@@ -1,5 +1,4 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import '@features/search/components/SearchMenu.scss';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';

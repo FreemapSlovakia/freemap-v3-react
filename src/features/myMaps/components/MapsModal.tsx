@@ -5,7 +5,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import '@shared/styles/react-tags.scss';
-import { Button } from '@mantine/core';
+import { Button, Checkbox, Menu } from '@mantine/core';
 import {
   type ReactElement,
   useCallback,
@@ -13,15 +13,9 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { Form, InputGroup, Modal, Table } from 'react-bootstrap';
 import {
-  Dropdown,
-  Form,
-  InputGroup,
-  Modal,
-  SplitButton,
-  Table,
-} from 'react-bootstrap';
-import {
+  FaCaretDown,
   FaCloudDownloadAlt,
   FaEdit,
   FaFilter,
@@ -310,45 +304,57 @@ export function MapsModal({ show }: Props): ReactElement {
               {activeMap ? m?.general.modify : m?.general.add}
             </Button>
 
-            <SplitButton
-              title={
-                <>
-                  <FaCloudDownloadAlt /> {m?.general.load}
-                </>
-              }
-              disabled={!selectedMap}
-              onClick={() =>
-                selectedMap &&
-                dispatch(
-                  mapsLoad({
-                    id: selectedMap.id,
-                    merge: !clear,
-                    ignoreLayers: !inclPosition,
-                    ignoreMap: !inclPosition,
-                  }),
-                )
-              }
-            >
-              <Dropdown.ItemText style={{ width: 'max-content' }}>
-                <Form.Check
-                  id="clear"
-                  type="checkbox"
-                  checked={clear}
-                  onChange={() => setClear((b) => !b)}
-                  label={m?.maps.loadToEmpty}
-                />
-              </Dropdown.ItemText>
+            <Button.Group>
+              <Button
+                size="sm"
+                leftSection={<FaCloudDownloadAlt />}
+                disabled={!selectedMap}
+                onClick={() =>
+                  selectedMap &&
+                  dispatch(
+                    mapsLoad({
+                      id: selectedMap.id,
+                      merge: !clear,
+                      ignoreLayers: !inclPosition,
+                      ignoreMap: !inclPosition,
+                    }),
+                  )
+                }
+              >
+                {m?.general.load}
+              </Button>
 
-              <Dropdown.ItemText>
-                <Form.Check
-                  id="inclPosition"
-                  type="checkbox"
-                  checked={inclPosition}
-                  onChange={() => setInclPosition((b) => !b)}
-                  label={m?.maps.loadInclMapAndPosition}
-                />
-              </Dropdown.ItemText>
-            </SplitButton>
+              <Menu closeOnItemClick={false}>
+                <Menu.Target>
+                  <Button
+                    size="sm"
+                    px="xs"
+                    variant="filled"
+                    disabled={!selectedMap}
+                  >
+                    <FaCaretDown />
+                  </Button>
+                </Menu.Target>
+
+                <Menu.Dropdown>
+                  <Menu.Item component="div">
+                    <Checkbox
+                      checked={clear}
+                      onChange={() => setClear((b) => !b)}
+                      label={m?.maps.loadToEmpty}
+                    />
+                  </Menu.Item>
+
+                  <Menu.Item component="div">
+                    <Checkbox
+                      checked={inclPosition}
+                      onChange={() => setInclPosition((b) => !b)}
+                      label={m?.maps.loadInclMapAndPosition}
+                    />
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </Button.Group>
 
             <Button
               color="red"

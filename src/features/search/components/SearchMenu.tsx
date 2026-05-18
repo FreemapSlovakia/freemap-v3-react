@@ -1,53 +1,49 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SourceName } from '@features/objects/components/SourceName.js';
 import {
+  ActionIcon,
+  Combobox,
+  ScrollArea,
+  TextInput,
+  useCombobox,
+} from '@mantine/core';
+import {
   getNameFromOsmElement,
   resolveGenericName,
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import {
-  FeatureId,
+  type FeatureId,
   featureIdsEqual,
-  OsmFeatureId,
+  type OsmFeatureId,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   Fragment,
-  forwardRef,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
+  type SubmitEvent,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import {
-  Button,
-  ButtonGroup,
-  Dropdown,
-  type DropdownProps,
-  Form,
-  InputGroup,
-} from 'react-bootstrap';
-import { FaCaretDown, FaDrawPolygon, FaSearch } from 'react-icons/fa';
+import { FaDrawPolygon, FaSearch } from 'react-icons/fa';
 import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
-  SearchResult,
-  SearchSource,
+  type SearchResult,
+  type SearchSource,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
 } from '../model/actions.js';
-import './SearchMenu.scss';
+import classes from './SearchMenu.module.css';
 
 type Props = {
   hidden?: boolean;
@@ -70,18 +66,6 @@ const wmsShapeSymbol: Record<string, ReactNode> = {
   MultiPolygon: <FaDrawPolygon />,
 };
 
-export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
-  ({ children }, ref) => {
-    return (
-      <span className="fm-no-after" ref={ref}>
-        {children}
-      </span>
-    );
-  },
-);
-
-HideArrow.displayName = 'HideArrow';
-
 export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const m = useMessages();
 
@@ -95,16 +79,18 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const [value, setValue] = useState(query);
 
-  const [open, setOpen] = useState(false);
-
   useEffect(() => {
     setValue(query);
   }, [query]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+  });
+
   const handleSearch = useCallback(
-    (e: ChangeEvent<HTMLFormElement>) => {
+    (e: SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       if (value.length > 2) {
@@ -127,13 +113,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     [dispatch, results.length],
   );
 
-  const handleSelect = useCallback(
-    (eventKey: string | null) => {
-      if (!eventKey) {
-        return;
-      }
-
-      const id: FeatureId = JSON.parse(eventKey);
+  const handleOptionSubmit = useCallback(
+    (idString: string) => {
+      const id: FeatureId = JSON.parse(idString);
 
       const result = results.find((item) => featureIdsEqual(item.id, id));
 
@@ -141,21 +123,25 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         dispatch(searchSelectResult({ result, showToast: result.showToast }));
       }
 
-      setOpen(false);
+      combobox.closeDropdown();
     },
-    [results, dispatch],
+    [results, dispatch, combobox],
   );
 
+  // React only when the results identity changes — not when combobox state
+  // does. The combobox callback refs change every open/close, so depending on
+  // them would cause an infinite open loop (closing the dropdown on result
+  // click would re-trigger the effect and reopen it).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: see comment above
   useEffect(() => {
     if (results.length) {
       if (!inputRef.current || document.activeElement === inputRef.current) {
-        setOpen(true);
+        combobox.openDropdown();
       } else {
         inputRef.current?.focus();
       }
     } else {
-      setOpen(false);
-      // setValue(''); TODO
+      combobox.closeDropdown();
     }
   }, [results]);
 
@@ -191,115 +177,104 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     };
   }, [hidden, preventShortcut]);
 
-  const handleInputFocus = useCallback(() => {
-    setOpen(results.length > 0);
-  }, [results]);
-
-  const handleToggle: DropdownProps['onToggle'] = (isOpen) => {
-    if (document.activeElement !== inputRef.current && !isOpen) {
-      setOpen(false);
-    }
-  };
-
-  const sc = useScrollClasses('vertical');
-
   let prevSource: SearchSource | undefined = undefined;
 
   return (
-    <Form
+    <form
       onSubmit={handleSearch}
       style={{ display: hidden ? 'none' : '' }}
       className="ms-1"
     >
-      <Dropdown
-        as={ButtonGroup}
-        show={open}
-        onSelect={handleSelect}
-        onToggle={handleToggle}
+      <Combobox
+        store={combobox}
+        onOptionSubmit={handleOptionSubmit}
+        width="fit-content"
+        position="bottom-start"
       >
-        <Dropdown.Toggle as={HideArrow}>
-          <InputGroup className="flex-nowrap">
-            <Form.Control
-              type="search"
-              className="fm-search-input"
-              onChange={handleChange}
-              value={value}
-              placeholder={m?.search.placeholder}
-              ref={inputRef}
-              onFocus={handleInputFocus}
-            />
+        <Combobox.Target>
+          <TextInput
+            classNames={{
+              root: classes['search-input'],
+            }}
+            type="search"
+            value={value}
+            onChange={handleChange}
+            placeholder={m?.search.placeholder}
+            ref={inputRef}
+            onClick={() => results.length > 0 && combobox.openDropdown()}
+            onFocus={() => results.length > 0 && combobox.openDropdown()}
+            onBlur={() => combobox.closeDropdown()}
+            rightSectionWidth={value && results.length === 0 ? 56 : undefined}
+            rightSection={
+              <>
+                {value && (
+                  <Combobox.ClearButton
+                    onClear={() => {
+                      setValue('');
 
-            {results.length ? (
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={() => inputRef.current?.focus()}
-              >
-                <FaCaretDown />
-              </Button>
-            ) : (
-              <LongPressTooltip label={m?.search.buttonTitle}>
-                {({ props }) => (
-                  <Button
-                    variant="secondary"
+                      if (results.length > 0) {
+                        dispatch(searchSetResults([]));
+                      }
+                    }}
+                  />
+                )}
+
+                {results.length === 0 && (
+                  <ActionIcon
+                    variant="light"
                     type="submit"
+                    title={m?.search.buttonTitle}
                     disabled={!value}
-                    {...props}
                   >
                     <FaSearch />
-                  </Button>
+                  </ActionIcon>
                 )}
-              </LongPressTooltip>
-            )}
-          </InputGroup>
-        </Dropdown.Toggle>
+              </>
+            }
+          />
+        </Combobox.Target>
 
-        <Dropdown.Menu
-          className="fm-search-dropdown fm-dropdown-with-scroller"
-          popperConfig={fixedPopperConfig}
-        >
-          <div className="dropdown-long" ref={sc}>
-            <div />
+        <Combobox.Dropdown className={classes['search-dropdown']}>
+          <Combobox.Options>
+            <ScrollArea.Autosize mah="calc(100dvh - 130px)" type="auto">
+              {results.map((result) => {
+                const id = stringifyFeatureId(result.id);
 
-            {results.map((result) => {
-              const id = stringifyFeatureId(result.id);
+                const divider =
+                  !(
+                    [
+                      'nominatim-forward',
+                      'bbox',
+                      'coords',
+                      'geojson',
+                    ] as SearchSource[]
+                  ).includes(result.source) && prevSource !== result.source ? (
+                    <div className="dropdown-caption-divider">
+                      <SourceName result={result} />
+                    </div>
+                  ) : null;
 
-              const divider =
-                !(
-                  [
-                    'nominatim-forward',
-                    'bbox',
-                    'coords',
-                    'geojson',
-                  ] as SearchSource[]
-                ).includes(result.source) && prevSource !== result.source ? (
-                  <div className="dropdown-caption-divider">
-                    <SourceName result={result} />
-                  </div>
-                ) : null;
+                prevSource = result.source;
 
-              prevSource = result.source;
+                const isActive =
+                  selectedResult !== null &&
+                  featureIdsEqual(result.id, selectedResult.id);
 
-              return (
-                <Fragment key={id}>
-                  {divider}
+                return (
+                  <Fragment key={id}>
+                    {divider}
 
-                  <Dropdown.Item
-                    eventKey={id}
-                    active={
-                      selectedResult !== null &&
-                      featureIdsEqual(result.id, selectedResult.id)
-                    }
-                  >
-                    <Result value={result} />
-                  </Dropdown.Item>
-                </Fragment>
-              );
-            })}
-          </div>
-        </Dropdown.Menu>
-      </Dropdown>
-    </Form>
+                    <Combobox.Option value={id} active={isActive}>
+                      <Result value={result} />
+                    </Combobox.Option>
+                  </Fragment>
+                );
+              })}
+            </ScrollArea.Autosize>
+          </Combobox.Options>
+        </Combobox.Dropdown>
+      </Combobox>
+    </form>
   );
 }
 

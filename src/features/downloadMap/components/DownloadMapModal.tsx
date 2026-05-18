@@ -1,7 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { authInit } from '@features/auth/model/actions.js';
-import { CreditsAlert } from '@/features/credits/components/CreditsAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Menu } from '@mantine/core';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
@@ -28,16 +28,16 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { Button, ButtonGroup, Form, InputGroup, Modal } from 'react-bootstrap';
 import {
-  Button,
-  ButtonGroup,
-  Dropdown,
-  Form,
-  InputGroup,
-  Modal,
-} from 'react-bootstrap';
-import { FaDownload, FaDrawPolygon, FaEye, FaTimes } from 'react-icons/fa';
+  FaCaretDown,
+  FaDownload,
+  FaDrawPolygon,
+  FaEye,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { CreditsAlert } from '@/features/credits/components/CreditsAlert.js';
 import { downloadMap } from '../model/actions.js';
 
 type Props = { show: boolean };
@@ -377,19 +377,31 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           <Form.Group controlId="mapType">
             <Form.Label>{m?.downloadMap.map}</Form.Label>
 
-            <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
-              <Dropdown.Toggle className="text-start w-100">
-                {mapDef ? getItem(mapDef) : m?.downloadMap.unknownMapType}
-              </Dropdown.Toggle>
+            <Menu width="target">
+              <Menu.Target>
+                <Button
+                  variant="light"
+                  className="mb-3 text-start w-100 d-flex align-items-center justify-content-between border"
+                >
+                  <span>
+                    {mapDef ? getItem(mapDef) : m?.downloadMap.unknownMapType}
+                  </span>
+                  <FaCaretDown />
+                </Button>
+              </Menu.Target>
 
-              <Dropdown.Menu>
+              <Menu.Dropdown>
                 {mapDefs.map((def) => (
-                  <Dropdown.Item key={def.type} eventKey={def.type}>
+                  <Menu.Item
+                    key={def.type}
+                    onClick={() => setMapType(def.type)}
+                    color={def.type === mapType ? 'blue' : undefined}
+                  >
                     {getItem(def)}
-                  </Dropdown.Item>
+                  </Menu.Item>
                 ))}
-              </Dropdown.Menu>
-            </Dropdown>
+              </Menu.Dropdown>
+            </Menu>
           </Form.Group>
 
           <Form.Group controlId="downloadArea">

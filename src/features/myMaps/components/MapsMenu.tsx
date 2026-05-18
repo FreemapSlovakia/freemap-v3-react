@@ -94,15 +94,15 @@ export function MapsMenu(): ReactElement {
             <MantineLongPressTooltip breakpoint="xl" label={m?.maps.disconnect}>
               {({ label, labelHidden, props }) =>
                 labelHidden ? (
-                  <ActionIcon
-                    variant="filled"
+                  <Button
                     color="gray"
-                    size="input-sm"
+                    size="sm"
+                    px="xs"
                     onClick={() => dispatch(mapsDisconnect())}
                     {...props}
                   >
                     <FaUnlink />
-                  </ActionIcon>
+                  </Button>
                 ) : (
                   <Button
                     color="gray"
@@ -119,9 +119,9 @@ export function MapsMenu(): ReactElement {
 
             <Menu position="bottom-end">
               <Menu.Target>
-                <ActionIcon variant="filled" color="gray" size="input-sm">
+                <Button color="gray" size="sm" px="xs">
                   <FaCaretDown />
-                </ActionIcon>
+                </Button>
               </Menu.Target>
 
               <Menu.Dropdown>

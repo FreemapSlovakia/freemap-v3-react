@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Menu } from '@mantine/core';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -26,13 +27,18 @@ import {
   Alert,
   Button,
   ButtonGroup,
-  Dropdown,
   Form,
   InputGroup,
   Modal,
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
-import { FaChevronLeft, FaDrawPolygon, FaEye, FaSave } from 'react-icons/fa';
+import {
+  FaCaretDown,
+  FaChevronLeft,
+  FaDrawPolygon,
+  FaEye,
+  FaSave,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import type { CachedTileMapDef } from '../cachedTileMaps.js';
 import { cachedMapsSetView, cacheTilesStart } from '../model/actions.js';
@@ -264,19 +270,29 @@ export function CacheTilesForm(): ReactElement {
         <Form.Group controlId="mapType">
           <Form.Label>{m?.downloadMap.map}</Form.Label>
 
-          <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
-            <Dropdown.Toggle className="text-start w-100">
-              {mapDef ? getItem(mapDef) : '???'}
-            </Dropdown.Toggle>
+          <Menu width="target">
+            <Menu.Target>
+              <Button
+                variant="light"
+                className="mb-3 text-start w-100 d-flex align-items-center justify-content-between border"
+              >
+                <span>{mapDef ? getItem(mapDef) : '???'}</span>
+                <FaCaretDown />
+              </Button>
+            </Menu.Target>
 
-            <Dropdown.Menu>
+            <Menu.Dropdown>
               {mapDefs.map((def) => (
-                <Dropdown.Item key={def.type} eventKey={def.type}>
+                <Menu.Item
+                  key={def.type}
+                  onClick={() => setMapType(def.type)}
+                  color={def.type === mapType ? 'blue' : undefined}
+                >
                   {getItem(def)}
-                </Dropdown.Item>
+                </Menu.Item>
               ))}
-            </Dropdown.Menu>
-          </Dropdown>
+            </Menu.Dropdown>
+          </Menu>
         </Form.Group>
 
         <Form.Group controlId="downloadArea">

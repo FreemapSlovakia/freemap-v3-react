@@ -12,7 +12,6 @@ import { center } from '@turf/center';
 import { ReactElement } from 'react';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import './SearchMenu.scss';
 
 type Props = {
   hidden?: boolean;

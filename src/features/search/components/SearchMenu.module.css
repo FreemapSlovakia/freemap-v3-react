@@ -1,0 +1,19 @@
+@media (max-width: 767px) {
+    .search-input {
+        max-width: calc(50dvw);
+    }
+}
+
+.search-input {
+    width: 260px;
+}
+
+.search-dropdown {
+    @media (min-width: 768px) {
+        max-width: calc(100dvw - 160px);
+    }
+
+    @media (max-width: 767px) {
+        max-width: calc(100dvw - 16px);
+    }
+}

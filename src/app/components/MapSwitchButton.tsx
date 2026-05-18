@@ -2,17 +2,18 @@ import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SubmenuHeader } from '@features/mainMenu/components/SubmenuHeader.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
+import { Button, Kbd, Menu, ScrollArea, Text, TextInput } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
+import { MenuSelectContext } from '@shared/components/menuSelectContext.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { useSubmenuScrollMemory } from '@shared/hooks/useSubmenuScrollMemory.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
 import { removeAccents } from '@shared/stringUtils.js';
@@ -25,9 +26,9 @@ import {
   ReactElement,
   SyntheticEvent,
   useCallback,
+  useRef,
   useState,
 } from 'react';
-import { Button, ButtonGroup, Dropdown, Form } from 'react-bootstrap';
 import { BiWifiOff, BiWorld } from 'react-icons/bi';
 import {
   FaChevronRight,
@@ -47,8 +48,18 @@ import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../store/actions.js';
 
+const SYNTH_EVENT = {
+  preventDefault() {},
+} as SyntheticEvent<unknown, Event>;
+
 function getKbdShortcut(shortcut?: Shortcut | null) {
-  return shortcut && <kbd className="ms-1">{formatShortcut(shortcut)}</kbd>;
+  return (
+    shortcut && (
+      <Kbd ml={4} size="xs">
+        {formatShortcut(shortcut)}
+      </Kbd>
+    )
+  );
 }
 
 export function MapSwitchButton(): ReactElement {
@@ -154,6 +165,11 @@ export function MapSwitchButton(): ReactElement {
     [dispatch, handlePossibleFilterClick],
   );
 
+  const select = useCallback(
+    (eventKey: string) => handleSelect(eventKey, SYNTH_EVENT),
+    [handleSelect],
+  );
+
   const handleLayerButtonClick = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       if (handlePossibleFilterClick(e)) {
@@ -173,7 +189,9 @@ export function MapSwitchButton(): ReactElement {
     getInitialValueInEffect: false,
   });
 
-  const sc = useScrollClasses('vertical');
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  useSubmenuScrollMemory(viewportRef, subview);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
@@ -355,23 +373,25 @@ export function MapSwitchButton(): ReactElement {
 
         return (
           <Fragment key={type}>
-            {wasFirst && showLeadingDivider && <Dropdown.Divider />}
+            {wasFirst && showLeadingDivider && <Menu.Divider />}
 
-            <Dropdown.Item
+            <Menu.Item
+              component="a"
               href={`?layers=${type}`}
-              eventKey={'layer-' + type}
-              active={active}
-              className={clsx(showInMenu || 'text-secondary')}
+              color={active ? 'blue' : undefined}
+              c={showInMenu ? undefined : 'dimmed'}
+              leftSection={
+                def.layer === 'base' ? (
+                  <Checkbox value={active} />
+                ) : active ? (
+                  <FaRegCheckCircle />
+                ) : (
+                  <FaRegCircle />
+                )
+              }
+              onClick={(e) => handleSelect('layer-' + type, e)}
             >
-              {def.layer === 'base' ? (
-                <Checkbox value={active} />
-              ) : active ? (
-                <FaRegCheckCircle />
-              ) : (
-                <FaRegCircle />
-              )}
-
-              <span className="px-2">
+              <span style={{ marginInlineEnd: 6 }}>
                 {def.custom ? <MdDashboardCustomize /> : def.icon}
               </span>
 
@@ -388,7 +408,7 @@ export function MapSwitchButton(): ReactElement {
               </span>
 
               {commonBadges(def, 'menu')}
-            </Dropdown.Item>
+            </Menu.Item>
           </Fragment>
         );
       });
@@ -397,10 +417,10 @@ export function MapSwitchButton(): ReactElement {
   let showsOfm = false;
 
   return (
-    <>
+    <MenuSelectContext.Provider value={select}>
       <div className="d-none d-sm-block me-1">{m?.mapLayers.switch}</div>
 
-      <ButtonGroup>
+      <Button.Group>
         {(isWide ? layerDefs : []).map((def) => {
           const { type } = def;
 
@@ -426,8 +446,10 @@ export function MapSwitchButton(): ReactElement {
             showsOfm = true;
           }
 
+          const isActive = (type === 'i') !== activeLayers.includes(type);
+
           return (
-            <LongPressTooltip
+            <MantineLongPressTooltip
               key={type}
               label={
                 <>
@@ -441,10 +463,11 @@ export function MapSwitchButton(): ReactElement {
             >
               {({ props }) => (
                 <Button
-                  variant="secondary"
-                  key={type}
+                  size="sm"
+                  px="xs"
+                  variant="filled"
+                  color={isActive ? 'blue' : 'gray'}
                   data-type={type}
-                  active={(type === 'i') !== activeLayers.includes(type)}
                   onClick={handleLayerButtonClick}
                   {...props}
                 >
@@ -453,31 +476,34 @@ export function MapSwitchButton(): ReactElement {
                   {commonBadges(def, 'toolbar')}
                 </Button>
               )}
-            </LongPressTooltip>
+            </MantineLongPressTooltip>
           );
         })}
 
-        <Dropdown
-          show={Boolean(show)}
-          drop="up-centered"
-          onSelect={handleSelect}
-          autoClose="outside"
-          onToggle={handleToggle}
-          as={ButtonGroup}
+        <Menu
+          opened={Boolean(show)}
+          onChange={handleToggle}
+          closeOnItemClick={false}
+          position="top-end"
         >
-          <Dropdown.Toggle
-            title={m?.mapLayers.layers}
-            bsPrefix="fm-dropdown-toggle-nocaret"
-            variant={isWide ? 'secondary' : 'primary'}
-          >
-            <FaEllipsisV className="d-none d-sm-block" />
-            <FaRegMap className="d-sm-none" />
-          </Dropdown.Toggle>
+          <Menu.Target>
+            <Button
+              title={m?.mapLayers.layers}
+              size="sm"
+              px="xs"
+              variant="filled"
+              color={isWide ? 'gray' : 'blue'}
+            >
+              {isWide ? <FaEllipsisV /> : <FaRegMap />}
+            </Button>
+          </Menu.Target>
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            <div className="fm-menu-scroller" ref={sc}>
-              <div />
-
+          <Menu.Dropdown>
+            <ScrollArea.Autosize
+              mah="calc(100dvh - 160px)"
+              type="auto"
+              viewportRef={viewportRef}
+            >
               {subview === 'mapSettings' ? (
                 <>
                   <SubmenuHeader
@@ -485,44 +511,67 @@ export function MapSwitchButton(): ReactElement {
                     title={m?.mapLayers.settings}
                   />
 
-                  <Dropdown.Item as="button" eventKey="mapLayersConfig">
-                    <FaLayerGroup /> {m?.mapLayers.configureLayers} <kbd>m</kbd>{' '}
-                    <kbd>y</kbd>
-                  </Dropdown.Item>
+                  <Menu.Item
+                    leftSection={<FaLayerGroup />}
+                    rightSection={
+                      <>
+                        <Kbd>m</Kbd> <Kbd>y</Kbd>
+                      </>
+                    }
+                    onClick={() => select('mapLayersConfig')}
+                  >
+                    {m?.mapLayers.configureLayers}
+                  </Menu.Item>
 
-                  <Dropdown.Item as="button" eventKey="customMaps">
-                    <MdDashboardCustomize /> {m?.mapLayers.customMaps}{' '}
-                    <kbd>m</kbd> <kbd>c</kbd>
-                  </Dropdown.Item>
+                  <Menu.Item
+                    leftSection={<MdDashboardCustomize />}
+                    rightSection={
+                      <>
+                        <Kbd>m</Kbd> <Kbd>c</Kbd>
+                      </>
+                    }
+                    onClick={() => select('customMaps')}
+                  >
+                    {m?.mapLayers.customMaps}
+                  </Menu.Item>
 
-                  <Dropdown.Item as="button" eventKey="preferences">
-                    <FaCog /> {m?.mapLayers.preferences} <kbd>m</kbd>{' '}
-                    <kbd>p</kbd>
-                  </Dropdown.Item>
+                  <Menu.Item
+                    leftSection={<FaCog />}
+                    rightSection={
+                      <>
+                        <Kbd>m</Kbd> <Kbd>p</Kbd>
+                      </>
+                    }
+                    onClick={() => select('preferences')}
+                  >
+                    {m?.mapLayers.preferences}
+                  </Menu.Item>
                 </>
               ) : (
                 <>
                   {!normalizedFilter && (
                     <>
-                      <Dropdown.Item
-                        key="offlineMaps"
-                        as="button"
-                        eventKey="offlineMaps"
+                      <Menu.Item
+                        leftSection={<BiWifiOff />}
+                        rightSection={
+                          <>
+                            <Kbd>m</Kbd> <Kbd>o</Kbd>
+                          </>
+                        }
+                        onClick={() => select('offlineMaps')}
                       >
-                        <BiWifiOff /> {m?.offline.offlineMaps}
+                        {m?.offline.offlineMaps}
                         {cachedMapsTotalSize > 0 &&
-                          ` · ${formatSize(cachedMapsTotalSize)}`}{' '}
-                        <kbd>m</kbd> <kbd>o</kbd>
-                      </Dropdown.Item>
+                          ` · ${formatSize(cachedMapsTotalSize)}`}
+                      </Menu.Item>
 
-                      <Dropdown.Item
-                        key="mapSettings"
-                        as="button"
-                        eventKey="mapSettings"
+                      <Menu.Item
+                        leftSection={<FaCog />}
+                        rightSection={<FaChevronRight />}
+                        onClick={() => select('mapSettings')}
                       >
-                        <FaCog /> {m?.mapLayers.settings}
-                        <FaChevronRight />
-                      </Dropdown.Item>
+                        {m?.mapLayers.settings}
+                      </Menu.Item>
                     </>
                   )}
 
@@ -546,43 +595,43 @@ export function MapSwitchButton(): ReactElement {
                         {baseItems}
                         {overlayItems}
                         {noMatches && (
-                          <Dropdown.ItemText className="text-muted text-center">
+                          <Text c="dimmed" ta="center" px="sm" py="xs">
                             {m?.mapLayers.noMapsFound}
-                          </Dropdown.ItemText>
+                          </Text>
                         )}
                       </>
                     );
                   })()}
 
-                  <Dropdown.Divider />
+                  <Menu.Divider />
 
                   {!normalizedFilter &&
                     (show === true || show === 'more') &&
                     (!isWide && show === true ? (
-                      <Dropdown.Item eventKey="show-more">
+                      <Menu.Item onClick={() => select('show-more')} mb="xs">
                         {m?.mapLayers.showMore}
-                      </Dropdown.Item>
+                      </Menu.Item>
                     ) : (
-                      <Dropdown.Item eventKey="show-all">
+                      <Menu.Item onClick={() => select('show-all')} mb="xs">
                         {m?.mapLayers.showAll}
-                      </Dropdown.Item>
+                      </Menu.Item>
                     ))}
 
-                  <div className="px-2 pb-1">
-                    <Form.Control
-                      type="search"
-                      size="sm"
-                      placeholder={m?.mapLayers.filterMaps}
-                      value={filter}
-                      onChange={handleFilterChange}
-                    />
-                  </div>
+                  <TextInput
+                    px="xs"
+                    pb={4}
+                    type="search"
+                    size="sm"
+                    placeholder={m?.mapLayers.filterMaps}
+                    value={filter}
+                    onChange={handleFilterChange}
+                  />
                 </>
               )}
-            </div>
-          </Dropdown.Menu>
-        </Dropdown>
-      </ButtonGroup>
-    </>
+            </ScrollArea.Autosize>
+          </Menu.Dropdown>
+        </Menu>
+      </Button.Group>
+    </MenuSelectContext.Provider>
   );
 }

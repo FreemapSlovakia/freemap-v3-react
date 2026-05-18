@@ -4,33 +4,24 @@ import {
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ActionIcon, Menu } from '@mantine/core';
+import { MantineLongPressTooltip } from '@shared/components/MantineLongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import {
   ChangeEvent,
-  Children,
-  CSSProperties,
   Fragment,
-  forwardRef,
   ReactElement,
-  ReactNode,
   SubmitEvent,
   SyntheticEvent,
   useCallback,
   useState,
 } from 'react';
-import {
-  Button,
-  ButtonGroup,
-  Dropdown,
-  Form,
-  InputGroup,
-} from 'react-bootstrap';
+import { Button, ButtonGroup, Form, InputGroup } from 'react-bootstrap';
 import {
   FaBullseye,
+  FaCaretDown,
   FaChartArea,
   FaCrosshairs,
   FaDiceThree,
@@ -316,46 +307,6 @@ function IsochroneSettings() {
   );
 }
 
-type Props = { children: ReactNode; style: CSSProperties; className: string };
-
-const GraphopperModeMenu = forwardRef<HTMLDivElement, Props>(
-  ({ children, style, className }, ref) => {
-    return (
-      <div ref={ref} style={style} className={className}>
-        {children}
-
-        {Children.toArray(children)
-          .filter(
-            (
-              item,
-            ): item is ReactElement & { props: { eventKey: string | null } } =>
-              typeof item === 'object' &&
-              item !== null &&
-              'props' in item &&
-              typeof item.props === 'object' &&
-              item.props !== null &&
-              'active' in item.props &&
-              typeof item.props.active === 'boolean' &&
-              item.props.active,
-          )
-          .map((item) => {
-            return (
-              <Fragment key={'m-' + item.props.eventKey}>
-                {item.props.eventKey === 'roundtrip' ? (
-                  <TripSettings />
-                ) : item.props.eventKey === 'isochrone' ? (
-                  <IsochroneSettings />
-                ) : null}
-              </Fragment>
-            );
-          })}
-      </div>
-    );
-  },
-);
-
-GraphopperModeMenu.displayName = 'GraphopperModeMenu';
-
 export function RoutePlannerMenu(): ReactElement {
   const m = useMessages();
 
@@ -422,7 +373,7 @@ export function RoutePlannerMenu(): ReactElement {
   };
 
   function setFromHomeLocation(
-    pointType: string | null,
+    pointType: 'start' | 'finish',
     e: SyntheticEvent<unknown>,
   ) {
     if (e.target instanceof HTMLButtonElement) {
@@ -448,7 +399,7 @@ export function RoutePlannerMenu(): ReactElement {
       );
     } else if (pointType === 'start') {
       dispatch(routePlannerSetStart(homeLocation));
-    } else if (pointType === 'finish') {
+    } else {
       dispatch(routePlannerSetFinish(homeLocation));
     }
   }
@@ -468,143 +419,151 @@ export function RoutePlannerMenu(): ReactElement {
       />
 
       {activeTTDef?.api === 'gh' && (
-        <Dropdown
-          className="ms-1"
-          onSelect={(mode) => {
-            dispatch(routePlannerSetMode(mode as RoutingMode));
-          }}
-          show={routePlannerDropdownOpen}
-          onToggle={(nextShow, { source }) => {
-            if (source !== 'select') {
-              setRoutePlannerDropdownOpen(nextShow);
-            }
-          }}
+        <Menu
+          opened={routePlannerDropdownOpen}
+          onChange={setRoutePlannerDropdownOpen}
+          closeOnItemClick={false}
         >
-          <LongPressTooltip
-            label={
-              m?.routePlanner.mode[
-                activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
-              ]
-            }
-            breakpoint="sm"
-          >
-            {({ props, label, labelClassName }) => (
-              <Dropdown.Toggle id="mode" variant="secondary" {...props}>
-                <MdTimeline /> <span className={labelClassName}>{label}</span>
-              </Dropdown.Toggle>
-            )}
-          </LongPressTooltip>
+          <Menu.Target>
+            <MantineLongPressTooltip
+              label={
+                m?.routePlanner.mode[
+                  activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
+                ]
+              }
+              breakpoint="sm"
+            >
+              {({ props, label, labelClassName }) => (
+                <Button
+                  variant="secondary"
+                  className="ms-1"
+                  id="mode"
+                  {...props}
+                >
+                  <MdTimeline /> <span className={labelClassName}>{label}</span>{' '}
+                  <FaCaretDown />
+                </Button>
+              )}
+            </MantineLongPressTooltip>
+          </Menu.Target>
 
-          <Dropdown.Menu
-            popperConfig={fixedPopperConfig}
-            as={GraphopperModeMenu}
-          >
+          <Menu.Dropdown>
             {(['route', 'roundtrip', 'isochrone'] satisfies RoutingMode[]).map(
               (mode) => (
-                <Dropdown.Item
-                  eventKey={mode}
-                  key={mode}
-                  title={m?.routePlanner.mode[mode]}
-                  active={activeMode === mode}
-                >
-                  {m?.routePlanner.mode[
-                    mode === 'roundtrip' ? 'routndtrip-gh' : mode
-                  ] ?? '…'}
-                </Dropdown.Item>
+                <Fragment key={mode}>
+                  <Menu.Item
+                    title={m?.routePlanner.mode[mode]}
+                    color={activeMode === mode ? 'blue' : undefined}
+                    onClick={() => dispatch(routePlannerSetMode(mode))}
+                  >
+                    {m?.routePlanner.mode[
+                      mode === 'roundtrip' ? 'routndtrip-gh' : mode
+                    ] ?? '…'}
+                  </Menu.Item>
+
+                  {activeMode === mode && mode === 'roundtrip' && (
+                    <TripSettings />
+                  )}
+
+                  {activeMode === mode && mode === 'isochrone' && (
+                    <IsochroneSettings />
+                  )}
+                </Fragment>
               ),
             )}
-          </Dropdown.Menu>
-        </Dropdown>
+          </Menu.Dropdown>
+        </Menu>
       )}
 
       {activeTTDef?.api === 'osrm' && (
-        <Dropdown
-          className="ms-1"
-          onSelect={(mode) => {
-            dispatch(routePlannerSetMode(mode as RoutingMode));
-          }}
-        >
-          <Dropdown.Toggle id="mode" variant="secondary">
-            {m?.routePlanner.mode[activeMode] ?? '…'}
-          </Dropdown.Toggle>
+        <Menu>
+          <Menu.Target>
+            <Button variant="secondary" className="ms-1" id="mode">
+              {m?.routePlanner.mode[activeMode] ?? '…'} <FaCaretDown />
+            </Button>
+          </Menu.Target>
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+          <Menu.Dropdown>
             {(['route', 'trip', 'roundtrip'] satisfies RoutingMode[]).map(
               (mode) => (
-                <Dropdown.Item
-                  eventKey={mode}
+                <Menu.Item
                   key={mode}
                   title={m?.routePlanner.mode[mode]}
-                  active={activeMode === mode}
+                  color={activeMode === mode ? 'blue' : undefined}
+                  onClick={() => dispatch(routePlannerSetMode(mode))}
                 >
                   {m?.routePlanner.mode[mode] ?? '…'}
-                </Dropdown.Item>
+                </Menu.Item>
               ),
             )}
-          </Dropdown.Menu>
-        </Dropdown>
+          </Menu.Dropdown>
+        </Menu>
       )}
 
       <ButtonGroup className="ms-1">
-        <Dropdown
-          className="btn-group"
-          id="set-start-dropdown"
-          onSelect={(eventKey, e) => {
-            if (eventKey === 'pick') {
-              dispatch(routePlannerSetPickMode('start'));
-            } else if (eventKey === 'current') {
-              dispatch(routePlannerSetFromCurrentPosition('start'));
-            } else if (eventKey === 'home') {
-              setFromHomeLocation('start', e);
-            }
-          }}
-        >
-          <LongPressTooltip breakpoint="md" label={m?.routePlanner.start}>
-            {({ label, labelClassName, props }) => (
-              <Dropdown.Toggle
-                variant="secondary"
-                active={pickPointMode === 'start'}
-                {...props}
-              >
-                <FaPlay color="#409a40" />
-
-                <span className={labelClassName}> {label}</span>
-              </Dropdown.Toggle>
-            )}
-          </LongPressTooltip>
-
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            <Dropdown.Item eventKey="pick">
-              <FaMapMarkerAlt />
-              &nbsp;{m?.routePlanner.point.pick ?? '…'}
-            </Dropdown.Item>
-
-            <Dropdown.Item eventKey="current">
-              <FaBullseye />
-              &nbsp;{m?.routePlanner.point.current ?? '…'}
-            </Dropdown.Item>
-
-            <Dropdown.Item
-              className="d-flex align-items-center justify-content-between"
-              eventKey="home"
+        <Menu>
+          <Menu.Target>
+            <MantineLongPressTooltip
+              breakpoint="md"
+              label={m?.routePlanner.start}
             >
-              <FaHome />
-              &nbsp;{m?.routePlanner.point.home ?? '…'}
-              <Button
-                size="sm"
-                variant="secondary"
-                className="my-n1 ms-2"
-                title={m?.settings.map.homeLocation.select}
-              >
-                <FaCrosshairs className="pe-none" />
-              </Button>
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+              {({ label, labelClassName, props }) => (
+                <Button
+                  variant="secondary"
+                  active={pickPointMode === 'start'}
+                  {...props}
+                >
+                  <FaPlay color="#409a40" />
+                  <span className={labelClassName}> {label}</span>{' '}
+                  <FaCaretDown />
+                </Button>
+              )}
+            </MantineLongPressTooltip>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item
+              leftSection={<FaMapMarkerAlt />}
+              onClick={() => dispatch(routePlannerSetPickMode('start'))}
+            >
+              {m?.routePlanner.point.pick ?? '…'}
+            </Menu.Item>
+
+            <Menu.Item
+              leftSection={<FaBullseye />}
+              onClick={() =>
+                dispatch(routePlannerSetFromCurrentPosition('start'))
+              }
+            >
+              {m?.routePlanner.point.current ?? '…'}
+            </Menu.Item>
+
+            <Menu.Item
+              leftSection={<FaHome />}
+              rightSection={
+                <ActionIcon
+                  size="sm"
+                  variant="filled"
+                  color="gray"
+                  title={m?.settings.map.homeLocation.select}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    dispatch(setSelectingHomeLocation(true));
+                  }}
+                >
+                  <FaCrosshairs className="pe-none" />
+                </ActionIcon>
+              }
+              onClick={(e) => setFromHomeLocation('start', e)}
+            >
+              {m?.routePlanner.point.home ?? '…'}
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
 
         {activeMode !== 'roundtrip' && activeMode !== 'isochrone' && (
           <>
-            <LongPressTooltip label={m?.routePlanner.swap}>
+            <MantineLongPressTooltip label={m?.routePlanner.swap}>
               {({ label, labelClassName, props }) => (
                 <Button
                   variant="secondary"
@@ -615,102 +574,116 @@ export function RoutePlannerMenu(): ReactElement {
                   ⇆<span className={labelClassName}> {label}</span>
                 </Button>
               )}
-            </LongPressTooltip>
+            </MantineLongPressTooltip>
 
-            <Dropdown
-              id="set-finish-dropdown"
-              className="btn-group"
-              onSelect={(eventKey, e) => {
-                if (eventKey === 'pick') {
-                  dispatch(routePlannerSetPickMode('finish'));
-                } else if (eventKey === 'current') {
-                  dispatch(routePlannerSetFromCurrentPosition('finish'));
-                } else if (eventKey === 'home') {
-                  setFromHomeLocation('finish', e);
-                }
-              }}
-            >
-              <LongPressTooltip breakpoint="md" label={m?.routePlanner.finish}>
-                {({ label, labelClassName, props }) => (
-                  <Dropdown.Toggle
-                    variant="secondary"
-                    active={pickPointMode === 'finish'}
-                    {...props}
-                  >
-                    <FaStop color="#d9534f" />
-
-                    <span className={labelClassName}> {label}</span>
-                  </Dropdown.Toggle>
-                )}
-              </LongPressTooltip>
-
-              <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                <Dropdown.Item eventKey="pick">
-                  <FaMapMarkerAlt />
-                  &nbsp;
-                  {m?.routePlanner.point.pick ?? '…'}
-                </Dropdown.Item>
-
-                <Dropdown.Item eventKey="current">
-                  <FaBullseye />
-                  &nbsp;
-                  {m?.routePlanner.point.current ?? '…'}
-                </Dropdown.Item>
-
-                <Dropdown.Item
-                  className="d-flex align-items-center justify-content-between"
-                  eventKey="home"
+            <Menu>
+              <Menu.Target>
+                <MantineLongPressTooltip
+                  breakpoint="md"
+                  label={m?.routePlanner.finish}
                 >
-                  <FaHome />
-                  &nbsp;{m?.routePlanner.point.home ?? '…'}
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="my-n1 ms-2"
-                    title={m?.settings.map.homeLocation.select}
-                  >
-                    <FaCrosshairs className="pe-none" />
-                  </Button>
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+                  {({ label, labelClassName, props }) => (
+                    <Button
+                      variant="secondary"
+                      active={pickPointMode === 'finish'}
+                      {...props}
+                    >
+                      <FaStop color="#d9534f" />
+                      <span className={labelClassName}> {label}</span>{' '}
+                      <FaCaretDown />
+                    </Button>
+                  )}
+                </MantineLongPressTooltip>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<FaMapMarkerAlt />}
+                  onClick={() => dispatch(routePlannerSetPickMode('finish'))}
+                >
+                  {m?.routePlanner.point.pick ?? '…'}
+                </Menu.Item>
+
+                <Menu.Item
+                  leftSection={<FaBullseye />}
+                  onClick={() =>
+                    dispatch(routePlannerSetFromCurrentPosition('finish'))
+                  }
+                >
+                  {m?.routePlanner.point.current ?? '…'}
+                </Menu.Item>
+
+                <Menu.Item
+                  leftSection={<FaHome />}
+                  rightSection={
+                    <ActionIcon
+                      size="sm"
+                      variant="filled"
+                      color="gray"
+                      title={m?.settings.map.homeLocation.select}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        dispatch(setSelectingHomeLocation(true));
+                      }}
+                    >
+                      <FaCrosshairs className="pe-none" />
+                    </ActionIcon>
+                  }
+                  onClick={(e) => setFromHomeLocation('finish', e)}
+                >
+                  {m?.routePlanner.point.home ?? '…'}
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </>
         )}
       </ButtonGroup>
 
       {routeFound && (
-        <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
-          <Dropdown.Toggle variant="secondary">
-            <FaEllipsisV />
-          </Dropdown.Toggle>
+        <Menu>
+          <Menu.Target>
+            <Button variant="secondary" className="ms-1" id="more">
+              <FaEllipsisV />
+            </Button>
+          </Menu.Target>
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            <Dropdown.Item
-              active={elevationProfileIsVisible}
-              eventKey="toggle-elevation-chart"
+          <Menu.Dropdown>
+            <Menu.Item
+              leftSection={<FaChartArea />}
+              color={elevationProfileIsVisible ? 'blue' : undefined}
+              onClick={() => handleMoreSelect('toggle-elevation-chart')}
             >
-              <FaChartArea />
-              &nbsp;{m?.general.elevationProfile ?? '…'}
-            </Dropdown.Item>
+              {m?.general.elevationProfile ?? '…'}
+            </Menu.Item>
 
-            <Dropdown.Item eventKey="convert-to-drawing">
-              <FaPencilAlt />
-              &nbsp;{m?.general.convertToDrawing ?? '…'}
-            </Dropdown.Item>
+            <Menu.Item
+              leftSection={<FaPencilAlt />}
+              onClick={() => handleMoreSelect('convert-to-drawing')}
+            >
+              {m?.general.convertToDrawing ?? '…'}
+            </Menu.Item>
 
-            <Dropdown.Divider />
+            <Menu.Divider />
 
-            <Dropdown.Item eventKey="toggle-milestones-km">
-              {milestones === 'abs' ? <FaRegCheckSquare /> : <FaRegSquare />}
-              &nbsp;{m?.routePlanner.milestones ?? '…'} (km)
-            </Dropdown.Item>
+            <Menu.Item
+              leftSection={
+                milestones === 'abs' ? <FaRegCheckSquare /> : <FaRegSquare />
+              }
+              onClick={() => handleMoreSelect('toggle-milestones-km')}
+            >
+              {m?.routePlanner.milestones ?? '…'} (km)
+            </Menu.Item>
 
-            <Dropdown.Item eventKey="toggle-milestones-%">
-              {milestones === 'rel' ? <FaRegCheckSquare /> : <FaRegSquare />}
-              &nbsp;{m?.routePlanner.milestones ?? '…'} (%)
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+            <Menu.Item
+              leftSection={
+                milestones === 'rel' ? <FaRegCheckSquare /> : <FaRegSquare />
+              }
+              onClick={() => handleMoreSelect('toggle-milestones-%')}
+            >
+              {m?.routePlanner.milestones ?? '…'} (%)
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       )}
     </ToolMenu>
   );

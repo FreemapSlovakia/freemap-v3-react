@@ -56,12 +56,7 @@ export function MainMenuButton(): ReactElement {
         <Menu.Target>
           <MantineLongPressTooltip label={m?.mainMenu.title}>
             {({ props }) => (
-              <ActionIcon
-                variant="filled"
-                color="gray"
-                size="input-sm"
-                {...props}
-              >
+              <ActionIcon variant="filled" size="input-sm" {...props}>
                 <FaBars />
               </ActionIcon>
             )}
