@@ -2,7 +2,6 @@ import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { Button, Form, InputGroup } from 'react-bootstrap';
-import { is } from 'typia';
 
 type Props = {
   length: number;
@@ -37,7 +36,8 @@ export function DistanceInfo(props: Props) {
   );
 }
 
-const toUnit = (value: string | null) => (is<Units>(value) ? value : 'km');
+const toUnit = (value: string | null): Units =>
+  units.find((u) => u === value) ?? 'km';
 
 export function InnerDistanceInfo({ length, lengthLabel }: Props) {
   const [unit, setUnit] = usePersistentState<Units>(

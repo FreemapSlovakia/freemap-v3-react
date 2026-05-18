@@ -10,7 +10,7 @@ import {
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
-  GalleryColorizeBy,
+  GalleryColorizeBySchema,
   GalleryFilter,
   galleryClear,
   galleryColorizeBy,
@@ -74,6 +74,7 @@ import {
   setEmbedFeatures,
   setTool,
   ToolSchema,
+  ShowModalSchema,
 } from '../store/actions.js';
 import type { RootAction } from '../store/rootAction.js';
 import type { MyStore, RootState } from '../store/store.js';
@@ -629,14 +630,17 @@ export function handleLocationChange(store: MyStore): void {
     show = 'premium';
   }
 
-  if (is<ShowModal>(show)) {
-    if (show !== activeModal) {
-      dispatch(setActiveModal(show));
-    }
-  } else if (is<ShowModal>(activeModal)) {
-    dispatch(setActiveModal(null));
-  }
+  {
+    const result = ShowModalSchema.safeParse(show);
 
+    if (result.success) {
+      if (result.data !== activeModal) {
+        dispatch(setActiveModal(result.data));
+      }
+    } else if (ShowModalSchema.safeParse(activeModal).success) {
+      dispatch(setActiveModal(null));
+    }
+  }
   const doc = query['document'] ?? query['tip'];
 
   if (typeof doc === 'string') {
@@ -957,10 +961,10 @@ function handleGallery(
     dispatch(wikimediaCommonsSetPreview(null));
   }
 
-  const cb = query['gallery-cb'];
+  const cb = GalleryColorizeBySchema.safeParse(query['gallery-cb']);
 
-  if (is<GalleryColorizeBy>(cb)) {
-    dispatch(galleryColorizeBy(cb));
+  if (cb.success) {
+    dispatch(galleryColorizeBy(cb.data));
   }
 }
 

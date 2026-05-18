@@ -23,14 +23,17 @@ export type GalleryListOrder =
   | '-rating'
   | '-lastCommentedAt';
 
-export type GalleryColorizeBy =
-  | 'userId'
-  | 'takenAt'
-  | 'createdAt'
-  | 'rating'
-  | 'mine'
-  | 'season'
-  | 'premium';
+export const GalleryColorizeBySchema = z.enum([
+  'userId',
+  'takenAt',
+  'createdAt',
+  'rating',
+  'mine',
+  'season',
+  'premium',
+]);
+
+export type GalleryColorizeBy = z.infer<typeof GalleryColorizeBySchema>;
 
 export const GalleryTagSchema = z.object({
   name: z.string(),

@@ -2,7 +2,6 @@ import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { Button, Form, InputGroup } from 'react-bootstrap';
-import { is } from 'typia';
 import { InnerDistanceInfo } from './DistanceInfo.js';
 
 type Props = {
@@ -27,7 +26,8 @@ type Units = keyof typeof areaUnits;
 
 const units = Object.keys(areaUnits) as Units[];
 
-const toUnit = (value: string | null) => (is<Units>(value) ? value : 'km²');
+const toUnit = (value: string | null): Units =>
+  units.find((u) => u === value) ?? 'km²';
 
 function identity<T>(value: T): T {
   return value;
