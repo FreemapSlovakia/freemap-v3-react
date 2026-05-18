@@ -7,13 +7,10 @@ import type {
   Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
-import {
-  CustomLayerDef,
-  upgradeCustomLayerDefs,
-} from '@shared/mapDefinitions.js';
-import { migrateTransportType } from '@shared/transportTypeDefs.js';
+import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
+import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import type { StringDates } from '@shared/types/common.js';
-import { assert, is } from 'typia';
+import { assert } from 'typia';
 import {
   type MapData,
   type MapMeta,
@@ -89,9 +86,13 @@ export const mapsLoadProcessor: Processor = {
       delete map.overlays;
 
       if (map.customLayers) {
-        map.customLayers = upgradeCustomLayerDefs(map.customLayers);
+        const parsed = CustomLayerDefArrayCompatSchema.safeParse(
+          map.customLayers,
+        );
 
-        if (!is<CustomLayerDef[]>(map.customLayers)) {
+        if (parsed.success) {
+          map.customLayers = parsed.data;
+        } else {
           delete map.customLayers;
         }
       }
@@ -114,7 +115,7 @@ export const mapsLoadProcessor: Processor = {
         routePlanner.finishOnly =
           Boolean(routePlanner.finish) && !routePlanner.start;
 
-        routePlanner.transportType = migrateTransportType(
+        routePlanner.transportType = TransportTypeCompatSchema.parse(
           routePlanner.transportType,
         );
 

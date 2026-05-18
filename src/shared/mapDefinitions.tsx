@@ -15,7 +15,6 @@ import {
 import { GiHills, GiStonePile, GiTreasureMap } from 'react-icons/gi';
 import { LuLandPlot } from 'react-icons/lu';
 import { SiOpenstreetmap, SiWikimediacommons } from 'react-icons/si';
-import { is } from 'typia';
 import z from 'zod';
 import black1x1 from '@/images/1x1-black.png';
 import transparent1x1 from '@/images/1x1-transparent.png';
@@ -320,25 +319,49 @@ export type LayerDef<
   V extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
 > = CustomLayerDef<U> | IntegratedLayerDef<V>;
 
-type OldTileCustomLayerDef = Omit<CustomLayerDef, 'layer' | 'technology'>;
+// Legacy custom layer shape: tile-layer fields without the `layer` /
+// `technology` discriminators that the current schema requires.
+const OldTileCustomLayerDefSchema = z.object({
+  ...IsCustomLayerSchema.shape,
+  ...IsCommonLayerDefSchema.shape,
+  url: z.string(),
+  maxNativeZoom: z.number().optional(),
+  zIndex: z.number().optional(),
+  scaleWithDpi: z.boolean().optional(),
+  subdomains: z.union([z.string(), z.array(z.string())]).optional(),
+  tms: z.boolean().optional(),
+  extraScales: z.array(z.number()).optional(),
+  errorTileUrl: z.string().optional(),
+  cors: z.boolean().optional(),
+});
 
-export function upgradeCustomLayerDefs(
-  customLayerDefs: unknown[],
-): CustomLayerDef[] {
-  return customLayerDefs
-    .map((def) =>
-      is<CustomLayerDef>
-        ? def
-        : is<OldTileCustomLayerDef>(def)
-          ? ({
-              layer: def.type.charAt(0) === ':' ? 'overlay' : 'base',
-              technology: 'tile',
-              ...def,
-            } as CustomLayerDef<IsTileLayerDef>)
-          : undefined,
-    )
-    .filter((a): a is CustomLayerDef => Boolean(a));
-}
+export const CustomLayerDefArrayCompatSchema = z
+  .array(z.unknown())
+  .transform((defs) =>
+    defs.flatMap<CustomLayerDef>((def) => {
+      const ok = CustomLayerDefSchema.safeParse(def);
+
+      if (ok.success) {
+        return [ok.data];
+      }
+
+      const old = OldTileCustomLayerDefSchema.safeParse(def);
+
+      if (old.success) {
+        const upgraded = CustomLayerDefSchema.safeParse({
+          ...old.data,
+          layer: old.data.type.charAt(0) === ':' ? 'overlay' : 'base',
+          technology: 'tile',
+        });
+
+        if (upgraded.success) {
+          return [upgraded.data];
+        }
+      }
+
+      return [];
+    }),
+  );
 
 export const integratedLayerDefs: IntegratedLayerDef[] = [
   {

@@ -55,12 +55,12 @@ import {
   wikimediaCommonsSetPreview,
 } from '@features/wikimediaCommons/model/actions.js';
 import {
+  CustomLayerDefArrayCompatSchema,
   integratedLayerDefMap,
-  upgradeCustomLayerDefs,
 } from '@shared/mapDefinitions.js';
 import {
-  migrateTransportType,
   type TransportType,
+  TransportTypeCompatSchema,
   TransportTypeSchema,
 } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -68,6 +68,7 @@ import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
   enableUpdatingUrl,
+  ShowModalCompatSchema,
   ShowModalSchema,
   selectFeature,
   setActiveModal,
@@ -248,7 +249,7 @@ export function handleLocationChange(store: MyStore): void {
           routePlannerSetParams({
             points: latLons as unknown as RoutePoint[],
             finishOnly: nextFinishOnly,
-            transportType: migrateTransportType(query['transport']),
+            transportType: TransportTypeCompatSchema.parse(query['transport']),
             mode:
               routeMode === 'trip' ||
               routeMode === 'roundtrip' ||
@@ -459,7 +460,7 @@ export function handleLocationChange(store: MyStore): void {
     );
 
     try {
-      const customLayerDefs = upgradeCustomLayerDefs(
+      const customLayerDefs = CustomLayerDefArrayCompatSchema.parse(
         JSON.parse(customLayerDefsStr),
       );
 
@@ -614,31 +615,14 @@ export function handleLocationChange(store: MyStore): void {
 
   const activeModal = getState().main.activeModal;
 
-  let { show } = query;
+  const result = ShowModalCompatSchema.safeParse(query['show']);
 
-  // support legacy
-  if (show === 'export-gpx') {
-    show = 'export-map-features';
-  } else if (show === 'export-pdf') {
-    show = 'export-map';
-  } else if (show === 'supportUs') {
-    show = 'support-us';
-  } else if (show === 'mapSettings' || show === 'map-settings') {
-    show = 'map-layers-config';
-  } else if (show === 'remove-ads') {
-    show = 'premium';
-  }
-
-  {
-    const result = ShowModalSchema.safeParse(show);
-
-    if (result.success) {
-      if (result.data !== activeModal) {
-        dispatch(setActiveModal(result.data));
-      }
-    } else if (ShowModalSchema.safeParse(activeModal).success) {
-      dispatch(setActiveModal(null));
+  if (result.success) {
+    if (result.data !== activeModal) {
+      dispatch(setActiveModal(result.data));
     }
+  } else if (ShowModalSchema.safeParse(activeModal).success) {
+    dispatch(setActiveModal(null));
   }
   const doc = query['document'] ?? query['tip'];
 

@@ -69,9 +69,9 @@ import {
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
 import { wikimediaCommonsReducer } from '@features/wikimediaCommons/model/reducer.js';
-import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
+import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import {
-  migrateTransportType,
+  TransportTypeCompatSchema,
   transportTypeDefs,
 } from '@shared/transportTypeDefs.js';
 import storage from 'local-storage-fallback';
@@ -145,7 +145,7 @@ export function getInitialState() {
   if (!is<{ customLayers: unknown }>(persisted.map)) {
     // nothing
   } else if (is<{ customLayers: unknown[] }>(persisted.map)) {
-    persisted.map.customLayers = upgradeCustomLayerDefs(
+    persisted.map.customLayers = CustomLayerDefArrayCompatSchema.parse(
       persisted.map.customLayers,
     );
   } else {
@@ -275,7 +275,7 @@ export function getInitialState() {
   }
 
   if (is<{ transportType: unknown }>(persisted.routePlanner)) {
-    persisted.routePlanner.transportType = migrateTransportType(
+    persisted.routePlanner.transportType = TransportTypeCompatSchema.parse(
       persisted.routePlanner.transportType,
     );
   }

@@ -55,6 +55,21 @@ const BASIC_MODALS = [
 
 export const ShowModalSchema = z.enum(BASIC_MODALS);
 
+export const ShowModalCompatSchema = z.preprocess(
+  (v) =>
+    (typeof v === 'string' &&
+      ({
+        'export-gpx': 'export-map-features',
+        'export-pdf': 'export-map',
+        supportUs: 'support-us',
+        mapSettings: 'map-layers-config',
+        'map-settings': 'map-layers-config',
+        'remove-ads': 'premium',
+      }[v] as string | undefined)) ||
+    v,
+  ShowModalSchema,
+);
+
 export const ModalSchema = z.enum([
   ...BASIC_MODALS,
   'tips',

@@ -25,14 +25,11 @@ export const TransportTypeSchema = z.enum([
 
 export type TransportType = z.infer<typeof TransportTypeSchema>;
 
-export function migrateTransportType(transportType: unknown): TransportType {
-  const parsed = TransportTypeSchema.safeParse(transportType);
-
-  return parsed.success
-    ? parsed.data
-    : // backward compatibility
-      typeof transportType === 'string'
-      ? (({
+export const TransportTypeCompatSchema = z
+  .preprocess(
+    (v) =>
+      (typeof v === 'string' &&
+        {
           'car-toll': 'car',
           'car-free': 'car',
           'foot-stroller': 'foot',
@@ -45,9 +42,11 @@ export function migrateTransportType(transportType: unknown): TransportType {
           'car-osm': 'car-osrm',
           'bike-osm': 'bike-osrm',
           'foot-osm': 'foot-osrm',
-        }[transportType] ?? 'hiking') as TransportType)
-      : 'hiking';
-}
+        }[v]) ||
+      v,
+    TransportTypeSchema,
+  )
+  .catch('hiking');
 
 export type TransportTypeMsgKey =
   | 'bike'
