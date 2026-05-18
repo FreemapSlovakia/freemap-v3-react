@@ -8,10 +8,11 @@ export const LatLonSchema = z.object({
   lon: z.number(),
 });
 
-export interface LatLon {
-  lat: number;
-  lon: number;
-}
+// Wire format: ISO 8601 datetime string like "2026-05-17T12:00:48.000Z".
+// z.input → string, z.output → Date. No coercion.
+export const IsoDateSchema = z.iso.datetime().transform((s) => new Date(s));
+
+export type LatLon = z.infer<typeof LatLonSchema>;
 
 declare global {
   interface Window {

@@ -3,11 +3,9 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { handleTrackUpload } from '@features/tracking/model/processors/trackViewerUploadTrackProcessor.js';
-import type { StringDates } from '@shared/types/common.js';
-import { assert } from 'typia';
 import {
   type MapData,
-  type MapMeta,
+  MapMetaSchema,
   mapsLoadList,
   mapsSave,
   mapsSetMeta,
@@ -70,15 +68,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
     dispatch(mapsLoadList());
 
-    const data = assert<StringDates<MapMeta>>(await res.json());
-
-    dispatch(
-      mapsSetMeta({
-        ...data,
-        createdAt: new Date(data.createdAt),
-        modifiedAt: new Date(data.modifiedAt),
-      }),
-    );
+    dispatch(mapsSetMeta(MapMetaSchema.parse(await res.json())));
   },
 };
 

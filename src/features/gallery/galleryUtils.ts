@@ -1,5 +1,5 @@
-import type { StringDates } from '@shared/types/common.js';
-import type { GalleryFilter } from './model/actions.js';
+import type z from 'zod';
+import type { GalleryFilter, GalleryFilterSchema } from './model/actions.js';
 
 export function createFilter({
   tag,
@@ -12,7 +12,7 @@ export function createFilter({
   createdAtTo,
   pano,
   premium,
-}: GalleryFilter): StringDates<GalleryFilter> {
+}: GalleryFilter): z.input<typeof GalleryFilterSchema> {
   return {
     tag,
     userId,

@@ -6,17 +6,21 @@ import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { TrackingState } from '@features/tracking/model/reducer.js';
 import { TrackViewerState } from '@features/trackViewer/model/reducer.js';
 import { createAction } from '@reduxjs/toolkit';
+import { IsoDateSchema } from '@shared/types/common.js';
+import z from 'zod';
 
-export interface MapMeta {
-  id: string;
-  name: string;
-  public: boolean;
-  canWrite: boolean;
-  createdAt: Date;
-  modifiedAt: Date;
-  userId: number;
-  writers?: number[];
-}
+export const MapMetaSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  public: z.boolean(),
+  canWrite: z.boolean(),
+  createdAt: IsoDateSchema,
+  modifiedAt: IsoDateSchema,
+  userId: z.number(),
+  writers: z.array(z.number()).optional(),
+});
+
+export type MapMeta = z.infer<typeof MapMetaSchema>;
 
 export interface MapData<LT = Line, PT = DrawingPoint> {
   lines?: LT[];

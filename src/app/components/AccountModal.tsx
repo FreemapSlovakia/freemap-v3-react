@@ -4,9 +4,10 @@ import {
   authInit,
   authStartLogout,
 } from '@features/auth/model/actions.js';
-import type {
-  Purchase,
-  PurchasesResponse,
+import {
+  type Purchase,
+  type PurchasesResponse,
+  PurchasesResponseSchema,
 } from '@features/auth/model/types.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
@@ -44,8 +45,6 @@ import {
   FaUserCircle,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { assert } from 'typia';
-import { StringDates } from '@/shared/types/common.js';
 import { saveSettings, setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
@@ -155,24 +154,9 @@ export function AccountModal({ show }: Props): ReactElement | null {
         throw new Error();
       }
 
-      const raw = assert<StringDates<PurchasesResponse>>(await res.json());
-
       setState({
         type: 'success',
-        result: {
-          purchases: raw.purchases.map(({ createdAt, ...rest }) => ({
-            ...rest,
-            createdAt: new Date(createdAt),
-          })),
-          intents: raw.intents.map(
-            ({ createdAt, updatedAt, expireAt, ...rest }) => ({
-              ...rest,
-              createdAt: new Date(createdAt),
-              updatedAt: new Date(updatedAt),
-              expireAt: new Date(expireAt),
-            }),
-          ),
-        },
+        result: PurchasesResponseSchema.parse(await res.json()),
       });
     })().catch((error) => {
       if (ac.signal.aborted) {

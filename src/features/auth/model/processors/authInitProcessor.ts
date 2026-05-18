@@ -1,10 +1,14 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
-import { StringDates } from '@shared/types/common.js';
-import { assert, is } from 'typia';
+import { is } from 'typia';
 import { authInit, authSetUser } from '../actions.js';
-import { type User, type UserSettings, UserSettingsSchema } from '../types.js';
+import {
+  RawUserSchema,
+  type User,
+  type UserSettings,
+  UserSettingsSchema,
+} from '../types.js';
 
 function track(id: number | undefined) {
   window._paq.push(
@@ -47,9 +51,7 @@ export const authInitProcessor: Processor = {
         let user: User | null;
 
         if (ok) {
-          const rawUser = assert<
-            StringDates<Omit<User, 'settings'>> & { settings?: unknown }
-          >(await res.json());
+          const rawUser = RawUserSchema.parse(await res.json());
 
           let settings: UserSettings | undefined;
 
@@ -67,14 +69,7 @@ export const authInitProcessor: Processor = {
             console.error('Invalid user settings:', settingsResult.error);
           }
 
-          user = {
-            ...rawUser,
-            settings,
-            premiumExpiration:
-              rawUser.premiumExpiration === null
-                ? null
-                : new Date(rawUser.premiumExpiration),
-          };
+          user = { ...rawUser, settings };
         } else {
           user = null;
         }

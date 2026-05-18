@@ -3,31 +3,28 @@ import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
-import { StringDates } from '@shared/types/common.js';
 import { Dispatch } from 'redux';
-import { assert, is } from 'typia';
+import { is } from 'typia';
 import { authSetUser } from '../actions.js';
 import {
-  LoginResponse,
-  User,
+  LoginResponseSchema,
+  RawUserSchema,
   UserSettings,
   UserSettingsSchema,
 } from '../types.js';
+
+const RawLoginResponseSchema = LoginResponseSchema.omit({ user: true }).extend({
+  user: RawUserSchema,
+});
 
 export async function handleLoginResponse(
   res: Response,
   getState: () => RootState,
   dispatch: Dispatch,
 ) {
-  const {
-    user: rawUser,
-    connect,
-    clientData,
-  } = assert<
-    Omit<LoginResponse, 'user'> & {
-      user: StringDates<Omit<User, 'settings'>> & { settings?: unknown };
-    }
-  >(await res.json());
+  const { user, connect, clientData } = RawLoginResponseSchema.parse(
+    await res.json(),
+  );
 
   dispatch(
     toastsAdd({
@@ -37,13 +34,6 @@ export async function handleLoginResponse(
       timeout: 5000,
     }),
   );
-
-  const user = {
-    ...rawUser,
-    premiumExpiration: rawUser.premiumExpiration
-      ? new Date(rawUser.premiumExpiration)
-      : null,
-  };
 
   let settings: UserSettings | undefined;
 

@@ -60,17 +60,9 @@ export const loadDevicesProcessor: Processor<
       url: '/tracking/devices',
     });
 
-    const data = await res.json();
-
-    if (Array.isArray(data)) {
-      for (const device of data) {
-        if (device && typeof device === 'object') {
-          device.createdAt = new Date(device.createdAt);
-        }
-      }
-    }
-
-    dispatch(trackingActions.setDevices(z.array(DeviceSchema).parse(data)));
+    dispatch(
+      trackingActions.setDevices(z.array(DeviceSchema).parse(await res.json())),
+    );
   },
 };
 

@@ -1,11 +1,9 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import type { StringDates } from '@shared/types/common.js';
-import { assert } from 'typia';
 import {
   galleryRequestImage,
   gallerySetImage,
-  type Picture,
+  PictureSchema,
 } from '../actions.js';
 
 // TODO react only on getState().gallery.activeImageId change
@@ -19,18 +17,6 @@ export const galleryRequestImageProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    const data = assert<StringDates<Picture>>(await res.json());
-
-    dispatch(
-      gallerySetImage({
-        ...data,
-        createdAt: new Date(data.createdAt),
-        takenAt: data.takenAt === null ? null : new Date(data.takenAt),
-        comments: data.comments.map((comment) => ({
-          ...comment,
-          createdAt: new Date(comment.createdAt),
-        })),
-      }),
-    );
+    dispatch(gallerySetImage(PictureSchema.parse(await res.json())));
   },
 };

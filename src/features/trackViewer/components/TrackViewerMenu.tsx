@@ -22,9 +22,7 @@ import {
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { assert } from 'typia';
 import {
-  ColorizingMode,
   ColorizingModeSchema,
   trackViewerColorizeTrackBy,
   trackViewerSetData,

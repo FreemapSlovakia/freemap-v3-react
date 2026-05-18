@@ -1,8 +1,5 @@
-import {
-  type AuthState,
-  authInitialState,
-  authReducer,
-} from '@features/auth/model/reducer.js';
+import { authInitialState, authReducer } from '@features/auth/model/reducer.js';
+import { UserSchema, UserSettingsSchema } from '@features/auth/model/types.js';
 import { cachedMapsReducer } from '@features/cachedMaps/model/reducer.js';
 import { changesetReducer } from '@features/changesets/model/reducer.js';
 import {
@@ -77,11 +74,19 @@ import {
   migrateTransportType,
   transportTypeDefs,
 } from '@shared/transportTypeDefs.js';
-import { StringDates } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
 import { is } from 'typia';
+import z from 'zod';
 import type { RootState } from '../store/store.js';
 import { type MainState, mainInitialState, mainReducer } from './reducer.js';
+
+const PersistedAuthSchema = z.object({
+  user: UserSchema.extend({
+    settings: UserSettingsSchema.optional().catch(undefined),
+  })
+    .nullable()
+    .optional(),
+});
 
 export const reducers = {
   auth: authReducer,
@@ -149,23 +154,14 @@ export function getInitialState() {
     initial.l10n = { ...l10nInitialState, ...persisted.l10n };
   }
 
-  if (
-    is<Partial<StringDates<Omit<AuthState, 'purchases' | 'purchaseIntents'>>>>(
-      persisted.auth,
-    )
-  ) {
+  const persistedAuth = PersistedAuthSchema.safeParse(persisted.auth);
+
+  if (persistedAuth.success) {
+    const u = persistedAuth.data.user;
+
     initial.auth = {
       ...authInitialState,
-      ...persisted.auth,
-      user:
-        persisted.auth.user === undefined
-          ? authInitialState.user
-          : persisted.auth.user && {
-              ...persisted.auth.user,
-              premiumExpiration: persisted.auth.user.premiumExpiration
-                ? new Date(persisted.auth.user.premiumExpiration)
-                : null,
-            },
+      user: u === undefined ? authInitialState.user : u,
     };
   }
 

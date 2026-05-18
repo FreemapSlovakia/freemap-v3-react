@@ -1,7 +1,7 @@
 import { LayerSettingsSchema } from '@features/map/model/actions.js';
 import { CustomLayerDefSchema } from '@shared/mapDefinitions.js';
 import z from 'zod';
-import { LatLonSchema } from '@/shared/types/common.js';
+import { IsoDateSchema, LatLonSchema } from '@/shared/types/common.js';
 
 export const AuthProviderSchema = z.enum([
   'facebook',
@@ -13,30 +13,45 @@ export const AuthProviderSchema = z.enum([
 
 export type AuthProvider = z.infer<typeof AuthProviderSchema>;
 
-export type Purchase =
-  | { type: 'premium' }
-  | { type: 'credits'; amount: number };
+export const PurchaseSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('premium') }),
+  z.object({ type: z.literal('credits'), amount: z.number() }),
+]);
 
-export type PurchaseRecord = {
-  createdAt: Date;
-  item: Purchase;
-};
+export type Purchase = z.infer<typeof PurchaseSchema>;
 
-export type PurchaseIntentStatus = 'created' | 'awaiting_payment' | 'rejected';
+export const PurchaseRecordSchema = z.object({
+  createdAt: IsoDateSchema,
+  item: PurchaseSchema,
+});
 
-export type PurchaseIntent = {
-  item: Purchase;
-  status: PurchaseIntentStatus;
-  createdAt: Date;
-  updatedAt: Date;
-  expireAt: Date;
-  bankIntentStatus: string | null;
-};
+export type PurchaseRecord = z.infer<typeof PurchaseRecordSchema>;
 
-export type PurchasesResponse = {
-  purchases: PurchaseRecord[];
-  intents: PurchaseIntent[];
-};
+export const PurchaseIntentStatusSchema = z.enum([
+  'created',
+  'awaiting_payment',
+  'rejected',
+]);
+
+export type PurchaseIntentStatus = z.infer<typeof PurchaseIntentStatusSchema>;
+
+export const PurchaseIntentSchema = z.object({
+  item: PurchaseSchema,
+  status: PurchaseIntentStatusSchema,
+  createdAt: IsoDateSchema,
+  updatedAt: IsoDateSchema,
+  expireAt: IsoDateSchema,
+  bankIntentStatus: z.string().nullable(),
+});
+
+export type PurchaseIntent = z.infer<typeof PurchaseIntentSchema>;
+
+export const PurchasesResponseSchema = z.object({
+  purchases: z.array(PurchaseRecordSchema),
+  intents: z.array(PurchaseIntentSchema),
+});
+
+export type PurchasesResponse = z.infer<typeof PurchasesResponseSchema>;
 
 export const UserSettingsSchema = z.object({
   layersSettings: z.record(z.string(), LayerSettingsSchema).optional(),
@@ -57,12 +72,18 @@ export const UserSchema = z.object({
   language: z.string().nullish(),
   coordinates: LatLonSchema.nullable(),
   name: z.string(),
-  premiumExpiration: z.date().nullable(),
+  premiumExpiration: IsoDateSchema.nullable(),
   sendGalleryEmails: z.boolean(),
   settings: UserSettingsSchema.optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;
+
+// Wire form for server responses: settings are parsed separately because
+// they may need legacy upgrade before validation.
+export const RawUserSchema = UserSchema.omit({ settings: true }).extend({
+  settings: z.unknown().optional(),
+});
 
 export const LoginResponseSchema = z.object({
   user: UserSchema,

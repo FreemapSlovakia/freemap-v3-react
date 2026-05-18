@@ -1,3 +1,4 @@
+import { IsoDateSchema } from '@shared/types/common.js';
 import z from 'zod';
 
 export const DeviceSchema = z.object({
@@ -6,7 +7,7 @@ export const DeviceSchema = z.object({
   maxAge: z.number().nullable(),
   id: z.number(),
   token: z.string(),
-  createdAt: z.date(),
+  createdAt: IsoDateSchema,
 });
 
 export type Device = z.infer<typeof DeviceSchema>;
@@ -30,18 +31,22 @@ export interface TrackedDevice {
   splitDuration?: number | null;
 }
 
-export interface AccessTokenBase {
-  listingLabel: string | null;
-  timeFrom: Date | null;
-  timeTo: Date | null;
-  note: string | null;
-}
+export const AccessTokenBaseSchema = z.object({
+  listingLabel: z.string().nullable(),
+  timeFrom: IsoDateSchema.nullable(),
+  timeTo: IsoDateSchema.nullable(),
+  note: z.string().nullable(),
+});
 
-export interface AccessToken extends AccessTokenBase {
-  id: number;
-  token: string;
-  createdAt: Date;
-}
+export type AccessTokenBase = z.infer<typeof AccessTokenBaseSchema>;
+
+export const AccessTokenSchema = AccessTokenBaseSchema.extend({
+  id: z.number(),
+  token: z.string(),
+  createdAt: IsoDateSchema,
+});
+
+export type AccessToken = z.infer<typeof AccessTokenSchema>;
 
 export interface Track {
   token: string;
@@ -53,16 +58,18 @@ export interface Track {
   trackPoints: TrackPoint[];
 }
 
-export interface TrackPoint {
-  id: number;
-  lat: number;
-  lon: number;
-  ts: Date;
-  accuracy?: number | null;
-  battery?: number | null;
-  gsmSignal?: number | null;
-  speed?: number | null;
-  message?: string | null;
-  altitude?: number | null;
-  bearing?: number | null;
-}
+export const TrackPointSchema = z.object({
+  id: z.number(),
+  lat: z.number(),
+  lon: z.number(),
+  ts: IsoDateSchema,
+  accuracy: z.number().nullish(),
+  battery: z.number().nullish(),
+  gsmSignal: z.number().nullish(),
+  speed: z.number().nullish(),
+  message: z.string().nullish(),
+  altitude: z.number().nullish(),
+  bearing: z.number().nullish(),
+});
+
+export type TrackPoint = z.infer<typeof TrackPointSchema>;
