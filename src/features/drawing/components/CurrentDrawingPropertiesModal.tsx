@@ -18,7 +18,7 @@ import {
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { setActiveModal } from '../store/actions.js';
+import { setActiveModal } from '../../../app/store/actions.js';
 
 type Props = { show: boolean };
 
@@ -377,8 +377,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
               <Form.Group controlId="type" className="mt-3">
                 <Form.Label>{m?.drawing.edit.type}</Form.Label>
 
-                <Form.Control
-                  as="select"
+                <Form.Select
                   value={editedType}
                   onChange={(e) =>
                     setEditedType(e.currentTarget.value as 'polygon' | 'line')
@@ -387,7 +386,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
                 >
                   <option value="line">{m?.selections.drawLines}</option>
                   <option value="polygon">{m?.selections.drawPolygons}</option>
-                </Form.Control>
+                </Form.Select>
               </Form.Group>
             </>
           )}

@@ -260,7 +260,7 @@ const legendModalFactory = () =>
 const currentDrawingPropertiesModalFactory = () =>
   import(
     /* webpackChunkName: "current-drawing-properties-modal" */
-    './CurrentDrawingPropertiesModal.js'
+    '../../features/drawing/components/CurrentDrawingPropertiesModal.js'
   );
 
 const trackViewerUploadModalFactory = () =>

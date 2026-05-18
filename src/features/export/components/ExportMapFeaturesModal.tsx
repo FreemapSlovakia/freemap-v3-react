@@ -367,8 +367,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                   {m?.exportMapFeatures.garmin.activityType}:
                 </Form.Label>
 
-                <Form.Control
-                  as="select"
+                <Form.Select
                   value={activity}
                   onChange={(e) => setActivity(e.currentTarget.value)}
                 >
@@ -394,7 +393,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                   <option value="GRAVEL_CYCLING">
                     {m?.exportMapFeatures.garmin.at.gravelCycling}
                   </option>
-                </Form.Control>
+                </Form.Select>
               </Form.Group>
             </>
           ) : (
