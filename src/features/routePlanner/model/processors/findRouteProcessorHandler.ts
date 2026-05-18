@@ -7,9 +7,15 @@ import { isPremium } from '@shared/premium.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import distance from '@turf/distance';
-import { Feature, LineString, Polygon } from 'geojson';
 import { hash } from 'ohash';
-import { assert } from 'typia';
+import z from 'zod';
+import {
+  GeoJSONFeatureGenericSchema,
+  GeoJSONLineStringSchema,
+  GeoJSONPolygonSchema,
+  GeoJSONPositionSchema,
+  GeoJSONPropertiesSchema,
+} from 'zod-geojson';
 import {
   Alternative,
   Leg,
@@ -52,50 +58,151 @@ enum GraphhopperSign {
   PT_END_TRIP = 103,
 }
 
-type GraphhopperInstruction = {
-  distance: number;
-  heading?: number;
-  sign: GraphhopperSign | number;
-  interval: [number, number];
-  text: string;
-  time: number;
-  street_name: string;
-  exit_number?: number; // only for USE_ROUNDABOUT instructions
-  turn_angle?: number; // only for USE_ROUNDABOUT instructions
-};
+const GraphhopperInstructionSchema = z.object({
+  distance: z.number(),
+  heading: z.number().optional(),
+  sign: z.number(), // GraphhopperSign
+  interval: z.tuple([z.number(), z.number()]),
+  text: z.string(),
+  time: z.number(),
+  street_name: z.string(),
+  exit_number: z.number().optional(), // only for USE_ROUNDABOUT instructions
+  turn_angle: z.number().optional(), // only for USE_ROUNDABOUT instructions
+});
 
-type GraphhopperDetailSegment = [from: number, to: number, value: unknown];
+const GraphhopperDetailSegmentSchema = z.tuple([
+  z.number(),
+  z.number(),
+  z.unknown(),
+]);
 
-type GraphhopperPath = {
-  distance: number;
-  // weight: number;
-  time: number;
-  // transfers: number;
-  // points_encoded: boolean;
-  // bbox: [number, number, number, number];
-  points: LineString;
-  instructions: GraphhopperInstruction[];
-  details: Record<string, GraphhopperDetailSegment[]>; // eg. {"street_name": [[0,2,"Frankfurter Straße"],[2,6,"Zollweg"]]}
-  // ascend: number;
-  // descend: number;
-  // snapped_waypoints: unknown; // LineString;
-  // points_order?: number[]; // Only present if the optimize parameter was used.
-};
+const GraphhopperPathSchema = z.object({
+  distance: z.number(),
+  time: z.number(),
+  points: GeoJSONLineStringSchema,
+  instructions: z.array(GraphhopperInstructionSchema),
+  details: z.record(z.string(), z.array(GraphhopperDetailSegmentSchema)),
+});
 
-type GraphhopperResult = {
-  paths: GraphhopperPath[];
-};
+// type GraphhopperPath = {
+//   distance: number;
+//   // weight: number;
+//   time: number;
+//   // transfers: number;
+//   // points_encoded: boolean;
+//   // bbox: [number, number, number, number];
+//   points: LineString;
+//   instructions: GraphhopperInstruction[];
+//   details: Record<string, GraphhopperDetailSegment[]>; // eg. {"street_name": [[0,2,"Frankfurter Straße"],[2,6,"Zollweg"]]}
+//   // ascend: number;
+//   // descend: number;
+//   // snapped_waypoints: unknown; // LineString;
+//   // points_order?: number[]; // Only present if the optimize parameter was used.
+// };
 
-type IsochroneResponse = {
-  polygons: Feature<Polygon>[];
-};
+const GraphhopperResultSchema = z.object({
+  paths: z.array(GraphhopperPathSchema),
+});
 
-type OsrmResult = {
-  code: string;
-  trips?: Alternative[];
-  routes?: Alternative[];
-  waypoints?: Waypoint[];
-};
+const IsochroneResponseSchema = z.object({
+  polygons: z.array(
+    GeoJSONFeatureGenericSchema(
+      GeoJSONPositionSchema,
+      GeoJSONPropertiesSchema,
+      GeoJSONPolygonSchema,
+    ),
+  ),
+});
+
+const StepModeSchema = z.enum([
+  'foot',
+  'walking',
+  'cycling',
+  'driving',
+  'ferry',
+  'train',
+  'pushing bike',
+  'manual',
+  'error',
+]);
+
+const ManeuverModifierSchema = z.enum([
+  'uturn',
+  'sharp right',
+  'slight right',
+  'right',
+  'sharp left',
+  'slight left',
+  'left',
+  'straight',
+]);
+
+const RouteStepExtraSchema = z.object({
+  type: z.enum(['foot', 'bicycle']),
+  destination: z.string(),
+  departure: z.number().optional(),
+  duration: z.number().optional(),
+  number: z.number().optional(),
+});
+
+const StepSchema = z.object({
+  maneuver: z.object({
+    type: z.enum([
+      'turn',
+      'new name',
+      'depart',
+      'arrive',
+      'merge',
+      'on ramp',
+      'off ramp',
+      'fork',
+      'end of road',
+      'continue',
+      'roundabout',
+      'rotary',
+      'roundabout turn',
+      'exit rotary',
+      'exit roundabout',
+      'notification',
+    ]),
+    modifier: ManeuverModifierSchema.optional(),
+  }),
+  distance: z.number(),
+  duration: z.number(),
+  name: z.string(),
+  mode: StepModeSchema,
+  geometry: z.object({
+    coordinates: z.array(z.tuple([z.number(), z.number()])),
+  }),
+  extra: RouteStepExtraSchema.optional(),
+});
+
+const LegSchema = z.object({
+  steps: z.array(StepSchema),
+  distance: z.number(),
+  duration: z.number(),
+});
+
+const AlternativeSchema = z.object({
+  legs: z.array(LegSchema),
+  distance: z.number(),
+  duration: z.number(),
+});
+
+const WaypointSchema = z.object({
+  name: z.string(),
+  location: z.tuple([z.number(), z.number()]),
+  distance: z.number().optional(),
+  waypoint_index: z.number().optional(),
+  trips_index: z.number().optional(),
+});
+
+const OsrmResultSchema = z.object({
+  code: z.string(),
+  trips: z.array(AlternativeSchema).optional(),
+  routes: z.array(AlternativeSchema).optional(),
+  waypoints: z.array(WaypointSchema).optional(),
+});
 
 const rnfToastAction = toastsAdd({
   id: 'routePlanner',
@@ -165,7 +272,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
     dispatch(
       routePlannerSetIsochrones({
-        isochrones: assert<IsochroneResponse>(await response.json()).polygons,
+        isochrones: IsochroneResponseSchema.parse(await response.json())
+          .polygons,
         timestamp: Date.now(),
       }),
     );
@@ -429,7 +537,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         return false;
       }
 
-      return assert<GraphhopperResult>(data);
+      return GraphhopperResultSchema.parse(data);
     } else if (ttDef.api === 'osrm') {
       if (segment.points.length < 2) {
         throw new Error('too few points');
@@ -461,7 +569,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         cancelActions: cancelTypes,
       });
 
-      const result = assert<OsrmResult>(await response.json());
+      const result = OsrmResultSchema.parse(await response.json());
 
       if (result.code !== 'Ok') {
         dispatch(clearResultAction);
@@ -513,7 +621,7 @@ function segmentize(points: RoutePoint[], defaultTransport: TransportType) {
 export default handle;
 
 function fromGraphhopper(
-  result: GraphhopperResult,
+  result: z.infer<typeof GraphhopperResultSchema>,
   transportType: TransportType,
 ) {
   return result.paths.map((path) => {

@@ -6,7 +6,7 @@ import { ObjectsState } from '@features/objects/model/reducer.js';
 import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { TrackingState } from '@features/tracking/model/reducer.js';
 import { TrackViewerState } from '@features/trackViewer/model/reducer.js';
-import { colors } from '@shared/constants.js';
+import { COLORS } from '@shared/colors.js';
 import { escapeHtml } from '@shared/stringUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Feature, FeatureCollection } from 'geojson';
@@ -293,7 +293,7 @@ function addDrawingLines(
 
     const extEle = createElement(trkEle, 'extensions');
 
-    const color = (line.color ?? colors.normal).slice(1);
+    const color = (line.color ?? COLORS.normal).slice(1);
 
     if (type === 'polygon') {
       const fillStyleEle = createElement(extEle, [GPX_STYLE_NS, 'fill']);
@@ -376,7 +376,7 @@ function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
 
       ctx.closePath();
 
-      ctx.fillStyle = color || colors.normal;
+      ctx.fillStyle = color || COLORS.normal;
 
       ctx.fill();
 

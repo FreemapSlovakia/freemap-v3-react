@@ -1,8 +1,17 @@
-import type { LayerSettings } from '@features/map/model/actions.js';
-import { CustomLayerDef } from '@shared/mapDefinitions.js';
-import type { Action } from 'redux';
+import { LayerSettingsSchema } from '@features/map/model/actions.js';
+import { CustomLayerDefSchema } from '@shared/mapDefinitions.js';
+import z from 'zod';
+import { LatLonSchema } from '@/shared/types/common.js';
 
-export type AuthProvider = 'facebook' | 'osm' | 'garmin' | 'google' | 'apple';
+export const AuthProviderSchema = z.enum([
+  'facebook',
+  'osm',
+  'garmin',
+  'google',
+  'apple',
+]);
+
+export type AuthProvider = z.infer<typeof AuthProviderSchema>;
 
 export type Purchase =
   | { type: 'premium' }
@@ -29,33 +38,40 @@ export type PurchasesResponse = {
   intents: PurchaseIntent[];
 };
 
-export interface UserSettings {
-  layersSettings?: Record<string, LayerSettings>;
-  customLayers?: CustomLayerDef[];
-  maxZoom?: number;
-}
+export const UserSettingsSchema = z.object({
+  layersSettings: z.record(z.string(), LayerSettingsSchema).optional(),
+  customLayers: z.array(CustomLayerDefSchema).optional(),
+  maxZoom: z.number().optional(),
+});
 
-export interface User {
-  authProviders: AuthProvider[];
-  authToken: string;
-  credits: number;
-  email: string | null;
-  description: string | null;
-  id: number;
-  isAdmin: boolean;
-  language?: string | null;
-  coordinates: {
-    lat: number;
-    lon: number;
-  } | null;
-  name: string;
-  premiumExpiration: Date | null;
-  sendGalleryEmails: boolean;
-  settings?: UserSettings;
-}
+export type UserSettings = z.infer<typeof UserSettingsSchema>;
 
-export type LoginResponse = {
-  user: User;
-  connect: boolean;
-  clientData?: { successAction?: Action };
-};
+export const UserSchema = z.object({
+  authProviders: z.array(AuthProviderSchema),
+  authToken: z.string(),
+  credits: z.number(),
+  email: z.string().nullable(),
+  description: z.string().nullable(),
+  id: z.number(),
+  isAdmin: z.boolean(),
+  language: z.string().nullish(),
+  coordinates: LatLonSchema.nullable(),
+  name: z.string(),
+  premiumExpiration: z.date().nullable(),
+  sendGalleryEmails: z.boolean(),
+  settings: UserSettingsSchema.optional(),
+});
+
+export type User = z.infer<typeof UserSchema>;
+
+export const LoginResponseSchema = z.object({
+  user: UserSchema,
+  connect: z.boolean(),
+  clientData: z
+    .object({
+      successAction: z.object({ type: z.string() }).optional(),
+    })
+    .optional(),
+});
+
+export type LoginResponse = z.infer<typeof LoginResponseSchema>;

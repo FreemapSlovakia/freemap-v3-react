@@ -2,7 +2,8 @@ import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
 import { Shading } from '@features/parameterizedShading/Shading.js';
 import { createAction } from '@reduxjs/toolkit';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
-import { Shortcut } from '@shared/types/common.js';
+import { Shortcut, ShortcutSchema } from '@shared/types/common.js';
+import z from 'zod';
 
 export interface MapViewState {
   lat: number;
@@ -12,6 +13,13 @@ export interface MapViewState {
   bounds?: [number, number, number, number];
   countries?: string[];
 }
+
+export const LayerSettingsSchema = z.object({
+  opacity: z.number().optional(),
+  showInMenu: z.boolean().optional(),
+  showInToolbar: z.boolean().optional(),
+  shortcut: ShortcutSchema.nullish(),
+});
 
 export type LayerSettings = {
   opacity?: number;

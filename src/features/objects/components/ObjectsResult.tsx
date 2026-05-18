@@ -10,8 +10,8 @@ import {
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { OsmMapping } from '@osm/types.js';
+import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
-import { colors } from '@shared/constants.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -89,7 +89,7 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
             imageOpacity={access === 'private' || access === 'no' ? 0.33 : 1.0}
             color={
               activeId && featureIdsEqual(activeId, id)
-                ? colors.selected
+                ? COLORS.selected
                 : undefined
             }
             markerType={markerType}

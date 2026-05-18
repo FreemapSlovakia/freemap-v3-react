@@ -4,7 +4,7 @@ import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
 import { StringDates } from '@shared/types/common.js';
 import { assert, is } from 'typia';
 import { authInit, authSetUser } from '../actions.js';
-import type { User, UserSettings } from '../types.js';
+import { type User, type UserSettings, UserSettingsSchema } from '../types.js';
 
 function track(id: number | undefined) {
   window._paq.push(
@@ -59,12 +59,12 @@ export const authInitProcessor: Processor = {
             );
           }
 
-          try {
-            settings = assert<UserSettings>(rawUser.settings);
-          } catch (e) {
-            console.error('Invalid user settings:', e);
+          const settingsResult = UserSettingsSchema.safeParse(rawUser.settings);
 
-            settings = undefined;
+          if (settingsResult.success) {
+            settings = settingsResult.data;
+          } else {
+            console.error('Invalid user settings:', settingsResult.error);
           }
 
           user = {

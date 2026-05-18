@@ -1,4 +1,4 @@
-import { Shortcut } from '@shared/types/common.js';
+import { Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
   FaBus,
@@ -16,6 +16,7 @@ import { GiHills, GiStonePile, GiTreasureMap } from 'react-icons/gi';
 import { LuLandPlot } from 'react-icons/lu';
 import { SiOpenstreetmap, SiWikimediacommons } from 'react-icons/si';
 import { is } from 'typia';
+import z from 'zod';
 import black1x1 from '@/images/1x1-black.png';
 import transparent1x1 from '@/images/1x1-transparent.png';
 import white1x1 from '@/images/1x1-white.png';
@@ -212,6 +213,87 @@ export type CustomOverlayLayerDef<
 export type CustomLayerDef<
   T extends IsCustomLayerTechnologiesDef = IsCustomLayerTechnologiesDef,
 > = CustomBaseLayerDef<T> | CustomOverlayLayerDef<T>;
+
+const IsCommonLayerDefSchema = z.object({
+  type: z.string(),
+  minZoom: z.number().optional(),
+  shortcut: ShortcutSchema.optional(),
+});
+
+const IsCustomLayerSchema = z.object({
+  name: z.string().optional(),
+});
+
+export const IsTileLayerDefSchema = z.object({
+  technology: z.literal('tile'),
+  url: z.string(),
+  maxNativeZoom: z.number().optional(),
+  zIndex: z.number().optional(),
+  scaleWithDpi: z.boolean().optional(),
+  subdomains: z.union([z.string(), z.array(z.string())]).optional(),
+  tms: z.boolean().optional(),
+  extraScales: z.array(z.number()).optional(),
+  errorTileUrl: z.string().optional(),
+  cors: z.boolean().optional(),
+});
+
+export const IsWmsLayerDefSchema = z.object({
+  technology: z.literal('wms'),
+  url: z.string(),
+  layers: z.array(z.string()),
+  maxNativeZoom: z.number().optional(),
+  zIndex: z.number().optional(),
+  scaleWithDpi: z.boolean().optional(),
+});
+
+export const IsMapLibreLayerDefSchema = z.object({
+  technology: z.literal('maplibre'),
+  url: z.string(),
+});
+
+export const IsParametricShadingLayerDefSchema = z.object({
+  technology: z.literal('parametricShading'),
+  url: z.string(),
+  maxNativeZoom: z.number().optional(),
+  zIndex: z.number().optional(),
+  scaleWithDpi: z.boolean().optional(),
+});
+
+export const IsCustomLayerTechnologiesDefSchema = z.discriminatedUnion(
+  'technology',
+  [
+    IsTileLayerDefSchema,
+    IsWmsLayerDefSchema,
+    IsMapLibreLayerDefSchema,
+    IsParametricShadingLayerDefSchema,
+  ],
+);
+
+export const CustomLayerDefGenericSchema = <
+  T extends z.ZodType<IsCustomLayerTechnologiesDef>,
+>(
+  technologySchema: T,
+) =>
+  z.intersection(
+    z.discriminatedUnion('layer', [
+      z.object({
+        ...IsCustomLayerSchema.shape,
+        ...IsCommonLayerDefSchema.shape,
+        layer: z.literal('base'),
+      }),
+      z.object({
+        ...IsCustomLayerSchema.shape,
+        ...IsCommonLayerDefSchema.shape,
+        layer: z.literal('overlay'),
+        zIndex: z.number().optional(),
+      }),
+    ]),
+    technologySchema,
+  );
+
+export const CustomLayerDefSchema = CustomLayerDefGenericSchema(
+  IsCustomLayerTechnologiesDefSchema,
+);
 
 export type HasLegacy = {
   superseededBy?: string;

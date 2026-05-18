@@ -25,6 +25,7 @@ import { useDispatch } from 'react-redux';
 import { assert } from 'typia';
 import {
   ColorizingMode,
+  ColorizingModeSchema,
   trackViewerColorizeTrackBy,
   trackViewerSetData,
   trackViewerToggleElevationChart,
@@ -112,7 +113,7 @@ export function TrackViewerMenu(): ReactElement {
           onSelect={(approach) => {
             dispatch(
               trackViewerColorizeTrackBy(
-                assert<ColorizingMode | null>(approach),
+                ColorizingModeSchema.nullable().parse(approach),
               ),
             );
           }}

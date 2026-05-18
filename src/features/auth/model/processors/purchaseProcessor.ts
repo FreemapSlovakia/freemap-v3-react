@@ -4,7 +4,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { purchaseOnLogin } from '@features/auth/model/purchaseActions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { assert } from 'typia';
+import z from 'zod';
 
 type CallbackResult = {
   success: boolean;
@@ -43,7 +43,9 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       },
     });
 
-    const { paymentUrl } = assert<{ paymentUrl: string }>(await res.json());
+    const { paymentUrl } = z
+      .object({ paymentUrl: z.string() })
+      .parse(await res.json());
 
     const left = window.screen.width / 2 - 800 / 2;
 

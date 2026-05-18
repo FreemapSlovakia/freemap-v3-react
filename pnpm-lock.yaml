@@ -200,6 +200,12 @@ importers:
       webpack-assets-manifest:
         specifier: ^6.5.1
         version: 6.5.1(webpack@5.106.2)
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+      zod-geojson:
+        specifier: ^1.6.5
+        version: 1.6.5(zod@4.4.3)
     devDependencies:
       '@babel/core':
         specifier: ^7.29.0
@@ -4594,6 +4600,14 @@ packages:
   yn@3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
+
+  zod-geojson@1.6.5:
+    resolution: {integrity: sha512-ca8r2/XO/NnYyqmRt3bvfjpAkhX4m7FlrnJUIRii1nKQsCDyfdJM+lp8hNGed1wHq7Zy3JDz5hCqq7kzNqyPZQ==}
+    peerDependencies:
+      zod: '>=4.0.0'
+
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
 snapshots:
 
@@ -9187,3 +9201,9 @@ snapshots:
   yaml@2.9.0: {}
 
   yn@3.1.1: {}
+
+  zod-geojson@1.6.5(zod@4.4.3):
+    dependencies:
+      zod: 4.4.3
+
+  zod@4.4.3: {}

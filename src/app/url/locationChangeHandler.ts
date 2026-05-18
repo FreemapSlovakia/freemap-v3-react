@@ -54,7 +54,6 @@ import {
   wikimediaCommonsLoadPreview,
   wikimediaCommonsSetPreview,
 } from '@features/wikimediaCommons/model/actions.js';
-import { tools } from '@shared/constants.js';
 import {
   integratedLayerDefMap,
   upgradeCustomLayerDefs,
@@ -74,7 +73,7 @@ import {
   setActiveModal,
   setEmbedFeatures,
   setTool,
-  Tool,
+  ToolSchema,
 } from '../store/actions.js';
 import type { RootAction } from '../store/rootAction.js';
 import type { MyStore, RootState } from '../store/store.js';
@@ -140,9 +139,7 @@ export function handleLocationChange(store: MyStore): void {
           ? 'draw-polygons'
           : query['tool'] === 'measure-dist'
             ? 'draw-lines'
-            : tools.includes(query['tool'] as Tool)
-              ? (query['tool'] as Tool)
-              : null;
+            : (ToolSchema.safeParse(query['tool']).data ?? null);
 
   if (getState().main.tool !== tool) {
     dispatch(setTool(tool));

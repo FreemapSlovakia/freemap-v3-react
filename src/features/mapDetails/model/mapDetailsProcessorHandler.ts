@@ -20,10 +20,11 @@ import {
 } from '@shared/mapDefinitions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { FeatureId } from '@shared/types/featureId.js';
-import { NominatimResult } from '@shared/types/nominatimResult.js';
-import type {
-  OverpassBounds,
-  OverpassElement,
+import { NominatimResultSchema } from '@shared/types/nominatimResult.js';
+import {
+  type OverpassBounds,
+  OverpassBoundsExtraSchema,
+  overpassResultSchema,
 } from '@shared/types/overpass.js';
 import { distance } from '@turf/distance';
 import { feature, point } from '@turf/helpers';
@@ -31,7 +32,11 @@ import { toWgs84 } from '@turf/projection';
 import { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
 import { Dispatch } from 'redux';
-import { assert, is } from 'typia';
+import { is } from 'typia';
+
+const OverpassResultBoundsSchema = overpassResultSchema(
+  OverpassBoundsExtraSchema,
+);
 
 const cancelType = [
   clearMapFeatures.type,
@@ -172,11 +177,7 @@ export async function handle(
   ]);
 
   const nearbyElements = (
-    resNearby
-      ? assert<{
-          elements: OverpassElement<'bounds'>[];
-        }>(resNearby).elements
-      : []
+    resNearby ? OverpassResultBoundsSchema.parse(resNearby).elements : []
   )
     .map((e) => ({
       e,
@@ -195,12 +196,11 @@ export async function handle(
     .map((a) => a.e);
 
   const surroundingElements = resSurrounding
-    ? assert<{ elements: OverpassElement<'bounds'>[] }>(resSurrounding).elements
+    ? OverpassResultBoundsSchema.parse(resSurrounding).elements
     : [];
 
-  const reverseGeocodingElement = assert<NominatimResult | undefined>(
-    resReverse,
-  );
+  const reverseGeocodingElement =
+    NominatimResultSchema.optional().parse(resReverse);
 
   const surroundingElementsSet = new Set(
     surroundingElements.map((item) => item.type + item.id),

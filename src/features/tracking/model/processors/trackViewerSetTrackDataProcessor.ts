@@ -3,8 +3,7 @@ import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { trackViewerSetData } from '@features/trackViewer/model/actions.js';
 import * as toGeoJSON from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
-import { FeatureCollection } from 'geojson';
-import { assert } from 'typia';
+import { GeoJSON2DFeatureCollectionSchema } from 'zod-geojson';
 
 export const trackViewerSetTrackDataProcessor: Processor<
   typeof trackViewerSetData
@@ -21,7 +20,9 @@ export const trackViewerSetTrackDataProcessor: Processor<
       'text/xml',
     );
 
-    const trackGeojson = assert<FeatureCollection>(toGeoJSON.gpx(gpxAsXml));
+    const trackGeojson = GeoJSON2DFeatureCollectionSchema.parse(
+      toGeoJSON.gpx(gpxAsXml),
+    );
 
     if (action.payload.focus) {
       let bounds;

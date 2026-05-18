@@ -1,7 +1,7 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
+import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
-import { colors } from '@shared/constants.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
 import { DragEndEvent, LeafletEvent } from 'leaflet';
@@ -102,10 +102,10 @@ export function DrawingPointsResult(): ReactElement {
             position={{ lat: coords.lat, lng: coords.lon }}
             color={
               activeIndex === i
-                ? Color(color || colors.normal)
+                ? Color(color || COLORS.normal)
                     .lighten(0.75)
                     .hex()
-                : color || colors.normal
+                : color || COLORS.normal
             }
             draggable={!window.fmEmbedded && activeIndex === i}
             interactive={interactive}

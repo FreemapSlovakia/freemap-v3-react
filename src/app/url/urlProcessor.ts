@@ -2,13 +2,11 @@ import { drawingLineUpdatePoint } from '@features/drawing/model/actions/drawingL
 import { mapRefocus } from '@features/map/model/actions.js';
 import { serializeShading } from '@features/parameterizedShading/Shading.js';
 import { isAnyOf } from '@reduxjs/toolkit';
-import { basicModals } from '@shared/constants.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import { hash } from 'ohash';
-import { is } from 'typia';
-import { ShowModal } from '../store/actions.js';
+import { ShowModalSchema } from '../store/actions.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
 
 let lastActionType: string | undefined;
@@ -335,11 +333,12 @@ export const urlProcessor: Processor = {
       historyParts.push(['objects', objects.active.join(';')]);
     }
 
-    if (
-      is<ShowModal>(main.activeModal) &&
-      basicModals.includes(main.activeModal)
-    ) {
-      queryParts.push(['show', main.activeModal]);
+    {
+      const result = ShowModalSchema.safeParse(main.activeModal);
+
+      if (result.success) {
+        queryParts.push(['show', result.data]);
+      }
     }
 
     if (main.documentKey !== null) {

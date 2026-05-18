@@ -1,18 +1,22 @@
-export interface DeviceBase {
+import z from 'zod';
+
+export const DeviceSchema = z.object({
+  name: z.string(),
+  maxCount: z.number().nullable(),
+  maxAge: z.number().nullable(),
+  id: z.number(),
+  token: z.string(),
+  createdAt: z.date(),
+});
+
+export type Device = z.infer<typeof DeviceSchema>;
+
+export type EditedDevice = {
   name: string;
   maxCount: number | null;
   maxAge: number | null;
-}
-
-export interface Device extends DeviceBase {
-  id: number;
-  token: string;
-  createdAt: Date;
-}
-
-export interface EditedDevice extends DeviceBase {
   token: string | undefined;
-}
+};
 
 export interface TrackedDevice {
   token: string;

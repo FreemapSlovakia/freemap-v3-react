@@ -4,7 +4,7 @@ import { CSSProperties, ReactElement, useEffect, useMemo, useRef } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { assertGuard } from 'typia';
-import { colors } from '../constants.js';
+import { COLORS } from '../colors.js';
 
 const textStyle: CSSProperties = {
   fill: 'rgba(0, 0, 0, 0.5)',
@@ -120,7 +120,7 @@ export function MarkerIcon({
   image,
   imageOpacity,
   faIcon,
-  color = colors.normal,
+  color = COLORS.normal,
   label,
   markerType,
 }: IconProps): ReactElement {

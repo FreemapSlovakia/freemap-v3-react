@@ -8,6 +8,7 @@ import {
 } from '@features/trackViewer/model/actions.js';
 import { Dispatch } from 'redux';
 import { assert } from 'typia';
+import z from 'zod';
 
 export async function handleTrackUpload({
   dispatch,
@@ -56,7 +57,9 @@ export async function handleTrackUpload({
     window._paq.push(['trackEvent', 'TrackViewer', 'upload']);
 
     dispatch(
-      trackViewerSetTrackUID(assert<{ uid: string }>(await res.json()).uid),
+      trackViewerSetTrackUID(
+        z.object({ uid: z.string() }).parse(await res.json()).uid,
+      ),
     );
   }
 

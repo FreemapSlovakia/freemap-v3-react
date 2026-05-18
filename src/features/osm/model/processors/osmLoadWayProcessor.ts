@@ -5,9 +5,8 @@ import { searchSelectResult } from '@features/search/model/actions.js';
 import { positionsEqual, shouldBeArea } from '@shared/geoutils.js';
 import { FeatureId } from '@shared/types/featureId.js';
 import { lineString, polygon } from '@turf/helpers';
-import { assert } from 'typia';
 import { osmLoadWay } from '../osmActions.js';
-import type { OsmResult } from '../types.js';
+import { OsmResultSchema } from '../types.js';
 import { copyDisplayName } from './copyDisplayName.js';
 
 export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
@@ -25,7 +24,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
 
     const nodes: Record<string, [number, number]> = {};
 
-    const { elements } = assert<OsmResult>(await res.json());
+    const { elements } = OsmResultSchema.parse(await res.json());
 
     for (const item of elements) {
       if (item.type === 'node') {

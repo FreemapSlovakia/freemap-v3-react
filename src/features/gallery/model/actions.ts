@@ -1,6 +1,7 @@
 import type { User } from '@features/auth/model/types.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { LatLon } from '@shared/types/common.js';
+import z from 'zod';
 import type { PictureModel } from '../components/GalleryEditForm.js';
 
 export interface GalleryItem {
@@ -32,16 +33,20 @@ export type GalleryColorizeBy =
   | 'season'
   | 'premium';
 
-export interface GalleryTag {
-  name: string;
-  count: number;
-}
+export const GalleryTagSchema = z.object({
+  name: z.string(),
+  count: z.number(),
+});
 
-export interface GalleryUser {
-  id: number;
-  name: string;
-  count: number;
-}
+export type GalleryTag = z.infer<typeof GalleryTagSchema>;
+
+export const GalleryUserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  count: z.number(),
+});
+
+export type GalleryUser = z.infer<typeof GalleryUserSchema>;
 
 export interface PictureComment {
   id: number;

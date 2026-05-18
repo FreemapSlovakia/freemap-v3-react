@@ -1,4 +1,4 @@
-import { setActiveModal, setTool, Tool } from '@app/store/actions.js';
+import { setActiveModal, setTool, ToolSchema } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
@@ -9,7 +9,6 @@ import { ReactElement } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import { FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { assert } from 'typia';
 
 export default DrawingMenu;
 
@@ -29,7 +28,7 @@ export function DrawingMenu(): ReactElement | undefined {
       <ToolMenu>
         <Dropdown
           className="ms-1"
-          onSelect={(tool) => dispatch(setTool(assert<Tool>(tool)))}
+          onSelect={(tool) => dispatch(setTool(ToolSchema.parse(tool)))}
         >
           <LongPressTooltip
             breakpoint="lg"

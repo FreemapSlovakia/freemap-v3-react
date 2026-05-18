@@ -1,22 +1,29 @@
 import { mapSetEsriAttribution } from '@features/map/model/actions.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { BBox } from 'geojson';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { assert } from 'typia';
+import z from 'zod';
 
-type EsriWorldImageryAttribution = {
-  contributors: {
-    attribution: string;
-    coverageAreas: {
-      zoomMax?: number;
-      zoomMin?: number;
-      score: number;
-      bbox: BBox;
-    }[];
-  }[];
-};
+const EsriWorldImageryAttributionSchema = z.object({
+  contributors: z.array(
+    z.object({
+      attribution: z.string(),
+      coverageAreas: z.array(
+        z.object({
+          zoomMax: z.number().optional(),
+          zoomMin: z.number().optional(),
+          score: z.number(),
+          bbox: z.array(z.number()).length(4),
+        }),
+      ),
+    }),
+  ),
+});
+
+type EsriWorldImageryAttribution = z.infer<
+  typeof EsriWorldImageryAttributionSchema
+>;
 
 function isIntersecting(
   caBbox: number[],
@@ -130,7 +137,7 @@ export function useAttributionInfo() {
 
       if (res.ok) {
         setEsriAttributions(
-          assert<EsriWorldImageryAttribution>(await res.json()),
+          EsriWorldImageryAttributionSchema.parse(await res.json()),
         );
       }
     }

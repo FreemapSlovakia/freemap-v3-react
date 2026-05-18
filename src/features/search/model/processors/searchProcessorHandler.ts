@@ -6,12 +6,12 @@ import { tileToGeoJSON } from '@mapbox/tilebelt';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import type { LatLon } from '@shared/types/common.js';
-import { NominatimResult } from '@shared/types/nominatimResult.js';
+import { NominatimResultSchema } from '@shared/types/nominatimResult.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { feature, point } from '@turf/helpers';
 import { BBox } from 'geojson';
 import { CRS, Point } from 'leaflet';
-import { assert } from 'typia';
+import z from 'zod';
 import {
   SearchResult,
   searchSelectResult,
@@ -155,8 +155,10 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
     cancelActions: [clearMapFeatures, searchSetQuery],
   });
 
-  const results = assert<NominatimResult[]>(await res.json()).map(
-    (item, i): SearchResult => {
+  const results = z
+    .array(NominatimResultSchema)
+    .parse(await res.json())
+    .map((item, i): SearchResult => {
       return {
         source: 'nominatim-forward',
         id:
@@ -184,8 +186,7 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
             : undefined,
         ),
       };
-    },
-  );
+    });
 
   dispatch(searchSetResults(results));
 

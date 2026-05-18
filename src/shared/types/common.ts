@@ -1,6 +1,12 @@
 import type * as Sentry from '@sentry/browser';
 import type { PathOptions } from 'leaflet';
+import z from 'zod';
 import type { Messages } from '@/translations/messagesInterface.js';
+
+export const LatLonSchema = z.object({
+  lat: z.number(),
+  lon: z.number(),
+});
 
 export interface LatLon {
   lat: number;
@@ -107,13 +113,15 @@ export interface OffscreenCanvas extends EventTarget {
   getContext: (contextId: '2d') => CanvasRenderingContext2D;
 }
 
-export type Shortcut = {
-  code: string; // event.code of main key
-  ctrl?: boolean;
-  shift?: boolean;
-  alt?: boolean;
-  meta?: boolean;
-};
+export const ShortcutSchema = z.object({
+  code: z.string(), // event.code of main key
+  ctrl: z.boolean().optional(),
+  shift: z.boolean().optional(),
+  alt: z.boolean().optional(),
+  meta: z.boolean().optional(),
+});
+
+export type Shortcut = z.infer<typeof ShortcutSchema>;
 
 export type DistributiveOmit<T, K extends keyof T> = T extends unknown
   ? Omit<T, K>

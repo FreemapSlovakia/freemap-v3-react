@@ -1,9 +1,9 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { assert } from 'typia';
+import z from 'zod';
 import { trackingActions } from '../actions.js';
-import { Device } from '../types.js';
+import { DeviceSchema } from '../types.js';
 
 export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =
   {
@@ -70,7 +70,7 @@ export const loadDevicesProcessor: Processor<
       }
     }
 
-    dispatch(trackingActions.setDevices(assert<Device[]>(data)));
+    dispatch(trackingActions.setDevices(z.array(DeviceSchema).parse(data)));
   },
 };
 

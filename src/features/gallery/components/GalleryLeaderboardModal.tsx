@@ -5,7 +5,7 @@ import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap';
 import { FaCamera, FaTimes, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { assert } from 'typia';
+import z from 'zod';
 import { countryCodeToFlag, Emoji } from '../../../shared/components/Emoji.js';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '../../../shared/hooks/useNumberFormat.js';
@@ -13,30 +13,40 @@ import classes from './GalleryLeaderboardModal.module.scss';
 
 type Props = { show: boolean };
 
-type Stats = {
-  perUserPerCountry: {
-    [country: string]: {
-      userId: number;
-      userName: string;
-      pictureCount: number;
-    }[];
-  };
-  perUser: {
-    pictureCount: number;
-    userId: number;
-    userName: string;
-  }[];
-  me?: {
-    perCountry: {
-      [country: string]: {
-        pictureCount: number;
-        userRank: number;
-      };
-    };
-    pictureCount: number;
-    userRank: number;
-  };
-};
+const StatsSchema = z.object({
+  perUserPerCountry: z.record(
+    z.string(), // country
+    z.array(
+      z.object({
+        userId: z.number(),
+        userName: z.string(),
+        pictureCount: z.number(),
+      }),
+    ),
+  ),
+  perUser: z.array(
+    z.object({
+      pictureCount: z.number(),
+      userId: z.number(),
+      userName: z.string(),
+    }),
+  ),
+  me: z
+    .object({
+      perCountry: z.record(
+        z.string(), // country
+        z.object({
+          pictureCount: z.number(),
+          userRank: z.number(),
+        }),
+      ),
+      pictureCount: z.number(),
+      userRank: z.number(),
+    })
+    .optional(),
+});
+
+type Stats = z.infer<typeof StatsSchema>;
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
@@ -80,7 +90,10 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
         throw new Error();
       }
 
-      setState({ type: 'success', result: assert<Stats>(await res.json()) });
+      setState({
+        type: 'success',
+        result: StatsSchema.parse(await res.json()),
+      });
     })().catch((error) => {
       if (ac.signal.aborted) {
         return;

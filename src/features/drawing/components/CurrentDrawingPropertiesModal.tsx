@@ -4,7 +4,7 @@ import { drawingLineChangeProperties } from '@features/drawing/model/actions/dra
 import { drawingPointChangeProperties } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { colors } from '@shared/constants.js';
+import { COLORS } from '@shared/colors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import { polygon } from '@turf/helpers';
@@ -42,7 +42,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
       ? state.drawingPoints.points[selection.id]?.color
       : selection?.type === 'draw-line-poly' && selection.id !== undefined
         ? state.drawingLines.lines[selection.id]?.color
-        : colors.normal;
+        : COLORS.normal;
   });
 
   const width = useAppSelector((state) => {
@@ -350,7 +350,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
 
               <Form.Control
                 type="color"
-                value={editedColor || colors.normal}
+                value={editedColor || COLORS.normal}
                 onChange={(e) => setEditedColor(e.currentTarget.value)}
               />
 
@@ -361,7 +361,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
           {drawType === 'draw-line-poly' && (
             <>
               <DrawingLineStyleFields
-                color={editedColor || colors.normal}
+                color={editedColor || COLORS.normal}
                 onColorChange={setEditedColor}
                 width={editedWidth}
                 onWidthChange={setEditedWidth}

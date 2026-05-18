@@ -1,8 +1,12 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { assert } from 'typia';
-import { GalleryTag, galleryEditPicture, gallerySetTags } from '../actions.js';
+import z from 'zod';
+import {
+  GalleryTagSchema,
+  galleryEditPicture,
+  gallerySetTags,
+} from '../actions.js';
 
 export const galleryUploadModalProcessor: Processor = {
   actionCreator: [setActiveModal, galleryEditPicture],
@@ -24,6 +28,6 @@ export const galleryUploadModalProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    dispatch(gallerySetTags(assert<GalleryTag[]>(await res.json())));
+    dispatch(gallerySetTags(z.array(GalleryTagSchema).parse(await res.json())));
   },
 };

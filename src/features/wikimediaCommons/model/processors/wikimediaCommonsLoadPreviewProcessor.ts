@@ -2,35 +2,52 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
-import { assert } from 'typia';
+import { LatLonSchema } from '@shared/types/common.js';
+import z from 'zod';
 import {
   wikimediaCommonsLoadPreview,
   wikimediaCommonsSetPreview,
 } from '../actions.js';
-import { ExtMetaValue, pickLang, stripHtml } from './extMetaUtils.js';
+import { ExtMetaValueSchema, pickLang, stripHtml } from './extMetaUtils.js';
 
-interface PreviewResponse {
-  query?: {
-    pages?: {
-      pageid: number;
-      title: string;
-      coordinates?: { lat: number; lon: number }[];
-      imageinfo?: {
-        thumburl?: string;
-        thumbwidth?: number;
-        thumbheight?: number;
-        descriptionurl?: string;
-        extmetadata?: {
-          ImageDescription?: { value?: ExtMetaValue };
-          Artist?: { value?: ExtMetaValue };
-          LicenseShortName?: { value?: ExtMetaValue };
-          LicenseUrl?: { value?: ExtMetaValue };
-          DateTime?: { value?: ExtMetaValue };
-        };
-      }[];
-    }[];
-  };
-}
+const ExtMetaFieldSchema = z
+  .object({ value: ExtMetaValueSchema.optional() })
+  .optional();
+
+const PreviewResponseSchema = z.object({
+  query: z
+    .object({
+      pages: z
+        .array(
+          z.object({
+            pageid: z.number(),
+            title: z.string(),
+            coordinates: z.array(LatLonSchema).optional(),
+            imageinfo: z
+              .array(
+                z.object({
+                  thumburl: z.string().optional(),
+                  thumbwidth: z.number().optional(),
+                  thumbheight: z.number().optional(),
+                  descriptionurl: z.string().optional(),
+                  extmetadata: z
+                    .object({
+                      ImageDescription: ExtMetaFieldSchema,
+                      Artist: ExtMetaFieldSchema,
+                      LicenseShortName: ExtMetaFieldSchema,
+                      LicenseUrl: ExtMetaFieldSchema,
+                      DateTime: ExtMetaFieldSchema,
+                    })
+                    .optional(),
+                }),
+              )
+              .optional(),
+          }),
+        )
+        .optional(),
+    })
+    .optional(),
+});
 
 export const wikimediaCommonsLoadPreviewProcessor: Processor<
   typeof wikimediaCommonsLoadPreview
@@ -72,7 +89,7 @@ export const wikimediaCommonsLoadPreviewProcessor: Processor<
       cancelActions: [setActiveModal, wikimediaCommonsSetPreview],
     });
 
-    const data = assert<PreviewResponse>(await res.json());
+    const data = PreviewResponseSchema.parse(await res.json());
 
     const page = data.query?.pages?.[0];
 

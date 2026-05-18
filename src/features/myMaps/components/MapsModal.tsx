@@ -34,15 +34,17 @@ import {
 import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
 import 'react-tag-autocomplete/example/src/styles.css';
-import { assert } from 'typia';
+import z from 'zod';
 import { mapsDelete, mapsLoad, mapsSave } from '../model/actions.js';
 
 type Props = { show: boolean };
 
-type User = {
-  id: number;
-  name: string;
-};
+const UsersSchema = z.array(
+  z.object({
+    id: z.number(),
+    name: z.string(),
+  }),
+);
 
 export function MapsModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
@@ -108,7 +110,7 @@ export function MapsModal({ show }: Props): ReactElement {
 
   const online = useOnline();
 
-  const [users, setUsers] = useState<User[]>();
+  const [users, setUsers] = useState<z.infer<typeof UsersSchema>>();
 
   useEffect(() => {
     fetch(`${process.env['API_URL']}/users`)
@@ -120,7 +122,7 @@ export function MapsModal({ show }: Props): ReactElement {
         throw new Error();
       })
       .then((data) => {
-        setUsers(assert<User[]>(data));
+        setUsers(UsersSchema.parse(data));
       })
       .catch((err) => {
         dispatch(

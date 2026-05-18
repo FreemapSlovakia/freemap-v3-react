@@ -19,7 +19,7 @@ import {
 } from 'react';
 import { Accordion, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { assert } from 'typia';
+import z from 'zod';
 
 type Item = {
   category: string;
@@ -31,7 +31,13 @@ type Item = {
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
-type Res = { id: string; category: string; tags: Record<string, string>[] }[];
+const ResSchema = z.array(
+  z.object({
+    id: z.string(),
+    category: z.string(),
+    tags: z.array(z.record(z.string(), z.string())),
+  }),
+);
 
 export default OutdoorMapLegend;
 
@@ -60,7 +66,7 @@ export function OutdoorMapLegend(): ReactElement {
         response.status === 200 ? response.json() : undefined,
       )
       .then((data) => {
-        const items = assert<Res>(data);
+        const items = ResSchema.parse(data);
 
         const catMap = new Map<string, Item>();
 

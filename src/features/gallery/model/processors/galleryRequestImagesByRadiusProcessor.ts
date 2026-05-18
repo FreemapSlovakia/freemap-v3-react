@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
-import { assert } from 'typia';
+import z from 'zod';
 import { createFilter } from '../../galleryUtils.js';
 import {
   galleryRequestImage,
@@ -33,9 +33,10 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
       expectedStatus: 200,
     });
 
-    const ids = assert<{ id: number }[]>(await res.json()).map(
-      (item) => item.id,
-    );
+    const ids = z
+      .array(z.object({ id: z.number() }))
+      .parse(await res.json())
+      .map((item) => item.id);
 
     dispatch(gallerySetImageIds(ids));
 

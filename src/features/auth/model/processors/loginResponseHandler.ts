@@ -7,7 +7,12 @@ import { StringDates } from '@shared/types/common.js';
 import { Dispatch } from 'redux';
 import { assert, is } from 'typia';
 import { authSetUser } from '../actions.js';
-import { LoginResponse, User, UserSettings } from '../types.js';
+import {
+  LoginResponse,
+  User,
+  UserSettings,
+  UserSettingsSchema,
+} from '../types.js';
 
 export async function handleLoginResponse(
   res: Response,
@@ -48,12 +53,12 @@ export async function handleLoginResponse(
     );
   }
 
-  try {
-    settings = assert<UserSettings>(user.settings);
-  } catch (e) {
-    console.error('Invalid user settings:', e);
+  const settingsResult = UserSettingsSchema.safeParse(user.settings);
 
-    settings = undefined;
+  if (settingsResult.success) {
+    settings = settingsResult.data;
+  } else {
+    console.error('Invalid user settings:', settingsResult.error);
   }
 
   dispatch(authSetUser({ ...user, settings }));

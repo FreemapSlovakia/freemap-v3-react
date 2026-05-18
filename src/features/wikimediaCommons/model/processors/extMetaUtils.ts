@@ -1,4 +1,12 @@
-export type ExtMetaValue = string | Record<string, unknown> | undefined;
+import z from 'zod';
+
+export const ExtMetaValueSchema = z.union([
+  z.string(),
+  z.record(z.string(), z.unknown()),
+  z.undefined(),
+]);
+
+type ExtMetaValue = z.infer<typeof ExtMetaValueSchema>;
 
 export function pickLang(
   value: ExtMetaValue,
