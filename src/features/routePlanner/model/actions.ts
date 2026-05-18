@@ -16,9 +16,18 @@ export type RoutePoint = z.infer<typeof RoutePointSchema>;
 
 export type NewRoutePoint = LatLon & { transport?: TransportType };
 
-export type PickMode = 'start' | 'finish';
+export const PickModeSchema = z.enum(['start', 'finish']);
 
-export type RoutingMode = 'route' | 'trip' | 'roundtrip' | 'isochrone';
+export type PickMode = z.infer<typeof PickModeSchema>;
+
+export const RoutingModeSchema = z.enum([
+  'route',
+  'trip',
+  'roundtrip',
+  'isochrone',
+]);
+
+export type RoutingMode = z.infer<typeof RoutingModeSchema>;
 
 export type StepMode =
   | 'foot'

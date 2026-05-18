@@ -23,6 +23,22 @@ export const LineSchema = z.object({
 
 export type Line = z.infer<typeof LineSchema>;
 
+// Wire form for persisted maps: legacy `area` / `distance` line types
+// are renamed to the current `polygon` / `line`.
+export const LineCompatSchema = z.preprocess((v) => {
+  if (typeof v === 'object' && v !== null && 'type' in v) {
+    if (v.type === 'area') {
+      return { ...v, type: 'polygon' };
+    }
+
+    if (v.type === 'distance') {
+      return { ...v, type: 'line' };
+    }
+  }
+
+  return v;
+}, LineSchema);
+
 export const drawingLineAdd = createAction<Line>('DRAWING_LINE_ADD');
 
 export const drawingLineAddPoint = createAction<
