@@ -7,7 +7,6 @@ import { createRoot } from 'react-dom/client';
 import { FaExternalLinkAlt, FaTimes, FaWikipediaW } from 'react-icons/fa';
 import { Marker, Pane, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { assertGuard } from 'typia';
 import {
   WikiPreview,
   wikiLoadPreview,
@@ -22,11 +21,8 @@ class WikiIcon extends Icon {
 
     const div = oldIcon && reuse ? oldIcon : document.createElement('div');
 
-    assertGuard<{ _setIconStyles: (el: HTMLElement, str: string) => void }>(
-      this,
-    );
-
-    this._setIconStyles(div, 'icon');
+    // Leaflet's Icon._setIconStyles is an untyped internal method.
+    (this as any)._setIconStyles(div, 'icon');
 
     if (WikiIcon.template) {
       div.appendChild(WikiIcon.template.cloneNode());

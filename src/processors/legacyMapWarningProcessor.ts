@@ -9,20 +9,14 @@ import {
   toastsAdd,
   toastsRemove,
 } from '@features/toasts/model/actions.js';
-import { HasLegacy, integratedLayerDefs } from '@shared/mapDefinitions.js';
-import { is } from 'typia';
+import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 
 const TOAST_PREFIX = 'maps.legacyWarning.';
 
 export const legacyMapWarningProcessor: Processor = {
   stateChangePredicate: (state) =>
     integratedLayerDefs
-      .filter(
-        (def) =>
-          state.map.layers.includes(def.type) &&
-          is<HasLegacy>(def) &&
-          def.superseededBy,
-      )
+      .filter((def) => state.map.layers.includes(def.type) && def.superseededBy)
       .map((def) => def.type)
       .join(','),
   actionCreator: enableUpdatingUrl,
@@ -43,7 +37,6 @@ export const legacyMapWarningProcessor: Processor = {
     for (const def of integratedLayerDefs) {
       if (
         !layers.includes(def.type) ||
-        !is<HasLegacy>(def) ||
         !def.superseededBy ||
         legacyMapWarningSuppressions.includes(def.type) ||
         tempLegacyMapWarningSuppressions.includes(def.type)

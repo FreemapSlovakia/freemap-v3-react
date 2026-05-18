@@ -11,17 +11,12 @@ import {
   osmLoadWay,
 } from '@features/osm/model/osmActions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import {
-  HasMaxNativeZoom,
-  IsBaseLayerDef,
-  integratedLayerDefs,
-} from '@shared/mapDefinitions.js';
+import { integratedLayerDefs, isBaseLayerDef } from '@shared/mapDefinitions.js';
 import {
   featureIdsEqual,
   OsmFeatureIdSchema,
 } from '@shared/types/featureId.js';
 import bbox from '@turf/bbox';
-import { is } from 'typia';
 import { searchSelectResult, searchSetResults } from '../actions.js';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
@@ -121,7 +116,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
             maxZoom: Math.min(
               action.payload.result.zoom ?? 18,
               integratedLayerDefs
-                .filter((def) => is<IsBaseLayerDef & HasMaxNativeZoom>(def))
+                .filter(isBaseLayerDef)
                 .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
             ),
           },

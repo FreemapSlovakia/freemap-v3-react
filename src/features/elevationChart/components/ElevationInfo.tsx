@@ -6,13 +6,16 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import { IsTileLayerDef, integratedLayerDefs } from '@shared/mapDefinitions.js';
+import {
+  IsTileLayerDef,
+  integratedLayerDefs,
+  isTileLayerDef,
+} from '@shared/mapDefinitions.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Fragment, useCallback, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
 
 export type ElevationInfoBaseProps = {
   elevation: number | null;
@@ -78,7 +81,7 @@ export function ElevationInfo({
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
   const tileLayerDefs = [...integratedLayerDefs, ...customLayers].filter(
-    (def) => is<IsTileLayerDef>(def),
+    isTileLayerDef,
   );
 
   const tileUrls = layers

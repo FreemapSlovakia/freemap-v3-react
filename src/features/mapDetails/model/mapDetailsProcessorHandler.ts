@@ -16,6 +16,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   IsWmsLayerDef,
   integratedLayerDefs,
+  isWmsLayerDef,
   LayerDef,
 } from '@shared/mapDefinitions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
@@ -32,7 +33,6 @@ import { toWgs84 } from '@turf/projection';
 import { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
 import { Dispatch } from 'redux';
-import { is } from 'typia';
 
 const OverpassResultBoundsSchema = overpassResultSchema(
   OverpassBoundsExtraSchema,
@@ -62,9 +62,7 @@ export async function handle(
   const wmsLayerDefs = [
     ...integratedLayerDefs,
     ...getState().map.customLayers,
-  ].filter((def): def is LayerDef<IsWmsLayerDef, IsWmsLayerDef> =>
-    is<IsWmsLayerDef>(def),
-  );
+  ].filter(isWmsLayerDef);
 
   const wmsLayerTypes = wmsLayerDefs.map((def) => def.type);
 

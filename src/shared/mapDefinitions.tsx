@@ -179,6 +179,21 @@ export type IsOverlayLayerDef = HasZIndex & {
   layer: 'overlay';
 };
 
+export const isTileLayerDef = <T extends { technology: string }>(
+  def: T,
+): def is T & IsTileLayerDef => def.technology === 'tile';
+
+export const isWmsLayerDef = <T extends { technology: string }>(
+  def: T,
+): def is T & IsWmsLayerDef => def.technology === 'wms';
+
+// HasMaxNativeZoom is structural-only (the field is optional) — any object
+// matches it. Including it in the predicate's return type just lets callers
+// read def.maxNativeZoom without a TS error.
+export const isBaseLayerDef = <T extends { layer: string }>(
+  def: T,
+): def is T & IsBaseLayerDef & HasMaxNativeZoom => def.layer === 'base';
+
 export type IsAllTechnologiesLayerDef =
   | (IsTileLayerDef & {
       creditsPerMTile?: number;
