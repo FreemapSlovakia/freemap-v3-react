@@ -557,11 +557,11 @@ export function MapSwitchButton(): ReactElement {
                   {!normalizedFilter &&
                     (show === true || show === 'more') &&
                     (!isWide && show === true ? (
-                      <Dropdown.Item eventKey="show-more">
+                      <Dropdown.Item eventKey="show-more" className="mb-2">
                         {m?.mapLayers.showMore}
                       </Dropdown.Item>
                     ) : (
-                      <Dropdown.Item eventKey="show-all">
+                      <Dropdown.Item eventKey="show-all" className="mb-2">
                         {m?.mapLayers.showAll}
                       </Dropdown.Item>
                     ))}
