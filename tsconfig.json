@@ -18,7 +18,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "outDir": "dist",
-    "plugins": [{ "transform": "typia/lib/transform" }],
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,

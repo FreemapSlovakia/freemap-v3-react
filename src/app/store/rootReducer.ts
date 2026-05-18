@@ -3,58 +3,42 @@ import { UserSchema, UserSettingsSchema } from '@features/auth/model/types.js';
 import { cachedMapsReducer } from '@features/cachedMaps/model/reducer.js';
 import { changesetReducer } from '@features/changesets/model/reducer.js';
 import {
-  type CookieConsentState,
   cookieConsentInitialState,
   cookieConsentReducer,
 } from '@features/cookieConsent/model/reducer.js';
 import { drawingLinesReducer } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import { drawingPointsReducer } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import {
-  type DrawingSettingsState,
   drawingSettingsInitialState,
   drawingSettingsReducer,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { elevationChartReducer } from '@features/elevationChart/model/reducer.js';
-import type { GalleryColorizeBy } from '@features/gallery/model/actions.js';
 import {
   galleryInitialState,
   galleryReducer,
 } from '@features/gallery/model/reducer.js';
 import { geoIpReducer } from '@features/geoip/model/reducer.js';
 import {
-  type HomeLocationState,
   homeLocationInitialState,
   homeLocationReducer,
 } from '@features/homeLocation/model/reducer.js';
+import { l10nInitialState, l10nReducer } from '@features/l10n/model/reducer.js';
 import {
-  type L10nState,
-  l10nInitialState,
-  l10nReducer,
-} from '@features/l10n/model/reducer.js';
-import {
-  type LocationState,
   locationInitialState,
   locationReducer,
 } from '@features/location/model/reducer.js';
-import {
-  type MapState,
-  mapInitialState,
-  mapReducer,
-} from '@features/map/model/reducer.js';
-import { MapDetailsSource } from '@features/mapDetails/model/actions.js';
+import { mapInitialState, mapReducer } from '@features/map/model/reducer.js';
 import {
   mapDetailsInitialState,
   mapDetailsReducer,
 } from '@features/mapDetails/model/reducer.js';
 import { mapsReducer } from '@features/myMaps/model/reducer.js';
 import {
-  type ObjectsState,
   objectInitialState,
   objectsReducer,
 } from '@features/objects/model/reducer.js';
 import { progressReducer } from '@features/progress/model/reducer.js';
 import {
-  type RoutePlannerState,
   routePlannerInitialState,
   routePlannerReducer,
 } from '@features/routePlanner/model/reducer.js';
@@ -62,7 +46,6 @@ import { searchReducer } from '@features/search/model/reducer.js';
 import { toastsReducer } from '@features/toasts/model/reducer.js';
 import { trackingReducer } from '@features/tracking/model/reducer.js';
 import {
-  type TrackViewerState,
   trackViewerInitialState,
   trackViewerReducer,
 } from '@features/trackViewer/model/reducer.js';
@@ -75,10 +58,9 @@ import {
   transportTypeDefs,
 } from '@shared/transportTypeDefs.js';
 import storage from 'local-storage-fallback';
-import { is } from 'typia';
 import z from 'zod';
 import type { RootState } from '../store/store.js';
-import { type MainState, mainInitialState, mainReducer } from './reducer.js';
+import { mainInitialState, mainReducer } from './reducer.js';
 
 const PersistedAuthSchema = z.object({
   user: z
@@ -89,6 +71,10 @@ const PersistedAuthSchema = z.object({
     .nullable()
     .optional(),
 });
+
+function isObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null;
+}
 
 export const reducers = {
   auth: authReducer,
@@ -144,21 +130,23 @@ export function getInitialState() {
     }
   }
 
-  if (!is<{ customLayers: unknown }>(persisted.map)) {
-    // nothing
-  } else if (is<{ customLayers: unknown[] }>(persisted.map)) {
-    persisted.map.customLayers = CustomLayerDefArrayCompatSchema.parse(
-      persisted.map.customLayers,
+  if (isObject(persisted.map) && 'customLayers' in persisted.map) {
+    const parsed = CustomLayerDefArrayCompatSchema.safeParse(
+      persisted.map['customLayers'],
     );
-  } else {
-    delete persisted.map.customLayers;
+
+    if (parsed.success) {
+      persisted.map['customLayers'] = parsed.data;
+    } else {
+      delete persisted.map['customLayers'];
+    }
   }
 
-  if (is<Partial<MapState>>(persisted.map)) {
+  if (isObject(persisted.map)) {
     initial.map = { ...mapInitialState, ...persisted.map };
   }
 
-  if (is<Partial<L10nState>>(persisted.l10n)) {
+  if (isObject(persisted.l10n)) {
     initial.l10n = { ...l10nInitialState, ...persisted.l10n };
   }
 
@@ -173,145 +161,108 @@ export function getInitialState() {
     };
   }
 
-  if (is<Partial<CookieConsentState>>(persisted.cookieConsent)) {
+  if (isObject(persisted.cookieConsent)) {
     initial.cookieConsent = {
       ...cookieConsentInitialState,
       ...persisted.cookieConsent,
     };
-  } else if (
-    is<{
-      cookieConsentResult?: boolean | null;
-      analyticCookiesAllowed?: boolean;
-    }>(persisted.main)
-  ) {
+  } else if (isObject(persisted.main)) {
     initial.cookieConsent = {
       ...cookieConsentInitialState,
       ...persisted.main,
     };
   }
 
-  if (is<Partial<DrawingSettingsState>>(persisted.drawingSettings)) {
+  if (isObject(persisted.drawingSettings)) {
     initial.drawingSettings = {
       ...drawingSettingsInitialState,
       ...persisted.drawingSettings,
     };
-  } else if (
-    is<{
-      drawingColor?: string;
-      drawingWidth?: number;
-      drawingRecentColors?: string[];
-    }>(persisted.main)
-  ) {
+  } else if (isObject(persisted.main)) {
     initial.drawingSettings = {
       ...drawingSettingsInitialState,
       ...persisted.main,
     };
   }
 
-  if (is<Partial<HomeLocationState>>(persisted.homeLocation)) {
+  if (isObject(persisted.homeLocation)) {
     initial.homeLocation = {
       ...homeLocationInitialState,
       ...persisted.homeLocation,
     };
-  } else if (
-    is<{
-      homeLocation?: HomeLocationState['homeLocation'];
-      selectingHomeLocation?: HomeLocationState['selectingHomeLocation'];
-    }>(persisted.main)
-  ) {
+  } else if (isObject(persisted.main)) {
     initial.homeLocation = {
       ...homeLocationInitialState,
       ...persisted.main,
     };
   }
 
-  if (is<Partial<LocationState>>(persisted.location)) {
+  if (isObject(persisted.location)) {
     initial.location = {
       ...locationInitialState,
       ...persisted.location,
     };
-  } else if (
-    is<{
-      locate?: boolean;
-      location?: LocationState['location'];
-    }>(persisted.main)
-  ) {
+  } else if (isObject(persisted.main)) {
     initial.location = {
       ...locationInitialState,
       ...persisted.main,
     };
   }
 
-  if (
-    is<{
-      cookieConsentResult?: unknown;
-      analyticCookiesAllowed?: unknown;
-      drawingColor?: unknown;
-      drawingWidth?: unknown;
-      drawingRecentColors?: unknown;
-      homeLocation?: unknown;
-      selectingHomeLocation?: unknown;
-      locate?: unknown;
-      location?: unknown;
-      purchaseOnLogin?: unknown;
-    }>(persisted.main)
-  ) {
-    delete persisted.main.cookieConsentResult;
-    delete persisted.main.analyticCookiesAllowed;
-    delete persisted.main.drawingColor;
-    delete persisted.main.drawingWidth;
-    delete persisted.main.drawingRecentColors;
-    delete persisted.main.homeLocation;
-    delete persisted.main.selectingHomeLocation;
-    delete persisted.main.locate;
-    delete persisted.main.location;
-    delete persisted.main.purchaseOnLogin;
-  }
+  if (isObject(persisted.main)) {
+    for (const k of [
+      'cookieConsentResult',
+      'analyticCookiesAllowed',
+      'drawingColor',
+      'drawingWidth',
+      'drawingRecentColors',
+      'homeLocation',
+      'selectingHomeLocation',
+      'locate',
+      'location',
+      'purchaseOnLogin',
+    ]) {
+      delete persisted.main[k];
+    }
 
-  if (is<Partial<MainState>>(persisted.main)) {
     initial.main = { ...mainInitialState, ...persisted.main };
   }
 
-  if (is<Partial<ObjectsState>>(persisted.objects)) {
+  if (isObject(persisted.objects)) {
     initial.objects = { ...objectInitialState, ...persisted.objects };
   }
 
-  if (is<{ transportType: unknown }>(persisted.routePlanner)) {
-    persisted.routePlanner.transportType = TransportTypeCompatSchema.parse(
-      persisted.routePlanner.transportType,
-    );
-  }
+  if (isObject(persisted.routePlanner)) {
+    if ('transportType' in persisted.routePlanner) {
+      persisted.routePlanner['transportType'] = TransportTypeCompatSchema.parse(
+        persisted.routePlanner['transportType'],
+      );
+    }
 
-  if (is<Partial<RoutePlannerState>>(persisted.routePlanner)) {
     initial.routePlanner = {
       ...routePlannerInitialState,
       ...persisted.routePlanner,
     };
   }
 
-  if (is<Partial<TrackViewerState>>(persisted.trackViewer)) {
+  if (isObject(persisted.trackViewer)) {
     initial.trackViewer = {
       ...trackViewerInitialState,
       ...persisted.trackViewer,
     };
   }
 
-  if (is<{ sources: MapDetailsSource[] }>(persisted.mapDetails)) {
+  if (
+    isObject(persisted.mapDetails) &&
+    Array.isArray(persisted.mapDetails['sources'])
+  ) {
     initial.mapDetails = {
       ...mapDetailsInitialState,
       ...persisted.mapDetails,
     };
   }
 
-  if (
-    is<{
-      colorizeBy?: GalleryColorizeBy | null;
-      recentTags?: string[];
-      showDirection?: boolean;
-      showLegend?: boolean;
-      premium?: boolean;
-    }>(persisted.gallery)
-  ) {
+  if (isObject(persisted.gallery)) {
     initial.gallery = {
       ...galleryInitialState,
       ...persisted.gallery,
