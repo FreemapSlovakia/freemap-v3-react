@@ -19,17 +19,19 @@ export type EditedDevice = {
   token: string | undefined;
 };
 
-export interface TrackedDevice {
-  token: string;
-  color?: string | null;
-  width?: number | null;
-  label?: string | null;
-  maxCount?: number | null;
-  maxAge?: number | null;
-  fromTime?: Date | null;
-  splitDistance?: number | null;
-  splitDuration?: number | null;
-}
+export const TrackedDeviceSchema = z.object({
+  token: z.string(),
+  color: z.string().nullish(),
+  width: z.number().nullish(),
+  label: z.string().nullish(),
+  maxCount: z.number().nullish(),
+  maxAge: z.number().nullish(),
+  fromTime: IsoDateSchema.nullish(),
+  splitDistance: z.number().nullish(),
+  splitDuration: z.number().nullish(),
+});
+
+export type TrackedDevice = z.infer<typeof TrackedDeviceSchema>;
 
 export const AccessTokenBaseSchema = z.object({
   listingLabel: z.string().nullable(),
@@ -40,7 +42,8 @@ export const AccessTokenBaseSchema = z.object({
 
 export type AccessTokenBase = z.infer<typeof AccessTokenBaseSchema>;
 
-export const AccessTokenSchema = AccessTokenBaseSchema.extend({
+export const AccessTokenSchema = z.object({
+  ...AccessTokenBaseSchema.shape,
   id: z.number(),
   token: z.string(),
   createdAt: IsoDateSchema,

@@ -5,18 +5,21 @@ const OsmElementSchema = z.object({
   tags: z.record(z.string(), z.string()).optional(),
 });
 
-export const OsmNodeSchema = OsmElementSchema.extend({
+export const OsmNodeSchema = z.object({
+  ...OsmElementSchema.shape,
   type: z.literal('node'),
   lat: z.number(),
   lon: z.number(),
 });
 
-export const OsmWaySchema = OsmElementSchema.extend({
+export const OsmWaySchema = z.object({
+  ...OsmElementSchema.shape,
   type: z.literal('way'),
   nodes: z.array(z.number()),
 });
 
-export const OsmRelationSchema = OsmElementSchema.extend({
+export const OsmRelationSchema = z.object({
+  ...OsmElementSchema.shape,
   type: z.literal('relation'),
   members: z.array(
     z.object({

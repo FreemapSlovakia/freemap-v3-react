@@ -81,9 +81,11 @@ import type { RootState } from '../store/store.js';
 import { type MainState, mainInitialState, mainReducer } from './reducer.js';
 
 const PersistedAuthSchema = z.object({
-  user: UserSchema.extend({
-    settings: UserSettingsSchema.optional().catch(undefined),
-  })
+  user: z
+    .object({
+      ...UserSchema.shape,
+      settings: UserSettingsSchema.optional().catch(undefined),
+    })
     .nullable()
     .optional(),
 });

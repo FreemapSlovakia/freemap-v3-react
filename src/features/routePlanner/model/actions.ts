@@ -1,9 +1,18 @@
 import { createAction } from '@reduxjs/toolkit';
-import { TransportType } from '@shared/transportTypeDefs.js';
-import type { LatLon } from '@shared/types/common.js';
+import {
+  TransportType,
+  TransportTypeSchema,
+} from '@shared/transportTypeDefs.js';
+import { type LatLon, LatLonSchema } from '@shared/types/common.js';
 import { Feature, Polygon } from 'geojson';
+import z from 'zod';
 
-export type RoutePoint = LatLon & { transport?: TransportType };
+export const RoutePointSchema = z.object({
+  ...LatLonSchema.shape,
+  transport: TransportTypeSchema.optional(),
+});
+
+export type RoutePoint = z.infer<typeof RoutePointSchema>;
 
 export type NewRoutePoint = LatLon & { transport?: TransportType };
 

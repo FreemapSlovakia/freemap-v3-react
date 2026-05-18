@@ -15,7 +15,8 @@ const OverpassElementBaseSchema = z.object({
   tags: z.record(z.string(), z.string()).optional(), // probably bug in overpass, but it returned node without tags
 });
 
-const OverpassNodeElementSchema = OverpassElementBaseSchema.extend({
+const OverpassNodeElementSchema = z.object({
+  ...OverpassElementBaseSchema.shape,
   type: z.literal('node'),
   lat: z.number(),
   lon: z.number(),
@@ -33,7 +34,8 @@ export function overpassResultSchema<E extends z.ZodType>(extraSchema: E) {
       z.union([
         OverpassNodeElementSchema,
         z.intersection(
-          OverpassElementBaseSchema.extend({
+          z.object({
+            ...OverpassElementBaseSchema.shape,
             type: z.enum(['way', 'relation']),
           }),
           extraSchema,

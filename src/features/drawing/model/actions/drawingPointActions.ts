@@ -1,11 +1,14 @@
 import { createAction } from '@reduxjs/toolkit';
-import { LatLon } from '@shared/types/common.js';
+import { LatLon, LatLonSchema } from '@shared/types/common.js';
+import z from 'zod';
 
-export interface DrawingPoint {
-  coords: LatLon;
-  label?: string;
-  color?: string;
-}
+export const DrawingPointSchema = z.object({
+  coords: LatLonSchema,
+  label: z.string().optional(),
+  color: z.string().optional(),
+});
+
+export type DrawingPoint = z.infer<typeof DrawingPointSchema>;
 
 export const drawingPointAdd = createAction<DrawingPoint & { id: number }>(
   'DRAWING_POINT_ADD',

@@ -67,7 +67,8 @@ export type UserSettings = z.infer<typeof UserSettingsSchema>;
 // Strict UserSettingsSchema with the customLayers field swapped for the
 // lenient compat schema (filters out invalid items, upgrades legacy tile
 // shapes). Use for parsing settings from persisted/server payloads.
-export const UserSettingsCompatSchema = UserSettingsSchema.extend({
+export const UserSettingsCompatSchema = z.object({
+  ...UserSettingsSchema.shape,
   customLayers: CustomLayerDefArrayCompatSchema.optional(),
 });
 
@@ -91,7 +92,8 @@ export type User = z.infer<typeof UserSchema>;
 
 // Wire form for server responses: settings are parsed separately because
 // they may need legacy upgrade before validation.
-export const RawUserSchema = UserSchema.omit({ settings: true }).extend({
+export const RawUserSchema = z.object({
+  ...UserSchema.omit({ settings: true }).shape,
   settings: z.unknown().optional(),
 });
 

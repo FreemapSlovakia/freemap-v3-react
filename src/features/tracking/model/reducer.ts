@@ -15,7 +15,8 @@ import {
 
 const TrackPointsSchema = z.array(TrackPointSchema);
 
-const TrackPointWithTokenSchema = TrackPointSchema.extend({
+const TrackPointWithTokenSchema = z.object({
+  ...TrackPointSchema.shape,
   token: z.string(),
 });
 

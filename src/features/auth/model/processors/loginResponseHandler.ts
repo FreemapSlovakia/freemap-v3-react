@@ -3,6 +3,7 @@ import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isPremium } from '@shared/premium.js';
 import { Dispatch } from 'redux';
+import z from 'zod';
 import { authSetUser } from '../actions.js';
 import {
   LoginResponseSchema,
@@ -11,7 +12,8 @@ import {
   UserSettingsCompatSchema,
 } from '../types.js';
 
-const RawLoginResponseSchema = LoginResponseSchema.omit({ user: true }).extend({
+const RawLoginResponseSchema = z.object({
+  ...LoginResponseSchema.omit({ user: true }).shape,
   user: RawUserSchema,
 });
 
