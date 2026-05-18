@@ -12,7 +12,9 @@ export const NominatimResultSchema = z.object({
   class: z.string(),
   type: z.string(),
   extratags: z.record(z.string(), z.string()).nullish(),
-  boundingbox: z.array(z.string()).length(4).optional(),
+  boundingbox: z
+    .tuple([z.string(), z.string(), z.string(), z.string()])
+    .optional(),
 });
 
 export type NominatimResult = z.infer<typeof NominatimResultSchema>;

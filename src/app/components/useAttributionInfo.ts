@@ -14,7 +14,7 @@ const EsriWorldImageryAttributionSchema = z.object({
           zoomMax: z.number().optional(),
           zoomMin: z.number().optional(),
           score: z.number(),
-          bbox: z.array(z.number()).length(4),
+          bbox: z.tuple([z.number(), z.number(), z.number(), z.number()]),
         }),
       ),
     }),
