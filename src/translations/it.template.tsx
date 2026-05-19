@@ -848,6 +848,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     },
     customMaps: 'Mappe personalizzate',
+    addCustomMap: 'Aggiungi mappa personalizzata',
     base: 'Livelli di base',
     overlay: 'Livelli sovrapposti',
     url: 'Modello URL',

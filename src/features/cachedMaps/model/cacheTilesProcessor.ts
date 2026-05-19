@@ -18,6 +18,7 @@ import { toCachedLayerUrl } from '../cachedTileUrl.js';
 import {
   type CacheTilesStartPayload,
   cachedMapDeleted,
+  cachedMapRenamed,
   cachedMapsLoaded,
   cacheTilesCancel,
   cacheTilesComplete,
@@ -315,6 +316,19 @@ export const cachedMapDeletedProcessor: Processor<typeof cachedMapDeleted> = {
     }
 
     await deleteCachedTileMap(action.payload.id);
+  },
+};
+
+export const cachedMapRenamedProcessor: Processor<typeof cachedMapRenamed> = {
+  actionCreator: cachedMapRenamed,
+  async handle({ action, getState }) {
+    const meta = getState().map.cachedMaps.find(
+      (cm) => cm.type === action.payload.id,
+    );
+
+    if (meta) {
+      await saveCachedTileMap(meta);
+    }
   },
 };
 

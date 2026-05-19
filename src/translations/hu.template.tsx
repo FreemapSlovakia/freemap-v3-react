@@ -867,6 +867,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Az adatréteg rejtve van',
     customBase: 'Egyéni térkép',
     customMaps: 'Egyéni térképek',
+    addCustomMap: 'Egyéni térkép hozzáadása',
     base: 'Alaprétegek',
     overlay: 'Fedőrétegek',
     url: 'URL sablon',

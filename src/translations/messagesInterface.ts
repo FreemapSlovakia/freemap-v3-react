@@ -622,6 +622,7 @@ export type Messages = {
     attr: Record<string, ReactNode>;
     configureLayers: string;
     customMaps: string;
+    addCustomMap: string;
     base: string;
     overlay: string;
     technology: string;

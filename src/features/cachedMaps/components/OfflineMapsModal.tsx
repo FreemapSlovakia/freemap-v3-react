@@ -16,7 +16,12 @@ export function OfflineMapsModal({ show }: Props): ReactElement {
   const view = useAppSelector((state) => state.cachedMaps.view);
 
   return (
-    <Modal show={show} onHide={() => dispatch(setActiveModal(null))} size="lg">
+    <Modal
+      show={show}
+      onHide={() => dispatch(setActiveModal(null))}
+      size="lg"
+      contentClassName="bg-body-tertiary"
+    >
       {view === 'list' ? <CachedMapsList /> : <CacheTilesForm />}
     </Modal>
   );

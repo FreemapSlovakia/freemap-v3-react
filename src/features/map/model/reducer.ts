@@ -2,6 +2,7 @@ import { applySettings } from '@app/store/actions.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import {
   cachedMapDeleted,
+  cachedMapRenamed,
   cachedMapsLoaded,
   cacheTilesCancel,
   cacheTilesComplete,
@@ -277,5 +278,12 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       state.cachedMaps = state.cachedMaps.filter((m) => m.type !== payload.id);
 
       state.layers = state.layers.filter((l) => l !== payload.id);
+    })
+    .addCase(cachedMapRenamed, (state, { payload }) => {
+      const map = state.cachedMaps.find((m) => m.type === payload.id);
+
+      if (map) {
+        map.name = payload.name;
+      }
     }),
 );

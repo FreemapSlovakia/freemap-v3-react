@@ -15,6 +15,7 @@ import { authWithOsmProcessor } from '@features/auth/model/processors/authWithOs
 import { purchaseProcessor } from '@features/auth/model/processors/purchaseProcessor.js';
 import {
   cachedMapDeletedProcessor,
+  cachedMapRenamedProcessor,
   cacheTilesCancelProcessor,
   cacheTilesPauseProcessor,
   cacheTilesRestartProcessor,
@@ -195,5 +196,6 @@ export const processors = [
   cacheTilesResumeProcessor,
   cacheTilesCancelProcessor,
   cachedMapDeletedProcessor,
+  cachedMapRenamedProcessor,
   urlProcessor,
 ];

@@ -22,7 +22,12 @@ export function MyMapsModal({ show }: Props): ReactElement {
   const [editTarget, setEditTarget] = useState<MapMeta | 'new' | null>(null);
 
   return (
-    <Modal show={show} onHide={close} size="lg">
+    <Modal
+      show={show}
+      onHide={close}
+      size="lg"
+      contentClassName="bg-body-tertiary"
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <FaRegMap /> {m?.tools.maps}

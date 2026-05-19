@@ -891,6 +891,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     configureLayers: 'Nastavenie mapových vrstiev',
     customMaps: 'Vlastné mapy',
+    addCustomMap: 'Pridať vlastnú mapu',
     base: 'Základné vrstvy',
     overlay: 'Prekryvné vrstvy',
     technology: 'Typ',

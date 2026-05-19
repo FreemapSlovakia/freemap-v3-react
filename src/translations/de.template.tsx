@@ -857,6 +857,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoomWarning: (minZoom) => `Verfügbar ab Zoomstufe ${minZoom}`,
     customBase: 'Benutzerdefinierte Karte',
     customMaps: 'Benutzerdefinierte Karten',
+    addCustomMap: 'Benutzerdefinierte Karte hinzufügen',
     base: 'Grundlegende Ebenen',
     overlay: 'Überlagerungsebenen',
     url: 'URL-Vorlage',

@@ -49,6 +49,10 @@ export const cachedMapDeleted = createAction<{ id: string }>(
   'CACHED_MAP_DELETED',
 );
 
+export const cachedMapRenamed = createAction<{ id: string; name: string }>(
+  'CACHED_MAP_RENAMED',
+);
+
 export const cachedMapsSetView = createAction<'list' | 'add'>(
   'CACHED_MAPS_SET_VIEW',
 );

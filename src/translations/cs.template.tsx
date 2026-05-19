@@ -823,6 +823,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     configureLayers: 'Nastavení mapových vrstev',
     customMaps: 'Vlastní mapy',
+    addCustomMap: 'Přidat vlastní mapu',
     base: 'Základní vrstvy',
     overlay: 'Překryvné vrstvy',
     url: 'Šablona URL',

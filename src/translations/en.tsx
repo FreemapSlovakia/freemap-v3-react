@@ -840,6 +840,7 @@ const messages: Messages = {
     },
     configureLayers: 'Configure map layers',
     customMaps: 'Custom maps',
+    addCustomMap: 'Add custom map',
     base: 'Base layers',
     overlay: 'Overlay layers',
     technology: 'Type',

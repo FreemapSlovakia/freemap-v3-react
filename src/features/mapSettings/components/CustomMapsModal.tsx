@@ -3,7 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { ReactElement, useCallback, useState } from 'react';
-import { Button, Modal, Table } from 'react-bootstrap';
+import { Button, ListGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaPencilAlt, FaPlus, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
@@ -103,6 +103,7 @@ export function CustomMapsModal({ show }: Props): ReactElement {
       show={show}
       onHide={close}
       size={view.mode === 'list' ? 'lg' : undefined}
+      contentClassName={view.mode === 'list' ? 'bg-body-tertiary' : undefined}
     >
       <Modal.Header closeButton>
         <Modal.Title>
@@ -114,55 +115,49 @@ export function CustomMapsModal({ show }: Props): ReactElement {
         <>
           <Modal.Body>
             {customLayers.length > 0 && (
-              <Table striped bordered responsive>
-                <thead>
-                  <tr>
-                    <th>{m?.general.name}</th>
-                    <th>{m?.mapLayers.technology}</th>
-                    <th>{m?.mapLayers.layer.layer}</th>
-                    <th />
-                  </tr>
-                </thead>
+              <ListGroup>
+                {customLayers.map((def) => (
+                  <ListGroup.Item
+                    key={def.type}
+                    className="d-flex align-items-center gap-2"
+                  >
+                    <div className="flex-grow-1 me-2">
+                      <div>{def.name || `{${def.type}}`}</div>
 
-                <tbody>
-                  {customLayers.map((def) => (
-                    <tr key={def.type}>
-                      <td>{def.name || `{${def.type}}`}</td>
-                      <td>
+                      <small className="text-muted">
                         {m?.mapLayers.technologies[def.technology] ??
                           def.technology}
-                      </td>
-                      <td>{m?.mapLayers.layer[def.layer]}</td>
-                      <td className="text-nowrap">
-                        <Button
-                          size="sm"
-                          variant="outline-secondary"
-                          className="me-1"
-                          onClick={() => handleEditClick(def.type)}
-                          title={m?.general.modify}
-                        >
-                          <FaPencilAlt />
-                        </Button>
+                        {' · '}
+                        {m?.mapLayers.layer[def.layer]}
+                      </small>
+                    </div>
 
-                        <Button
-                          size="sm"
-                          variant="outline-danger"
-                          onClick={() => handleDeleteClick(def)}
-                          title={m?.general.delete}
-                        >
-                          <FaTrash />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+                    <Button
+                      size="sm"
+                      variant="outline-secondary"
+                      onClick={() => handleEditClick(def.type)}
+                      title={m?.general.modify}
+                    >
+                      <FaPencilAlt />
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => handleDeleteClick(def)}
+                      title={m?.general.delete}
+                    >
+                      <FaTrash />
+                    </Button>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
             )}
           </Modal.Body>
 
           <Modal.Footer>
             <Button type="button" variant="primary" onClick={handleAddClick}>
-              <FaPlus /> {m?.general.add}
+              <FaPlus /> {m?.mapLayers.addCustomMap}
             </Button>
 
             <Button variant="dark" type="button" onClick={close}>

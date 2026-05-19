@@ -829,6 +829,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
     customBase: 'Własna mapa',
     customMaps: 'Mapy własne',
+    addCustomMap: 'Dodaj własną mapę',
     base: 'Warstwy podstawowe',
     overlay: 'Warstwy nakładkowe',
     url: 'Szablon URL',
