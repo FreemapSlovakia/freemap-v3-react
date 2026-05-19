@@ -77,6 +77,7 @@ export const ModalSchema = z.enum([
   ...BASIC_MODALS,
   'tips',
   'current-drawing-properties',
+  'track-line-style',
 ]);
 
 export type Modal = z.infer<typeof ModalSchema>;

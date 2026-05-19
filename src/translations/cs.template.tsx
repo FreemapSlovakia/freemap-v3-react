@@ -461,6 +461,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     upload: 'Nahrát',
     moreInfo: 'Více info',
     share: 'Uložit na server',
+    lineStyle: {
+      menuItem: 'Styl trasy',
+      title: 'Styl čáry trasy',
+    },
     colorizingMode: {
       none: 'Neaktivní',
       elevation: 'Nadmořská výška',

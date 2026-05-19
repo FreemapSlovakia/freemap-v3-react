@@ -9,6 +9,7 @@ import {
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
   trackViewerSetData,
+  trackViewerSetLineStyle,
   trackViewerSetTrackUID,
 } from './actions.js';
 
@@ -21,6 +22,8 @@ export interface TrackViewerStateBase {
 
 export interface TrackViewerState extends TrackViewerStateBase {
   colorizeTrackBy: null | 'elevation' | 'steepness';
+  lineColor: string;
+  lineWidth: number;
 }
 
 export const cleanState: TrackViewerStateBase = {
@@ -32,6 +35,8 @@ export const cleanState: TrackViewerStateBase = {
 
 export const trackViewerInitialState: TrackViewerState = {
   colorizeTrackBy: null,
+  lineColor: '#838',
+  lineWidth: 6,
   ...cleanState,
 };
 
@@ -57,6 +62,14 @@ export const trackViewerReducer = createReducer(
       })
       .addCase(trackViewerColorizeTrackBy, (state, action) => {
         state.colorizeTrackBy = action.payload;
+      })
+      .addCase(trackViewerSetLineStyle, (state, action) => {
+        if (action.payload.lineColor !== undefined) {
+          state.lineColor = action.payload.lineColor;
+        }
+        if (action.payload.lineWidth !== undefined) {
+          state.lineWidth = action.payload.lineWidth;
+        }
       })
       .addCase(trackViewerGpxLoad, (state, action) => {
         state.gpxUrl = action.payload;

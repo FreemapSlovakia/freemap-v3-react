@@ -18,6 +18,7 @@ import {
   FaCloudUploadAlt,
   FaInfoCircle,
   FaPaintBrush,
+  FaPalette,
   FaPencilAlt,
   FaUpload,
 } from 'react-icons/fa';
@@ -173,6 +174,25 @@ export function TrackViewerMenu(): ReactElement {
               {...props}
             >
               <FaCloudUploadAlt />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
+
+      {hasTrack && (
+        <LongPressTooltip
+          breakpoint="sm"
+          label={m?.trackViewer.lineStyle.menuItem}
+        >
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => dispatch(setActiveModal('track-line-style'))}
+              {...props}
+            >
+              <FaPalette />
               <span className={labelClassName}> {label}</span>
             </Button>
           )}

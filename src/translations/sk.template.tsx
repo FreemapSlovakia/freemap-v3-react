@@ -504,6 +504,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     upload: 'Nahrať',
     moreInfo: 'Viac info',
     share: 'Uložiť na server',
+    lineStyle: {
+      menuItem: 'Štýl trasy',
+      title: 'Štýl čiary trasy',
+    },
     colorizingMode: {
       none: 'Neaktívne',
       elevation: 'Nadmorská výška',
