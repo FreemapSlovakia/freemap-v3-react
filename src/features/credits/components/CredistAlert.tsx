@@ -26,7 +26,7 @@ export function CreditsAlert({
     <Alert
       variant={price !== undefined && price > user.credits ? 'danger' : 'info'}
     >
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between  gap-4">
         <span>
           {m?.credits.youHaveCredits(
             <b>{nf.format(Math.floor(user.credits))}</b>,
