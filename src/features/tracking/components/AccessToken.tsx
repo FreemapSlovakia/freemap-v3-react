@@ -4,8 +4,13 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import { type ReactElement, useCallback } from 'react';
-import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import {
+  Fragment,
+  type ReactElement,
+  type ReactNode,
+  useCallback,
+} from 'react';
+import { Button, ListGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaClipboard, FaEdit, FaRegEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -76,83 +81,120 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
     );
   }, [accessToken.token, deviceName, dispatch]);
 
+  const meta: { label: string; value: ReactNode }[] = [];
+
+  meta.push({
+    label: m?.general.createdAt ?? '',
+    value: dateFormat.format(accessToken.createdAt),
+  });
+
+  if (accessToken.timeFrom) {
+    meta.push({
+      label: m?.tracking.accessToken.timeFrom ?? '',
+      value: dateFormat.format(accessToken.timeFrom),
+    });
+  }
+
+  if (accessToken.timeTo) {
+    meta.push({
+      label: m?.tracking.accessToken.timeTo ?? '',
+      value: dateFormat.format(accessToken.timeTo),
+    });
+  }
+
+  if (accessToken.note) {
+    meta.push({
+      label: m?.tracking.accessToken.note ?? '',
+      value: accessToken.note,
+    });
+  }
+
   return (
-    <tr>
-      <td>
-        <OverlayTrigger
-          trigger={['hover', 'focus']}
-          placement="right"
-          overlay={
-            <Tooltip id={accessToken.token}>
-              <span style={{ overflowWrap: 'break-word' }}>
-                {location.origin}/?track={encodeURIComponent(accessToken.token)}
-                &amp;follow={encodeURIComponent(accessToken.token)}
-              </span>
-            </Tooltip>
-          }
-        >
-          <span>
-            <span>{accessToken.token}</span>
+    <ListGroup.Item className="d-flex align-items-center gap-2">
+      <div className="flex-grow-1 me-2">
+        <div className="d-flex align-items-center gap-2">
+          <OverlayTrigger
+            trigger={['hover', 'focus']}
+            placement="right"
+            overlay={
+              <Tooltip id={accessToken.token}>
+                <span style={{ overflowWrap: 'break-word' }}>
+                  {location.origin}/?track=
+                  {encodeURIComponent(accessToken.token)}
+                  &amp;follow={encodeURIComponent(accessToken.token)}
+                </span>
+              </Tooltip>
+            }
+          >
+            <code>{accessToken.token}</code>
+          </OverlayTrigger>
 
-            <LongPressTooltip label={m?.general.copyUrl}>
-              {({ props }) => (
-                <Button
-                  onClick={handleCopyClick}
-                  size="sm"
-                  type="button"
-                  className="ms-1"
-                  {...props}
-                >
-                  <FaClipboard />
-                </Button>
-              )}
-            </LongPressTooltip>
-          </span>
-        </OverlayTrigger>
-      </td>
-      <td>{dateFormat.format(accessToken.createdAt)}</td>
-      <td>{accessToken.timeFrom && dateFormat.format(accessToken.timeFrom)}</td>
-      <td>{accessToken.timeTo && dateFormat.format(accessToken.timeTo)}</td>
-      {/* <td>{accessToken.listingLabel}</td> */}
-      <td>{accessToken.note}</td>
-      <td>
-        <LongPressTooltip label={m?.tracking.devices.watch}>
-          {({ props }) => (
-            <Button size="sm" type="button" onClick={handleView} {...props}>
-              <FaRegEye />
-            </Button>
-          )}
-        </LongPressTooltip>
+          <LongPressTooltip label={m?.general.copyUrl}>
+            {({ props }) => (
+              <Button
+                onClick={handleCopyClick}
+                size="sm"
+                variant="outline-secondary"
+                type="button"
+                {...props}
+              >
+                <FaClipboard />
+              </Button>
+            )}
+          </LongPressTooltip>
+        </div>
 
-        <LongPressTooltip label={m?.general.modify}>
-          {({ props }) => (
-            <Button
-              size="sm"
-              type="button"
-              onClick={handleModify}
-              className="ms-1"
-              {...props}
-            >
-              <FaEdit />
-            </Button>
-          )}
-        </LongPressTooltip>
+        <small className="text-muted">
+          {meta.map((item, i) => (
+            <Fragment key={item.label}>
+              {i > 0 && ' · '}
+              {item.label}: <strong>{item.value}</strong>
+            </Fragment>
+          ))}
+        </small>
+      </div>
 
-        <LongPressTooltip label={m?.general.delete}>
-          {({ props }) => (
-            <Button
-              variant="danger"
-              size="sm"
-              type="button"
-              onClick={handleDelete}
-              className="ms-1"
-              {...props}
-            >
-              <FaTimes />
-            </Button>
-          )}
-        </LongPressTooltip>
-      </td>
-    </tr>
+      <LongPressTooltip label={m?.tracking.devices.watch}>
+        {({ props }) => (
+          <Button
+            size="sm"
+            variant="outline-secondary"
+            type="button"
+            onClick={handleView}
+            {...props}
+          >
+            <FaRegEye />
+          </Button>
+        )}
+      </LongPressTooltip>
+
+      <LongPressTooltip label={m?.general.modify}>
+        {({ props }) => (
+          <Button
+            size="sm"
+            variant="outline-secondary"
+            type="button"
+            onClick={handleModify}
+            {...props}
+          >
+            <FaEdit />
+          </Button>
+        )}
+      </LongPressTooltip>
+
+      <LongPressTooltip label={m?.general.delete}>
+        {({ props }) => (
+          <Button
+            variant="outline-danger"
+            size="sm"
+            type="button"
+            onClick={handleDelete}
+            {...props}
+          >
+            <FaTimes />
+          </Button>
+        )}
+      </LongPressTooltip>
+    </ListGroup.Item>
   );
 }

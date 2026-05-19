@@ -2,7 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
-import { Alert, Button, Modal, Table } from 'react-bootstrap';
+import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
 import { FaMobileAlt, FaPlus, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -30,24 +30,13 @@ export function MyDevices(): ReactElement {
       <Modal.Body>
         <Alert variant="secondary">{m?.tracking.devices.desc()}</Alert>
 
-        <Table striped bordered responsive>
-          <thead>
-            <tr>
-              <th>{m?.tracking.device.name}</th>
-              <th>{m?.tracking.device.token}</th>
-              <th>{m?.tracking.device.maxCount}</th>
-              <th>{m?.tracking.device.maxAge}</th>
-              <th>{m?.general.createdAt}</th>
-              <th>{m?.general.actions}</th>
-            </tr>
-          </thead>
-
-          <tbody>
+        {devices.length > 0 && (
+          <ListGroup>
             {devices.map((device) => (
               <MyDevice key={device.id} device={device} />
             ))}
-          </tbody>
-        </Table>
+          </ListGroup>
+        )}
       </Modal.Body>
 
       <Modal.Footer>

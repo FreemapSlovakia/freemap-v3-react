@@ -2,7 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Alert, Button, Modal, Table } from 'react-bootstrap';
+import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
 import { FaEye, FaPlus, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -30,26 +30,13 @@ export function TrackedDevices(): ReactElement {
           {m?.tracking.trackedDevices.storageWarning}
         </Alert>
 
-        <Table striped bordered responsive>
-          <thead>
-            <tr>
-              <th>{m?.tracking.trackedDevice.token}</th>
-              <th>{m?.tracking.trackedDevice.label}</th>
-              <th>{m?.tracking.trackedDevice.fromTime}</th>
-              <th>{m?.tracking.trackedDevice.maxAge}</th>
-              <th>{m?.tracking.trackedDevice.maxCount}</th>
-              <th>{m?.tracking.trackedDevice.splitDistance}</th>
-              <th>{m?.tracking.trackedDevice.splitDuration}</th>
-              <th>{m?.general.actions}</th>
-            </tr>
-          </thead>
-
-          <tbody>
+        {devices.length > 0 && (
+          <ListGroup>
             {devices.map((device) => (
               <TrackedDevice key={device.token} device={device} />
             ))}
-          </tbody>
-        </Table>
+          </ListGroup>
+        )}
       </Modal.Body>
 
       <Modal.Footer>

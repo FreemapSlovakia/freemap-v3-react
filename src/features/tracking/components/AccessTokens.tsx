@@ -1,7 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
-import { Alert, Button, Modal, Table } from 'react-bootstrap';
+import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaChevronLeft, FaPlus } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -34,23 +34,14 @@ export function AccessTokens(): ReactElement {
           <FaBullseye /> {m?.tracking.accessTokens.modalTitle(deviceName)}
         </Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         <Alert variant="secondary">
           {m?.tracking.accessTokens.desc(deviceName)}
         </Alert>
-        <Table striped bordered responsive>
-          <thead>
-            <tr>
-              <th>{m?.tracking.accessToken.token}</th>
-              <th>{m?.general.createdAt}</th>
-              <th>{m?.tracking.accessToken.timeFrom}</th>
-              <th>{m?.tracking.accessToken.timeTo}</th>
-              {/* <th>{m?.tracking.accessToken.listingLabel}</th> */}
-              <th>{m?.tracking.accessToken.note}</th>
-              <th>{m?.general.actions}</th>
-            </tr>
-          </thead>
-          <tbody>
+
+        {accessTokens.length > 0 && (
+          <ListGroup>
             {accessTokens.map((accessToken) => (
               <AccessToken
                 key={accessToken.id}
@@ -58,9 +49,10 @@ export function AccessTokens(): ReactElement {
                 deviceName={deviceName}
               />
             ))}
-          </tbody>
-        </Table>
+          </ListGroup>
+        )}
       </Modal.Body>
+
       <Modal.Footer>
         <Button
           type="button"

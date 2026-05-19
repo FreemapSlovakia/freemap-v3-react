@@ -39,17 +39,16 @@ export function TrackingModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
+  const isList = ['devices', 'accessTokens', 'trackedDevices'].includes(view);
+
   return (
     <Modal
       onHide={() => {
         dispatch(setActiveModal(null));
       }}
       show={show}
-      size={
-        ['devices', 'accessTokens', 'trackedDevices'].includes(view)
-          ? 'xl'
-          : undefined
-      }
+      size={isList ? 'lg' : undefined}
+      contentClassName={isList ? 'bg-body-tertiary' : undefined}
     >
       {view === 'devices' && <MyDevices />}
       {view === 'deviceForm' && <MyDeviceForm />}

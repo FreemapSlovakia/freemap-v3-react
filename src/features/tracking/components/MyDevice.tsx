@@ -1,14 +1,25 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import { type ReactElement, useCallback } from 'react';
-import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { FaEdit, FaKey, FaTimes } from 'react-icons/fa';
+import {
+  Fragment,
+  type ReactElement,
+  type ReactNode,
+  useCallback,
+} from 'react';
+import {
+  Button,
+  Dropdown,
+  ListGroup,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
+import { FaEdit, FaEllipsisV, FaKey, FaTrash } from 'react-icons/fa';
 import { SiTraccar } from 'react-icons/si';
 import QRCode from 'react-qr-code';
 import { useDispatch } from 'react-redux';
+import { fixedPopperConfig } from '@/shared/fixedPopperConfig.js';
 import { trackingActions } from '../model/actions.js';
 import { Device as DeviceType } from '../model/types.js';
 
@@ -61,87 +72,91 @@ export function MyDevice({ device }: Props): ReactElement {
     dispatch(trackingActions.showAccessTokens(device.id));
   }, [device.id, dispatch]);
 
+  const meta: { label: string; value: ReactNode }[] = [];
+
+  if (device.maxCount) {
+    meta.push({
+      label: m?.tracking.device.maxCount ?? '',
+      value: device.maxCount,
+    });
+  }
+
+  if (typeof device.maxAge === 'number') {
+    meta.push({
+      label: m?.tracking.device.maxAge ?? '',
+      value: `${device.maxAge / 60} ${m?.general.minutes}`,
+    });
+  }
+
+  meta.push({
+    label: m?.general.createdAt ?? '',
+    value: dateFormat.format(device.createdAt),
+  });
+
   return (
-    <tr>
-      <td>{device.name}</td>
-      <td>
-        <div className="d-flex gap-1 justify-content-between">
-          <div>{device.token}</div>
-
-          <OverlayTrigger
-            trigger="click"
-            rootClose
-            overlay={
-              <Tooltip>
-                <div className="bg-white p-3">
-                  <QRCode
-                    size={120}
-                    value={
-                      'https://traccar.freemap.sk?accuracy=high&interval=10&id=' +
-                      encodeURIComponent(device.token)
-                    }
-                  />
-                </div>
-              </Tooltip>
-            }
-          >
-            <Button variant="secondary" size="sm">
-              <SiTraccar />
-            </Button>
-          </OverlayTrigger>
+    <ListGroup.Item className="d-flex align-items-center gap-2">
+      <div className="flex-grow-1 me-2">
+        <div>
+          <code>{device.token}</code> · {device.name}
         </div>
-      </td>
-      <td>{device.maxCount}</td>
-      <td>
-        {typeof device.maxAge === 'number' &&
-          `${device.maxAge / 60} ${m?.general.minutes}`}
-      </td>
-      <td>{dateFormat.format(device.createdAt)}</td>
-      <td>
-        <LongPressTooltip label={m?.general.modify}>
-          {({ props }) => (
-            <Button
-              size="sm"
-              type="button"
-              variant="secondary"
-              onClick={handleModify}
-              {...props}
-            >
-              <FaEdit />
-            </Button>
-          )}
-        </LongPressTooltip>
 
-        <LongPressTooltip label={m?.tracking.devices.watchTokens}>
-          {({ props }) => (
-            <Button
-              size="sm"
-              type="button"
-              variant="secondary"
-              onClick={handleShowAccessTokens}
-              className="ms-1"
-              {...props}
-            >
-              <FaKey />
-            </Button>
-          )}
-        </LongPressTooltip>
+        <small className="text-muted">
+          {meta.map((item, i) => (
+            <Fragment key={item.label}>
+              {i > 0 && ' · '}
+              {item.label}: <strong>{item.value}</strong>
+            </Fragment>
+          ))}
+        </small>
+      </div>
 
-        <LongPressTooltip label={m?.general.delete}>
-          {({ props }) => (
-            <Button
-              variant="danger"
-              size="sm"
-              type="button"
-              onClick={handleDelete}
-              className="ms-1"
-              {...props}
-            >
-              <FaTimes />
-            </Button>
-          )}
-        </LongPressTooltip>
-      </td>
-    </tr>
+      <OverlayTrigger
+        trigger="click"
+        rootClose
+        overlay={
+          <Tooltip>
+            <div className="bg-white p-3">
+              <QRCode
+                size={120}
+                value={
+                  'https://traccar.freemap.sk?accuracy=high&interval=10&id=' +
+                  encodeURIComponent(device.token)
+                }
+              />
+            </div>
+          </Tooltip>
+        }
+      >
+        <Button variant="outline-secondary" size="sm" title="Traccar">
+          <SiTraccar />
+        </Button>
+      </OverlayTrigger>
+
+      <Dropdown align="end">
+        <Dropdown.Toggle
+          variant="outline-secondary"
+          size="sm"
+          aria-label={m?.general.actions}
+        >
+          <FaEllipsisV />
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu popperConfig={fixedPopperConfig}>
+          <Dropdown.Item onClick={handleModify}>
+            <FaEdit /> {m?.general.modify}
+          </Dropdown.Item>
+
+          <Dropdown.Item onClick={handleShowAccessTokens}>
+            <FaKey /> {m?.tracking.devices.watchTokens}
+          </Dropdown.Item>
+
+          <Dropdown.Divider />
+
+          <Dropdown.Item className="text-danger" onClick={handleDelete}>
+            <FaTrash /> {m?.general.delete}
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    </ListGroup.Item>
   );
 }

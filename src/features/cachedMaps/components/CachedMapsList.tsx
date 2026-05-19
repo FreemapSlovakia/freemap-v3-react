@@ -78,12 +78,18 @@ export function CachedMapsList(): ReactElement {
 
                       <div className="d-flex align-items-center gap-2">
                         <small className="text-muted text-nowrap">
-                          {m?.offline.zoom} {cm.minZoom}&ndash;
-                          {cm.maxNativeZoom}
+                          {m?.offline.zoom}:{' '}
+                          <strong>
+                            {cm.minZoom}&ndash;{cm.maxNativeZoom}
+                          </strong>
                           {' · '}
-                          {nf.format(cm.tileCount)} {m?.offline.tiles}
+                          {m?.offline.tiles}:{' '}
+                          <strong>{nf.format(cm.tileCount)}</strong>
                           {' · '}
-                          {formatSize(dl?.sizeBytes ?? cm.sizeBytes)}
+                          {m?.offline.size}:{' '}
+                          <strong>
+                            {formatSize(dl?.sizeBytes ?? cm.sizeBytes)}
+                          </strong>
                         </small>
 
                         {dl ? (

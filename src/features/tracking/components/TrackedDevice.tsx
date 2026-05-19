@@ -1,8 +1,13 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import { type ReactElement, useCallback } from 'react';
-import { Button } from 'react-bootstrap';
+import {
+  Fragment,
+  type ReactElement,
+  type ReactNode,
+  useCallback,
+} from 'react';
+import { Button, ListGroup } from 'react-bootstrap';
 import { FaEdit, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -33,56 +38,97 @@ export function TrackedDevice({ device }: Props): ReactElement {
     dispatch(trackingActions.deleteTrackedDevice(device.token));
   }, [device.token, dispatch]);
 
-  return (
-    <tr>
-      <td>{device.token}</td>
-      <td>
-        <div
-          style={{
-            display: 'inline-block',
-            backgroundColor: device.color || '#7239a8',
-            // width: `${device.width ?? 4}px`,
-            width: '20px',
-            height: '20px',
-            marginRight: `${14 - (device.width || 4)}px`,
-            verticalAlign: 'bottom',
-          }}
-        />
-        {device.label}
-      </td>
-      <td>{device.fromTime && dateFormat.format(device.fromTime)}</td>
-      <td>
-        {typeof device.maxAge === 'number'
-          ? `${device.maxAge / 60} ${m?.general.minutes}`
-          : ''}
-      </td>
-      <td>{device.maxCount}</td>
-      <td>{device.splitDistance}</td>
-      <td>{device.splitDuration}</td>
-      <td>
-        <LongPressTooltip label={m?.general.modify}>
-          {({ props }) => (
-            <Button size="sm" type="button" onClick={handleModify} {...props}>
-              <FaEdit />
-            </Button>
-          )}
-        </LongPressTooltip>
+  const meta: { label: string; value: ReactNode }[] = [];
 
-        <LongPressTooltip label={m?.general.delete}>
-          {({ props }) => (
-            <Button
-              variant="danger"
-              size="sm"
-              type="button"
-              onClick={handleDelete}
-              className="ms-1"
-              {...props}
-            >
-              <FaTimes />
-            </Button>
-          )}
-        </LongPressTooltip>
-      </td>
-    </tr>
+  if (device.fromTime) {
+    meta.push({
+      label: m?.tracking.trackedDevice.fromTime ?? '',
+      value: dateFormat.format(device.fromTime),
+    });
+  }
+
+  if (typeof device.maxAge === 'number') {
+    meta.push({
+      label: m?.tracking.trackedDevice.maxAge ?? '',
+      value: `${device.maxAge / 60} ${m?.general.minutes}`,
+    });
+  }
+
+  if (device.maxCount) {
+    meta.push({
+      label: m?.tracking.trackedDevice.maxCount ?? '',
+      value: device.maxCount,
+    });
+  }
+
+  if (device.splitDistance) {
+    meta.push({
+      label: m?.tracking.trackedDevice.splitDistance ?? '',
+      value: device.splitDistance,
+    });
+  }
+
+  if (device.splitDuration) {
+    meta.push({
+      label: m?.tracking.trackedDevice.splitDuration ?? '',
+      value: device.splitDuration,
+    });
+  }
+
+  return (
+    <ListGroup.Item className="d-flex align-items-center gap-2">
+      <div
+        style={{
+          backgroundColor: device.color || '#7239a8',
+          width: '20px',
+          height: '20px',
+          flexShrink: 0,
+        }}
+      />
+
+      <div className="flex-grow-1 me-2">
+        <div>
+          <code>{device.token}</code>
+          {device.label && <> · {device.label}</>}
+        </div>
+
+        <small className="text-muted">
+          {meta.map((item, i) => (
+            <Fragment key={item.label}>
+              {i > 0 && ' · '}
+              {item.label}: <strong>{item.value}</strong>
+            </Fragment>
+          ))}
+        </small>
+      </div>
+
+      <LongPressTooltip label={m?.general.modify}>
+        {({ props }) => (
+          <Button
+            size="sm"
+            variant="outline-secondary"
+            type="button"
+            onClick={handleModify}
+            {...props}
+          >
+            <FaEdit />
+          </Button>
+        )}
+      </LongPressTooltip>
+
+      <LongPressTooltip label={m?.general.delete}>
+        {({ props }) => (
+          <Button
+            variant="outline-danger"
+            size="sm"
+            type="button"
+            onClick={handleDelete}
+            {...props}
+          >
+            <FaTimes />
+          </Button>
+        )}
+      </LongPressTooltip>
+    </ListGroup.Item>
   );
 }

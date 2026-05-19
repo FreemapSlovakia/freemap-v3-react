@@ -142,16 +142,17 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                     <div>{map.name}</div>
 
                     <small className="text-muted">
-                      {m?.general.createdAt}: {dateFormat.format(map.createdAt)}
+                      {m?.general.createdAt}:{' '}
+                      <strong>{dateFormat.format(map.createdAt)}</strong>
                       {' · '}
                       {m?.general.modifiedAt}:{' '}
-                      {dateFormat.format(map.modifiedAt)}
+                      <strong>{dateFormat.format(map.modifiedAt)}</strong>
                     </small>
                   </div>
 
                   <Dropdown align="end">
                     <Dropdown.Toggle
-                      variant="light"
+                      variant="outline-secondary"
                       size="sm"
                       aria-label={m?.general.actions}
                     >
