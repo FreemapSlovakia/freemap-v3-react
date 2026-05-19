@@ -486,6 +486,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       elevation: 'Magasság',
       steepness: 'Meredekség',
     },
+    lineStyle: {},
     details: {
       startTime: 'Indulási idő',
       finishTime: 'Érkezési idő',

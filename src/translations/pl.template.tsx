@@ -471,6 +471,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       elevation: 'Wysokość',
       steepness: 'Stromość',
     },
+    lineStyle: {},
     details: {
       startTime: 'Czas rozpoczęcia',
       finishTime: 'Czas zakończenia',
