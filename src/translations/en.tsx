@@ -250,6 +250,7 @@ const messages: Messages = {
     mapExport: 'Map export to image/document',
     osmWiki: 'OpenStreetMap documentation',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
+    status: 'Services status',
   },
 
   main: {

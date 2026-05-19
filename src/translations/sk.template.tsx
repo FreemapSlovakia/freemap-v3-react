@@ -257,6 +257,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExport: 'Export mapy do obrázka/dokumentu',
     osmWiki: 'Dokumentačný projekt OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko',
+    status: 'Stav služieb',
   },
   main: {
     title: shared.title,

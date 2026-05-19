@@ -199,6 +199,7 @@ export type Messages = {
     mapExport: string;
     osmWiki: string;
     wikiLink: string;
+    status: string;
   };
   main: {
     title: string;

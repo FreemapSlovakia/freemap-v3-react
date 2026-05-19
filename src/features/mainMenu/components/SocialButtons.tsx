@@ -11,7 +11,12 @@ import {
   FaMastodon,
   FaYoutube,
 } from 'react-icons/fa';
-import { MdDarkMode, MdHdrAuto, MdLightMode } from 'react-icons/md';
+import {
+  MdDarkMode,
+  MdHdrAuto,
+  MdLightMode,
+  MdMonitorHeart,
+} from 'react-icons/md';
 
 type Props = {
   closeMenu: () => void;
@@ -37,7 +42,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
   }
 
   return (
-    <div className="mx-3 d-flex gap-2 fs-5">
+    <div className="mx-3 d-flex gap-2 fs-5 flex-wrap">
       <LongPressTooltip label={m?.mainMenu.mastodon}>
         {({ props }) => (
           <a
@@ -122,13 +127,32 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://apps.apple.com/sk/app/freemap/id6760855105"
             target="_blank"
             rel="noopener noreferrer"
-            className="fm-apple-icon flex-grow-1"
+            className="fm-apple-icon"
             {...props}
           >
             <FaApple />
           </a>
         )}
       </LongPressTooltip>
+
+      <div className="vr" />
+
+      <LongPressTooltip label={m?.mainMenu.status}>
+        {({ props }) => (
+          <a
+            onClick={closeMenu}
+            href="https://status.freemap.sk/status/all"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fm-apple-icon"
+            {...props}
+          >
+            <MdMonitorHeart />
+          </a>
+        )}
+      </LongPressTooltip>
+
+      <div className="flex-grow-1" />
 
       <div className="d-flex border rounded px-1">
         {(['light', 'dark', 'auto'] as const).map((theme) => (
