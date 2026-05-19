@@ -12,7 +12,6 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import {
-  FeatureId,
   featureIdsEqual,
   OsmFeatureId,
   stringifyFeatureId,
@@ -133,9 +132,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         return;
       }
 
-      const id: FeatureId = JSON.parse(eventKey);
-
-      const result = results.find((item) => featureIdsEqual(item.id, id));
+      const result = results.find(
+        (item) => stringifyFeatureId(item.id) === eventKey,
+      );
 
       if (result) {
         dispatch(searchSelectResult({ result, showToast: result.showToast }));
