@@ -4,9 +4,8 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { FeatureId } from '@shared/types/featureId.js';
 import { point } from '@turf/helpers';
-import { assert } from 'typia';
 import { osmLoadNode } from '../osmActions.js';
-import type { OsmNode, OsmResult } from '../types.js';
+import { type OsmNode, OsmResultSchema } from '../types.js';
 import { copyDisplayName } from './copyDisplayName.js';
 
 export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
@@ -22,11 +21,11 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
       cancelActions: [clearMapFeatures, searchSelectResult],
     });
 
-    const { elements } = assert<OsmResult>(await res.json());
+    const { elements } = OsmResultSchema.parse(await res.json());
 
-    const nodes = (
-      elements.filter((el) => el.type === 'node') as OsmNode[]
-    ).map((node) => [node.lon, node.lat]);
+    const nodes = elements
+      .filter((el): el is OsmNode => el.type === 'node')
+      .map((node) => [node.lon, node.lat]);
 
     const osmId: FeatureId = { type: 'osm', elementType: 'node', id };
 

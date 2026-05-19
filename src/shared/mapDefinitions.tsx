@@ -1,4 +1,4 @@
-import { Shortcut } from '@shared/types/common.js';
+import { Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
   FaBus,
@@ -15,7 +15,7 @@ import {
 import { GiHills, GiStonePile, GiTreasureMap } from 'react-icons/gi';
 import { LuLandPlot } from 'react-icons/lu';
 import { SiOpenstreetmap, SiWikimediacommons } from 'react-icons/si';
-import { is } from 'typia';
+import z from 'zod';
 import black1x1 from '@/images/1x1-black.png';
 import transparent1x1 from '@/images/1x1-transparent.png';
 import white1x1 from '@/images/1x1-white.png';
@@ -90,6 +90,18 @@ const LLS_URL =
 
 const OFM_URL =
   'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#ortofoto';
+
+export const StravaHeatmapColorSchema = z.enum([
+  'hot',
+  'blue',
+  'purple',
+  'gray',
+  'bluered',
+] as const);
+
+export type StravaHeatmapColor = z.infer<typeof StravaHeatmapColorSchema>;
+
+export const defaultStravaHeatmapColor: StravaHeatmapColor = 'purple';
 
 export type HasUrl = {
   url: string;
@@ -179,6 +191,21 @@ export type IsOverlayLayerDef = HasZIndex & {
   layer: 'overlay';
 };
 
+export const isTileLayerDef = <T extends { technology: string }>(
+  def: T,
+): def is T & IsTileLayerDef => def.technology === 'tile';
+
+export const isWmsLayerDef = <T extends { technology: string }>(
+  def: T,
+): def is T & IsWmsLayerDef => def.technology === 'wms';
+
+// HasMaxNativeZoom is structural-only (the field is optional) — any object
+// matches it. Including it in the predicate's return type just lets callers
+// read def.maxNativeZoom without a TS error.
+export const isBaseLayerDef = <T extends { layer: string }>(
+  def: T,
+): def is T & IsBaseLayerDef & HasMaxNativeZoom => def.layer === 'base';
+
 export type IsAllTechnologiesLayerDef =
   | (IsTileLayerDef & {
       creditsPerMTile?: number;
@@ -213,6 +240,87 @@ export type CustomLayerDef<
   T extends IsCustomLayerTechnologiesDef = IsCustomLayerTechnologiesDef,
 > = CustomBaseLayerDef<T> | CustomOverlayLayerDef<T>;
 
+const IsCommonLayerDefSchema = z.object({
+  type: z.string(),
+  minZoom: z.number().optional(),
+  shortcut: ShortcutSchema.optional(),
+});
+
+const IsCustomLayerSchema = z.object({
+  name: z.string().optional(),
+});
+
+export const IsTileLayerDefSchema = z.object({
+  technology: z.literal('tile'),
+  url: z.string(),
+  maxNativeZoom: z.number().optional(),
+  zIndex: z.number().optional(),
+  scaleWithDpi: z.boolean().optional(),
+  subdomains: z.union([z.string(), z.array(z.string())]).optional(),
+  tms: z.boolean().optional(),
+  extraScales: z.array(z.number()).optional(),
+  errorTileUrl: z.string().optional(),
+  cors: z.boolean().optional(),
+});
+
+export const IsWmsLayerDefSchema = z.object({
+  technology: z.literal('wms'),
+  url: z.string(),
+  layers: z.array(z.string()),
+  maxNativeZoom: z.number().optional(),
+  zIndex: z.number().optional(),
+  scaleWithDpi: z.boolean().optional(),
+});
+
+export const IsMapLibreLayerDefSchema = z.object({
+  technology: z.literal('maplibre'),
+  url: z.string(),
+});
+
+export const IsParametricShadingLayerDefSchema = z.object({
+  technology: z.literal('parametricShading'),
+  url: z.string(),
+  maxNativeZoom: z.number().optional(),
+  zIndex: z.number().optional(),
+  scaleWithDpi: z.boolean().optional(),
+});
+
+export const IsCustomLayerTechnologiesDefSchema = z.discriminatedUnion(
+  'technology',
+  [
+    IsTileLayerDefSchema,
+    IsWmsLayerDefSchema,
+    IsMapLibreLayerDefSchema,
+    IsParametricShadingLayerDefSchema,
+  ],
+);
+
+export const CustomLayerDefGenericSchema = <
+  T extends z.ZodType<IsCustomLayerTechnologiesDef>,
+>(
+  technologySchema: T,
+) =>
+  z.intersection(
+    z.discriminatedUnion('layer', [
+      z.object({
+        ...IsCustomLayerSchema.shape,
+        ...IsCommonLayerDefSchema.shape,
+        layer: z.literal('base'),
+      }),
+      z.object({
+        ...IsCustomLayerSchema.shape,
+        ...IsCommonLayerDefSchema.shape,
+        layer: z.literal('overlay'),
+        zIndex: z.number().optional(),
+      }),
+    ]),
+    technologySchema,
+  );
+
+export const CustomLayerDefSchema = CustomLayerDefGenericSchema(
+  IsCustomLayerTechnologiesDefSchema,
+);
+
 export type HasLegacy = {
   superseededBy?: string;
 };
@@ -238,25 +346,49 @@ export type LayerDef<
   V extends IsAllTechnologiesLayerDef = IsAllTechnologiesLayerDef,
 > = CustomLayerDef<U> | IntegratedLayerDef<V>;
 
-type OldTileCustomLayerDef = Omit<CustomLayerDef, 'layer' | 'technology'>;
+// Legacy custom layer shape: tile-layer fields without the `layer` /
+// `technology` discriminators that the current schema requires.
+const OldTileCustomLayerDefSchema = z.object({
+  ...IsCustomLayerSchema.shape,
+  ...IsCommonLayerDefSchema.shape,
+  url: z.string(),
+  maxNativeZoom: z.number().optional(),
+  zIndex: z.number().optional(),
+  scaleWithDpi: z.boolean().optional(),
+  subdomains: z.union([z.string(), z.array(z.string())]).optional(),
+  tms: z.boolean().optional(),
+  extraScales: z.array(z.number()).optional(),
+  errorTileUrl: z.string().optional(),
+  cors: z.boolean().optional(),
+});
 
-export function upgradeCustomLayerDefs(
-  customLayerDefs: unknown[],
-): CustomLayerDef[] {
-  return customLayerDefs
-    .map((def) =>
-      is<CustomLayerDef>
-        ? def
-        : is<OldTileCustomLayerDef>(def)
-          ? ({
-              layer: def.type.charAt(0) === ':' ? 'overlay' : 'base',
-              technology: 'tile',
-              ...def,
-            } as CustomLayerDef<IsTileLayerDef>)
-          : undefined,
-    )
-    .filter((a): a is CustomLayerDef => Boolean(a));
-}
+export const CustomLayerDefArrayCompatSchema = z
+  .array(z.unknown())
+  .transform((defs) =>
+    defs.flatMap<CustomLayerDef>((def) => {
+      const ok = CustomLayerDefSchema.safeParse(def);
+
+      if (ok.success) {
+        return [ok.data];
+      }
+
+      const old = OldTileCustomLayerDefSchema.safeParse(def);
+
+      if (old.success) {
+        const upgraded = CustomLayerDefSchema.safeParse({
+          ...old.data,
+          layer: old.data.type.charAt(0) === ':' ? 'overlay' : 'base',
+          technology: 'tile',
+        });
+
+        if (upgraded.success) {
+          return [upgraded.data];
+        }
+      }
+
+      return [];
+    }),
+  );
 
 export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
@@ -906,7 +1038,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         defaultInMenu: true,
         technology: 'tile' as const,
         icon: <FaStrava />,
-        url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,
+        url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/{stravaColor}/{z}/{x}/{y}.png`,
         attribution: [STRAVA_ATTR],
         minZoom: 0,
         maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x

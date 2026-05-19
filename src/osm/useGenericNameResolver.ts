@@ -3,10 +3,9 @@ import '@features/search/components/SearchMenu.scss';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
-import { OsmFeatureId } from '@shared/types/featureId.js';
+import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
 import { getGenericNameFromOsmElement } from './osmNameResolver.js';
 
 export function useGenericNameResolver(
@@ -19,13 +18,15 @@ export function useGenericNameResolver(
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!is<OsmFeatureId>(result.id) || result.genericName) {
+    const parsed = OsmFeatureIdSchema.safeParse(result.id);
+
+    if (!parsed.success || result.genericName) {
       return;
     }
 
     getGenericNameFromOsmElement(
       result.geojson.properties ?? {},
-      result.id.elementType,
+      parsed.data.elementType,
       language,
     ).then(setGenericName, (err) => {
       dispatch(

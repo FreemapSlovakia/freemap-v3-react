@@ -1,22 +1,43 @@
 import { Selection } from '@app/store/actions.js';
 import { createAction } from '@reduxjs/toolkit';
+import z from 'zod';
 
-export interface Point {
-  lat: number;
-  lon: number;
-  id: number;
-}
+export const PointSchema = z.object({
+  lat: z.number(),
+  lon: z.number(),
+  id: z.number(),
+});
 
-export interface Line {
-  type: 'polygon' | 'line';
-  points: Point[];
-  label?: string;
-  color?: string;
-  width?: number;
-  dashArray?: number[];
-  lineCap?: 'butt' | 'round' | 'square';
-  lineJoin?: 'miter' | 'round' | 'bevel';
-}
+export type Point = z.infer<typeof PointSchema>;
+
+export const LineSchema = z.object({
+  type: z.enum(['polygon', 'line']),
+  points: z.array(PointSchema),
+  label: z.string().optional(),
+  color: z.string().optional(),
+  width: z.number().optional(),
+  dashArray: z.array(z.number()).optional(),
+  lineCap: z.enum(['butt', 'round', 'square']).optional(),
+  lineJoin: z.enum(['miter', 'round', 'bevel']).optional(),
+});
+
+export type Line = z.infer<typeof LineSchema>;
+
+// Wire form for persisted maps: legacy `area` / `distance` line types
+// are renamed to the current `polygon` / `line`.
+export const LineCompatSchema = z.preprocess((v) => {
+  if (typeof v === 'object' && v !== null && 'type' in v) {
+    if (v.type === 'area') {
+      return { ...v, type: 'polygon' };
+    }
+
+    if (v.type === 'distance') {
+      return { ...v, type: 'line' };
+    }
+  }
+
+  return v;
+}, LineSchema);
 
 export const drawingLineAdd = createAction<Line>('DRAWING_LINE_ADD');
 

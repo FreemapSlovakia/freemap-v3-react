@@ -4,13 +4,19 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import type { OverpassResult } from '@shared/types/overpass.js';
-import { assert } from 'typia';
+import {
+  OverpassCenterExtraSchema,
+  overpassResultSchema,
+} from '@shared/types/overpass.js';
 import {
   ObjectsResult,
   objectsSetFilter,
   objectsSetResult,
 } from './actions.js';
+
+const OverpassResultCenterSchema = overpassResultSchema(
+  OverpassCenterExtraSchema,
+);
 
 const limit =
   Math.round((window.screen.height * window.screen.width) / 5000 / 10) * 10;
@@ -118,7 +124,7 @@ export const objectsFetchProcessor: Processor = {
       ],
     });
 
-    const result = assert<OverpassResult<'center'>>(await res.json())
+    const result = OverpassResultCenterSchema.parse(await res.json())
       .elements.filter((e) => e.tags)
       .map(
         (e) =>

@@ -2,38 +2,115 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
-import type {
-  Line,
-  Point,
-} from '@features/drawing/model/actions/drawingLineActions.js';
-import { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
+import { LineCompatSchema } from '@features/drawing/model/actions/drawingLineActions.js';
+import { DrawingPointCompatSchema } from '@features/drawing/model/actions/drawingPointActions.js';
+import { GalleryFilterSchema } from '@features/gallery/model/actions.js';
+import { ShadingSchema } from '@features/parameterizedShading/Shading.js';
 import {
-  CustomLayerDef,
-  upgradeCustomLayerDefs,
-} from '@shared/mapDefinitions.js';
-import { migrateTransportType } from '@shared/transportTypeDefs.js';
-import type { StringDates } from '@shared/types/common.js';
-import { assert, is } from 'typia';
-import {
-  type MapData,
-  type MapMeta,
-  mapsLoad,
-  mapsLoaded,
-} from '../actions.js';
+  PickModeSchema,
+  RoutePointSchema,
+  RoutingModeSchema,
+} from '@features/routePlanner/model/actions.js';
+import { TrackedDeviceSchema } from '@features/tracking/model/types.js';
+import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
+import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
+import z from 'zod';
+import { GeoJSONFeatureCollectionSchema } from 'zod-geojson';
+import { MapMetaSchema, mapsLoad, mapsLoaded } from '../actions.js';
 
-interface CompatLine {
-  type: 'polygon' | 'line' | 'area' | 'distance';
-  points: Point[];
-  label?: string;
-  color?: string;
-}
+const RoutePlannerMapDataCompatSchema = z.preprocess(
+  (v) => {
+    if (
+      typeof v !== 'object' ||
+      v === null ||
+      'points' in v ||
+      !('start' in v || 'midpoints' in v || 'finish' in v)
+    ) {
+      return v;
+    }
 
-interface CompatDrawingPoint {
-  lat: number;
-  lon: number;
-  label?: string;
-  color?: string;
-}
+    const { start, midpoints, finish, ...rest } = v as {
+      start?: unknown;
+      midpoints?: unknown[];
+      finish?: unknown;
+      [k: string]: unknown;
+    };
+
+    return {
+      ...rest,
+      points: [start, ...(midpoints ?? []), finish].filter(Boolean),
+      finishOnly: Boolean(finish) && !start,
+    };
+  },
+  z.object({
+    transportType: TransportTypeCompatSchema.optional(),
+    points: z.array(RoutePointSchema).optional(),
+    finishOnly: z.boolean().optional(),
+    pickMode: PickModeSchema.nullable().optional(),
+    mode: RoutingModeSchema.optional(),
+    milestones: z
+      .union([z.literal('abs'), z.literal('rel'), z.literal(false)])
+      .optional(),
+  }),
+);
+
+const MapMapDataCompatSchema = z.preprocess(
+  (v) => {
+    if (
+      typeof v === 'object' &&
+      v !== null &&
+      'mapType' in v &&
+      'overlays' in v &&
+      Array.isArray(v.overlays)
+    ) {
+      const { mapType, overlays, ...rest } = v as {
+        mapType: string;
+        overlays: string[];
+        [k: string]: unknown;
+      };
+
+      return { ...rest, layers: [mapType, ...overlays] };
+    }
+
+    return v;
+  },
+  z.object({
+    lat: z.number().optional(),
+    lon: z.number().optional(),
+    zoom: z.number().optional(),
+    layers: z.array(z.string()).optional(),
+    customLayers: CustomLayerDefArrayCompatSchema.optional(),
+    shading: ShadingSchema.optional(),
+  }),
+);
+
+const TrackViewerMapDataSchema = z.object({
+  trackGeojson: GeoJSONFeatureCollectionSchema.nullable().optional(),
+  trackGpx: z.string().nullable().optional(),
+  trackUID: z.string().nullable().optional(),
+  gpxUrl: z.string().nullable().optional(),
+  colorizeTrackBy: z.enum(['elevation', 'steepness']).nullable().optional(),
+});
+
+const MapsLoadResponseSchema = z.object({
+  meta: MapMetaSchema,
+  data: z.object({
+    lines: z.array(LineCompatSchema).optional(),
+    points: z.array(DrawingPointCompatSchema).optional(),
+    tracking: z
+      .object({
+        trackedDevices: z.array(TrackedDeviceSchema).optional(),
+        showLine: z.boolean().optional(),
+        showPoints: z.boolean().optional(),
+      })
+      .optional(),
+    routePlanner: RoutePlannerMapDataCompatSchema.optional(),
+    galleryFilter: GalleryFilterSchema.optional(),
+    trackViewer: TrackViewerMapDataSchema.optional(),
+    map: MapMapDataCompatSchema.optional(),
+    objectsV2: z.object({ active: z.array(z.string()) }).optional(),
+  }),
+});
 
 export const mapsLoadProcessor: Processor = {
   actionCreator: [mapsLoad, authSetUser, authLogout],
@@ -55,163 +132,26 @@ export const mapsLoadProcessor: Processor = {
       cancelActions: [mapsLoad, authSetUser, authLogout],
     });
 
-    const data = await res.json();
+    const { meta, data } = MapsLoadResponseSchema.parse(await res.json());
 
-    // backward compatibility
-
-    try {
-      const features = data.data.trackViewer.trackGeojson.features;
-
-      // typescript-is fails if feature property contains array; TODO find out why
-
-      if (Array.isArray(features)) {
-        for (const feature of features) {
-          if (feature.properties) {
-            for (const k in feature.properties) {
-              if (typeof feature.properties[k] !== 'string') {
-                delete feature.properties[k];
-              }
-            }
-          }
-        }
-      }
-    } catch {
-      // ignore
-    }
-
-    // backward compatibility
-    try {
-      const { map } = data.data;
-
-      map.layers = [map.mapType, ...map.overlays];
-
-      delete map.mapType;
-      delete map.overlays;
-
-      if (map.customLayers) {
-        map.customLayers = upgradeCustomLayerDefs(map.customLayers);
-
-        if (!is<CustomLayerDef[]>(map.customLayers)) {
-          delete map.customLayers;
-        }
-      }
-    } catch {
-      // ignore
-    }
-
-    try {
-      const { routePlanner } = data.data;
-
-      if (!routePlanner.points) {
-        routePlanner.points = [
-          routePlanner.start,
-          ...routePlanner.midpoints,
-          routePlanner.finish,
-        ]
-          .filter(Boolean)
-          .map((pt) => ({ ...pt, manual: pt.manual ?? false }));
-
-        routePlanner.finishOnly =
-          Boolean(routePlanner.finish) && !routePlanner.start;
-
-        routePlanner.transportType = migrateTransportType(
-          routePlanner.transportType,
-        );
-
-        delete routePlanner.start;
-        delete routePlanner.midpoints;
-        delete routePlanner.finish;
-      }
-    } catch {
-      // ignore
-    }
-
-    const map =
-      assert<
-        StringDates<{
-          meta: MapMeta;
-          data: MapData<Line | CompatLine, DrawingPoint | CompatDrawingPoint>;
-        }>
-      >(data);
-
-    const mapData = map.data;
-
-    if (mapData.map) {
+    if (data.map) {
       if (loadMeta.ignoreMap) {
-        delete mapData.map.lat;
-
-        delete mapData.map.lon;
-
-        delete mapData.map.zoom;
+        delete data.map.lat;
+        delete data.map.lon;
+        delete data.map.zoom;
       }
 
       if (loadMeta.ignoreLayers) {
-        delete mapData.map.layers;
-
-        delete mapData.map.shading;
+        delete data.map.layers;
+        delete data.map.shading;
       }
     }
 
     dispatch(
       mapsLoaded({
         merge: loadMeta.merge,
-        meta: {
-          ...map.meta,
-          createdAt: new Date(map.meta.createdAt),
-          modifiedAt: new Date(map.meta.modifiedAt),
-        },
-        data: {
-          ...mapData,
-          // get rid of OldLines
-          lines: mapData.lines?.map((line) => ({
-            ...line,
-            type:
-              line.type === 'area'
-                ? 'polygon'
-                : line.type === 'distance'
-                  ? 'line'
-                  : line.type,
-          })),
-          points: mapData.points?.map((point) =>
-            'coords' in point
-              ? point
-              : {
-                  color: point.color,
-                  label: point.label,
-                  coords: {
-                    lat: point.lat,
-                    lon: point.lon,
-                  },
-                },
-          ),
-          tracking: mapData.tracking && {
-            ...mapData.tracking,
-            trackedDevices: mapData.tracking.trackedDevices.map((device) => ({
-              ...device,
-              fromTime: device.fromTime ? new Date(device.fromTime) : null,
-            })),
-          },
-          galleryFilter: mapData.galleryFilter && {
-            ...mapData.galleryFilter,
-            createdAtFrom:
-              mapData.galleryFilter.createdAtFrom === undefined
-                ? undefined
-                : new Date(mapData.galleryFilter.createdAtFrom),
-            createdAtTo:
-              mapData.galleryFilter.createdAtTo === undefined
-                ? undefined
-                : new Date(mapData.galleryFilter.createdAtTo),
-            takenAtFrom:
-              mapData.galleryFilter.takenAtFrom === undefined
-                ? undefined
-                : new Date(mapData.galleryFilter.takenAtFrom),
-            takenAtTo:
-              mapData.galleryFilter.takenAtTo === undefined
-                ? undefined
-                : new Date(mapData.galleryFilter.takenAtTo),
-          },
-          trackViewer: mapData.trackViewer,
-        },
+        meta,
+        data,
       }),
     );
 

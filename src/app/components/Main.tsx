@@ -176,7 +176,7 @@ const trackingModalFactory = () =>
 const accountModalFactory = () =>
   import(
     /* webpackChunkName: "account-modal" */
-    './AccountModal.js'
+    '@features/auth/components/AccountModal/AccountModal.js'
   );
 
 const downloadMapModalFactory = () =>

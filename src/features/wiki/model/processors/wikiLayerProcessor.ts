@@ -8,27 +8,33 @@ import area from '@turf/area';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { CRS, Point } from 'leaflet';
 import RBush, { BBox } from 'rbush';
-import { assert } from 'typia';
+import z from 'zod';
 import { WikiPoint, wikiSetPoints } from '../actions.js';
 
-interface WikiResponse {
-  entities?: {
-    [key: string]: {
-      type: 'item';
-      id: string;
-      sitelinks: { [key: string]: { site: string; title: string } };
-    };
-  };
-}
+const WikiResponseSchema = z.object({
+  entities: z
+    .record(
+      z.string(),
+      z.object({
+        type: z.literal('item'),
+        id: z.string(),
+        sitelinks: z.record(
+          z.string(),
+          z.object({ site: z.string(), title: z.string() }),
+        ),
+      }),
+    )
+    .optional(),
+});
 
-type WikiPoi = [
-  wikipedia: string | null,
-  wikidata: string | null,
-  lon: number,
-  lat: number,
-  id: string,
-  name: string | null,
-];
+const WikiPoiSchema = z.tuple([
+  z.string().nullable(), // wikipedia
+  z.string().nullable(), // wikidata
+  z.number(), // lon
+  z.number(), // lat
+  z.string(), // id
+  z.string().nullable(), // name
+]);
 
 let initial = true;
 
@@ -115,11 +121,11 @@ export const wikiLayerProcessor: Processor = {
       cancelActions: [mapRefocus, mapToggleLayer],
     });
 
-    const wikipedia2item = new Map<string, WikiPoi>();
+    const wikipedia2item = new Map<string, z.infer<typeof WikiPoiSchema>>();
 
     const wikidatas: string[] = [];
 
-    const data = assert<WikiPoi[]>(await res.json());
+    const data = z.array(WikiPoiSchema).parse(await res.json());
 
     for (const item of data) {
       let wikipedia = item[0];
@@ -157,7 +163,7 @@ export const wikiLayerProcessor: Processor = {
       cancelActions: [mapRefocus, mapToggleLayer],
     });
 
-    const data1 = assert<WikiResponse>(await res1.json());
+    const data1 = WikiResponseSchema.parse(await res1.json());
 
     for (const item of data) {
       if (item[0]) {

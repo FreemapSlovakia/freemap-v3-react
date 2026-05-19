@@ -6,42 +6,55 @@ import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { cancelRegister } from '@shared/cancelRegister.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
+import { LatLonSchema } from '@shared/types/common.js';
 import distance from '@turf/distance';
 import { point } from '@turf/helpers';
-import { assert } from 'typia';
+import z from 'zod';
 import {
   WikimediaCommonsPhoto,
   wikimediaCommonsSetPhotos,
 } from '../actions.js';
-import { ExtMetaValue, pickLang, stripHtml } from './extMetaUtils.js';
+import { ExtMetaValueSchema, pickLang, stripHtml } from './extMetaUtils.js';
 
 const MIN_ZOOM = 13;
 
-interface CommonsPage {
-  pageid: number;
-  title: string;
-  coordinates?: { lat: number; lon: number }[];
-  imageinfo?: {
-    thumburl?: string;
-    thumbwidth?: number;
-    thumbheight?: number;
-    descriptionurl?: string;
-    extmetadata?: {
-      ImageDescription?: { value?: ExtMetaValue };
-      Artist?: { value?: ExtMetaValue };
-      LicenseShortName?: { value?: ExtMetaValue };
-      LicenseUrl?: { value?: ExtMetaValue };
-      DateTime?: { value?: ExtMetaValue };
-    };
-  }[];
-}
+const ExtMetaFieldSchema = z
+  .object({ value: ExtMetaValueSchema.optional() })
+  .optional();
 
-interface CommonsResponse {
-  query?: {
-    pages?: CommonsPage[];
-  };
-  continue?: Record<string, unknown>;
-}
+const CommonsPageSchema = z.object({
+  pageid: z.number(),
+  title: z.string(),
+  coordinates: z.array(LatLonSchema).optional(),
+  imageinfo: z
+    .array(
+      z.object({
+        thumburl: z.string().optional(),
+        thumbwidth: z.number().optional(),
+        thumbheight: z.number().optional(),
+        descriptionurl: z.string().optional(),
+        extmetadata: z
+          .object({
+            ImageDescription: ExtMetaFieldSchema,
+            Artist: ExtMetaFieldSchema,
+            LicenseShortName: ExtMetaFieldSchema,
+            LicenseUrl: ExtMetaFieldSchema,
+            DateTime: ExtMetaFieldSchema,
+          })
+          .optional(),
+      }),
+    )
+    .optional(),
+});
+
+const CommonsResponseSchema = z.object({
+  query: z
+    .object({
+      pages: z.array(CommonsPageSchema).optional(),
+    })
+    .optional(),
+  continue: z.record(z.string(), z.unknown()).optional(),
+});
 
 const MAX_DIAGONAL_M = 9000;
 
@@ -178,7 +191,7 @@ export const wikimediaCommonsLayerProcessor: Processor = {
       cancelActions: [mapRefocus, mapToggleLayer],
     });
 
-    const data = assert<CommonsResponse>(await res.json());
+    const data = CommonsResponseSchema.parse(await res.json());
 
     const pages = data.query?.pages;
 

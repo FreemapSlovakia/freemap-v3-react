@@ -5,8 +5,7 @@ import {
   osmLoadWay,
 } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { OsmFeatureId } from '@shared/types/featureId.js';
-import { is } from 'typia';
+import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import {
   SearchResult,
   searchClear,
@@ -90,20 +89,24 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
 
       state.searchResultSeq = state.searchResultSeq + 1;
 
-      if (is<OsmFeatureId>(result?.id)) {
-        switch (result.id.elementType) {
+      const parsed = OsmFeatureIdSchema.safeParse(result?.id);
+
+      if (parsed.success) {
+        const id = parsed.data;
+
+        switch (id.elementType) {
           case 'node':
-            state.osmNodeId = result.id.id;
+            state.osmNodeId = id.id;
 
             break;
 
           case 'way':
-            state.osmWayId = result.id.id;
+            state.osmWayId = id.id;
 
             break;
 
           case 'relation':
-            state.osmRelationId = result.id.id;
+            state.osmRelationId = id.id;
 
             break;
         }

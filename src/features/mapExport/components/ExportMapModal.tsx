@@ -31,13 +31,16 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { assert, is } from 'typia';
+import z from 'zod';
 import {
   CustomLayerOrder,
+  CustomLayerOrderSchema,
+  EXPORTABLE_LAYERS,
   ExportableLayer,
+  ExportableLayerSchema,
   ExportFormat,
+  ExportFormatSchema,
   exportMap,
-  LAYERS,
 } from '../model/actions.js';
 
 type Props = { show: boolean };
@@ -55,10 +58,10 @@ export default ExportMapModal;
 const toScale = (value: string | null) => value ?? '100';
 
 const toExportFormat = (value: string | null) =>
-  is<ExportFormat>(value) ? value : 'jpeg';
+  ExportFormatSchema.safeParse(value).data ?? 'jpeg';
 
 const toCustomLayerOrder = (value: string | null) =>
-  is<CustomLayerOrder>(value) ? value : 'topmost';
+  CustomLayerOrderSchema.safeParse(value).data ?? 'topmost';
 
 export function ExportMapModal({ show }: Props): ReactElement {
   const canExportByPolygon = useAppSelector(
@@ -93,14 +96,16 @@ export function ExportMapModal({ show }: Props): ReactElement {
     const layers = storage.getItem(LAYERS_STORAGE_KEY);
 
     if (!layers) {
-      return new Set(LAYERS);
+      return new Set(EXPORTABLE_LAYERS);
     }
 
     const set = new Set<ExportableLayer>();
 
     for (const str of layers.split(',')) {
-      if (is<ExportableLayer>(str)) {
-        set.add(str);
+      const a = ExportableLayerSchema.safeParse(str);
+
+      if (a.success) {
+        set.add(a.data);
       }
     }
 
@@ -188,7 +193,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
         throw new Error();
       })
       .then((data) => {
-        setPolyCountries(assert<string[]>(data));
+        setPolyCountries(z.array(z.string()).parse(data));
       })
       .catch((err) => {
         dispatch(
@@ -273,7 +278,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
         <Form.Group>
           <Form.Label>{m?.mapExport.layersTitle}</Form.Label>
 
-          {LAYERS.map((layer) => (
+          {EXPORTABLE_LAYERS.map((layer) => (
             <Form.Check
               key={layer}
               id={layer}

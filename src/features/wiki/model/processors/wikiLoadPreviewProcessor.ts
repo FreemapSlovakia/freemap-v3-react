@@ -2,28 +2,47 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
-import { assert } from 'typia';
+import z from 'zod';
 import { WikiPreview, wikiLoadPreview, wikiSetPreview } from '../actions.js';
 
-interface WikiResponse1 {
-  query: {
-    pages: { [key: string]: { langlinks?: { lang: string; '*': string }[] } };
-  };
-  continue?: Record<string, unknown>;
-}
+const WikiResponse1Schema = z.object({
+  query: z.object({
+    pages: z.record(
+      z.string(),
+      z.object({
+        langlinks: z
+          .array(
+            z.object({
+              lang: z.string(),
+              '*': z.string(),
+            }),
+          )
+          .optional(),
+      }),
+    ),
+  }),
+  continue: z.record(z.string(), z.unknown()).optional(),
+});
 
-interface WikiResponse2 {
-  query: {
-    pages: {
-      [key: string]: {
-        title: string;
-        extract: string;
-        thumbnail?: { source: string; width: number; height: number };
-      };
-    };
-  };
-  continue?: Record<string, unknown>;
-}
+const WikiResponse2Schema = z.object({
+  query: z.object({
+    pages: z.record(
+      z.string(),
+      z.object({
+        title: z.string(),
+        extract: z.string(),
+        thumbnail: z
+          .object({
+            source: z.string(),
+            width: z.number(),
+            height: z.number(),
+          })
+          .optional(),
+      }),
+    ),
+  }),
+  continue: z.record(z.string(), z.unknown()).optional(),
+});
 
 export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
   actionCreator: wikiLoadPreview,
@@ -57,7 +76,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
           cancelActions: [setActiveModal],
         });
 
-        const okData: WikiResponse1 = assert<WikiResponse1>(await res.json());
+        const okData = WikiResponse1Schema.parse(await res.json());
 
         const item = Object.values(okData.query.pages)[0]?.langlinks?.find(
           (ll) => ll.lang === language,
@@ -95,9 +114,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
       cancelActions: [setActiveModal],
     });
 
-    const data = assert<WikiResponse2>(await res.json());
-
-    // TODO validate
+    const data = WikiResponse2Schema.parse(await res.json());
 
     const preview: WikiPreview = {
       ...Object.values(data.query.pages)[0],

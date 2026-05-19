@@ -14,16 +14,16 @@ import {
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
+import z from 'zod';
 import { setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
 
 const FEATURES_STORAGE_KEY = 'fm.embedMap.features';
 
-const FEATURES = ['search', 'mapSwitch', 'locateMe'] as const;
+const FeatureSchema = z.enum(['search', 'mapSwitch', 'locateMe']);
 
-type Feature = (typeof FEATURES)[number];
+type Feature = z.infer<typeof FeatureSchema>;
 
 function identity<T>(value: T): T {
   return value;
@@ -56,14 +56,16 @@ export function EmbedMapModal({ show }: Props): ReactElement {
     const features = storage.getItem(FEATURES_STORAGE_KEY);
 
     if (!features) {
-      return new Set(FEATURES);
+      return new Set(FeatureSchema.options);
     }
 
     const set = new Set<Feature>();
 
     for (const feature of features.split(',')) {
-      if (is<Feature>(feature)) {
-        set.add(feature);
+      const f = FeatureSchema.safeParse(feature);
+
+      if (f.success) {
+        set.add(f.data);
       }
     }
 

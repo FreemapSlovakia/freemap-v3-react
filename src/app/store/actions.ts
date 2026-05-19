@@ -10,18 +10,78 @@ import {
 import { setLocation, toggleLocate } from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
-import { basicModals, tools } from '@shared/constants.js';
-import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import type {
+  CustomLayerDef,
+  StravaHeatmapColor,
+} from '@shared/mapDefinitions.js';
 import { OsmFeatureId } from '@shared/types/featureId.js';
+import z from 'zod';
 
-export type Tool = (typeof tools)[number];
+export const ToolSchema = z.enum([
+  'changesets',
+  'draw-lines',
+  'draw-points',
+  'draw-polygons',
+  'map-details',
+  'objects',
+  'route-planner',
+  'track-viewer',
+]);
 
-export type Modal =
-  | (typeof basicModals)[number]
-  | 'tips'
-  | 'current-drawing-properties';
+export type Tool = z.infer<typeof ToolSchema>;
 
-export type ShowModal = (typeof basicModals)[number];
+const BASIC_MODALS = [
+  'about',
+  'account',
+  'buy-credits',
+  'download-map',
+  'drawing-properties',
+  'embed',
+  'export-map',
+  'export-map-features',
+  'gallery-filter',
+  'gallery-upload',
+  'gallery-leaderboard',
+  'legend',
+  'login',
+  'map-layers-config',
+  'custom-maps',
+  'map-preferences',
+  'maps',
+  'offline-maps',
+  'premium',
+  'support-us',
+  'tracking-my',
+  'tracking-watched',
+  'upload-track',
+] as const;
+
+export const ShowModalSchema = z.enum(BASIC_MODALS);
+
+export const ShowModalCompatSchema = z.preprocess(
+  (v) =>
+    (typeof v === 'string' &&
+      ({
+        'export-gpx': 'export-map-features',
+        'export-pdf': 'export-map',
+        supportUs: 'support-us',
+        mapSettings: 'map-layers-config',
+        'map-settings': 'map-layers-config',
+        'remove-ads': 'premium',
+      }[v] as string | undefined)) ||
+    v,
+  ShowModalSchema,
+);
+
+export const ModalSchema = z.enum([
+  ...BASIC_MODALS,
+  'tips',
+  'current-drawing-properties',
+]);
+
+export type Modal = z.infer<typeof ModalSchema>;
+
+export type ShowModal = z.infer<typeof ShowModalSchema>;
 
 export const setTool = createAction<Tool | null>('SET_TOOL');
 
@@ -45,6 +105,7 @@ type Settings = {
   drawingLineCap?: 'butt' | 'round' | 'square';
   drawingLineJoin?: 'miter' | 'round' | 'bevel';
   maxZoom?: number;
+  stravaHeatmapColor?: StravaHeatmapColor;
 };
 
 export const saveSettings = createAction<{
@@ -131,27 +192,28 @@ export const convertToDrawing = createAction<
   | { type: 'search-result'; tolerance: number }
 >('CONVERT_TO_DRAWING');
 
-export type ExternalTargets =
-  | 'copy'
-  | 'f4map'
-  | 'google'
-  | 'hiking.sk'
-  | 'image'
-  | 'josm'
-  | 'mapillary'
-  | 'mapy.com'
-  | 'oma.sk'
-  | 'openstreetcam'
-  | 'osm.org'
-  | 'osm.org/id'
-  | 'peakfinder'
-  | 'url'
-  | 'waze'
-  | 'window'
-  | 'zbgis';
+export const ExternalTargetSchema = z.enum([
+  'copy',
+  'f4map',
+  'google',
+  'hiking.sk',
+  'image',
+  'josm',
+  'mapillary',
+  'mapy.com',
+  'oma.sk',
+  'openstreetcam',
+  'osm.org',
+  'osm.org/id',
+  'peakfinder',
+  'url',
+  'waze',
+  'window',
+  'zbgis',
+]);
 
 export const openInExternalApp = createAction<{
-  where: ExternalTargets;
+  where: z.infer<typeof ExternalTargetSchema>;
   lat?: number;
   lon?: number;
   zoom?: number;

@@ -1,43 +1,55 @@
-export interface DeviceBase {
+import { IsoDateSchema } from '@shared/types/common.js';
+import z from 'zod';
+
+export const DeviceSchema = z.object({
+  name: z.string(),
+  maxCount: z.number().nullable(),
+  maxAge: z.number().nullable(),
+  id: z.number(),
+  token: z.string(),
+  createdAt: IsoDateSchema,
+});
+
+export type Device = z.infer<typeof DeviceSchema>;
+
+export type EditedDevice = {
   name: string;
   maxCount: number | null;
   maxAge: number | null;
-}
-
-export interface Device extends DeviceBase {
-  id: number;
-  token: string;
-  createdAt: Date;
-}
-
-export interface EditedDevice extends DeviceBase {
   token: string | undefined;
-}
+};
 
-export interface TrackedDevice {
-  token: string;
-  color?: string | null;
-  width?: number | null;
-  label?: string | null;
-  maxCount?: number | null;
-  maxAge?: number | null;
-  fromTime?: Date | null;
-  splitDistance?: number | null;
-  splitDuration?: number | null;
-}
+export const TrackedDeviceSchema = z.object({
+  token: z.string(),
+  color: z.string().nullish(),
+  width: z.number().nullish(),
+  label: z.string().nullish(),
+  maxCount: z.number().nullish(),
+  maxAge: z.number().nullish(),
+  fromTime: IsoDateSchema.nullish(),
+  splitDistance: z.number().nullish(),
+  splitDuration: z.number().nullish(),
+});
 
-export interface AccessTokenBase {
-  listingLabel: string | null;
-  timeFrom: Date | null;
-  timeTo: Date | null;
-  note: string | null;
-}
+export type TrackedDevice = z.infer<typeof TrackedDeviceSchema>;
 
-export interface AccessToken extends AccessTokenBase {
-  id: number;
-  token: string;
-  createdAt: Date;
-}
+export const AccessTokenBaseSchema = z.object({
+  listingLabel: z.string().nullable(),
+  timeFrom: IsoDateSchema.nullable(),
+  timeTo: IsoDateSchema.nullable(),
+  note: z.string().nullable(),
+});
+
+export type AccessTokenBase = z.infer<typeof AccessTokenBaseSchema>;
+
+export const AccessTokenSchema = z.object({
+  ...AccessTokenBaseSchema.shape,
+  id: z.number(),
+  token: z.string(),
+  createdAt: IsoDateSchema,
+});
+
+export type AccessToken = z.infer<typeof AccessTokenSchema>;
 
 export interface Track {
   token: string;
@@ -49,16 +61,18 @@ export interface Track {
   trackPoints: TrackPoint[];
 }
 
-export interface TrackPoint {
-  id: number;
-  lat: number;
-  lon: number;
-  ts: Date;
-  accuracy?: number | null;
-  battery?: number | null;
-  gsmSignal?: number | null;
-  speed?: number | null;
-  message?: string | null;
-  altitude?: number | null;
-  bearing?: number | null;
-}
+export const TrackPointSchema = z.object({
+  id: z.number(),
+  lat: z.number(),
+  lon: z.number(),
+  ts: IsoDateSchema,
+  accuracy: z.number().nullish(),
+  battery: z.number().nullish(),
+  gsmSignal: z.number().nullish(),
+  speed: z.number().nullish(),
+  message: z.string().nullish(),
+  altitude: z.number().nullish(),
+  bearing: z.number().nullish(),
+});
+
+export type TrackPoint = z.infer<typeof TrackPointSchema>;

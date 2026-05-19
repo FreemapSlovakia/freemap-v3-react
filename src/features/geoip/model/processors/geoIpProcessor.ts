@@ -1,7 +1,10 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { assert } from 'typia';
-import { GeoIpResult, invokeGeoip, processGeoipResult } from '../actions.js';
+import {
+  GeoIpResultSchema,
+  invokeGeoip,
+  processGeoipResult,
+} from '../actions.js';
 
 export const geoipProcessor: Processor = {
   errorKey: 'general.connectionError',
@@ -29,6 +32,6 @@ export const geoipProcessor: Processor = {
       data.longitude = Number(data.longitude);
     }
 
-    dispatch(processGeoipResult(assert<GeoIpResult>(data)));
+    dispatch(processGeoipResult(GeoIpResultSchema.parse(data)));
   },
 };

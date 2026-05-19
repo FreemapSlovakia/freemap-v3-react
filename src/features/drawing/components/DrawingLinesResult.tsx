@@ -1,5 +1,5 @@
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
-import { colors } from '@shared/constants.js';
+import { COLORS } from '@shared/colors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
 import { type ReactElement, useEffect } from 'react';
@@ -13,7 +13,7 @@ function useLinePointColor() {
         : state.main.selection?.type === 'line-point'
           ? state.drawingLines.lines[state.main.selection.lineIndex]?.color
           : undefined,
-    ) || colors.normal;
+    ) || COLORS.normal;
 
   useEffect(() => {
     const root = document.documentElement;

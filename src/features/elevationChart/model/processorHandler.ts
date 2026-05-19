@@ -18,7 +18,7 @@ import {
   Polygon,
 } from 'geojson';
 import { Dispatch } from 'redux';
-import { assert } from 'typia';
+import z from 'zod';
 import {
   elevationChartClose,
   elevationChartSetElevationProfile,
@@ -121,22 +121,24 @@ async function resolveElevationProfilePointsViaApi(
 
   let prevEle: number | null | undefined;
 
-  assert<(number | null)[]>(await res.json()).forEach((ele, i) => {
-    if (prevEle !== undefined) {
-      const d = (ele ?? 0) - (prevEle ?? 0);
+  z.array(z.number().nullable())
+    .parse(await res.json())
+    .forEach((ele, i) => {
+      if (prevEle !== undefined) {
+        const d = (ele ?? 0) - (prevEle ?? 0);
 
-      if (d > 0) {
-        climbUp += d;
-      } else {
-        climbDown -= d;
+        if (d > 0) {
+          climbUp += d;
+        } else {
+          climbDown -= d;
+        }
       }
-    }
 
-    // TODO following are computed data, should not go to store
-    Object.assign(elevationProfilePoints[i], { ele, climbUp, climbDown });
+      // TODO following are computed data, should not go to store
+      Object.assign(elevationProfilePoints[i], { ele, climbUp, climbDown });
 
-    prevEle = ele;
-  });
+      prevEle = ele;
+    });
 
   dispatch(elevationChartSetElevationProfile(elevationProfilePoints));
 }

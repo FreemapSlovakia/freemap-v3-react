@@ -1,8 +1,8 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { assert } from 'typia';
-import { GalleryUser, gallerySetUsers } from '../actions.js';
+import z from 'zod';
+import { GalleryUserSchema, gallerySetUsers } from '../actions.js';
 
 export const galleryFetchUsersProcessor: Processor = {
   actionCreator: setActiveModal,
@@ -18,6 +18,8 @@ export const galleryFetchUsersProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    dispatch(gallerySetUsers(assert<GalleryUser[]>(await res.json())));
+    dispatch(
+      gallerySetUsers(z.array(GalleryUserSchema).parse(await res.json())),
+    );
   },
 };

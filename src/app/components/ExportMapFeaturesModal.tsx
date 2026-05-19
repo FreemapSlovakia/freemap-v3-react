@@ -2,10 +2,10 @@ import { authWithGarmin } from '@features/auth/model/actions.js';
 import {
   Exportable,
   ExportTarget,
+  ExportTargetSchema,
   ExportType,
+  ExportTypeSchema,
   exportMapFeatures,
-  exportTargets,
-  exportTypes,
 } from '@features/export/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
@@ -47,7 +47,6 @@ import { MdTimeline } from 'react-icons/md';
 import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
-import { is } from 'typia';
 import { setActiveModal } from '../store/actions.js';
 
 const exportableDefinitions: readonly [
@@ -71,10 +70,10 @@ type Props = { show: boolean };
 export default ExportMapFeaturesModal;
 
 const toExportType = (value: string | null) =>
-  is<ExportType>(value) ? value : 'gpx';
+  ExportTypeSchema.safeParse(value).data ?? 'gpx';
 
 const toExportFormat = (value: string | null) =>
-  is<ExportTarget>(value) ? value : 'download';
+  ExportTargetSchema.safeParse(value).data ?? 'download';
 
 export function ExportMapFeaturesModal({ show }: Props): ReactElement {
   const m = useMessages();
@@ -289,7 +288,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
             <div>
               <ButtonGroup vertical={!isWide}>
-                {exportTargets.map((exportTarget) => (
+                {ExportTargetSchema.options.map((exportTarget) => (
                   <ToggleButton
                     id={exportTarget}
                     key={exportTarget}
@@ -402,7 +401,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
               <div>
                 <ButtonGroup>
-                  {exportTypes.map((exportType) => (
+                  {ExportTypeSchema.options.map((exportType) => (
                     <ToggleButton
                       id={exportType}
                       key={exportType}

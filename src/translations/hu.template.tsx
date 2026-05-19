@@ -884,6 +884,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Elemek mérete',
     featureScaleHelp:
       'Megnöveli a megjelenített feliratokat és vonalakat. Nincs hatással a műholdas, árnyékolt, WMS és vektoros (MapLibre) rétegekre.',
+    stravaHeatmapColor: 'Strava hőtérkép színe',
+    stravaHeatmapColors: {
+      hot: 'Forró',
+      blue: 'Kék',
+      purple: 'Lila',
+      gray: 'Szürke',
+      bluered: 'Kék-piros',
+    },
     layer: {
       layer: 'Réteg',
       base: 'Alap',

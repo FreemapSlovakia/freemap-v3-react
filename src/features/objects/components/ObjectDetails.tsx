@@ -9,11 +9,10 @@ import {
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { OsmFeatureId } from '@shared/types/featureId.js';
+import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import { Fragment, ReactElement } from 'react';
 import { Button, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
 import { SourceName } from './SourceName.js';
 
 type Props = {
@@ -46,17 +45,17 @@ export function ObjectDetails({
     result.displayName ||
     getNameFromOsmElement(geojson.properties ?? {}, language);
 
-  const isOsm = is<OsmFeatureId>(id);
+  const parsedId = OsmFeatureIdSchema.safeParse(id);
 
   const handleEditInJosm = () => {
-    if (!isOsm) {
+    if (!parsedId.success) {
       throw new Error('unsupported type');
     }
 
     fetch(
       'http://localhost:8111/load_object?new_layer=true&relation_members=true&objects=' +
-        { node: 'n', way: 'w', relation: 'r' }[id.elementType] +
-        id.id +
+        { node: 'n', way: 'w', relation: 'r' }[parsedId.data.elementType] +
+        parsedId.data.id +
         '&layer_name=' +
         encodeURIComponent(
           `${genericName}${displayName ? ' "' + displayName + '"' : ''}`,
@@ -79,7 +78,7 @@ export function ObjectDetails({
   };
 
   function renderKey(k: string) {
-    return !isOsm ? (
+    return !parsedId.success ? (
       k
     ) : (
       <a
@@ -94,7 +93,7 @@ export function ObjectDetails({
     );
   }
   function renderValue(k: string, v: string) {
-    return !isOsm ? (
+    return !parsedId.success ? (
       v
     ) : /^https?:\/\//.test(v) ? (
       <a target="_blank" rel="noreferrer" href={v}>
@@ -163,12 +162,12 @@ export function ObjectDetails({
         {genericName} {displayName && <i>{displayName}</i>}
       </p>
 
-      {isOsm && (
+      {parsedId.success && (
         <p>
           <a
             target="_blank"
             rel="noreferrer"
-            href={`https://www.openstreetmap.org/${id.elementType}/${id.id}`}
+            href={`https://www.openstreetmap.org/${parsedId.data.elementType}/${parsedId.data.id}`}
           >
             {openText}
           </a>
@@ -176,7 +175,7 @@ export function ObjectDetails({
           <a
             target="_blank"
             rel="noreferrer"
-            href={`https://www.openstreetmap.org/${id.elementType}/${id.id}/history`}
+            href={`https://www.openstreetmap.org/${parsedId.data.elementType}/${parsedId.data.id}/history`}
           >
             {historyText}
           </a>
@@ -184,11 +183,11 @@ export function ObjectDetails({
         </p>
       )}
 
-      {isOsm && geojson.properties?.['description'] && (
+      {parsedId.success && geojson.properties?.['description'] && (
         <p>{geojson.properties['description']}</p>
       )}
 
-      {!window.fmEmbedded && isOsm && (
+      {!window.fmEmbedded && parsedId.success && (
         <Button type="button" onClick={handleEditInJosm} className="mb-4">
           {editInJosmText}
         </Button>

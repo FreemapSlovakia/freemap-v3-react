@@ -3,16 +3,22 @@ import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { rpcEvent, rpcResponse } from '@features/rpc/model/actions.js';
 import { wsStateChanged } from '@features/websocket/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import type { StringDates } from '@shared/types/common.js';
-import { is } from 'typia';
+import z from 'zod';
 import { trackingActions } from './actions.js';
-import type {
-  AccessToken,
-  Device,
-  Track,
-  TrackedDevice,
-  TrackPoint,
+import {
+  type AccessToken,
+  type Device,
+  type Track,
+  type TrackedDevice,
+  TrackPointSchema,
 } from './types.js';
+
+const TrackPointsSchema = z.array(TrackPointSchema);
+
+const TrackPointWithTokenSchema = z.object({
+  ...TrackPointSchema.shape,
+  token: z.string(),
+});
 
 export interface TrackingState {
   devices: Device[];
@@ -117,70 +123,64 @@ export const trackingReducer = createReducer(initialState, (builder) =>
 
       const { params } = payload;
 
-      if (!is<{ token: string }>(params)) {
+      const parsedParams = z.object({ token: z.string() }).safeParse(params);
+
+      if (!parsedParams.success) {
         return state;
       }
 
       if (
         payload.method === 'tracking.subscribe' &&
-        payload.type === 'result' &&
-        is<StringDates<TrackPoint[]>>(payload.result)
-      ) {
-        const { token } = params;
-
-        if (token === undefined) {
-          throw new Error();
-        }
-
-        return {
-          ...state,
-          tracks: [
-            ...state.tracks.filter(({ token: id }) => id !== token),
-            {
-              token,
-              trackPoints: payload.result.map((tp) => ({
-                ...tp,
-                ts: new Date(tp.ts),
-              })),
-            },
-          ],
-        };
-      }
-
-      if (
-        payload.method === 'tracking.unsubscribe' &&
         payload.type === 'result'
       ) {
-        return {
-          ...state,
-          tracks: state.tracks.filter((track) => track.token !== params.token),
-        };
+        const parsedTrackPoint = TrackPointsSchema.safeParse(payload.result);
+
+        if (parsedTrackPoint.success) {
+          const { token } = parsedParams.data;
+
+          if (token === undefined) {
+            throw new Error();
+          }
+
+          return {
+            ...state,
+            tracks: [
+              ...state.tracks.filter(({ token: id }) => id !== token),
+              { token, trackPoints: parsedTrackPoint.data },
+            ],
+          };
+        }
       }
 
-      return state;
+      return payload.method === 'tracking.unsubscribe' &&
+        payload.type === 'result'
+        ? {
+            ...state,
+            tracks: state.tracks.filter(
+              (track) => track.token !== parsedParams.data.token,
+            ),
+          }
+        : state;
     })
     .addCase(rpcEvent, (state, { payload: { method, params } }) => {
-      if (
-        method === 'tracking.addPoint' &&
-        is<StringDates<TrackPoint> & { token: string }>(params)
-      ) {
-        const { token, ts, ...rest } = params;
+      if (method === 'tracking.addPoint') {
+        const parsed = TrackPointWithTokenSchema.safeParse(params);
 
-        if (token === undefined) {
-          return;
+        if (parsed.success) {
+          const { token, ...rest } = parsed.data;
+
+          let track = state.tracks.find((t) => t.token === token);
+
+          if (!track) {
+            track = { token, trackPoints: [] };
+
+            state.tracks.push(track);
+          }
+
+          track.trackPoints.push(rest);
+
+          // TODO apply limits from trackedDevices
         }
-
-        let track = state.tracks.find((t) => t.token === token);
-
-        if (!track) {
-          track = { token, trackPoints: [] };
-
-          state.tracks.push(track);
-        }
-
-        track.trackPoints.push({ ts: new Date(ts), ...rest });
-
-        // TODO apply limits from trackedDevices
       }
 
       return state;

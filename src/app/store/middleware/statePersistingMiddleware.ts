@@ -71,6 +71,7 @@ function persistSelectedState(state: RootState) {
         maxZoom: state.map.maxZoom,
         resolutionScale: state.map.resolutionScale,
         featureScale: state.map.featureScale,
+        stravaHeatmapColor: state.map.stravaHeatmapColor,
       },
       gallery: {
         colorizeBy: state.gallery.colorizeBy,

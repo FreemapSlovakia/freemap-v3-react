@@ -3,8 +3,7 @@ import Leaflet, { BaseIconOptions, Icon } from 'leaflet';
 import { CSSProperties, ReactElement, useEffect, useMemo, useRef } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
-import { assertGuard } from 'typia';
-import { colors } from '../constants.js';
+import { COLORS } from '../colors.js';
 
 const textStyle: CSSProperties = {
   fill: 'rgba(0, 0, 0, 0.5)',
@@ -95,11 +94,8 @@ export class MarkerLeafletIcon extends Icon<
     ) as HTMLElement & { _fm_root?: Root };
 
     if (!div._fm_root) {
-      assertGuard<{ _setIconStyles: (el: HTMLElement, str: string) => void }>(
-        this,
-      );
-
-      this._setIconStyles(div, 'icon');
+      // Leaflet's Icon._setIconStyles is an untyped internal method.
+      (this as any)._setIconStyles(div, 'icon');
 
       div._fm_root = createRoot(div);
 
@@ -120,7 +116,7 @@ export function MarkerIcon({
   image,
   imageOpacity,
   faIcon,
-  color = colors.normal,
+  color = COLORS.normal,
   label,
   markerType,
 }: IconProps): ReactElement {

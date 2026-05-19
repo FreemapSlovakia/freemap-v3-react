@@ -869,6 +869,14 @@ const messages: Messages = {
     featureScale: 'Feature size',
     featureScaleHelp:
       'Enlarges rendered labels and lines. Has no effect on satellite, shading, WMS, or vector (MapLibre) layers.',
+    stravaHeatmapColor: 'Strava heatmap color',
+    stravaHeatmapColors: {
+      hot: 'Hot',
+      blue: 'Blue',
+      purple: 'Purple',
+      gray: 'Gray',
+      bluered: 'Blue–red',
+    },
     loadWmsLayers: 'Load layers',
   },
 

@@ -71,6 +71,6 @@ export const trackViewerReducer = createReducer(
               data: { trackViewer },
             },
           },
-        ) => trackViewer ?? trackViewerInitialState,
+        ) => ({ ...trackViewerInitialState, ...trackViewer }),
       ),
 );

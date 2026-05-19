@@ -1,14 +1,13 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
+import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
-import { colors } from '@shared/constants.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
 import { DragEndEvent, LeafletEvent } from 'leaflet';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
 import {
   drawingMeasure,
   drawingPointChangePosition,
@@ -27,17 +26,18 @@ export function DrawingPointsResult(): ReactElement {
 
   const handleMove = useCallback(
     (e: LeafletEvent) => {
-      if (
-        activeIndex !== null &&
+      if (activeIndex !== null) {
         // see https://github.com/PaulLeCam/react-leaflet/issues/981
-        is<{ latlng: { lat: number; lng: number } }>(e)
-      ) {
+        const { latlng } = e as unknown as {
+          latlng: { lat: number; lng: number };
+        };
+
         dispatch(
           drawingPointChangePosition({
             index: activeIndex,
             coords: {
-              lat: e.latlng.lat,
-              lon: e.latlng.lng,
+              lat: latlng.lat,
+              lon: latlng.lng,
             },
           }),
         );
@@ -102,10 +102,10 @@ export function DrawingPointsResult(): ReactElement {
             position={{ lat: coords.lat, lng: coords.lon }}
             color={
               activeIndex === i
-                ? Color(color || colors.normal)
+                ? Color(color || COLORS.normal)
                     .lighten(0.75)
                     .hex()
-                : color || colors.normal
+                : color || COLORS.normal
             }
             draggable={!window.fmEmbedded && activeIndex === i}
             interactive={interactive}

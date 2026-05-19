@@ -7,26 +7,29 @@ import {
   FaPen,
   FaWalking,
 } from 'react-icons/fa';
-import { is } from 'typia';
+import z from 'zod';
 
-export type TransportType =
-  | 'bike-osrm'
-  | 'car-osrm'
-  | 'foot-osrm'
-  | 'car'
-  | 'car4wd'
-  | 'foot'
-  | 'hiking'
-  | 'motorcycle'
-  | 'mtb'
-  | 'racingbike'
-  | 'manual';
+export const TransportTypeSchema = z.enum([
+  'bike-osrm',
+  'car-osrm',
+  'foot-osrm',
+  'car',
+  'car4wd',
+  'foot',
+  'hiking',
+  'motorcycle',
+  'mtb',
+  'racingbike',
+  'manual',
+]);
 
-export function migrateTransportType(transportType: unknown): TransportType {
-  return is<TransportType>(transportType)
-    ? transportType
-    : typeof transportType === 'string'
-      ? (({
+export type TransportType = z.infer<typeof TransportTypeSchema>;
+
+export const TransportTypeCompatSchema = z
+  .preprocess(
+    (v) =>
+      (typeof v === 'string' &&
+        {
           'car-toll': 'car',
           'car-free': 'car',
           'foot-stroller': 'foot',
@@ -39,9 +42,11 @@ export function migrateTransportType(transportType: unknown): TransportType {
           'car-osm': 'car-osrm',
           'bike-osm': 'bike-osrm',
           'foot-osm': 'foot-osrm',
-        }[transportType] ?? 'hiking') as TransportType)
-      : 'hiking';
-}
+        }[v]) ||
+      v,
+    TransportTypeSchema,
+  )
+  .catch('hiking');
 
 export type TransportTypeMsgKey =
   | 'bike'

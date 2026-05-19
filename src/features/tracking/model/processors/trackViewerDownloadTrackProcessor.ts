@@ -4,7 +4,7 @@ import {
   trackViewerDownloadTrack,
   trackViewerSetData,
 } from '@features/trackViewer/model/actions.js';
-import { assert } from 'typia';
+import z from 'zod';
 
 export const trackViewerDownloadTrackProcessor: Processor = {
   actionCreator: trackViewerDownloadTrack,
@@ -20,7 +20,9 @@ export const trackViewerDownloadTrackProcessor: Processor = {
     dispatch(
       trackViewerSetData({
         trackGpx: decodeURIComponent(
-          escape(atob(assert<{ data: string }>(await res.json()).data)),
+          escape(
+            atob(z.object({ data: z.string() }).parse(await res.json()).data),
+          ),
         ),
       }),
     );

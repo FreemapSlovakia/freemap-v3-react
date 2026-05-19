@@ -1,7 +1,7 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { length as turfLength } from '@turf/length';
 import { useMemo } from 'react';
-import { assert } from 'typia';
+import z from 'zod';
 import { TrackPoint } from '../model/actions.js';
 
 export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
@@ -32,9 +32,10 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
 
         let finishTime: Date | undefined;
 
-        const times = assert<string[] | undefined>(
-          feature.properties && feature.properties['coordTimes'],
-        );
+        const times = z
+          .array(z.string())
+          .optional()
+          .parse(feature.properties && feature.properties['coordTimes']);
 
         if (times) {
           startTime = new Date(times[0]);

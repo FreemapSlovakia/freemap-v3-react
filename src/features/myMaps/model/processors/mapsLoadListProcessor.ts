@@ -2,9 +2,8 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
-import type { StringDates } from '@shared/types/common.js';
-import { assert } from 'typia';
-import { type MapMeta, mapsLoadList, mapsSetList } from '../actions.js';
+import z from 'zod';
+import { MapMetaSchema, mapsLoadList, mapsSetList } from '../actions.js';
 
 export const mapsLoadListProcessor: Processor = {
   actionCreator: [mapsLoadList, authSetUser, authLogout, setActiveModal],
@@ -18,15 +17,7 @@ export const mapsLoadListProcessor: Processor = {
         cancelActions: [mapsLoadList, authSetUser, authLogout, setActiveModal],
       });
 
-      dispatch(
-        mapsSetList(
-          assert<StringDates<MapMeta[]>>(await res.json()).map((map) => ({
-            ...map,
-            createdAt: new Date(map.createdAt),
-            modifiedAt: new Date(map.modifiedAt),
-          })),
-        ),
-      );
+      dispatch(mapsSetList(z.array(MapMetaSchema).parse(await res.json())));
     } else if (getState().maps.maps.length) {
       dispatch(mapsSetList([]));
     }

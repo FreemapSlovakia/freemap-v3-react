@@ -2,10 +2,10 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { colors } from '@shared/constants.js';
+import { COLORS } from '@shared/colors.js';
 import { featureCollection, lineString, point, polygon } from '@turf/helpers';
 import { Feature } from 'geojson';
-import { assert } from 'typia';
+import z from 'zod';
 import { exportMap } from './actions.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
@@ -71,7 +71,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
 
       const props = {
         name: line.label || '',
-        color: line.color ?? colors.normal,
+        color: line.color ?? COLORS.normal,
         width: line.width ?? 4,
         lineJoin: line.lineJoin,
         lineCap: line.lineCap,
@@ -100,7 +100,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
       features.push(
         point([p.coords.lon, p.coords.lat], {
           name: p.label || '',
-          color: p.color ?? colors.normal,
+          color: p.color ?? COLORS.normal,
         }),
       );
     }
@@ -159,7 +159,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     expectedStatus: 200,
   });
 
-  const data = assert<{ token: string }>(await res.json());
+  const data = z.object({ token: z.string() }).parse(await res.json());
 
   dispatch(setActiveModal(null));
 

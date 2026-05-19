@@ -1,10 +1,9 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import type { StringDates } from '@shared/types/common.js';
-import { assert } from 'typia';
+import z from 'zod';
 import { trackingActions } from '../actions.js';
-import type { AccessToken } from '../types.js';
+import { AccessTokenSchema } from '../types.js';
 
 export const saveAccessTokenProcessor: Processor<
   typeof trackingActions.saveAccessToken
@@ -68,12 +67,7 @@ export const loadAccessTokensProcessor: Processor<
 
     dispatch(
       trackingActions.setAccessTokens(
-        assert<StringDates<AccessToken[]>>(await res.json()).map((item) => ({
-          ...item,
-          createdAt: new Date(item.createdAt),
-          timeFrom: item.timeFrom === null ? null : new Date(item.timeFrom),
-          timeTo: item.timeTo === null ? null : new Date(item.timeTo),
-        })),
+        z.array(AccessTokenSchema).parse(await res.json()),
       ),
     );
   },

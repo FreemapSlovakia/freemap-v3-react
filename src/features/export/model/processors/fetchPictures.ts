@@ -3,23 +3,25 @@ import type { RootState } from '@app/store/store.js';
 import { createFilter } from '@features/gallery/galleryUtils.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
-import { assert } from 'typia';
-import { StringDates } from '../../../../shared/types/common.js';
+import { IsoDateSchema } from '@shared/types/common.js';
+import z from 'zod';
 
-export type Picture = {
-  lat: number;
-  lon: number;
-  id: number;
-  takenAt: Date | null;
-  createdAt: Date | null;
-  title: string | null;
-  description: string | null;
-  tags: string[];
-  user: string;
-  rating: number;
-  premium?: boolean;
-  hmac?: string;
-};
+const PictureSchema = z.object({
+  lat: z.number(),
+  lon: z.number(),
+  id: z.number(),
+  takenAt: IsoDateSchema.nullable(),
+  createdAt: IsoDateSchema.nullable(),
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  tags: z.array(z.string()),
+  user: z.string(),
+  rating: z.number(),
+  premium: z.boolean().optional(),
+  hmac: z.string().optional(),
+});
+
+export type Picture = z.infer<typeof PictureSchema>;
 
 export async function fetchPictures(getState: () => RootState) {
   const res = await httpRequest({
@@ -46,9 +48,5 @@ export async function fetchPictures(getState: () => RootState) {
     expectedStatus: 200,
   });
 
-  return assert<StringDates<Picture>[]>(await res.json()).map((p) => ({
-    ...p,
-    createdAt: p.createdAt == null ? p.createdAt : new Date(p.createdAt),
-    takenAt: p.takenAt == null ? p.takenAt : new Date(p.takenAt),
-  }));
+  return z.array(PictureSchema).parse(await res.json());
 }

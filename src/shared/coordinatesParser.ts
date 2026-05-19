@@ -1,5 +1,4 @@
-import type { LatLon } from '@shared/types/common.js';
-import { assert } from 'typia';
+import { LatLon, LatLonSchema } from '@shared/types/common.js';
 
 // TODO publish as npm package
 
@@ -34,7 +33,7 @@ export function parseCoordinates(coord: string): LatLon {
   const mXml = P_XML.exec(coord);
 
   if (mXml) {
-    return assert<LatLon>({
+    return LatLonSchema.parse({
       ...toLatLon1(parseFloat(mXml[1].replace(',', '.')), 0.0, 0.0, 'N'),
       ...toLatLon1(parseFloat(mXml[2].replace(',', '.')), 0.0, 0.0, 'E'),
     });
@@ -227,7 +226,7 @@ function toLatLon(
     ...toLatLon1(coord2deg, coord2min, coord2sec, card2),
   };
 
-  return assert<LatLon>(latLon);
+  return LatLonSchema.parse(latLon);
 }
 
 function toLatLon1(

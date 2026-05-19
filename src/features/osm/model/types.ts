@@ -1,24 +1,46 @@
-import type { LatLon } from '@shared/types/common.js';
+import z from 'zod';
 
-interface OsmElement {
-  id: number;
-  tags?: Record<string, string>;
-}
+const OsmElementSchema = z.object({
+  id: z.number(),
+  tags: z.record(z.string(), z.string()).optional(),
+});
 
-export interface OsmNode extends OsmElement, LatLon {
-  type: 'node';
-}
+export const OsmNodeSchema = z.object({
+  ...OsmElementSchema.shape,
+  type: z.literal('node'),
+  lat: z.number(),
+  lon: z.number(),
+});
 
-export interface OsmWay extends OsmElement {
-  type: 'way';
-  nodes: number[];
-}
+export const OsmWaySchema = z.object({
+  ...OsmElementSchema.shape,
+  type: z.literal('way'),
+  nodes: z.array(z.number()),
+});
 
-export interface OsmRelation extends OsmElement {
-  type: 'relation';
-  members: { type: 'node' | 'way' | 'relation'; ref: number; role?: string }[];
-}
+export const OsmRelationSchema = z.object({
+  ...OsmElementSchema.shape,
+  type: z.literal('relation'),
+  members: z.array(
+    z.object({
+      type: z.enum(['node', 'way', 'relation']),
+      ref: z.number(),
+      role: z.string().optional(),
+    }),
+  ),
+});
 
-export interface OsmResult {
-  elements: (OsmNode | OsmWay | OsmRelation)[];
-}
+export const OsmResultSchema = z.object({
+  elements: z.array(
+    z.discriminatedUnion('type', [
+      OsmNodeSchema,
+      OsmWaySchema,
+      OsmRelationSchema,
+    ]),
+  ),
+});
+
+export type OsmNode = z.infer<typeof OsmNodeSchema>;
+export type OsmWay = z.infer<typeof OsmWaySchema>;
+export type OsmRelation = z.infer<typeof OsmRelationSchema>;
+export type OsmResult = z.infer<typeof OsmResultSchema>;

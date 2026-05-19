@@ -6,9 +6,13 @@ import { mergeLines } from '@shared/geoutils.js';
 import { FeatureId } from '@shared/types/featureId.js';
 import { featureCollection, lineString, point } from '@turf/helpers';
 import type { Feature, LineString, Point, Polygon } from 'geojson';
-import { assert } from 'typia';
 import { osmLoadRelation } from '../osmActions.js';
-import type { OsmNode, OsmRelation, OsmResult, OsmWay } from '../types.js';
+import {
+  type OsmNode,
+  type OsmRelation,
+  OsmResultSchema,
+  type OsmWay,
+} from '../types.js';
 import { copyDisplayName } from './copyDisplayName.js';
 
 export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
@@ -24,7 +28,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
       cancelActions: [clearMapFeatures, searchSelectResult],
     });
 
-    const data = assert<OsmResult>(await res.json());
+    const data = OsmResultSchema.parse(await res.json());
 
     const nodes: Record<number, OsmNode> = {};
 
@@ -39,8 +43,8 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
     }
 
     const relations = data.elements.filter(
-      (el) => el.type === 'relation',
-    ) as OsmRelation[];
+      (el): el is OsmRelation => el.type === 'relation',
+    );
 
     const features: Feature<Point | LineString | Polygon>[] = [];
 

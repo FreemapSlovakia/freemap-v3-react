@@ -4,7 +4,7 @@ import {
   selectingModeSelector,
 } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
-import { colors } from '@shared/constants.js';
+import { COLORS } from '@shared/colors.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -50,14 +50,14 @@ const circularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="circular-leaflet-marker-icon" style="background-color: var(--color-normal, ${colors.normal})"></div>`,
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: var(--color-normal, ${COLORS.normal})"></div>`,
 });
 
 const selectedCircularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="circular-leaflet-marker-icon" style="background-color: var(--color-selected, ${colors.selected})"></div>`,
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: var(--color-selected, ${COLORS.selected})"></div>`,
 });
 
 type Props = {
@@ -84,7 +84,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
       : undefined,
   );
 
-  const color = line.color || colors.normal;
+  const color = line.color || COLORS.normal;
 
   const width = line.width || 4;
 

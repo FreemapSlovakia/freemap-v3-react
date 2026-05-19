@@ -1,63 +1,47 @@
-import {
-  type AuthState,
-  authInitialState,
-  authReducer,
-} from '@features/auth/model/reducer.js';
+import { authInitialState, authReducer } from '@features/auth/model/reducer.js';
+import { UserSchema, UserSettingsSchema } from '@features/auth/model/types.js';
 import { cachedMapsReducer } from '@features/cachedMaps/model/reducer.js';
 import { changesetReducer } from '@features/changesets/model/reducer.js';
 import {
-  type CookieConsentState,
   cookieConsentInitialState,
   cookieConsentReducer,
 } from '@features/cookieConsent/model/reducer.js';
 import { drawingLinesReducer } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import { drawingPointsReducer } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import {
-  type DrawingSettingsState,
   drawingSettingsInitialState,
   drawingSettingsReducer,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { elevationChartReducer } from '@features/elevationChart/model/reducer.js';
-import type { GalleryColorizeBy } from '@features/gallery/model/actions.js';
+import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
 import {
   galleryInitialState,
   galleryReducer,
 } from '@features/gallery/model/reducer.js';
 import { geoIpReducer } from '@features/geoip/model/reducer.js';
 import {
-  type HomeLocationState,
   homeLocationInitialState,
   homeLocationReducer,
 } from '@features/homeLocation/model/reducer.js';
+import { l10nInitialState, l10nReducer } from '@features/l10n/model/reducer.js';
 import {
-  type L10nState,
-  l10nInitialState,
-  l10nReducer,
-} from '@features/l10n/model/reducer.js';
-import {
-  type LocationState,
   locationInitialState,
   locationReducer,
 } from '@features/location/model/reducer.js';
-import {
-  type MapState,
-  mapInitialState,
-  mapReducer,
-} from '@features/map/model/reducer.js';
-import { MapDetailsSource } from '@features/mapDetails/model/actions.js';
+import { LayerSettingsSchema } from '@features/map/model/actions.js';
+import { mapInitialState, mapReducer } from '@features/map/model/reducer.js';
 import {
   mapDetailsInitialState,
   mapDetailsReducer,
 } from '@features/mapDetails/model/reducer.js';
 import { mapsReducer } from '@features/myMaps/model/reducer.js';
 import {
-  type ObjectsState,
   objectInitialState,
   objectsReducer,
 } from '@features/objects/model/reducer.js';
+import { ShadingSchema } from '@features/parameterizedShading/Shading.js';
 import { progressReducer } from '@features/progress/model/reducer.js';
 import {
-  type RoutePlannerState,
   routePlannerInitialState,
   routePlannerReducer,
 } from '@features/routePlanner/model/reducer.js';
@@ -65,23 +49,140 @@ import { searchReducer } from '@features/search/model/reducer.js';
 import { toastsReducer } from '@features/toasts/model/reducer.js';
 import { trackingReducer } from '@features/tracking/model/reducer.js';
 import {
-  type TrackViewerState,
   trackViewerInitialState,
   trackViewerReducer,
 } from '@features/trackViewer/model/reducer.js';
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
 import { wikimediaCommonsReducer } from '@features/wikimediaCommons/model/reducer.js';
-import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
 import {
-  migrateTransportType,
-  transportTypeDefs,
-} from '@shared/transportTypeDefs.js';
-import { StringDates } from '@shared/types/common.js';
+  CustomLayerDefArrayCompatSchema,
+  StravaHeatmapColorSchema,
+} from '@shared/mapDefinitions.js';
+import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
+import { LatLonSchema } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
-import { is } from 'typia';
+import z from 'zod';
 import type { RootState } from '../store/store.js';
-import { type MainState, mainInitialState, mainReducer } from './reducer.js';
+import { mainInitialState, mainReducer } from './reducer.js';
+
+const PersistedAuthSchema = z.object({
+  user: z
+    .object({
+      ...UserSchema.shape,
+      settings: UserSettingsSchema.optional().catch(undefined),
+    })
+    .nullable()
+    .optional(),
+});
+
+const PersistedMapSchema = z
+  .object({
+    lat: z.number(),
+    lon: z.number(),
+    zoom: z.number(),
+    layers: z.array(z.string()),
+    layersSettings: z.record(z.string(), LayerSettingsSchema),
+    customLayers: CustomLayerDefArrayCompatSchema,
+    legacyMapWarningSuppressions: z.array(z.string()),
+    shading: ShadingSchema,
+    maxZoom: z.number(),
+    resolutionScale: z.number().nullable(),
+    featureScale: z.number(),
+    stravaHeatmapColor: StravaHeatmapColorSchema,
+  })
+  .partial();
+
+const PersistedL10nSchema = z
+  .object({
+    chosenLanguage: z.string().nullable(),
+  })
+  .partial();
+
+const PersistedCookieConsentSchema = z
+  .object({
+    cookieConsentResult: z.boolean().nullable(),
+    analyticCookiesAllowed: z.boolean(),
+  })
+  .partial();
+
+const PersistedDrawingSettingsSchema = z
+  .object({
+    drawingColor: z.string(),
+    drawingWidth: z.number(),
+    drawingRecentColors: z.array(z.string()),
+  })
+  .partial();
+
+const PersistedHomeLocationSchema = z
+  .object({
+    homeLocation: LatLonSchema.nullable(),
+  })
+  .partial();
+
+const PersistedLocationSchema = z
+  .object({
+    locate: z.boolean(),
+    location: z
+      .object({
+        lat: z.number(),
+        lon: z.number(),
+        accuracy: z.number(),
+      })
+      .nullable(),
+  })
+  .partial();
+
+const PersistedMainSchema = z
+  .object({
+    hiddenInfoBars: z.record(z.string(), z.number()),
+  })
+  .partial();
+
+const PersistedObjectsSchema = z
+  .object({
+    selectedIcon: z.enum(['pin', 'square', 'ring']),
+  })
+  .partial();
+
+const PersistedRoutePlannerSchema = z
+  .object({
+    preventHint: z.boolean(),
+    transportType: TransportTypeCompatSchema,
+    milestones: z.union([z.literal('abs'), z.literal('rel'), z.literal(false)]),
+  })
+  .partial();
+
+const PersistedTrackViewerSchema = z
+  .object({
+    colorizeTrackBy: z.enum(['elevation', 'steepness']).nullable(),
+  })
+  .partial();
+
+const MapDetailsSourceSchema = z.union([
+  z.literal('nominatim-reverse'),
+  z.literal('overpass-nearby'),
+  z.literal('overpass-surrounding'),
+  z.custom<`wms:${string}`>(
+    (v) => typeof v === 'string' && v.startsWith('wms:'),
+  ),
+]);
+
+const PersistedMapDetailsSchema = z
+  .object({
+    excludeSources: z.array(MapDetailsSourceSchema),
+  })
+  .partial();
+
+const PersistedGallerySchema = z
+  .object({
+    colorizeBy: GalleryColorizeBySchema.nullable(),
+    showDirection: z.boolean(),
+    showLegend: z.boolean(),
+    recentTags: z.array(z.string()),
+    premium: z.boolean(),
+  })
+  .partial();
 
 export const reducers = {
   auth: authReducer,
@@ -124,201 +225,143 @@ export function getInitialState() {
 
   const initial: Partial<RootState> = {};
 
-  if (is<{ mapType: string; overlays: string[] }>(persisted.map)) {
-    (persisted.map as unknown as { layers: string[] }).layers = [
-      persisted.map.mapType,
-      ...persisted.map.overlays,
-    ];
+  // Legacy: { mapType, overlays } → { layers }
+  {
+    const m = z
+      .object({ mapType: z.string(), overlays: z.string().array() })
+      .safeParse(persisted.map);
+
+    if (m.success) {
+      (persisted.map as unknown as { layers: string[] }).layers = [
+        m.data.mapType,
+        ...m.data.overlays,
+      ];
+    }
   }
 
-  if (!is<{ customLayers: unknown }>(persisted.map)) {
-    // nothing
-  } else if (is<{ customLayers: unknown[] }>(persisted.map)) {
-    persisted.map.customLayers = upgradeCustomLayerDefs(
-      persisted.map.customLayers,
-    );
-  } else {
-    delete persisted.map.customLayers;
+  const map = PersistedMapSchema.safeParse(persisted.map);
+
+  if (map.success) {
+    initial.map = { ...mapInitialState, ...map.data };
   }
 
-  if (is<Partial<MapState>>(persisted.map)) {
-    initial.map = { ...mapInitialState, ...persisted.map };
+  const l10n = PersistedL10nSchema.safeParse(persisted.l10n);
+
+  if (l10n.success) {
+    initial.l10n = { ...l10nInitialState, ...l10n.data };
   }
 
-  if (is<Partial<L10nState>>(persisted.l10n)) {
-    initial.l10n = { ...l10nInitialState, ...persisted.l10n };
-  }
+  const auth = PersistedAuthSchema.safeParse(persisted.auth);
 
-  if (
-    is<Partial<StringDates<Omit<AuthState, 'purchases' | 'purchaseIntents'>>>>(
-      persisted.auth,
-    )
-  ) {
+  if (auth.success) {
     initial.auth = {
       ...authInitialState,
-      ...persisted.auth,
       user:
-        persisted.auth.user === undefined
-          ? authInitialState.user
-          : persisted.auth.user && {
-              ...persisted.auth.user,
-              premiumExpiration: persisted.auth.user.premiumExpiration
-                ? new Date(persisted.auth.user.premiumExpiration)
-                : null,
-            },
+        auth.data.user === undefined ? authInitialState.user : auth.data.user,
     };
   }
 
-  if (is<Partial<CookieConsentState>>(persisted.cookieConsent)) {
-    initial.cookieConsent = {
-      ...cookieConsentInitialState,
-      ...persisted.cookieConsent,
-    };
-  } else if (
-    is<{
-      cookieConsentResult?: boolean | null;
-      analyticCookiesAllowed?: boolean;
-    }>(persisted.main)
-  ) {
-    initial.cookieConsent = {
-      ...cookieConsentInitialState,
-      ...persisted.main,
-    };
+  const cookieConsent = parseWithFallback(
+    PersistedCookieConsentSchema,
+    persisted.cookieConsent,
+    persisted.main,
+  );
+
+  if (cookieConsent) {
+    initial.cookieConsent = { ...cookieConsentInitialState, ...cookieConsent };
   }
 
-  if (is<Partial<DrawingSettingsState>>(persisted.drawingSettings)) {
+  const drawingSettings = parseWithFallback(
+    PersistedDrawingSettingsSchema,
+    persisted.drawingSettings,
+    persisted.main,
+  );
+
+  if (drawingSettings) {
     initial.drawingSettings = {
       ...drawingSettingsInitialState,
-      ...persisted.drawingSettings,
-    };
-  } else if (
-    is<{
-      drawingColor?: string;
-      drawingWidth?: number;
-      drawingRecentColors?: string[];
-    }>(persisted.main)
-  ) {
-    initial.drawingSettings = {
-      ...drawingSettingsInitialState,
-      ...persisted.main,
+      ...drawingSettings,
     };
   }
 
-  if (is<Partial<HomeLocationState>>(persisted.homeLocation)) {
-    initial.homeLocation = {
-      ...homeLocationInitialState,
-      ...persisted.homeLocation,
-    };
-  } else if (
-    is<{
-      homeLocation?: HomeLocationState['homeLocation'];
-      selectingHomeLocation?: HomeLocationState['selectingHomeLocation'];
-    }>(persisted.main)
-  ) {
-    initial.homeLocation = {
-      ...homeLocationInitialState,
-      ...persisted.main,
-    };
+  const homeLocation = parseWithFallback(
+    PersistedHomeLocationSchema,
+    persisted.homeLocation,
+    persisted.main,
+  );
+
+  if (homeLocation) {
+    initial.homeLocation = { ...homeLocationInitialState, ...homeLocation };
   }
 
-  if (is<Partial<LocationState>>(persisted.location)) {
-    initial.location = {
-      ...locationInitialState,
-      ...persisted.location,
-    };
-  } else if (
-    is<{
-      locate?: boolean;
-      location?: LocationState['location'];
-    }>(persisted.main)
-  ) {
-    initial.location = {
-      ...locationInitialState,
-      ...persisted.main,
-    };
+  const location = parseWithFallback(
+    PersistedLocationSchema,
+    persisted.location,
+    persisted.main,
+  );
+
+  if (location) {
+    initial.location = { ...locationInitialState, ...location };
   }
 
-  if (
-    is<{
-      cookieConsentResult?: unknown;
-      analyticCookiesAllowed?: unknown;
-      drawingColor?: unknown;
-      drawingWidth?: unknown;
-      drawingRecentColors?: unknown;
-      homeLocation?: unknown;
-      selectingHomeLocation?: unknown;
-      locate?: unknown;
-      location?: unknown;
-      purchaseOnLogin?: unknown;
-    }>(persisted.main)
-  ) {
-    delete persisted.main.cookieConsentResult;
-    delete persisted.main.analyticCookiesAllowed;
-    delete persisted.main.drawingColor;
-    delete persisted.main.drawingWidth;
-    delete persisted.main.drawingRecentColors;
-    delete persisted.main.homeLocation;
-    delete persisted.main.selectingHomeLocation;
-    delete persisted.main.locate;
-    delete persisted.main.location;
-    delete persisted.main.purchaseOnLogin;
+  const main = PersistedMainSchema.safeParse(persisted.main);
+
+  if (main.success) {
+    initial.main = { ...mainInitialState, ...main.data };
   }
 
-  if (is<Partial<MainState>>(persisted.main)) {
-    initial.main = { ...mainInitialState, ...persisted.main };
+  const objects = PersistedObjectsSchema.safeParse(persisted.objects);
+
+  if (objects.success) {
+    initial.objects = { ...objectInitialState, ...objects.data };
   }
 
-  if (is<Partial<ObjectsState>>(persisted.objects)) {
-    initial.objects = { ...objectInitialState, ...persisted.objects };
-  }
+  const routePlanner = PersistedRoutePlannerSchema.safeParse(
+    persisted.routePlanner,
+  );
 
-  if (is<{ transportType: unknown }>(persisted.routePlanner)) {
-    persisted.routePlanner.transportType = migrateTransportType(
-      persisted.routePlanner.transportType,
-    );
-  }
-
-  if (is<Partial<RoutePlannerState>>(persisted.routePlanner)) {
+  if (routePlanner.success) {
     initial.routePlanner = {
       ...routePlannerInitialState,
-      ...persisted.routePlanner,
+      ...routePlanner.data,
     };
   }
 
-  if (is<Partial<TrackViewerState>>(persisted.trackViewer)) {
-    initial.trackViewer = {
-      ...trackViewerInitialState,
-      ...persisted.trackViewer,
-    };
+  const trackViewer = PersistedTrackViewerSchema.safeParse(
+    persisted.trackViewer,
+  );
+
+  if (trackViewer.success) {
+    initial.trackViewer = { ...trackViewerInitialState, ...trackViewer.data };
   }
 
-  if (is<{ sources: MapDetailsSource[] }>(persisted.mapDetails)) {
-    initial.mapDetails = {
-      ...mapDetailsInitialState,
-      ...persisted.mapDetails,
-    };
+  const mapDetails = PersistedMapDetailsSchema.safeParse(persisted.mapDetails);
+
+  if (mapDetails.success) {
+    initial.mapDetails = { ...mapDetailsInitialState, ...mapDetails.data };
   }
 
-  if (
-    is<{
-      colorizeBy?: GalleryColorizeBy | null;
-      recentTags?: string[];
-      showDirection?: boolean;
-      showLegend?: boolean;
-      premium?: boolean;
-    }>(persisted.gallery)
-  ) {
-    initial.gallery = {
-      ...galleryInitialState,
-      ...persisted.gallery,
-    };
-  }
+  const gallery = PersistedGallerySchema.safeParse(persisted.gallery);
 
-  const tt = initial.routePlanner?.transportType;
-
-  if (initial.routePlanner && tt && !transportTypeDefs[tt]) {
-    initial.routePlanner.transportType = 'hiking';
+  if (gallery.success) {
+    initial.gallery = { ...galleryInitialState, ...gallery.data };
   }
 
   return initial;
+}
+
+function parseWithFallback<T extends object>(
+  schema: z.ZodType<T>,
+  primary: unknown,
+  fallback: unknown,
+): T | undefined {
+  const a = schema.safeParse(primary);
+
+  if (a.success && Object.keys(a.data).length > 0) {
+    return a.data;
+  }
+
+  const b = schema.safeParse(fallback);
+
+  return b.success && Object.keys(b.data).length > 0 ? b.data : undefined;
 }

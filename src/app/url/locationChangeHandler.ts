@@ -10,7 +10,7 @@ import {
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
-  GalleryColorizeBy,
+  GalleryColorizeBySchema,
   GalleryFilter,
   galleryClear,
   galleryColorizeBy,
@@ -54,27 +54,27 @@ import {
   wikimediaCommonsLoadPreview,
   wikimediaCommonsSetPreview,
 } from '@features/wikimediaCommons/model/actions.js';
-import { tools } from '@shared/constants.js';
 import {
+  CustomLayerDefArrayCompatSchema,
   integratedLayerDefMap,
-  upgradeCustomLayerDefs,
 } from '@shared/mapDefinitions.js';
 import {
-  migrateTransportType,
   type TransportType,
+  TransportTypeCompatSchema,
+  TransportTypeSchema,
 } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
-import { is } from 'typia';
 import {
   enableUpdatingUrl,
-  ShowModal,
+  ShowModalCompatSchema,
+  ShowModalSchema,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
   setTool,
-  Tool,
+  ToolSchema,
 } from '../store/actions.js';
 import type { RootAction } from '../store/rootAction.js';
 import type { MyStore, RootState } from '../store/store.js';
@@ -140,9 +140,7 @@ export function handleLocationChange(store: MyStore): void {
           ? 'draw-polygons'
           : query['tool'] === 'measure-dist'
             ? 'draw-lines'
-            : tools.includes(query['tool'] as Tool)
-              ? (query['tool'] as Tool)
-              : null;
+            : (ToolSchema.safeParse(query['tool']).data ?? null);
 
   if (getState().main.tool !== tool) {
     dispatch(setTool(tool));
@@ -185,7 +183,7 @@ export function handleLocationChange(store: MyStore): void {
           (point !== null || i === 0 || i === qPoints.length - 1) &&
           (point === null ||
             (point.length === 3 &&
-              is<TransportType | undefined>(point[0]) &&
+              TransportTypeSchema.optional().safeParse(point[0]).success &&
               !Number.isNaN(point[1]) &&
               !Number.isNaN(point[2]))),
       );
@@ -199,7 +197,7 @@ export function handleLocationChange(store: MyStore): void {
           ? 'rel'
           : false;
 
-    if (is<TransportType>(query['transport']) && pointsOk) {
+    if (TransportTypeSchema.safeParse(query['transport']).success && pointsOk) {
       const {
         points,
         finishOnly,
@@ -251,7 +249,7 @@ export function handleLocationChange(store: MyStore): void {
           routePlannerSetParams({
             points: latLons as unknown as RoutePoint[],
             finishOnly: nextFinishOnly,
-            transportType: migrateTransportType(query['transport']),
+            transportType: TransportTypeCompatSchema.parse(query['transport']),
             mode:
               routeMode === 'trip' ||
               routeMode === 'roundtrip' ||
@@ -462,7 +460,7 @@ export function handleLocationChange(store: MyStore): void {
     );
 
     try {
-      const customLayerDefs = upgradeCustomLayerDefs(
+      const customLayerDefs = CustomLayerDefArrayCompatSchema.parse(
         JSON.parse(customLayerDefsStr),
       );
 
@@ -617,29 +615,15 @@ export function handleLocationChange(store: MyStore): void {
 
   const activeModal = getState().main.activeModal;
 
-  let { show } = query;
+  const result = ShowModalCompatSchema.safeParse(query['show']);
 
-  // support legacy
-  if (show === 'export-gpx') {
-    show = 'export-map-features';
-  } else if (show === 'export-pdf') {
-    show = 'export-map';
-  } else if (show === 'supportUs') {
-    show = 'support-us';
-  } else if (show === 'mapSettings' || show === 'map-settings') {
-    show = 'map-layers-config';
-  } else if (show === 'remove-ads') {
-    show = 'premium';
-  }
-
-  if (is<ShowModal>(show)) {
-    if (show !== activeModal) {
-      dispatch(setActiveModal(show));
+  if (result.success) {
+    if (result.data !== activeModal) {
+      dispatch(setActiveModal(result.data));
     }
-  } else if (is<ShowModal>(activeModal)) {
+  } else if (ShowModalSchema.safeParse(activeModal).success) {
     dispatch(setActiveModal(null));
   }
-
   const doc = query['document'] ?? query['tip'];
 
   if (typeof doc === 'string') {
@@ -960,10 +944,10 @@ function handleGallery(
     dispatch(wikimediaCommonsSetPreview(null));
   }
 
-  const cb = query['gallery-cb'];
+  const cb = GalleryColorizeBySchema.safeParse(query['gallery-cb']);
 
-  if (is<GalleryColorizeBy>(cb)) {
-    dispatch(galleryColorizeBy(cb));
+  if (cb.success) {
+    dispatch(galleryColorizeBy(cb.data));
   }
 }
 

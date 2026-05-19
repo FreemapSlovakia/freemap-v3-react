@@ -13,7 +13,7 @@ import type { LatLon } from '@shared/types/common.js';
 import { area } from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import { length } from '@turf/length';
-import { assert } from 'typia';
+import z from 'zod';
 import { drawingMeasure } from './actions/drawingPointActions.js';
 
 const cancelType = [
@@ -61,7 +61,10 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
           cancelActions: [drawingMeasure, clearMapFeatures],
         });
 
-        elevation = assert<[number]>(await res.json())[0];
+        elevation = z
+          .array(z.number())
+          .length(1)
+          .parse(await res.json())[0];
       }
 
       dispatch(

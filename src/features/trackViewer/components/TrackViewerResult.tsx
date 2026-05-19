@@ -1,8 +1,8 @@
 import { setTool } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
-import { colors } from '@shared/constants.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { smoothElevations } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -184,7 +184,7 @@ export function TrackViewerResult({
 
       {getFeatures('Point').map(({ geometry, properties }, i) => (
         <RichMarker
-          faIcon={<FaFlag color={colors.normal} />}
+          faIcon={<FaFlag color={COLORS.normal} />}
           key={`point-${i}-${interactive ? 'a' : 'b'}`}
           interactive={interactive}
           position={{

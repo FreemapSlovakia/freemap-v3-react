@@ -1,7 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { assert } from 'typia';
+import z from 'zod';
 import { authWithGarmin } from '../actions.js';
 
 export const handle: ProcessorHandler<typeof authWithGarmin> = async ({
@@ -25,7 +25,9 @@ export const handle: ProcessorHandler<typeof authWithGarmin> = async ({
     expectedStatus: 200,
   });
 
-  const { redirectUrl } = assert<{ redirectUrl: string }>(await res.json());
+  const { redirectUrl } = z
+    .object({ redirectUrl: z.string() })
+    .parse(await res.json());
 
   const w = window.open(
     redirectUrl,

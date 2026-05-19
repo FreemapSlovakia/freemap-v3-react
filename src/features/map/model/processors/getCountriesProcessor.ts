@@ -1,7 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { Processor } from '@app/store/middleware/processorMiddleware.js';
 import bboxPolygon from '@turf/bbox-polygon';
-import { assert } from 'typia';
+import z from 'zod';
 import { mapSetBounds, mapSetCountries } from '../actions.js';
 
 export const getCountriesProcessor: Processor = {
@@ -27,7 +27,7 @@ export const getCountriesProcessor: Processor = {
           cancelActions: [mapSetBounds],
         });
 
-        dispatch(mapSetCountries(assert<string[]>(await res.json())));
+        dispatch(mapSetCountries(z.array(z.string()).parse(await res.json())));
       })().catch((err) => {
         if (err instanceof DOMException && err.name === 'AbortError') {
           return;

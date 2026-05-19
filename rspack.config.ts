@@ -1,19 +1,20 @@
+import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
+import type {
+  Configuration,
+  CssExtractRspackLoaderOptions,
+} from '@rspack/core';
+import { rspack } from '@rspack/core';
+import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import path from 'path';
-import process from 'process';
+import HtmlRspackPlugin from 'html-rspack-plugin';
+import { RspackManifestPlugin } from 'rspack-manifest-plugin';
 import * as sass from 'sass-embedded';
 import type SassLoader from 'sass-loader';
 import TerserPlugin from 'terser-webpack-plugin';
-import type { Configuration } from 'webpack';
-import webpack from 'webpack';
-import { WebpackAssetsManifest } from 'webpack-assets-manifest';
-import { MarkdownDictPlugin } from './MarkdownDictPlugin.js';
+import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
+import { RspackMarkdownDictPlugin } from './RspackMarkdownDictPlugin.js';
 
 import csMessages from './src/translations/cs-shared.js';
 import deMessages from './src/translations/de-shared.js';
@@ -25,7 +26,7 @@ import skMessages from './src/translations/sk-shared.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const prod = process.env['DEPLOYMENT'] && process.env['DEPLOYMENT'] !== 'dev';
+const prod = 'DEPLOYMENT' in process.env && process.env['DEPLOYMENT'] !== 'dev';
 const cssModuleRegex = /\.module\.css$/;
 const scssModuleRegex = /\.module\.scss$/;
 
@@ -48,9 +49,6 @@ const htmlPluginProps = {
 
 const config: Configuration = {
   mode: prod ? 'production' : 'development',
-  cache: {
-    type: 'filesystem',
-  },
   context: path.resolve(__dirname, 'src'),
   entry: {
     main: './app/index.tsx',
@@ -80,31 +78,40 @@ const config: Configuration = {
     extensionAlias: {
       '.js': ['.js', '.ts', '.tsx'],
     },
-    fallback: {
-      url: false,
-      fs: false,
-      path: false,
-    },
   },
   optimization: {
-    // moduleIds: 'deterministic',
-    // chunkIds: 'named',
     minimizer: [
       new TerserPlugin({
         minify: TerserPlugin.swcMinify,
-        // Optional: you can pass SWC-specific options here
       }),
       new CssMinimizerPlugin(),
     ],
   },
-  // more info: https://webpack.js.org/configuration/devtool/
+  devServer: {
+    hot: true,
+    liveReload: false,
+    server: {
+      type: 'https',
+      options: {
+        key: path.resolve(__dirname, 'ssl/freemap.sk.key'),
+        cert: path.resolve(__dirname, 'ssl/freemap.sk.pem'),
+      },
+    },
+    host: '0.0.0.0',
+    port: 9000,
+    allowedHosts: 'all',
+    client: {
+      overlay: false,
+    },
+    static: false,
+  },
   devtool: prod ? 'source-map' : 'cheap-module-source-map',
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'swc-loader',
+        loader: 'builtin:swc-loader',
         options: {
           jsc: {
             parser: {
@@ -119,6 +126,7 @@ const config: Configuration = {
             },
           },
         },
+        type: 'javascript/auto',
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
@@ -129,14 +137,14 @@ const config: Configuration = {
         use: [
           prod
             ? {
-                loader: MiniCssExtractPlugin.loader,
+                loader: rspack.CssExtractRspackPlugin.loader,
                 options: {
                   publicPath: (resourcePath, context) => {
                     return (
                       path.relative(path.dirname(resourcePath), context) + '/'
                     );
                   },
-                } satisfies MiniCssExtractPlugin.LoaderOptions,
+                } satisfies CssExtractRspackLoaderOptions,
               }
             : 'style-loader',
           {
@@ -172,14 +180,14 @@ const config: Configuration = {
         use: [
           prod
             ? {
-                loader: MiniCssExtractPlugin.loader,
+                loader: rspack.CssExtractRspackPlugin.loader,
                 options: {
                   publicPath: (resourcePath, context) => {
                     return (
                       path.relative(path.dirname(resourcePath), context) + '/'
                     );
                   },
-                } satisfies MiniCssExtractPlugin.LoaderOptions,
+                } satisfies CssExtractRspackLoaderOptions,
               }
             : 'style-loader',
           {
@@ -207,6 +215,7 @@ const config: Configuration = {
             loader: path.resolve('markdown-loader.js'),
           },
         ],
+        type: 'javascript/auto',
       },
       {
         test: /\.mjs$/,
@@ -221,31 +230,27 @@ const config: Configuration = {
   },
   plugins: [
     !prod &&
-      new ForkTsCheckerWebpackPlugin({
+      new TsCheckerRspackPlugin({
         typescript: {
           configFile: path.resolve(__dirname, 'tsconfig.json'),
         },
       }),
-    new MarkdownDictPlugin({ dir: 'src/documents' }),
-    !prod &&
-      new ReactRefreshWebpackPlugin({
-        overlay: false,
-      }),
-    new WebpackAssetsManifest({
-      customize(entry) {
-        return entry &&
-          typeof entry.key === 'string' &&
-          (entry.key?.endsWith('.map') ||
-            entry.key?.endsWith('.sw') ||
-            entry.key === '.htaccess')
-          ? false
-          : entry;
+    new RspackMarkdownDictPlugin({ dir: 'src/documents' }),
+    !prod && new ReactRefreshRspackPlugin(),
+    new RspackManifestPlugin({
+      fileName: 'assets-manifest.json',
+      filter: (file) => {
+        return (
+          !file.name.endsWith('.map') &&
+          !file.name.endsWith('.sw') &&
+          file.name !== '.htaccess'
+        );
       },
     }),
-    new webpack.EnvironmentPlugin({
+    new rspack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react
       BROWSER: 'true',
-      PREVENT_ADS: 'PREVENT_ADS' in process.env,
+      PREVENT_ADS: String('PREVENT_ADS' in process.env),
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
@@ -269,12 +274,12 @@ const config: Configuration = {
           www: 'https://graphhopper.freemap.sk',
         }[process.env['DEPLOYMENT']!] || 'https://graphhopper.freemap.sk', //'http://localhost:8989',
     }),
-    new HtmlWebpackPlugin(htmlPluginProps), // fallback for dev
-    new HtmlWebpackPlugin({
+    new HtmlRspackPlugin(htmlPluginProps), // fallback for dev
+    new HtmlRspackPlugin({
       ...htmlPluginProps,
       filename: 'index-en.html',
     }),
-    new HtmlWebpackPlugin({
+    new HtmlRspackPlugin({
       ...htmlPluginProps,
       filename: 'index-sk.html',
       templateParameters: {
@@ -289,7 +294,7 @@ const config: Configuration = {
         loadingMessage: 'Načítavam…',
       },
     }),
-    new HtmlWebpackPlugin({
+    new HtmlRspackPlugin({
       ...htmlPluginProps,
       filename: 'index-cs.html',
       templateParameters: {
@@ -304,7 +309,7 @@ const config: Configuration = {
         loadingMessage: 'Načítám…',
       },
     }),
-    new HtmlWebpackPlugin({
+    new HtmlRspackPlugin({
       ...htmlPluginProps,
       filename: 'index-hu.html',
       templateParameters: {
@@ -319,7 +324,7 @@ const config: Configuration = {
         loadingMessage: 'Betöltés…',
       },
     }),
-    new HtmlWebpackPlugin({
+    new HtmlRspackPlugin({
       ...htmlPluginProps,
       filename: 'index-it.html',
       templateParameters: {
@@ -334,7 +339,7 @@ const config: Configuration = {
         loadingMessage: 'Caricamento…',
       },
     }),
-    new HtmlWebpackPlugin({
+    new HtmlRspackPlugin({
       ...htmlPluginProps,
       filename: 'index-de.html',
       templateParameters: {
@@ -349,7 +354,7 @@ const config: Configuration = {
         loadingMessage: 'Lade…',
       },
     }),
-    new HtmlWebpackPlugin({
+    new HtmlRspackPlugin({
       ...htmlPluginProps,
       filename: 'index-pl.html',
       templateParameters: {
@@ -364,7 +369,7 @@ const config: Configuration = {
         loadingMessage: 'Ładowanie…',
       },
     }),
-    new CopyWebpackPlugin({
+    new rspack.CopyRspackPlugin({
       patterns: [
         {
           from: 'static/**/*',
@@ -374,9 +379,7 @@ const config: Configuration = {
       ],
     }),
     prod &&
-      new MiniCssExtractPlugin({
-        // Options similar to the same options in webpackOptions.output
-        // both options are optional
+      new rspack.CssExtractRspackPlugin({
         filename: '[name].[chunkhash].css',
         chunkFilename: '[name].[chunkhash].css',
       }),

@@ -1,6 +1,6 @@
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
-import { colors } from '@shared/constants.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Point } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
@@ -60,7 +60,7 @@ export function ChangesetsResult(): ReactElement {
 
         return (
           <RichMarker
-            faIcon={<FaPencilAlt color={colors.normal} />}
+            faIcon={<FaPencilAlt color={COLORS.normal} />}
             opacity={opacity}
             key={changeset.id}
             position={{ lat: changeset.centerLat, lng: changeset.centerLon }}

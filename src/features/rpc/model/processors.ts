@@ -1,34 +1,37 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { wsReceived, wsSend } from '@features/websocket/model/actions.js';
-import { is } from 'typia';
+import z from 'zod';
 import { rpcCall, rpcEvent, rpcResponse } from './actions.js';
 
 // TODO implement call timeout
 
-interface JsonRpcRequest {
-  jsonrpc: '2.0';
-  method: string;
-  params?: unknown;
-  id?: string | number | null;
-}
+const JsonRpcIdSchema = z.union([z.string(), z.number(), z.null()]);
 
-interface JsonRpcResponseBase {
-  jsonrpc: '2.0';
-  id?: string | number | null;
-}
+const JsonRpcRequestSchema = z.object({
+  jsonrpc: z.literal('2.0'),
+  method: z.string(),
+  params: z.unknown().optional(),
+  id: JsonRpcIdSchema.optional(),
+});
 
-interface JsonRpcOkResponse extends JsonRpcResponseBase {
-  result: unknown;
-}
+const JsonRpcErrorPayloadSchema = z.object({
+  code: z.number(),
+  message: z.string(),
+  data: z.unknown().optional(),
+});
 
-interface JsonRpcErrorResponse extends JsonRpcResponseBase {
-  error: {
-    code: number;
-    message: string;
-    data?: unknown;
-  };
-}
+const JsonRpcOkResponseSchema = z.object({
+  jsonrpc: z.literal('2.0'),
+  id: JsonRpcIdSchema.optional(),
+  result: z.unknown(),
+});
+
+const JsonRpcErrorResponseSchema = z.object({
+  jsonrpc: z.literal('2.0'),
+  id: JsonRpcIdSchema.optional(),
+  error: JsonRpcErrorPayloadSchema,
+});
 
 interface Call {
   method: string;
@@ -97,59 +100,83 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
       // ignore
     }
 
-    if (is<JsonRpcRequest>(object) && object.id === undefined) {
-      dispatch(rpcEvent({ method: object.method, params: object.params }));
-    } else if (is<JsonRpcErrorResponse>(object) && object.id == null) {
+    const reqParse = JsonRpcRequestSchema.safeParse(object);
+
+    if (reqParse.success && reqParse.data.id === undefined) {
+      dispatch(
+        rpcEvent({
+          method: reqParse.data.method,
+          params: reqParse.data.params,
+        }),
+      );
+
+      return;
+    }
+
+    const errParse = JsonRpcErrorResponseSchema.safeParse(object);
+
+    if (errParse.success && errParse.data.id == null) {
       dispatch(
         toastsAdd({
           style: 'danger',
           messageKey: 'general.operationError',
-          messageParams: { err: object.error.message },
+          messageParams: { err: errParse.data.error.message },
         }),
       );
-    } else if (
-      is<JsonRpcOkResponse | JsonRpcErrorResponse>(object) &&
-      object.id != null
-    ) {
-      const call = callMap.get(object.id);
 
-      if (!call) {
-        dispatch(
-          toastsAdd({
-            style: 'danger',
-            messageKey: 'general.operationError',
-            messageParams: { err: 'No such call.' },
-          }),
-        );
-
-        return;
-      }
-
-      callMap.delete(object.id);
-
-      const base = {
-        method: call.method,
-        params: call.params,
-        tag: call.tag,
-      };
-
-      dispatch(
-        rpcResponse(
-          is<JsonRpcErrorResponse>(object)
-            ? {
-                type: 'error',
-                ...base,
-                error: object.error,
-              }
-            : {
-                type: 'result',
-                ...base,
-                result: object.result,
-              },
-        ),
-      );
-    } else {
-      console.warn('Unexpected:', object);
+      return;
     }
+
+    const okParse = JsonRpcOkResponseSchema.safeParse(object);
+
+    const respId = errParse.success
+      ? errParse.data.id
+      : okParse.success
+        ? okParse.data.id
+        : undefined;
+
+    if (respId == null) {
+      console.warn('Unexpected:', object);
+
+      return;
+    }
+
+    const call = callMap.get(respId);
+
+    if (!call) {
+      dispatch(
+        toastsAdd({
+          style: 'danger',
+          messageKey: 'general.operationError',
+          messageParams: { err: 'No such call.' },
+        }),
+      );
+
+      return;
+    }
+
+    callMap.delete(respId);
+
+    const base = {
+      method: call.method,
+      params: call.params,
+      tag: call.tag,
+    };
+
+    dispatch(
+      rpcResponse(
+        errParse.success
+          ? {
+              type: 'error',
+              ...base,
+              error: errParse.data.error,
+            }
+          : {
+              type: 'result',
+              ...base,
+              result: okParse.success ? okParse.data.result : undefined,
+            },
+      ),
+    );
   },
 };

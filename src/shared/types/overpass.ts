@@ -1,31 +1,53 @@
-import type { LatLon } from './common.js';
+import z from 'zod';
+import { LatLonSchema } from './common.js';
 
-type Kind = 'center' | 'bounds';
+export const OverpassBoundsSchema = z.object({
+  minlat: z.number(),
+  minlon: z.number(),
+  maxlat: z.number(),
+  maxlon: z.number(),
+});
 
-interface OverpassElementBase {
-  id: number;
-  tags?: Record<string, string>; // probably bug in overpass, but it returned node without tags
+export type OverpassBounds = z.infer<typeof OverpassBoundsSchema>;
+
+const OverpassElementBaseSchema = z.object({
+  id: z.number(),
+  tags: z.record(z.string(), z.string()).optional(), // probably bug in overpass, but it returned node without tags
+});
+
+const OverpassNodeElementSchema = z.object({
+  ...OverpassElementBaseSchema.shape,
+  type: z.literal('node'),
+  lat: z.number(),
+  lon: z.number(),
+});
+
+export const OverpassCenterExtraSchema = z.object({ center: LatLonSchema });
+
+export const OverpassBoundsExtraSchema = z.object({
+  bounds: OverpassBoundsSchema,
+});
+
+export function overpassResultSchema<E extends z.ZodType>(extraSchema: E) {
+  return z.object({
+    elements: z.array(
+      z.union([
+        OverpassNodeElementSchema,
+        z.intersection(
+          z.object({
+            ...OverpassElementBaseSchema.shape,
+            type: z.enum(['way', 'relation']),
+          }),
+          extraSchema,
+        ),
+      ]),
+    ),
+  });
 }
 
-interface OverpassNodeElement extends OverpassElementBase, LatLon {
-  type: 'node';
-}
+export type OverpassResult<E extends z.ZodType> = z.infer<
+  ReturnType<typeof overpassResultSchema<E>>
+>;
 
-type OverpassWayOrRelationElement<T extends Kind> = OverpassElementBase & {
-  type: 'way' | 'relation';
-} & (T extends 'center' ? { center: LatLon } : { bounds: OverpassBounds });
-
-export type OverpassElement<T extends Kind> =
-  | OverpassNodeElement
-  | OverpassWayOrRelationElement<T>;
-
-export interface OverpassResult<T extends Kind> {
-  elements: OverpassElement<T>[];
-}
-
-export type OverpassBounds = {
-  minlat: number;
-  minlon: number;
-  maxlat: number;
-  maxlon: number;
-};
+export type OverpassElement<E extends z.ZodType> =
+  OverpassResult<E>['elements'][number];

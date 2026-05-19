@@ -1,28 +1,30 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { upgradeCustomLayerDefs } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
-import { StringDates } from '@shared/types/common.js';
 import { Dispatch } from 'redux';
-import { assert, is } from 'typia';
+import z from 'zod';
 import { authSetUser } from '../actions.js';
-import { LoginResponse, User, UserSettings } from '../types.js';
+import {
+  LoginResponseSchema,
+  RawUserSchema,
+  UserSettings,
+  UserSettingsCompatSchema,
+} from '../types.js';
+
+const RawLoginResponseSchema = z.object({
+  ...LoginResponseSchema.omit({ user: true }).shape,
+  user: RawUserSchema,
+});
 
 export async function handleLoginResponse(
   res: Response,
   getState: () => RootState,
   dispatch: Dispatch,
 ) {
-  const {
-    user: rawUser,
-    connect,
-    clientData,
-  } = assert<
-    Omit<LoginResponse, 'user'> & {
-      user: StringDates<Omit<User, 'settings'>> & { settings?: unknown };
-    }
-  >(await res.json());
+  const { user, connect, clientData } = RawLoginResponseSchema.parse(
+    await res.json(),
+  );
 
   dispatch(
     toastsAdd({
@@ -33,27 +35,14 @@ export async function handleLoginResponse(
     }),
   );
 
-  const user = {
-    ...rawUser,
-    premiumExpiration: rawUser.premiumExpiration
-      ? new Date(rawUser.premiumExpiration)
-      : null,
-  };
-
   let settings: UserSettings | undefined;
 
-  if (is<{ customLayers: unknown[] }>(user.settings)) {
-    user.settings.customLayers = upgradeCustomLayerDefs(
-      user.settings.customLayers,
-    );
-  }
+  const settingsResult = UserSettingsCompatSchema.safeParse(user.settings);
 
-  try {
-    settings = assert<UserSettings>(user.settings);
-  } catch (e) {
-    console.error('Invalid user settings:', e);
-
-    settings = undefined;
+  if (settingsResult.success) {
+    settings = settingsResult.data;
+  } else {
+    console.error('Invalid user settings:', settingsResult.error);
   }
 
   dispatch(authSetUser({ ...user, settings }));

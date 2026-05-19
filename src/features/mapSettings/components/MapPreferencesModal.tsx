@@ -2,6 +2,10 @@ import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import {
+  type StravaHeatmapColor,
+  StravaHeatmapColorSchema,
+} from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   ChangeEvent,
@@ -33,6 +37,10 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
     String(state.map.featureScale),
   );
 
+  const initialStravaHeatmapColor = useAppSelector(
+    (state) => state.map.stravaHeatmapColor,
+  );
+
   const [maxZoom, setMaxZoom] = useState(initialMaxZoom);
 
   const [resolutionScale, setResolutionScale] = useState(
@@ -40,6 +48,10 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
   );
 
   const [featureScale, setFeatureScale] = useState(initialFeatureScale);
+
+  const [stravaHeatmapColor, setStravaHeatmapColor] = useState(
+    initialStravaHeatmapColor,
+  );
 
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
@@ -51,16 +63,16 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
     (e: SubmitEvent) => {
       e.preventDefault();
 
+      const settings: Parameters<typeof saveSettings>[0]['settings'] = {};
+
       if (maxZoom !== initialMaxZoom) {
         const maxZoomValue = parseInt(maxZoom, 10);
 
-        dispatch(
-          saveSettings({
-            settings: {
-              maxZoom: isNaN(maxZoomValue) ? 20 : maxZoomValue,
-            },
-          }),
-        );
+        settings.maxZoom = isNaN(maxZoomValue) ? 20 : maxZoomValue;
+      }
+
+      if (stravaHeatmapColor !== initialStravaHeatmapColor) {
+        settings.stravaHeatmapColor = stravaHeatmapColor;
       }
 
       if (
@@ -76,7 +88,13 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
         );
       }
 
-      close();
+      if (Object.keys(settings).length > 0) {
+        // saveSettingsProcessor closes the modal on success;
+        // dispatching setActiveModal(null) here would cancel its PATCH.
+        dispatch(saveSettings({ settings }));
+      } else {
+        close();
+      }
     },
     [
       close,
@@ -85,8 +103,10 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
       initialFeatureScale,
       initialMaxZoom,
       initialResolutionScale,
+      initialStravaHeatmapColor,
       maxZoom,
       resolutionScale,
+      stravaHeatmapColor,
     ],
   );
 
@@ -111,10 +131,18 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
     [],
   );
 
+  const handleStravaHeatmapColorChange = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
+      setStravaHeatmapColor(e.currentTarget.value as StravaHeatmapColor);
+    },
+    [],
+  );
+
   const dirty =
     maxZoom !== initialMaxZoom ||
     resolutionScale !== initialResolutionScale ||
-    featureScale !== initialFeatureScale;
+    featureScale !== initialFeatureScale ||
+    stravaHeatmapColor !== initialStravaHeatmapColor;
 
   return (
     <Modal show={show} onHide={close}>
@@ -170,6 +198,21 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
             </Form.Select>
 
             <Form.Text muted>{m?.mapLayers.featureScaleHelp}</Form.Text>
+          </Form.Group>
+
+          <Form.Group controlId="stravaHeatmapColor" className="mt-3">
+            <Form.Label>{m?.mapLayers.stravaHeatmapColor}</Form.Label>
+
+            <Form.Select
+              value={stravaHeatmapColor}
+              onChange={handleStravaHeatmapColorChange}
+            >
+              {StravaHeatmapColorSchema.options.map((color) => (
+                <option key={color} value={color}>
+                  {m?.mapLayers.stravaHeatmapColors[color]}
+                </option>
+              ))}
+            </Form.Select>
           </Form.Group>
         </Modal.Body>
 

@@ -1,6 +1,6 @@
-import type { User } from '@features/auth/model/types.js';
 import { createAction } from '@reduxjs/toolkit';
-import type { LatLon } from '@shared/types/common.js';
+import { IsoDateSchema, type LatLon } from '@shared/types/common.js';
+import z from 'zod';
 import type { PictureModel } from '../components/GalleryEditForm.js';
 
 export interface GalleryItem {
@@ -23,62 +23,79 @@ export type GalleryListOrder =
   | '-rating'
   | '-lastCommentedAt';
 
-export type GalleryColorizeBy =
-  | 'userId'
-  | 'takenAt'
-  | 'createdAt'
-  | 'rating'
-  | 'mine'
-  | 'season'
-  | 'premium';
+export const GalleryColorizeBySchema = z.enum([
+  'userId',
+  'takenAt',
+  'createdAt',
+  'rating',
+  'mine',
+  'season',
+  'premium',
+]);
 
-export interface GalleryTag {
-  name: string;
-  count: number;
-}
+export type GalleryColorizeBy = z.infer<typeof GalleryColorizeBySchema>;
 
-export interface GalleryUser {
-  id: number;
-  name: string;
-  count: number;
-}
+export const GalleryTagSchema = z.object({
+  name: z.string(),
+  count: z.number(),
+});
 
-export interface PictureComment {
-  id: number;
-  createdAt: Date;
-  user: Pick<User, 'id' | 'name'>;
-  comment: string;
-}
+export type GalleryTag = z.infer<typeof GalleryTagSchema>;
 
-export interface Picture extends LatLon {
-  id: number;
-  title: string | null;
-  description: string | null;
-  tags: string[];
-  comments: PictureComment[];
-  rating: number;
-  myStars?: number | null;
-  user: Pick<User, 'id' | 'name'>;
-  createdAt: Date;
-  takenAt: Date | null;
-  pano?: boolean;
-  premium?: boolean;
-  azimuth?: number | null;
-  hmac?: string;
-}
+export const GalleryUserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  count: z.number(),
+});
 
-export interface GalleryFilter {
-  tag?: string;
-  userId?: number;
-  takenAtFrom?: Date;
-  takenAtTo?: Date;
-  createdAtFrom?: Date;
-  createdAtTo?: Date;
-  ratingFrom?: number;
-  ratingTo?: number;
-  pano?: boolean;
-  premium?: boolean;
-}
+export type GalleryUser = z.infer<typeof GalleryUserSchema>;
+
+const PictureUserSchema = z.object({ id: z.number(), name: z.string() });
+
+export const PictureCommentSchema = z.object({
+  id: z.number(),
+  createdAt: IsoDateSchema,
+  user: PictureUserSchema,
+  comment: z.string(),
+});
+
+export type PictureComment = z.infer<typeof PictureCommentSchema>;
+
+export const PictureSchema = z.object({
+  id: z.number(),
+  lat: z.number(),
+  lon: z.number(),
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  tags: z.array(z.string()),
+  comments: z.array(PictureCommentSchema),
+  rating: z.number(),
+  myStars: z.number().nullish(),
+  user: PictureUserSchema,
+  createdAt: IsoDateSchema,
+  takenAt: IsoDateSchema.nullable(),
+  pano: z.boolean().optional(),
+  premium: z.boolean().optional(),
+  azimuth: z.number().nullish(),
+  hmac: z.string().optional(),
+});
+
+export type Picture = z.infer<typeof PictureSchema>;
+
+export const GalleryFilterSchema = z.object({
+  tag: z.string().optional(),
+  userId: z.number().optional(),
+  takenAtFrom: IsoDateSchema.optional(),
+  takenAtTo: IsoDateSchema.optional(),
+  createdAtFrom: IsoDateSchema.optional(),
+  createdAtTo: IsoDateSchema.optional(),
+  ratingFrom: z.number().optional(),
+  ratingTo: z.number().optional(),
+  pano: z.boolean().optional(),
+  premium: z.boolean().optional(),
+});
+
+export type GalleryFilter = z.infer<typeof GalleryFilterSchema>;
 
 export const galleryAddTag = createAction<string>('GALLERY_ADD_TAG');
 

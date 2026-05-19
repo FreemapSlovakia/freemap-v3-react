@@ -4,12 +4,8 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { is } from 'typia';
 import { getDocuments } from '@/documents/index.js';
-import {
-  Modal as ModalType,
-  setActiveModal,
-} from '../../../app/store/actions.js';
+import { ModalSchema, setActiveModal } from '../../../app/store/actions.js';
 import { documentShow } from '../model/actions.js';
 
 type Props = { show: boolean };
@@ -90,10 +86,10 @@ export function DocumentModal({ show }: Props): ReactElement | null {
             return;
           }
 
-          const show = sp.get('show');
+          const show = ModalSchema.safeParse(sp.get('show'));
 
-          if (is<ModalType>(show)) {
-            dispatch(setActiveModal(show));
+          if (show.success) {
+            dispatch(setActiveModal(show.data));
           } else if (sp.has('document')) {
             dispatch(documentShow(sp.get('document')));
           }

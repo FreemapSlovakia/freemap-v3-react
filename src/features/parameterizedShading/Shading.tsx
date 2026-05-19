@@ -1,4 +1,5 @@
 import Color from 'color';
+import z from 'zod';
 
 export const SHADING_COMPONENT_TYPES = [
   'hillshade-igor',
@@ -9,47 +10,76 @@ export const SHADING_COMPONENT_TYPES = [
   'aspect',
 ] as const;
 
-export type ColorStop = { value: number; color: Color };
+export const ColorSchema = z.tuple([
+  z.number(),
+  z.number(),
+  z.number(),
+  z.number(),
+]);
 
-export type Color = [number, number, number, number];
+export type Color = z.infer<typeof ColorSchema>;
 
-export type ShadingComponentType = (typeof SHADING_COMPONENT_TYPES)[number];
+export const ColorStopSchema = z.object({
+  value: z.number(),
+  color: ColorSchema,
+});
 
-export type ShadingComponent = {
-  id: number;
-  contrast: number;
-  brightness: number;
-  colorStops: ColorStop[];
-} & (
-  | {
-      type: 'hillshade-igor';
-      azimuth: number;
-      exaggeration: number;
-    }
-  | {
-      type: 'hillshade-classic';
-      elevation: number;
-      azimuth: number;
-      exaggeration: number;
-    }
-  | {
-      type: 'slope-classic';
-      elevation: number;
-      exaggeration: number;
-    }
-  | {
-      type: 'slope-igor';
-      exaggeration: number;
-    }
-  | {
-      type: 'color-relief' | 'aspect';
-    }
-);
+export type ColorStop = z.infer<typeof ColorStopSchema>;
 
-export type Shading = {
-  backgroundColor: Color;
-  components: ShadingComponent[];
+export const ShadingComponentTypeSchema = z.enum(SHADING_COMPONENT_TYPES);
+
+export type ShadingComponentType = z.infer<typeof ShadingComponentTypeSchema>;
+
+const ShadingComponentBaseShape = {
+  id: z.number(),
+  contrast: z.number(),
+  brightness: z.number(),
+  colorStops: z.array(ColorStopSchema),
 };
+
+export const ShadingComponentSchema = z.discriminatedUnion('type', [
+  z.object({
+    ...ShadingComponentBaseShape,
+    type: z.literal('hillshade-igor'),
+    azimuth: z.number(),
+    exaggeration: z.number(),
+  }),
+  z.object({
+    ...ShadingComponentBaseShape,
+    type: z.literal('hillshade-classic'),
+    elevation: z.number(),
+    azimuth: z.number(),
+    exaggeration: z.number(),
+  }),
+  z.object({
+    ...ShadingComponentBaseShape,
+    type: z.literal('slope-classic'),
+    elevation: z.number(),
+    exaggeration: z.number(),
+  }),
+  z.object({
+    ...ShadingComponentBaseShape,
+    type: z.literal('slope-igor'),
+    exaggeration: z.number(),
+  }),
+  z.object({
+    ...ShadingComponentBaseShape,
+    type: z.literal('color-relief'),
+  }),
+  z.object({
+    ...ShadingComponentBaseShape,
+    type: z.literal('aspect'),
+  }),
+]);
+
+export type ShadingComponent = z.infer<typeof ShadingComponentSchema>;
+
+export const ShadingSchema = z.object({
+  backgroundColor: ColorSchema,
+  components: z.array(ShadingComponentSchema),
+});
+
+export type Shading = z.infer<typeof ShadingSchema>;
 
 export function serializeShading(shading: Shading) {
   const parts = [Color(shading.backgroundColor).hexa().slice(1)];

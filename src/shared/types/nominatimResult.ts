@@ -1,15 +1,20 @@
-import { Geometry } from 'geojson';
+import z from 'zod';
+import { GeoJSONGeometrySchema } from 'zod-geojson';
 
-export interface NominatimResult {
-  osm_id?: number;
-  osm_type?: 'node' | 'way' | 'relation';
-  geojson?: Geometry;
-  lat: string;
-  lon: string;
-  name?: string;
-  display_name: string;
-  class: string;
-  type: string;
-  extratags?: null | Record<string, string>;
-  boundingbox?: [string, string, string, string];
-}
+export const NominatimResultSchema = z.object({
+  osm_id: z.number().optional(),
+  osm_type: z.enum(['node', 'way', 'relation']).optional(),
+  geojson: GeoJSONGeometrySchema,
+  lat: z.string(),
+  lon: z.string(),
+  name: z.string().optional(),
+  display_name: z.string(),
+  class: z.string(),
+  type: z.string(),
+  extratags: z.record(z.string(), z.string()).nullish(),
+  boundingbox: z
+    .tuple([z.string(), z.string(), z.string(), z.string()])
+    .optional(),
+});
+
+export type NominatimResult = z.infer<typeof NominatimResultSchema>;
