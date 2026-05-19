@@ -55,7 +55,10 @@ import {
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
 import { wikimediaCommonsReducer } from '@features/wikimediaCommons/model/reducer.js';
-import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
+import {
+  CustomLayerDefArrayCompatSchema,
+  StravaHeatmapColorSchema,
+} from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import { LatLonSchema } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
@@ -86,6 +89,7 @@ const PersistedMapSchema = z
     maxZoom: z.number(),
     resolutionScale: z.number().nullable(),
     featureScale: z.number(),
+    stravaHeatmapColor: StravaHeatmapColorSchema,
   })
   .partial();
 

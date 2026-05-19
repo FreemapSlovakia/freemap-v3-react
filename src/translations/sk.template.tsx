@@ -915,6 +915,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Veľkosť prvkov',
     featureScaleHelp:
       'Zväčšuje vykreslené popisy a čiary. Nemá vplyv na satelitné, tieňované, WMS ani vektorové (MapLibre) vrstvy.',
+    stravaHeatmapColor: 'Farba Strava heatmapy',
+    stravaHeatmapColors: {
+      hot: 'Horúca',
+      blue: 'Modrá',
+      purple: 'Fialová',
+      gray: 'Sivá',
+      bluered: 'Modro-červená',
+    },
     layer: {
       layer: 'Vrstva',
       base: 'Základná',

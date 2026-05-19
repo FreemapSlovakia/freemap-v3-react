@@ -865,6 +865,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Dimensione degli elementi',
     featureScaleHelp:
       'Ingrandisce etichette e linee renderizzate. Non ha effetto sui livelli satellitari, di ombreggiatura, WMS o vettoriali (MapLibre).',
+    stravaHeatmapColor: 'Colore della heatmap Strava',
+    stravaHeatmapColors: {
+      hot: 'Caldo',
+      blue: 'Blu',
+      purple: 'Viola',
+      gray: 'Grigio',
+      bluered: 'Blu-rosso',
+    },
     layer: {
       layer: 'Livello',
       base: 'Base',

@@ -91,6 +91,18 @@ const LLS_URL =
 const OFM_URL =
   'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#ortofoto';
 
+export const StravaHeatmapColorSchema = z.enum([
+  'hot',
+  'blue',
+  'purple',
+  'gray',
+  'bluered',
+] as const);
+
+export type StravaHeatmapColor = z.infer<typeof StravaHeatmapColorSchema>;
+
+export const defaultStravaHeatmapColor: StravaHeatmapColor = 'purple';
+
 export type HasUrl = {
   url: string;
 };
@@ -1026,7 +1038,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         defaultInMenu: true,
         technology: 'tile' as const,
         icon: <FaStrava />,
-        url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/purple/{z}/{x}/{y}.png`,
+        url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/{stravaColor}/{z}/{x}/{y}.png`,
         attribution: [STRAVA_ATTR],
         minZoom: 0,
         maxNativeZoom: 15, // for @2x.png is max 14, otherwise 15; also @2x.png tiles are 1024x1024 and "normal" are 512x512 so no need to use @2x

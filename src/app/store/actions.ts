@@ -10,7 +10,10 @@ import {
 import { setLocation, toggleLocate } from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
-import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import type {
+  CustomLayerDef,
+  StravaHeatmapColor,
+} from '@shared/mapDefinitions.js';
 import { OsmFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
 
@@ -102,6 +105,7 @@ type Settings = {
   drawingLineCap?: 'butt' | 'round' | 'square';
   drawingLineJoin?: 'miter' | 'round' | 'bevel';
   maxZoom?: number;
+  stravaHeatmapColor?: StravaHeatmapColor;
 };
 
 export const saveSettings = createAction<{

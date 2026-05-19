@@ -50,16 +50,26 @@ export function CacheTilesForm(): ReactElement {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
+  const stravaHeatmapColor = useAppSelector(
+    (state) => state.map.stravaHeatmapColor,
+  );
+
   const mapDefs = useMemo(() => {
     const integrated = integratedLayerDefs
       .filter(
         (def): def is CacheableLayerDef =>
           def.technology === 'tile' || def.technology === 'wms',
       )
-      .map((layer) => ({
-        ...layer,
-        url: layer.url.startsWith('//') ? 'https:' + layer.url : layer.url,
-      }));
+      .map((layer) => {
+        const url = layer.url.startsWith('//')
+          ? 'https:' + layer.url
+          : layer.url;
+
+        return {
+          ...layer,
+          url: url.replace('{stravaColor}', stravaHeatmapColor),
+        };
+      });
 
     const custom = customLayers
       .filter((def) => def.technology === 'tile' || def.technology === 'wms')
@@ -72,7 +82,7 @@ export function CacheTilesForm(): ReactElement {
       }));
 
     return [...integrated, ...custom];
-  }, [customLayers]);
+  }, [customLayers, stravaHeatmapColor]);
 
   const layers = useAppSelector((state) => state.map.layers);
 
