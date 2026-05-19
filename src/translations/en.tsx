@@ -1074,7 +1074,8 @@ const messages: Messages = {
     ),
   },
 
-  maps: {
+  myMaps: {
+    addNew: 'Add new map',
     legacy: 'legacy',
     legacyMapWarning: ({ from, to }) => (
       <>

@@ -13,7 +13,7 @@ import {
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
-  errorKey: 'maps.saveError',
+  errorKey: 'myMaps.saveError',
   async handle({ getState, dispatch, action }) {
     if (getState().trackViewer.trackGpx && !getState().trackViewer.trackUID) {
       await handleTrackUpload({
@@ -28,12 +28,16 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
     const { activeMap } = getState().maps;
 
+    const asNew = action.payload?.asCopy;
+
+    const patchExisting = activeMap && !asNew;
+
     const res = await httpRequest({
       getState,
-      method: activeMap ? 'PATCH' : 'POST',
-      url: `/maps/${activeMap?.id ?? ''}`,
+      method: patchExisting ? 'PATCH' : 'POST',
+      url: `/maps/${patchExisting ? activeMap.id : ''}`,
       expectedStatus: [200, 412],
-      headers: activeMap
+      headers: patchExisting
         ? {
             'If-Unmodified-Since': activeMap.modifiedAt.toUTCString(),
           }
@@ -49,9 +53,9 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
     if (res.status === 412) {
       dispatch(
         toastsAdd({
-          id: 'maps.conflictError',
+          id: 'myMaps.conflictError',
           style: 'danger',
-          messageKey: 'maps.conflictError',
+          messageKey: 'myMaps.conflictError',
         }),
       );
 

@@ -114,7 +114,7 @@ const MapsLoadResponseSchema = z.object({
 
 export const mapsLoadProcessor: Processor = {
   actionCreator: [mapsLoad, authSetUser, authLogout],
-  errorKey: 'maps.fetchError',
+  errorKey: 'myMaps.fetchError',
   handle: async ({ getState, dispatch }) => {
     const {
       auth,

@@ -1071,7 +1071,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  maps: {
+  myMaps: {
+    addNew: 'Dodaj nową mapę',
     legacy: 'przestarzała',
     legacyMapWarning: ({ from, to }) => (
       <>

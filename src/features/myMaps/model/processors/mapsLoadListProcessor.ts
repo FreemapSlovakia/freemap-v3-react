@@ -7,7 +7,7 @@ import { MapMetaSchema, mapsLoadList, mapsSetList } from '../actions.js';
 
 export const mapsLoadListProcessor: Processor = {
   actionCreator: [mapsLoadList, authSetUser, authLogout, setActiveModal],
-  errorKey: 'maps.fetchListError',
+  errorKey: 'myMaps.fetchListError',
   handle: async ({ getState, dispatch }) => {
     if (getState().auth.validated && getState().main.activeModal === 'maps') {
       const res = await httpRequest({

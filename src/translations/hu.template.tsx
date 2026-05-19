@@ -1108,7 +1108,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     styles: 'Az adatréteg stílusai',
   },
 
-  maps: {
+  myMaps: {
+    addNew: 'Új térkép hozzáadása',
     noMapFound: 'Nem található térkép',
     save: 'Mentés',
     delete: 'Törlés',

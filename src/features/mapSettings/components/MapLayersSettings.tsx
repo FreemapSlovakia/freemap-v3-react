@@ -137,7 +137,7 @@ export function MapLayersSettings({
                 {def.superseededBy && (
                   <FaHistory
                     className="text-warning ms-1"
-                    title={m?.maps.legacy}
+                    title={m?.myMaps.legacy}
                   />
                 )}
 

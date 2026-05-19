@@ -260,7 +260,7 @@ export function MapSwitchButton(): ReactElement {
         ) : null}
 
         {place !== 'toolbar' && !def.custom && def.superseededBy && (
-          <FaHistory className="text-warning ms-1" title={m?.maps.legacy} />
+          <FaHistory className="text-warning ms-1" title={m?.myMaps.legacy} />
         )}
 
         {place !== 'toolbar' && !def.custom && def.experimental && (

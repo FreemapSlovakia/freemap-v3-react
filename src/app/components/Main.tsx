@@ -15,7 +15,7 @@ import { TheMap } from '@features/map/components/Map.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
-import { MapsMenu } from '@features/myMaps/components/MapsMenu.js';
+import { MyMapsMenu } from '@features/myMaps/components/MyMapsMenu.js';
 import RouteLegSelection from '@features/routePlanner/components/RouteLegSelection.js';
 import RoutePointSelection from '@features/routePlanner/components/RoutePointSelection.js';
 import { routePlannerToggleElevationChart } from '@features/routePlanner/model/actions.js';
@@ -278,7 +278,7 @@ const loginModalFactory = () =>
 const mapsModalFactory = () =>
   import(
     /* webpackChunkName: "maps-modal" */
-    '@features/myMaps/components/MapsModal.js'
+    '@features/myMaps/components/MyMapsModal.js'
   );
 
 const premiumActivationModalFactory = () =>
@@ -620,7 +620,7 @@ export function Main(): ReactElement {
                 </Toolbar>
               )}
 
-              {showMenu && showMapsMenu && !window.fmEmbedded && <MapsMenu />}
+              {showMenu && showMapsMenu && !window.fmEmbedded && <MyMapsMenu />}
 
               {showMenu && showPictures && (
                 <AsyncComponent factory={galleryMenuFactory} />

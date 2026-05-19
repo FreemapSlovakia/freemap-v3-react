@@ -147,7 +147,10 @@ export function PurchasesSection(): ReactElement | null {
   return (
     <>
       {becomePremium ? (
-        <Alert variant="warning" className="d-flex justify-content-between gap-4">
+        <Alert
+          variant="warning"
+          className="d-flex justify-content-between gap-4"
+        >
           <span>
             <FaExclamationTriangle />{' '}
             {user.premiumExpiration

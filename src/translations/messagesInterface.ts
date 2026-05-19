@@ -753,7 +753,8 @@ export type Messages = {
     advancedSettings: string;
     styles: string;
   };
-  maps: {
+  myMaps: {
+    addNew: string;
     legacy: string;
     legacyMapWarning: ({
       from,

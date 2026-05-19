@@ -5,7 +5,7 @@ import { mapsDelete, mapsDisconnect, mapsLoadList } from '../actions.js';
 
 export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
   actionCreator: mapsDelete,
-  errorKey: 'maps.deleteError',
+  errorKey: 'myMaps.deleteError',
   handle: async ({ getState, dispatch, action: { payload: id } }) => {
     await httpRequest({
       getState,

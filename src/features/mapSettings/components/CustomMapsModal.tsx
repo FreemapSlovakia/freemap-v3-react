@@ -59,7 +59,7 @@ export function CustomMapsModal({ show }: Props): ReactElement {
     (def: CustomLayerDef) => {
       const name = def.name || `{${def.type}}`;
 
-      if (!window.confirm(m?.maps.deleteConfirm(name))) {
+      if (!window.confirm(m?.myMaps.deleteConfirm(name))) {
         return;
       }
 

@@ -11,7 +11,7 @@ import {
 } from '@features/toasts/model/actions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 
-const TOAST_PREFIX = 'maps.legacyWarning.';
+const TOAST_PREFIX = 'myMaps.legacyWarning.';
 
 export const legacyMapWarningProcessor: Processor = {
   stateChangePredicate: (state) =>
@@ -78,7 +78,7 @@ export const legacyMapWarningProcessor: Processor = {
       dispatch(
         toastsAdd({
           id: TOAST_PREFIX + def.type,
-          messageKey: 'maps.legacyMapWarning',
+          messageKey: 'myMaps.legacyMapWarning',
           messageParams: {
             from: def.type,
             to: def.superseededBy!,

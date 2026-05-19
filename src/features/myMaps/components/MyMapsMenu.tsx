@@ -11,7 +11,7 @@ import { FaEraser, FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { mapsDisconnect, mapsSave } from '../model/actions.js';
 
-export function MapsMenu(): ReactElement {
+export function MyMapsMenu(): ReactElement {
   const m = useMessages();
 
   const activeMap = useAppSelector((state) => state.maps.activeMap);
@@ -44,7 +44,7 @@ export function MapsMenu(): ReactElement {
           </span>
 
           {activeMap?.canWrite && (
-            <LongPressTooltip breakpoint="xl" label={m?.maps.save}>
+            <LongPressTooltip breakpoint="xl" label={m?.myMaps.save}>
               {({ label, labelClassName, props }) => (
                 <Button
                   className="ms-1"
@@ -59,7 +59,7 @@ export function MapsMenu(): ReactElement {
             </LongPressTooltip>
           )}
 
-          <LongPressTooltip breakpoint="xl" label={m?.maps.disconnect}>
+          <LongPressTooltip breakpoint="xl" label={m?.myMaps.disconnect}>
             {({ label, labelClassName, props }) => (
               <Dropdown as={ButtonGroup} align="end" {...props}>
                 <Button
@@ -84,7 +84,7 @@ export function MapsMenu(): ReactElement {
                       dispatch(clearMapFeatures());
                     }}
                   >
-                    <FaEraser /> {m?.maps.disconnectAndClear}
+                    <FaEraser /> {m?.myMaps.disconnectAndClear}
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
