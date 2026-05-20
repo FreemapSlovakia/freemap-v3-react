@@ -7,30 +7,35 @@ import { FaCamera, FaTimes, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { countryCodeToFlag, Emoji } from '../../../shared/components/Emoji.js';
+import { UserChip } from '../../../shared/components/UserChip.js';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '../../../shared/hooks/useNumberFormat.js';
 import classes from './GalleryLeaderboardModal.module.scss';
 
 type Props = { show: boolean };
 
+const UserSchema = z.object({
+  id: z.uint32(),
+  name: z.string(),
+  hasPicture: z.coerce.boolean(),
+});
+
 const StatsSchema = z.object({
   perUserPerCountry: z.record(
     z.string(), // country
-    z.array(
-      z.object({
-        userId: z.number(),
-        userName: z.string(),
-        pictureCount: z.number(),
-      }),
-    ),
+    z
+      .object({
+        user: UserSchema,
+        pictureCount: z.uint32(),
+      })
+      .array(),
   ),
-  perUser: z.array(
-    z.object({
-      pictureCount: z.number(),
-      userId: z.number(),
-      userName: z.string(),
-    }),
-  ),
+  perUser: z
+    .object({
+      user: UserSchema,
+      pictureCount: z.uint32(),
+    })
+    .array(),
   me: z
     .object({
       perCountry: z.record(
@@ -163,24 +168,28 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                         </th>
                       </tr>
                     </thead>
+
                     <tbody>
                       {state.result.perUser.map((row, i) => (
                         <tr
                           key={i}
                           className={clsx({
                             [classes['hideable']]: i > 2,
-                            'table-primary': row.userId === user?.id,
+                            'table-primary': row.user.id === user?.id,
                           })}
                         >
                           <td className="text-end text-nowrap">
                             {MEDALS[i]} {i + 1}
                           </td>
-                          <td>{row.userName}</td>
+                          <td>
+                            <UserChip user={row.user} />
+                          </td>
                           <td className="text-end">
                             {nf.format(row.pictureCount)}
                           </td>
                         </tr>
                       ))}
+
                       {user &&
                         state.result.me &&
                         state.result.me.userRank >
@@ -195,12 +204,15 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                             <td className="text-end">
                               {state.result.me.userRank}
                             </td>
-                            <td>{user.name}</td>
+                            <td>
+                              <UserChip user={user} />
+                            </td>
                             <td className="text-end">
                               {nf.format(state.result.me.pictureCount)}
                             </td>
                           </tr>
                         )}
+
                       {state.result.perUser.length > 3 && (
                         <tr>
                           <td colSpan={3}>
@@ -250,6 +262,7 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                         </th>
                       </tr>
                     </thead>
+
                     {Object.entries(state.result.perUserPerCountry).map(
                       ([country, data]) => {
                         const me = state.result.me?.perCountry[country];
@@ -265,7 +278,7 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                                 className={clsx({
                                   [classes['separ']]: i === 0,
                                   [classes['hideable']]: i > 2,
-                                  'table-primary': item.userId === user?.id,
+                                  'table-primary': item.user.id === user?.id,
                                 })}
                               >
                                 {i === 0 && (
@@ -282,7 +295,9 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                                 <td className="text-end text-nowrap">
                                   {MEDALS[i]} {i + 1}
                                 </td>
-                                <td>{item.userName}</td>
+                                <td>
+                                  <UserChip user={item.user} />
+                                </td>
                                 <td className="text-end">
                                   {nf.format(item.pictureCount)}
                                 </td>
@@ -297,7 +312,9 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                                 )}
                               >
                                 <td className="text-end">{me.userRank}</td>
-                                <td>{user.name}</td>
+                                <td>
+                                  <UserChip user={user} />
+                                </td>
                                 <td className="text-end">
                                   {nf.format(me.pictureCount)}
                                 </td>
