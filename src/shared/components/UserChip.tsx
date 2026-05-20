@@ -1,5 +1,6 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ReactElement } from 'react';
-import { Image, OverlayTrigger, Popover } from 'react-bootstrap';
+import { Image, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
 import { FaGem } from 'react-icons/fa';
 
 type Props = {
@@ -12,6 +13,8 @@ type Props = {
 };
 
 export function UserChip({ user }: Props): ReactElement {
+  const m = useMessages();
+
   const src = `${process.env['API_URL']}/auth/users/${user.id}/picture`;
 
   return (
@@ -39,7 +42,14 @@ export function UserChip({ user }: Props): ReactElement {
         </OverlayTrigger>
       )}
       <b>{user.name}</b>
-      {user.premium && <FaGem className="ms-1 text-info" />}
+      {user.premium && (
+        <OverlayTrigger
+          placement="top"
+          overlay={<Tooltip>{m?.premium.premiumUser}</Tooltip>}
+        >
+          <FaGem className="ms-1 text-info" />
+        </OverlayTrigger>
+      )}
     </>
   );
 }

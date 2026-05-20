@@ -837,6 +837,7 @@ export type Messages = {
     youArePremium: (date: string) => JSX.Element;
     premiumOnly: string;
     alreadyPremium: string;
+    premiumUser: string;
   };
   credits: {
     buyCredits: string;

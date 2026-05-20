@@ -1220,6 +1220,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     premiumOnly: 'Dostępne tylko z dostępem premium.',
     alreadyPremium: 'Masz już dostęp premium.',
+    premiumUser: 'Użytkownik z dostępem premium',
   },
 
   credits: {

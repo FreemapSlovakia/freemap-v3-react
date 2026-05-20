@@ -1265,6 +1265,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
     alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
+    premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
   },
 
   credits: {

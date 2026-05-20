@@ -1248,6 +1248,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     premiumOnly: 'Nur mit Premium-Zugang verfügbar.',
     alreadyPremium: 'Du hast bereits Premium-Zugang.',
+    premiumUser: 'Nutzer mit Premium-Zugang',
   },
   credits: {
     buyCredits: 'Credits kaufen',

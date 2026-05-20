@@ -1198,6 +1198,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     premiumOnly: 'Dostupné pouze s prémiovým přístupem.',
     alreadyPremium: 'Máte již prémiový přístup.',
+    premiumUser: 'Uživatel s prémiovým přístupem',
   },
 
   credits: {
