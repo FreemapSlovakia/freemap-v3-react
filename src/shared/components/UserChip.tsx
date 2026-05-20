@@ -1,8 +1,14 @@
 import { ReactElement } from 'react';
 import { Image, OverlayTrigger, Popover } from 'react-bootstrap';
+import { FaGem } from 'react-icons/fa';
 
 type Props = {
-  user: { id: number; name: string; hasPicture?: boolean };
+  user: {
+    id: number;
+    name: string;
+    hasPicture: boolean;
+    premium: boolean;
+  };
 };
 
 export function UserChip({ user }: Props): ReactElement {
@@ -33,6 +39,7 @@ export function UserChip({ user }: Props): ReactElement {
         </OverlayTrigger>
       )}
       <b>{user.name}</b>
+      {user.premium && <FaGem className="ms-1 text-info" />}
     </>
   );
 }

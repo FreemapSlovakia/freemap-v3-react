@@ -364,7 +364,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           {premium && (
             <>
               {' '}
-              <FaGem className="text-warning" />
+              <FaGem className="text-info" />
             </>
           )}
         </Modal.Title>

@@ -20,7 +20,7 @@ export function PremiumActivationModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaGem className="text-warning" /> {m?.premium.title}
+          <FaGem className="text-info" /> {m?.premium.title}
         </Modal.Title>
       </Modal.Header>
 

@@ -17,7 +17,8 @@ type Props = { show: boolean };
 const UserSchema = z.object({
   id: z.uint32(),
   name: z.string(),
-  hasPicture: z.coerce.boolean(),
+  hasPicture: z.boolean(),
+  premium: z.boolean(),
 });
 
 const StatsSchema = z.object({
@@ -69,6 +70,13 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
   >({ type: 'fetching' });
 
   const user = useAppSelector((s) => s.auth.user);
+
+  const meUser = user && {
+    ...user,
+    premium: Boolean(
+      user.premiumExpiration && user.premiumExpiration < new Date(),
+    ),
+  };
 
   const [period, setPeriod] = useState('');
 
@@ -190,7 +198,7 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                         </tr>
                       ))}
 
-                      {user &&
+                      {meUser &&
                         state.result.me &&
                         state.result.me.userRank >
                           state.result.perUser.length && (
@@ -205,7 +213,7 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                               {state.result.me.userRank}
                             </td>
                             <td>
-                              <UserChip user={user} />
+                              <UserChip user={meUser} />
                             </td>
                             <td className="text-end">
                               {nf.format(state.result.me.pictureCount)}
@@ -303,7 +311,7 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                                 </td>
                               </tr>
                             ))}
-                            {user && me && Boolean(iAmExtra) && (
+                            {meUser && me && Boolean(iAmExtra) && (
                               <tr
                                 key="me"
                                 className={clsx(
@@ -313,7 +321,7 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
                               >
                                 <td className="text-end">{me.userRank}</td>
                                 <td>
-                                  <UserChip user={user} />
+                                  <UserChip user={meUser} />
                                 </td>
                                 <td className="text-end">
                                   {nf.format(me.pictureCount)}

@@ -54,6 +54,7 @@ const PictureUserSchema = z.object({
   id: z.number(),
   name: z.string(),
   hasPicture: z.boolean(),
+  premium: z.boolean(),
 });
 
 export const PictureCommentSchema = z.object({
