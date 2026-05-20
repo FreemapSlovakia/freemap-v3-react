@@ -585,6 +585,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Czy na pewno chcesz usunąć swoje konto? Zostaną usunięte wszystkie Twoje zdjęcia, komentarze i oceny, własne mapy i śledzone urządzenia.',
       personalInfo: 'Dane osobowe',
       authProviders: 'Dostawcy logowania',
+      picture: 'Zdjęcie profilowe',
+      choosePicture: 'Wybierz zdjęcie',
+      pictureTooLarge: 'Zdjęcie jest za duże. Maksymalny rozmiar to 5 MB.',
     },
 
     general: {

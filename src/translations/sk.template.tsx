@@ -622,6 +622,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Naozaj si prajete zmazať svoj účet? Spolu s ním sa odstránia všetky vaše fotografie, komentáre a hodnotenia fotografií, vlastné mapy a sledované zariadenia.',
       personalInfo: 'Osobné údaje',
       authProviders: 'Poskytovatelia prihlásenia',
+      picture: 'Profilový obrázok',
+      choosePicture: 'Vybrať obrázok',
+      pictureTooLarge: 'Obrázok je príliš veľký. Maximálna veľkosť je 5 MB.',
     },
     general: {
       tips: 'Zobrazovať tipy po otvorení stránky',

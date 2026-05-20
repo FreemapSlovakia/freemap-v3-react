@@ -601,6 +601,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       delete: 'Elimina account',
       deleteWarning:
         'Sei sicuro di voler eliminare il tuo account? Verranno rimossi tutte le tue foto, i commenti e le valutazioni delle foto, le tue mappe e i dispositivi monitorati.',
+      picture: 'Foto del profilo',
+      choosePicture: 'Scegli foto',
+      pictureTooLarge: 'La foto è troppo grande. La dimensione massima è 5 MB.',
     },
     general: {
       tips: "Mostra i consigli all'apertura della pagina (solo se è selezionata la lingua ceca o slovacca)",

@@ -599,6 +599,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Biztosan törölni szeretnéd a fiókodat? Ez eltávolítja az összes fotódat, fotómegjegyzésedet és értékelésedet, a térképeidet és a követett eszközeidet.',
       personalInfo: 'Személyes adatok',
       authProviders: 'Bejelentkezési szolgáltatók',
+      picture: 'Profilkép',
+      choosePicture: 'Kép kiválasztása',
+      pictureTooLarge: 'A kép túl nagy. Maximális méret 5 MB.',
     },
     general: {
       tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',

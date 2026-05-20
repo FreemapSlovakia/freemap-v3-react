@@ -87,6 +87,7 @@ export const UserSchema = z.object({
   name: z.string(),
   premiumExpiration: IsoDateSchema.nullable(),
   sendGalleryEmails: z.boolean(),
+  hasPicture: z.boolean(),
   settings: UserSettingsSchema.optional(),
 });
 

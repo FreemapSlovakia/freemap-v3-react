@@ -580,6 +580,9 @@ const messages: Messages = {
         'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.',
       personalInfo: 'Personal information',
       authProviders: 'Login providers',
+      picture: 'Profile picture',
+      choosePicture: 'Choose picture',
+      pictureTooLarge: 'Picture is too large. Maximum size is 5 MB.',
     },
     general: {
       tips: 'Show tips on page opening (only if Slovak or Czech language is selected)',

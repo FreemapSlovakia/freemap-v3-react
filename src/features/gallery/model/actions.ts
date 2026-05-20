@@ -50,7 +50,11 @@ export const GalleryUserSchema = z.object({
 
 export type GalleryUser = z.infer<typeof GalleryUserSchema>;
 
-const PictureUserSchema = z.object({ id: z.number(), name: z.string() });
+const PictureUserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  hasPicture: z.boolean(),
+});
 
 export const PictureCommentSchema = z.object({
   id: z.number(),

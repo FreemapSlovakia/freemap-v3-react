@@ -18,7 +18,15 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Alert, Badge, Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import {
+  Alert,
+  Badge,
+  Button,
+  Form,
+  Image,
+  InputGroup,
+  Modal,
+} from 'react-bootstrap';
 import {
   FaCamera,
   FaExternalLinkAlt,
@@ -478,10 +486,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             )}
           </div>
 
-          <br />
-
           {image && (
-            <div className="footer">
+            <div className="footer mt-3">
               {isFullscreen && imageIds && (
                 <>{`${index + 1} / ${imageIds.length}`} ｜ </>
               )}
@@ -489,7 +495,18 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               {isFullscreen && title && <>{title} ｜ </>}
 
               {m?.gallery.viewer.uploaded({
-                username: <b key={image.user.name}>{image.user.name}</b>,
+                username: (
+                  <Fragment key={image.user.id}>
+                    {image.user.hasPicture && (
+                      <Image
+                        className="me-1 w-6"
+                        src={`${process.env['API_URL']}/auth/users/${image.user.id}/picture`}
+                        roundedCircle
+                      />
+                    )}
+                    <b>{image.user.name}</b>
+                  </Fragment>
+                ),
                 createdAt: createdAt ? (
                   <b key={createdAt.getTime()}>
                     {dateFormat.format(createdAt)}
@@ -565,8 +582,15 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                   {!comments ? null : comments.length ? (
                     comments.map((c) => (
                       <p key={c.id}>
-                        {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>:{' '}
-                        {c.comment}
+                        {dateFormat.format(c.createdAt)}{' '}
+                        {c.user.hasPicture && (
+                          <Image
+                            className="me-1 w-6"
+                            src={`${process.env['API_URL']}/auth/users/${c.user.id}/picture`}
+                            roundedCircle
+                          />
+                        )}
+                        <b>{c.user.name}</b>: {c.comment}
                       </p>
                     ))
                   ) : (

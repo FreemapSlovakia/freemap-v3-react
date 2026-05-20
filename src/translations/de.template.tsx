@@ -602,6 +602,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Möchten Sie Ihr Konto wirklich löschen? Dabei werden alle Ihre Fotos, Kommentare und Bewertungen, Ihre Karten und überwachten Geräte entfernt.',
       personalInfo: 'Persönliche Informationen',
       authProviders: 'Anmeldeanbieter',
+      picture: 'Profilbild',
+      choosePicture: 'Bild auswählen',
+      pictureTooLarge: 'Bild ist zu groß. Maximale Größe beträgt 5 MB.',
     },
 
     general: {

@@ -115,6 +115,7 @@ export const saveSettings = createAction<{
     email?: string | null;
     description?: string | null;
     sendGalleryEmails?: boolean;
+    picture?: string | null;
   };
   keepOpen?: boolean;
 }>('SAVE_SETTINGS');

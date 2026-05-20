@@ -442,6 +442,9 @@ export type Messages = {
       personalInfo: string;
       authProviders: string;
       description: string;
+      picture: string;
+      choosePicture: string;
+      pictureTooLarge: string;
     };
     general: {
       tips: string;
