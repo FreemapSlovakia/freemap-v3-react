@@ -3,6 +3,7 @@
 ## Workflow
 
 - **Do not commit until I explicitly approve.** Leave the working tree dirty at the end of a task and wait for "commit"/"looks good"/similar. This overrides any "commit when done" instinct.
+- **When I tell you to commit, add yourself as co-author** via a `Co-Authored-By: Claude <noreply@anthropic.com>` trailer in the commit message.
 - **Run `npx biome check --write <changed files>` after every change set**, before reporting completion. The project uses Biome with import-order enforcement, so manually arranging imports is wasted effort. Pair with `npx tsgo --noEmit -p .` for type safety.
 
 ## Translations
