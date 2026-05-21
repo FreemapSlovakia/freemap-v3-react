@@ -409,6 +409,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     raceway: 'Circuito',
     road: 'Strada di tipo sconosciuto',
     via_ferrata: 'Via ferrata',
+    rest_area: 'Area di sosta',
   },
 
   historic: {
@@ -484,6 +485,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     pedestrian: 'Area pedonale',
     railway: 'Area ferroviaria',
     village_green: 'Prato del villaggio',
+    logging: 'Disboscamento',
   },
 
   leisure: {
@@ -519,7 +521,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     sports_hall: 'Palazzetto dello Sport',
     stadium: 'Stadio',
     swimming_pool: 'Piscina',
-    track: { '*': 'Pista' },
+    track: {
+      '*': 'Pista',
+      sport: {
+        cycling: 'Pista ciclabile (corsa)',
+        equestrian: 'Pista equestre',
+        horse_racing: 'Ippodromo',
+      },
+    },
     water_park: 'Parco acquatico',
     adult_gaming_centre: 'Sala giochi per adulti',
     amusement_arcade: 'Sala giochi',
@@ -761,6 +770,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
     wood: 'Foresta',
+    volcano: 'Vulcano',
   },
 
   place: {
@@ -1630,6 +1640,32 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     no: 'Accesso veicoli vietato',
     private: 'Accesso veicoli solo proprietari',
     yes: 'Accesso veicoli consentito',
+  },
+
+  access: {
+    customers: 'Solo per clienti',
+    private: 'Elemento privato',
+    no: 'Elemento con accesso vietato',
+  },
+
+  emergency: {
+    defibrillator: 'Defibrillatore',
+    phone: 'Telefono di emergenza',
+  },
+
+  entrance: {
+    '*': 'Ingresso',
+    main: 'Ingresso principale',
+    secondary: 'Ingresso secondario',
+    service: 'Ingresso di servizio',
+    exit: 'Uscita',
+    entrance: 'Ingresso (solo)',
+    emergency: 'Ingresso di emergenza',
+    staircase: 'Ingresso alle scale',
+    home: 'Ingresso a casa/giardino/appartamento privato',
+    garage: 'Ingresso al garage',
+    shop: 'Ingresso al negozio',
+    no: 'Nessun ingresso',
   },
 };
 

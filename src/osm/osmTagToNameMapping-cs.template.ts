@@ -404,6 +404,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     raceway: 'Závodní dráha',
     road: 'Cesta neznámého typu',
     via_ferrata: 'Via ferrata',
+    rest_area: 'Odpočívadlo',
   },
 
   historic: {
@@ -479,6 +480,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     pedestrian: 'Plocha pro pěší',
     railway: 'Plocha železnice',
     village_green: 'Náves',
+    logging: 'Těžba dřeva',
   },
 
   leisure: {
@@ -514,7 +516,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     sports_hall: 'Sportovní hala',
     stadium: 'Stadion',
     swimming_pool: 'Bazén',
-    track: { '*': 'Závodní dráha' },
+    track: {
+      '*': 'Závodní dráha',
+      sport: {
+        cycling: 'Cyklistická dráha',
+        equestrian: 'Jezdecká dráha',
+        horse_racing: 'Dostihová dráha',
+      },
+    },
     water_park: 'Vodní park',
     adult_gaming_centre: 'Herna pro dospělé',
     amusement_arcade: 'Zábavní herna',
@@ -758,6 +767,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
     wood: 'Les',
+    volcano: 'Sopka',
   },
 
   place: {
@@ -1631,6 +1641,32 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     summer_toboggan: 'Letní bobová dráha',
     train: 'Vyhlídkový vláček',
     water_slide: 'Tobogan',
+  },
+
+  access: {
+    customers: 'Pouze pro zákazníky',
+    private: 'Soukromý objekt',
+    no: 'Objekt se zákazem vstupu',
+  },
+
+  emergency: {
+    defibrillator: 'Defibrilátor',
+    phone: 'Nouzový telefon',
+  },
+
+  entrance: {
+    '*': 'Vchod',
+    main: 'Hlavní vchod',
+    secondary: 'Vedlejší vchod',
+    service: 'Služební vchod',
+    exit: 'Východ',
+    entrance: 'Vchod (pouze)',
+    emergency: 'Nouzový vchod',
+    staircase: 'Vchod do schodiště',
+    home: 'Vchod do soukromého domu/zahrady/bytu',
+    garage: 'Vjezd do garáže',
+    shop: 'Vchod do obchodu',
+    no: 'Není vchod',
   },
 };
 

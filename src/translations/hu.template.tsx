@@ -228,6 +228,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     fetchingError: ({ err }) =>
       addError(messages, 'Hiba történt az útvonaltervezésnél', err),
     manualTooltip: 'A következő szakasz összekötése egyenes vonallal',
+    default: 'Alapértelmezett',
+    leg: 'Útvonal szakasz',
+    stop: 'Megálló',
   },
 
   mainMenu: {
@@ -252,6 +255,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     automaticLanguage: 'Automatikus',
     mapExport: 'Térkép exportja képként/dokumentumként',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Hu:Main_Page',
+    status: 'Szolgáltatások állapota',
     title: 'Főmenü',
     osmWiki: 'OpenStreetMap dokumentáció',
   },
@@ -315,7 +319,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   gallery: {
-    stats: {},
+    stats: {
+      leaderboard: 'Ranglista',
+      country: 'Ország',
+      perUserPerCountry: 'Fotók szerző és ország szerint',
+      perUser: 'Fotók szerző szerint',
+      more: 'Több',
+      less: 'Kevesebb',
+      user: 'Szerző',
+      photos: 'Fotók',
+      numberOfPhotos: 'Fotók száma',
+      timePeriod: 'Időszak',
+      allTime: 'Teljes időszak',
+      last3months: 'Utolsó 3 hónap',
+      last30days: 'Utolsó 30 nap',
+    },
 
     legend: 'Jelmagyarázat',
     filter: 'Szűrő',
@@ -543,6 +561,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     split: 'Felosztás',
     stopDrawing: 'Rajzolás befejezése',
     selectPointToJoin: 'Válasszon pontot a vonalak összekapcsolásához',
+    reverse: 'Irány megfordítása',
+    simplify: 'Egyszerűsítés',
     defProps: {
       menuItem: 'Stílusbeállítások',
       title: 'Rajzolási stílus beállításai',
@@ -602,6 +622,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       picture: 'Profilkép',
       choosePicture: 'Kép kiválasztása',
       pictureTooLarge: 'A kép túl nagy. Maximális méret 5 MB.',
+      description: 'Rólam',
     },
     general: {
       tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
@@ -662,6 +683,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
 
     sources: 'Források',
+    source: 'Forrás',
   },
 
   objects: {
@@ -719,6 +741,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'nominatim-reverse': 'Fordított geokódolás',
       'overpass-nearby': 'Közeli objektumok',
       'overpass-surrounding': 'Tartalmazó objektumok',
+      bbox: 'Határoló keret',
+      geojson: 'GeoJSON',
+      tile: 'Csempe',
+      coords: 'Koordináták',
+      'overpass-objects': 'Közeli elemek',
+      'nominatim-forward': 'Geokódolás',
+      osm: 'OpenStreetMap',
+      'wms:': 'WMS',
     },
   },
 
@@ -848,6 +878,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       h: 'Paraméteres árnyékolás',
       z: 'Paraméteres árnyékolás',
       y: 'Paraméteres árnyékolás',
+      M: 'Wikimedia Commons fotók',
+      WDZ: 'Faállomány-összetétel',
+      WLT: 'Erdőtípusok',
+      WGE: 'Geológiai',
+      WKA: 'Kataszter',
+      wka: 'Kataszter',
+      WHC: 'Hidrokémiai',
     },
 
     type: {
@@ -866,6 +903,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     },
     showAll: 'Összes térkép megjelenítése',
+    filterMaps: 'Térképek szűrése',
+    noMapsFound: 'Nem található térkép',
     settings: 'Térkép beállítások',
     switch: 'Térképek',
     interactiveLayerWarning: 'Az adatréteg rejtve van',
@@ -882,6 +921,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-index',
     preferences: 'Beállítások',
     maxZoom: 'Maximális nagyítás',
+    forcedScale: 'Kényszerített felbontás',
     resolutionScale: 'Felbontás skála',
     resolutionScaleAuto: 'Automatikus (eszköz alapértelmezett)',
     resolutionScaleHelp:
@@ -1091,7 +1131,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'GPX-nyomvonal',
     },
     mapScale: 'Térkép felbontása',
-    orders: {},
+    orders: {
+      natural: 'Természetes',
+      topmost: 'Legfelül',
+    },
+    customLayerOrder: 'Rajzolási sorrend',
     alert: (licence) => (
       <>
         Megjegyzések:
@@ -1158,6 +1202,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     writers: 'Szerkesztők',
     conflictError: 'A térképet időközben módosították.',
     addWriter: 'Szerkesztő hozzáadása',
+    disconnectAndClear: 'Lecsatlakozás és törlés',
   },
 
   mapCtxMenu: {
@@ -1426,7 +1471,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
     formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
-  wikimediaCommons: {},
+  wikimediaCommons: {
+    artist: 'Szerző',
+    license: 'Licenc',
+    dateTime: 'Dátum',
+    moreResults:
+      'További fotók érhetők el. Nagyítson a térképen a nem megjelenített eredmények megtekintéséhez.',
+  },
 };
 
 export default messages;

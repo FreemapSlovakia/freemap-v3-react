@@ -234,6 +234,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     fetchingError: ({ err }) =>
       addError(messages, 'Error finding the route:', err),
     manualTooltip: 'Collega il segmento successivo con una linea retta',
+    default: 'Predefinito',
+    leg: 'Tratto del percorso',
+    stop: 'Fermata',
   },
 
   mainMenu: {
@@ -260,6 +263,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExport: 'Esportazione della mappa in immagine/documento',
     osmWiki: 'Documentazione su OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
+    status: 'Stato dei servizi',
   },
 
   main: {
@@ -317,7 +321,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   gallery: {
-    stats: {},
+    stats: {
+      leaderboard: 'Classifica',
+      country: 'Paese',
+      perUserPerCountry: 'Foto per autore e paese',
+      perUser: 'Foto per autore',
+      more: 'Più',
+      less: 'Meno',
+      user: 'Autore',
+      photos: 'Foto',
+      numberOfPhotos: 'Numero di foto',
+      timePeriod: 'Periodo di tempo',
+      allTime: 'Sempre',
+      last3months: 'Ultimi 3 mesi',
+      last30days: 'Ultimi 30 giorni',
+    },
 
     legend: 'Legenda',
     filter: 'Filtro',
@@ -544,6 +562,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     split: 'Separa',
     stopDrawing: 'Ferma il disegno',
     selectPointToJoin: 'Seleziona un punto per unire le linee',
+    reverse: 'Inverti direzione',
+    simplify: 'Semplifica',
     defProps: {
       menuItem: 'Impostazioni stile',
       title: 'Impostazioni dello stile di disegno',
@@ -604,6 +624,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       picture: 'Foto del profilo',
       choosePicture: 'Scegli foto',
       pictureTooLarge: 'La foto è troppo grande. La dimensione massima è 5 MB.',
+      description: 'Su di me',
     },
     general: {
       tips: "Mostra i consigli all'apertura della pagina (solo se è selezionata la lingua ceca o slovacca)",
@@ -657,6 +678,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       />
     ),
     sources: 'Fonti',
+    source: 'Fonte',
   },
 
   objects: {
@@ -705,6 +727,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'nominatim-reverse': 'Geocodifica inversa',
       'overpass-nearby': 'Oggetti vicini',
       'overpass-surrounding': 'Oggetti contenenti',
+      bbox: 'Riquadro di delimitazione',
+      geojson: 'GeoJSON',
+      tile: 'Tile',
+      coords: 'Coordinate',
+      'overpass-objects': 'Elementi vicini',
+      'nominatim-forward': 'Geocodifica',
+      osm: 'OpenStreetMap',
+      'wms:': 'WMS',
     },
   },
 
@@ -798,6 +828,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     showAll: 'Mostra tutti i livelli',
+    filterMaps: 'Filtra mappe',
+    noMapsFound: 'Nessuna mappa trovata',
     settings: 'Impostazioni livelli mappa',
     layers: 'Livelli mappa',
     switch: 'Livelli mappa',
@@ -835,6 +867,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       h: 'Ombreggiatura parametrica',
       z: 'Ombreggiatura parametrica',
       y: 'Ombreggiatura parametrica',
+      M: 'Foto di Wikimedia Commons',
+      WDZ: 'Composizione arborea',
+      WLT: 'Tipi di foresta',
+      WGE: 'Geologica',
+      WKA: 'Catasto',
+      wka: 'Catasto',
+      WHC: 'Idrochimica',
     },
     customBase: 'Mappa personalizzata',
     type: {
@@ -863,6 +902,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Preferenze',
     maxZoom: 'Zoom massimo',
+    forcedScale: 'Risoluzione forzata',
     resolutionScale: 'Scala di risoluzione',
     resolutionScaleAuto: 'Automatica (predefinita del dispositivo)',
     resolutionScaleHelp:
@@ -1063,7 +1103,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'Traccia GPX',
     },
     mapScale: 'Risoluzione mappa',
-    orders: {},
+    orders: {
+      natural: 'Naturale',
+      topmost: 'In primo piano',
+    },
+    customLayerOrder: 'Ordine di disegno',
     alert: (licence) => (
       <>
         Note:
@@ -1121,6 +1165,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     writers: 'Editori',
     conflictError: 'La mappa è stata modificata nel frattempo.',
     addWriter: 'Aggiungi editor',
+    disconnectAndClear: 'Disconnetti e svuota',
   },
 
   mapCtxMenu: {
@@ -1388,7 +1433,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
     formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
-  wikimediaCommons: {},
+  wikimediaCommons: {
+    artist: 'Autore',
+    license: 'Licenza',
+    dateTime: 'Data',
+    moreResults:
+      'Sono disponibili altre foto. Ingrandisci la mappa per vedere i risultati non mostrati qui.',
+  },
 };
 
 export default messages;

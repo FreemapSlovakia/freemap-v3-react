@@ -228,6 +228,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba při hledání trasy', err),
     manualTooltip: 'Propojit následující segment přímou čarou',
+    default: 'Výchozí',
+    leg: 'Úsek trasy',
+    stop: 'Zastávka',
   },
 
   mainMenu: {
@@ -254,6 +257,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExport: 'Export mapy do obrázku/dokumentu',
     osmWiki: 'Dokumentační projekt OpenStreetMap ',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Cs:Main_Page',
+    status: 'Stav služeb',
   },
 
   main: {
@@ -315,7 +319,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   gallery: {
-    stats: {},
+    stats: {
+      leaderboard: 'Žebříček',
+      country: 'Země',
+      perUserPerCountry: 'Fotky na autora na zemi',
+      perUser: 'Fotky na autora',
+      more: 'Více',
+      less: 'Méně',
+      user: 'Autor',
+      photos: 'Fotek',
+      numberOfPhotos: 'Počet fotek',
+      timePeriod: 'Časové období',
+      allTime: 'Celý čas',
+      last3months: 'Poslední 3 měsíce',
+      last30days: 'Posledních 30 dní',
+    },
 
     legend: 'Legenda',
     recentTags: 'Nedávné tagy pro přiřazení:',
@@ -579,6 +597,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       picture: 'Profilový obrázek',
       choosePicture: 'Vybrat obrázek',
       pictureTooLarge: 'Obrázek je příliš velký. Maximální velikost je 5 MB.',
+      description: 'O mně',
     },
     general: {
       tips: 'Zobrazovat tipy po otevření stránky',
@@ -632,6 +651,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       />
     ),
     sources: 'Zdroje',
+    source: 'Zdroj',
   },
 
   objects: {
@@ -685,6 +705,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'nominatim-reverse': 'Reverzní geokódování',
       'overpass-nearby': 'Blízké objekty',
       'overpass-surrounding': 'Obsahující objekty',
+      bbox: 'Ohraničující box',
+      geojson: 'GeoJSON',
+      tile: 'Dlaždice',
+      coords: 'Souřadnice',
+      'overpass-objects': 'Blízké prvky',
+      'nominatim-forward': 'Geokódování',
+      osm: 'OpenStreetMap',
+      'wms:': 'WMS',
     },
   },
 
@@ -774,6 +802,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     showAll: 'Zobrazit všechny mapy',
+    filterMaps: 'Filtrovat mapy',
+    noMapsFound: 'Žádné mapy nenalezeny',
     settings: 'Nastavení map',
     layers: 'Mapy',
     switch: 'Mapy',
@@ -809,6 +839,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       h: ' Parametrické stínování',
       z: ' Parametrické stínování',
       y: ' Parametrické stínování',
+      M: 'Fotografie z Wikimedia Commons',
+      WDZ: 'Dřevinné složení',
+      WLT: 'Lesní typy',
+      WGE: 'Geologická',
+      WKA: 'Katastr',
+      wka: 'Katastr',
+      WHC: 'Hydrochemická',
     },
     customBase: 'Vlastní mapa',
     type: {
@@ -838,6 +875,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Předvolby',
     maxZoom: 'Maximální přiblížení',
+    forcedScale: 'Vynucené rozlišení',
     resolutionScale: 'Škála rozlišení',
     resolutionScaleAuto: 'Automaticky (podle zařízení)',
     resolutionScaleHelp:
@@ -1037,7 +1075,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'GPX trasu',
     },
     mapScale: 'Rozlišení mapy',
-    orders: {},
+    orders: {
+      natural: 'Přirozené',
+      topmost: 'Navrchu',
+    },
+    customLayerOrder: 'Pořadí kreslení',
     alert: (licence) => (
       <>
         Upozornění:
@@ -1094,6 +1136,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     writers: 'Editori',
     conflictError: 'Mapa byla mezitím modifikována.',
     addWriter: 'Přidat editora',
+    disconnectAndClear: 'Odpojit a vyčistit',
   },
 
   // check/improve translation
@@ -1359,7 +1402,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
     formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
-  wikimediaCommons: {},
+  wikimediaCommons: {
+    artist: 'Autor',
+    license: 'Licence',
+    dateTime: 'Datum',
+    moreResults:
+      'K dispozici jsou další fotografie. Přibližte mapu pro zobrazení nezobrazených výsledků.',
+  },
 };
 
 export default messages;

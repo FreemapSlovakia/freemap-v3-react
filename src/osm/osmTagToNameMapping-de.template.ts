@@ -388,6 +388,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     raceway: 'Rennstrecke',
     road: 'Straße unbekannter Art',
     via_ferrata: 'Klettersteig',
+    rest_area: 'Rastplatz',
   },
 
   historic: {
@@ -462,6 +463,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     pedestrian: 'Fußgängerbereich',
     railway: 'Eisenbahnfläche',
     village_green: 'Dorfanger',
+    logging: 'Holzeinschlag',
   },
 
   leisure: {
@@ -497,7 +499,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     sports_hall: 'Sporthalle',
     stadium: 'Stadion',
     swimming_pool: 'Schwimmbad',
-    track: { '*': 'Bahn' },
+    track: {
+      '*': 'Bahn',
+      sport: {
+        cycling: 'Radrennbahn',
+        equestrian: 'Reitbahn',
+        horse_racing: 'Pferderennbahn',
+      },
+    },
     water_park: 'Wasserpark',
     adult_gaming_centre: 'Spielhalle für Erwachsene',
     amusement_arcade: 'Spielhalle',
@@ -737,6 +746,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
     wood: 'Wald',
+    volcano: 'Vulkan',
   },
 
   place: {
@@ -1620,6 +1630,32 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     bad: 'Schlechte Wegsichtbarkeit',
     horrible: 'Sehr schlechte Wegsichtbarkeit',
     no: 'Keine Wegsichtbarkeit',
+  },
+
+  access: {
+    customers: 'Nur für Kunden',
+    private: 'Privates Objekt',
+    no: 'Objekt mit Zutrittsverbot',
+  },
+
+  emergency: {
+    defibrillator: 'Defibrillator',
+    phone: 'Notruftelefon',
+  },
+
+  entrance: {
+    '*': 'Eingang',
+    main: 'Haupteingang',
+    secondary: 'Nebeneingang',
+    service: 'Diensteingang',
+    exit: 'Ausgang',
+    entrance: 'Eingang (nur)',
+    emergency: 'Notausgang',
+    staircase: 'Eingang zum Treppenhaus',
+    home: 'Eingang zu Privathaus/Garten/Wohnung',
+    garage: 'Garageneingang',
+    shop: 'Ladeneingang',
+    no: 'Kein Eingang',
   },
 };
 

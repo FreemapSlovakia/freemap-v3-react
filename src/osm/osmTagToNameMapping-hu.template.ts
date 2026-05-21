@@ -410,6 +410,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     raceway: 'Versenypálya',
     road: 'Ismeretlen típusú út',
     via_ferrata: 'Via ferrata',
+    rest_area: 'Pihenőhely',
   },
 
   historic: {
@@ -484,6 +485,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     pedestrian: 'Gyalogos terület',
     railway: 'Vasúti terület',
     village_green: 'Falu zöldterülete',
+    logging: 'Fakitermelés',
   },
 
   leisure: {
@@ -519,7 +521,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     sports_hall: 'Sportcsarnok',
     stadium: 'Stadion',
     swimming_pool: 'Úszómedence',
-    track: { '*': 'Versenypálya' },
+    track: {
+      '*': 'Versenypálya',
+      sport: {
+        cycling: 'Kerékpárpálya',
+        equestrian: 'Lovaspálya',
+        horse_racing: 'Lóversenypálya',
+      },
+    },
     water_park: 'Strand, élményfürdő',
     adult_gaming_centre: 'Felnőtt játékközpont',
     amusement_arcade: 'Játékterem',
@@ -759,6 +768,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
     wood: 'Természetes erdő',
+    volcano: 'Vulkán',
   },
 
   place: {
@@ -1626,6 +1636,32 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     no: 'Járműforgalom tilos',
     private: 'Járműforgalom csak tulajdonosnak',
     yes: 'Járműforgalom megengedett',
+  },
+
+  access: {
+    customers: 'Csak vásárlóknak',
+    private: 'Magánterület',
+    no: 'Bejárás tilos',
+  },
+
+  emergency: {
+    defibrillator: 'Defibrillátor',
+    phone: 'Segélyhívó telefon',
+  },
+
+  entrance: {
+    '*': 'Bejárat',
+    main: 'Főbejárat',
+    secondary: 'Másodlagos bejárat',
+    service: 'Szolgálati bejárat',
+    exit: 'Kijárat',
+    entrance: 'Bejárat (csak)',
+    emergency: 'Vészkijárat',
+    staircase: 'Bejárat lépcsőházba',
+    home: 'Bejárat magánházhoz/kertbe/lakásba',
+    garage: 'Garázsbejárat',
+    shop: 'Üzletbejárat',
+    no: 'Nincs bejárat',
   },
 };
 

@@ -229,6 +229,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     fetchingError: ({ err }) =>
       addError(messages, 'Fehler beim Finden der Route', err),
     manualTooltip: 'Folgenden Abschnitt mit einer geraden Linie verbinden',
+    default: 'Standard',
+    leg: 'Routenabschnitt',
+    stop: 'Halt',
   },
   mainMenu: {
     title: 'Hauptmenü',
@@ -254,6 +257,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapExport: 'Export der Karte als Bild/Dokument',
     osmWiki: 'OpenStreetMap-Dokumentation',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/De:Main_Page',
+    status: 'Dienststatus',
   },
 
   main: {
@@ -312,7 +316,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   gallery: {
-    stats: {},
+    stats: {
+      leaderboard: 'Bestenliste',
+      country: 'Land',
+      perUserPerCountry: 'Fotos pro Autor und Land',
+      perUser: 'Fotos pro Autor',
+      more: 'Mehr',
+      less: 'Weniger',
+      user: 'Autor',
+      photos: 'Fotos',
+      numberOfPhotos: 'Anzahl der Fotos',
+      timePeriod: 'Zeitraum',
+      allTime: 'Gesamter Zeitraum',
+      last3months: 'Letzte 3 Monate',
+      last30days: 'Letzte 30 Tage',
+    },
 
     f: {
       '-createdAt': 'von zuletzt hochgeladenen',
@@ -553,6 +571,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     split: 'Teilen',
     stopDrawing: 'Zeichnen beenden',
     selectPointToJoin: 'Punkt zum Verbinden der Linien wählen',
+    reverse: 'Richtung umkehren',
+    simplify: 'Vereinfachen',
   },
 
   purchases: {
@@ -605,6 +625,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       picture: 'Profilbild',
       choosePicture: 'Bild auswählen',
       pictureTooLarge: 'Bild ist zu groß. Maximale Größe beträgt 5 MB.',
+      description: 'Über mich',
     },
 
     general: {
@@ -664,6 +685,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
 
     sources: 'Quellen',
+    source: 'Quelle',
   },
 
   objects: {
@@ -717,6 +739,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'nominatim-reverse': 'Reverse-Geokodierung',
       'overpass-nearby': 'Nahegelegene Objekte',
       'overpass-surrounding': 'Enthaltende Objekte',
+      bbox: 'Begrenzungsrahmen',
+      geojson: 'GeoJSON',
+      tile: 'Kachel',
+      coords: 'Koordinaten',
+      'overpass-objects': 'Nahegelegene Elemente',
+      'nominatim-forward': 'Geokodierung',
+      osm: 'OpenStreetMap',
+      'wms:': 'WMS',
     },
   },
 
@@ -834,6 +864,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       h: 'Parametrische Schattierung',
       z: 'Parametrische Schattierung',
       y: 'Parametrische Schattierung',
+      M: 'Wikimedia Commons Fotos',
+      WDZ: 'Baumartenzusammensetzung',
+      WLT: 'Waldtypen',
+      WGE: 'Geologisch',
+      WKA: 'Kataster',
+      wka: 'Kataster',
+      WHC: 'Hydrochemisch',
     },
 
     type: {
@@ -853,6 +890,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     showAll: 'Alle Karten anzeigen',
+    filterMaps: 'Karten filtern',
+    noMapsFound: 'Keine Karten gefunden',
     settings: 'Karteneinstellungen',
     layers: 'Karten',
     switch: 'Karten',
@@ -872,6 +911,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Einstellungen',
     maxZoom: 'Maximale Zoomstufe',
+    forcedScale: 'Erzwungene Auflösung',
     resolutionScale: 'Auflösungsskala',
     resolutionScaleAuto: 'Automatisch (Gerätestandard)',
     resolutionScaleHelp:
@@ -1086,7 +1126,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       track: 'GPX-Track',
     },
     mapScale: 'Kartenauflösung',
-    orders: {},
+    orders: {
+      natural: 'Natürlich',
+      topmost: 'Zuoberst',
+    },
+    customLayerOrder: 'Zeichenreihenfolge',
 
     alert: (licence) => (
       <>
@@ -1144,6 +1188,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     writers: 'Bearbeiter',
     conflictError: 'Die Karte wurde inzwischen geändert.',
     addWriter: 'Editor hinzufügen',
+    disconnectAndClear: 'Trennen und leeren',
   },
   mapCtxMenu: {
     centerMap: 'Karte hier zentrieren',
@@ -1410,7 +1455,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
     formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
-  wikimediaCommons: {},
+  wikimediaCommons: {
+    artist: 'Autor',
+    license: 'Lizenz',
+    dateTime: 'Datum',
+    moreResults:
+      'Weitere Fotos sind verfügbar. Vergrößere die Karte, um die nicht angezeigten Ergebnisse zu sehen.',
+  },
 };
 
 export default messages;

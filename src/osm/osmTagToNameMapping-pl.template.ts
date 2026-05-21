@@ -392,6 +392,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     raceway: 'Tor wyścigowy',
     road: 'Droga nieokreślonego typu',
     via_ferrata: 'Via ferrata',
+    rest_area: 'Miejsce odpoczynku',
   },
 
   historic: {
@@ -466,6 +467,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     pedestrian: 'Obszar pieszy',
     railway: 'Obszar kolejowy',
     village_green: 'Zieleń wiejska',
+    logging: 'Wyręby',
   },
 
   leisure: {
@@ -515,7 +517,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     sports_hall: 'Hala sportowa',
     stadium: 'Stadion',
     swimming_pool: 'Basen',
-    track: { '*': 'Tor' },
+    track: {
+      '*': 'Tor',
+      sport: {
+        cycling: 'Tor kolarski',
+        equestrian: 'Tor jeździecki',
+        horse_racing: 'Tor wyścigów konnych',
+      },
+    },
     water_park: 'Park wodny',
     adult_gaming_centre: 'Salon gier dla dorosłych',
     amusement_arcade: 'Salon gier',
@@ -740,6 +749,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
     wood: 'Las',
+    volcano: 'Wulkan',
   },
 
   place: {
@@ -1622,6 +1632,32 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     no: 'Zakaz ruchu pojazdów',
     private: 'Ruch pojazdów tylko dla właścicieli',
     yes: 'Ruch pojazdów dozwolony',
+  },
+
+  access: {
+    customers: 'Tylko dla klientów',
+    private: 'Obiekt prywatny',
+    no: 'Obiekt z zakazem wstępu',
+  },
+
+  emergency: {
+    defibrillator: 'Defibrylator',
+    phone: 'Telefon alarmowy',
+  },
+
+  entrance: {
+    '*': 'Wejście',
+    main: 'Wejście główne',
+    secondary: 'Wejście boczne',
+    service: 'Wejście służbowe',
+    exit: 'Wyjście',
+    entrance: 'Wejście (tylko)',
+    emergency: 'Wyjście awaryjne',
+    staircase: 'Wejście na klatkę schodową',
+    home: 'Wejście do prywatnego domu/ogrodu/mieszkania',
+    garage: 'Wejście do garażu',
+    shop: 'Wejście do sklepu',
+    no: 'Brak wejścia',
   },
 };
 

@@ -837,6 +837,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
     wood: 'Les',
+    volcano: 'Sopka',
   },
   place: {
     '*': 'Miesto {}',
