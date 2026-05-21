@@ -15,6 +15,7 @@ import type SassLoader from 'sass-loader';
 import TerserPlugin from 'terser-webpack-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import { RspackMarkdownDictPlugin } from './RspackMarkdownDictPlugin.js';
+import { RspackSyncLanguagesPlugin } from './RspackSyncLanguagesPlugin.js';
 
 import csMessages from './src/translations/cs-shared.js';
 import deMessages from './src/translations/de-shared.js';
@@ -236,6 +237,13 @@ const config: Configuration = {
         },
       }),
     new RspackMarkdownDictPlugin({ dir: 'src/documents' }),
+    new RspackSyncLanguagesPlugin({
+      root: __dirname,
+      script: path.resolve(
+        __dirname,
+        'translation-manager/sync-language-files.js',
+      ),
+    }),
     !prod && new ReactRefreshRspackPlugin(),
     new RspackManifestPlugin({
       fileName: 'assets-manifest.json',

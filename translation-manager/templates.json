@@ -1,0 +1,8 @@
+{
+  "langs": ["cs", "hu", "it", "sk", "de", "pl"],
+  "templates": [
+    "src/osm/osmTagToNameMapping-{LANG}.ts",
+    "src/translations/{LANG}.tsx",
+    "src/features/supportUsModal/translations/{LANG}.tsx"
+  ]
+}

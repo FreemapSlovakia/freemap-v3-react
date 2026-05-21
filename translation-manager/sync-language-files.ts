@@ -21,6 +21,7 @@ import {
   objectProperty,
 } from '@babel/types';
 import { parse, print, types } from 'recast';
+import templatesConfig from './templates.json' with { type: 'json' };
 
 type OtherLocales = [lang: string, Record<string, ObjectProperty>];
 
@@ -34,18 +35,9 @@ const parser = {
   },
 };
 
-process(
-  resolve(import.meta.dirname, '../src/osm/osmTagToNameMapping-{LANG}.ts'),
-);
-
-process(resolve(import.meta.dirname, '../src/translations/{LANG}.tsx'));
-
-process(
-  resolve(
-    import.meta.dirname,
-    '../src/features/supportUsModal/translations/{LANG}.tsx',
-  ),
-);
+for (const template of templatesConfig.templates) {
+  process(resolve(import.meta.dirname, '..', template));
+}
 
 function findRoot(file: File) {
   const { program } = file;
@@ -299,9 +291,7 @@ function process(template: string) {
     throw new Error('root not found for en');
   }
 
-  const langs = ['cs', 'hu', 'it', 'sk', 'de', 'pl'];
-
-  const roots = langs.map((lang) => {
+  const roots = templatesConfig.langs.map((lang) => {
     const file = parseFile(lang + '.template', template);
 
     const root = findRoot(file);
