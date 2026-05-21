@@ -51,7 +51,7 @@ You'll then find all static web resources in `dist` directory.
 
 Files:
 
-- [webpack.config.js](webpack.config.js) - texts in `htmlPluginProps`
+- [rspack.config.ts](rspack.config.ts) - texts in `htmlPluginProps`
 - [src/translations/en-shared.json](src/translations/en-shared.json)
 - [src/translations/en.tsx](src/translations/en.tsx)
 - [src/components/supportUsModal/translations/en.tsx](src/components/supportUsModal/translations/en.tsx)
