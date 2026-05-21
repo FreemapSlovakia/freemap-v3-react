@@ -1,4 +1,8 @@
-@use "~bootstrap/scss/bootstrap";
+@use "~bootstrap/scss/bootstrap" with (
+    $enable-shadows: true,
+    $enable-gradients: true,
+    $enable-negative-margins: true
+);
 
 @use "./bootstrap-override.scss";
 
