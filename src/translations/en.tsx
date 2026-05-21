@@ -599,6 +599,7 @@ const messages: Messages = {
 
   changesets: {
     allAuthors: 'All authors',
+    refresh: 'Download changesets for current map view',
     tooBig:
       'Changesets request may return too many items. Please try zoom in, choose fewer days or enter the specific author.',
     olderThan: ({ days }) => `${days} days`,
@@ -613,9 +614,9 @@ const messages: Messages = {
       noDescription: 'without description',
       closedAt: 'Time:',
       moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <p>
+        <>
           More details on {osmLink} or {achaviLink}.
-        </p>
+        </>
       ),
     },
   },

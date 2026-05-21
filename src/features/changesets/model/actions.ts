@@ -19,3 +19,9 @@ export const changesetsSet = createAction<Changeset[]>('CHANGESETS_SET');
 export const changesetsSetParams = createAction<ChangesetParams>(
   'CHANGESETS_SET_PARAMS',
 );
+
+export const changesetsRefresh = createAction('CHANGESETS_REFRESH');
+
+export const changesetsSetLastFetchedBBox = createAction<string>(
+  'CHANGESETS_SET_LAST_FETCHED_BBOX',
+);

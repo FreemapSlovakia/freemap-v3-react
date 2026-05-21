@@ -1,17 +1,24 @@
 import { clearMapFeatures, setTool } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { Changeset, changesetsSet, changesetsSetParams } from './actions.js';
+import {
+  Changeset,
+  changesetsSet,
+  changesetsSetLastFetchedBBox,
+  changesetsSetParams,
+} from './actions.js';
 
 export interface ChangesetsState {
   changesets: Changeset[];
   days: number | null;
   authorName: string | null;
+  lastFetchedBBox: string | null;
 }
 
 export const initialState: ChangesetsState = {
   changesets: [],
   days: null,
   authorName: null,
+  lastFetchedBBox: null,
 };
 
 export const changesetReducer = createReducer(initialState, (builder) =>
@@ -26,5 +33,8 @@ export const changesetReducer = createReducer(initialState, (builder) =>
     })
     .addCase(changesetsSetParams, (state, action) => {
       Object.assign(state, action.payload);
+    })
+    .addCase(changesetsSetLastFetchedBBox, (state, action) => {
+      state.lastFetchedBBox = action.payload;
     }),
 );

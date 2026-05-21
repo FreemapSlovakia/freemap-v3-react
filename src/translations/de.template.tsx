@@ -630,13 +630,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       noDescription: 'keine Beschreibung',
       closedAt: 'Zeit:',
       moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <p>
+        <>
           Mehr Details auf {osmLink} oder {achaviLink}.
-        </p>
+        </>
       ),
     },
 
     allAuthors: 'Alle Autoren',
+    refresh: 'Changesets für aktuellen Kartenausschnitt herunterladen',
     tooBig:
       'Die Anfrage nach Changesets kann zu viele Einträge zurückgeben. Bitte zoomen Sie näher heran, wählen Sie weniger Tage oder geben Sie einen bestimmten Autor ein.',
     olderThan: ({ days }) => `${days} Tage`,

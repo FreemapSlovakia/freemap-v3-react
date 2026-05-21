@@ -596,6 +596,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   changesets: {
     allAuthors: 'Všichni autoři',
+    refresh: 'Stáhnout sady změn pro aktuální výřez mapy',
     tooBig:
       'Požadavek na získání změn může vrátit spoustu záznamů. Zkuste přiblížit mapu, zvolit méně dní, nebo zadat konkrétního autora.',
     olderThan: ({ days }) => `${days} dn ${days === 3 ? 'i' : 'í'}`,
@@ -611,9 +612,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       noDescription: 'bez popisu',
       closedAt: 'Čas:',
       moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <p>
+        <>
           Více detailů na {osmLink}, nebo {achaviLink}.
-        </p>
+        </>
       ),
     },
   },

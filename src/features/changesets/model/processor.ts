@@ -9,7 +9,13 @@ import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
-import { Changeset, changesetsSet, changesetsSetParams } from './actions.js';
+import {
+  Changeset,
+  changesetsRefresh,
+  changesetsSet,
+  changesetsSetLastFetchedBBox,
+  changesetsSetParams,
+} from './actions.js';
 
 export const changesetsTrackProcessor: Processor = {
   stateChangePredicate: (state) =>
@@ -33,7 +39,7 @@ export const changesetsTrackProcessor: Processor = {
 
 export const changesetsProcessor: Processor = {
   id: 'changeset.detail',
-  actionCreator: [changesetsSetParams, mapRefocus, setTool],
+  actionCreator: [changesetsSetParams, changesetsRefresh, setTool],
   errorKey: 'changesets.fetchError',
   handle: async ({ dispatch, getState }) => {
     const state = getState();
@@ -87,6 +93,8 @@ export const changesetsProcessor: Processor = {
 
     const bbox = (await mapPromise).getBounds().toBBoxString();
 
+    dispatch(changesetsSetLastFetchedBBox(bbox));
+
     await loadChangesets(null, []);
 
     async function loadChangesets(
@@ -105,7 +113,7 @@ export const changesetsProcessor: Processor = {
         expectedStatus: [200, 404],
         cancelActions: [
           changesetsSetParams,
-          mapRefocus,
+          changesetsRefresh,
           selectFeature,
           clearMapFeatures,
           setTool,

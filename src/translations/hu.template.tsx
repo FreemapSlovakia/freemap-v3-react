@@ -619,6 +619,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   changesets: {
     allAuthors: 'Minden szerző',
+    refresh: 'Változáskészletek letöltése az aktuális térképnézethez',
     tooBig:
       'A változáskérések túl sok elemet adhatnak vissza. Kérlek, nagyíts rá, válassz kevesebb napot, vagy adj meg egy konkrét szerzőt.',
 
@@ -638,9 +639,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       noDescription: 'leírás nélküli',
       closedAt: 'Idő:',
       moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <p>
+        <>
           További részletek itt: {osmLink} vagy itt: {achaviLink}.
-        </p>
+        </>
       ),
     },
   },

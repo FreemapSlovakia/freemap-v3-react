@@ -460,6 +460,7 @@ export type Messages = {
   };
   changesets: {
     allAuthors: string;
+    refresh: string;
     tooBig: string;
     olderThan: ({ days }: { days: number }) => string;
     olderThanFull: ({ days }: { days: number }) => string;

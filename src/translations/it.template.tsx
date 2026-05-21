@@ -622,6 +622,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   changesets: {
     allAuthors: 'Tutti gli autori',
+    refresh: 'Scarica i changeset per la vista corrente della mappa',
     tooBig:
       'La richiesta dei changeset potrebbe restituire troppi risultati. Per favore aumenta lo zoom, scegli meno giorni o inserici un autore specifico.',
     olderThan: ({ days }) => `${days} giorni`,
@@ -636,9 +637,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       noDescription: 'senza descrizione',
       closedAt: 'Ora:',
       moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <p>
+        <>
           Maggiori dettagli su {osmLink} o {achaviLink}.
-        </p>
+        </>
       ),
     },
   },

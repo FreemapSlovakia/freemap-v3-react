@@ -1,5 +1,6 @@
 import { convertToDrawing, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { changesetsSet } from '@features/changesets/model/actions.js';
 import {
   drawingLineAdd,
   Point,
@@ -156,6 +157,33 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             : pointCount === 1
               ? { type: 'draw-points', id: state.drawingPoints.points.length }
               : null,
+        ),
+      );
+    } else if (payload.type === 'changesets') {
+      const { changesets } = state.changesets;
+
+      if (changesets.length === 0) {
+        return;
+      }
+
+      for (const changeset of changesets) {
+        dispatch(
+          drawingPointAdd({
+            coords: { lat: changeset.centerLat, lon: changeset.centerLon },
+            label: changeset.description,
+            color: state.drawingSettings.drawingColor,
+            id: getState().drawingPoints.points.length,
+          }),
+        );
+      }
+
+      dispatch(changesetsSet([]));
+
+      dispatch(
+        selectFeature(
+          changesets.length === 1
+            ? { type: 'draw-points', id: state.drawingPoints.points.length }
+            : null,
         ),
       );
     } else if (payload.type === 'search-result') {

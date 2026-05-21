@@ -191,6 +191,7 @@ export const convertToDrawing = createAction<
   | { type: 'planned-route'; tolerance: number }
   | { type: 'track'; tolerance: number }
   | { type: 'search-result'; tolerance: number }
+  | { type: 'changesets' }
 >('CONVERT_TO_DRAWING');
 
 export const ExternalTargetSchema = z.enum([

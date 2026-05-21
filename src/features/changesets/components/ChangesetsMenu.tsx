@@ -1,12 +1,14 @@
+import { convertToDrawing } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useState } from 'react';
 import { Button, Dropdown, Form, InputGroup } from 'react-bootstrap';
-import { FaEraser } from 'react-icons/fa';
+import { FaDownload, FaEraser, FaPencilAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { changesetsSetParams } from '../model/actions.js';
+import { changesetsRefresh, changesetsSetParams } from '../model/actions.js';
 
 export default ChangesetsMenu;
 
@@ -18,6 +20,20 @@ export function ChangesetsMenu(): ReactElement {
   );
 
   const days = useAppSelector((state) => state.changesets.days || 3);
+
+  const currentBBox = useAppSelector((state) =>
+    state.map.bounds ? state.map.bounds.join(',') : null,
+  );
+
+  const lastFetchedBBox = useAppSelector(
+    (state) => state.changesets.lastFetchedBBox,
+  );
+
+  const canRefresh = currentBBox !== null && currentBBox !== lastFetchedBBox;
+
+  const hasChangesets = useAppSelector(
+    (state) => state.changesets.changesets.length > 0,
+  );
 
   const dispatch = useDispatch();
 
@@ -74,6 +90,37 @@ export function ChangesetsMenu(): ReactElement {
           </Button>
         </InputGroup>
       </Form>
+
+      <LongPressTooltip label={m?.changesets.refresh}>
+        {({ label, labelClassName, props }) => (
+          <Button
+            className="ms-1"
+            variant="primary"
+            disabled={!canRefresh}
+            onClick={() => dispatch(changesetsRefresh())}
+            {...props}
+          >
+            <FaDownload />
+            <span className={labelClassName}> {label}</span>
+          </Button>
+        )}
+      </LongPressTooltip>
+
+      {hasChangesets && (
+        <LongPressTooltip label={m?.general.convertToDrawing}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => dispatch(convertToDrawing({ type: 'changesets' }))}
+              {...props}
+            >
+              <FaPencilAlt />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
     </ToolMenu>
   );
 }

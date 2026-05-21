@@ -611,12 +611,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       noDescription: 'bez opisu',
       closedAt: 'Czas:',
       moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <p>
+        <>
           Więcej szczegółów na {osmLink} lub {achaviLink}.
-        </p>
+        </>
       ),
     },
     allAuthors: 'Wszyscy autorzy',
+    refresh: 'Pobierz zestawy zmian dla bieżącego widoku mapy',
     tooBig:
       'Żądanie changesetów może zwrócić zbyt wiele elementów. Spróbuj przybliżyć mapę, wybrać mniej dni lub podać konkretnego autora.',
     olderThan: ({ days }) => `${days} dni`,
