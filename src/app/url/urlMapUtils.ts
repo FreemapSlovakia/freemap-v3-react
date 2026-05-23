@@ -97,21 +97,35 @@ function parseGeoUri(
     return undefined;
   }
 
-  const lat = parseFloat(m[1]);
-  const lon = parseFloat(m[2]);
-
-  if (Number.isNaN(lat) || Number.isNaN(lon)) {
-    return undefined;
-  }
-
+  let lat = parseFloat(m[1]);
+  let lon = parseFloat(m[2]);
   let zoom: number | undefined;
 
-  if (m[3]) {
-    const zMatch = /(?:^|[;&])z=(\d+)/i.exec(m[3]);
+  const params = m[3];
+
+  if (params) {
+    const qMatch = /(?:^|[;&])q=([^;&]*)/i.exec(params);
+
+    if (qMatch) {
+      const qVal = decodeURIComponent(qMatch[1]);
+
+      const llMatch = /^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/.exec(qVal);
+
+      if (llMatch) {
+        lat = parseFloat(llMatch[1]);
+        lon = parseFloat(llMatch[2]);
+      }
+    }
+
+    const zMatch = /(?:^|[;&])z=(\d+)/i.exec(params);
 
     if (zMatch) {
       zoom = parseInt(zMatch[1], 10);
     }
+  }
+
+  if (Number.isNaN(lat) || Number.isNaN(lon) || (lat === 0 && lon === 0)) {
+    return undefined;
   }
 
   return { lat, lon, zoom };

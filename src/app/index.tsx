@@ -131,6 +131,12 @@ window.navigator.serviceWorker
     console.warn('Error registering service worker:', e);
   });
 
+try {
+  window.navigator.registerProtocolHandler?.('geo', '/?geo=%s');
+} catch {
+  // browsers can reject; ignore
+}
+
 window.addEventListener('message', ({ data }: MessageEvent) => {
   if (data && typeof data === 'object' && typeof data.freemap === 'object') {
     if (data.freemap.action === 'setEmbedFeatures') {

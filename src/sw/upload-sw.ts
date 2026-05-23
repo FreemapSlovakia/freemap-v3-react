@@ -34,6 +34,24 @@ async function handleShareUpload(request: Request): Promise<Response> {
       .getAll('file')
       .filter((f): f is File => f instanceof File);
 
+    if (files.length === 0) {
+      const text = [data.get('text'), data.get('url'), data.get('title')]
+        .filter((v): v is string => typeof v === 'string')
+        .join(' ');
+
+      const geo = text ? extractGeoFromText(text) : null;
+
+      if (geo) {
+        return Response.redirect(`/?geo=${encodeURIComponent(geo)}`, 303);
+      }
+
+      if (text.trim()) {
+        return Response.redirect(`/?q=${encodeURIComponent(text.trim())}`, 303);
+      }
+
+      return Response.redirect('/', 303);
+    }
+
     const shareId = Date.now().toString(36);
 
     const cache = await caches.open(SHARE_CACHE);
@@ -59,4 +77,12 @@ async function handleShareUpload(request: Request): Promise<Response> {
       status: 500,
     });
   }
+}
+
+function extractGeoFromText(text: string): string | null {
+  const geo = /geo:-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?(?:[?;,(][^\s]*)?/i.exec(
+    text,
+  );
+
+  return geo ? geo[0] : null;
 }
