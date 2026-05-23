@@ -74,5 +74,50 @@
         }
       ]
     }
-  }
+  },
+  "protocol_handlers": [{ "protocol": "geo", "url": "/?geo=%s" }],
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "application/gpx+xml": [".gpx"],
+        "image/jpeg": [".jpg", ".jpeg"]
+      }
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Moje mapy",
+      "url": "/#show=maps",
+      "icons": [
+        {
+          "src": "/freemap-logo-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Plánovač trasy",
+      "url": "/#tool=route-planner",
+      "icons": [
+        {
+          "src": "/freemap-logo-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Objekty",
+      "url": "/#tool=objects",
+      "icons": [
+        {
+          "src": "/freemap-logo-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }

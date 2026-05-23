@@ -10,7 +10,20 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
     (location.hash || location.search).slice(1),
   );
 
-  const [zoomFrag, latFrag, lonFrag] = query.get('map')?.split('/') ?? [];
+  let [zoomFrag, latFrag, lonFrag] = query.get('map')?.split('/') ?? [];
+
+  if (!latFrag || !lonFrag) {
+    const geo = parseGeoUri(query.get('geo'));
+
+    if (geo) {
+      latFrag = String(geo.lat);
+      lonFrag = String(geo.lon);
+
+      if (geo.zoom !== undefined && !zoomFrag) {
+        zoomFrag = String(geo.zoom);
+      }
+    }
+  }
 
   const lat = undefineNaN(parseFloat(latFrag));
 
@@ -66,6 +79,42 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
 
 function undefineNaN(val: number): number | undefined {
   return Number.isNaN(val) ? undefined : val;
+}
+
+function parseGeoUri(
+  raw: string | null,
+): { lat: number; lon: number; zoom?: number } | undefined {
+  if (!raw) {
+    return undefined;
+  }
+
+  const m =
+    /^geo:(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)(?:,-?\d+(?:\.\d+)?)?(?:[?;](.*))?$/i.exec(
+      raw,
+    );
+
+  if (!m) {
+    return undefined;
+  }
+
+  const lat = parseFloat(m[1]);
+  const lon = parseFloat(m[2]);
+
+  if (Number.isNaN(lat) || Number.isNaN(lon)) {
+    return undefined;
+  }
+
+  let zoom: number | undefined;
+
+  if (m[3]) {
+    const zMatch = /(?:^|[;&])z=(\d+)/i.exec(m[3]);
+
+    if (zMatch) {
+      zoom = parseInt(zMatch[1], 10);
+    }
+  }
+
+  return { lat, lon, zoom };
 }
 
 export function getMapStateDiffFromUrl(

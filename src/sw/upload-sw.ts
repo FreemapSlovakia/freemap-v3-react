@@ -2,32 +2,61 @@
 
 declare const self: ServiceWorkerGlobalScope;
 
-function fetchEventHandler(event: FetchEvent) {
-  event.respondWith(
-    (async () => {
-      const url = new URL(event.request.url);
+const SHARE_CACHE = 'pending-shares';
 
-      if (
-        event.request.method === 'POST' &&
-        url.origin === location.origin &&
-        url.pathname === '/upload'
-      ) {
-        const data = await event.request.formData();
+self.addEventListener('install', () => {
+  self.skipWaiting();
+});
 
-        const client = await self.clients.get(
-          event.resultingClientId || event.clientId,
-        );
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
 
-        client?.postMessage({
-          freemap: { action: 'shareFile', payload: data.getAll('file') },
-        });
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
 
-        return Response.redirect('/');
-      }
+  if (
+    event.request.method !== 'POST' ||
+    url.origin !== location.origin ||
+    url.pathname !== '/upload'
+  ) {
+    return;
+  }
 
-      return Response.error();
-    })(),
-  );
+  event.respondWith(handleShareUpload(event.request));
+});
+
+async function handleShareUpload(request: Request): Promise<Response> {
+  try {
+    const data = await request.formData();
+
+    const files = data
+      .getAll('file')
+      .filter((f): f is File => f instanceof File);
+
+    const shareId = Date.now().toString(36);
+
+    const cache = await caches.open(SHARE_CACHE);
+
+    await Promise.all(
+      files.map((file, i) =>
+        cache.put(
+          `/__share/${shareId}/${i}`,
+          new Response(file, {
+            headers: {
+              'content-type': file.type || 'application/octet-stream',
+              'x-file-name': encodeURIComponent(file.name),
+              'x-file-last-modified': String(file.lastModified),
+            },
+          }),
+        ),
+      ),
+    );
+
+    return Response.redirect(`/?shared=${shareId}`, 303);
+  } catch (e) {
+    return new Response(`Share failed: ${(e as Error).message}`, {
+      status: 500,
+    });
+  }
 }
-
-self.addEventListener('fetch', fetchEventHandler);
