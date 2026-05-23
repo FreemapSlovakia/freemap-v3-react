@@ -1,42 +1,60 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "id": "/",
   "name": "Freemap Slovakia",
   "short_name": "Freemap",
   "description": "Freemap je voľne dostupná online mapa Slovenska založená na dátach z OpenStreetMap",
   "start_url": "/",
+  "scope": "/",
+  "lang": "sk",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#f8f9fa",
   "theme_color": "#0d6efd",
   "dir": "auto",
-  "orientation": "portrait",
+  "launch_handler": { "client_mode": "navigate-existing" },
+  "categories": ["fitness", "navigation", "sports", "travel", "utilities"],
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=sk.bigware.freemap",
+      "id": "sk.bigware.freemap"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/sk/app/freemap/id6760855105",
+      "id": "6760855105"
+    }
+  ],
   "icons": [
     {
-      "src": "/icons/freemap-logo-96.png",
+      "src": "/freemap-logo-96.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "/icons/freemap-logo-128.png",
+      "src": "/freemap-logo-128.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "/icons/freemap-logo-192.png",
+      "src": "/freemap-logo-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/freemap-logo-256.png",
+      "src": "/freemap-logo-256.png",
       "sizes": "256x256",
       "type": "image/png"
     },
     {
-      "src": "/icons/freemap-logo-384.png",
+      "src": "/freemap-logo-384.png",
       "sizes": "384x384",
       "type": "image/png"
     },
     {
-      "src": "/icons/freemap-logo-512.png",
+      "src": "/freemap-logo-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

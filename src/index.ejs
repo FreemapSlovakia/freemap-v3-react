@@ -35,6 +35,14 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="<%= process.env['BASE_URL'] + '/' %>" />
     <meta property="og:description" content="<%= description %>" />
+    <meta
+      property="og:see_also"
+      content="https://play.google.com/store/apps/details?id=sk.bigware.freemap"
+    />
+    <meta
+      property="og:see_also"
+      content="https://apps.apple.com/sk/app/freemap/id6760855105"
+    />
 
     <meta http-equiv="Accept-CH" content="Width" />
 
@@ -60,6 +68,8 @@
       title="Sitemap"
       href="/sitemap-index.xml"
     />
+
+    <link rel="manifest" href="/manifest.webmanifest" />
 
     <link rel="shortcut icon" href="/favicon.ico" />
 
@@ -95,6 +105,8 @@
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content="Freemap" />
+
+    <meta name="apple-itunes-app" content="app-id=6760855105" />
     <!-- prettier-ignore -->
     <%=
       [

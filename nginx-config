@@ -3,6 +3,10 @@ server {
 
     root /home/freemap/www;
 
+    location = /manifest.webmanifest {
+      default_type application/manifest+json;
+    }
+
     location ~ ^/~(.+?)(/.*)?$ {
       charset UTF-8;
       alias /home/$1/www$2;
