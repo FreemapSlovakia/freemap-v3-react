@@ -682,7 +682,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     josm: 'Editor JOSM',
     id: 'Editor iD',
     window: 'Nové okno',
-    url: 'Sdílet URL',
+    url: 'Sdílet polohu',
     image: 'Sdílet fotografii',
   },
 

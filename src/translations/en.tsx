@@ -665,7 +665,7 @@ const messages: Messages = {
     josm: 'Edit in JOSM',
     id: 'Edit in iD',
     window: 'New window',
-    url: 'Share URL',
+    url: 'Share location',
     image: 'Share photo',
   },
 

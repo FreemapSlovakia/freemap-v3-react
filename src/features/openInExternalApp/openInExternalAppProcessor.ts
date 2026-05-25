@@ -194,11 +194,15 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
         break;
 
-      case 'url':
+      case 'url': {
+        const geo = `geo:${lat.toFixed(6)},${lon.toFixed(6)}?z=${zoom}`;
+
+        const text = [pointDescription, geo].filter(Boolean).join('\n');
+
         window.navigator
           .share({
             title: pointTitle,
-            text: pointDescription,
+            text,
             url: url || window.location.href,
           })
           .catch((err: unknown) => {
@@ -212,6 +216,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
           });
 
         break;
+      }
 
       case 'image':
         {

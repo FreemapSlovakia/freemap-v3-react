@@ -723,7 +723,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     josm: 'Szerkesztés JOSM-mal',
     id: 'Szerkesztés iD-vel',
     window: 'Új ablakban',
-    url: 'URL megosztása',
+    url: 'Hely megosztása',
     image: 'Fénykép megosztása',
   },
 

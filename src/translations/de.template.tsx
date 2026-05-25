@@ -721,7 +721,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     josm: 'In JOSM bearbeiten',
     id: 'In iD bearbeiten',
     window: 'Neues Fenster',
-    url: 'URL teilen',
+    url: 'Standort teilen',
     image: 'Foto teilen',
   },
 
