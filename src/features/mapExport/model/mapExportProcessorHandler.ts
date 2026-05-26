@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { featureCollection, lineString, point, polygon } from '@turf/helpers';
 import { Feature } from 'geojson';
@@ -69,14 +70,19 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
         continue;
       }
 
+      const stroke = splitColorAlpha(line.color ?? COLORS.normal);
+      const fill = line.fillColor ? splitColorAlpha(line.fillColor) : undefined;
+
       const props = {
-        name: line.label || '',
-        color: line.color ?? COLORS.normal,
-        fillColor: line.fillColor,
-        width: line.width ?? 4,
-        lineJoin: line.lineJoin,
-        lineCap: line.lineCap,
-        dashArray: line.dashArray,
+        title: line.label || '',
+        stroke: stroke.color,
+        'stroke-opacity': stroke.opacity < 1 ? stroke.opacity : undefined,
+        fill: fill?.color,
+        'fill-opacity': fill && fill.opacity < 1 ? fill.opacity : undefined,
+        'stroke-width': line.width ?? 4,
+        'stroke-linejoin': line.lineJoin,
+        'stroke-linecap': line.lineCap,
+        'stroke-dasharray': line.dashArray,
       };
 
       features.push(
@@ -98,10 +104,14 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     }
 
     for (const p of getState().drawingPoints.points) {
+      const marker = splitColorAlpha(p.color ?? COLORS.normal);
+
       features.push(
         point([p.coords.lon, p.coords.lat], {
-          name: p.label || '',
-          color: p.color ?? COLORS.normal,
+          title: p.label || '',
+          'marker-color': marker.color,
+          'marker-color-opacity':
+            marker.opacity < 1 ? marker.opacity : undefined,
         }),
       );
     }

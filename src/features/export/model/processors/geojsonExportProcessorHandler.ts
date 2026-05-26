@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { TrackingState } from '@features/tracking/model/reducer.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import {
   featureCollection,
   lineString,
@@ -46,14 +47,20 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
         continue;
       }
 
+      const stroke = line.color ? splitColorAlpha(line.color) : undefined;
+      const fill = line.fillColor ? splitColorAlpha(line.fillColor) : undefined;
+
       const props = {
-        name: line.label,
-        color: line.color,
-        fillColor: line.fillColor,
-        width: line.type,
-        lineCap: line.lineCap,
-        lineJoin: line.lineCap,
-        dashArray: line.dashArray,
+        title: line.label,
+        stroke: stroke?.color,
+        'stroke-opacity':
+          stroke && stroke.opacity < 1 ? stroke.opacity : undefined,
+        fill: fill?.color,
+        'fill-opacity': fill && fill.opacity < 1 ? fill.opacity : undefined,
+        'stroke-width': line.width,
+        'stroke-linecap': line.lineCap,
+        'stroke-linejoin': line.lineJoin,
+        'stroke-dasharray': line.dashArray,
       };
 
       fc.features.push(
@@ -72,8 +79,15 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 
   if (set.has('drawingPoints')) {
     for (const p of drawingPoints.points) {
+      const marker = p.color ? splitColorAlpha(p.color) : undefined;
+
       fc.features.push(
-        point([p.coords.lon, p.coords.lat], { name: p.label, color: p.color }),
+        point([p.coords.lon, p.coords.lat], {
+          title: p.label,
+          'marker-color': marker?.color,
+          'marker-color-opacity':
+            marker && marker.opacity < 1 ? marker.opacity : undefined,
+        }),
       );
     }
   }
@@ -174,7 +188,7 @@ function addPictures(fc: FeatureCollection, pictures: Picture[]) {
       point([lon, lat], {
         takenAt: takenAt ? takenAt.toISOString() : undefined,
         publishedAt: createdAt ? createdAt.toISOString() : undefined,
-        name: title,
+        title,
         description,
         imageUrl,
         webUrl: `${location.origin}?image=${id}`,
@@ -197,7 +211,7 @@ function addPlannedRoute(
     points.forEach((pt, i: number) => {
       fc.features.push(
         point([pt.lon, pt.lat], {
-          name:
+          title:
             i === 0 && !finishOnly
               ? window.translations?.routePlanner.start
               : i === points.length - 1
@@ -214,7 +228,9 @@ function addPlannedRoute(
         legs.flatMap((leg) =>
           leg.steps.map((step) => step.geometry.coordinates),
         ),
-        { name: window.translations?.routePlanner.alternative + ' ' + (i + 1) },
+        {
+          title: window.translations?.routePlanner.alternative + ' ' + (i + 1),
+        },
       ),
     );
   });
@@ -232,13 +248,17 @@ function addTracking(
   }));
 
   for (const track of tracks1) {
+    const stroke = track.color ? splitColorAlpha(track.color) : undefined;
+
     fc.features.push(
       lineString(
         track.trackPoints.map((tp) => [tp.lon, tp.lat]),
         {
-          name: track.label,
-          color: track.color,
-          width: track.width,
+          title: track.label,
+          stroke: stroke?.color,
+          'stroke-opacity':
+            stroke && stroke.opacity < 1 ? stroke.opacity : undefined,
+          'stroke-width': track.width,
           maxAge: track.maxAge,
           maxCount: track.maxCount,
           fromTime: track.fromTime,
