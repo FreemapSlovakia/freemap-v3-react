@@ -197,6 +197,7 @@ export function DrawingLineStyleFields({
                 fill={fillColor || color}
                 stroke={color}
                 strokeWidth={widthNum}
+                strokeLinecap={lineCap}
                 strokeLinejoin={lineJoin}
                 strokeDasharray={dashArrayValue}
               />
