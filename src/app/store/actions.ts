@@ -100,6 +100,7 @@ type Settings = {
   overlayPaneOpacity?: number;
   customLayers?: CustomLayerDef[];
   drawingColor?: string;
+  drawingFillColor?: string;
   drawingWidth?: number;
   drawingDash?: number[];
   drawingLineCap?: 'butt' | 'round' | 'square';

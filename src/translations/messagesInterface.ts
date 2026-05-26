@@ -371,6 +371,7 @@ export type Messages = {
     edit: {
       title: string;
       color: string;
+      fillColor: string;
       label: string;
       width: string;
       hint: string;

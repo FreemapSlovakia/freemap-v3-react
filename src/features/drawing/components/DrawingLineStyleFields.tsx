@@ -1,11 +1,13 @@
-import { DrawingRecentColors } from '@features/drawing/components/DrawingRecentColors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
+import { RgbaColorPicker } from './RgbaColorPicker.js';
 
 type Props = {
   color: string;
   onColorChange: (color: string) => void;
+  fillColor?: string;
+  onFillColorChange?: (fillColor: string) => void;
   width: string;
   onWidthChange: (width: string) => void;
   widthStep?: number;
@@ -21,6 +23,8 @@ type Props = {
 export function DrawingLineStyleFields({
   color,
   onColorChange,
+  fillColor,
+  onFillColorChange,
   width,
   onWidthChange,
   widthStep,
@@ -68,21 +72,49 @@ export function DrawingLineStyleFields({
 
   const widthNum = parseFloat(width) || 2;
   const dashArrayValue = dashArray.length ? dashArray.join(' ') : undefined;
-  const previewHeight = Math.max(20, widthNum + 12);
+  const previewHeight = onFillColorChange
+    ? Math.max(40, widthNum * 2 + 24)
+    : Math.max(20, widthNum + 12);
+
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [svgWidth, setSvgWidth] = useState(0);
+
+  useEffect(() => {
+    const el = svgRef.current;
+
+    if (!el) {
+      return;
+    }
+
+    const ro = new ResizeObserver(([entry]) => {
+      setSvgWidth(entry.contentRect.width);
+    });
+
+    ro.observe(el);
+
+    return () => ro.disconnect();
+  }, []);
+
+  const inset = widthNum / 2 + 6;
 
   return (
     <>
       <Form.Group controlId="color" className="mt-3">
         <Form.Label>{m?.drawing.edit.color}</Form.Label>
 
-        <Form.Control
-          type="color"
-          value={color}
-          onChange={(e) => onColorChange(e.currentTarget.value)}
-        />
-
-        <DrawingRecentColors onColor={onColorChange} />
+        <RgbaColorPicker value={color} onChange={onColorChange} />
       </Form.Group>
+
+      {onFillColorChange && (
+        <Form.Group controlId="fillColor" className="mt-3">
+          <Form.Label>{m?.drawing.edit.fillColor}</Form.Label>
+
+          <RgbaColorPicker
+            value={fillColor ?? color}
+            onChange={onFillColorChange}
+          />
+        </Form.Group>
+      )}
 
       <Form.Group controlId="width" className="mt-3">
         <Form.Label>{m?.drawing.edit.width}</Form.Label>
@@ -91,7 +123,7 @@ export function DrawingLineStyleFields({
           type="number"
           value={width}
           min={1}
-          max={12}
+          max={99}
           step={widthStep}
           isInvalid={invalidWidth}
           onChange={(e) => onWidthChange(e.currentTarget.value)}
@@ -142,7 +174,6 @@ export function DrawingLineStyleFields({
               type="number"
               min={0}
               value={val}
-              placeholder="…"
               style={{ width: '4rem' }}
               onChange={(e) => handleInputChange(i, e.currentTarget.value)}
               onBlur={() => handleInputBlur(i)}
@@ -150,18 +181,38 @@ export function DrawingLineStyleFields({
           ))}
         </div>
 
-        <svg width="100%" height={previewHeight} style={{ display: 'block' }}>
-          <line
-            x1="4"
-            y1="50%"
-            x2="96%"
-            y2="50%"
-            stroke={color}
-            strokeWidth={widthNum}
-            strokeLinecap={lineCap}
-            strokeLinejoin={lineJoin}
-            strokeDasharray={dashArrayValue}
-          />
+        <svg
+          ref={svgRef}
+          width="100%"
+          height={previewHeight}
+          style={{ display: 'block' }}
+        >
+          {svgWidth > 0 &&
+            (onFillColorChange ? (
+              <rect
+                x={inset}
+                y={inset}
+                width={svgWidth - 2 * inset}
+                height={previewHeight - 2 * inset}
+                fill={fillColor || color}
+                stroke={color}
+                strokeWidth={widthNum}
+                strokeLinejoin={lineJoin}
+                strokeDasharray={dashArrayValue}
+              />
+            ) : (
+              <line
+                x1={inset}
+                y1={previewHeight / 2}
+                x2={svgWidth - inset}
+                y2={previewHeight / 2}
+                stroke={color}
+                strokeWidth={widthNum}
+                strokeLinecap={lineCap}
+                strokeLinejoin={lineJoin}
+                strokeDasharray={dashArrayValue}
+              />
+            ))}
         </svg>
       </Form.Group>
     </>

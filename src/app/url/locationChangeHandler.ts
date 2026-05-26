@@ -956,6 +956,8 @@ function parseColorAndLabel(m: string) {
 
   let color: string | undefined;
 
+  let fillColor: string | undefined;
+
   let width: number | undefined;
 
   let dashArray: number[] | undefined;
@@ -979,6 +981,8 @@ function parseColorAndLabel(m: string) {
         label = field.slice(1);
       } else if (field[0] === 'C') {
         color = field.slice(1);
+      } else if (field[0] === 'F') {
+        fillColor = field.slice(1);
       } else if (field[0] === 'W') {
         width = Number(field.slice(1)) || undefined;
       } else if (field[0] === 'D') {
@@ -995,7 +999,7 @@ function parseColorAndLabel(m: string) {
     }
   }
 
-  return { label, color, width, dashArray, lineCap, lineJoin };
+  return { label, color, fillColor, width, dashArray, lineCap, lineJoin };
 }
 
 function handleInfoPoint(
@@ -1066,7 +1070,7 @@ function handleInfoPoint(
 }
 
 function serializePoints(line: Line): string {
-  return `${line.type}:${line.points
+  return `${line.type}:${line.color ?? ''}:${line.fillColor ?? ''}:${line.points
     .map((point) => serializePoint(point))
     .join(',')}`;
 }

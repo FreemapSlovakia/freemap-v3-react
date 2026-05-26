@@ -18,6 +18,10 @@ export function PredefinedDrawingPropertiesModal({
 
   const color = useAppSelector((state) => state.drawingSettings.drawingColor);
 
+  const fillColorPref = useAppSelector(
+    (state) => state.drawingSettings.drawingFillColor,
+  );
+
   const width = useAppSelector((state) => state.drawingSettings.drawingWidth);
 
   const dashArray = useAppSelector(
@@ -34,6 +38,8 @@ export function PredefinedDrawingPropertiesModal({
 
   const [editedColor, setEditedColor] = useState(color);
 
+  const [editedFillColor, setEditedFillColor] = useState(fillColorPref);
+
   const [editedWidth, setEditedWidth] = useState(String(width));
 
   const [editedDash, setEditedDash] = useState(dashArray ?? []);
@@ -48,6 +54,7 @@ export function PredefinedDrawingPropertiesModal({
     dispatch(
       applySettings({
         drawingColor: editedColor,
+        drawingFillColor: editedFillColor,
         drawingWidth: Number(editedWidth) || 4,
         drawingDash: editedDash.length ? editedDash : undefined,
         drawingLineCap: editedLineCap === 'round' ? undefined : editedLineCap,
@@ -85,6 +92,8 @@ export function PredefinedDrawingPropertiesModal({
           <DrawingLineStyleFields
             color={editedColor}
             onColorChange={setEditedColor}
+            fillColor={editedFillColor}
+            onFillColorChange={setEditedFillColor}
             width={editedWidth}
             onWidthChange={setEditedWidth}
             widthStep={0.1}

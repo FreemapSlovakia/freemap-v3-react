@@ -4,6 +4,7 @@ import {
   selectingModeSelector,
 } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -85,6 +86,20 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   );
 
   const color = line.color || COLORS.normal;
+
+  const stroke = splitColorAlpha(color);
+
+  const renderColor = selected
+    ? Color(stroke.color).lighten(0.75).hex()
+    : stroke.color;
+
+  const fillRaw = splitColorAlpha(line.fillColor ?? color);
+
+  const renderFillColor = selected
+    ? Color(fillRaw.color).lighten(0.75).hex()
+    : fillRaw.color;
+
+  const renderFillOpacity = line.fillColor ? fillRaw.opacity : undefined;
 
   const width = line.width || 4;
 
@@ -357,7 +372,8 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           <Polyline
             weight={width}
             pathOptions={{
-              color: selected ? Color(color).lighten(0.75).hex() : color,
+              color: renderColor,
+              opacity: stroke.opacity,
               dashArray: line.dashArray,
               lineCap: line.lineCap ?? 'round',
               lineJoin: line.lineJoin ?? 'round',
@@ -381,7 +397,10 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           key={`polygon-${interactiveLine ? 'a' : 'b'}`}
           weight={width}
           pathOptions={{
-            color: selected ? Color(color).lighten(0.75).hex() : color,
+            color: renderColor,
+            opacity: stroke.opacity,
+            fillColor: renderFillColor,
+            fillOpacity: renderFillOpacity,
             dashArray: line.dashArray,
             lineCap: line.lineCap ?? 'round',
             lineJoin: line.lineJoin ?? 'round',
@@ -411,7 +430,8 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
       {futureLinePositions && (
         <Polyline
           pathOptions={{
-            color: Color(color).lighten(0.75).hex(),
+            color: Color(stroke.color).lighten(0.75).hex(),
+            opacity: stroke.opacity,
             dashArray: line.dashArray,
             lineCap: line.lineCap ?? 'round',
             lineJoin: line.lineJoin ?? 'round',

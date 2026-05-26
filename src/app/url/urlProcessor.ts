@@ -260,8 +260,10 @@ export const urlProcessor: Processor = {
         `${line.points.map((point) => serializePoint(point)).join(',')}${
           line.width ? `\x1eW${line.width}` : ''
         }${line.color ? `\x1eC${line.color}` : ''}${
-          line.label ? `\x1eL${line.label}` : ''
-        }${line.dashArray ? `\x1eD${line.dashArray}` : ''}${
+          line.fillColor ? `\x1eF${line.fillColor}` : ''
+        }${line.label ? `\x1eL${line.label}` : ''}${
+          line.dashArray ? `\x1eD${line.dashArray}` : ''
+        }${
           line.lineCap === 'butt'
             ? '\x1eKb'
             : line.lineCap === 'square'

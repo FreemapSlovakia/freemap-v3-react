@@ -5,6 +5,7 @@ import { drawingPointChangeProperties } from '../actions/drawingPointActions.js'
 
 export interface DrawingSettingsState {
   drawingColor: string;
+  drawingFillColor?: string;
   drawingWidth: number;
   drawingRecentColors: string[];
   drawingDashArray?: number[];
@@ -14,6 +15,7 @@ export interface DrawingSettingsState {
 
 export const drawingSettingsInitialState: DrawingSettingsState = {
   drawingColor: '#0000ff',
+  drawingFillColor: '#0000ff33',
   drawingWidth: 4,
   drawingRecentColors: [],
 };
@@ -27,6 +29,10 @@ export const drawingSettingsReducer = createReducer(
 
         if (action.payload.drawingColor) {
           state.drawingColor = action.payload.drawingColor;
+        }
+
+        if ('drawingFillColor' in action.payload) {
+          state.drawingFillColor = action.payload.drawingFillColor;
         }
 
         if (action.payload.drawingWidth) {
@@ -48,13 +54,30 @@ export const drawingSettingsReducer = createReducer(
         if (color) {
           updateRecentDrawingColors(state, color);
         }
+
+        const fillColor = action.payload.drawingFillColor;
+
+        if (fillColor) {
+          updateRecentDrawingColors(state, fillColor);
+        }
       })
       .addMatcher(
         isAnyOf(drawingLineChangeProperties, drawingPointChangeProperties),
         (state, { payload }) => {
           const color = payload.properties.color;
 
-          return color ? updateRecentDrawingColors(state, color) : state;
+          if (color) {
+            updateRecentDrawingColors(state, color);
+          }
+
+          if (
+            'fillColor' in payload.properties &&
+            payload.properties.fillColor
+          ) {
+            updateRecentDrawingColors(state, payload.properties.fillColor);
+          }
+
+          return state;
         },
       ),
 );

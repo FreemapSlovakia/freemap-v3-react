@@ -1,4 +1,5 @@
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
@@ -6,7 +7,7 @@ import { type ReactElement, useEffect } from 'react';
 import { DrawingLineResult } from './DrawingLineResult.js';
 
 function useLinePointColor() {
-  const color =
+  const rawColor =
     useAppSelector((state) =>
       state.main.selection?.type === 'draw-line-poly'
         ? state.drawingLines.lines[state.main.selection.id]?.color
@@ -14,6 +15,8 @@ function useLinePointColor() {
           ? state.drawingLines.lines[state.main.selection.lineIndex]?.color
           : undefined,
     ) || COLORS.normal;
+
+  const { color } = splitColorAlpha(rawColor);
 
   useEffect(() => {
     const root = document.documentElement;

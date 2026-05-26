@@ -15,6 +15,7 @@ export const LineSchema = z.object({
   points: z.array(PointSchema),
   label: z.string().optional(),
   color: z.string().optional(),
+  fillColor: z.string().optional(),
   width: z.number().optional(),
   dashArray: z.array(z.number()).optional(),
   lineCap: z.enum(['butt', 'round', 'square']).optional(),
@@ -54,6 +55,7 @@ export const drawingLineAddPoint = createAction<
         lineProps: {
           type: 'polygon' | 'line';
           color?: string;
+          fillColor?: string;
           width?: number;
           dashArray?: number[];
           lineCap?: 'butt' | 'round' | 'square';
@@ -68,6 +70,7 @@ export const drawingLineChangeProperties = createAction<{
   properties: {
     label: string | undefined;
     color: string | undefined;
+    fillColor: string | undefined;
     width: number | undefined;
     type: 'line' | 'polygon';
     dashArray: number[] | undefined;

@@ -72,6 +72,10 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
             line.color = payload.drawingColor;
           }
 
+          if ('drawingFillColor' in payload) {
+            line.fillColor = payload.drawingFillColor;
+          }
+
           if (payload.drawingWidth) {
             line.width = payload.drawingWidth;
           }
@@ -99,6 +103,7 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
         line = {
           type: lineProps.type,
           color: lineProps.color,
+          fillColor: lineProps.fillColor,
           width: lineProps.width,
           dashArray: lineProps.dashArray,
           lineCap: lineProps.lineCap,

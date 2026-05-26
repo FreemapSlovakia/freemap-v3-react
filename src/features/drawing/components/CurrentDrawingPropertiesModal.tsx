@@ -1,5 +1,5 @@
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
-import { DrawingRecentColors } from '@features/drawing/components/DrawingRecentColors.js';
+import { RgbaColorPicker } from '@features/drawing/components/RgbaColorPicker.js';
 import { drawingLineChangeProperties } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
@@ -43,6 +43,14 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
       : selection?.type === 'draw-line-poly' && selection.id !== undefined
         ? state.drawingLines.lines[selection.id]?.color
         : COLORS.normal;
+  });
+
+  const fillColor = useAppSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-line-poly' && selection.id !== undefined
+      ? state.drawingLines.lines[selection.id]?.fillColor
+      : undefined;
   });
 
   const width = useAppSelector((state) => {
@@ -100,6 +108,10 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
   const [editedLabel, setEditedLabel] = useState(label);
 
   const [editedColor, setEditedColor] = useState(color);
+
+  const [editedFillColor, setEditedFillColor] = useState(
+    fillColor ?? (type === 'polygon' ? color : undefined),
+  );
 
   const [editedWidth, setEditedWidth] = useState(width || '4');
 
@@ -280,6 +292,8 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
               properties: {
                 label: editedLabel || undefined,
                 color: editedColor,
+                fillColor:
+                  editedType === 'polygon' ? editedFillColor : undefined,
                 width: parseFloat(editedWidth) || undefined,
                 type: editedType,
                 dashArray: editedDash.length ? editedDash : undefined,
@@ -304,6 +318,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
       editedLabel,
       dispatch,
       editedColor,
+      editedFillColor,
       editedWidth,
       editedType,
       editedDash,
@@ -321,7 +336,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
     [],
   );
 
-  const invalidWidth = isInvalidFloat(editedWidth, false, 1, 12);
+  const invalidWidth = isInvalidFloat(editedWidth, false, 1, 99);
 
   return (
     <Modal show={show} onHide={close}>
@@ -348,13 +363,10 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
             <Form.Group controlId="color" className="mt-3">
               <Form.Label>{m?.drawing.edit.color}</Form.Label>
 
-              <Form.Control
-                type="color"
+              <RgbaColorPicker
                 value={editedColor || COLORS.normal}
-                onChange={(e) => setEditedColor(e.currentTarget.value)}
+                onChange={setEditedColor}
               />
-
-              <DrawingRecentColors onColor={setEditedColor} />
             </Form.Group>
           )}
 
@@ -363,6 +375,12 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
               <DrawingLineStyleFields
                 color={editedColor || COLORS.normal}
                 onColorChange={setEditedColor}
+                fillColor={
+                  editedType === 'polygon' ? editedFillColor : undefined
+                }
+                onFillColorChange={
+                  editedType === 'polygon' ? setEditedFillColor : undefined
+                }
                 width={editedWidth}
                 onWidthChange={setEditedWidth}
                 invalidWidth={invalidWidth}
@@ -379,9 +397,15 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
 
                 <Form.Select
                   value={editedType}
-                  onChange={(e) =>
-                    setEditedType(e.currentTarget.value as 'polygon' | 'line')
-                  }
+                  onChange={(e) => {
+                    const newType = e.currentTarget.value as 'polygon' | 'line';
+
+                    setEditedType(newType);
+
+                    if (newType === 'polygon' && !editedFillColor) {
+                      setEditedFillColor(editedColor);
+                    }
+                  }}
                   disabled={!polyPoints || polyPoints.length < 3}
                 >
                   <option value="line">{m?.selections.drawLines}</option>

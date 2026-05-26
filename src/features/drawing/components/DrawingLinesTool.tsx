@@ -29,6 +29,10 @@ export function DrawingLinesTool(): null {
 
   const color = useAppSelector((state) => state.drawingSettings.drawingColor);
 
+  const fillColor = useAppSelector(
+    (state) => state.drawingSettings.drawingFillColor,
+  );
+
   const width = useAppSelector((state) => state.drawingSettings.drawingWidth);
 
   const dashArray = useAppSelector(
@@ -78,6 +82,7 @@ export function DrawingLinesTool(): null {
               lineProps: {
                 type: tool === 'draw-lines' ? 'line' : 'polygon',
                 color,
+                fillColor: tool === 'draw-lines' ? undefined : fillColor,
                 width,
                 dashArray: dashArray,
                 lineCap,
@@ -103,6 +108,7 @@ export function DrawingLinesTool(): null {
       selection,
       tool,
       color,
+      fillColor,
       width,
       dashArray,
       lineCap,

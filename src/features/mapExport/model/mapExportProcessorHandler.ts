@@ -72,6 +72,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
       const props = {
         name: line.label || '',
         color: line.color ?? COLORS.normal,
+        fillColor: line.fillColor,
         width: line.width ?? 4,
         lineJoin: line.lineJoin,
         lineCap: line.lineCap,

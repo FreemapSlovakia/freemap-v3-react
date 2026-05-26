@@ -1,5 +1,6 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
+import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -90,6 +91,13 @@ export function DrawingPointsResult(): ReactElement {
       {points.map(({ coords, label, color }, i) => {
         const interactive = interactive0 || activeIndex === i;
 
+        const { color: rgb, opacity } = splitColorAlpha(color || COLORS.normal);
+
+        const renderColor =
+          activeIndex === i
+            ? joinColorAlpha(Color(rgb).lighten(0.75).hex(), opacity)
+            : color || COLORS.normal;
+
         return (
           <RichMarker
             key={`${change}-${i}-${interactive ? 'a' : 'b'}`}
@@ -100,13 +108,7 @@ export function DrawingPointsResult(): ReactElement {
               click: onSelects[i],
             }}
             position={{ lat: coords.lat, lng: coords.lon }}
-            color={
-              activeIndex === i
-                ? Color(color || COLORS.normal)
-                    .lighten(0.75)
-                    .hex()
-                : color || COLORS.normal
-            }
+            color={renderColor}
             draggable={!window.fmEmbedded && activeIndex === i}
             interactive={interactive}
           >

@@ -502,6 +502,7 @@ const messages: Messages = {
     edit: {
       title: 'Properties',
       color: 'Color',
+      fillColor: 'Fill color',
       label: 'Label',
       width: 'Width',
       hint: 'To remove label leave this field empty.',

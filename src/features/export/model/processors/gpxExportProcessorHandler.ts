@@ -6,6 +6,7 @@ import { ObjectsState } from '@features/objects/model/reducer.js';
 import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { TrackingState } from '@features/tracking/model/reducer.js';
 import { TrackViewerState } from '@features/trackViewer/model/reducer.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { escapeHtml } from '@shared/stringUtils.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -293,19 +294,38 @@ function addDrawingLines(
 
     const extEle = createElement(trkEle, 'extensions');
 
-    const color = (line.color ?? COLORS.normal).slice(1);
+    const stroke = splitColorAlpha(line.color ?? COLORS.normal);
+    const rgb = stroke.color.slice(1);
+
+    const fillSrc = line.fillColor ?? line.color ?? COLORS.normal;
+    const fillRaw = splitColorAlpha(fillSrc);
+    const fill = {
+      color: fillRaw.color,
+      opacity: line.fillColor ? fillRaw.opacity : 0.33,
+    };
+    const fillRgb = fill.color.slice(1);
 
     if (type === 'polygon') {
       const fillStyleEle = createElement(extEle, [GPX_STYLE_NS, 'fill']);
 
-      createElement(fillStyleEle, [GPX_STYLE_NS, 'color'], color);
+      createElement(fillStyleEle, [GPX_STYLE_NS, 'color'], fillRgb);
 
-      createElement(fillStyleEle, [GPX_STYLE_NS, 'opacity'], '0.33');
+      createElement(
+        fillStyleEle,
+        [GPX_STYLE_NS, 'opacity'],
+        fill.opacity.toFixed(2),
+      );
     }
 
     const lineStyleEle = createElement(extEle, [GPX_STYLE_NS, 'line']);
 
-    createElement(lineStyleEle, [GPX_STYLE_NS, 'color'], color);
+    createElement(lineStyleEle, [GPX_STYLE_NS, 'color'], rgb);
+
+    createElement(
+      lineStyleEle,
+      [GPX_STYLE_NS, 'opacity'],
+      stroke.opacity.toFixed(2),
+    );
 
     createElement(
       lineStyleEle,
@@ -315,7 +335,11 @@ function addDrawingLines(
 
     const ext2Ele = createElement(lineStyleEle, 'extensions');
 
-    createElement(ext2Ele, [LOCUS_NS, 'locus:lsColorBase'], '#ff' + color);
+    createElement(
+      ext2Ele,
+      [LOCUS_NS, 'locus:lsColorBase'],
+      '#' + toLocusAlpha(stroke.opacity) + rgb,
+    );
 
     createElement(
       ext2Ele,
@@ -326,7 +350,11 @@ function addDrawingLines(
     createElement(ext2Ele, [LOCUS_NS, 'locus:lsUnits'], 'PIXELS');
 
     if (type === 'polygon') {
-      createElement(ext2Ele, [LOCUS_NS, 'locus:lsColorFill'], '#60' + color);
+      createElement(
+        ext2Ele,
+        [LOCUS_NS, 'locus:lsColorFill'],
+        '#' + toLocusAlpha(fill.opacity) + fillRgb,
+      );
     }
 
     const trksegEle = createElement(trkEle, 'trkseg');
@@ -459,6 +487,12 @@ function toLatLon(latLon: LatLon) {
     lat: latLon.lat.toString(),
     lon: latLon.lon.toString(),
   };
+}
+
+function toLocusAlpha(opacity: number): string {
+  return Math.round(Math.max(0, Math.min(1, opacity)) * 255)
+    .toString(16)
+    .padStart(2, '0');
 }
 
 const FM_NS = 'https://www.freemap.sk/GPX/1/0';
