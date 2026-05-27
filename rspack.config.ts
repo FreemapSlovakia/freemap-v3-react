@@ -106,7 +106,7 @@ const config: Configuration = {
     },
     static: false,
   },
-  devtool: prod ? 'source-map' : 'cheap-module-source-map',
+  devtool: prod ? 'source-map' : 'eval-source-map',
   module: {
     rules: [
       {
