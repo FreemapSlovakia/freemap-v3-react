@@ -10,8 +10,7 @@ import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlRspackPlugin from 'html-rspack-plugin';
 import { RspackManifestPlugin } from 'rspack-manifest-plugin';
-import * as sass from 'sass-embedded';
-import type SassLoader from 'sass-loader';
+import { LoaderOptions as SassLoaderOptions } from 'sass-loader';
 import TerserPlugin from 'terser-webpack-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import { RspackMarkdownDictPlugin } from './RspackMarkdownDictPlugin.js';
@@ -25,7 +24,7 @@ import itMessages from './src/translations/it-shared.js';
 import plMessages from './src/translations/pl-shared.js';
 import skMessages from './src/translations/sk-shared.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = import.meta.dirname;
 
 const prod = 'DEPLOYMENT' in process.env && process.env['DEPLOYMENT'] !== 'dev';
 const cssModuleRegex = /\.module\.css$/;
@@ -132,6 +131,9 @@ const config: Configuration = {
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
         type: 'asset/resource',
+        // Keep the original filename in the emitted asset so URLs are readable
+        // (also lets drawing points reference poi icons by name, not by hash).
+        generator: { filename: '[name].[contenthash][ext]' },
       },
       {
         test: /\.scss$/,
@@ -164,11 +166,10 @@ const config: Configuration = {
           {
             loader: 'sass-loader',
             options: {
-              implementation: sass,
               sassOptions: {
                 quietDeps: true,
               },
-            } satisfies SassLoader.Options,
+            } satisfies SassLoaderOptions,
           },
         ],
       },

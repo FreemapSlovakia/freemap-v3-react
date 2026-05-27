@@ -1,4 +1,5 @@
 import { applySettings } from '@app/store/actions.js';
+import type { MarkerType } from '@features/objects/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import { drawingLineChangeProperties } from '../actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '../actions/drawingPointActions.js';
@@ -11,6 +12,7 @@ export interface DrawingSettingsState {
   drawingDashArray?: number[];
   drawingLineCap?: 'butt' | 'round' | 'square';
   drawingLineJoin?: 'miter' | 'round' | 'bevel';
+  drawingMarkerType: MarkerType;
 }
 
 export const drawingSettingsInitialState: DrawingSettingsState = {
@@ -18,6 +20,7 @@ export const drawingSettingsInitialState: DrawingSettingsState = {
   drawingFillColor: '#0000ff33',
   drawingWidth: 4,
   drawingRecentColors: [],
+  drawingMarkerType: 'pin',
 };
 
 export const drawingSettingsReducer = createReducer(
@@ -49,6 +52,10 @@ export const drawingSettingsReducer = createReducer(
 
         if ('drawingLineJoin' in action.payload) {
           state.drawingLineJoin = action.payload.drawingLineJoin;
+        }
+
+        if (action.payload.drawingMarkerType) {
+          state.drawingMarkerType = action.payload.drawingMarkerType;
         }
 
         if (color) {

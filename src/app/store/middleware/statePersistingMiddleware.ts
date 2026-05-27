@@ -42,6 +42,7 @@ function persistSelectedState(state: RootState) {
         drawingColor: state.drawingSettings.drawingColor,
         drawingWidth: state.drawingSettings.drawingWidth,
         drawingRecentColors: state.drawingSettings.drawingRecentColors,
+        drawingMarkerType: state.drawingSettings.drawingMarkerType,
       },
       objects: {
         selectedIcon: state.objects.selectedIcon,

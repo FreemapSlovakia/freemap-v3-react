@@ -9,6 +9,7 @@ import {
 } from '@features/homeLocation/model/actions.js';
 import { setLocation, toggleLocate } from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
+import type { MarkerType } from '@features/objects/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import type {
   CustomLayerDef,
@@ -105,6 +106,7 @@ type Settings = {
   drawingDash?: number[];
   drawingLineCap?: 'butt' | 'round' | 'square';
   drawingLineJoin?: 'miter' | 'round' | 'bevel';
+  drawingMarkerType?: MarkerType;
   maxZoom?: number;
   stravaHeatmapColor?: StravaHeatmapColor;
 };

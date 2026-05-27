@@ -9,6 +9,9 @@ import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointAct
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import { searchClear } from '@features/search/model/actions.js';
 import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
+import { resolveGenericName } from '@osm/osmNameResolver.js';
+import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
+import { poiIconUrlToName } from '@shared/drawingIcons.js';
 import { mergeLines } from '@shared/geoutils.js';
 import { flatten as turfFlatten } from '@turf/flatten';
 import { lineString } from '@turf/helpers';
@@ -71,11 +74,19 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       );
 
       if (object) {
+        const iconUrl = resolveGenericName(osmTagToIconMapping, object.tags)[0];
+
+        const iconName = iconUrl ? poiIconUrlToName[iconUrl] : undefined;
+
+        const markerType = state.objects.selectedIcon;
+
         dispatch(
           drawingPointAdd({
             coords: object.coords,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
             color: state.drawingSettings.drawingColor,
+            markerType: markerType === 'pin' ? undefined : markerType,
+            icon: iconName ? `poi:${iconName}` : undefined,
             id: getState().drawingPoints.points.length,
           }),
         );
@@ -215,6 +226,14 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         const { geometry } = feature;
 
         if (geometry?.type === 'Point') {
+          const tags = (feature.properties ?? {}) as Record<string, string>;
+
+          const iconUrl = resolveGenericName(osmTagToIconMapping, tags)[0];
+
+          const iconName = iconUrl ? poiIconUrlToName[iconUrl] : undefined;
+
+          const markerType = state.objects.selectedIcon;
+
           dispatch(
             drawingPointAdd({
               label: feature.properties?.['name'],
@@ -223,6 +242,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
                 lat: geometry.coordinates[1],
                 lon: geometry.coordinates[0],
               },
+              markerType: markerType === 'pin' ? undefined : markerType,
+              icon: iconName ? `poi:${iconName}` : undefined,
               id: getState().drawingPoints.points.length,
             }),
           );

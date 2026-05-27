@@ -1,11 +1,18 @@
+import { MarkerType } from '@features/objects/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import { LatLon, LatLonSchema } from '@shared/types/common.js';
 import z from 'zod';
+
+export const MarkerTypeSchema = z.enum(['pin', 'square', 'ring']);
 
 export const DrawingPointSchema = z.object({
   coords: LatLonSchema,
   label: z.string().optional(),
   color: z.string().optional(),
+  markerType: MarkerTypeSchema.optional(),
+  // Prefixed icon spec rendered inside the marker: `fa:FaFlag` (react-icons,
+  // `<set>:<IconName>`) or `poi:church` (bundled OSM poi icon).
+  icon: z.string().optional(),
 });
 
 export type DrawingPoint = z.infer<typeof DrawingPointSchema>;
@@ -46,6 +53,8 @@ export const drawingPointChangeProperties = createAction<{
   properties: {
     label: string | undefined;
     color: string | undefined;
+    markerType: MarkerType | undefined;
+    icon: string | undefined;
   };
 }>('DRAWING_POINT_CHANGE_PROPERTIES');
 

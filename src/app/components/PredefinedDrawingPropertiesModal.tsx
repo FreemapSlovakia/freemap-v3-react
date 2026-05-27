@@ -36,7 +36,13 @@ export function PredefinedDrawingPropertiesModal({
     (state) => state.drawingSettings.drawingLineJoin ?? 'round',
   );
 
+  const markerType = useAppSelector(
+    (state) => state.drawingSettings.drawingMarkerType,
+  );
+
   const [editedColor, setEditedColor] = useState(color);
+
+  const [editedMarkerType, setEditedMarkerType] = useState(markerType);
 
   const [editedFillColor, setEditedFillColor] = useState(fillColorPref);
 
@@ -60,6 +66,7 @@ export function PredefinedDrawingPropertiesModal({
         drawingLineCap: editedLineCap === 'round' ? undefined : editedLineCap,
         drawingLineJoin:
           editedLineJoin === 'round' ? undefined : editedLineJoin,
+        drawingMarkerType: editedMarkerType,
         drawingApplyAll: applyToAll,
       }),
     );
@@ -104,6 +111,23 @@ export function PredefinedDrawingPropertiesModal({
             dashArray={editedDash}
             onDashArrayChange={setEditedDash}
           />
+
+          <Form.Group controlId="markerType" className="mt-3">
+            <Form.Label>{m?.drawing.edit.shape}</Form.Label>
+
+            <Form.Select
+              value={editedMarkerType}
+              onChange={(e) =>
+                setEditedMarkerType(
+                  e.currentTarget.value as 'pin' | 'square' | 'ring',
+                )
+              }
+            >
+              <option value="pin">{m?.objects.icon.pin}</option>
+              <option value="ring">{m?.objects.icon.ring}</option>
+              <option value="square">{m?.objects.icon.square}</option>
+            </Form.Select>
+          </Form.Group>
         </Modal.Body>
 
         <Modal.Footer>

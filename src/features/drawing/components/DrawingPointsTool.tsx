@@ -11,6 +11,10 @@ import {
 export function DrawingPointsTool(): null {
   const color = useAppSelector((state) => state.drawingSettings.drawingColor);
 
+  const markerType = useAppSelector(
+    (state) => state.drawingSettings.drawingMarkerType,
+  );
+
   const length = useAppSelector((state) => state.drawingPoints.points.length);
 
   const dispatch = useDispatch();
@@ -26,13 +30,14 @@ export function DrawingPointsTool(): null {
               lon: latlng.lng,
             },
             color,
+            markerType: markerType === 'pin' ? undefined : markerType,
             id: length,
           }),
         );
 
         dispatch(drawingMeasure({}));
       },
-      [dispatch, color, length],
+      [dispatch, color, markerType, length],
     ),
   );
 

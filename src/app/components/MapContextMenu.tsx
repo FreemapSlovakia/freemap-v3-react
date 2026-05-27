@@ -114,6 +114,10 @@ export function MapContextMenu(): ReactElement {
 
   const color = useAppSelector((state) => state.drawingSettings.drawingColor);
 
+  const markerType = useAppSelector(
+    (state) => state.drawingSettings.drawingMarkerType,
+  );
+
   const width = useAppSelector((state) => state.drawingSettings.drawingWidth);
 
   const linesLength = useAppSelector(
@@ -188,6 +192,7 @@ export function MapContextMenu(): ReactElement {
                 lon: contextMenu.lon,
               },
               color,
+              markerType: markerType === 'pin' ? undefined : markerType,
               id: pointsLength,
             }),
           );
@@ -258,6 +263,7 @@ export function MapContextMenu(): ReactElement {
     [
       closeMenu,
       color,
+      markerType,
       contextMenu.lat,
       contextMenu.lon,
       dispatch,
