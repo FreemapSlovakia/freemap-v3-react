@@ -467,81 +467,85 @@ export function RoutePlannerResult(): ReactElement {
 
   const pointElements = useMemo(
     () =>
-      points.map((point, i) => (
-        <RichMarker
-          key={`pt-${i}-${routePlannerToolActive}-${interactive}`}
-          position={{ lat: point.lat, lng: point.lon }}
-          interactive={window.fmEmbedded || interactive || selectedPoint === i}
-          draggable={
-            (routePlannerToolActive || selectedPoint === i) &&
-            !window.fmEmbedded
-          }
-          label={
-            i === 0 || (i === points.length - 1 && mode !== 'roundtrip')
-              ? undefined
-              : mode === 'route'
-                ? i
-                : waypoints[i]?.waypoint_index
-          }
-          color={
-            i === 0 && !finishOnly
-              ? selectedPoint === i
-                ? '#a2daa2'
-                : '#409a40'
-              : mode !== 'roundtrip' && i === points.length - 1
+      points.map((point, i) => {
+        const isStart = i === 0 && !finishOnly;
+
+        const isEnd = mode !== 'roundtrip' && i === points.length - 1;
+
+        // `faIcon` and `label` are mutually exclusive on RichMarker.
+        const content = isStart
+          ? { faIcon: <FaPlay color="#409a40" /> }
+          : isEnd
+            ? { faIcon: <FaStop color="#d9534f" /> }
+            : i === 0
+              ? {} // start point in finishOnly mode: neither icon nor label
+              : { label: mode === 'route' ? i : waypoints[i]?.waypoint_index };
+
+        return (
+          <RichMarker
+            key={`pt-${i}-${routePlannerToolActive}-${interactive}`}
+            position={{ lat: point.lat, lng: point.lon }}
+            interactive={
+              window.fmEmbedded || interactive || selectedPoint === i
+            }
+            draggable={
+              (routePlannerToolActive || selectedPoint === i) &&
+              !window.fmEmbedded
+            }
+            {...content}
+            color={
+              isStart
                 ? selectedPoint === i
-                  ? '#feaca9'
-                  : '#d9534f'
-                : selectedPoint === i
-                  ? '#9fb7ff'
-                  : '#3e64d5'
-          }
-          faIcon={
-            i === 0 && !finishOnly ? (
-              <FaPlay color="#409a40" />
-            ) : mode !== 'roundtrip' && i === points.length - 1 ? (
-              <FaStop color="#d9534f" />
-            ) : undefined
-          }
-          zIndexOffset={(i === 0 && !finishOnly) || points.length - 1 ? 10 : 1}
-          eventHandlers={
-            window.fmEmbedded
-              ? {}
-              : {
-                  mousedown() {
-                    pointPointerDownRef.current = true;
-                  },
-                  dragstart: handlePointDragStart,
-                  dragend(e) {
-                    handlePointDragEnd(i, e);
-                  },
-                  click() {
-                    handlePointClick(i);
-                  },
-                  mouseover() {
-                    handlePointMouseOver(i);
-                  },
-                  mouseout: handlePointMouseOut,
-                }
-          }
-        >
-          {i === points.length - 1 /* finish */ ? (
-            mode === 'roundtrip' ? (
-              <Tooltip direction="top">
-                {getPointDetails(points.length - 2)}
-              </Tooltip>
+                  ? '#a2daa2'
+                  : '#409a40'
+                : isEnd
+                  ? selectedPoint === i
+                    ? '#feaca9'
+                    : '#d9534f'
+                  : selectedPoint === i
+                    ? '#9fb7ff'
+                    : '#3e64d5'
+            }
+            zIndexOffset={isStart || points.length - 1 ? 10 : 1}
+            eventHandlers={
+              window.fmEmbedded
+                ? {}
+                : {
+                    mousedown() {
+                      pointPointerDownRef.current = true;
+                    },
+                    dragstart: handlePointDragStart,
+                    dragend(e) {
+                      handlePointDragEnd(i, e);
+                    },
+                    click() {
+                      handlePointClick(i);
+                    },
+                    mouseover() {
+                      handlePointMouseOver(i);
+                    },
+                    mouseout: handlePointMouseOut,
+                  }
+            }
+          >
+            {i === points.length - 1 /* finish */ ? (
+              mode === 'roundtrip' ? (
+                <Tooltip direction="top">
+                  {getPointDetails(points.length - 2)}
+                </Tooltip>
+              ) : (
+                getSummary(i === pointHovering)
+              )
+            ) : i === 0 && !finishOnly /* start */ ? (
+              mode === 'roundtrip' && getSummary(i === pointHovering)
             ) : (
-              getSummary(i === pointHovering)
-            )
-          ) : i === 0 && !finishOnly /* start */ ? (
-            mode === 'roundtrip' && getSummary(i === pointHovering)
-          ) : (
-            <Tooltip direction="top" key={points.length}>
-              {getPointDetails(i - 1)}
-            </Tooltip>
-          )}
-        </RichMarker>
-      )),
+              <Tooltip direction="top" key={points.length}>
+                {getPointDetails(i - 1)}
+              </Tooltip>
+            )}
+          </RichMarker>
+        );
+      }),
     [
       points,
       routePlannerToolActive,

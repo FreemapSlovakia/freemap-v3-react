@@ -14,20 +14,43 @@ const textStyle: CSSProperties = {
   textAnchor: 'middle',
 };
 
-interface IconProps {
-  label?: string | number;
+interface BaseIconProps {
   color?: string;
-  image?: string;
-  faIcon?: ReactElement;
-  cacheKey?: string;
-  imageOpacity?: number;
-  selectedIconValue?: string;
   markerType?: MarkerType;
 }
 
-interface Props extends MarkerProps, IconProps {
-  autoOpenPopup?: boolean;
+// Loose shape accepted by the low-level renderer, which receives the content
+// props already destructured (and thus uncorrelated). Public callers use the
+// mutually-exclusive `IconProps` below.
+interface MarkerIconProps extends BaseIconProps {
+  label?: string | number;
+  image?: string;
+  faIcon?: ReactElement;
+  imageOpacity?: number;
 }
+
+// `faIcon`, `image` (+ `imageOpacity`) and `label` are mutually exclusive.
+type IconContentProps =
+  | {
+      faIcon?: ReactElement;
+      image?: never;
+      imageOpacity?: never;
+      label?: never;
+    }
+  | { image?: string; imageOpacity?: number; faIcon?: never; label?: never }
+  | {
+      label?: string | number;
+      faIcon?: never;
+      image?: never;
+      imageOpacity?: never;
+    };
+
+type IconProps = BaseIconProps & IconContentProps;
+
+type Props = MarkerProps &
+  IconProps & {
+    autoOpenPopup?: boolean;
+  };
 
 export const markerIconOptions = {
   iconSize: [24, 40] as [number, number],
@@ -37,7 +60,6 @@ export const markerIconOptions = {
 
 export function RichMarker({
   autoOpenPopup,
-  cacheKey: _cacheKey = 'default',
   markerType = 'pin',
   color,
   faIcon,
@@ -119,7 +141,7 @@ export function MarkerIcon({
   color = COLORS.normal,
   label,
   markerType,
-}: IconProps): ReactElement {
+}: MarkerIconProps): ReactElement {
   return (
     <>
       {markerType === 'ring' ? (
