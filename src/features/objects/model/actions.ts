@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { LatLon } from '@shared/types/common.js';
 import { OsmFeatureId } from '@shared/types/featureId.js';
+import z from 'zod';
 
 export interface ObjectsResult {
   id: OsmFeatureId;
@@ -8,7 +9,17 @@ export interface ObjectsResult {
   tags: Record<string, string>;
 }
 
-export type MarkerType = 'pin' | 'square' | 'ring';
+export const MarkerTypeSchema = z.enum(['pin', 'square', 'ring']);
+
+export type MarkerType = z.infer<typeof MarkerTypeSchema>;
+
+// 'pin' is the default shape; collapse it to undefined so it's omitted from
+// state, URLs and persisted maps.
+export function normalizeMarkerType(
+  markerType: MarkerType,
+): MarkerType | undefined {
+  return markerType === 'pin' ? undefined : markerType;
+}
 
 export const objectsSetFilter = createAction<string[]>('OBJECTS_SET_FILTER');
 

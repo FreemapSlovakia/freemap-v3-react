@@ -131,6 +131,9 @@ const config: Configuration = {
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
         type: 'asset/resource',
+        // Keep the original filename in the emitted asset so URLs are readable
+        // (also lets drawing points reference poi icons by name, not by hash).
+        generator: { filename: '[name].[contenthash][ext]' },
       },
       {
         test: /\.scss$/,

@@ -33,6 +33,10 @@ export const drawingPointsReducer = createReducer(initialState, (builder) =>
           if (payload.drawingColor) {
             point.color = payload.drawingColor;
           }
+
+          if (payload.drawingMarkerType) {
+            point.markerType = payload.drawingMarkerType;
+          }
         }
       }
     })

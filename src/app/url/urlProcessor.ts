@@ -249,7 +249,13 @@ export const urlProcessor: Processor = {
           'point',
           `${serializePoint(point.coords)}${point.color ? `\x1eC${point.color}` : ''}${
             point.label ? `\x1eL${point.label}` : ''
-          }`,
+          }${
+            point.markerType === 'square'
+              ? '\x1eSs'
+              : point.markerType === 'ring'
+                ? '\x1eSr'
+                : ''
+          }${point.icon ? `\x1eI${point.icon}` : ''}`,
         ]);
       }
     }

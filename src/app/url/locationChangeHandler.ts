@@ -966,6 +966,10 @@ function parseColorAndLabel(m: string) {
 
   let lineJoin: 'miter' | 'round' | 'bevel' | undefined;
 
+  let markerType: 'pin' | 'square' | 'ring' | undefined;
+
+  let icon: string | undefined;
+
   // compatibility
   if (m.startsWith(',') || m.startsWith(';')) {
     if (m[1] === '#') {
@@ -995,11 +999,26 @@ function parseColorAndLabel(m: string) {
       } else if (field[0] === 'J') {
         lineJoin =
           field[1] === 'm' ? 'miter' : field[1] === 'b' ? 'bevel' : undefined;
+      } else if (field[0] === 'S') {
+        markerType =
+          field[1] === 's' ? 'square' : field[1] === 'r' ? 'ring' : undefined;
+      } else if (field[0] === 'I') {
+        icon = field.slice(1) || undefined;
       }
     }
   }
 
-  return { label, color, fillColor, width, dashArray, lineCap, lineJoin };
+  return {
+    label,
+    color,
+    fillColor,
+    width,
+    dashArray,
+    lineCap,
+    lineJoin,
+    markerType,
+    icon,
+  };
 }
 
 function handleInfoPoint(
@@ -1028,12 +1047,17 @@ function handleInfoPoint(
       // see https://github.com/microsoft/TypeScript/issues/29642
       const m = ipMatch!;
 
+      const { label, color, markerType, icon } = parseColorAndLabel(m[3] ?? '');
+
       return {
         coords: {
           lat: parseFloat(m[1]),
           lon: parseFloat(m[2]),
         },
-        ...parseColorAndLabel(m[3] ?? ''),
+        label,
+        color,
+        markerType,
+        icon,
       };
     });
 
@@ -1048,15 +1072,15 @@ function handleInfoPoint(
   if (
     ips
       .map(
-        ({ coords, label, color }) =>
-          `${serializePoint(coords)},${label},${color}`,
+        ({ coords, label, color, markerType, icon }) =>
+          `${serializePoint(coords)},${label},${color},${markerType},${icon}`,
       )
       .sort()
       .join('\n') !==
     getState()
       .drawingPoints.points.map(
-        ({ coords, label, color }) =>
-          `${serializePoint(coords)},${label},${color}`,
+        ({ coords, label, color, markerType, icon }) =>
+          `${serializePoint(coords)},${label},${color},${markerType},${icon}`,
       )
       .sort()
       .join('\n')

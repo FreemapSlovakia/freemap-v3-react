@@ -6,9 +6,11 @@ import {
   Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import { normalizeMarkerType } from '@features/objects/model/actions.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import { searchClear } from '@features/search/model/actions.js';
 import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
+import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
 import { mergeLines } from '@shared/geoutils.js';
 import { flatten as turfFlatten } from '@turf/flatten';
 import { lineString } from '@turf/helpers';
@@ -76,6 +78,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             coords: object.coords,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
             color: state.drawingSettings.drawingColor,
+            markerType: normalizeMarkerType(state.objects.selectedIcon),
+            icon: tagsToPoiIconSpec(object.tags),
             id: getState().drawingPoints.points.length,
           }),
         );
@@ -215,6 +219,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         const { geometry } = feature;
 
         if (geometry?.type === 'Point') {
+          const tags = (feature.properties ?? {}) as Record<string, string>;
+
           dispatch(
             drawingPointAdd({
               label: feature.properties?.['name'],
@@ -223,6 +229,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
                 lat: geometry.coordinates[1],
                 lon: geometry.coordinates[0],
               },
+              markerType: normalizeMarkerType(state.objects.selectedIcon),
+              icon: tagsToPoiIconSpec(tags),
               id: getState().drawingPoints.points.length,
             }),
           );

@@ -7,6 +7,7 @@ import { galleryRequestImages } from '@features/gallery/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
+import { normalizeMarkerType } from '@features/objects/model/actions.js';
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import {
   routePlannerSetFinish,
@@ -114,6 +115,10 @@ export function MapContextMenu(): ReactElement {
 
   const color = useAppSelector((state) => state.drawingSettings.drawingColor);
 
+  const markerType = useAppSelector(
+    (state) => state.drawingSettings.drawingMarkerType,
+  );
+
   const width = useAppSelector((state) => state.drawingSettings.drawingWidth);
 
   const linesLength = useAppSelector(
@@ -188,6 +193,7 @@ export function MapContextMenu(): ReactElement {
                 lon: contextMenu.lon,
               },
               color,
+              markerType: normalizeMarkerType(markerType),
               id: pointsLength,
             }),
           );
@@ -258,6 +264,7 @@ export function MapContextMenu(): ReactElement {
     [
       closeMenu,
       color,
+      markerType,
       contextMenu.lat,
       contextMenu.lon,
       dispatch,

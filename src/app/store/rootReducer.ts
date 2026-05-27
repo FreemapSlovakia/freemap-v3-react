@@ -35,6 +35,7 @@ import {
   mapDetailsReducer,
 } from '@features/mapDetails/model/reducer.js';
 import { mapsReducer } from '@features/myMaps/model/reducer.js';
+import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import {
   objectInitialState,
   objectsReducer,
@@ -141,7 +142,7 @@ const PersistedMainSchema = z
 
 const PersistedObjectsSchema = z
   .object({
-    selectedIcon: z.enum(['pin', 'square', 'ring']),
+    selectedIcon: MarkerTypeSchema,
   })
   .partial();
 

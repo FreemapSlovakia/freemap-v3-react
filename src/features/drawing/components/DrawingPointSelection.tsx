@@ -55,6 +55,8 @@ export function DrawingPointSelection(): ReactElement | null {
             lat: p.geometry.coordinates[1],
           },
           color,
+          markerType: point.markerType,
+          icon: point.icon,
         }),
       );
     },

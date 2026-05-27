@@ -3,12 +3,19 @@ import { selectingModeSelector } from '@app/store/selectors.js';
 import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
+import {
+  faIconToSvg,
+  parseIconSpec,
+  poiIconNameToUrl,
+  useFaIcon,
+} from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
-import { DragEndEvent, LeafletEvent } from 'leaflet';
+import { DragEndEvent, LeafletEvent, LeafletEventHandlerFnMap } from 'leaflet';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import type { DrawingPoint } from '../model/actions/drawingPointActions.js';
 import {
   drawingMeasure,
   drawingPointChangePosition,
@@ -88,8 +95,10 @@ export function DrawingPointsResult(): ReactElement {
 
   return (
     <>
-      {points.map(({ coords, label, color }, i) => {
+      {points.map((point, i) => {
         const interactive = interactive0 || activeIndex === i;
+
+        const { color } = point;
 
         const { color: rgb, opacity } = splitColorAlpha(color || COLORS.normal);
 
@@ -99,27 +108,75 @@ export function DrawingPointsResult(): ReactElement {
             : color || COLORS.normal;
 
         return (
-          <RichMarker
+          <DrawingPointMarker
             key={`${change}-${i}-${interactive ? 'a' : 'b'}`}
+            point={point}
+            renderColor={renderColor}
+            interactive={interactive}
+            draggable={!window.fmEmbedded && activeIndex === i}
             eventHandlers={{
               dragstart: onSelects[i],
               dragend: handleDragEnd,
               move: handleMove,
               click: onSelects[i],
             }}
-            position={{ lat: coords.lat, lng: coords.lon }}
-            color={renderColor}
-            draggable={!window.fmEmbedded && activeIndex === i}
-            interactive={interactive}
-          >
-            {label && (
-              <Tooltip className="compact" direction="top" permanent>
-                <span>{label}</span>
-              </Tooltip>
-            )}
-          </RichMarker>
+          />
         );
       })}
     </>
+  );
+}
+
+function DrawingPointMarker({
+  point: { coords, label, markerType, icon },
+  renderColor,
+  interactive,
+  draggable,
+  eventHandlers,
+}: {
+  point: DrawingPoint;
+  renderColor: string;
+  interactive: boolean;
+  draggable: boolean;
+  eventHandlers: LeafletEventHandlerFnMap;
+}): ReactElement {
+  // The marker interior is the `icon` content: a bundled poi icon, a Font
+  // Awesome icon, or up to 2 literal characters of text. The `label` is the
+  // descriptive tooltip.
+  const spec = parseIconSpec(icon);
+
+  const faDef = useFaIcon(spec?.kind === 'fa' ? spec.name : undefined);
+
+  // Memoized on the (stable, cached) definition so RichMarker's icon isn't
+  // rebuilt mid-drag.
+  const iconSvg = useMemo(() => faDef && faIconToSvg(faDef), [faDef]);
+
+  const contentProps =
+    spec?.kind === 'poi'
+      ? { image: poiIconNameToUrl[spec.name] }
+      : spec?.kind === 'fa'
+        ? iconSvg
+          ? { iconSvg }
+          : {}
+        : spec?.kind === 'text'
+          ? { label: spec.text }
+          : {};
+
+  return (
+    <RichMarker
+      eventHandlers={eventHandlers}
+      position={{ lat: coords.lat, lng: coords.lon }}
+      color={renderColor}
+      markerType={markerType}
+      {...contentProps}
+      draggable={draggable}
+      interactive={interactive}
+    >
+      {label && (
+        <Tooltip className="compact" direction="top" permanent>
+          <span>{label}</span>
+        </Tooltip>
+      )}
+    </RichMarker>
   );
 }

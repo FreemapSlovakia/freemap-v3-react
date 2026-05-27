@@ -1,10 +1,14 @@
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
+import { IconPicker } from '@features/drawing/components/IconPicker.js';
+import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
 import { RgbaColorPicker } from '@features/drawing/components/RgbaColorPicker.js';
 import { drawingLineChangeProperties } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { normalizeMarkerType } from '@features/objects/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { COLORS } from '@shared/colors.js';
+import { faSpec, parseIconSpec } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import { polygon } from '@turf/helpers';
@@ -21,6 +25,10 @@ import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../../../app/store/actions.js';
 
 type Props = { show: boolean };
+
+// Stable reference so the dashArray selector doesn't return a fresh array each
+// call (which react-redux warns about and causes needless rerenders).
+const EMPTY_DASH: number[] = [];
 
 export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
   const m = useMessages();
@@ -45,6 +53,22 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
         : COLORS.normal;
   });
 
+  const markerType = useAppSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-points' && selection.id !== undefined
+      ? (state.drawingPoints.points[selection.id]?.markerType ?? 'pin')
+      : 'pin';
+  });
+
+  const icon = useAppSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-points' && selection.id !== undefined
+      ? (state.drawingPoints.points[selection.id]?.icon ?? '')
+      : '';
+  });
+
   const fillColor = useAppSelector((state) => {
     const { selection } = state.main;
 
@@ -65,8 +89,8 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
     const { selection } = state.main;
 
     return selection?.type === 'draw-line-poly' && selection.id !== undefined
-      ? (state.drawingLines.lines[selection.id]?.dashArray ?? [])
-      : [];
+      ? (state.drawingLines.lines[selection.id]?.dashArray ?? EMPTY_DASH)
+      : EMPTY_DASH;
   });
 
   const lineCap = useAppSelector((state) => {
@@ -108,6 +132,12 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
   const [editedLabel, setEditedLabel] = useState(label);
 
   const [editedColor, setEditedColor] = useState(color);
+
+  const [editedMarkerType, setEditedMarkerType] = useState(markerType);
+
+  const [editedIcon, setEditedIcon] = useState(icon);
+
+  const editedIconSpec = parseIconSpec(editedIcon);
 
   const [editedFillColor, setEditedFillColor] = useState(
     fillColor ?? (type === 'polygon' ? color : undefined),
@@ -307,6 +337,8 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
               properties: {
                 label: editedLabel || undefined,
                 color: editedColor,
+                markerType: normalizeMarkerType(editedMarkerType),
+                icon: editedIcon || undefined,
               },
             }),
       );
@@ -318,6 +350,8 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
       editedLabel,
       dispatch,
       editedColor,
+      editedMarkerType,
+      editedIcon,
       editedFillColor,
       editedWidth,
       editedType,
@@ -360,14 +394,53 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
           </Form.Group>
 
           {drawType !== 'draw-line-poly' && (
-            <Form.Group controlId="color" className="mt-3">
-              <Form.Label>{m?.drawing.edit.color}</Form.Label>
+            <>
+              <Form.Group controlId="color" className="mt-3">
+                <Form.Label>{m?.drawing.edit.color}</Form.Label>
 
-              <RgbaColorPicker
-                value={editedColor || COLORS.normal}
-                onChange={setEditedColor}
-              />
-            </Form.Group>
+                <RgbaColorPicker
+                  value={editedColor || COLORS.normal}
+                  onChange={setEditedColor}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="markerType" className="mt-3">
+                <Form.Label>{m?.drawing.edit.shape}</Form.Label>
+
+                <MarkerTypeSelect
+                  value={editedMarkerType}
+                  onChange={setEditedMarkerType}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="icon" className="mt-3">
+                <Form.Label>{m?.drawing.edit.icon}</Form.Label>
+
+                <IconPicker
+                  selectedName={
+                    editedIconSpec?.kind === 'fa'
+                      ? editedIconSpec.name
+                      : undefined
+                  }
+                  onSelect={(name) => setEditedIcon(name ? faSpec(name) : '')}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="text" className="mt-3">
+                <Form.Label>{m?.drawing.edit.text}</Form.Label>
+
+                <Form.Control
+                  type="text"
+                  maxLength={2}
+                  value={
+                    editedIconSpec?.kind === 'text' ? editedIconSpec.text : ''
+                  }
+                  onChange={(e) => setEditedIcon(e.currentTarget.value)}
+                />
+
+                <Form.Text muted>{m?.drawing.edit.textHint}</Form.Text>
+              </Form.Group>
+            </>
           )}
 
           {drawType === 'draw-line-poly' && (

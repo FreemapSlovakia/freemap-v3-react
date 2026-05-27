@@ -1,4 +1,5 @@
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
+import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
@@ -36,7 +37,13 @@ export function PredefinedDrawingPropertiesModal({
     (state) => state.drawingSettings.drawingLineJoin ?? 'round',
   );
 
+  const markerType = useAppSelector(
+    (state) => state.drawingSettings.drawingMarkerType,
+  );
+
   const [editedColor, setEditedColor] = useState(color);
+
+  const [editedMarkerType, setEditedMarkerType] = useState(markerType);
 
   const [editedFillColor, setEditedFillColor] = useState(fillColorPref);
 
@@ -60,6 +67,7 @@ export function PredefinedDrawingPropertiesModal({
         drawingLineCap: editedLineCap === 'round' ? undefined : editedLineCap,
         drawingLineJoin:
           editedLineJoin === 'round' ? undefined : editedLineJoin,
+        drawingMarkerType: editedMarkerType,
         drawingApplyAll: applyToAll,
       }),
     );
@@ -104,6 +112,15 @@ export function PredefinedDrawingPropertiesModal({
             dashArray={editedDash}
             onDashArrayChange={setEditedDash}
           />
+
+          <Form.Group controlId="markerType" className="mt-3">
+            <Form.Label>{m?.drawing.edit.shape}</Form.Label>
+
+            <MarkerTypeSelect
+              value={editedMarkerType}
+              onChange={setEditedMarkerType}
+            />
+          </Form.Group>
         </Modal.Body>
 
         <Modal.Footer>
