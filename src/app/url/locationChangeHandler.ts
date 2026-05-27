@@ -537,7 +537,7 @@ export function handleLocationChange(store: MyStore): void {
             colorStops = [
               {
                 value: 0,
-                color: toColor(params.shift()),
+                color: toColor(params.pop()),
               },
             ];
 
