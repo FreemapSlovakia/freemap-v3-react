@@ -25,11 +25,17 @@ type ShadingLayerOptions = GridLayerOptions & {
   onPremiumClick?: () => void;
 };
 
-type CanvasWithRender = HTMLCanvasElement & {
-  render: (shading: Shading) => void;
+type CanvasEx = HTMLCanvasElement & {
+  _render: (shading: Shading) => void;
+  _gpuCleanup?: () => void;
+  _gpuUnloaded?: boolean;
 };
 
 class TileNotFoundError extends Error {}
+
+// Tile fetch cancelled because the tile unloaded (e.g. the user panned away).
+// This is normal, not a failure — it must not surface the error overlay.
+class TileAbortedError extends Error {}
 
 class GpuError extends Error {
   private _kind: keyof Messages['gpu'];
@@ -102,7 +108,7 @@ class LShadingLayer extends LGridLayer {
 
     this.textureFormat = textureFormat;
 
-    this.on('tileunload', ({ coords }: { coords: Coords }) => {
+    this.on('tileunload', ({ coords, tile }) => {
       const key = `${coords.x}/${coords.y}/${coords.z}`;
 
       const ac = this.acm.get(key);
@@ -112,6 +118,16 @@ class LShadingLayer extends LGridLayer {
 
         this.acm.delete(key);
       }
+
+      // Free this tile's GPU resources eagerly. Firefox/wgpu has a much
+      // tighter GPU allocator budget than Chrome/Dawn and relies on explicit
+      // destroy(), otherwise panning leaks textures/swapchains until OOM.
+      const canvas = tile as HTMLElement as CanvasEx;
+
+      canvas._gpuUnloaded = true;
+
+      canvas._gpuCleanup?.();
+      canvas._gpuCleanup = undefined;
     });
 
     const initGpuObjects = async () => {
@@ -236,7 +252,9 @@ class LShadingLayer extends LGridLayer {
 
     const zoom = coords.z + (this._options.zoomOffset ?? 0);
 
-    const key = `${x}/${y}/${zoom}`;
+    // Key by the tile's own z (matching the tileunload handler), not the
+    // zoomOffset-adjusted `zoom` which is only used for URL templating.
+    const key = `${x}/${y}/${coords.z}`;
 
     const url = Util.template(this._options.url, { x, y, z: zoom });
 
@@ -254,7 +272,7 @@ class LShadingLayer extends LGridLayer {
       res = await fetch(url, { signal });
     } catch {
       if (signal.aborted) {
-        throw new Error('aborted');
+        throw new TileAbortedError();
       }
 
       throw new TileNotFoundError();
@@ -288,10 +306,11 @@ class LShadingLayer extends LGridLayer {
     const texture = device.createTexture({
       size: [tileSize, tileSize],
       format: 'r32float',
-      usage:
-        GPUTextureUsage.TEXTURE_BINDING |
-        GPUTextureUsage.COPY_DST |
-        GPUTextureUsage.RENDER_ATTACHMENT,
+      // Sampled-only (binding 1) and filled via writeTexture (COPY_DST); it is
+      // never a render target. RENDER_ATTACHMENT would force a renderable
+      // r32float allocation, which Firefox/wgpu on Vulkan can fail to satisfy
+      // (device lost / "out of memory"), while Chrome/Dawn tolerates it.
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
     });
 
     device.queue.writeTexture(
@@ -316,7 +335,30 @@ class LShadingLayer extends LGridLayer {
       ],
     });
 
-    (canvas as CanvasWithRender).render = (shading: Shading) => {
+    const canvasEx = canvas as CanvasEx;
+
+    canvasEx._gpuCleanup = () => {
+      texture.destroy();
+
+      shadingBuffer.destroy();
+
+      try {
+        context.unconfigure();
+      } catch {
+        // context may already be gone
+      }
+    };
+
+    // The tile may have unloaded while we were fetching/decoding; if so, free
+    // what we just allocated and skip rendering into a discarded canvas.
+    if (canvasEx._gpuUnloaded) {
+      canvasEx._gpuCleanup();
+      canvasEx._gpuCleanup = undefined;
+
+      return false;
+    }
+
+    canvasEx._render = (shading: Shading) => {
       const shadingData = new ArrayBuffer(shadingBuffer.size);
 
       const dw = new DataWriter(shadingData);
@@ -436,12 +478,15 @@ class LShadingLayer extends LGridLayer {
 
     this.createTileAsync(coords, canvas).then(
       () => {
-        (canvas as CanvasWithRender).render(this.shading);
+        (canvas as CanvasEx)._render?.(this.shading);
 
         done(undefined, canvas);
       },
       (err) => {
-        if (!(err instanceof TileNotFoundError)) {
+        if (
+          !(err instanceof TileNotFoundError) &&
+          !(err instanceof TileAbortedError)
+        ) {
           this.showError(err);
         }
 
@@ -456,14 +501,20 @@ class LShadingLayer extends LGridLayer {
     this.shading = shading;
 
     for (const tile in this._tiles) {
-      (this._tiles[tile].el as CanvasWithRender).render?.(shading);
+      (this._tiles[tile].el as CanvasEx)._render?.(shading);
     }
   }
 
   private showError(err: unknown) {
-    if (this.errorDiv) {
+    // The rejection handler can fire after the layer was detached (panned away,
+    // HMR, or quick add/remove), at which point there's no container to attach
+    // the overlay to.
+    if (this.errorDiv || !this._map) {
       return;
     }
+
+    // Surface the underlying error; the overlay only shows a localized summary.
+    console.error('ShadingLayer error:', err);
 
     this.workerPool?.destroy();
 
