@@ -1,0 +1,137 @@
+.dropdown-menu {
+  z-index: 10000;
+}
+
+.dropdown-long {
+  overflow-x: auto;
+  max-height: calc(100dvh - 150px);
+}
+
+.accordion > .card > .card-header {
+  cursor: pointer;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  border: 0;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: hsla(0, 0%, 0%, 0.2);
+  border-radius: 50%;
+  background-origin: content-box;
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+}
+
+.form-label.required:after {
+  content: " *";
+  color: red;
+}
+
+/* let active looks like dark variant */
+.btn-secondary:not(:disabled):not(.disabled).active {
+  background-color: #343a40;
+  border-color: #343a40;
+
+  &:hover,
+  &:focus {
+    background-color: #23272b;
+    border-color: #1d2124;
+  }
+}
+
+kbd,
+.fm-should-have-keyboard {
+  display: none;
+
+  /* https://stackoverflow.com/a/47703337/289827 */
+  @media (hover: hover) and (pointer: fine) {
+    & {
+      display: revert;
+    }
+  }
+}
+
+kbd {
+  background-color: #bbb;
+  line-height: 0;
+}
+
+.f-gap-1 {
+  gap: 0.25rem;
+}
+
+.f-gap-2 {
+  gap: 0.5rem;
+}
+
+.dropdown-item {
+  @media (pointer: coarse) {
+    padding: 0.5rem 1.5rem;
+  }
+}
+
+legend {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.text-pre {
+  white-space: pre;
+}
+
+.btn-group {
+  /* Reset rounded corners */
+  > .btn:not(:last-child).fm-dropdown-toggle-nocaret {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+}
+
+.dropdown-item {
+  white-space: normal; /* to see all menu text on narrow mobile screens */
+}
+
+.w-4 {
+  width: 1rem !important;
+}
+
+.w-6 {
+  width: 1.5rem !important;
+}
+
+.w-8 {
+  width: 2rem !important;
+}
+
+.w-10 {
+  width: 2.5rem !important;
+}
+
+.dropdown-caption-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  font-size: var(--bs-dropdown-header-font-size, 0.875rem);
+  padding: var(--bs-dropdown-item-padding-y) var(--bs-dropdown-item-padding-x);
+  color: var(--bs-secondary-color);
+}
+
+.dropdown-caption-divider::before,
+.dropdown-caption-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.dropdown-caption-divider:not(:empty)::before {
+  margin-right: var(--bs-dropdown-item-padding-x);
+}
+
+.dropdown-caption-divider:not(:empty)::after {
+  margin-left: var(--bs-dropdown-item-padding-x);
+}

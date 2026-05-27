@@ -1,10 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import clsx from 'clsx';
 import type { CSSProperties, ReactElement } from 'react';
 import { AlertLink } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { Changeset, changesetsSetParams } from '../model/actions.js';
-import classes from './ChangesetDetails.module.scss';
+import classes from './ChangesetDetails.module.css';
 
 type Props = { changeset: Changeset };
 
@@ -24,7 +25,7 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
 
   return (
     <>
-      <dl className={`${classes['kvGrid']} mb-2`}>
+      <dl className={clsx(classes['kvGrid'], 'mb-2')}>
         <dt>{m?.changesets.details.author}</dt>
         <dd>
           <AlertLink

@@ -5,7 +5,7 @@ import { type ReactElement, useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gallerySetPickingPosition } from '../model/actions.js';
-import './gallery.scss';
+import './gallery.css';
 
 export function GalleryResult(): ReactElement {
   const dispatch = useDispatch();

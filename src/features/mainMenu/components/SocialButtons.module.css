@@ -1,0 +1,35 @@
+.mastodon-icon {
+  color: #6364ff;
+}
+
+.fb-icon {
+  color: #3b5998;
+
+  [data-bs-theme="dark"] & {
+    color: #77a2ff;
+  }
+}
+
+.yt-icon {
+  color: #ff0000;
+}
+
+.github-icon {
+  color: #333;
+
+  [data-bs-theme="dark"] & {
+    color: #ccc;
+  }
+}
+
+.android-icon {
+  color: #78c257;
+}
+
+.apple-icon {
+  color: black;
+
+  [data-bs-theme="dark"] & {
+    color: white;
+  }
+}

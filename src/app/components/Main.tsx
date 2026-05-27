@@ -59,6 +59,7 @@ import { AsyncComponent } from './AsyncComponent.js';
 import { CopyrightButton } from './CopyrightButton.js';
 import { InfoBar } from './InfoBar.js';
 import { Layers } from './Layers.js';
+import classes from './Main.module.css';
 import { MapContextMenu } from './MapContextMenu.js';
 import { MapControls } from './MapControls.js';
 import { Results } from './Results.js';
@@ -544,10 +545,10 @@ export function Main(): ReactElement {
 
           <Toasts />
 
-          <div className="fm-header">
+          <div className={classes['header']}>
             {!askingCookieConsent && !window.fmEmbedded && <InfoBar />}
 
-            <div className="fm-menus">
+            <div className={classes['menus']}>
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
                 <div />
 
@@ -697,7 +698,7 @@ export function Main(): ReactElement {
             )}
           </div>
 
-          <div className="fm-type-zoom-control">
+          <div className={classes['type-zoom-control']}>
             <div>
               <div
                 className="fm-ib-scroller fm-ib-scroller-bottom"
@@ -717,14 +718,14 @@ export function Main(): ReactElement {
       )}
 
       <div {...getRootProps()}>
-        {isDragActive && <div className="fm-drag-to-map" />}
+        {isDragActive && <div className={classes['drag-to-map']} />}
 
         <input {...getInputProps()} />
 
         {layers.some((layer) => layer[0] === 'V') && (
           <a
             href="https://www.maptiler.com"
-            className="watermark"
+            className={classes['watermark']}
             target="_blank"
             rel="noopener noreferrer"
           >

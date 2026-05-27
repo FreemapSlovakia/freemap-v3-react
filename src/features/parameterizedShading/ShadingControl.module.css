@@ -1,0 +1,23 @@
+.shading-control {
+  width: fit-content;
+
+  & :global(.fm-menu-scroller)::before,
+  & :global(.fm-menu-scroller) > div:first-child::before {
+    margin-top: 0;
+  }
+
+  & :global(.card-body) {
+    pointer-events: auto;
+    margin: 0;
+    padding: 0;
+    transform: translate(0, 0);
+  }
+}
+
+.shading-color {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  border: 1px solid black;
+}

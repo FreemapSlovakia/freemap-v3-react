@@ -46,19 +46,20 @@ import {
   Point,
 } from '../model/actions/drawingLineActions.js';
 import { drawingMeasure } from '../model/actions/drawingPointActions.js';
+import classes from './DrawingLineResult.module.css';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="circular-leaflet-marker-icon" style="background-color: var(--color-normal, ${COLORS.normal})"></div>`,
+  html: `<div class="${classes['circular-marker-icon']}" style="background-color: var(--color-normal, ${COLORS.normal})"></div>`,
 });
 
 const selectedCircularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="circular-leaflet-marker-icon" style="background-color: var(--color-selected, ${COLORS.selected})"></div>`,
+  html: `<div class="${classes['circular-marker-icon']}" style="background-color: var(--color-selected, ${COLORS.selected})"></div>`,
 });
 
 type Props = {

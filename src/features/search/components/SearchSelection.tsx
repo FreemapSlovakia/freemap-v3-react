@@ -12,7 +12,6 @@ import { ReactElement } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { FaPencilAlt, FaPlay, FaSearch, FaStop } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import './SearchMenu.scss';
 
 type Props = {
   hidden?: boolean;

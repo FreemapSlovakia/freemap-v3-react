@@ -5,7 +5,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import 'leaflet/dist/leaflet.css';
 import { ReactElement, ReactNode } from 'react';
 import { MapContainer, ScaleControl } from 'react-leaflet';
-import './leaflet.scss';
+import './leaflet.css';
 
 type Props = {
   children: ReactNode;

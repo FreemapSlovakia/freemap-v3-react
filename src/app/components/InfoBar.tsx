@@ -4,6 +4,7 @@ import { type ReactElement, useEffect, useState } from 'react';
 import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { hideInfoBar } from '../store/actions.js';
+import classes from './InfoBar.module.css';
 
 export function InfoBar(): ReactElement | null {
   const m = useMessages();
@@ -42,7 +43,7 @@ export function InfoBar(): ReactElement | null {
   const InfoBarContent = infoBars[key];
 
   return (
-    <div className="fm-info-bar">
+    <div className={classes['info-bar']}>
       <CloseButton
         onClick={() => {
           setShow(0);

@@ -27,6 +27,7 @@ import {
   MANAGEABLE_TYPES,
   ShadingComponentControl,
 } from './ShadingComponentControl.js';
+import classes from './ShadingControl.module.css';
 
 export function ShadingControl() {
   const shading = useAppSelector((state) => state.map.shading);
@@ -87,7 +88,7 @@ export function ShadingControl() {
   }, [card, sc, rf]);
 
   return (
-    <Card body className="fm-shading-control mt-2 ms-2">
+    <Card body className={`${classes['shading-control']} mt-2 ms-2`}>
       <div className="fm-menu-scroller" ref={setCard}>
         <div />
 
@@ -273,7 +274,7 @@ export function ShadingControl() {
           >
             <ListGroup.Item action eventKey="">
               <span
-                className="fm-shading-color"
+                className={classes['shading-color']}
                 style={{
                   backgroundColor: Color(shading.backgroundColor).hex(),
                 }}
@@ -290,7 +291,7 @@ export function ShadingControl() {
               >
                 {/^hillshade-|^slope-/.test(component.type) && (
                   <span
-                    className=" fm-shading-color"
+                    className={classes['shading-color']}
                     style={{
                       backgroundColor: Color(
                         component.colorStops[0].color,

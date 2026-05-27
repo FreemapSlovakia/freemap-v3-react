@@ -1,0 +1,23 @@
+.opacity-button {
+  background:
+    repeating-conic-gradient(#808080 0 25%, #0000 0 50%) 50% / 8px 8px;
+
+  & button {
+    width: 1em;
+    height: 1em;
+    background-color: #0d6efd;
+    padding: 0;
+    border: 0;
+    margin: 0.25em;
+    vertical-align: top;
+    border-radius: 3px;
+    position: relative;
+  }
+}
+
+.map-shortcut-cfg {
+  & button {
+    line-height: 1.1;
+    min-width: 2rem;
+  }
+}

@@ -30,6 +30,7 @@ import {
 } from '../model/actions.js';
 import { PictureModel } from './GalleryEditForm.js';
 import { GalleryUploadItem } from './GalleryUploadItem.js';
+import classes from './GalleryUploadModal.module.css';
 
 type Props = { show: boolean };
 
@@ -208,7 +209,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
       <Modal.Body>
         {items.length > 0 && (
-          <div className="fm-gallery-upload-items">
+          <div className={classes['upload-items']}>
             {items.map(
               ({
                 id,

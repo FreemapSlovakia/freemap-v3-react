@@ -4,11 +4,13 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import clsx from 'clsx';
 import { type ReactElement, ReactNode } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaPencilRuler, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { toolDefinitions } from '../toolDefinitions.js';
+import classes from './ToolMenu.module.css';
 
 type Props = {
   children?: ReactNode;
@@ -29,7 +31,7 @@ export function ToolMenu({ children }: Props): ReactElement {
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Toolbar className="mt-2 fm-toolmenu">
+      <Toolbar className={clsx('mt-2', classes['toolmenu'])}>
         <ButtonToolbar>
           {toolDef && (
             <span className="align-self-center ms-1">

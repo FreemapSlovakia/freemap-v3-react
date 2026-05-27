@@ -1,0 +1,95 @@
+.leaflet-container {
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+
+  & .leaflet-tooltip {
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+
+    &.compact {
+      padding: 0 3px;
+    }
+  }
+
+  & .leaflet-tooltip-top:before {
+    border-top-color: var(--bs-body-bg);
+  }
+
+  & .leaflet-tooltip-bottom:before {
+    border-bottom-color: var(--bs-body-bg);
+  }
+
+  & .leaflet-tooltip-left:before {
+    border-left-color: var(--bs-body-bg);
+  }
+
+  & .leaflet-tooltip-right:before {
+    border-right-color: var(--bs-body-bg);
+  }
+}
+
+/* preventing some defaults on L.divIcon */
+.leaflet-div-icon {
+  background-color: transparent !important;
+  border: 0 !important;
+}
+
+a.leaflet-control-layers-toggle {
+  background-size: 30px 30px;
+}
+
+.leaflet-touch a.leaflet-control-layers-toggle {
+  background-size: 36px 36px;
+}
+
+/* default canvas z-index is 100 which makes svg outline overlap canvas hotline */
+.leaflet-map-pane {
+  & canvas,
+  & svg {
+    z-index: 200;
+  }
+}
+
+@media (max-width: 720px) {
+  .leaflet-control-scale {
+    margin-bottom: 4rem !important;
+  }
+}
+
+@media (max-width: 271px) {
+  .leaflet-control-scale {
+    margin-bottom: 7.5rem !important;
+  }
+}
+
+.fm-base-layer .fm-demo-tile {
+  box-shadow: 5px 5px 8px #0004;
+}
+
+.fm-nonpremium-tile {
+  background-color: #aaa8;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 2px #fff;
+  color: #000a;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & > a {
+    pointer-events: all;
+    text-decoration: none;
+    color: #000080;
+  }
+
+  & > * {
+    transform: rotate(45deg);
+    max-width: 200px;
+    text-align: center;
+  }
+}

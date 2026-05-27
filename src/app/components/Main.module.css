@@ -1,0 +1,69 @@
+.header {
+  position: absolute;
+  z-index: 1010;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  pointer-events: none;
+
+  & > * {
+    pointer-events: auto;
+  }
+}
+
+.menus {
+  pointer-events: none;
+
+  & > * {
+    pointer-events: auto;
+  }
+
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.type-zoom-control {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1010;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  & > div:first-child {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    max-width: 100dvw;
+
+    & > div {
+      pointer-events: auto;
+    }
+  }
+
+  & > div:last-child {
+    align-self: flex-end;
+    pointer-events: auto;
+  }
+}
+
+.drag-to-map {
+  background-color: rgba(217, 237, 247, 50%);
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20000;
+  pointer-events: none;
+}
+
+.watermark {
+  position: absolute;
+  left: 5px;
+  bottom: 28px;
+  z-index: 999;
+}

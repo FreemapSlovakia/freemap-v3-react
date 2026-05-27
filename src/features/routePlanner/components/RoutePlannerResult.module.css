@@ -1,0 +1,3 @@
+:global(.leaflet-container).dragging :global(.leaflet-tooltip) {
+  display: none;
+}

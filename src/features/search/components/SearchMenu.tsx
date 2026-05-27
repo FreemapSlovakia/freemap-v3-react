@@ -16,6 +16,7 @@ import {
   OsmFeatureId,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
+import clsx from 'clsx';
 import {
   ChangeEvent,
   Fragment,
@@ -46,7 +47,7 @@ import {
   searchSetQuery,
   searchSetResults,
 } from '../model/actions.js';
-import './SearchMenu.scss';
+import classes from './SearchMenu.module.css';
 
 type Props = {
   hidden?: boolean;
@@ -72,7 +73,7 @@ const wmsShapeSymbol: Record<string, ReactNode> = {
 export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
   ({ children }, ref) => {
     return (
-      <span className="fm-no-after" ref={ref}>
+      <span className={classes['no-after']} ref={ref}>
         {children}
       </span>
     );
@@ -220,7 +221,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           <InputGroup className="flex-nowrap">
             <Form.Control
               type="search"
-              className="fm-search-input"
+              className={classes['search-input']}
               onChange={handleChange}
               value={value}
               placeholder={m?.search.placeholder}
@@ -254,7 +255,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         </Dropdown.Toggle>
 
         <Dropdown.Menu
-          className="fm-search-dropdown fm-dropdown-with-scroller"
+          className={clsx(
+            classes['search-dropdown'],
+            'fm-dropdown-with-scroller',
+          )}
           popperConfig={fixedPopperConfig}
         >
           <div className="dropdown-long" ref={sc}>

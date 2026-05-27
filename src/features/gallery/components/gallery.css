@@ -1,0 +1,39 @@
+.gallery-image {
+  max-width: 100%;
+  max-height: calc(100dvh - 300px);
+  margin: 0 auto;
+  display: block;
+
+  @media screen and (max-height: 600px) {
+    max-height: 300px;
+  }
+
+  &.loading {
+    -webkit-filter: blur(3px) grayscale(100%); /* Safari 6.0 - 9.0 */
+    filter: blur(3px) grayscale(100%);
+  }
+}
+
+.gallery-image-upload {
+  margin: 0 auto 10px;
+}
+
+button.carousel-control-prev,
+button.carousel-control-next {
+  opacity: 0.5 !important;
+}
+
+button.carousel-control-prev:hover,
+button.carousel-control-next:hover {
+  opacity: 1 !important;
+}
+
+button.carousel-control-disabled,
+button.carousel-control-disabled:hover {
+  cursor: not-allowed;
+  opacity: 0.2 !important;
+}
+
+.react-tags__suggestions {
+  z-index: 10;
+}

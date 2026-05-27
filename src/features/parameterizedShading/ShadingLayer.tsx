@@ -12,7 +12,7 @@ import {
 import { Messages } from '@/translations/messagesInterface.js';
 import { DataWriter } from './DataWriter.js';
 import { Color, SHADING_COMPONENT_TYPES, Shading } from './Shading.js';
-import classes from './ShadingLayer.module.scss';
+import classes from './ShadingLayer.module.css';
 import shadingWgslResource from './shading.wgsl';
 
 type ShadingLayerOptions = GridLayerOptions & {

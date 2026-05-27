@@ -4,6 +4,7 @@ import { CSSProperties, ReactElement, useEffect, useMemo, useRef } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { COLORS } from '../colors.js';
+import classes from './RichMarker.module.css';
 
 const textStyle: CSSProperties = {
   fill: 'rgba(0, 0, 0, 0.5)',
@@ -328,9 +329,7 @@ export function MarkerIcon({
         </svg>
       )}
 
-      {faIcon && (
-        <div className="fa-icon-inside-leaflet-icon-holder">{faIcon}</div>
-      )}
+      {faIcon && <div className={classes['fa-icon']}>{faIcon}</div>}
     </>
   );
 }

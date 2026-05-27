@@ -12,6 +12,7 @@ import {
   wikiLoadPreview,
   wikiSetPreview,
 } from '../model/actions.js';
+import classes from './WikiLayer.module.css';
 
 class WikiIcon extends Icon {
   static template: ChildNode | undefined;
@@ -43,7 +44,7 @@ class WikiIcon extends Icon {
 }
 
 const wikiIcon = new WikiIcon({
-  className: 'leaflet-marker-wiki-icon',
+  className: classes['wiki-icon'],
   iconUrl: '',
   iconSize: [18, 18],
   iconAnchor: [9, 9],

@@ -10,7 +10,7 @@ import { countryCodeToFlag, Emoji } from '../../../shared/components/Emoji.js';
 import { UserChip } from '../../../shared/components/UserChip.js';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '../../../shared/hooks/useNumberFormat.js';
-import classes from './GalleryLeaderboardModal.module.scss';
+import classes from './GalleryLeaderboardModal.module.css';
 
 type Props = { show: boolean };
 

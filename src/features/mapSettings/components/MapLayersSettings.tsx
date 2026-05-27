@@ -8,6 +8,7 @@ import {
   integratedLayerDefMap,
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
+import clsx from 'clsx';
 import { ReactElement, useState } from 'react';
 import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
@@ -19,6 +20,7 @@ import {
   FaRegListAlt,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
+import classes from './MapLayersSettings.module.css';
 
 type Props = {
   layersSettings: Record<string, LayerSettings>;
@@ -194,7 +196,7 @@ export function MapLayersSettings({
                       overlay={popover}
                       rootClose
                     >
-                      <div className="fm-opacity-button">
+                      <div className={classes['opacity-button']}>
                         <button
                           type="button"
                           style={{
@@ -209,7 +211,13 @@ export function MapLayersSettings({
                 )}
               </td>
 
-              <td className="text-center fm-map-shortcut-cfg fm-should-have-keyboard">
+              <td
+                className={clsx(
+                  'text-center',
+                  classes['map-shortcut-cfg'],
+                  'fm-should-have-keyboard',
+                )}
+              >
                 <ShortcutRecorder
                   value={
                     layersSettings[type]?.shortcut === undefined

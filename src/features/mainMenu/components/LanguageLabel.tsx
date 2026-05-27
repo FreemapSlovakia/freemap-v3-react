@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { ReactNode, useEffect, useState } from 'react';
+import styles from './LanguageLabel.module.css';
 
 const LANGUAGES = ['Language', 'Lingua', 'Jazyk', 'Język', 'Sprache', 'Nyelv'];
 
@@ -33,7 +34,7 @@ export function LanguageLabel({ children }: Props) {
     'start-0',
     'transition-opacity',
     'text-nowrap',
-    'fm-transition`',
+    styles['transition'],
   ];
 
   return (

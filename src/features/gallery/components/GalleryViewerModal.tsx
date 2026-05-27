@@ -51,8 +51,9 @@ import {
 import { Azimuth } from './Azimuth.js';
 import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
 import { RecentTags } from './RecentTags.js';
-import './gallery.scss';
+import './gallery.css';
 import clsx from 'clsx';
+import classes from './GalleryViewerModal.module.css';
 
 type Props = { show: boolean };
 
@@ -413,7 +414,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                     )}
                   </Alert>
                 ) : (
-                  <div className="gallery-image-container">
+                  <div className={classes['image-container']}>
                     <img
                       key={imgKey}
                       ref={setImageElement}
@@ -480,7 +481,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           </div>
 
           {image && (
-            <div className="footer mt-3">
+            <div className={clsx(classes['footer'], 'mt-3')}>
               {isFullscreen && imageIds && (
                 <>{`${index + 1} / ${imageIds.length}`} ｜ </>
               )}
@@ -517,7 +518,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               {' ｜ '}
 
               <Rating
-                className="stars"
+                className={classes['stars']}
                 size={22}
                 initialValue={rating}
                 readonly
@@ -611,7 +612,11 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
                       {disabledPremium ? null : (
                         <Rating
-                          className="stars ms-1 flex-shrink-0"
+                          className={clsx(
+                            classes['stars'],
+                            'ms-1',
+                            'flex-shrink-0',
+                          )}
                           size={22}
                           allowFraction={false}
                           initialValue={myStars ?? 0}

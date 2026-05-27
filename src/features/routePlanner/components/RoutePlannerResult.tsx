@@ -43,8 +43,9 @@ import {
   routePlannerSetStart,
   StepMode,
 } from '../model/actions.js';
+import classes from './RoutePlannerResult.module.css';
 
-const pointDraggingClassName = 'fm-route-planner-point-dragging';
+const pointDraggingClassName = classes['dragging'];
 
 export function RoutePlannerResult(): ReactElement {
   const m = useMessages();

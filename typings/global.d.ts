@@ -12,6 +12,7 @@ declare module '*.jpg' {
   const value: string;
   export default value;
 }
+
 declare module '*.jpeg' {
   const value: string;
   export default value;
@@ -48,11 +49,6 @@ declare module '*.module.css' {
 }
 
 declare module '*.css' {
-  const classes: Record<string, string>;
-  export default classes;
-}
-
-declare module '*.module.scss' {
   const classes: Record<string, string>;
   export default classes;
 }

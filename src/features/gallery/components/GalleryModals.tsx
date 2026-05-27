@@ -6,7 +6,7 @@ import { LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useEffect, useLayoutEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { gallerySetPickingPosition } from '../model/actions.js';
-import './gallery.scss';
+import './gallery.css';
 
 const galleryViewerModalFactory = () =>
   import(

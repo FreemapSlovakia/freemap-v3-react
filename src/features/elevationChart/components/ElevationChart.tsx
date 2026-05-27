@@ -17,7 +17,7 @@ import {
   elevationChartClose,
   elevationChartSetActivePoint,
 } from '../model/actions.js';
-import classes from './ElevationChart.module.scss';
+import classes from './ElevationChart.module.css';
 
 const ml = 50,
   mr = 30,

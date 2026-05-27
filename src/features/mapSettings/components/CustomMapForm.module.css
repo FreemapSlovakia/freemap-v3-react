@@ -1,0 +1,13 @@
+.grid-span {
+  grid-column: 1 / -1;
+}
+
+.list-group-nested {
+  & :global(.list-group-item):first-child {
+    border-top-width: 0;
+  }
+
+  & + :global(.list-group-item) {
+    border-top-width: 0;
+  }
+}

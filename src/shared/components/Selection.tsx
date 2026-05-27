@@ -9,6 +9,7 @@ import { type ReactElement, ReactNode } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import classes from './Selection.module.css';
 
 export function Selection({
   label,
@@ -33,7 +34,7 @@ export function Selection({
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Toolbar className="mt-2 fm-selection">
+      <Toolbar className={clsx('mt-2', classes['selection'])}>
         <ButtonToolbar>
           <LongPressTooltip breakpoint="sm" label={label}>
             {({ label, labelClassName, props }) => (

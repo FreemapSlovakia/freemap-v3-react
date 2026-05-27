@@ -1,0 +1,9 @@
+:global(.leaflet-container) .fa-icon {
+  position: absolute;
+  width: 100%;
+  left: 50%;
+  margin-left: -50%;
+  top: 4px;
+  text-align: center;
+  font-size: 90%;
+}

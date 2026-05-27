@@ -21,6 +21,8 @@ import { enableUpdatingUrl, setEmbedFeatures } from './store/actions.js';
 import { setStore as setErrorHandlerStore } from './store/middleware/globalErrorHandler.js';
 import { createReduxStore } from './store/store.js';
 import './styles/index.scss';
+import './styles/bootstrap-override.css';
+import './styles/index.css';
 import { createCookieConsentToastAction } from '@/features/cookieConsent/action.js';
 import { handleLocationChange } from './url/locationChangeHandler.js';
 

@@ -2,6 +2,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import clsx from 'clsx';
 import { Icon } from 'leaflet';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Button, Modal } from 'react-bootstrap';
@@ -13,7 +14,7 @@ import {
   wikimediaCommonsLoadPreview,
   wikimediaCommonsSetPreview,
 } from '../model/actions.js';
-import './wikimediaCommons.scss';
+import classes from './WikimediaCommonsLayer.module.css';
 
 const ICON_SIZE = 40;
 
@@ -24,7 +25,7 @@ function makeIcon(thumbUrl: string): Icon {
     iconAnchor: [ICON_SIZE / 2, ICON_SIZE / 2],
     popupAnchor: [0, -ICON_SIZE / 2],
     tooltipAnchor: [0, -ICON_SIZE / 2],
-    className: 'leaflet-marker-wm-photo-icon',
+    className: classes['photo-icon'],
   });
 }
 
@@ -97,7 +98,11 @@ export function WikimediaCommonsLayer(): ReactElement {
           {shown ? (
             <>
               <div
-                className="wmc-image-container position-relative mx-auto"
+                className={clsx(
+                  classes['image-container'],
+                  'position-relative',
+                  'mx-auto',
+                )}
                 style={{
                   aspectRatio: `${shown.thumbWidth} / ${shown.thumbHeight}`,
                   maxWidth: `calc((100dvh - 300px) * ${shown.thumbWidth} / ${shown.thumbHeight})`,
@@ -112,7 +117,12 @@ export function WikimediaCommonsLayer(): ReactElement {
                 {shown.license &&
                   (shown.licenseUrl ? (
                     <a
-                      className="wmc-license position-absolute bottom-0 end-0"
+                      className={clsx(
+                        classes['license'],
+                        'position-absolute',
+                        'bottom-0',
+                        'end-0',
+                      )}
                       href={shown.licenseUrl}
                       target="license"
                       rel="noopener noreferrer"
@@ -120,7 +130,15 @@ export function WikimediaCommonsLayer(): ReactElement {
                       {shown.license}
                     </a>
                   ) : (
-                    <span className="wmc-license wmc-license-text position-absolute bottom-0 end-0">
+                    <span
+                      className={clsx(
+                        classes['license'],
+                        classes['license-text'],
+                        'position-absolute',
+                        'bottom-0',
+                        'end-0',
+                      )}
+                    >
                       {shown.license}
                     </span>
                   ))}

@@ -21,6 +21,7 @@ import {
   Spinner,
 } from 'react-bootstrap';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa';
+import classes from './CustomMapForm.module.css';
 
 type Props = {
   type: string;
@@ -316,7 +317,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           {layer.children.length > 0 ? (
             <div
               className={clsx(
-                'fm-list-group-nested',
+                classes['list-group-nested'],
                 expanded.includes(id) || 'd-none',
               )}
             >
@@ -331,12 +332,14 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   return (
     <div>
       <Form.Group controlId="name">
-        <Form.Label className="d-flex align-items-end fm-grid-span">
+        <Form.Label
+          className={clsx('d-flex', 'align-items-end', classes['grid-span'])}
+        >
           {m?.general.name}
         </Form.Label>
 
         <Form.Control
-          className="fm-grid-span"
+          className={classes['grid-span']}
           type="text"
           value={model.name}
           onChange={handlers.name}
@@ -347,7 +350,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         <Form.Label>{m?.mapLayers.technology}</Form.Label>
 
         <Form.Select
-          className="fm-grid-span"
+          className={classes['grid-span']}
           value={model.technology}
           onChange={handlers.technology}
         >
@@ -364,7 +367,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           <Form.Label>{m?.mapLayers.url}</Form.Label>
 
           <Form.Control
-            className="fm-grid-span"
+            className={classes['grid-span']}
             type="text"
             value={model.url}
             onChange={handlers.url}
@@ -375,7 +378,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       {model.technology === 'wms' && (
         <>
           <Button
-            className="mt-3 fm-grid-span"
+            className={clsx('mt-3', classes['grid-span'])}
             type="button"
             onClick={handleLoadLayersClick}
             disabled={!model.url.match(/^https?:\/\/\w+/) || loadingLayers}
@@ -391,13 +394,16 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           </Button>
 
           {wmsLayersFetchError && (
-            <Alert className="mt-3 fm-grid-span" variant="danger">
+            <Alert
+              className={clsx('mt-3', classes['grid-span'])}
+              variant="danger"
+            >
               {wmsLayersFetchError}
             </Alert>
           )}
 
           <ListGroup
-            className="mt-3 fm-grid-span overflow-auto"
+            className={clsx('mt-3', classes['grid-span'], 'overflow-auto')}
             style={{ maxHeight: '400px' }}
             onSelect={handleLayerSelect}
           >

@@ -11,7 +11,7 @@ import {
   toastsStopTimeout,
 } from '../model/actions.js';
 import { Toast } from './Toast.js';
-import classes from './Toasts.module.scss';
+import classes from './Toasts.module.css';
 
 function tx(m: Messages | undefined, toastAction: ToastAction) {
   if ('name' in toastAction) {

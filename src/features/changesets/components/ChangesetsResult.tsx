@@ -8,7 +8,7 @@ import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { Changeset, changesetsSetParams } from '../model/actions.js';
-import classes from './ChangesetsResult.module.scss';
+import classes from './ChangesetsResult.module.css';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 

@@ -17,6 +17,7 @@ import {
   MdLightMode,
   MdMonitorHeart,
 } from 'react-icons/md';
+import classes from './SocialButtons.module.css';
 
 type Props = {
   closeMenu: () => void;
@@ -50,7 +51,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://en.osm.town/@FreemapSlovakia"
             target="_blank"
             rel="noopener noreferrer"
-            className="fm-mastodonb-icon"
+            className={classes['mastodon-icon']}
             {...props}
           >
             <FaMastodon />
@@ -65,7 +66,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://www.facebook.com/FreemapSlovakia"
             target="_blank"
             rel="noopener noreferrer"
-            className="fm-fb-icon"
+            className={classes['fb-icon']}
             {...props}
           >
             <FaFacebook />
@@ -80,7 +81,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
             target="_blank"
             rel="noopener noreferrer"
-            className="fm-yt-icon"
+            className={classes['yt-icon']}
             {...props}
           >
             <FaYoutube />
@@ -95,7 +96,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://github.com/FreemapSlovakia"
             target="_blank"
             rel="noopener noreferrer"
-            className="fm-github-icon"
+            className={classes['github-icon']}
             {...props}
           >
             <FaGithub />
@@ -112,7 +113,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://play.google.com/store/apps/details?id=sk.bigware.freemap"
             target="_blank"
             rel="noopener noreferrer"
-            className="fm-android-icon"
+            className={classes['android-icon']}
             {...props}
           >
             <FaAndroid />
@@ -127,7 +128,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://apps.apple.com/sk/app/freemap/id6760855105"
             target="_blank"
             rel="noopener noreferrer"
-            className="fm-apple-icon"
+            className={classes['apple-icon']}
             {...props}
           >
             <FaApple />
@@ -144,7 +145,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://status.freemap.sk/status/all"
             target="_blank"
             rel="noopener noreferrer"
-            className="fm-apple-icon"
+            className={classes['apple-icon']}
             {...props}
           >
             <MdMonitorHeart />

@@ -1,0 +1,289 @@
+:root {
+  --scroller-mix-blend-mode: normal;
+
+  --scroller-pct: 5%;
+}
+
+[data-bs-theme="light"] {
+  --scroller-from: rgba(224, 224, 224, 0);
+  --scroller-to: rgb(180, 180, 180);
+}
+
+[data-bs-theme="dark"] {
+  --scroller-from: rgba(40, 40, 40, 0);
+  --scroller-to: rgb(160, 160, 160);
+}
+
+body {
+  overflow: hidden;
+}
+
+#freemap-logo-print {
+  @media print {
+    top: 4px;
+    left: 4px;
+    z-index: 2000;
+    position: absolute;
+    display: block !important;
+  }
+
+  @media screen {
+    display: none;
+  }
+}
+
+button#freemap-logo {
+  border: none;
+  outline: none;
+  background-color: rgba(255, 255, 255, 0);
+  background-image: url("@/images/freemap-logo.png");
+  background-size: 122px 34px;
+  background-repeat: no-repeat;
+  margin-right: 3px;
+  height: 34px;
+  width: 122px;
+  -webkit-transform: scale(1);
+  transform: scale(1);
+  -webkit-transition: 0.1s ease-in-out;
+  transition: 0.1s ease-in-out;
+
+  &.in-progress {
+    animation: pulse 1s infinite;
+  }
+
+  &:hover {
+    cursor: pointer;
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+}
+
+@media (max-width: 767px) {
+  .full {
+    button#freemap-logo {
+      background-image: url("@/images/freemap-logo-small.png");
+      background-size: 42px 34px;
+      width: 42px;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    filter: brightness(100%);
+  }
+  50% {
+    filter: brightness(200%);
+  }
+  100% {
+    filter: brightness(100%);
+  }
+}
+
+.fm-toolbar {
+  @media screen {
+    min-height: 3rem;
+    background-color: rgba(255, 255, 255, 0.8);
+
+    [data-bs-theme="dark"] & {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    display: inline-flex;
+    flex-direction: row;
+    vertical-align: top;
+    align-items: center;
+
+    padding: 0.25rem;
+    margin-inline: 0.5rem;
+  }
+
+  @media print {
+    display: none !important;
+  }
+
+  & > .btn-toolbar {
+    flex-wrap: nowrap;
+
+    & * {
+      white-space: nowrap;
+    }
+  }
+}
+
+.fm-ib-scroller {
+  overflow: auto;
+}
+
+.input-group > input.form-control {
+  min-width: 100px;
+}
+
+.picker-dialog-bg {
+  z-index: 10000 !important;
+}
+
+.picker-dialog {
+  z-index: 10001 !important;
+}
+
+.fm-menu-scroller {
+  /* hack to prevent popovers go outside view on mobiles */
+  max-height: calc(100dvh - 160px);
+  overflow-y: auto;
+}
+
+.fm-ib-scroller::before,
+.fm-ib-scroller > div:first-child::before,
+.fm-menu-scroller::before,
+.fm-menu-scroller > div:first-child::before,
+.dropdown-long::before,
+.dropdown-long > div:first-child::before {
+  content: "";
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.fm-ib-scroller::before {
+  width: 2rem;
+  height: 3rem;
+  mix-blend-mode: var(--scroller-mix-blend-mode);
+  background: linear-gradient(
+    to right,
+    var(--scroller-to) var(--scroller-pct),
+    var(--scroller-from)
+  );
+}
+
+.fm-ib-scroller > div:first-child::before {
+  width: 2rem;
+  height: 3rem;
+  right: 0;
+  mix-blend-mode: var(--scroller-mix-blend-mode);
+  background: linear-gradient(
+    to right,
+    var(--scroller-from) var(--scroller-pct),
+    var(--scroller-to)
+  );
+}
+
+.fm-ib-scroller-top::before {
+  width: 2rem;
+  height: 3rem;
+  mix-blend-mode: var(--scroller-mix-blend-mode);
+  background: linear-gradient(
+    to right,
+    var(--scroller-to) var(--scroller-pct),
+    var(--scroller-from)
+  );
+}
+
+.fm-ib-scroller-top::before,
+.fm-ib-scroller-top > div:first-child::before {
+  margin-top: 0.5rem;
+}
+
+.fm-menu-scroller::before,
+.dropdown-long::before {
+  width: 100%;
+  height: 2rem;
+  mix-blend-mode: var(--scroller-mix-blend-mode);
+  background: linear-gradient(
+    to bottom,
+    var(--scroller-to) var(--scroller-pct),
+    var(--scroller-from)
+  );
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.fm-menu-scroller > div:first-child::before,
+.dropdown-long > div:first-child::before {
+  width: 100%;
+  height: 2rem;
+  bottom: 0;
+  mix-blend-mode: var(--scroller-mix-blend-mode);
+  background: linear-gradient(
+    to bottom,
+    var(--scroller-from) var(--scroller-pct),
+    var(--scroller-to)
+  );
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.fm-menu-scroller::before,
+.fm-menu-scroller > div:first-child::before {
+  margin-top: -0.5rem;
+}
+
+.dropdown-long::before,
+.dropdown-long > div:first-child::before {
+  margin-top: -0.5rem;
+}
+
+.scroll-left::before,
+.scroll-right > div:first-child::before,
+.scroll-top::before,
+.scroll-bottom > div:first-child::before {
+  opacity: 1;
+  transition: opacity 0.25s;
+}
+
+.markdown {
+  & table {
+    margin-bottom: 1rem;
+  }
+
+  & th,
+  & td {
+    border: 1px solid black;
+    padding: 0 0.5em;
+  }
+}
+
+.pe-none {
+  pointer-events: none;
+}
+
+.dropzone {
+  margin: 10px;
+  border: 2px dashed grey;
+  padding: 30px;
+  border-radius: 5px;
+  cursor: default;
+}
+
+.dropzone:hover,
+.dropzone-dropping {
+  background-color: var(--bs-highlight-bg);
+  color: var(--bs-highlight-color);
+}
+
+.fm-fs-content {
+  field-sizing: content;
+}
+
+.fm-ellipsis {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-dropdown-with-scroller {
+  padding: 0;
+
+  & > div {
+    padding-block: 0.5rem;
+  }
+}
+
+/* hack to show NLC vector overlay above TODO fix */
+.leaflet-gl-layer.maplibregl-map {
+  position: relative;
+  z-index: 3;
+}
