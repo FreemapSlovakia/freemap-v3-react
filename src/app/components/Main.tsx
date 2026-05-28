@@ -417,7 +417,7 @@ export function Main(): ReactElement {
     (trackGpx: string) => {
       dispatch(trackViewerSetTrackUID(null));
 
-      dispatch(trackViewerSetData({ trackGpx }));
+      dispatch(trackViewerSetData({ trackGpx, focus: true }));
 
       dispatch(setActiveModal(null));
 

@@ -4,6 +4,7 @@ import { osmClear } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { FeatureCollection } from 'geojson';
 import {
+  type ColorizingMode,
   trackViewerColorizeTrackBy,
   trackViewerDelete,
   trackViewerDownloadTrack,
@@ -20,7 +21,7 @@ export interface TrackViewerStateBase {
 }
 
 export interface TrackViewerState extends TrackViewerStateBase {
-  colorizeTrackBy: null | 'elevation' | 'steepness';
+  colorizeTrackBy: ColorizingMode | null;
 }
 
 export const cleanState: TrackViewerStateBase = {

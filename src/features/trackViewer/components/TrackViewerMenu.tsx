@@ -11,6 +11,8 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { flatten } from '@turf/flatten';
+import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useCallback } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
@@ -22,6 +24,7 @@ import {
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { colorizers, colorizingModes } from '../colorizers/index.js';
 import {
   ColorizingModeSchema,
   trackViewerColorizeTrackBy,
@@ -54,6 +57,22 @@ export function TrackViewerMenu(): ReactElement {
   const enableElevationChart = useAppSelector(
     trackGeojsonIsSuitableForElevationChart,
   );
+
+  const lineFeatures = useAppSelector((state) => {
+    const gj = state.trackViewer.trackGeojson;
+
+    return gj
+      ? (flatten(gj).features.filter(
+          (f) => f.geometry?.type === 'LineString',
+        ) as Feature<LineString>[])
+      : [];
+  });
+
+  const availableModes = colorizingModes.filter((mode) => {
+    const { isAvailable } = colorizers[mode];
+
+    return !isAvailable || isAvailable(lineFeatures);
+  });
 
   const handleConvertToDrawing = useCallback(() => {
     const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
@@ -122,7 +141,7 @@ export function TrackViewerMenu(): ReactElement {
           </Dropdown.Toggle>
 
           <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
+            {[undefined, ...availableModes].map((mode) => (
               <Dropdown.Item
                 eventKey={mode}
                 key={mode || 'none'}

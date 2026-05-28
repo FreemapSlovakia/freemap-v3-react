@@ -1,11 +1,12 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { LatLon } from '@shared/types/common.js';
 import { FeatureCollection } from 'geojson';
-import z from 'zod';
+import {
+  type ColorizingMode,
+  ColorizingModeSchema,
+} from '../colorizers/index.js';
 
-export const ColorizingModeSchema = z.enum(['elevation', 'steepness']);
-
-export type ColorizingMode = z.infer<typeof ColorizingModeSchema>;
+export { type ColorizingMode, ColorizingModeSchema };
 
 export interface TrackPoint extends LatLon {
   startTime?: Date;

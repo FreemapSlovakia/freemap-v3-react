@@ -340,6 +340,13 @@ export type Messages = {
       none: string;
       elevation: string;
       steepness: string;
+      speed: string;
+      heartRate: string;
+      cadence: string;
+      power: string;
+      temperature: string;
+      time: string;
+      heading: string;
     };
     details: {
       startTime: string;

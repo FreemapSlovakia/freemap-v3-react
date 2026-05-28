@@ -12,6 +12,7 @@ import {
   RoutingModeSchema,
 } from '@features/routePlanner/model/actions.js';
 import { TrackedDeviceSchema } from '@features/tracking/model/types.js';
+import { ColorizingModeSchema } from '@features/trackViewer/model/actions.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import z from 'zod';
@@ -89,7 +90,7 @@ const TrackViewerMapDataSchema = z.object({
   trackGpx: z.string().nullable().optional(),
   trackUID: z.string().nullable().optional(),
   gpxUrl: z.string().nullable().optional(),
-  colorizeTrackBy: z.enum(['elevation', 'steepness']).nullable().optional(),
+  colorizeTrackBy: ColorizingModeSchema.nullable().optional(),
 });
 
 const MapsLoadResponseSchema = z.object({

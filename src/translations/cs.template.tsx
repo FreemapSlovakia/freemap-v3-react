@@ -483,6 +483,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       none: 'Neaktivní',
       elevation: 'Nadmořská výška',
       steepness: 'Sklon',
+      speed: 'Rychlost',
+      heartRate: 'Tepová frekvence',
+      cadence: 'Kadence',
+      power: 'Výkon',
+      temperature: 'Teplota',
+      time: 'Čas',
+      heading: 'Směr',
     },
     details: {
       startTime: 'Čas startu',

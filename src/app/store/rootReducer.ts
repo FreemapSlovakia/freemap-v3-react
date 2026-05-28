@@ -49,6 +49,7 @@ import {
 import { searchReducer } from '@features/search/model/reducer.js';
 import { toastsReducer } from '@features/toasts/model/reducer.js';
 import { trackingReducer } from '@features/tracking/model/reducer.js';
+import { ColorizingModeSchema } from '@features/trackViewer/model/actions.js';
 import {
   trackViewerInitialState,
   trackViewerReducer,
@@ -156,7 +157,7 @@ const PersistedRoutePlannerSchema = z
 
 const PersistedTrackViewerSchema = z
   .object({
-    colorizeTrackBy: z.enum(['elevation', 'steepness']).nullable(),
+    colorizeTrackBy: ColorizingModeSchema.nullable(),
   })
   .partial();
 

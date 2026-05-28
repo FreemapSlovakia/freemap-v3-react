@@ -503,6 +503,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       none: 'Inaktív',
       elevation: 'Magasság',
       steepness: 'Meredekség',
+      speed: 'Sebesség',
+      heartRate: 'Pulzusszám',
+      cadence: 'Kadencia',
+      power: 'Teljesítmény',
+      temperature: 'Hőmérséklet',
+      time: 'Idő',
+      heading: 'Irány',
     },
     details: {
       startTime: 'Indulási idő',

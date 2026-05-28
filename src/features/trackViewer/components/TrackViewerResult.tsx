@@ -10,12 +10,9 @@ import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
-import { smoothElevations } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import { distance } from '@turf/distance';
 import { flatten } from '@turf/flatten';
-import { getCoords } from '@turf/invariant';
 import { Feature, FeatureCollection, LineString, Point } from 'geojson';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement } from 'react';
@@ -23,6 +20,7 @@ import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
+import { colorizers } from '../colorizers/index.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
 
 interface GetFeatures {
@@ -49,52 +47,10 @@ export function TrackViewerResult({
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
-  const eleSmoothingFactor = 5;
-
   const getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
     flatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
 
-  const getColorLineDataForElevation = () =>
-    getFeatures('LineString').map((feature) => {
-      const smoothed = smoothElevations(getCoords(feature), eleSmoothingFactor);
-
-      const eles = smoothed.map((coord) => coord[2]);
-
-      const maxEle = Math.max(...eles);
-
-      const minEle = Math.min(...eles);
-
-      return smoothed.map((coord) => {
-        const color = (coord[2] - minEle) / (maxEle - minEle);
-
-        return { lat: coord[1], lon: coord[0], color };
-      });
-    });
-
-  const getColorLineDataForSteepness = () =>
-    getFeatures('LineString').map((feature) => {
-      const smoothed = smoothElevations(getCoords(feature), eleSmoothingFactor);
-
-      let prevCoord = smoothed[0];
-
-      return smoothed.map((coord) => {
-        const [lon, lat, ele] = coord;
-
-        const d = distance([lon, lat], prevCoord, { units: 'meters' });
-
-        let angle = 0;
-
-        if (d > 0) {
-          angle = (ele - prevCoord[2]) / d;
-        }
-
-        prevCoord = coord;
-
-        const color = angle / 0.5 + 0.5;
-
-        return { lat, lon, color };
-      });
-    });
+  const activeColorizer = colorizeTrackBy ? colorizers[colorizeTrackBy] : null;
 
   const interactive = useAppSelector(selectingModeSelector);
 
@@ -175,35 +131,23 @@ export function TrackViewerResult({
         </Polyline>
       ))}
 
-      {colorizeTrackBy &&
-        (colorizeTrackBy === 'elevation'
-          ? getColorLineDataForElevation()
-          : getColorLineDataForSteepness()
-        ).map((positions, i) => (
-          <Hotline
-            key={`${colorizeTrackBy}-${i}`}
-            data={positions}
-            getVal={(p) => p.point.color}
-            getLat={(p) => p.point.lat}
-            getLng={(p) => p.point.lon}
-            options={{
-              weight: 6,
-              outlineWidth: 0,
-              palette:
-                colorizeTrackBy === 'elevation'
-                  ? [
-                      { r: 0, g: 0, b: 0, t: 0.0 },
-                      { r: 128, g: 128, b: 128, t: 0.5 },
-                      { r: 255, g: 255, b: 255, t: 1.0 },
-                    ]
-                  : [
-                      { r: 0, g: 255, b: 0, t: 0.0 },
-                      { r: 255, g: 255, b: 255, t: 0.5 },
-                      { r: 255, g: 0, b: 0, t: 1.0 },
-                    ],
-            }}
-          />
-        ))}
+      {activeColorizer &&
+        activeColorizer
+          .compute(getFeatures('LineString'))
+          .map((positions, i) => (
+            <Hotline
+              key={`${colorizeTrackBy}-${i}`}
+              data={positions}
+              getVal={(p) => p.point.color}
+              getLat={(p) => p.point.lat}
+              getLng={(p) => p.point.lon}
+              options={{
+                weight: 6,
+                outlineWidth: 0,
+                palette: activeColorizer.palette,
+              }}
+            />
+          ))}
 
       {colorizeTrackBy === null &&
         features.map(({ lineData, style }, i) => {

@@ -504,6 +504,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       none: 'Inattivo',
       elevation: 'Elevazione',
       steepness: 'Ripidezza',
+      speed: 'Velocità',
+      heartRate: 'Frequenza cardiaca',
+      cadence: 'Cadenza',
+      power: 'Potenza',
+      temperature: 'Temperatura',
+      time: 'Tempo',
+      heading: 'Direzione',
     },
     details: {
       startTime: 'Ora inizio',

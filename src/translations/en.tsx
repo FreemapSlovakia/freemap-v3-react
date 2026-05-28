@@ -468,6 +468,13 @@ const messages: Messages = {
       none: 'Inactive',
       elevation: 'Elevation',
       steepness: 'Steepness',
+      speed: 'Speed',
+      heartRate: 'Heart rate',
+      cadence: 'Cadence',
+      power: 'Power',
+      temperature: 'Temperature',
+      time: 'Time',
+      heading: 'Heading',
     },
     details: {
       startTime: 'Start time',
