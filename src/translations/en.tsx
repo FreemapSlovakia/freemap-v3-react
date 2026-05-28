@@ -464,6 +464,10 @@ const messages: Messages = {
     upload: 'Upload',
     moreInfo: 'More info',
     share: 'Save on server',
+    lineStyle: {
+      menuItem: 'Track style',
+      title: 'Track line style',
+    },
     colorizingMode: {
       none: 'Inactive',
       elevation: 'Elevation',

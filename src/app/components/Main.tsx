@@ -306,6 +306,12 @@ const predefinedDrawingPropertiesModalFactory = () =>
     './PredefinedDrawingPropertiesModal.js'
   );
 
+const trackViewerLineStyleModalFactory = () =>
+  import(
+    /* webpackChunkName: "track-line-style-modal" */
+    '@features/trackViewer/components/TrackViewerLineStyleModal.js'
+  );
+
 export function Main(): ReactElement {
   const m = useMessages();
 
@@ -871,6 +877,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal === 'drawing-properties'}
         factory={predefinedDrawingPropertiesModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal === 'track-line-style'}
+        factory={trackViewerLineStyleModalFactory}
       />
 
       <GalleryModals />

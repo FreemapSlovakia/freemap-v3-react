@@ -336,6 +336,10 @@ export type Messages = {
     upload: string;
     moreInfo: string;
     share: string;
+    lineStyle: {
+      menuItem: string;
+      title: string;
+    };
     colorizingMode: {
       none: string;
       elevation: string;

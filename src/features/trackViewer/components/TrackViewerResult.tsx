@@ -43,6 +43,10 @@ export function TrackViewerResult({
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
+  const lineColor = useAppSelector((state) => state.trackViewer.lineColor);
+
+  const lineWidth = useAppSelector((state) => state.trackViewer.lineWidth);
+
   const eleSmoothingFactor = 5;
 
   const getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
@@ -121,7 +125,7 @@ export function TrackViewerResult({
       {features.map(({ lineData, name }, i) => (
         <Polyline
           key={`outline-${i}-${interactive ? 'a' : 'b'}`}
-          weight={10}
+          weight={lineWidth + 4}
           interactive={interactive}
           positions={lineData}
           color="#fff"
@@ -150,7 +154,7 @@ export function TrackViewerResult({
             getLat={(p) => p.point.lat}
             getLng={(p) => p.point.lon}
             options={{
-              weight: 6,
+              weight: lineWidth,
               outlineWidth: 0,
               palette:
                 colorizeTrackBy === 'elevation'
@@ -171,10 +175,10 @@ export function TrackViewerResult({
       {colorizeTrackBy === null && (
         <Polyline
           key={`poly-${interactive ? 'a' : 'b'}`}
-          weight={6}
+          weight={lineWidth}
           interactive={interactive}
           positions={features.map(({ lineData }) => lineData)}
-          color="#838"
+          color={lineColor}
           bubblingMouseEvents={false}
           eventHandlers={{
             click: setThisTool,

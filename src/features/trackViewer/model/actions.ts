@@ -40,3 +40,8 @@ export const trackViewerToggleElevationChart = createAction(
 export const trackViewerGpxLoad = createAction<string>('TRACK_VIEWER_GPX_LOAD');
 
 export const trackViewerDelete = createAction('TRACK_VIEWER_DELETE');
+
+export const trackViewerSetLineStyle = createAction<{
+  lineColor?: string;
+  lineWidth?: number;
+}>('TRACK_VIEWER_SET_LINE_STYLE');
