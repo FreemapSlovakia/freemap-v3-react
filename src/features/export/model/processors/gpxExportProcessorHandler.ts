@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import type { DrawingLineType } from '@features/drawing/model/actions/drawingLineActions.js';
 import { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import { ObjectsState } from '@features/objects/model/reducer.js';
@@ -308,7 +309,7 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
 function addDrawingLines(
   doc: Document,
   { lines }: DrawingLinesState,
-  type: 'polygon' | 'line',
+  type: DrawingLineType,
 ) {
   for (const line of lines.filter((line) => line.type === type)) {
     const trkEle = createElement(doc.documentElement, 'trk');

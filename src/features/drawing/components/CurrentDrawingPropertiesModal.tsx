@@ -2,7 +2,10 @@ import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLine
 import { IconPicker } from '@features/drawing/components/IconPicker.js';
 import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
 import { RgbaColorPicker } from '@features/drawing/components/RgbaColorPicker.js';
-import { drawingLineChangeProperties } from '@features/drawing/model/actions/drawingLineActions.js';
+import {
+  type DrawingLineType,
+  drawingLineChangeProperties,
+} from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { normalizeMarkerType } from '@features/objects/model/actions.js';
@@ -145,9 +148,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
 
   const [editedWidth, setEditedWidth] = useState(width || '4');
 
-  const [editedType, setEditedType] = useState<'polygon' | 'line'>(
-    type ?? 'line',
-  );
+  const [editedType, setEditedType] = useState<DrawingLineType>(type ?? 'line');
 
   const [editedDash, setEditedDash] = useState(dashArray);
 
@@ -471,7 +472,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
                 <Form.Select
                   value={editedType}
                   onChange={(e) => {
-                    const newType = e.currentTarget.value as 'polygon' | 'line';
+                    const newType = e.currentTarget.value as DrawingLineType;
 
                     setEditedType(newType);
 

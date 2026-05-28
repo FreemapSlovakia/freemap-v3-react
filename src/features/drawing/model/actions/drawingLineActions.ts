@@ -2,6 +2,27 @@ import { Selection } from '@app/store/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import z from 'zod';
 
+export const LineCapSchema = z.enum(['butt', 'round', 'square']);
+
+export type LineCap = z.infer<typeof LineCapSchema>;
+
+export const LineJoinSchema = z.enum(['miter', 'round', 'bevel']);
+
+export type LineJoin = z.infer<typeof LineJoinSchema>;
+
+export const DrawingLineTypeSchema = z.enum(['line', 'polygon']);
+
+export type DrawingLineType = z.infer<typeof DrawingLineTypeSchema>;
+
+export const isLineCap = (s: unknown): s is LineCap =>
+  LineCapSchema.safeParse(s).success;
+
+export const isLineJoin = (s: unknown): s is LineJoin =>
+  LineJoinSchema.safeParse(s).success;
+
+export const isDrawingLineType = (s: unknown): s is DrawingLineType =>
+  DrawingLineTypeSchema.safeParse(s).success;
+
 export const PointSchema = z.object({
   lat: z.number(),
   lon: z.number(),
@@ -11,15 +32,15 @@ export const PointSchema = z.object({
 export type Point = z.infer<typeof PointSchema>;
 
 export const LineSchema = z.object({
-  type: z.enum(['polygon', 'line']),
+  type: DrawingLineTypeSchema,
   points: z.array(PointSchema),
   label: z.string().optional(),
   color: z.string().optional(),
   fillColor: z.string().optional(),
   width: z.number().optional(),
   dashArray: z.array(z.number()).optional(),
-  lineCap: z.enum(['butt', 'round', 'square']).optional(),
-  lineJoin: z.enum(['miter', 'round', 'bevel']).optional(),
+  lineCap: LineCapSchema.optional(),
+  lineJoin: LineJoinSchema.optional(),
 });
 
 export type Line = z.infer<typeof LineSchema>;
@@ -53,13 +74,13 @@ export const drawingLineAddPoint = createAction<
       }
     | {
         lineProps: {
-          type: 'polygon' | 'line';
+          type: DrawingLineType;
           color?: string;
           fillColor?: string;
           width?: number;
           dashArray?: number[];
-          lineCap?: 'butt' | 'round' | 'square';
-          lineJoin?: 'miter' | 'round' | 'bevel';
+          lineCap?: LineCap;
+          lineJoin?: LineJoin;
         };
       }
   )
@@ -72,10 +93,10 @@ export const drawingLineChangeProperties = createAction<{
     color: string | undefined;
     fillColor: string | undefined;
     width: number | undefined;
-    type: 'line' | 'polygon';
+    type: DrawingLineType;
     dashArray: number[] | undefined;
-    lineCap: 'butt' | 'round' | 'square' | undefined;
-    lineJoin: 'miter' | 'round' | 'bevel' | undefined;
+    lineCap: LineCap | undefined;
+    lineJoin: LineJoin | undefined;
   };
 }>('DRAWING_LINE_CHANGE_PROPERTIES');
 

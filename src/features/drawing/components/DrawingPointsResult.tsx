@@ -3,12 +3,7 @@ import { selectingModeSelector } from '@app/store/selectors.js';
 import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
-import {
-  faIconToSvg,
-  parseIconSpec,
-  poiIconNameToUrl,
-  useFaIcon,
-} from '@shared/drawingIcons.js';
+import { useIconContentProps } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
 import { DragEndEvent, LeafletEvent, LeafletEventHandlerFnMap } from 'leaflet';
@@ -143,34 +138,17 @@ function DrawingPointMarker({
   // The marker interior is the `icon` content: a bundled poi icon, a Font
   // Awesome icon, or up to 2 literal characters of text. The `label` is the
   // descriptive tooltip.
-  const spec = parseIconSpec(icon);
-
-  const faDef = useFaIcon(spec?.kind === 'fa' ? spec.name : undefined);
-
-  // Memoized on the (stable, cached) definition so RichMarker's icon isn't
-  // rebuilt mid-drag.
-  const iconSvg = useMemo(() => faDef && faIconToSvg(faDef), [faDef]);
-
-  const contentProps =
-    spec?.kind === 'poi'
-      ? { image: poiIconNameToUrl[spec.name] }
-      : spec?.kind === 'fa'
-        ? iconSvg
-          ? { iconSvg }
-          : {}
-        : spec?.kind === 'text'
-          ? { label: spec.text }
-          : {};
+  const contentProps = useIconContentProps(icon);
 
   return (
     <RichMarker
-      eventHandlers={eventHandlers}
       position={{ lat: coords.lat, lng: coords.lon }}
       color={renderColor}
       markerType={markerType}
       {...contentProps}
       draggable={draggable}
       interactive={interactive}
+      eventHandlers={eventHandlers}
     >
       {label && (
         <Tooltip className="compact" direction="top" permanent>

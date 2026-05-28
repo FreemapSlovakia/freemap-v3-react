@@ -3,6 +3,10 @@ import {
   applyCookieConsent,
   setAnalyticCookiesAllowed,
 } from '@features/cookieConsent/model/actions.js';
+import type {
+  LineCap,
+  LineJoin,
+} from '@features/drawing/model/actions/drawingLineActions.js';
 import {
   saveHomeLocation,
   setSelectingHomeLocation,
@@ -104,8 +108,8 @@ type Settings = {
   drawingFillColor?: string;
   drawingWidth?: number;
   drawingDash?: number[];
-  drawingLineCap?: 'butt' | 'round' | 'square';
-  drawingLineJoin?: 'miter' | 'round' | 'bevel';
+  drawingLineCap?: LineCap;
+  drawingLineJoin?: LineJoin;
   drawingMarkerType?: MarkerType;
   maxZoom?: number;
   stravaHeatmapColor?: StravaHeatmapColor;

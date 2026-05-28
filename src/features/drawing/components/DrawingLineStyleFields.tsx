@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
+import type { LineCap, LineJoin } from '../model/actions/drawingLineActions.js';
 import { RgbaColorPicker } from './RgbaColorPicker.js';
 
 type Props = {
@@ -12,10 +13,10 @@ type Props = {
   onWidthChange: (width: string) => void;
   widthStep?: number;
   invalidWidth?: boolean;
-  lineCap: 'butt' | 'round' | 'square';
-  onLineCapChange: (lineCap: 'butt' | 'round' | 'square') => void;
-  lineJoin: 'miter' | 'round' | 'bevel';
-  onLineJoinChange: (lineJoin: 'miter' | 'round' | 'bevel') => void;
+  lineCap: LineCap;
+  onLineCapChange: (lineCap: LineCap) => void;
+  lineJoin: LineJoin;
+  onLineJoinChange: (lineJoin: LineJoin) => void;
   dashArray: number[];
   onDashArrayChange: (dashArray: number[]) => void;
 };
@@ -135,11 +136,7 @@ export function DrawingLineStyleFields({
 
         <Form.Select
           value={lineCap}
-          onChange={(e) =>
-            onLineCapChange(
-              e.currentTarget.value as 'butt' | 'round' | 'square',
-            )
-          }
+          onChange={(e) => onLineCapChange(e.currentTarget.value as LineCap)}
         >
           <option value="round">{m?.drawing.edit.lineCapRound}</option>
           <option value="butt">{m?.drawing.edit.lineCapButt}</option>
@@ -152,11 +149,7 @@ export function DrawingLineStyleFields({
 
         <Form.Select
           value={lineJoin}
-          onChange={(e) =>
-            onLineJoinChange(
-              e.currentTarget.value as 'miter' | 'round' | 'bevel',
-            )
-          }
+          onChange={(e) => onLineJoinChange(e.currentTarget.value as LineJoin)}
         >
           <option value="round">{m?.drawing.edit.lineJoinRound}</option>
           <option value="miter">{m?.drawing.edit.lineJoinMiter}</option>

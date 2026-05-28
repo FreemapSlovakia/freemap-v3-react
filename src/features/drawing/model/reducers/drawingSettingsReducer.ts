@@ -1,7 +1,11 @@
 import { applySettings } from '@app/store/actions.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
-import { drawingLineChangeProperties } from '../actions/drawingLineActions.js';
+import {
+  drawingLineChangeProperties,
+  type LineCap,
+  type LineJoin,
+} from '../actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '../actions/drawingPointActions.js';
 
 export interface DrawingSettingsState {
@@ -10,8 +14,8 @@ export interface DrawingSettingsState {
   drawingWidth: number;
   drawingRecentColors: string[];
   drawingDashArray?: number[];
-  drawingLineCap?: 'butt' | 'round' | 'square';
-  drawingLineJoin?: 'miter' | 'round' | 'bevel';
+  drawingLineCap?: LineCap;
+  drawingLineJoin?: LineJoin;
   drawingMarkerType: MarkerType;
 }
 

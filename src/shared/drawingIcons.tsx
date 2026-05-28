@@ -3,7 +3,7 @@ import { resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import type { Node } from '@osm/types.js';
 import type { IconSvg } from '@shared/components/RichMarker.js';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 // The `icon` field on a drawing point is one of these forms.
 export type IconSpec =
@@ -141,6 +141,35 @@ export function faIconToSvg(def: IconDefinition): IconSvg {
   const [width, height, , , path] = def.icon;
 
   return { width, height, path: Array.isArray(path) ? path.join(' ') : path };
+}
+
+/**
+ * Resolves an icon-spec string (`fa:*`, `poi:*`, short literal text) into the
+ * `RichMarker` content prop it maps to. Returns `{}` when the spec is missing
+ * or a `fa:*` icon hasn't lazy-loaded yet; callers decide how to fall back.
+ *
+ * The return type is a discriminated union (exactly one of `image`/`iconSvg`/
+ * `label` is set, or none) so callers can `{...spread}` it into RichMarker
+ * without TS widening the props into a forbidden intersection.
+ */
+export function useIconContentProps(icon: string | undefined) {
+  const spec = parseIconSpec(icon);
+
+  const faDef = useFaIcon(spec?.kind === 'fa' ? spec.name : undefined);
+
+  // Memoized on the (stable, cached) definition so consumers don't rebuild
+  // the marker icon on unrelated re-renders / mid-drag.
+  const iconSvg = useMemo(() => faDef && faIconToSvg(faDef), [faDef]);
+
+  return spec?.kind === 'poi'
+    ? { image: poiIconNameToUrl[spec.name] }
+    : spec?.kind === 'fa'
+      ? iconSvg
+        ? { iconSvg }
+        : {}
+      : spec?.kind === 'text'
+        ? { label: spec.text }
+        : {};
 }
 
 /**

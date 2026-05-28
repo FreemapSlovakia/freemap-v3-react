@@ -7,6 +7,8 @@ import { documentShow } from '@features/documents/model/actions.js';
 import {
   drawingLineSetLines,
   Line,
+  type LineCap,
+  type LineJoin,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
@@ -962,9 +964,9 @@ function parseColorAndLabel(m: string) {
 
   let dashArray: number[] | undefined;
 
-  let lineCap: 'butt' | 'round' | 'square' | undefined;
+  let lineCap: LineCap | undefined;
 
-  let lineJoin: 'miter' | 'round' | 'bevel' | undefined;
+  let lineJoin: LineJoin | undefined;
 
   let markerType: 'pin' | 'square' | 'ring' | undefined;
 

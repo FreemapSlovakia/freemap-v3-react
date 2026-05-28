@@ -1,9 +1,15 @@
 import { setTool } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
+import {
+  lineStyleFromProperties,
+  pointStyleFromProperties,
+} from '@features/drawing/model/styleFromProperties.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
+import { useIconContentProps } from '@shared/drawingIcons.js';
 import { smoothElevations } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
@@ -14,7 +20,7 @@ import { Feature, FeatureCollection, LineString, Point } from 'geojson';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement } from 'react';
 import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
-import { Polyline, Tooltip } from 'react-leaflet';
+import { Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
@@ -103,13 +109,42 @@ export function TrackViewerResult({
     (JSON.stringify(trackGeojson) + displayingElevationChart).length
   }`; // otherwise GeoJSON will still display the first data
 
-  const features = getFeatures('LineString').map((feature) => ({
-    name: feature.properties && feature.properties['name'],
-    lineData: feature.geometry.coordinates.map(([lng, lat]) => ({
-      lat,
-      lng,
-    })),
-  }));
+  // Default stroke for unstyled tracks: the legacy purple/weight-6 look.
+  const defaultStroke = '#883388';
+
+  const defaultWidth = 6;
+
+  const features = getFeatures('LineString').map((feature) => {
+    const coords = feature.geometry.coordinates;
+
+    const closed =
+      coords.length > 2 &&
+      coords[0][0] === coords[coords.length - 1][0] &&
+      coords[0][1] === coords[coords.length - 1][1];
+
+    const style = lineStyleFromProperties(feature.properties, closed);
+
+    const stroke = splitColorAlpha(style.color ?? defaultStroke);
+
+    const fill = style.fillColor ? splitColorAlpha(style.fillColor) : undefined;
+
+    return {
+      name: feature.properties?.['name'] as string | undefined,
+      lineData: coords.map(([lng, lat]) => ({ lat, lng })),
+      style: {
+        type:
+          style.type === 'polygon' ? ('polygon' as const) : ('line' as const),
+        strokeColor: stroke.color,
+        strokeOpacity: stroke.opacity,
+        fillColor: fill?.color,
+        fillOpacity: fill?.opacity,
+        width: style.width ?? defaultWidth,
+        dashArray: style.dashArray,
+        lineCap: style.lineCap,
+        lineJoin: style.lineJoin,
+      },
+    };
+  });
 
   const timeFormat = useDateTimeFormat({
     hour: 'numeric',
@@ -168,44 +203,55 @@ export function TrackViewerResult({
           />
         ))}
 
-      {colorizeTrackBy === null && (
-        <Polyline
-          key={`poly-${interactive ? 'a' : 'b'}`}
-          weight={6}
-          interactive={interactive}
-          positions={features.map(({ lineData }) => lineData)}
-          color="#838"
-          bubblingMouseEvents={false}
-          eventHandlers={{
-            click: setThisTool,
-          }}
-        />
-      )}
+      {colorizeTrackBy === null &&
+        features.map(({ lineData, style }, i) => {
+          const pathOptions = {
+            color: style.strokeColor,
+            opacity: style.strokeOpacity,
+            fillColor: style.fillColor,
+            fillOpacity: style.fillOpacity,
+            dashArray: style.dashArray,
+            lineCap: style.lineCap ?? 'round',
+            lineJoin: style.lineJoin ?? 'round',
+          } as const;
+
+          return style.type === 'polygon' ? (
+            <Polygon
+              key={`poly-${i}-${interactive ? 'a' : 'b'}`}
+              weight={style.width}
+              pathOptions={pathOptions}
+              positions={lineData}
+              interactive={interactive}
+              bubblingMouseEvents={false}
+              eventHandlers={{
+                click: setThisTool,
+              }}
+            />
+          ) : (
+            <Polyline
+              key={`poly-${i}-${interactive ? 'a' : 'b'}`}
+              weight={style.width}
+              pathOptions={pathOptions}
+              positions={lineData}
+              interactive={interactive}
+              bubblingMouseEvents={false}
+              eventHandlers={{
+                click: setThisTool,
+              }}
+            />
+          );
+        })}
 
       {getFeatures('Point').map(({ geometry, properties }, i) => (
-        <RichMarker
-          faIcon={<FaFlag color={COLORS.normal} />}
+        <WaypointMarker
           key={`point-${i}-${interactive ? 'a' : 'b'}`}
+          lat={geometry.coordinates[1]}
+          lon={geometry.coordinates[0]}
+          name={properties?.['name']}
+          properties={properties}
           interactive={interactive}
-          position={{
-            lat: geometry.coordinates[1],
-            lng: geometry.coordinates[0],
-          }}
-          eventHandlers={{
-            click: setThisTool,
-          }}
-        >
-          {properties?.['name'] && (
-            <Tooltip
-              className="compact"
-              offset={new LPoint(10, 10)}
-              direction="right"
-              permanent
-            >
-              <span>{properties['name']}</span>
-            </Tooltip>
-          )}
-        </RichMarker>
+          onClick={setThisTool}
+        />
       ))}
 
       {startPoints.map((p, i) => (
@@ -266,5 +312,53 @@ export function TrackViewerResult({
 
       <ElevationChartActivePoint />
     </Fragment>
+  );
+}
+
+function WaypointMarker({
+  lat,
+  lon,
+  name,
+  properties,
+  interactive,
+  onClick,
+}: {
+  lat: number;
+  lon: number;
+  name: string | undefined;
+  properties: Record<string, unknown> | null | undefined;
+  interactive: boolean;
+  onClick: () => void;
+}): ReactElement {
+  const style = pointStyleFromProperties(properties);
+
+  const contentProps = useIconContentProps(style.icon);
+
+  // No icon spec resolved → fall back to the legacy flag glyph.
+  const hasIconContent =
+    contentProps.image || contentProps.iconSvg || contentProps.label;
+
+  return (
+    <RichMarker
+      position={{ lat, lng: lon }}
+      color={style.color ?? COLORS.normal}
+      markerType={style.markerType}
+      interactive={interactive}
+      eventHandlers={{ click: onClick }}
+      {...(hasIconContent
+        ? contentProps
+        : { faIcon: <FaFlag color={COLORS.normal} /> })}
+    >
+      {name && (
+        <Tooltip
+          className="compact"
+          offset={new LPoint(10, 10)}
+          direction="right"
+          permanent
+        >
+          <span>{name}</span>
+        </Tooltip>
+      )}
+    </RichMarker>
   );
 }

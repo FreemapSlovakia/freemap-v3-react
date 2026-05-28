@@ -3,20 +3,14 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { changesetsSet } from '@features/changesets/model/actions.js';
 import {
   drawingLineAdd,
-  type Line,
   Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
-import { garminSymToIconSpec } from '@features/export/garminSymMapping.js';
 import {
-  osmAndBackgroundToMarkerType,
-  osmAndIconToIconSpec,
-} from '@features/export/osmandIconMapping.js';
-import {
-  MarkerType,
-  MarkerTypeSchema,
-  normalizeMarkerType,
-} from '@features/objects/model/actions.js';
+  lineStyleFromProperties,
+  pointStyleFromProperties,
+} from '@features/drawing/model/styleFromProperties.js';
+import { normalizeMarkerType } from '@features/objects/model/actions.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import { searchClear } from '@features/search/model/actions.js';
 import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
@@ -25,107 +19,6 @@ import { mergeLines } from '@shared/geoutils.js';
 import { flatten as turfFlatten } from '@turf/flatten';
 import { lineString } from '@turf/helpers';
 import { simplify } from '@turf/simplify';
-
-// Plucks drawing-point styling out of a GeoJSON feature's properties.
-// Priority: freemap-private (lossless round-trip) → OsmAnd → plain GeoJSON
-// keys (imported geojson) → Garmin <sym> / simplestyle marker-symbol.
-// Returns undefined fields when nothing matches so the caller can fall
-// back to drawing settings / OSM-tag inference.
-function pointStyleFromProperties(
-  properties: Record<string, unknown> | null | undefined,
-): {
-  markerType: MarkerType | undefined;
-  icon: string | undefined;
-  color: string | undefined;
-} {
-  const get = (key: string): string | undefined => {
-    const v = properties?.[key];
-
-    return typeof v === 'string' && v ? v : undefined;
-  };
-
-  const rawMarkerType = get('freemap:markerType') ?? get('markerType');
-
-  const markerType =
-    (rawMarkerType
-      ? MarkerTypeSchema.safeParse(rawMarkerType).data
-      : undefined) ?? osmAndBackgroundToMarkerType(get('osmand:background'));
-
-  const icon =
-    get('freemap:icon') ??
-    osmAndIconToIconSpec(get('osmand:icon')) ??
-    get('icon') ??
-    garminSymToIconSpec(get('sym') ?? get('marker-symbol'));
-
-  const color =
-    get('freemap:color') ?? get('osmand:color') ?? get('marker-color');
-
-  return { markerType, icon, color };
-}
-
-// Plucks line/polygon styling out of a GeoJSON feature's properties. GPX has
-// no native polygon type, so callers must combine `type` here with a
-// closed-ring check to decide whether to dispatch as polygon. Priority:
-// freemap:* (lossless) → osmand:* → simplestyle (stroke/fill).
-function lineStyleFromProperties(
-  properties: Record<string, unknown> | null | undefined,
-  closed: boolean,
-): {
-  type: 'line' | 'polygon' | undefined;
-  color: string | undefined;
-  fillColor: string | undefined;
-  width: number | undefined;
-  lineCap: Line['lineCap'];
-  lineJoin: Line['lineJoin'];
-  dashArray: number[] | undefined;
-} {
-  const get = (key: string): string | undefined => {
-    const v = properties?.[key];
-
-    return typeof v === 'string' && v ? v : undefined;
-  };
-
-  const rawType = get('freemap:type');
-
-  const type: 'line' | 'polygon' | undefined =
-    rawType === 'polygon' || rawType === 'line'
-      ? rawType
-      : closed && get('gpx_style:hasFill')
-        ? 'polygon'
-        : undefined;
-
-  const color = get('freemap:color') ?? get('osmand:color') ?? get('stroke');
-
-  const fillColor =
-    get('freemap:fillColor') ?? get('osmand:fill_color') ?? get('fill');
-
-  const rawWidth =
-    get('freemap:width') ?? get('osmand:width') ?? get('stroke-width');
-  const widthNum = rawWidth ? Number(rawWidth) : Number.NaN;
-  const width = Number.isFinite(widthNum) ? widthNum : undefined;
-
-  const rawCap = get('freemap:lineCap') ?? get('stroke-linecap');
-  const lineCap =
-    rawCap === 'butt' || rawCap === 'round' || rawCap === 'square'
-      ? rawCap
-      : undefined;
-
-  const rawJoin = get('freemap:lineJoin') ?? get('stroke-linejoin');
-  const lineJoin =
-    rawJoin === 'miter' || rawJoin === 'round' || rawJoin === 'bevel'
-      ? rawJoin
-      : undefined;
-
-  const rawDash = get('freemap:dashArray') ?? get('stroke-dasharray');
-  const dashArray = rawDash
-    ? rawDash
-        .split(/[\s,]+/)
-        .map(Number)
-        .filter((n) => Number.isFinite(n))
-    : undefined;
-
-  return { type, color, fillColor, width, lineCap, lineJoin, dashArray };
-}
 
 export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   actionCreator: convertToDrawing,
