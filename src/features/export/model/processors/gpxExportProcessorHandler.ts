@@ -6,11 +6,23 @@ import { ObjectsState } from '@features/objects/model/reducer.js';
 import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { TrackingState } from '@features/tracking/model/reducer.js';
 import { TrackViewerState } from '@features/trackViewer/model/reducer.js';
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
+import {
+  faIconToSvg,
+  loadAllIcons,
+  parseIconSpec,
+  poiIconNameToUrl,
+} from '@shared/drawingIcons.js';
 import { escapeHtml } from '@shared/stringUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Feature, FeatureCollection } from 'geojson';
+import { iconSpecToGarminSym } from '../../garminSymMapping.js';
+import {
+  iconSpecToOsmAndIcon,
+  markerTypeToOsmAndBackground,
+} from '../../osmandIconMapping.js';
 import { exportMapFeatures } from '../actions.js';
 import { fetchPictures, Picture } from './fetchPictures.js';
 import {
@@ -22,6 +34,15 @@ import {
   LOCUS_NS,
 } from './gpxExporter.js';
 import { upload } from './upload.js';
+
+// Freemap-private namespace for lossless round-trip of drawing-point styling
+// (markerType + icon spec + color) that has no standard GPX equivalent. Other
+// consumers ignore unknown extension elements per the GPX spec.
+const FM_NS = 'https://www.freemap.sk/GPX/1/0';
+
+// OsmAnd's GPX waypoint extension namespace, declared on the root so we can
+// emit `<osmand:icon>`, `<osmand:background>` and `<osmand:color>`.
+const OSMAND_NS = 'https://osmand.net';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 
@@ -41,6 +62,10 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   );
 
   doc.documentElement.setAttribute('xmlns:locus', LOCUS_NS);
+
+  doc.documentElement.setAttribute('xmlns:fm', FM_NS);
+
+  doc.documentElement.setAttribute('xmlns:osmand', OSMAND_NS);
 
   addAttribute(doc.documentElement, 'version', '1.1');
 
@@ -109,7 +134,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('drawingPoints')) {
-    addDrawingPoints(doc, drawingPoints);
+    await addDrawingPoints(doc, drawingPoints);
   }
 
   if (set.has('objects')) {
@@ -333,6 +358,22 @@ function addDrawingLines(
       String(line.width || 4),
     );
 
+    if (line.lineCap) {
+      createElement(lineStyleEle, [GPX_STYLE_NS, 'linecap'], line.lineCap);
+    }
+
+    if (line.lineJoin) {
+      createElement(lineStyleEle, [GPX_STYLE_NS, 'linejoin'], line.lineJoin);
+    }
+
+    if (line.dashArray && line.dashArray.length > 0) {
+      createElement(
+        lineStyleEle,
+        [GPX_STYLE_NS, 'dasharray'],
+        line.dashArray.join(' '),
+      );
+    }
+
     const ext2Ele = createElement(lineStyleEle, 'extensions');
 
     createElement(
@@ -357,6 +398,53 @@ function addDrawingLines(
       );
     }
 
+    // Freemap-private extensions for lossless round-trip. GPX has no native
+    // polygon type — `fm:type=polygon` is the unambiguous signal for our
+    // importer, separate from the gpx_style:fill heuristic that other
+    // consumers use. Color/lineCap/lineJoin/dashArray are duplicated here
+    // because gpx_style splits color into RGB+opacity (losing the original
+    // hex alpha precision) and not every reader handles linecap/linejoin.
+    appendNs(extEle, FM_NS, 'fm:type', type);
+
+    if (line.color) {
+      appendNs(extEle, FM_NS, 'fm:color', line.color);
+    }
+
+    if (type === 'polygon' && line.fillColor) {
+      appendNs(extEle, FM_NS, 'fm:fillColor', line.fillColor);
+    }
+
+    if (line.lineCap) {
+      appendNs(extEle, FM_NS, 'fm:lineCap', line.lineCap);
+    }
+
+    if (line.lineJoin) {
+      appendNs(extEle, FM_NS, 'fm:lineJoin', line.lineJoin);
+    }
+
+    if (line.dashArray && line.dashArray.length > 0) {
+      appendNs(extEle, FM_NS, 'fm:dashArray', line.dashArray.join(' '));
+    }
+
+    if (line.width != null) {
+      appendNs(extEle, FM_NS, 'fm:width', String(line.width));
+    }
+
+    // OsmAnd track styling: a single colour element + width, plus a fill
+    // colour for polygons. OsmAnd renders closed tracks with a fill colour
+    // as filled areas.
+    if (line.color) {
+      appendNs(extEle, OSMAND_NS, 'osmand:color', stroke.color);
+    }
+
+    if (line.width != null) {
+      appendNs(extEle, OSMAND_NS, 'osmand:width', String(line.width));
+    }
+
+    if (type === 'polygon') {
+      appendNs(extEle, OSMAND_NS, 'osmand:fill_color', fill.color);
+    }
+
     const trksegEle = createElement(trkEle, 'trkseg');
 
     const points =
@@ -368,8 +456,13 @@ function addDrawingLines(
   }
 }
 
-function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
-  for (const { coords, label, color } of points) {
+async function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
+  // Caches shared across all points in this export, so a thousand identical
+  // poi/fa icons resolve once.
+  const faCache = new Map<string, IconDefinition | undefined>();
+  const poiDataUrlCache = new Map<string, Promise<string | undefined>>();
+
+  for (const { coords, label, color, markerType, icon } of points) {
     const wptEle = createElement(
       doc.documentElement,
       'wpt',
@@ -381,36 +474,312 @@ function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
       createElement(wptEle, 'name', label);
     }
 
+    // `<sym>` carries the icon for Garmin / BaseCamp / MapSource and many
+    // mobile consumers. Falls back to the icon-spec's literal text/poi/fa
+    // name when no curated Garmin sym maps cleanly — those still round-trip
+    // via the freemap extensions below.
+    const sym = iconSpecToGarminSym(icon) ?? iconToBareSym(icon);
+
+    if (sym) {
+      createElement(wptEle, 'sym', sym);
+    }
+
     const extEle = createElement(wptEle, 'extensions');
 
-    const canvas = document.createElement('canvas');
+    // Lossless round-trip metadata for our own importer.
+    if (markerType) {
+      appendNs(extEle, FM_NS, 'fm:markerType', markerType);
+    }
 
-    canvas.width = 64;
+    if (icon) {
+      appendNs(extEle, FM_NS, 'fm:icon', icon);
+    }
 
-    canvas.height = 64;
+    if (color) {
+      appendNs(extEle, FM_NS, 'fm:color', color);
+    }
 
-    const ctx = canvas.getContext('2d');
+    // OsmAnd extensions: icon name from the OsmAnd catalog, background
+    // shape derived from our markerType, and the colour. OsmAnd shows the
+    // marker natively rather than relying on the embedded Locus raster.
+    const osmandIcon = iconSpecToOsmAndIcon(icon);
 
-    if (ctx) {
-      ctx.beginPath();
+    if (osmandIcon) {
+      appendNs(extEle, OSMAND_NS, 'osmand:icon', osmandIcon);
+    }
 
-      ctx.closePath();
+    const osmandBg = markerTypeToOsmAndBackground(markerType);
 
-      ctx.beginPath();
+    if (osmandBg) {
+      appendNs(extEle, OSMAND_NS, 'osmand:background', osmandBg);
+    }
 
-      ctx.moveTo(32, 58);
+    if (color) {
+      appendNs(extEle, OSMAND_NS, 'osmand:color', color);
+    }
 
-      ctx.arc(32, 24, 18, Math.PI - Math.PI / 6, Math.PI / 6);
+    // Locus reads `<locus:icon>` as a data URL. We build an SVG that mirrors
+    // RichMarker (shape + inner white inset + glyph) so users see the same
+    // icon on the device.
+    const locusIcon = await buildLocusIconDataUrl({
+      markerType,
+      color: color || COLORS.normal,
+      label,
+      icon,
+      faCache,
+      poiDataUrlCache,
+    });
 
-      ctx.closePath();
-
-      ctx.fillStyle = color || COLORS.normal;
-
-      ctx.fill();
-
-      createElement(extEle, [LOCUS_NS, 'locus:icon'], canvas.toDataURL());
+    if (locusIcon) {
+      createElement(extEle, [LOCUS_NS, 'locus:icon'], locusIcon);
     }
   }
+}
+
+function appendNs(
+  parent: Element,
+  ns: string,
+  qname: string,
+  value: string,
+): void {
+  const el = parent.ownerDocument.createElementNS(ns, qname);
+
+  el.textContent = value;
+
+  parent.appendChild(el);
+}
+
+// Returns a `<sym>`-suitable string when the icon spec has no curated Garmin
+// counterpart: poi/fa names are stripped of their prefix; literal text is
+// passed through. Some consumers may still display it as text — better than
+// no symbol info at all.
+function iconToBareSym(icon: string | undefined): string | undefined {
+  const spec = parseIconSpec(icon);
+
+  if (!spec) {
+    return undefined;
+  }
+
+  return spec.kind === 'text' ? spec.text : spec.name;
+}
+
+// Builds a self-contained SVG marker matching RichMarker (shape + white
+// inset + glyph) and returns it as a `data:image/svg+xml;base64,...` URL.
+// Returns undefined if a glyph can't be resolved at all (still emits an
+// icon for the shape, so this only happens on misconfigured colour input).
+async function buildLocusIconDataUrl({
+  markerType,
+  color,
+  label,
+  icon,
+  faCache,
+  poiDataUrlCache,
+}: {
+  markerType: DrawingPointsState['points'][number]['markerType'];
+  color: string;
+  label?: string;
+  icon?: string;
+  faCache: Map<string, IconDefinition | undefined>;
+  poiDataUrlCache: Map<string, Promise<string | undefined>>;
+}): Promise<string | undefined> {
+  const spec = parseIconSpec(icon);
+
+  // Text shown inside the inset: either the explicit text-icon spec, or the
+  // first ≤2 chars of `label` for unicon-less markers (matches the in-app
+  // behaviour where short labels render as a glyph).
+  const text =
+    spec?.kind === 'text'
+      ? spec.text
+      : !spec && label && [...label].length <= 2
+        ? label
+        : undefined;
+
+  let faSvg: { width: number; height: number; path: string } | undefined;
+
+  if (spec?.kind === 'fa') {
+    let def = faCache.get(spec.name);
+
+    if (!faCache.has(spec.name)) {
+      const all = await loadAllIcons();
+      def = all.find((d) => d.iconName === spec.name);
+      faCache.set(spec.name, def);
+    }
+
+    if (def) {
+      faSvg = faIconToSvg(def);
+    }
+  }
+
+  let poiDataUrl: string | undefined;
+
+  if (spec?.kind === 'poi') {
+    const url = poiIconNameToUrl[spec.name];
+
+    if (url) {
+      let p = poiDataUrlCache.get(url);
+
+      if (!p) {
+        p = fetchSvgAsDataUrl(url);
+        poiDataUrlCache.set(url, p);
+      }
+
+      poiDataUrl = await p;
+    }
+  }
+
+  const hasContent = Boolean(text || faSvg || poiDataUrl);
+
+  const svg = buildMarkerSvg({
+    markerType,
+    color,
+    hasContent,
+    text,
+    faSvg,
+    poiDataUrl,
+  });
+
+  // Base64-encode via UTF-8-safe path so non-ASCII labels survive btoa.
+  const b64 =
+    typeof btoa === 'function'
+      ? btoa(
+          Array.from(new TextEncoder().encode(svg), (b) =>
+            String.fromCharCode(b),
+          ).join(''),
+        )
+      : '';
+
+  return `data:image/svg+xml;base64,${b64}`;
+}
+
+async function fetchSvgAsDataUrl(url: string): Promise<string | undefined> {
+  try {
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      return undefined;
+    }
+
+    const text = await res.text();
+
+    const b64 = btoa(
+      Array.from(new TextEncoder().encode(text), (b) =>
+        String.fromCharCode(b),
+      ).join(''),
+    );
+
+    return `data:image/svg+xml;base64,${b64}`;
+  } catch {
+    return undefined;
+  }
+}
+
+// Mirrors the geometry and viewBox of RichMarker so the exported icon
+// matches the in-app marker. Glyph color is GLYPH_COLOR from RichMarker
+// (Bootstrap gray-700) — kept literal here so we don't need a runtime CSS
+// variable lookup in the export pipeline.
+const GLYPH_COLOR_LITERAL = '#495057';
+
+function buildMarkerSvg({
+  markerType,
+  color,
+  hasContent,
+  text,
+  faSvg,
+  poiDataUrl,
+}: {
+  markerType: DrawingPointsState['points'][number]['markerType'];
+  color: string;
+  hasContent: boolean;
+  text?: string;
+  faSvg?: { width: number; height: number; path: string };
+  poiDataUrl?: string;
+}): string {
+  const GLYPH = 150;
+
+  const renderGlyph = (cx: number, cy: number): string => {
+    if (text) {
+      return (
+        `<text x="${cx}" y="${cy}" text-anchor="middle" ` +
+        `dominant-baseline="central" fill="${GLYPH_COLOR_LITERAL}" ` +
+        `font-size="150" font-weight="bold" font-family="Sans-Serif" ` +
+        `style="white-space:pre">${escapeXml(text)}</text>`
+      );
+    }
+
+    if (faSvg) {
+      const scale = GLYPH / Math.max(faSvg.width, faSvg.height);
+      const tx = cx - (faSvg.width * scale) / 2;
+      const ty = cy - (faSvg.height * scale) / 2;
+
+      return (
+        `<path d="${escapeXml(faSvg.path)}" fill="${GLYPH_COLOR_LITERAL}" ` +
+        `transform="translate(${tx} ${ty}) scale(${scale})"/>`
+      );
+    }
+
+    if (poiDataUrl) {
+      return (
+        `<image x="${cx - GLYPH / 2}" y="${cy - GLYPH / 2}" ` +
+        `width="${GLYPH}" height="${GLYPH}" href="${poiDataUrl}"/>`
+      );
+    }
+
+    return '';
+  };
+
+  if (markerType === 'ring') {
+    return (
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 310">` +
+      `<ellipse cx="155" cy="155" rx="135" ry="135" fill="${color}" ` +
+      `stroke="${color}" stroke-width="10" stroke-opacity="0.5"/>` +
+      (hasContent
+        ? `<ellipse cx="155" cy="155" rx="110" ry="110" fill="#fff"/>`
+        : '') +
+      renderGlyph(155, 155) +
+      `</svg>`
+    );
+  }
+
+  if (markerType === 'square') {
+    return (
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 310">` +
+      `<rect x="30" y="30" width="240" height="240" rx="20" ry="20" ` +
+      `fill="${color}" stroke="${color}" stroke-width="10" ` +
+      `stroke-opacity="0.6"/>` +
+      (hasContent
+        ? `<rect x="50" y="50" width="200" height="200" rx="20" ry="20" ` +
+          `fill="#fff"/>`
+        : '') +
+      renderGlyph(150, 150) +
+      `</svg>`
+    );
+  }
+
+  // pin (default)
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 512">` +
+    `<path d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 ` +
+    `C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 ` +
+    `493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 ` +
+    `186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 ` +
+    `11.734 Z" fill="${color}" stroke="#fff" stroke-width="10" ` +
+    `stroke-opacity="0.5"/>` +
+    (hasContent
+      ? `<ellipse cx="154.12" cy="163.702" rx="119.462" ry="119.462" ` +
+        `fill="#fff"/>`
+      : '') +
+    renderGlyph(154, 164) +
+    `</svg>`
+  );
+}
+
+function escapeXml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
 
 function addObjects(doc: Document, { objects }: ObjectsState) {
@@ -494,8 +863,6 @@ function toLocusAlpha(opacity: number): string {
     .toString(16)
     .padStart(2, '0');
 }
-
-const FM_NS = 'https://www.freemap.sk/GPX/1/0';
 
 function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
   const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));

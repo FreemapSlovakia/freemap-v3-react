@@ -1,5 +1,11 @@
 # Project notes for Claude
 
+## Reference docs
+
+Deeper format/architecture references live in [`doc/`](./doc/). Consult them before designing changes in the same area:
+
+- [Drawing feature export/import format mapping](./doc/drawing-export-mapping.md) — GPX/GeoJSON write+read for drawing points/lines/polygons, the `fm:*` lossless-shadow design, and the curated Garmin/OsmAnd icon dictionaries. **Read this before changing anything in `src/features/export/` or in the drawing-conversion processors.**
+
 ## Workflow
 
 - **Do not commit until I explicitly approve.** Leave the working tree dirty at the end of a task and wait for "commit"/"looks good"/similar. This overrides any "commit when done" instinct.

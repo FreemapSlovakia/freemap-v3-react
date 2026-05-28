@@ -11,6 +11,7 @@ import {
   polygon,
 } from '@turf/helpers';
 import { FeatureCollection } from 'geojson';
+import { iconSpecToGarminSym } from '../../garminSymMapping.js';
 import { exportMapFeatures } from '../actions.js';
 import { fetchPictures, Picture } from './fetchPictures.js';
 import { licenseNotice, upload } from './upload.js';
@@ -50,6 +51,9 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
       const stroke = line.color ? splitColorAlpha(line.color) : undefined;
       const fill = line.fillColor ? splitColorAlpha(line.fillColor) : undefined;
 
+      // `stroke`/`fill` follow simplestyle (split alpha into opacity), so the
+      // original hex precision is lost. The `freemap:*` shadows preserve the
+      // raw input verbatim so our importer can restore it losslessly.
       const props = {
         title: line.label,
         stroke: stroke?.color,
@@ -61,6 +65,9 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
         'stroke-linecap': line.lineCap,
         'stroke-linejoin': line.lineJoin,
         'stroke-dasharray': line.dashArray,
+        'freemap:type': line.type,
+        'freemap:color': line.color,
+        'freemap:fillColor': line.fillColor,
       };
 
       fc.features.push(
@@ -81,12 +88,22 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     for (const p of drawingPoints.points) {
       const marker = p.color ? splitColorAlpha(p.color) : undefined;
 
+      // - `marker-color` / `marker-color-opacity`: simplestyle-spec, recognised
+      //   by Mapbox, github.com and similar.
+      // - `marker-symbol`: simplestyle's symbol slot, populated with the
+      //   Garmin sym name when we know one (small but useful overlap with
+      //   maki names).
+      // - `markerType` / `icon`: freemap-private slots that mirror the redux
+      //   state and let our own importer restore shape + icon losslessly.
       fc.features.push(
         point([p.coords.lon, p.coords.lat], {
           title: p.label,
           'marker-color': marker?.color,
           'marker-color-opacity':
             marker && marker.opacity < 1 ? marker.opacity : undefined,
+          'marker-symbol': iconSpecToGarminSym(p.icon),
+          markerType: p.markerType,
+          icon: p.icon,
         }),
       );
     }

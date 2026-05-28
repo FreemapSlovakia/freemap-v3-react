@@ -47,6 +47,14 @@ You'll then find all static web resources in `dist` directory.
 
 - `FM_MAPSERVER_URL` - base URL of Mapnik Mapserver (without trailing slash); for example `http://localhost:4000` for development
 
+## Documentation
+
+Deeper reference docs live in [`doc/`](./doc/):
+
+- [Drawing feature export/import format mapping](./doc/drawing-export-mapping.md) — how points, lines and polygons round-trip through GPX and GeoJSON, including curated icon mappings for Garmin / OsmAnd / Locus.
+
+Contributor notes for Claude Code (workflow, conventions): [CLAUDE.md](./CLAUDE.md).
+
 ## Translation (i18n)
 
 Files:
