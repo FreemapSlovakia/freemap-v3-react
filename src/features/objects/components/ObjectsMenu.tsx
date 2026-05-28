@@ -27,6 +27,7 @@ import {
   objectsSetFilter,
   setSelectedIcon,
 } from '../model/actions.js';
+import classes from './ObjectsMenu.module.css';
 
 export default ObjectsMenu;
 
@@ -186,7 +187,7 @@ export function ObjectsMenu(): ReactElement {
         return (
           <Dropdown.Item key={key} eventKey={key} active={active.includes(key)}>
             {img.length > 0 ? (
-              <img src={img[0]} style={{ width: '1em', height: '1em' }} />
+              <img src={img[0]} className={classes['icon']} />
             ) : (
               <span
                 style={{

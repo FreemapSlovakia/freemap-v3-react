@@ -1,0 +1,15 @@
+.icon {
+  width: 1em;
+  height: 1em;
+}
+
+[data-bs-theme="dark"] .icon {
+  filter: drop-shadow(0 0 0.3px var(--bs-body-color))
+    drop-shadow(0 0 0.3px var(--bs-body-color))
+    drop-shadow(0 0 0.3px var(--bs-body-color))
+    drop-shadow(0 0 0.3px var(--bs-body-color))
+    drop-shadow(0 0 0.3px var(--bs-body-color))
+    drop-shadow(0 0 0.3px var(--bs-body-color))
+    drop-shadow(0 0 0.3px var(--bs-body-color))
+    drop-shadow(0 0 0.3px var(--bs-body-color));
+}
