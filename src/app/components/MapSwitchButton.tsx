@@ -359,7 +359,7 @@ export function MapSwitchButton(): ReactElement {
               href={`?layers=${type}`}
               eventKey={'layer-' + type}
               active={active}
-              className={clsx(showInMenu || 'text-secondary')}
+              // className={clsx(showInMenu || 'text-secondary')}
             >
               {def.layer === 'base' ? (
                 <Checkbox value={active} />
@@ -376,7 +376,8 @@ export function MapSwitchButton(): ReactElement {
               <span
                 className={
                   !def.zoomOk || !def.countryOk
-                    ? 'text-decoration-line-through'
+                    ? // was: 'text-decoration-line-through'
+                      'text-secondary'
                     : ''
                 }
               >
