@@ -62,7 +62,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         });
 
         elevation = z
-          .array(z.number())
+          .array(z.number().nullable())
           .length(1)
           .parse(await res.json())[0];
       }
