@@ -396,6 +396,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
           key={`polygon-${interactiveLine ? 'a' : 'b'}`}
+          pane="fm-drawing-polygons"
           weight={width}
           pathOptions={{
             color: renderColor,

@@ -4,6 +4,7 @@ import { COLORS } from '@shared/colors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
 import { type ReactElement, useEffect } from 'react';
+import { Pane } from 'react-leaflet';
 import { DrawingLineResult } from './DrawingLineResult.js';
 
 function useLinePointColor() {
@@ -37,6 +38,8 @@ export function DrawingLinesResult(): ReactElement {
 
   return (
     <>
+      <Pane name="fm-drawing-polygons" style={{ zIndex: 399 }} />
+
       {lines.map((_, i) => (
         <DrawingLineResult key={i} lineIndex={i} />
       ))}

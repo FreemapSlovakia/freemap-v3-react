@@ -20,7 +20,7 @@ import { Feature, FeatureCollection, LineString, Point } from 'geojson';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement } from 'react';
 import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
-import { Polygon, Polyline, Tooltip } from 'react-leaflet';
+import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
@@ -153,13 +153,15 @@ export function TrackViewerResult({
 
   return (
     <Fragment key={keyToAssureProperRefresh}>
-      {features.map(({ lineData, name }, i) => (
+      <Pane name="fm-trackviewer-polygons" style={{ zIndex: 399 }} />
+
+      {features.map(({ lineData, name, style }, i) => (
         <Polyline
           key={`outline-${i}-${interactive ? 'a' : 'b'}`}
-          weight={10}
+          weight={style.width + 8}
           interactive={interactive}
           positions={lineData}
-          color="#fff"
+          opacity={0}
           bubblingMouseEvents={false}
           eventHandlers={{
             click: setThisTool,
@@ -218,6 +220,7 @@ export function TrackViewerResult({
           return style.type === 'polygon' ? (
             <Polygon
               key={`poly-${i}-${interactive ? 'a' : 'b'}`}
+              pane="fm-trackviewer-polygons"
               weight={style.width}
               pathOptions={pathOptions}
               positions={lineData}
