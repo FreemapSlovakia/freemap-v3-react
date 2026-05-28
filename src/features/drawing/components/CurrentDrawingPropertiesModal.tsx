@@ -11,7 +11,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { normalizeMarkerType } from '@features/objects/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { COLORS } from '@shared/colors.js';
-import { faSpec, parseIconSpec } from '@shared/drawingIcons.js';
+import { parseIconSpec } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import { polygon } from '@turf/helpers';
@@ -418,12 +418,13 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
                 <Form.Label>{m?.drawing.edit.icon}</Form.Label>
 
                 <IconPicker
-                  selectedName={
-                    editedIconSpec?.kind === 'fa'
-                      ? editedIconSpec.name
+                  selected={
+                    editedIconSpec?.kind === 'fa' ||
+                    editedIconSpec?.kind === 'poi'
+                      ? editedIcon
                       : undefined
                   }
-                  onSelect={(name) => setEditedIcon(name ? faSpec(name) : '')}
+                  onSelect={(spec) => setEditedIcon(spec ?? '')}
                 />
               </Form.Group>
 

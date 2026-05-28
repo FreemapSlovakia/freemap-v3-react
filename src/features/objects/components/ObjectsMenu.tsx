@@ -9,6 +9,7 @@ import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import classes from '@shared/poiIcon.module.css';
 import { removeAccents } from '@shared/stringUtils.js';
 import {
   ChangeEvent,
@@ -27,7 +28,6 @@ import {
   objectsSetFilter,
   setSelectedIcon,
 } from '../model/actions.js';
-import classes from './ObjectsMenu.module.css';
 
 export default ObjectsMenu;
 
