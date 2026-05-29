@@ -58,7 +58,7 @@ export function CachedMapsList(): ReactElement {
 
       <Modal.Body>
         {cachedMaps.length === 0 ? (
-          <p className="text-muted">{m?.offline.emptyMessage}</p>
+          <p className="text-muted mb-0">{m?.offline.emptyMessage}</p>
         ) : (
           <>
             <ListGroup>

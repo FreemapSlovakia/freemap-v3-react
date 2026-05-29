@@ -156,7 +156,11 @@ export function CustomMapsModal({ show }: Props): ReactElement {
       {view.mode === 'list' ? (
         <>
           <Modal.Body>
-            {customLayers.length > 0 && (
+            {customLayers.length === 0 ? (
+              <p className="text-muted mb-0">
+                {m?.mapLayers.customMapsEmptyMessage}
+              </p>
+            ) : (
               <ListGroup>
                 {customLayers.map((def) => (
                   <ListGroup.Item

@@ -642,6 +642,7 @@ export type Messages = {
     configureLayers: string;
     customMaps: string;
     addCustomMap: string;
+    customMapsEmptyMessage: string;
     base: string;
     overlay: string;
     technology: string;

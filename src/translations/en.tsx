@@ -860,6 +860,8 @@ const messages: Messages = {
     configureLayers: 'Configure map layers',
     customMaps: 'Custom maps',
     addCustomMap: 'Add custom map',
+    customMapsEmptyMessage:
+      'No custom maps defined yet. Add one to display your own map source.',
     base: 'Base layers',
     overlay: 'Overlay layers',
     technology: 'Type',
