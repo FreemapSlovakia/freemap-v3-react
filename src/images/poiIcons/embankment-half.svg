@@ -1,8 +1,0 @@
-<svg width="12" height="14" version="1.1"
-  xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-
-
-  <path d="M 11.625,7 V 0 M 5.625,7 V 3 M 12,6.625 H 0" fill="none" stroke="#646464"
-    stroke-width="0.75" />
-  <path opacity="0.5" fill="none" d="M 12,14 H 0 V 0 H 12 Z" />
-</svg>
