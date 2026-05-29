@@ -65,7 +65,8 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
         'stroke-linecap': line.lineCap,
         'stroke-linejoin': line.lineJoin,
         'stroke-dasharray': line.dashArray,
-        'freemap:type': line.type,
+        // No `freemap:type` shadow: unlike GPX (which has no polygon type),
+        // GeoJSON encodes line-vs-polygon in the native geometry type below.
         'freemap:color': line.color,
         'freemap:fillColor': line.fillColor,
       };

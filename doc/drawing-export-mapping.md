@@ -108,8 +108,7 @@ files.
 
 | State field | GeoJSON property | Notes |
 |---|---|---|
-| `type` | Geometry type | Native (`LineString` vs `Polygon`) — no shadow needed |
-| `type` | `freemap:type` | Belt-and-suspenders for tools that don't preserve geometry type |
+| `type` | Geometry type | Native (`LineString` vs `Polygon`) — no shadow; no `freemap:type` (that's a GPX-only signal) |
 | `label` | `title` | |
 | `color` | `stroke` + `stroke-opacity` | Simplestyle (lossy alpha) |
 | `color` | `freemap:color` | **Lossless** |
@@ -134,8 +133,11 @@ lineJoin   ← freemap:lineJoin    → stroke-linejoin
 dashArray  ← freemap:dashArray   → stroke-dasharray
 ```
 
-The closed-ring + `gpx_style:hasFill` heuristic is what lets us correctly
-classify polygons from third-party producers that don't write `fm:type`.
+`freemap:type` is a GPX-only signal (GPX has no polygon geometry). For
+GeoJSON, `convertToDrawingProcessor` recognises native `Polygon`/`MultiPolygon`
+geometry directly, so no shadow is needed. The closed-ring + `gpx_style:hasFill`
+heuristic is what lets us correctly classify polygons from third-party GPX
+producers that don't write `fm:type`.
 
 ## Curated icon dictionaries
 
