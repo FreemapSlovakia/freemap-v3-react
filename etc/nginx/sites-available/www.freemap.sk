@@ -1,0 +1,147 @@
+
+server {
+	server_name www.freemap.sk;
+	
+	if ($blocked_country) {
+	    return 444;
+	}
+
+	root /home/freemap/www;
+	
+	location = /manifest.webmanifest {
+		default_type application/manifest+json;
+    	}
+
+	add_header Alt-Svc 'h3=":443"; ma=86400' always;
+
+	location ~ ^/~(.+?)(/.*)?$ {
+		charset UTF-8;
+		alias /home/$1/www$2;
+		autoindex on;
+	}
+
+	location /sitemap/layers=X&lang=sk {
+		add_header Link '<https://www.freemap.sk/?layers=X&lang=sk>; rel=\"canonical\"';
+		default_type 'text/html; charset=UTF-8';
+	}
+
+	location /sitemap {
+		default_type 'text/html; charset=UTF-8';
+	}
+
+	location = /admin {
+		root /var/www;
+
+		try_files /admin.html =404;	
+	}
+
+	location = / {
+		set $cond "";
+
+		#if ($http_user_agent ~ "\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners|Lighthouse)\b") {
+		if ($http_user_agent ~ "\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners)\b") {
+			set $cond a;
+		}
+
+		if ($args ~ "layers=X&osm-(node|way|relation)=\d+&lang=sk") {
+			set $cond "${cond}b";
+		}
+
+		if ($args ~ "layers=X&tip=\w+&lang=sk") {
+			set $cond "${cond}b";
+		}
+
+		if ($cond = ab) {
+			rewrite ^ /sitemap/$args;
+		}
+
+		if ($cond = a) {
+			rewrite ^ /sitemap/layers=X&lang=sk;
+		}
+
+		#set $lang_sup "en,sk,cs,hu";
+		#	set_by_lua_file $lang_accept /etc/nginx/lang.lua $lang_sup;
+		#try_files $uri /index-$lang_accept.html;
+		add_header Cache-Control 'no-store, max-age=0';
+		add_header Referrer-Policy 'no-referrer';
+		add_header Strict-Transport-Security 'max-age=31536000';
+	}
+
+	# Match all unhashed HTML, including the internal redirect "/" -> /index.html
+	# (served outside the "location = /" block, so its headers are lost) and the
+	# index-XX.html variants. Without this, the entry HTML is heuristically cached,
+	# pinning users to stale hashed asset names (broken layout after a deploy).
+	location ~ \.html$ {
+		add_header Cache-Control 'no-store, max-age=0';
+		add_header Referrer-Policy 'no-referrer';
+		add_header Strict-Transport-Security 'max-age=31536000';
+	}
+
+	# Service workers and the asset manifest are unhashed and must never go stale,
+	# otherwise the SW / precache list lags behind the deployed build.
+	location ~ ^/(sw|upload-sw)\.js$ {
+		add_header Cache-Control 'no-store, max-age=0';
+	}
+
+	location = /assets-manifest.json {
+		add_header Cache-Control 'no-store, max-age=0';
+	}
+
+	# Content-addressed assets (rspack emits 16-char [chunkhash]/[contenthash]).
+	# The old rule required 20 chars and never matched, so bundles were uncached.
+	location ~ "\.[a-z0-9]{16,}\.[a-z0-9]+$" {
+		add_header Cache-Control 'max-age=31536000, immutable';
+	}
+
+	location ~ "\.(png|jpg)$" {
+		add_header Cache-Control 'max-age=31536000';
+	}
+
+	#	location /pgbadger {
+	#		alias /var/www/pgbadger;
+	#	}
+
+	location /mbtiles {
+		alias /fm/storage/backend.freemap.sk-data/user-mbtiles;
+	}
+
+
+	location /tiles/parametric-shading {
+		proxy_set_header Host $host;
+	        proxy_set_header X-Real-IP $remote_addr;
+        	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	        proxy_set_header X-Forwarded-Proto $scheme;
+
+		expires 30d;
+		add_header Cache-Control "public, no-transform";
+
+		rewrite ^/tiles/parametric-shading/(.*)$ /$1 break;
+        	proxy_pass http://localhost:3033/;
+	}
+
+	http2 on;
+
+	listen 443 quic reuseport;
+	listen [::]:443 quic reuseport;
+
+	listen 443 ssl; # managed by Certbot
+	listen [::]:443 ssl; # managed by Certbot
+	ssl_certificate /etc/letsencrypt/live/www.freemap.sk/fullchain.pem; # managed by Certbot
+	ssl_certificate_key /etc/letsencrypt/live/www.freemap.sk/privkey.pem; # managed by Certbot
+	include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+	if ($host = www.freemap.sk) {
+		return 301 https://$host$request_uri;
+	} # managed by Certbot
+
+	listen 80;
+	listen [::]:80;
+
+	server_name www.freemap.sk;
+
+	return 404; # managed by Certbot
+}
+
