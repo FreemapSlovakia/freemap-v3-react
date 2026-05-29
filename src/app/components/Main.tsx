@@ -49,7 +49,7 @@ import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useMouseCursor } from '../hooks/useMouseCursor.js';
-import { setActiveModal } from '../store/actions.js';
+import { setActiveModal, setTool } from '../store/actions.js';
 import {
   askingCookieConsentSelector,
   showGalleryPickerSelector,
@@ -420,6 +420,8 @@ export function Main(): ReactElement {
       dispatch(trackViewerSetData({ trackGpx, focus: true }));
 
       dispatch(setActiveModal(null));
+
+      dispatch(setTool('track-viewer'));
 
       dispatch(elevationChartClose());
     },
