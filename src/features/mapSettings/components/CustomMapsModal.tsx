@@ -2,12 +2,13 @@ import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
-import { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, ListGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaPencilAlt, FaPlus, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { CustomMapForm } from './CustomMapForm.js';
+import { LayerVisibilityFields } from './LayerVisibilityFields.js';
 
 type Props = { show: boolean };
 
@@ -29,9 +30,15 @@ export function CustomMapsModal({ show }: Props): ReactElement {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
+
   const [view, setView] = useState<View>({ mode: 'list' });
 
   const [draft, setDraft] = useState<CustomLayerDef | undefined>(undefined);
+
+  const [showInMenu, setShowInMenu] = useState(true);
+
+  const [showInToolbar, setShowInToolbar] = useState(false);
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
@@ -80,11 +87,32 @@ export function CustomMapsModal({ show }: Props): ReactElement {
     const next = [...customLayers.filter((d) => d.type !== draft.type), draft];
 
     dispatch(
-      saveSettings({ settings: { customLayers: next }, keepOpen: true }),
+      saveSettings({
+        settings: {
+          customLayers: next,
+          layersSettings: {
+            ...layersSettings,
+            [draft.type]: {
+              ...(layersSettings[draft.type] ?? {}),
+              showInMenu,
+              showInToolbar,
+            },
+          },
+        },
+        keepOpen: true,
+      }),
     );
 
     goToList();
-  }, [customLayers, draft, dispatch, goToList]);
+  }, [
+    customLayers,
+    draft,
+    dispatch,
+    goToList,
+    layersSettings,
+    showInMenu,
+    showInToolbar,
+  ]);
 
   const editingValue =
     view.mode === 'edit'
@@ -97,6 +125,20 @@ export function CustomMapsModal({ show }: Props): ReactElement {
       : view.mode === 'edit'
         ? view.type
         : '';
+
+  useEffect(() => {
+    if (view.mode === 'edit') {
+      const s = layersSettings[view.type];
+
+      setShowInMenu(s?.showInMenu ?? true);
+
+      setShowInToolbar(s?.showInToolbar ?? false);
+    } else if (view.mode === 'add') {
+      setShowInMenu(true);
+
+      setShowInToolbar(false);
+    }
+  }, [view, layersSettings]);
 
   return (
     <Modal
@@ -174,6 +216,17 @@ export function CustomMapsModal({ show }: Props): ReactElement {
               value={editingValue}
               onChange={setDraft}
             />
+
+            <div className="mt-3">
+              <LayerVisibilityFields
+                showInMenu={showInMenu}
+                showInToolbar={showInToolbar}
+                onChange={(v) => {
+                  setShowInMenu(v.showInMenu);
+                  setShowInToolbar(v.showInToolbar);
+                }}
+              />
+            </div>
           </Modal.Body>
 
           <Modal.Footer>

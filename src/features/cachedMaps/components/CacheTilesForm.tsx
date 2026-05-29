@@ -1,4 +1,6 @@
+import { saveSettings } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -115,6 +117,12 @@ export function CacheTilesForm(): ReactElement {
   const [area, setArea] = useState<'visible' | 'selected'>(
     selectedLine?.type === 'polygon' ? 'selected' : 'visible',
   );
+
+  const [showInMenu, setShowInMenu] = useState(true);
+
+  const [showInToolbar, setShowInToolbar] = useState(false);
+
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
   const bounds = useAppSelector((state) => state.map.bounds);
 
@@ -252,6 +260,22 @@ export function CacheTilesForm(): ReactElement {
                 },
         }),
       );
+
+      dispatch(
+        saveSettings({
+          settings: {
+            layersSettings: {
+              ...layersSettings,
+              [type]: {
+                ...(layersSettings[type] ?? {}),
+                showInMenu,
+                showInToolbar,
+              },
+            },
+          },
+          keepOpen: true,
+        }),
+      );
     },
     [
       dispatch,
@@ -263,6 +287,9 @@ export function CacheTilesForm(): ReactElement {
       tileCount,
       selectedLine,
       area,
+      layersSettings,
+      showInMenu,
+      showInToolbar,
     ],
   );
 
@@ -364,6 +391,17 @@ export function CacheTilesForm(): ReactElement {
             </InputGroup>
           </Form.Group>
         )}
+
+        <Form.Group>
+          <LayerVisibilityFields
+            showInMenu={showInMenu}
+            showInToolbar={showInToolbar}
+            onChange={(v) => {
+              setShowInMenu(v.showInMenu);
+              setShowInToolbar(v.showInToolbar);
+            }}
+          />
+        </Form.Group>
 
         {tileCount !== undefined &&
           tileCount !== Infinity &&
