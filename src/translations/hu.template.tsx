@@ -752,7 +752,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       geojson: 'GeoJSON',
       tile: 'Csempe',
       coords: 'Koordináták',
-      'overpass-objects': 'Közeli elemek',
       'nominatim-forward': 'Geokódolás',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',

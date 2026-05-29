@@ -701,7 +701,6 @@ const messages: Messages = {
       coords: 'Coordinates',
       'overpass-nearby': 'Nearby ',
       'overpass-surrounding': 'Containing features',
-      'overpass-objects': 'Nearby features',
       'nominatim-forward': 'Forward geocoding',
       'nominatim-reverse': 'Reverse geocoding',
       osm: 'OpenStreetMap',

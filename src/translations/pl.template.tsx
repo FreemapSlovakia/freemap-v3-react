@@ -725,7 +725,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       geojson: 'GeoJSON',
       tile: 'Kafelek',
       coords: 'Współrzędne',
-      'overpass-objects': 'Pobliskie obiekty',
       'nominatim-forward': 'Geokodowanie',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',

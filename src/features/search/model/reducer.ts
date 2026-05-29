@@ -71,10 +71,6 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
       osmRelationId: action.payload.id,
     }))
     .addCase(searchSelectResult, (state, action) => {
-      if (action.payload?.storeResult === false) {
-        return;
-      }
-
       state.osmNodeId = null;
 
       state.osmWayId = null;

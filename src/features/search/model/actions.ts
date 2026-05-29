@@ -9,7 +9,6 @@ export type SearchSource =
   | 'coords'
   | 'overpass-nearby'
   | 'overpass-surrounding'
-  | 'overpass-objects'
   | 'nominatim-forward'
   | 'nominatim-reverse'
   | 'osm'
@@ -40,6 +39,4 @@ export const searchSelectResult = createAction<{
   result: SearchResult;
   showToast?: boolean;
   focus?: boolean;
-  storeResult?: boolean;
-  // TODO refactor to: actions?: ('showToast' | 'focus' | 'storeResult')[];
 } | null>('SEARCH_SELECT_RESULT');

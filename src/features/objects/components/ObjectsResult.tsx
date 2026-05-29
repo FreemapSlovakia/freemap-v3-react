@@ -1,7 +1,17 @@
-import { selectFeature } from '@app/store/actions.js';
+import {
+  clearMapFeatures,
+  convertToDrawing,
+  selectFeature,
+} from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { searchSelectResult } from '@features/search/model/actions.js';
+import {
+  osmLoadNode,
+  osmLoadRelation,
+  osmLoadWay,
+} from '@features/osm/model/osmActions.js';
+import { searchSetResults } from '@features/search/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
@@ -99,15 +109,26 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
                 dispatch(selectFeature({ type: 'objects', id }));
 
                 dispatch(
-                  searchSelectResult({
-                    result: {
-                      id,
-                      source: 'overpass-objects',
-                      geojson: point([coords.lon, coords.lat], tags),
+                  toastsAdd({
+                    id: 'mapDetails.tags',
+                    messageKey: 'mapDetails.detail',
+                    messageParams: {
+                      result: {
+                        id,
+                        source: 'osm',
+                        geojson: point([coords.lon, coords.lat], tags),
+                      },
                     },
-                    showToast: true,
-                    focus: false,
-                    storeResult: false,
+                    cancelType: [
+                      clearMapFeatures.type,
+                      searchSetResults.type,
+                      osmLoadNode.type,
+                      osmLoadWay.type,
+                      osmLoadRelation.type,
+                      convertToDrawing.type,
+                      selectFeature.type,
+                    ],
+                    style: 'info',
                   }),
                 );
               },
