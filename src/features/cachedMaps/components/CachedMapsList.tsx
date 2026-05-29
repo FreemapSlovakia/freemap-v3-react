@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -71,26 +72,34 @@ export function CachedMapsList(): ReactElement {
                 return (
                   <ListGroup.Item
                     key={cm.type}
-                    className="d-flex align-items-center gap-2"
+                    className="d-flex flex-wrap align-items-center gap-2"
                   >
                     <div className="flex-grow-1 me-2">
                       <div>{cm.name}</div>
 
-                      <div className="d-flex align-items-center gap-2">
-                        <small className="text-muted text-nowrap">
-                          {m?.offline.zoom}:{' '}
-                          <strong>
-                            {cm.minZoom}&ndash;{cm.maxNativeZoom}
-                          </strong>
-                          {' · '}
-                          {m?.offline.tiles}:{' '}
-                          <strong>{nf.format(cm.tileCount)}</strong>
-                          {' · '}
-                          {m?.offline.size}:{' '}
-                          <strong>
-                            {formatSize(dl?.sizeBytes ?? cm.sizeBytes)}
-                          </strong>
+                      <div className="d-flex flex-wrap align-items-center gap-2">
+                        <small className="text-muted">
+                          <span className="text-nowrap">
+                            {m?.offline.zoom}:{' '}
+                            <strong>
+                              {cm.minZoom}&ndash;{cm.maxNativeZoom}
+                            </strong>
+                            {' · '}
+                          </span>{' '}
+                          <span className="text-nowrap">
+                            {m?.offline.tiles}:{' '}
+                            <strong>{nf.format(cm.tileCount)}</strong>
+                            {' · '}
+                          </span>{' '}
+                          <span className="text-nowrap">
+                            {m?.offline.size}:{' '}
+                            <strong>
+                              {formatSize(dl?.sizeBytes ?? cm.sizeBytes)}
+                            </strong>
+                          </span>
                         </small>
+
+                        <small> · </small>
 
                         {dl ? (
                           <ProgressBar
@@ -104,109 +113,136 @@ export function CachedMapsList(): ReactElement {
                             style={{ minWidth: 80 }}
                           />
                         ) : isComplete ? (
-                          <>
-                            <small> · </small>
-                            <small className="text-success">
-                              {m?.offline.ready}
-                            </small>
-                          </>
+                          <small className="text-success">
+                            {m?.offline.ready}
+                          </small>
                         ) : (
-                          <>
-                            <small> · </small>
-                            <small className="text-warning">
-                              · {m?.offline.incomplete({ pct })}
-                            </small>
-                          </>
+                          <small className="text-warning">
+                            {m?.offline.incomplete({ pct })}
+                          </small>
                         )}
                       </div>
                     </div>
 
-                    {dl && dl.status === 'downloading' && (
-                      <Button
-                        size="sm"
-                        variant="outline-secondary"
-                        onClick={() =>
-                          dispatch(cacheTilesPause({ id: cm.type }))
-                        }
-                        title={m?.offline.pause}
-                      >
-                        <FaPause />
-                      </Button>
-                    )}
+                    <div className="d-flex flex-wrap gap-2">
+                      {dl && dl.status === 'downloading' && (
+                        <LongPressTooltip label={m?.offline.pause}>
+                          {({ props }) => (
+                            <Button
+                              size="sm"
+                              variant="outline-secondary"
+                              onClick={() =>
+                                dispatch(cacheTilesPause({ id: cm.type }))
+                              }
+                              {...props}
+                            >
+                              <FaPause />
+                            </Button>
+                          )}
+                        </LongPressTooltip>
+                      )}
 
-                    {dl && dl.status === 'paused' && (
-                      <Button
-                        size="sm"
-                        variant="outline-secondary"
-                        onClick={() =>
-                          dispatch(cacheTilesResume({ id: cm.type }))
-                        }
-                        title={m?.offline.resume}
-                      >
-                        <FaPlay />
-                      </Button>
-                    )}
+                      {dl && dl.status === 'paused' && (
+                        <LongPressTooltip label={m?.offline.resume}>
+                          {({ props }) => (
+                            <Button
+                              size="sm"
+                              variant="outline-secondary"
+                              onClick={() =>
+                                dispatch(cacheTilesResume({ id: cm.type }))
+                              }
+                              {...props}
+                            >
+                              <FaPlay />
+                            </Button>
+                          )}
+                        </LongPressTooltip>
+                      )}
 
-                    {dl && (
-                      <Button
-                        size="sm"
-                        variant="outline-danger"
-                        onClick={() =>
-                          dispatch(cacheTilesCancel({ id: cm.type }))
-                        }
-                        title={m?.general.cancel}
-                      >
-                        <FaTimes />
-                      </Button>
-                    )}
+                      {dl && (
+                        <LongPressTooltip label={m?.general.cancel}>
+                          {({ props }) => (
+                            <Button
+                              size="sm"
+                              variant="outline-danger"
+                              onClick={() =>
+                                dispatch(cacheTilesCancel({ id: cm.type }))
+                              }
+                              {...props}
+                            >
+                              <FaTimes />
+                            </Button>
+                          )}
+                        </LongPressTooltip>
+                      )}
 
-                    {!dl && !isComplete && (
-                      <Button
-                        size="sm"
-                        variant="outline-primary"
-                        onClick={() =>
-                          dispatch(cacheTilesRestart({ id: cm.type }))
-                        }
-                        title={m?.offline.resume}
-                      >
-                        <FaPlay />
-                      </Button>
-                    )}
+                      {!dl && !isComplete && (
+                        <LongPressTooltip label={m?.offline.resume}>
+                          {({ props }) => (
+                            <Button
+                              size="sm"
+                              variant="outline-primary"
+                              onClick={() =>
+                                dispatch(cacheTilesRestart({ id: cm.type }))
+                              }
+                              {...props}
+                            >
+                              <FaPlay />
+                            </Button>
+                          )}
+                        </LongPressTooltip>
+                      )}
 
-                    {!dl && (
-                      <Button
-                        size="sm"
-                        variant="outline-secondary"
-                        onClick={() => {
-                          const next = window.prompt(m?.general.name, cm.name);
+                      {!dl && (
+                        <LongPressTooltip label={m?.general.modify}>
+                          {({ props }) => (
+                            <Button
+                              size="sm"
+                              variant="outline-secondary"
+                              onClick={() => {
+                                const next = window.prompt(
+                                  m?.general.name,
+                                  cm.name,
+                                );
 
-                          if (next != null && next.trim() && next !== cm.name) {
-                            dispatch(
-                              cachedMapRenamed({
-                                id: cm.type,
-                                name: next.trim(),
-                              }),
-                            );
-                          }
-                        }}
-                        title={m?.general.modify}
-                      >
-                        <FaPencilAlt />
-                      </Button>
-                    )}
+                                if (
+                                  next != null &&
+                                  next.trim() &&
+                                  next !== cm.name
+                                ) {
+                                  dispatch(
+                                    cachedMapRenamed({
+                                      id: cm.type,
+                                      name: next.trim(),
+                                    }),
+                                  );
+                                }
+                              }}
+                              {...props}
+                            >
+                              <FaPencilAlt />
+                            </Button>
+                          )}
+                        </LongPressTooltip>
+                      )}
 
-                    {!dl && (
-                      <Button
-                        size="sm"
-                        variant="outline-danger"
-                        onClick={() =>
-                          dispatch(cachedMapDeleted({ id: cm.type }))
-                        }
-                        title={m?.general.delete}
-                      >
-                        <FaTrash />
-                      </Button>
-                    )}
+                      {!dl && (
+                        <LongPressTooltip label={m?.general.delete}>
+                          {({ props }) => (
+                            <Button
+                              size="sm"
+                              variant="outline-danger"
+                              onClick={() =>
+                                dispatch(cachedMapDeleted({ id: cm.type }))
+                              }
+                              {...props}
+                            >
+                              <FaTrash />
+                            </Button>
+                          )}
+                        </LongPressTooltip>
+                      )}
+                    </div>
                   </ListGroup.Item>
                 );
               })}
