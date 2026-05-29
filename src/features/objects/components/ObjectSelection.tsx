@@ -1,41 +1,170 @@
-import { convertToDrawing } from '@app/store/actions.js';
+import { convertToDrawing, setTool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  routePlannerSetFinish,
+  routePlannerSetStart,
+} from '@features/routePlanner/model/actions.js';
+import { searchSelectResult } from '@features/search/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { featureIdsEqual } from '@shared/types/featureId.js';
+import { point } from '@turf/helpers';
 import type { ReactElement } from 'react';
-import { Button } from 'react-bootstrap';
-import { FaMapMarkerAlt, FaPencilAlt } from 'react-icons/fa';
+import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
+import {
+  FaMapMarkerAlt,
+  FaPencilAlt,
+  FaPlay,
+  FaSearch,
+  FaStop,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 export default ObjectSelection;
 
-export function ObjectSelection(): ReactElement {
+export function ObjectSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
 
-  const selection = useAppSelector((state) => state.main.selection);
+  const object = useAppSelector((state) => {
+    const sel = state.main.selection;
+
+    return sel?.type === 'objects'
+      ? state.objects.objects.find((o) => featureIdsEqual(o.id, sel.id))
+      : undefined;
+  });
+
+  if (!object) {
+    return null;
+  }
+
+  const hasGeometry = object.id.elementType !== 'node';
 
   return (
     <Selection icon={<FaMapMarkerAlt />} label={m?.selections.objects}>
-      <LongPressTooltip breakpoint="sm" label={m?.general.convertToDrawing}>
-        {({ label, labelClassName, props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
+      {!window.fmEmbedded && (
+        <ButtonGroup className="ms-1">
+          <LongPressTooltip label={m?.search.routeFrom}>
+            {({ props }) => (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  dispatch(setTool('route-planner'));
+
+                  dispatch(
+                    routePlannerSetStart({
+                      lat: object.coords.lat,
+                      lon: object.coords.lon,
+                    }),
+                  );
+                }}
+                {...props}
+              >
+                <FaPlay color="#32CD32" />
+              </Button>
+            )}
+          </LongPressTooltip>
+
+          <LongPressTooltip label={m?.search.routeTo}>
+            {({ props }) => (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  dispatch(setTool('route-planner'));
+
+                  dispatch(
+                    routePlannerSetFinish({
+                      lat: object.coords.lat,
+                      lon: object.coords.lon,
+                    }),
+                  );
+                }}
+                {...props}
+              >
+                <FaStop color="#FF6347" />
+              </Button>
+            )}
+          </LongPressTooltip>
+        </ButtonGroup>
+      )}
+
+      <Dropdown as={ButtonGroup} className="ms-1">
+        <LongPressTooltip breakpoint="lg" label={m?.general.convertToDrawing}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(convertToDrawing({ type: 'objects', id: object.id }));
+              }}
+              {...props}
+            >
+              <FaPencilAlt />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+
+        <Dropdown.Toggle split variant="secondary" id="object-convert-split" />
+
+        <Dropdown.Menu popperConfig={fixedPopperConfig}>
+          <Dropdown.Item
             onClick={() => {
-              if (selection?.type === 'objects') {
-                dispatch(convertToDrawing(selection));
-              }
+              dispatch(convertToDrawing({ type: 'objects', id: object.id }));
             }}
-            {...props}
           >
-            <FaPencilAlt />
-            <span className={labelClassName}> {label}</span>
-          </Button>
-        )}
-      </LongPressTooltip>
+            <FaPencilAlt /> {m?.objects.convertAsPoint}
+          </Dropdown.Item>
+
+          {hasGeometry && (
+            <Dropdown.Item
+              onClick={() => {
+                const tolerance = window.prompt(
+                  m?.general.simplifyPrompt,
+                  '50',
+                );
+
+                if (tolerance !== null) {
+                  dispatch(
+                    convertToDrawing({
+                      type: 'objects-geometry',
+                      id: object.id,
+                      tolerance: Number(tolerance || '0') / 100_000,
+                    }),
+                  );
+                }
+              }}
+            >
+              <FaPencilAlt /> {m?.objects.convertWithGeometry}
+            </Dropdown.Item>
+          )}
+
+          <Dropdown.Divider />
+
+          <Dropdown.Item
+            onClick={() => {
+              dispatch(
+                searchSelectResult({
+                  result: {
+                    source: 'osm',
+                    id: object.id,
+                    geojson: point(
+                      [object.coords.lon, object.coords.lat],
+                      object.tags,
+                    ),
+                    incomplete: true,
+                  },
+                  showToast: true,
+                }),
+              );
+            }}
+          >
+            <FaSearch /> {m?.objects.showAsLookup}
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
     </Selection>
   );
 }

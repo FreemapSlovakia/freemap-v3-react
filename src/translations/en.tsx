@@ -667,6 +667,10 @@ const messages: Messages = {
       ring: 'Ring',
       square: 'Square',
     },
+    convertAsPoint: 'As point',
+    convertWithGeometry: 'With full geometry',
+    showAsLookup: 'Show as Lookup',
+    convertAll: 'Convert all visible objects to drawing',
   },
 
   external: {

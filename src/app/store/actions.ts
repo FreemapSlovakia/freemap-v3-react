@@ -194,7 +194,9 @@ export type Selection =
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
 
 export const convertToDrawing = createAction<
-  | ObjectsSelection
+  // objects: `id` omitted → bulk-convert every visible object as a point
+  | { type: 'objects'; id?: OsmFeatureId }
+  | { type: 'objects-geometry'; id: OsmFeatureId; tolerance: number }
   | { type: 'planned-route'; tolerance: number }
   | { type: 'track'; tolerance: number }
   | { type: 'search-result'; tolerance: number }

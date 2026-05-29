@@ -708,6 +708,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       square: 'Quadrat',
     },
 
+    convertAsPoint: 'Als Punkt',
+    convertWithGeometry: 'Mit voller Geometrie',
+    showAsLookup: 'Als Fund anzeigen',
+    convertAll: 'Alle sichtbaren Objekte in Zeichnung umwandeln',
+
     type: 'Typ',
 
     tooManyPoints: ({ limit }) =>

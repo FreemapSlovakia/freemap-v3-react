@@ -715,6 +715,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       square: 'Négyzet',
     },
 
+    convertAsPoint: 'Pontként',
+    convertWithGeometry: 'Teljes geometriával',
+    showAsLookup: 'Megjelenítés találatként',
+    convertAll: 'Minden látható objektum átalakítása rajzzá',
+
     tooManyPoints: ({ limit }) =>
       `Az eredmény ${limit} objektumra lett korlátozva.`,
   },

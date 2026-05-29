@@ -1,3 +1,4 @@
+import { convertToDrawing } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HideArrow } from '@features/search/components/SearchMenu.js';
 import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
@@ -21,7 +22,13 @@ import {
   useState,
 } from 'react';
 import { Button, Dropdown, type DropdownProps, Form } from 'react-bootstrap';
-import { FaCircle, FaMapMarker, FaSquare, FaTrash } from 'react-icons/fa';
+import {
+  FaCircle,
+  FaMapMarker,
+  FaPencilAlt,
+  FaSquare,
+  FaTrash,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   MarkerType,
@@ -214,6 +221,10 @@ export function ObjectsMenu(): ReactElement {
     dispatch(setSelectedIcon(selectedIconValue));
   };
 
+  const hasObjects = useAppSelector(
+    (state) => state.objects.objects.length > 0,
+  );
+
   return (
     <ToolMenu>
       <Dropdown
@@ -284,6 +295,23 @@ export function ObjectsMenu(): ReactElement {
             <FaSquare /> {m?.objects.icon.square}
           </Dropdown.Item>
         </Dropdown.Menu>
+
+        {hasObjects && (
+          <LongPressTooltip label={m?.objects.convertAll}>
+            {({ props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => {
+                  dispatch(convertToDrawing({ type: 'objects' }));
+                }}
+                {...props}
+              >
+                <FaPencilAlt />
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
 
         {active.length > 0 && (
           <LongPressTooltip label={m?.general.delete} kbd="Del">

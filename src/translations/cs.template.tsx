@@ -676,6 +676,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ring: 'Kruhová',
       square: 'Čtvercová',
     },
+    convertAsPoint: 'Jako bod',
+    convertWithGeometry: 'S celou geometrií',
+    showAsLookup: 'Zobrazit jako Nález',
+    convertAll: 'Zkonvertovat všechny viditelné objekty na kreslení',
   },
 
   external: {

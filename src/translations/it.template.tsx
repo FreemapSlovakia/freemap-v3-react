@@ -703,6 +703,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ring: "Dell'anello",
       square: 'Quadrata',
     },
+    convertAsPoint: 'Come punto',
+    convertWithGeometry: 'Con la geometria completa',
+    showAsLookup: 'Mostra come Risultato',
+    convertAll: 'Converti tutti gli oggetti visibili in disegno',
   },
 
   external: {

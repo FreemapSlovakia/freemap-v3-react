@@ -1,5 +1,6 @@
 import { convertToDrawing, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import { changesetsSet } from '@features/changesets/model/actions.js';
 import {
   drawingLineAdd,
@@ -11,6 +12,7 @@ import {
   pointStyleFromProperties,
 } from '@features/drawing/model/styleFromProperties.js';
 import { normalizeMarkerType } from '@features/objects/model/actions.js';
+import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import { searchClear } from '@features/search/model/actions.js';
 import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
@@ -19,7 +21,8 @@ import { mergeLines } from '@shared/geoutils.js';
 import { flatten as turfFlatten } from '@turf/flatten';
 import { lineString } from '@turf/helpers';
 import { simplify } from '@turf/simplify';
-import type { Position } from 'geojson';
+import type { Feature, FeatureCollection, Position } from 'geojson';
+import type { Dispatch } from 'redux';
 
 // Build drawing-line points from a single ring/line. `dropClosing` strips the
 // duplicate closing coordinate of an explicitly-closed ring, since drawing
@@ -32,10 +35,137 @@ function ringToPoints(ring: Position[], dropClosing: boolean): Point[] {
   }));
 }
 
+// Convert an arbitrary GeoJSON Feature/FeatureCollection into drawing points
+// and lines/polygons. Returns counts so callers can decide what to select.
+// Shared between the `search-result` and `objects-geometry` branches.
+function geojsonToDrawing(
+  geojson: Feature | FeatureCollection,
+  tolerance: number | undefined,
+  getState: () => RootState,
+  dispatch: Dispatch,
+): { lineCount: number; pointCount: number } {
+  const { features } = turfFlatten(
+    tolerance
+      ? simplify(geojson, { mutate: false, highQuality: true, tolerance })
+      : geojson,
+  );
+
+  mergeLines(features);
+
+  let lineCount = 0;
+
+  let pointCount = 0;
+
+  for (const feature of features) {
+    const { geometry } = feature;
+
+    if (geometry?.type === 'Point') {
+      const tags = (feature.properties ?? {}) as Record<string, string>;
+
+      // Explicit styling (freemap extensions / Garmin sym / simplestyle) wins
+      // over OSM tag inference, then falls back to drawing settings.
+      const style = pointStyleFromProperties(feature.properties);
+
+      const state = getState();
+
+      dispatch(
+        drawingPointAdd({
+          label: feature.properties?.['name'],
+          color: style.color ?? state.drawingSettings.drawingColor,
+          coords: {
+            lat: geometry.coordinates[1],
+            lon: geometry.coordinates[0],
+          },
+          markerType: normalizeMarkerType(
+            style.markerType ?? state.objects.selectedIcon,
+          ),
+          icon: style.icon ?? tagsToPoiIconSpec(tags),
+          id: state.drawingPoints.points.length,
+        }),
+      );
+
+      pointCount++;
+    } else if (
+      geometry?.type === 'LineString' ||
+      geometry?.type === 'Polygon'
+    ) {
+      // Drawing can't represent holes, so emit every ring (outer + holes) as
+      // its own polygon.
+      const isGeoJsonPolygon = geometry.type === 'Polygon';
+
+      const rings: Position[][] =
+        geometry.type === 'Polygon'
+          ? geometry.coordinates
+          : [geometry.coordinates];
+
+      for (const ring of rings) {
+        const closed =
+          !isGeoJsonPolygon &&
+          ring.length > 2 &&
+          ring[0][0] === ring[ring.length - 1][0] &&
+          ring[0][1] === ring[ring.length - 1][1];
+
+        const style = lineStyleFromProperties(feature.properties, closed);
+
+        const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
+
+        const points = ringToPoints(
+          ring,
+          isGeoJsonPolygon || (isPolygon && closed),
+        );
+
+        const state = getState();
+
+        dispatch(
+          drawingLineAdd({
+            type: isPolygon ? 'polygon' : 'line',
+            label: isPolygon ? feature.properties?.['name'] : undefined, // ignore street names
+            color: style.color ?? state.drawingSettings.drawingColor,
+            // Bake the fill default in here (like color/width above) so the
+            // semitransparency survives — a freshly drawn polygon uses
+            // drawingFillColor, so match it for unstyled imported polygons.
+            fillColor:
+              style.fillColor ??
+              (isPolygon ? state.drawingSettings.drawingFillColor : undefined),
+            width: style.width ?? state.drawingSettings.drawingWidth,
+            lineCap: style.lineCap,
+            lineJoin: style.lineJoin,
+            dashArray: style.dashArray,
+            points,
+          }),
+        );
+
+        lineCount++;
+      }
+    }
+  }
+
+  return { lineCount, pointCount };
+}
+
+function selectAfterConvert(
+  dispatch: Dispatch,
+  getState: () => RootState,
+  lineCount: number,
+  pointCount: number,
+): void {
+  dispatch(
+    selectFeature(
+      lineCount === 1
+        ? { type: 'draw-line-poly', id: getState().drawingLines.lines.length }
+        : pointCount === 1
+          ? { type: 'draw-points', id: getState().drawingPoints.points.length }
+          : null,
+    ),
+  );
+}
+
 export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   actionCreator: convertToDrawing,
-  id: 'deleteFeature',
-  transform: ({ getState, dispatch, action: { payload } }) => {
+  id: 'convertToDrawing',
+  transform: ({ getState, dispatch, action }) => {
+    const { payload } = action;
+
     const state = getState();
 
     if (payload.type === 'planned-route') {
@@ -84,11 +214,18 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
       dispatch(routePlannerDelete());
     } else if (payload.type === 'objects') {
-      const object = state.objects.objects.find(
-        (object) => object.id === payload.id,
-      );
+      // `id` present → convert just that object as a point.
+      // `id` absent  → bulk-convert every visible object (points only;
+      //                full-geometry bulk would mean N OSM API fetches).
+      const targets = payload.id
+        ? state.objects.objects.filter((object) => object.id === payload.id)
+        : state.objects.objects;
 
-      if (object) {
+      if (targets.length === 0) {
+        return;
+      }
+
+      for (const object of targets) {
         dispatch(
           drawingPointAdd({
             coords: object.coords,
@@ -99,7 +236,9 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             id: getState().drawingPoints.points.length,
           }),
         );
+      }
 
+      if (targets.length === 1) {
         dispatch(
           selectFeature({
             type: 'draw-points',
@@ -107,6 +246,9 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           }),
         );
       }
+    } else if (payload.type === 'objects-geometry') {
+      // Async fetch path — leave the action alone so `handle` picks it up.
+      return action;
     } else if (payload.type === 'track') {
       if (!state.trackViewer.trackGeojson) {
         return;
@@ -183,9 +325,6 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
                 type: isPolygon ? 'polygon' : 'line',
                 label: feature.properties?.['name'],
                 color: style.color ?? state.drawingSettings.drawingColor,
-                // Bake the fill default in here (like color/width above) so the
-                // semitransparency survives — a freshly drawn polygon uses
-                // drawingFillColor, so match it for unstyled imported polygons.
                 fillColor:
                   style.fillColor ??
                   (isPolygon
@@ -206,15 +345,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
       dispatch(trackViewerDelete());
 
-      dispatch(
-        selectFeature(
-          lineCount === 1
-            ? { type: 'draw-line-poly', id: state.drawingLines.lines.length }
-            : pointCount === 1
-              ? { type: 'draw-points', id: state.drawingPoints.points.length }
-              : null,
-        ),
-      );
+      selectAfterConvert(dispatch, getState, lineCount, pointCount);
     } else if (payload.type === 'changesets') {
       const { changesets } = state.changesets;
 
@@ -243,120 +374,43 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         ),
       );
     } else if (payload.type === 'search-result') {
-      // TODO very similar to route conversion - use functions
-
       if (!state.search.selectedResult?.geojson) {
         return;
       }
 
-      const { geojson } = state.search.selectedResult;
-
-      const { features } = turfFlatten(
-        payload.tolerance
-          ? simplify(geojson, {
-              mutate: false,
-              highQuality: true,
-              tolerance: payload.tolerance,
-            })
-          : geojson,
+      const { lineCount, pointCount } = geojsonToDrawing(
+        state.search.selectedResult.geojson,
+        payload.tolerance,
+        getState,
+        dispatch,
       );
-
-      mergeLines(features);
-
-      let lineCount = 0;
-
-      let pointCount = 0;
-
-      for (const feature of features) {
-        const { geometry } = feature;
-
-        if (geometry?.type === 'Point') {
-          const tags = (feature.properties ?? {}) as Record<string, string>;
-
-          // Explicit styling (freemap extensions / Garmin sym / simplestyle)
-          // wins over OSM tag inference, then falls back to drawing settings.
-          const style = pointStyleFromProperties(feature.properties);
-
-          dispatch(
-            drawingPointAdd({
-              label: feature.properties?.['name'],
-              color: style.color ?? state.drawingSettings.drawingColor,
-              coords: {
-                lat: geometry.coordinates[1],
-                lon: geometry.coordinates[0],
-              },
-              markerType: normalizeMarkerType(
-                style.markerType ?? state.objects.selectedIcon,
-              ),
-              icon: style.icon ?? tagsToPoiIconSpec(tags),
-              id: getState().drawingPoints.points.length,
-            }),
-          );
-
-          pointCount++;
-        } else if (
-          geometry?.type === 'LineString' ||
-          geometry?.type === 'Polygon'
-        ) {
-          // Drawing can't represent holes, so emit every ring (outer + holes)
-          // as its own polygon.
-          const isGeoJsonPolygon = geometry.type === 'Polygon';
-
-          const rings: Position[][] =
-            geometry.type === 'Polygon'
-              ? geometry.coordinates
-              : [geometry.coordinates];
-
-          for (const ring of rings) {
-            const closed =
-              !isGeoJsonPolygon &&
-              ring.length > 2 &&
-              ring[0][0] === ring[ring.length - 1][0] &&
-              ring[0][1] === ring[ring.length - 1][1];
-
-            const style = lineStyleFromProperties(feature.properties, closed);
-
-            const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
-
-            const points = ringToPoints(
-              ring,
-              isGeoJsonPolygon || (isPolygon && closed),
-            );
-
-            dispatch(
-              drawingLineAdd({
-                type: isPolygon ? 'polygon' : 'line',
-                label: isPolygon ? feature.properties?.['name'] : undefined, // ignore street names
-                color: style.color ?? state.drawingSettings.drawingColor,
-                fillColor:
-                  style.fillColor ??
-                  (isPolygon
-                    ? state.drawingSettings.drawingFillColor
-                    : undefined),
-                width: style.width ?? state.drawingSettings.drawingWidth,
-                lineCap: style.lineCap,
-                lineJoin: style.lineJoin,
-                dashArray: style.dashArray,
-                points,
-              }),
-            );
-
-            lineCount++;
-          }
-        }
-      }
 
       dispatch(searchClear());
 
-      dispatch(
-        selectFeature(
-          lineCount === 1
-            ? { type: 'draw-line-poly', id: state.drawingLines.lines.length }
-            : pointCount === 1
-              ? { type: 'draw-points', id: state.drawingPoints.points.length }
-              : null,
-        ),
-      );
+      selectAfterConvert(dispatch, getState, lineCount, pointCount);
     }
   },
+  handle: async ({ getState, dispatch, action }) => {
+    if (action.payload.type !== 'objects-geometry') {
+      return;
+    }
+
+    const { id, tolerance } = action.payload;
+
+    const geojson = await fetchOsmFullGeojson(id, getState);
+
+    if (!geojson) {
+      return;
+    }
+
+    const { lineCount, pointCount } = geojsonToDrawing(
+      geojson,
+      tolerance,
+      getState,
+      dispatch,
+    );
+
+    selectAfterConvert(dispatch, getState, lineCount, pointCount);
+  },
+  errorKey: 'objects.fetchingError',
 };

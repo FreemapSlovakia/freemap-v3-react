@@ -689,6 +689,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       `Wynik został ograniczony do ${limit} obiektów.`,
     fetchingError: ({ err }) =>
       addError(messages, 'Błąd podczas pobierania obiektów (POI)', err),
+    convertAsPoint: 'Jako punkt',
+    convertWithGeometry: 'Z pełną geometrią',
+    showAsLookup: 'Pokaż jako Wynik',
+    convertAll: 'Przekształć wszystkie widoczne obiekty na rysunek',
   },
 
   external: {

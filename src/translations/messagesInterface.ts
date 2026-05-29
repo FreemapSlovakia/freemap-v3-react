@@ -518,6 +518,10 @@ export type Messages = {
       ring: string;
       square: string;
     };
+    convertAsPoint: string;
+    convertWithGeometry: string;
+    showAsLookup: string;
+    convertAll: string;
   };
   external: {
     openInExternal: string;
