@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
   Fragment,
   type ReactElement,
@@ -40,6 +41,8 @@ export function MyDevice({ device }: Props): ReactElement {
     minute: '2-digit',
   });
 
+  const nf = useNumberFormat();
+
   const handleModify = useCallback(() => {
     dispatch(trackingActions.modifyDevice(device.id));
   }, [device.id, dispatch]);
@@ -77,14 +80,14 @@ export function MyDevice({ device }: Props): ReactElement {
   if (device.maxCount) {
     meta.push({
       label: m?.tracking.device.maxCount ?? '',
-      value: device.maxCount,
+      value: nf.format(device.maxCount),
     });
   }
 
   if (typeof device.maxAge === 'number') {
     meta.push({
       label: m?.tracking.device.maxAge ?? '',
-      value: `${device.maxAge / 60} ${m?.general.minutes}`,
+      value: `${nf.format(device.maxAge / 60)} ${m?.general.minutes}`,
     });
   }
 
@@ -94,7 +97,7 @@ export function MyDevice({ device }: Props): ReactElement {
   });
 
   return (
-    <ListGroup.Item className="d-flex align-items-center gap-2">
+    <ListGroup.Item className="d-flex flex-wrap align-items-center gap-2">
       <div className="flex-grow-1 me-2">
         <div>
           <code>{device.token}</code> · {device.name}
@@ -104,59 +107,63 @@ export function MyDevice({ device }: Props): ReactElement {
           {meta.map((item, i) => (
             <Fragment key={item.label}>
               {i > 0 && ' · '}
-              {item.label}: <strong>{item.value}</strong>
+              <span className="text-nowrap">
+                {item.label}: <strong>{item.value}</strong>
+              </span>
             </Fragment>
           ))}
         </small>
       </div>
 
-      <OverlayTrigger
-        trigger="click"
-        rootClose
-        overlay={
-          <Tooltip>
-            <div className="bg-white p-3">
-              <QRCode
-                size={120}
-                value={
-                  'https://traccar.freemap.sk?accuracy=high&interval=10&id=' +
-                  encodeURIComponent(device.token)
-                }
-              />
-            </div>
-          </Tooltip>
-        }
-      >
-        <Button variant="outline-secondary" size="sm" title="Traccar">
-          <SiTraccar />
-        </Button>
-      </OverlayTrigger>
-
-      <Dropdown align="end">
-        <Dropdown.Toggle
-          variant="outline-secondary"
-          size="sm"
-          aria-label={m?.general.actions}
+      <div className="d-flex flex-wrap gap-2">
+        <OverlayTrigger
+          trigger="click"
+          rootClose
+          overlay={
+            <Tooltip>
+              <div className="bg-white p-3">
+                <QRCode
+                  size={120}
+                  value={
+                    'https://traccar.freemap.sk?accuracy=high&interval=10&id=' +
+                    encodeURIComponent(device.token)
+                  }
+                />
+              </div>
+            </Tooltip>
+          }
         >
-          <FaEllipsisV />
-        </Dropdown.Toggle>
+          <Button variant="outline-secondary" size="sm" title="Traccar">
+            <SiTraccar />
+          </Button>
+        </OverlayTrigger>
 
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
-          <Dropdown.Item onClick={handleModify}>
-            <FaEdit /> {m?.general.modify}
-          </Dropdown.Item>
+        <Dropdown align="end">
+          <Dropdown.Toggle
+            variant="outline-secondary"
+            size="sm"
+            aria-label={m?.general.actions}
+          >
+            <FaEllipsisV />
+          </Dropdown.Toggle>
 
-          <Dropdown.Item onClick={handleShowAccessTokens}>
-            <FaKey /> {m?.tracking.devices.watchTokens}
-          </Dropdown.Item>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+            <Dropdown.Item onClick={handleModify}>
+              <FaEdit /> {m?.general.modify}
+            </Dropdown.Item>
 
-          <Dropdown.Divider />
+            <Dropdown.Item onClick={handleShowAccessTokens}>
+              <FaKey /> {m?.tracking.devices.watchTokens}
+            </Dropdown.Item>
 
-          <Dropdown.Item className="text-danger" onClick={handleDelete}>
-            <FaTrash /> {m?.general.delete}
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
+            <Dropdown.Divider />
+
+            <Dropdown.Item className="text-danger" onClick={handleDelete}>
+              <FaTrash /> {m?.general.delete}
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
     </ListGroup.Item>
   );
 }

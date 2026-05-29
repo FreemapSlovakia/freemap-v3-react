@@ -110,9 +110,9 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
   }
 
   return (
-    <ListGroup.Item className="d-flex align-items-center gap-2">
+    <ListGroup.Item className="d-flex flex-wrap align-items-center gap-2">
       <div className="flex-grow-1 me-2">
-        <div className="d-flex align-items-center gap-2">
+        <div className="d-flex flex-wrap align-items-center gap-2">
           <OverlayTrigger
             trigger={['hover', 'focus']}
             placement="right"
@@ -148,53 +148,57 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
           {meta.map((item, i) => (
             <Fragment key={item.label}>
               {i > 0 && ' · '}
-              {item.label}: <strong>{item.value}</strong>
+              <span className="text-nowrap">
+                {item.label}: <strong>{item.value}</strong>
+              </span>
             </Fragment>
           ))}
         </small>
       </div>
 
-      <LongPressTooltip label={m?.tracking.devices.watch}>
-        {({ props }) => (
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            type="button"
-            onClick={handleView}
-            {...props}
-          >
-            <FaRegEye />
-          </Button>
-        )}
-      </LongPressTooltip>
+      <div className="d-flex flex-wrap gap-2">
+        <LongPressTooltip label={m?.tracking.devices.watch}>
+          {({ props }) => (
+            <Button
+              size="sm"
+              variant="outline-secondary"
+              type="button"
+              onClick={handleView}
+              {...props}
+            >
+              <FaRegEye />
+            </Button>
+          )}
+        </LongPressTooltip>
 
-      <LongPressTooltip label={m?.general.modify}>
-        {({ props }) => (
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            type="button"
-            onClick={handleModify}
-            {...props}
-          >
-            <FaEdit />
-          </Button>
-        )}
-      </LongPressTooltip>
+        <LongPressTooltip label={m?.general.modify}>
+          {({ props }) => (
+            <Button
+              size="sm"
+              variant="outline-secondary"
+              type="button"
+              onClick={handleModify}
+              {...props}
+            >
+              <FaEdit />
+            </Button>
+          )}
+        </LongPressTooltip>
 
-      <LongPressTooltip label={m?.general.delete}>
-        {({ props }) => (
-          <Button
-            variant="outline-danger"
-            size="sm"
-            type="button"
-            onClick={handleDelete}
-            {...props}
-          >
-            <FaTimes />
-          </Button>
-        )}
-      </LongPressTooltip>
+        <LongPressTooltip label={m?.general.delete}>
+          {({ props }) => (
+            <Button
+              variant="outline-danger"
+              size="sm"
+              type="button"
+              onClick={handleDelete}
+              {...props}
+            >
+              <FaTimes />
+            </Button>
+          )}
+        </LongPressTooltip>
+      </div>
     </ListGroup.Item>
   );
 }

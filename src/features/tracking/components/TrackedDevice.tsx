@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
   Fragment,
   type ReactElement,
@@ -30,6 +31,8 @@ export function TrackedDevice({ device }: Props): ReactElement {
     minute: '2-digit',
   });
 
+  const nf = useNumberFormat();
+
   const handleModify = useCallback(() => {
     dispatch(trackingActions.modifyTrackedDevice(device));
   }, [device, dispatch]);
@@ -50,33 +53,33 @@ export function TrackedDevice({ device }: Props): ReactElement {
   if (typeof device.maxAge === 'number') {
     meta.push({
       label: m?.tracking.trackedDevice.maxAge ?? '',
-      value: `${device.maxAge / 60} ${m?.general.minutes}`,
+      value: `${nf.format(device.maxAge / 60)} ${m?.general.minutes}`,
     });
   }
 
   if (device.maxCount) {
     meta.push({
       label: m?.tracking.trackedDevice.maxCount ?? '',
-      value: device.maxCount,
+      value: nf.format(device.maxCount),
     });
   }
 
   if (device.splitDistance) {
     meta.push({
       label: m?.tracking.trackedDevice.splitDistance ?? '',
-      value: device.splitDistance,
+      value: nf.format(device.splitDistance),
     });
   }
 
   if (device.splitDuration) {
     meta.push({
       label: m?.tracking.trackedDevice.splitDuration ?? '',
-      value: device.splitDuration,
+      value: nf.format(device.splitDuration),
     });
   }
 
   return (
-    <ListGroup.Item className="d-flex align-items-center gap-2">
+    <ListGroup.Item className="d-flex flex-wrap align-items-center gap-2">
       <div
         style={{
           backgroundColor: device.color || '#7239a8',
@@ -96,39 +99,43 @@ export function TrackedDevice({ device }: Props): ReactElement {
           {meta.map((item, i) => (
             <Fragment key={item.label}>
               {i > 0 && ' · '}
-              {item.label}: <strong>{item.value}</strong>
+              <span className="text-nowrap">
+                {item.label}: <strong>{item.value}</strong>
+              </span>
             </Fragment>
           ))}
         </small>
       </div>
 
-      <LongPressTooltip label={m?.general.modify}>
-        {({ props }) => (
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            type="button"
-            onClick={handleModify}
-            {...props}
-          >
-            <FaEdit />
-          </Button>
-        )}
-      </LongPressTooltip>
+      <div className="d-flex flex-wrap gap-2">
+        <LongPressTooltip label={m?.general.modify}>
+          {({ props }) => (
+            <Button
+              size="sm"
+              variant="outline-secondary"
+              type="button"
+              onClick={handleModify}
+              {...props}
+            >
+              <FaEdit />
+            </Button>
+          )}
+        </LongPressTooltip>
 
-      <LongPressTooltip label={m?.general.delete}>
-        {({ props }) => (
-          <Button
-            variant="outline-danger"
-            size="sm"
-            type="button"
-            onClick={handleDelete}
-            {...props}
-          >
-            <FaTimes />
-          </Button>
-        )}
-      </LongPressTooltip>
+        <LongPressTooltip label={m?.general.delete}>
+          {({ props }) => (
+            <Button
+              variant="outline-danger"
+              size="sm"
+              type="button"
+              onClick={handleDelete}
+              {...props}
+            >
+              <FaTimes />
+            </Button>
+          )}
+        </LongPressTooltip>
+      </div>
     </ListGroup.Item>
   );
 }

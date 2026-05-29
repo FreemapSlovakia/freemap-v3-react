@@ -136,17 +136,21 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 <ListGroup.Item
                   key={map.id}
                   variant={isActive ? 'primary' : undefined}
-                  className="d-flex align-items-center gap-2"
+                  className="d-flex flex-wrap align-items-center gap-2"
                 >
                   <div className="flex-grow-1 me-2">
                     <div>{map.name}</div>
 
                     <small className="text-muted">
-                      {m?.general.createdAt}:{' '}
-                      <strong>{dateFormat.format(map.createdAt)}</strong>
+                      <span className="text-nowrap">
+                        {m?.general.createdAt}:{' '}
+                        <strong>{dateFormat.format(map.createdAt)}</strong>
+                      </span>
                       {' · '}
-                      {m?.general.modifiedAt}:{' '}
-                      <strong>{dateFormat.format(map.modifiedAt)}</strong>
+                      <span className="text-nowrap">
+                        {m?.general.modifiedAt}:{' '}
+                        <strong>{dateFormat.format(map.modifiedAt)}</strong>
+                      </span>
                     </small>
                   </div>
 

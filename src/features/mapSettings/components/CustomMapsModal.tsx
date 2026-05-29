@@ -165,36 +165,42 @@ export function CustomMapsModal({ show }: Props): ReactElement {
                 {customLayers.map((def) => (
                   <ListGroup.Item
                     key={def.type}
-                    className="d-flex align-items-center gap-2"
+                    className="d-flex flex-wrap align-items-center gap-2"
                   >
                     <div className="flex-grow-1 me-2">
                       <div>{def.name || `{${def.type}}`}</div>
 
                       <small className="text-muted">
-                        {m?.mapLayers.technologies[def.technology] ??
-                          def.technology}
+                        <span className="text-nowrap">
+                          {m?.mapLayers.technologies[def.technology] ??
+                            def.technology}
+                        </span>
                         {' · '}
-                        {m?.mapLayers.layer[def.layer]}
+                        <span className="text-nowrap">
+                          {m?.mapLayers.layer[def.layer]}
+                        </span>
                       </small>
                     </div>
 
-                    <Button
-                      size="sm"
-                      variant="outline-secondary"
-                      onClick={() => handleEditClick(def.type)}
-                      title={m?.general.modify}
-                    >
-                      <FaPencilAlt />
-                    </Button>
+                    <div className="d-flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline-secondary"
+                        onClick={() => handleEditClick(def.type)}
+                        title={m?.general.modify}
+                      >
+                        <FaPencilAlt />
+                      </Button>
 
-                    <Button
-                      size="sm"
-                      variant="outline-danger"
-                      onClick={() => handleDeleteClick(def)}
-                      title={m?.general.delete}
-                    >
-                      <FaTrash />
-                    </Button>
+                      <Button
+                        size="sm"
+                        variant="outline-danger"
+                        onClick={() => handleDeleteClick(def)}
+                        title={m?.general.delete}
+                      >
+                        <FaTrash />
+                      </Button>
+                    </div>
                   </ListGroup.Item>
                 ))}
               </ListGroup>
