@@ -107,7 +107,7 @@
     "@biomejs/biome": "^2.4.16",
     "@rspack/cli": "^2.0.5",
     "@rspack/core": "^2.0.5",
-    "@rspack/dev-server": "^2.0.2",
+    "@rspack/dev-server": "2.0.1",
     "@rspack/plugin-react-refresh": "^2.0.1",
     "@sentry/cli": "^3.4.3",
     "@swc/core": "^1.15.40",
