@@ -68,11 +68,11 @@ export function TrackViewerMenu(): ReactElement {
       : [];
   });
 
-  const availableModes = colorizingModes.filter((mode) => {
+  const isModeAvailable = (mode: (typeof colorizingModes)[number]) => {
     const { isAvailable } = colorizers[mode];
 
     return !isAvailable || isAvailable(lineFeatures);
-  });
+  };
 
   const handleConvertToDrawing = useCallback(() => {
     const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
@@ -143,11 +143,12 @@ export function TrackViewerMenu(): ReactElement {
           </Dropdown.Toggle>
 
           <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            {[undefined, ...availableModes].map((mode) => (
+            {[undefined, ...colorizingModes].map((mode) => (
               <Dropdown.Item
                 eventKey={mode}
                 key={mode || 'none'}
                 active={mode === colorizeTrackBy}
+                disabled={mode !== undefined && !isModeAvailable(mode)}
               >
                 {m?.trackViewer.colorizingMode[mode ?? 'none']}
               </Dropdown.Item>
