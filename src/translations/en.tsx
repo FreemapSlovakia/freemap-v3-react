@@ -1286,6 +1286,7 @@ const messages: Messages = {
     startCaching: 'Start caching',
     cachedSuccess: ({ name }) => `Map "${name}" cached successfully.`,
     activate: 'Activate',
+    namePrefix: 'Offline',
   },
 
   errorStatus: {

@@ -887,6 +887,7 @@ export type Messages = {
     startCaching: string;
     cachedSuccess: (props: { name: string }) => string;
     activate: string;
+    namePrefix: string;
   };
   errorStatus: Record<number, string>;
   gpu: {

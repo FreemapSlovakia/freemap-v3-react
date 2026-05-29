@@ -129,9 +129,17 @@ export function CacheTilesForm(): ReactElement {
   }, [mapDef]);
 
   useEffect(() => {
-    setName((prev) =>
-      prev && nameChanged ? prev : (m?.mapLayers.letters[mapType] ?? mapType),
-    );
+    setName((prev) => {
+      if (prev && nameChanged) {
+        return prev;
+      }
+
+      const layerName = m?.mapLayers.letters[mapType] ?? mapType;
+
+      return m?.offline.namePrefix
+        ? `${m.offline.namePrefix} ${layerName}`
+        : layerName;
+    });
   }, [m, mapType, nameChanged]);
 
   const tileCount = useMemo(() => {

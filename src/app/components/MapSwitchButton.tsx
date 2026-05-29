@@ -319,7 +319,7 @@ export function MapSwitchButton(): ReactElement {
 
         const showInMenu =
           layersSettings[type]?.showInMenu ??
-          (!def.custom && Boolean(def.defaultInMenu));
+          (def.custom || Boolean(def.defaultInMenu));
 
         const showInToolbar =
           layersSettings[type]?.showInToolbar ??

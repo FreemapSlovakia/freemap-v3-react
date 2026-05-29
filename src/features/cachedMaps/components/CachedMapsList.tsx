@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { mapToggleLayer } from '@features/map/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -8,6 +9,7 @@ import type { ReactElement } from 'react';
 import { Button, ListGroup, Modal, ProgressBar } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
+  FaEye,
   FaPause,
   FaPencilAlt,
   FaPlay,
@@ -36,6 +38,8 @@ export function CachedMapsList(): ReactElement {
   const activeDownloads = useAppSelector(
     (state) => state.cachedMaps.activeDownloads,
   );
+
+  const activeLayers = useAppSelector((state) => state.map.layers);
 
   const nf = useNumberFormat({
     minimumFractionDigits: 0,
@@ -125,6 +129,28 @@ export function CachedMapsList(): ReactElement {
                     </div>
 
                     <div className="d-flex flex-wrap gap-2">
+                      {!dl && isComplete && (
+                        <LongPressTooltip label={m?.offline.activate}>
+                          {({ props }) => (
+                            <Button
+                              size="sm"
+                              variant={
+                                activeLayers.includes(cm.type)
+                                  ? 'primary'
+                                  : 'outline-primary'
+                              }
+                              active={activeLayers.includes(cm.type)}
+                              onClick={() =>
+                                dispatch(mapToggleLayer({ type: cm.type }))
+                              }
+                              {...props}
+                            >
+                              <FaEye />
+                            </Button>
+                          )}
+                        </LongPressTooltip>
+                      )}
+
                       {dl && dl.status === 'downloading' && (
                         <LongPressTooltip label={m?.offline.pause}>
                           {({ props }) => (
