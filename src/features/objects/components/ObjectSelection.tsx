@@ -20,9 +20,33 @@ import {
   FaSearch,
   FaStop,
 } from 'react-icons/fa';
+import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 
 export default ObjectSelection;
+
+function ObjectsToggleButton(): ReactElement {
+  const tool = useAppSelector((state) => state.main.tool);
+
+  const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  return (
+    <LongPressTooltip label={m?.tools.objects}>
+      {({ props }) => (
+        <Button
+          {...props}
+          variant="dark"
+          disabled={tool === 'objects'}
+          onClick={() => dispatch(setTool('objects'))}
+        >
+          <TbMapPins />
+        </Button>
+      )}
+    </LongPressTooltip>
+  );
+}
 
 export function ObjectSelection(): ReactElement | null {
   const dispatch = useDispatch();
@@ -44,7 +68,15 @@ export function ObjectSelection(): ReactElement | null {
   const hasGeometry = object.id.elementType !== 'node';
 
   return (
-    <Selection icon={<FaMapMarkerAlt />} label={m?.selections.objects}>
+    <Selection
+      icon={
+        <>
+          <ObjectsToggleButton /> <FaMapMarkerAlt />
+        </>
+      }
+      label={m?.selections.objects}
+      noLeftMargin
+    >
       {!window.fmEmbedded && (
         <ButtonGroup className="ms-1">
           <LongPressTooltip label={m?.search.routeFrom}>

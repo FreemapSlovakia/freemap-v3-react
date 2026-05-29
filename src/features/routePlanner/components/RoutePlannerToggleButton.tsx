@@ -19,6 +19,7 @@ export function RoutePlannerToggleButton(): ReactElement | undefined | false {
       {({ props }) => (
         <Button
           {...props}
+          variant="dark"
           disabled={tool === 'route-planner'}
           onClick={() => dispatch(setTool('route-planner'))}
         >

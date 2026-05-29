@@ -38,6 +38,7 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { SiGarmin } from 'react-icons/si';
+import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import {
@@ -55,7 +56,7 @@ const exportableDefinitions: readonly [
   garmin: boolean,
 ][] = [
   ['plannedRoute', <FaMapSigns />, true],
-  ['objects', <FaMapMarkerAlt />, false],
+  ['objects', <TbMapPins />, false],
   ['pictures', <FaCamera />, false],
   ['drawingLines', <MdTimeline />, true],
   ['drawingAreas', <FaDrawPolygon />, false],

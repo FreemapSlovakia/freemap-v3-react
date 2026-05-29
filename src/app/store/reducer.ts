@@ -131,10 +131,9 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
 
       state.selection = action.payload;
 
-      if (action.payload?.type === 'objects' && state.tool !== 'objects') {
-        state.tool = 'objects';
-      }
-      // else if (
+      // if (action.payload?.type === 'objects' && state.tool !== 'objects') {
+      //   state.tool = 'objects';
+      // } else if (
       //   state.tool !== 'objects' &&
       //   state.tool !== 'changesets' &&
       //   state.tool !== 'import-file' &&

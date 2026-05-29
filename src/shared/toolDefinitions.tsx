@@ -9,6 +9,7 @@ import {
   FaPencilAlt,
 } from 'react-icons/fa';
 import { MdPolyline } from 'react-icons/md';
+import { TbMapPins } from 'react-icons/tb';
 import type { Messages } from '../translations/messagesInterface.js';
 
 export interface ToolDefinition {
@@ -28,7 +29,7 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     tool: 'objects',
-    icon: <FaMapMarkerAlt />,
+    icon: <TbMapPins />,
     msgKey: 'objects',
     kbd: 'KeyO',
   },
