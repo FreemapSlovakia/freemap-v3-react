@@ -140,7 +140,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Rysowanie punktów',
     drawLines: 'Rysowanie linii',
     drawPolygons: 'Rysowanie wielokątów',
-    trackViewer: 'Przeglądarka śladów (GPX)',
+    trackViewer: 'Import pliku',
     changesets: 'Zmiany na mapie',
     mapDetails: 'Szczegóły mapy',
     tracking: 'Śledzenie na żywo',
@@ -509,8 +509,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       durationValue: ({ h, m }) => `${h} godz. ${m} min`,
     },
     uploadModal: {
-      title: 'Prześlij trasę',
-      drop: 'Upuść plik .gpx tutaj lub kliknij, aby go wybrać.',
+      title: 'Importuj plik',
+      drop: 'Upuść plik GPX lub GeoJSON tutaj lub kliknij, aby go wybrać.',
     },
     upload: 'Prześlij',
     moreInfo: 'Więcej informacji',
@@ -522,8 +522,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     savingError: ({ err }) =>
       addError(messages, 'Wystąpił błąd podczas zapisywania trasy', err),
     loadingError: 'Błąd podczas ładowania pliku.',
-    onlyOne: 'Oczekiwany jest tylko jeden plik GPX.',
-    wrongFormat: 'Plik musi mieć rozszerzenie .gpx.',
+    onlyOne: 'Oczekiwany jest tylko jeden plik.',
+    invalidFormat:
+      'Plik nie jest w obsługiwanym formacie lub jest nieprawidłowy.',
     info: () => <TrackViewerDetails />,
     tooBigError: 'Plik jest zbyt duży.',
   },

@@ -6,14 +6,19 @@ import {
 } from '@features/drawing/model/styleFromProperties.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
-import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { flatten } from '@turf/flatten';
-import { Feature, FeatureCollection, LineString, Point } from 'geojson';
+import {
+  Feature,
+  FeatureCollection,
+  LineString,
+  Point,
+  Polygon as PolygonGeometry,
+} from 'geojson';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement } from 'react';
 import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
@@ -26,6 +31,7 @@ import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
 interface GetFeatures {
   (type: 'LineString'): Feature<LineString>[];
   (type: 'Point'): Feature<Point>[];
+  (type: 'Polygon'): Feature<PolygonGeometry>[];
 }
 
 export default TrackViewerResult;
@@ -47,7 +53,21 @@ export function TrackViewerResult({
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
-  const getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
+  // Style unstyled features with the current drawing defaults so the preview
+  // matches what "convert to drawing" will produce.
+  const drawingColor = useAppSelector(
+    (state) => state.drawingSettings.drawingColor,
+  );
+
+  const drawingWidth = useAppSelector(
+    (state) => state.drawingSettings.drawingWidth,
+  );
+
+  const drawingFillColor = useAppSelector(
+    (state) => state.drawingSettings.drawingFillColor,
+  );
+
+  const getFeatures: GetFeatures = (type: 'LineString' | 'Point' | 'Polygon') =>
     flatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
 
   const activeColorizer = colorizeTrackBy ? colorizers[colorizeTrackBy] : null;
@@ -57,7 +77,7 @@ export function TrackViewerResult({
   const dispatch = useDispatch();
 
   const setThisTool = () => {
-    dispatch(setTool('track-viewer'));
+    dispatch(setTool('import-file'));
   };
 
   // TODO rather compute some hash or better - detect real change
@@ -65,10 +85,15 @@ export function TrackViewerResult({
     (JSON.stringify(trackGeojson) + displayingElevationChart).length
   }`; // otherwise GeoJSON will still display the first data
 
-  // Default stroke for unstyled tracks: the legacy purple/weight-6 look.
-  const defaultStroke = '#883388';
+  const defaultStroke = drawingColor;
 
-  const defaultWidth = 6;
+  const defaultWidth = drawingWidth;
+
+  // Fallback fill opacity, used only when no fill color is resolvable at all
+  // (e.g. the user cleared drawingFillColor). Passing an explicit number is
+  // required: Leaflet's `setOptions` copies `fillOpacity: undefined` over its
+  // own 0.2 default, which renders the fill fully opaque.
+  const defaultFillOpacity = 0.2;
 
   const features = getFeatures('LineString').map((feature) => {
     const coords = feature.geometry.coordinates;
@@ -82,7 +107,11 @@ export function TrackViewerResult({
 
     const stroke = splitColorAlpha(style.color ?? defaultStroke);
 
-    const fill = style.fillColor ? splitColorAlpha(style.fillColor) : undefined;
+    // Same default-fill treatment as native polygons below (ignored for lines,
+    // which render as unfilled Polylines).
+    const fillSpec = style.fillColor ?? drawingFillColor;
+
+    const fill = splitColorAlpha(fillSpec ?? style.color ?? defaultStroke);
 
     return {
       name: feature.properties?.['name'] as string | undefined,
@@ -92,8 +121,43 @@ export function TrackViewerResult({
           style.type === 'polygon' ? ('polygon' as const) : ('line' as const),
         strokeColor: stroke.color,
         strokeOpacity: stroke.opacity,
-        fillColor: fill?.color,
-        fillOpacity: fill?.opacity,
+        fillColor: fill.color,
+        fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
+        width: style.width ?? defaultWidth,
+        dashArray: style.dashArray,
+        lineCap: style.lineCap,
+        lineJoin: style.lineJoin,
+      },
+    };
+  });
+
+  // Native GeoJSON Polygon geometry (e.g. an imported .geojson; MultiPolygon
+  // is split into Polygon features by `flatten`). GPX never produces these —
+  // its "polygons" arrive as closed LineStrings handled above. Each Polygon's
+  // coordinates are [outerRing, ...holes], which Leaflet's Polygon renders
+  // directly as positions.
+  const polygons = getFeatures('Polygon').map((feature) => {
+    const style = lineStyleFromProperties(feature.properties, true);
+
+    const stroke = splitColorAlpha(style.color ?? defaultStroke);
+
+    // With no explicit fill, fall back to the drawing default fill so an
+    // unstyled imported polygon looks like a freshly drawn one (semitransparent)
+    // rather than a solid blob.
+    const fillSpec = style.fillColor ?? drawingFillColor;
+
+    const fill = splitColorAlpha(fillSpec ?? style.color ?? defaultStroke);
+
+    return {
+      name: feature.properties?.['name'] as string | undefined,
+      positions: feature.geometry.coordinates.map((ring) =>
+        ring.map(([lng, lat]) => ({ lat, lng })),
+      ),
+      style: {
+        strokeColor: stroke.color,
+        strokeOpacity: stroke.opacity,
+        fillColor: fill.color,
+        fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
         width: style.width ?? defaultWidth,
         dashArray: style.dashArray,
         lineCap: style.lineCap,
@@ -189,6 +253,35 @@ export function TrackViewerResult({
           );
         })}
 
+      {polygons.map(({ positions, name, style }, i) => (
+        <Polygon
+          key={`mpoly-${i}-${interactive ? 'a' : 'b'}`}
+          pane="fm-trackviewer-polygons"
+          weight={style.width}
+          pathOptions={{
+            color: style.strokeColor,
+            opacity: style.strokeOpacity,
+            fillColor: style.fillColor,
+            fillOpacity: style.fillOpacity,
+            dashArray: style.dashArray,
+            lineCap: style.lineCap ?? 'round',
+            lineJoin: style.lineJoin ?? 'round',
+          }}
+          positions={positions}
+          interactive={interactive}
+          bubblingMouseEvents={false}
+          eventHandlers={{
+            click: setThisTool,
+          }}
+        >
+          {name && (
+            <Tooltip className="compact" direction="top" permanent>
+              <span>{name}</span>
+            </Tooltip>
+          )}
+        </Polygon>
+      ))}
+
       {getFeatures('Point').map(({ geometry, properties }, i) => (
         <WaypointMarker
           key={`point-${i}-${interactive ? 'a' : 'b'}`}
@@ -281,6 +374,11 @@ function WaypointMarker({
 
   const contentProps = useIconContentProps(style.icon);
 
+  // Match the drawing default point color for unstyled waypoints.
+  const drawingColor = useAppSelector(
+    (state) => state.drawingSettings.drawingColor,
+  );
+
   // No icon spec resolved → fall back to the legacy flag glyph.
   const hasIconContent =
     contentProps.image || contentProps.iconSvg || contentProps.label;
@@ -288,13 +386,13 @@ function WaypointMarker({
   return (
     <RichMarker
       position={{ lat, lng: lon }}
-      color={style.color ?? COLORS.normal}
+      color={style.color ?? drawingColor}
       markerType={style.markerType}
       interactive={interactive}
       eventHandlers={{ click: onClick }}
       {...(hasIconContent
         ? contentProps
-        : { faIcon: <FaFlag color={COLORS.normal} /> })}
+        : { faIcon: <FaFlag color={style.color ?? drawingColor} /> })}
     >
       {name && (
         <Tooltip

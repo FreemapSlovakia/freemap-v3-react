@@ -145,7 +145,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Pont rajzolása',
     drawLines: 'Vonal rajzolása',
     drawPolygons: 'Sokszög rajzolása',
-    trackViewer: 'Nyomvonalmegtekintő (GPX)',
+    trackViewer: 'Fájlimportálás',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
     tracking: 'Élő követés',
@@ -524,8 +524,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       durationValue: ({ h, m }) => `${h} óra ${m} perc`,
     },
     uploadModal: {
-      title: 'A nyomvonal feltöltése',
-      drop: 'Húzza ide a .gpx fájlt vagy kattintson ide a kijelöléséhez.',
+      title: 'Fájl importálása',
+      drop: 'Húzza ide a GPX- vagy GeoJSON-fájlt, vagy kattintson ide a kijelöléséhez.',
     },
     shareToast:
       'Az útvonal el lett mentve a kiszolgálóra, és az oldal URL-jének másolásával megosztható.',
@@ -538,8 +538,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     savingError: ({ err }) =>
       addError(messages, 'Hiba történt a nyomvonal mentésekor', err),
     loadingError: 'Hiba történt a fájl betöltésekor.',
-    onlyOne: 'Csak egyetlen GPX-fájl tölthető be.',
-    wrongFormat: 'A fájlnak GPX kiterjesztésűnek kell lennie.',
+    onlyOne: 'Csak egyetlen fájl tölthető be.',
+    invalidFormat: 'A fájl formátuma nem támogatott, vagy a fájl érvénytelen.',
     info: () => <TrackViewerDetails />,
     tooBigError: 'Túl nagy a fájl.',
   },

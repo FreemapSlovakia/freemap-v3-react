@@ -369,7 +369,7 @@ export type Messages = {
     savingError: (props: Err) => string;
     loadingError: string;
     onlyOne: string;
-    wrongFormat: string;
+    invalidFormat: string;
     info: () => JSX.Element;
     tooBigError: string;
   };

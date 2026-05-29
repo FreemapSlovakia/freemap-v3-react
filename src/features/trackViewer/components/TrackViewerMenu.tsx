@@ -89,21 +89,23 @@ export function TrackViewerMenu(): ReactElement {
 
   return (
     <ToolMenu>
-      <LongPressTooltip breakpoint="sm" label={m?.trackViewer.upload}>
-        {({ label, labelClassName, props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() => {
-              dispatch(setActiveModal('upload-track'));
-            }}
-            {...props}
-          >
-            <FaUpload />
-            <span className={labelClassName}> {label}</span>
-          </Button>
-        )}
-      </LongPressTooltip>
+      {canUpload && (
+        <LongPressTooltip breakpoint="sm" label={m?.trackViewer.upload}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => {
+                dispatch(setActiveModal('upload-track'));
+              }}
+              {...props}
+            >
+              <FaUpload />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
 
       {enableElevationChart && (
         <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
@@ -182,7 +184,7 @@ export function TrackViewerMenu(): ReactElement {
         </LongPressTooltip>
       )}
 
-      {canUpload && (
+      {canUpload && hasTrack && (
         <LongPressTooltip breakpoint="sm" label={m?.trackViewer.share}>
           {({ label, labelClassName, props }) => (
             <Button

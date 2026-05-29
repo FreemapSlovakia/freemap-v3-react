@@ -145,7 +145,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Punkte zeichnen',
     drawLines: 'Linien zeichnen',
     drawPolygons: 'Polygone zeichnen',
-    trackViewer: 'Trackanzeige (GPX)',
+    trackViewer: 'Dateiimport',
     changesets: 'Kartenänderungen',
     mapDetails: 'Kartendetails',
     tracking: 'Live-Tracking',
@@ -521,8 +521,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     uploadModal: {
-      title: 'Strecke hochladen',
-      drop: 'Ziehen Sie Ihre .gpx-Datei hierher oder klicken Sie hier zur Auswahl.',
+      title: 'Datei importieren',
+      drop: 'Ziehen Sie eine GPX- oder GeoJSON-Datei hierher oder klicken Sie hier zur Auswahl.',
     },
 
     upload: 'Hochladen',
@@ -535,8 +535,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     savingError: ({ err }) =>
       addError(messages, 'Fehler beim Speichern der Strecke', err),
     loadingError: 'Fehler beim Laden der Datei.',
-    onlyOne: 'Es wird nur eine einzelne GPX-Datei erwartet.',
-    wrongFormat: 'Die Datei muss die Endung .gpx haben.',
+    onlyOne: 'Es wird nur eine einzelne Datei erwartet.',
+    invalidFormat: 'Die Datei hat kein unterstütztes Format oder ist ungültig.',
     info: () => <TrackViewerDetails />,
     tooBigError: 'Die Datei ist zu groß.',
   },

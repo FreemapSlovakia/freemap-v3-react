@@ -2,11 +2,11 @@ import { Tool } from '@app/store/actions.js';
 import type { ReactElement } from 'react';
 import {
   FaDrawPolygon,
+  FaFileImport,
   FaInfo,
   FaMapMarkerAlt,
   FaMapSigns,
   FaPencilAlt,
-  FaRoad,
 } from 'react-icons/fa';
 import { MdPolyline } from 'react-icons/md';
 import type { Messages } from '../translations/messagesInterface.js';
@@ -54,8 +54,8 @@ export const toolDefinitions: ToolDefinition[] = [
     draw: true,
   },
   {
-    tool: 'track-viewer',
-    icon: <FaRoad />,
+    tool: 'import-file',
+    icon: <FaFileImport />,
     msgKey: 'trackViewer',
     kbd: 'KeyG',
   },

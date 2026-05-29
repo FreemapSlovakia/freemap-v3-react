@@ -27,10 +27,10 @@ export const ToolSchema = z.enum([
   'draw-lines',
   'draw-points',
   'draw-polygons',
+  'import-file',
   'map-details',
   'objects',
   'route-planner',
-  'track-viewer',
 ]);
 
 export type Tool = z.infer<typeof ToolSchema>;

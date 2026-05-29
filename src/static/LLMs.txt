@@ -176,13 +176,13 @@ Toggles the objects toolbar.
 The toolbar contains a combo box to search for various POIs by type. Multiple types can be activated and will be visible interactively as markers with icons on the map.
 The marker icon can be globally changed (pin/ring/square).
 
-### Track viewer (GPX)
+### File import
 
-- Access: Main menu > Track viewer (GPX)
+- Access: Main menu > File import
 - Keyboard shortcut: <kbd>g</kbd> <kbd>g</kbd>
-- URL path: `/#tool=track-viewer`
+- URL path: `/#tool=import-file` (legacy `/#tool=track-viewer` still works)
 
-Toggles the GPX track viewer toolbar. It contains an Upload button to open the GPS track upload modal (URL path: `/#show=upload-track`).
+Toggles the file import toolbar. It contains an Import button to open the file import modal (URL path: `/#show=upload-track`), which accepts GPX and GeoJSON files.
 
 ### Map details
 

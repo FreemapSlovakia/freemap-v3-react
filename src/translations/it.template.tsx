@@ -150,7 +150,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Disegno a punti',
     drawLines: 'Disegno a linee',
     drawPolygons: 'Disegno a poligoni',
-    trackViewer: 'Visualizzatore di tracce (GPX)',
+    trackViewer: 'Importazione file',
     changesets: 'Modifiche mappa',
     mapDetails: 'Dettagli mappa',
     tracking: 'Tracciamento in tempo reale',
@@ -525,8 +525,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       durationValue: ({ h, m }) => `${h} ore ${m} minuti`,
     },
     uploadModal: {
-      title: 'Carica la traccia',
-      drop: 'Trascina qui il tuo file GPX oppure clicca per selezionarlo.',
+      title: 'Importa file',
+      drop: 'Trascina qui un file GPX o GeoJSON oppure clicca per selezionarlo.',
     },
     shareToast:
       "La traccia è stata salvata sul server e può essere condivisa copiando l'URL della pagina.",
@@ -539,8 +539,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     savingError: ({ err }) =>
       addError(messages, 'Errore nel salvataggio della traccia:', err),
     loadingError: 'Errore nel caricamento del file.',
-    onlyOne: "E' atteso un singolo file GPX.",
-    wrongFormat: 'Il file deve avere estensione .GPX.',
+    onlyOne: "E' atteso un singolo file.",
+    invalidFormat: 'Il file non è in un formato supportato o non è valido.',
     info: () => <TrackViewerDetails />,
     tooBigError: 'Il file è troppo grande.',
   },

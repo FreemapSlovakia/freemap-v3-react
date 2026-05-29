@@ -76,6 +76,7 @@ import {
   setActiveModal,
   setEmbedFeatures,
   setTool,
+  Tool,
   ToolSchema,
 } from '../store/actions.js';
 import type { RootAction } from '../store/rootAction.js';
@@ -133,16 +134,21 @@ export function handleLocationChange(store: MyStore): void {
   const query =
     id === undefined ? parsedQuery : { ...parsedQuery, ...parseQuery(sq) };
 
+  // Old URL tool tokens (from before these tools were renamed) mapped to their
+  // current ids, so existing shared/bookmarked links keep working.
+  const toolAliases: Record<string, Tool> = {
+    'info-point': 'draw-points',
+    'measure-area': 'draw-polygons',
+    'measure-dist': 'draw-lines',
+    'track-viewer': 'import-file',
+  };
+
   const tool =
     !query['tool'] || typeof query['tool'] !== 'string'
       ? null
-      : query['tool'] === 'info-point'
-        ? 'draw-points'
-        : query['tool'] === 'measure-area'
-          ? 'draw-polygons'
-          : query['tool'] === 'measure-dist'
-            ? 'draw-lines'
-            : (ToolSchema.safeParse(query['tool']).data ?? null);
+      : (toolAliases[query['tool']] ??
+        ToolSchema.safeParse(query['tool']).data ??
+        null);
 
   if (getState().main.tool !== tool) {
     dispatch(setTool(tool));

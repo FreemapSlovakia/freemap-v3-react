@@ -13,28 +13,30 @@ export const trackViewerSetTrackDataProcessor: Processor<
 > = {
   actionCreator: trackViewerSetData,
   transform: ({ action }) => {
-    if (!action.payload.trackGpx) {
-      return action;
+    // GeoJSON may be supplied directly (e.g. a dropped .geojson file); only
+    // parse when GPX was given. Either way we focus on the resulting geometry.
+    let trackGeojson = action.payload.trackGeojson;
+
+    if (action.payload.trackGpx) {
+      // TODO add error handling for failed string-to-gpx and gpx-to-geojson parsing
+      const gpxAsXml = new DOMParser().parseFromString(
+        action.payload.trackGpx,
+        'text/xml',
+      );
+
+      trackGeojson = toGeoJSON.gpx(gpxAsXml);
+
+      // togeojson already pulls `<sym>` and any registered namespaces into
+      // properties, but the property key depends on the source's prefix
+      // (`fm:markerType` -> `fm_markerType`). Walk the wpt/trk elements
+      // ourselves and inject canonical `freemap:*` / `osmand:*` keys so
+      // downstream readers don't have to guess the prefix.
+      enrichWaypointsWithExtensions(gpxAsXml, trackGeojson);
+
+      enrichTracksWithExtensions(gpxAsXml, trackGeojson);
     }
 
-    // TODO add error handling for failed string-to-gpx and gpx-to-geojson parsing
-    const gpxAsXml = new DOMParser().parseFromString(
-      action.payload.trackGpx,
-      'text/xml',
-    );
-
-    const trackGeojson = toGeoJSON.gpx(gpxAsXml);
-
-    // togeojson already pulls `<sym>` and any registered namespaces into
-    // properties, but the property key depends on the source's prefix
-    // (`fm:markerType` -> `fm_markerType`). Walk the wpt/trk elements
-    // ourselves and inject canonical `freemap:*` / `osmand:*` keys so
-    // downstream readers don't have to guess the prefix.
-    enrichWaypointsWithExtensions(gpxAsXml, trackGeojson);
-
-    enrichTracksWithExtensions(gpxAsXml, trackGeojson);
-
-    if (action.payload.focus) {
+    if (action.payload.focus && trackGeojson) {
       let bounds;
 
       try {
@@ -51,10 +53,12 @@ export const trackViewerSetTrackDataProcessor: Processor<
       }
     }
 
-    return trackViewerSetData({
-      ...action.payload,
-      trackGeojson,
-    });
+    return action.payload.trackGpx
+      ? trackViewerSetData({
+          ...action.payload,
+          trackGeojson,
+        })
+      : action;
   },
 };
 

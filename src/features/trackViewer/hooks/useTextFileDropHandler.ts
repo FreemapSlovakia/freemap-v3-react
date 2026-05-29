@@ -2,15 +2,15 @@ import { useCallback } from 'react';
 import { FileRejection } from 'react-dropzone';
 import { Messages } from '@/translations/messagesInterface.js';
 
-export function useGpxDropHandler(
-  onDrop: (gpx: string) => void,
+export function useTextFileDropHandler(
+  onDrop: (text: string, file: File) => void,
   onLoadError: (msg: string) => void,
   m?: Messages,
 ): (acceptedFiles: File[], fileRejections?: FileRejection[]) => void {
   return useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[] = []) => {
       if (fileRejections.length) {
-        onLoadError(m?.trackViewer.wrongFormat ?? 'wrong format');
+        onLoadError(m?.trackViewer.invalidFormat ?? 'invalid format');
 
         return;
       }
@@ -21,13 +21,15 @@ export function useGpxDropHandler(
         return;
       }
 
+      const file = acceptedFiles[0];
+
       const reader = new FileReader();
 
-      reader.readAsText(acceptedFiles[0], 'UTF-8');
+      reader.readAsText(file, 'UTF-8');
 
       reader.onload = () => {
         if (typeof reader.result === 'string') {
-          onDrop(reader.result);
+          onDrop(reader.result, file);
         } else {
           onLoadError(m?.trackViewer.loadingError ?? 'loading error');
         }

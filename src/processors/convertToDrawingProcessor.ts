@@ -19,6 +19,18 @@ import { mergeLines } from '@shared/geoutils.js';
 import { flatten as turfFlatten } from '@turf/flatten';
 import { lineString } from '@turf/helpers';
 import { simplify } from '@turf/simplify';
+import type { Position } from 'geojson';
+
+// Build drawing-line points from a single ring/line. `dropClosing` strips the
+// duplicate closing coordinate of an explicitly-closed ring, since drawing
+// polygons are stored open and closed at render time.
+function ringToPoints(ring: Position[], dropClosing: boolean): Point[] {
+  return (dropClosing ? ring.slice(0, -1) : ring).map((node, id) => ({
+    lat: node[1],
+    lon: node[0],
+    id,
+  }));
+}
 
 export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   actionCreator: convertToDrawing,
@@ -135,50 +147,60 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           );
 
           pointCount++;
-        } else if (geometry?.type === 'LineString') {
-          const coords = geometry.coordinates;
+        } else if (
+          geometry?.type === 'LineString' ||
+          geometry?.type === 'Polygon'
+        ) {
+          // GPX tracks arrive as LineStrings; imported GeoJSON may carry native
+          // Polygon geometry (MultiPolygon is split by `turfFlatten`). Drawing
+          // can't represent holes, so emit every ring (outer + holes) as its
+          // own polygon.
+          const isGeoJsonPolygon = geometry.type === 'Polygon';
 
-          const closed =
-            coords.length > 2 &&
-            coords[0][0] === coords[coords.length - 1][0] &&
-            coords[0][1] === coords[coords.length - 1][1];
+          const rings: Position[][] =
+            geometry.type === 'Polygon'
+              ? geometry.coordinates
+              : [geometry.coordinates];
 
-          const style = lineStyleFromProperties(feature.properties, closed);
+          for (const ring of rings) {
+            const closed =
+              !isGeoJsonPolygon &&
+              ring.length > 2 &&
+              ring[0][0] === ring[ring.length - 1][0] &&
+              ring[0][1] === ring[ring.length - 1][1];
 
-          const isPolygon = style.type === 'polygon';
+            const style = lineStyleFromProperties(feature.properties, closed);
 
-          // For a closed ring rendered as a polygon, drop the duplicate
-          // closing point — drawing-lines stores polygons open-ended and
-          // closes them at render time.
-          const ringCoords = isPolygon && closed ? coords.slice(0, -1) : coords;
+            const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
 
-          let id = 0;
+            const points = ringToPoints(
+              ring,
+              isGeoJsonPolygon || (isPolygon && closed),
+            );
 
-          const points: Point[] = [];
+            dispatch(
+              drawingLineAdd({
+                type: isPolygon ? 'polygon' : 'line',
+                label: feature.properties?.['name'],
+                color: style.color ?? state.drawingSettings.drawingColor,
+                // Bake the fill default in here (like color/width above) so the
+                // semitransparency survives — a freshly drawn polygon uses
+                // drawingFillColor, so match it for unstyled imported polygons.
+                fillColor:
+                  style.fillColor ??
+                  (isPolygon
+                    ? state.drawingSettings.drawingFillColor
+                    : undefined),
+                width: style.width ?? state.drawingSettings.drawingWidth,
+                lineCap: style.lineCap,
+                lineJoin: style.lineJoin,
+                dashArray: style.dashArray,
+                points,
+              }),
+            );
 
-          for (const node of ringCoords) {
-            points.push({
-              lat: node[1],
-              lon: node[0],
-              id: id++,
-            });
+            lineCount++;
           }
-
-          dispatch(
-            drawingLineAdd({
-              type: isPolygon ? 'polygon' : 'line',
-              label: feature.properties?.['name'],
-              color: style.color ?? state.drawingSettings.drawingColor,
-              fillColor: style.fillColor,
-              width: style.width ?? state.drawingSettings.drawingWidth,
-              lineCap: style.lineCap,
-              lineJoin: style.lineJoin,
-              dashArray: style.dashArray,
-              points,
-            }),
-          );
-
-          lineCount++;
         }
       }
 
@@ -276,54 +298,51 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           geometry?.type === 'LineString' ||
           geometry?.type === 'Polygon'
         ) {
+          // Drawing can't represent holes, so emit every ring (outer + holes)
+          // as its own polygon.
           const isGeoJsonPolygon = geometry.type === 'Polygon';
 
-          const rawCoords = isGeoJsonPolygon
-            ? geometry.coordinates[0]
-            : geometry.coordinates;
+          const rings: Position[][] =
+            geometry.type === 'Polygon'
+              ? geometry.coordinates
+              : [geometry.coordinates];
 
-          const closed =
-            !isGeoJsonPolygon &&
-            rawCoords.length > 2 &&
-            rawCoords[0][0] === rawCoords[rawCoords.length - 1][0] &&
-            rawCoords[0][1] === rawCoords[rawCoords.length - 1][1];
+          for (const ring of rings) {
+            const closed =
+              !isGeoJsonPolygon &&
+              ring.length > 2 &&
+              ring[0][0] === ring[ring.length - 1][0] &&
+              ring[0][1] === ring[ring.length - 1][1];
 
-          const style = lineStyleFromProperties(feature.properties, closed);
+            const style = lineStyleFromProperties(feature.properties, closed);
 
-          const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
+            const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
 
-          const ringCoords =
-            !isGeoJsonPolygon && isPolygon && closed
-              ? rawCoords.slice(0, -1)
-              : rawCoords;
+            const points = ringToPoints(
+              ring,
+              isGeoJsonPolygon || (isPolygon && closed),
+            );
 
-          let id = 0;
+            dispatch(
+              drawingLineAdd({
+                type: isPolygon ? 'polygon' : 'line',
+                label: isPolygon ? feature.properties?.['name'] : undefined, // ignore street names
+                color: style.color ?? state.drawingSettings.drawingColor,
+                fillColor:
+                  style.fillColor ??
+                  (isPolygon
+                    ? state.drawingSettings.drawingFillColor
+                    : undefined),
+                width: style.width ?? state.drawingSettings.drawingWidth,
+                lineCap: style.lineCap,
+                lineJoin: style.lineJoin,
+                dashArray: style.dashArray,
+                points,
+              }),
+            );
 
-          const points: Point[] = [];
-
-          for (const node of ringCoords) {
-            points.push({
-              lat: node[1],
-              lon: node[0],
-              id: id++,
-            });
+            lineCount++;
           }
-
-          dispatch(
-            drawingLineAdd({
-              type: isPolygon ? 'polygon' : 'line',
-              label: isPolygon ? feature.properties?.['name'] : undefined, // ignore street names
-              color: style.color ?? state.drawingSettings.drawingColor,
-              fillColor: style.fillColor,
-              width: style.width ?? state.drawingSettings.drawingWidth,
-              lineCap: style.lineCap,
-              lineJoin: style.lineJoin,
-              dashArray: style.dashArray,
-              points,
-            }),
-          );
-
-          lineCount++;
         }
       }
 

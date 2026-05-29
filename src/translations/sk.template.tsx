@@ -144,7 +144,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Kreslenie bodov',
     drawLines: 'Kreslenie čiar',
     drawPolygons: 'Kreslenie polygónov',
-    trackViewer: 'Prehliadač trás (GPX)',
+    trackViewer: 'Import súboru',
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
     tracking: 'Sledovanie',
@@ -530,8 +530,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       durationValue: ({ h, m }) => `${h} hodín ${m} minút`,
     },
     uploadModal: {
-      title: 'Nahrať trasu',
-      drop: 'Potiahnite sem .gpx súbor alebo kliknite sem pre jeho výber.',
+      title: 'Importovať súbor',
+      drop: 'Potiahnite sem súbor GPX alebo GeoJSON alebo kliknite sem pre jeho výber.',
     },
     shareToast:
       'Trasa bola uložená na server a môžete ju zdieľať skopirovaním URL stránky.',
@@ -540,8 +540,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     savingError: ({ err }) =>
       addError(messages, 'Nepodarilo sa uložiť trasu', err),
     loadingError: 'Súbor sa nepodarilo načítať.',
-    onlyOne: 'Očakáva sa iba jeden GPX súbor.',
-    wrongFormat: 'Nahraný súbor musí mať príponu .gpx',
+    onlyOne: 'Očakáva sa iba jeden súbor.',
+    invalidFormat: 'Súbor nie je v podporovanom formáte alebo je neplatný.',
     info: () => <TrackViewerDetails />,
     tooBigError: 'Nahraný súbor je príliš veľký.',
   },

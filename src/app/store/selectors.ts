@@ -44,7 +44,7 @@ export const showGalleryPickerSelector = createSelector(
     drawingLine,
   ) =>
     (!tool ||
-      ['photos', 'track-viewer', 'objects', 'changesets'].includes(tool)) &&
+      ['photos', 'import-file', 'objects', 'changesets'].includes(tool)) &&
     layers.includes('I') &&
     galleryPickingPositionForId === null &&
     !galleryShowPosition &&
@@ -135,7 +135,7 @@ export const selectingModeSelector = (state: RootState): boolean =>
   !window.fmEmbedded &&
   !state.drawingLines.drawing &&
   (state.main.tool === null ||
-    state.main.tool === 'track-viewer' ||
+    state.main.tool === 'import-file' ||
     state.main.tool === 'changesets' ||
     state.main.tool === 'objects' ||
     (state.main.tool === 'route-planner' &&

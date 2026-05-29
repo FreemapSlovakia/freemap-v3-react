@@ -8,11 +8,12 @@ import { Button, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { useGpxDropHandler } from '../hooks/useGpxDropHandler.js';
+import { useTextFileDropHandler } from '../hooks/useTextFileDropHandler.js';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from '../model/actions.js';
+import { parseGeojsonFile } from '../parseGeojsonFile.js';
 
 type Props = { show: boolean };
 
@@ -26,19 +27,6 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
-
-  const handleUpload = useCallback(
-    (trackGpx: string) => {
-      dispatch(trackViewerSetTrackUID(null));
-
-      dispatch(trackViewerSetData({ trackGpx, focus: true }));
-
-      dispatch(setActiveModal(null));
-
-      dispatch(elevationChartClose());
-    },
-    [dispatch],
-  );
 
   const handleLoadError = useCallback(
     (message: string) => {
@@ -54,13 +42,45 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
     [dispatch],
   );
 
-  const handleGpxDrop = useGpxDropHandler(handleUpload, handleLoadError, m);
+  const handleUpload = useCallback(
+    (text: string, file: File) => {
+      const name = file.name.toLowerCase();
+
+      if (name.endsWith('.geojson') || name.endsWith('.json')) {
+        const trackGeojson = parseGeojsonFile(text);
+
+        if (!trackGeojson) {
+          handleLoadError(m?.trackViewer.invalidFormat ?? 'invalid format');
+
+          return;
+        }
+
+        dispatch(trackViewerSetTrackUID(null));
+
+        dispatch(trackViewerSetData({ trackGeojson, focus: true }));
+      } else {
+        dispatch(trackViewerSetTrackUID(null));
+
+        dispatch(trackViewerSetData({ trackGpx: text, focus: true }));
+      }
+
+      dispatch(setActiveModal(null));
+
+      dispatch(elevationChartClose());
+    },
+    [dispatch, m, handleLoadError],
+  );
+
+  const handleDrop = useTextFileDropHandler(handleUpload, handleLoadError, m);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: handleGpxDrop,
+    onDrop: handleDrop,
+    // TODO add KML/KMZ once a parser is wired up
     accept: {
       'application/gpx+xml': ['.gpx'],
-      'application/octet-stream': ['.gpx'],
+      'application/geo+json': ['.geojson'],
+      'application/json': ['.json', '.geojson'],
+      'application/octet-stream': ['.gpx', '.geojson', '.json'],
     },
     multiple: false,
   });

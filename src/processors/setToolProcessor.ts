@@ -11,7 +11,7 @@ export const setToolProcessor: Processor<typeof setTool> = {
       window._paq.push(['trackEvent', 'Main', 'setTool', tool]);
 
       if (
-        tool === 'track-viewer' &&
+        tool === 'import-file' &&
         !getState().trackViewer.trackGpx &&
         !getState().trackViewer.trackGeojson
       ) {

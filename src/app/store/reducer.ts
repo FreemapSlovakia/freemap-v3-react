@@ -137,7 +137,7 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       // else if (
       //   state.tool !== 'objects' &&
       //   state.tool !== 'changesets' &&
-      //   state.tool !== 'track-viewer' &&
+      //   state.tool !== 'import-file' &&
       //   (state.tool !== 'route-planner' ||
       //     (action.payload?.type !== 'route-point' &&
       //       action.payload?.type !== 'route-leg')) &&
