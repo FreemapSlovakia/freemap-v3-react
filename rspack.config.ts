@@ -7,7 +7,6 @@ import type {
 } from '@rspack/core';
 import { rspack } from '@rspack/core';
 import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlRspackPlugin from 'html-rspack-plugin';
 import { RspackManifestPlugin } from 'rspack-manifest-plugin';
 import { LoaderOptions as SassLoaderOptions } from 'sass-loader';
@@ -29,6 +28,19 @@ const __dirname = import.meta.dirname;
 const prod = 'DEPLOYMENT' in process.env && process.env['DEPLOYMENT'] !== 'dev';
 const cssModuleRegex = /\.module\.css$/;
 const scssModuleRegex = /\.module\.scss$/;
+
+// Browser targets for CSS lowering. The `.css` files use native CSS nesting,
+// which `css-loader` does not transpile; without lowering it ships verbatim and
+// breaks on browsers lacking nesting support (Firefox < 117 incl. ESR 115,
+// Chrome < 112, Safari < 16.5). LightningCSS flattens nesting (and adds vendor
+// prefixes) for these targets. JS is left as-is — these browsers handle it.
+const cssTargets = [
+  '>= 0.5%',
+  'last 2 versions',
+  'Firefox ESR',
+  'firefox >= 115',
+  'not dead',
+];
 
 const htmlPluginProps = {
   filename: 'index.html',
@@ -84,7 +96,11 @@ const config: Configuration = {
       new TerserPlugin({
         minify: TerserPlugin.swcMinify,
       }),
-      new CssMinimizerPlugin(),
+      // LightningCSS (replaces cssnano) so it also downlevels native CSS
+      // nesting to flat selectors for the browsers in `cssTargets`.
+      new rspack.LightningCssMinimizerRspackPlugin({
+        minimizerOptions: { targets: cssTargets },
+      }),
     ],
   },
   devServer: {

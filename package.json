@@ -138,7 +138,6 @@
     "@typescript/native-preview": "7.0.0-dev.20260527.2",
     "@webgpu/types": "^0.1.70",
     "css-loader": "^7.1.4",
-    "css-minimizer-webpack-plugin": "^8.0.0",
     "gray-matter": "^4.0.3",
     "html-loader": "^5.1.0",
     "html-rspack-plugin": "^6.1.9",
