@@ -545,9 +545,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     edit: {
       title: 'Eigenschaften',
       color: 'Farbe',
+      fillColor: 'Füllfarbe',
       label: 'Beschriftung',
       width: 'Breite',
       hint: 'Um die Beschriftung zu entfernen, lassen Sie das Feld leer.',
+      shape: 'Form',
+      icon: 'Symbol',
+      iconChoose: 'Symbol auswählen…',
+      iconNone: 'Kein Symbol',
+      iconSearch: 'Symbole suchen',
+      text: 'Text',
+      textHint: 'Maximal 2 Zeichen werden in der Markierung angezeigt.',
       type: 'Geometrietyp',
       dashArray: 'Linienstil',
       lineCap: 'Linienende',
@@ -912,6 +920,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customBase: 'Benutzerdefinierte Karte',
     customMaps: 'Benutzerdefinierte Karten',
     addCustomMap: 'Benutzerdefinierte Karte hinzufügen',
+    customMapsEmptyMessage:
+      'Noch keine benutzerdefinierten Karten definiert. Fügen Sie eine hinzu, um Ihre eigene Kartenquelle anzuzeigen.',
     base: 'Grundlegende Ebenen',
     overlay: 'Überlagerungsebenen',
     url: 'URL-Vorlage',
@@ -1359,6 +1369,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     cachedSuccess: ({ name }) =>
       `Karte „${name}“ wurde erfolgreich gespeichert.`,
     activate: 'Aktivieren',
+    namePrefix: 'Offline',
   },
   errorStatus: {
     100: 'Weiter',

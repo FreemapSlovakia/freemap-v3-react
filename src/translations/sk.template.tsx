@@ -551,6 +551,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     edit: {
       title: 'Vlastnosti',
       color: 'Farba',
+      fillColor: 'Farba výplne',
       label: 'Popis',
       width: 'Šírka',
       hint: 'Ak chcete popis odstrániť, nechajte pole popisu prázdne.',
@@ -913,6 +914,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     configureLayers: 'Nastavenie mapových vrstiev',
     customMaps: 'Vlastné mapy',
     addCustomMap: 'Pridať vlastnú mapu',
+    customMapsEmptyMessage:
+      'Zatiaľ nie sú definované žiadne vlastné mapy. Pridajte jednu na zobrazenie vlastného zdroja máp.',
     base: 'Základné vrstvy',
     overlay: 'Prekryvné vrstvy',
     technology: 'Typ',
@@ -1342,6 +1345,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startCaching: 'Spustiť sťahovanie',
     cachedSuccess: ({ name }) => `Mapa „${name}“ bola úspešne stiahnutá.`,
     activate: 'Aktivovať',
+    namePrefix: 'Offline',
   },
 
   errorStatus: {

@@ -533,9 +533,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     edit: {
       title: 'Właściwości',
       color: 'Kolor',
+      fillColor: 'Kolor wypełnienia',
       label: 'Etykieta',
       width: 'Szerokość',
       hint: 'Aby usunąć etykietę, pozostaw to pole puste.',
+      shape: 'Kształt',
+      icon: 'Ikona',
+      iconChoose: 'Wybierz ikonę…',
+      iconNone: 'Bez ikony',
+      iconSearch: 'Szukaj ikon',
+      text: 'Tekst',
+      textHint: 'Maksymalnie 2 znaki wyświetlane w znaczniku.',
       type: 'Typ geometrii',
       dashArray: 'Styl linii',
       lineCap: 'Zakończenie linii',
@@ -884,6 +892,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customBase: 'Własna mapa',
     customMaps: 'Mapy własne',
     addCustomMap: 'Dodaj własną mapę',
+    customMapsEmptyMessage:
+      'Nie zdefiniowano jeszcze żadnych własnych map. Dodaj jedną, aby wyświetlić własne źródło mapy.',
     base: 'Warstwy podstawowe',
     overlay: 'Warstwy nakładkowe',
     url: 'Szablon URL',
@@ -1330,6 +1340,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startCaching: 'Rozpocznij pobieranie',
     cachedSuccess: ({ name }) => `Mapa „${name}” została pomyślnie pobrana.`,
     activate: 'Aktywuj',
+    namePrefix: 'Offline',
   },
 
   errorStatus: {

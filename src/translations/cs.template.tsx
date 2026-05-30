@@ -525,9 +525,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     edit: {
       title: 'Vlastnosti',
       color: 'Barva',
+      fillColor: 'Barva výplně',
       label: 'Popis',
       width: 'Šířka',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
+      shape: 'Tvar',
+      icon: 'Ikona',
+      iconChoose: 'Vybrat ikonu…',
+      iconNone: 'Bez ikony',
+      iconSearch: 'Hledat ikony',
+      text: 'Text',
+      textHint: 'Nejvýše 2 znaky zobrazené ve značce.',
       type: 'Typ geometrie',
       dashArray: 'Styl čáry',
       lineCap: 'Konec čáry',
@@ -875,6 +883,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     configureLayers: 'Nastavení mapových vrstev',
     customMaps: 'Vlastní mapy',
     addCustomMap: 'Přidat vlastní mapu',
+    customMapsEmptyMessage:
+      'Zatím nejsou definovány žádné vlastní mapy. Přidejte jednu pro zobrazení vlastního zdroje map.',
     base: 'Základní vrstvy',
     overlay: 'Překryvné vrstvy',
     url: 'Šablona URL',
@@ -1305,6 +1315,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startCaching: 'Spustit stahování',
     cachedSuccess: ({ name }) => `Mapa „${name}“ byla úspěšně stažena.`,
     activate: 'Aktivovat',
+    namePrefix: 'Offline',
   },
 
   errorStatus: {
