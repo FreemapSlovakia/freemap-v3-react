@@ -175,9 +175,15 @@ export function TrackViewerResult({
     <Fragment key={keyToAssureProperRefresh}>
       <Pane name="fm-trackviewer-polygons" style={{ zIndex: 399 }} />
 
+      {/* Above the hotline canvas (default overlayPane, zIndex 400) so the
+          invisible outline below catches clicks even when the track is
+          colorized; below markerPane (600) so waypoints stay clickable. */}
+      <Pane name="fm-trackviewer-hit" style={{ zIndex: 450 }} />
+
       {features.map(({ lineData, name, style }, i) => (
         <Polyline
           key={`outline-${i}-${interactive ? 'a' : 'b'}`}
+          pane="fm-trackviewer-hit"
           weight={style.width + 8}
           interactive={interactive}
           positions={lineData}
