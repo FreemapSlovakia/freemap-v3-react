@@ -20,7 +20,7 @@ import {
   Polygon as PolygonGeometry,
 } from 'geojson';
 import { Point as LPoint } from 'leaflet';
-import { Fragment, ReactElement } from 'react';
+import { Fragment, ReactElement, useMemo } from 'react';
 import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
@@ -71,6 +71,17 @@ export function TrackViewerResult({
     flatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
 
   const activeColorizer = colorizeTrackBy ? colorizers[colorizeTrackBy] : null;
+
+  // Stable reference so react-leaflet-hotline's options-effect doesn't fire
+  // (and schedule a canvas redraw) on every render.
+  const hotlineOptions = useMemo(
+    () => ({
+      weight: 6,
+      outlineWidth: 0,
+      palette: activeColorizer?.palette,
+    }),
+    [activeColorizer],
+  );
 
   const interactive = useAppSelector(selectingModeSelector);
 
@@ -210,11 +221,7 @@ export function TrackViewerResult({
               getVal={(p) => p.point.color}
               getLat={(p) => p.point.lat}
               getLng={(p) => p.point.lon}
-              options={{
-                weight: 6,
-                outlineWidth: 0,
-                palette: activeColorizer.palette,
-              }}
+              options={hotlineOptions}
             />
           ))}
 
