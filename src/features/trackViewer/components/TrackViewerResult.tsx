@@ -117,8 +117,7 @@ export function TrackViewerResult({
       name: feature.properties?.['name'] as string | undefined,
       lineData: coords.map(([lng, lat]) => ({ lat, lng })),
       style: {
-        type:
-          style.type === 'polygon' ? ('polygon' as const) : ('line' as const),
+        type: style.type === 'polygon' ? 'polygon' : 'line',
         strokeColor: stroke.color,
         strokeOpacity: stroke.opacity,
         fillColor: fill.color,
@@ -149,7 +148,7 @@ export function TrackViewerResult({
     const fill = splitColorAlpha(fillSpec ?? style.color ?? defaultStroke);
 
     return {
-      name: feature.properties?.['name'] as string | undefined,
+      name: feature.properties?.['name'],
       positions: feature.geometry.coordinates.map((ring) =>
         ring.map(([lng, lat]) => ({ lat, lng })),
       ),
