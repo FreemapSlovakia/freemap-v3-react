@@ -140,6 +140,11 @@ function DrawingPointMarker({
   // descriptive tooltip.
   const contentProps = useIconContentProps(icon);
 
+  // Fade the label tooltip with the same alpha as the marker (0.9 is Leaflet's
+  // default tooltip opacity) so the whole marker — including its label — is
+  // uniformly transparent.
+  const { opacity } = splitColorAlpha(renderColor);
+
   return (
     <RichMarker
       position={{ lat: coords.lat, lng: coords.lon }}
@@ -151,7 +156,12 @@ function DrawingPointMarker({
       eventHandlers={eventHandlers}
     >
       {label && (
-        <Tooltip className="compact" direction="top" permanent>
+        <Tooltip
+          className="compact"
+          direction="top"
+          permanent
+          opacity={0.9 * opacity}
+        >
           <span>{label}</span>
         </Tooltip>
       )}

@@ -3,6 +3,7 @@ import Leaflet, { BaseIconOptions, Icon } from 'leaflet';
 import { CSSProperties, ReactElement, useEffect, useMemo, useRef } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
+import { splitColorAlpha } from '../colorAlpha.js';
 import { COLORS } from '../colors.js';
 import classes from './RichMarker.module.css';
 
@@ -180,6 +181,12 @@ export function MarkerIcon({
   label,
   markerType,
 }: MarkerIconProps): ReactElement {
+  // Split any alpha off the color: the solid RGB paints the shape, while the
+  // alpha is applied as a group `opacity` on the whole marker (shape + white
+  // inset + glyph + Font Awesome overlay) so the entire marker fades uniformly
+  // rather than only its background.
+  const { color: fillColor, opacity } = splitColorAlpha(color);
+
   // A glyph (label text, poi image or Font Awesome icon) fills the white inset;
   // this flag also drives whether the inset is drawn.
   const hasContent = Boolean(label || image || faIcon || iconSvg);
@@ -243,6 +250,7 @@ export function MarkerIcon({
           y="0px"
           viewBox="0 0 310 310"
           xmlns="http://www.w3.org/2000/svg"
+          opacity={opacity}
         >
           <ellipse
             cx={155}
@@ -251,9 +259,9 @@ export function MarkerIcon({
             ry={135}
             style={{
               strokeWidth: 10,
-              fill: color,
+              fill: fillColor,
               strokeOpacity: 0.5,
-              stroke: color,
+              stroke: fillColor,
             }}
           />
 
@@ -279,6 +287,7 @@ export function MarkerIcon({
           y="0px"
           viewBox="0 0 310 310"
           xmlns="http://www.w3.org/2000/svg"
+          opacity={opacity}
         >
           <rect
             x={30}
@@ -290,8 +299,8 @@ export function MarkerIcon({
             style={{
               strokeWidth: 10,
               strokeOpacity: 0.6,
-              fill: color,
-              stroke: color,
+              fill: fillColor,
+              stroke: fillColor,
             }}
           />
 
@@ -319,12 +328,13 @@ export function MarkerIcon({
           y="0px"
           viewBox="0 0 310 512"
           xmlns="http://www.w3.org/2000/svg"
+          opacity={opacity}
         >
           <path
             d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z"
             style={{
               strokeWidth: 10,
-              fill: color,
+              fill: fillColor,
               strokeOpacity: 0.5,
               stroke: 'white',
             }}
@@ -348,7 +358,11 @@ export function MarkerIcon({
         </svg>
       )}
 
-      {faIcon && <div className={classes['fa-icon']}>{faIcon}</div>}
+      {faIcon && (
+        <div className={classes['fa-icon']} style={{ opacity }}>
+          {faIcon}
+        </div>
+      )}
     </>
   );
 }
