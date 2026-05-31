@@ -53,7 +53,7 @@ Deeper reference docs live in [`doc/`](./doc/):
 
 - [Drawing feature export/import format mapping](./doc/drawing-export-mapping.md) — how points, lines and polygons round-trip through GPX and GeoJSON, including curated icon mappings for Garmin / OsmAnd / Locus.
 
-[`src/static/LLMs.txt`](./src/static/LLMs.txt) is a hand-maintained, user-facing description of the application (its functions, modals and map layers) for AI assistants, served at [www.freemap.sk/LLMs.txt](https://www.freemap.sk/LLMs.txt). Keep it in sync when changing user-visible behavior — see [CLAUDE.md](./CLAUDE.md).
+[`src/static/llms.txt`](./src/static/llms.txt) is a hand-maintained, user-facing description of the application (its functions, modals and map layers) for AI assistants, served at [www.freemap.sk/llms.txt](https://www.freemap.sk/llms.txt) per the [llmstxt.org](https://llmstxt.org) convention. Keep it in sync when changing user-visible behavior — see [CLAUDE.md](./CLAUDE.md).
 
 Contributor notes for Claude Code (workflow, conventions): [CLAUDE.md](./CLAUDE.md).
 
