@@ -7,7 +7,7 @@ import { useIconContentProps } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
 import { DragEndEvent, LeafletEvent, LeafletEventHandlerFnMap } from 'leaflet';
-import { type ReactElement, useCallback, useMemo } from 'react';
+import { type ReactElement } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import type { DrawingPoint } from '../model/actions/drawingPointActions.js';
@@ -27,64 +27,54 @@ export function DrawingPointsResult(): ReactElement {
       : null,
   );
 
-  const handleMove = useCallback(
-    (e: LeafletEvent) => {
-      if (activeIndex !== null) {
-        // see https://github.com/PaulLeCam/react-leaflet/issues/981
-        const { latlng } = e as unknown as {
-          latlng: { lat: number; lng: number };
-        };
+  const handleMove = (e: LeafletEvent) => {
+    if (activeIndex !== null) {
+      // see https://github.com/PaulLeCam/react-leaflet/issues/981
+      const { latlng } = e as unknown as {
+        latlng: { lat: number; lng: number };
+      };
 
-        dispatch(
-          drawingPointChangePosition({
-            index: activeIndex,
-            coords: {
-              lat: latlng.lat,
-              lon: latlng.lng,
-            },
-          }),
-        );
+      dispatch(
+        drawingPointChangePosition({
+          index: activeIndex,
+          coords: {
+            lat: latlng.lat,
+            lon: latlng.lng,
+          },
+        }),
+      );
 
-        dispatch(drawingMeasure({ elevation: false }));
-      }
-    },
-    [activeIndex, dispatch],
-  );
+      dispatch(drawingMeasure({ elevation: false }));
+    }
+  };
 
-  const handleDragEnd = useCallback(
-    (e: DragEndEvent) => {
-      if (activeIndex !== null) {
-        const coords = e.target.getLatLng();
+  const handleDragEnd = (e: DragEndEvent) => {
+    if (activeIndex !== null) {
+      const coords = e.target.getLatLng();
 
-        dispatch(
-          drawingPointChangePosition({
-            index: activeIndex,
-            coords: {
-              lat: coords.lat,
-              lon: coords.lng,
-            },
-          }),
-        );
+      dispatch(
+        drawingPointChangePosition({
+          index: activeIndex,
+          coords: {
+            lat: coords.lat,
+            lon: coords.lng,
+          },
+        }),
+      );
 
-        dispatch(drawingMeasure({}));
-      }
-    },
-    [activeIndex, dispatch],
-  );
+      dispatch(drawingMeasure({}));
+    }
+  };
 
   const points = useAppSelector((state) => state.drawingPoints.points);
 
-  const onSelects = useMemo(
-    () =>
-      new Array(points.length).fill(0).map((_, id) => () => {
-        if (id !== activeIndex) {
-          dispatch(selectFeature({ type: 'draw-points', id }));
+  const onSelects = new Array(points.length).fill(0).map((_, id) => () => {
+    if (id !== activeIndex) {
+      dispatch(selectFeature({ type: 'draw-points', id }));
 
-          dispatch(drawingMeasure({}));
-        }
-      }),
-    [points.length, activeIndex, dispatch],
-  );
+      dispatch(drawingMeasure({}));
+    }
+  });
 
   const change = useAppSelector((state) => state.drawingPoints.change);
 

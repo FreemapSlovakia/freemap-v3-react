@@ -4,7 +4,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
-import { type ReactElement, useMemo } from 'react';
+import { type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaList, FaLock, FaQuestion, FaRegCopyright } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -24,19 +24,14 @@ export function CopyrightButton(): ReactElement {
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const legendLayers = useMemo(
-    () =>
-      new Set([
-        ...(skCs ? ['A', 'T', 'C', 'K'] : []),
-        'X',
-        'O',
-        ...[...integratedLayerDefs, ...customLayers]
-          .filter((def) => def.technology === 'wms')
-          .map((def) => def.type),
-      ]),
-
-    [customLayers, skCs],
-  );
+  const legendLayers = new Set([
+    ...(skCs ? ['A', 'T', 'C', 'K'] : []),
+    'X',
+    'O',
+    ...[...integratedLayerDefs, ...customLayers]
+      .filter((def) => def.technology === 'wms')
+      .map((def) => def.type),
+  ]);
 
   const showLegendButton = layers.some((type) => legendLayers.has(type));
 

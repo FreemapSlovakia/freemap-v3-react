@@ -29,6 +29,11 @@ const prod = 'DEPLOYMENT' in process.env && process.env['DEPLOYMENT'] !== 'dev';
 const cssModuleRegex = /\.module\.css$/;
 const scssModuleRegex = /\.module\.scss$/;
 
+// React Compiler runs as a Babel plugin (no SWC implementation yet), so it is
+// chained ahead of the swc-loader for `.ts`/`.tsx`. Default config targets
+// React 19 (the version this project ships), so no `target` override is needed.
+const reactCompilerConfig = {};
+
 // Browser targets for CSS lowering. The `.css` files use native CSS nesting,
 // which `css-loader` does not transpile; without lowering it ships verbatim and
 // breaks on browsers lacking nesting support (Firefox < 117 incl. ESR 115,
@@ -127,21 +132,40 @@ const config: Configuration = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'builtin:swc-loader',
-        options: {
-          jsc: {
-            parser: {
-              syntax: 'typescript',
-              tsx: true,
-            },
-            transform: {
-              react: {
-                runtime: 'automatic',
-                refresh: !prod,
+        // Loaders run bottom-to-top: babel-loader applies React Compiler first
+        // (it must see the original JSX/hooks), then swc-loader strips the rest
+        // of TypeScript, does the automatic JSX transform and Fast Refresh.
+        use: [
+          {
+            loader: 'builtin:swc-loader',
+            options: {
+              jsc: {
+                parser: {
+                  syntax: 'typescript',
+                  tsx: true,
+                },
+                transform: {
+                  react: {
+                    runtime: 'automatic',
+                    refresh: !prod,
+                  },
+                },
               },
             },
           },
-        },
+          {
+            loader: 'babel-loader',
+            options: {
+              babelrc: false,
+              configFile: false,
+              cacheDirectory: true,
+              // `@babel/preset-typescript` auto-detects `.tsx` vs `.ts` from the
+              // filename, so Babel can parse the sources React Compiler runs on.
+              presets: ['@babel/preset-typescript'],
+              plugins: [['babel-plugin-react-compiler', reactCompilerConfig]],
+            },
+          },
+        ],
         type: 'javascript/auto',
       },
       {

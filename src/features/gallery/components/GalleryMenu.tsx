@@ -7,7 +7,6 @@ import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { useCallback } from 'react';
 import { Button, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import {
   FaBook,
@@ -66,30 +65,27 @@ export function GalleryMenu() {
         .length > 0,
   );
 
-  const handleMoreSelect = useCallback(
-    (eventKey: string | null) => {
-      if (!eventKey) {
-        // nothing
-      } else if (eventKey.startsWith('all-')) {
-        dispatch(
-          galleryAllPremiumOrFree(eventKey.slice(4) as 'premium' | 'free'),
-        );
-      } else if (eventKey === 'emails') {
-        dispatch(
-          saveSettings({
-            user: {
-              sendGalleryEmails: !sendGalleryEmails,
-            },
-          }),
-        );
-      } else if (eventKey === 'direction') {
-        dispatch(galleryToggleDirection());
-      } else if (eventKey === 'legend') {
-        dispatch(galleryToggleLegend());
-      }
-    },
-    [dispatch, sendGalleryEmails],
-  );
+  const handleMoreSelect = (eventKey: string | null) => {
+    if (!eventKey) {
+      // nothing
+    } else if (eventKey.startsWith('all-')) {
+      dispatch(
+        galleryAllPremiumOrFree(eventKey.slice(4) as 'premium' | 'free'),
+      );
+    } else if (eventKey === 'emails') {
+      dispatch(
+        saveSettings({
+          user: {
+            sendGalleryEmails: !sendGalleryEmails,
+          },
+        }),
+      );
+    } else if (eventKey === 'direction') {
+      dispatch(galleryToggleDirection());
+    } else if (eventKey === 'legend') {
+      dispatch(galleryToggleLegend());
+    }
+  };
 
   const [hidden, setHidden] = usePersistentState<boolean>(
     'fm.galleryMenu.collapsed',

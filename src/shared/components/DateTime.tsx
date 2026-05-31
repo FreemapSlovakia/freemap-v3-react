@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useCallback } from 'react';
+import { ChangeEvent, ReactElement } from 'react';
 import { Form, InputGroup } from 'react-bootstrap';
 import { FaCalendar, FaClock } from 'react-icons/fa';
 
@@ -33,33 +33,21 @@ export function DateTime({
 }: Props): ReactElement {
   const [, datePart, timePart] = /(.*)T(.*)/.exec(value ?? '') || ['', '', ''];
 
-  const propagateChange = useCallback(
-    (date: string, time: string) => {
-      onChange(date ? `${date}T${time || '00:00:00'}` : '');
-    },
-    [onChange],
-  );
+  const propagateChange = (date: string, time: string) => {
+    onChange(date ? `${date}T${time || '00:00:00'}` : '');
+  };
 
-  const handleDateChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      propagateChange(e.target.value, timePart);
-    },
-    [timePart, propagateChange],
-  );
+  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    propagateChange(e.target.value, timePart);
+  };
 
-  const handleTimeChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      propagateChange(datePart, e.target.value);
-    },
-    [datePart, propagateChange],
-  );
+  const handleTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    propagateChange(datePart, e.target.value);
+  };
 
-  const handleDatetimeChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      onChange(e.target.value);
-    },
-    [onChange],
-  );
+  const handleDatetimeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.value);
+  };
 
   return supportsDatetimeLocal ? (
     <Form.Control

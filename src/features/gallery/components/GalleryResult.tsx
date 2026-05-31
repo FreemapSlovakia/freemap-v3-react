@@ -1,7 +1,7 @@
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { DragEndEvent, LeafletMouseEvent } from 'leaflet';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactElement } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gallerySetPickingPosition } from '../model/actions.js';
@@ -22,33 +22,24 @@ export function GalleryResult(): ReactElement {
 
   const showPosition = useAppSelector((state) => state.gallery.showPosition);
 
-  const handlePositionPick = useCallback(
-    (lat: number, lon: number) => {
-      dispatch(gallerySetPickingPosition({ lat, lon }));
-    },
-    [dispatch],
-  );
+  const handlePositionPick = (lat: number, lon: number) => {
+    dispatch(gallerySetPickingPosition({ lat, lon }));
+  };
 
   // TODO move to GalleryMenu to be consistent with other tools
-  const handleMapClick = useCallback(
-    ({ latlng }: LeafletMouseEvent) => {
-      if (isPickingPosition) {
-        handlePositionPick(latlng.lat, latlng.lng);
-      }
-    },
-    [isPickingPosition, handlePositionPick],
-  );
+  const handleMapClick = ({ latlng }: LeafletMouseEvent) => {
+    if (isPickingPosition) {
+      handlePositionPick(latlng.lat, latlng.lng);
+    }
+  };
 
   useMapEvent('click', handleMapClick);
 
-  const handlePositionMarkerDragEnd = useCallback(
-    (e: DragEndEvent) => {
-      const coords = e.target.getLatLng();
+  const handlePositionMarkerDragEnd = (e: DragEndEvent) => {
+    const coords = e.target.getLatLng();
 
-      handlePositionPick(coords.lat, coords.lng);
-    },
-    [handlePositionPick],
-  );
+    handlePositionPick(coords.lat, coords.lng);
+  };
 
   return (
     <>

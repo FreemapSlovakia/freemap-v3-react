@@ -22,14 +22,7 @@ import {
   LeafletMouseEvent,
   PointExpression,
 } from 'leaflet';
-import {
-  Fragment,
-  ReactElement,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { Fragment, ReactElement, ReactNode, useEffect, useState } from 'react';
 import {
   Marker,
   Polygon,
@@ -216,31 +209,27 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     dispatch(drawingMeasure({}));
   }
 
-  const ps = useMemo(() => {
-    const ps: Point[] = [];
+  const ps: Point[] = [];
 
-    for (let i = 0; i < points.length; i++) {
-      ps.push(points[i]);
+  for (let i = 0; i < points.length; i++) {
+    ps.push(points[i]);
 
-      if (i < points.length - 1 || line.type === 'polygon') {
-        const p1 = points[i];
+    if (i < points.length - 1 || line.type === 'polygon') {
+      const p1 = points[i];
 
-        const p2 = points[(i + 1) % points.length];
+      const p2 = points[(i + 1) % points.length];
 
-        const lat = (p1.lat + p2.lat) / 2;
+      const lat = (p1.lat + p2.lat) / 2;
 
-        const lon = (p1.lon + p2.lon) / 2;
+      const lon = (p1.lon + p2.lon) / 2;
 
-        ps.push({
-          lat,
-          lon,
-          id: points.length - 1 === i ? points.length * 2 : (p1.id + p2.id) / 2,
-        });
-      }
+      ps.push({
+        lat,
+        lon,
+        id: points.length - 1 === i ? points.length * 2 : (p1.id + p2.id) / 2,
+      });
     }
-
-    return ps;
-  }, [points, line.type]);
+  }
 
   let x;
 

@@ -1,7 +1,6 @@
 import { normalizeMarkerType } from '@features/objects/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LeafletMouseEvent } from 'leaflet';
-import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
@@ -20,27 +19,21 @@ export function DrawingPointsTool(): null {
 
   const dispatch = useDispatch();
 
-  useMapEvent(
-    'click',
-    useCallback(
-      ({ latlng }: LeafletMouseEvent) => {
-        dispatch(
-          drawingPointAdd({
-            coords: {
-              lat: latlng.lat,
-              lon: latlng.lng,
-            },
-            color,
-            markerType: normalizeMarkerType(markerType),
-            id: length,
-          }),
-        );
+  useMapEvent('click', ({ latlng }: LeafletMouseEvent) => {
+    dispatch(
+      drawingPointAdd({
+        coords: {
+          lat: latlng.lat,
+          lon: latlng.lng,
+        },
+        color,
+        markerType: normalizeMarkerType(markerType),
+        id: length,
+      }),
+    );
 
-        dispatch(drawingMeasure({}));
-      },
-      [dispatch, color, markerType, length],
-    ),
-  );
+    dispatch(drawingMeasure({}));
+  });
 
   return null;
 }

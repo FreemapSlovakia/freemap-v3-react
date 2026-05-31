@@ -3,7 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs, LayerDef } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import missingTile from '@/images/missing-tile-256x256.png';
 import { setActiveModal } from '../store/actions.js';
@@ -66,9 +66,9 @@ export function Layers(): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const handlePremiumClick = useCallback(() => {
+  const handlePremiumClick = () => {
     dispatch(setActiveModal('premium'));
-  }, [dispatch]);
+  };
 
   function getLayer(layerDef: LayerDef) {
     const { type, minZoom } = layerDef;

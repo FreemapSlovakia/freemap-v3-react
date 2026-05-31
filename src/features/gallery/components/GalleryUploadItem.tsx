@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import spinnerbar from '@/images/spinnerbar.gif';
@@ -38,20 +38,17 @@ export function GalleryUploadItem({
   onModelChange,
   onPreview,
 }: Props): ReactElement {
-  const handleRemove = useCallback(() => {
+  const handleRemove = () => {
     onRemove(id);
-  }, [id, onRemove]);
+  };
 
-  const handlePositionPick = useCallback(() => {
+  const handlePositionPick = () => {
     onPositionPick(id);
-  }, [id, onPositionPick]);
+  };
 
-  const handleModelChange = useCallback(
-    (model: PictureModel) => {
-      onModelChange(id, model);
-    },
-    [id, onModelChange],
-  );
+  const handleModelChange = (model: PictureModel) => {
+    onModelChange(id, model);
+  };
 
   const canvasContainer = useRef<HTMLDivElement>(null);
 
@@ -65,7 +62,7 @@ export function GalleryUploadItem({
     }
   }, [previewKey]);
 
-  const handleLoadPreviewClick = useCallback(() => {
+  const handleLoadPreviewClick = () => {
     setShowPreview2(true);
 
     loadPreview(file, 618, (err, key) => {
@@ -75,7 +72,7 @@ export function GalleryUploadItem({
         onPreview({ id, previewKey: key! });
       }
     });
-  }, [file, id, onPreview]);
+  };
 
   const [showPreview2, setShowPreview2] = useState(showPreview);
 

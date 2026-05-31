@@ -14,7 +14,6 @@ import {
   type ReactElement,
   type UIEvent,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -77,20 +76,15 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
 
   const q = query.trim().toLowerCase();
 
-  const entries = useMemo<Entry[]>(() => {
-    const faEntries: FaEntry[] = (faIcons ?? []).map((def) => ({
-      kind: 'fa',
-      name: def.iconName,
-      def,
-    }));
+  const faEntries: FaEntry[] = (faIcons ?? []).map((def) => ({
+    kind: 'fa',
+    name: def.iconName,
+    def,
+  }));
 
-    return [...poiEntries, ...faEntries];
-  }, [faIcons]);
+  const entries: Entry[] = [...poiEntries, ...faEntries];
 
-  const filtered = useMemo(
-    () => (q ? entries.filter((e) => e.name.includes(q)) : entries),
-    [entries, q],
-  );
+  const filtered = q ? entries.filter((e) => e.name.includes(q)) : entries;
 
   const visible = filtered.slice(0, limit);
 

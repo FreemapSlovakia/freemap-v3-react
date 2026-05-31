@@ -16,7 +16,7 @@ import { mapRefocus } from '@features/map/model/actions.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import storage from 'local-storage-fallback';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 export function useMenuHandler({
@@ -90,117 +90,106 @@ export function useMenuHandler({
 
   const extraHandler = useRef<(eventKey: string) => boolean>(undefined);
 
-  const handleSelect = useCallback(
-    (eventKey: string | null, e: React.SyntheticEvent<unknown, Event>) => {
-      if (eventKey !== 'url') {
-        e.preventDefault();
-      }
+  const handleSelect = (
+    eventKey: string | null,
+    e: React.SyntheticEvent<unknown, Event>,
+  ) => {
+    if (eventKey !== 'url') {
+      e.preventDefault();
+    }
 
-      if (eventKey === null) {
-        return;
-      }
+    if (eventKey === null) {
+      return;
+    }
 
-      if (eventKey.startsWith('modal-')) {
-        dispatch(setActiveModal((eventKey.slice(6) || null) as Modal | null));
+    if (eventKey.startsWith('modal-')) {
+      dispatch(setActiveModal((eventKey.slice(6) || null) as Modal | null));
 
-        setShow(false);
-      } else if (eventKey.startsWith('submenu-')) {
-        setSubmenu((eventKey.slice(8) || null) as Submenu);
-      } else if (eventKey.startsWith('document-')) {
-        dispatch(documentShow(eventKey.slice(9)));
+      setShow(false);
+    } else if (eventKey.startsWith('submenu-')) {
+      setSubmenu((eventKey.slice(8) || null) as Submenu);
+    } else if (eventKey.startsWith('document-')) {
+      dispatch(documentShow(eventKey.slice(9)));
 
-        setShow(false);
-      } else if (eventKey.startsWith('tool-')) {
-        dispatch(setTool((eventKey.slice(5) || null) as Tool | null));
+      setShow(false);
+    } else if (eventKey.startsWith('tool-')) {
+      dispatch(setTool((eventKey.slice(5) || null) as Tool | null));
 
-        setShow(false);
-      } else if (eventKey === 'drawing') {
-        const parsed = ToolSchema.safeParse(storage.getItem('fm.drawingTool'));
+      setShow(false);
+    } else if (eventKey === 'drawing') {
+      const parsed = ToolSchema.safeParse(storage.getItem('fm.drawingTool'));
 
-        dispatch(setTool(parsed.success ? parsed.data : 'draw-points'));
+      dispatch(setTool(parsed.success ? parsed.data : 'draw-points'));
 
-        setShow(false);
-      } else if (eventKey === 'clear-map-features') {
-        dispatch(clearMapFeatures());
+      setShow(false);
+    } else if (eventKey === 'clear-map-features') {
+      dispatch(clearMapFeatures());
 
-        setShow(false);
-      } else if (eventKey.startsWith('lang-')) {
+      setShow(false);
+    } else if (eventKey.startsWith('lang-')) {
+      dispatch(l10nSetChosenLanguage({ language: eventKey.slice(5) || null }));
+
+      setShow(false);
+    } else if (eventKey.startsWith('open-')) {
+      const where = eventKey.slice(5);
+
+      const parsed = ExternalTargetSchema.safeParse(where);
+
+      if (parsed.success) {
         dispatch(
-          l10nSetChosenLanguage({ language: eventKey.slice(5) || null }),
-        );
-
-        setShow(false);
-      } else if (eventKey.startsWith('open-')) {
-        const where = eventKey.slice(5);
-
-        const parsed = ExternalTargetSchema.safeParse(where);
-
-        if (parsed.success) {
-          dispatch(
-            openInExternalApp({
-              where: parsed.data,
-              lat,
-              lon,
-              zoom,
-              pointTitle,
-              pointDescription,
-            }),
-          );
-        }
-
-        setShow(false);
-      } else if (eventKey.startsWith('tracking-visual-')) {
-        const [points, lines] = eventKey
-          .slice(16)
-          .split('')
-          .map((n) => n === '1');
-
-        dispatch(trackingActions.setShowPoints(points));
-
-        dispatch(trackingActions.setShowLine(lines));
-      } else if (eventKey.startsWith('gallery')) {
-        dispatch(
-          mapRefocus({
-            layers: layers.includes('I')
-              ? layers.filter((o) => o !== 'I')
-              : [...layers, 'I'],
+          openInExternalApp({
+            where: parsed.data,
+            lat,
+            lon,
+            zoom,
+            pointTitle,
+            pointDescription,
           }),
         );
-
-        setShow(false);
-      } else if (eventKey === 'close' || eventKey === 'url') {
-        setShow(false);
-      } else if (eventKey === 'galEmails') {
-        dispatch(
-          saveSettings({
-            user: {
-              sendGalleryEmails: !sendGalleryEmails,
-            },
-          }),
-        );
-      } else if (extraHandler.current?.(eventKey)) {
-        // nothing
       }
-    },
-    [
-      dispatch,
-      lat,
-      lon,
-      pointDescription,
-      pointTitle,
-      zoom,
-      layers,
-      sendGalleryEmails,
-    ],
-  );
 
-  const handleMenuToggle = useCallback((nextShow: boolean) => {
+      setShow(false);
+    } else if (eventKey.startsWith('tracking-visual-')) {
+      const [points, lines] = eventKey
+        .slice(16)
+        .split('')
+        .map((n) => n === '1');
+
+      dispatch(trackingActions.setShowPoints(points));
+
+      dispatch(trackingActions.setShowLine(lines));
+    } else if (eventKey.startsWith('gallery')) {
+      dispatch(
+        mapRefocus({
+          layers: layers.includes('I')
+            ? layers.filter((o) => o !== 'I')
+            : [...layers, 'I'],
+        }),
+      );
+
+      setShow(false);
+    } else if (eventKey === 'close' || eventKey === 'url') {
+      setShow(false);
+    } else if (eventKey === 'galEmails') {
+      dispatch(
+        saveSettings({
+          user: {
+            sendGalleryEmails: !sendGalleryEmails,
+          },
+        }),
+      );
+    } else if (extraHandler.current?.(eventKey)) {
+      // nothing
+    }
+  };
+
+  const handleMenuToggle = (nextShow: boolean) => {
     setShow(nextShow);
-  }, []);
+  };
 
-  const closeMenu = useCallback(() => {
+  const closeMenu = () => {
     setShow(false);
-  }, []);
+  };
 
   return {
     handleSelect,

@@ -1,6 +1,6 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import storage from 'local-storage-fallback';
-import { ChangeEvent, MouseEvent, useCallback, useState } from 'react';
+import { ChangeEvent, MouseEvent, useState } from 'react';
 
 export function usePersistentState<
   T,
@@ -16,45 +16,37 @@ export function usePersistentState<
     (state) => state.cookieConsent.cookieConsentResult !== null,
   );
 
-  const setState = useCallback(
-    (value: T | ((value: T) => T)) => {
-      if (typeof value === 'function') {
-        const fn = value as (value: T) => T;
+  const setState = (value: T | ((value: T) => T)) => {
+    if (typeof value === 'function') {
+      const fn = value as (value: T) => T;
 
-        setValue((prev) => {
-          const next = fn(prev);
+      setValue((prev) => {
+        const next = fn(prev);
 
-          if (cookiesEnabled) {
-            storage.setItem(key, serialize(next));
-          }
-
-          return next;
-        });
-      } else {
         if (cookiesEnabled) {
-          storage.setItem(key, serialize(value));
+          storage.setItem(key, serialize(next));
         }
 
-        setValue(value);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [key, cookiesEnabled, serialize],
-  );
-
-  const setFormState = useCallback(
-    (evt: ChangeEvent<E> | MouseEvent<E>) => {
-      const value = deserialize(evt.currentTarget.value);
-
+        return next;
+      });
+    } else {
       if (cookiesEnabled) {
         storage.setItem(key, serialize(value));
       }
 
       setValue(value);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cookiesEnabled, key, deserialize, serialize],
-  );
+    }
+  };
+
+  const setFormState = (evt: ChangeEvent<E> | MouseEvent<E>) => {
+    const value = deserialize(evt.currentTarget.value);
+
+    if (cookiesEnabled) {
+      storage.setItem(key, serialize(value));
+    }
+
+    setValue(value);
+  };
 
   return [value, setState, setFormState] as const;
 }

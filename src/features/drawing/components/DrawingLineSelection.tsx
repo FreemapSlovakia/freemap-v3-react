@@ -10,7 +10,7 @@ import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
 import { lineString } from '@turf/helpers';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
@@ -56,7 +56,7 @@ export function DrawingLineSelection(): ReactElement | null {
     Boolean(state.elevationChart.elevationProfilePoints),
   );
 
-  const toggleElevationChart = useCallback(() => {
+  const toggleElevationChart = () => {
     // TODO to processor
 
     if (showElevationChart) {
@@ -68,84 +68,78 @@ export function DrawingLineSelection(): ReactElement | null {
         ),
       );
     }
-  }, [line, showElevationChart, dispatch]);
+  };
 
   const [projectPointDialogVisible, setProjectPointDialogVisible] =
     useState(false);
 
-  const projectPoint = useCallback(
-    (distance: number, azimuth: number) => {
-      if (lineIndex === undefined) {
-        return;
-      }
+  const projectPoint = (distance: number, azimuth: number) => {
+    if (lineIndex === undefined) {
+      return;
+    }
 
-      const basePoint = line?.points.at(-1);
+    const basePoint = line?.points.at(-1);
 
-      if (!basePoint) {
-        return;
-      }
+    if (!basePoint) {
+      return;
+    }
 
-      setProjectPointDialogVisible(false);
+    setProjectPointDialogVisible(false);
 
-      const p = destination([basePoint.lon, basePoint.lat], distance, azimuth, {
-        units: 'meters',
-      });
+    const p = destination([basePoint.lon, basePoint.lat], distance, azimuth, {
+      units: 'meters',
+    });
 
-      dispatch(
-        drawingLineAddPoint({
-          lineIndex,
-          indexOfLineToSelect: lineIndex,
-          point: {
-            id: basePoint.id + 1,
-            lon: p.geometry.coordinates[0],
-            lat: p.geometry.coordinates[1],
-          },
-        }),
-      );
-    },
-    [dispatch, line?.points, lineIndex],
-  );
+    dispatch(
+      drawingLineAddPoint({
+        lineIndex,
+        indexOfLineToSelect: lineIndex,
+        point: {
+          id: basePoint.id + 1,
+          lon: p.geometry.coordinates[0],
+          lat: p.geometry.coordinates[1],
+        },
+      }),
+    );
+  };
 
-  const handleMoreSelect = useCallback(
-    (eventKey: string | null) => {
-      if (lineIndex === undefined) {
-        return;
-      }
+  const handleMoreSelect = (eventKey: string | null) => {
+    if (lineIndex === undefined) {
+      return;
+    }
 
-      switch (eventKey) {
-        case 'project-point':
-          setProjectPointDialogVisible(true);
+    switch (eventKey) {
+      case 'project-point':
+        setProjectPointDialogVisible(true);
 
-          break;
+        break;
 
-        case 'toggle-elevation-chart':
-          toggleElevationChart();
+      case 'toggle-elevation-chart':
+        toggleElevationChart();
 
-          break;
+        break;
 
-        case 'reverse':
-          dispatch(drawingLineReverse({ lineIndex }));
+      case 'reverse':
+        dispatch(drawingLineReverse({ lineIndex }));
 
-          break;
+        break;
 
-        case 'simplify': {
-          const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
+      case 'simplify': {
+        const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
 
-          if (tolerance !== null) {
-            dispatch(
-              drawingLineSimplify({
-                lineIndex,
-                tolerance: Number(tolerance || '0') / 100000,
-              }),
-            );
-          }
-
-          break;
+        if (tolerance !== null) {
+          dispatch(
+            drawingLineSimplify({
+              lineIndex,
+              tolerance: Number(tolerance || '0') / 100000,
+            }),
+          );
         }
+
+        break;
       }
-    },
-    [dispatch, lineIndex, m, toggleElevationChart],
-  );
+    }
+  };
 
   if (!line) {
     return null;

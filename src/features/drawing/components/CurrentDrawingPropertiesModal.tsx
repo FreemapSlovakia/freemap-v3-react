@@ -15,13 +15,7 @@ import { parseIconSpec } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import { polygon } from '@turf/helpers';
-import {
-  ChangeEvent,
-  ReactElement,
-  SubmitEvent,
-  useCallback,
-  useState,
-} from 'react';
+import { ChangeEvent, ReactElement, SubmitEvent, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -158,218 +152,191 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
-  const handleSubmit = useCallback(
-    (e: SubmitEvent<HTMLFormElement>) => {
-      if (
-        selection?.type !== 'draw-line-poly' &&
-        selection?.type !== 'draw-points'
-      ) {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+    if (
+      selection?.type !== 'draw-line-poly' &&
+      selection?.type !== 'draw-points'
+    ) {
+      return;
+    }
+
+    e.preventDefault();
+
+    if (
+      polyPoints &&
+      polyPoints.length >= 3 &&
+      editedLabel === 'cry me a river'
+    ) {
+      const pixelSize = window.prompt('Pixel size?');
+
+      if (pixelSize == null) {
         return;
       }
 
-      e.preventDefault();
+      const threshold = window.prompt('Stream threshold?', '20000');
 
-      if (
-        polyPoints &&
-        polyPoints.length >= 3 &&
-        editedLabel === 'cry me a river'
-      ) {
-        const pixelSize = window.prompt('Pixel size?');
+      if (!threshold) {
+        return;
+      }
 
-        if (pixelSize == null) {
-          return;
-        }
+      const minLen = window.prompt('Minimum stream length?', '50');
 
-        const threshold = window.prompt('Stream threshold?', '20000');
+      if (!minLen) {
+        return;
+      }
 
-        if (!threshold) {
-          return;
-        }
+      const simplifyTolerance = window.prompt('Simplify tolerance?', '1.5');
 
-        const minLen = window.prompt('Minimum stream length?', '50');
+      if (!simplifyTolerance) {
+        return;
+      }
 
-        if (!minLen) {
-          return;
-        }
+      const inJosm = window.confirm('Open in JSOM?');
 
-        const simplifyTolerance = window.prompt('Simplify tolerance?', '1.5');
+      const toOsm =
+        inJosm || window.confirm('Write as OSM? (otherwise ad GeoJSON)');
 
-        if (!simplifyTolerance) {
-          return;
-        }
+      const q = new URLSearchParams({
+        threshold,
+        'min-len': minLen,
+        'simplify-tolerance': simplifyTolerance,
+        mask: JSON.stringify(
+          polygon([[...polyPoints, polyPoints[0]].map((p) => [p.lon, p.lat])]),
+        ),
+      });
 
-        const inJosm = window.confirm('Open in JSOM?');
+      if (pixelSize) {
+        q.append('pixel-size', pixelSize);
+      }
 
-        const toOsm =
-          inJosm || window.confirm('Write as OSM? (otherwise ad GeoJSON)');
+      if (toOsm) {
+        q.append('to-osm', '1');
+      }
 
-        const q = new URLSearchParams({
-          threshold,
-          'min-len': minLen,
-          'simplify-tolerance': simplifyTolerance,
-          mask: JSON.stringify(
-            polygon([
-              [...polyPoints, polyPoints[0]].map((p) => [p.lon, p.lat]),
-            ]),
-          ),
-        });
-
-        if (pixelSize) {
-          q.append('pixel-size', pixelSize);
-        }
-
-        if (toOsm) {
-          q.append('to-osm', '1');
-        }
-
-        if (inJosm) {
-          fetch(
-            'http://localhost:8111/import?new_layer=true&url=' +
-              encodeURIComponent('http://fm3.freemap.sk:8080?' + q.toString()),
-          )
-            .then((res) => {
-              if (!res.ok) {
-                throw new Error(
-                  'Error response from localhost:8111: ' + res.status,
-                );
-              }
-            })
-            .catch((err) => {
-              dispatch?.(
-                toastsAdd({
-                  messageKey: 'general.operationError',
-                  messageParams: { err },
-                  style: 'danger',
-                }),
+      if (inJosm) {
+        fetch(
+          'http://localhost:8111/import?new_layer=true&url=' +
+            encodeURIComponent('http://fm3.freemap.sk:8080?' + q.toString()),
+        )
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error(
+                'Error response from localhost:8111: ' + res.status,
               );
-            });
-        } else {
-          const aElem = document.createElement('a');
+            }
+          })
+          .catch((err) => {
+            dispatch?.(
+              toastsAdd({
+                messageKey: 'general.operationError',
+                messageParams: { err },
+                style: 'danger',
+              }),
+            );
+          });
+      } else {
+        const aElem = document.createElement('a');
 
-          aElem.href = 'http://fm3.freemap.sk:8080?' + q.toString();
+        aElem.href = 'http://fm3.freemap.sk:8080?' + q.toString();
 
-          aElem.target = '_blank';
+        aElem.target = '_blank';
 
-          aElem.click();
-        }
+        aElem.click();
+      }
 
+      return;
+    }
+
+    if (polyPoints && editedLabel === 'run forest run') {
+      const classifications = window.prompt('Classifications?', '4,5');
+
+      if (!classifications) {
         return;
       }
 
-      if (polyPoints && editedLabel === 'run forest run') {
-        const classifications = window.prompt('Classifications?', '4,5');
+      const inJosm = window.confirm('Open in JSOM?');
 
-        if (!classifications) {
-          return;
-        }
+      const toOsm =
+        inJosm || window.confirm('Write as OSM? (otherwise ad GeoJSON)');
 
-        const inJosm = window.confirm('Open in JSOM?');
+      const q = new URLSearchParams({
+        classifications,
+        mask: JSON.stringify(
+          polygon([[...polyPoints, polyPoints[0]].map((p) => [p.lon, p.lat])]),
+        ),
+        'to-osm': toOsm ? '1' : '',
+      });
 
-        const toOsm =
-          inJosm || window.confirm('Write as OSM? (otherwise ad GeoJSON)');
-
-        const q = new URLSearchParams({
-          classifications,
-          mask: JSON.stringify(
-            polygon([
-              [...polyPoints, polyPoints[0]].map((p) => [p.lon, p.lat]),
-            ]),
-          ),
-          'to-osm': toOsm ? '1' : '',
-        });
-
-        if (inJosm) {
-          fetch(
-            'http://localhost:8111/import?new_layer=true&url=' +
-              encodeURIComponent('http://fm3.freemap.sk:8085?' + q.toString()),
-          )
-            .then((res) => {
-              if (!res.ok) {
-                throw new Error(
-                  'Error response from localhost:8111: ' + res.status,
-                );
-              }
-            })
-            .catch((err) => {
-              dispatch?.(
-                toastsAdd({
-                  messageKey: 'general.operationError',
-                  messageParams: { err },
-                  style: 'danger',
-                }),
+      if (inJosm) {
+        fetch(
+          'http://localhost:8111/import?new_layer=true&url=' +
+            encodeURIComponent('http://fm3.freemap.sk:8085?' + q.toString()),
+        )
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error(
+                'Error response from localhost:8111: ' + res.status,
               );
-            });
-        } else {
-          const aElem = document.createElement('a');
+            }
+          })
+          .catch((err) => {
+            dispatch?.(
+              toastsAdd({
+                messageKey: 'general.operationError',
+                messageParams: { err },
+                style: 'danger',
+              }),
+            );
+          });
+      } else {
+        const aElem = document.createElement('a');
 
-          aElem.href = 'http://fm3.freemap.sk:8085?' + q.toString();
+        aElem.href = 'http://fm3.freemap.sk:8085?' + q.toString();
 
-          aElem.target = '_blank';
+        aElem.target = '_blank';
 
-          aElem.click();
-        }
-
-        return;
+        aElem.click();
       }
 
-      dispatch(
-        selection.type === 'draw-line-poly'
-          ? drawingLineChangeProperties({
-              index: selection.id,
-              properties: {
-                label: editedLabel || undefined,
-                color: editedColor,
-                fillColor:
-                  editedType === 'polygon' ? editedFillColor : undefined,
-                width: parseFloat(editedWidth) || undefined,
-                type: editedType,
-                dashArray: editedDash.length ? editedDash : undefined,
-                lineCap: editedLineCap === 'round' ? undefined : editedLineCap,
-                lineJoin:
-                  editedLineJoin === 'round' ? undefined : editedLineJoin,
-              },
-            })
-          : drawingPointChangeProperties({
-              index: selection.id,
-              properties: {
-                label: editedLabel || undefined,
-                color: editedColor,
-                markerType: normalizeMarkerType(editedMarkerType),
-                icon: editedIcon || undefined,
-              },
-            }),
-      );
+      return;
+    }
 
-      close();
-    },
-    [
-      polyPoints,
-      editedLabel,
-      dispatch,
-      editedColor,
-      editedMarkerType,
-      editedIcon,
-      editedFillColor,
-      editedWidth,
-      editedType,
-      editedDash,
-      editedLineCap,
-      editedLineJoin,
-      close,
-      selection,
-    ],
-  );
+    dispatch(
+      selection.type === 'draw-line-poly'
+        ? drawingLineChangeProperties({
+            index: selection.id,
+            properties: {
+              label: editedLabel || undefined,
+              color: editedColor,
+              fillColor: editedType === 'polygon' ? editedFillColor : undefined,
+              width: parseFloat(editedWidth) || undefined,
+              type: editedType,
+              dashArray: editedDash.length ? editedDash : undefined,
+              lineCap: editedLineCap === 'round' ? undefined : editedLineCap,
+              lineJoin: editedLineJoin === 'round' ? undefined : editedLineJoin,
+            },
+          })
+        : drawingPointChangeProperties({
+            index: selection.id,
+            properties: {
+              label: editedLabel || undefined,
+              color: editedColor,
+              markerType: normalizeMarkerType(editedMarkerType),
+              icon: editedIcon || undefined,
+            },
+          }),
+    );
 
-  const handleLocalLabelChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setEditedLabel(e.currentTarget.value);
-    },
-    [],
-  );
+    close();
+  };
+
+  const handleLocalLabelChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEditedLabel(e.currentTarget.value);
+  };
 
   const invalidWidth = isInvalidFloat(editedWidth, false, 1, 99);
 

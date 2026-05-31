@@ -1,6 +1,6 @@
 import { MarkerType } from '@features/objects/model/actions.js';
 import Leaflet, { BaseIconOptions, Icon } from 'leaflet';
-import { CSSProperties, ReactElement, useEffect, useMemo, useRef } from 'react';
+import { CSSProperties, ReactElement, useEffect, useRef } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { splitColorAlpha } from '../colorAlpha.js';
@@ -113,32 +113,26 @@ export function RichMarker({
     }
   }, [autoOpenPopup]);
 
-  const icon = useMemo(
-    () =>
-      new MarkerLeafletIcon({
-        iconAnchor:
-          markerType === 'ring' || markerType === 'square'
-            ? [12, 12]
-            : markerIconOptions.iconAnchor,
-        tooltipAnchor:
-          markerType === 'ring' || markerType === 'square'
-            ? [0, -10]
-            : [0, -35],
-        iconSize: markerIconOptions.iconSize,
-        icon: (
-          <MarkerIcon
-            color={color}
-            faIcon={faIcon}
-            iconSvg={iconSvg}
-            image={image}
-            imageOpacity={imageOpacity}
-            label={label}
-            markerType={markerType}
-          />
-        ),
-      }),
-    [color, faIcon, iconSvg, image, imageOpacity, label, markerType],
-  );
+  const icon = new MarkerLeafletIcon({
+    iconAnchor:
+      markerType === 'ring' || markerType === 'square'
+        ? [12, 12]
+        : markerIconOptions.iconAnchor,
+    tooltipAnchor:
+      markerType === 'ring' || markerType === 'square' ? [0, -10] : [0, -35],
+    iconSize: markerIconOptions.iconSize,
+    icon: (
+      <MarkerIcon
+        color={color}
+        faIcon={faIcon}
+        iconSvg={iconSvg}
+        image={image}
+        imageOpacity={imageOpacity}
+        label={label}
+        markerType={markerType}
+      />
+    ),
+  });
 
   return <Marker {...restProps} icon={icon} key={markerType} ref={markerRef} />;
 }

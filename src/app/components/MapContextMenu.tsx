@@ -18,13 +18,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { LeafletMouseEvent } from 'leaflet';
-import {
-  type ReactElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaCamera,
@@ -129,150 +123,137 @@ export function MapContextMenu(): ReactElement {
     (state) => state.drawingPoints.points.length,
   );
 
-  extraHandler.current = useCallback(
-    (eventKey: string | null) => {
-      switch (eventKey) {
-        case 'center':
-          dispatch(
-            mapRefocus({
+  extraHandler.current = (eventKey: string | null) => {
+    switch (eventKey) {
+      case 'center':
+        dispatch(
+          mapRefocus({
+            lat: contextMenu.lat,
+            lon: contextMenu.lon,
+          }),
+        );
+
+        closeMenu();
+
+        break;
+
+      case 'measure':
+        dispatch(
+          drawingMeasure({
+            position: {
               lat: contextMenu.lat,
               lon: contextMenu.lon,
-            }),
-          );
+            },
+          }),
+        );
 
-          closeMenu();
+        closeMenu();
 
-          break;
+        break;
 
-        case 'measure':
-          dispatch(
-            drawingMeasure({
-              position: {
-                lat: contextMenu.lat,
-                lon: contextMenu.lon,
-              },
-            }),
-          );
+      case 'details':
+        dispatch(
+          searchSetQuery({
+            query:
+              '@' +
+              contextMenu.lat.toFixed(6) +
+              ',' +
+              contextMenu.lon.toFixed(6),
+          }),
+        );
 
-          closeMenu();
+        closeMenu();
 
-          break;
+        break;
 
-        case 'details':
-          dispatch(
-            searchSetQuery({
-              query:
-                '@' +
-                contextMenu.lat.toFixed(6) +
-                ',' +
-                contextMenu.lon.toFixed(6),
-            }),
-          );
+      case 'photos':
+        dispatch(
+          galleryRequestImages({
+            lat: contextMenu.lat,
+            lon: contextMenu.lon,
+          }),
+        );
 
-          closeMenu();
+        closeMenu();
 
-          break;
+        break;
 
-        case 'photos':
-          dispatch(
-            galleryRequestImages({
+      case 'addPoint':
+        dispatch(
+          drawingPointAdd({
+            coords: {
               lat: contextMenu.lat,
               lon: contextMenu.lon,
-            }),
-          );
+            },
+            color,
+            markerType: normalizeMarkerType(markerType),
+            id: pointsLength,
+          }),
+        );
 
-          closeMenu();
+        dispatch(drawingMeasure({}));
 
-          break;
+        closeMenu();
 
-        case 'addPoint':
-          dispatch(
-            drawingPointAdd({
-              coords: {
-                lat: contextMenu.lat,
-                lon: contextMenu.lon,
-              },
+        break;
+
+      case 'startLine':
+        dispatch(setTool('draw-lines'));
+
+        dispatch(
+          drawingLineAddPoint({
+            lineProps: {
+              type: 'line',
               color,
-              markerType: normalizeMarkerType(markerType),
-              id: pointsLength,
-            }),
-          );
-
-          dispatch(drawingMeasure({}));
-
-          closeMenu();
-
-          break;
-
-        case 'startLine':
-          dispatch(setTool('draw-lines'));
-
-          dispatch(
-            drawingLineAddPoint({
-              lineProps: {
-                type: 'line',
-                color,
-                width,
-              },
-              point: {
-                id: 0,
-                lat: contextMenu.lat,
-                lon: contextMenu.lon,
-              },
-              indexOfLineToSelect: linesLength,
-            }),
-          );
-
-          closeMenu();
-
-          break;
-
-        case 'startRoute':
-          dispatch(setTool('route-planner'));
-
-          dispatch(
-            routePlannerSetStart({
+              width,
+            },
+            point: {
+              id: 0,
               lat: contextMenu.lat,
               lon: contextMenu.lon,
-            }),
-          );
+            },
+            indexOfLineToSelect: linesLength,
+          }),
+        );
 
-          closeMenu();
+        closeMenu();
 
-          break;
+        break;
 
-        case 'finishRoute':
-          dispatch(setTool('route-planner'));
+      case 'startRoute':
+        dispatch(setTool('route-planner'));
 
-          dispatch(
-            routePlannerSetFinish({
-              lat: contextMenu.lat,
-              lon: contextMenu.lon,
-            }),
-          );
+        dispatch(
+          routePlannerSetStart({
+            lat: contextMenu.lat,
+            lon: contextMenu.lon,
+          }),
+        );
 
-          closeMenu();
+        closeMenu();
 
-          break;
+        break;
 
-        default:
-          return false;
-      }
+      case 'finishRoute':
+        dispatch(setTool('route-planner'));
 
-      return true;
-    },
-    [
-      closeMenu,
-      color,
-      markerType,
-      contextMenu.lat,
-      contextMenu.lon,
-      dispatch,
-      width,
-      linesLength,
-      pointsLength,
-    ],
-  );
+        dispatch(
+          routePlannerSetFinish({
+            lat: contextMenu.lat,
+            lon: contextMenu.lon,
+          }),
+        );
+
+        closeMenu();
+
+        break;
+
+      default:
+        return false;
+    }
+
+    return true;
+  };
 
   return (
     <Dropdown

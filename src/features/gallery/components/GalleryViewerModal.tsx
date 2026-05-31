@@ -126,36 +126,27 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     }
   };
 
-  const handleEditModelChange = useCallback(
-    (editModel: PictureModel) => {
-      dispatch(gallerySetEditModel(editModel));
-    },
-    [dispatch],
-  );
+  const handleEditModelChange = (editModel: PictureModel) => {
+    dispatch(gallerySetEditModel(editModel));
+  };
 
-  const handleIndexChange = useCallback(
-    (e: ChangeEvent<HTMLSelectElement>) => {
-      if (imageIds) {
-        const idx = parseInt(e.currentTarget.value, 10);
+  const handleIndexChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    if (imageIds) {
+      const idx = parseInt(e.currentTarget.value, 10);
 
-        if (isNaN(idx)) {
-          throw new Error();
-        }
-
-        dispatch(galleryRequestImage(imageIds[idx]));
+      if (isNaN(idx)) {
+        throw new Error();
       }
-    },
-    [dispatch, imageIds],
-  );
 
-  const handleCommentFormSubmit = useCallback(
-    (e: SubmitEvent) => {
-      e.preventDefault();
+      dispatch(galleryRequestImage(imageIds[idx]));
+    }
+  };
 
-      dispatch(gallerySubmitComment());
-    },
-    [dispatch],
-  );
+  const handleCommentFormSubmit = (e: SubmitEvent) => {
+    e.preventDefault();
+
+    dispatch(gallerySubmitComment());
+  };
 
   const {
     title = '...',

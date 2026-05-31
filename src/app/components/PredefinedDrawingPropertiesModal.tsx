@@ -2,7 +2,7 @@ import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLine
 import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
+import { ReactElement, SubmitEvent, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaFill, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -85,9 +85,9 @@ export function PredefinedDrawingPropertiesModal({
     save(true);
   };
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   return (
     <Modal show={show} onHide={close}>

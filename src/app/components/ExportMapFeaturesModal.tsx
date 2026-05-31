@@ -17,7 +17,6 @@ import {
   ReactElement,
   ReactNode,
   SubmitEvent,
-  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -146,51 +145,38 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
   const [activity, setActivity] = useState('');
 
-  const runExport = useCallback(
-    (e: SubmitEvent) => {
-      e.preventDefault();
+  const runExport = (e: SubmitEvent) => {
+    e.preventDefault();
 
-      if (!exportables) {
-        return;
-      }
+    if (!exportables) {
+      return;
+    }
 
-      const exportAction = exportMapFeatures({
-        type,
-        exportables: exportables.split('|').filter((a) => a) as Exportable[],
-        target,
-        name: name || undefined,
-        description: description || undefined,
-        activity: activity || undefined,
-      });
-
-      if (target === 'garmin' && !userHasGarmin) {
-        if (
-          window.confirm(
-            userHasGarmin === false
-              ? m?.exportMapFeatures.garmin.connectPrompt
-              : m?.exportMapFeatures.garmin.authPrompt,
-          )
-        ) {
-          dispatch(
-            authWithGarmin({ connect: true, successAction: exportAction }),
-          );
-        }
-      } else {
-        dispatch(exportAction);
-      }
-    },
-    [
-      dispatch,
+    const exportAction = exportMapFeatures({
       type,
-      exportables,
+      exportables: exportables.split('|').filter((a) => a) as Exportable[],
       target,
-      name,
-      description,
-      activity,
-      userHasGarmin,
-      m,
-    ],
-  );
+      name: name || undefined,
+      description: description || undefined,
+      activity: activity || undefined,
+    });
+
+    if (target === 'garmin' && !userHasGarmin) {
+      if (
+        window.confirm(
+          userHasGarmin === false
+            ? m?.exportMapFeatures.garmin.connectPrompt
+            : m?.exportMapFeatures.garmin.authPrompt,
+        )
+      ) {
+        dispatch(
+          authWithGarmin({ connect: true, successAction: exportAction }),
+        );
+      }
+    } else {
+      dispatch(exportAction);
+    }
+  };
 
   const isGarmin = target === 'garmin';
 
@@ -198,24 +184,21 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
-  const handleCheckboxChange = useCallback(
-    (type: Exportable) => {
-      let next = isGarmin ? '|' : exportables;
+  const handleCheckboxChange = (type: Exportable) => {
+    let next = isGarmin ? '|' : exportables;
 
-      if (exportables.includes('|' + type + '|')) {
-        next = exportables.replace(type + '|', '');
+    if (exportables.includes('|' + type + '|')) {
+      next = exportables.replace(type + '|', '');
 
-        if (type === 'plannedRoute') {
-          next = next.replace('|plannedRouteWithStops', '');
-        }
-      } else {
-        next += type + '|';
+      if (type === 'plannedRoute') {
+        next = next.replace('|plannedRouteWithStops', '');
       }
+    } else {
+      next += type + '|';
+    }
 
-      setExportables(next);
-    },
-    [exportables, isGarmin],
-  );
+    setExportables(next);
+  };
 
   const [garminExportables, setGarminExportables] = useState<
     Partial<Record<Exportable, Position[] | string | null>> | undefined

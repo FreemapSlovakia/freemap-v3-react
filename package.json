@@ -102,7 +102,9 @@
     "zod-geojson": "^1.6.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.7",
     "@babel/parser": "^7.29.7",
+    "@babel/preset-typescript": "^7.29.7",
     "@babel/types": "^7.29.7",
     "@biomejs/biome": "^2.4.16",
     "@rspack/cli": "^2.0.5",
@@ -137,6 +139,8 @@
     "@types/wicg-file-system-access": "^2023.10.7",
     "@typescript/native-preview": "7.0.0-dev.20260527.2",
     "@webgpu/types": "^0.1.70",
+    "babel-loader": "^10.1.1",
+    "babel-plugin-react-compiler": "^1.0.0",
     "css-loader": "^7.1.4",
     "gray-matter": "^4.0.3",
     "html-loader": "^5.1.0",

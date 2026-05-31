@@ -4,7 +4,7 @@ import { MapViewState, mapRefocus } from '@features/map/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
@@ -25,16 +25,13 @@ export function MapControls(): ReactElement | null {
 
   const gpsTracked = useAppSelector((state) => state.map.gpsTracked);
 
-  const onMapRefocus = useCallback(
-    (changes: Partial<MapViewState>) => {
-      dispatch(mapRefocus(changes));
-    },
-    [dispatch],
-  );
+  const onMapRefocus = (changes: Partial<MapViewState>) => {
+    dispatch(mapRefocus(changes));
+  };
 
   const map = useMap();
 
-  const handleFullscreenClick = useCallback(() => {
+  const handleFullscreenClick = () => {
     if (!document.exitFullscreen) {
       // unsupported
     } else if (document.fullscreenElement) {
@@ -42,7 +39,7 @@ export function MapControls(): ReactElement | null {
     } else {
       document.body.requestFullscreen();
     }
-  }, []);
+  };
 
   const [forceUpdate, setForceUpdate] = useState(0);
 

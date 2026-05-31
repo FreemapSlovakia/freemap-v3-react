@@ -1,7 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { clsx } from 'clsx';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap';
 import { FaCamera, FaTimes, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -120,9 +120,9 @@ export function GalleryLeaderboardModal({ show }: Props): ReactElement {
     };
   }, [authToken, period]);
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   return (
     <Modal show={show} onHide={close}>

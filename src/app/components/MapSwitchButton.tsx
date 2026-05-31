@@ -23,7 +23,6 @@ import {
   MouseEvent,
   ReactElement,
   SyntheticEvent,
-  useCallback,
   useState,
 } from 'react';
 import { Button, ButtonGroup, Dropdown, Form } from 'react-bootstrap';
@@ -76,98 +75,92 @@ export function MapSwitchButton(): ReactElement {
 
   const [filter, setFilter] = useState('');
 
-  const handleFilterChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+  const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFilter(e.currentTarget.value);
-  }, []);
+  };
 
   const normalizedFilter = removeAccents(filter.trim().toLowerCase());
 
-  const handlePossibleFilterClick = useCallback(
-    (e: SyntheticEvent<unknown, unknown>) => {
-      let x: unknown = e.target;
+  const handlePossibleFilterClick = (e: SyntheticEvent<unknown, unknown>) => {
+    let x: unknown = e.target;
 
-      while (x instanceof Element) {
-        if (x === e.currentTarget) {
-          break;
-        }
-
-        if (x instanceof SVGElement && x.dataset['filter']) {
-          dispatch(setActiveModal('gallery-filter'));
-
-          return true;
-        }
-
-        x = x.parentNode;
+    while (x instanceof Element) {
+      if (x === e.currentTarget) {
+        break;
       }
 
-      return false;
-    },
-    [dispatch],
-  );
+      if (x instanceof SVGElement && x.dataset['filter']) {
+        dispatch(setActiveModal('gallery-filter'));
 
-  const handleSelect = useCallback(
-    (selection: string | null, e: SyntheticEvent<unknown>) => {
-      e.preventDefault();
-
-      if (selection === null || handlePossibleFilterClick(e)) {
-        setShow(false);
-
-        return;
+        return true;
       }
 
-      if (selection === 'show-all') {
-        setShow('all');
-      } else if (selection === 'show-more') {
-        setShow('more');
-      } else if (selection === 'offlineMaps') {
-        setShow(false);
+      x = x.parentNode;
+    }
 
-        dispatch(cachedMapsSetView('list'));
+    return false;
+  };
 
-        dispatch(setActiveModal('offline-maps'));
-      } else if (selection === 'mapSettings') {
-        setSubview('mapSettings');
-      } else if (selection === 'submenu-') {
-        setSubview(null);
-      } else if (selection === 'mapLayersConfig') {
-        setShow(false);
+  const handleSelect = (
+    selection: string | null,
+    e: SyntheticEvent<unknown>,
+  ) => {
+    e.preventDefault();
 
-        setSubview(null);
+    if (selection === null || handlePossibleFilterClick(e)) {
+      setShow(false);
 
-        dispatch(setActiveModal('map-layers-config'));
-      } else if (selection === 'customMaps') {
-        setShow(false);
+      return;
+    }
 
-        setSubview(null);
+    if (selection === 'show-all') {
+      setShow('all');
+    } else if (selection === 'show-more') {
+      setShow('more');
+    } else if (selection === 'offlineMaps') {
+      setShow(false);
 
-        dispatch(setActiveModal('custom-maps'));
-      } else if (selection === 'preferences') {
-        setShow(false);
+      dispatch(cachedMapsSetView('list'));
 
-        setSubview(null);
+      dispatch(setActiveModal('offline-maps'));
+    } else if (selection === 'mapSettings') {
+      setSubview('mapSettings');
+    } else if (selection === 'submenu-') {
+      setSubview(null);
+    } else if (selection === 'mapLayersConfig') {
+      setShow(false);
 
-        dispatch(setActiveModal('map-preferences'));
-      } else if (selection.startsWith('layer-')) {
-        dispatch(mapToggleLayer({ type: selection.slice(6) }));
-      }
-    },
-    [dispatch, handlePossibleFilterClick],
-  );
+      setSubview(null);
 
-  const handleLayerButtonClick = useCallback(
-    (e: MouseEvent<HTMLButtonElement>) => {
-      if (handlePossibleFilterClick(e)) {
-        return;
-      }
+      dispatch(setActiveModal('map-layers-config'));
+    } else if (selection === 'customMaps') {
+      setShow(false);
 
-      const { type } = e.currentTarget.dataset;
+      setSubview(null);
 
-      if (type) {
-        dispatch(mapToggleLayer({ type }));
-      }
-    },
-    [dispatch, handlePossibleFilterClick],
-  );
+      dispatch(setActiveModal('custom-maps'));
+    } else if (selection === 'preferences') {
+      setShow(false);
+
+      setSubview(null);
+
+      dispatch(setActiveModal('map-preferences'));
+    } else if (selection.startsWith('layer-')) {
+      dispatch(mapToggleLayer({ type: selection.slice(6) }));
+    }
+  };
+
+  const handleLayerButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
+    if (handlePossibleFilterClick(e)) {
+      return;
+    }
+
+    const { type } = e.currentTarget.dataset;
+
+    if (type) {
+      dispatch(mapToggleLayer({ type }));
+    }
+  };
 
   const isWide = useMediaQuery({ query: '(min-width: 576px)' });
 
@@ -205,14 +198,14 @@ export function MapSwitchButton(): ReactElement {
     zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
   }));
 
-  const handleToggle = useCallback((nextShow: boolean) => {
+  const handleToggle = (nextShow: boolean) => {
     setShow(nextShow);
 
     if (!nextShow) {
       setSubview(null);
       setFilter('');
     }
-  }, []);
+  };
 
   function commonBadges(
     def: (typeof layerDefs)[number],

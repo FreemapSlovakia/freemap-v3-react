@@ -1,7 +1,6 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LeafletMouseEvent } from 'leaflet';
-import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
@@ -51,71 +50,56 @@ export function DrawingLinesTool(): null {
     (state) => state.drawingLines.lines.length,
   );
 
-  const handleMapClick = useCallback(
-    ({ latlng, originalEvent }: LeafletMouseEvent) => {
-      if (
-        // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
-        window.preventMapClick ||
-        !isEventOnMap(originalEvent)
-      ) {
-        return;
-      }
+  const handleMapClick = ({ latlng, originalEvent }: LeafletMouseEvent) => {
+    if (
+      // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
+      window.preventMapClick ||
+      !isEventOnMap(originalEvent)
+    ) {
+      return;
+    }
 
-      const pos = linePoints.length;
+    const pos = linePoints.length;
 
-      let id;
+    let id;
 
-      if (pos === 0) {
-        id = linePoints.length ? linePoints[pos].id - 1 : 0;
-      } else if (pos === linePoints.length) {
-        id = linePoints[pos - 1].id + 1;
-      } else {
-        id = (linePoints[pos - 1].id + linePoints[pos].id) / 2;
-      }
+    if (pos === 0) {
+      id = linePoints.length ? linePoints[pos].id - 1 : 0;
+    } else if (pos === linePoints.length) {
+      id = linePoints[pos - 1].id + 1;
+    } else {
+      id = (linePoints[pos - 1].id + linePoints[pos].id) / 2;
+    }
 
-      const lineIndex =
-        selection?.type === 'draw-line-poly' ? selection.id : undefined;
+    const lineIndex =
+      selection?.type === 'draw-line-poly' ? selection.id : undefined;
 
-      dispatch(
-        lineIndex === undefined
-          ? drawingLineAddPoint({
-              lineProps: {
-                type: tool === 'draw-lines' ? 'line' : 'polygon',
-                color,
-                fillColor: tool === 'draw-lines' ? undefined : fillColor,
-                width,
-                dashArray: dashArray,
-                lineCap,
-                lineJoin,
-              },
-              point: { lat: latlng.lat, lon: latlng.lng, id },
-              position: pos,
-              indexOfLineToSelect: linesLength,
-            })
-          : drawingLineAddPoint({
-              lineIndex,
-              point: { lat: latlng.lat, lon: latlng.lng, id },
-              position: pos,
-              indexOfLineToSelect: lineIndex,
-            }),
-      );
+    dispatch(
+      lineIndex === undefined
+        ? drawingLineAddPoint({
+            lineProps: {
+              type: tool === 'draw-lines' ? 'line' : 'polygon',
+              color,
+              fillColor: tool === 'draw-lines' ? undefined : fillColor,
+              width,
+              dashArray: dashArray,
+              lineCap,
+              lineJoin,
+            },
+            point: { lat: latlng.lat, lon: latlng.lng, id },
+            position: pos,
+            indexOfLineToSelect: linesLength,
+          })
+        : drawingLineAddPoint({
+            lineIndex,
+            point: { lat: latlng.lat, lon: latlng.lng, id },
+            position: pos,
+            indexOfLineToSelect: lineIndex,
+          }),
+    );
 
-      dispatch(drawingMeasure({}));
-    },
-    [
-      linePoints,
-      dispatch,
-      selection,
-      tool,
-      color,
-      fillColor,
-      width,
-      dashArray,
-      lineCap,
-      lineJoin,
-      linesLength,
-    ],
-  );
+    dispatch(drawingMeasure({}));
+  };
 
   useMapEvent('click', handleMapClick);
 

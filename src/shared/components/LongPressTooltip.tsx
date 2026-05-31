@@ -3,7 +3,6 @@ import {
   MouseEvent,
   PointerEvent,
   ReactNode,
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -83,24 +82,21 @@ export function LongPressTooltip({
     return () => window.removeEventListener('resize', checkVisibility);
   }, [breakpoint]);
 
-  const handleStart = useCallback(
-    (e: PointerEvent) => {
-      if (!labelHidden || timeoutRef.current) {
-        return;
-      }
+  const handleStart = (e: PointerEvent) => {
+    if (!labelHidden || timeoutRef.current) {
+      return;
+    }
 
-      const type = e.type;
+    const type = e.type;
 
-      timeoutRef.current = setTimeout(() => {
-        preventClickRef.current = type !== 'pointerenter';
+    timeoutRef.current = setTimeout(() => {
+      preventClickRef.current = type !== 'pointerenter';
 
-        setShow(true);
-      }, delay);
-    },
-    [delay, labelHidden],
-  );
+      setShow(true);
+    }, delay);
+  };
 
-  const handleClear = useCallback(() => {
+  const handleClear = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -112,21 +108,21 @@ export function LongPressTooltip({
     });
 
     setShow(false);
-  }, []);
+  };
 
-  const handleClickCapture = useCallback((e: MouseEvent) => {
+  const handleClickCapture = (e: MouseEvent) => {
     if (preventClickRef.current) {
       e.preventDefault();
       e.stopPropagation();
     } else {
       setShow(false);
     }
-  }, []);
+  };
 
-  const handleContextMenuCapture = useCallback((e: MouseEvent) => {
+  const handleContextMenuCapture = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-  }, []);
+  };
 
   const kbdEl = (kbd?.split(' ') ?? []).map((kbd) => (
     <Fragment key={kbd}>

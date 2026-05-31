@@ -1,4 +1,4 @@
-import { ChangeEvent, useMemo, useRef } from 'react';
+import { ChangeEvent, useRef } from 'react';
 
 type ControlChangeEvent = ChangeEvent<
   HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -11,24 +11,18 @@ export function useModelChangeHandlers<T extends object>(
     Partial<Record<keyof T, (e: ControlChangeEvent) => void>>
   >({});
 
-  return useMemo(() => {
-    return new Proxy(
-      {} as { [K in keyof T]: (e: ControlChangeEvent) => void },
-      {
-        get: (_, key) => {
-          const k = key as keyof T;
+  return new Proxy({} as { [K in keyof T]: (e: ControlChangeEvent) => void }, {
+    get: (_, key) => {
+      const k = key as keyof T;
 
-          return (cache.current[k] ??= (e) => {
-            const { type, value, checked } =
-              e.currentTarget as HTMLInputElement;
+      return (cache.current[k] ??= (e) => {
+        const { type, value, checked } = e.currentTarget as HTMLInputElement;
 
-            setModel((model) => ({
-              ...model,
-              [k]: type === 'checkbox' ? checked : value,
-            }));
-          });
-        },
-      },
-    );
-  }, [setModel]);
+        setModel((model) => ({
+          ...model,
+          [k]: type === 'checkbox' ? checked : value,
+        }));
+      });
+    },
+  });
 }

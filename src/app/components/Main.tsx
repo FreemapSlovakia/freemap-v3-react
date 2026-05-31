@@ -44,7 +44,7 @@ import { isPremium } from '@shared/premium.js';
 import fmLogo from '@/images/freemap-logo-print.png';
 import 'leaflet/dist/leaflet.css';
 import clsx from 'clsx';
-import { MouseEvent, ReactElement, useCallback } from 'react';
+import { MouseEvent, ReactElement } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
@@ -370,7 +370,7 @@ export function Main(): ReactElement {
 
   useMouseCursor(map?.getContainer());
 
-  const handleLogoClick = useCallback(() => {
+  const handleLogoClick = () => {
     if (window.fmEmbedded) {
       const params = new URLSearchParams(window.location.hash.slice(1));
 
@@ -391,21 +391,17 @@ export function Main(): ReactElement {
         }),
       );
     }
-  }, [dispatch]);
+  };
 
-  const handlePictureAdded = useCallback(
-    (item: GalleryItem) => {
-      dispatch(galleryAddItem(item));
-    },
-    [dispatch],
-  );
+  const handlePictureAdded = (item: GalleryItem) => {
+    dispatch(galleryAddItem(item));
+  };
 
-  const onPictureUpdated = useCallback(
-    (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {
-      dispatch(galleryMergeItem(item));
-    },
-    [dispatch],
-  );
+  const onPictureUpdated = (
+    item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>,
+  ) => {
+    dispatch(galleryMergeItem(item));
+  };
 
   const handlePicturesDrop = usePictureDropHandler(
     true,
@@ -414,59 +410,50 @@ export function Main(): ReactElement {
     onPictureUpdated,
   );
 
-  const onGpxDrop = useCallback(
-    (trackGpx: string) => {
-      dispatch(trackViewerSetTrackUID(null));
+  const onGpxDrop = (trackGpx: string) => {
+    dispatch(trackViewerSetTrackUID(null));
 
-      dispatch(trackViewerSetData({ trackGpx, focus: true }));
+    dispatch(trackViewerSetData({ trackGpx, focus: true }));
 
-      dispatch(setActiveModal(null));
+    dispatch(setActiveModal(null));
 
-      dispatch(setTool('import-file'));
+    dispatch(setTool('import-file'));
 
-      dispatch(elevationChartClose());
-    },
-    [dispatch],
-  );
+    dispatch(elevationChartClose());
+  };
 
-  const onGpxLoadError = useCallback(
-    (message: string) => {
-      dispatch(
-        toastsAdd({
-          id: 'trackViewer.loadError',
-          message,
-          style: 'danger',
-          timeout: 5000,
-        }),
-      );
-    },
-    [dispatch],
-  );
+  const onGpxLoadError = (message: string) => {
+    dispatch(
+      toastsAdd({
+        id: 'trackViewer.loadError',
+        message,
+        style: 'danger',
+        timeout: 5000,
+      }),
+    );
+  };
 
   const handleGpxDrop = useTextFileDropHandler(onGpxDrop, onGpxLoadError, m);
 
-  const onGeojsonDrop = useCallback(
-    (text: string) => {
-      const trackGeojson = parseGeojsonFile(text);
+  const onGeojsonDrop = (text: string) => {
+    const trackGeojson = parseGeojsonFile(text);
 
-      if (!trackGeojson) {
-        onGpxLoadError(m?.trackViewer.invalidFormat ?? 'invalid format');
+    if (!trackGeojson) {
+      onGpxLoadError(m?.trackViewer.invalidFormat ?? 'invalid format');
 
-        return;
-      }
+      return;
+    }
 
-      dispatch(trackViewerSetTrackUID(null));
+    dispatch(trackViewerSetTrackUID(null));
 
-      dispatch(trackViewerSetData({ trackGeojson, focus: true }));
+    dispatch(trackViewerSetData({ trackGeojson, focus: true }));
 
-      dispatch(setActiveModal(null));
+    dispatch(setActiveModal(null));
 
-      dispatch(setTool('import-file'));
+    dispatch(setTool('import-file'));
 
-      dispatch(elevationChartClose());
-    },
-    [dispatch, m, onGpxLoadError],
-  );
+    dispatch(elevationChartClose());
+  };
 
   const handleGeojsonDrop = useTextFileDropHandler(
     onGeojsonDrop,
@@ -474,46 +461,37 @@ export function Main(): ReactElement {
     m,
   );
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const pictureFiles = acceptedFiles.filter(
-        (file) => file.type === 'image/jpeg',
-      );
+  const onDrop = (acceptedFiles: File[]) => {
+    const pictureFiles = acceptedFiles.filter(
+      (file) => file.type === 'image/jpeg',
+    );
 
-      if (pictureFiles.length) {
-        dispatch(setActiveModal('gallery-upload')); // if no user then it displays valuable error
+    if (pictureFiles.length) {
+      dispatch(setActiveModal('gallery-upload')); // if no user then it displays valuable error
 
-        if (authenticated) {
-          handlePicturesDrop(pictureFiles);
-        }
+      if (authenticated) {
+        handlePicturesDrop(pictureFiles);
       }
+    }
 
-      const gpxFiles = acceptedFiles.filter((file) =>
-        file.name.toLowerCase().endsWith('.gpx'),
-      );
+    const gpxFiles = acceptedFiles.filter((file) =>
+      file.name.toLowerCase().endsWith('.gpx'),
+    );
 
-      if (gpxFiles.length) {
-        handleGpxDrop(gpxFiles);
-      }
+    if (gpxFiles.length) {
+      handleGpxDrop(gpxFiles);
+    }
 
-      const geojsonFiles = acceptedFiles.filter((file) => {
-        const name = file.name.toLowerCase();
+    const geojsonFiles = acceptedFiles.filter((file) => {
+      const name = file.name.toLowerCase();
 
-        return name.endsWith('.geojson') || name.endsWith('.json');
-      });
+      return name.endsWith('.geojson') || name.endsWith('.json');
+    });
 
-      if (geojsonFiles.length) {
-        handleGeojsonDrop(geojsonFiles);
-      }
-    },
-    [
-      handlePicturesDrop,
-      handleGpxDrop,
-      handleGeojsonDrop,
-      dispatch,
-      authenticated,
-    ],
-  );
+    if (geojsonFiles.length) {
+      handleGeojsonDrop(geojsonFiles);
+    }
+  };
 
   useShareFile(onDrop);
 

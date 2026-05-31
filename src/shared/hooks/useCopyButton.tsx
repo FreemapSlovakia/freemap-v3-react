@@ -1,5 +1,5 @@
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaCheck, FaCopy } from 'react-icons/fa';
 
@@ -8,7 +8,7 @@ export function useCopyButton(text: string) {
 
   const tid = useRef<number | undefined>(undefined);
 
-  const handleCopyClick = useCallback(() => {
+  const handleCopyClick = () => {
     navigator.clipboard.writeText(text);
 
     setChecked(true);
@@ -22,7 +22,7 @@ export function useCopyButton(text: string) {
 
       setChecked(false);
     }, 1000);
-  }, [text]);
+  };
 
   useEffect(
     () => () => {

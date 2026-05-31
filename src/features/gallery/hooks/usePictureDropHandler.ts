@@ -1,7 +1,6 @@
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import ExifReader, { Tags } from 'exifreader';
-import { useCallback } from 'react';
 import { loadPreview } from '../imagePreview.js';
 import { GalleryItem } from '../model/actions.js';
 
@@ -15,9 +14,8 @@ export function usePictureDropHandler(
 ): (files: File[]) => void {
   const premium = useAppSelector((state) => state.gallery.premium);
 
-  const processFile = useCallback(
-    (file: File, cb: (err?: unknown) => void) => {
-      const reader = new FileReader();
+  const processFile = (file: File, cb: (err?: unknown) => void) => {
+    const reader = new FileReader();
 
       reader.onerror = () => {
         reader.abort();
@@ -152,25 +150,20 @@ export function usePictureDropHandler(
         }
       };
 
-      reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
-    },
-    [showPreview, language, onItemAdd, onItemChange, premium],
-  );
+    reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
+  };
 
-  return useCallback(
-    (acceptedFiles: File[] /* , rejectedFiles: File[] */) => {
-      for (const accpetedFile of acceptedFiles) {
-        processFile(accpetedFile, (err?: unknown) => {
-          if (err) {
-            console.error(err);
+  return (acceptedFiles: File[] /* , rejectedFiles: File[] */) => {
+    for (const accpetedFile of acceptedFiles) {
+      processFile(accpetedFile, (err?: unknown) => {
+        if (err) {
+          console.error(err);
 
-            // TODO return it
-          }
-        });
-      }
-    },
-    [processFile],
-  );
+          // TODO return it
+        }
+      });
+    }
+  };
 }
 
 type WeirdGpsCoordinate = {

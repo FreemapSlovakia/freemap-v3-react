@@ -3,7 +3,7 @@ import { resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import type { Node } from '@osm/types.js';
 import type { IconSvg } from '@shared/components/RichMarker.js';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // The `icon` field on a drawing point is one of these forms.
 export type IconSpec =
@@ -663,9 +663,7 @@ export function useIconContentProps(icon: string | undefined) {
 
   const faDef = useFaIcon(spec?.kind === 'fa' ? spec.name : undefined);
 
-  // Memoized on the (stable, cached) definition so consumers don't rebuild
-  // the marker icon on unrelated re-renders / mid-drag.
-  const iconSvg = useMemo(() => faDef && faIconToSvg(faDef), [faDef]);
+  const iconSvg = faDef && faIconToSvg(faDef);
 
   return spec?.kind === 'poi'
     ? { image: poiIconNameToUrl[spec.name] }

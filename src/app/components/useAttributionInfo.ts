@@ -1,7 +1,7 @@
 import { mapSetEsriAttribution } from '@features/map/model/actions.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 
@@ -180,7 +180,7 @@ export function useAttributionInfo() {
     );
   }, [layers, dispatch, nonce, esriAttribution]);
 
-  return useCallback(() => {
+  return () => {
     setNonce((n) => n + 1);
-  }, []);
+  };
 }

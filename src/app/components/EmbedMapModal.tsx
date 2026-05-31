@@ -72,6 +72,8 @@ export function EmbedMapModal({ show }: Props): ReactElement {
     return set;
   });
 
+  // Kept memoized (despite React Compiler) because both are consumed by
+  // useEffect dependency arrays below.
   const getEmbedFeatures = useCallback(
     () =>
       [
@@ -152,9 +154,9 @@ export function EmbedMapModal({ show }: Props): ReactElement {
     }
   };
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const allow = ['fullscreen'];
 
@@ -170,28 +172,25 @@ export function EmbedMapModal({ show }: Props): ReactElement {
     (state) => state.cookieConsent.cookieConsentResult !== null,
   );
 
-  const handleFeaturesChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const value = e.currentTarget.value as Feature;
+  const handleFeaturesChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value as Feature;
 
-      setFeatures((prev) => {
-        const next = new Set(prev);
+    setFeatures((prev) => {
+      const next = new Set(prev);
 
-        if (next.has(value)) {
-          next.delete(value);
-        } else {
-          next.add(value);
-        }
+      if (next.has(value)) {
+        next.delete(value);
+      } else {
+        next.add(value);
+      }
 
-        if (cookiesEnabled) {
-          storage.setItem(FEATURES_STORAGE_KEY, [...next].join(','));
-        }
+      if (cookiesEnabled) {
+        storage.setItem(FEATURES_STORAGE_KEY, [...next].join(','));
+      }
 
-        return next;
-      });
-    },
-    [cookiesEnabled],
-  );
+      return next;
+    });
+  };
 
   return (
     <Modal show={show} onHide={close} className="dynamic">
