@@ -20,11 +20,6 @@ server {
 		autoindex on;
 	}
 
-	location /sitemap/layers=X&lang=sk {
-		add_header Link '<https://www.freemap.sk/?layers=X&lang=sk>; rel=\"canonical\"';
-		default_type 'text/html; charset=UTF-8';
-	}
-
 	location /sitemap {
 		default_type 'text/html; charset=UTF-8';
 	}
@@ -43,28 +38,43 @@ server {
 			set $cond a;
 		}
 
-		if ($args ~ "layers=X&osm-(node|way|relation)=\d+&lang=sk") {
+		# Allowlist of safe, non-empty prerender query strings. These chars cover
+		# layers= / show= / tool= / osm-…= / tip= / document= / lang= (incl. '~');
+		# none contain '/', '.' or '%', so no path traversal into try_files below.
+		if ($args ~ "^[A-Za-z0-9=&_~-]+$") {
 			set $cond "${cond}b";
 		}
 
-		if ($args ~ "layers=X&tip=\w+&lang=sk") {
-			set $cond "${cond}b";
-		}
-
+		# Bot + recognised query string: serve the matching static prerender
+		# (homepage / hub / feature / document, any language), falling back to
+		# the Slovak homepage when no prerender exists for it.
 		if ($cond = ab) {
-			rewrite ^ /sitemap/$args;
+			rewrite ^ /__prerender last;
 		}
 
+		# Bot + no / unsupported query string: serve the Slovak homepage prerender.
 		if ($cond = a) {
 			rewrite ^ /sitemap/layers=X&lang=sk;
 		}
 
-		#set $lang_sup "en,sk,cs,hu";
-		#	set_by_lua_file $lang_accept /etc/nginx/lang.lua $lang_sup;
-		#try_files $uri /index-$lang_accept.html;
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
+	}
+
+	# Internal-only: map a bot's query string to a prerendered HTML file under
+	# /sitemap, with the Slovak homepage as the fallback. Reached via the rewrite
+	# in "location = /"; never requested directly.
+	location = /__prerender {
+		internal;
+
+		default_type 'text/html; charset=UTF-8';
+
+		add_header Cache-Control 'no-store, max-age=0';
+		add_header Referrer-Policy 'no-referrer';
+		add_header Strict-Transport-Security 'max-age=31536000';
+
+		try_files "/sitemap/$args" "/sitemap/layers=X&lang=sk";
 	}
 
 	# Match all unhashed HTML, including the internal redirect "/" -> /index.html

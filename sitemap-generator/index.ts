@@ -1,145 +1,128 @@
-import { readdir, readFile, writeFile } from 'fs/promises';
+import { mkdir, readdir, readFile, rm, writeFile } from 'fs/promises';
+import matter from 'gray-matter';
 import htm from 'htm';
 import { marked } from 'marked';
 import vhtml from 'vhtml';
 import { objects } from './objects.js';
+import {
+  appUrl,
+  BASE,
+  fileName,
+  HUB_LANGS,
+  hubs,
+  LANGS,
+  renderDocument,
+  renderHome,
+  renderHub,
+} from './seo.js';
 
 const html = htm.bind(vhtml);
 
-const raw = (html: string) =>
-  vhtml(null, {
-    dangerouslySetInnerHTML: { __html: html },
-  });
-
 async function gen() {
+  const startedAt = Date.now();
+
+  console.log('Generating sitemap…');
+
+  // Start from a clean output dir: gen only writes, so without this, pages for
+  // OSM features deleted since the last run linger and get redeployed (rsync
+  // --delete cannot remove them — they still exist locally).
+  await rm('../sitemap', { recursive: true, force: true });
+
+  await mkdir('../sitemap', { recursive: true });
+
   const sitemapNames: string[] = [];
 
   const out: string[] = [];
 
-  await writeFile(
-    `../sitemap/layers=X&lang=sk`,
-    '<!doctype html>\n' +
-      html`<html lang="sk">
-        <head>
-          <title>Freemap Slovakia, digitálne mapy</title>
+  // Homepage, one prerender per UI language (cross-linked via hreflang).
+  for (const lang of LANGS) {
+    await writeFile(
+      `../sitemap/${fileName('layers=X', lang)}`,
+      renderHome(lang),
+    );
 
-          <description
-            >Detailná turistická mapa, cyklistická mapa, bežkárska mapa a
-            jazdecká mapa strednej Európy, založená na databáze OpenStreetMap.
-          </description>
+    out.push(appUrl('layers=X', lang));
+  }
 
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
+  console.log(`Homepages: ${LANGS.length} languages`);
 
-          <style>
-            a {
-              display: inline-block;
-              margin: 0.33rem;
-            }
-          </style>
-        </head>
+  // Layer/tool landing pages (curated copy from llms.txt), sk + en.
+  for (const hub of hubs) {
+    for (const lang of HUB_LANGS) {
+      await writeFile(
+        `../sitemap/${fileName(hub.param, lang)}`,
+        renderHub(hub, lang),
+      );
 
-        <body>
-          Detailná turistická mapa, cyklistická mapa, bežkárska mapa a jazdecká
-          mapa strednej Európy (Slovenska, Česka, Maďarska, Chorvátska,
-          Slovinska, Rumunska, Bulharska, Bosny a Hercegoviny, Rakúska,
-          Švajčiarska severného Talianska a Zakarpatskej Rusi). Mapa obsahuje
-          značené turistické, cyklistické, bežkárske a jazdecké chodníky. Je
-          založená na databáze OpenStreetMap a preto je neustále aktualizovaná.
-          Rôzne podklady ako Strava heatmap, lesné cesty NLC, ortofoto,
-          satelitný podklad, verejná doprava, wikipédia, fotografie. Funkcie ako
-          vyhľadávanie (podľa názvu alebo POI podľa kategórie), plánovanie trás
-          (pešo, cyklo, kočík, vozík, ...), anotácia mapy (kreslenie,
-          body/značky v mape), meranie (vzdialenosti, výšky, plochy, polohy),
-          zobrazenie vlastných GPX záznamov, vlastné mapy, živé sledovanie
-          (tracking), export do GPX a GeoJSON, tlač máp, exportovanie mapy do
-          PDF. Vloženie mapy do vlastnej stránky. Alternatíva k mapám ako
-          ${' '}<a href="https://mapy.dennikn.sk">hiking.sk</a>,${' '}<a
-            href="https://mapy.com"
-            >mapy.com</a
-          >${' '}alebo${' '}<a href="https://maps.google.com">maps.google.com</a
-          >.
+      out.push(appUrl(hub.param, lang));
+    }
+  }
 
-          <ul>
-            <li><a href="/?layers=X&show=legend&lang=sk">legenda mapy</a></li>
-            <li>
-              <a href="/?layers=X&show=upload-track&lang=sk"
-                >nahrať GPX súbor</a
-              >
-            </li>
-            <li>
-              <a href="/?layers=X&show=export-map-features&lang=sk"
-                >export do GPX / GeoJSON / Garmin</a
-              >
-            </li>
-            <li>
-              <a href="/?layers=X&show=export-map&lang=sk"
-                >export mapy do PDF, SVG, PNG a JPEG</a
-              >
-            </li>
-            <li>
-              <a href="/?layers=X&show=support-us&lang=sk">podporte Freemap</a>
-            </li>
-            <li>
-              <a href="/?layers=X&show=tracking-watched&lang=sk"
-                >sledované zariadenia</a
-              >
-            </li>
-          </ul>
-          <!-- TODO maybe put here words from freemap website (from sk.tsx) -->
-        </body>
-      </html>`,
+  console.log(
+    `Hub pages: ${hubs.length * HUB_LANGS.length} (${hubs.length} hubs × ${HUB_LANGS.length} languages)`,
   );
-
-  out.push(`https://www.freemap.sk/?layers=X&lang=sk`);
 
   const documentsDir = '../src/documents';
 
-  for (const document of await readdir(documentsDir)) {
-    if (document.endsWith('.md')) {
+  // Documents are `<key>.<lang>.md`. The app resolves the right file from the
+  // bare `document=<key>` param + the active `&lang=`, so the URL must NOT carry
+  // the language suffix. Group files by key to emit per-language hreflang links.
+  const docLangs = new Map<string, Lang[]>();
+
+  for (const file of await readdir(documentsDir)) {
+    const m = file.match(/^(.+)\.([a-z]{2})\.md$/);
+
+    if (!m) {
+      continue;
+    }
+
+    const key = m[1];
+
+    const lang = m[2] as Lang;
+
+    if (!LANGS.includes(lang)) {
+      continue;
+    }
+
+    docLangs.set(key, [...(docLangs.get(key) ?? []), lang]);
+  }
+
+  let docCount = 0;
+
+  for (const [key, langs] of docLangs) {
+    const docParam = `layers=X&document=${key}`;
+
+    const xDefaultLang: Lang = langs.includes('en')
+      ? 'en'
+      : langs.includes('sk')
+        ? 'sk'
+        : langs[0];
+
+    for (const lang of langs) {
+      const md = await readFile(`${documentsDir}/${key}.${lang}.md`, 'utf-8');
+
+      // Documents carry a YAML frontmatter `title:`; strip it from the body.
+      const { data, content } = matter(md);
+
       await writeFile(
-        `../sitemap/layers=X&document=${document.slice(0, -3)}&lang=sk`,
-        '<!doctype html>\n' +
-          html`<html lang="sk">
-            <head>
-              <title>freemap.sk</title>
-
-              <description
-                >Detailná turistická mapa, cyklistická mapa, bežkárska mapa a
-                jazdecká mapa strednej Európy, založená na databáze
-                OpenStreetMap.
-              </description>
-
-              <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1.0"
-              />
-
-              <style>
-                a {
-                  display: inline-block;
-                  margin: 0.33rem;
-                }
-              </style>
-            </head>
-
-            <body>
-              ${raw(
-                await marked.parse(
-                  await readFile(documentsDir + '/' + document, 'utf-8'),
-                ),
-              )}
-            </body>
-          </html>`,
+        `../sitemap/${fileName(docParam, lang)}`,
+        renderDocument({
+          key,
+          lang,
+          langs,
+          xDefaultLang,
+          title: typeof data['title'] === 'string' ? data['title'] : key,
+          bodyHtml: await marked.parse(content),
+        }),
       );
 
-      out.push(
-        `https://www.freemap.sk/?layers=X&document=${document.slice(0, -3)}&lang=sk`,
-      );
+      out.push(appUrl(docParam, lang));
+
+      docCount++;
     }
   }
+
+  console.log(`Document pages: ${docCount} (${docLangs.size} documents)`);
 
   const name = 'sitemap-core.txt';
 
@@ -157,12 +140,23 @@ async function gen() {
           ${sitemapNames.map(
             (name) =>
               html`<sitemap>
-                <loc>https://www.freemap.sk/${name}</loc>
+                <loc>${BASE}/sitemap/${name}</loc>
               </sitemap>`,
           )}
         </sitemapindex>
       `,
   );
+
+  console.log(
+    `Done in ${((Date.now() - startedAt) / 1000).toFixed(1)}s — ` +
+      `${out.length} core URLs, ${sitemapNames.length} sitemap files (sitemap-index.xml written).`,
+  );
 }
 
-gen().catch(console.error);
+gen().catch((err) => {
+  console.error(err);
+
+  // Exit non-zero so `dep-sitemap`'s `&& rsync --delete` does not run on a
+  // partial crawl and wipe good pages.
+  process.exitCode = 1;
+});
