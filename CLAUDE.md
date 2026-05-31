@@ -6,6 +6,15 @@ Deeper format/architecture references live in [`doc/`](./doc/). Consult them bef
 
 - [Drawing feature export/import format mapping](./doc/drawing-export-mapping.md) — GPX/GeoJSON write+read for drawing points/lines/polygons, the `fm:*` lossless-shadow design, and the curated Garmin/OsmAnd icon dictionaries. **Read this before changing anything in `src/features/export/` or in the drawing-conversion processors.**
 
+## Keeping `LLMs.txt` in sync
+
+[`src/static/LLMs.txt`](./src/static/LLMs.txt) is a hand-maintained, user-facing description of the app for AI assistants. It is **not** generated, so it drifts unless updated deliberately. When a change touches user-visible behavior, update the matching part of `LLMs.txt` in the same change set:
+
+- **Map layers** (`src/shared/mapDefinitions.tsx`) — the "Layer registry" tables (ids, zoom levels, premium-from-zoom, credits, shortcuts, countries, base/overlay). This is the most drift-prone area.
+- **Menu / tools / modals** — added, removed, or renamed main-menu items, tools, toolbars, keyboard shortcuts, URL hash params (`#show=…`, `#tool=…`, `layers=…`), or login/export providers. Cross-check labels against `src/translations/en.tsx`.
+
+If a change makes `LLMs.txt` wrong but you can't fully fix it, say so explicitly rather than leaving it silently stale.
+
 ## Workflow
 
 - **Do not commit until I explicitly approve.** Leave the working tree dirty at the end of a task and wait for "commit"/"looks good"/similar. This overrides any "commit when done" instinct.
