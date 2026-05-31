@@ -45,6 +45,12 @@ const FM_NS = 'https://www.freemap.sk/GPX/1/0';
 // emit `<osmand:icon>`, `<osmand:background>` and `<osmand:color>`.
 const OSMAND_NS = 'https://osmand.net';
 
+// The namespace that namespace declarations themselves live in. Declaring
+// `xmlns:*` attributes via setAttributeNS with this namespace makes
+// XMLSerializer treat them as in-scope prefixes instead of redeclaring them
+// on every child element.
+const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
+
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
@@ -56,17 +62,21 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 
   doc.documentElement.setAttributeNS(
     'http://www.w3.org/2001/XMLSchema-instance',
-    'schemaLocation',
+    'xsi:schemaLocation',
     `${GPX_NS} http://www.topografix.com/GPX/1/1/gpx.xsd
       ${GARMIN_NS} https://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd
       ${GPX_STYLE_NS} https://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd`,
   );
 
-  doc.documentElement.setAttribute('xmlns:locus', LOCUS_NS);
+  // Declare the prefixes as real namespace declarations (in the xmlns
+  // namespace) rather than plain attributes. Otherwise XMLSerializer doesn't
+  // see them as in-scope and re-declares `xmlns:*` on every child element that
+  // uses them.
+  doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:locus', LOCUS_NS);
 
-  doc.documentElement.setAttribute('xmlns:fm', FM_NS);
+  doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:fm', FM_NS);
 
-  doc.documentElement.setAttribute('xmlns:osmand', OSMAND_NS);
+  doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:osmand', OSMAND_NS);
 
   addAttribute(doc.documentElement, 'version', '1.1');
 
@@ -459,9 +469,15 @@ function addDrawingLines(
 
 async function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
   // Caches shared across all points in this export, so a thousand identical
-  // poi/fa icons resolve once.
+  // poi/fa icons resolve once, and identical markers rasterize to PNG once.
   const faCache = new Map<string, IconDefinition | undefined>();
   const poiDataUrlCache = new Map<string, Promise<string | undefined>>();
+  const locusIconCache = new Map<string, Promise<string | undefined>>();
+
+  // Build the synchronous parts (and kick off the async Locus-icon work) in
+  // order, then await all icons in parallel and attach them.
+  const pending: { extEle: Element; locusIcon: Promise<string | undefined> }[] =
+    [];
 
   for (const { coords, label, color, markerType, icon } of points) {
     const wptEle = createElement(
@@ -520,21 +536,38 @@ async function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
     }
 
     // Locus reads `<locus:icon>` as a data URL. We build an SVG that mirrors
-    // RichMarker (shape + inner white inset + glyph) so users see the same
-    // icon on the device.
-    const locusIcon = await buildLocusIconDataUrl({
-      markerType,
-      color: color || COLORS.normal,
-      label,
-      icon,
-      faCache,
-      poiDataUrlCache,
-    });
+    // RichMarker (shape + inner white inset + glyph), rasterized to PNG, so
+    // users see the same icon on the device. Dedupe identical markers so each
+    // distinct one is built and rasterized only once.
+    const effColor = color || COLORS.normal;
 
-    if (locusIcon) {
-      createElement(extEle, [LOCUS_NS, 'locus:icon'], locusIcon);
+    const key = `${markerType ?? ''}|${effColor}|${label ?? ''}|${icon ?? ''}`;
+
+    let locusIcon = locusIconCache.get(key);
+
+    if (!locusIcon) {
+      locusIcon = buildLocusIconDataUrl({
+        markerType,
+        color: effColor,
+        label,
+        icon,
+        faCache,
+        poiDataUrlCache,
+      });
+
+      locusIconCache.set(key, locusIcon);
     }
+
+    pending.push({ extEle, locusIcon });
   }
+
+  const locusIcons = await Promise.all(pending.map((p) => p.locusIcon));
+
+  locusIcons.forEach((locusIcon, i) => {
+    if (locusIcon) {
+      createElement(pending[i].extEle, [LOCUS_NS, 'locus:icon'], locusIcon);
+    }
+  });
 }
 
 function appendNs(
@@ -564,10 +597,10 @@ function iconToBareSym(icon: string | undefined): string | undefined {
   return spec.kind === 'text' ? spec.text : spec.name;
 }
 
-// Builds a self-contained SVG marker matching RichMarker (shape + white
-// inset + glyph) and returns it as a `data:image/svg+xml;base64,...` URL.
-// Returns undefined if a glyph can't be resolved at all (still emits an
-// icon for the shape, so this only happens on misconfigured colour input).
+// Builds a self-contained marker matching RichMarker (shape + white inset +
+// glyph), rasterizes it to a `data:image/png;base64,...` URL (Locus only
+// renders raster icons in `<locus:icon>`), and falls back to the SVG data URL
+// when no canvas is available.
 async function buildLocusIconDataUrl({
   markerType,
   color,
@@ -630,7 +663,7 @@ async function buildLocusIconDataUrl({
 
   const hasContent = Boolean(text || faSvg || poiDataUrl);
 
-  const svg = buildMarkerSvg({
+  const { svg, width, height } = buildMarkerSvg({
     markerType,
     color,
     hasContent,
@@ -640,16 +673,74 @@ async function buildLocusIconDataUrl({
   });
 
   // Base64-encode via UTF-8-safe path so non-ASCII labels survive btoa.
-  const b64 =
-    typeof btoa === 'function'
-      ? btoa(
-          Array.from(new TextEncoder().encode(svg), (b) =>
-            String.fromCharCode(b),
-          ).join(''),
-        )
-      : '';
+  const svgDataUrl = `data:image/svg+xml;base64,${utf8ToBase64(svg)}`;
 
-  return `data:image/svg+xml;base64,${b64}`;
+  return (await svgToPngDataUrl(svgDataUrl, width, height)) ?? svgDataUrl;
+}
+
+// UTF-8-safe base64 so non-ASCII content survives btoa.
+function utf8ToBase64(s: string): string {
+  return typeof btoa === 'function'
+    ? btoa(
+        Array.from(new TextEncoder().encode(s), (b) =>
+          String.fromCharCode(b),
+        ).join(''),
+      )
+    : '';
+}
+
+// Rasterizes an SVG (given as a data URL with intrinsic width/height) to a
+// `data:image/png` URL via an offscreen canvas, scaled so its longest side is
+// RASTER_MAX. Returns undefined when no canvas/Image is available or
+// rendering/encoding fails.
+async function svgToPngDataUrl(
+  svgDataUrl: string,
+  width: number,
+  height: number,
+): Promise<string | undefined> {
+  if (typeof document === 'undefined' || typeof Image === 'undefined') {
+    return undefined;
+  }
+
+  const RASTER_MAX = 128; // px, longest side of the output PNG
+
+  const scale = RASTER_MAX / Math.max(width, height);
+
+  const w = Math.round(width * scale);
+  const h = Math.round(height * scale);
+
+  const img = new Image();
+
+  const loaded = new Promise<boolean>((resolve) => {
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+  });
+
+  img.src = svgDataUrl;
+
+  if (!(await loaded)) {
+    return undefined;
+  }
+
+  const canvas = document.createElement('canvas');
+
+  canvas.width = w;
+
+  canvas.height = h;
+
+  const ctx = canvas.getContext('2d');
+
+  if (!ctx) {
+    return undefined;
+  }
+
+  ctx.drawImage(img, 0, 0, w, h);
+
+  try {
+    return canvas.toDataURL('image/png');
+  } catch {
+    return undefined;
+  }
 }
 
 async function fetchSvgAsDataUrl(url: string): Promise<string | undefined> {
@@ -662,13 +753,7 @@ async function fetchSvgAsDataUrl(url: string): Promise<string | undefined> {
 
     const text = await res.text();
 
-    const b64 = btoa(
-      Array.from(new TextEncoder().encode(text), (b) =>
-        String.fromCharCode(b),
-      ).join(''),
-    );
-
-    return `data:image/svg+xml;base64,${b64}`;
+    return `data:image/svg+xml;base64,${utf8ToBase64(text)}`;
   } catch {
     return undefined;
   }
@@ -694,7 +779,7 @@ function buildMarkerSvg({
   text?: string;
   faSvg?: { width: number; height: number; path: string };
   poiDataUrl?: string;
-}): string {
+}): { svg: string; width: number; height: number } {
   const GLYPH = 150;
 
   const renderGlyph = (cx: number, cy: number): string => {
@@ -729,49 +814,58 @@ function buildMarkerSvg({
   };
 
   if (markerType === 'ring') {
-    return (
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 310">` +
-      `<ellipse cx="155" cy="155" rx="135" ry="135" fill="${color}" ` +
-      `stroke="${color}" stroke-width="10" stroke-opacity="0.5"/>` +
-      (hasContent
-        ? `<ellipse cx="155" cy="155" rx="110" ry="110" fill="#fff"/>`
-        : '') +
-      renderGlyph(155, 155) +
-      `</svg>`
-    );
+    return {
+      svg:
+        `<svg xmlns="http://www.w3.org/2000/svg" width="310" height="310" viewBox="0 0 310 310">` +
+        `<ellipse cx="155" cy="155" rx="135" ry="135" fill="${color}" ` +
+        `stroke="${color}" stroke-width="10" stroke-opacity="0.5"/>` +
+        (hasContent
+          ? `<ellipse cx="155" cy="155" rx="110" ry="110" fill="#fff"/>`
+          : '') +
+        renderGlyph(155, 155) +
+        `</svg>`,
+      width: 310,
+      height: 310,
+    };
   }
 
   if (markerType === 'square') {
-    return (
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 310">` +
-      `<rect x="30" y="30" width="240" height="240" rx="20" ry="20" ` +
-      `fill="${color}" stroke="${color}" stroke-width="10" ` +
-      `stroke-opacity="0.6"/>` +
-      (hasContent
-        ? `<rect x="50" y="50" width="200" height="200" rx="20" ry="20" ` +
-          `fill="#fff"/>`
-        : '') +
-      renderGlyph(150, 150) +
-      `</svg>`
-    );
+    return {
+      svg:
+        `<svg xmlns="http://www.w3.org/2000/svg" width="310" height="310" viewBox="0 0 310 310">` +
+        `<rect x="30" y="30" width="240" height="240" rx="20" ry="20" ` +
+        `fill="${color}" stroke="${color}" stroke-width="10" ` +
+        `stroke-opacity="0.6"/>` +
+        (hasContent
+          ? `<rect x="50" y="50" width="200" height="200" rx="20" ry="20" ` +
+            `fill="#fff"/>`
+          : '') +
+        renderGlyph(150, 150) +
+        `</svg>`,
+      width: 310,
+      height: 310,
+    };
   }
 
   // pin (default)
-  return (
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 512">` +
-    `<path d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 ` +
-    `C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 ` +
-    `493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 ` +
-    `186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 ` +
-    `11.734 Z" fill="${color}" stroke="#fff" stroke-width="10" ` +
-    `stroke-opacity="0.5"/>` +
-    (hasContent
-      ? `<ellipse cx="154.12" cy="163.702" rx="119.462" ry="119.462" ` +
-        `fill="#fff"/>`
-      : '') +
-    renderGlyph(154, 164) +
-    `</svg>`
-  );
+  return {
+    svg:
+      `<svg xmlns="http://www.w3.org/2000/svg" width="310" height="512" viewBox="0 0 310 512">` +
+      `<path d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 ` +
+      `C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 ` +
+      `493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 ` +
+      `186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 ` +
+      `11.734 Z" fill="${color}" stroke="#fff" stroke-width="10" ` +
+      `stroke-opacity="0.5"/>` +
+      (hasContent
+        ? `<ellipse cx="154.12" cy="163.702" rx="119.462" ry="119.462" ` +
+          `fill="#fff"/>`
+        : '') +
+      renderGlyph(154, 164) +
+      `</svg>`,
+    width: 310,
+    height: 512,
+  };
 }
 
 function escapeXml(s: string): string {
