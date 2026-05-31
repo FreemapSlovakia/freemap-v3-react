@@ -1,57 +1,102 @@
 # Freemap Slovakia Web Application
 
-Current version of [www.freemap.sk](https://www.freemap.sk) maintained by [OZ Freemap Slovakia](https://oz.freemap.sk).
+Source of [www.freemap.sk](https://www.freemap.sk), the web map portal maintained by [OZ Freemap Slovakia](https://oz.freemap.sk).
+
+Freemap is a free, non-commercial web map application built on OpenStreetMap data. Its focus is a detailed outdoor map for hiking, cycling, cross-country skiing and horse riding across Europe, complemented by many additional base and overlay layers and by tools for search, route planning, drawing and measurement, GPX viewing, live tracking, personal maps, map embedding, and export.
+
+This repository is the **frontend** — a React single-page application. It talks to:
+
+- the [Freemap API server](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend) (`freemap-v3-api`) for accounts, photos, tracking, saved maps and purchases, and
+- external tile, routing (GraphHopper) and geocoding (Nominatim / Overpass) services.
+
+## Tech stack
+
+- **React 19** + **Redux Toolkit** (application state is reflected in the URL hash)
+- **Leaflet** / **react-leaflet** with **MapLibre GL** for vector layers
+- **TypeScript**, type-checked with [`tsgo`](https://www.npmjs.com/package/@typescript/native-preview)
+- **rspack** bundler, **Biome** for linting/formatting, **pnpm** as the package manager
+- **Zod** schemas for validation (see [CLAUDE.md](./CLAUDE.md) for conventions)
 
 ## Requirements
 
-- Node 14
-- [Freemap API Server](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend)
+- Node.js 22+
+- [pnpm](https://pnpm.io/)
+- A running [Freemap API server](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend) for features that depend on the backend (login, photos, tracking, saved maps, export); the map itself renders without it.
 
 ## Compiling and running in development mode
 
-1. Add `local.freemap.sk` to `127.0.0.1` in your system hosts file (for Linux and MacOS it is `/etc/hosts`).
+1. Map `local.freemap.sk` to `127.0.0.1` in your system hosts file (on Linux and macOS this is `/etc/hosts`):
 
-1. Install the necessary libs:
-
-   ```bash
-   npm i
-   npm run prepare
+   ```
+   127.0.0.1 local.freemap.sk
    ```
 
-1. Run webserver which also compiles the source files on change:
+1. Install dependencies:
 
    ```bash
-   npm start
+   pnpm install
    ```
 
-1. Install [development CA certificate](./ssl/Freemap_CA.crt) to your browser.
+1. Start the dev server (it compiles protobufs, syncs language files, and rebuilds on change):
 
-1. Open the application by visiting `https://local.freemap.sk:9000/`.
+   ```bash
+   pnpm start
+   ```
 
-## Compiling for the production
+1. Trust the [development CA certificate](./ssl/Freemap_CA.crt) in your browser (the dev server is served over HTTPS).
 
-Set `DEPLOYMENT` to:
+1. Open the application at <https://local.freemap.sk:9000/>.
 
-- `dev` (default) for `local.freemap.sk`
-- `next` for `next.freemap.sk`
-- `www` for `www.freemap.sk`
+## Building for production
+
+The build target is selected with the `DEPLOYMENT` environment variable:
+
+- _unset_ or `dev` — development build for `local.freemap.sk` (uses local backend / base URLs).
+- `www` — production build for `www.freemap.sk` (wires up the production backend, GraphHopper, Matomo, Sentry and Facebook app IDs).
+- any other value (e.g. `next`) — a production-optimized build that still uses the local / default URLs.
 
 ```bash
-npm i
-DEPLOYMENT=www npm run build
+pnpm install
+DEPLOYMENT=www pnpm build
 ```
 
-You'll then find all static web resources in `dist` directory.
+The static web resources are emitted into the `dist/` directory.
 
-## Other env varialbes
+Deploying `www.freemap.sk` is done with the `dep` script, which runs a `www` production build, injects and uploads Sentry source maps, and rsyncs `dist/` to the server:
 
-- `FM_MAPSERVER_URL` - base URL of Mapnik Mapserver (without trailing slash); for example `http://localhost:4000` for development
+```bash
+pnpm dep
+```
+
+### Server (nginx) configuration
+
+The production nginx site configs are checked into this repo under [`etc/nginx/sites-available/`](./etc/nginx/sites-available/) as a reference for what is actually deployed:
+
+- [`www.freemap.sk`](./etc/nginx/sites-available/www.freemap.sk) — the main site.
+- [`www.freemap.eu`](./etc/nginx/sites-available/www.freemap.eu) — the `.eu` mirror (additionally allows CORS for the GlitchTip/Sentry origin).
+
+Both serve the static build from `/home/freemap/www` and share the same **cache-header policy**, which is critical to get right — mismatched headers pin users to stale hashed asset names and break the layout after a deploy:
+
+- **Entry HTML** (`index*.html`, the `/` redirect), **service workers** (`sw.js`, `upload-sw.js`) and `assets-manifest.json` are served `Cache-Control: no-store, max-age=0` — they are unhashed and must never go stale.
+- **Content-addressed assets** (rspack emits 16-char `[contenthash]`/`[chunkhash]` names) are `max-age=31536000, immutable`.
+- `*.png` / `*.jpg` get a one-year `max-age` (without `immutable`).
+
+The configs also handle: HSTS / `Referrer-Policy` headers, HTTP→HTTPS redirect and HTTP/3 (QUIC) via Certbot-managed TLS, per-user directory listings under `/~<user>/`, search-engine sitemap rewrites for bots on `/`, `/mbtiles` offline-map downloads, and a reverse proxy for `/tiles/parametric-shading`.
+
+When changing build-output naming, the service worker, or the asset manifest, update these configs in the same change set.
+
+## Environment variables
+
+Most deployment-specific values are derived from `DEPLOYMENT` (see above). The remaining overrides:
+
+- `FM_MAPSERVER_URL` — base URL of the Mapnik tile server, **without** a trailing slash (default `https://outdoor.tiles.freemap.sk`; e.g. `http://localhost:4000` for local rendering).
+- `PREVENT_ADS` — if set (to any value), disables the ad banner.
 
 ## Documentation
 
 Deeper reference docs live in [`doc/`](./doc/):
 
-- [Drawing feature export/import format mapping](./doc/drawing-export-mapping.md) — how points, lines and polygons round-trip through GPX and GeoJSON, including curated icon mappings for Garmin / OsmAnd / Locus.
+- [Drawing feature export/import format mapping](./doc/drawing-export-mapping.md) — how points, lines and polygons round-trip through GPX and GeoJSON, including the curated icon mappings for Garmin / OsmAnd / Locus.
 
 [`src/static/llms.txt`](./src/static/llms.txt) is a hand-maintained, user-facing description of the application (its functions, modals and map layers) for AI assistants, served at [www.freemap.sk/llms.txt](https://www.freemap.sk/llms.txt) per the [llmstxt.org](https://llmstxt.org) convention. Keep it in sync when changing user-visible behavior — see [CLAUDE.md](./CLAUDE.md).
 
@@ -59,12 +104,18 @@ Contributor notes for Claude Code (workflow, conventions): [CLAUDE.md](./CLAUDE.
 
 ## Translation (i18n)
 
-Files:
+The English master is `src/translations/en.tsx`; other locales are edited via their `*.template.tsx` files (the plain `*.tsx` files are generated — see [CLAUDE.md](./CLAUDE.md)).
 
-- [rspack.config.ts](rspack.config.ts) - texts in `htmlPluginProps`
+Files holding translatable text:
+
+- [rspack.config.ts](rspack.config.ts) — texts in `htmlPluginProps`
 - [src/translations/en-shared.json](src/translations/en-shared.json)
 - [src/translations/en.tsx](src/translations/en.tsx)
 - [src/components/supportUsModal/translations/en.tsx](src/components/supportUsModal/translations/en.tsx)
-- [src/globalErrorHandler.ts](src/globalErrorHandler.ts) - bottom error message
+- [src/globalErrorHandler.ts](src/globalErrorHandler.ts) — bottom error message
 - [src/osm/osmTagToNameMapping-en.ts](src/osm/osmTagToNameMapping-en.ts)
-- https://github.com/FreemapSlovakia/freemap-mapnik/blob/develop/legend.js
+- <https://github.com/FreemapSlovakia/freemap-mapnik/blob/develop/legend.js>
+
+## License
+
+[Apache-2.0](./LICENSE)
