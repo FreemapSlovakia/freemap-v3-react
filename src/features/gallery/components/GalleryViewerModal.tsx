@@ -245,9 +245,9 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
       }
     }
 
-    window.addEventListener('keypress', handler);
+    window.addEventListener('keydown', handler);
 
-    return () => window.removeEventListener('keypress', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, [handleDelete, handleFullscreen]);
 
   // fullscreen of pano fails when traversing from non-pano picture
@@ -672,8 +672,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               {({ label, labelClassName, props }) => (
                 <Button onClick={handleDelete} variant="danger" {...props}>
                   <FaTrash />
-
-                  <span className={labelClassName}> {label}</span>
+                  <span className={labelClassName}> {label}</span>{' '}
+                  <kbd>Del</kbd>
                 </Button>
               )}
             </LongPressTooltip>
