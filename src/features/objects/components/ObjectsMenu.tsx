@@ -1,4 +1,5 @@
 import { convertToDrawing } from '@app/store/actions.js';
+import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HideArrow } from '@features/search/components/SearchMenu.js';
 import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
@@ -22,13 +23,7 @@ import {
   useState,
 } from 'react';
 import { Button, Dropdown, type DropdownProps, Form } from 'react-bootstrap';
-import {
-  FaCircle,
-  FaMapMarker,
-  FaPencilAlt,
-  FaSquare,
-  FaTrash,
-} from 'react-icons/fa';
+import { FaPencilAlt, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   MarkerType,
@@ -266,70 +261,45 @@ export function ObjectsMenu(): ReactElement {
         </Dropdown.Menu>
       </Dropdown>
 
-      <Dropdown
+      <MarkerTypeSelect
         className="ms-1"
-        onSelect={(eventKey) => handleIconChange(eventKey as MarkerType)}
-      >
-        <Dropdown.Toggle variant="secondary">
-          {selectedIconValue === 'ring' ? (
-            <FaCircle />
-          ) : selectedIconValue === 'square' ? (
-            <FaSquare />
-          ) : (
-            <FaMapMarker />
+        value={selectedIconValue}
+        onChange={handleIconChange}
+      />
+
+      {hasObjects && (
+        <LongPressTooltip label={m?.objects.convertAll}>
+          {({ props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => {
+                dispatch(convertToDrawing({ type: 'objects' }));
+              }}
+              {...props}
+            >
+              <FaPencilAlt />
+            </Button>
           )}
-        </Dropdown.Toggle>
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
-          <Dropdown.Item eventKey="pin" active={selectedIconValue === 'pin'}>
-            <FaMapMarker /> {m?.objects.icon.pin}
-          </Dropdown.Item>
+        </LongPressTooltip>
+      )}
 
-          <Dropdown.Item eventKey="ring" active={selectedIconValue === 'ring'}>
-            <FaCircle /> {m?.objects.icon.ring}
-          </Dropdown.Item>
-
-          <Dropdown.Item
-            eventKey="square"
-            active={selectedIconValue === 'square'}
-          >
-            <FaSquare /> {m?.objects.icon.square}
-          </Dropdown.Item>
-        </Dropdown.Menu>
-
-        {hasObjects && (
-          <LongPressTooltip label={m?.objects.convertAll}>
-            {({ props }) => (
-              <Button
-                className="ms-1"
-                variant="secondary"
-                onClick={() => {
-                  dispatch(convertToDrawing({ type: 'objects' }));
-                }}
-                {...props}
-              >
-                <FaPencilAlt />
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
-
-        {active.length > 0 && (
-          <LongPressTooltip label={m?.general.delete} kbd="Del">
-            {({ props }) => (
-              <Button
-                className="ms-1"
-                variant="danger"
-                onClick={() => {
-                  dispatch(objectsSetFilter([]));
-                }}
-                {...props}
-              >
-                {active.length} <FaTrash />
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
-      </Dropdown>
+      {active.length > 0 && (
+        <LongPressTooltip label={m?.general.delete} kbd="Del">
+          {({ props }) => (
+            <Button
+              className="ms-1"
+              variant="danger"
+              onClick={() => {
+                dispatch(objectsSetFilter([]));
+              }}
+              {...props}
+            >
+              {active.length} <FaTrash />
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
     </ToolMenu>
   );
 }

@@ -117,6 +117,7 @@ export function PredefinedDrawingPropertiesModal({
             <Form.Label>{m?.drawing.edit.shape}</Form.Label>
 
             <MarkerTypeSelect
+              asSelect
               value={editedMarkerType}
               onChange={setEditedMarkerType}
             />

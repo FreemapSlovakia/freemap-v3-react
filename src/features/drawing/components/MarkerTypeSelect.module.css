@@ -1,0 +1,10 @@
+/* Bootstrap `.form-select` repaints native <select> text via
+   `color: transparent` + `text-shadow` on focus (to hide the text outline).
+   text-shadow doesn't paint our SVG icon, so it turns invisible when focused.
+   Our toggle renders real elements, so just reset the trick. The doubled class
+   bumps specificity above Bootstrap's `.form-select:focus-visible`. */
+.toggle.toggle:focus-visible,
+.toggle.toggle:-moz-focusring {
+  color: var(--bs-body-color);
+  text-shadow: none;
+}

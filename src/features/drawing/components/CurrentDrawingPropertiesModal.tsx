@@ -409,6 +409,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
                 <Form.Label>{m?.drawing.edit.shape}</Form.Label>
 
                 <MarkerTypeSelect
+                  asSelect
                   value={editedMarkerType}
                   onChange={setEditedMarkerType}
                 />
