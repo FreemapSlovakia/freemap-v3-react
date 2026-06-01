@@ -3,4 +3,5 @@ export type Submenu =
   | 'help'
   | 'language'
   | 'tracking'
+  | 'mapSettings'
   | null;

@@ -11,6 +11,7 @@ import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
+import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
@@ -24,6 +25,7 @@ import {
   ReactElement,
   SyntheticEvent,
   useCallback,
+  useEffect,
   useState,
 } from 'react';
 import { Button, ButtonGroup, Dropdown, Form } from 'react-bootstrap';
@@ -70,11 +72,25 @@ export function MapSwitchButton(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const [show, setShow] = useState<boolean | 'more' | 'all'>(false);
+  const {
+    handleSelect: baseHandleSelect,
+    menuShown,
+    handleMenuToggle,
+    closeMenu,
+    submenu,
+    extraHandler,
+  } = useMenuHandler();
 
-  const [subview, setSubview] = useState<'mapSettings' | null>(null);
+  const [expand, setExpand] = useState<false | 'more' | 'all'>(false);
 
   const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    if (!menuShown) {
+      setExpand(false);
+      setFilter('');
+    }
+  }, [menuShown]);
 
   const handleFilterChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setFilter(e.currentTarget.value);
@@ -105,53 +121,42 @@ export function MapSwitchButton(): ReactElement {
     [dispatch],
   );
 
-  const handleSelect = useCallback(
-    (selection: string | null, e: SyntheticEvent<unknown>) => {
-      e.preventDefault();
-
-      if (selection === null || handlePossibleFilterClick(e)) {
-        setShow(false);
-
-        return;
-      }
-
-      if (selection === 'show-all') {
-        setShow('all');
-      } else if (selection === 'show-more') {
-        setShow('more');
-      } else if (selection === 'offlineMaps') {
-        setShow(false);
+  extraHandler.current = useCallback(
+    (eventKey: string) => {
+      if (eventKey === 'show-all') {
+        setExpand('all');
+      } else if (eventKey === 'show-more') {
+        setExpand('more');
+      } else if (eventKey === 'offlineMaps') {
+        closeMenu();
 
         dispatch(cachedMapsSetView('list'));
 
         dispatch(setActiveModal('offline-maps'));
-      } else if (selection === 'mapSettings') {
-        setSubview('mapSettings');
-      } else if (selection === 'submenu-') {
-        setSubview(null);
-      } else if (selection === 'mapLayersConfig') {
-        setShow(false);
-
-        setSubview(null);
-
-        dispatch(setActiveModal('map-layers-config'));
-      } else if (selection === 'customMaps') {
-        setShow(false);
-
-        setSubview(null);
-
-        dispatch(setActiveModal('custom-maps'));
-      } else if (selection === 'preferences') {
-        setShow(false);
-
-        setSubview(null);
-
-        dispatch(setActiveModal('map-preferences'));
-      } else if (selection.startsWith('layer-')) {
-        dispatch(mapToggleLayer({ type: selection.slice(6) }));
+      } else if (eventKey.startsWith('layer-')) {
+        dispatch(mapToggleLayer({ type: eventKey.slice(6) }));
+      } else {
+        return false;
       }
+
+      return true;
     },
-    [dispatch, handlePossibleFilterClick],
+    [closeMenu, dispatch],
+  );
+
+  const handleSelect = useCallback(
+    (selection: string | null, e: SyntheticEvent<unknown>) => {
+      if (selection === null || handlePossibleFilterClick(e)) {
+        e.preventDefault();
+
+        closeMenu();
+
+        return;
+      }
+
+      baseHandleSelect(selection, e);
+    },
+    [baseHandleSelect, closeMenu, handlePossibleFilterClick],
   );
 
   const handleLayerButtonClick = useCallback(
@@ -204,15 +209,6 @@ export function MapSwitchButton(): ReactElement {
       def.countries.some((c) => countriesSet.has(c)),
     zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
   }));
-
-  const handleToggle = useCallback((nextShow: boolean) => {
-    setShow(nextShow);
-
-    if (!nextShow) {
-      setSubview(null);
-      setFilter('');
-    }
-  }, []);
 
   function commonBadges(
     def: (typeof layerDefs)[number],
@@ -336,9 +332,9 @@ export function MapSwitchButton(): ReactElement {
             return null;
           }
         } else if (
-          show !== 'all' &&
+          expand !== 'all' &&
           !activeLayers.includes(type) &&
-          (!(show === true && !isWide ? showInToolbar : showInMenu) ||
+          (!(expand === false && !isWide ? showInToolbar : showInMenu) ||
             !def.countryOk ||
             !def.zoomOk)
         ) {
@@ -457,11 +453,11 @@ export function MapSwitchButton(): ReactElement {
         })}
 
         <Dropdown
-          show={Boolean(show)}
+          show={menuShown}
           drop="up-centered"
           onSelect={handleSelect}
           autoClose="outside"
-          onToggle={handleToggle}
+          onToggle={handleMenuToggle}
           as={ButtonGroup}
         >
           <Dropdown.Toggle
@@ -477,24 +473,24 @@ export function MapSwitchButton(): ReactElement {
             <div className="fm-menu-scroller" ref={sc}>
               <div />
 
-              {subview === 'mapSettings' ? (
+              {submenu === 'mapSettings' ? (
                 <>
                   <SubmenuHeader
                     icon={<FaCog />}
                     title={m?.mapLayers.settings}
                   />
 
-                  <Dropdown.Item as="button" eventKey="mapLayersConfig">
+                  <Dropdown.Item as="button" eventKey="modal-map-layers-config">
                     <FaLayerGroup /> {m?.mapLayers.configureLayers} <kbd>m</kbd>{' '}
                     <kbd>y</kbd>
                   </Dropdown.Item>
 
-                  <Dropdown.Item as="button" eventKey="customMaps">
+                  <Dropdown.Item as="button" eventKey="modal-custom-maps">
                     <MdDashboardCustomize /> {m?.mapLayers.customMaps}{' '}
                     <kbd>m</kbd> <kbd>c</kbd>
                   </Dropdown.Item>
 
-                  <Dropdown.Item as="button" eventKey="preferences">
+                  <Dropdown.Item as="button" eventKey="modal-map-preferences">
                     <FaCog /> {m?.mapLayers.preferences} <kbd>m</kbd>{' '}
                     <kbd>p</kbd>
                   </Dropdown.Item>
@@ -517,7 +513,7 @@ export function MapSwitchButton(): ReactElement {
                       <Dropdown.Item
                         key="mapSettings"
                         as="button"
-                        eventKey="mapSettings"
+                        eventKey="submenu-mapSettings"
                       >
                         <FaCog /> {m?.mapLayers.settings}
                         <FaChevronRight />
@@ -556,8 +552,8 @@ export function MapSwitchButton(): ReactElement {
                   <Dropdown.Divider />
 
                   {!normalizedFilter &&
-                    (show === true || show === 'more') &&
-                    (!isWide && show === true ? (
+                    (expand === false || expand === 'more') &&
+                    (!isWide && expand === false ? (
                       <Dropdown.Item eventKey="show-more" className="mb-2">
                         {m?.mapLayers.showMore}
                       </Dropdown.Item>

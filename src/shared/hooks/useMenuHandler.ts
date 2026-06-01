@@ -79,7 +79,9 @@ export function useMenuHandler({
   }, [submenu]);
 
   useEffect(() => {
-    if (menuShown) {
+    if (!menuShown) {
+      stack.current = [];
+
       setSubmenu(null);
     }
   }, [menuShown]);
