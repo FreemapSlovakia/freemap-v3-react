@@ -24,7 +24,6 @@ import {
   clearMapFeatures,
   convertToDrawing,
   deleteFeature,
-  enableUpdatingUrl,
   hideInfoBar,
   Modal,
   Selection,
@@ -39,7 +38,6 @@ import {
 export interface MainState {
   tool: Tool | null;
   activeModal: Modal | null;
-  urlUpdatingEnabled: boolean;
   errorTicketId: string | undefined;
   embedFeatures: string[];
   selection: Selection | null;
@@ -50,7 +48,6 @@ export interface MainState {
 export const mainInitialState: MainState = {
   tool: null,
   activeModal: null,
-  urlUpdatingEnabled: false,
   errorTicketId: undefined,
   embedFeatures: [],
   selection: null,
@@ -99,9 +96,6 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       if (action.payload) {
         state.activeModal = null;
       }
-    })
-    .addCase(enableUpdatingUrl, (state, action) => {
-      state.urlUpdatingEnabled = action.payload;
     })
     .addCase(setErrorTicketId, (state, action) => {
       state.errorTicketId = action.payload;

@@ -1,5 +1,6 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
+import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
@@ -53,6 +54,10 @@ export function DrawingPointsResult(): ReactElement {
 
   const handleDragEnd = useCallback(
     (e: DragEndEvent) => {
+      // Re-enable first so the final-position dispatch below runs through the
+      // URL processor and commits the whole drag as a single history entry.
+      setUrlUpdatingEnabled(true);
+
       if (activeIndex !== null) {
         const coords = e.target.getLatLng();
 
@@ -110,7 +115,14 @@ export function DrawingPointsResult(): ReactElement {
             interactive={interactive}
             draggable={!window.fmEmbedded && activeIndex === i}
             eventHandlers={{
-              dragstart: onSelects[i],
+              dragstart() {
+                // Suspend history writes for the whole drag gesture; the
+                // intermediate positions (and their measurement fallout) must
+                // not pile up in browser history. Re-enabled in handleDragEnd.
+                setUrlUpdatingEnabled(false);
+
+                onSelects[i]();
+              },
               dragend: handleDragEnd,
               move: handleMove,
               click: onSelects[i],

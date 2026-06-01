@@ -20,6 +20,7 @@ import {
   Alternative,
   Leg,
   RoutePoint,
+  routePlannerAddPoint,
   routePlannerPreventHint,
   routePlannerSetFinish,
   routePlannerSetIsochrones,
@@ -28,7 +29,6 @@ import {
   Step,
   StepMode,
   Waypoint,
-  routePlannerAddPoint,
 } from '../actions.js';
 import { updateRouteTypes } from './findRouteProcessor.js';
 

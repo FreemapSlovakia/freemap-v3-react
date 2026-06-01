@@ -4,34 +4,28 @@ import { mapRefocus, mapSetBounds } from './model/actions.js';
 
 export function attachMapStateHandler(store: MyStore) {
   mapPromise.then((map) => {
-    let t: number | undefined;
-
+    // `moveend` already fires once per settled gesture, and the URL processor
+    // now coalesces consecutive viewport changes into a single history entry,
+    // so no debounce is needed here. The delta threshold below still guards
+    // against dispatching when the position didn't meaningfully change.
     function handleMapMoveEnd() {
-      if (t) {
-        window.clearTimeout(t);
+      const { zoom, lat, lon } = store.getState().map;
+
+      const { lat: newLat, lng: newLon } = map.getCenter();
+
+      const newZoom = map.getZoom();
+
+      const delta = 5 / Math.pow(2, zoom);
+
+      if (
+        zoom !== newZoom ||
+        newLat - delta > lat ||
+        newLat + delta < lat ||
+        newLon - delta > lon ||
+        newLon + delta < lon
+      ) {
+        store.dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
       }
-
-      t = window.setTimeout(() => {
-        const { zoom, lat, lon } = store.getState().map;
-
-        const { lat: newLat, lng: newLon } = map.getCenter();
-
-        const newZoom = map.getZoom();
-
-        const delta = 5 / Math.pow(2, zoom);
-
-        if (
-          zoom !== newZoom ||
-          newLat - delta > lat ||
-          newLat + delta < lat ||
-          newLon - delta > lon ||
-          newLon + delta < lon
-        ) {
-          store.dispatch(
-            mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }),
-          );
-        }
-      }, 250);
     }
 
     map.on('moveend', handleMapMoveEnd);

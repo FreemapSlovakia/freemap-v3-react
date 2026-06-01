@@ -98,8 +98,6 @@ export const clearMapFeatures = createAction('CLEAR_MAP_FEATURES');
 
 export { saveHomeLocation, setSelectingHomeLocation, toggleLocate };
 
-export const enableUpdatingUrl = createAction<boolean>('ENABLE_UPDATING_URL');
-
 type Settings = {
   layersSettings?: Record<string, LayerSettings>;
   overlayPaneOpacity?: number;
@@ -241,3 +239,5 @@ export const hideInfoBar = createAction<{
   key: string;
   ts: number;
 }>('HIDE_INFO_BAR');
+
+export const init = createAction('INIT');

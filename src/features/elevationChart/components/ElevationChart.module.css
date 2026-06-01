@@ -1,7 +1,7 @@
 .elevation-chart {
   position: relative;
   background-color: rgba(255, 255, 255, 0.8);
-  [data-bs-theme='dark'] & {
+  [data-bs-theme="dark"] & {
     background-color: rgba(0, 0, 0, 0.8);
   }
   resize: both;

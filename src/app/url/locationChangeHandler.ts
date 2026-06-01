@@ -69,7 +69,6 @@ import type { LatLon } from '@shared/types/common.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
-  enableUpdatingUrl,
   ShowModalCompatSchema,
   ShowModalSchema,
   selectFeature,
@@ -82,6 +81,7 @@ import {
 import type { RootAction } from '../store/rootAction.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
+import { setUrlUpdatingEnabled } from './urlUpdating.js';
 
 function parseQuery(search: string) {
   const q: Record<string, string | string[]> = {};
@@ -104,7 +104,7 @@ function parseQuery(search: string) {
 export function handleLocationChange(store: MyStore): void {
   const { getState, dispatch } = store;
 
-  store.dispatch(enableUpdatingUrl(false));
+  setUrlUpdatingEnabled(false);
 
   const search = (document.location.hash || document.location.search).slice(1);
 
@@ -278,7 +278,7 @@ export function handleLocationChange(store: MyStore): void {
           }),
         );
       }
-    } else if (getState().routePlanner.points) {
+    } else if (getState().routePlanner.points.length) {
       dispatch(
         routePlannerSetParams({
           points: [],
@@ -787,7 +787,7 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
-  store.dispatch(enableUpdatingUrl(true));
+  setUrlUpdatingEnabled(true);
 }
 
 // TODO use some generic deep compare fn

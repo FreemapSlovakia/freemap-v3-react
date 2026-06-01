@@ -1,6 +1,6 @@
-import { enableUpdatingUrl } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
+  mapRefocus,
   mapReplaceLayer,
   mapSuppressLegacyMapWarning,
 } from '@features/map/model/actions.js';
@@ -10,6 +10,7 @@ import {
   toastsRemove,
 } from '@features/toasts/model/actions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { init } from '@/app/store/actions.js';
 
 const TOAST_PREFIX = 'myMaps.legacyWarning.';
 
@@ -19,7 +20,7 @@ export const legacyMapWarningProcessor: Processor = {
       .filter((def) => state.map.layers.includes(def.type) && def.superseededBy)
       .map((def) => def.type)
       .join(','),
-  actionCreator: enableUpdatingUrl,
+  actionCreator: [mapRefocus, init],
   predicatesOperation: 'OR',
   async handle({ getState, dispatch }) {
     const {

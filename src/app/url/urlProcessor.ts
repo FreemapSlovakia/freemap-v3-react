@@ -1,20 +1,31 @@
-import { drawingLineUpdatePoint } from '@features/drawing/model/actions/drawingLineActions.js';
-import { mapRefocus } from '@features/map/model/actions.js';
 import { serializeShading } from '@features/parameterizedShading/Shading.js';
-import { isAnyOf } from '@reduxjs/toolkit';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import { hash } from 'ohash';
 import { ShowModalSchema } from '../store/actions.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
+import { isUrlUpdatingEnabled } from './urlUpdating.js';
 
-let lastActionType: string | undefined;
+// Browser-history policy for map viewport changes (pan/zoom): a contiguous run
+// of viewport-only changes collapses into a single history entry via
+// `replaceState`, so a burst of small map moves costs one Back press instead of
+// many. A fresh entry (`pushState`) is started when anything other than the
+// viewport changes (e.g. the map type / layers), or when more than
+// VIEW_COALESCE_GAP_MS has elapsed since the last viewport write — so distinct
+// panning sessions stay separately navigable.
+const VIEW_COALESCE_GAP_MS = 60_000;
 
-let previous: unknown[] = [];
+let previousRest: unknown[] = [];
+
+let previousView: [number, number, number] | null = null;
+
+let lastWriteWasViewOnly = false;
+
+let lastViewWriteTs = 0;
 
 export const urlProcessor: Processor = {
-  handle: async ({ getState, action }) => {
+  handle: async ({ getState }) => {
     const {
       map,
       routePlanner,
@@ -32,11 +43,21 @@ export const urlProcessor: Processor = {
       wikimediaCommons,
     } = getState();
 
-    if (!main.urlUpdatingEnabled) {
+    if (!isUrlUpdatingEnabled()) {
+      // URL updating is suspended while the store is mutated programmatically
+      // (a feature drag, or restoring state on popstate). End any in-progress
+      // viewport-coalescing session so the first write after we resume starts a
+      // fresh history entry instead of replacing the entry we navigated to.
+      lastWriteWasViewOnly = false;
+
       return;
     }
 
-    const next = [
+    // Map viewport (pan/zoom) is tracked separately from everything else so a
+    // run of viewport-only changes can be coalesced into one history entry.
+    const view: [number, number, number] = [map.lat, map.lon, map.zoom];
+
+    const rest = [
       changesets.authorName,
       changesets.days,
       drawingLines.lines,
@@ -46,10 +67,6 @@ export const urlProcessor: Processor = {
       main.activeModal,
       main.embedFeatures,
       main.selection,
-      main.urlUpdatingEnabled,
-      map.lat,
-      map.lon,
-      map.zoom,
       map.layers,
       map.customLayers,
       map.shading,
@@ -75,14 +92,23 @@ export const urlProcessor: Processor = {
       wikimediaCommons.loading,
     ];
 
-    if (
-      previous.length === next.length &&
-      previous.every((item, i) => next[i] === item)
-    ) {
+    const restChanged =
+      previousRest.length !== rest.length ||
+      previousRest.some((item, i) => item !== rest[i]);
+
+    const viewChanged =
+      !previousView ||
+      previousView[0] !== view[0] ||
+      previousView[1] !== view[1] ||
+      previousView[2] !== view[2];
+
+    if (!restChanged && !viewChanged) {
       return;
     }
 
-    previous = next;
+    previousRest = rest;
+
+    previousView = view;
 
     const layers = map.layers
       .filter((type) => type !== 'i' && integratedLayerDefMap[type])
@@ -420,10 +446,18 @@ export const urlProcessor: Processor = {
       (mapId && sq !== (history.state as { sq: string })?.sq) ||
       urlSearch !== window.location.hash.slice(1)
     ) {
-      const isReplaceAction = isAnyOf(mapRefocus, drawingLineUpdatePoint);
+      // A viewport-only change replaces the current entry when it continues a
+      // recent panning session (last write was also viewport-only and within
+      // the gap); otherwise it starts a fresh entry. Any non-viewport change
+      // (map type, drawing, modals, …) always pushes.
+      const viewOnly = !restChanged;
+
+      const now = Date.now();
 
       const method =
-        lastActionType && isReplaceAction(action)
+        viewOnly &&
+        lastWriteWasViewOnly &&
+        now - lastViewWriteTs < VIEW_COALESCE_GAP_MS
           ? 'replaceState'
           : 'pushState';
 
@@ -441,7 +475,11 @@ export const urlProcessor: Processor = {
         );
       }
 
-      lastActionType = action.type;
+      lastWriteWasViewOnly = viewOnly;
+
+      if (viewOnly) {
+        lastViewWriteTs = now;
+      }
     }
   },
 };

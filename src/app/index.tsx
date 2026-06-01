@@ -18,7 +18,7 @@ import { ErrorCatcher } from './components/ErrorCatcher.js';
 import { Main } from './components/Main.js';
 import { MessagesProvider } from './components/TranslationProvider.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
-import { enableUpdatingUrl, setEmbedFeatures } from './store/actions.js';
+import { init, setEmbedFeatures } from './store/actions.js';
 import { setStore as setErrorHandlerStore } from './store/middleware/globalErrorHandler.js';
 import { createReduxStore } from './store/store.js';
 import './styles/index.scss';
@@ -26,6 +26,7 @@ import './styles/bootstrap-override.css';
 import './styles/index.css';
 import { createCookieConsentToastAction } from '@/features/cookieConsent/action.js';
 import { handleLocationChange } from './url/locationChangeHandler.js';
+import { setUrlUpdatingEnabled } from './url/urlUpdating.js';
 
 window.localStorageFallback = storage;
 
@@ -89,7 +90,9 @@ attachGarminLoginMessageHandler(store);
 
 attachMapStateHandler(store);
 
-store.dispatch(enableUpdatingUrl(true));
+setUrlUpdatingEnabled(true);
+
+store.dispatch(init());
 
 const cookieConsentResult = store.getState().cookieConsent.cookieConsentResult;
 

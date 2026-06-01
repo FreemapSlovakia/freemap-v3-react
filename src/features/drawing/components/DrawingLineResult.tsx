@@ -3,6 +3,7 @@ import {
   drawingLinePolys,
   selectingModeSelector,
 } from '@app/store/selectors.js';
+import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
@@ -527,8 +528,33 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
                       );
                     }
                   },
-                  dragstart: handleDragStart,
-                  dragend: handleDragEnd,
+                  dragstart() {
+                    // Suspend history writes for the whole drag gesture so
+                    // intermediate vertex positions don't pile up in browser
+                    // history. Re-enabled on dragend.
+                    setUrlUpdatingEnabled(false);
+
+                    handleDragStart();
+                  },
+                  dragend(e) {
+                    // Re-enable first so the final-position dispatch below runs
+                    // through the URL processor and commits the whole drag as a
+                    // single history entry.
+                    setUrlUpdatingEnabled(true);
+
+                    const coord = e.target.getLatLng();
+
+                    dispatch(
+                      drawingLineUpdatePoint({
+                        index: lineIndex,
+                        point: { lat: coord.lat, lon: coord.lng, id: p.id },
+                      }),
+                    );
+
+                    dispatch(drawingMeasure({}));
+
+                    handleDragEnd();
+                  },
                 }}
               >
                 {line.type === 'line' && !joinWith && (
@@ -570,20 +596,16 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
                 opacity={0.33}
                 eventHandlers={{
                   dragstart(e) {
-                    addPoint(
-                      e.target.getLatLng().lat,
-                      e.target.getLatLng().lng,
-                      i,
-                      p.id,
-                    );
+                    setUrlUpdatingEnabled(false);
+
+                    const { lat, lng } = e.target.getLatLng();
+
+                    addPoint(lat, lng, i, p.id);
                   },
                   click(e) {
-                    addPoint(
-                      e.target.getLatLng().lat,
-                      e.target.getLatLng().lng,
-                      i,
-                      p.id,
-                    );
+                    const { lat, lng } = e.target.getLatLng();
+
+                    addPoint(lat, lng, i, p.id);
                   },
                 }}
               />
