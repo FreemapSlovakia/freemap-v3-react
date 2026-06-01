@@ -117,6 +117,10 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
       premiumFromZoom,
       premiumOnlyText,
       onPremiumClick,
+      // strict-origin-when-cross-origin (the modern browser default) so tile
+      // providers that require a Referer header — e.g. OSM's usage policy —
+      // aren't blocked even if a stricter document-level policy is in effect.
+      referrerPolicy = 'strict-origin-when-cross-origin',
       ...rest
     } = props;
 
@@ -129,7 +133,7 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
         premiumFromZoom,
         premiumOnlyText,
         onPremiumClick,
-        rest,
+        { ...rest, referrerPolicy },
       ),
       context,
     };
