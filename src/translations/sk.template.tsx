@@ -573,7 +573,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       iconNone: 'Bez ikony',
       iconSearch: 'Hľadať ikony',
       text: 'Text',
-      textHint: 'Najviac 2 znaky zobrazené v značke.',
+      textHint: 'Ikona alebo najviac 2 znaky zobrazené v značke.',
       type: 'Typ geometrie',
       dashArray: 'Štýl prerušovania',
       lineCap: 'Koniec čiary',

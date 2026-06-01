@@ -571,7 +571,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       iconNone: 'Nincs ikon',
       iconSearch: 'Ikonok keresése',
       text: 'Szöveg',
-      textHint: 'Legfeljebb 2 karakter jelenik meg a jelölőn belül.',
+      textHint: 'Ikon vagy legfeljebb 2 karakter jelenik meg a jelölőn belül.',
       type: 'Geometria típusa',
       dashArray: 'Szaggatás stílusa',
       lineCap: 'Vonalvég',

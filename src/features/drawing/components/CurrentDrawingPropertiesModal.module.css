@@ -1,0 +1,27 @@
+.iconTextGrid {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    "iconLabel textLabel"
+    "icon      text";
+  column-gap: 1rem;
+  justify-content: start;
+  align-items: center;
+}
+
+.iconLabel {
+  grid-area: iconLabel;
+}
+
+.textLabel {
+  grid-area: textLabel;
+}
+
+.icon {
+  grid-area: icon;
+}
+
+.text {
+  grid-area: text;
+  width: 4rem;
+}

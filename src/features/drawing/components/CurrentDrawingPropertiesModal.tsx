@@ -26,6 +26,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../../../app/store/actions.js';
+import classes from './CurrentDrawingPropertiesModal.module.css';
 
 type Props = { show: boolean };
 
@@ -415,31 +416,39 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
                 />
               </Form.Group>
 
-              <Form.Group controlId="icon" className="mt-3">
-                <Form.Label>{m?.drawing.edit.icon}</Form.Label>
+              <Form.Group className="mt-3">
+                <div className={classes['iconTextGrid']}>
+                  <Form.Label htmlFor="icon" className={classes['iconLabel']}>
+                    {m?.drawing.edit.icon}
+                  </Form.Label>
 
-                <IconPicker
-                  selected={
-                    editedIconSpec?.kind === 'fa' ||
-                    editedIconSpec?.kind === 'poi'
-                      ? editedIcon
-                      : undefined
-                  }
-                  onSelect={(spec) => setEditedIcon(spec ?? '')}
-                />
-              </Form.Group>
+                  <div className={classes['icon']}>
+                    <IconPicker
+                      selected={
+                        editedIconSpec?.kind === 'fa' ||
+                        editedIconSpec?.kind === 'poi'
+                          ? editedIcon
+                          : undefined
+                      }
+                      onSelect={(spec) => setEditedIcon(spec ?? '')}
+                    />
+                  </div>
 
-              <Form.Group controlId="text" className="mt-3">
-                <Form.Label>{m?.drawing.edit.text}</Form.Label>
+                  <Form.Label htmlFor="text" className={classes['textLabel']}>
+                    {m?.drawing.edit.text}
+                  </Form.Label>
 
-                <Form.Control
-                  type="text"
-                  maxLength={2}
-                  value={
-                    editedIconSpec?.kind === 'text' ? editedIconSpec.text : ''
-                  }
-                  onChange={(e) => setEditedIcon(e.currentTarget.value)}
-                />
+                  <Form.Control
+                    id="text"
+                    className={classes['text']}
+                    type="text"
+                    maxLength={2}
+                    value={
+                      editedIconSpec?.kind === 'text' ? editedIconSpec.text : ''
+                    }
+                    onChange={(e) => setEditedIcon(e.currentTarget.value)}
+                  />
+                </div>
 
                 <Form.Text muted>{m?.drawing.edit.textHint}</Form.Text>
               </Form.Group>

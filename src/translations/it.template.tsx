@@ -572,7 +572,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       iconNone: 'Nessuna icona',
       iconSearch: 'Cerca icone',
       text: 'Testo',
-      textHint: 'Massimo 2 caratteri mostrati nel marcatore.',
+      textHint: 'Icona o massimo 2 caratteri mostrati nel marcatore.',
       type: 'Tipo di geometria',
       dashArray: 'Stile tratteggio',
       lineCap: 'Terminazione linea',

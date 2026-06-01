@@ -531,7 +531,7 @@ const messages: Messages = {
       iconNone: 'No icon',
       iconSearch: 'Search icons',
       text: 'Text',
-      textHint: 'Up to 2 characters shown inside the marker.',
+      textHint: 'Icon or up to 2 characters shown inside the marker.',
       type: 'Geometry type',
       dashArray: 'Dash style',
       lineCap: 'Line cap',

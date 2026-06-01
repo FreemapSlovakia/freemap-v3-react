@@ -555,7 +555,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       iconNone: 'Bez ikony',
       iconSearch: 'Szukaj ikon',
       text: 'Tekst',
-      textHint: 'Maksymalnie 2 znaki wyświetlane w znaczniku.',
+      textHint: 'Ikona lub maksymalnie 2 znaki wyświetlane w znaczniku.',
       type: 'Typ geometrii',
       dashArray: 'Styl kreskowania',
       lineCap: 'Zakończenie linii',

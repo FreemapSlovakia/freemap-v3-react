@@ -567,7 +567,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       iconNone: 'Kein Symbol',
       iconSearch: 'Symbole suchen',
       text: 'Text',
-      textHint: 'Maximal 2 Zeichen werden in der Markierung angezeigt.',
+      textHint:
+        'Symbol oder maximal 2 Zeichen werden in der Markierung angezeigt.',
       type: 'Geometrietyp',
       dashArray: 'Strichelung',
       lineCap: 'Linienende',
