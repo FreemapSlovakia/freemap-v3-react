@@ -61,6 +61,12 @@ const htmlPluginProps = {
 
 const config: Configuration = {
   mode: prod ? 'production' : 'development',
+  // @rspack/cli auto-enables lazy compilation for web-only targets unless we
+  // set it explicitly. It injects an XHR-based client that pings
+  // /_rspack/lazy/trigger (harmless Firefox "XML Parsing Error" noise) and,
+  // worse, gets bundled into the `sw`/`upload-sw` service-worker entries where
+  // XMLHttpRequest is unavailable. Opt out.
+  lazyCompilation: false,
   context: path.resolve(__dirname, 'src'),
   entry: {
     main: './app/index.tsx',
