@@ -563,7 +563,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       text: 'Text',
       textHint: 'Najviac 2 znaky zobrazené v značke.',
       type: 'Typ geometrie',
-      dashArray: 'Štýl čiary',
+      dashArray: 'Štýl prerušovania',
       lineCap: 'Koniec čiary',
       lineCapRound: 'Okrúhly',
       lineCapButt: 'Rovný',

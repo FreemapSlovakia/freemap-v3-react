@@ -557,7 +557,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       text: 'Text',
       textHint: 'Maximal 2 Zeichen werden in der Markierung angezeigt.',
       type: 'Geometrietyp',
-      dashArray: 'Linienstil',
+      dashArray: 'Strichelung',
       lineCap: 'Linienende',
       lineCapRound: 'Rund',
       lineCapButt: 'Flach',

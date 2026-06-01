@@ -562,7 +562,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       text: 'Testo',
       textHint: 'Massimo 2 caratteri mostrati nel marcatore.',
       type: 'Tipo di geometria',
-      dashArray: 'Stile linea',
+      dashArray: 'Stile tratteggio',
       lineCap: 'Terminazione linea',
       lineCapRound: 'Arrotondata',
       lineCapButt: 'Piatta',

@@ -545,7 +545,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       text: 'Tekst',
       textHint: 'Maksymalnie 2 znaki wyświetlane w znaczniku.',
       type: 'Typ geometrii',
-      dashArray: 'Styl linii',
+      dashArray: 'Styl kreskowania',
       lineCap: 'Zakończenie linii',
       lineCapRound: 'Okrągłe',
       lineCapButt: 'Płaskie',

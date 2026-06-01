@@ -561,7 +561,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       text: 'Szöveg',
       textHint: 'Legfeljebb 2 karakter jelenik meg a jelölőn belül.',
       type: 'Geometria típusa',
-      dashArray: 'Vonalstílus',
+      dashArray: 'Szaggatás stílusa',
       lineCap: 'Vonalvég',
       lineCapRound: 'Kerek',
       lineCapButt: 'Lapos',
