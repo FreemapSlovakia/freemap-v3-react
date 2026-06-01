@@ -109,7 +109,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     unauthenticatedError:
       'Pre prístup k tejto funkcii sa najprv prihláste, prosím.',
-    areYouSure: 'Ste si istý/á?',
     confirmation: 'Potvrdenie',
     export: 'Exportovať',
     success: 'Hotovo!',
@@ -484,8 +483,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     linkToWww: 'fotografia na www.freemap.sk',
     linkToImage: 'súbor fotografie',
     allMyPhotos: {
+      title: 'Zmena prístupu',
       premium: 'Zaradiť všetky moje fotky do prémiového obsahu',
       free: 'Sprístupniť všetky moje fotky každému',
+      confirmPremium:
+        'Zaradiť všetky vaše fotky do prémiového obsahu? Uvidia ich iba používatelia s prémiovým prístupom.',
+      confirmFree: 'Sprístupniť všetky vaše fotky každému?',
     },
     showLegend: 'Zobraziť legendu vyfarbenia',
   },

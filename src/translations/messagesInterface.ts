@@ -72,7 +72,6 @@ export type Messages = {
     experimentalFunction: string;
     attribution: () => JSX.Element;
     unauthenticatedError: string;
-    areYouSure: string;
     confirmation: string;
     export: string;
     success: string;
@@ -321,8 +320,11 @@ export type Messages = {
     linkToWww: string;
     linkToImage: string;
     allMyPhotos: {
+      title: string;
       premium: string;
       free: string;
+      confirmPremium: string;
+      confirmFree: string;
     };
   };
   measurement: {

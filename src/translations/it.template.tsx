@@ -117,7 +117,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     export: 'Esporta',
     expiration: 'Scadenza',
     unauthenticatedError: 'Accedi per utilizzare questa funzione.',
-    areYouSure: 'Sei sicuro/a?',
     confirmation: 'Conferma',
     success: 'Fatto!',
     privacyPolicy: 'Informativa sulla privacy',
@@ -476,8 +475,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showLegend: 'Mostra la legenda della colorazione',
 
     allMyPhotos: {
+      title: 'Modifica accesso',
       premium: 'Includi tutte le mie foto nei contenuti premium',
       free: 'Rendi tutte le mie foto accessibili a tutti',
+      confirmPremium:
+        'Includere tutte le tue foto nei contenuti premium? Solo gli utenti con accesso premium potranno vederle.',
+      confirmFree: 'Rendere tutte le tue foto accessibili a tutti?',
     },
 
     recentTags: 'Tag recenti da assegnare:',

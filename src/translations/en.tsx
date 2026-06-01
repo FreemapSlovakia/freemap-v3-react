@@ -103,7 +103,6 @@ const messages: Messages = {
     experimentalFunction: 'Experimental function',
     attribution: () => <Attribution unknown="Map licence is not specified" />,
     unauthenticatedError: 'Please log-in to access this feature.',
-    areYouSure: 'Are you sure?',
     confirmation: 'Confirmation',
     export: 'Export',
     success: 'Success!',
@@ -444,8 +443,12 @@ const messages: Messages = {
     linkToWww: 'photo at www.freemap.sk',
     linkToImage: 'photo image file',
     allMyPhotos: {
+      title: 'Access change',
       premium: 'Include all my photos in premium content',
       free: 'Make all my photos accessible to everyone',
+      confirmPremium:
+        'Include all your photos in premium content? Only users with premium access will be able to see them.',
+      confirmFree: 'Make all your photos accessible to everyone?',
     },
   },
 

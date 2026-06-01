@@ -110,7 +110,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       <Attribution unknown="A térkép licence nincs megadva." />
     ),
     unauthenticatedError: 'A funkció használatához előbb jelentkezz be.',
-    areYouSure: 'Biztos vagy benne?',
     confirmation: 'Megerősítés',
     success: 'Kész!',
     privacyPolicy: 'Adatvédelmi irányelvek',
@@ -472,8 +471,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     allMyPhotos: {
+      title: 'Hozzáférés módosítása',
       premium: 'Minden fotóm felvétele a prémium tartalomba',
       free: 'Minden fotóm elérhetővé tétele mindenki számára',
+      confirmPremium:
+        'Felveszi minden fotóját a prémium tartalomba? Csak a prémium hozzáféréssel rendelkező felhasználók láthatják őket.',
+      confirmFree: 'Elérhetővé teszi minden fotóját mindenki számára?',
     },
 
     recentTags: 'Legutóbbi címkék hozzárendeléshez:',

@@ -108,7 +108,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       <Attribution unknown="Licencja mapy nie została określona" />
     ),
     unauthenticatedError: 'Zaloguj się, aby uzyskać dostęp do tej funkcji.',
-    areYouSure: 'Jesteś pewien?',
     confirmation: 'Potwierdzenie',
     export: 'Eksportuj',
     success: 'Gotowe!',
@@ -426,8 +425,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     allMyPhotos: {
+      title: 'Zmiana dostępu',
       premium: 'Uwzględnij wszystkie moje zdjęcia w treściach premium',
       free: 'Udostępnij wszystkie moje zdjęcia dla wszystkich',
+      confirmPremium:
+        'Uwzględnić wszystkie Twoje zdjęcia w treściach premium? Zobaczą je tylko użytkownicy z dostępem premium.',
+      confirmFree: 'Udostępnić wszystkie Twoje zdjęcia dla wszystkich?',
     },
 
     legend: 'Legenda',

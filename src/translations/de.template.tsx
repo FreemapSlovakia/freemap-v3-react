@@ -110,7 +110,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     unauthenticatedError:
       'Bitte melden Sie sich an, um auf diese Funktion zuzugreifen.',
-    areYouSure: 'Sind Sie sicher?',
     confirmation: 'Bestätigung',
     export: 'Exportieren',
     success: 'Fertig!',
@@ -434,8 +433,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     allMyPhotos: {
+      title: 'Zugriffsänderung',
       premium: 'Alle meine Fotos in Premium-Inhalte aufnehmen',
       free: 'Alle meine Fotos für alle zugänglich machen',
+      confirmPremium:
+        'Alle Ihre Fotos in Premium-Inhalte aufnehmen? Nur Benutzer mit Premium-Zugang können sie sehen.',
+      confirmFree: 'Alle Ihre Fotos für alle zugänglich machen?',
     },
 
     legend: 'Legende',

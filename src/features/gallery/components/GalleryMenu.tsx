@@ -74,7 +74,18 @@ export function GalleryMenu() {
       if (!eventKey) {
         // nothing
       } else if (eventKey.startsWith('all-')) {
-        if (await confirm({ message: m?.general.areYouSure })) {
+        if (
+          await confirm({
+            title: m?.gallery.allMyPhotos.title,
+            message:
+              eventKey === 'all-premium'
+                ? m?.gallery.allMyPhotos.confirmPremium
+                : m?.gallery.allMyPhotos.confirmFree,
+            icon: eventKey === 'all-premium' ? <FaGem /> : <FaDove />,
+            confirmLabel: m?.general.yes,
+            cancelLabel: m?.general.no,
+          })
+        ) {
           dispatch(
             galleryAllPremiumOrFree(eventKey.slice(4) as 'premium' | 'free'),
           );
