@@ -128,16 +128,32 @@ createRoot(rootElement).render(
   </Provider>,
 );
 
-await window.navigator.serviceWorker
-  ?.register('/sw.js')
-  .catch((err) => console.error('Error registering service worker: ' + err));
+if (process.env['NODE_ENV'] === 'production') {
+  await window.navigator.serviceWorker
+    ?.register('/sw.js')
+    .catch((err) => console.error('Error registering service worker: ' + err));
 
-// share target SW
-window.navigator.serviceWorker
-  ?.register('/upload-sw.js', { scope: '/upload' })
-  .catch((e) => {
-    console.warn('Error registering service worker:', e);
-  });
+  // share target SW
+  window.navigator.serviceWorker
+    ?.register('/upload-sw.js', { scope: '/upload' })
+    .catch((e) => {
+      console.warn('Error registering service worker:', e);
+    });
+} else {
+  // In development a leftover service worker (from a prod visit to the same
+  // origin) intercepts HMR chunk requests and breaks hot reload, so unregister
+  // any existing one. Caches (offline maps, static assets) are left intact.
+  window.navigator.serviceWorker
+    ?.getRegistrations()
+    .then((registrations) => {
+      for (const registration of registrations) {
+        registration.unregister();
+      }
+    })
+    .catch(() => {
+      // ignore
+    });
+}
 
 try {
   window.navigator.registerProtocolHandler?.('geo', '/?geo=%s');
