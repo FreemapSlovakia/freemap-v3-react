@@ -9,6 +9,7 @@ import { cachedMapsLoaded } from '@features/cachedMaps/model/actions.js';
 import { invokeGeoip } from '@features/geoip/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { attachMapStateHandler } from '@features/map/mapStateHandler.js';
+import { ConfirmProvider } from '@shared/components/ConfirmProvider.js';
 import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
@@ -114,9 +115,11 @@ createRoot(rootElement).render(
       }}
     >
       <MessagesProvider>
-        <ErrorCatcher>
-          <Main />
-        </ErrorCatcher>
+        <ConfirmProvider>
+          <ErrorCatcher>
+            <Main />
+          </ErrorCatcher>
+        </ConfirmProvider>
       </MessagesProvider>
     </IconContext.Provider>
   </Provider>,

@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
@@ -18,7 +18,7 @@ import type { AuthProvider } from '../model/types.js';
 type Props = { mode: 'login' | 'connect' | 'disconnect' };
 
 export function AuthProviders({ mode }: Props): ReactElement {
-  const m = useMessages();
+  const confirm = useConfirm();
 
   const dispatch = useDispatch();
 
@@ -30,8 +30,8 @@ export function AuthProviders({ mode }: Props): ReactElement {
     (state) => state.cookieConsent.cookieConsentResult,
   );
 
-  const loginWithFacebook = useCallback(() => {
-    if (mode === 'disconnect' && !window.confirm(m?.general.areYouSure)) {
+  const loginWithFacebook = useCallback(async () => {
+    if (mode === 'disconnect' && !(await confirm())) {
       return;
     }
 
@@ -40,10 +40,10 @@ export function AuthProviders({ mode }: Props): ReactElement {
         ? authDisconnect({ provider: 'facebook' })
         : authWithFacebook({ connect: mode === 'connect' }),
     );
-  }, [dispatch, mode, m]);
+  }, [dispatch, mode, confirm]);
 
-  const loginWithGoogle = useCallback(() => {
-    if (mode === 'disconnect' && !window.confirm(m?.general.areYouSure)) {
+  const loginWithGoogle = useCallback(async () => {
+    if (mode === 'disconnect' && !(await confirm())) {
       return;
     }
 
@@ -52,10 +52,10 @@ export function AuthProviders({ mode }: Props): ReactElement {
         ? authDisconnect({ provider: 'google' })
         : authWithGoogle({ connect: mode === 'connect' }),
     );
-  }, [dispatch, mode, m]);
+  }, [dispatch, mode, confirm]);
 
-  const loginWithApple = useCallback(() => {
-    if (mode === 'disconnect' && !window.confirm(m?.general.areYouSure)) {
+  const loginWithApple = useCallback(async () => {
+    if (mode === 'disconnect' && !(await confirm())) {
       return;
     }
 
@@ -64,10 +64,10 @@ export function AuthProviders({ mode }: Props): ReactElement {
         ? authDisconnect({ provider: 'apple' })
         : authWithApple({ connect: mode === 'connect' }),
     );
-  }, [dispatch, mode, m]);
+  }, [dispatch, mode, confirm]);
 
-  const loginWithOsm = useCallback(() => {
-    if (mode === 'disconnect' && !window.confirm(m?.general.areYouSure)) {
+  const loginWithOsm = useCallback(async () => {
+    if (mode === 'disconnect' && !(await confirm())) {
       return;
     }
 
@@ -76,10 +76,10 @@ export function AuthProviders({ mode }: Props): ReactElement {
         ? authDisconnect({ provider: 'osm' })
         : authWithOsm({ connect: mode === 'connect' }),
     );
-  }, [dispatch, mode, m]);
+  }, [dispatch, mode, confirm]);
 
-  const loginWithGarmin = useCallback(() => {
-    if (mode === 'disconnect' && !window.confirm(m?.general.areYouSure)) {
+  const loginWithGarmin = useCallback(async () => {
+    if (mode === 'disconnect' && !(await confirm())) {
       return;
     }
 
@@ -88,7 +88,7 @@ export function AuthProviders({ mode }: Props): ReactElement {
         ? authDisconnect({ provider: 'garmin' })
         : authWithGarmin({ connect: mode === 'connect' }),
     );
-  }, [dispatch, mode, m]);
+  }, [dispatch, mode, confirm]);
 
   function show(provider: AuthProvider) {
     return (

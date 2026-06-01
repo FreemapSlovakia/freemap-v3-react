@@ -111,6 +111,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     unauthenticatedError: 'A funkció használatához előbb jelentkezz be.',
     areYouSure: 'Biztos vagy benne?',
+    confirmation: 'Megerősítés',
     success: 'Kész!',
     privacyPolicy: 'Adatvédelmi irányelvek',
     newOptionText: '%value% hozzáadása',
@@ -375,7 +376,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </>
       ),
       captured: (takenAt) => <>Ekkor készült: {takenAt}</>,
-      deletePrompt: 'Kép törlése?',
+      deletePrompt: (title) =>
+        title ? (
+          <>
+            Biztosan törölni szeretné a(z) <i>{title}</i> képet?
+          </>
+        ) : (
+          <>Biztosan törölni szeretné ezt a képet?</>
+        ),
+      deleteTitle: 'Kép törlése',
       modify: 'Módosítás',
       premiumOnly:
         'Ezt a fényképet a szerzője csak prémium hozzáféréssel rendelkező felhasználók számára tette elérhetővé.',
@@ -1033,7 +1042,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       timeTo: 'Eddig',
       listingLabel: 'Felsorolási felirat',
       note: 'Megjegyzés',
-      delete: 'Törlöd a hozzáférési tokent?',
+      delete: (token) => (
+        <>
+          Biztosan törölni szeretné a(z) <i>{token}</i> hozzáférési tokent?
+        </>
+      ),
+      deleteTitle: 'Hozzáférési token törlése',
     },
     accessTokens: {
       modalTitle: (deviceName) => (
@@ -1077,7 +1091,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       watchTokens: 'Kódok megtekintése',
       watchPrivately: 'Privát figyelés',
       watch: 'Figyelés',
-      delete: 'Törli a készüléket?',
+      delete: (name) => (
+        <>
+          Biztosan törölni szeretné a(z) <i>{name}</i> készüléket?
+        </>
+      ),
+      deleteTitle: 'Készülék törlése',
       modifyTitle: ({ name }) => (
         <>
           A(z) <i>{name}</i> készülék követésének módosítása
@@ -1183,7 +1202,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noMapFound: 'Nem található térkép',
     save: 'Mentés',
     delete: 'Törlés',
-    deleteConfirm: (name) => `Biztosan törli ezt a térképet? ${name}`,
+    deleteConfirm: (name) => (
+      <>
+        Biztosan törli a(z) <i>{name}</i> térképet?
+      </>
+    ),
+    deleteTitle: 'Térkép törlése',
 
     fetchError: ({ err }) =>
       addError(messages, 'Hiba történt a térkép betöltéskor', err),

@@ -1,6 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -63,6 +63,8 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
+
+  const confirm = useConfirm();
 
   const imageIds = useAppSelector((state) => state.gallery.imageIds);
 
@@ -213,24 +215,18 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
     }
   }, []);
 
-  const handleDelete = useCallback(() => {
-    dispatch(
-      toastsAdd({
-        id: 'gallery.deletePicture',
-        messageKey: 'gallery.viewer.deletePrompt',
-        style: 'warning',
-        cancelType: [galleryClear.type, galleryRequestImage.type],
-        actions: [
-          {
-            nameKey: 'general.yes',
-            action: galleryDeletePicture(),
-            style: 'danger',
-          },
-          { nameKey: 'general.no' },
-        ],
-      }),
-    );
-  }, [dispatch]);
+  const handleDelete = useCallback(async () => {
+    if (
+      await confirm({
+        title: m?.gallery.viewer.deleteTitle,
+        message: m?.gallery.viewer.deletePrompt(image?.title),
+        confirmLabel: m?.general.delete,
+        confirmStyle: 'danger',
+      })
+    ) {
+      dispatch(galleryDeletePicture());
+    }
+  }, [dispatch, confirm, m, image?.title]);
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {

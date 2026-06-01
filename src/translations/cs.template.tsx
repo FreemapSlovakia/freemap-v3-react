@@ -110,6 +110,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     unauthenticatedError:
       'Pro přístup k této funkci se nejprve prosím přihlašte.',
     areYouSure: 'Jste si jisti?',
+    confirmation: 'Potvrzení',
     export: 'Exportovat',
     success: 'Hotovo!',
     expiration: 'Expirace',
@@ -373,7 +374,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </>
       ),
       captured: (takenAt) => <>Vyfoceno dne {takenAt}</>,
-      deletePrompt: 'Smazat obrázek?',
+      deletePrompt: (title) =>
+        title ? (
+          <>
+            Opravdu chcete smazat obrázek <i>{title}</i>?
+          </>
+        ) : (
+          <>Opravdu chcete smazat tento obrázek?</>
+        ),
+      deleteTitle: 'Smazání obrázku',
       modify: 'Úprava',
       premiumOnly:
         'Tuto fotografii zpřístupnil její autor pouze uživatelům s prémiovým přístupem.',
@@ -977,7 +986,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       timeTo: 'Do',
       listingLabel: 'Název zařízení',
       note: 'Poznámka',
-      delete: 'Smasat sledovací token?',
+      delete: (token) => (
+        <>
+          Opravdu chcete smazat sledovací token <i>{token}</i>?
+        </>
+      ),
+      deleteTitle: 'Smazání sledovacího tokenu',
     },
     accessTokens: {
       modalTitle: (deviceName) => (
@@ -1020,7 +1034,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       watchTokens: 'Sledovací tokeny',
       watchPrivately: 'Sledovat soukromě',
       watch: 'Sledovat',
-      delete: 'Smazat zařízení?',
+      delete: (name) => (
+        <>
+          Opravdu chcete smazat zařízení <i>{name}</i>?
+        </>
+      ),
+      deleteTitle: 'Smazání zařízení',
       modifyTitle: ({ name }) => (
         <>
           Úprava zařízení <i>{name}</i>
@@ -1131,7 +1150,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     save: 'Uložit',
     delete: 'Smazat',
     disconnect: 'Odpojit',
-    deleteConfirm: (name) => `Opravdu si přejete smazat mapu ${name}?`,
+    deleteConfirm: (name) => (
+      <>
+        Opravdu si přejete smazat mapu <i>{name}</i>?
+      </>
+    ),
+    deleteTitle: 'Smazání mapy',
     fetchError: ({ err }) =>
       addError(messages, 'Nastala chyba při nahrávání mapy', err),
     fetchListError: ({ err }) =>

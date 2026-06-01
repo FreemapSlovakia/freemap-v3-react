@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { authWithGarmin } from '@features/auth/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
@@ -81,6 +82,8 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
+  const confirm = useConfirm();
+
   const initExportables = useAppSelector((state) => {
     const exportables: Exportable[] = [];
 
@@ -148,7 +151,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
   const [activity, setActivity] = useState('');
 
   const runExport = useCallback(
-    (e: SubmitEvent) => {
+    async (e: SubmitEvent) => {
       e.preventDefault();
 
       if (!exportables) {
@@ -166,11 +169,12 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
       if (target === 'garmin' && !userHasGarmin) {
         if (
-          window.confirm(
-            userHasGarmin === false
-              ? m?.exportMapFeatures.garmin.connectPrompt
-              : m?.exportMapFeatures.garmin.authPrompt,
-          )
+          await confirm({
+            message:
+              userHasGarmin === false
+                ? m?.exportMapFeatures.garmin.connectPrompt
+                : m?.exportMapFeatures.garmin.authPrompt,
+          })
         ) {
           dispatch(
             authWithGarmin({ connect: true, successAction: exportAction }),
@@ -190,6 +194,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
       activity,
       userHasGarmin,
       m,
+      confirm,
     ],
   );
 

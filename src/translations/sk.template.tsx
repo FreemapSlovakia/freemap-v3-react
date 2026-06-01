@@ -110,6 +110,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     unauthenticatedError:
       'Pre prístup k tejto funkcii sa najprv prihláste, prosím.',
     areYouSure: 'Ste si istý/á?',
+    confirmation: 'Potvrdenie',
     export: 'Exportovať',
     success: 'Hotovo!',
     expiration: 'Exspirácia',
@@ -398,7 +399,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </>
       ),
       captured: (takenAt) => <>Odfotené dňa {takenAt}</>,
-      deletePrompt: 'Zmazať obrázok?',
+      deletePrompt: (title) =>
+        title ? (
+          <>
+            Naozaj chcete zmazať obrázok <i>{title}</i>?
+          </>
+        ) : (
+          <>Naozaj chcete zmazať tento obrázok?</>
+        ),
+      deleteTitle: 'Zmazanie obrázka',
       modify: 'Úprava',
       premiumOnly:
         'Túto fotografiu sprístupnil jej autor len používateľom s prémiovým prístupom.',
@@ -1006,7 +1015,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       timeTo: 'Do',
       listingLabel: 'Popisok v zozname',
       note: 'Poznámka',
-      delete: 'Zmazať token sledovania?',
+      delete: (token) => (
+        <>
+          Naozaj chcete zmazať token sledovania <i>{token}</i>?
+        </>
+      ),
+      deleteTitle: 'Zmazanie tokenu sledovania',
     },
     accessTokens: {
       modalTitle: (deviceName) => (
@@ -1049,7 +1063,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       watchTokens: 'Sledovacie tokeny',
       watchPrivately: 'Sledovať privátne',
       watch: 'Sledovať',
-      delete: 'Odstrániť zariadenie?',
+      delete: (name) => (
+        <>
+          Naozaj chcete odstrániť zariadenie <i>{name}</i>?
+        </>
+      ),
+      deleteTitle: 'Odstránenie zariadenia',
       modifyTitle: ({ name }) => (
         <>
           Upraviť zariadenie <i>{name}</i>
@@ -1162,7 +1181,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     delete: 'Zmazať',
     disconnect: 'Odpojiť',
     disconnectAndClear: 'Odpojiť a vyčistiť',
-    deleteConfirm: (name) => `Naozaj si prajete vymazať mapu ${name}?`,
+    deleteConfirm: (name) => (
+      <>
+        Naozaj si prajete vymazať mapu <i>{name}</i>?
+      </>
+    ),
+    deleteTitle: 'Vymazanie mapy',
     fetchError: ({ err }) =>
       addError(messages, 'Nastala chyba pri načítavaní mapy', err),
     fetchListError: ({ err }) =>

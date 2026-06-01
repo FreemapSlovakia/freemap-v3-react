@@ -1,5 +1,6 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
@@ -27,6 +28,8 @@ export function CustomMapsModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
+
+  const confirm = useConfirm();
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
@@ -63,10 +66,17 @@ export function CustomMapsModal({ show }: Props): ReactElement {
   }, []);
 
   const handleDeleteClick = useCallback(
-    (def: CustomLayerDef) => {
+    async (def: CustomLayerDef) => {
       const name = def.name || `{${def.type}}`;
 
-      if (!window.confirm(m?.myMaps.deleteConfirm(name))) {
+      if (
+        !(await confirm({
+          title: m?.myMaps.deleteTitle,
+          message: m?.myMaps.deleteConfirm(name),
+          confirmLabel: m?.general.delete,
+          confirmStyle: 'danger',
+        }))
+      ) {
         return;
       }
 
@@ -76,7 +86,7 @@ export function CustomMapsModal({ show }: Props): ReactElement {
         saveSettings({ settings: { customLayers: next }, keepOpen: true }),
       );
     },
-    [customLayers, dispatch, m],
+    [customLayers, dispatch, m, confirm],
   );
 
   const handleSave = useCallback(() => {

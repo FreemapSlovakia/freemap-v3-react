@@ -8,16 +8,6 @@ export const galleryMakeAllPremiumOrFreeProcessor: Processor<
 > = {
   actionCreator: galleryAllPremiumOrFree,
   async handle({ getState, action, dispatch }) {
-    await new Promise((resolve) => window.setTimeout(resolve));
-
-    if (
-      !window.confirm(
-        window.translations?.general.areYouSure ?? 'Are you sure?',
-      )
-    ) {
-      return;
-    }
-
     await httpRequest({
       getState,
       method: 'POST',

@@ -73,6 +73,7 @@ export type Messages = {
     attribution: () => JSX.Element;
     unauthenticatedError: string;
     areYouSure: string;
+    confirmation: string;
     export: string;
     success: string;
     expiration: string;
@@ -263,7 +264,8 @@ export type Messages = {
         createdAt: ReactNode;
       }) => JSX.Element;
       captured: (takenAt: JSX.Element) => JSX.Element;
-      deletePrompt: string;
+      deletePrompt: (title: string | null | undefined) => JSX.Element;
+      deleteTitle: string;
       modify: string;
       premiumOnly: string;
       noComments: string;
@@ -711,7 +713,8 @@ export type Messages = {
       timeTo: string; // TODO move to general
       listingLabel: string;
       note: string; // TODO move to general
-      delete: string;
+      delete: (token: string) => JSX.Element;
+      deleteTitle: string;
     };
     accessTokens: {
       modalTitle: (deviceName: string) => JSX.Element;
@@ -738,9 +741,11 @@ export type Messages = {
       modalTitle: string;
       createTitle: string;
       watchTokens: string;
+      traccarQrCode: string;
       watchPrivately: string;
       watch: string;
-      delete: string;
+      delete: (name: string) => JSX.Element;
+      deleteTitle: string;
       modifyTitle: (props: { name: string }) => JSX.Element;
       desc: () => JSX.Element;
     };
@@ -793,7 +798,8 @@ export type Messages = {
     delete: string;
     disconnect: string;
     disconnectAndClear: string;
-    deleteConfirm: (name: string) => string;
+    deleteConfirm: (name: string) => JSX.Element;
+    deleteTitle: string;
     fetchError: (props: Err) => string;
     fetchListError: (props: Err) => string;
     deleteError: (props: Err) => string;

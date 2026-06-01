@@ -1,5 +1,6 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -76,6 +77,8 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
   const [inclPosition, setInclPosition] = useState(true);
 
   const m = useMessages();
+
+  const confirm = useConfirm();
 
   const filteredMaps = sortedMaps.filter(
     (map) =>
@@ -224,11 +227,14 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                           <Dropdown.Item
                             disabled={!online}
                             className="text-danger"
-                            onClick={() => {
+                            onClick={async () => {
                               if (
-                                window.confirm(
-                                  m?.myMaps.deleteConfirm(map.name),
-                                )
+                                await confirm({
+                                  title: m?.myMaps.deleteTitle,
+                                  message: m?.myMaps.deleteConfirm(map.name),
+                                  confirmLabel: m?.general.delete,
+                                  confirmStyle: 'danger',
+                                })
                               ) {
                                 dispatch(mapsDelete(map.id));
                               }

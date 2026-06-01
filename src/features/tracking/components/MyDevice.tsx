@@ -1,6 +1,5 @@
-import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
@@ -8,14 +7,10 @@ import {
   type ReactElement,
   type ReactNode,
   useCallback,
+  useRef,
+  useState,
 } from 'react';
-import {
-  Button,
-  Dropdown,
-  ListGroup,
-  OverlayTrigger,
-  Tooltip,
-} from 'react-bootstrap';
+import { Dropdown, ListGroup, Overlay, Tooltip } from 'react-bootstrap';
 import { FaEdit, FaEllipsisV, FaKey, FaTrash } from 'react-icons/fa';
 import { SiTraccar } from 'react-icons/si';
 import QRCode from 'react-qr-code';
@@ -33,6 +28,8 @@ export function MyDevice({ device }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
+  const confirm = useConfirm();
+
   const dateFormat = useDateTimeFormat({
     year: 'numeric',
     month: 'short',
@@ -47,29 +44,18 @@ export function MyDevice({ device }: Props): ReactElement {
     dispatch(trackingActions.modifyDevice(device.id));
   }, [device.id, dispatch]);
 
-  const handleDelete = useCallback(() => {
-    dispatch(
-      toastsAdd({
-        id: 'tracking.deleteDevice',
-        messageKey: 'tracking.devices.delete',
-        style: 'warning',
-        cancelType: [
-          trackingActions.modifyDevice.type,
-          trackingActions.modifyTrackedDevice.type,
-          trackingActions.showAccessTokens.type,
-          setActiveModal.type,
-        ],
-        actions: [
-          {
-            nameKey: 'general.yes',
-            action: trackingActions.deleteDevice(device.id),
-            style: 'danger',
-          },
-          { nameKey: 'general.no' },
-        ],
-      }),
-    );
-  }, [device.id, dispatch]);
+  const handleDelete = useCallback(async () => {
+    if (
+      await confirm({
+        title: m?.tracking.devices.deleteTitle,
+        message: m?.tracking.devices.delete(device.name),
+        confirmLabel: m?.general.delete,
+        confirmStyle: 'danger',
+      })
+    ) {
+      dispatch(trackingActions.deleteDevice(device.id));
+    }
+  }, [device.id, device.name, dispatch, confirm, m]);
 
   const handleShowAccessTokens = useCallback(() => {
     dispatch(trackingActions.showAccessTokens(device.id));
@@ -96,6 +82,10 @@ export function MyDevice({ device }: Props): ReactElement {
     value: dateFormat.format(device.createdAt),
   });
 
+  const dropdownRef = useRef<HTMLButtonElement>(null);
+
+  const [showQr, setShowQr] = useState(false);
+
   return (
     <ListGroup.Item className="d-flex flex-wrap align-items-center gap-2">
       <div className="flex-grow-1 me-2">
@@ -116,10 +106,13 @@ export function MyDevice({ device }: Props): ReactElement {
       </div>
 
       <div className="d-flex flex-wrap gap-2">
-        <OverlayTrigger
-          trigger="click"
-          rootClose
-          overlay={
+        {showQr && (
+          <Overlay
+            target={dropdownRef.current}
+            show
+            rootClose
+            onHide={() => setShowQr(false)}
+          >
             <Tooltip>
               <div className="bg-white p-3">
                 <QRCode
@@ -131,15 +124,12 @@ export function MyDevice({ device }: Props): ReactElement {
                 />
               </div>
             </Tooltip>
-          }
-        >
-          <Button variant="outline-secondary" size="sm" title="Traccar">
-            <SiTraccar />
-          </Button>
-        </OverlayTrigger>
+          </Overlay>
+        )}
 
         <Dropdown align="end">
           <Dropdown.Toggle
+            ref={dropdownRef}
             variant="outline-secondary"
             size="sm"
             aria-label={m?.general.actions}
@@ -154,6 +144,10 @@ export function MyDevice({ device }: Props): ReactElement {
 
             <Dropdown.Item onClick={handleShowAccessTokens}>
               <FaKey /> {m?.tracking.devices.watchTokens}
+            </Dropdown.Item>
+
+            <Dropdown.Item onClick={() => setShowQr(true)}>
+              <SiTraccar /> {m?.tracking.devices.traccarQrCode}
             </Dropdown.Item>
 
             <Dropdown.Divider />

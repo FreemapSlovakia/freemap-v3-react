@@ -118,6 +118,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     expiration: 'Scadenza',
     unauthenticatedError: 'Accedi per utilizzare questa funzione.',
     areYouSure: 'Sei sicuro/a?',
+    confirmation: 'Conferma',
     success: 'Fatto!',
     privacyPolicy: 'Informativa sulla privacy',
     newOptionText: 'Aggiungi %value%',
@@ -378,7 +379,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </>
       ),
       captured: (takenAt) => <>Captured on {takenAt}</>,
-      deletePrompt: 'Eliminare questa foto?',
+      deletePrompt: (title) =>
+        title ? (
+          <>
+            Vuoi davvero eliminare la foto <i>{title}</i>?
+          </>
+        ) : (
+          <>Vuoi davvero eliminare questa foto?</>
+        ),
+      deleteTitle: 'Eliminazione foto',
       modify: 'Modifica',
       premiumOnly:
         'Questa foto è stata resa disponibile dal suo autore solo agli utenti con accesso premium.',
@@ -1006,7 +1015,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       timeTo: 'A',
       listingLabel: 'Etichetta inserzione',
       note: 'Note',
-      delete: 'Eliminare il token?',
+      delete: (token) => (
+        <>
+          Vuoi davvero eliminare il token <i>{token}</i>?
+        </>
+      ),
+      deleteTitle: 'Eliminazione del token',
     },
     accessTokens: {
       modalTitle: (deviceName) => (
@@ -1049,7 +1063,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       watchTokens: 'Watch token',
       watchPrivately: 'Guarda privatamente',
       watch: 'Guarda',
-      delete: 'Eliminare dispositivo?',
+      delete: (name) => (
+        <>
+          Vuoi davvero eliminare il dispositivo <i>{name}</i>?
+        </>
+      ),
+      deleteTitle: 'Eliminazione dispositivo',
       modifyTitle: ({ name }) => (
         <>
           Modifica dispositivo di tracciamento <i>{name}</i>
@@ -1160,7 +1179,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     save: 'Salva',
     delete: 'Elimina',
     disconnect: 'Disconnetti',
-    deleteConfirm: (name) => `Sicuro di cancellare la mappa ${name}?`,
+    deleteConfirm: (name) => (
+      <>
+        Sicuro di cancellare la mappa <i>{name}</i>?
+      </>
+    ),
+    deleteTitle: 'Eliminazione mappa',
     fetchError: ({ err }) =>
       addError(messages, 'Errore caricando la mappa:', err),
     fetchListError: ({ err }) =>

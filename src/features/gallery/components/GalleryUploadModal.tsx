@@ -1,6 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import clsx from 'clsx';
@@ -41,6 +41,8 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
+  const confirm = useConfirm();
+
   const items = useAppSelector((state) => state.gallery.items);
 
   const uploading = useAppSelector((state) =>
@@ -76,27 +78,19 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
     [handleItemMerge],
   );
 
-  const handleClose = useCallback(() => {
-    if (items.length) {
-      dispatch(
-        toastsAdd({
-          id: 'galleryUploadModal.close',
-          messageKey: 'general.closeWithoutSaving',
-          style: 'warning',
-          actions: [
-            {
-              nameKey: 'general.yes',
-              action: setActiveModal(null),
-              style: 'danger',
-            },
-            { nameKey: 'general.no' },
-          ],
-        }),
-      );
-    } else {
+  const handleClose = useCallback(async () => {
+    if (
+      !items.length ||
+      (await confirm({
+        message: m?.general.closeWithoutSaving,
+        confirmLabel: m?.general.yes,
+        cancelLabel: m?.general.no,
+        confirmStyle: 'danger',
+      }))
+    ) {
       dispatch(setActiveModal(null));
     }
-  }, [dispatch, items]);
+  }, [dispatch, items, confirm, m]);
 
   const handleItemAdd = useCallback(
     (item: GalleryItem) => {

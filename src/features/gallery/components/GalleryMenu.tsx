@@ -1,6 +1,7 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
@@ -48,6 +49,8 @@ export function GalleryMenu() {
 
   const dispatch = useDispatch();
 
+  const confirm = useConfirm();
+
   const colorizeBy = useAppSelector(
     (state) => state.gallery.colorizeBy ?? 'disable',
   );
@@ -67,13 +70,15 @@ export function GalleryMenu() {
   );
 
   const handleMoreSelect = useCallback(
-    (eventKey: string | null) => {
+    async (eventKey: string | null) => {
       if (!eventKey) {
         // nothing
       } else if (eventKey.startsWith('all-')) {
-        dispatch(
-          galleryAllPremiumOrFree(eventKey.slice(4) as 'premium' | 'free'),
-        );
+        if (await confirm({ message: m?.general.areYouSure })) {
+          dispatch(
+            galleryAllPremiumOrFree(eventKey.slice(4) as 'premium' | 'free'),
+          );
+        }
       } else if (eventKey === 'emails') {
         dispatch(
           saveSettings({
@@ -88,7 +93,7 @@ export function GalleryMenu() {
         dispatch(galleryToggleLegend());
       }
     },
-    [dispatch, sendGalleryEmails],
+    [dispatch, sendGalleryEmails, confirm, m],
   );
 
   const [hidden, setHidden] = usePersistentState<boolean>(

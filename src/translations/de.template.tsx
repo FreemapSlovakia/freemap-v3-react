@@ -111,6 +111,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     unauthenticatedError:
       'Bitte melden Sie sich an, um auf diese Funktion zuzugreifen.',
     areYouSure: 'Sind Sie sicher?',
+    confirmation: 'Bestätigung',
     export: 'Exportieren',
     success: 'Fertig!',
     expiration: 'Ablaufdatum',
@@ -364,7 +365,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </>
       ),
       captured: (takenAt) => <>Aufgenommen am {takenAt}</>,
-      deletePrompt: 'Dieses Bild löschen?',
+      deletePrompt: (title) =>
+        title ? (
+          <>
+            Möchten Sie das Bild <i>{title}</i> wirklich löschen?
+          </>
+        ) : (
+          <>Möchten Sie dieses Bild wirklich löschen?</>
+        ),
+      deleteTitle: 'Löschen des Bildes',
       modify: 'Bearbeiten',
       premiumOnly:
         'Dieses Foto wurde vom Autor nur für Nutzer mit Premium-Zugang freigegeben.',
@@ -1016,7 +1025,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       timeTo: 'Bis',
       listingLabel: 'Gerätename',
       note: 'Notiz',
-      delete: 'Zugriffstoken löschen?',
+      delete: (token) => (
+        <>
+          Möchten Sie den Zugriffstoken <i>{token}</i> wirklich löschen?
+        </>
+      ),
+      deleteTitle: 'Löschen des Zugriffstokens',
     },
 
     accessTokens: {
@@ -1063,7 +1077,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       watchTokens: 'Beobachtungstoken',
       watchPrivately: 'Privat beobachten',
       watch: 'Beobachten',
-      delete: 'Gerät löschen?',
+      delete: (name) => (
+        <>
+          Möchten Sie das Gerät <i>{name}</i> wirklich löschen?
+        </>
+      ),
+      deleteTitle: 'Löschen des Geräts',
       modifyTitle: ({ name }) => (
         <>
           Verfolgungsgerät bearbeiten <i>{name}</i>
@@ -1184,7 +1203,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     save: 'Speichern',
     delete: 'Löschen',
     disconnect: 'Trennen',
-    deleteConfirm: (name) => `Möchten Sie die Karte ${name} wirklich löschen?`,
+    deleteConfirm: (name) => (
+      <>
+        Möchten Sie die Karte <i>{name}</i> wirklich löschen?
+      </>
+    ),
+    deleteTitle: 'Löschen der Karte',
     fetchError: ({ err }) =>
       addError(messages, 'Fehler beim Laden der Karte', err),
     fetchListError: ({ err }) =>

@@ -1,7 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import {
@@ -10,9 +10,22 @@ import {
   type ReactNode,
   useCallback,
 } from 'react';
-import { Button, ListGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { FaClipboard, FaEdit, FaRegEye, FaTimes } from 'react-icons/fa';
+import {
+  Button,
+  Dropdown,
+  ListGroup,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
+import {
+  FaClipboard,
+  FaEdit,
+  FaEllipsisV,
+  FaRegEye,
+  FaTrash,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { fixedPopperConfig } from '@/shared/fixedPopperConfig.js';
 import { trackingActions } from '../model/actions.js';
 import { AccessToken as AccessTokenType } from '../model/types.js';
 
@@ -26,6 +39,8 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
+  const confirm = useConfirm();
+
   const dateFormat = useDateTimeFormat({
     year: 'numeric',
     month: 'short',
@@ -38,28 +53,18 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
     dispatch(trackingActions.modifyAccessToken(accessToken.id));
   }, [accessToken.id, dispatch]);
 
-  const handleDelete = useCallback(() => {
-    dispatch(
-      toastsAdd({
-        id: 'tracking.deleteAccessToken',
-        messageKey: 'tracking.accessToken.delete',
-        style: 'warning',
-        cancelType: [
-          trackingActions.modifyAccessToken.type,
-          trackingActions.showAccessTokens.type,
-          setActiveModal.type,
-        ],
-        actions: [
-          {
-            nameKey: 'general.yes',
-            action: trackingActions.deleteAccessToken(accessToken.id),
-            style: 'danger',
-          },
-          { nameKey: 'general.no' },
-        ],
-      }),
-    );
-  }, [accessToken.id, dispatch]);
+  const handleDelete = useCallback(async () => {
+    if (
+      await confirm({
+        title: m?.tracking.accessToken.deleteTitle,
+        message: m?.tracking.accessToken.delete(accessToken.token),
+        confirmLabel: m?.general.delete,
+        confirmStyle: 'danger',
+      })
+    ) {
+      dispatch(trackingActions.deleteAccessToken(accessToken.id));
+    }
+  }, [accessToken.id, accessToken.token, dispatch, confirm, m]);
 
   const handleCopyClick = useCallback(() => {
     copyToClipboard(
@@ -157,47 +162,31 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
       </div>
 
       <div className="d-flex flex-wrap gap-2">
-        <LongPressTooltip label={m?.tracking.devices.watch}>
-          {({ props }) => (
-            <Button
-              size="sm"
-              variant="outline-secondary"
-              type="button"
-              onClick={handleView}
-              {...props}
-            >
-              <FaRegEye />
-            </Button>
-          )}
-        </LongPressTooltip>
+        <Dropdown align="end">
+          <Dropdown.Toggle
+            variant="outline-secondary"
+            size="sm"
+            aria-label={m?.general.actions}
+          >
+            <FaEllipsisV />
+          </Dropdown.Toggle>
 
-        <LongPressTooltip label={m?.general.modify}>
-          {({ props }) => (
-            <Button
-              size="sm"
-              variant="outline-secondary"
-              type="button"
-              onClick={handleModify}
-              {...props}
-            >
-              <FaEdit />
-            </Button>
-          )}
-        </LongPressTooltip>
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+            <Dropdown.Item onClick={handleView}>
+              <FaRegEye /> {m?.tracking.devices.watch}
+            </Dropdown.Item>
 
-        <LongPressTooltip label={m?.general.delete}>
-          {({ props }) => (
-            <Button
-              variant="outline-danger"
-              size="sm"
-              type="button"
-              onClick={handleDelete}
-              {...props}
-            >
-              <FaTimes />
-            </Button>
-          )}
-        </LongPressTooltip>
+            <Dropdown.Item onClick={handleModify}>
+              <FaEdit /> {m?.general.modify}
+            </Dropdown.Item>
+
+            <Dropdown.Divider />
+
+            <Dropdown.Item className="text-danger" onClick={handleDelete}>
+              <FaTrash /> {m?.general.delete}
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     </ListGroup.Item>
   );

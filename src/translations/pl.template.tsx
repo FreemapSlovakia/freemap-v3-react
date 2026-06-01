@@ -109,6 +109,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     unauthenticatedError: 'Zaloguj się, aby uzyskać dostęp do tej funkcji.',
     areYouSure: 'Jesteś pewien?',
+    confirmation: 'Potwierdzenie',
     export: 'Eksportuj',
     success: 'Gotowe!',
     expiration: 'Wygasa',
@@ -355,7 +356,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </>
       ),
       captured: (takenAt) => <>Zrobione dnia {takenAt}</>,
-      deletePrompt: 'Usunąć to zdjęcie?',
+      deletePrompt: (title) =>
+        title ? (
+          <>
+            Czy na pewno chcesz usunąć zdjęcie <i>{title}</i>?
+          </>
+        ) : (
+          <>Czy na pewno chcesz usunąć to zdjęcie?</>
+        ),
+      deleteTitle: 'Usunięcie zdjęcia',
       modify: 'Edytuj',
       premiumOnly:
         'To zdjęcie zostało udostępnione przez autora tylko użytkownikom z dostępem premium.',
@@ -989,7 +998,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       timeTo: 'Do',
       listingLabel: 'Nazwa urządzenia',
       note: 'Notatka',
-      delete: 'Usunąć token dostępu?',
+      delete: (token) => (
+        <>
+          Czy na pewno chcesz usunąć token dostępu <i>{token}</i>?
+        </>
+      ),
+      deleteTitle: 'Usunięcie tokenu dostępu',
     },
 
     accessTokens: {
@@ -1035,7 +1049,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       watchTokens: 'Tokeny śledzenia',
       watchPrivately: 'Śledź prywatnie',
       watch: 'Śledź',
-      delete: 'Usunąć urządzenie?',
+      delete: (name) => (
+        <>
+          Czy na pewno chcesz usunąć urządzenie <i>{name}</i>?
+        </>
+      ),
+      deleteTitle: 'Usunięcie urządzenia',
       modifyTitle: ({ name }) => (
         <>
           Edytuj urządzenie śledzące <i>{name}</i>
@@ -1155,7 +1174,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     save: 'Zapisz',
     delete: 'Usuń',
     disconnect: 'Odłącz',
-    deleteConfirm: (name) => `Czy na pewno chcesz usunąć mapę ${name}?`,
+    deleteConfirm: (name) => (
+      <>
+        Czy na pewno chcesz usunąć mapę <i>{name}</i>?
+      </>
+    ),
+    deleteTitle: 'Usunięcie mapy',
     fetchError: ({ err }) =>
       addError(messages, 'Błąd podczas wczytywania mapy', err),
     fetchListError: ({ err }) =>

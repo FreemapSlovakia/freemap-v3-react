@@ -104,6 +104,7 @@ const messages: Messages = {
     attribution: () => <Attribution unknown="Map licence is not specified" />,
     unauthenticatedError: 'Please log-in to access this feature.',
     areYouSure: 'Are you sure?',
+    confirmation: 'Confirmation',
     export: 'Export',
     success: 'Success!',
     expiration: 'Expiration',
@@ -361,7 +362,15 @@ const messages: Messages = {
         </>
       ),
       captured: (takenAt) => <>Captured on {takenAt}</>,
-      deletePrompt: 'Delete this picture?',
+      deletePrompt: (title) =>
+        title ? (
+          <>
+            Do you really want to delete picture <i>{title}</i>?
+          </>
+        ) : (
+          <>Do you really want to delete this picture?</>
+        ),
+      deleteTitle: 'Picture deletion',
       modify: 'Modify',
       premiumOnly:
         'This photo has been made available by its author only to users with premium access.',
@@ -955,7 +964,12 @@ const messages: Messages = {
       timeTo: 'To',
       listingLabel: 'Listing Label',
       note: 'Note',
-      delete: 'Delete access token?',
+      delete: (token) => (
+        <>
+          Do you really want to delete access token <i>{token}</i>?
+        </>
+      ),
+      deleteTitle: 'Access token deletion',
     },
     accessTokens: {
       modalTitle: (deviceName) => (
@@ -996,9 +1010,15 @@ const messages: Messages = {
       modalTitle: 'My tracked devices',
       createTitle: 'Create Tracking Device',
       watchTokens: 'Watch tokens',
+      traccarQrCode: 'Traccar QR Code',
       watchPrivately: 'Watch privately',
       watch: 'Watch',
-      delete: 'Delete device?',
+      delete: (name) => (
+        <>
+          Do you really want to delete device <i>{name}</i>?
+        </>
+      ),
+      deleteTitle: 'Device deletion',
       modifyTitle: ({ name }) => (
         <>
           Modify Tracking Device <i>{name}</i>
@@ -1113,7 +1133,12 @@ const messages: Messages = {
     delete: 'Delete',
     disconnect: 'Disconnect',
     disconnectAndClear: 'Disconnect and clear',
-    deleteConfirm: (name) => `Are you sure to delete map ${name}?`,
+    deleteConfirm: (name) => (
+      <>
+        Do you really want to delete map <i>{name}</i>?
+      </>
+    ),
+    deleteTitle: 'Map deletion',
     fetchError: ({ err }) => addError(messages, 'Error loading map', err),
     fetchListError: ({ err }) => addError(messages, 'Error loading maps', err),
     deleteError: ({ err }) => addError(messages, 'Error deleting map', err),
