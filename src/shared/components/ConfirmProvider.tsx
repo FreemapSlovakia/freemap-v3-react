@@ -5,6 +5,7 @@ import {
   type ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -80,6 +81,40 @@ export function ConfirmProvider({
     setShow(false);
   }, []);
 
+  // Behave like a real modal: while open, keep every key except Tab/Enter
+  // (focus navigation and activating the focused button) from reaching the
+  // app's global keyboard shortcuts. These are registered on `document`/
+  // `window` in the bubble phase, so a capture-phase listener intercepts them
+  // first. Escape is handled here too (instead of letting react-bootstrap's
+  // own document listener close the modal) so it ONLY dismisses the dialog and
+  // doesn't also trigger the global Escape handler (which would clear a
+  // background selection/tool).
+  useEffect(() => {
+    if (!show) {
+      return;
+    }
+
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Tab' || e.key === 'Enter') {
+        return;
+      }
+
+      e.stopPropagation();
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+
+        close(false);
+      }
+    };
+
+    document.addEventListener('keydown', handler, true);
+
+    return () => {
+      document.removeEventListener('keydown', handler, true);
+    };
+  }, [show, close]);
+
   const icon =
     options.icon ??
     (options.confirmStyle === 'danger' ? (
@@ -119,7 +154,8 @@ export function ConfirmProvider({
           </Button>
 
           <Button variant="secondary" onClick={() => close(false)}>
-            <FaTimes /> {options.cancelLabel ?? m?.general.cancel}
+            <FaTimes /> {options.cancelLabel ?? m?.general.cancel}{' '}
+            <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </Modal>
