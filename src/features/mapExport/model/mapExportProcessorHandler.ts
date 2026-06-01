@@ -2,8 +2,10 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
+import { buildMarkerSvg, resolveMarkerGlyph } from '@shared/markerSvg.js';
 import { featureCollection, lineString, point, polygon } from '@turf/helpers';
 import { Feature } from 'geojson';
 import z from 'zod';
@@ -103,15 +105,39 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
       );
     }
 
+    // Caches shared across all points so identical fa/poi icons resolve (and
+    // poi SVGs are fetched) only once.
+    const faCache = new Map<string, IconDefinition | undefined>();
+    const poiDataUrlCache = new Map<string, Promise<string | undefined>>();
+
     for (const p of getState().drawingPoints.points) {
-      const marker = splitColorAlpha(p.color ?? COLORS.normal);
+      // Self-contained SVG of the whole marker (shape + fill color + icon/text),
+      // mirroring the in-app RichMarker, so the server renders it as-is. The
+      // color (incl. alpha) is baked into the SVG, so no separate marker-color
+      // / markerType / icon properties are needed.
+      const glyph = await resolveMarkerGlyph({
+        icon: p.icon,
+        label: p.label,
+        faCache,
+        poiDataUrlCache,
+      });
+
+      const { svg } = buildMarkerSvg({
+        markerType: p.markerType,
+        color: p.color ?? COLORS.normal,
+        hasContent: glyph.hasContent,
+        text: glyph.text,
+        faSvg: glyph.faSvg,
+        poiDataUrl: glyph.poiDataUrl,
+        // Center the anchor in the viewBox so the server can place every
+        // marker by centering it on the coordinate, with no shape knowledge.
+        anchorAtCenter: true,
+      });
 
       features.push(
         point([p.coords.lon, p.coords.lat], {
           title: p.label || '',
-          'marker-color': marker.color,
-          'marker-color-opacity':
-            marker.opacity < 1 ? marker.opacity : undefined,
+          'marker-svg': svg,
         }),
       );
     }
