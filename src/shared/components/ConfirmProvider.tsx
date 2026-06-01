@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -33,15 +34,51 @@ export type ConfirmOptions = {
 
 export type ConfirmFn = (options?: ConfirmOptions) => Promise<boolean>;
 
-const ConfirmContext = createContext<ConfirmFn>(() => Promise.resolve(false));
+type ConfirmContextValue = {
+  /** Opens the dialog and resolves to the user's choice. */
+  open: ConfirmFn;
+  /** Resolves the in-flight call to `false` and hides the dialog. */
+  cancel: () => void;
+};
+
+const ConfirmContext = createContext<ConfirmContextValue>({
+  open: () => Promise.resolve(false),
+  cancel: () => {},
+});
 
 /**
  * Returns an imperative `confirm()` that opens a styled, i18n-aware
  * confirmation modal and resolves to `true`/`false`. Because the dialog blocks
  * interaction while open, no global (redux) state is needed.
+ *
+ * If the calling component unmounts while its dialog is still open, the dialog
+ * is closed and the pending promise resolves to `false`.
  */
 export function useConfirm(): ConfirmFn {
-  return useContext(ConfirmContext);
+  const { open, cancel } = useContext(ConfirmContext);
+
+  // true while this component's own confirm is still awaiting an answer
+  const pendingRef = useRef(false);
+
+  useEffect(
+    () => () => {
+      if (pendingRef.current) {
+        cancel();
+      }
+    },
+    [cancel],
+  );
+
+  return useCallback<ConfirmFn>(
+    (options) => {
+      pendingRef.current = true;
+
+      return open(options).finally(() => {
+        pendingRef.current = false;
+      });
+    },
+    [open],
+  );
 }
 
 export function ConfirmProvider({
@@ -59,7 +96,15 @@ export function ConfirmProvider({
   // resolver of the in-flight promise, outside render so updaters stay pure
   const resolveRef = useRef<((result: boolean) => void) | null>(null);
 
-  const confirm = useCallback<ConfirmFn>(
+  const close = useCallback((result: boolean) => {
+    resolveRef.current?.(result);
+
+    resolveRef.current = null;
+
+    setShow(false);
+  }, []);
+
+  const open = useCallback<ConfirmFn>(
     (options = {}) =>
       new Promise<boolean>((resolve) => {
         resolveRef.current?.(false); // resolve any previous (defensive)
@@ -73,13 +118,12 @@ export function ConfirmProvider({
     [],
   );
 
-  const close = useCallback((result: boolean) => {
-    resolveRef.current?.(result);
+  const cancel = useCallback(() => close(false), [close]);
 
-    resolveRef.current = null;
-
-    setShow(false);
-  }, []);
+  const value = useMemo<ConfirmContextValue>(
+    () => ({ open, cancel }),
+    [open, cancel],
+  );
 
   // Behave like a real modal: while open, keep every key except Tab/Enter
   // (focus navigation and activating the focused button) from reaching the
@@ -122,7 +166,7 @@ export function ConfirmProvider({
     ) : null);
 
   return (
-    <ConfirmContext.Provider value={confirm}>
+    <ConfirmContext.Provider value={value}>
       {children}
 
       <Modal
