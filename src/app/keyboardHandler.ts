@@ -13,6 +13,7 @@ import {
   galleryShowOnTheMap,
 } from '@features/gallery/model/actions.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
+import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import {
@@ -38,7 +39,8 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
   const suspendedModal =
     state.homeLocation.selectingHomeLocation !== false ||
     state.gallery.pickingPositionForId ||
-    state.gallery.showPosition;
+    state.gallery.showPosition ||
+    state.mapArea.selecting;
 
   const showingModal =
     Boolean(state.main.activeModal) ||
@@ -72,6 +74,10 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
 
     if (state.drawingLines.drawing) {
       return drawingLineStopDrawing();
+    }
+
+    if (state.mapArea.selecting) {
+      return mapAreaSelectCancel();
     }
 
     if (state.homeLocation.selectingHomeLocation !== false) {

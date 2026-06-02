@@ -273,7 +273,7 @@ The manager modal lists already-cached offline maps with their zoom range, tile 
 The "Cache map for offline use" form lets the user choose:
 
 - the map (layer) to cache
-- the area: current visible area, or the area covered by a selected polygon
+- the area: current visible area, or a rectangle drawn on the map
 - a name
 - the zoom range
 - whether to show the cached map in the menu and/or toolbar
@@ -311,7 +311,7 @@ Opens a submenu:
 
 Opens a modal to export the map as an image or document. Options:
 
-- Export area: visible area, or the area containing a selected polygon
+- Export area: visible area, or a rectangle drawn on the map
 - Format: JPEG, PNG, PDF, or SVG
 - Optional layers to include: contours, shaded relief, hiking trails, bicycle trails, ski trails, horse trails, drawing, found route, GPX track
 - Drawing order: Topmost or Natural
@@ -358,7 +358,7 @@ Opens a modal with instructions to get various maps for GPS devices:
 - URL path: `/#show=download-map`
 
 Opens a modal to download a map in offline formats (MBTiles or SQLiteDB).
-Selection can be the current visible map area or an area defined by a selected polygon.
+Selection can be the current visible map area or a rectangle drawn on the map.
 Multiple tile-based maps are supported for download.
 Users can select the desired zoom range.
 Link to the map prepared for download will be emailed to the provided email address.

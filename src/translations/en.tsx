@@ -1081,7 +1081,7 @@ const messages: Messages = {
     area: 'Export area',
     areas: {
       visible: 'Visible area of the map',
-      pinned: 'Area containing selected polygon (drawing)',
+      byArea: 'Selected area',
     },
     format: 'Format',
     layersTitle: 'Optional layers',
@@ -1407,7 +1407,8 @@ const messages: Messages = {
     downloadArea: 'Export',
     area: {
       visible: 'Visible area',
-      byPolygon: 'Area covered by selected polygon',
+      byArea: 'Selected area',
+      pickHint: 'Adjust the rectangle to set the area',
     },
     name: 'Name',
     zoomRange: 'Zoom range',

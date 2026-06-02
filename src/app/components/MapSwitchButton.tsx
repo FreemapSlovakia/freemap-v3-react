@@ -64,6 +64,14 @@ export function MapSwitchButton(): ReactElement {
     Object.values(state.gallery.filter).some((x) => x !== undefined),
   );
 
+  // while picking a photo position or drawing a map-area rectangle, restrict the
+  // map switcher to plain layer switching (no offline maps / settings)
+  const restrictToMapSwitching = useAppSelector(
+    (state) =>
+      state.gallery.pickingPositionForId !== null ||
+      state.mapArea.selecting !== null,
+  );
+
   const isAdmin = useAppSelector((state) => Boolean(state.auth.user?.isAdmin));
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
@@ -497,7 +505,7 @@ export function MapSwitchButton(): ReactElement {
                 </>
               ) : (
                 <>
-                  {!normalizedFilter && (
+                  {!normalizedFilter && !restrictToMapSwitching && (
                     <>
                       <Dropdown.Item
                         key="offlineMaps"
@@ -524,7 +532,7 @@ export function MapSwitchButton(): ReactElement {
                   {(() => {
                     const baseItems = layersMemuItems(
                       'base',
-                      !normalizedFilter,
+                      !normalizedFilter && !restrictToMapSwitching,
                     );
                     const baseHasItems = baseItems.some(Boolean);
                     const overlayItems = layersMemuItems(

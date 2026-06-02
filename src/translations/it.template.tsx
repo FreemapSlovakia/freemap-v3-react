@@ -1129,7 +1129,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     area: 'Esporta area',
     areas: {
       visible: 'Area visibile della mappa',
-      pinned: 'Area contenente i poligoni selezionati (disegno)',
+      byArea: 'Area selezionata',
     },
     format: 'Formato',
     layersTitle: 'Livelli opzionali',
@@ -1460,7 +1460,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     downloadArea: 'Esporta',
     area: {
       visible: 'Area visibile',
-      byPolygon: 'Area coperta dal poligono selezionato',
+      byArea: 'Area selezionata',
+      pickHint: "Regola il rettangolo per selezionare l'area",
     },
     name: 'Nome',
     zoomRange: 'Intervallo di zoom',

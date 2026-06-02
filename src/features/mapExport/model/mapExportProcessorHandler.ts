@@ -28,30 +28,11 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
   } = action.payload;
 
   const {
-    main: { selection },
     drawingLines: { lines },
   } = getState();
 
-  let bbox;
-
-  if (area === 'visible') {
-    bbox = getState().map.bounds;
-  } else if (
-    selection?.type === 'draw-line-poly' &&
-    lines[selection.id]?.type === 'polygon'
-  ) {
-    // selected polygon
-
-    bbox = lines[selection.id].points.reduce(
-      (a, c) => [
-        Math.min(a[0], c.lon),
-        Math.min(a[1], c.lat),
-        Math.max(a[2], c.lon),
-        Math.max(a[3], c.lat),
-      ],
-      [Infinity, Infinity, -Infinity, -Infinity],
-    );
-  }
+  const bbox =
+    area === 'visible' ? getState().map.bounds : getState().mapArea.bbox;
 
   if (!bbox) {
     return;
@@ -62,16 +43,6 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
   if (exportLayers.includes('drawing')) {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-
-      if (
-        area === 'selected' &&
-        selection?.type === 'draw-line-poly' &&
-        lines[selection.id]?.type === 'polygon' &&
-        selection.id === i
-      ) {
-        // excluding bounding polygon
-        continue;
-      }
 
       const stroke = splitColorAlpha(line.color ?? COLORS.normal);
       const fill = line.fillColor ? splitColorAlpha(line.fillColor) : undefined;

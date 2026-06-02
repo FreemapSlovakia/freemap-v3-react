@@ -2,6 +2,8 @@ import { setActiveModal } from '@app/store/actions.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
+import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
@@ -15,12 +17,8 @@ import {
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import {
-  countTilesInBbox,
-  countTilesInPolygon,
-} from '@shared/tileEnumeration.js';
+import { countTilesInBbox } from '@shared/tileEnumeration.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
-import { polygon } from '@turf/helpers';
 import { BBox } from 'geojson';
 import {
   ReactElement,
@@ -38,13 +36,7 @@ import {
   InputGroup,
   Modal,
 } from 'react-bootstrap';
-import {
-  FaDatabase,
-  FaDownload,
-  FaDrawPolygon,
-  FaEye,
-  FaTimes,
-} from 'react-icons/fa';
+import { FaDatabase, FaDownload, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { downloadMap } from '../model/actions.js';
 
@@ -73,16 +65,13 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
   const [maxZoom, setMaxZoom] = useState('0');
 
-  const selectedLine = useAppSelector((state) =>
-    state.main.selection?.type === 'draw-line-poly' &&
-    state.main.selection.id !== undefined
-      ? state.drawingLines.lines[state.main.selection.id]
-      : null,
-  );
-
-  const [area, setArea] = useState<'visible' | 'selected'>(
-    selectedLine?.type === 'polygon' ? 'selected' : 'visible',
-  );
+  const {
+    area,
+    setArea,
+    selecting: selectingArea,
+    bbox,
+    startSelecting,
+  } = useMapAreaSelection();
 
   const mapDefs = useMemo(
     () =>
@@ -154,36 +143,13 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
     setMaxZoom(String(mapDef.maxNativeZoom));
   }, [mapDef]);
 
-  const bounds = useAppSelector((state) => state.map.bounds);
-
   const tileCount = useMemo(() => {
-    const minZ = Number(minZoom);
-    const maxZ = Number(maxZoom);
-
-    if (selectedLine?.type === 'polygon' && area === 'selected') {
-      const poly = polygon([
-        [
-          ...selectedLine.points.map((pt) => [pt.lon, pt.lat]),
-          [selectedLine.points[0].lon, selectedLine.points[0].lat],
-        ],
-      ]);
-
-      return countTilesInPolygon(poly, minZ, maxZ);
+    if (!bbox) {
+      return undefined;
     }
 
-    if (area === 'visible' && bounds) {
-      return countTilesInBbox(bounds, minZ, maxZ);
-    }
-
-    return undefined;
-  }, [
-    selectedLine?.type,
-    selectedLine?.points,
-    area,
-    bounds,
-    minZoom,
-    maxZoom,
-  ]);
+    return countTilesInBbox(bbox, Number(minZoom), Number(maxZoom));
+  }, [bbox, minZoom, maxZoom]);
 
   const cnf = useNumberFormat({
     minimumFractionDigits: 0,
@@ -220,32 +186,11 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           maxZoom: parseInt(maxZoom, 10),
           minZoom: parseInt(minZoom, 10),
           scale: parseInt(scale, 10),
-          boundary:
-            selectedLine?.type === 'polygon' && area === 'selected'
-              ? polygon([
-                  [
-                    ...selectedLine.points.map((pt) => [pt.lon, pt.lat]),
-                    [selectedLine.points[0].lon, selectedLine.points[0].lat],
-                  ],
-                ])
-              : bboxPolygon(bounds as BBox),
+          boundary: bboxPolygon(bbox as BBox),
         }),
       );
     },
-    [
-      dispatch,
-      email,
-      name,
-      mapType,
-      format,
-      maxZoom,
-      minZoom,
-      scale,
-      selectedLine?.type,
-      selectedLine?.points,
-      area,
-      bounds,
-    ],
+    [dispatch, email, name, mapType, format, maxZoom, minZoom, scale, bbox],
   );
 
   // refresh user (credits)
@@ -275,7 +220,14 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   }
 
   return (
-    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
+    <Modal
+      show={show}
+      onHide={close}
+      contentClassName="bg-body-tertiary"
+      className={selectingArea ? 'd-none' : undefined}
+      backdropClassName={selectingArea ? 'd-none' : undefined}
+      enforceFocus={!selectingArea}
+    >
       <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -403,26 +355,14 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           <Form.Group controlId="downloadArea">
             <Form.Label>{m?.downloadMap.downloadArea}</Form.Label>
 
-            <ButtonGroup className="d-flex mb-3">
-              <Button
-                className="fm-ellipsis"
-                variant="outline-primary"
-                active={area === 'visible'}
-                onClick={() => setArea('visible')}
-              >
-                <FaEye /> {m?.downloadMap.area.visible}
-              </Button>
-
-              <Button
-                className="fm-ellipsis"
-                variant="outline-primary"
-                active={area === 'selected'}
-                onClick={() => setArea('selected')}
-                disabled={selectedLine?.type !== 'polygon'}
-              >
-                <FaDrawPolygon /> {m?.downloadMap.area.byPolygon}
-              </Button>
-            </ButtonGroup>
+            <MapAreaToggle
+              className="mb-3"
+              area={area}
+              onSelectVisible={() => setArea('visible')}
+              onSelectArea={startSelecting}
+              visibleLabel={m?.downloadMap.area.visible}
+              areaLabel={m?.downloadMap.area.byArea}
+            />
           </Form.Group>
 
           <Form.Group controlId="name" className="mb-3">

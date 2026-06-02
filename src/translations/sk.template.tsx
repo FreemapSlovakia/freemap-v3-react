@@ -1131,7 +1131,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     area: 'Exportovať oblasť',
     areas: {
       visible: 'Viditeľnú oblasť mapy',
-      pinned: 'Plochu obsahujúcu označený polygón (kreslenie)',
+      byArea: 'Označenú oblasť',
     },
     format: 'Formát',
     layersTitle: 'Voliteľné vrstvy',
@@ -1460,7 +1460,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     downloadArea: 'Exportovať',
     area: {
       visible: 'Viditeľnú oblasť',
-      byPolygon: 'Oblasť pokrytú označeným polygónom',
+      byArea: 'Označenú oblasť',
+      pickHint: 'Upravte obdĺžnik na výber oblasti',
     },
     name: 'Názov',
     zoomRange: 'Rozsah priblíženia',

@@ -254,7 +254,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       state.cachedMaps = action.payload;
     })
     .addCase(cacheTilesStart, (state, { payload }) => {
-      state.cachedMaps.push(payload.meta);
+      state.cachedMaps.push(payload);
     })
     .addCase(cacheTilesProgress, (state, { payload }) => {
       const map = state.cachedMaps.find((m) => m.type === payload.id);

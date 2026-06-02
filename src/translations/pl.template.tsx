@@ -1108,7 +1108,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   mapExport: {
     areas: {
       visible: 'Widoczny obszar mapy',
-      pinned: 'Obszar zawierający zaznaczony wielokąt (rysunek)',
+      byArea: 'Wybrany obszar',
     },
 
     layers: {
@@ -1452,7 +1452,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   downloadMap: {
     area: {
       visible: 'Widoczny obszar',
-      byPolygon: 'Obszar pokryty wybranym wielokątem',
+      byArea: 'Wybrany obszar',
+      pickHint: 'Dostosuj prostokąt, aby wybrać obszar',
     },
     downloadMap: 'Eksport map offline',
     format: 'Format',

@@ -1,0 +1,28 @@
+:global(.leaflet-container) .corner-handle {
+  height: 14px;
+  width: 14px;
+  background-color: #fff;
+  border: 2px solid #3388ff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+:global(.leaflet-container) .move-handle {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 2px;
+  height: 20px;
+  width: 20px;
+  padding: 3px;
+  background-color: #fff;
+  border: 2px solid #3388ff;
+  border-radius: 3px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+  cursor: move;
+}
+
+:global(.leaflet-container) .move-handle > span {
+  background-color: #3388ff;
+  border-radius: 1px;
+}

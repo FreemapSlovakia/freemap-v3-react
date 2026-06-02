@@ -35,10 +35,10 @@ export const cachedMapsReducer = createReducer(
   (builder) =>
     builder
       .addCase(cacheTilesStart, (state, { payload }) => {
-        state.activeDownloads[payload.meta.type] = {
+        state.activeDownloads[payload.type] = {
           status: 'downloading',
           downloaded: 0,
-          total: payload.meta.tileCount,
+          total: payload.tileCount,
           sizeBytes: 0,
         };
 

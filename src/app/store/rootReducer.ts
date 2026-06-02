@@ -30,6 +30,7 @@ import {
 } from '@features/location/model/reducer.js';
 import { LayerSettingsSchema } from '@features/map/model/actions.js';
 import { mapInitialState, mapReducer } from '@features/map/model/reducer.js';
+import { mapAreaReducer } from '@features/mapArea/model/reducer.js';
 import {
   mapDetailsInitialState,
   mapDetailsReducer,
@@ -202,6 +203,7 @@ export const reducers = {
   location: locationReducer,
   main: mainReducer,
   mapDetails: mapDetailsReducer,
+  mapArea: mapAreaReducer,
   map: mapReducer,
   objects: objectsReducer,
   progress: progressReducer,

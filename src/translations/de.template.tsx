@@ -1135,7 +1135,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   mapExport: {
     areas: {
       visible: 'Sichtbarer Kartenbereich',
-      pinned: 'Bereich mit ausgewähltem Polygon (Zeichnung)',
+      byArea: 'Ausgewählter Bereich',
     },
 
     advancedSettings: 'Erweiterte Optionen',
@@ -1484,7 +1484,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     downloadArea: 'Exportieren',
     area: {
       visible: 'Sichtbarer Bereich',
-      byPolygon: 'Bereich mit ausgewähltem Polygon',
+      byArea: 'Ausgewählter Bereich',
+      pickHint: 'Passen Sie das Rechteck an, um den Bereich festzulegen',
     },
     name: 'Name',
     zoomRange: 'Zoom-Bereich',

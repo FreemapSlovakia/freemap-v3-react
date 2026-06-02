@@ -1,5 +1,7 @@
 import { saveSettings } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
+import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
@@ -13,11 +15,7 @@ import {
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import {
-  countTilesInBbox,
-  countTilesInPolygon,
-} from '@shared/tileEnumeration.js';
-import { polygon } from '@turf/helpers';
+import { countTilesInBbox } from '@shared/tileEnumeration.js';
 import {
   type ReactElement,
   type SubmitEvent,
@@ -29,14 +27,13 @@ import {
 import {
   Alert,
   Button,
-  ButtonGroup,
   Dropdown,
   Form,
   InputGroup,
   Modal,
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
-import { FaChevronLeft, FaDrawPolygon, FaEye, FaSave } from 'react-icons/fa';
+import { FaChevronLeft, FaSave } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import type { CachedTileMapDef } from '../cachedTileMaps.js';
 import { cachedMapsSetView, cacheTilesStart } from '../model/actions.js';
@@ -109,24 +106,13 @@ export function CacheTilesForm(): ReactElement {
 
   const [maxZoom, setMaxZoom] = useState('0');
 
-  const selectedLine = useAppSelector((state) =>
-    state.main.selection?.type === 'draw-line-poly' &&
-    state.main.selection.id !== undefined
-      ? state.drawingLines.lines[state.main.selection.id]
-      : null,
-  );
-
-  const [area, setArea] = useState<'visible' | 'selected'>(
-    selectedLine?.type === 'polygon' ? 'selected' : 'visible',
-  );
+  const { area, setArea, bbox, startSelecting } = useMapAreaSelection();
 
   const [showInMenu, setShowInMenu] = useState(true);
 
   const [showInToolbar, setShowInToolbar] = useState(false);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
-
-  const bounds = useAppSelector((state) => state.map.bounds);
 
   useEffect(() => {
     if (!mapDef) {
@@ -153,33 +139,12 @@ export function CacheTilesForm(): ReactElement {
   }, [m, mapType, nameChanged]);
 
   const tileCount = useMemo(() => {
-    const minZ = Number(minZoom);
-    const maxZ = Number(maxZoom);
-
-    if (selectedLine?.type === 'polygon' && area === 'selected') {
-      const poly = polygon([
-        [
-          ...selectedLine.points.map((pt) => [pt.lon, pt.lat]),
-          [selectedLine.points[0].lon, selectedLine.points[0].lat],
-        ],
-      ]);
-
-      return countTilesInPolygon(poly, minZ, maxZ);
+    if (!bbox) {
+      return undefined;
     }
 
-    if (area === 'visible' && bounds) {
-      return countTilesInBbox(bounds, minZ, maxZ);
-    }
-
-    return undefined;
-  }, [
-    selectedLine?.type,
-    selectedLine?.points,
-    area,
-    bounds,
-    minZoom,
-    maxZoom,
-  ]);
+    return countTilesInBbox(bbox, Number(minZoom), Number(maxZoom));
+  }, [bbox, minZoom, maxZoom]);
 
   const cnf = useNumberFormat({
     minimumFractionDigits: 0,
@@ -212,7 +177,7 @@ export function CacheTilesForm(): ReactElement {
     (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      if (!mapDef) {
+      if (!mapDef || !bbox) {
         return;
       }
 
@@ -239,7 +204,7 @@ export function CacheTilesForm(): ReactElement {
         sourceType: mapDef.type,
         minZoom: parseInt(minZoom, 10),
         maxNativeZoom: parseInt(maxZoom, 10),
-        bounds: bounds as [number, number, number, number],
+        bounds: bbox,
         tileCount: tileCount ?? 0,
         downloadedCount: 0,
         cacheName: `tiles-${type}`,
@@ -247,21 +212,7 @@ export function CacheTilesForm(): ReactElement {
         sizeBytes: 0,
       } as CachedTileMapDef;
 
-      dispatch(
-        cacheTilesStart({
-          meta,
-          boundary:
-            selectedLine?.type === 'polygon' && area === 'selected'
-              ? {
-                  type: 'polygon' as const,
-                  points: selectedLine.points,
-                }
-              : {
-                  type: 'bbox' as const,
-                  bounds: bounds as [number, number, number, number],
-                },
-        }),
-      );
+      dispatch(cacheTilesStart(meta));
 
       dispatch(
         saveSettings({
@@ -285,10 +236,8 @@ export function CacheTilesForm(): ReactElement {
       mapDef,
       minZoom,
       maxZoom,
-      bounds,
+      bbox,
       tileCount,
-      selectedLine,
-      area,
       layersSettings,
       showInMenu,
       showInToolbar,
@@ -329,26 +278,14 @@ export function CacheTilesForm(): ReactElement {
         <Form.Group controlId="downloadArea">
           <Form.Label>{m?.downloadMap.downloadArea}</Form.Label>
 
-          <ButtonGroup className="d-flex mb-3">
-            <Button
-              className="fm-ellipsis"
-              variant="outline-primary"
-              active={area === 'visible'}
-              onClick={() => setArea('visible')}
-            >
-              <FaEye /> {m?.downloadMap.area.visible}
-            </Button>
-
-            <Button
-              className="fm-ellipsis"
-              variant="outline-primary"
-              active={area === 'selected'}
-              onClick={() => setArea('selected')}
-              disabled={selectedLine?.type !== 'polygon'}
-            >
-              <FaDrawPolygon /> {m?.downloadMap.area.byPolygon}
-            </Button>
-          </ButtonGroup>
+          <MapAreaToggle
+            className="mb-3"
+            area={area}
+            onSelectVisible={() => setArea('visible')}
+            onSelectArea={startSelecting}
+            visibleLabel={m?.downloadMap.area.visible}
+            areaLabel={m?.downloadMap.area.byArea}
+          />
         </Form.Group>
 
         <Form.Group controlId="name" className="mb-3">
@@ -410,7 +347,7 @@ export function CacheTilesForm(): ReactElement {
           !invalidMinZoom &&
           !invalidMaxZoom &&
           tileCount > 50_000 && (
-            <Alert variant="warning">
+            <Alert variant="warning" className="mt-3 mb-0">
               {m?.offline.largeDownload({
                 tiles: cnf.format(tileCount),
                 size:

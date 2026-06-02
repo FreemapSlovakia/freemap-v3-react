@@ -14,6 +14,7 @@ import { MainMenuButton } from '@features/mainMenu/components/MainMenuButton.js'
 import { TheMap } from '@features/map/components/Map.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
+import { MapAreaSelectionResult } from '@features/mapArea/components/MapAreaSelectionResult.js';
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
 import { MyMapsMenu } from '@features/myMaps/components/MyMapsMenu.js';
 import RouteLegSelection from '@features/routePlanner/components/RouteLegSelection.js';
@@ -143,6 +144,12 @@ const homeLocationPickingMenuFactory = () =>
   import(
     /* webpackChunkName: "home-location-picking-menu" */
     '@features/homeLocation/components/HomeLocationPickingMenu.js'
+  );
+
+const mapAreaSelectionMenuFactory = () =>
+  import(
+    /* webpackChunkName: "map-area-selection-menu" */
+    '@features/mapArea/components/MapAreaSelectionMenu.js'
   );
 
 const galleryMenuFactory = () =>
@@ -344,7 +351,12 @@ export function Main(): ReactElement {
     (state) =>
       state.homeLocation.selectingHomeLocation === false &&
       !state.gallery.pickingPositionForId &&
-      !state.gallery.showPosition,
+      !state.gallery.showPosition &&
+      !state.mapArea.selecting,
+  );
+
+  const selectingMapArea = useAppSelector(
+    (state) => state.mapArea.selecting !== null,
   );
 
   const showResults = useAppSelector(
@@ -726,6 +738,10 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={homeLocationPickingMenuFactory} />
               )}
 
+              {selectingMapArea && (
+                <AsyncComponent factory={mapAreaSelectionMenuFactory} />
+              )}
+
               {showAds && !askingCookieConsent && !showElevationChart && (
                 <AsyncComponent factory={adFactory} />
               )}
@@ -801,6 +817,8 @@ export function Main(): ReactElement {
             {showGalleryPicker && <GalleryPicker />}
 
             {selectingHomeLocation !== false && <HomeLocationPickingResult />}
+
+            {selectingMapArea && <MapAreaSelectionResult />}
 
             {/* TODO should not be extra just because for position picking */}
 

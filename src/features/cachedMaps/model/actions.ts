@@ -1,16 +1,9 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { CachedTileMapDef } from '../cachedTileMaps.js';
 
-export interface CacheTilesStartPayload {
-  /** The full CachedTileMapDef with downloadedCount=0 and sizeBytes=0 */
-  meta: CachedTileMapDef;
-  boundary:
-    | { type: 'bbox'; bounds: [number, number, number, number] }
-    | { type: 'polygon'; points: { lat: number; lon: number }[] };
-}
-
+/** Payload is the full CachedTileMapDef with downloadedCount=0 and sizeBytes=0. */
 export const cacheTilesStart =
-  createAction<CacheTilesStartPayload>('CACHE_TILES_START');
+  createAction<CachedTileMapDef>('CACHE_TILES_START');
 
 export const cacheTilesProgress = createAction<{
   id: string;

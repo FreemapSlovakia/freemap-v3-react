@@ -1,11 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import {
-  enumerateTilesInBbox,
-  enumerateTilesInPolygon,
-} from '@shared/tileEnumeration.js';
-import { polygon } from '@turf/helpers';
+import { enumerateTilesInBbox } from '@shared/tileEnumeration.js';
 import type { Dispatch } from 'redux';
 import {
   cacheStaticAssets,
@@ -16,7 +12,6 @@ import {
 import type { CachedTileMapDef } from '../cachedTileMaps.js';
 import { toCachedLayerUrl } from '../cachedTileUrl.js';
 import {
-  type CacheTilesStartPayload,
   cachedMapDeleted,
   cachedMapRenamed,
   cachedMapsLoaded,
@@ -57,23 +52,18 @@ function buildTileUrl(
 }
 
 function updateMeta(
-  payload: CacheTilesStartPayload,
+  meta: CachedTileMapDef,
   downloadedCount: number,
   sizeBytes: number,
 ): CachedTileMapDef {
   return {
-    ...payload.meta,
+    ...meta,
     downloadedCount,
     sizeBytes,
   };
 }
 
-async function downloadTiles(
-  payload: CacheTilesStartPayload,
-  dispatch: Dispatch,
-) {
-  const { meta, boundary } = payload;
-
+async function downloadTiles(meta: CachedTileMapDef, dispatch: Dispatch) {
   const id = meta.type;
 
   const abortController = new AbortController();
@@ -93,19 +83,7 @@ async function downloadTiles(
 
   const maxZoom = meta.maxNativeZoom ?? 18;
 
-  const tiles =
-    boundary.type === 'bbox'
-      ? enumerateTilesInBbox(boundary.bounds, minZoom, maxZoom)
-      : enumerateTilesInPolygon(
-          polygon([
-            [
-              ...boundary.points.map((pt) => [pt.lon, pt.lat]),
-              [boundary.points[0].lon, boundary.points[0].lat],
-            ],
-          ]),
-          minZoom,
-          maxZoom,
-        );
+  const tiles = enumerateTilesInBbox(meta.bounds, minZoom, maxZoom);
 
   let downloaded = 0;
   let sizeBytes = meta.sizeBytes;
@@ -188,14 +166,14 @@ async function downloadTiles(
 
       dispatch(cacheTilesProgress({ id, downloaded, sizeBytes }));
 
-      await saveCachedTileMap(updateMeta(payload, downloaded, sizeBytes));
+      await saveCachedTileMap(updateMeta(meta, downloaded, sizeBytes));
     }
   }
 
   activeDownloads.delete(id);
 
   if (!abortController.signal.aborted) {
-    await saveCachedTileMap(updateMeta(payload, meta.tileCount, sizeBytes));
+    await saveCachedTileMap(updateMeta(meta, meta.tileCount, sizeBytes));
 
     // auto-cache static assets on first completed map
     const allMaps = await getCachedTileMaps();
@@ -236,7 +214,7 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
   errorKey: 'general.operationError',
   handle({ action, dispatch }) {
     // save initial metadata to IndexedDB
-    saveCachedTileMap(action.payload.meta);
+    saveCachedTileMap(action.payload);
 
     // fire and forget — runs in background
     downloadTiles(action.payload, dispatch).catch((err) => {
@@ -246,7 +224,7 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
 
       dispatch(
         cacheTilesError({
-          id: action.payload.meta.type,
+          id: action.payload.type,
           error: err instanceof Error ? err.message : String(err),
         }),
       );
@@ -344,12 +322,7 @@ export const cacheTilesRestartProcessor: Processor<typeof cacheTilesRestart> = {
       return;
     }
 
-    const payload: CacheTilesStartPayload = {
-      meta,
-      boundary: { type: 'bbox', bounds: meta.bounds },
-    };
-
-    downloadTiles(payload, dispatch).catch((err) => {
+    downloadTiles(meta, dispatch).catch((err) => {
       if (err instanceof DOMException && err.name === 'AbortError') {
         return;
       }

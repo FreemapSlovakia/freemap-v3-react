@@ -1158,7 +1158,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     area: 'Exportálandó terület',
     areas: {
       visible: 'A térkép látható területe',
-      pinned: 'A kijelölt sokszöget (rajzot) tartalmazó terület',
+      byArea: 'Kijelölt terület',
     },
     format: 'Formátum',
     layersTitle: 'Választható rétegek',
@@ -1499,7 +1499,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     downloadArea: 'Exportálni',
     area: {
       visible: 'Látható terület',
-      byPolygon: 'A kijelölt sokszöggel lefedett terület',
+      byArea: 'Kijelölt terület',
+      pickHint: 'Igazítsa a téglalapot a terület kijelöléséhez',
     },
     name: 'Név',
     zoomRange: 'Nagyítási tartomány',

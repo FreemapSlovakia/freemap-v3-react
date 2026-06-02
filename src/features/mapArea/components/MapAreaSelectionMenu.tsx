@@ -5,14 +5,11 @@ import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import {
-  galleryConfirmPickedPosition,
-  gallerySetItemForPositionPicking,
-} from '../model/actions.js';
+import { mapAreaSelectCancel, mapAreaSelectConfirm } from '../model/actions.js';
 
-export default GalleryPositionPickingMenu;
+export default MapAreaSelectionMenu;
 
-export function GalleryPositionPickingMenu(): ReactElement | null {
+export function MapAreaSelectionMenu(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -20,13 +17,13 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
   return (
     <div>
       <Toolbar className="mt-2">
-        <div className="m-2">{m?.gallery.locationPicking.title}</div>
+        <div className="m-2">{m?.downloadMap.area.pickHint}</div>
 
         <LongPressTooltip breakpoint="sm" label={m?.general.ok}>
           {({ label, labelClassName, props }) => (
             <Button
               className="me-1"
-              onClick={() => dispatch(galleryConfirmPickedPosition())}
+              onClick={() => dispatch(mapAreaSelectConfirm())}
               {...props}
             >
               <FaCheck />
@@ -39,7 +36,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
           {({ label, labelClassName, props }) => (
             <Button
               variant="dark"
-              onClick={() => dispatch(gallerySetItemForPositionPicking(null))}
+              onClick={() => dispatch(mapAreaSelectCancel())}
               {...props}
             >
               <FaTimes />

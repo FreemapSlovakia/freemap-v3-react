@@ -37,7 +37,7 @@ export interface MapExportOptions {
   layers: ExportableLayer[];
   customLayerOrder: CustomLayerOrder;
   scale: number;
-  area: 'visible' | 'selected';
+  area: 'visible' | 'area';
   format: ExportFormat;
   decorations: MapExportDecorations;
 }

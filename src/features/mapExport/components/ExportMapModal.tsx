@@ -1,5 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
+import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   useResolvedAttribution,
@@ -8,7 +10,7 @@ import {
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import { polygon } from '@turf/helpers';
+import { bboxPolygon } from '@turf/bbox-polygon';
 import storage from 'local-storage-fallback';
 import {
   ChangeEvent,
@@ -33,8 +35,6 @@ import {
   FaCompass,
   FaCopyright,
   FaDownload,
-  FaDrawPolygon,
-  FaEye,
   FaHiking,
   FaHorse,
   FaPencilAlt,
@@ -98,17 +98,15 @@ const fromBool = (value: boolean) => (value ? '1' : '0');
 const toBool = (value: string | null) => value !== '0';
 
 export function ExportMapModal({ show }: Props): ReactElement {
-  const canExportByPolygon = useAppSelector(
-    (state) =>
-      state.main.selection?.type === 'draw-line-poly' &&
-      state.main.selection.id !== undefined,
-  );
-
   const m = useMessages();
 
-  const [area, setArea] = useState<'visible' | 'selected'>(
-    canExportByPolygon ? 'selected' : 'visible',
-  );
+  const {
+    area,
+    setArea,
+    areaBbox,
+    selecting: selectingArea,
+    startSelecting,
+  } = useMapAreaSelection();
 
   const [scale, setScale] = usePersistentState<string>(
     'fm.exportMap.scale',
@@ -211,26 +209,21 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
   const countries = useAppSelector((state) => state.map.countries);
 
-  const [polyCountries, setPolyCountries] = useState<string[] | undefined>();
+  const [areaCountries, setAreaCountries] = useState<string[] | undefined>();
 
-  const poly0 = useAppSelector((state) =>
-    state.main.selection?.type === 'draw-line-poly'
-      ? state.drawingLines.lines[state.main.selection.id]
-      : undefined,
-  );
-
-  const poly = area === 'selected' ? poly0 : undefined;
-
+  // resolve attribution countries covered by the drawn rectangle
   useEffect(() => {
-    if (!poly || poly.points.length < 3 || polyCountries) {
+    if (area !== 'area' || !areaBbox) {
+      setAreaCountries(undefined);
+
       return;
     }
 
+    let cancelled = false;
+
     fetch(`${process.env['API_URL']}/geotools/covered-countries`, {
       method: 'POST',
-      body: JSON.stringify(
-        polygon([[...poly.points, poly.points[0]].map((p) => [p.lon, p.lat])]),
-      ),
+      body: JSON.stringify(bboxPolygon(areaBbox)),
       headers: { 'content-type': 'application/geo+json' },
     })
       .then((res) => {
@@ -241,7 +234,9 @@ export function ExportMapModal({ show }: Props): ReactElement {
         throw new Error();
       })
       .then((data) => {
-        setPolyCountries(z.array(z.string()).parse(data));
+        if (!cancelled) {
+          setAreaCountries(z.array(z.string()).parse(data));
+        }
       })
       .catch((err) => {
         dispatch(
@@ -252,9 +247,13 @@ export function ExportMapModal({ show }: Props): ReactElement {
           }),
         );
       });
-  }, [dispatch, poly, polyCountries]);
 
-  const attributionCountries = area === 'selected' ? polyCountries : countries;
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch, area, areaBbox]);
+
+  const attributionCountries = area === 'area' ? areaCountries : countries;
 
   const attribution = useResolvedAttribution(MAP_LAYERS, attributionCountries);
 
@@ -264,7 +263,13 @@ export function ExportMapModal({ show }: Props): ReactElement {
   );
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal
+      show={show}
+      onHide={close}
+      className={selectingArea ? 'd-none' : undefined}
+      backdropClassName={selectingArea ? 'd-none' : undefined}
+      enforceFocus={!selectingArea}
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <FaPrint /> {m?.mainMenu.mapExport}
@@ -283,26 +288,13 @@ export function ExportMapModal({ show }: Props): ReactElement {
         <Form.Group>
           <Form.Label className="d-block">{m?.mapExport.area}</Form.Label>
 
-          <ButtonGroup className="d-flex">
-            <Button
-              className="fm-ellipsis"
-              variant="outline-primary"
-              active={area === 'visible'}
-              onClick={() => setArea('visible')}
-            >
-              <FaEye /> {m?.mapExport.areas.visible}
-            </Button>
-
-            <Button
-              className="fm-ellipsis"
-              variant="outline-primary"
-              active={area === 'selected'}
-              onClick={() => setArea('selected')}
-              disabled={!canExportByPolygon}
-            >
-              <FaDrawPolygon /> {m?.mapExport.areas.pinned}
-            </Button>
-          </ButtonGroup>
+          <MapAreaToggle
+            area={area}
+            onSelectVisible={() => setArea('visible')}
+            onSelectArea={startSelecting}
+            visibleLabel={m?.mapExport.areas.visible}
+            areaLabel={m?.mapExport.areas.byArea}
+          />
         </Form.Group>
 
         <div className="mt-3" />

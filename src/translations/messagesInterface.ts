@@ -773,7 +773,7 @@ export type Messages = {
     area: string;
     areas: {
       visible: string;
-      pinned: string;
+      byArea: string;
     };
     format: string;
     layersTitle: string;
@@ -921,7 +921,7 @@ export type Messages = {
     map: string;
     unknownMapType: string;
     downloadArea: string;
-    area: { visible: string; byPolygon: string };
+    area: { visible: string; byArea: string; pickHint: string };
     name: string;
     zoomRange: string;
     scale: string;
