@@ -1,10 +1,11 @@
 import type { RootAction } from '@app/store/rootAction.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { MessagePaths } from '@shared/types/common.js';
+import { ButtonVariant } from 'react-bootstrap/esm/types.js';
 
 export type ToastAction = {
   action?: RootAction | RootAction[];
-  style?: string;
+  variant?: ButtonVariant;
 } & ({ name: string } | { nameKey: MessagePaths });
 
 export type Toast = (

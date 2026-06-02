@@ -455,6 +455,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       actions.push({
         nameKey: 'general.preventShowingAgain',
         action: routePlannerPreventHint(),
+        variant: 'dark',
       });
     }
 

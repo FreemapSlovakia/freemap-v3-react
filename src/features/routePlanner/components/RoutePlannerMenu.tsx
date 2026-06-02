@@ -442,7 +442,7 @@ export function RoutePlannerMenu(): ReactElement {
               nameKey: 'routePlanner.noHomeAlert.setHome',
               action: setSelectingHomeLocation(true),
             },
-            { nameKey: 'general.close', style: 'dark' },
+            { nameKey: 'general.close', variant: 'dark' },
           ],
         }),
       );

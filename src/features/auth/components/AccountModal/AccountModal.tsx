@@ -57,12 +57,12 @@ export function AccountModal({ show }: Props): ReactElement | null {
         actions: [
           {
             nameKey: 'general.delete',
-            style: 'danger',
+            variant: 'danger',
             action: authDeleteAccount(),
           },
           {
             nameKey: 'general.cancel',
-            style: 'dark',
+            variant: 'dark',
           },
         ],
       }),

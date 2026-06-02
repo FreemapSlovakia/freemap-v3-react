@@ -10,7 +10,7 @@ export function createCookieConsentToastAction() {
       {
         nameKey: 'general.accept',
         action: applyCookieConsent(),
-        style: 'secondary',
+        variant: 'secondary',
       },
     ],
   });

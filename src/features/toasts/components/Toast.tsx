@@ -98,7 +98,7 @@ export function Toast({
 
       {buttonActions.length > 0 && (
         <ButtonToolbar className="mt-2">
-          {buttonActions.map(({ name, action, style: buttonStyle }, i) => (
+          {buttonActions.map(({ name, action, variant: buttonStyle }, i) => (
             <Button
               size="sm"
               className={i > 0 ? 'ms-2' : ''}
