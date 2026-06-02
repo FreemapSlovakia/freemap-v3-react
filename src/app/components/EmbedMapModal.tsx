@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Button, Form, InputGroup, Modal, ToggleButton } from 'react-bootstrap';
 import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
@@ -194,7 +194,12 @@ export function EmbedMapModal({ show }: Props): ReactElement {
   );
 
   return (
-    <Modal show={show} onHide={close} className="dynamic">
+    <Modal
+      show={show}
+      onHide={close}
+      className="dynamic"
+      contentClassName="bg-body-tertiary"
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <FaCode /> {m?.mainMenu.embedMap}
@@ -209,63 +214,75 @@ export function EmbedMapModal({ show }: Props): ReactElement {
         >
           <Form.Label className="required">{m?.embed.dimensions}</Form.Label>
 
-          <InputGroup>
-            <InputGroup.Text>{m?.embed.width}</InputGroup.Text>
+          <div className="d-flex gap-2">
+            <InputGroup>
+              <InputGroup.Text>{m?.embed.width}</InputGroup.Text>
 
-            <Form.Control
-              type="number"
-              value={width}
-              min={100}
-              max={1600}
-              step={10}
-              isInvalid={invalidWidth}
-              required
-              onChange={setWidth}
-            />
+              <Form.Control
+                type="number"
+                value={width}
+                min={100}
+                max={1600}
+                step={10}
+                isInvalid={invalidWidth}
+                required
+                onChange={setWidth}
+              />
+            </InputGroup>
 
-            <InputGroup.Text>{m?.embed.height}</InputGroup.Text>
+            <InputGroup>
+              <InputGroup.Text>{m?.embed.height}</InputGroup.Text>
 
-            <Form.Control
-              type="number"
-              value={height}
-              min={100}
-              max={1200}
-              step={10}
-              isInvalid={invalidHeight}
-              required
-              onChange={setHeight}
-            />
-          </InputGroup>
+              <Form.Control
+                type="number"
+                value={height}
+                min={100}
+                max={1200}
+                step={10}
+                isInvalid={invalidHeight}
+                required
+                onChange={setHeight}
+              />
+            </InputGroup>
+          </div>
         </Form.Group>
 
-        <Form.Label>{m?.embed.enableFeatures}</Form.Label>
+        <Form.Label className="d-block">{m?.embed.enableFeatures}</Form.Label>
 
-        <Form.Check
-          id="enableSearch"
-          type="checkbox"
-          value="search"
-          onChange={handleFeaturesChange}
-          checked={features.has('search')}
-          label={m?.embed.enableSearch}
-        />
+        <div className="d-flex flex-wrap gap-2">
+          <ToggleButton
+            id="enableSearch"
+            type="checkbox"
+            variant="outline-primary"
+            value="search"
+            checked={features.has('search')}
+            onChange={handleFeaturesChange}
+          >
+            {m?.embed.enableSearch}
+          </ToggleButton>
 
-        <Form.Check
-          id="enableMapSwitch"
-          type="checkbox"
-          value="mapSwitch"
-          onChange={handleFeaturesChange}
-          checked={features.has('mapSwitch')}
-          label={m?.embed.enableMapSwitch}
-        />
+          <ToggleButton
+            id="enableMapSwitch"
+            type="checkbox"
+            variant="outline-primary"
+            value="mapSwitch"
+            checked={features.has('mapSwitch')}
+            onChange={handleFeaturesChange}
+          >
+            {m?.embed.enableMapSwitch}
+          </ToggleButton>
 
-        <Form.Check
-          id="enableLocateMe"
-          type="checkbox"
-          value="locateMe"
-          onChange={handleFeaturesChange}
-          checked={features.has('locateMe')}
-          label={m?.embed.enableLocateMe}
-        />
+          <ToggleButton
+            id="enableLocateMe"
+            type="checkbox"
+            variant="outline-primary"
+            value="locateMe"
+            checked={features.has('locateMe')}
+            onChange={handleFeaturesChange}
+          >
+            {m?.embed.enableLocateMe}
+          </ToggleButton>
+        </div>
 
         <hr />
 

@@ -2,6 +2,20 @@
   z-index: 10000;
 }
 
+/* dynamic modal width — auto-widen the modal to fit its content */
+@media (min-width: 768px) {
+  .modal.dynamic {
+    display: flex !important;
+
+    .modal-dialog {
+      min-width: 600px;
+      max-width: 100%;
+      width: auto !important;
+      display: inline-block;
+    }
+  }
+}
+
 .dropdown-long {
   overflow-x: auto;
   max-height: calc(100dvh - 150px);
