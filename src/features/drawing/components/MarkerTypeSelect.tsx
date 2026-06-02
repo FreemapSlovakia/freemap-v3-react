@@ -1,14 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
+import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
-import {
-  type ComponentPropsWithoutRef,
-  forwardRef,
-  type ReactElement,
-} from 'react';
+import { type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaCircle, FaMapMarker, FaSquare } from 'react-icons/fa';
-import classes from './MarkerTypeSelect.module.css';
 
 const markerTypes: MarkerType[] = ['pin', 'ring', 'square'];
 
@@ -17,32 +13,6 @@ const icons: Record<MarkerType, ReactElement> = {
   ring: <FaCircle />,
   square: <FaSquare />,
 };
-
-// toggle styled as a native-like <select> (border + caret) for use in forms.
-// `.form-select` draws its own caret, so drop Bootstrap's `dropdown-toggle`
-// class to avoid a second caret from its `::after`.
-const SelectToggle = forwardRef<
-  HTMLButtonElement,
-  ComponentPropsWithoutRef<'button'>
->(({ children, className, ...props }, ref) => {
-  const extra = (className ?? '')
-    .split(' ')
-    .filter((c) => c && c !== 'dropdown-toggle')
-    .join(' ');
-
-  return (
-    <button
-      type="button"
-      ref={ref}
-      className={`form-select text-start ${classes['toggle']}${extra ? ` ${extra}` : ''}`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-});
-
-SelectToggle.displayName = 'SelectToggle';
 
 type Props = {
   value: MarkerType;

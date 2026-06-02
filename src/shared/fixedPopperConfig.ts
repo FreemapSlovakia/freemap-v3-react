@@ -21,3 +21,24 @@ export const fixedPopperConfig: UseDropdownMenuOptions['popperConfig'] = {
   },
   modifiers: [positionFixerModifier],
 };
+
+// makes the dropdown menu at least as wide as its toggle
+const sameMinWidthModifier: Modifier<'sameMinWidth', Obj> = {
+  name: 'sameMinWidth',
+  enabled: true,
+  phase: 'beforeWrite',
+  requires: ['computeStyles'],
+  fn({ state }) {
+    state.styles['popper'].minWidth = `${state.rects.reference.width}px`;
+  },
+  effect({ state }) {
+    state.elements['popper'].style.minWidth = `${
+      (state.elements['reference'] as HTMLElement).offsetWidth
+    }px`;
+  },
+};
+
+export const sameMinWidthPopperConfig: UseDropdownMenuOptions['popperConfig'] =
+  {
+    modifiers: [sameMinWidthModifier],
+  };
