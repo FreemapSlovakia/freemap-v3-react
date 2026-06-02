@@ -7,7 +7,6 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { Position } from 'geojson';
 import {
-  Fragment,
   ReactElement,
   ReactNode,
   SubmitEvent,
@@ -41,7 +40,6 @@ import { MdTimeline } from 'react-icons/md';
 import { SiGarmin } from 'react-icons/si';
 import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
-import { useMediaQuery } from 'react-responsive';
 import {
   Exportable,
   ExportTarget,
@@ -66,6 +64,16 @@ const exportableDefinitions: readonly [
   ['gpx', <FaRoad />, true],
   ['search', <FaSearch />, true],
 ];
+
+const garminActivityTypes = [
+  ['RUNNING', 'running'],
+  ['HIKING', 'hiking'],
+  ['OTHER', 'other'],
+  ['MOUNTAIN_BIKING', 'mountain_biking'],
+  ['TRAIL_RUNNING', 'trailRunning'],
+  ['ROAD_CYCLING', 'roadCycling'],
+  ['GRAVEL_CYCLING', 'gravelCycling'],
+] as const;
 
 type Props = { show: boolean };
 
@@ -262,6 +270,16 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
         ? ''
         : undefined;
 
+  // a selected Garmin option whose preconditions aren't met (e.g. multiple
+  // lines) blocks export until resolved
+  const garminSelectedError =
+    isGarmin &&
+    exportableDefinitions.some(
+      ([type]) =>
+        exportables.includes('|' + type + '|') &&
+        typeof garminExportables?.[type] === 'string',
+    );
+
   useEffect(() => {
     const e =
       garminSingleEnabled !== undefined
@@ -274,8 +292,6 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
     setExportables(e);
   }, [initExportables, garminSingleEnabled]);
-
-  const isWide = useMediaQuery({ query: '(min-width: 992px)' });
 
   return (
     <Modal show={show} onHide={close} size="lg">
@@ -293,12 +309,13 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
             <Form.Label>{m?.exportMapFeatures.target}</Form.Label>
 
             <div>
-              <ButtonGroup vertical={!isWide}>
+              <ButtonGroup>
                 {ExportTargetSchema.options.map((exportTarget) => (
                   <ToggleButton
                     id={exportTarget}
                     key={exportTarget}
                     type="radio"
+                    variant="outline-primary"
                     checked={target === exportTarget}
                     value={exportTarget}
                     onChange={setTarget}
@@ -345,7 +362,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
             <>
               <Form.Group controlId="courseName" className="mb-3">
                 <Form.Label>
-                  {m?.exportMapFeatures.garmin.courseName}:
+                  {m?.exportMapFeatures.garmin.courseName}
                 </Form.Label>
 
                 <Form.Control
@@ -356,7 +373,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
               <Form.Group controlId="description" className="mb-3">
                 <Form.Label>
-                  {m?.exportMapFeatures.garmin.description}:
+                  {m?.exportMapFeatures.garmin.description}
                 </Form.Label>
 
                 <Form.Control
@@ -367,38 +384,30 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                 />
               </Form.Group>
 
-              <Form.Group controlId="activityType" className="mb-3">
-                <Form.Label>
-                  {m?.exportMapFeatures.garmin.activityType}:
+              <Form.Group className="mb-3">
+                <Form.Label className="d-block">
+                  {m?.exportMapFeatures.garmin.activityType}
                 </Form.Label>
 
-                <Form.Select
-                  value={activity}
-                  onChange={(e) => setActivity(e.currentTarget.value)}
-                >
-                  <option value="" />
-                  <option value="RUNNING">
-                    {m?.exportMapFeatures.garmin.at.running}
-                  </option>
-                  <option value="HIKING">
-                    {m?.exportMapFeatures.garmin.at.hiking}
-                  </option>
-                  <option value="OTHER">
-                    {m?.exportMapFeatures.garmin.at.other}
-                  </option>
-                  <option value="MOUNTAIN_BIKING">
-                    {m?.exportMapFeatures.garmin.at.mountain_biking}
-                  </option>
-                  <option value="TRAIL_RUNNING">
-                    {m?.exportMapFeatures.garmin.at.trailRunning}
-                  </option>
-                  <option value="ROAD_CYCLING">
-                    {m?.exportMapFeatures.garmin.at.roadCycling}
-                  </option>
-                  <option value="GRAVEL_CYCLING">
-                    {m?.exportMapFeatures.garmin.at.gravelCycling}
-                  </option>
-                </Form.Select>
+                <div>
+                  <ButtonGroup>
+                    {garminActivityTypes.map(([value, labelKey]) => (
+                      <ToggleButton
+                        key={value}
+                        id={'at-' + value}
+                        type="checkbox"
+                        value={value}
+                        variant="outline-primary"
+                        checked={activity === value}
+                        onChange={() =>
+                          setActivity(activity === value ? '' : value)
+                        }
+                      >
+                        {m?.exportMapFeatures.garmin.at[labelKey]}
+                      </ToggleButton>
+                    ))}
+                  </ButtonGroup>
+                </div>
               </Form.Group>
             </>
           ) : (
@@ -412,6 +421,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                       id={exportType}
                       key={exportType}
                       type="radio"
+                      variant="outline-primary"
                       value={exportType}
                       checked={type === exportType}
                       onChange={setType}
@@ -428,50 +438,82 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
           <Form.Group controlId="download" className="mb-3">
             <Form.Label>{m?.general.export}</Form.Label>
 
-            <div>
-              {exportableDefinitions
-                .filter(([, , garmin]) => target !== 'garmin' || garmin)
-                .map(([type, icon]) => (
-                  <Fragment key={type}>
-                    <Form.Check
-                      id={'chk-' + type}
-                      name="exportable"
-                      type={target === 'garmin' ? 'radio' : 'checkbox'}
-                      inline={type === 'plannedRoute'}
-                    >
-                      <Form.Check.Input
-                        isInvalid={
-                          target === 'garmin' &&
-                          typeof garminExportables?.[type] === 'string'
-                        }
-                        disabled={
-                          target === 'garmin'
-                            ? !garminExportables?.[type] ||
-                              typeof garminExportables[type] === 'string'
-                            : !initExportables.includes('|' + type + '|')
-                        }
-                        checked={exportables.includes('|' + type + '|')}
-                        onChange={() => handleCheckboxChange(type)}
-                        type={target === 'garmin' ? 'radio' : 'checkbox'}
-                      />
+            {target === 'garmin' ? (
+              <>
+                <div className="d-flex flex-wrap gap-2">
+                  {exportableDefinitions
+                    .filter(([, , garmin]) => garmin)
+                    .map(([type, icon]) => {
+                      const value = garminExportables?.[type];
 
-                      <Form.Check.Label>
-                        {icon} {m?.exportMapFeatures.what[type]}
-                      </Form.Check.Label>
+                      const error =
+                        typeof value === 'string' ? value : undefined;
 
-                      {target === 'garmin' &&
-                      typeof garminExportables?.[type] === 'string' ? (
-                        <Form.Control.Feedback type="invalid">
-                          {garminExportables[type]}
-                        </Form.Control.Feedback>
-                      ) : null}
-                    </Form.Check>
+                      const selected = exportables.includes('|' + type + '|');
 
-                    {type === 'plannedRoute' && target !== 'garmin' && (
-                      <Form.Check
-                        id="chk-plannedRouteWithStops"
-                        inline
+                      return (
+                        <ToggleButton
+                          key={type}
+                          id={'chk-' + type}
+                          name="exportable"
+                          type="radio"
+                          variant={
+                            selected && error
+                              ? 'outline-danger'
+                              : 'outline-primary'
+                          }
+                          value={type}
+                          checked={selected}
+                          // only truly empty options are unavailable; options
+                          // with a problem stay selectable so the reason can be
+                          // shown on demand
+                          disabled={!value}
+                          onChange={() => handleCheckboxChange(type)}
+                        >
+                          {icon} {m?.exportMapFeatures.what[type]}
+                        </ToggleButton>
+                      );
+                    })}
+                </div>
+
+                {exportableDefinitions
+                  .filter(
+                    ([type, , garmin]) =>
+                      garmin &&
+                      exportables.includes('|' + type + '|') &&
+                      typeof garminExportables?.[type] === 'string',
+                  )
+                  .map(([type, icon]) => (
+                    <Form.Text key={type} className="d-block text-danger mt-2">
+                      {icon} {m?.exportMapFeatures.what[type]}{' '}
+                      {garminExportables?.[type] as string}
+                    </Form.Text>
+                  ))}
+              </>
+            ) : (
+              <div className="d-flex flex-wrap gap-2">
+                {exportableDefinitions.map(([type, icon]) =>
+                  type === 'plannedRoute' ? (
+                    // "found route" and its "include stops" modifier stay a
+                    // connected segmented pair among the detached pills
+                    <ButtonGroup key={type}>
+                      <ToggleButton
+                        id={'chk-' + type}
                         type="checkbox"
+                        variant="outline-primary"
+                        value={type}
+                        checked={exportables.includes('|' + type + '|')}
+                        disabled={!initExportables.includes('|' + type + '|')}
+                        onChange={() => handleCheckboxChange(type)}
+                      >
+                        {icon} {m?.exportMapFeatures.what[type]}
+                      </ToggleButton>
+
+                      <ToggleButton
+                        id="chk-plannedRouteWithStops"
+                        type="checkbox"
+                        variant="outline-primary"
+                        value="plannedRouteWithStops"
                         checked={exportables.includes(
                           '|plannedRouteWithStops|',
                         )}
@@ -479,16 +521,29 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                         onChange={() =>
                           handleCheckboxChange('plannedRouteWithStops')
                         }
-                        label={
-                          m?.exportMapFeatures.what['plannedRouteWithStops']
-                        }
-                      />
-                    )}
-                  </Fragment>
-                ))}
-            </div>
+                      >
+                        {m?.exportMapFeatures.what['plannedRouteWithStops']}
+                      </ToggleButton>
+                    </ButtonGroup>
+                  ) : (
+                    <ToggleButton
+                      key={type}
+                      id={'chk-' + type}
+                      type="checkbox"
+                      variant="outline-primary"
+                      value={type}
+                      checked={exportables.includes('|' + type + '|')}
+                      disabled={!initExportables.includes('|' + type + '|')}
+                      onChange={() => handleCheckboxChange(type)}
+                    >
+                      {icon} {m?.exportMapFeatures.what[type]}
+                    </ToggleButton>
+                  ),
+                )}
+              </div>
+            )}
 
-            <Form.Text muted className="d-block mt-3">
+            <Form.Text muted className="d-block mt-1">
               {m?.exportMapFeatures.disabledAlert}
             </Form.Text>
           </Form.Group>
@@ -500,6 +555,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
             variant="primary"
             disabled={
               !exportables.length ||
+              garminSelectedError ||
               (target === 'garmin' && (!name.trim() || !activity))
             }
           >

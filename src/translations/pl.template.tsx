@@ -811,7 +811,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     target: 'Cel',
     exportError: ({ err }) => addError(messages, 'Błąd eksportu', err),
     disabledAlert:
-      'Tylko pola wyboru, których obiekty są widoczne na mapie, są aktywne.',
+      'Tylko opcje, których obiekty są widoczne na mapie, są aktywne.',
     licenseAlert:
       'Do pliku mogą mieć zastosowanie różne licencje – np. OpenStreetMap. Pamiętaj o podaniu wymaganych informacji przy udostępnianiu.',
     exportedToDropbox: 'Plik został zapisany na Dropboxie.',

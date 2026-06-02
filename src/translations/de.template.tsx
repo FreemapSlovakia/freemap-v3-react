@@ -835,7 +835,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     exportError: ({ err }) =>
       addError(messages, 'Fehler beim Exportieren', err),
     disabledAlert:
-      'Nur Checkboxen mit exportierbaren Elementen auf der Karte sind aktiviert.',
+      'Nur Optionen mit exportierbaren Elementen auf der Karte sind aktiviert.',
     licenseAlert:
       'Es können verschiedene Lizenzen gelten – z. B. OpenStreetMap. Bitte beachte fehlende Quellenangaben beim Teilen der exportierten Datei.',
     exportedToDropbox: 'Datei wurde in Dropbox gespeichert.',

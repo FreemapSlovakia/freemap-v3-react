@@ -817,7 +817,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     disabledAlert:
-      'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
+      'Csak azok az elemek aktívak, amelyekhez a térképen exportálható tartalom tartozik.',
 
     licenseAlert:
       'Különféle licencek vonatkozhatnak - például az OpenStreetMap. Kérjük, adja hozzá a hiányzó forrásokat az exportált fájl megosztásakor.',

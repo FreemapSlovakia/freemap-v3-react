@@ -758,7 +758,7 @@ const messages: Messages = {
       search: 'highlighted map feature',
     },
     disabledAlert:
-      'Only checkboxes having anything in the map to export are enabled.',
+      'Only items that have something on the map to export are enabled.',
     licenseAlert:
       'Various licenses may apply - like OpenStreetMap. Please add missing attributions upon sharing exported file.',
     exportedToDropbox: 'File has been saved to Dropboxu.',

@@ -803,7 +803,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
 
     disabledAlert:
-      'Sono abilitate solo i checkbox che hanno qualcosa nella mappa da esportare.',
+      'Sono abilitate solo le opzioni che hanno qualcosa da esportare nella mappa.',
 
     licenseAlert:
       'Possono essere applicate varie licenze, come OpenStreetMap. Aggiungi le attribuzioni mancanti durante la condivisione del file esportato.',
