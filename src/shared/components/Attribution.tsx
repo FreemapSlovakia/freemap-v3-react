@@ -27,12 +27,7 @@ export function Attribution({ unknown }: Props): ReactElement {
   );
 }
 
-export function useResolvedAttribution(
-  layers: string[],
-  countries?: string[],
-): [string, ReactElement][] | null {
-  const m = useMessages();
-
+function useCategorizedAttribution(layers: string[], countries?: string[]) {
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
   const cachedAttrs = cachedMaps
@@ -51,6 +46,61 @@ export function useResolvedAttribution(
   );
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
+
+  return { categorized, esriAttribution };
+}
+
+/**
+ * Plain-text attribution for the given layers and covered countries, suitable
+ * for baking into an exported map. Mirrors {@link useResolvedAttribution} but
+ * flattens to a string and skips attributions whose label is not plain text.
+ */
+export function useResolvedAttributionText(
+  layers: string[],
+  countries?: string[],
+): string | null {
+  const m = useMessages();
+
+  const { categorized, esriAttribution } = useCategorizedAttribution(
+    layers,
+    countries,
+  );
+
+  if (categorized.length === 0) {
+    return null;
+  }
+
+  const parts = categorized
+    .map(({ type, attributions }) => {
+      const names = attributions
+        .map((a) => a.name ?? (a.nameKey ? m?.mapLayers.attr[a.nameKey] : ''))
+        .filter(
+          (name): name is string => typeof name === 'string' && name !== '',
+        );
+
+      return names.length === 0
+        ? ''
+        : `${m?.mapLayers.type[type] ?? ''} ${names.join(', ')}`.trim();
+    })
+    .filter(Boolean);
+
+  if (esriAttribution?.length) {
+    parts.push(esriAttribution.join(', '));
+  }
+
+  return parts.length === 0 ? null : parts.join('; ');
+}
+
+export function useResolvedAttribution(
+  layers: string[],
+  countries?: string[],
+): [string, ReactElement][] | null {
+  const m = useMessages();
+
+  const { categorized, esriAttribution } = useCategorizedAttribution(
+    layers,
+    countries,
+  );
 
   const dispatch = useDispatch();
 

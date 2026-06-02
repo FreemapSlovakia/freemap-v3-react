@@ -24,6 +24,7 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
     format,
     layers: exportLayers,
     customLayerOrder,
+    decorations,
   } = action.payload;
 
   const {
@@ -180,6 +181,11 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
       zoom: getState().map.zoom,
       format,
       scale,
+      decorations: {
+        scaleBar: decorations.scaleBar, // bottom-left, metric, cos(lat)-corrected
+        northArrow: decorations.northArrow, // top-right, static up-arrow + localized letter
+        attribution: decorations.attribution, // bottom-right, right-aligned
+      },
       features: {
         shading: exportLayers.includes('shading'),
         contours: exportLayers.includes('contours'),

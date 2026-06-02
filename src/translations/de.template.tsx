@@ -1175,6 +1175,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       topmost: 'Zuoberst',
     },
     customLayerOrder: 'Zeichenreihenfolge',
+    decorations: 'Kartendekorationen',
+    scaleBar: 'Maßstabsleiste',
+    northArrow: 'Nordpfeil',
+    attribution: 'Quellenangabe',
+    northArrowLetter: 'N',
 
     alert: (licence) => (
       <>

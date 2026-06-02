@@ -25,12 +25,21 @@ export const CustomLayerOrderSchema = z.enum(['topmost', 'natural']);
 
 export type CustomLayerOrder = 'topmost' | 'natural';
 
+export interface MapExportDecorations {
+  scaleBar: boolean;
+  /** Localized cardinal letter to draw next to the north arrow, or `false` to omit it. */
+  northArrow: string | false;
+  /** Resolved attribution text to render, or `false` to omit it. */
+  attribution: string | false;
+}
+
 export interface MapExportOptions {
   layers: ExportableLayer[];
   customLayerOrder: CustomLayerOrder;
   scale: number;
   area: 'visible' | 'selected';
   format: ExportFormat;
+  decorations: MapExportDecorations;
 }
 
 export const exportMap = createAction<MapExportOptions>('EXPORT_MAP');

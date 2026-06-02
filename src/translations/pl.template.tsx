@@ -1144,6 +1144,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       topmost: 'Na wierzchu',
     },
     customLayerOrder: 'Kolejność rysowania',
+    decorations: 'Dekoracje mapy',
+    scaleBar: 'Podziałka',
+    northArrow: 'Strzałka północy',
+    attribution: 'Atrybucja',
+    northArrowLetter: 'N',
     alert: (licence) => (
       <>
         Uwagi:

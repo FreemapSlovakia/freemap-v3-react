@@ -1179,6 +1179,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       topmost: 'Legfelül',
     },
     customLayerOrder: 'Rajzolási sorrend',
+    decorations: 'Térképdíszítések',
+    scaleBar: 'Aránymérték',
+    northArrow: 'Iránytű',
+    attribution: 'Forrásmegjelölés',
+    northArrowLetter: 'É',
     alert: (licence) => (
       <>
         Megjegyzések:

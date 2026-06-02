@@ -1152,6 +1152,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       natural: 'Prirodzené',
       topmost: 'Na vrchu',
     },
+    decorations: 'Dekorácie mapy',
+    scaleBar: 'Mierka',
+    northArrow: 'Smerová šípka',
+    attribution: 'Uvedenie zdroja',
+    northArrowLetter: 'S',
     alert: (licence) => (
       <>
         Upozornenia:

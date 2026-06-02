@@ -1122,6 +1122,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       topmost: 'Navrchu',
     },
     customLayerOrder: 'Pořadí kreslení',
+    decorations: 'Dekorace mapy',
+    scaleBar: 'Měřítko',
+    northArrow: 'Směrová šipka',
+    attribution: 'Uvedení zdroje',
+    northArrowLetter: 'S',
     alert: (licence) => (
       <>
         Upozornění:

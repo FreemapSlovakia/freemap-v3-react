@@ -1102,6 +1102,11 @@ const messages: Messages = {
       natural: 'Natural',
       topmost: 'Topmost',
     },
+    decorations: 'Map decorations',
+    scaleBar: 'Scale bar',
+    northArrow: 'North arrow',
+    attribution: 'Attribution',
+    northArrowLetter: 'N',
 
     alert: (licence) => (
       <>

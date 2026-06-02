@@ -1150,6 +1150,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       topmost: 'In primo piano',
     },
     customLayerOrder: 'Ordine di disegno',
+    decorations: 'Decorazioni mappa',
+    scaleBar: 'Barra della scala',
+    northArrow: 'Freccia del nord',
+    attribution: 'Attribuzione',
+    northArrowLetter: 'N',
     alert: (licence) => (
       <>
         Note:

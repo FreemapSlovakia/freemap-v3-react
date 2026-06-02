@@ -1,7 +1,10 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { useResolvedAttribution } from '@shared/components/Attribution.js';
+import {
+  useResolvedAttribution,
+  useResolvedAttributionText,
+} from '@shared/components/Attribution.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -22,6 +25,8 @@ import {
   Form,
   InputGroup,
   Modal,
+  ToggleButton,
+  ToggleButtonGroup,
 } from 'react-bootstrap';
 import {
   FaDownload,
@@ -63,6 +68,11 @@ const toExportFormat = (value: string | null) =>
 const toCustomLayerOrder = (value: string | null) =>
   CustomLayerOrderSchema.safeParse(value).data ?? 'topmost';
 
+const fromBool = (value: boolean) => (value ? '1' : '0');
+
+// default on
+const toBool = (value: string | null) => value !== '0';
+
 export function ExportMapModal({ show }: Props): ReactElement {
   const canExportByPolygon = useAppSelector(
     (state) =>
@@ -91,6 +101,21 @@ export function ExportMapModal({ show }: Props): ReactElement {
     identity,
     toExportFormat,
   );
+
+  const [scaleBar, setScaleBar] = usePersistentState<boolean>(
+    'fm.exportMap.scaleBar',
+    fromBool,
+    toBool,
+  );
+
+  const [northArrow, setNorthArrow] = usePersistentState<boolean>(
+    'fm.exportMap.northArrow',
+    fromBool,
+    toBool,
+  );
+
+  const [attributionEnabled, setAttributionEnabled] =
+    usePersistentState<boolean>('fm.exportMap.attribution', fromBool, toBool);
 
   const [layers, setLayers] = useState(() => {
     const layers = storage.getItem(LAYERS_STORAGE_KEY);
@@ -125,24 +150,14 @@ export function ExportMapModal({ show }: Props): ReactElement {
   );
 
   const handleLayersChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const value = e.currentTarget.value as ExportableLayer;
+    (values: ExportableLayer[]) => {
+      const n = new Set(values);
 
-      setLayers((prev) => {
-        const n = new Set(prev);
+      if (cookiesEnabled) {
+        storage.setItem(LAYERS_STORAGE_KEY, [...n].join(','));
+      }
 
-        if (n.has(value)) {
-          n.delete(value);
-        } else {
-          n.add(value);
-        }
-
-        if (cookiesEnabled) {
-          storage.setItem(LAYERS_STORAGE_KEY, [...n].join(','));
-        }
-
-        return n;
-      });
+      setLayers(n);
     },
     [cookiesEnabled],
   );
@@ -155,10 +170,19 @@ export function ExportMapModal({ show }: Props): ReactElement {
   );
 
   const handleCustomLayerOrderChange = useCallback(
-    (e: ChangeEvent<HTMLSelectElement>) => {
-      setCustomLayerOrder(e.currentTarget.value as CustomLayerOrder);
+    (value: CustomLayerOrder) => {
+      setCustomLayerOrder(value);
     },
     [setCustomLayerOrder],
+  );
+
+  const handleDecorationsChange = useCallback(
+    (values: ('scaleBar' | 'northArrow' | 'attribution')[]) => {
+      setScaleBar(values.includes('scaleBar'));
+      setNorthArrow(values.includes('northArrow'));
+      setAttributionEnabled(values.includes('attribution'));
+    },
+    [setScaleBar, setNorthArrow, setAttributionEnabled],
   );
 
   const countries = useAppSelector((state) => state.map.countries);
@@ -206,9 +230,13 @@ export function ExportMapModal({ show }: Props): ReactElement {
       });
   }, [dispatch, poly, polyCountries]);
 
-  const attribution = useResolvedAttribution(
+  const attributionCountries = area === 'selected' ? polyCountries : countries;
+
+  const attribution = useResolvedAttribution(MAP_LAYERS, attributionCountries);
+
+  const attributionText = useResolvedAttributionText(
     MAP_LAYERS,
-    area === 'selected' ? polyCountries : countries,
+    attributionCountries,
   );
 
   return (
@@ -234,7 +262,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           <ButtonGroup className="d-flex">
             <Button
               className="fm-ellipsis"
-              variant="secondary"
+              variant="outline-primary"
               active={area === 'visible'}
               onClick={() => setArea('visible')}
             >
@@ -243,7 +271,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
             <Button
               className="fm-ellipsis"
-              variant="secondary"
+              variant="outline-primary"
               active={area === 'selected'}
               onClick={() => setArea('selected')}
               disabled={!canExportByPolygon}
@@ -261,7 +289,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           <ButtonGroup>
             {['jpeg', 'png', 'pdf', 'svg'].map((fmt) => (
               <Button
-                variant="secondary"
+                variant="outline-primary"
                 key={fmt}
                 value={fmt}
                 onClick={setFormat}
@@ -276,33 +304,105 @@ export function ExportMapModal({ show }: Props): ReactElement {
         <div className="mt-3" />
 
         <Form.Group>
-          <Form.Label>{m?.mapExport.layersTitle}</Form.Label>
+          <Form.Label className="d-block">
+            {m?.mapExport.layersTitle}
+          </Form.Label>
 
-          {EXPORTABLE_LAYERS.map((layer) => (
-            <Form.Check
-              key={layer}
-              id={layer}
-              value={layer}
-              type="checkbox"
-              checked={layers.has(layer)}
-              onChange={handleLayersChange}
-              label={m?.mapExport.layers[layer]}
-            />
-          ))}
+          <ToggleButtonGroup
+            type="checkbox"
+            value={[...layers]}
+            onChange={handleLayersChange}
+            className="d-flex flex-wrap gap-2"
+          >
+            {EXPORTABLE_LAYERS.map((layer) => (
+              <ToggleButton
+                key={layer}
+                id={`export-layer-${layer}`}
+                value={layer}
+                variant="outline-primary"
+                className="rounded flex-grow-0"
+              >
+                {m?.mapExport.layers[layer]}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
         </Form.Group>
 
         <div className="mt-3" />
 
-        <Form.Group controlId="customLayerOrder">
-          <Form.Label>{m?.mapExport.customLayerOrder}</Form.Label>
+        <Form.Group>
+          <Form.Label className="d-block">
+            {m?.mapExport.decorations}
+          </Form.Label>
 
-          <Form.Select
+          <ToggleButtonGroup
+            type="checkbox"
+            value={[
+              ...(scaleBar ? (['scaleBar'] as const) : []),
+              ...(northArrow ? (['northArrow'] as const) : []),
+              ...(attributionEnabled ? (['attribution'] as const) : []),
+            ]}
+            onChange={handleDecorationsChange}
+            className="d-flex flex-wrap gap-2"
+          >
+            <ToggleButton
+              id="exportScaleBar"
+              value="scaleBar"
+              variant="outline-primary"
+              className="rounded flex-grow-0"
+            >
+              {m?.mapExport.scaleBar}
+            </ToggleButton>
+
+            <ToggleButton
+              id="exportNorthArrow"
+              value="northArrow"
+              variant="outline-primary"
+              className="rounded flex-grow-0"
+            >
+              {m?.mapExport.northArrow}
+            </ToggleButton>
+
+            <ToggleButton
+              id="exportAttribution"
+              value="attribution"
+              variant="outline-primary"
+              className="rounded flex-grow-0"
+            >
+              {m?.mapExport.attribution}
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Form.Group>
+
+        <div className="mt-3" />
+
+        <Form.Group>
+          <Form.Label className="d-block">
+            {m?.mapExport.customLayerOrder}
+          </Form.Label>
+
+          <ToggleButtonGroup
+            type="radio"
+            name="customLayerOrder"
             value={customLayerOrder}
             onChange={handleCustomLayerOrderChange}
           >
-            <option value="topmost">{m?.mapExport.orders.topmost}</option>
-            <option value="natural">{m?.mapExport.orders.natural}</option>
-          </Form.Select>
+            <ToggleButton
+              id="customLayerOrder-topmost"
+              value="topmost"
+              variant="outline-primary"
+            >
+              {m?.mapExport.orders.topmost}
+            </ToggleButton>
+
+            <ToggleButton
+              id="customLayerOrder-natural"
+              value="natural"
+              variant="outline-primary"
+            >
+              {m?.mapExport.orders.natural}
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Form.Group>
 
         <div className="mt-3" />
@@ -337,6 +437,16 @@ export function ExportMapModal({ show }: Props): ReactElement {
                 format,
                 layers: [...layers],
                 customLayerOrder,
+                decorations: {
+                  scaleBar,
+                  northArrow: northArrow
+                    ? (m?.mapExport.northArrowLetter ?? 'N')
+                    : false,
+                  attribution:
+                    attributionEnabled && attributionText
+                      ? attributionText
+                      : false,
+                },
               }),
             )
           }

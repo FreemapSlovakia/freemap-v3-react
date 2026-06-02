@@ -781,6 +781,11 @@ export type Messages = {
     mapScale: string;
     customLayerOrder: string;
     orders: Record<CustomLayerOrder, string>;
+    decorations: string;
+    scaleBar: string;
+    northArrow: string;
+    attribution: string;
+    northArrowLetter: string;
     alert: (licence?: ReactElement[]) => JSX.Element;
     advancedSettings: string;
     styles: string;
