@@ -29,10 +29,11 @@ import {
   FaDrawPolygon,
   FaDropbox,
   FaFileExport,
+  FaFileImport,
   FaGoogle,
   FaMapMarkerAlt,
   FaMapSigns,
-  FaRoad,
+  FaRoute,
   FaSearch,
   FaTimes,
 } from 'react-icons/fa';
@@ -54,14 +55,14 @@ const exportableDefinitions: readonly [
   icon: ReactNode,
   garmin: boolean,
 ][] = [
-  ['plannedRoute', <FaMapSigns />, true],
+  ['plannedRoute', <FaRoute />, true],
   ['objects', <TbMapPins />, false],
   ['pictures', <FaCamera />, false],
   ['drawingLines', <MdTimeline />, true],
   ['drawingAreas', <FaDrawPolygon />, false],
   ['drawingPoints', <FaMapMarkerAlt />, false],
   ['tracking', <FaBullseye />, true],
-  ['gpx', <FaRoad />, true],
+  ['import', <FaFileImport />, true],
   ['search', <FaSearch />, true],
 ];
 
@@ -128,7 +129,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
     }
 
     if (state.trackViewer.trackGpx || state.trackViewer.trackGeojson) {
-      exportables.push('gpx');
+      exportables.push('import');
     }
 
     return '|' + exportables.map((e) => e + '|').join('');
@@ -298,7 +299,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
       <Form onSubmit={runExport}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaDownload /> {m?.mainMenu.mapFeaturesExport}
+            <FaFileExport /> {m?.mainMenu.mapFeaturesExport}
           </Modal.Title>
         </Modal.Header>
 
@@ -522,6 +523,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                           handleCheckboxChange('plannedRouteWithStops')
                         }
                       >
+                        <FaMapSigns />{' '}
                         {m?.exportMapFeatures.what['plannedRouteWithStops']}
                       </ToggleButton>
                     </ButtonGroup>

@@ -781,8 +781,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       drawingAreas: 'rysowanie – poligony',
       drawingPoints: 'rysowanie – punkty',
       tracking: 'śledzenie na żywo',
-      gpx: 'ścieżka GPX',
-      search: 'wyróżniony obiekt mapy',
+      import: 'zaimportowany plik',
+      search: 'wynik',
     },
 
     garmin: {

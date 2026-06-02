@@ -50,7 +50,7 @@ export function getExportables(): Partial<
       }
     },
 
-    gpx({ trackViewer }: RootState) {
+    import({ trackViewer }: RootState) {
       if (!trackViewer.trackGeojson) {
         return null;
       }

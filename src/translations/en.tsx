@@ -754,8 +754,8 @@ const messages: Messages = {
       drawingAreas: 'drawing - polygons',
       drawingPoints: 'drawing - points',
       tracking: 'live tracking',
-      gpx: 'GPX track',
-      search: 'highlighted map feature',
+      import: 'imported file',
+      search: 'lookup',
     },
     disabledAlert:
       'Only items that have something on the map to export are enabled.',

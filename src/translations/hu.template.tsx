@@ -812,8 +812,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       drawingAreas: 'rajzolás - sokszögek',
       drawingPoints: 'rajzolás - pontok',
       tracking: 'élő nyomkövetés',
-      gpx: 'GPX-nyomvonal',
-      search: 'kiemelt térképelem',
+      import: 'importált fájl',
+      search: 'találat',
     },
 
     disabledAlert:

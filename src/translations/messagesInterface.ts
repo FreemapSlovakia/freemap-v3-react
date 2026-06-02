@@ -581,7 +581,7 @@ export type Messages = {
       drawingAreas: string;
       drawingPoints: string;
       tracking: string;
-      gpx: string;
+      import: string;
       search: string;
     };
     disabledAlert: string;

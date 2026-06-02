@@ -9,9 +9,10 @@ import {
   FaCamera,
   FaChevronRight,
   FaCode,
-  FaDownload,
+  FaDatabase,
   FaEraser,
   FaExternalLinkAlt,
+  FaFileExport,
   FaHeart,
   FaMobileAlt,
   FaPencilRuler,
@@ -122,7 +123,8 @@ export function MainMenu(): ReactElement {
         eventKey="modal-export-map-features"
         href="#show=export-map-features"
       >
-        <FaDownload /> {m?.mainMenu.mapFeaturesExport} <kbd>e</kbd> <kbd>g</kbd>
+        <FaFileExport /> {m?.mainMenu.mapFeaturesExport} <kbd>e</kbd>{' '}
+        <kbd>g</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="document-exports" href="#document=exports">
@@ -130,7 +132,7 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-download-map" href="#show=download-map">
-        <FaDownload /> {m?.downloadMap.downloadMap} <kbd>e</kbd> <kbd>m</kbd>
+        <FaDatabase /> {m?.downloadMap.downloadMap} <kbd>e</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-embed" href="#show=embed">

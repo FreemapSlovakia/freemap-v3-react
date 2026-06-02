@@ -798,8 +798,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       drawingAreas: 'disegno - poligoni',
       drawingPoints: 'disegno - punti',
       tracking: 'tracciamento in tempo reale',
-      gpx: 'traccia GPX',
-      search: 'elemento della mappa evidenziato',
+      import: 'file importato',
+      search: 'risultato',
     },
 
     disabledAlert:

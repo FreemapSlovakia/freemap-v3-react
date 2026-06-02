@@ -160,7 +160,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     addTracking(doc, tracking);
   }
 
-  if (set.has('gpx')) {
+  if (set.has('import')) {
     addGpx(doc, trackViewer);
   }
 

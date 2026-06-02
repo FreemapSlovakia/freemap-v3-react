@@ -124,7 +124,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     addTracking(fc, tracking);
   }
 
-  if (set.has('gpx')) {
+  if (set.has('import')) {
     if (trackViewer.trackGeojson) {
       fc.features.push(...trackViewer.trackGeojson.features);
     }

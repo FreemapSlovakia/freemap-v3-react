@@ -5,8 +5,8 @@ import {
   FaFileImport,
   FaInfo,
   FaMapMarkerAlt,
-  FaMapSigns,
   FaPencilAlt,
+  FaRoute,
 } from 'react-icons/fa';
 import { MdPolyline } from 'react-icons/md';
 import { TbMapPins } from 'react-icons/tb';
@@ -23,7 +23,7 @@ export interface ToolDefinition {
 export const toolDefinitions: ToolDefinition[] = [
   {
     tool: 'route-planner',
-    icon: <FaMapSigns />,
+    icon: <FaRoute />,
     msgKey: 'routePlanner',
     kbd: 'KeyR',
   },

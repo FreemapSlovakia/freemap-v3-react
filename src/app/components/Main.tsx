@@ -187,10 +187,10 @@ const downloadMapModalFactory = () =>
     '@features/downloadMap/components/DownloadMapModal.js'
   );
 
-const offlineMapsModalFactory = () =>
+const cachedMapsModalFactory = () =>
   import(
-    /* webpackChunkName: "offline-maps-modal" */
-    '@features/cachedMaps/components/OfflineMapsModal.js'
+    /* webpackChunkName: "cached-maps-modal" */
+    '@features/cachedMaps/components/CachedMapsModal.js'
   );
 
 const mapLayersConfigModalFactory = () =>
@@ -832,7 +832,7 @@ export function Main(): ReactElement {
 
       <AsyncModal
         show={activeModal === 'offline-maps'}
-        factory={offlineMapsModalFactory}
+        factory={cachedMapsModalFactory}
       />
 
       <AsyncModal

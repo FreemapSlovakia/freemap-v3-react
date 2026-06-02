@@ -804,8 +804,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       drawingAreas: 'kreslenie - polygóny',
       drawingPoints: 'kreslenie - body',
       tracking: 'sledovanie',
-      gpx: 'GPX trasu',
-      search: 'zvýraznený prvok mapy',
+      import: 'importovaný súbor',
+      search: 'nález',
     },
     disabledAlert:
       'Aktívne sú iba voľby, ktorých objekty sa nachádzajú na mape.',

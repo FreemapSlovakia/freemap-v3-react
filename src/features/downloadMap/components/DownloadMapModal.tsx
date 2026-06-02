@@ -38,7 +38,13 @@ import {
   InputGroup,
   Modal,
 } from 'react-bootstrap';
-import { FaDownload, FaDrawPolygon, FaEye, FaTimes } from 'react-icons/fa';
+import {
+  FaDatabase,
+  FaDownload,
+  FaDrawPolygon,
+  FaEye,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { downloadMap } from '../model/actions.js';
 
@@ -273,7 +279,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <ExperimentalFunction /> {m?.downloadMap.downloadMap}
+            <FaDatabase /> {m?.downloadMap.downloadMap} <ExperimentalFunction />
           </Modal.Title>
         </Modal.Header>
 

@@ -807,8 +807,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       drawingAreas: 'Zeichnung – Polygone',
       drawingPoints: 'Zeichnung – Punkte',
       tracking: 'Live-Tracking',
-      gpx: 'GPX-Track',
-      search: 'hervorgehobenes Kartenelement',
+      import: 'Importierte Datei',
+      search: 'Fund',
     },
     garmin: {
       at: {

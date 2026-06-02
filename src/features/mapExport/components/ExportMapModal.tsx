@@ -29,12 +29,24 @@ import {
   ToggleButtonGroup,
 } from 'react-bootstrap';
 import {
+  FaBicycle,
+  FaCompass,
+  FaCopyright,
   FaDownload,
   FaDrawPolygon,
   FaEye,
+  FaHiking,
+  FaHorse,
+  FaPencilAlt,
   FaPrint,
+  FaRoute,
+  FaRulerHorizontal,
+  FaShoePrints,
+  FaSkiing,
   FaTimes,
 } from 'react-icons/fa';
+import { GiHills } from 'react-icons/gi';
+import { RxTarget } from 'react-icons/rx';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import {
@@ -49,6 +61,18 @@ import {
 } from '../model/actions.js';
 
 type Props = { show: boolean };
+
+const LAYER_ICONS: Record<ExportableLayer, ReactElement> = {
+  contours: <RxTarget />,
+  shading: <GiHills />,
+  hikingTrails: <FaHiking />,
+  bicycleTrails: <FaBicycle />,
+  skiTrails: <FaSkiing />,
+  horseTrails: <FaHorse />,
+  drawing: <FaPencilAlt />,
+  plannedRoute: <FaRoute />,
+  track: <FaShoePrints />,
+};
 
 const LAYERS_STORAGE_KEY = 'fm.exportMap.layers';
 
@@ -322,7 +346,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
                 variant="outline-primary"
                 className="rounded flex-grow-0"
               >
-                {m?.mapExport.layers[layer]}
+                {LAYER_ICONS[layer]} {m?.mapExport.layers[layer]}
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
@@ -351,7 +375,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
               variant="outline-primary"
               className="rounded flex-grow-0"
             >
-              {m?.mapExport.scaleBar}
+              <FaRulerHorizontal /> {m?.mapExport.scaleBar}
             </ToggleButton>
 
             <ToggleButton
@@ -360,7 +384,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
               variant="outline-primary"
               className="rounded flex-grow-0"
             >
-              {m?.mapExport.northArrow}
+              <FaCompass /> {m?.mapExport.northArrow}
             </ToggleButton>
 
             <ToggleButton
@@ -369,7 +393,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
               variant="outline-primary"
               className="rounded flex-grow-0"
             >
-              {m?.mapExport.attribution}
+              <FaCopyright /> {m?.mapExport.attribution}
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
