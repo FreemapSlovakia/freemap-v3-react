@@ -28,6 +28,26 @@ export const galleryShowPositionSelector = (state: RootState): boolean =>
 export const drawingLineSelector = (state: RootState): boolean =>
   state.drawingLines.drawing;
 
+export const mapAreaSelectingSelector = (state: RootState): boolean =>
+  state.mapArea.selecting !== null;
+
+// True while the map is in a dedicated mode that takes over the map: picking a
+// home location, picking or showing a photo location, or drawing an export/cache
+// area. In these modes the regular features stay visible but non-interactive and
+// the tools stay inert (clicks don't draw points, add route legs, etc.).
+export const pickingModeSelector = (state: RootState): boolean =>
+  selectingHomeLocationSelector(state) ||
+  galleryPickingPositionForIdSelector(state) !== null ||
+  galleryShowPositionSelector(state) ||
+  mapAreaSelectingSelector(state);
+
+// The active tool as far as map interaction is concerned: the selected tool,
+// but masked to null while a picking mode owns the map so map-click tools go
+// inert. Map-interaction code should read this; menus/processors that want the
+// genuinely-selected tool should use toolSelector.
+export const activeMapToolSelector = (state: RootState): Tool | null =>
+  pickingModeSelector(state) ? null : state.main.tool;
+
 export const showGalleryPickerSelector = createSelector(
   toolSelector,
   mapLayersSelector,
@@ -35,6 +55,7 @@ export const showGalleryPickerSelector = createSelector(
   galleryShowPositionSelector,
   selectingHomeLocationSelector,
   drawingLineSelector,
+  mapAreaSelectingSelector,
   (
     tool,
     layers,
@@ -42,6 +63,7 @@ export const showGalleryPickerSelector = createSelector(
     galleryShowPosition,
     selectingHomeLocation,
     drawingLine,
+    mapAreaSelecting,
   ) =>
     (!tool ||
       ['photos', 'import-file', 'objects', 'changesets'].includes(tool)) &&
@@ -49,7 +71,8 @@ export const showGalleryPickerSelector = createSelector(
     galleryPickingPositionForId === null &&
     !galleryShowPosition &&
     !selectingHomeLocation &&
-    !drawingLine,
+    !drawingLine &&
+    !mapAreaSelecting,
 );
 
 export const showGalleryViewerSelector = (state: RootState): boolean =>
@@ -63,7 +86,7 @@ const markerCursor = `url(${marker}) 13.5 26, crosshair`;
 
 export const mouseCursorSelector = createSelector(
   selectingHomeLocationSelector,
-  toolSelector,
+  activeMapToolSelector,
   routePlannerPickModeSelector,
   showGalleryPickerSelector,
   galleryShowPositionSelector,
@@ -133,6 +156,7 @@ export const trackingTrackSelector = createSelector(
 
 export const selectingModeSelector = (state: RootState): boolean =>
   !window.fmEmbedded &&
+  !pickingModeSelector(state) &&
   !state.drawingLines.drawing &&
   (state.main.tool === null ||
     state.main.tool === 'import-file' ||
@@ -142,9 +166,10 @@ export const selectingModeSelector = (state: RootState): boolean =>
       state.routePlanner.pickMode === null));
 
 export const drawingLinePolys = (state: RootState): boolean =>
-  state.drawingLines.drawing ||
-  state.main.tool === 'draw-lines' ||
-  state.main.tool === 'draw-polygons';
+  !pickingModeSelector(state) &&
+  (state.drawingLines.drawing ||
+    state.main.tool === 'draw-lines' ||
+    state.main.tool === 'draw-polygons');
 
 export const trackGeojsonIsSuitableForElevationChart = (
   state: RootState,

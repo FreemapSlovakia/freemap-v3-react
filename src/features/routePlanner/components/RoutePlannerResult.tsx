@@ -1,5 +1,8 @@
 import { selectFeature } from '@app/store/actions.js';
-import { selectingModeSelector } from '@app/store/selectors.js';
+import {
+  activeMapToolSelector,
+  selectingModeSelector,
+} from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMap } from '@features/map/hooks/useMap.js';
@@ -93,7 +96,7 @@ export function RoutePlannerResult(): ReactElement {
 
   const pickMode = useAppSelector((state) => state.routePlanner.pickMode);
 
-  const tool = useAppSelector((state) => state.main.tool);
+  const tool = useAppSelector(activeMapToolSelector);
 
   const selectedPoint = useAppSelector((state) =>
     state.main.selection?.type === 'route-point'

@@ -33,6 +33,22 @@
   }
 }
 
+/* While selecting an export/cache area or picking a photo location, keep all
+   features visible but click-through, so clicks reach the map and don't hijack
+   the selection. The active selection's own handles live in fm-active-overlay
+   and stay interactive. */
+/* !important to beat Leaflet's own `.leaflet-pane > svg path.leaflet-interactive`
+   rule, which is more specific than a plain descendant selector. */
+.fm-features-noninteractive .leaflet-interactive {
+  pointer-events: none !important;
+}
+
+.fm-features-noninteractive
+  .leaflet-fm-active-overlay-pane
+  .leaflet-interactive {
+  pointer-events: auto !important;
+}
+
 /* preventing some defaults on L.divIcon */
 .leaflet-div-icon {
   background-color: transparent !important;

@@ -55,6 +55,7 @@ import { setActiveModal, setTool } from '../store/actions.js';
 import {
   askingCookieConsentSelector,
   showGalleryPickerSelector,
+  toolSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from '../store/selectors.js';
 import { AsyncComponent } from './AsyncComponent.js';
@@ -323,7 +324,7 @@ export function Main(): ReactElement {
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
-  const tool = useAppSelector((state) => state.main.tool);
+  const tool = useAppSelector(toolSelector);
 
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
@@ -806,11 +807,15 @@ export function Main(): ReactElement {
 
             <Tools />
 
-            {showMenu && showResults && <Results />}
+            {/* Features always render; in dedicated map modes (picking a
+                home/photo location, showing a photo location, selecting an
+                export/cache area) they stay visible but non-interactive — see
+                pickingModeSelector / Map.tsx / leaflet.css. */}
+            {showResults && <Results />}
 
-            {showMenu && <WikiLayer />}
+            <WikiLayer />
 
-            {showMenu && showWikimediaCommonsLayer && (
+            {showWikimediaCommonsLayer && (
               <AsyncComponent factory={wikimediaCommonsLayerFactory} />
             )}
 

@@ -22,11 +22,12 @@ import {
 } from 'react-icons/fa';
 import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
+import { toolSelector } from '@/app/store/selectors.js';
 
 export default ObjectSelection;
 
 function ObjectsToggleButton(): ReactElement {
-  const tool = useAppSelector((state) => state.main.tool);
+  const tool = useAppSelector(toolSelector);
 
   const m = useMessages();
 

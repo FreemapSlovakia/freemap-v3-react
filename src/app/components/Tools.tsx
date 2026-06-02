@@ -2,7 +2,11 @@ import { DrawingPointsTool } from '@features/drawing/components/DrawingPointsToo
 import { MapDetailsTool } from '@features/mapDetails/components/MapDetailsTool.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement } from 'react';
-import { drawingLinePolys, selectingModeSelector } from '../store/selectors.js';
+import {
+  activeMapToolSelector,
+  drawingLinePolys,
+  selectingModeSelector,
+} from '../store/selectors.js';
 import { AsyncComponent } from './AsyncComponent.js';
 import { SelectionTool } from './SelectionTool.js';
 
@@ -13,7 +17,7 @@ const drawingLinesToolFactory = () =>
   );
 
 export function Tools(): ReactElement {
-  const tool = useAppSelector((state) => state.main.tool);
+  const tool = useAppSelector(activeMapToolSelector);
 
   const isSelecting = useAppSelector(selectingModeSelector);
 

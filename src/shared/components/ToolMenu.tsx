@@ -9,6 +9,7 @@ import { type ReactElement, ReactNode } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaPencilRuler, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { toolSelector } from '@/app/store/selectors.js';
 import { toolDefinitions } from '../toolDefinitions.js';
 import classes from './ToolMenu.module.css';
 
@@ -23,7 +24,7 @@ export function ToolMenu({ children }: Props): ReactElement {
 
   const m = useMessages();
 
-  const tool = useAppSelector((state) => state.main.tool);
+  const tool = useAppSelector(toolSelector);
 
   const toolDef = tool && toolDefinitions.find((td) => td.tool === tool);
 

@@ -80,6 +80,7 @@ export function MapAreaSelectionResult(): ReactElement | null {
   return (
     <>
       <Rectangle
+        pane="fm-active-overlay"
         bounds={[
           [s, w],
           [n, e],
@@ -93,6 +94,7 @@ export function MapAreaSelectionResult(): ReactElement | null {
           // eslint-disable-next-line react/no-array-index-key
           key={index}
           draggable
+          pane="fm-active-overlay"
           position={{ lat, lng }}
           icon={cornerIcon}
           eventHandlers={{
@@ -115,6 +117,7 @@ export function MapAreaSelectionResult(): ReactElement | null {
 
       <Marker
         draggable
+        pane="fm-active-overlay"
         position={{ lat: (s + n) / 2, lng: (w + e) / 2 }}
         icon={moveIcon}
         eventHandlers={{

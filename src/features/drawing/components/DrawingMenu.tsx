@@ -9,11 +9,12 @@ import { ReactElement } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import { FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { toolSelector } from '@/app/store/selectors.js';
 
 export default DrawingMenu;
 
 export function DrawingMenu(): ReactElement | undefined {
-  const activeTool = useAppSelector((state) => state.main.tool);
+  const activeTool = useAppSelector(toolSelector);
 
   const activeToolDef =
     (activeTool ?? undefined) &&

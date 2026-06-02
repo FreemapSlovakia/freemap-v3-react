@@ -22,6 +22,7 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import { IoLanguage } from 'react-icons/io5';
+import { toolSelector } from '@/app/store/selectors.js';
 import { LanguageLabel } from './LanguageLabel.js';
 
 export function MainMenu(): ReactElement {
@@ -31,7 +32,7 @@ export function MainMenu(): ReactElement {
     state.map.layers.includes('I'),
   );
 
-  const tool = useAppSelector((state) => state.main.tool);
+  const tool = useAppSelector(toolSelector);
 
   const toolDef = toolDefinitions.find((t) => t.tool === tool);
 

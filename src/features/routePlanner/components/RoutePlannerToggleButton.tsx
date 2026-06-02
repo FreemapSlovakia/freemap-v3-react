@@ -5,10 +5,11 @@ import { Button } from 'react-bootstrap';
 import { FaRoute } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setTool } from '@/app/store/actions.js';
+import { toolSelector } from '@/app/store/selectors.js';
 import { LongPressTooltip } from '@/shared/components/LongPressTooltip.js';
 
 export function RoutePlannerToggleButton(): ReactElement | undefined | false {
-  const tool = useAppSelector((state) => state.main.tool);
+  const tool = useAppSelector(toolSelector);
 
   const m = useMessages();
 

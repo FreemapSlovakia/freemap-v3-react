@@ -55,6 +55,7 @@ export function GalleryResult(): ReactElement {
       {pickingPosition && (
         <RichMarker
           draggable
+          pane="fm-active-overlay"
           position={{ lat: pickingPosition.lat, lng: pickingPosition.lon }}
           eventHandlers={{
             dragend: handlePositionMarkerDragEnd,
