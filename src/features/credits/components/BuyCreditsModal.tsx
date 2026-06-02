@@ -37,7 +37,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
   const invalidCredits = isInvalidInt(credits, true, 500);
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>

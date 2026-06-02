@@ -48,7 +48,7 @@ export function MapLayersConfigModal({ show }: Props): ReactElement {
           </Modal.Title>
         </Modal.Header>
 
-        <Modal.Body className="bg-body-tertiary">
+        <Modal.Body>
           <MapLayersSettings
             layersSettings={layersSettings}
             setLayersSettings={setLayersSettings}

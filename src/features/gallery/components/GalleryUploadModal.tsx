@@ -194,7 +194,12 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
   }, [show]);
 
   return (
-    <Modal show={show} onHide={handleClose} size="lg">
+    <Modal
+      show={show}
+      onHide={handleClose}
+      size="lg"
+      contentClassName="bg-body-tertiary"
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <FaCamera /> <FaUpload /> {m?.gallery.uploadModal.title}

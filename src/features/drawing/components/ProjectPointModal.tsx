@@ -53,7 +53,7 @@ export function ProjectPointModal({
   }
 
   return (
-    <Modal show={show} onHide={onClose}>
+    <Modal show={show} onHide={onClose} contentClassName="bg-body-tertiary">
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>{m?.drawing.projection.projectPoint}</Modal.Title>

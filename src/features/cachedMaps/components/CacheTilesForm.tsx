@@ -2,6 +2,8 @@ import { saveSettings } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
+import { SelectToggle } from '@shared/components/SelectToggle.js';
+import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
@@ -310,11 +312,11 @@ export function CacheTilesForm(): ReactElement {
           <Form.Label>{m?.downloadMap.map}</Form.Label>
 
           <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
-            <Dropdown.Toggle className="text-start w-100">
+            <Dropdown.Toggle as={SelectToggle} className="w-100">
               {mapDef ? getItem(mapDef) : '???'}
             </Dropdown.Toggle>
 
-            <Dropdown.Menu>
+            <Dropdown.Menu popperConfig={sameMinWidthPopperConfig}>
               {mapDefs.map((def) => (
                 <Dropdown.Item key={def.type} eventKey={def.type}>
                   {getItem(def)}
@@ -330,7 +332,7 @@ export function CacheTilesForm(): ReactElement {
           <ButtonGroup className="d-flex mb-3">
             <Button
               className="fm-ellipsis"
-              variant="secondary"
+              variant="outline-primary"
               active={area === 'visible'}
               onClick={() => setArea('visible')}
             >
@@ -339,7 +341,7 @@ export function CacheTilesForm(): ReactElement {
 
             <Button
               className="fm-ellipsis"
-              variant="secondary"
+              variant="outline-primary"
               active={area === 'selected'}
               onClick={() => setArea('selected')}
               disabled={selectedLine?.type !== 'polygon'}

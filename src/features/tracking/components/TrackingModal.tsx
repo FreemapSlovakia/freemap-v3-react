@@ -48,7 +48,7 @@ export function TrackingModal({ show }: Props): ReactElement {
       }}
       show={show}
       size={isList ? 'lg' : undefined}
-      contentClassName={isList ? 'bg-body-tertiary' : undefined}
+      contentClassName="bg-body-tertiary"
     >
       {view === 'devices' && <MyDevices />}
       {view === 'deviceForm' && <MyDeviceForm />}

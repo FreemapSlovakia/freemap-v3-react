@@ -15,10 +15,12 @@ import {
 import {
   Alert,
   Button,
+  ButtonGroup,
   Form,
   ListGroup,
   ListGroupItem,
   Spinner,
+  ToggleButton,
 } from 'react-bootstrap';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa';
 import classes from './CustomMapForm.module.css';
@@ -346,19 +348,25 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         />
       </Form.Group>
 
-      <Form.Group controlId="technology" className="mt-3">
-        <Form.Label>{m?.mapLayers.technology}</Form.Label>
+      <Form.Group className="mt-3">
+        <Form.Label className="d-block">{m?.mapLayers.technology}</Form.Label>
 
-        <Form.Select
-          className={classes['grid-span']}
-          value={model.technology}
-          onChange={handlers.technology}
-        >
-          <option value="tile">{m?.mapLayers.technologies.tile}</option>
-          <option value="maplibre">{m?.mapLayers.technologies.maplibre}</option>
-          <option value="wms">{m?.mapLayers.technologies.wms}</option>
-          {/* <option value="parametricShading">{m?.mapLayers.technologies.parametricShading}</option> */}
-        </Form.Select>
+        <ButtonGroup>
+          {(['tile', 'maplibre', 'wms'] as const).map((technology) => (
+            <ToggleButton
+              key={technology}
+              id={'tech-' + technology}
+              type="radio"
+              name="technology"
+              variant="outline-primary"
+              value={technology}
+              checked={model.technology === technology}
+              onChange={handlers.technology}
+            >
+              {m?.mapLayers.technologies[technology]}
+            </ToggleButton>
+          ))}
+        </ButtonGroup>
       </Form.Group>
 
       {/* URL */}
@@ -476,13 +484,25 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         </>
       )}
 
-      <Form.Group controlId="layer" className="mt-3">
-        <Form.Label>{m?.mapLayers.layer.layer}</Form.Label>
+      <Form.Group className="mt-3">
+        <Form.Label className="d-block">{m?.mapLayers.layer.layer}</Form.Label>
 
-        <Form.Select value={model.layer} onChange={handlers.layer}>
-          <option value="base">{m?.mapLayers.layer.base}</option>
-          <option value="overlay">{m?.mapLayers.layer.overlay}</option>
-        </Form.Select>
+        <ButtonGroup>
+          {(['base', 'overlay'] as const).map((layer) => (
+            <ToggleButton
+              key={layer}
+              id={'layer-' + layer}
+              type="radio"
+              name="layer"
+              variant="outline-primary"
+              value={layer}
+              checked={model.layer === layer}
+              onChange={handlers.layer}
+            >
+              {m?.mapLayers.layer[layer]}
+            </ToggleButton>
+          ))}
+        </ButtonGroup>
       </Form.Group>
 
       {model.layer === 'overlay' && (

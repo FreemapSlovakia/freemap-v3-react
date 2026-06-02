@@ -253,7 +253,7 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
   );
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
       <Modal.Header closeButton>
         <Modal.Title>
           <FaCamera /> <FaFilter /> {m?.gallery.filterModal.title}

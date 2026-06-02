@@ -339,7 +339,13 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   }
 
   return (
-    <Modal show={show} onHide={close} size="xl" keyboard={false}>
+    <Modal
+      show={show}
+      onHide={close}
+      size="xl"
+      keyboard={false}
+      contentClassName="bg-body-tertiary"
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <FaCamera /> {m?.gallery.viewer.title}{' '}

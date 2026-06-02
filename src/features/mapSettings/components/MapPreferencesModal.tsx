@@ -14,7 +14,13 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import {
+  Button,
+  Form,
+  Modal,
+  ToggleButton,
+  ToggleButtonGroup,
+} from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -117,27 +123,6 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
     [],
   );
 
-  const handleResolutionScaleChange = useCallback(
-    (e: ChangeEvent<HTMLSelectElement>) => {
-      setResolutionScale(e.currentTarget.value);
-    },
-    [],
-  );
-
-  const handleFeatureScaleChange = useCallback(
-    (e: ChangeEvent<HTMLSelectElement>) => {
-      setFeatureScale(e.currentTarget.value);
-    },
-    [],
-  );
-
-  const handleStravaHeatmapColorChange = useCallback(
-    (e: ChangeEvent<HTMLSelectElement>) => {
-      setStravaHeatmapColor(e.currentTarget.value as StravaHeatmapColor);
-    },
-    [],
-  );
-
   const dirty =
     maxZoom !== initialMaxZoom ||
     resolutionScale !== initialResolutionScale ||
@@ -145,7 +130,7 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
     stravaHeatmapColor !== initialStravaHeatmapColor;
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -167,52 +152,90 @@ export function MapPreferencesModal({ show }: Props): ReactElement {
             />
           </Form.Group>
 
-          <Form.Group controlId="resolutionScale" className="mt-3">
-            <Form.Label>{m?.mapLayers.resolutionScale}</Form.Label>
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">
+              {m?.mapLayers.resolutionScale}
+            </Form.Label>
 
-            <Form.Select
+            <ToggleButtonGroup
+              type="radio"
+              name="resolutionScale"
               value={resolutionScale}
-              onChange={handleResolutionScaleChange}
+              onChange={setResolutionScale}
             >
-              <option value="">{m?.mapLayers.resolutionScaleAuto}</option>
-              <option value="1">1×</option>
-              <option value="2">2×</option>
-              <option value="3">3×</option>
-              <option value="4">4×</option>
-            </Form.Select>
+              <ToggleButton id="rs-auto" value="" variant="outline-primary">
+                {m?.mapLayers.resolutionScaleAuto}
+              </ToggleButton>
 
-            <Form.Text muted>{m?.mapLayers.resolutionScaleHelp}</Form.Text>
+              {['1', '2', '3', '4'].map((scale) => (
+                <ToggleButton
+                  key={scale}
+                  id={'rs-' + scale}
+                  value={scale}
+                  variant="outline-primary"
+                >
+                  {scale}×
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+
+            <Form.Text muted className="d-block">
+              {m?.mapLayers.resolutionScaleHelp}
+            </Form.Text>
           </Form.Group>
 
-          <Form.Group controlId="featureScale" className="mt-3">
-            <Form.Label>{m?.mapLayers.featureScale}</Form.Label>
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">
+              {m?.mapLayers.featureScale}
+            </Form.Label>
 
-            <Form.Select
+            <ToggleButtonGroup
+              type="radio"
+              name="featureScale"
               value={featureScale}
-              onChange={handleFeatureScaleChange}
+              onChange={setFeatureScale}
             >
-              <option value="0.5">0.5×</option>
-              <option value="1">1×</option>
-              <option value="2">2×</option>
-              <option value="4">4×</option>
-            </Form.Select>
+              {['0.5', '1', '2', '4'].map((scale) => (
+                <ToggleButton
+                  key={scale}
+                  id={'fs-' + scale}
+                  value={scale}
+                  variant="outline-primary"
+                >
+                  {scale}×
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
 
-            <Form.Text muted>{m?.mapLayers.featureScaleHelp}</Form.Text>
+            <Form.Text muted className="d-block">
+              {m?.mapLayers.featureScaleHelp}
+            </Form.Text>
           </Form.Group>
 
-          <Form.Group controlId="stravaHeatmapColor" className="mt-3">
-            <Form.Label>{m?.mapLayers.stravaHeatmapColor}</Form.Label>
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">
+              {m?.mapLayers.stravaHeatmapColor}
+            </Form.Label>
 
-            <Form.Select
+            <ToggleButtonGroup
+              type="radio"
+              name="stravaHeatmapColor"
               value={stravaHeatmapColor}
-              onChange={handleStravaHeatmapColorChange}
+              onChange={(value) =>
+                setStravaHeatmapColor(value as StravaHeatmapColor)
+              }
             >
               {StravaHeatmapColorSchema.options.map((color) => (
-                <option key={color} value={color}>
+                <ToggleButton
+                  key={color}
+                  id={'shc-' + color}
+                  value={color}
+                  variant="outline-primary"
+                >
                   {m?.mapLayers.stravaHeatmapColors[color]}
-                </option>
+                </ToggleButton>
               ))}
-            </Form.Select>
+            </ToggleButtonGroup>
           </Form.Group>
         </Modal.Body>
 

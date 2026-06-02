@@ -5,6 +5,8 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
+import { SelectToggle } from '@shared/components/SelectToggle.js';
+import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
@@ -267,7 +269,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
   }
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
       <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -378,11 +380,11 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             <Form.Label>{m?.downloadMap.map}</Form.Label>
 
             <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
-              <Dropdown.Toggle className="text-start w-100">
+              <Dropdown.Toggle as={SelectToggle} className="w-100">
                 {mapDef ? getItem(mapDef) : m?.downloadMap.unknownMapType}
               </Dropdown.Toggle>
 
-              <Dropdown.Menu>
+              <Dropdown.Menu popperConfig={sameMinWidthPopperConfig}>
                 {mapDefs.map((def) => (
                   <Dropdown.Item key={def.type} eventKey={def.type}>
                     {getItem(def)}
@@ -398,7 +400,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             <ButtonGroup className="d-flex mb-3">
               <Button
                 className="fm-ellipsis"
-                variant="secondary"
+                variant="outline-primary"
                 active={area === 'visible'}
                 onClick={() => setArea('visible')}
               >
@@ -407,7 +409,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
               <Button
                 className="fm-ellipsis"
-                variant="secondary"
+                variant="outline-primary"
                 active={area === 'selected'}
                 onClick={() => setArea('selected')}
                 disabled={selectedLine?.type !== 'polygon'}
@@ -437,7 +439,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               <LongPressTooltip label={m?.downloadMap.formatMbtilesTooltip}>
                 {({ props }) => (
                   <Button
-                    variant="secondary"
+                    variant="outline-primary"
                     active={format === 'mbtiles'}
                     onClick={() => setFormat('mbtiles')}
                     {...props}
@@ -450,7 +452,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               <LongPressTooltip label={m?.downloadMap.formatSqlitedbTooltip}>
                 {({ props }) => (
                   <Button
-                    variant="secondary"
+                    variant="outline-primary"
                     active={format === 'sqlitedb'}
                     onClick={() => setFormat('sqlitedb')}
                     {...props}

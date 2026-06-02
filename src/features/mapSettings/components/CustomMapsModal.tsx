@@ -155,7 +155,7 @@ export function CustomMapsModal({ show }: Props): ReactElement {
       show={show}
       onHide={close}
       size={view.mode === 'list' ? 'lg' : undefined}
-      contentClassName={view.mode === 'list' ? 'bg-body-tertiary' : undefined}
+      contentClassName="bg-body-tertiary"
     >
       <Modal.Header closeButton>
         <Modal.Title>

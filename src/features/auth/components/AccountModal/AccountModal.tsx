@@ -74,7 +74,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
   }
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
       <Modal.Header closeButton>
         <Modal.Title>
           <FaUser /> {m?.mainMenu.account}
@@ -102,7 +102,7 @@ export function AccountModal({ show }: Props): ReactElement | null {
               </span>
             </Accordion.Header>
 
-            <Accordion.Body>
+            <Accordion.Body className="bg-body-tertiary">
               <PersonalInfoSection />
             </Accordion.Body>
           </Accordion.Item>

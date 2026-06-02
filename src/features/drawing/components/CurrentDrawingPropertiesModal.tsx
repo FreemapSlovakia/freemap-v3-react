@@ -375,7 +375,7 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
   const invalidWidth = isInvalidFloat(editedWidth, false, 1, 99);
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>{m?.drawing.edit.title}</Modal.Title>

@@ -90,7 +90,7 @@ export function PredefinedDrawingPropertiesModal({
   }, [dispatch]);
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>{m?.drawing.defProps.title}</Modal.Title>
