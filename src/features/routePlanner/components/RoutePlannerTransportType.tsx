@@ -7,6 +7,7 @@ import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaEquals, FaGem, FaMoneyBill } from 'react-icons/fa';
+import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 
 type Props = {
   onChange: (value?: TransportType) => void;
@@ -21,11 +22,13 @@ export function RoutePlannerTransportType({
 }: Props): ReactElement {
   const m = useMessages();
 
+  const rpm = useRoutePlannerMessages();
+
   const activeTTDef = value && transportTypeDefs[value];
 
   const ttLabel = activeTTDef
-    ? m?.routePlanner.transportType[activeTTDef.msgKey]
-    : m?.routePlanner.default;
+    ? rpm?.transportType[activeTTDef.msgKey]
+    : rpm?.default;
 
   const becomePremium = useBecomePremium();
 
@@ -80,7 +83,7 @@ export function RoutePlannerTransportType({
 
           {withDefault && (
             <Dropdown.Item as="button" eventKey="" active={!value}>
-              <FaEquals /> {m?.routePlanner.default}
+              <FaEquals /> {rpm?.default}
             </Dropdown.Item>
           )}
 
@@ -99,7 +102,7 @@ export function RoutePlannerTransportType({
                     as="button"
                     eventKey={type}
                     key={type}
-                    title={m?.routePlanner.transportType[key]}
+                    title={rpm?.transportType[key]}
                     active={value === type}
                     disabled={withDefault && Boolean(becomePremium)}
                   >
@@ -107,7 +110,7 @@ export function RoutePlannerTransportType({
                     {['car', 'car-toll', 'bikesharing'].includes(type) && (
                       <FaMoneyBill />
                     )}{' '}
-                    {m?.routePlanner.transportType[key] ?? '…'}
+                    {rpm?.transportType[key] ?? '…'}
                     {withDefault && (
                       <>
                         {' '}

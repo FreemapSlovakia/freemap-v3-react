@@ -5,11 +5,14 @@ import { Button, Modal } from 'react-bootstrap';
 import { FaRegAddressCard, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../store/actions.js';
+import { useContactsMessages } from './aboutModal/translations/useContactsMessages.js';
 
 type Props = { show: boolean };
 
 export default function AboutModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const lm = useContactsMessages();
 
   const dispatch = useDispatch();
 
@@ -28,7 +31,7 @@ export default function AboutModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        <h3>{m?.contacts.ngo}</h3>
+        <h3>{lm?.ngo}</h3>
 
         <address>
           Freemap Slovakia
@@ -39,7 +42,7 @@ export default function AboutModal({ show }: Props): ReactElement {
           <br />
         </address>
 
-        <p>{m?.contacts.registered}</p>
+        <p>{lm?.registered}</p>
 
         <p>
           {'IČO: '}
@@ -55,7 +58,7 @@ export default function AboutModal({ show }: Props): ReactElement {
         </p>
 
         <p>
-          {m?.contacts.bankAccount}: VÚB 2746389453/0200
+          {lm?.bankAccount}: VÚB 2746389453/0200
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
@@ -65,33 +68,33 @@ export default function AboutModal({ show }: Props): ReactElement {
           <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
         </p>
 
-        <h3>{m?.contacts.generalContact}</h3>
+        <h3>{lm?.generalContact}</h3>
 
         <ul>
           <li>
-            {m?.contacts.board}: <a href="oz@freemap.sk">oz@freemap.sk</a>
+            {lm?.board}: <a href="oz@freemap.sk">oz@freemap.sk</a>
           </li>
         </ul>
 
-        <h3>{m?.contacts.boardMemebers}</h3>
+        <h3>{lm?.boardMemebers}</h3>
 
         <ul>
           <li>
-            {m?.contacts.president}
+            {lm?.president}
             {': '}
             <a href="mailto:michal.bellovic@freemap.sk">Michal Bellovič</a>{' '}
             (Prievidza)
           </li>
 
           <li>
-            {m?.contacts.vicepresident}
+            {lm?.vicepresident}
             {': '}
             <a href="mailto:martin.zdila@freemap.sk">Ing. Martin Ždila</a>{' '}
             (Košice)
           </li>
 
           <li>
-            {m?.contacts.secretary}
+            {lm?.secretary}
             {': '}
             <a href="mailto:tibor.jamecny@freemap.sk">Ing. Tibor Jamečný</a>{' '}
             (Žilina)

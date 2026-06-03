@@ -1,10 +1,10 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { routePlannerSetPoint } from '../model/actions.js';
+import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
@@ -27,7 +27,7 @@ export default function RouteLegSelection(): ReactElement | undefined | false {
       state.routePlanner.mode === 'route',
   );
 
-  const m = useMessages();
+  const rpm = useRoutePlannerMessages();
 
   const dispatch = useDispatch();
 
@@ -40,7 +40,7 @@ export default function RouteLegSelection(): ReactElement | undefined | false {
             <RoutePlannerToggleButton /> <FaMapMarkerAlt />
           </>
         }
-        label={m?.routePlanner.leg}
+        label={rpm?.leg}
         deletable
         noLeftMargin
       >

@@ -146,86 +146,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tracking: 'Śledzenie na żywo',
     maps: 'Moje mapy',
   },
-  routePlanner: {
-    ghParams: {
-      tripParameters: 'Parametry wycieczki',
-      seed: 'Ziarno losowości',
-      distance: 'Przybliżony dystans',
-      isochroneParameters: 'Parametry izochron',
-      buckets: 'Segmenty',
-      timeLimit: 'Limit czasu',
-      distanceLimit: 'Limit dystansu',
-    },
-    point: {
-      pick: 'Wybierz na mapie',
-      current: 'Twoja pozycja',
-      home: 'Pozycja domowa',
-      point: 'Punkt trasy',
-    },
-    transportType: {
-      car: 'Samochód',
-      car4wd: 'Samochód (4x4)',
-      bike: 'Rower',
-      foot: 'Pieszo',
-      hiking: 'Turystyka piesza',
-      mtb: 'Rower górski',
-      racingbike: 'Rower szosowy',
-      motorcycle: 'Motocykl',
-      manual: 'Linia prosta',
-    },
-    mode: {
-      route: 'W ustalonej kolejności',
-      trip: 'Odwiedzanie miejsc',
-      roundtrip: 'Odwiedzanie miejsc (pętla)',
-      'routndtrip-gh': 'Wycieczka (pętla)',
-      isochrone: 'Izoliny czasu',
-    },
-    noHomeAlert: {
-      msg: 'Najpierw musisz ustawić pozycję domową w ustawieniach.',
-      setHome: 'Ustaw',
-    },
-    milestones: 'Słupki kilometrowe',
-    start: 'Start',
-    finish: 'Meta',
-    swap: 'Zamień start i metę',
-    development: 'w przygotowaniu',
-    alternative: 'Alternatywa',
-    distance: ({ value, diff }) => (
-      <>
-        Dystans:{' '}
-        <b>
-          {value}
-          {diff ? ` (+ ${diff})` : ''}
-        </b>
-      </>
-    ),
-    duration: ({ h, m, diff }) => (
-      <>
-        Czas:{' '}
-        <b>
-          {h}h {m}m{diff && ` (+ ${diff.h} h ${diff.m} m)`}
-        </b>
-      </>
-    ),
-    summary: ({ distance, h, m }) => (
-      <>
-        Dystans: <b>{distance}</b>| Czas:{' '}
-        <b>
-          {h}h {m}m
-        </b>
-      </>
-    ),
-    showMidpointHint: 'Aby dodać punkt pośredni, przeciągnij odcinek trasy.',
-    gpsError: 'Błąd podczas pobierania bieżącej lokalizacji.',
-    routeNotFound:
-      'Nie znaleziono trasy. Spróbuj zmienić parametry lub przesunąć punkty.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Błąd podczas wyszukiwania trasy', err),
-    manualTooltip: 'Połącz następny odcinek prostą linią',
-    default: 'Domyślna',
-    leg: 'Odcinek trasy',
-    stop: 'Postój',
-  },
   mainMenu: {
     title: 'Menu główne',
     logOut: 'Wyloguj się',
@@ -755,18 +675,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
   },
 
-  embed: {
-    code: 'Umieść poniższy kod na swojej stronie HTML:',
-    example: 'Wynik będzie wyglądał następująco:',
-    dimensions: 'Wymiary',
-    height: 'Wysokość',
-    width: 'Szerokość',
-    enableFeatures: 'Włącz funkcje',
-    enableSearch: 'wyszukiwanie',
-    enableMapSwitch: 'przełączanie warstw mapy',
-    enableLocateMe: 'znajdź mnie',
-  },
-
   documents: {
     errorLoading: 'Błąd podczas ładowania dokumentu.',
   },
@@ -1222,41 +1130,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startRoute: 'Zaplanuj trasę stąd',
     finishRoute: 'Zaplanuj trasę tutaj',
     showPhotos: 'Pokaż zdjęcia w pobliżu',
-  },
-
-  legend: {
-    body: ({ name }) => (
-      <>
-        Legenda mapy dla <i>{name}</i>
-      </>
-    ),
-    outdoorMap: {
-      accommodation: 'Noclegi',
-      'gastro-poi': 'Jedzenie i napoje',
-      institution: 'Instytucje',
-      sport: 'Sport',
-      'natural-poi': 'Obiekty przyrodnicze',
-      poi: 'Inne punkty zainteresowania',
-      landcover: 'Pokrycie terenu',
-      borders: 'Granice',
-      'roads-and-paths': 'Drogi i ścieżki',
-      railway: 'Kolej',
-      terrain: 'Ukształtowanie terenu',
-      water: 'Woda',
-      other: 'Inne',
-    },
-  },
-
-  contacts: {
-    ngo: 'Stowarzyszenie ochotnicze',
-    registered: 'Zarejestrowane w MV/VVS/1-900/90-34343 dnia 2009-10-02',
-    bankAccount: 'Konto bankowe',
-    generalContact: 'Kontakty ogólne',
-    board: 'Zarząd',
-    boardMemebers: 'Członkowie zarządu',
-    president: 'Prezes',
-    vicepresident: 'Wiceprezes',
-    secretary: 'Sekretarz',
   },
 
   premium: {

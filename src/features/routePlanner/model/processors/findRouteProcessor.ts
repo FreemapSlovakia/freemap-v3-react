@@ -32,7 +32,9 @@ export const updateRouteTypes = [
 export const routePlannerFindRouteProcessor: Processor = {
   actionCreator: updateRouteTypes,
   id: 'routePlanner',
-  errorKey: 'routePlanner.fetchingError',
+  // route-fetch errors are reported by the handler itself (see
+  // findRouteProcessorHandler); unexpected throws fall back to the generic
+  // processor-error toast.
   handle: async (...params) =>
     (
       await import(

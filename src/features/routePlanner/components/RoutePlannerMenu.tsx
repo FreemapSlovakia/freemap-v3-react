@@ -60,6 +60,7 @@ import {
   routePlannerToggleElevationChart,
   routePlannerToggleMilestones,
 } from '../model/actions.js';
+import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
 function useParam(
@@ -130,9 +131,9 @@ function TripSettings() {
     ),
   );
 
-  const m = useMessages();
+  const rpm = useRoutePlannerMessages();
 
-  const ghParams = m?.routePlanner.ghParams;
+  const ghParams = rpm?.ghParams;
 
   return (
     <>
@@ -241,7 +242,9 @@ function IsochroneSettings() {
 
   const m = useMessages();
 
-  const ghParams = m?.routePlanner.ghParams;
+  const rpm = useRoutePlannerMessages();
+
+  const ghParams = rpm?.ghParams;
 
   return (
     <>
@@ -357,6 +360,8 @@ GraphopperModeMenu.displayName = 'GraphopperModeMenu';
 export default function RoutePlannerMenu(): ReactElement {
   const m = useMessages();
 
+  const rpm = useRoutePlannerMessages();
+
   const dispatch = useDispatch();
 
   const milestones = useAppSelector((state) => state.routePlanner.milestones);
@@ -433,11 +438,11 @@ export default function RoutePlannerMenu(): ReactElement {
       dispatch(
         toastsAdd({
           id: 'routePlanner.noHomeAlert',
-          messageKey: 'routePlanner.noHomeAlert.msg',
+          message: rpm?.noHomeAlert.msg ?? '',
           style: 'warning',
           actions: [
             {
-              nameKey: 'routePlanner.noHomeAlert.setHome',
+              name: rpm?.noHomeAlert.setHome ?? '',
               action: setSelectingHomeLocation(true),
             },
             { nameKey: 'general.close', variant: 'dark' },
@@ -480,7 +485,7 @@ export default function RoutePlannerMenu(): ReactElement {
         >
           <LongPressTooltip
             label={
-              m?.routePlanner.mode[
+              rpm?.mode[
                 activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
               ]
             }
@@ -502,12 +507,11 @@ export default function RoutePlannerMenu(): ReactElement {
                 <Dropdown.Item
                   eventKey={mode}
                   key={mode}
-                  title={m?.routePlanner.mode[mode]}
+                  title={rpm?.mode[mode]}
                   active={activeMode === mode}
                 >
-                  {m?.routePlanner.mode[
-                    mode === 'roundtrip' ? 'routndtrip-gh' : mode
-                  ] ?? '…'}
+                  {rpm?.mode[mode === 'roundtrip' ? 'routndtrip-gh' : mode] ??
+                    '…'}
                 </Dropdown.Item>
               ),
             )}
@@ -523,7 +527,7 @@ export default function RoutePlannerMenu(): ReactElement {
           }}
         >
           <Dropdown.Toggle id="mode" variant="secondary">
-            {m?.routePlanner.mode[activeMode] ?? '…'}
+            {rpm?.mode[activeMode] ?? '…'}
           </Dropdown.Toggle>
 
           <Dropdown.Menu popperConfig={fixedPopperConfig}>
@@ -532,10 +536,10 @@ export default function RoutePlannerMenu(): ReactElement {
                 <Dropdown.Item
                   eventKey={mode}
                   key={mode}
-                  title={m?.routePlanner.mode[mode]}
+                  title={rpm?.mode[mode]}
                   active={activeMode === mode}
                 >
-                  {m?.routePlanner.mode[mode] ?? '…'}
+                  {rpm?.mode[mode] ?? '…'}
                 </Dropdown.Item>
               ),
             )}
@@ -557,7 +561,7 @@ export default function RoutePlannerMenu(): ReactElement {
             }
           }}
         >
-          <LongPressTooltip breakpoint="md" label={m?.routePlanner.start}>
+          <LongPressTooltip breakpoint="md" label={rpm?.start}>
             {({ label, labelClassName, props }) => (
               <Dropdown.Toggle
                 variant="secondary"
@@ -574,12 +578,12 @@ export default function RoutePlannerMenu(): ReactElement {
           <Dropdown.Menu popperConfig={fixedPopperConfig}>
             <Dropdown.Item eventKey="pick">
               <FaMapMarkerAlt />
-              &nbsp;{m?.routePlanner.point.pick ?? '…'}
+              &nbsp;{rpm?.point.pick ?? '…'}
             </Dropdown.Item>
 
             <Dropdown.Item eventKey="current">
               <FaBullseye />
-              &nbsp;{m?.routePlanner.point.current ?? '…'}
+              &nbsp;{rpm?.point.current ?? '…'}
             </Dropdown.Item>
 
             <Dropdown.Item
@@ -587,7 +591,7 @@ export default function RoutePlannerMenu(): ReactElement {
               eventKey="home"
             >
               <FaHome />
-              &nbsp;{m?.routePlanner.point.home ?? '…'}
+              &nbsp;{rpm?.point.home ?? '…'}
               <Button
                 size="sm"
                 variant="secondary"
@@ -602,7 +606,7 @@ export default function RoutePlannerMenu(): ReactElement {
 
         {activeMode !== 'roundtrip' && activeMode !== 'isochrone' && (
           <>
-            <LongPressTooltip label={m?.routePlanner.swap}>
+            <LongPressTooltip label={rpm?.swap}>
               {({ label, labelClassName, props }) => (
                 <Button
                   variant="secondary"
@@ -628,7 +632,7 @@ export default function RoutePlannerMenu(): ReactElement {
                 }
               }}
             >
-              <LongPressTooltip breakpoint="md" label={m?.routePlanner.finish}>
+              <LongPressTooltip breakpoint="md" label={rpm?.finish}>
                 {({ label, labelClassName, props }) => (
                   <Dropdown.Toggle
                     variant="secondary"
@@ -646,13 +650,13 @@ export default function RoutePlannerMenu(): ReactElement {
                 <Dropdown.Item eventKey="pick">
                   <FaMapMarkerAlt />
                   &nbsp;
-                  {m?.routePlanner.point.pick ?? '…'}
+                  {rpm?.point.pick ?? '…'}
                 </Dropdown.Item>
 
                 <Dropdown.Item eventKey="current">
                   <FaBullseye />
                   &nbsp;
-                  {m?.routePlanner.point.current ?? '…'}
+                  {rpm?.point.current ?? '…'}
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -660,7 +664,7 @@ export default function RoutePlannerMenu(): ReactElement {
                   eventKey="home"
                 >
                   <FaHome />
-                  &nbsp;{m?.routePlanner.point.home ?? '…'}
+                  &nbsp;{rpm?.point.home ?? '…'}
                   <Button
                     size="sm"
                     variant="secondary"
@@ -700,12 +704,12 @@ export default function RoutePlannerMenu(): ReactElement {
 
             <Dropdown.Item eventKey="toggle-milestones-km">
               {milestones === 'abs' ? <FaRegCheckSquare /> : <FaRegSquare />}
-              &nbsp;{m?.routePlanner.milestones ?? '…'} (km)
+              &nbsp;{rpm?.milestones ?? '…'} (km)
             </Dropdown.Item>
 
             <Dropdown.Item eventKey="toggle-milestones-%">
               {milestones === 'rel' ? <FaRegCheckSquare /> : <FaRegSquare />}
-              &nbsp;{m?.routePlanner.milestones ?? '…'} (%)
+              &nbsp;{rpm?.milestones ?? '…'} (%)
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>

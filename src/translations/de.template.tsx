@@ -152,87 +152,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maps: 'Meine Karten',
   },
 
-  routePlanner: {
-    ghParams: {
-      tripParameters: 'Reiseparameter',
-      seed: 'Zufallswert',
-      distance: 'Ungefähre Entfernung',
-      isochroneParameters: 'Isochrone-Parameter',
-      buckets: 'Intervalle',
-      timeLimit: 'Zeitlimit',
-      distanceLimit: 'Entfernungslimit',
-    },
-    point: {
-      pick: 'Auf der Karte auswählen',
-      current: 'Deine Position',
-      home: 'Startposition',
-      point: 'Routenpunkt',
-    },
-    transportType: {
-      car: 'Auto',
-      car4wd: 'Auto (4WD)',
-      bike: 'Fahrrad',
-      foot: 'Zu Fuß',
-      hiking: 'Wandern',
-      mtb: 'Mountainbike',
-      racingbike: 'Rennrad',
-      motorcycle: 'Motorrad',
-      manual: 'Luftlinie',
-    },
-    mode: {
-      route: 'In Reihenfolge',
-      trip: 'Besuchte Orte',
-      roundtrip: 'Besuchte Orte (Rundreise)',
-      'routndtrip-gh': 'Rundreise',
-      isochrone: 'Isochronen',
-    },
-    milestones: 'Kilometermarkierungen',
-    start: 'Start',
-    finish: 'Ziel',
-    swap: 'Start und Ziel tauschen',
-    development: 'in Entwicklung',
-    alternative: 'Alternative',
-    distance: ({ value, diff }) => (
-      <>
-        Entfernung:{' '}
-        <b>
-          {value}
-          {diff ? ` (+ ${diff})` : ''}
-        </b>
-      </>
-    ),
-    duration: ({ h, m, diff }) => (
-      <>
-        Dauer:{' '}
-        <b>
-          {h}h {m}m{diff && ` (+ ${diff.h}h ${diff.m}m)`}
-        </b>
-      </>
-    ),
-    summary: ({ distance, h, m }) => (
-      <>
-        Entfernung: <b>{distance}</b> | Dauer:{' '}
-        <b>
-          {h}h {m}m
-        </b>
-      </>
-    ),
-    noHomeAlert: {
-      msg: 'Du musst zuerst deine Startposition in den Einstellungen setzen.',
-      setHome: 'Setzen',
-    },
-    showMidpointHint:
-      'Ziehe ein Routensegment, um einen Zwischenpunkt hinzuzufügen.',
-    gpsError: 'Fehler beim Ermitteln deiner aktuellen Position.',
-    routeNotFound:
-      'Keine Route gefunden. Versuche, die Parameter zu ändern oder die Punkte zu verschieben.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Fehler beim Finden der Route', err),
-    manualTooltip: 'Folgenden Abschnitt mit einer geraden Linie verbinden',
-    default: 'Standard',
-    leg: 'Routenabschnitt',
-    stop: 'Halt',
-  },
   mainMenu: {
     title: 'Hauptmenü',
     logOut: 'Abmelden',
@@ -782,18 +701,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
   },
 
-  embed: {
-    code: 'Füge den folgenden Code in deine HTML-Seite ein:',
-    example: 'Das Ergebnis wird folgendermaßen aussehen:',
-    dimensions: 'Größe',
-    height: 'Höhe',
-    width: 'Breite',
-    enableFeatures: 'Funktionen aktivieren',
-    enableSearch: 'Suche',
-    enableMapSwitch: 'Kartenebenen wechseln',
-    enableLocateMe: 'Standort ermitteln',
-  },
-
   documents: {
     errorLoading: 'Fehler beim Laden des Dokuments.',
   },
@@ -1251,39 +1158,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startRoute: 'Route von hier planen',
     finishRoute: 'Route bis hier planen',
     showPhotos: 'Fotos in der Nähe anzeigen',
-  },
-  legend: {
-    body: ({ name }) => (
-      <>
-        Kartenlegende für <i>{name}</i>
-      </>
-    ),
-    outdoorMap: {
-      accommodation: 'Unterkunft',
-      'gastro-poi': 'Essen und Trinken',
-      institution: 'Institutionen',
-      sport: 'Sport',
-      'natural-poi': 'Naturmerkmale',
-      poi: 'Weitere Sehenswürdigkeiten',
-      landcover: 'Landbedeckung',
-      borders: 'Grenzen',
-      'roads-and-paths': 'Straßen und Wege',
-      railway: 'Eisenbahnen',
-      terrain: 'Gelände',
-      water: 'Wasser',
-      other: 'Andere',
-    },
-  },
-  contacts: {
-    ngo: 'Eingetragener Verein',
-    registered: 'Registriert bei MV/VVS/1-900/90-34343 am 02.10.2009',
-    bankAccount: 'Bankverbindung',
-    generalContact: 'Allgemeine Kontakte',
-    board: 'Vorstand',
-    boardMemebers: 'Vorstandsmitglieder',
-    president: 'Vorsitzender',
-    vicepresident: 'Stellvertretender Vorsitzender',
-    secretary: 'Schriftführer',
   },
   premium: {
     title: 'Premium-Zugang erhalten',

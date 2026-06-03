@@ -1,5 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { useLocalMessages, useMessages } from '@features/l10n/l10nInjector.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { type ReactElement, useCallback } from 'react';
@@ -8,7 +8,7 @@ import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ShowModalLink } from '../../shared/components/ShowModalLink.js';
 import { documentShow } from '../documents/model/actions.js';
-import { SupportUsMessages } from './translations/SupportUsMessages.js';
+import { useSupportUsMessages } from './translations/useSupportUsMessages.js';
 
 type Props = { show: boolean };
 
@@ -17,14 +17,7 @@ export default function SupportUsModal({ show }: Props): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const lm = useLocalMessages<SupportUsMessages>(
-    () =>
-      import(
-        /* webpackExclude: /\.template\./ */
-        /* webpackChunkName: "support-translation-[request]" */
-        `./translations/${language}.tsx`
-      ),
-  );
+  const lm = useSupportUsMessages();
 
   const m = useMessages();
 

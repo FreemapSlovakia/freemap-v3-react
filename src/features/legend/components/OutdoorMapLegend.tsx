@@ -1,4 +1,3 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
@@ -20,6 +19,7 @@ import {
 import { Accordion, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
+import { useLegendMessages } from '../translations/useLegendMessages.js';
 
 type Item = {
   category: string;
@@ -103,12 +103,10 @@ export default function OutdoorMapLegend(): ReactElement {
       });
   }, [dispatch, osmMapping]);
 
-  const m = useMessages();
+  const lm = useLegendMessages();
 
   const orderedLegend = useMemo(() => {
-    const outdoorMap = m?.legend.outdoorMap as
-      | Record<string, string>
-      | undefined;
+    const outdoorMap = lm?.outdoorMap;
 
     if (!outdoorMap) {
       return legend;
@@ -127,14 +125,14 @@ export default function OutdoorMapLegend(): ReactElement {
         (order.get(a.category) ?? Number.MAX_SAFE_INTEGER) -
         (order.get(b.category) ?? Number.MAX_SAFE_INTEGER),
     );
-  }, [legend, m]);
+  }, [legend, lm]);
 
   return (
     <Accordion>
       {orderedLegend.map((c: Item, i: number) => (
         <Accordion.Item key={c.category} eventKey={String(i)}>
           <Accordion.Header>
-            {(m?.legend.outdoorMap as Record<string, string>)[c.category] ??
+            {(lm?.outdoorMap as Record<string, string>)[c.category] ??
               c.category}
           </Accordion.Header>
 

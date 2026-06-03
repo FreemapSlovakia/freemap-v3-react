@@ -16,6 +16,7 @@ import {
   GeoJSONPositionSchema,
   GeoJSONPropertiesSchema,
 } from 'zod-geojson';
+import { loadRoutePlannerMessages } from '../../translations/loadRoutePlannerMessages.js';
 import {
   Alternative,
   Leg,
@@ -205,13 +206,6 @@ const OsrmResultSchema = z.object({
   waypoints: z.array(WaypointSchema).optional(),
 });
 
-const rnfToastAction = toastsAdd({
-  id: 'routePlanner',
-  messageKey: 'routePlanner.routeNotFound',
-  style: 'warning',
-  timeout: 5000,
-});
-
 const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   const {
     points,
@@ -282,6 +276,15 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     return;
   }
 
+  const rpm = await loadRoutePlannerMessages(getState().l10n.language);
+
+  const rnfToastAction = toastsAdd({
+    id: 'routePlanner',
+    message: rpm.routeNotFound,
+    style: 'warning',
+    timeout: 5000,
+  });
+
   const segments =
     mode === 'route' &&
     (isPremium(getState().auth.user) ||
@@ -315,8 +318,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       dispatch(
         toastsAdd({
           id: 'routePlanner',
-          messageKey: 'routePlanner.fetchingError',
-          messageParams: { err: data.reason },
+          message: rpm.fetchingError({ err: data.reason }),
           style: 'danger',
           timeout: 5000,
         }),
@@ -462,7 +464,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     dispatch(
       toastsAdd({
         id: 'routePlanner.showMidpointHint',
-        messageKey: 'routePlanner.showMidpointHint',
+        message: rpm.showMidpointHint,
         style: 'info',
         actions,
         cancelType: [setTool.type, routePlannerAddPoint.type],

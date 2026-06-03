@@ -3,6 +3,10 @@
   "templates": [
     "src/osm/osmTagToNameMapping-{LANG}.ts",
     "src/translations/{LANG}.tsx",
-    "src/features/supportUsModal/translations/{LANG}.tsx"
+    "src/features/supportUsModal/translations/{LANG}.tsx",
+    "src/features/routePlanner/translations/{LANG}.tsx",
+    "src/features/legend/translations/{LANG}.tsx",
+    "src/app/components/embedMapModal/translations/{LANG}.tsx",
+    "src/app/components/aboutModal/translations/{LANG}.tsx"
   ]
 }

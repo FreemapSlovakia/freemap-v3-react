@@ -5,6 +5,8 @@ import { DrawingLinesState } from '@features/drawing/model/reducers/drawingLines
 import { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import { ObjectsState } from '@features/objects/model/reducer.js';
 import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
+import { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
 import { TrackingState } from '@features/tracking/model/reducer.js';
 import { TrackViewerState } from '@features/trackViewer/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
@@ -154,7 +156,12 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('plannedRoute') || set.has('plannedRouteWithStops')) {
-    addPlannedRoute(doc, routePlanner, set.has('plannedRouteWithStops'));
+    addPlannedRoute(
+      doc,
+      routePlanner,
+      set.has('plannedRouteWithStops'),
+      await loadRoutePlannerMessages(language),
+    );
   }
 
   if (set.has('tracking')) {
@@ -662,6 +669,7 @@ function addPlannedRoute(
   doc: Document,
   { alternatives, points, finishOnly }: RoutePlannerState,
   withStops: boolean,
+  rpm: RoutePlannerMessages,
 ) {
   // TODO add itinerar details and metadata
   // TODO add option to only export selected alternative
@@ -679,10 +687,10 @@ function addPlannedRoute(
         midpointWptEle,
         'name',
         i === 0 && !finishOnly
-          ? window.translations?.routePlanner.start
+          ? rpm.start
           : i === points.length - 1
-            ? window.translations?.routePlanner.finish // TODO not for roundtrip?
-            : window.translations?.routePlanner.stop + ' ' + (i + 1),
+            ? rpm.finish // TODO not for roundtrip?
+            : rpm.stop + ' ' + (i + 1),
       );
     });
   }
@@ -690,11 +698,7 @@ function addPlannedRoute(
   alternatives.forEach(({ legs }, i: number) => {
     const trkEle = createElement(doc.documentElement, 'trk');
 
-    createElement(
-      trkEle,
-      'name',
-      window.translations?.routePlanner.alternative + ' ' + (i + 1),
-    );
+    createElement(trkEle, 'name', rpm.alternative + ' ' + (i + 1));
 
     const trksegEle = createElement(trkEle, 'trkseg');
 

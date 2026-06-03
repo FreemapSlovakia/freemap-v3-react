@@ -5,6 +5,8 @@ import {
 } from '@features/drawing/model/styleFromProperties.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
 import type { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
+import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { resolveGenericName } from '@osm/osmNameResolver.js';
@@ -326,6 +328,7 @@ function addPlannedRoute(
   }: RoutePlannerState,
   selection: 'all' | 'active',
   withStops: boolean,
+  rpm: RoutePlannerMessages,
 ) {
   if (withStops) {
     points.forEach((pt, i) => {
@@ -333,10 +336,10 @@ function addPlannedRoute(
         point([pt.lon, pt.lat], {
           title:
             i === 0 && !finishOnly
-              ? window.translations?.routePlanner.start
+              ? rpm.start
               : i === points.length - 1
-                ? window.translations?.routePlanner.finish
-                : window.translations?.routePlanner.stop + ' ' + (i + 1),
+                ? rpm.finish
+                : rpm.stop + ' ' + (i + 1),
         }),
       );
     });
@@ -367,7 +370,7 @@ function addPlannedRoute(
           leg.steps.map((step) => step.geometry.coordinates),
         ),
         {
-          title: window.translations?.routePlanner.alternative + ' ' + (i + 1),
+          title: rpm.alternative + ' ' + (i + 1),
         },
       ),
     );
@@ -590,6 +593,7 @@ export async function buildExportFeatureCollection({
       routePlanner,
       options.route ?? 'all',
       Boolean(include.plannedRouteWithStops),
+      await loadRoutePlannerMessages(getState().l10n.language),
     );
   }
 

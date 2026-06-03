@@ -9,9 +9,7 @@ import {
   CustomLayerOrder,
   ExportableLayer,
 } from '@features/mapToDocumentExport/model/actions.js';
-import { RoutingMode } from '@features/routePlanner/model/actions.js';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
-import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
 import { DeepPartial } from '@shared/types/deepPartial.js';
 import { JSX, ReactElement, ReactNode } from 'react';
 
@@ -109,71 +107,6 @@ export type Messages = {
     mapDetails: string;
     tracking: string;
     maps: string;
-  };
-  routePlanner: {
-    default: string;
-    leg: string;
-    manualTooltip: string;
-    ghParams: {
-      tripParameters: string;
-      seed: string;
-      distance: string;
-      isochroneParameters: string;
-      buckets: string;
-      timeLimit: string;
-      distanceLimit: string;
-    };
-    milestones: string;
-    start: string;
-    stop: string;
-    finish: string;
-    swap: string;
-    point: {
-      point: string;
-      pick: string;
-      current: string;
-      home: string;
-    };
-    transportType: Record<TransportTypeMsgKey, string>;
-    development: string;
-    mode: Record<RoutingMode | 'routndtrip-gh', string>;
-    alternative: string;
-    distance: ({
-      value,
-      diff,
-    }: {
-      value: string;
-      diff?: string;
-    }) => JSX.Element;
-    duration: ({
-      h,
-      m,
-      diff,
-    }: {
-      h: number;
-      m: number;
-      diff?: {
-        h: number;
-        m: number;
-      };
-    }) => JSX.Element;
-    summary: ({
-      distance,
-      h,
-      m,
-    }: {
-      distance: ReactNode;
-      h: ReactNode;
-      m: ReactNode;
-    }) => JSX.Element;
-    noHomeAlert: {
-      msg: string;
-      setHome: string;
-    };
-    showMidpointHint: string;
-    gpsError: string;
-    routeNotFound: string;
-    fetchingError: (props: Err) => string;
   };
   mainMenu: {
     title: string;
@@ -553,17 +486,6 @@ export type Messages = {
     result: string;
     sources: Record<SearchSource, string>;
   };
-  embed: {
-    code: string;
-    example: string;
-    dimensions: string;
-    height: string;
-    width: string;
-    enableFeatures: string;
-    enableSearch: string;
-    enableMapSwitch: string;
-    enableLocateMe: string;
-  };
   documents: {
     errorLoading: string;
   };
@@ -822,35 +744,6 @@ export type Messages = {
     writers: string;
     addWriter: string;
     conflictError: string;
-  };
-  legend: {
-    body: (props: { name: string }) => JSX.Element;
-    outdoorMap: {
-      'natural-poi': string;
-      'roads-and-paths': string;
-      accommodation: string;
-      borders: string;
-      'gastro-poi': string;
-      institution: string;
-      landcover: string;
-      other: string;
-      poi: string;
-      railway: string;
-      sport: string;
-      terrain: string;
-      water: string;
-    };
-  };
-  contacts: {
-    ngo: string;
-    registered: string;
-    bankAccount: string;
-    generalContact: string;
-    board: string;
-    boardMemebers: string;
-    president: string;
-    vicepresident: string;
-    secretary: string;
   };
   mapCtxMenu: {
     centerMap: string;

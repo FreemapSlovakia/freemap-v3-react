@@ -145,87 +145,6 @@ const messages: Messages = {
     maps: 'My maps',
   },
 
-  routePlanner: {
-    default: 'Route default',
-    leg: 'Route leg',
-    manualTooltip: 'Connect following segment with direct line',
-    ghParams: {
-      tripParameters: 'Trip parameters',
-      seed: 'Random seed',
-      distance: 'Approximate distance',
-      isochroneParameters: 'Isochrone parameters',
-      buckets: 'Buckets',
-      timeLimit: 'Time limit',
-      distanceLimit: 'Distance limit',
-    },
-    milestones: 'Milestones',
-    start: 'Start',
-    finish: 'Finish',
-    stop: 'Stop',
-    swap: 'Swap start and finish',
-    point: {
-      point: 'Route point',
-      pick: 'Select on the map',
-      current: 'Your position',
-      home: 'Home position',
-    },
-    transportType: {
-      car: 'Car',
-      car4wd: 'Car (4WD)',
-      bike: 'Bicycle',
-      foot: 'Walking',
-      hiking: 'Hiking',
-      mtb: 'Mountain bike',
-      racingbike: 'Racing bike',
-      motorcycle: 'Motorcycle',
-      manual: 'Straight line',
-    },
-    development: 'in development',
-    mode: {
-      route: 'Ordered',
-      trip: 'Visiting places',
-      roundtrip: 'Visiting places (roundtrip)',
-      'routndtrip-gh': 'Roundtrip',
-      isochrone: 'Isochrones',
-    },
-    alternative: 'Alternative',
-    distance: ({ value, diff }) => (
-      <>
-        Distance:{' '}
-        <b>
-          {value}
-          {diff ? ` (+ ${diff})` : ''}
-        </b>
-      </>
-    ),
-    duration: ({ h, m, diff }) => (
-      <>
-        Duration:{' '}
-        <b>
-          {h} h {m} m{diff && ` (+ ${diff.h} h ${diff.m} m)`}
-        </b>
-      </>
-    ),
-    summary: ({ distance, h, m }) => (
-      <>
-        Distance: <b>{distance}</b> | Duration:{' '}
-        <b>
-          {h} h {m} m
-        </b>
-      </>
-    ),
-    noHomeAlert: {
-      msg: 'You need to set your home position in settings first.',
-      setHome: 'Set',
-    },
-    showMidpointHint: 'To add a midpoint, drag a route segment.',
-    gpsError: 'Error getting your current location.',
-    routeNotFound:
-      'No route found. Try to change parameters or move the route points.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Error finding the route', err),
-  },
-
   mainMenu: {
     title: 'Main menu',
     logOut: 'Log out',
@@ -724,18 +643,6 @@ const messages: Messages = {
     },
   },
 
-  embed: {
-    code: 'Put the following code to your HTML page:',
-    example: 'The result will look like this:',
-    dimensions: 'Dimensions',
-    height: 'Height',
-    width: 'Width',
-    enableFeatures: 'Enable features',
-    enableSearch: 'search',
-    enableMapSwitch: 'map layer switch',
-    enableLocateMe: 'find me',
-  },
-
   documents: {
     errorLoading: 'Error loading document.',
   },
@@ -1174,42 +1081,6 @@ const messages: Messages = {
     startRoute: 'Plan a route from here',
     finishRoute: 'Plan a route to here',
     showPhotos: 'Show nearby photos',
-  },
-
-  legend: {
-    body: ({ name }) => (
-      <>
-        Map legend for <i>{name}</i>
-      </>
-    ),
-
-    outdoorMap: {
-      accommodation: 'Accommodation',
-      'gastro-poi': 'Food & Drink',
-      institution: 'Institutions',
-      sport: 'Sports',
-      'natural-poi': 'Natural features',
-      poi: 'Other points of interest',
-      landcover: 'Land cover',
-      water: 'Water',
-      'roads-and-paths': 'Roads and paths',
-      railway: 'Railways',
-      terrain: 'Terrain',
-      borders: 'Borders',
-      other: 'Other',
-    },
-  },
-
-  contacts: {
-    ngo: 'Voluntary association',
-    registered: 'Registered at MV/VVS/1-900/90-34343 on 2009-10-02',
-    bankAccount: 'Bank account',
-    generalContact: 'General contacts',
-    board: 'Board',
-    boardMemebers: 'Board members',
-    president: 'President',
-    vicepresident: 'Vice-President',
-    secretary: 'Secretary',
   },
 
   premium: {

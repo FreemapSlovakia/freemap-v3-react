@@ -16,6 +16,7 @@ import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { setActiveModal } from '../store/actions.js';
+import { useEmbedMessages } from './embedMapModal/translations/useEmbedMessages.js';
 
 type Props = { show: boolean };
 
@@ -35,6 +36,8 @@ const toHeight = (value: string | null) => value ?? '480';
 
 export default function EmbedMapModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const lm = useEmbedMessages();
 
   const dispatch = useDispatch();
 
@@ -210,11 +213,11 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
           className="mb-3"
           style={{ maxWidth: '542px' }}
         >
-          <Form.Label className="required">{m?.embed.dimensions}</Form.Label>
+          <Form.Label className="required">{lm?.dimensions}</Form.Label>
 
           <div className="d-flex gap-2">
             <InputGroup>
-              <InputGroup.Text>{m?.embed.width}</InputGroup.Text>
+              <InputGroup.Text>{lm?.width}</InputGroup.Text>
 
               <Form.Control
                 type="number"
@@ -229,7 +232,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
             </InputGroup>
 
             <InputGroup>
-              <InputGroup.Text>{m?.embed.height}</InputGroup.Text>
+              <InputGroup.Text>{lm?.height}</InputGroup.Text>
 
               <Form.Control
                 type="number"
@@ -245,7 +248,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
           </div>
         </Form.Group>
 
-        <Form.Label className="d-block">{m?.embed.enableFeatures}</Form.Label>
+        <Form.Label className="d-block">{lm?.enableFeatures}</Form.Label>
 
         <div className="d-flex flex-wrap gap-2">
           <ToggleButton
@@ -256,7 +259,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
             checked={features.has('search')}
             onChange={handleFeaturesChange}
           >
-            {m?.embed.enableSearch}
+            {lm?.enableSearch}
           </ToggleButton>
 
           <ToggleButton
@@ -267,7 +270,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
             checked={features.has('mapSwitch')}
             onChange={handleFeaturesChange}
           >
-            {m?.embed.enableMapSwitch}
+            {lm?.enableMapSwitch}
           </ToggleButton>
 
           <ToggleButton
@@ -278,13 +281,13 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
             checked={features.has('locateMe')}
             onChange={handleFeaturesChange}
           >
-            {m?.embed.enableLocateMe}
+            {lm?.enableLocateMe}
           </ToggleButton>
         </div>
 
         <hr />
 
-        <Form.Label>{m?.embed.code}</Form.Label>
+        <Form.Label>{lm?.code}</Form.Label>
 
         <Form.Control
           ref={setFormControl}
@@ -303,7 +306,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
 
         {!(invalidWidth || invalidHeight) && (
           <div className="mt-3">
-            <Form.Label>{m?.embed.example}</Form.Label>
+            <Form.Label>{lm?.example}</Form.Label>
 
             <div style={{ overflowX: 'auto' }}>
               <iframe

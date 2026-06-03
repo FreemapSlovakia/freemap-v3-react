@@ -4,7 +4,6 @@ import {
   selectingModeSelector,
 } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
@@ -46,12 +45,13 @@ import {
   routePlannerSetStart,
   StepMode,
 } from '../model/actions.js';
+import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import classes from './RoutePlannerResult.module.css';
 
 const pointDraggingClassName = classes['dragging'];
 
 export function RoutePlannerResult(): ReactElement {
-  const m = useMessages();
+  const rpm = useRoutePlannerMessages();
 
   const dispatch = useDispatch();
 
@@ -159,7 +159,7 @@ export function RoutePlannerResult(): ReactElement {
       return (
         <div>
           <div>
-            {m?.routePlanner.distance({
+            {rpm?.distance({
               value: formatDistance(distanceSum, language),
               diff:
                 distanceDiff === undefined
@@ -169,7 +169,7 @@ export function RoutePlannerResult(): ReactElement {
           </div>
           {!isNaN(durationSum) && (
             <div>
-              {m?.routePlanner.duration({
+              {rpm?.duration({
                 h: Math.floor(Math.round(durationSum / 60) / 60),
                 m: Math.round(durationSum / 60) % 60,
                 diff:
@@ -185,7 +185,7 @@ export function RoutePlannerResult(): ReactElement {
         </div>
       );
     },
-    [language, m],
+    [language, rpm],
   );
 
   const milestones = useMemo(() => {

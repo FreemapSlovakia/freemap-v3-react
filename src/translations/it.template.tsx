@@ -157,88 +157,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maps: 'Le mie mappe',
   },
 
-  routePlanner: {
-    ghParams: {
-      tripParameters: 'Parametri del viaggio',
-      seed: 'Casuale',
-      distance: 'Distanza approssimativa',
-      isochroneParameters: 'Parametri isocroni',
-      buckets: 'Buckets',
-      timeLimit: 'Limite tempo',
-      distanceLimit: 'Limite distanza',
-    },
-    milestones: 'Marcatori',
-    start: 'Inizio',
-    finish: 'Fine',
-    swap: 'Inverti inizio e fine',
-    point: {
-      pick: 'Seleziona sulla mappa',
-      current: 'La tua posizione',
-      home: 'Posizione casa',
-      point: 'Punto del percorso',
-    },
-    transportType: {
-      car: 'Auto',
-      car4wd: 'Auto 4x4',
-      bike: 'Bici',
-      foot: 'Camminata',
-      hiking: 'Escursione',
-      mtb: 'Mountain bike',
-      racingbike: 'Bici da corsa',
-      motorcycle: 'Moto',
-      manual: 'Linea retta',
-    },
-    development: 'in sviluppo',
-    mode: {
-      route: 'Ordinato',
-      trip: 'Luoghi da visitare',
-      roundtrip: 'Luoghi da visitare (Andata e ritorno)',
-      'routndtrip-gh': 'Andata e ritorno',
-      isochrone: 'Isocrono',
-    },
-    alternative: 'Alternativo',
-    distance: ({ value, diff }) => (
-      <>
-        Distance:{' '}
-        <b>
-          {value}
-          {diff ? ` (+ ${diff})` : ''}
-        </b>
-      </>
-    ),
-    duration: ({ h, m, diff }) => (
-      <>
-        Durata:{' '}
-        <b>
-          {h} h {m} m{diff && ` (+ ${diff.h} h ${diff.m} m)`}
-        </b>
-      </>
-    ),
-    summary: ({ distance, h, m }) => (
-      <>
-        Distanza: <b>{distance}</b> | Durata:{' '}
-        <b>
-          {h} h {m} m
-        </b>
-      </>
-    ),
-    noHomeAlert: {
-      msg: 'Devi prima impostare la tua posizione di casa nelle Opzioni.',
-      setHome: 'Imposta',
-    },
-    showMidpointHint:
-      'Per aggiungere un punto intermedio, trascina un punto della linea.',
-    gpsError: 'Errore nel determinare la tua posizione corrente.',
-    routeNotFound:
-      'Nessun percorso trovato. Prova a cambiare i parametri o sposta i punti della rotta.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Error finding the route:', err),
-    manualTooltip: 'Collega il segmento successivo con una linea retta',
-    default: 'Predefinito',
-    leg: 'Tratto del percorso',
-    stop: 'Fermata',
-  },
-
   mainMenu: {
     title: 'Menu principale',
     logOut: 'Esci',
@@ -768,18 +686,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
   },
 
-  embed: {
-    code: 'Inserisci il codice seguente nella tua pagina HTML:',
-    example: 'Il risultato sarà simile a questo:',
-    dimensions: 'Dimensioni',
-    height: 'Altezza',
-    width: 'Larghezza',
-    enableFeatures: 'Abilita caratteristiche',
-    enableSearch: 'cerca',
-    enableMapSwitch: 'Cambia livello mappa',
-    enableLocateMe: 'trovami',
-  },
-
   documents: {
     errorLoading: 'Errore caricamento documento.',
   },
@@ -1227,41 +1133,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startRoute: 'Pianifica una rotta da qui',
     finishRoute: 'Pianifica una rotta fino qui',
     showPhotos: 'Mostra le foto vicine',
-  },
-
-  legend: {
-    body: ({ name }) => (
-      <>
-        Legenda mappa per <i>{name}</i>
-      </>
-    ),
-    outdoorMap: {
-      accommodation: 'Alloggio',
-      'gastro-poi': 'Cibo e bevande',
-      institution: 'Istituzioni',
-      sport: 'Sport',
-      'natural-poi': 'Elementi naturali',
-      poi: 'Altri punti di interesse',
-      landcover: 'Copertura del suolo',
-      borders: 'Confini',
-      'roads-and-paths': 'Strade e sentieri',
-      railway: 'Ferrovie',
-      terrain: 'Terreno',
-      water: 'Acqua',
-      other: 'Altro',
-    },
-  },
-
-  contacts: {
-    ngo: 'Associazione di volontari',
-    registered: 'Registrata a MV/VVS/1-900/90-34343 on 2009-10-02',
-    bankAccount: 'Conto bancario',
-    generalContact: 'Contatti generali',
-    board: 'Consiglio direttivo',
-    boardMemebers: 'Membri del consiglio',
-    president: 'Presidente',
-    vicepresident: 'Vice Presidente',
-    secretary: 'Segretario',
   },
 
   premium: {

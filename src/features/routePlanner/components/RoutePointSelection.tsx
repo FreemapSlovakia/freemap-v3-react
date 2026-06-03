@@ -1,8 +1,8 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
 
 export default function RoutePointSelection():
@@ -15,7 +15,7 @@ export default function RoutePointSelection():
       : undefined,
   );
 
-  const m = useMessages();
+  const rpm = useRoutePlannerMessages();
 
   return (
     point && (
@@ -25,7 +25,7 @@ export default function RoutePointSelection():
             <RoutePlannerToggleButton /> <FaMapMarkerAlt />
           </>
         }
-        label={m?.routePlanner.point.point}
+        label={rpm?.point.point}
         deletable
         noLeftMargin
       />

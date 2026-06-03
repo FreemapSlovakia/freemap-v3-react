@@ -10,6 +10,7 @@ import { type ReactElement, useCallback, useMemo } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import { FaList, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useLegendMessages } from '../translations/useLegendMessages.js';
 import OutdoorMapLegend from './OutdoorMapLegend.js';
 import { WmsMapLegend } from './WmsMapLegend.js';
 
@@ -53,6 +54,8 @@ export default function LegendModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
+  const lm = useLegendMessages();
+
   function getSingleLegend(type: string) {
     return type === 'X' ? (
       <OutdoorMapLegend />
@@ -81,7 +84,7 @@ export default function LegendModal({ show }: Props): ReactElement {
         {activeLegendLayers.length === 1 ? (
           <>
             <div className="mb-3">
-              {m?.legend.body({ name: getHeader(activeLegendLayers[0]) })}
+              {lm?.body({ name: getHeader(activeLegendLayers[0]) })}
             </div>
 
             {getSingleLegend(activeLegendLayers[0])}

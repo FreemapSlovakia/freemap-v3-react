@@ -151,88 +151,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maps: 'Moje mapy',
   },
 
-  routePlanner: {
-    ghParams: {
-      tripParameters: 'Parametry výletu',
-      seed: 'Random seed',
-      distance: 'Orientační vzdálenost',
-      isochroneParameters: 'Parametry izochronů',
-      buckets: 'Počet dělení',
-      timeLimit: 'Časový limit',
-      distanceLimit: 'Limit vzdálenosti',
-    },
-    milestones: 'Kilometrovník',
-    start: 'Start',
-    finish: 'Cíl',
-    swap: 'Prohodit start a cíl',
-    point: {
-      pick: 'Vybrat na mapě',
-      current: 'Tvá poloha',
-      home: 'Domů',
-      point: 'Bod trasy',
-    },
-    transportType: {
-      car: 'Auto',
-      car4wd: 'Auto 4x4',
-      bike: 'Kolo',
-      foot: 'Pěšky',
-      hiking: 'Turistika',
-      mtb: 'Horské kolo',
-      racingbike: 'Silniční kolo',
-      motorcycle: 'Motocykl',
-      manual: 'Přímá čára',
-    },
-    development: 've vývoji',
-    mode: {
-      route: 'Po pořadí',
-      trip: 'Návštěva míst',
-      roundtrip: 'Návštěva míst (okruh)',
-      'routndtrip-gh': 'Výlet',
-      isochrone: 'Izochróny',
-    },
-    alternative: 'Alternativa',
-    distance: ({ value, diff }) => (
-      <>
-        Vzdálenost:{' '}
-        <b>
-          {value}
-          {diff ? ` (+ ${diff})` : ''}
-        </b>
-      </>
-    ),
-    duration: ({ h, m, diff }) => (
-      <>
-        Trvání:{' '}
-        <b>
-          {h} h {m} m{diff && ` (+ ${diff.h} h ${diff.m} m)`}
-        </b>
-      </>
-    ),
-    summary: ({ distance, h, m }) => (
-      <>
-        Vzdálenost: <b>{distance}</b> | Trvání:{' '}
-        <b>
-          {h} h {m} m
-        </b>
-      </>
-    ),
-    noHomeAlert: {
-      msg: 'Nejprve si musíte nastavit výchozí polohu.',
-      setHome: 'Nastavit',
-    },
-    showMidpointHint:
-      'Pro přidání průchozího bodu přetáhněte úsek silnice na zvolené místo.',
-    gpsError: 'Nelze získat aktuální polohu.',
-    routeNotFound:
-      'Přes zvolené body se nepodařilo vyhledat trasu. Zkuste změnit parametry nebo posunout body trasy. ',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Nastala chyba při hledání trasy', err),
-    manualTooltip: 'Propojit následující segment přímou čarou',
-    default: 'Výchozí',
-    leg: 'Úsek trasy',
-    stop: 'Zastávka',
-  },
-
   mainMenu: {
     title: 'Hlavní menu',
     logOut: 'Odhlásit',
@@ -746,18 +664,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
   },
 
-  embed: {
-    code: 'Vložte na vaši stránku tento html kód:',
-    example: 'Výsledek bude vypadat následovně:',
-    dimensions: 'Velikost',
-    height: 'Výška',
-    width: 'Šířka',
-    enableFeatures: 'Povolit funkce',
-    enableSearch: 'vyhledávání',
-    enableMapSwitch: 'přepínání vrstev mapy',
-    enableLocateMe: 'nalezení vlastní pozice',
-  },
-
   documents: {
     errorLoading: 'Dokument se nepodařilo načíst.',
   },
@@ -1199,41 +1105,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startRoute: 'Zde začít trasu',
     finishRoute: 'Zde ukončit trasu',
     showPhotos: 'Zobrazit fotky v okolí',
-  },
-
-  legend: {
-    body: ({ name }) => (
-      <>
-        Legenda k mapě <i>{name}</i>
-      </>
-    ),
-    outdoorMap: {
-      accommodation: 'Ubytování',
-      'gastro-poi': 'Jídlo a pití',
-      institution: 'Instituce',
-      sport: 'Sport',
-      'natural-poi': 'Přírodní zajímavosti',
-      poi: 'Ostatní zajímavosti',
-      landcover: 'Krajinný pokryv',
-      borders: 'Hranice',
-      'roads-and-paths': 'Cesty a stezky',
-      railway: 'Železnice',
-      terrain: 'Terén',
-      water: 'Voda',
-      other: 'Ostatní',
-    },
-  },
-
-  contacts: {
-    ngo: 'Spolek',
-    registered: 'Registrované na MV/VVS/1-900/90-34343 dne 2.10.2009',
-    bankAccount: 'Bankovní spojení',
-    generalContact: 'Všeobecné kontakty',
-    board: 'Představenstvo',
-    boardMemebers: 'Členové představenstva',
-    president: 'Předseda',
-    vicepresident: 'Místopředseda',
-    secretary: 'Tajemník',
   },
 
   premium: {
