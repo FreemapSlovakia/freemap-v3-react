@@ -777,6 +777,7 @@ export type Messages = {
     };
     format: string;
     layersTitle: string;
+    mapDataTitle: string;
     layers: Record<ExportableLayer, string>;
     mapScale: string;
     customLayerOrder: string;

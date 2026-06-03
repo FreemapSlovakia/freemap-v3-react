@@ -1135,6 +1135,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     format: 'Formát',
     layersTitle: 'Voliteľné vrstvy',
+    mapDataTitle: 'Mapové dáta',
     layers: {
       contours: 'Vrstevnice',
       shading: 'Tieňovaný reliéf',
@@ -1142,12 +1143,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       bicycleTrails: 'Cyklotrasy',
       skiTrails: 'Lyžiarske trasy',
       horseTrails: 'Jazdecké trasy',
-      drawing: 'Kreslenie',
-      plannedRoute: 'Vyhľadanú trasu',
-      track: 'GPX trasu',
     },
     mapScale: 'Rozlíšenie mapy',
-    customLayerOrder: 'Poradie kreslenia',
+    customLayerOrder: 'Umiestnenie mapových dát',
     orders: {
       natural: 'Prirodzené',
       topmost: 'Na vrchu',

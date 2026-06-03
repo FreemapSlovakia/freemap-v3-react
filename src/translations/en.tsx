@@ -1085,6 +1085,7 @@ const messages: Messages = {
     },
     format: 'Format',
     layersTitle: 'Optional layers',
+    mapDataTitle: 'Map data',
     layers: {
       contours: 'Contours',
       shading: 'Shaded relief',
@@ -1092,12 +1093,9 @@ const messages: Messages = {
       bicycleTrails: 'Bicycle trails',
       skiTrails: 'Ski trails',
       horseTrails: 'Horse trails',
-      drawing: 'Drawing',
-      plannedRoute: 'Found route',
-      track: 'GPX track',
     },
     mapScale: 'Map resolution',
-    customLayerOrder: 'Drawing order',
+    customLayerOrder: 'Map data placement',
     orders: {
       natural: 'Natural',
       topmost: 'Topmost',

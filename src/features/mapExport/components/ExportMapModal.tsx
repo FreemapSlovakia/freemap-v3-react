@@ -1,4 +1,9 @@
 import { setActiveModal } from '@app/store/actions.js';
+import {
+  ExportablesSelector,
+  useAvailableExportables,
+} from '@features/export/components/ExportablesSelector.js';
+import type { Exportable } from '@features/export/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
@@ -37,11 +42,8 @@ import {
   FaDownload,
   FaHiking,
   FaHorse,
-  FaPencilAlt,
   FaPrint,
-  FaRoute,
   FaRulerHorizontal,
-  FaShoePrints,
   FaSkiing,
   FaTimes,
 } from 'react-icons/fa';
@@ -69,9 +71,6 @@ const LAYER_ICONS: Record<ExportableLayer, ReactElement> = {
   bicycleTrails: <FaBicycle />,
   skiTrails: <FaSkiing />,
   horseTrails: <FaHorse />,
-  drawing: <FaPencilAlt />,
-  plannedRoute: <FaRoute />,
-  track: <FaShoePrints />,
 };
 
 const LAYERS_STORAGE_KEY = 'fm.exportMap.layers';
@@ -159,6 +158,17 @@ export function ExportMapModal({ show }: Props): ReactElement {
     return set;
   });
 
+  // Vector feature sources (drawing, route, objects, …) selected via the shared
+  // exportables vocabulary; default to whatever currently has data, like the
+  // data-export modal.
+  const availableExportables = useAvailableExportables();
+
+  const [exportables, setExportables] = useState(availableExportables);
+
+  useEffect(() => {
+    setExportables(availableExportables);
+  }, [availableExportables]);
+
   const dispatch = useDispatch();
 
   function close() {
@@ -171,15 +181,23 @@ export function ExportMapModal({ show }: Props): ReactElement {
     (state) => state.cookieConsent.cookieConsentResult !== null,
   );
 
-  const handleLayersChange = useCallback(
-    (values: ExportableLayer[]) => {
-      const n = new Set(values);
+  const toggleLayer = useCallback(
+    (layer: ExportableLayer) => {
+      setLayers((prev) => {
+        const n = new Set(prev);
 
-      if (cookiesEnabled) {
-        storage.setItem(LAYERS_STORAGE_KEY, [...n].join(','));
-      }
+        if (n.has(layer)) {
+          n.delete(layer);
+        } else {
+          n.add(layer);
+        }
 
-      setLayers(n);
+        if (cookiesEnabled) {
+          storage.setItem(LAYERS_STORAGE_KEY, [...n].join(','));
+        }
+
+        return n;
+      });
     },
     [cookiesEnabled],
   );
@@ -324,24 +342,36 @@ export function ExportMapModal({ show }: Props): ReactElement {
             {m?.mapExport.layersTitle}
           </Form.Label>
 
-          <ToggleButtonGroup
-            type="checkbox"
-            value={[...layers]}
-            onChange={handleLayersChange}
-            className="d-flex flex-wrap gap-2"
-          >
+          <div className="d-flex flex-wrap gap-2">
             {EXPORTABLE_LAYERS.map((layer) => (
               <ToggleButton
                 key={layer}
                 id={`export-layer-${layer}`}
+                type="checkbox"
                 value={layer}
                 variant="outline-primary"
                 className="rounded flex-grow-0"
+                checked={layers.has(layer)}
+                onChange={() => toggleLayer(layer)}
               >
                 {LAYER_ICONS[layer]} {m?.mapExport.layers[layer]}
               </ToggleButton>
             ))}
-          </ToggleButtonGroup>
+          </div>
+        </Form.Group>
+
+        <div className="mt-3" />
+
+        <Form.Group>
+          <Form.Label className="d-block">
+            {m?.mapExport.mapDataTitle}
+          </Form.Label>
+
+          <ExportablesSelector
+            value={exportables}
+            available={availableExportables}
+            onChange={setExportables}
+          />
         </Form.Group>
 
         <div className="mt-3" />
@@ -452,6 +482,9 @@ export function ExportMapModal({ show }: Props): ReactElement {
                 scale: parseInt(scale, 10) / 96,
                 format,
                 layers: [...layers],
+                exportables: exportables
+                  .split('|')
+                  .filter(Boolean) as Exportable[],
                 customLayerOrder,
                 decorations: {
                   scaleBar,

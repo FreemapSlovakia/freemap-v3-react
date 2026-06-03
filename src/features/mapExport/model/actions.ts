@@ -1,6 +1,9 @@
+import type { Exportable } from '@features/export/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import z from 'zod';
 
+// Server-rendered raster overlays. The vector feature sources (drawing, route,
+// objects, …) are selected separately via the shared `Exportable` vocabulary.
 export const EXPORTABLE_LAYERS = [
   'contours',
   'shading',
@@ -8,9 +11,6 @@ export const EXPORTABLE_LAYERS = [
   'bicycleTrails',
   'skiTrails',
   'horseTrails',
-  'drawing',
-  'plannedRoute',
-  'track',
 ] as const;
 
 export const ExportableLayerSchema = z.enum(EXPORTABLE_LAYERS);
@@ -35,6 +35,7 @@ export interface MapExportDecorations {
 
 export interface MapExportOptions {
   layers: ExportableLayer[];
+  exportables: Exportable[];
   customLayerOrder: CustomLayerOrder;
   scale: number;
   area: 'visible' | 'area';

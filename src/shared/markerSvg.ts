@@ -126,6 +126,60 @@ export async function resolveMarkerGlyph({
   };
 }
 
+// Rasterizes an SVG (given as a data URL with intrinsic width/height) to a
+// `data:image/png` URL via an offscreen canvas, scaled so its longest side is
+// RASTER_MAX. Returns undefined when no canvas/Image is available or
+// rendering/encoding fails.
+export async function svgToPngDataUrl(
+  svgDataUrl: string,
+  width: number,
+  height: number,
+): Promise<string | undefined> {
+  if (typeof document === 'undefined' || typeof Image === 'undefined') {
+    return undefined;
+  }
+
+  const RASTER_MAX = 128; // px, longest side of the output PNG
+
+  const scale = RASTER_MAX / Math.max(width, height);
+
+  const w = Math.round(width * scale);
+  const h = Math.round(height * scale);
+
+  const img = new Image();
+
+  const loaded = new Promise<boolean>((resolve) => {
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+  });
+
+  img.src = svgDataUrl;
+
+  if (!(await loaded)) {
+    return undefined;
+  }
+
+  const canvas = document.createElement('canvas');
+
+  canvas.width = w;
+
+  canvas.height = h;
+
+  const ctx = canvas.getContext('2d');
+
+  if (!ctx) {
+    return undefined;
+  }
+
+  ctx.drawImage(img, 0, 0, w, h);
+
+  try {
+    return canvas.toDataURL('image/png');
+  } catch {
+    return undefined;
+  }
+}
+
 // Mirrors the geometry and viewBox of RichMarker so the exported icon matches
 // the in-app marker: the colored shape, the white inset (only when there's a
 // glyph), and the centered glyph itself.

@@ -8,7 +8,6 @@ import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { Position } from 'geojson';
 import {
   ReactElement,
-  ReactNode,
   SubmitEvent,
   useCallback,
   useEffect,
@@ -23,23 +22,13 @@ import {
   ToggleButton,
 } from 'react-bootstrap';
 import {
-  FaBullseye,
-  FaCamera,
   FaDownload,
-  FaDrawPolygon,
   FaDropbox,
   FaFileExport,
-  FaFileImport,
   FaGoogle,
-  FaMapMarkerAlt,
-  FaMapSigns,
-  FaRoute,
-  FaSearch,
   FaTimes,
 } from 'react-icons/fa';
-import { MdTimeline } from 'react-icons/md';
 import { SiGarmin } from 'react-icons/si';
-import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import {
   Exportable,
@@ -49,22 +38,11 @@ import {
   ExportTypeSchema,
   exportMapFeatures,
 } from '../model/actions.js';
-
-const exportableDefinitions: readonly [
-  type: Exportable,
-  icon: ReactNode,
-  garmin: boolean,
-][] = [
-  ['plannedRoute', <FaRoute />, true],
-  ['objects', <TbMapPins />, false],
-  ['pictures', <FaCamera />, false],
-  ['drawingLines', <MdTimeline />, true],
-  ['drawingAreas', <FaDrawPolygon />, false],
-  ['drawingPoints', <FaMapMarkerAlt />, false],
-  ['tracking', <FaBullseye />, true],
-  ['import', <FaFileImport />, true],
-  ['search', <FaSearch />, true],
-];
+import {
+  ExportablesSelector,
+  exportableDefinitions,
+  useAvailableExportables,
+} from './ExportablesSelector.js';
 
 const garminActivityTypes = [
   ['RUNNING', 'running'],
@@ -93,47 +71,7 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
 
   const confirm = useConfirm();
 
-  const initExportables = useAppSelector((state) => {
-    const exportables: Exportable[] = [];
-
-    if (state.search.selectedResult) {
-      exportables.push('search');
-    }
-
-    if (state.routePlanner.alternatives.length) {
-      exportables.push('plannedRoute');
-    }
-
-    if (state.objects.objects.length) {
-      exportables.push('objects');
-    }
-
-    if (state.map.layers.includes('I')) {
-      exportables.push('pictures');
-    }
-
-    if (state.drawingLines.lines.some((line) => line.type === 'line')) {
-      exportables.push('drawingLines');
-    }
-
-    if (state.drawingLines.lines.some((line) => line.type === 'polygon')) {
-      exportables.push('drawingAreas');
-    }
-
-    if (state.drawingPoints.points.length) {
-      exportables.push('drawingPoints');
-    }
-
-    if (state.tracking.tracks.length) {
-      exportables.push('tracking');
-    }
-
-    if (state.trackViewer.trackGpx || state.trackViewer.trackGeojson) {
-      exportables.push('import');
-    }
-
-    return '|' + exportables.map((e) => e + '|').join('');
-  });
+  const initExportables = useAvailableExportables();
 
   const userHasGarmin = useAppSelector((state) =>
     state.auth.user?.authProviders.includes('garmin'),
@@ -492,57 +430,11 @@ export function ExportMapFeaturesModal({ show }: Props): ReactElement {
                   ))}
               </>
             ) : (
-              <div className="d-flex flex-wrap gap-2">
-                {exportableDefinitions.map(([type, icon]) =>
-                  type === 'plannedRoute' ? (
-                    // "found route" and its "include stops" modifier stay a
-                    // connected segmented pair among the detached pills
-                    <ButtonGroup key={type}>
-                      <ToggleButton
-                        id={'chk-' + type}
-                        type="checkbox"
-                        variant="outline-primary"
-                        value={type}
-                        checked={exportables.includes('|' + type + '|')}
-                        disabled={!initExportables.includes('|' + type + '|')}
-                        onChange={() => handleCheckboxChange(type)}
-                      >
-                        {icon} {m?.exportMapFeatures.what[type]}
-                      </ToggleButton>
-
-                      <ToggleButton
-                        id="chk-plannedRouteWithStops"
-                        type="checkbox"
-                        variant="outline-primary"
-                        value="plannedRouteWithStops"
-                        checked={exportables.includes(
-                          '|plannedRouteWithStops|',
-                        )}
-                        disabled={!exportables.includes('|' + type + '|')}
-                        onChange={() =>
-                          handleCheckboxChange('plannedRouteWithStops')
-                        }
-                      >
-                        <FaMapSigns />{' '}
-                        {m?.exportMapFeatures.what['plannedRouteWithStops']}
-                      </ToggleButton>
-                    </ButtonGroup>
-                  ) : (
-                    <ToggleButton
-                      key={type}
-                      id={'chk-' + type}
-                      type="checkbox"
-                      variant="outline-primary"
-                      value={type}
-                      checked={exportables.includes('|' + type + '|')}
-                      disabled={!initExportables.includes('|' + type + '|')}
-                      onChange={() => handleCheckboxChange(type)}
-                    >
-                      {icon} {m?.exportMapFeatures.what[type]}
-                    </ToggleButton>
-                  ),
-                )}
-              </div>
+              <ExportablesSelector
+                value={exportables}
+                available={initExportables}
+                onChange={setExportables}
+              />
             )}
 
             <Form.Text muted className="d-block mt-1">
