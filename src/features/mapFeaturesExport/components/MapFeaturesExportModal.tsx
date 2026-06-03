@@ -56,15 +56,13 @@ const garminActivityTypes = [
 
 type Props = { show: boolean };
 
-export default ExportMapFeaturesModal;
-
 const toExportType = (value: string | null) =>
   ExportTypeSchema.safeParse(value).data ?? 'gpx';
 
 const toExportTarget = (value: string | null) =>
   ExportTargetSchema.safeParse(value).data ?? 'download';
 
-export function ExportMapFeaturesModal({ show }: Props): ReactElement {
+export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();

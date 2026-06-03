@@ -232,7 +232,7 @@ const messages: Messages = {
     logIn: 'Log in',
     account: 'Account',
     mapFeaturesExport: 'Map data export',
-    mapExports: 'Maps for GPS devices',
+    gpsDevicesMapExports: 'Maps for GPS devices',
     embedMap: 'Embed map',
     supportUs: 'Support Freemap',
     help: 'Info & help',
@@ -247,7 +247,7 @@ const messages: Messages = {
     googlePlay: 'Freemap on Google Play',
     appStore: 'Freemap on App Store',
     automaticLanguage: 'Automatic',
-    mapExport: 'Map export to image/document',
+    mapToDocumentExport: 'Map export to image/document',
     osmWiki: 'OpenStreetMap documentation',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Services status',
@@ -1065,7 +1065,7 @@ const messages: Messages = {
       </>
     ),
   },
-  mapExport: {
+  mapToDocumentExport: {
     advancedSettings: 'Advanced options',
     styles: 'Data layer styles',
     exportError: ({ err }) => addError(messages, 'Error exporting map', err),
@@ -1397,7 +1397,7 @@ const messages: Messages = {
     errorRequestingDevice: 'Failed to create GPU device: ',
     other: 'Error rendering: ',
   },
-  downloadMap: {
+  offlineMapExport: {
     downloadMap: 'Offline maps export',
     format: 'Format',
     map: 'Map',

@@ -10,11 +10,11 @@ export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
 
     return action.payload &&
       [
-        'maps',
+        'my-maps',
         'gallery-upload',
         'account',
         'tracking-my',
-        'download-map',
+        'offline-map-export',
       ].includes(action.payload) &&
       anonymous
       ? toastsAdd({

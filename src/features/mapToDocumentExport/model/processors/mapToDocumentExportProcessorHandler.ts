@@ -1,15 +1,15 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
-import { buildExportFeatureCollection } from '@features/export/model/buildExportFeatureCollection.js';
+import { buildExportFeatureCollection } from '@features/mapFeaturesExport/model/buildExportFeatureCollection.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { COLORS } from '@shared/colors.js';
 import z from 'zod';
-import { exportMap } from './actions.js';
+import { exportMapToDocument } from '../actions.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
-const handle: ProcessorHandler<typeof exportMap> = async ({
+const handle: ProcessorHandler<typeof exportMapToDocument> = async ({
   dispatch,
   getState,
   action,
@@ -96,8 +96,8 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
 
   dispatch(
     toastsAdd({
-      id: 'mapExport.export',
-      messageKey: 'mapExport.exporting',
+      id: 'mapToDocumentExport.export',
+      messageKey: 'mapToDocumentExport.exporting',
       style: 'info',
     }),
   );
@@ -122,8 +122,8 @@ const handle: ProcessorHandler<typeof exportMap> = async ({
 
   dispatch(
     toastsAdd({
-      id: 'mapExport.export',
-      messageKey: 'mapExport.exported',
+      id: 'mapToDocumentExport.export',
+      messageKey: 'mapToDocumentExport.exported',
       messageParams: {
         url: `${fmMapserverUrl}/export?token=${data.token}`,
       },

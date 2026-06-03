@@ -10,9 +10,7 @@ import { FaDownload, FaEraser, FaPencilAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { changesetsRefresh, changesetsSetParams } from '../model/actions.js';
 
-export default ChangesetsMenu;
-
-export function ChangesetsMenu(): ReactElement {
+export default function ChangesetsMenu(): ReactElement {
   const m = useMessages();
 
   const [authorName, setAuthorName] = useState<string | null>(

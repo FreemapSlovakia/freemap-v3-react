@@ -191,8 +191,8 @@ const accountModalFactory = () =>
 
 const downloadMapModalFactory = () =>
   import(
-    /* webpackChunkName: "download-map-modal" */
-    '@features/downloadMap/components/DownloadMapModal.js'
+    /* webpackChunkName: "offline-map-export-modal" */
+    '@/features/offlineMapExport/components/OfflineMapExportModal.js'
   );
 
 const cachedMapsModalFactory = () =>
@@ -227,14 +227,14 @@ const embedMapModalFactory = () =>
 
 const exportGpxModalFactory = () =>
   import(
-    /* webpackChunkName: "export-map-features-modal" */
-    '@features/export/components/ExportMapFeaturesModal.js'
+    /* webpackChunkName: "map-features-export-modal" */
+    '@/features/mapFeaturesExport/components/MapFeaturesExportModal.js'
   );
 
 const exportMapModalFactory = () =>
   import(
-    /* webpackChunkName: "export-map-modal" */
-    '@/features/mapExport/components/ExportMapModal.js'
+    /* webpackChunkName: "map-to-document-export-modal" */
+    '@/features/mapToDocumentExport/components/MapToDocumentExportModal.js'
   );
 
 const documentModalFactory = () =>
@@ -554,7 +554,9 @@ export function Main(): ReactElement {
 
   useHtmlMeta();
 
-  const showMapsMenu = useAppSelector((state) => Boolean(state.maps.activeMap));
+  const showMapsMenu = useAppSelector((state) =>
+    Boolean(state.myMaps.activeMap),
+  );
 
   // prevents map click action if dropdown is open
   const handleMapWrapperClick = (e: MouseEvent) => {
@@ -849,7 +851,7 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal === 'download-map'}
+        show={activeModal === 'offline-map-export'}
         factory={downloadMapModalFactory}
       />
 
@@ -879,12 +881,12 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal === 'export-map-features'}
+        show={activeModal === 'map-features-export'}
         factory={exportGpxModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'export-map'}
+        show={activeModal === 'map-to-document-export'}
         factory={exportMapModalFactory}
       />
 
@@ -896,7 +898,7 @@ export function Main(): ReactElement {
       <AsyncModal show={activeModal === 'about'} factory={aboutModalFactory} />
 
       <AsyncModal
-        show={activeModal === 'buy-credits'}
+        show={activeModal === 'credits-purchase'}
         factory={buyCreditModalFactory}
       />
 
@@ -916,13 +918,13 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal === 'upload-track'}
+        show={activeModal === 'file-import'}
         factory={trackViewerUploadModalFactory}
       />
 
       <AsyncModal show={activeModal === 'login'} factory={loginModalFactory} />
 
-      <AsyncModal show={activeModal === 'maps'} factory={mapsModalFactory} />
+      <AsyncModal show={activeModal === 'my-maps'} factory={mapsModalFactory} />
 
       <AsyncModal
         show={activeModal === 'premium'}

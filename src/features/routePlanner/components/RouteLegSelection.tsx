@@ -8,9 +8,7 @@ import { routePlannerSetPoint } from '../model/actions.js';
 import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
-export default RouteLegSelection;
-
-export function RouteLegSelection(): ReactElement | undefined | false {
+export default function RouteLegSelection(): ReactElement | undefined | false {
   const id = useAppSelector((state) =>
     state.main.selection?.type === 'route-leg'
       ? state.main.selection.id

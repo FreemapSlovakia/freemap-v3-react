@@ -245,7 +245,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logIn: 'Accedi',
     account: 'Account',
     mapFeaturesExport: 'Esportazione dei dati della mappa',
-    mapExports: 'Mappe per dispositivi GPS',
+    gpsDevicesMapExports: 'Mappe per dispositivi GPS',
     embedMap: 'Incorpora la mappa',
     supportUs: 'Supporta Freemap',
     help: 'Info e aiuto',
@@ -260,7 +260,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     googlePlay: 'Freemap su Google Play',
     appStore: 'Freemap su App Store',
     automaticLanguage: 'Automatico',
-    mapExport: 'Esportazione della mappa in immagine/documento',
+    mapToDocumentExport: 'Esportazione della mappa in immagine/documento',
     osmWiki: 'Documentazione su OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Stato dei servizi',
@@ -1113,7 +1113,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-  mapExport: {
+  mapToDocumentExport: {
     advancedSettings: 'Opzioni avanzate',
     styles: 'Stili del livello dati',
     exportError: ({ err }) => addError(messages, 'Error exporting map:', err),
@@ -1450,7 +1450,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorRequestingDevice: 'Impossibile creare il dispositivo GPU: ',
     other: 'Errore durante il rendering: ',
   },
-  downloadMap: {
+  offlineMapExport: {
     downloadMap: 'Esportazione delle mappe offline',
     format: 'Formato',
     map: 'Mappa',

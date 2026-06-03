@@ -234,7 +234,7 @@ type Props = GalleryLayerOptions & {
   dirtySeq?: number; // probably unused?
 };
 
-export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
+export default createTileLayerComponent<LGalleryLayer, Props>(
   (props, context) => ({
     instance: new LGalleryLayer(props),
     context,
@@ -258,5 +258,3 @@ export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
     }
   },
 );
-
-export default GalleryLayer;

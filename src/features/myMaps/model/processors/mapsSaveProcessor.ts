@@ -26,7 +26,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       return;
     }
 
-    const { activeMap } = getState().maps;
+    const { activeMap } = getState().myMaps;
 
     const asNew = action.payload?.asCopy;
 

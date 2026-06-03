@@ -11,9 +11,7 @@ import { FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { toolSelector } from '@/app/store/selectors.js';
 
-export default DrawingMenu;
-
-export function DrawingMenu(): ReactElement | undefined {
+export default function DrawingMenu(): ReactElement | undefined {
   const activeTool = useAppSelector(toolSelector);
 
   const activeToolDef =

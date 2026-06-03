@@ -12,9 +12,7 @@ import { Button } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
-export default HomeLocationPickingMenu;
-
-export function HomeLocationPickingMenu(): ReactElement | null {
+export default function HomeLocationPickingMenu(): ReactElement | null {
   const dispatch = useDispatch();
 
   const selectingHomeLocation = useAppSelector(

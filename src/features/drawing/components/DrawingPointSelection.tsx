@@ -13,9 +13,7 @@ import { useDispatch } from 'react-redux';
 import { drawingPointAdd } from '../model/actions/drawingPointActions.js';
 import { ProjectPointModal } from './ProjectPointModal.js';
 
-export default DrawingPointSelection;
-
-export function DrawingPointSelection(): ReactElement | null {
+export default function DrawingPointSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();

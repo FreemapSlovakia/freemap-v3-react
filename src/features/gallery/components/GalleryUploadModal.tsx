@@ -34,9 +34,7 @@ import classes from './GalleryUploadModal.module.css';
 
 type Props = { show: boolean };
 
-export default GalleryUploadModal;
-
-export function GalleryUploadModal({ show }: Props): ReactElement {
+export default function GalleryUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();

@@ -232,7 +232,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logIn: 'Zaloguj się',
     account: 'Konto',
     mapFeaturesExport: 'Eksport danych mapy',
-    mapExports: 'Mapy dla urządzeń GPS',
+    gpsDevicesMapExports: 'Mapy dla urządzeń GPS',
     embedMap: 'Osadź mapę',
     supportUs: 'Wesprzyj Freemap',
     help: 'Informacje i pomoc',
@@ -247,7 +247,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     googlePlay: 'Freemap w Google Play',
     appStore: 'Freemap w App Store',
     automaticLanguage: 'Automatyczny',
-    mapExport: 'Eksport mapy do obrazu/dokumentu',
+    mapToDocumentExport: 'Eksport mapy do obrazu/dokumentu',
     osmWiki: 'Dokumentacja OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Pl:Main_Page',
     status: 'Stan usług',
@@ -1105,7 +1105,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-  mapExport: {
+  mapToDocumentExport: {
     areas: {
       visible: 'Widoczny obszar mapy',
       byArea: 'Wybrany obszar',
@@ -1447,7 +1447,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     other: 'Błąd podczas renderowania: ',
   },
 
-  downloadMap: {
+  offlineMapExport: {
     area: {
       visible: 'Widoczny obszar',
       byArea: 'Wybrany obszar',

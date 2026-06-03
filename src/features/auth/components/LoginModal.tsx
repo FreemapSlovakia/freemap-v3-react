@@ -9,7 +9,7 @@ import { AuthProviders } from './AuthProviders.js';
 
 type Props = { show: boolean };
 
-export function LoginModal({ show }: Props): ReactElement {
+export default function LoginModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -62,5 +62,3 @@ export function LoginModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
-
-export default LoginModal;

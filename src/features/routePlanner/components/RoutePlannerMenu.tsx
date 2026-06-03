@@ -62,8 +62,6 @@ import {
 } from '../model/actions.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
-export default RoutePlannerMenu;
-
 function useParam(
   initValue: number,
   fallbackValue: number,
@@ -356,7 +354,7 @@ const GraphopperModeMenu = forwardRef<HTMLDivElement, Props>(
 
 GraphopperModeMenu.displayName = 'GraphopperModeMenu';
 
-export function RoutePlannerMenu(): ReactElement {
+export default function RoutePlannerMenu(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();

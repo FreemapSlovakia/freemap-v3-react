@@ -7,9 +7,7 @@ import { FaChevronLeft } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { galleryCancelShowOnTheMap } from '../model/actions.js';
 
-export default GalleryShowPositionMenu;
-
-export function GalleryShowPositionMenu(): ReactElement | null {
+export default function GalleryShowPositionMenu(): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();

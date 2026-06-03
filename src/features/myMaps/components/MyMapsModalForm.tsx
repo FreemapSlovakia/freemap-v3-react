@@ -27,7 +27,7 @@ const UsersSchema = z.array(
 export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const activeMap = useAppSelector((state) => state.maps.activeMap);
+  const activeMap = useAppSelector((state) => state.myMaps.activeMap);
 
   const myUserId = useAppSelector((state) => state.auth.user?.id);
 

@@ -20,7 +20,7 @@ export function CreditsText({ credits, help }: Props) {
               onClick={(e) => {
                 e.preventDefault();
 
-                dispatch(setActiveModal('download-map'));
+                dispatch(setActiveModal('offline-map-export'));
               }}
             >
               {re[2]}

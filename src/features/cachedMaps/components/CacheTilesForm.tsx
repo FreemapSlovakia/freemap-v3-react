@@ -258,7 +258,7 @@ export function CacheTilesForm(): ReactElement {
 
       <Modal.Body>
         <Form.Group controlId="mapType">
-          <Form.Label>{m?.downloadMap.map}</Form.Label>
+          <Form.Label>{m?.offlineMapExport.map}</Form.Label>
 
           <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
             <Dropdown.Toggle as={SelectToggle} className="w-100">
@@ -276,15 +276,15 @@ export function CacheTilesForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="downloadArea">
-          <Form.Label>{m?.downloadMap.downloadArea}</Form.Label>
+          <Form.Label>{m?.offlineMapExport.downloadArea}</Form.Label>
 
           <MapAreaToggle
             className="mb-3"
             area={area}
             onSelectVisible={() => setArea('visible')}
             onSelectArea={startSelecting}
-            visibleLabel={m?.downloadMap.area.visible}
-            areaLabel={m?.downloadMap.area.byArea}
+            visibleLabel={m?.offlineMapExport.area.visible}
+            areaLabel={m?.offlineMapExport.area.byArea}
           />
         </Form.Group>
 
@@ -304,7 +304,7 @@ export function CacheTilesForm(): ReactElement {
         {mapDef && (
           <Form.Group controlId="zoomRange" className="mb-3">
             <Form.Label className="required">
-              {m?.downloadMap.zoomRange}
+              {m?.offlineMapExport.zoomRange}
             </Form.Label>
 
             <InputGroup>

@@ -22,9 +22,7 @@ function makeType() {
   return Math.random().toString(36).slice(-6);
 }
 
-export default CustomMapsModal;
-
-export function CustomMapsModal({ show }: Props): ReactElement {
+export default function CustomMapsModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();

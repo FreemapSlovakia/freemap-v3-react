@@ -238,7 +238,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logIn: 'Bejelentkezés',
     account: 'Fiók',
     mapFeaturesExport: 'Térképadatok exportja',
-    mapExports: 'Térképek GPS-eszközökhöz',
+    gpsDevicesMapExports: 'Térképek GPS-eszközökhöz',
     embedMap: 'Térkép beágyazása',
     supportUs: 'A Freemap támogatása',
     help: 'Információk és segítség',
@@ -253,7 +253,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     googlePlay: 'Freemap a Google Playen',
     appStore: 'Freemap az App Store-ban',
     automaticLanguage: 'Automatikus',
-    mapExport: 'Térkép exportja képként/dokumentumként',
+    mapToDocumentExport: 'Térkép exportja képként/dokumentumként',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Hu:Main_Page',
     status: 'Szolgáltatások állapota',
     title: 'Főmenü',
@@ -1141,7 +1141,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-  mapExport: {
+  mapToDocumentExport: {
     exportError: ({ err }) =>
       addError(messages, 'Hiba történt a térkép exportálásakor', err),
 
@@ -1489,7 +1489,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorRequestingDevice: 'Nem sikerült létrehozni a GPU eszközt: ',
     other: 'Hiba a megjelenítés során: ',
   },
-  downloadMap: {
+  offlineMapExport: {
     downloadMap: 'Offline térképek exportja',
     format: 'Formátum',
     map: 'Térkép',

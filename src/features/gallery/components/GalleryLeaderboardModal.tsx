@@ -56,9 +56,7 @@ type Stats = z.infer<typeof StatsSchema>;
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
-export default GalleryLeaderboardModal;
-
-export function GalleryLeaderboardModal({ show }: Props): ReactElement {
+export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();

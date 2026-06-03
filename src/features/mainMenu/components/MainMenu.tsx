@@ -125,15 +125,16 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item href="#show=export-map" eventKey="modal-export-map">
-        <FaPrint /> {m?.mainMenu.mapExport} <kbd>e</kbd> <kbd>p</kbd>
+        <FaPrint /> {m?.mainMenu.mapToDocumentExport} <kbd>e</kbd> <kbd>p</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-download-map" href="#show=download-map">
-        <FaDatabase /> {m?.downloadMap.downloadMap} <kbd>e</kbd> <kbd>m</kbd>
+        <FaDatabase /> {m?.offlineMapExport.downloadMap} <kbd>e</kbd>{' '}
+        <kbd>m</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="document-exports" href="#document=exports">
-        <FaMobileAlt /> {m?.mainMenu.mapExports}
+        <FaMobileAlt /> {m?.mainMenu.gpsDevicesMapExports}
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-embed" href="#show=embed">

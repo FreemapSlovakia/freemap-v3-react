@@ -7,7 +7,7 @@ import { purchase, setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
 
-export function PremiumActivationModal({ show }: Props): ReactElement {
+export default function PremiumActivationModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();
@@ -45,5 +45,3 @@ export function PremiumActivationModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
-
-export default PremiumActivationModal;

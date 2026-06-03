@@ -26,9 +26,7 @@ import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 
-export default MapPreferencesModal;
-
-export function MapPreferencesModal({ show }: Props): ReactElement {
+export default function MapPreferencesModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();

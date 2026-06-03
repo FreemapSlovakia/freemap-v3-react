@@ -19,8 +19,9 @@ export const downloadMapProcessor: Processor<typeof downloadMap> = {
 
     dispatch(
       toastsAdd({
+        id: 'offlineMapExport',
         style: 'success',
-        messageKey: 'downloadMap.success',
+        messageKey: 'offlineMapExport.success',
       }),
     );
   },

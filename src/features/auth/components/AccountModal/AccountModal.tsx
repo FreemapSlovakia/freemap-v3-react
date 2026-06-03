@@ -27,9 +27,7 @@ import { PurchasesSection } from './PurchasesSection.js';
 
 type Props = { show: boolean };
 
-export default AccountModal;
-
-export function AccountModal({ show }: Props): ReactElement | null {
+export default function AccountModal({ show }: Props): ReactElement | null {
   const dispatch = useDispatch();
 
   useEffect(() => {

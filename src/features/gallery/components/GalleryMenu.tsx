@@ -38,11 +38,9 @@ import {
 } from '../model/actions.js';
 import { PictureLegend } from './PictureLegend.js';
 
-export default GalleryMenu;
-
 const isTrue = (value: string | null) => value === 'true';
 
-export function GalleryMenu() {
+export default function GalleryMenu() {
   const sc = useScrollClasses('horizontal');
 
   const m = useMessages();

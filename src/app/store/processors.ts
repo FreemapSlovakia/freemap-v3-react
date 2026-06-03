@@ -27,10 +27,8 @@ import {
   changesetsTrackProcessor,
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
-import { downloadMapProcessor } from '@features/downloadMap/model/downloadMapProcessor.js';
 import { measurementProcessor } from '@features/drawing/model/measurementProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
-import { exportMapFeaturesProcessor } from '@features/export/model/processors/exportMapFeaturesProcessor.js';
 import { galleryDeletePictureProcessor } from '@features/gallery/model/processors/galleryDeletePictureProcessor.js';
 import { galleryFetchUsersProcessor } from '@features/gallery/model/processors/galleryFetchUsersProcessor.js';
 import { galleryItemUploadProcessor } from '@features/gallery/model/processors/galleryItemUploadProcessor.js';
@@ -53,7 +51,7 @@ import { locateProcessor } from '@features/location/model/locateProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
 import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProcessor.js';
-import { exportMapProcessor } from '@features/mapExport/model/mapExportProcessor.js';
+import { mapToDocumentExportProcessor } from '@features/mapToDocumentExport/model/processors/mapToDocumentExportProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
 import { mapsLoadProcessor } from '@features/myMaps/model/processors/mapsLoadProcessor.js';
@@ -93,6 +91,8 @@ import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerPro
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { wikimediaCommonsLayerProcessor } from '@features/wikimediaCommons/model/processors/wikimediaCommonsLayerProcessor.js';
 import { wikimediaCommonsLoadPreviewProcessor } from '@features/wikimediaCommons/model/processors/wikimediaCommonsLoadPreviewProcessor.js';
+import { exportMapFeaturesProcessor } from '@/features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.js';
+import { downloadMapProcessor } from '@/features/offlineMapExport/model/downloadMapProcessor.js';
 import { cancelProcessor } from '@/processors/cancelProcessor.js';
 import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
 import { deleteProcessor } from '@/processors/deleteProcessor.js';
@@ -180,7 +180,7 @@ export const processors = [
   openInExternalAppProcessor,
   ...Object.values(rpcProcessors),
   exportMapFeaturesProcessor,
-  exportMapProcessor,
+  mapToDocumentExportProcessor,
   authWithFacebookProcessor,
   authWithGoogleProcessor,
   authWithAppleProcessor,

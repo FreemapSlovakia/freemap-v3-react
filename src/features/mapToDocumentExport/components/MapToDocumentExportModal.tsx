@@ -1,9 +1,4 @@
 import { setActiveModal } from '@app/store/actions.js';
-import {
-  ExportablesSelector,
-  useAvailableExportables,
-} from '@features/export/components/ExportablesSelector.js';
-import type { Exportable } from '@features/export/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
@@ -51,14 +46,19 @@ import { RxTarget } from 'react-icons/rx';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import {
+  ExportablesSelector,
+  useAvailableExportables,
+} from '@/features/mapFeaturesExport/components/ExportablesSelector.js';
+import type { Exportable } from '@/features/mapFeaturesExport/model/actions.js';
+import {
   CustomLayerOrder,
   CustomLayerOrderSchema,
   EXPORTABLE_LAYERS,
   ExportableLayer,
   ExportableLayerSchema,
-  ExportFormat,
-  ExportFormatSchema,
-  exportMap,
+  exportMapToDocument,
+  Format,
+  FormatSchema,
 } from '../model/actions.js';
 
 type Props = { show: boolean };
@@ -72,7 +72,7 @@ const LAYER_ICONS: Record<ExportableLayer, ReactElement> = {
   horseTrails: <FaHorse />,
 };
 
-const LAYERS_STORAGE_KEY = 'fm.exportMap.layers';
+const LAYERS_STORAGE_KEY = 'fm.mapToDocumentExport.layers';
 
 const MAP_LAYERS = ['X'];
 
@@ -80,12 +80,10 @@ function identity<T>(value: T): T {
   return value;
 }
 
-export default ExportMapModal;
-
 const toScale = (value: string | null) => value ?? '100';
 
 const toExportFormat = (value: string | null) =>
-  ExportFormatSchema.safeParse(value).data ?? 'jpeg';
+  FormatSchema.safeParse(value).data ?? 'jpeg';
 
 const toCustomLayerOrder = (value: string | null) =>
   CustomLayerOrderSchema.safeParse(value).data ?? 'topmost';
@@ -95,7 +93,9 @@ const fromBool = (value: boolean) => (value ? '1' : '0');
 // default on
 const toBool = (value: string | null) => value !== '0';
 
-export function ExportMapModal({ show }: Props): ReactElement {
+export default function MapToDocumentExportModal({
+  show,
+}: Props): ReactElement {
   const m = useMessages();
 
   const {
@@ -116,7 +116,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
     'topmost' | 'natural'
   >('fm.exportMap.customLayerOrder', identity, toCustomLayerOrder);
 
-  const [format, setFormat] = usePersistentState<ExportFormat>(
+  const [format, setFormat] = usePersistentState<Format>(
     'fm.exportMap.format',
     identity,
     toExportFormat,
@@ -289,13 +289,13 @@ export function ExportMapModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaPrint /> {m?.mainMenu.mapExport}
+          <FaPrint /> {m?.mainMenu.mapToDocumentExport}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Alert variant="warning">
-          {m?.mapExport.alert(
+          {m?.mapToDocumentExport.alert(
             attribution?.map(([type, elem]) => (
               <Fragment key={type}>{elem}, </Fragment>
             )),
@@ -303,21 +303,26 @@ export function ExportMapModal({ show }: Props): ReactElement {
         </Alert>
 
         <Form.Group>
-          <Form.Label className="d-block">{m?.mapExport.area}</Form.Label>
+          <Form.Label className="d-block">
+            {m?.mapToDocumentExport.area}
+          </Form.Label>
 
           <MapAreaToggle
             area={area}
             onSelectVisible={() => setArea('visible')}
             onSelectArea={startSelecting}
-            visibleLabel={m?.mapExport.areas.visible}
-            areaLabel={m?.mapExport.areas.byArea}
+            visibleLabel={m?.mapToDocumentExport.areas.visible}
+            areaLabel={m?.mapToDocumentExport.areas.byArea}
           />
         </Form.Group>
 
         <div className="mt-3" />
 
         <Form.Group>
-          <Form.Label className="d-block"> {m?.mapExport.format}</Form.Label>
+          <Form.Label className="d-block">
+            {' '}
+            {m?.mapToDocumentExport.format}
+          </Form.Label>
 
           <ToggleButtonGroup
             type="radio"
@@ -325,7 +330,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
             value={format}
             onChange={setFormat}
           >
-            {ExportFormatSchema.options.map((fmt) => (
+            {FormatSchema.options.map((fmt) => (
               <ToggleButton
                 key={fmt}
                 id={`exportFormat-${fmt}`}
@@ -342,7 +347,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
         <Form.Group>
           <Form.Label className="d-block">
-            {m?.mapExport.layersTitle}
+            {m?.mapToDocumentExport.layersTitle}
           </Form.Label>
 
           <div className="d-flex flex-wrap gap-2">
@@ -357,7 +362,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
                 checked={layers.has(layer)}
                 onChange={() => toggleLayer(layer)}
               >
-                {LAYER_ICONS[layer]} {m?.mapExport.layers[layer]}
+                {LAYER_ICONS[layer]} {m?.mapToDocumentExport.layers[layer]}
               </ToggleButton>
             ))}
           </div>
@@ -367,7 +372,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
         <Form.Group>
           <Form.Label className="d-block">
-            {m?.mapExport.mapDataTitle}
+            {m?.mapToDocumentExport.mapDataTitle}
           </Form.Label>
 
           <ExportablesSelector
@@ -381,7 +386,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
         <Form.Group>
           <Form.Label className="d-block">
-            {m?.mapExport.decorations}
+            {m?.mapToDocumentExport.decorations}
           </Form.Label>
 
           <ToggleButtonGroup
@@ -400,7 +405,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
               variant="outline-primary"
               className="rounded flex-grow-0"
             >
-              <FaRulerHorizontal /> {m?.mapExport.scaleBar}
+              <FaRulerHorizontal /> {m?.mapToDocumentExport.scaleBar}
             </ToggleButton>
 
             <ToggleButton
@@ -409,7 +414,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
               variant="outline-primary"
               className="rounded flex-grow-0"
             >
-              <FaCompass /> {m?.mapExport.northArrow}
+              <FaCompass /> {m?.mapToDocumentExport.northArrow}
             </ToggleButton>
 
             <ToggleButton
@@ -418,7 +423,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
               variant="outline-primary"
               className="rounded flex-grow-0"
             >
-              <FaCopyright /> {m?.mapExport.attribution}
+              <FaCopyright /> {m?.mapToDocumentExport.attribution}
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
@@ -427,7 +432,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
 
         <Form.Group>
           <Form.Label className="d-block">
-            {m?.mapExport.customLayerOrder}
+            {m?.mapToDocumentExport.customLayerOrder}
           </Form.Label>
 
           <ToggleButtonGroup
@@ -441,7 +446,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
               value="topmost"
               variant="outline-primary"
             >
-              {m?.mapExport.orders.topmost}
+              {m?.mapToDocumentExport.orders.topmost}
             </ToggleButton>
 
             <ToggleButton
@@ -449,7 +454,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
               value="natural"
               variant="outline-primary"
             >
-              {m?.mapExport.orders.natural}
+              {m?.mapToDocumentExport.orders.natural}
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
@@ -457,7 +462,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
         <div className="mt-3" />
 
         <Form.Group controlId="mapScale">
-          <Form.Label>{m?.mapExport.mapScale}</Form.Label>
+          <Form.Label>{m?.mapToDocumentExport.mapScale}</Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -480,7 +485,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
           disabled={invalidScale}
           onClick={() =>
             dispatch(
-              exportMap({
+              exportMapToDocument({
                 area,
                 scale: parseInt(scale, 10) / 96,
                 format,
@@ -492,7 +497,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
                 decorations: {
                   scaleBar,
                   northArrow: northArrow
-                    ? (m?.mapExport.northArrowLetter ?? 'N')
+                    ? (m?.mapToDocumentExport.northArrowLetter ?? 'N')
                     : false,
                   attribution:
                     attributionEnabled && attributionText

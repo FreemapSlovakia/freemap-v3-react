@@ -9,7 +9,10 @@ export const mapsLoadListProcessor: Processor = {
   actionCreator: [mapsLoadList, authSetUser, authLogout, setActiveModal],
   errorKey: 'myMaps.fetchListError',
   handle: async ({ getState, dispatch }) => {
-    if (getState().auth.validated && getState().main.activeModal === 'maps') {
+    if (
+      getState().auth.validated &&
+      getState().main.activeModal === 'my-maps'
+    ) {
       const res = await httpRequest({
         getState,
         url: '/maps/',
@@ -18,7 +21,7 @@ export const mapsLoadListProcessor: Processor = {
       });
 
       dispatch(mapsSetList(z.array(MapMetaSchema).parse(await res.json())));
-    } else if (getState().maps.maps.length) {
+    } else if (getState().myMaps.maps.length) {
       dispatch(mapsSetList([]));
     }
   },

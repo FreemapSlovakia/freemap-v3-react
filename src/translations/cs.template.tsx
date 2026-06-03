@@ -239,7 +239,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logIn: 'Přihlášení',
     account: 'Účet',
     mapFeaturesExport: 'Export mapových dat',
-    mapExports: 'Mapy pro GPS zařízení',
+    gpsDevicesMapExports: 'Mapy pro GPS zařízení',
     embedMap: 'Vložit do webstránky',
     supportUs: 'Podpořit Freemap',
     help: 'Pomoc',
@@ -254,7 +254,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     googlePlay: 'Freemap na Google Play',
     appStore: 'Freemap na App Store',
     automaticLanguage: 'Automaticky',
-    mapExport: 'Export mapy do obrázku/dokumentu',
+    mapToDocumentExport: 'Export mapy do obrázku/dokumentu',
     osmWiki: 'Dokumentační projekt OpenStreetMap ',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Cs:Main_Page',
     status: 'Stav služeb',
@@ -1085,7 +1085,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-  mapExport: {
+  mapToDocumentExport: {
     advancedSettings: 'Rozšířená nastavení',
     styles: 'Styly datové vrstvy',
     exportError: ({ err }) => addError(messages, 'Chyba exportu mapy', err),
@@ -1420,7 +1420,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorRequestingDevice: 'Nepodařilo se vytvořit GPU zařízení: ',
     other: 'Chyba při vykreslování: ',
   },
-  downloadMap: {
+  offlineMapExport: {
     downloadMap: 'Export offline máp',
     format: 'Formát',
     map: 'Mapa',

@@ -213,7 +213,7 @@ export const reducers = {
   tracking: trackingReducer,
   trackViewer: trackViewerReducer,
   websocket: websocketReducer,
-  maps: mapsReducer,
+  myMaps: mapsReducer,
   wiki: wikiReducer,
   wikimediaCommons: wikimediaCommonsReducer,
 };

@@ -8,9 +8,7 @@ import { CacheTilesForm } from './CacheTilesForm.js';
 
 type Props = { show: boolean };
 
-export default CachedMapsModal;
-
-export function CachedMapsModal({ show }: Props): ReactElement {
+export default function CachedMapsModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const view = useAppSelector((state) => state.cachedMaps.view);

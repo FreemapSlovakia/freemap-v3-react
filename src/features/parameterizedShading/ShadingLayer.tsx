@@ -546,7 +546,7 @@ class LShadingLayer extends LGridLayer {
 
 type Props = ShadingLayerOptions;
 
-export const ShadingLayer = createTileLayerComponent<LShadingLayer, Props>(
+export default createTileLayerComponent<LShadingLayer, Props>(
   (props, context) => ({
     instance: new LShadingLayer(props),
     context,
@@ -570,5 +570,3 @@ export const ShadingLayer = createTileLayerComponent<LShadingLayer, Props>(
     }
   },
 );
-
-export default ShadingLayer;

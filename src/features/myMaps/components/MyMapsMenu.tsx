@@ -14,7 +14,7 @@ import { mapsDisconnect, mapsSave } from '../model/actions.js';
 export function MyMapsMenu(): ReactElement {
   const m = useMessages();
 
-  const activeMap = useAppSelector((state) => state.maps.activeMap);
+  const activeMap = useAppSelector((state) => state.myMaps.activeMap);
 
   const dispatch = useDispatch();
 
@@ -30,7 +30,7 @@ export function MyMapsMenu(): ReactElement {
             {({ label, labelClassName, props }) => (
               <Button
                 variant="primary"
-                onClick={() => dispatch(setActiveModal('maps'))}
+                onClick={() => dispatch(setActiveModal('my-maps'))}
                 {...props}
               >
                 <FaRegMap />

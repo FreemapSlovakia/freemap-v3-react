@@ -10,9 +10,7 @@ import { applySettings, setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
 
-export default PredefinedDrawingPropertiesModal;
-
-export function PredefinedDrawingPropertiesModal({
+export default function PredefinedDrawingPropertiesModal({
   show,
 }: Props): ReactElement {
   const m = useMessages();

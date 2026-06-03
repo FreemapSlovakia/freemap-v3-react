@@ -15,9 +15,7 @@ import { WmsMapLegend } from './WmsMapLegend.js';
 
 type Props = { show: boolean };
 
-export default LegendModal;
-
-export function LegendModal({ show }: Props): ReactElement {
+export default function LegendModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const close = useCallback(() => {

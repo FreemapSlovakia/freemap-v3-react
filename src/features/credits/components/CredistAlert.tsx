@@ -38,7 +38,7 @@ export function CreditsAlert({
           <Button
             type="button"
             className="m-n2 ms-2"
-            onClick={() => dispatch(setActiveModal('buy-credits'))}
+            onClick={() => dispatch(setActiveModal('credits-purchase'))}
           >
             <FaCoins /> {m?.credits.buyCredits}
           </Button>

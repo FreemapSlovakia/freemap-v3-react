@@ -20,9 +20,7 @@ import { TrackedDevices } from './TrackedDevices.js';
 
 type Props = { show: boolean };
 
-export default TrackingModal;
-
-export function TrackingModal({ show }: Props): ReactElement {
+export default function TrackingModal({ show }: Props): ReactElement {
   const view = useAppSelector((state) =>
     state.main.activeModal === 'tracking-my'
       ? state.tracking.modifiedDeviceId !== undefined

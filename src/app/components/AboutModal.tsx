@@ -8,7 +8,7 @@ import { setActiveModal } from '../store/actions.js';
 
 type Props = { show: boolean };
 
-export function AboutModal({ show }: Props): ReactElement {
+export default function AboutModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -118,5 +118,3 @@ export function AboutModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
-
-export default AboutModal;

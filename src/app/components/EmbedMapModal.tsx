@@ -29,13 +29,11 @@ function identity<T>(value: T): T {
   return value;
 }
 
-export default EmbedMapModal;
-
 const toWidth = (value: string | null) => value ?? '640';
 
 const toHeight = (value: string | null) => value ?? '480';
 
-export function EmbedMapModal({ show }: Props): ReactElement {
+export default function EmbedMapModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();

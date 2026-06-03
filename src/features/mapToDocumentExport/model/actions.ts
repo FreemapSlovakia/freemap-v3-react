@@ -1,6 +1,6 @@
-import type { Exportable } from '@features/export/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import z from 'zod';
+import type { Exportable } from '@/features/mapFeaturesExport/model/actions.js';
 
 // Server-rendered raster overlays. The vector feature sources (drawing, route,
 // objects, …) are selected separately via the shared `Exportable` vocabulary.
@@ -17,15 +17,15 @@ export const ExportableLayerSchema = z.enum(EXPORTABLE_LAYERS);
 
 export type ExportableLayer = z.infer<typeof ExportableLayerSchema>;
 
-export const ExportFormatSchema = z.enum(['jpeg', 'png', 'pdf', 'svg']);
+export const FormatSchema = z.enum(['jpeg', 'png', 'pdf', 'svg']);
 
-export type ExportFormat = z.infer<typeof ExportFormatSchema>;
+export type Format = z.infer<typeof FormatSchema>;
 
 export const CustomLayerOrderSchema = z.enum(['topmost', 'natural']);
 
 export type CustomLayerOrder = 'topmost' | 'natural';
 
-export interface MapExportDecorations {
+export interface Decorations {
   scaleBar: boolean;
   /** Localized cardinal letter to draw next to the north arrow, or `false` to omit it. */
   northArrow: string | false;
@@ -33,14 +33,16 @@ export interface MapExportDecorations {
   attribution: string | false;
 }
 
-export interface MapExportOptions {
+export interface ExportOptions {
   layers: ExportableLayer[];
   exportables: Exportable[];
   customLayerOrder: CustomLayerOrder;
   scale: number;
   area: 'visible' | 'area';
-  format: ExportFormat;
-  decorations: MapExportDecorations;
+  format: Format;
+  decorations: Decorations;
 }
 
-export const exportMap = createAction<MapExportOptions>('EXPORT_MAP');
+export const exportMapToDocument = createAction<ExportOptions>(
+  'EXPORT_MAP_TO_DOCUMENT',
+);

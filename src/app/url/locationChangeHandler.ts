@@ -120,7 +120,7 @@ export function handleLocationChange(store: MyStore): void {
 
   if (
     id !== undefined &&
-    id !== (getState().maps.loadMeta?.id ?? getState().maps.activeMap?.id)
+    id !== (getState().myMaps.loadMeta?.id ?? getState().myMaps.activeMap?.id)
   ) {
     dispatch(
       mapsLoad({

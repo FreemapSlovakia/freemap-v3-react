@@ -7,9 +7,7 @@ import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { mapAreaSelectCancel, mapAreaSelectConfirm } from '../model/actions.js';
 
-export default MapAreaSelectionMenu;
-
-export function MapAreaSelectionMenu(): ReactElement {
+export default function MapAreaSelectionMenu(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -17,7 +15,7 @@ export function MapAreaSelectionMenu(): ReactElement {
   return (
     <div>
       <Toolbar className="mt-2">
-        <div className="m-2">{m?.downloadMap.area.pickHint}</div>
+        <div className="m-2">{m?.offlineMapExport.area.pickHint}</div>
 
         <LongPressTooltip breakpoint="sm" label={m?.general.ok}>
           {({ label, labelClassName, props }) => (

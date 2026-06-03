@@ -24,8 +24,6 @@ import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { toolSelector } from '@/app/store/selectors.js';
 
-export default ObjectSelection;
-
 function ObjectsToggleButton(): ReactElement {
   const tool = useAppSelector(toolSelector);
 
@@ -49,7 +47,7 @@ function ObjectsToggleButton(): ReactElement {
   );
 }
 
-export function ObjectSelection(): ReactElement | null {
+export default function ObjectSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();

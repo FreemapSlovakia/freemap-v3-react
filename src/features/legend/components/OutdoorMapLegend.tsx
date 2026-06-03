@@ -39,9 +39,7 @@ const ResSchema = z.array(
   }),
 );
 
-export default OutdoorMapLegend;
-
-export function OutdoorMapLegend(): ReactElement {
+export default function OutdoorMapLegend(): ReactElement {
   const activeObjects = useAppSelector((s) => s.objects.active);
 
   const [legend, setLegend] = useState<Item[]>([]);

@@ -17,9 +17,7 @@ import { gallerySetFilter } from '../model/actions.js';
 
 type Props = { show: boolean };
 
-export default GalleryFilterModal;
-
-export function GalleryFilterModal({ show }: Props): ReactElement {
+export default function GalleryFilterModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();

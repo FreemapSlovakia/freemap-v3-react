@@ -9,9 +9,7 @@ import { MapLayersSettings } from './MapLayersSettings.js';
 
 type Props = { show: boolean };
 
-export default MapLayersConfigModal;
-
-export function MapLayersConfigModal({ show }: Props): ReactElement {
+export default function MapLayersConfigModal({ show }: Props): ReactElement {
   const initLayersSettings = useAppSelector(
     (state) => state.map.layersSettings,
   );

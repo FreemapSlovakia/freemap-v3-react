@@ -34,7 +34,9 @@ type Props = { show: boolean };
 // call (which react-redux warns about and causes needless rerenders).
 const EMPTY_DASH: number[] = [];
 
-export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
+export default function CurrentDrawingPropertiesModal({
+  show,
+}: Props): ReactElement {
   const m = useMessages();
 
   const label = useAppSelector((state) => {
@@ -514,5 +516,3 @@ export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
-
-export default CurrentDrawingPropertiesModal;

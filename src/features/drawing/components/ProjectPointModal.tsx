@@ -11,8 +11,6 @@ import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
-export default ProjectPointModal;
-
 type Props = {
   show: boolean;
   onAdd: (distance: number, azimuth: number) => void;

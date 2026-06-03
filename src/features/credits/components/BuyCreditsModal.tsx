@@ -10,9 +10,9 @@ import { CreditsAlert } from './CredistAlert.js';
 
 type Props = { show: boolean };
 
-export default CurrentDrawingPropertiesModal;
-
-export function CurrentDrawingPropertiesModal({ show }: Props): ReactElement {
+export default function CurrentDrawingPropertiesModal({
+  show,
+}: Props): ReactElement {
   const dispatch = useDispatch();
 
   const [credits, setCredits] = useState('500');

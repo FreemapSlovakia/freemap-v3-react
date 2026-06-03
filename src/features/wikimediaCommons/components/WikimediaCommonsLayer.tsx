@@ -29,7 +29,7 @@ function makeIcon(thumbUrl: string): Icon {
   });
 }
 
-export function WikimediaCommonsLayer(): ReactElement {
+export default function WikimediaCommonsLayer(): ReactElement {
   const m = useMessages();
 
   const photos = useAppSelector((state) => state.wikimediaCommons.photos);
@@ -226,5 +226,3 @@ export function WikimediaCommonsLayer(): ReactElement {
     </>
   );
 }
-
-export default WikimediaCommonsLayer;

@@ -7,15 +7,13 @@ import { Button } from 'react-bootstrap';
 import tShirt from '@/images/fm-t-shirt.jpg';
 import { AdItem, useAd } from '../hooks/useAd.js';
 
-export default Ad;
-
 const ads: AdItem[] = [
   { id: 'tShirt', countries: ['SK'], chance: 4 }, // Freemap T-Shirt
   { id: 'rovas', chance: 1 }, // Rovas
   { id: 'self', chance: 8 }, // self promo
 ];
 
-export function Ad(): ReactElement | null {
+export default function Ad(): ReactElement | null {
   const [closed, setClosed] = useState(false);
 
   const m = useMessages();

@@ -14,7 +14,7 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
       expectedStatus: 204,
     });
 
-    if (getState().maps.activeMap?.id === id) {
+    if (getState().myMaps.activeMap?.id === id) {
       dispatch(mapsDisconnect());
     }
 

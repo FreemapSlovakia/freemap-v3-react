@@ -12,7 +12,7 @@ import { SupportUsMessages } from './translations/SupportUsMessages.js';
 
 type Props = { show: boolean };
 
-export function SupportUsModal({ show }: Props): ReactElement {
+export default function SupportUsModal({ show }: Props): ReactElement {
   const becomePremium = useBecomePremium();
 
   const language = useAppSelector((state) => state.l10n.language);
@@ -138,5 +138,3 @@ export function SupportUsModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
-
-export default SupportUsModal;

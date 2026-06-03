@@ -5,9 +5,10 @@ import { type ReactElement } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
 
-export default RoutePointSelection;
-
-export function RoutePointSelection(): ReactElement | undefined | false {
+export default function RoutePointSelection():
+  | ReactElement
+  | undefined
+  | false {
   const point = useAppSelector((state) =>
     state.main.selection?.type === 'route-point'
       ? state.routePlanner.points[state.main.selection.id]

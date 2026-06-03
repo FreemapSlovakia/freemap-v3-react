@@ -29,11 +29,9 @@ import {
   drawingLineSimplify,
   drawingLineStopDrawing,
 } from '../model/actions/drawingLineActions.js';
-import ProjectPointModal from './ProjectPointModal.js';
+import { ProjectPointModal } from './ProjectPointModal.js';
 
-export default DrawingLineSelection;
-
-export function DrawingLineSelection(): ReactElement | null {
+export default function DrawingLineSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();

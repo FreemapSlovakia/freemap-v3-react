@@ -34,9 +34,7 @@ interface GetFeatures {
   (type: 'Polygon'): Feature<PolygonGeometry>[];
 }
 
-export default TrackViewerResult;
-
-export function TrackViewerResult({
+export default function TrackViewerResult({
   trackGeojson,
 }: {
   trackGeojson: FeatureCollection;

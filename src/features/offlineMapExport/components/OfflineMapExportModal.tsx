@@ -44,9 +44,9 @@ import { downloadMap } from '../model/actions.js';
 
 type Props = { show: boolean };
 
-export default DownloadMapModal;
-
-export function DownloadMapModal({ show }: Props): ReactElement | null {
+export default function OfflineMapExportModal({
+  show,
+}: Props): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -233,18 +233,19 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
       <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaDatabase /> {m?.downloadMap.downloadMap} <ExperimentalFunction />
+            <FaDatabase /> {m?.offlineMapExport.downloadMap}{' '}
+            <ExperimentalFunction />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <div>
             <p>
-              <strong>{m?.downloadMap.usageIntro}</strong>
+              <strong>{m?.offlineMapExport.usageIntro}</strong>
             </p>
             <ul>
               <li>
-                <strong>{m?.downloadMap.usageDesktop}</strong>{' '}
+                <strong>{m?.offlineMapExport.usageDesktop}</strong>{' '}
                 <a href="https://qgis.org/" target="_blank">
                   QGIS
                 </a>{' '}
@@ -255,7 +256,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               </li>
 
               <li>
-                <strong>{m?.downloadMap.usageAndroid}</strong>{' '}
+                <strong>{m?.offlineMapExport.usageAndroid}</strong>{' '}
                 <a
                   href="https://play.google.com/store/apps/details?id=menion.android.locus"
                   target="_blank"
@@ -286,7 +287,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               </li>
 
               <li>
-                <strong>{m?.downloadMap.usageIos}</strong>{' '}
+                <strong>{m?.offlineMapExport.usageIos}</strong>{' '}
                 <a
                   href="https://apps.apple.com/app/guru-maps-offline-maps-gps/id1032458712"
                   target="_blank"
@@ -310,8 +311,8 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
               </li>
 
               <li>
-                <strong>{m?.downloadMap.usageWeb}</strong>{' '}
-                {m?.downloadMap.usageWebLead}{' '}
+                <strong>{m?.offlineMapExport.usageWeb}</strong>{' '}
+                {m?.offlineMapExport.usageWebLead}{' '}
                 <a
                   href="https://github.com/consbio/mbtileserver"
                   target="_blank"
@@ -319,7 +320,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                 >
                   mbtileserver
                 </a>{' '}
-                {m?.downloadMap.usageWebMid}{' '}
+                {m?.offlineMapExport.usageWebMid}{' '}
                 <a
                   href="https://github.com/maptiler/tileserver-gl"
                   target="_blank"
@@ -327,7 +328,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                 >
                   TileServer GL
                 </a>
-                {m?.downloadMap.usageWebTrail}
+                {m?.offlineMapExport.usageWebTrail}
               </li>
             </ul>
           </div>
@@ -337,11 +338,11 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           <hr />
 
           <Form.Group controlId="mapType">
-            <Form.Label>{m?.downloadMap.map}</Form.Label>
+            <Form.Label>{m?.offlineMapExport.map}</Form.Label>
 
             <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
               <Dropdown.Toggle as={SelectToggle} className="w-100">
-                {mapDef ? getItem(mapDef) : m?.downloadMap.unknownMapType}
+                {mapDef ? getItem(mapDef) : m?.offlineMapExport.unknownMapType}
               </Dropdown.Toggle>
 
               <Dropdown.Menu popperConfig={sameMinWidthPopperConfig}>
@@ -355,20 +356,20 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           </Form.Group>
 
           <Form.Group controlId="downloadArea">
-            <Form.Label>{m?.downloadMap.downloadArea}</Form.Label>
+            <Form.Label>{m?.offlineMapExport.downloadArea}</Form.Label>
 
             <MapAreaToggle
               className="mb-3"
               area={area}
               onSelectVisible={() => setArea('visible')}
               onSelectArea={startSelecting}
-              visibleLabel={m?.downloadMap.area.visible}
-              areaLabel={m?.downloadMap.area.byArea}
+              visibleLabel={m?.offlineMapExport.area.visible}
+              areaLabel={m?.offlineMapExport.area.byArea}
             />
           </Form.Group>
 
           <Form.Group controlId="name" className="mb-3">
-            <Form.Label>{m?.downloadMap.name}</Form.Label>
+            <Form.Label>{m?.offlineMapExport.name}</Form.Label>
 
             <Form.Control
               type="text"
@@ -381,10 +382,12 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           </Form.Group>
 
           <Form.Group controlId="format" className="mb-3">
-            <Form.Label>{m?.downloadMap.format}</Form.Label>
+            <Form.Label>{m?.offlineMapExport.format}</Form.Label>
 
             <ButtonGroup className="d-block">
-              <LongPressTooltip label={m?.downloadMap.formatMbtilesTooltip}>
+              <LongPressTooltip
+                label={m?.offlineMapExport.formatMbtilesTooltip}
+              >
                 {({ props }) => (
                   <ToggleButton
                     id="downloadFormat-mbtiles"
@@ -396,12 +399,14 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                     onChange={() => setFormat('mbtiles')}
                     {...props}
                   >
-                    {m?.downloadMap.formatMbtiles}
+                    {m?.offlineMapExport.formatMbtiles}
                   </ToggleButton>
                 )}
               </LongPressTooltip>
 
-              <LongPressTooltip label={m?.downloadMap.formatSqlitedbTooltip}>
+              <LongPressTooltip
+                label={m?.offlineMapExport.formatSqlitedbTooltip}
+              >
                 {({ props }) => (
                   <ToggleButton
                     id="downloadFormat-sqlitedb"
@@ -413,7 +418,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
                     onChange={() => setFormat('sqlitedb')}
                     {...props}
                   >
-                    {m?.downloadMap.formatSqlitedb}
+                    {m?.offlineMapExport.formatSqlitedb}
                   </ToggleButton>
                 )}
               </LongPressTooltip>
@@ -423,7 +428,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           {mapDef && (
             <Form.Group controlId="zoomRange" className="mb-3">
               <Form.Label className="required">
-                {m?.downloadMap.zoomRange}
+                {m?.offlineMapExport.zoomRange}
               </Form.Label>
 
               <InputGroup>
@@ -452,7 +457,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
 
           {mapDef?.extraScales && (
             <Form.Group controlId="scale" className="mb-3">
-              <Form.Label>{m?.downloadMap.scale}</Form.Label>
+              <Form.Label>{m?.offlineMapExport.scale}</Form.Label>
 
               <ToggleButtonGroup
                 type="radio"
@@ -476,7 +481,9 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
           )}
 
           <Form.Group controlId="email" className="mb-3">
-            <Form.Label className="required">{m?.downloadMap.email}</Form.Label>
+            <Form.Label className="required">
+              {m?.offlineMapExport.email}
+            </Form.Label>
 
             <Form.Control
               type="email"
@@ -487,7 +494,7 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             />
 
             <Form.Text className="text-muted">
-              {m?.downloadMap.emailInfo}
+              {m?.offlineMapExport.emailInfo}
             </Form.Text>
           </Form.Group>
         </Modal.Body>
@@ -495,13 +502,14 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
         <Modal.Footer className="flex-wrap">
           {tileCount !== undefined && mapDef && (
             <div className="w-100 text-end">
-              {m?.downloadMap.summaryTiles}: <b>{cnf.format(tileCount)}</b> ｜{' '}
+              {m?.offlineMapExport.summaryTiles}: <b>{cnf.format(tileCount)}</b>{' '}
+              ｜{' '}
               <span
                 className={
                   price >= Math.floor(user?.credits ?? 0) ? 'text-danger' : ''
                 }
               >
-                {m?.downloadMap.summaryPrice(<b>{cnf.format(price)}</b>)}
+                {m?.offlineMapExport.summaryPrice(<b>{cnf.format(price)}</b>)}
               </span>
             </div>
           )}

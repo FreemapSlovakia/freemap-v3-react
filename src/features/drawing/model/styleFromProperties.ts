@@ -1,12 +1,12 @@
-import { garminSymToIconSpec } from '@features/export/garminSymMapping.js';
-import {
-  osmAndBackgroundToMarkerType,
-  osmAndIconToIconSpec,
-} from '@features/export/osmandIconMapping.js';
 import {
   MarkerType,
   MarkerTypeSchema,
 } from '@features/objects/model/actions.js';
+import { garminSymToIconSpec } from '@/features/mapFeaturesExport/garminSymMapping.js';
+import {
+  osmAndBackgroundToMarkerType,
+  osmAndIconToIconSpec,
+} from '@/features/mapFeaturesExport/osmandIconMapping.js';
 import {
   type DrawingLineType,
   isDrawingLineType,

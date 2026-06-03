@@ -37,7 +37,7 @@ export const urlProcessor: Processor = {
       gallery: { filter: galleryFilter },
       main,
       tracking,
-      maps,
+      myMaps,
       search,
       objects,
       wikimediaCommons,
@@ -85,7 +85,7 @@ export const urlProcessor: Processor = {
       search.osmRelationId,
       search.osmWayId,
       trackViewer.trackUID,
-      maps.activeMap,
+      myMaps.activeMap,
       main.tool,
       objects.active,
       wikimediaCommons.preview?.pageId,
@@ -135,7 +135,7 @@ export const urlProcessor: Processor = {
       queryParts.push(['tool', main.tool]);
     }
 
-    const mapId = maps.loadMeta?.id || maps.activeMap?.id;
+    const mapId = myMaps.loadMeta?.id || myMaps.activeMap?.id;
 
     if (mapId) {
       queryParts.push(['id', mapId]);

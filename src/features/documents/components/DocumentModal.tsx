@@ -11,8 +11,7 @@ import { documentShow } from '../model/actions.js';
 type Props = { show: boolean };
 
 export default DocumentModal;
-
-export function DocumentModal({ show }: Props): ReactElement | null {
+function DocumentModal({ show }: Props): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();

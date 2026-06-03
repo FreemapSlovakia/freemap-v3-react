@@ -41,10 +41,7 @@ type MaplibreLayerProps = LayerProps &
     language?: string | null;
   };
 
-export const MaplibreLayer = createTileLayerComponent<
-  MaplibreWithLang,
-  MaplibreLayerProps
->(
+export default createTileLayerComponent<MaplibreWithLang, MaplibreLayerProps>(
   (props, context) => ({
     instance: new MaplibreWithLang(props),
     context,
@@ -56,5 +53,3 @@ export const MaplibreLayer = createTileLayerComponent<
     }
   },
 );
-
-export default MaplibreLayer;

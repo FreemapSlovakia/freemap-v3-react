@@ -31,9 +31,7 @@ import {
   setSelectedIcon,
 } from '../model/actions.js';
 
-export default ObjectsMenu;
-
-export function ObjectsMenu(): ReactElement {
+export default function ObjectsMenu(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();

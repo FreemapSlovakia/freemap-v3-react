@@ -57,9 +57,7 @@ import classes from './GalleryViewerModal.module.css';
 
 type Props = { show: boolean };
 
-export default GalleryViewerModal;
-
-export function GalleryViewerModal({ show }: Props): ReactElement {
+export default function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();

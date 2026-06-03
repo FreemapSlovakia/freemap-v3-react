@@ -16,9 +16,7 @@ import {
   drawingLineSplit,
 } from '../model/actions/drawingLineActions.js';
 
-export default DrawingLinePointSelection;
-
-export function DrawingLinePointSelection(): ReactElement | null {
+export default function DrawingLinePointSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();

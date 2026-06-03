@@ -10,9 +10,7 @@ import {
   gallerySetItemForPositionPicking,
 } from '../model/actions.js';
 
-export default GalleryPositionPickingMenu;
-
-export function GalleryPositionPickingMenu(): ReactElement | null {
+export default function GalleryPositionPickingMenu(): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();

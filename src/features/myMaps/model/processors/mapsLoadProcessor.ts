@@ -119,7 +119,7 @@ export const mapsLoadProcessor: Processor = {
   handle: async ({ getState, dispatch }) => {
     const {
       auth,
-      maps: { loadMeta },
+      myMaps: { loadMeta },
     } = getState();
 
     if (!loadMeta || (auth.user && !auth.validated)) {

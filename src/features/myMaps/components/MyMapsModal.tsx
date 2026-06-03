@@ -10,7 +10,7 @@ import { MyMapsModalList } from './MyMapsModalList.js';
 
 type Props = { show: boolean };
 
-export function MyMapsModal({ show }: Props): ReactElement {
+export default function MyMapsModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const close = useCallback(() => {
@@ -48,5 +48,3 @@ export function MyMapsModal({ show }: Props): ReactElement {
     </Modal>
   );
 }
-
-export default MyMapsModal;

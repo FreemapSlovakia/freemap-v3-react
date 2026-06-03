@@ -239,7 +239,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logIn: 'Anmelden',
     account: 'Konto',
     mapFeaturesExport: 'Export der Kartendaten',
-    mapExports: 'Karten für GPS-Geräte',
+    gpsDevicesMapExports: 'Karten für GPS-Geräte',
     embedMap: 'Karte einbetten',
     supportUs: 'Freemap unterstützen',
     help: ' Info & Hilfe',
@@ -254,7 +254,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     googlePlay: 'Freemap auf Google Play',
     appStore: 'Freemap im App Store',
     automaticLanguage: 'Automatisch',
-    mapExport: 'Export der Karte als Bild/Dokument',
+    mapToDocumentExport: 'Export der Karte als Bild/Dokument',
     osmWiki: 'OpenStreetMap-Dokumentation',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/De:Main_Page',
     status: 'Dienststatus',
@@ -1132,7 +1132,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-  mapExport: {
+  mapToDocumentExport: {
     areas: {
       visible: 'Sichtbarer Kartenbereich',
       byArea: 'Ausgewählter Bereich',
@@ -1474,7 +1474,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorRequestingDevice: 'GPU-Gerät konnte nicht erstellt werden: ',
     other: 'Fehler beim Rendern: ',
   },
-  downloadMap: {
+  offlineMapExport: {
     downloadMap: 'Export von Offline-Karten',
     format: 'Format',
     map: 'Karte',

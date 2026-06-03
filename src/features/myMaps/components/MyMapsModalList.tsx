@@ -50,7 +50,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const { maps, activeMap } = useAppSelector((state) => state.maps);
+  const { maps, activeMap } = useAppSelector((state) => state.myMaps);
 
   const myUserId = useAppSelector((state) => state.auth.user?.id);
 

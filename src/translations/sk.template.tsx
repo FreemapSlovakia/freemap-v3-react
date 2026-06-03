@@ -239,7 +239,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     logIn: 'Prihlásenie',
     account: 'Účet',
     mapFeaturesExport: 'Export mapových dát',
-    mapExports: 'Mapy pre GPS zariadenia',
+    gpsDevicesMapExports: 'Mapy pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
     supportUs: 'Podporiť Freemap',
     help: 'Info a pomoc',
@@ -254,7 +254,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     googlePlay: 'Freemap na Google Play',
     appStore: 'Freemap na App Store',
     automaticLanguage: 'Automaticky',
-    mapExport: 'Export mapy do obrázka/dokumentu',
+    mapToDocumentExport: 'Export mapy do obrázka/dokumentu',
     osmWiki: 'Dokumentačný projekt OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko',
     status: 'Stav služieb',
@@ -1114,7 +1114,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-  mapExport: {
+  mapToDocumentExport: {
     advancedSettings: 'Rozšírené nastavenia',
     styles: 'Štýly dátovej vrstvy',
     exportError: ({ err }) =>
@@ -1450,7 +1450,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorRequestingDevice: 'Nepodarilo sa vytvoriť GPU zariadenie: ',
     other: 'Chyba pri vykresľovaní: ',
   },
-  downloadMap: {
+  offlineMapExport: {
     downloadMap: 'Export offline máp',
     format: 'Formát',
     map: 'Mapa',

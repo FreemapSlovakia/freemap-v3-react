@@ -17,9 +17,7 @@ import { parseGeojsonFile } from '../parseGeojsonFile.js';
 
 type Props = { show: boolean };
 
-export default TrackViewerUploadModal;
-
-export function TrackViewerUploadModal({ show }: Props): ReactElement {
+export default function TrackViewerUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -85,7 +83,7 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
     multiple: false,
   });
 
-  // {activeModal === 'upload-track' && // TODO move to separate component
+  // {activeModal === 'file-import' && // TODO move to separate component
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>

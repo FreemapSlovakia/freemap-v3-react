@@ -240,7 +240,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       }
 
       if (event.code === 'KeyM') {
-        return setActiveModal('maps');
+        return setActiveModal('my-maps');
       }
 
       const toolDefinition = toolDefinitions.find(
@@ -327,10 +327,10 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
           return setActiveModal('account');
 
         case 'KeyG':
-          return setActiveModal('export-map-features');
+          return setActiveModal('map-features-export');
 
         case 'KeyP':
-          return setActiveModal('export-map');
+          return setActiveModal('map-to-document-export');
 
         case 'KeyE':
           return setActiveModal('embed');
@@ -339,7 +339,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
           return setActiveModal('drawing-properties');
 
         case 'KeyM':
-          return setActiveModal('download-map');
+          return setActiveModal('offline-map-export');
       }
 
       return undefined;

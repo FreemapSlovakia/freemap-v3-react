@@ -15,7 +15,7 @@ export const setToolProcessor: Processor<typeof setTool> = {
         !getState().trackViewer.trackGpx &&
         !getState().trackViewer.trackGeojson
       ) {
-        dispatch(setActiveModal('upload-track'));
+        dispatch(setActiveModal('file-import'));
       }
 
       if (

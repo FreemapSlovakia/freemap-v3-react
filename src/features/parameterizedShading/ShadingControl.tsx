@@ -29,7 +29,7 @@ import {
 } from './ShadingComponentControl.js';
 import classes from './ShadingControl.module.css';
 
-export function ShadingControl() {
+export default function ShadingControl() {
   const shading = useAppSelector((state) => state.map.shading);
 
   const [id, setId] = useState<number>();
@@ -559,5 +559,3 @@ export function ShadingControl() {
     </Card>
   );
 }
-
-export default ShadingControl;

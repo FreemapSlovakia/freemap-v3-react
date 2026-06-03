@@ -7,10 +7,10 @@ import type { Modal } from '../store/actions.js';
 // TODO Partiel because of missing documents (formerly tips)
 const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {
   legend: 'mainMenu.mapLegend',
-  'upload-track': 'trackViewer.uploadModal.title',
+  'file-import': 'trackViewer.uploadModal.title',
   about: 'mainMenu.contacts',
-  'export-map-features': 'mainMenu.mapFeaturesExport',
-  'export-map': 'mainMenu.mapExport',
+  'map-features-export': 'mainMenu.mapFeaturesExport',
+  'map-to-document-export': 'mainMenu.mapToDocumentExport',
   account: 'mainMenu.account',
   'map-layers-config': 'mapLayers.configureLayers',
   'custom-maps': 'mapLayers.customMaps',
@@ -19,7 +19,7 @@ const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {
   'support-us': 'mainMenu.supportUs',
   'tracking-watched': 'tracking.trackedDevices.modalTitle',
   'tracking-my': 'tracking.devices.modalTitle',
-  maps: 'tools.maps',
+  'my-maps': 'tools.maps',
   'current-drawing-properties': 'drawing.edit.title',
   login: 'mainMenu.logIn',
   premium: 'premium.title',

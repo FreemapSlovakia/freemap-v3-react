@@ -8,7 +8,7 @@ import {
 import {
   CustomLayerOrder,
   ExportableLayer,
-} from '@features/mapExport/model/actions.js';
+} from '@features/mapToDocumentExport/model/actions.js';
 import { RoutingMode } from '@features/routePlanner/model/actions.js';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
 import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
@@ -181,7 +181,7 @@ export type Messages = {
     logIn: string;
     account: string;
     mapFeaturesExport: string;
-    mapExports: string;
+    gpsDevicesMapExports: string;
     embedMap: string;
     supportUs: string;
     help: string;
@@ -196,7 +196,7 @@ export type Messages = {
     googlePlay: string;
     appStore: string;
     automaticLanguage: string;
-    mapExport: string;
+    mapToDocumentExport: string;
     osmWiki: string;
     wikiLink: string;
     status: string;
@@ -766,7 +766,7 @@ export type Messages = {
     subscribeNotFound: (props: { id: string | number }) => JSX.Element;
     subscribeError: (props: { id: string | number }) => JSX.Element;
   };
-  mapExport: {
+  mapToDocumentExport: {
     exportError: (props: Err) => string;
     exporting: string;
     exported: ({ url }: { url: string }) => JSX.Element;
@@ -916,7 +916,7 @@ export type Messages = {
     errorRequestingDevice: string;
     other: string;
   };
-  downloadMap: {
+  offlineMapExport: {
     downloadMap: string;
     format: string;
     map: string;

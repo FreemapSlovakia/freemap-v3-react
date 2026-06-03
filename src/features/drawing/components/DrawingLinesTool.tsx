@@ -11,11 +11,9 @@ import {
 } from '../model/actions/drawingLineActions.js';
 import { drawingMeasure } from '../model/actions/drawingPointActions.js';
 
-export default DrawingLinesTool;
-
 const EMPTY: Point[] = [];
 
-export function DrawingLinesTool(): null {
+export default function DrawingLinesTool(): null {
   const selection = useAppSelector((state) => state.main.selection);
 
   const tool = useAppSelector(toolSelector);
