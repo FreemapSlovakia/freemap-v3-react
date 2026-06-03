@@ -116,10 +116,6 @@ export function MainMenu(): ReactElement {
         <FaExternalLinkAlt /> {m?.external.openInExternal} <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item href="#show=export-map" eventKey="modal-export-map">
-        <FaPrint /> {m?.mainMenu.mapExport} <kbd>e</kbd> <kbd>p</kbd>
-      </Dropdown.Item>
-
       <Dropdown.Item
         eventKey="modal-export-map-features"
         href="#show=export-map-features"
@@ -128,12 +124,16 @@ export function MainMenu(): ReactElement {
         <kbd>g</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item eventKey="document-exports" href="#document=exports">
-        <FaMobileAlt /> {m?.mainMenu.mapExports}
+      <Dropdown.Item href="#show=export-map" eventKey="modal-export-map">
+        <FaPrint /> {m?.mainMenu.mapExport} <kbd>e</kbd> <kbd>p</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-download-map" href="#show=download-map">
         <FaDatabase /> {m?.downloadMap.downloadMap} <kbd>e</kbd> <kbd>m</kbd>
+      </Dropdown.Item>
+
+      <Dropdown.Item eventKey="document-exports" href="#document=exports">
+        <FaMobileAlt /> {m?.mainMenu.mapExports}
       </Dropdown.Item>
 
       <Dropdown.Item eventKey="modal-embed" href="#show=embed">

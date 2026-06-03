@@ -149,3 +149,8 @@ legend {
 .dropdown-caption-divider:not(:empty)::after {
   margin-left: var(--bs-dropdown-item-padding-x);
 }
+
+.btn-outline-primary,
+.btn-outline-secondary {
+  background-color: var(--bs-body-bg);
+}
