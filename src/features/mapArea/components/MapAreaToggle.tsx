@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import type { ReactElement, ReactNode } from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { FaDrawPolygon, FaEye } from 'react-icons/fa';
 import type { MapAreaMode } from '../useMapAreaSelection.js';
 
@@ -23,24 +23,31 @@ export function MapAreaToggle({
   className,
 }: Props): ReactElement {
   return (
-    <ButtonGroup className={clsx('d-flex', className)}>
-      <Button
+    <ToggleButtonGroup
+      type="radio"
+      name="mapArea"
+      value={area}
+      className={clsx('d-flex', className)}
+    >
+      <ToggleButton
+        id="mapArea-visible"
         className="fm-ellipsis"
         variant="outline-primary"
-        active={area === 'visible'}
+        value="visible"
         onClick={onSelectVisible}
       >
         <FaEye /> {visibleLabel}
-      </Button>
+      </ToggleButton>
 
-      <Button
+      <ToggleButton
+        id="mapArea-area"
         className="fm-ellipsis"
         variant="outline-primary"
-        active={area === 'area'}
+        value="area"
         onClick={onSelectArea}
       >
         <FaDrawPolygon /> {areaLabel}
-      </Button>
-    </ButtonGroup>
+      </ToggleButton>
+    </ToggleButtonGroup>
   );
 }

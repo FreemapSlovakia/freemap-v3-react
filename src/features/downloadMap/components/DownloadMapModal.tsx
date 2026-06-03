@@ -35,6 +35,8 @@ import {
   Form,
   InputGroup,
   Modal,
+  ToggleButton,
+  ToggleButtonGroup,
 } from 'react-bootstrap';
 import { FaDatabase, FaDownload, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -384,27 +386,35 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             <ButtonGroup className="d-block">
               <LongPressTooltip label={m?.downloadMap.formatMbtilesTooltip}>
                 {({ props }) => (
-                  <Button
+                  <ToggleButton
+                    id="downloadFormat-mbtiles"
+                    type="radio"
+                    name="downloadFormat"
                     variant="outline-primary"
-                    active={format === 'mbtiles'}
-                    onClick={() => setFormat('mbtiles')}
+                    value="mbtiles"
+                    checked={format === 'mbtiles'}
+                    onChange={() => setFormat('mbtiles')}
                     {...props}
                   >
                     {m?.downloadMap.formatMbtiles}
-                  </Button>
+                  </ToggleButton>
                 )}
               </LongPressTooltip>
 
               <LongPressTooltip label={m?.downloadMap.formatSqlitedbTooltip}>
                 {({ props }) => (
-                  <Button
+                  <ToggleButton
+                    id="downloadFormat-sqlitedb"
+                    type="radio"
+                    name="downloadFormat"
                     variant="outline-primary"
-                    active={format === 'sqlitedb'}
-                    onClick={() => setFormat('sqlitedb')}
+                    value="sqlitedb"
+                    checked={format === 'sqlitedb'}
+                    onChange={() => setFormat('sqlitedb')}
                     {...props}
                   >
                     {m?.downloadMap.formatSqlitedb}
-                  </Button>
+                  </ToggleButton>
                 )}
               </LongPressTooltip>
             </ButtonGroup>
@@ -444,18 +454,24 @@ export function DownloadMapModal({ show }: Props): ReactElement | null {
             <Form.Group controlId="scale" className="mb-3">
               <Form.Label>{m?.downloadMap.scale}</Form.Label>
 
-              <Form.Select
+              <ToggleButtonGroup
+                type="radio"
+                name="scale"
                 value={scale}
-                onChange={(e) => setScale(e.currentTarget.value)}
+                onChange={setScale}
+                className="d-flex"
               >
-                <option value="1">1</option>
-
-                {mapDef.extraScales.map((scale) => (
-                  <option key={scale} value={scale}>
-                    {scale}
-                  </option>
+                {[1, ...mapDef.extraScales].map((scale) => (
+                  <ToggleButton
+                    key={scale}
+                    id={`scale-${scale}`}
+                    value={String(scale)}
+                    variant="outline-primary"
+                  >
+                    {scale}×
+                  </ToggleButton>
                 ))}
-              </Form.Select>
+              </ToggleButtonGroup>
             </Form.Group>
           )}
 

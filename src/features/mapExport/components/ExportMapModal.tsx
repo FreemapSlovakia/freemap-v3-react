@@ -28,7 +28,6 @@ import {
 import {
   Alert,
   Button,
-  ButtonGroup,
   Form,
   InputGroup,
   Modal,
@@ -117,7 +116,7 @@ export function ExportMapModal({ show }: Props): ReactElement {
     'topmost' | 'natural'
   >('fm.exportMap.customLayerOrder', identity, toCustomLayerOrder);
 
-  const [format, , setFormat] = usePersistentState<ExportFormat>(
+  const [format, setFormat] = usePersistentState<ExportFormat>(
     'fm.exportMap.format',
     identity,
     toExportFormat,
@@ -320,19 +319,23 @@ export function ExportMapModal({ show }: Props): ReactElement {
         <Form.Group>
           <Form.Label className="d-block"> {m?.mapExport.format}</Form.Label>
 
-          <ButtonGroup>
-            {['jpeg', 'png', 'pdf', 'svg'].map((fmt) => (
-              <Button
-                variant="outline-primary"
+          <ToggleButtonGroup
+            type="radio"
+            name="exportFormat"
+            value={format}
+            onChange={setFormat}
+          >
+            {ExportFormatSchema.options.map((fmt) => (
+              <ToggleButton
                 key={fmt}
+                id={`exportFormat-${fmt}`}
                 value={fmt}
-                onClick={setFormat}
-                active={format === fmt}
+                variant="outline-primary"
               >
                 {fmt.toUpperCase()}
-              </Button>
+              </ToggleButton>
             ))}
-          </ButtonGroup>
+          </ToggleButtonGroup>
         </Form.Group>
 
         <div className="mt-3" />
