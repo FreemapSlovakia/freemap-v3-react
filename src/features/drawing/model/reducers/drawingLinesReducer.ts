@@ -66,32 +66,14 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       joinWith: undefined,
     }))
     .addCase(applySettings, (state, { payload }) => {
-      if (payload.drawingApplyAll) {
-        for (const line of state.lines) {
-          if (payload.drawingColor) {
-            line.color = payload.drawingColor;
-          }
+      if (!payload.drawingApplyAll) {
+        return;
+      }
 
-          if ('drawingFillColor' in payload) {
-            line.fillColor = payload.drawingFillColor;
-          }
+      const { drawing } = payload;
 
-          if (payload.drawingWidth) {
-            line.width = payload.drawingWidth;
-          }
-
-          if ('drawingDash' in payload) {
-            line.dashArray = payload.drawingDash;
-          }
-
-          if ('drawingLineCap' in payload) {
-            line.lineCap = payload.drawingLineCap;
-          }
-
-          if ('drawingLineJoin' in payload) {
-            line.lineJoin = payload.drawingLineJoin;
-          }
-        }
+      for (const line of state.lines) {
+        Object.assign(line, drawing);
       }
     })
     .addCase(drawingLineAddPoint, (state, action) => {

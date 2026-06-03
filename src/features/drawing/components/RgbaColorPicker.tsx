@@ -18,7 +18,7 @@ const checkerBg: CSSProperties = {
 
 export function RgbaColorPicker({ value, onChange }: Props): ReactElement {
   const recentColors = useAppSelector(
-    (state) => state.drawingSettings.drawingRecentColors,
+    (state) => state.drawingSettings.recentColors,
   );
 
   const [show, setShow] = useState(false);

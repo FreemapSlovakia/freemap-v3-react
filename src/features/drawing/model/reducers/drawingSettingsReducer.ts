@@ -1,30 +1,97 @@
 import { applySettings } from '@app/store/actions.js';
-import type { MarkerType } from '@features/objects/model/actions.js';
+import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import z from 'zod';
 import {
   drawingLineChangeProperties,
-  type LineCap,
-  type LineJoin,
+  LineCapSchema,
+  LineJoinSchema,
 } from '../actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '../actions/drawingPointActions.js';
 
-export interface DrawingSettingsState {
-  drawingColor: string;
-  drawingFillColor?: string;
-  drawingWidth: number;
-  drawingRecentColors: string[];
-  drawingDashArray?: number[];
-  drawingLineCap?: LineCap;
-  drawingLineJoin?: LineJoin;
-  drawingMarkerType: MarkerType;
-}
+// The default style applied to newly drawn points/lines/polygons. Spread
+// directly onto `drawingPointAdd`/`drawingLineAdd` payloads, so it must hold
+// only style fields — `recentColors` (UI history) lives one level up.
+export const DrawingStyleSchema = z.object({
+  color: z.string(),
+  width: z.number(),
+  fillColor: z.string(),
+  dashArray: z.number().array(),
+  lineCap: LineCapSchema,
+  lineJoin: LineJoinSchema,
+  markerType: MarkerTypeSchema,
+});
 
-export const drawingSettingsInitialState: DrawingSettingsState = {
-  drawingColor: '#0000ff',
-  drawingFillColor: '#0000ff33',
-  drawingWidth: 4,
-  drawingRecentColors: [],
-  drawingMarkerType: 'pin',
+export type DrawingStyle = z.infer<typeof DrawingStyleSchema>;
+
+export const DrawingSettingsSchema = z.object({
+  style: DrawingStyleSchema,
+  recentColors: z.array(z.string()),
+});
+
+export type DrawingSettings = z.infer<typeof DrawingSettingsSchema>;
+
+// Legacy persisted shape used flat `drawing*`-prefixed keys (drawingColor,
+// drawingWidth, …). Rename them to the current style keys.
+const LEGACY_KEY_MAP: Record<string, keyof DrawingStyle | 'recentColors'> = {
+  drawingColor: 'color',
+  drawingFillColor: 'fillColor',
+  drawingWidth: 'width',
+  drawingRecentColors: 'recentColors',
+  drawingDashArray: 'dashArray',
+  drawingLineCap: 'lineCap',
+  drawingLineJoin: 'lineJoin',
+  drawingMarkerType: 'markerType',
+};
+
+export const DrawingSettingsCompatSchema = z.preprocess(
+  (s) => {
+    if (!s || typeof s !== 'object' || Array.isArray(s)) {
+      return s;
+    }
+
+    const source = s as Record<string, unknown>;
+
+    // Already in the current nested shape — leave it alone.
+    if ('style' in source) {
+      return source;
+    }
+
+    // Legacy/flat shape: lift `recentColors` to the top and nest the rest
+    // under `style`.
+    const style: Record<string, unknown> = {};
+
+    let recentColors: unknown;
+
+    for (const [key, value] of Object.entries(source)) {
+      const mapped = LEGACY_KEY_MAP[key] ?? key;
+
+      if (mapped === 'recentColors') {
+        recentColors = value;
+      } else {
+        style[mapped] = value;
+      }
+    }
+
+    return { style, recentColors };
+  },
+  z.object({
+    style: DrawingStyleSchema.partial(),
+    recentColors: z.array(z.string()).optional(),
+  }),
+);
+
+export const drawingSettingsInitialState: DrawingSettings = {
+  style: {
+    color: '#0000ff',
+    fillColor: '#0000ff33',
+    width: 4,
+    markerType: 'pin',
+    dashArray: [],
+    lineCap: 'round',
+    lineJoin: 'round',
+  },
+  recentColors: [],
 };
 
 export const drawingSettingsReducer = createReducer(
@@ -32,41 +99,43 @@ export const drawingSettingsReducer = createReducer(
   (builder) =>
     builder
       .addCase(applySettings, (state, action) => {
-        const color = action.payload.drawingColor;
+        const { drawing } = action.payload;
 
-        if (action.payload.drawingColor) {
-          state.drawingColor = action.payload.drawingColor;
+        const color = drawing?.color;
+
+        if (color) {
+          state.style.color = color;
         }
 
-        if ('drawingFillColor' in action.payload) {
-          state.drawingFillColor = action.payload.drawingFillColor;
+        const fillColor = drawing?.fillColor;
+
+        if (fillColor) {
+          state.style.fillColor = fillColor;
         }
 
-        if (action.payload.drawingWidth) {
-          state.drawingWidth = action.payload.drawingWidth;
+        if (drawing?.width) {
+          state.style.width = drawing.width;
         }
 
-        if ('drawingDash' in action.payload) {
-          state.drawingDashArray = action.payload.drawingDash;
+        if (drawing?.dashArray) {
+          state.style.dashArray = drawing.dashArray;
         }
 
-        if ('drawingLineCap' in action.payload) {
-          state.drawingLineCap = action.payload.drawingLineCap;
+        if (drawing?.lineCap) {
+          state.style.lineCap = drawing.lineCap;
         }
 
-        if ('drawingLineJoin' in action.payload) {
-          state.drawingLineJoin = action.payload.drawingLineJoin;
+        if (drawing?.lineJoin) {
+          state.style.lineJoin = drawing.lineJoin;
         }
 
-        if (action.payload.drawingMarkerType) {
-          state.drawingMarkerType = action.payload.drawingMarkerType;
+        if (drawing?.markerType) {
+          state.style.markerType = drawing.markerType;
         }
 
         if (color) {
           updateRecentDrawingColors(state, color);
         }
-
-        const fillColor = action.payload.drawingFillColor;
 
         if (fillColor) {
           updateRecentDrawingColors(state, fillColor);
@@ -94,14 +163,14 @@ export const drawingSettingsReducer = createReducer(
 );
 
 function updateRecentDrawingColors(
-  state: DrawingSettingsState,
+  state: DrawingSettings,
   drawingColor: string,
 ) {
-  state.drawingRecentColors = state.drawingRecentColors.filter(
+  state.recentColors = state.recentColors.filter(
     (color) => color !== drawingColor,
   );
 
-  state.drawingRecentColors.unshift(drawingColor);
+  state.recentColors.unshift(drawingColor);
 
-  state.drawingRecentColors.splice(12, Infinity);
+  state.recentColors.splice(12, Infinity);
 }

@@ -3,17 +3,12 @@ import {
   applyCookieConsent,
   setAnalyticCookiesAllowed,
 } from '@features/cookieConsent/model/actions.js';
-import type {
-  LineCap,
-  LineJoin,
-} from '@features/drawing/model/actions/drawingLineActions.js';
 import {
   saveHomeLocation,
   setSelectingHomeLocation,
 } from '@features/homeLocation/model/actions.js';
 import { setLocation, toggleLocate } from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
-import type { MarkerType } from '@features/objects/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import type {
   CustomLayerDef,
@@ -21,6 +16,7 @@ import type {
 } from '@shared/mapDefinitions.js';
 import { OsmFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
+import type { DrawingStyle } from '@/features/drawing/model/reducers/drawingSettingsReducer.js';
 
 export const ToolSchema = z.enum([
   'changesets',
@@ -108,15 +104,9 @@ type Settings = {
   layersSettings?: Record<string, LayerSettings>;
   overlayPaneOpacity?: number;
   customLayers?: CustomLayerDef[];
-  drawingColor?: string;
-  drawingFillColor?: string;
-  drawingWidth?: number;
-  drawingDash?: number[];
-  drawingLineCap?: LineCap;
-  drawingLineJoin?: LineJoin;
-  drawingMarkerType?: MarkerType;
   maxZoom?: number;
   stravaHeatmapColor?: StravaHeatmapColor;
+  drawing?: Partial<DrawingStyle>;
 };
 
 export const saveSettings = createAction<{

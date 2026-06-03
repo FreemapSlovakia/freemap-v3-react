@@ -38,12 +38,7 @@ function persistSelectedState(state: RootState) {
         cookieConsentResult: state.cookieConsent.cookieConsentResult,
         analyticCookiesAllowed: state.cookieConsent.analyticCookiesAllowed,
       },
-      drawingSettings: {
-        drawingColor: state.drawingSettings.drawingColor,
-        drawingWidth: state.drawingSettings.drawingWidth,
-        drawingRecentColors: state.drawingSettings.drawingRecentColors,
-        drawingMarkerType: state.drawingSettings.drawingMarkerType,
-      },
+      drawingSettings: state.drawingSettings,
       objects: {
         selectedIcon: state.objects.selectedIcon,
       },

@@ -9,6 +9,7 @@ import {
 import { drawingLinesReducer } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import { drawingPointsReducer } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import {
+  DrawingSettingsCompatSchema,
   drawingSettingsInitialState,
   drawingSettingsReducer,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
@@ -106,14 +107,6 @@ const PersistedCookieConsentSchema = z
   .object({
     cookieConsentResult: z.boolean().nullable(),
     analyticCookiesAllowed: z.boolean(),
-  })
-  .partial();
-
-const PersistedDrawingSettingsSchema = z
-  .object({
-    drawingColor: z.string(),
-    drawingWidth: z.number(),
-    drawingRecentColors: z.array(z.string()),
   })
   .partial();
 
@@ -276,7 +269,7 @@ export function getInitialState() {
   }
 
   const drawingSettings = parseWithFallback(
-    PersistedDrawingSettingsSchema,
+    DrawingSettingsCompatSchema,
     persisted.drawingSettings,
     persisted.main,
   );
@@ -285,6 +278,10 @@ export function getInitialState() {
     initial.drawingSettings = {
       ...drawingSettingsInitialState,
       ...drawingSettings,
+      style: {
+        ...drawingSettingsInitialState.style,
+        ...drawingSettings.style,
+      },
     };
   }
 

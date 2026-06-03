@@ -26,24 +26,24 @@ export default function DrawingLinesTool(): null {
 
   const dispatch = useDispatch();
 
-  const color = useAppSelector((state) => state.drawingSettings.drawingColor);
+  const color = useAppSelector((state) => state.drawingSettings.style.color);
 
   const fillColor = useAppSelector(
-    (state) => state.drawingSettings.drawingFillColor,
+    (state) => state.drawingSettings.style.fillColor,
   );
 
-  const width = useAppSelector((state) => state.drawingSettings.drawingWidth);
+  const width = useAppSelector((state) => state.drawingSettings.style.width);
 
   const dashArray = useAppSelector(
-    (state) => state.drawingSettings.drawingDashArray,
+    (state) => state.drawingSettings.style.dashArray,
   );
 
   const lineCap = useAppSelector(
-    (state) => state.drawingSettings.drawingLineCap,
+    (state) => state.drawingSettings.style.lineCap,
   );
 
   const lineJoin = useAppSelector(
-    (state) => state.drawingSettings.drawingLineJoin,
+    (state) => state.drawingSettings.style.lineJoin,
   );
 
   const linesLength = useAppSelector(

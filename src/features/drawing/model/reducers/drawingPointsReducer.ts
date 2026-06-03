@@ -28,16 +28,14 @@ export const drawingPointsReducer = createReducer(initialState, (builder) =>
       points: state.points.filter((_, i) => i !== payload.index),
     }))
     .addCase(applySettings, (state, { payload }) => {
-      if (payload.drawingApplyAll) {
-        for (const point of state.points) {
-          if (payload.drawingColor) {
-            point.color = payload.drawingColor;
-          }
+      if (!payload.drawingApplyAll) {
+        return;
+      }
 
-          if (payload.drawingMarkerType) {
-            point.markerType = payload.drawingMarkerType;
-          }
-        }
+      const { drawing } = payload;
+
+      for (const point of state.points) {
+        Object.assign(point, drawing);
       }
     })
     .addCase(drawingPointAdd, (state, { payload }) => {

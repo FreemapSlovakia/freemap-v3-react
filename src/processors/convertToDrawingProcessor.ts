@@ -11,7 +11,6 @@ import {
   lineStyleFromProperties,
   pointStyleFromProperties,
 } from '@features/drawing/model/styleFromProperties.js';
-import { normalizeMarkerType } from '@features/objects/model/actions.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import { searchClear } from '@features/search/model/actions.js';
@@ -70,15 +69,13 @@ function geojsonToDrawing(
 
       dispatch(
         drawingPointAdd({
+          ...state.drawingSettings.style,
+          ...style,
           label: feature.properties?.['name'],
-          color: style.color ?? state.drawingSettings.drawingColor,
           coords: {
             lat: geometry.coordinates[1],
             lon: geometry.coordinates[0],
           },
-          markerType: normalizeMarkerType(
-            style.markerType ?? state.objects.selectedIcon,
-          ),
           icon: style.icon ?? tagsToPoiIconSpec(tags),
           id: state.drawingPoints.points.length,
         }),
@@ -118,19 +115,10 @@ function geojsonToDrawing(
 
         dispatch(
           drawingLineAdd({
+            ...state.drawingSettings.style,
+            ...style,
             type: isPolygon ? 'polygon' : 'line',
             label: isPolygon ? feature.properties?.['name'] : undefined, // ignore street names
-            color: style.color ?? state.drawingSettings.drawingColor,
-            // Bake the fill default in here (like color/width above) so the
-            // semitransparency survives — a freshly drawn polygon uses
-            // drawingFillColor, so match it for unstyled imported polygons.
-            fillColor:
-              style.fillColor ??
-              (isPolygon ? state.drawingSettings.drawingFillColor : undefined),
-            width: style.width ?? state.drawingSettings.drawingWidth,
-            lineCap: style.lineCap,
-            lineJoin: style.lineJoin,
-            dashArray: style.dashArray,
             points,
           }),
         );
@@ -194,9 +182,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
       dispatch(
         drawingLineAdd({
+          ...state.drawingSettings.style,
           type: 'line',
-          color: state.drawingSettings.drawingColor,
-          width: state.drawingSettings.drawingWidth,
           points: ls.geometry.coordinates.map((p, id) => ({
             lat: p[0],
             lon: p[1],
@@ -228,10 +215,11 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       for (const object of targets) {
         dispatch(
           drawingPointAdd({
+            ...state.drawingSettings.style,
             coords: object.coords,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
-            color: state.drawingSettings.drawingColor,
-            markerType: normalizeMarkerType(state.objects.selectedIcon),
+            color: state.drawingSettings.style.color,
+            markerType: state.objects.selectedIcon,
             icon: tagsToPoiIconSpec(object.tags),
             id: getState().drawingPoints.points.length,
           }),
@@ -274,12 +262,10 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
           dispatch(
             drawingPointAdd({
+              ...state.drawingSettings.style,
+              ...style,
               label: feature.properties?.['name'],
-              color: style.color ?? state.drawingSettings.drawingColor,
-              markerType: normalizeMarkerType(
-                style.markerType ?? state.objects.selectedIcon,
-              ),
-              icon: style.icon,
+              markerType: style.markerType ?? state.objects.selectedIcon,
               coords: {
                 lat: geometry.coordinates[1],
                 lon: geometry.coordinates[0],
@@ -322,18 +308,10 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
             dispatch(
               drawingLineAdd({
+                ...state.drawingSettings.style,
+                ...style,
                 type: isPolygon ? 'polygon' : 'line',
                 label: feature.properties?.['name'],
-                color: style.color ?? state.drawingSettings.drawingColor,
-                fillColor:
-                  style.fillColor ??
-                  (isPolygon
-                    ? state.drawingSettings.drawingFillColor
-                    : undefined),
-                width: style.width ?? state.drawingSettings.drawingWidth,
-                lineCap: style.lineCap,
-                lineJoin: style.lineJoin,
-                dashArray: style.dashArray,
                 points,
               }),
             );
@@ -356,9 +334,10 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       for (const changeset of changesets) {
         dispatch(
           drawingPointAdd({
+            ...state.drawingSettings.style,
             coords: { lat: changeset.centerLat, lon: changeset.centerLon },
             label: changeset.description,
-            color: state.drawingSettings.drawingColor,
+            color: state.drawingSettings.style.color,
             id: getState().drawingPoints.points.length,
           }),
         );

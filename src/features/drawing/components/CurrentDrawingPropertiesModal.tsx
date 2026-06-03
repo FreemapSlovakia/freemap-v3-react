@@ -8,7 +8,6 @@ import {
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { normalizeMarkerType } from '@features/objects/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { COLORS } from '@shared/colors.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
@@ -326,14 +325,12 @@ export default function CurrentDrawingPropertiesModal({
               properties: {
                 label: editedLabel || undefined,
                 color: editedColor,
-                fillColor:
-                  editedType === 'polygon' ? editedFillColor : undefined,
+                fillColor: editedFillColor,
                 width: parseFloat(editedWidth) || undefined,
                 type: editedType,
-                dashArray: editedDash.length ? editedDash : undefined,
-                lineCap: editedLineCap === 'round' ? undefined : editedLineCap,
-                lineJoin:
-                  editedLineJoin === 'round' ? undefined : editedLineJoin,
+                dashArray: editedDash,
+                lineCap: editedLineCap,
+                lineJoin: editedLineJoin,
               },
             })
           : drawingPointChangeProperties({
@@ -341,7 +338,7 @@ export default function CurrentDrawingPropertiesModal({
               properties: {
                 label: editedLabel || undefined,
                 color: editedColor,
-                markerType: normalizeMarkerType(editedMarkerType),
+                markerType: editedMarkerType,
                 icon: editedIcon || undefined,
               },
             }),

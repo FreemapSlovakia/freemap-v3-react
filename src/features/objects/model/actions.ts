@@ -13,14 +13,6 @@ export const MarkerTypeSchema = z.enum(['pin', 'square', 'ring']);
 
 export type MarkerType = z.infer<typeof MarkerTypeSchema>;
 
-// 'pin' is the default shape; collapse it to undefined so it's omitted from
-// state, URLs and persisted maps.
-export function normalizeMarkerType(
-  markerType: MarkerType,
-): MarkerType | undefined {
-  return markerType === 'pin' ? undefined : markerType;
-}
-
 export const objectsSetFilter = createAction<string[]>('OBJECTS_SET_FILTER');
 
 export const objectsSetResult =

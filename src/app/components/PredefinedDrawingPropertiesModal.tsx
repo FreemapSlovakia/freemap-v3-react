@@ -15,28 +15,28 @@ export default function PredefinedDrawingPropertiesModal({
 }: Props): ReactElement {
   const m = useMessages();
 
-  const color = useAppSelector((state) => state.drawingSettings.drawingColor);
+  const color = useAppSelector((state) => state.drawingSettings.style.color);
 
   const fillColorPref = useAppSelector(
-    (state) => state.drawingSettings.drawingFillColor,
+    (state) => state.drawingSettings.style.fillColor,
   );
 
-  const width = useAppSelector((state) => state.drawingSettings.drawingWidth);
+  const width = useAppSelector((state) => state.drawingSettings.style.width);
 
   const dashArray = useAppSelector(
-    (state) => state.drawingSettings.drawingDashArray,
+    (state) => state.drawingSettings.style.dashArray,
   );
 
   const lineCap = useAppSelector(
-    (state) => state.drawingSettings.drawingLineCap ?? 'round',
+    (state) => state.drawingSettings.style.lineCap ?? 'round',
   );
 
   const lineJoin = useAppSelector(
-    (state) => state.drawingSettings.drawingLineJoin ?? 'round',
+    (state) => state.drawingSettings.style.lineJoin ?? 'round',
   );
 
   const markerType = useAppSelector(
-    (state) => state.drawingSettings.drawingMarkerType,
+    (state) => state.drawingSettings.style.markerType,
   );
 
   const [editedColor, setEditedColor] = useState(color);
@@ -47,7 +47,7 @@ export default function PredefinedDrawingPropertiesModal({
 
   const [editedWidth, setEditedWidth] = useState(String(width));
 
-  const [editedDash, setEditedDash] = useState(dashArray ?? []);
+  const [editedDashArray, setEditedDashArray] = useState(dashArray ?? []);
 
   const [editedLineCap, setEditedLineCap] = useState(lineCap);
 
@@ -58,14 +58,15 @@ export default function PredefinedDrawingPropertiesModal({
   function save(applyToAll = false) {
     dispatch(
       applySettings({
-        drawingColor: editedColor,
-        drawingFillColor: editedFillColor,
-        drawingWidth: Number(editedWidth) || 4,
-        drawingDash: editedDash.length ? editedDash : undefined,
-        drawingLineCap: editedLineCap === 'round' ? undefined : editedLineCap,
-        drawingLineJoin:
-          editedLineJoin === 'round' ? undefined : editedLineJoin,
-        drawingMarkerType: editedMarkerType,
+        drawing: {
+          color: editedColor,
+          fillColor: editedFillColor,
+          width: Number(editedWidth) || 4,
+          dashArray: editedDashArray,
+          lineCap: editedLineCap,
+          lineJoin: editedLineJoin,
+          markerType: editedMarkerType,
+        },
         drawingApplyAll: applyToAll,
       }),
     );
@@ -107,8 +108,8 @@ export default function PredefinedDrawingPropertiesModal({
             onLineCapChange={setEditedLineCap}
             lineJoin={editedLineJoin}
             onLineJoinChange={setEditedLineJoin}
-            dashArray={editedDash}
-            onDashArrayChange={setEditedDash}
+            dashArray={editedDashArray}
+            onDashArrayChange={setEditedDashArray}
           />
 
           <Form.Group controlId="markerType" className="mt-3">

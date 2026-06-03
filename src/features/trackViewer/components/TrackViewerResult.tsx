@@ -54,15 +54,15 @@ export default function TrackViewerResult({
   // Style unstyled features with the current drawing defaults so the preview
   // matches what "convert to drawing" will produce.
   const drawingColor = useAppSelector(
-    (state) => state.drawingSettings.drawingColor,
+    (state) => state.drawingSettings.style.color,
   );
 
   const drawingWidth = useAppSelector(
-    (state) => state.drawingSettings.drawingWidth,
+    (state) => state.drawingSettings.style.width,
   );
 
   const drawingFillColor = useAppSelector(
-    (state) => state.drawingSettings.drawingFillColor,
+    (state) => state.drawingSettings.style.fillColor,
   );
 
   const getFeatures: GetFeatures = (type: 'LineString' | 'Point' | 'Polygon') =>
@@ -94,10 +94,6 @@ export default function TrackViewerResult({
     (JSON.stringify(trackGeojson) + displayingElevationChart).length
   }`; // otherwise GeoJSON will still display the first data
 
-  const defaultStroke = drawingColor;
-
-  const defaultWidth = drawingWidth;
-
   // Fallback fill opacity, used only when no fill color is resolvable at all
   // (e.g. the user cleared drawingFillColor). Passing an explicit number is
   // required: Leaflet's `setOptions` copies `fillOpacity: undefined` over its
@@ -114,13 +110,13 @@ export default function TrackViewerResult({
 
     const style = lineStyleFromProperties(feature.properties, closed);
 
-    const stroke = splitColorAlpha(style.color ?? defaultStroke);
+    const stroke = splitColorAlpha(style.color ?? drawingColor);
 
     // Same default-fill treatment as native polygons below (ignored for lines,
     // which render as unfilled Polylines).
     const fillSpec = style.fillColor ?? drawingFillColor;
 
-    const fill = splitColorAlpha(fillSpec ?? style.color ?? defaultStroke);
+    const fill = splitColorAlpha(fillSpec ?? style.color ?? drawingColor);
 
     return {
       name: feature.properties?.['name'] as string | undefined,
@@ -131,7 +127,7 @@ export default function TrackViewerResult({
         strokeOpacity: stroke.opacity,
         fillColor: fill.color,
         fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
-        width: style.width ?? defaultWidth,
+        width: style.width ?? drawingWidth,
         dashArray: style.dashArray,
         lineCap: style.lineCap,
         lineJoin: style.lineJoin,
@@ -147,14 +143,14 @@ export default function TrackViewerResult({
   const polygons = getFeatures('Polygon').map((feature) => {
     const style = lineStyleFromProperties(feature.properties, true);
 
-    const stroke = splitColorAlpha(style.color ?? defaultStroke);
+    const stroke = splitColorAlpha(style.color ?? drawingColor);
 
     // With no explicit fill, fall back to the drawing default fill so an
     // unstyled imported polygon looks like a freshly drawn one (semitransparent)
     // rather than a solid blob.
     const fillSpec = style.fillColor ?? drawingFillColor;
 
-    const fill = splitColorAlpha(fillSpec ?? style.color ?? defaultStroke);
+    const fill = splitColorAlpha(fillSpec ?? style.color ?? drawingColor);
 
     return {
       name: feature.properties?.['name'],
@@ -166,7 +162,7 @@ export default function TrackViewerResult({
         strokeOpacity: stroke.opacity,
         fillColor: fill.color,
         fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
-        width: style.width ?? defaultWidth,
+        width: style.width ?? drawingWidth,
         dashArray: style.dashArray,
         lineCap: style.lineCap,
         lineJoin: style.lineJoin,
@@ -386,7 +382,7 @@ function WaypointMarker({
 
   // Match the drawing default point color for unstyled waypoints.
   const drawingColor = useAppSelector(
-    (state) => state.drawingSettings.drawingColor,
+    (state) => state.drawingSettings.style.color,
   );
 
   // No icon spec resolved → fall back to the legacy flag glyph.

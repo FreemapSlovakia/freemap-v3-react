@@ -478,9 +478,9 @@ export async function buildExportFeatureCollection({
   const markerMode = Boolean(pointMode.svgMarker || pointMode.pngMarker);
 
   const foreignDefaults = {
-    color: drawingSettings.drawingColor,
-    width: drawingSettings.drawingWidth,
-    fillColor: drawingSettings.drawingFillColor,
+    color: drawingSettings.style.color,
+    width: drawingSettings.style.width,
+    fillColor: drawingSettings.style.fillColor,
   };
 
   const features: Feature[] = [];

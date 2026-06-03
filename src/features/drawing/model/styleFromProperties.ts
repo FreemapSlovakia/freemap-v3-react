@@ -24,9 +24,9 @@ import {
 export function pointStyleFromProperties(
   properties: Record<string, unknown> | null | undefined,
 ): {
-  markerType: MarkerType | undefined;
-  icon: string | undefined;
-  color: string | undefined;
+  markerType?: MarkerType;
+  icon?: string;
+  color?: string;
 } {
   const get = (key: string): string | undefined => {
     const v = properties?.[key];
@@ -50,7 +50,14 @@ export function pointStyleFromProperties(
   const color =
     get('freemap:color') ?? get('osmand:color') ?? get('marker-color');
 
-  return { markerType, icon, color };
+  const pointStyle = { markerType, icon, color };
+
+  for (const [key, value] of Object.entries(pointStyle)) {
+    if (value === undefined) {
+      delete pointStyle[key as keyof typeof pointStyle];
+    }
+  }
+  return pointStyle;
 }
 
 // Plucks line/polygon styling out of a GeoJSON feature's properties. GPX has
@@ -61,13 +68,13 @@ export function lineStyleFromProperties(
   properties: Record<string, unknown> | null | undefined,
   closed: boolean,
 ): {
-  type: DrawingLineType | undefined;
-  color: string | undefined;
-  fillColor: string | undefined;
-  width: number | undefined;
-  lineCap: LineCap | undefined;
-  lineJoin: LineJoin | undefined;
-  dashArray: number[] | undefined;
+  type?: DrawingLineType;
+  color?: string;
+  fillColor?: string;
+  width?: number;
+  lineCap?: LineCap;
+  lineJoin?: LineJoin;
+  dashArray?: number[];
 } {
   const get = (key: string): string | undefined => {
     const v = properties?.[key];
@@ -107,5 +114,21 @@ export function lineStyleFromProperties(
         .filter((n) => Number.isFinite(n))
     : undefined;
 
-  return { type, color, fillColor, width, lineCap, lineJoin, dashArray };
+  const lineStyle = {
+    type,
+    color,
+    fillColor,
+    width,
+    lineCap,
+    lineJoin,
+    dashArray,
+  };
+
+  for (const [key, value] of Object.entries(lineStyle)) {
+    if (value === undefined) {
+      delete lineStyle[key as keyof typeof lineStyle];
+    }
+  }
+
+  return lineStyle;
 }

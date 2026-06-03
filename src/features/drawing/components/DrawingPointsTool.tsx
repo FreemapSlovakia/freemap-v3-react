@@ -1,4 +1,3 @@
-import { normalizeMarkerType } from '@features/objects/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
@@ -10,10 +9,10 @@ import {
 } from '../model/actions/drawingPointActions.js';
 
 export function DrawingPointsTool(): null {
-  const color = useAppSelector((state) => state.drawingSettings.drawingColor);
+  const color = useAppSelector((state) => state.drawingSettings.style.color);
 
   const markerType = useAppSelector(
-    (state) => state.drawingSettings.drawingMarkerType,
+    (state) => state.drawingSettings.style.markerType,
   );
 
   const length = useAppSelector((state) => state.drawingPoints.points.length);
@@ -31,7 +30,7 @@ export function DrawingPointsTool(): null {
               lon: latlng.lng,
             },
             color,
-            markerType: normalizeMarkerType(markerType),
+            markerType,
             id: length,
           }),
         );
