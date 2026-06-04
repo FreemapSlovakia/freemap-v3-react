@@ -4,7 +4,7 @@ title: Garmin
 
 Ak máte používateľský účet [Garmin Connect](https://connect.garmin.com), môžete sa pomocou neho [prihlásiť na Freemap](#show=login) alebo ho [prepojiť s vaším existujúcim účtom na Freemap](#show=account).
 
-Okrem toho môžete mnohé mapové prvky jednoducho [preniesť do svojho zariadenia Garmin](#show=export-gpx), napríklad [naplánovanú trasu](#tool=route-planner&show=), [nakreslenú čiaru](#tool=draw-lines&show=), vyhľadaný alebo [vybraný lineárny prvok z mapy](#tool=map-details&show=), a ďalšie.
+Okrem toho môžete mnohé mapové prvky jednoducho [preniesť do svojho zariadenia Garmin](#show=map-features-export), napríklad [naplánovanú trasu](#tool=route-planner&show=), [nakreslenú čiaru](#tool=draw-lines&show=), vyhľadaný alebo [vybraný lineárny prvok z mapy](#tool=map-details&show=), a ďalšie.
 
 #### Príklad exportu turistickej trasy:
 

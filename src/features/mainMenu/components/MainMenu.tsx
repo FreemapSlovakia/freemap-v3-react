@@ -117,18 +117,24 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item
-        eventKey="modal-export-map-features"
-        href="#show=export-map-features"
+        eventKey="modal-map-features-export"
+        href="#show=map-features-export"
       >
         <FaFileExport /> {m?.mainMenu.mapFeaturesExport} <kbd>e</kbd>{' '}
         <kbd>g</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item href="#show=export-map" eventKey="modal-export-map">
+      <Dropdown.Item
+        href="#show=map-to-document-export"
+        eventKey="modal-map-to-document-export"
+      >
         <FaPrint /> {m?.mainMenu.mapToDocumentExport} <kbd>e</kbd> <kbd>p</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item eventKey="modal-download-map" href="#show=download-map">
+      <Dropdown.Item
+        eventKey="modal-offline-map-export"
+        href="#show=offline-map-export"
+      >
         <FaDatabase /> {m?.offlineMapExport.downloadMap} <kbd>e</kbd>{' '}
         <kbd>m</kbd>
       </Dropdown.Item>

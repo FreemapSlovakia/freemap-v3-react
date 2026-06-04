@@ -6,7 +6,7 @@ order: 600
 
 If you have a [Garmin Connect](https://connect.garmin.com) account, you can use it to [log in to Freemap](#show=login) or [link it to your existing Freemap account](#show=account).
 
-In addition, you can easily [export many map features to your Garmin device](#show=export-gpx), such as a [planned route](#tool=route-planner&show=), a [drawn line](#tool=draw-lines&show=), a searched or [selected linear feature from the map](#tool=map-details&show=), and more.
+In addition, you can easily [export many map features to your Garmin device](#show=map-features-export), such as a [planned route](#tool=route-planner&show=), a [drawn line](#tool=draw-lines&show=), a searched or [selected linear feature from the map](#tool=map-details&show=), and more.
 
 #### Example: exporting a hiking route
 

@@ -307,7 +307,7 @@ Opens a submenu:
 
 - Access: Main menu > Map export to image/document
 - Keyboard shortcut: <kbd>e</kbd> <kbd>p</kbd>
-- URL path: `/#show=export-map`
+- URL path: `/#show=map-to-document-export`
 
 Opens a modal to export the map as an image or document. Options:
 
@@ -324,7 +324,7 @@ The modal also displays the attribution that must accompany the exported map whe
 
 - Access: Main menu > Map data export
 - Keyboard shortcut: <kbd>e</kbd> <kbd>g</kbd>
-- URL path: `/#show=export-map-features`
+- URL path: `/#show=map-features-export`
 
 Opens a modal to export the user's own map data as a GPX or GeoJSON file. Only the data types that actually have something on the map are selectable:
 
@@ -356,7 +356,7 @@ Opens a modal with instructions to get various maps for GPS devices:
 
 - Access: Main menu > Offline maps export
 - Keyboard shortcut: <kbd>e</kbd> <kbd>m</kbd>
-- URL path: `/#show=download-map`
+- URL path: `/#show=offline-map-export`
 
 Opens a modal to download a map in offline formats (MBTiles or SQLiteDB).
 Selection can be the current visible map area or a rectangle drawn on the map.

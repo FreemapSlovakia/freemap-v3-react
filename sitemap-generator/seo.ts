@@ -202,7 +202,7 @@ export const hubs: Hub[] = [
     },
   },
   {
-    param: 'show=export-map',
+    param: 'show=map-to-document-export',
     title: {
       en: 'Map export to image or PDF',
       sk: 'Export mapy do obrázka alebo PDF',
@@ -213,7 +213,7 @@ export const hubs: Hub[] = [
     },
   },
   {
-    param: 'show=export-map-features',
+    param: 'show=map-features-export',
     title: {
       en: 'Map data export (GPX, GeoJSON)',
       sk: 'Export mapových dát (GPX, GeoJSON)',
@@ -235,7 +235,7 @@ export const hubs: Hub[] = [
     },
   },
   {
-    param: 'show=download-map',
+    param: 'show=offline-map-export',
     title: {
       en: 'Offline map export (MBTiles)',
       sk: 'Export offline máp (MBTiles)',
