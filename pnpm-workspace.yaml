@@ -18,3 +18,12 @@ minimumReleaseAgeExclude:
   - '@sentry/core@10.55.0'
   - html-rspack-plugin@6.1.9
   - ts-checker-rspack-plugin@1.3.1
+  - '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260603.1'
+  - '@typescript/native-preview-darwin-x64@7.0.0-dev.20260603.1'
+  - '@typescript/native-preview-linux-arm64@7.0.0-dev.20260603.1'
+  - '@typescript/native-preview-linux-arm@7.0.0-dev.20260603.1'
+  - '@typescript/native-preview-linux-x64@7.0.0-dev.20260603.1'
+  - '@typescript/native-preview-win32-arm64@7.0.0-dev.20260603.1'
+  - '@typescript/native-preview-win32-x64@7.0.0-dev.20260603.1'
+  - '@typescript/native-preview@7.0.0-dev.20260603.1'
+  - exifreader@4.40.5
