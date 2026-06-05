@@ -118,6 +118,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     accept: 'Elfogadod',
   },
 
+  generic: {
+    color: 'Szín',
+    size: 'Méret',
+    weight: 'Vastagság',
+    width: 'Szélesség',
+  },
+
   theme: {
     light: 'Világos mód',
     dark: 'Sötét mód',
@@ -1089,6 +1096,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     northArrow: 'Iránytű',
     attribution: 'Forrásmegjelölés',
     northArrowLetter: 'É',
+    glow: 'Ragyogás',
+    markerWidth: 'Jelölők mérete',
     alert: (licence) => (
       <>
         Megjegyzések:

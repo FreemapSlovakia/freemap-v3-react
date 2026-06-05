@@ -117,6 +117,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: 'Usuń %value% z listy',
     accept: 'Zaakceptować',
   },
+  generic: {
+    color: 'Kolor',
+    size: 'Rozmiar',
+    weight: 'Grubość',
+    width: 'Szerokość',
+  },
   theme: {
     light: 'Jasny tryb',
     dark: 'Ciemny tryb',
@@ -1055,6 +1061,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     northArrow: 'Strzałka północy',
     attribution: 'Atrybucja',
     northArrowLetter: 'N',
+    glow: 'Poświata',
+    markerWidth: 'Rozmiar znaczników',
     alert: (licence) => (
       <>
         Uwagi:

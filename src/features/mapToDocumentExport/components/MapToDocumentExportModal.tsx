@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { RgbaColorPicker } from '@features/drawing/components/RgbaColorPicker.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
@@ -37,6 +38,7 @@ import {
   FaHiking,
   FaHorse,
   FaPrint,
+  FaRegSun,
   FaRulerHorizontal,
   FaSkiing,
   FaTimes,
@@ -86,7 +88,7 @@ const toExportFormat = (value: string | null) =>
   FormatSchema.safeParse(value).data ?? 'jpeg';
 
 const toCustomLayerOrder = (value: string | null) =>
-  CustomLayerOrderSchema.safeParse(value).data ?? 'topmost';
+  CustomLayerOrderSchema.safeParse(value).data ?? 'natural';
 
 const fromBool = (value: boolean) => (value ? '1' : '0');
 
@@ -137,6 +139,51 @@ export default function MapToDocumentExportModal({
   const [attributionEnabled, setAttributionEnabled] =
     usePersistentState<boolean>('fm.exportMap.attribution', fromBool, toBool);
 
+  // Glow/shadow rendered around all custom-layer markers and lines.
+  const [glow, setGlow] = usePersistentState<boolean>(
+    'fm.exportMap.glow',
+    fromBool,
+    toBool,
+  );
+
+  const [glowColor, setGlowColor] = usePersistentState<string>(
+    'fm.exportMap.glowColor',
+    identity,
+    (value) => value ?? '#ffffff80',
+  );
+
+  const [glowWidth, setGlowWidth] = usePersistentState<string>(
+    'fm.exportMap.glowWidth',
+    identity,
+    (value) => value ?? '2',
+  );
+
+  // Width in pixels of custom-layer point markers.
+  const [markerWidth, setMarkerWidth] = usePersistentState<string>(
+    'fm.exportMap.markerWidth',
+    identity,
+    (value) => value ?? '30',
+  );
+
+  // Styling of custom-layer feature labels.
+  const [labelColor, setLabelColor] = usePersistentState<string>(
+    'fm.exportMap.labelColor',
+    identity,
+    (value) => value ?? '#8000ff',
+  );
+
+  const [labelWeight, setLabelWeight] = usePersistentState<string>(
+    'fm.exportMap.labelWeight',
+    identity,
+    (value) => value ?? '700',
+  );
+
+  const [labelSize, setLabelSize] = usePersistentState<string>(
+    'fm.exportMap.labelSize',
+    identity,
+    (value) => value ?? '15',
+  );
+
   const [layers, setLayers] = useState(() => {
     const layers = storage.getItem(LAYERS_STORAGE_KEY);
 
@@ -176,6 +223,14 @@ export default function MapToDocumentExportModal({
 
   const invalidScale = isInvalidInt(scale, true, 60, 960);
 
+  const invalidGlowWidth = glow && isInvalidInt(glowWidth, true, 1, 50);
+
+  const invalidMarkerWidth = isInvalidInt(markerWidth, true, 1, 100);
+
+  const invalidLabelWeight = isInvalidInt(labelWeight, true, 100, 900);
+
+  const invalidLabelSize = isInvalidInt(labelSize, true, 1, 100);
+
   const cookiesEnabled = useAppSelector(
     (state) => state.cookieConsent.cookieConsentResult !== null,
   );
@@ -206,6 +261,34 @@ export default function MapToDocumentExportModal({
       setScale(e.currentTarget.value);
     },
     [setScale],
+  );
+
+  const handleGlowWidthChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setGlowWidth(e.currentTarget.value);
+    },
+    [setGlowWidth],
+  );
+
+  const handleMarkerWidthChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setMarkerWidth(e.currentTarget.value);
+    },
+    [setMarkerWidth],
+  );
+
+  const handleLabelWeightChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setLabelWeight(e.currentTarget.value);
+    },
+    [setLabelWeight],
+  );
+
+  const handleLabelSizeChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setLabelSize(e.currentTarget.value);
+    },
+    [setLabelSize],
   );
 
   const handleCustomLayerOrderChange = useCallback(
@@ -316,9 +399,7 @@ export default function MapToDocumentExportModal({
           />
         </Form.Group>
 
-        <div className="mt-3" />
-
-        <Form.Group>
+        <Form.Group className="mt-3">
           <Form.Label className="d-block">
             {' '}
             {m?.mapToDocumentExport.format}
@@ -343,9 +424,7 @@ export default function MapToDocumentExportModal({
           </ToggleButtonGroup>
         </Form.Group>
 
-        <div className="mt-3" />
-
-        <Form.Group>
+        <Form.Group className="mt-3">
           <Form.Label className="d-block">
             {m?.mapToDocumentExport.layersTitle}
           </Form.Label>
@@ -368,23 +447,178 @@ export default function MapToDocumentExportModal({
           </div>
         </Form.Group>
 
-        <div className="mt-3" />
+        <fieldset className="mt-3 border rounded p-3">
+          <Form.Group>
+            <Form.Label className="d-block">
+              {m?.mapToDocumentExport.mapDataTitle}
+            </Form.Label>
 
-        <Form.Group>
-          <Form.Label className="d-block">
-            {m?.mapToDocumentExport.mapDataTitle}
-          </Form.Label>
+            <ExportablesSelector
+              value={exportables}
+              available={availableExportables}
+              onChange={setExportables}
+            />
+          </Form.Group>
 
-          <ExportablesSelector
-            value={exportables}
-            available={availableExportables}
-            onChange={setExportables}
-          />
-        </Form.Group>
+          <fieldset disabled={exportables.length < 2} className="mt-3">
+            <Form.Group>
+              <Form.Label className="d-block">
+                {m?.mapToDocumentExport.markerWidth}
+              </Form.Label>
 
-        <div className="mt-3" />
+              <InputGroup className="w-auto">
+                <Form.Control
+                  type="number"
+                  value={markerWidth}
+                  min={1}
+                  max={100}
+                  step={1}
+                  isInvalid={invalidMarkerWidth}
+                  onChange={handleMarkerWidthChange}
+                  style={{ width: '5rem' }}
+                />
 
-        <Form.Group>
+                <InputGroup.Text>px</InputGroup.Text>
+              </InputGroup>
+            </Form.Group>
+
+            <Form.Group className="mt-3">
+              <Form.Label className="d-block">
+                {m?.mapToDocumentExport.glow}
+              </Form.Label>
+
+              <div className="d-flex flex-wrap align-items-center gap-2">
+                <ToggleButtonGroup
+                  type="checkbox"
+                  value={glow ? ['glow'] : []}
+                  onChange={(values: string[]) =>
+                    setGlow(values.includes('glow'))
+                  }
+                >
+                  <ToggleButton
+                    id="exportGlow"
+                    value="glow"
+                    variant="outline-primary"
+                    className="rounded flex-grow-0"
+                  >
+                    <FaRegSun /> {m?.mapToDocumentExport.glow}
+                  </ToggleButton>
+                </ToggleButtonGroup>
+
+                {glow && (
+                  <>
+                    <InputGroup className="w-auto">
+                      <InputGroup.Text>{m?.generic.color}</InputGroup.Text>
+
+                      <RgbaColorPicker
+                        value={glowColor}
+                        onChange={setGlowColor}
+                        className="flex-grow-0"
+                        style={{ width: '3rem' }}
+                      />
+                    </InputGroup>
+
+                    <InputGroup className="w-auto">
+                      <InputGroup.Text>{m?.generic.width}</InputGroup.Text>
+
+                      <Form.Control
+                        type="number"
+                        value={glowWidth}
+                        min={1}
+                        max={50}
+                        step={1}
+                        isInvalid={invalidGlowWidth}
+                        onChange={handleGlowWidthChange}
+                        style={{ minWidth: '5rem', width: '5rem' }}
+                      />
+                    </InputGroup>
+                  </>
+                )}
+              </div>
+            </Form.Group>
+
+            <Form.Group className="mt-3">
+              <Form.Label className="d-block">
+                {m?.mapToDocumentExport.labelTitle}
+              </Form.Label>
+
+              <div className="d-flex flex-wrap align-items-center gap-2">
+                <InputGroup className="w-auto">
+                  <InputGroup.Text>{m?.generic.color}</InputGroup.Text>
+
+                  <RgbaColorPicker
+                    value={labelColor}
+                    onChange={setLabelColor}
+                    alpha={false}
+                    className="flex-grow-0"
+                    style={{ width: '3rem' }}
+                  />
+                </InputGroup>
+
+                <InputGroup className="w-auto">
+                  <InputGroup.Text>{m?.generic.size}</InputGroup.Text>
+
+                  <Form.Control
+                    type="number"
+                    value={labelSize}
+                    min={1}
+                    max={100}
+                    step={1}
+                    isInvalid={invalidLabelSize}
+                    onChange={handleLabelSizeChange}
+                    style={{ minWidth: '5rem', width: '5rem' }}
+                  />
+                </InputGroup>
+
+                <InputGroup className="w-auto">
+                  <InputGroup.Text>{m?.generic.weight}</InputGroup.Text>
+
+                  <Form.Control
+                    type="number"
+                    value={labelWeight}
+                    min={100}
+                    max={900}
+                    step={100}
+                    isInvalid={invalidLabelWeight}
+                    onChange={handleLabelWeightChange}
+                    style={{ minWidth: '5rem', width: '5rem' }}
+                  />
+                </InputGroup>
+              </div>
+            </Form.Group>
+
+            <Form.Group className="mt-3">
+              <Form.Label className="d-block">
+                {m?.mapToDocumentExport.customLayerOrder}
+              </Form.Label>
+
+              <ToggleButtonGroup
+                type="radio"
+                name="customLayerOrder"
+                value={customLayerOrder}
+                onChange={handleCustomLayerOrderChange}
+              >
+                <ToggleButton
+                  id="customLayerOrder-natural"
+                  value="natural"
+                  variant="outline-primary"
+                >
+                  {m?.mapToDocumentExport.orders.natural}
+                </ToggleButton>
+
+                <ToggleButton
+                  id="customLayerOrder-topmost"
+                  value="topmost"
+                  variant="outline-primary"
+                >
+                  {m?.mapToDocumentExport.orders.topmost}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Form.Group>
+          </fieldset>
+        </fieldset>
+
+        <Form.Group className="mt-3">
           <Form.Label className="d-block">
             {m?.mapToDocumentExport.decorations}
           </Form.Label>
@@ -428,40 +662,7 @@ export default function MapToDocumentExportModal({
           </ToggleButtonGroup>
         </Form.Group>
 
-        <div className="mt-3" />
-
-        <Form.Group>
-          <Form.Label className="d-block">
-            {m?.mapToDocumentExport.customLayerOrder}
-          </Form.Label>
-
-          <ToggleButtonGroup
-            type="radio"
-            name="customLayerOrder"
-            value={customLayerOrder}
-            onChange={handleCustomLayerOrderChange}
-          >
-            <ToggleButton
-              id="customLayerOrder-topmost"
-              value="topmost"
-              variant="outline-primary"
-            >
-              {m?.mapToDocumentExport.orders.topmost}
-            </ToggleButton>
-
-            <ToggleButton
-              id="customLayerOrder-natural"
-              value="natural"
-              variant="outline-primary"
-            >
-              {m?.mapToDocumentExport.orders.natural}
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Form.Group>
-
-        <div className="mt-3" />
-
-        <Form.Group controlId="mapScale">
+        <Form.Group controlId="mapScale" className="mt-3">
           <Form.Label>{m?.mapToDocumentExport.mapScale}</Form.Label>
 
           <InputGroup>
@@ -482,7 +683,13 @@ export default function MapToDocumentExportModal({
 
       <Modal.Footer>
         <Button
-          disabled={invalidScale}
+          disabled={
+            invalidScale ||
+            invalidGlowWidth ||
+            invalidMarkerWidth ||
+            invalidLabelWeight ||
+            invalidLabelSize
+          }
           onClick={() =>
             dispatch(
               exportMapToDocument({
@@ -503,6 +710,15 @@ export default function MapToDocumentExportModal({
                     attributionEnabled && attributionText
                       ? attributionText
                       : false,
+                },
+                glow: glow
+                  ? { color: glowColor, width: parseInt(glowWidth, 10) }
+                  : null,
+                markerWidth: parseInt(markerWidth, 10),
+                label: {
+                  color: labelColor,
+                  weight: parseInt(labelWeight, 10),
+                  size: parseInt(labelSize, 10),
                 },
               }),
             )

@@ -315,6 +315,9 @@ Opens a modal to export the map as an image or document. Options:
 - Format: JPEG, PNG, PDF, or SVG
 - Optional server-rendered overlays: contours, shaded relief, hiking trails, bicycle trails, ski trails, horse trails
 - Own map-feature sources to draw on top (only those with data are selectable, same set as the map data export): found route (optionally with stops), objects (POIs), photos, drawing lines/areas/points, live tracking, imported GPX track, highlighted map feature
+- Glow: optional glow/shadow drawn around all own map-feature markers and lines, with configurable color (incl. opacity) and width
+- Marker size: configurable pixel size of own map-feature point markers
+- Labels: configurable color (no opacity), size, and weight of own map-feature labels
 - Drawing order: Topmost or Natural
 - Map resolution (DPI)
 

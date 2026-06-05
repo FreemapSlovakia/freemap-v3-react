@@ -119,6 +119,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     accept: 'Přijmout',
   },
 
+  generic: {
+    color: 'Barva',
+    size: 'Velikost',
+    weight: 'Tloušťka',
+    width: 'Šířka',
+  },
+
   theme: {
     light: 'Světlý režim',
     dark: 'Tmavý režim',
@@ -1031,6 +1038,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     northArrow: 'Směrová šipka',
     attribution: 'Uvedení zdroje',
     northArrowLetter: 'S',
+    glow: 'Záře',
+    markerWidth: 'Velikost značek',
     alert: (licence) => (
       <>
         Upozornění:

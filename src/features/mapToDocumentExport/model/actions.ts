@@ -33,6 +33,24 @@ export interface Decorations {
   attribution: string | false;
 }
 
+/** Glow/shadow drawn around all custom-layer markers and lines, or `null` to omit it. */
+export interface Glow {
+  /** `#rrggbbaa` color (including alpha). */
+  color: string;
+  /** Glow width in pixels. */
+  width: number;
+}
+
+/** Styling of custom-layer feature labels. */
+export interface Label {
+  /** `#rrggbb` color (no alpha). */
+  color: string;
+  /** Font weight. */
+  weight: number;
+  /** Font size in pixels. */
+  size: number;
+}
+
 export interface ExportOptions {
   layers: ExportableLayer[];
   exportables: Exportable[];
@@ -41,6 +59,11 @@ export interface ExportOptions {
   area: 'visible' | 'area';
   format: Format;
   decorations: Decorations;
+  glow: Glow | null;
+  /** Width in pixels of custom-layer point markers. */
+  markerWidth: number;
+  /** Styling of custom-layer feature labels. */
+  label: Label;
 }
 
 export const exportMapToDocument = createAction<ExportOptions>(

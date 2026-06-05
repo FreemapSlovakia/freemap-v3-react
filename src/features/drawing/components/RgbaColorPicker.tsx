@@ -7,6 +7,10 @@ import { OverlayTrigger, Popover } from 'react-bootstrap';
 type Props = {
   value: string;
   onChange: (color: string) => void;
+  className?: string;
+  style?: CSSProperties;
+  /** Allow editing the alpha channel; when `false` the result is `#rrggbb`. */
+  alpha?: boolean;
 };
 
 const checkerBg: CSSProperties = {
@@ -16,7 +20,13 @@ const checkerBg: CSSProperties = {
   backgroundPosition: '0 0, 0 5px, 5px -5px, -5px 0',
 };
 
-export function RgbaColorPicker({ value, onChange }: Props): ReactElement {
+export function RgbaColorPicker({
+  value,
+  onChange,
+  className,
+  style,
+  alpha = true,
+}: Props): ReactElement {
   const recentColors = useAppSelector(
     (state) => state.drawingSettings.recentColors,
   );
@@ -30,15 +40,24 @@ export function RgbaColorPicker({ value, onChange }: Props): ReactElement {
       rootClose
       show={show}
       onToggle={setShow}
+      // render into <body> so the popover isn't clipped by a scrollable modal
+      // body and can flip above the swatch when there's no room below
+      container={() => document.body}
+      flip
       overlay={
         <Popover style={{ maxWidth: 'none' }}>
           <Popover.Body className="p-2">
             <ColorPicker
               value={toRgbaString(value)}
-              onChange={(c) => onChange(rgbaStringToHexa(c))}
+              onChange={(c) => {
+                const hexa = rgbaStringToHexa(c);
+
+                onChange(alpha ? hexa : hexa.slice(0, 7));
+              }}
               width={236}
               height={120}
               presets={recentColors}
+              hideOpacity={!alpha}
               hideControls
               hideColorTypeBtns
               hideEyeDrop
@@ -52,11 +71,12 @@ export function RgbaColorPicker({ value, onChange }: Props): ReactElement {
     >
       <button
         type="button"
-        className="form-control p-0"
+        className={`form-control p-0${className ? ` ${className}` : ''}`}
         style={{
           cursor: 'pointer',
           height: 'calc(1.5em + 0.75rem + 2px)',
           ...checkerBg,
+          ...style,
         }}
         aria-label="Pick color"
       >

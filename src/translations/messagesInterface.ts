@@ -79,6 +79,12 @@ export type Messages = {
     deleteButtonText: string;
     accept: string;
   };
+  generic: {
+    color: string;
+    size: string;
+    weight: string;
+    width: string;
+  };
   theme: {
     light: string;
     dark: string;
@@ -712,6 +718,9 @@ export type Messages = {
     alert: (licence?: ReactElement[]) => JSX.Element;
     advancedSettings: string;
     styles: string;
+    glow: string;
+    markerWidth: string;
+    labelTitle: string;
   };
   myMaps: {
     addNew: string;

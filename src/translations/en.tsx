@@ -113,6 +113,13 @@ const messages: Messages = {
     accept: 'Accept',
   },
 
+  generic: {
+    color: 'Color',
+    size: 'Size',
+    weight: 'Weight',
+    width: 'Width',
+  },
+
   theme: {
     light: 'Light mode',
     dark: 'Dark mode',
@@ -1012,6 +1019,9 @@ const messages: Messages = {
     northArrow: 'North arrow',
     attribution: 'Attribution',
     northArrowLetter: 'N',
+    glow: 'Glow',
+    markerWidth: 'Marker size',
+    labelTitle: 'Labels',
 
     alert: (licence) => (
       <>

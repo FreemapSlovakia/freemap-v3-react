@@ -125,6 +125,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     accept: 'Accetta',
   },
 
+  generic: {
+    color: 'Colore',
+    size: 'Dimensione',
+    weight: 'Spessore',
+    width: 'Larghezza',
+  },
+
   theme: {
     light: 'Modalità chiara',
     dark: 'Modalità scura',
@@ -1059,6 +1066,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     northArrow: 'Freccia del nord',
     attribution: 'Attribuzione',
     northArrowLetter: 'N',
+    glow: 'Alone',
+    markerWidth: 'Dimensione dei marcatori',
     alert: (licence) => (
       <>
         Note:

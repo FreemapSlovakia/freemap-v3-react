@@ -22,6 +22,9 @@ const handle: ProcessorHandler<typeof exportMapToDocument> = async ({
     exportables,
     customLayerOrder,
     decorations,
+    glow,
+    markerWidth,
+    label,
   } = action.payload;
 
   const bbox =
@@ -77,14 +80,17 @@ const handle: ProcessorHandler<typeof exportMapToDocument> = async ({
         attribution: decorations.attribution, // bottom-right, right-aligned
       },
       features: {
-        shading: exportLayers.includes('shading'),
-        contours: exportLayers.includes('contours'),
-        hikingTrails: exportLayers.includes('hikingTrails'),
-        bicycleTrails: exportLayers.includes('bicycleTrails'),
-        skiTrails: exportLayers.includes('skiTrails'),
-        horseTrails: exportLayers.includes('horseTrails'),
-        featureCollection: fc.features.length ? fc : undefined,
-        featureCollectionOrder: customLayerOrder,
+        layers: exportLayers,
+        customLayer: {
+          featureCollection: fc.features.length ? fc : undefined,
+          featureCollectionOrder: customLayerOrder,
+          glowColor: glow ? glow.color : undefined, // rgba
+          glowWidth: glow ? glow.width : 0,
+          markerWidth,
+          labelColor: label.color, // rgb (no alpha)
+          labelWeight: label.weight,
+          labelSize: label.size,
+        },
       },
     },
     expectedStatus: 200,

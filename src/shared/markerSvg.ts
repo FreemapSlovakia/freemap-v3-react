@@ -35,9 +35,9 @@ export function utf8ToBase64(s: string): string {
     : '';
 }
 
-export async function fetchSvgAsDataUrl(
-  url: string,
-): Promise<string | undefined> {
+// Fetches an SVG asset and returns its raw markup, so callers can inline it as
+// a nested `<svg>` (true vector) instead of embedding it as an `<image>`.
+export async function fetchSvgText(url: string): Promise<string | undefined> {
   try {
     const res = await fetch(url);
 
@@ -45,12 +45,38 @@ export async function fetchSvgAsDataUrl(
       return undefined;
     }
 
-    const text = await res.text();
-
-    return `data:image/svg+xml;base64,${utf8ToBase64(text)}`;
+    return await res.text();
   } catch {
     return undefined;
   }
+}
+
+// Strips the XML prolog / DOCTYPE / comments from a standalone SVG and re-tags
+// its root `<svg>` as a nested element positioned at (x, y) and sized
+// size×size. The element keeps its own `viewBox`, so its vector content scales
+// into the marker — no rasterization, unlike an `<image href="data:...">`.
+// `id` attributes are dropped so inlining many markers in one document can't
+// produce duplicate ids (these icons carry none referenced via `url(#…)`).
+export function nestSvg(
+  svgText: string,
+  x: number,
+  y: number,
+  size: number,
+): string {
+  const body = svgText
+    .replace(/<\?xml[\s\S]*?\?>/g, '')
+    .replace(/<!DOCTYPE[\s\S]*?>/gi, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\sid\s*=\s*("[^"]*"|'[^']*')/g, '')
+    .trim();
+
+  return body.replace(/<svg\b[^>]*>/, (tag) => {
+    const attrs = tag
+      .slice(4, -1)
+      .replace(/\s(?:x|y|width|height)\s*=\s*("[^"]*"|'[^']*')/g, '');
+
+    return `<svg${attrs} x="${x}" y="${y}" width="${size}" height="${size}">`;
+  });
 }
 
 // Resolves a drawing point's icon spec (+ label fallback) into the concrete
@@ -61,16 +87,16 @@ export async function resolveMarkerGlyph({
   icon,
   label,
   faCache,
-  poiDataUrlCache,
+  poiSvgCache,
 }: {
   icon?: string;
   label?: string;
   faCache: Map<string, IconDefinition | undefined>;
-  poiDataUrlCache: Map<string, Promise<string | undefined>>;
+  poiSvgCache: Map<string, Promise<string | undefined>>;
 }): Promise<{
   text?: string;
   faSvg?: FaSvg;
-  poiDataUrl?: string;
+  poiSvg?: string;
   hasContent: boolean;
 }> {
   const spec = parseIconSpec(icon);
@@ -101,28 +127,28 @@ export async function resolveMarkerGlyph({
     }
   }
 
-  let poiDataUrl: string | undefined;
+  let poiSvg: string | undefined;
 
   if (spec?.kind === 'poi') {
     const url = poiIconNameToUrl[spec.name];
 
     if (url) {
-      let p = poiDataUrlCache.get(url);
+      let p = poiSvgCache.get(url);
 
       if (!p) {
-        p = fetchSvgAsDataUrl(url);
-        poiDataUrlCache.set(url, p);
+        p = fetchSvgText(url);
+        poiSvgCache.set(url, p);
       }
 
-      poiDataUrl = await p;
+      poiSvg = await p;
     }
   }
 
   return {
     text,
     faSvg,
-    poiDataUrl,
-    hasContent: Boolean(text || faSvg || poiDataUrl),
+    poiSvg,
+    hasContent: Boolean(text || faSvg || poiSvg),
   };
 }
 
@@ -196,7 +222,7 @@ export function buildMarkerSvg({
   hasContent,
   text,
   faSvg,
-  poiDataUrl,
+  poiSvg,
   anchorAtCenter = false,
 }: {
   markerType: MarkerType | undefined;
@@ -204,7 +230,7 @@ export function buildMarkerSvg({
   hasContent: boolean;
   text?: string;
   faSvg?: FaSvg;
-  poiDataUrl?: string;
+  poiSvg?: string;
   anchorAtCenter?: boolean;
 }): { svg: string; width: number; height: number } {
   // Split any alpha off the color: the solid RGB paints the shape, while the
@@ -237,11 +263,8 @@ export function buildMarkerSvg({
       );
     }
 
-    if (poiDataUrl) {
-      return (
-        `<image x="${cx - GLYPH / 2}" y="${cy - GLYPH / 2}" ` +
-        `width="${GLYPH}" height="${GLYPH}" href="${poiDataUrl}"/>`
-      );
+    if (poiSvg) {
+      return nestSvg(poiSvg, cx - GLYPH / 2, cy - GLYPH / 2, GLYPH);
     }
 
     return '';

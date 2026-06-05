@@ -120,6 +120,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     accept: 'Akzeptieren',
   },
 
+  generic: {
+    color: 'Farbe',
+    size: 'Größe',
+    weight: 'Stärke',
+    width: 'Breite',
+  },
+
   theme: {
     light: 'Heller Modus',
     dark: 'Dunkler Modus',
@@ -1085,6 +1092,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     northArrow: 'Nordpfeil',
     attribution: 'Quellenangabe',
     northArrowLetter: 'N',
+    glow: 'Schein',
+    markerWidth: 'Größe der Markierungen',
 
     alert: (licence) => (
       <>

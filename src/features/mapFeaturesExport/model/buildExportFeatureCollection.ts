@@ -15,7 +15,7 @@ import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import {
   buildMarkerSvg,
-  fetchSvgAsDataUrl,
+  fetchSvgText,
   resolveMarkerGlyph,
   svgToPngDataUrl,
   utf8ToBase64,
@@ -77,7 +77,7 @@ export interface BuildExportOptions {
 
 interface Caches {
   faCache: Map<string, IconDefinition | undefined>;
-  poiDataUrlCache: Map<string, Promise<string | undefined>>;
+  poiSvgCache: Map<string, Promise<string | undefined>>;
 }
 
 interface MarkerSpec {
@@ -137,17 +137,17 @@ async function bakeMarkerProps(
   });
 
   if (!glyph.hasContent && spec.iconUrl) {
-    let p = caches.poiDataUrlCache.get(spec.iconUrl);
+    let p = caches.poiSvgCache.get(spec.iconUrl);
 
     if (!p) {
-      p = fetchSvgAsDataUrl(spec.iconUrl);
-      caches.poiDataUrlCache.set(spec.iconUrl, p);
+      p = fetchSvgText(spec.iconUrl);
+      caches.poiSvgCache.set(spec.iconUrl, p);
     }
 
-    const poiDataUrl = await p;
+    const poiSvg = await p;
 
-    if (poiDataUrl) {
-      glyph = { poiDataUrl, hasContent: true };
+    if (poiSvg) {
+      glyph = { poiSvg, hasContent: true };
     }
   }
 
@@ -161,7 +161,7 @@ async function bakeMarkerProps(
     hasContent: glyph.hasContent,
     text: glyph.text,
     faSvg: glyph.faSvg,
-    poiDataUrl: glyph.poiDataUrl,
+    poiSvg: glyph.poiSvg,
     // Center the anchor so a shape-agnostic renderer places every marker by
     // centering it on the coordinate.
     anchorAtCenter: true,
@@ -472,7 +472,7 @@ export async function buildExportFeatureCollection({
 
   const caches: Caches = {
     faCache: new Map(),
-    poiDataUrlCache: new Map(),
+    poiSvgCache: new Map(),
   };
 
   const markerMode = Boolean(pointMode.svgMarker || pointMode.pngMarker);
