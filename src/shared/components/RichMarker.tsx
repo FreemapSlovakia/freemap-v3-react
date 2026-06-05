@@ -1,20 +1,29 @@
 import { MarkerType } from '@features/objects/model/actions.js';
+import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
+import { poiIconGlyphRect } from '@shared/poiIconGlyph.js';
 import Leaflet, { BaseIconOptions, Icon } from 'leaflet';
-import { CSSProperties, ReactElement, useEffect, useMemo, useRef } from 'react';
+import {
+  CSSProperties,
+  cloneElement,
+  ReactElement,
+  SVGProps,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { splitColorAlpha } from '../colorAlpha.js';
 import { COLORS } from '../colors.js';
-import classes from './RichMarker.module.css';
 
 // Fixed glyph box (in viewBox units) and font size, shared by all marker
 // shapes so icon/text size is independent of the shape.
-const GLYPH = 150;
+const GLYPH_SIZE = 160;
 
-// Glyph color; always drawn on a white inset, so a solid Bootstrap gray
-// instead of a semi-transparent black. `var()` only works in CSS `style`
-// (not in the SVG `fill` presentation attribute), so apply it via style.
-const GLYPH_COLOR = 'var(--bs-gray-700)';
+// Glyph color; always drawn on a white inset, so a solid black. `var()` only
+// works in CSS `style` (not in the SVG `fill` presentation attribute), so
+// apply it via style.
+const GLYPH_COLOR = 'black';
 
 const textStyle: CSSProperties = {
   fill: GLYPH_COLOR,
@@ -30,8 +39,10 @@ interface BaseIconProps {
   markerType?: MarkerType;
 }
 
-// A Font Awesome icon embedded directly into the marker SVG (rather than
-// overlaid like `faIcon`), so it scales and positions with the marker shape.
+// A Font Awesome icon described as a raw `{ width, height, path }`, embedded
+// directly into the marker SVG so it scales and positions with the marker
+// shape. `faIcon` (a ready-made react-icons `<svg>` element) is rendered the
+// same way; both share the `GLYPH_SIZE` scale.
 export interface IconSvg {
   width: number;
   height: number;
@@ -183,8 +194,8 @@ export function MarkerIcon({
 }: MarkerIconProps): ReactElement {
   // Split any alpha off the color: the solid RGB paints the shape, while the
   // alpha is applied as a group `opacity` on the whole marker (shape + white
-  // inset + glyph + Font Awesome overlay) so the entire marker fades uniformly
-  // rather than only its background.
+  // inset + glyph) so the entire marker fades uniformly rather than only its
+  // background.
   const { color: fillColor, opacity } = splitColorAlpha(color);
 
   // A glyph (label text, poi image or Font Awesome icon) fills the white inset;
@@ -194,17 +205,51 @@ export function MarkerIcon({
   // The glyph is drawn at a fixed size centered on each shape's inset, so its
   // on-screen size does not depend on the marker shape.
   const renderGlyph = (cx: number, cy: number) => {
-    // Scale the icon's longer side to GLYPH and center it. Drawn as a plain
+    // Scale the icon's longer side to GLYPH_SIZE and center it. Drawn as a plain
     // <path> (not a nested <svg>) to avoid the latter's overflow clipping.
     let iconTransform: string | undefined;
 
+    // A `react-icons` element is a self-contained `<svg viewBox=…>`; clone it
+    // into a GLYPH_SIZE box centered on the inset so it scales exactly like
+    // `image`/`iconSvg`. Its `fill="currentColor"` resolves to the wrapping
+    // `<g>`'s GLYPH_SIZE color unless the element sets its own `color`.
+    const faGlyph =
+      faIcon &&
+      cloneElement(faIcon as ReactElement<SVGProps<SVGSVGElement>>, {
+        x: cx - GLYPH_SIZE / 2,
+        y: cy - GLYPH_SIZE / 2,
+        width: GLYPH_SIZE,
+        height: GLYPH_SIZE,
+      });
+
     if (iconSvg) {
-      const scale = GLYPH / Math.max(iconSvg.width, iconSvg.height);
+      const scale = GLYPH_SIZE / Math.max(iconSvg.width, iconSvg.height);
 
       iconTransform =
         `translate(${cx - (iconSvg.width * scale) / 2} ` +
         `${cy - (iconSvg.height * scale) / 2}) scale(${scale})`;
     }
+
+    // Scale+center the icon by its precomputed drawing bbox (see
+    // poiIconGlyphRect), so icons keep the relative sizes the map renders
+    // instead of each filling the box. Icons absent from the table (e.g.
+    // malformed) fall back to filling the full GLYPH_SIZE box.
+    const imageGlyph =
+      image &&
+      (() => {
+        const bbox = poiIconBBoxes[image];
+
+        const rect = bbox
+          ? poiIconGlyphRect(bbox, cx, cy, GLYPH_SIZE)
+          : {
+              x: cx - GLYPH_SIZE / 2,
+              y: cy - GLYPH_SIZE / 2,
+              width: GLYPH_SIZE,
+              height: GLYPH_SIZE,
+            };
+
+        return <image {...rect} xlinkHref={image} opacity={imageOpacity} />;
+      })();
 
     return (
       <>
@@ -220,16 +265,7 @@ export function MarkerIcon({
           </text>
         )}
 
-        {image && (
-          <image
-            x={cx - GLYPH / 2}
-            y={cy - GLYPH / 2}
-            width={GLYPH}
-            height={GLYPH}
-            xlinkHref={image}
-            opacity={imageOpacity}
-          />
-        )}
+        {imageGlyph}
 
         {iconSvg && (
           <path
@@ -238,6 +274,8 @@ export function MarkerIcon({
             transform={iconTransform}
           />
         )}
+
+        {faGlyph && <g style={{ color: GLYPH_COLOR }}>{faGlyph}</g>}
       </>
     );
   };
@@ -356,12 +394,6 @@ export function MarkerIcon({
 
           {renderGlyph(154, 164)}
         </svg>
-      )}
-
-      {faIcon && (
-        <div className={classes['fa-icon']} style={{ opacity }}>
-          {faIcon}
-        </div>
       )}
     </>
   );

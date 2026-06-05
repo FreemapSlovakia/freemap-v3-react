@@ -624,12 +624,14 @@ async function buildLocusIconDataUrl({
   faCache: Map<string, IconDefinition | undefined>;
   poiSvgCache: Map<string, Promise<string | undefined>>;
 }): Promise<string | undefined> {
-  const { text, faSvg, poiSvg, hasContent } = await resolveMarkerGlyph({
-    icon,
-    label,
-    faCache,
-    poiSvgCache,
-  });
+  const { text, faSvg, poiSvg, poiBBox, hasContent } = await resolveMarkerGlyph(
+    {
+      icon,
+      label,
+      faCache,
+      poiSvgCache,
+    },
+  );
 
   const { svg, width, height } = buildMarkerSvg({
     markerType,
@@ -638,6 +640,7 @@ async function buildLocusIconDataUrl({
     text,
     faSvg,
     poiSvg,
+    poiBBox,
   });
 
   // Base64-encode via UTF-8-safe path so non-ASCII labels survive btoa.

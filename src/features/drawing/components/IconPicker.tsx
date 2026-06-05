@@ -1,7 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
 import {
-  FaIconSvg,
+  faIconToSvg,
   faSpec,
   loadAllIcons,
   parseIconSpec,
@@ -10,6 +11,7 @@ import {
   useFaIcon,
 } from '@shared/drawingIcons.js';
 import classes from '@shared/poiIcon.module.css';
+import { poiIconGlyphRect } from '@shared/poiIconGlyph.js';
 import {
   type ReactElement,
   type UIEvent,
@@ -22,6 +24,57 @@ import { Button, Form, Overlay, Popover, Spinner } from 'react-bootstrap';
 import { FaXmark } from 'react-icons/fa6';
 
 const PAGE = 120;
+
+// The glyph drawing box, in user units — the same intrinsic-scale RichMarker
+// uses (so e.g. `peak` stays small instead of filling the cell, and fa icons
+// scale to the box). Some fa paths have ink reaching outside their declared
+// viewBox (e.g. person-hiking's head sits at y=-32); the marker doesn't clip it
+// because it draws into a much larger canvas, so the svg here is `overflow:
+// visible` to match (the button padding leaves room for the spill).
+const GLYPH_BOX = 160;
+
+// Renders a single icon the way the marker glyph does, so the picker preview is
+// faithful: the glyph centered in a fixed square viewBox, black-filled.
+function IconGlyph(
+  props: { url: string; def?: never } | { def: IconDefinition; url?: never },
+): ReactElement {
+  const c = GLYPH_BOX / 2;
+
+  return (
+    <svg
+      viewBox={`0 0 ${GLYPH_BOX} ${GLYPH_BOX}`}
+      overflow="visible"
+      className={classes['icon']}
+      aria-hidden="true"
+    >
+      {props.def
+        ? (() => {
+            const { width, height, path } = faIconToSvg(props.def);
+
+            const scale = GLYPH_BOX / Math.max(width, height);
+
+            return (
+              <path
+                d={path}
+                fill="black"
+                transform={`translate(${c - (width * scale) / 2} ${
+                  c - (height * scale) / 2
+                }) scale(${scale})`}
+              />
+            );
+          })()
+        : (() => {
+            const bbox = poiIconBBoxes[props.url];
+
+            const rect = bbox
+              ? poiIconGlyphRect(bbox, c, c, GLYPH_BOX)
+              : { x: 0, y: 0, width: GLYPH_BOX, height: GLYPH_BOX };
+
+            return <image {...rect} href={props.url} />;
+          })()}
+    </svg>
+  );
+}
 
 type PoiEntry = { kind: 'poi'; name: string; url: string };
 
@@ -113,9 +166,9 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
         onClick={() => setOpen((o) => !o)}
       >
         {selectedFa ? (
-          <FaIconSvg def={selectedFa} />
+          <IconGlyph def={selectedFa} />
         ) : selectedPoiUrl ? (
-          <img src={selectedPoiUrl} alt="" className={classes['icon']} />
+          <IconGlyph url={selectedPoiUrl} />
         ) : selectedSpec?.kind === 'fa' ? (
           <Spinner size="sm" />
         ) : (
@@ -168,6 +221,7 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
                   <Button
                     key={`${e.kind}:${e.name}`}
                     size="sm"
+                    className="p-2 lh-1"
                     variant={isSelected ? 'secondary' : 'outline-secondary'}
                     onClick={() => {
                       onSelect(
@@ -179,9 +233,9 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
                     title={e.name}
                   >
                     {e.kind === 'fa' ? (
-                      <FaIconSvg def={e.def} />
+                      <IconGlyph def={e.def} />
                     ) : (
-                      <img src={e.url} alt="" className={classes['icon']} />
+                      <IconGlyph url={e.url} />
                     )}
                   </Button>
                 );

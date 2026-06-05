@@ -162,7 +162,7 @@ export default function MapToDocumentExportModal({
   const [markerWidth, setMarkerWidth] = usePersistentState<string>(
     'fm.exportMap.markerWidth',
     identity,
-    (value) => value ?? '30',
+    (value) => value ?? '24',
   );
 
   // Styling of custom-layer feature labels.

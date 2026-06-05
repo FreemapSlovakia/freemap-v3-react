@@ -1,5 +1,6 @@
 import type { MarkerType } from '@features/objects/model/actions.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { type PoiIconBBox, poiIconBBoxes } from '@osm/poiIconBBoxes.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import {
   faIconToSvg,
@@ -7,10 +8,11 @@ import {
   parseIconSpec,
   poiIconNameToUrl,
 } from '@shared/drawingIcons.js';
+import { poiIconGlyphRect } from '@shared/poiIconGlyph.js';
 
-// Glyph color: GLYPH_COLOR from RichMarker (Bootstrap gray-700). Kept literal
-// here so the export pipeline doesn't need a runtime CSS-variable lookup.
-const GLYPH_COLOR_LITERAL = '#495057';
+// Glyph color: matches RichMarker's GLYPH_COLOR ('black'), drawn on the white
+// inset. Kept literal here so the export pipeline doesn't need a runtime lookup.
+const GLYPH_COLOR_LITERAL = 'black';
 
 // Flattened Font Awesome icon geometry, as returned by `faIconToSvg`.
 type FaSvg = { width: number; height: number; path: string };
@@ -52,16 +54,17 @@ export async function fetchSvgText(url: string): Promise<string | undefined> {
 }
 
 // Strips the XML prolog / DOCTYPE / comments from a standalone SVG and re-tags
-// its root `<svg>` as a nested element positioned at (x, y) and sized
-// size×size. The element keeps its own `viewBox`, so its vector content scales
-// into the marker — no rasterization, unlike an `<image href="data:...">`.
-// `id` attributes are dropped so inlining many markers in one document can't
-// produce duplicate ids (these icons carry none referenced via `url(#…)`).
+// its root `<svg>` as a nested element positioned at (x, y) and sized w×h. The
+// element keeps its own `viewBox`, so its vector content scales into the marker
+// — no rasterization, unlike an `<image href="data:...">`. `id` attributes are
+// dropped so inlining many markers in one document can't produce duplicate ids
+// (these icons carry none referenced via `url(#…)`).
 export function nestSvg(
   svgText: string,
   x: number,
   y: number,
-  size: number,
+  w: number,
+  h: number,
 ): string {
   const body = svgText
     .replace(/<\?xml[\s\S]*?\?>/g, '')
@@ -71,11 +74,28 @@ export function nestSvg(
     .trim();
 
   return body.replace(/<svg\b[^>]*>/, (tag) => {
-    const attrs = tag
-      .slice(4, -1)
+    const inner = tag.slice(4, -1);
+
+    // The icon's own viewBox maps its coordinate system into the w×h box.
+    // Many icons carry no viewBox (just width/height), so synthesize one from
+    // those — otherwise the icon's small user units (e.g. 0–8 for peak) would
+    // render 1:1 in the box and appear as a tiny speck.
+    let viewBox = inner.match(/\sviewBox\s*=\s*("[^"]*"|'[^']*')/)?.[0] ?? '';
+
+    if (!viewBox) {
+      const w = inner.match(/\swidth\s*=\s*"([\d.]+)/)?.[1];
+      const h = inner.match(/\sheight\s*=\s*"([\d.]+)/)?.[1];
+
+      if (w && h) {
+        viewBox = ` viewBox="0 0 ${w} ${h}"`;
+      }
+    }
+
+    const attrs = inner
+      .replace(/\sviewBox\s*=\s*("[^"]*"|'[^']*')/g, '')
       .replace(/\s(?:x|y|width|height)\s*=\s*("[^"]*"|'[^']*')/g, '');
 
-    return `<svg${attrs} x="${x}" y="${y}" width="${size}" height="${size}">`;
+    return `<svg${attrs}${viewBox} x="${x}" y="${y}" width="${w}" height="${h}">`;
   });
 }
 
@@ -97,6 +117,7 @@ export async function resolveMarkerGlyph({
   text?: string;
   faSvg?: FaSvg;
   poiSvg?: string;
+  poiBBox?: PoiIconBBox;
   hasContent: boolean;
 }> {
   const spec = parseIconSpec(icon);
@@ -128,6 +149,7 @@ export async function resolveMarkerGlyph({
   }
 
   let poiSvg: string | undefined;
+  let poiBBox: PoiIconBBox | undefined;
 
   if (spec?.kind === 'poi') {
     const url = poiIconNameToUrl[spec.name];
@@ -141,6 +163,7 @@ export async function resolveMarkerGlyph({
       }
 
       poiSvg = await p;
+      poiBBox = poiIconBBoxes[url];
     }
   }
 
@@ -148,6 +171,7 @@ export async function resolveMarkerGlyph({
     text,
     faSvg,
     poiSvg,
+    poiBBox,
     hasContent: Boolean(text || faSvg || poiSvg),
   };
 }
@@ -223,6 +247,7 @@ export function buildMarkerSvg({
   text,
   faSvg,
   poiSvg,
+  poiBBox,
   anchorAtCenter = false,
 }: {
   markerType: MarkerType | undefined;
@@ -231,6 +256,7 @@ export function buildMarkerSvg({
   text?: string;
   faSvg?: FaSvg;
   poiSvg?: string;
+  poiBBox?: PoiIconBBox;
   anchorAtCenter?: boolean;
 }): { svg: string; width: number; height: number } {
   // Split any alpha off the color: the solid RGB paints the shape, while the
@@ -241,6 +267,10 @@ export function buildMarkerSvg({
   const opacityAttr = opacity < 1 ? ` opacity="${opacity}"` : '';
 
   const GLYPH = 150;
+
+  // poiIcons use RichMarker's GLYPH_SIZE (160) so document exports match the
+  // in-app marker; the rest of the glyph kinds keep GLYPH (150).
+  const POI_GLYPH_SIZE = 160;
 
   const renderGlyph = (cx: number, cy: number): string => {
     if (text) {
@@ -264,7 +294,20 @@ export function buildMarkerSvg({
     }
 
     if (poiSvg) {
-      return nestSvg(poiSvg, cx - GLYPH / 2, cy - GLYPH / 2, GLYPH);
+      // Mirror RichMarker's <image> placement (scale+center by drawing bbox).
+      if (poiBBox) {
+        const { x, y, width, height } = poiIconGlyphRect(
+          poiBBox,
+          cx,
+          cy,
+          POI_GLYPH_SIZE,
+        );
+
+        return nestSvg(poiSvg, x, y, width, height);
+      }
+
+      // No bbox (icon missing from the table): fall back to filling the box.
+      return nestSvg(poiSvg, cx - GLYPH / 2, cy - GLYPH / 2, GLYPH, GLYPH);
     }
 
     return '';

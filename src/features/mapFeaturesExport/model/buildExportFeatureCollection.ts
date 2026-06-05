@@ -11,6 +11,7 @@ import type { TrackingState } from '@features/tracking/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
+import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import {
@@ -147,7 +148,11 @@ async function bakeMarkerProps(
     const poiSvg = await p;
 
     if (poiSvg) {
-      glyph = { poiSvg, hasContent: true };
+      glyph = {
+        poiSvg,
+        poiBBox: poiIconBBoxes[spec.iconUrl],
+        hasContent: true,
+      };
     }
   }
 
@@ -162,6 +167,7 @@ async function bakeMarkerProps(
     text: glyph.text,
     faSvg: glyph.faSvg,
     poiSvg: glyph.poiSvg,
+    poiBBox: glyph.poiBBox,
     // Center the anchor so a shape-agnostic renderer places every marker by
     // centering it on the coordinate.
     anchorAtCenter: true,
