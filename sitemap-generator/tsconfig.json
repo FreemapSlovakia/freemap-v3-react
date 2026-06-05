@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "NodeNext",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "nodenext",
