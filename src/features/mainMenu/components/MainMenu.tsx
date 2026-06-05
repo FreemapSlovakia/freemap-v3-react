@@ -23,6 +23,10 @@ import {
 } from 'react-icons/fa';
 import { IoLanguage } from 'react-icons/io5';
 import { toolSelector } from '@/app/store/selectors.js';
+import {
+  documentMenuItemProps,
+  modalMenuItemProps,
+} from '@/shared/hooks/useMenuHandler.js';
 import { LanguageLabel } from './LanguageLabel.js';
 
 export function MainMenu(): ReactElement {
@@ -51,11 +55,11 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       {user ? (
-        <Dropdown.Item eventKey="modal-account" href="#show=account">
+        <Dropdown.Item {...modalMenuItemProps('account')}>
           <FaUser /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
         </Dropdown.Item>
       ) : (
-        <Dropdown.Item eventKey="modal-login">
+        <Dropdown.Item {...modalMenuItemProps('login')}>
           <FaSignInAlt /> {m?.mainMenu.logIn}
         </Dropdown.Item>
       )}
@@ -75,8 +79,8 @@ export function MainMenu(): ReactElement {
         <FaCamera /> {m?.tools.photos} <kbd>⇧f</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item as="button" eventKey="modal-maps">
-        <FaRegMap /> {m?.tools.maps} <kbd>g</kbd> <kbd>m</kbd>
+      <Dropdown.Item {...modalMenuItemProps('my-maps')}>
+        <FaRegMap /> {m?.tools.myMaps} <kbd>g</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item as="button" eventKey="drawing">
@@ -116,34 +120,25 @@ export function MainMenu(): ReactElement {
         <FaExternalLinkAlt /> {m?.external.openInExternal} <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item
-        eventKey="modal-map-features-export"
-        href="#show=map-features-export"
-      >
+      <Dropdown.Item {...modalMenuItemProps('map-features-export')}>
         <FaFileExport /> {m?.mainMenu.mapFeaturesExport} <kbd>e</kbd>{' '}
         <kbd>g</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item
-        href="#show=map-to-document-export"
-        eventKey="modal-map-to-document-export"
-      >
+      <Dropdown.Item {...modalMenuItemProps('map-to-document-export')}>
         <FaPrint /> {m?.mainMenu.mapToDocumentExport} <kbd>e</kbd> <kbd>p</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item
-        eventKey="modal-offline-map-export"
-        href="#show=offline-map-export"
-      >
+      <Dropdown.Item {...modalMenuItemProps('offline-map-export')}>
         <FaDatabase /> {m?.offlineMapExport.downloadMap} <kbd>e</kbd>{' '}
         <kbd>m</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item eventKey="document-exports" href="#document=exports">
+      <Dropdown.Item {...documentMenuItemProps('exports')}>
         <FaMobileAlt /> {m?.mainMenu.gpsDevicesMapExports}
       </Dropdown.Item>
 
-      <Dropdown.Item eventKey="modal-embed" href="#show=embed">
+      <Dropdown.Item {...modalMenuItemProps('embed')}>
         <FaCode /> {m?.mainMenu.embedMap} <kbd>e</kbd> <kbd>e</kbd>
       </Dropdown.Item>
 
@@ -153,7 +148,7 @@ export function MainMenu(): ReactElement {
         <FaBook /> {m?.mainMenu.help} <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item href="#show=support-us" eventKey="modal-support-us">
+      <Dropdown.Item {...modalMenuItemProps('support-us')}>
         <FaHeart color="red" /> {m?.mainMenu.supportUs} <FaHeart color="red" />
       </Dropdown.Item>
     </>

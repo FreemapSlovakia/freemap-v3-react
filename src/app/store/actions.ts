@@ -197,28 +197,27 @@ export const convertToDrawing = createAction<
   | { type: 'changesets' }
 >('CONVERT_TO_DRAWING');
 
-export const ExternalTargetSchema = z.enum([
-  'copy',
-  'f4map',
-  'google',
-  'hiking.sk',
-  'image',
-  'josm',
-  'mapillary',
-  'mapy.com',
-  'oma.sk',
-  'openstreetcam',
-  'osm.org',
-  'osm.org/id',
-  'peakfinder',
-  'url',
-  'waze',
-  'window',
-  'zbgis',
-]);
+export type ExternalTarget =
+  | 'copy'
+  | 'f4map'
+  | 'google'
+  | 'hiking.sk'
+  | 'image'
+  | 'josm'
+  | 'mapillary'
+  | 'mapy.com'
+  | 'oma.sk'
+  | 'openstreetcam'
+  | 'osm.org'
+  | 'osm.org/id'
+  | 'peakfinder'
+  | 'url'
+  | 'waze'
+  | 'window'
+  | 'zbgis';
 
 export const openInExternalApp = createAction<{
-  where: z.infer<typeof ExternalTargetSchema>;
+  where: ExternalTarget;
   lat?: number;
   lon?: number;
   zoom?: number;

@@ -6,7 +6,7 @@ import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { getDocuments } from '@/documents/index.js';
 import { ModalSchema, setActiveModal } from '../../../app/store/actions.js';
-import { documentShow } from '../model/actions.js';
+import { DocumentSchema, documentShow } from '../model/actions.js';
 
 type Props = { show: boolean };
 
@@ -89,8 +89,12 @@ function DocumentModal({ show }: Props): ReactElement | null {
 
           if (show.success) {
             dispatch(setActiveModal(show.data));
-          } else if (sp.has('document')) {
-            dispatch(documentShow(sp.get('document')));
+          } else {
+            const document = DocumentSchema.safeParse(sp.get('document'));
+
+            if (document.success) {
+              dispatch(documentShow(document.data));
+            }
           }
         };
       }

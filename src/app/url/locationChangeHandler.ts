@@ -3,7 +3,10 @@ import {
   changesetsSet,
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
-import { documentShow } from '@features/documents/model/actions.js';
+import {
+  DocumentSchema,
+  documentShow,
+} from '@features/documents/model/actions.js';
 import {
   drawingLineSetLines,
   Line,
@@ -56,6 +59,7 @@ import {
   wikimediaCommonsLoadPreview,
   wikimediaCommonsSetPreview,
 } from '@features/wikimediaCommons/model/actions.js';
+import { isLanguage } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
   integratedLayerDefMap,
@@ -292,10 +296,7 @@ export function handleLocationChange(store: MyStore): void {
 
   const lang = query['lang'];
 
-  if (
-    typeof lang === 'string' &&
-    ['en', 'sk', 'cs', 'hu', 'it', 'de', 'pl'].includes(lang as string)
-  ) {
+  if (isLanguage(lang)) {
     dispatch(l10nSetChosenLanguage({ language: lang }));
   }
 
@@ -632,11 +633,12 @@ export function handleLocationChange(store: MyStore): void {
   } else if (ShowModalSchema.safeParse(activeModal).success) {
     dispatch(setActiveModal(null));
   }
-  const doc = query['document'] ?? query['tip'];
 
-  if (typeof doc === 'string') {
-    if (getState().main.documentKey !== doc) {
-      dispatch(documentShow(doc));
+  const doc = DocumentSchema.safeParse(query['document'] ?? query['tip']);
+
+  if (doc.success) {
+    if (getState().main.documentKey !== doc.data) {
+      dispatch(documentShow(doc.data));
     }
   } else if (getState().main.documentKey) {
     dispatch(documentShow(null));

@@ -4,6 +4,7 @@ import { JSX, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaBook, FaList, FaRegAddressCard, FaUsers } from 'react-icons/fa';
 import { getDocuments } from '@/documents/index.js';
+import { modalMenuItemProps } from '@/shared/hooks/useMenuHandler.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function HelpSubmenu(): JSX.Element {
@@ -25,12 +26,12 @@ export function HelpSubmenu(): JSX.Element {
       <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
 
       {layers.some((layer) => legendLayers.has(layer)) && (
-        <Dropdown.Item href="#show=legend" eventKey="modal-legend">
+        <Dropdown.Item {...modalMenuItemProps('legend')}>
           <FaList /> {m?.mainMenu.mapLegend}
         </Dropdown.Item>
       )}
 
-      <Dropdown.Item eventKey="modal-about" href="#show=about">
+      <Dropdown.Item {...modalMenuItemProps('about')}>
         <FaRegAddressCard /> {m?.mainMenu.contacts}
       </Dropdown.Item>
 

@@ -142,7 +142,7 @@ const messages: Messages = {
     changesets: 'Map changes',
     mapDetails: 'Map details',
     tracking: 'Live tracking',
-    maps: 'My maps',
+    myMaps: 'My maps',
   },
 
   mainMenu: {

@@ -148,7 +148,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     changesets: 'Změny v mapě',
     mapDetails: 'Detaily v mapě',
     tracking: 'Sledování',
-    maps: 'Moje mapy',
+    myMaps: 'Moje mapy',
   },
 
   mainMenu: {

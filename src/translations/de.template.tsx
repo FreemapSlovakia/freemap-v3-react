@@ -149,7 +149,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     changesets: 'Kartenänderungen',
     mapDetails: 'Kartendetails',
     tracking: 'Live-Tracking',
-    maps: 'Meine Karten',
+    myMaps: 'Meine Karten',
   },
 
   mainMenu: {

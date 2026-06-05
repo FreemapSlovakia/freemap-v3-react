@@ -8,6 +8,7 @@ import { type ReactElement, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaList, FaLock, FaQuestion, FaRegCopyright } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { modalMenuItemProps } from '@/shared/hooks/useMenuHandler.js';
 import { setActiveModal } from '../store/actions.js';
 import { useAttributionInfo } from './useAttributionInfo.js';
 
@@ -71,8 +72,7 @@ export function CopyrightButton(): ReactElement {
 
           {showLegendButton && (
             <Dropdown.Item
-              key="legend"
-              href="#show=legend"
+              {...modalMenuItemProps('legend')}
               onClick={(e) => {
                 e.preventDefault();
 

@@ -1,10 +1,10 @@
 import { MouseEvent, ReactNode, useCallback } from 'react';
 import { Anchor } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { documentShow } from '../model/actions.js';
+import { Document, documentShow } from '../model/actions.js';
 
 type Props = {
-  doc: string;
+  doc: Document;
   children: ReactNode;
 };
 

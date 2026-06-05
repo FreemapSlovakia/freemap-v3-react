@@ -26,7 +26,7 @@ export function MyMapsMenu(): ReactElement {
 
       <Toolbar className="mt-2">
         <ButtonToolbar>
-          <LongPressTooltip breakpoint="xl" label={m?.tools.maps}>
+          <LongPressTooltip breakpoint="xl" label={m?.tools.myMaps}>
             {({ label, labelClassName, props }) => (
               <Button
                 variant="primary"

@@ -11,7 +11,10 @@ import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
-import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
+import {
+  modalMenuItemProps,
+  useMenuHandler,
+} from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { isPremium } from '@shared/premium.js';
@@ -488,17 +491,20 @@ export function MapSwitchButton(): ReactElement {
                     title={m?.mapLayers.settings}
                   />
 
-                  <Dropdown.Item as="button" eventKey="modal-map-layers-config">
+                  <Dropdown.Item {...modalMenuItemProps('map-layers-config')}>
                     <FaLayerGroup /> {m?.mapLayers.configureLayers} <kbd>m</kbd>{' '}
                     <kbd>y</kbd>
                   </Dropdown.Item>
 
-                  <Dropdown.Item as="button" eventKey="modal-custom-maps">
+                  <Dropdown.Item {...modalMenuItemProps('custom-maps')}>
                     <MdDashboardCustomize /> {m?.mapLayers.customMaps}{' '}
                     <kbd>m</kbd> <kbd>c</kbd>
                   </Dropdown.Item>
 
-                  <Dropdown.Item as="button" eventKey="modal-map-preferences">
+                  <Dropdown.Item
+                    as="button"
+                    {...modalMenuItemProps('map-preferences')}
+                  >
                     <FaCog /> {m?.mapLayers.preferences} <kbd>m</kbd>{' '}
                     <kbd>p</kbd>
                   </Dropdown.Item>

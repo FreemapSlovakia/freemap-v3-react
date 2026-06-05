@@ -8,6 +8,7 @@ import {
   FaShareAlt,
   FaWindowMaximize,
 } from 'react-icons/fa';
+import { ExternalTarget } from '@/app/store/actions.js';
 import {
   getF4mapUrl,
   getGeocachingUrl,
@@ -34,6 +35,12 @@ interface Props extends LatLon {
   copy?: boolean;
 }
 
+export function openMenuItemProps(externalTarget: ExternalTarget) {
+  return {
+    eventKey: `open-${externalTarget}`,
+  };
+}
+
 export function OpenInExternalAppDropdownItems({
   lat,
   lon,
@@ -58,13 +65,13 @@ export function OpenInExternalAppDropdownItems({
           </Dropdown.Item>
 
           {hasShare && (
-            <Dropdown.Item as="button" eventKey="open-url">
+            <Dropdown.Item as="button" {...openMenuItemProps('url')}>
               <FaLink /> {m?.external.url}
             </Dropdown.Item>
           )}
 
           {'canShare' in window.navigator && (
-            <Dropdown.Item as="button" eventKey="open-image">
+            <Dropdown.Item as="button" {...openMenuItemProps('image')}>
               <FaShareAlt /> {m?.external.image}
             </Dropdown.Item>
           )}
@@ -74,7 +81,7 @@ export function OpenInExternalAppDropdownItems({
       )}
 
       {!url && hasClipboard && copy && (
-        <Dropdown.Item as="button" eventKey="open-copy">
+        <Dropdown.Item as="button" {...openMenuItemProps('copy')}>
           <FaClipboard /> {m?.general.copyPageUrl}
           {showKbdShortcut && (
             <>
@@ -86,7 +93,7 @@ export function OpenInExternalAppDropdownItems({
       )}
 
       {!url && hasShare && (
-        <Dropdown.Item as="button" eventKey="open-url">
+        <Dropdown.Item as="button" {...openMenuItemProps('url')}>
           <FaLink /> {m?.external.url}
         </Dropdown.Item>
       )}
@@ -239,7 +246,7 @@ export function OpenInExternalAppDropdownItems({
 
       <Dropdown.Divider />
 
-      <Dropdown.Item as="button" eventKey="open-josm">
+      <Dropdown.Item as="button" {...openMenuItemProps('josm')}>
         {m?.external.josm}
         {showKbdShortcut && (
           <>

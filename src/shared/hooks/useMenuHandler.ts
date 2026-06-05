@@ -1,6 +1,6 @@
 import {
   clearMapFeatures,
-  ExternalTargetSchema,
+  ExternalTarget,
   Modal,
   openInExternalApp,
   saveSettings,
@@ -9,15 +9,46 @@ import {
   Tool,
   ToolSchema,
 } from '@app/store/actions.js';
-import { documentShow } from '@features/documents/model/actions.js';
+import { Document, documentShow } from '@features/documents/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { Submenu } from '@features/mainMenu/components/submenu.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { Language } from '@shared/langUtils.js';
 import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { afterPrefix } from '../types/typeUtils.js';
+
+export type EventKey =
+  | 'url'
+  | 'drawing'
+  | 'clear-map-features'
+  | 'close'
+  | 'gallery'
+  | 'galEmails'
+  | `tracking-visual-${'0' | '1'}${'0' | '1'}`
+  | `submenu-${NonNullable<Submenu> | ''}`
+  | `document-${Document}`
+  | `tool-${Tool}`
+  | `lang-${Language | ''}`
+  | `open-${ExternalTarget}`
+  | `modal-${Modal}`;
+
+export function modalMenuItemProps(modal: Modal) {
+  return {
+    eventKey: `modal-${modal}`,
+    href: `#show=${modal}`,
+  };
+}
+
+export function documentMenuItemProps(document: string) {
+  return {
+    eventKey: `document-${document}`,
+    href: `document=${document}`,
+  };
+}
 
 export function useMenuHandler({
   pointTitle,
@@ -102,65 +133,106 @@ export function useMenuHandler({
         return;
       }
 
-      if (eventKey.startsWith('modal-')) {
-        dispatch(setActiveModal((eventKey.slice(6) || null) as Modal | null));
+      const key = eventKey as EventKey;
+
+      const modal = afterPrefix(key, 'modal-');
+
+      if (modal !== undefined) {
+        dispatch(setActiveModal(modal));
 
         setShow(false);
-      } else if (eventKey.startsWith('submenu-')) {
-        setSubmenu((eventKey.slice(8) || null) as Submenu);
-      } else if (eventKey.startsWith('document-')) {
-        dispatch(documentShow(eventKey.slice(9)));
+
+        return;
+      }
+
+      const submenu = afterPrefix(key, 'submenu-');
+
+      if (submenu !== undefined) {
+        setSubmenu(submenu || null);
+
+        return;
+      }
+
+      const document = afterPrefix(key, 'document-');
+
+      if (document !== undefined) {
+        dispatch(documentShow(document));
 
         setShow(false);
-      } else if (eventKey.startsWith('tool-')) {
-        dispatch(setTool((eventKey.slice(5) || null) as Tool | null));
+
+        return;
+      }
+
+      const tool = afterPrefix(key, 'tool-');
+
+      if (tool !== undefined) {
+        dispatch(setTool(tool || null));
 
         setShow(false);
-      } else if (eventKey === 'drawing') {
+
+        return;
+      }
+
+      if (key === 'drawing') {
         const parsed = ToolSchema.safeParse(storage.getItem('fm.drawingTool'));
 
         dispatch(setTool(parsed.success ? parsed.data : 'draw-points'));
 
         setShow(false);
-      } else if (eventKey === 'clear-map-features') {
+
+        return;
+      }
+
+      if (key === 'clear-map-features') {
         dispatch(clearMapFeatures());
 
         setShow(false);
-      } else if (eventKey.startsWith('lang-')) {
+
+        return;
+      }
+
+      const lang = afterPrefix(key, 'lang-');
+
+      if (lang !== undefined) {
+        dispatch(l10nSetChosenLanguage({ language: lang || null }));
+
+        setShow(false);
+
+        return;
+      }
+
+      const where = afterPrefix(key, 'open-');
+
+      if (where !== undefined) {
         dispatch(
-          l10nSetChosenLanguage({ language: eventKey.slice(5) || null }),
+          openInExternalApp({
+            where,
+            lat,
+            lon,
+            zoom,
+            pointTitle,
+            pointDescription,
+          }),
         );
 
         setShow(false);
-      } else if (eventKey.startsWith('open-')) {
-        const where = eventKey.slice(5);
 
-        const parsed = ExternalTargetSchema.safeParse(where);
+        return;
+      }
 
-        if (parsed.success) {
-          dispatch(
-            openInExternalApp({
-              where: parsed.data,
-              lat,
-              lon,
-              zoom,
-              pointTitle,
-              pointDescription,
-            }),
-          );
-        }
+      const trackingVisual = afterPrefix(key, 'tracking-visual-');
 
-        setShow(false);
-      } else if (eventKey.startsWith('tracking-visual-')) {
-        const [points, lines] = eventKey
-          .slice(16)
-          .split('')
-          .map((n) => n === '1');
+      if (trackingVisual !== undefined) {
+        const [points, lines] = trackingVisual.split('').map((n) => n === '1');
 
         dispatch(trackingActions.setShowPoints(points));
 
         dispatch(trackingActions.setShowLine(lines));
-      } else if (eventKey.startsWith('gallery')) {
+
+        return;
+      }
+
+      if (key === 'gallery') {
         dispatch(
           mapRefocus({
             layers: layers.includes('I')
@@ -170,9 +242,17 @@ export function useMenuHandler({
         );
 
         setShow(false);
-      } else if (eventKey === 'close' || eventKey === 'url') {
+
+        return;
+      }
+
+      if (key === 'close' || key === 'url') {
         setShow(false);
-      } else if (eventKey === 'galEmails') {
+
+        return;
+      }
+
+      if (key === 'galEmails') {
         dispatch(
           saveSettings({
             user: {
@@ -180,9 +260,11 @@ export function useMenuHandler({
             },
           }),
         );
-      } else if (extraHandler.current?.(eventKey)) {
-        // nothing
+
+        return;
       }
+
+      extraHandler.current?.(key);
     },
     [
       dispatch,

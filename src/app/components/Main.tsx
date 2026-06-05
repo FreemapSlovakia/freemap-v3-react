@@ -287,7 +287,7 @@ const loginModalFactory = () =>
 
 const mapsModalFactory = () =>
   import(
-    /* webpackChunkName: "maps-modal" */
+    /* webpackChunkName: "my-maps-modal" */
     '@features/myMaps/components/MyMapsModal.js'
   );
 

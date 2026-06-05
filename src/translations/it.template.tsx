@@ -154,7 +154,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     changesets: 'Modifiche mappa',
     mapDetails: 'Dettagli mappa',
     tracking: 'Tracciamento in tempo reale',
-    maps: 'Le mie mappe',
+    myMaps: 'Le mie mappe',
   },
 
   mainMenu: {

@@ -106,7 +106,7 @@ export type Messages = {
     changesets: string;
     mapDetails: string;
     tracking: string;
-    maps: string;
+    myMaps: string;
   };
   mainMenu: {
     title: string;

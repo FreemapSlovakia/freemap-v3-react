@@ -10,6 +10,7 @@ import {
   FaRegCircle,
   FaRegEye,
 } from 'react-icons/fa';
+import { modalMenuItemProps } from '@/shared/hooks/useMenuHandler.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function TrackingSubmenu(): ReactElement {
@@ -23,15 +24,12 @@ export function TrackingSubmenu(): ReactElement {
     <>
       <SubmenuHeader icon={<FaBullseye />} title={m?.tools.tracking} />
 
-      <Dropdown.Item
-        href="#show=tracking-watched"
-        eventKey="modal-tracking-watched"
-      >
+      <Dropdown.Item {...modalMenuItemProps('tracking-watched')}>
         <FaRegEye /> {m?.tracking.trackedDevices.button} <kbd>g</kbd>{' '}
         <kbd>w</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item href="#show=tracking-my" eventKey="modal-tracking-my">
+      <Dropdown.Item {...modalMenuItemProps('tracking-my')}>
         <FaMobileAlt /> {m?.tracking.devices.button} <kbd>g</kbd> <kbd>d</kbd>
       </Dropdown.Item>
 

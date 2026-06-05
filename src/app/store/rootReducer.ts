@@ -59,6 +59,7 @@ import {
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
 import { wikimediaCommonsReducer } from '@features/wikimediaCommons/model/reducer.js';
+import { LanguageSchema } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
   StravaHeatmapColorSchema,
@@ -99,7 +100,7 @@ const PersistedMapSchema = z
 
 const PersistedL10nSchema = z
   .object({
-    chosenLanguage: z.string().nullable(),
+    chosenLanguage: LanguageSchema.nullable(),
   })
   .partial();
 

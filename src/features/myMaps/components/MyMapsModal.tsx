@@ -30,7 +30,7 @@ export default function MyMapsModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaRegMap /> {m?.tools.maps}
+          <FaRegMap /> {m?.tools.myMaps}
         </Modal.Title>
       </Modal.Header>
 

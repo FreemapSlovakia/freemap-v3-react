@@ -149,7 +149,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
     tracking: 'Élő követés',
-    maps: 'Saját térképeim',
+    myMaps: 'Saját térképeim',
   },
 
   mainMenu: {

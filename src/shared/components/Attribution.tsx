@@ -1,4 +1,7 @@
-import { documentShow } from '@features/documents/model/actions.js';
+import {
+  DocumentSchema,
+  documentShow,
+} from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Fragment, ReactElement } from 'react';
@@ -125,9 +128,17 @@ export function useResolvedAttribution(
                         return;
                       }
 
+                      const doc = DocumentSchema.safeParse(
+                        a.url.slice(PREFIX.length),
+                      );
+
+                      if (!doc.success) {
+                        return;
+                      }
+
                       e.preventDefault();
 
-                      dispatch(documentShow(a.url.slice(PREFIX.length)));
+                      dispatch(documentShow(doc.data));
                     }}
                   >
                     {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}

@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { OverlayTrigger, Tooltip, TooltipProps } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
+import { modalMenuItemProps } from '@/shared/hooks/useMenuHandler.js';
 
 type Props = { help: string; credits: string };
 
@@ -16,7 +17,7 @@ export function CreditsText({ credits, help }: Props) {
           <>
             {re[1]}
             <a
-              href="#show=download-map"
+              href={modalMenuItemProps('offline-map-export').href}
               onClick={(e) => {
                 e.preventDefault();
 
