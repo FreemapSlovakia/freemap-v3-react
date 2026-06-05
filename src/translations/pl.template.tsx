@@ -1062,7 +1062,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     attribution: 'Atrybucja',
     northArrowLetter: 'N',
     glow: 'Poświata',
-    markerWidth: 'Rozmiar znaczników',
     alert: (licence) => (
       <>
         Uwagi:

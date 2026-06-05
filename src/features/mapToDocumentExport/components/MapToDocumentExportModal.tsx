@@ -158,13 +158,6 @@ export default function MapToDocumentExportModal({
     (value) => value ?? '2',
   );
 
-  // Width in pixels of custom-layer point markers.
-  const [markerWidth, setMarkerWidth] = usePersistentState<string>(
-    'fm.exportMap.markerWidth',
-    identity,
-    (value) => value ?? '24',
-  );
-
   // Styling of custom-layer feature labels.
   const [labelColor, setLabelColor] = usePersistentState<string>(
     'fm.exportMap.labelColor',
@@ -225,8 +218,6 @@ export default function MapToDocumentExportModal({
 
   const invalidGlowWidth = glow && isInvalidInt(glowWidth, true, 1, 50);
 
-  const invalidMarkerWidth = isInvalidInt(markerWidth, true, 1, 100);
-
   const invalidLabelWeight = isInvalidInt(labelWeight, true, 100, 900);
 
   const invalidLabelSize = isInvalidInt(labelSize, true, 1, 100);
@@ -268,13 +259,6 @@ export default function MapToDocumentExportModal({
       setGlowWidth(e.currentTarget.value);
     },
     [setGlowWidth],
-  );
-
-  const handleMarkerWidthChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setMarkerWidth(e.currentTarget.value);
-    },
-    [setMarkerWidth],
   );
 
   const handleLabelWeightChange = useCallback(
@@ -462,27 +446,6 @@ export default function MapToDocumentExportModal({
 
           <fieldset disabled={exportables.length < 2} className="mt-3">
             <Form.Group>
-              <Form.Label className="d-block">
-                {m?.mapToDocumentExport.markerWidth}
-              </Form.Label>
-
-              <InputGroup className="w-auto">
-                <Form.Control
-                  type="number"
-                  value={markerWidth}
-                  min={1}
-                  max={100}
-                  step={1}
-                  isInvalid={invalidMarkerWidth}
-                  onChange={handleMarkerWidthChange}
-                  style={{ width: '5rem' }}
-                />
-
-                <InputGroup.Text>px</InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-
-            <Form.Group className="mt-3">
               <Form.Label className="d-block">
                 {m?.mapToDocumentExport.glow}
               </Form.Label>
@@ -686,7 +649,6 @@ export default function MapToDocumentExportModal({
           disabled={
             invalidScale ||
             invalidGlowWidth ||
-            invalidMarkerWidth ||
             invalidLabelWeight ||
             invalidLabelSize
           }
@@ -714,7 +676,6 @@ export default function MapToDocumentExportModal({
                 glow: glow
                   ? { color: glowColor, width: parseInt(glowWidth, 10) }
                   : null,
-                markerWidth: parseInt(markerWidth, 10),
                 label: {
                   color: labelColor,
                   weight: parseInt(labelWeight, 10),

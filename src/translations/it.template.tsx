@@ -1067,7 +1067,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     attribution: 'Attribuzione',
     northArrowLetter: 'N',
     glow: 'Alone',
-    markerWidth: 'Dimensione dei marcatori',
     alert: (licence) => (
       <>
         Note:

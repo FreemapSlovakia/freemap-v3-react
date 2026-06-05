@@ -60,8 +60,6 @@ export interface ExportOptions {
   format: Format;
   decorations: Decorations;
   glow: Glow | null;
-  /** Width in pixels of custom-layer point markers. */
-  markerWidth: number;
   /** Styling of custom-layer feature labels. */
   label: Label;
 }

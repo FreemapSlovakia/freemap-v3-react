@@ -23,7 +23,6 @@ const handle: ProcessorHandler<typeof exportMapToDocument> = async ({
     customLayerOrder,
     decorations,
     glow,
-    markerWidth,
     label,
   } = action.payload;
 
@@ -86,7 +85,6 @@ const handle: ProcessorHandler<typeof exportMapToDocument> = async ({
           featureCollectionOrder: customLayerOrder,
           glowColor: glow ? glow.color : undefined, // rgba
           glowWidth: glow ? glow.width : 0,
-          markerWidth,
           labelColor: label.color, // rgb (no alpha)
           labelWeight: label.weight,
           labelSize: label.size,

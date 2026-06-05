@@ -8,7 +8,11 @@ import {
   parseIconSpec,
   poiIconNameToUrl,
 } from '@shared/drawingIcons.js';
-import { poiIconGlyphRect } from '@shared/poiIconGlyph.js';
+import {
+  MARKER_REF_WIDTH,
+  MARKER_VIEWBOX_WIDTH,
+  poiIconGlyphRect,
+} from '@shared/poiIconGlyph.js';
 
 // Glyph color: matches RichMarker's GLYPH_COLOR ('black'), drawn on the white
 // inset. Kept literal here so the export pipeline doesn't need a runtime lookup.
@@ -240,6 +244,11 @@ export async function svgToPngDataUrl(
 // viewBox is padded with transparent space below the tip. This lets a
 // shape-agnostic renderer place every marker by simply centering it on the
 // coordinate (scaling to a fixed width, since all shapes share width 310).
+//
+// `displayWidth` is the marker's intended on-screen width in px, baked into the
+// root `<svg>`'s width/height so the SVG is self-describing: the renderer draws
+// it at its natural size (no separate marker-width knob). Defaults to
+// MARKER_REF_WIDTH, the size at which poi glyphs equal the map's natural icons.
 export function buildMarkerSvg({
   markerType,
   color,
@@ -249,6 +258,7 @@ export function buildMarkerSvg({
   poiSvg,
   poiBBox,
   anchorAtCenter = false,
+  displayWidth = MARKER_REF_WIDTH,
 }: {
   markerType: MarkerType | undefined;
   color: string;
@@ -258,6 +268,7 @@ export function buildMarkerSvg({
   poiSvg?: string;
   poiBBox?: PoiIconBBox;
   anchorAtCenter?: boolean;
+  displayWidth?: number;
 }): { svg: string; width: number; height: number } {
   // Split any alpha off the color: the solid RGB paints the shape, while the
   // alpha becomes a group `opacity` on the whole <svg> so the entire marker
@@ -265,6 +276,11 @@ export function buildMarkerSvg({
   const { color: fillColor, opacity } = splitColorAlpha(color);
 
   const opacityAttr = opacity < 1 ? ` opacity="${opacity}"` : '';
+
+  // viewBox stays in artwork units (width MARKER_VIEWBOX_WIDTH); the px scale
+  // maps that to the requested on-screen width so the root <svg> is
+  // self-describing (renderer draws it at natural size).
+  const pxScale = displayWidth / MARKER_VIEWBOX_WIDTH;
 
   const GLYPH = 150;
 
@@ -314,9 +330,11 @@ export function buildMarkerSvg({
   };
 
   if (markerType === 'ring') {
+    const pxW = MARKER_VIEWBOX_WIDTH * pxScale;
+
     return {
       svg:
-        `<svg xmlns="http://www.w3.org/2000/svg" width="310" height="310" viewBox="0 0 310 310"${opacityAttr}>` +
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${pxW}" height="${pxW}" viewBox="0 0 310 310"${opacityAttr}>` +
         `<ellipse cx="155" cy="155" rx="135" ry="135" fill="${fillColor}" ` +
         `stroke="${fillColor}" stroke-width="10" stroke-opacity="0.5"/>` +
         (hasContent
@@ -324,15 +342,17 @@ export function buildMarkerSvg({
           : '') +
         renderGlyph(155, 155) +
         `</svg>`,
-      width: 310,
-      height: 310,
+      width: pxW,
+      height: pxW,
     };
   }
 
   if (markerType === 'square') {
+    const pxW = MARKER_VIEWBOX_WIDTH * pxScale;
+
     return {
       svg:
-        `<svg xmlns="http://www.w3.org/2000/svg" width="310" height="310" viewBox="0 0 310 310"${opacityAttr}>` +
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${pxW}" height="${pxW}" viewBox="0 0 310 310"${opacityAttr}>` +
         `<rect x="30" y="30" width="240" height="240" rx="20" ry="20" ` +
         `fill="${fillColor}" stroke="${fillColor}" stroke-width="10" ` +
         `stroke-opacity="0.6"/>` +
@@ -342,19 +362,23 @@ export function buildMarkerSvg({
           : '') +
         renderGlyph(150, 150) +
         `</svg>`,
-      width: 310,
-      height: 310,
+      width: pxW,
+      height: pxW,
     };
   }
 
   // pin (default). The anchor is the tip at (156.06, 493.24). With
   // `anchorAtCenter`, pad the viewBox below the tip so it becomes the vertical
   // center: height = 2 × 493.239, keeping the tip at center (155, 493.239).
-  const height = anchorAtCenter ? 986.478 : 512;
+  const vbHeight = anchorAtCenter ? 986.478 : 512;
+
+  const pxW = MARKER_VIEWBOX_WIDTH * pxScale;
+
+  const pxH = vbHeight * pxScale;
 
   return {
     svg:
-      `<svg xmlns="http://www.w3.org/2000/svg" width="310" height="${height}" viewBox="0 0 310 ${height}"${opacityAttr}>` +
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${pxW}" height="${pxH}" viewBox="0 0 310 ${vbHeight}"${opacityAttr}>` +
       `<path d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 ` +
       `C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 ` +
       `493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 ` +
@@ -367,7 +391,7 @@ export function buildMarkerSvg({
         : '') +
       renderGlyph(154, 164) +
       `</svg>`,
-    width: 310,
-    height,
+    width: pxW,
+    height: pxH,
   };
 }

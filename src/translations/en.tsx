@@ -1020,7 +1020,6 @@ const messages: Messages = {
     attribution: 'Attribution',
     northArrowLetter: 'N',
     glow: 'Glow',
-    markerWidth: 'Marker size',
     labelTitle: 'Labels',
 
     alert: (licence) => (

@@ -1069,7 +1069,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     attribution: 'Uvedenie zdroja',
     northArrowLetter: 'S',
     glow: 'Žiara',
-    markerWidth: 'Veľkosť značiek',
     alert: (licence) => (
       <>
         Upozornenia:

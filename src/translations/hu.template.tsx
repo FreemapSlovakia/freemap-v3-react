@@ -1097,7 +1097,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     attribution: 'Forrásmegjelölés',
     northArrowLetter: 'É',
     glow: 'Ragyogás',
-    markerWidth: 'Jelölők mérete',
     alert: (licence) => (
       <>
         Megjegyzések:

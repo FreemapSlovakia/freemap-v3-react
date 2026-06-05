@@ -719,7 +719,6 @@ export type Messages = {
     advancedSettings: string;
     styles: string;
     glow: string;
-    markerWidth: string;
     labelTitle: string;
   };
   myMaps: {
