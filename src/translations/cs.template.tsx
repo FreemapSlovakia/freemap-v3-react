@@ -1003,6 +1003,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     styles: 'Styly datové vrstvy',
     exportError: ({ err }) => addError(messages, 'Chyba exportu mapy', err),
     exporting: 'Prosím počkejte, mapa se exportuje…',
+    cancelExportTitle: 'Zrušit export',
+    cancelExportQuestion: 'Opravdu chcete zrušit probíhající export?',
     exported: ({ url }) => (
       <>
         Export mapy je dokončen.{' '}

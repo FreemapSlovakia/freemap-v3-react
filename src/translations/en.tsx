@@ -992,6 +992,8 @@ const messages: Messages = {
         </AlertLink>
       </>
     ),
+    cancelExportTitle: 'Cancel export',
+    cancelExportQuestion: 'Do you really want to cancel the running export?',
     area: 'Export area',
     areas: {
       visible: 'Visible area of the map',

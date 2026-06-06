@@ -51,7 +51,6 @@ import { locateProcessor } from '@features/location/model/locateProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
 import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProcessor.js';
-import { mapToDocumentExportProcessor } from '@features/mapToDocumentExport/model/processors/mapToDocumentExportProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
 import { mapsLoadProcessor } from '@features/myMaps/model/processors/mapsLoadProcessor.js';
@@ -180,7 +179,6 @@ export const processors = [
   openInExternalAppProcessor,
   ...Object.values(rpcProcessors),
   exportMapFeaturesProcessor,
-  mapToDocumentExportProcessor,
   authWithFacebookProcessor,
   authWithGoogleProcessor,
   authWithAppleProcessor,

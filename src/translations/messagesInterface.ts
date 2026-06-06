@@ -8,7 +8,7 @@ import {
 import {
   CustomLayerOrder,
   ExportableLayer,
-} from '@features/mapToDocumentExport/model/actions.js';
+} from '@features/mapToDocumentExport/model/types.js';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
 import { DeepPartial } from '@shared/types/deepPartial.js';
 import { JSX, ReactElement, ReactNode } from 'react';
@@ -698,6 +698,8 @@ export type Messages = {
     exportError: (props: Err) => string;
     exporting: string;
     exported: ({ url }: { url: string }) => JSX.Element;
+    cancelExportTitle: string;
+    cancelExportQuestion: string;
     area: string;
     areas: {
       visible: string;

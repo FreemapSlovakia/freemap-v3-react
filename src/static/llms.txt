@@ -323,6 +323,8 @@ Opens a modal to export the map as an image or document. Options:
 
 The modal also displays the attribution that must accompany the exported map when shared.
 
+While the export runs the modal stays open with its controls disabled and a spinner on the export button; only Cancel stays active (cancelling asks for confirmation and aborts the request). When the export finishes the resulting file is downloaded automatically.
+
 ### Map data export
 
 - Access: Main menu > Map data export

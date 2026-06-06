@@ -1059,6 +1059,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Fehler beim Kartenexport', err),
 
     exporting: 'Bitte warten, Karte wird exportiert…',
+    cancelExportTitle: 'Export abbrechen',
+    cancelExportQuestion:
+      'Möchten Sie den laufenden Export wirklich abbrechen?',
 
     exported: ({ url }) => (
       <>

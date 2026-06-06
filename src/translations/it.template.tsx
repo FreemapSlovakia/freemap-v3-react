@@ -1031,6 +1031,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     styles: 'Stili del livello dati',
     exportError: ({ err }) => addError(messages, 'Error exporting map:', err),
     exporting: 'Attendere prego, esportazione in corso…',
+    cancelExportTitle: 'Annulla esportazione',
+    cancelExportQuestion: "Vuoi davvero annullare l'esportazione in corso?",
     exported: ({ url }) => (
       <>
         Esportazione mappa completata.{' '}

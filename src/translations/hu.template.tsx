@@ -1060,6 +1060,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Hiba történt a térkép exportálásakor', err),
 
     exporting: 'Kérjük várjon, a térkép exportálása folyamatban van…',
+    cancelExportTitle: 'Exportálás megszakítása',
+    cancelExportQuestion:
+      'Biztosan megszakítja a folyamatban lévő exportálást?',
 
     exported: ({ url }) => (
       <>

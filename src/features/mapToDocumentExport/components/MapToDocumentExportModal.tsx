@@ -1,5 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { RgbaColorPicker } from '@features/drawing/components/RgbaColorPicker.js';
+import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
@@ -8,17 +8,16 @@ import {
   useResolvedAttribution,
   useResolvedAttributionText,
 } from '@shared/components/Attribution.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import { bboxPolygon } from '@turf/bbox-polygon';
-import storage from 'local-storage-fallback';
 import {
   ChangeEvent,
   Fragment,
   ReactElement,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -27,73 +26,33 @@ import {
   Form,
   InputGroup,
   Modal,
+  Spinner,
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';
-import {
-  FaBicycle,
-  FaCompass,
-  FaCopyright,
-  FaDownload,
-  FaHiking,
-  FaHorse,
-  FaPrint,
-  FaRegSun,
-  FaRulerHorizontal,
-  FaSkiing,
-  FaTimes,
-} from 'react-icons/fa';
-import { GiHills } from 'react-icons/gi';
-import { RxTarget } from 'react-icons/rx';
-import { useDispatch } from 'react-redux';
-import z from 'zod';
+import { FaDownload, FaPrint, FaTimes } from 'react-icons/fa';
+import { useDispatch, useStore } from 'react-redux';
 import {
   ExportablesSelector,
   useAvailableExportables,
 } from '@/features/mapFeaturesExport/components/ExportablesSelector.js';
 import type { Exportable } from '@/features/mapFeaturesExport/model/actions.js';
+import { exportMapToDocument } from '../model/exportMapToDocument.js';
 import {
   CustomLayerOrder,
-  CustomLayerOrderSchema,
-  EXPORTABLE_LAYERS,
   ExportableLayer,
-  ExportableLayerSchema,
-  exportMapToDocument,
   Format,
   FormatSchema,
-} from '../model/actions.js';
+} from '../model/types.js';
+import { useAreaCountries } from '../model/useAreaCountries.js';
+import { useExportSettings } from '../model/useExportSettings.js';
+import { DataLayerStyleFields } from './DataLayerStyleFields.js';
+import { ExportLayersField } from './ExportLayersField.js';
+import { MapDecorationsField } from './MapDecorationsField.js';
 
 type Props = { show: boolean };
 
-const LAYER_ICONS: Record<ExportableLayer, ReactElement> = {
-  contours: <RxTarget />,
-  shading: <GiHills />,
-  hikingTrails: <FaHiking />,
-  bicycleTrails: <FaBicycle />,
-  skiTrails: <FaSkiing />,
-  horseTrails: <FaHorse />,
-};
-
-const LAYERS_STORAGE_KEY = 'fm.mapToDocumentExport.layers';
-
 const MAP_LAYERS = ['X'];
-
-function identity<T>(value: T): T {
-  return value;
-}
-
-const toScale = (value: string | null) => value ?? '100';
-
-const toExportFormat = (value: string | null) =>
-  FormatSchema.safeParse(value).data ?? 'jpeg';
-
-const toCustomLayerOrder = (value: string | null) =>
-  CustomLayerOrderSchema.safeParse(value).data ?? 'natural';
-
-const fromBool = (value: boolean) => (value ? '1' : '0');
-
-// default on
-const toBool = (value: string | null) => value !== '0';
 
 export default function MapToDocumentExportModal({
   show,
@@ -108,94 +67,23 @@ export default function MapToDocumentExportModal({
     startSelecting,
   } = useMapAreaSelection();
 
-  const [scale, setScale] = usePersistentState<string>(
-    'fm.exportMap.scale',
-    identity,
-    toScale,
-  );
+  const [settings, updateSettings] = useExportSettings();
 
-  const [customLayerOrder, setCustomLayerOrder] = usePersistentState<
-    'topmost' | 'natural'
-  >('fm.exportMap.customLayerOrder', identity, toCustomLayerOrder);
-
-  const [format, setFormat] = usePersistentState<Format>(
-    'fm.exportMap.format',
-    identity,
-    toExportFormat,
-  );
-
-  const [scaleBar, setScaleBar] = usePersistentState<boolean>(
-    'fm.exportMap.scaleBar',
-    fromBool,
-    toBool,
-  );
-
-  const [northArrow, setNorthArrow] = usePersistentState<boolean>(
-    'fm.exportMap.northArrow',
-    fromBool,
-    toBool,
-  );
-
-  const [attributionEnabled, setAttributionEnabled] =
-    usePersistentState<boolean>('fm.exportMap.attribution', fromBool, toBool);
-
-  // Glow/shadow rendered around all custom-layer markers and lines.
-  const [glow, setGlow] = usePersistentState<boolean>(
-    'fm.exportMap.glow',
-    fromBool,
-    toBool,
-  );
-
-  const [glowColor, setGlowColor] = usePersistentState<string>(
-    'fm.exportMap.glowColor',
-    identity,
-    (value) => value ?? '#ffffff80',
-  );
-
-  const [glowWidth, setGlowWidth] = usePersistentState<string>(
-    'fm.exportMap.glowWidth',
-    identity,
-    (value) => value ?? '2',
-  );
-
-  // Styling of custom-layer feature labels.
-  const [labelColor, setLabelColor] = usePersistentState<string>(
-    'fm.exportMap.labelColor',
-    identity,
-    (value) => value ?? '#8000ff',
-  );
-
-  const [labelWeight, setLabelWeight] = usePersistentState<string>(
-    'fm.exportMap.labelWeight',
-    identity,
-    (value) => value ?? '700',
-  );
-
-  const [labelSize, setLabelSize] = usePersistentState<string>(
-    'fm.exportMap.labelSize',
-    identity,
-    (value) => value ?? '15',
-  );
-
-  const [layers, setLayers] = useState(() => {
-    const layers = storage.getItem(LAYERS_STORAGE_KEY);
-
-    if (!layers) {
-      return new Set(EXPORTABLE_LAYERS);
-    }
-
-    const set = new Set<ExportableLayer>();
-
-    for (const str of layers.split(',')) {
-      const a = ExportableLayerSchema.safeParse(str);
-
-      if (a.success) {
-        set.add(a.data);
-      }
-    }
-
-    return set;
-  });
+  const {
+    scale,
+    customLayerOrder,
+    format,
+    scaleBar,
+    northArrow,
+    attribution: attributionEnabled,
+    glow,
+    glowColor,
+    glowWidth,
+    labelColor,
+    labelWeight,
+    labelSize,
+    layers,
+  } = settings;
 
   // Vector feature sources (drawing, route, objects, …) selected via the shared
   // exportables vocabulary; default to whatever currently has data, like the
@@ -210,9 +98,18 @@ export default function MapToDocumentExportModal({
 
   const dispatch = useDispatch();
 
-  function close() {
+  const store = useStore<RootState>();
+
+  const confirm = useConfirm();
+
+  const [exporting, setExporting] = useState(false);
+
+  // Aborts the in-flight export requests when the user confirms cancellation.
+  const abortRef = useRef<AbortController | null>(null);
+
+  const close = useCallback(() => {
     dispatch(setActiveModal(null));
-  }
+  }, [dispatch]);
 
   const invalidScale = isInvalidInt(scale, true, 60, 960);
 
@@ -222,120 +119,70 @@ export default function MapToDocumentExportModal({
 
   const invalidLabelSize = isInvalidInt(labelSize, true, 1, 100);
 
-  const cookiesEnabled = useAppSelector(
-    (state) => state.cookieConsent.cookieConsentResult !== null,
-  );
-
   const toggleLayer = useCallback(
     (layer: ExportableLayer) => {
-      setLayers((prev) => {
-        const n = new Set(prev);
-
-        if (n.has(layer)) {
-          n.delete(layer);
-        } else {
-          n.add(layer);
-        }
-
-        if (cookiesEnabled) {
-          storage.setItem(LAYERS_STORAGE_KEY, [...n].join(','));
-        }
-
-        return n;
+      updateSettings({
+        layers: layers.includes(layer)
+          ? layers.filter((l) => l !== layer)
+          : [...layers, layer],
       });
     },
-    [cookiesEnabled],
+    [updateSettings, layers],
   );
 
   const handleScaleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setScale(e.currentTarget.value);
+      updateSettings({ scale: e.currentTarget.value });
     },
-    [setScale],
+    [updateSettings],
   );
 
   const handleGlowWidthChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setGlowWidth(e.currentTarget.value);
+      updateSettings({ glowWidth: e.currentTarget.value });
     },
-    [setGlowWidth],
+    [updateSettings],
   );
 
   const handleLabelWeightChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setLabelWeight(e.currentTarget.value);
+      updateSettings({ labelWeight: e.currentTarget.value });
     },
-    [setLabelWeight],
+    [updateSettings],
   );
 
   const handleLabelSizeChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setLabelSize(e.currentTarget.value);
+      updateSettings({ labelSize: e.currentTarget.value });
     },
-    [setLabelSize],
+    [updateSettings],
   );
 
   const handleCustomLayerOrderChange = useCallback(
     (value: CustomLayerOrder) => {
-      setCustomLayerOrder(value);
+      updateSettings({ customLayerOrder: value });
     },
-    [setCustomLayerOrder],
+    [updateSettings],
   );
 
   const handleDecorationsChange = useCallback(
     (values: ('scaleBar' | 'northArrow' | 'attribution')[]) => {
-      setScaleBar(values.includes('scaleBar'));
-      setNorthArrow(values.includes('northArrow'));
-      setAttributionEnabled(values.includes('attribution'));
+      updateSettings({
+        scaleBar: values.includes('scaleBar'),
+        northArrow: values.includes('northArrow'),
+        attribution: values.includes('attribution'),
+      });
     },
-    [setScaleBar, setNorthArrow, setAttributionEnabled],
+    [updateSettings],
   );
 
   const countries = useAppSelector((state) => state.map.countries);
 
-  const [areaCountries, setAreaCountries] = useState<string[] | undefined>();
-
-  // resolve attribution countries covered by the drawn rectangle
-  useEffect(() => {
-    if (area !== 'area' || !areaBbox) {
-      setAreaCountries(undefined);
-
-      return;
-    }
-
-    let cancelled = false;
-
-    fetch(`${process.env['API_URL']}/geotools/covered-countries`, {
-      method: 'POST',
-      body: JSON.stringify(bboxPolygon(areaBbox)),
-      headers: { 'content-type': 'application/geo+json' },
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-
-        throw new Error();
-      })
-      .then((data) => {
-        if (!cancelled) {
-          setAreaCountries(z.array(z.string()).parse(data));
-        }
-      })
-      .catch((err) => {
-        dispatch(
-          toastsAdd({
-            style: 'danger',
-            messageKey: 'general.loadError',
-            messageParams: { err },
-          }),
-        );
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [dispatch, area, areaBbox]);
+  const areaCountries = useAreaCountries(
+    area === 'area' && areaBbox
+      ? { type: 'selected', bbox: areaBbox }
+      : { type: 'visible' },
+  );
 
   const attributionCountries = area === 'area' ? areaCountries : countries;
 
@@ -346,21 +193,129 @@ export default function MapToDocumentExportModal({
     attributionCountries,
   );
 
+  const handleExport = useCallback(async () => {
+    const ac = new AbortController();
+
+    abortRef.current = ac;
+
+    setExporting(true);
+
+    try {
+      const result = await exportMapToDocument({
+        getState: store.getState,
+        signal: ac.signal,
+        area,
+        format,
+        scale: parseInt(scale, 10) / 96,
+        layers: [...layers],
+        exportables: exportables.split('|').filter(Boolean) as Exportable[],
+        customLayerOrder,
+        decorations: {
+          scaleBar,
+          northArrow: northArrow
+            ? (m?.mapToDocumentExport.northArrowLetter ?? 'N')
+            : false,
+          attribution:
+            attributionEnabled && attributionText ? attributionText : false,
+        },
+        glow: glow
+          ? { color: glowColor, width: parseInt(glowWidth, 10) }
+          : null,
+        label: {
+          color: labelColor,
+          weight: parseInt(labelWeight, 10),
+          size: parseInt(labelSize, 10),
+        },
+      });
+
+      if (!result) {
+        return;
+      }
+
+      const objectUrl = URL.createObjectURL(result.blob);
+
+      const a = document.createElement('a');
+
+      a.href = objectUrl;
+
+      a.download = result.suggestedName;
+
+      a.click();
+
+      URL.revokeObjectURL(objectUrl);
+
+      close();
+    } catch (err) {
+      if (!ac.signal.aborted) {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'mapToDocumentExport.exportError',
+            messageParams: { err },
+          }),
+        );
+      }
+    } finally {
+      abortRef.current = null;
+
+      setExporting(false);
+    }
+  }, [
+    store,
+    dispatch,
+    close,
+    m,
+    area,
+    exportables,
+    format,
+    scale,
+    layers,
+    customLayerOrder,
+    scaleBar,
+    northArrow,
+    attributionEnabled,
+    attributionText,
+    glow,
+    glowColor,
+    glowWidth,
+    labelColor,
+    labelWeight,
+    labelSize,
+  ]);
+
+  const handleCancel = useCallback(async () => {
+    if (
+      await confirm({
+        title: m?.mapToDocumentExport.cancelExportTitle,
+        message: m?.mapToDocumentExport.cancelExportQuestion,
+        confirmLabel: m?.general.yes,
+        cancelLabel: m?.general.no,
+        confirmStyle: 'danger',
+      })
+    ) {
+      // Abort the in-flight export but keep this modal open so the user can
+      // tweak the options and try again.
+      abortRef.current?.abort();
+    }
+  }, [confirm, m]);
+
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={exporting ? handleCancel : close}
+      backdrop={exporting ? 'static' : undefined}
+      keyboard={!exporting}
       className={selectingArea ? 'd-none' : undefined}
       backdropClassName={selectingArea ? 'd-none' : undefined}
       enforceFocus={!selectingArea}
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton={!exporting}>
         <Modal.Title>
           <FaPrint /> {m?.mainMenu.mapToDocumentExport}
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>
+      <Modal.Body as="fieldset" disabled={exporting}>
         <Alert variant="warning">
           {m?.mapToDocumentExport.alert(
             attribution?.map(([type, elem]) => (
@@ -393,7 +348,7 @@ export default function MapToDocumentExportModal({
             type="radio"
             name="exportFormat"
             value={format}
-            onChange={setFormat}
+            onChange={(value: Format) => updateSettings({ format: value })}
           >
             {FormatSchema.options.map((fmt) => (
               <ToggleButton
@@ -408,28 +363,7 @@ export default function MapToDocumentExportModal({
           </ToggleButtonGroup>
         </Form.Group>
 
-        <Form.Group className="mt-3">
-          <Form.Label className="d-block">
-            {m?.mapToDocumentExport.layersTitle}
-          </Form.Label>
-
-          <div className="d-flex flex-wrap gap-2">
-            {EXPORTABLE_LAYERS.map((layer) => (
-              <ToggleButton
-                key={layer}
-                id={`export-layer-${layer}`}
-                type="checkbox"
-                value={layer}
-                variant="outline-primary"
-                className="rounded flex-grow-0"
-                checked={layers.has(layer)}
-                onChange={() => toggleLayer(layer)}
-              >
-                {LAYER_ICONS[layer]} {m?.mapToDocumentExport.layers[layer]}
-              </ToggleButton>
-            ))}
-          </div>
-        </Form.Group>
+        <ExportLayersField value={layers} onToggle={toggleLayer} />
 
         <fieldset className="mt-3 border rounded p-3">
           <Form.Group>
@@ -444,186 +378,36 @@ export default function MapToDocumentExportModal({
             />
           </Form.Group>
 
-          <fieldset disabled={exportables.length < 2} className="mt-3">
-            <Form.Group>
-              <Form.Label className="d-block">
-                {m?.mapToDocumentExport.glow}
-              </Form.Label>
-
-              <div className="d-flex flex-wrap align-items-center gap-2">
-                <ToggleButtonGroup
-                  type="checkbox"
-                  value={glow ? ['glow'] : []}
-                  onChange={(values: string[]) =>
-                    setGlow(values.includes('glow'))
-                  }
-                >
-                  <ToggleButton
-                    id="exportGlow"
-                    value="glow"
-                    variant="outline-primary"
-                    className="rounded flex-grow-0"
-                  >
-                    <FaRegSun /> {m?.mapToDocumentExport.glow}
-                  </ToggleButton>
-                </ToggleButtonGroup>
-
-                {glow && (
-                  <>
-                    <InputGroup className="w-auto">
-                      <InputGroup.Text>{m?.generic.color}</InputGroup.Text>
-
-                      <RgbaColorPicker
-                        value={glowColor}
-                        onChange={setGlowColor}
-                        className="flex-grow-0"
-                        style={{ width: '3rem' }}
-                      />
-                    </InputGroup>
-
-                    <InputGroup className="w-auto">
-                      <InputGroup.Text>{m?.generic.width}</InputGroup.Text>
-
-                      <Form.Control
-                        type="number"
-                        value={glowWidth}
-                        min={1}
-                        max={50}
-                        step={1}
-                        isInvalid={invalidGlowWidth}
-                        onChange={handleGlowWidthChange}
-                        style={{ minWidth: '5rem', width: '5rem' }}
-                      />
-                    </InputGroup>
-                  </>
-                )}
-              </div>
-            </Form.Group>
-
-            <Form.Group className="mt-3">
-              <Form.Label className="d-block">
-                {m?.mapToDocumentExport.labelTitle}
-              </Form.Label>
-
-              <div className="d-flex flex-wrap align-items-center gap-2">
-                <InputGroup className="w-auto">
-                  <InputGroup.Text>{m?.generic.color}</InputGroup.Text>
-
-                  <RgbaColorPicker
-                    value={labelColor}
-                    onChange={setLabelColor}
-                    alpha={false}
-                    className="flex-grow-0"
-                    style={{ width: '3rem' }}
-                  />
-                </InputGroup>
-
-                <InputGroup className="w-auto">
-                  <InputGroup.Text>{m?.generic.size}</InputGroup.Text>
-
-                  <Form.Control
-                    type="number"
-                    value={labelSize}
-                    min={1}
-                    max={100}
-                    step={1}
-                    isInvalid={invalidLabelSize}
-                    onChange={handleLabelSizeChange}
-                    style={{ minWidth: '5rem', width: '5rem' }}
-                  />
-                </InputGroup>
-
-                <InputGroup className="w-auto">
-                  <InputGroup.Text>{m?.generic.weight}</InputGroup.Text>
-
-                  <Form.Control
-                    type="number"
-                    value={labelWeight}
-                    min={100}
-                    max={900}
-                    step={100}
-                    isInvalid={invalidLabelWeight}
-                    onChange={handleLabelWeightChange}
-                    style={{ minWidth: '5rem', width: '5rem' }}
-                  />
-                </InputGroup>
-              </div>
-            </Form.Group>
-
-            <Form.Group className="mt-3">
-              <Form.Label className="d-block">
-                {m?.mapToDocumentExport.customLayerOrder}
-              </Form.Label>
-
-              <ToggleButtonGroup
-                type="radio"
-                name="customLayerOrder"
-                value={customLayerOrder}
-                onChange={handleCustomLayerOrderChange}
-              >
-                <ToggleButton
-                  id="customLayerOrder-natural"
-                  value="natural"
-                  variant="outline-primary"
-                >
-                  {m?.mapToDocumentExport.orders.natural}
-                </ToggleButton>
-
-                <ToggleButton
-                  id="customLayerOrder-topmost"
-                  value="topmost"
-                  variant="outline-primary"
-                >
-                  {m?.mapToDocumentExport.orders.topmost}
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </Form.Group>
-          </fieldset>
+          <DataLayerStyleFields
+            disabled={exportables.length < 2}
+            glow={glow}
+            onGlowChange={(value) => updateSettings({ glow: value })}
+            glowColor={glowColor}
+            onGlowColorChange={(value) => updateSettings({ glowColor: value })}
+            glowWidth={glowWidth}
+            onGlowWidthChange={handleGlowWidthChange}
+            invalidGlowWidth={invalidGlowWidth}
+            labelColor={labelColor}
+            onLabelColorChange={(value) =>
+              updateSettings({ labelColor: value })
+            }
+            labelSize={labelSize}
+            onLabelSizeChange={handleLabelSizeChange}
+            invalidLabelSize={invalidLabelSize}
+            labelWeight={labelWeight}
+            onLabelWeightChange={handleLabelWeightChange}
+            invalidLabelWeight={invalidLabelWeight}
+            customLayerOrder={customLayerOrder}
+            onCustomLayerOrderChange={handleCustomLayerOrderChange}
+          />
         </fieldset>
 
-        <Form.Group className="mt-3">
-          <Form.Label className="d-block">
-            {m?.mapToDocumentExport.decorations}
-          </Form.Label>
-
-          <ToggleButtonGroup
-            type="checkbox"
-            value={[
-              ...(scaleBar ? (['scaleBar'] as const) : []),
-              ...(northArrow ? (['northArrow'] as const) : []),
-              ...(attributionEnabled ? (['attribution'] as const) : []),
-            ]}
-            onChange={handleDecorationsChange}
-            className="d-flex flex-wrap gap-2"
-          >
-            <ToggleButton
-              id="exportScaleBar"
-              value="scaleBar"
-              variant="outline-primary"
-              className="rounded flex-grow-0"
-            >
-              <FaRulerHorizontal /> {m?.mapToDocumentExport.scaleBar}
-            </ToggleButton>
-
-            <ToggleButton
-              id="exportNorthArrow"
-              value="northArrow"
-              variant="outline-primary"
-              className="rounded flex-grow-0"
-            >
-              <FaCompass /> {m?.mapToDocumentExport.northArrow}
-            </ToggleButton>
-
-            <ToggleButton
-              id="exportAttribution"
-              value="attribution"
-              variant="outline-primary"
-              className="rounded flex-grow-0"
-            >
-              <FaCopyright /> {m?.mapToDocumentExport.attribution}
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Form.Group>
+        <MapDecorationsField
+          scaleBar={scaleBar}
+          northArrow={northArrow}
+          attribution={attributionEnabled}
+          onChange={handleDecorationsChange}
+        />
 
         <Form.Group controlId="mapScale" className="mt-3">
           <Form.Label>{m?.mapToDocumentExport.mapScale}</Form.Label>
@@ -647,50 +431,31 @@ export default function MapToDocumentExportModal({
       <Modal.Footer>
         <Button
           disabled={
+            exporting ||
             invalidScale ||
             invalidGlowWidth ||
             invalidLabelWeight ||
             invalidLabelSize
           }
-          onClick={() =>
-            dispatch(
-              exportMapToDocument({
-                area,
-                scale: parseInt(scale, 10) / 96,
-                format,
-                layers: [...layers],
-                exportables: exportables
-                  .split('|')
-                  .filter(Boolean) as Exportable[],
-                customLayerOrder,
-                decorations: {
-                  scaleBar,
-                  northArrow: northArrow
-                    ? (m?.mapToDocumentExport.northArrowLetter ?? 'N')
-                    : false,
-                  attribution:
-                    attributionEnabled && attributionText
-                      ? attributionText
-                      : false,
-                },
-                glow: glow
-                  ? { color: glowColor, width: parseInt(glowWidth, 10) }
-                  : null,
-                label: {
-                  color: labelColor,
-                  weight: parseInt(labelWeight, 10),
-                  size: parseInt(labelSize, 10),
-                },
-              }),
-            )
-          }
+          onClick={handleExport}
         >
-          <FaDownload /> {m?.general.export}
+          {exporting ? (
+            <Spinner as="span" size="sm" role="status" />
+          ) : (
+            <FaDownload />
+          )}{' '}
+          {m?.general.export}
         </Button>
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
+        {exporting ? (
+          <Button variant="dark" onClick={handleCancel}>
+            <FaTimes /> {m?.general.cancel}
+          </Button>
+        ) : (
+          <Button variant="dark" onClick={close}>
+            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   );

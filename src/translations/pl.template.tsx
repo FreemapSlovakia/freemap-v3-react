@@ -1038,6 +1038,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     styles: 'Style warstwy danych',
     exportError: ({ err }) => addError(messages, 'Błąd eksportu mapy', err),
     exporting: 'Proszę czekać, trwa eksport mapy…',
+    cancelExportTitle: 'Anuluj eksport',
+    cancelExportQuestion: 'Czy na pewno chcesz anulować trwający eksport?',
     exported: ({ url }) => (
       <>
         Eksport mapy zakończony.{' '}

@@ -1,8 +1,6 @@
-import { httpRequest } from '@app/httpRequest.js';
 import { Processor } from '@app/store/middleware/processorMiddleware.js';
-import bboxPolygon from '@turf/bbox-polygon';
-import z from 'zod';
 import { mapSetBounds, mapSetCountries } from '../actions.js';
+import { fetchCoveredCountries } from '../fetchCoveredCountries.js';
 
 export const getCountriesProcessor: Processor = {
   // stateChangePredicate: (state) => state.map.bounds, // we use actionCreator because it also cancels
@@ -17,17 +15,11 @@ export const getCountriesProcessor: Processor = {
           return;
         }
 
-        const res = await httpRequest({
-          getState,
-          method: 'POST',
-          url: '/geotools/covered-countries',
-          expectedStatus: 200,
-          headers: { 'content-type': 'application/geo+json' },
-          body: JSON.stringify(bboxPolygon(bounds)),
-          cancelActions: [mapSetBounds],
-        });
-
-        dispatch(mapSetCountries(z.array(z.string()).parse(await res.json())));
+        dispatch(
+          mapSetCountries(
+            await fetchCoveredCountries(getState, bounds, [mapSetBounds]),
+          ),
+        );
       })().catch((err) => {
         if (err instanceof DOMException && err.name === 'AbortError') {
           return;
