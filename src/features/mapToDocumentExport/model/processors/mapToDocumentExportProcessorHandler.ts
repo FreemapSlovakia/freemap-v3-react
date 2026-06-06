@@ -80,15 +80,17 @@ const handle: ProcessorHandler<typeof exportMapToDocument> = async ({
       },
       features: {
         layers: exportLayers,
-        customLayer: {
-          featureCollection: fc.features.length ? fc : undefined,
-          featureCollectionOrder: customLayerOrder,
-          glowColor: glow ? glow.color : undefined, // rgba
-          glowWidth: glow ? glow.width : 0,
-          labelColor: label.color, // rgb (no alpha)
-          labelWeight: label.weight,
-          labelSize: label.size,
-        },
+        customLayer: fc.features.length
+          ? {
+              featureCollection: fc,
+              featureCollectionOrder: customLayerOrder,
+              glowColor: glow ? glow.color : undefined, // rgba
+              glowWidth: glow ? glow.width : 0,
+              labelColor: label.color, // rgb (no alpha)
+              labelWeight: label.weight,
+              labelSize: label.size,
+            }
+          : undefined,
       },
     },
     expectedStatus: 200,
