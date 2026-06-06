@@ -80,7 +80,10 @@ export function RgbaColorPicker({
         }}
         aria-label="Pick color"
       >
-        <div className="w-100 h-100 rounded" style={{ background: value }} />
+        <div
+          className="w-100 h-100"
+          style={{ background: value, borderRadius: 'inherit' }}
+        />
       </button>
     </OverlayTrigger>
   );
