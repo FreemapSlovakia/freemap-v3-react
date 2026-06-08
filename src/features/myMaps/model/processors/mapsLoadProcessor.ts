@@ -16,6 +16,7 @@ import { ColorizingModeSchema } from '@features/trackViewer/model/actions.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import z from 'zod';
+import { GeoJSONFeatureCollectionSchema } from 'zod-geojson';
 import { MapMetaSchema, mapsLoad, mapsLoaded } from '../actions.js';
 
 const RoutePlannerMapDataCompatSchema = z.preprocess(
@@ -85,8 +86,7 @@ const MapMapDataCompatSchema = z.preprocess(
 );
 
 const TrackViewerMapDataSchema = z.object({
-  // TODO remove any after https://github.com/reilem/zod-geojson/issues/30 gets fixed
-  trackGeojson: z.any(), // GeoJSONFeatureCollectionSchema.nullable().optional(),
+  trackGeojson: GeoJSONFeatureCollectionSchema.nullable().optional(),
   trackGpx: z.string().nullable().optional(),
   trackUID: z.string().nullable().optional(),
   gpxUrl: z.string().nullable().optional(),
