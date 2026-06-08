@@ -13,6 +13,9 @@ export const AuthProviderSchema = z.enum([
   'garmin',
   'google',
   'apple',
+  'github',
+  'strava',
+  'microsoft',
 ]);
 
 export type AuthProvider = z.infer<typeof AuthProviderSchema>;

@@ -1,4 +1,5 @@
 import { AuthProviders } from '@features/auth/components/AuthProviders.js';
+import { AuthProviderSchema } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement } from 'react';
@@ -14,7 +15,7 @@ export function AuthProvidersSection(): ReactElement | null {
 
   return (
     <>
-      {user.authProviders.length < 5 && (
+      {user.authProviders.length < AuthProviderSchema.options.length && (
         <>
           <p>{m?.auth.connect.label}</p>
 

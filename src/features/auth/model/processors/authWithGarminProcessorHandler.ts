@@ -4,7 +4,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import z from 'zod';
 import { authWithGarmin } from '../actions.js';
 
-export const handle: ProcessorHandler<typeof authWithGarmin> = async ({
+const handle: ProcessorHandler<typeof authWithGarmin> = async ({
   action: {
     payload: { connect, successAction },
   },
@@ -60,3 +60,5 @@ export const handle: ProcessorHandler<typeof authWithGarmin> = async ({
     });
   });
 };
+
+export default handle;

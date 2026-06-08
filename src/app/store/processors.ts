@@ -1,3 +1,4 @@
+import { authProcessors } from '@features/auth/model/authProcessors.js';
 import { authDeleteAccountProcessor } from '@features/auth/model/processors/authDeleteAccountProcessor.js';
 import { authDisconnectProcessor } from '@features/auth/model/processors/authDisconnectProcessor.js';
 import {
@@ -5,13 +6,6 @@ import {
   authTrackProcessor,
 } from '@features/auth/model/processors/authInitProcessor.js';
 import { authLogoutProcessor } from '@features/auth/model/processors/authLogoutProcessor.js';
-import { authWithAppleProcessor } from '@features/auth/model/processors/authWithAppleProcessor.js';
-import { authWithFacebookProcessor } from '@features/auth/model/processors/authWithFacebookProcessor.js';
-import { authWithGarmin2Processor } from '@features/auth/model/processors/authWithGarmin2Processor.js';
-import { authWithGarminProcessor } from '@features/auth/model/processors/authWithGarminProcessor.js';
-import { authWithGoogleProcessor } from '@features/auth/model/processors/authWithGoogleProcessor.js';
-import { authWithOsm2Processor } from '@features/auth/model/processors/authWithOsm2Processor.js';
-import { authWithOsmProcessor } from '@features/auth/model/processors/authWithOsmProcessor.js';
 import { purchaseProcessor } from '@features/auth/model/processors/purchaseProcessor.js';
 import {
   cachedMapDeletedProcessor,
@@ -179,13 +173,7 @@ export const processors = [
   openInExternalAppProcessor,
   ...Object.values(rpcProcessors),
   exportMapFeaturesProcessor,
-  authWithFacebookProcessor,
-  authWithGoogleProcessor,
-  authWithAppleProcessor,
-  authWithOsmProcessor,
-  authWithOsm2Processor,
-  authWithGarminProcessor,
-  authWithGarmin2Processor,
+  ...authProcessors,
   downloadMapProcessor,
   purchaseProcessor,
   cacheTilesStartProcessor,

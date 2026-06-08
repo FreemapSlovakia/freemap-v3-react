@@ -1,19 +1,20 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
-import { authWithOsm2 } from '../actions.js';
+import { popupOAuthProviders } from '../../popupOAuthProviders.js';
+import { authWithOAuthCode } from '../actions.js';
 import { handleLoginResponse } from './loginResponseHandler.js';
 
-const handle: ProcessorHandler<typeof authWithOsm2> = async ({
+const handle: ProcessorHandler<typeof authWithOAuthCode> = async ({
   getState,
   dispatch,
   action,
 }) => {
-  const { code, connect } = action.payload;
+  const { provider, code, connect } = action.payload;
 
   const res = await httpRequest({
     getState,
     method: 'POST',
-    url: '/auth/login-osm',
+    url: popupOAuthProviders[provider].loginPath,
     data: {
       code,
       language: getState().l10n.chosenLanguage,
