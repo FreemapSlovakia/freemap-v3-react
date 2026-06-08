@@ -4,6 +4,13 @@
 // exchanges the code for a token (see `makeOAuthLoginHandler` in the API).
 export type PopupOAuthProvider = 'osm' | 'github' | 'strava' | 'microsoft';
 
+// In-flight popup-login nonces for THIS tab. The callback echoes the nonce back
+// in `state`; only the tab that started the login holds it, and it's removed on
+// use — so the single-use code is redeemed exactly once, by the initiating tab.
+// (`BroadcastChannel` reaches every same-origin tab, so without this each open
+// tab would race to redeem the same code.)
+export const pendingOAuthLogins = new Set<string>();
+
 type PopupOAuthProviderConfig = {
   authorizeUrl: string;
   scope: string;

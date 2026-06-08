@@ -4,6 +4,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { Dispatch } from 'redux';
 import {
   type PopupOAuthProvider,
+  pendingOAuthLogins,
   popupOAuthProviders,
 } from './popupOAuthProviders.js';
 
@@ -33,6 +34,15 @@ export async function startPopupOAuth(
 
   const { clientId } = await res.json();
 
+  // Scope this login to the current tab so the shared-channel callback is only
+  // redeemed once (see `pendingOAuthLogins`). The handler clears the nonce when
+  // it consumes the callback. We must NOT clear it on popup close — under COOP
+  // the cross-origin popup handle is unreliable (`w.closed` can read true
+  // early), which would drop the nonce before the callback arrives.
+  const nonce = crypto.randomUUID();
+
+  pendingOAuthLogins.add(nonce);
+
   // open window within user gesture handler (before further awaits)
   const w = window.open(
     cfg.authorizeUrl +
@@ -42,7 +52,7 @@ export async function startPopupOAuth(
         client_id: clientId,
         redirect_uri: location.origin + '/authCallback.html',
         scope: cfg.scope,
-        state: `${provider}:${connect}`,
+        state: `${provider}:${connect}:${nonce}`,
         ...cfg.extraParams,
       }).toString(),
     `${provider}-login`,

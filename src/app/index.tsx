@@ -1,3 +1,4 @@
+import { attachAuthSync } from '@features/auth/authSync.js';
 import { attachGarminLoginMessageHandler } from '@features/auth/garminLoginMessageHandler.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { attachOAuthLoginMessageHandler } from '@features/auth/oauthLoginMessageHandler.js';
@@ -85,6 +86,8 @@ window.addEventListener('popstate', () => {
 handleLocationChange(store);
 
 attachOAuthLoginMessageHandler(store);
+
+attachAuthSync(store);
 
 attachGarminLoginMessageHandler(store);
 
