@@ -213,14 +213,19 @@ export function MarkerIcon({
     // into a GLYPH_SIZE box centered on the inset so it scales exactly like
     // `image`/`iconSvg`. Its `fill="currentColor"` resolves to the wrapping
     // `<g>`'s GLYPH_SIZE color unless the element sets its own `color`.
+    // Size via `size`, not `width`/`height`: react-icons' IconBase writes its
+    // own `height`/`width` from `size` *after* spreading our props, so a cloned
+    // `width`/`height` is overridden by the default `1em` (~1px glyph).
     const faGlyph =
       faIcon &&
-      cloneElement(faIcon as ReactElement<SVGProps<SVGSVGElement>>, {
-        x: cx - GLYPH_SIZE / 2,
-        y: cy - GLYPH_SIZE / 2,
-        width: GLYPH_SIZE,
-        height: GLYPH_SIZE,
-      });
+      cloneElement(
+        faIcon as ReactElement<SVGProps<SVGSVGElement> & { size?: number }>,
+        {
+          x: cx - GLYPH_SIZE / 2,
+          y: cy - GLYPH_SIZE / 2,
+          size: GLYPH_SIZE,
+        },
+      );
 
     if (iconSvg) {
       const scale = GLYPH_SIZE / Math.max(iconSvg.width, iconSvg.height);
