@@ -20,6 +20,8 @@ function makeState(): RootState {
     l10n: { chosenLanguage: 'sk', language: 'en' },
     main: { hiddenInfoBars: { foo: 1 } },
     homeLocation: { homeLocation: { lat: 1, lon: 2 } },
+    // Present in state but deliberately NOT persisted (load-only slice).
+    location: { locate: true, location: { lat: 1, lon: 2, accuracy: 5 } },
     cookieConsent: { cookieConsentResult: true, analyticCookiesAllowed: false },
     drawingSettings: {
       style: {
@@ -174,6 +176,41 @@ describe('statePersistingMiddleware — what gets persisted', () => {
       },
       mapDetails: { excludeSources: [] },
     });
+  });
+
+  it('persists exactly this set of top-level slices (anti-drift guard)', () => {
+    // If a new persisted slice is added, update `makeState` + the expected blob
+    // above AND this list — otherwise this fails loudly instead of the snapshot
+    // silently ignoring the new key.
+    runMiddleware(makeState());
+
+    const saved = JSON.parse(storage.getItem('store') ?? 'null');
+
+    expect(Object.keys(saved).sort()).toEqual(
+      [
+        'auth',
+        'cookieConsent',
+        'drawingSettings',
+        'gallery',
+        'homeLocation',
+        'l10n',
+        'main',
+        'map',
+        'mapDetails',
+        'objects',
+        'routePlanner',
+      ].sort(),
+    );
+  });
+
+  it('does NOT persist the `location` slice (load-only: read via fallback, never written)', () => {
+    // `location` is rehydrated from the legacy `main` fallback but the save side
+    // never writes it. Pin this asymmetry so the upcoming table refactor keeps it.
+    runMiddleware(makeState());
+
+    const saved = JSON.parse(storage.getItem('store') ?? 'null');
+
+    expect(saved).not.toHaveProperty('location');
   });
 
   it('serializes a null premiumExpiration as null', () => {

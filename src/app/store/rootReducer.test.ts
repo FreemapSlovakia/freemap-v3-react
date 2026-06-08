@@ -5,7 +5,9 @@ import { homeLocationInitialState } from '@features/homeLocation/model/reducer.j
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
 import { locationInitialState } from '@features/location/model/reducer.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
+import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
+import { trackViewerInitialState } from '@features/trackViewer/model/reducer.js';
 import storage from 'local-storage-fallback';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
@@ -211,6 +213,24 @@ describe('getInitialState — merge over initialState', () => {
       transportType: 'car',
       milestones: 'abs',
       preventHint: true,
+    });
+  });
+
+  it('merges a partial trackViewer blob over its initial state', () => {
+    seed({ trackViewer: { colorizeTrackBy: 'heartRate' } });
+
+    expect(getInitialState().trackViewer).toEqual({
+      ...trackViewerInitialState,
+      colorizeTrackBy: 'heartRate',
+    });
+  });
+
+  it('merges a partial mapDetails blob over its initial state', () => {
+    seed({ mapDetails: { excludeSources: ['nominatim-reverse'] } });
+
+    expect(getInitialState().mapDetails).toEqual({
+      ...mapDetailsInitialState,
+      excludeSources: ['nominatim-reverse'],
     });
   });
 
