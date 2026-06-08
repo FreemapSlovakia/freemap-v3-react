@@ -100,6 +100,20 @@ function loginAction(provider: AuthProvider, connect: boolean) {
   }
 }
 
+// Strava's single API app accepts only the www.freemap.sk callback domain, so
+// its login/connect popup only works there. Disconnect doesn't use the popup,
+// so it stays available everywhere.
+function isProviderAvailable(
+  provider: AuthProvider,
+  mode: Props['mode'],
+): boolean {
+  return (
+    provider !== 'strava' ||
+    mode === 'disconnect' ||
+    location.hostname === 'www.freemap.sk'
+  );
+}
+
 type Props = { mode: 'login' | 'connect' | 'disconnect' };
 
 export function AuthProviders({ mode }: Props): ReactElement {
@@ -154,7 +168,9 @@ export function AuthProviders({ mode }: Props): ReactElement {
 
   return (
     <div className="d-grid gap-2">
-      {PROVIDERS.filter((def) => show(def.provider)).map((def) => (
+      {PROVIDERS.filter(
+        (def) => isProviderAvailable(def.provider, mode) && show(def.provider),
+      ).map((def) => (
         <Button
           key={def.provider}
           onClick={() => handleClick(def.provider)}
