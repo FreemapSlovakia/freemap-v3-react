@@ -281,7 +281,7 @@ const config: Configuration = {
     new rspack.EnvironmentPlugin({
       ...(prod ? { NODE_ENV: 'production' } : null), // for react
       BROWSER: 'true',
-      PREVENT_ADS: String('PREVENT_ADS' in process.env),
+      PREVENT_ADS: 'PREVENT_ADS' in process.env ? 'true' : '',
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
