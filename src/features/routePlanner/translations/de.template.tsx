@@ -1,3 +1,4 @@
+import { getMessages } from '@features/l10n/messagesStore.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { RoutePlannerMessages } from './RoutePlannerMessages.js';
@@ -77,7 +78,7 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   routeNotFound:
     'Keine Route gefunden. Versuche, die Parameter zu ändern oder die Punkte zu verschieben.',
   fetchingError: ({ err }) =>
-    addError(window.translations!, 'Fehler beim Finden der Route', err),
+    addError(getMessages()!, 'Fehler beim Finden der Route', err),
   manualTooltip: 'Folgenden Abschnitt mit einer geraden Linie verbinden',
   default: 'Standard',
   leg: 'Routenabschnitt',

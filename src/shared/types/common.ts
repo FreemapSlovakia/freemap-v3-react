@@ -18,7 +18,6 @@ declare global {
   interface Window {
     fbAsyncInit?: () => void;
     preventMapClick?: boolean;
-    translations?: Messages;
     fmEmbedded: boolean;
     isRobot: boolean;
     fmHeadless?: {

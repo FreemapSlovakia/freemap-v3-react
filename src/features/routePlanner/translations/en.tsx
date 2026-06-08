@@ -1,3 +1,4 @@
+import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
@@ -79,7 +80,7 @@ const en: RoutePlannerMessages = {
   routeNotFound:
     'No route found. Try to change parameters or move the route points.',
   fetchingError: ({ err }) =>
-    addError(window.translations!, 'Error finding the route', err),
+    addError(getMessages()!, 'Error finding the route', err),
 };
 
 export default en;

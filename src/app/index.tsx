@@ -17,7 +17,6 @@ import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { ErrorCatcher } from './components/ErrorCatcher.js';
 import { Main } from './components/Main.js';
-import { MessagesProvider } from './components/TranslationProvider.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
 import { init, setEmbedFeatures } from './store/actions.js';
 import { setStore as setErrorHandlerStore } from './store/middleware/globalErrorHandler.js';
@@ -120,13 +119,11 @@ createRoot(rootElement).render(
         style: { verticalAlign: 'middle', position: 'relative', top: '-1px' },
       }}
     >
-      <MessagesProvider>
-        <ConfirmProvider>
-          <ErrorCatcher>
-            <Main />
-          </ErrorCatcher>
-        </ConfirmProvider>
-      </MessagesProvider>
+      <ConfirmProvider>
+        <ErrorCatcher>
+          <Main />
+        </ErrorCatcher>
+      </ConfirmProvider>
     </IconContext.Provider>
   </Provider>,
 );

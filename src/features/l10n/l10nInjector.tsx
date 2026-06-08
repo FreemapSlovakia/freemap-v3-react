@@ -1,7 +1,8 @@
 import { useLazy } from '@app/hooks/useLazy.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useMemo } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 import { Messages } from '@/translations/messagesInterface.js';
+import { getMessages, subscribeMessages } from './messagesStore.js';
 
 export function useLocalMessages<T>(
   factory: (language: string) => Promise<{ default: T }>,
@@ -19,10 +20,7 @@ export function useLocalMessages<T>(
 }
 
 export function useMessages(): Messages | undefined {
-  // force applying english language on load
-  useAppSelector((state) => state.l10n.counter);
-
-  return window.translations;
+  return useSyncExternalStore(subscribeMessages, getMessages, getMessages);
 }
 
 export function getMessageByKey(m: Messages | undefined, key: string): unknown {

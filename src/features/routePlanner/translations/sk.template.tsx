@@ -1,3 +1,4 @@
+import { getMessages } from '@features/l10n/messagesStore.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { RoutePlannerMessages } from './RoutePlannerMessages.js';
@@ -81,7 +82,7 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   routeNotFound:
     'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
   fetchingError: ({ err }) =>
-    addError(window.translations!, 'Nastala chyba pri hľadaní trasy', err),
+    addError(getMessages()!, 'Nastala chyba pri hľadaní trasy', err),
 };
 
 export default sk;

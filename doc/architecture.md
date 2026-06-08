@@ -159,9 +159,10 @@ Two layers — global and per-feature:
 - **Global** (`src/translations/`): `en.tsx` is the master; `messagesInterface.ts`
   is the **hand-maintained** `Messages` type that all locales are checked against;
   `*.template.tsx` hold per-language overrides; plain `*.tsx` are **generated** by
-  `pnpm sync-language-files` (gitignored, but required for `tsgo`). Components read
-  it via `useMessages()` (backed by the mutable `window.translations`, refreshed
-  through an l10n counter selector). See the root agent file for the full
+  `pnpm sync-language-files` (gitignored, but required for `tsgo`). The loaded
+  bundle lives in a small subscribable module store (`features/l10n/messagesStore.ts`);
+  components read it via `useMessages()` (backed by `useSyncExternalStore`), and
+  non-React callers use `getMessages()`. See the root agent file for the full
   add-a-string checklist.
 - **Per-feature lazy** (e.g. `features/routePlanner/translations/`): a feature can
   own its own message bundle, code-split per language, to keep it out of the global

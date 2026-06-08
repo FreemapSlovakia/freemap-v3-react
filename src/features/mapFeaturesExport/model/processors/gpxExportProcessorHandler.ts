@@ -3,6 +3,7 @@ import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware
 import type { DrawingLineType } from '@features/drawing/model/actions/drawingLineActions.js';
 import { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
+import { getMessages } from '@features/l10n/messagesStore.js';
 import { ObjectsState } from '@features/objects/model/reducer.js';
 import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
@@ -251,7 +252,7 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
       createElement(wptEle, 'name', title);
     }
 
-    const gm = window.translations?.gallery;
+    const gm = getMessages()?.gallery;
 
     const lines: [string, string][] = [];
 

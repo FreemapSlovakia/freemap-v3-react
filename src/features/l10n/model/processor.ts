@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import { getEffectiveChosenLanguage } from '@shared/langUtils.js';
+import { setMessages } from '../messagesStore.js';
 import { l10nSetChosenLanguage, l10nSetLanguage } from './actions.js';
 
 export const l10nSetLanguageProcessor: Processor = {
@@ -12,13 +13,15 @@ export const l10nSetLanguageProcessor: Processor = {
 
     const language = getEffectiveChosenLanguage(chosenLanguage);
 
-    window.translations = (
-      await import(
-        /* webpackExclude: /\.template\./ */
-        /* webpackChunkName: "translation-[request]" */
-        `@/translations/${language}.tsx`
-      )
-    ).default;
+    setMessages(
+      (
+        await import(
+          /* webpackExclude: /\.template\./ */
+          /* webpackChunkName: "translation-[request]" */
+          `@/translations/${language}.tsx`
+        )
+      ).default,
+    );
 
     dispatch(l10nSetLanguage(language));
 

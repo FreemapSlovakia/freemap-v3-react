@@ -6,13 +6,11 @@ import { l10nSetChosenLanguage, l10nSetLanguage } from './actions.js';
 export interface L10nState {
   chosenLanguage: Language | null;
   language: Language;
-  counter: number;
 }
 
 export const l10nInitialState: L10nState = {
   chosenLanguage: null,
   language: 'en',
-  counter: 0,
 };
 
 export const l10nReducer = createReducer(l10nInitialState, (builder) =>
@@ -31,7 +29,5 @@ export const l10nReducer = createReducer(l10nInitialState, (builder) =>
     })
     .addCase(l10nSetLanguage, (state, action) => {
       state.language = action.payload;
-
-      state.counter = state.counter + 1;
     }),
 );

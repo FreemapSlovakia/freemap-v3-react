@@ -1,3 +1,4 @@
+import { getMessages } from '@features/l10n/messagesStore.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { RoutePlannerMessages } from './RoutePlannerMessages.js';
@@ -76,7 +77,7 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   routeNotFound:
     'Nem sikerült útvonalat találni. Próbálja meg módosítani a paramétereket vagy áthelyezni az út pontjait.',
   fetchingError: ({ err }) =>
-    addError(window.translations!, 'Hiba történt az útvonaltervezésnél', err),
+    addError(getMessages()!, 'Hiba történt az útvonaltervezésnél', err),
   manualTooltip: 'A következő szakasz összekötése egyenes vonallal',
   default: 'Alapértelmezett',
   leg: 'Útvonal szakasz',

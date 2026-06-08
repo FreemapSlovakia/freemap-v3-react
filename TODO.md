@@ -26,9 +26,6 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
 - [ ] **Derive `Messages` from `en.tsx`.** `src/translations/messagesInterface.ts`
       is hand-maintained against the master and can drift. Explore deriving the
       type from `typeof en` (or a codegen step) so `en.tsx` is the single source.
-- [ ] **Rework `useMessages()` global.** It reads a mutable `window.translations`
-      with reactivity faked via an l10n counter selector. Works, but fragile and
-      untyped at the boundary; a context/store-backed source would be cleaner.
 - [ ] **Minor processor-middleware cleanups.** Internal `any` casts;
       `Math.random()` for fallback toast IDs; duplicated transform/handle predicate
       logic. Low priority.

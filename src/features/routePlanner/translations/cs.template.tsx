@@ -1,3 +1,4 @@
+import { getMessages } from '@features/l10n/messagesStore.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { RoutePlannerMessages } from './RoutePlannerMessages.js';
@@ -77,7 +78,7 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   routeNotFound:
     'Přes zvolené body se nepodařilo vyhledat trasu. Zkuste změnit parametry nebo posunout body trasy. ',
   fetchingError: ({ err }) =>
-    addError(window.translations!, 'Nastala chyba při hledání trasy', err),
+    addError(getMessages()!, 'Nastala chyba při hledání trasy', err),
   manualTooltip: 'Propojit následující segment přímou čarou',
   default: 'Výchozí',
   leg: 'Úsek trasy',

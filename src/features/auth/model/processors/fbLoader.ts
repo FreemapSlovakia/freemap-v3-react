@@ -1,3 +1,5 @@
+import { getMessages } from '@features/l10n/messagesStore.js';
+
 let fbPromise: Promise<void>;
 
 export function loadFb(): Promise<void> {
@@ -23,7 +25,7 @@ export function loadFb(): Promise<void> {
     js.defer = true;
 
     js.src = `//connect.facebook.net/${
-      window.translations?.general.iso ?? 'en_US'
+      getMessages()?.general.iso ?? 'en_US'
     }/sdk.js`;
 
     js.onload = () => {

@@ -6,6 +6,7 @@ import {
   setTool,
 } from '@app/store/actions.js';
 import { RootState } from '@app/store/store.js';
+import { getMessages } from '@features/l10n/messagesStore.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import {
   type SearchResult,
@@ -133,7 +134,7 @@ export async function handle(
           const name =
             'name' in def
               ? (def.name ?? def.type)
-              : window.translations?.mapLayers.letters[def.type];
+              : getMessages()?.mapLayers.letters[def.type];
 
           const bounds = map.getBounds();
           const size = map.getSize();

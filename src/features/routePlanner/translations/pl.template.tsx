@@ -1,3 +1,4 @@
+import { getMessages } from '@features/l10n/messagesStore.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { RoutePlannerMessages } from './RoutePlannerMessages.js';
@@ -76,7 +77,7 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   routeNotFound:
     'Nie znaleziono trasy. Spróbuj zmienić parametry lub przesunąć punkty.',
   fetchingError: ({ err }) =>
-    addError(window.translations!, 'Błąd podczas wyszukiwania trasy', err),
+    addError(getMessages()!, 'Błąd podczas wyszukiwania trasy', err),
   manualTooltip: 'Połącz następny odcinek prostą linią',
   default: 'Domyślna',
   leg: 'Odcinek trasy',
