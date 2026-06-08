@@ -54,6 +54,10 @@ type Props = {
   preventShortcut?: boolean;
 };
 
+function preventDefault(e: { preventDefault: () => void }) {
+  e.preventDefault();
+}
+
 const typeSymbol: Record<OsmFeatureId['elementType'], ReactNode> = {
   node: <GoDotFill />,
   way: <MdPolyline />,
@@ -289,6 +293,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
                   <Dropdown.Item
                     eventKey={id}
+                    onClick={preventDefault}
+                    href={
+                      result.id.type === 'osm'
+                        ? '#osm-' + result.id.elementType + '=' + result.id.id
+                        : undefined
+                    }
                     active={
                       selectedResult !== null &&
                       featureIdsEqual(result.id, selectedResult.id)
