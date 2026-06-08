@@ -5,11 +5,12 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
 
 ## Committed work
 
-- [ ] **Add automated tests.** No test runner is configured. Highest-value,
-      lowest-friction targets are pure and deterministic:
-      `getInitialState()` legacy migrations, the `Persisted*Schema` parsers, and
-      reducers. A regression in localStorage rehydration silently wipes user
-      settings. Suggest Vitest + a starter set of schema/reducer tests.
+- [~] **Add automated tests.** Vitest + jsdom now configured (`vitest.config.ts`,
+      `pnpm test`). Starter characterization tests pin the persistence layer:
+      `getInitialState()` legacy migrations + `parseWithFallback` + per-slice
+      isolation + merge-over-initialState, the `Persisted*Schema` parsers, and
+      the save side / round-trip (`statePersistingMiddleware`). Still TODO: pure
+      reducer tests, and widening coverage beyond persistence.
 - [ ] **Reduce the manual central registries.**
       `src/app/store/processors.ts` is a ~190-line hand-maintained array (merge
       magnet) and `getInitialState()` repeats the same safeParse-then-merge block

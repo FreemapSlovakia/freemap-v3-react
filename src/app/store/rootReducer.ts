@@ -71,7 +71,7 @@ import z from 'zod';
 import type { RootState } from '../store/store.js';
 import { mainInitialState, mainReducer } from './reducer.js';
 
-const PersistedAuthSchema = z.object({
+export const PersistedAuthSchema = z.object({
   user: z
     .object({
       ...UserSchema.shape,
@@ -81,7 +81,7 @@ const PersistedAuthSchema = z.object({
     .optional(),
 });
 
-const PersistedMapSchema = z
+export const PersistedMapSchema = z
   .object({
     lat: z.number(),
     lon: z.number(),
@@ -98,26 +98,26 @@ const PersistedMapSchema = z
   })
   .partial();
 
-const PersistedL10nSchema = z
+export const PersistedL10nSchema = z
   .object({
     chosenLanguage: LanguageSchema.nullable(),
   })
   .partial();
 
-const PersistedCookieConsentSchema = z
+export const PersistedCookieConsentSchema = z
   .object({
     cookieConsentResult: z.boolean().nullable(),
     analyticCookiesAllowed: z.boolean(),
   })
   .partial();
 
-const PersistedHomeLocationSchema = z
+export const PersistedHomeLocationSchema = z
   .object({
     homeLocation: LatLonSchema.nullable(),
   })
   .partial();
 
-const PersistedLocationSchema = z
+export const PersistedLocationSchema = z
   .object({
     locate: z.boolean(),
     location: z
@@ -130,19 +130,19 @@ const PersistedLocationSchema = z
   })
   .partial();
 
-const PersistedMainSchema = z
+export const PersistedMainSchema = z
   .object({
     hiddenInfoBars: z.record(z.string(), z.number()),
   })
   .partial();
 
-const PersistedObjectsSchema = z
+export const PersistedObjectsSchema = z
   .object({
     selectedIcon: MarkerTypeSchema,
   })
   .partial();
 
-const PersistedRoutePlannerSchema = z
+export const PersistedRoutePlannerSchema = z
   .object({
     preventHint: z.boolean(),
     transportType: TransportTypeCompatSchema,
@@ -150,7 +150,7 @@ const PersistedRoutePlannerSchema = z
   })
   .partial();
 
-const PersistedTrackViewerSchema = z
+export const PersistedTrackViewerSchema = z
   .object({
     colorizeTrackBy: ColorizingModeSchema.nullable(),
   })
@@ -165,13 +165,13 @@ const MapDetailsSourceSchema = z.union([
   ),
 ]);
 
-const PersistedMapDetailsSchema = z
+export const PersistedMapDetailsSchema = z
   .object({
     excludeSources: z.array(MapDetailsSourceSchema),
   })
   .partial();
 
-const PersistedGallerySchema = z
+export const PersistedGallerySchema = z
   .object({
     colorizeBy: GalleryColorizeBySchema.nullable(),
     showDirection: z.boolean(),

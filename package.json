@@ -21,6 +21,8 @@
   },
   "scripts": {
     "start": "pnpm build:proto && pnpm sync-language-files && rspack serve --config rspack.config.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "build": "pnpm build:proto && pnpm sync-language-files && tsgo --noEmit && rspack build --config rspack.config.ts",
@@ -140,6 +142,7 @@
     "gray-matter": "^4.0.3",
     "html-loader": "^5.1.0",
     "html-rspack-plugin": "^6.1.9",
+    "jsdom": "^29.1.1",
     "patch-package": "^8.0.1",
     "react-refresh": "^0.18.0",
     "recast": "^0.23.11",
@@ -154,6 +157,7 @@
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
     "utility-types": "^3.11.0",
-    "v": "^0.3.0"
+    "v": "^0.3.0",
+    "vitest": "^4.1.8"
   }
 }
