@@ -9,7 +9,7 @@ import type { Action, Dispatch, Middleware } from 'redux';
 import type { RootState } from '../store.js';
 import { sendError } from './globalErrorHandler.js';
 
-type BaseActionCreator<P = any, T extends string = string> = {
+export type BaseActionCreator<P = any, T extends string = string> = {
   (payload: P): PayloadAction<P, T>;
   type: T;
   match: (action: unknown) => action is PayloadAction<P, T>;

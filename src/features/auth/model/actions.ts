@@ -1,15 +1,22 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { Action } from 'redux';
+import type { PopupOAuthProvider } from '../popupOAuthProviders.js';
 import type { AuthProvider, User } from './types.js';
 
-export const authWithOsm = createAction<{
+// First stage shared by all popup OAuth providers (osm, github, strava,
+// microsoft): opens the provider's authorize popup.
+export const authWithPopupOAuth = createAction<{
+  provider: PopupOAuthProvider;
   connect: boolean;
-}>('AUTH_WITH_OSM');
+}>('AUTH_WITH_POPUP_OAUTH');
 
-export const authWithOsm2 = createAction<{
+// Second stage shared by all popup OAuth providers: the callback relayed a
+// `code`, which is exchanged for a session by the API.
+export const authWithOAuthCode = createAction<{
+  provider: PopupOAuthProvider;
   connect: boolean;
   code: string;
-}>('AUTH_WITH_OSM_2');
+}>('AUTH_WITH_OAUTH_CODE');
 
 export const authWithFacebook = createAction<{
   connect: boolean;

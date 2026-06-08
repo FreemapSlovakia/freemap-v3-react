@@ -1,6 +1,6 @@
 import { attachGarminLoginMessageHandler } from '@features/auth/garminLoginMessageHandler.js';
 import { authInit } from '@features/auth/model/actions.js';
-import { attachOsmLoginMessageHandler } from '@features/auth/osmLoginMessageHandler.js';
+import { attachOAuthLoginMessageHandler } from '@features/auth/oauthLoginMessageHandler.js';
 import {
   getCachedTileMaps,
   syncStaticCache,
@@ -84,7 +84,7 @@ window.addEventListener('popstate', () => {
 
 handleLocationChange(store);
 
-attachOsmLoginMessageHandler(store);
+attachOAuthLoginMessageHandler(store);
 
 attachGarminLoginMessageHandler(store);
 

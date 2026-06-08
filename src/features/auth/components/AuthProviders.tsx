@@ -1,8 +1,16 @@
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import { type CSSProperties, type ReactNode, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
-import { FaApple, FaFacebook, FaGoogle } from 'react-icons/fa';
+import {
+  FaApple,
+  FaFacebook,
+  FaGithub,
+  FaGoogle,
+  FaMicrosoft,
+  FaStrava,
+} from 'react-icons/fa';
 import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import {
@@ -11,9 +19,86 @@ import {
   authWithFacebook,
   authWithGarmin,
   authWithGoogle,
-  authWithOsm,
+  authWithPopupOAuth,
 } from '../model/actions.js';
 import type { AuthProvider } from '../model/types.js';
+
+type ProviderDef = {
+  provider: AuthProvider;
+  label: string;
+  icon: ReactNode;
+  style: CSSProperties;
+};
+
+// Ordered by relevance: mainstream consumer providers first, then the
+// domain-relevant outdoor/mapping ones, with the niche developer one last.
+const PROVIDERS: ProviderDef[] = [
+  {
+    provider: 'google',
+    label: 'Google',
+    icon: <FaGoogle />,
+    style: { backgroundColor: '#DB4437', color: '#fff' },
+  },
+  {
+    provider: 'facebook',
+    label: 'Facebook',
+    icon: <FaFacebook />,
+    style: { backgroundColor: '#3b5998', color: '#fff' },
+  },
+  {
+    provider: 'apple',
+    label: 'Apple',
+    icon: <FaApple />,
+    style: { backgroundColor: '#000', color: '#fff' },
+  },
+  {
+    provider: 'microsoft',
+    label: 'Microsoft',
+    icon: <FaMicrosoft />,
+    style: { backgroundColor: '#2f2f2f', color: '#fff' },
+  },
+  {
+    provider: 'osm',
+    label: 'OpenStreetMap',
+    icon: <SiOpenstreetmap />,
+    style: { backgroundColor: '#8bdc81', color: '#585858' },
+  },
+  {
+    provider: 'garmin',
+    label: 'Garmin',
+    icon: <SiGarmin style={{ fontSize: '400%', marginBlock: '-24px' }} />,
+    style: { backgroundColor: '#1791FF', color: '#fff' },
+  },
+  {
+    provider: 'strava',
+    label: 'Strava',
+    icon: <FaStrava />,
+    style: { backgroundColor: '#fc4c02', color: '#fff' },
+  },
+  {
+    provider: 'github',
+    label: 'GitHub',
+    icon: <FaGithub />,
+    style: { backgroundColor: '#24292e', color: '#fff' },
+  },
+];
+
+// Providers whose login is initiated by a dedicated action are listed here;
+// everyone else goes through the shared popup OAuth flow.
+function loginAction(provider: AuthProvider, connect: boolean) {
+  switch (provider) {
+    case 'facebook':
+      return authWithFacebook({ connect });
+    case 'google':
+      return authWithGoogle({ connect });
+    case 'apple':
+      return authWithApple({ connect });
+    case 'garmin':
+      return authWithGarmin({ connect });
+    default:
+      return authWithPopupOAuth({ provider, connect });
+  }
+}
 
 type Props = { mode: 'login' | 'connect' | 'disconnect' };
 
@@ -30,65 +115,20 @@ export function AuthProviders({ mode }: Props): ReactElement {
     (state) => state.cookieConsent.cookieConsentResult,
   );
 
-  const loginWithFacebook = useCallback(async () => {
-    if (mode === 'disconnect' && !(await confirm())) {
-      return;
-    }
+  const handleClick = useCallback(
+    async (provider: AuthProvider) => {
+      if (mode === 'disconnect') {
+        if (!(await confirm())) {
+          return;
+        }
 
-    dispatch(
-      mode === 'disconnect'
-        ? authDisconnect({ provider: 'facebook' })
-        : authWithFacebook({ connect: mode === 'connect' }),
-    );
-  }, [dispatch, mode, confirm]);
-
-  const loginWithGoogle = useCallback(async () => {
-    if (mode === 'disconnect' && !(await confirm())) {
-      return;
-    }
-
-    dispatch(
-      mode === 'disconnect'
-        ? authDisconnect({ provider: 'google' })
-        : authWithGoogle({ connect: mode === 'connect' }),
-    );
-  }, [dispatch, mode, confirm]);
-
-  const loginWithApple = useCallback(async () => {
-    if (mode === 'disconnect' && !(await confirm())) {
-      return;
-    }
-
-    dispatch(
-      mode === 'disconnect'
-        ? authDisconnect({ provider: 'apple' })
-        : authWithApple({ connect: mode === 'connect' }),
-    );
-  }, [dispatch, mode, confirm]);
-
-  const loginWithOsm = useCallback(async () => {
-    if (mode === 'disconnect' && !(await confirm())) {
-      return;
-    }
-
-    dispatch(
-      mode === 'disconnect'
-        ? authDisconnect({ provider: 'osm' })
-        : authWithOsm({ connect: mode === 'connect' }),
-    );
-  }, [dispatch, mode, confirm]);
-
-  const loginWithGarmin = useCallback(async () => {
-    if (mode === 'disconnect' && !(await confirm())) {
-      return;
-    }
-
-    dispatch(
-      mode === 'disconnect'
-        ? authDisconnect({ provider: 'garmin' })
-        : authWithGarmin({ connect: mode === 'connect' }),
-    );
-  }, [dispatch, mode, confirm]);
+        dispatch(authDisconnect({ provider }));
+      } else {
+        dispatch(loginAction(provider, mode === 'connect'));
+      }
+    },
+    [dispatch, mode, confirm],
+  );
 
   function show(provider: AuthProvider) {
     return (
@@ -114,65 +154,18 @@ export function AuthProviders({ mode }: Props): ReactElement {
 
   return (
     <div className="d-grid gap-2">
-      {show('facebook') && (
+      {PROVIDERS.filter((def) => show(def.provider)).map((def) => (
         <Button
-          onClick={loginWithFacebook}
+          key={def.provider}
+          onClick={() => handleClick(def.provider)}
           size="lg"
-          style={{ backgroundColor: '#3b5998', color: '#fff' }}
-          disabled={disabled('facebook')}
+          style={def.style}
+          disabled={disabled(def.provider)}
         >
-          <FaFacebook />
-          &ensp;Facebook
+          {def.icon}
+          &ensp;{def.label}
         </Button>
-      )}
-
-      {show('google') && (
-        <Button
-          onClick={loginWithGoogle}
-          size="lg"
-          style={{ backgroundColor: '#DB4437', color: '#fff' }}
-          disabled={disabled('google')}
-        >
-          <FaGoogle />
-          &ensp;Google
-        </Button>
-      )}
-
-      {show('apple') && (
-        <Button
-          onClick={loginWithApple}
-          size="lg"
-          style={{ backgroundColor: '#000', color: '#fff' }}
-          disabled={disabled('apple')}
-        >
-          <FaApple />
-          &ensp;Apple
-        </Button>
-      )}
-
-      {show('osm') && (
-        <Button
-          onClick={loginWithOsm}
-          size="lg"
-          style={{ backgroundColor: '#8bdc81', color: '#585858' }}
-          disabled={disabled('osm')}
-        >
-          <SiOpenstreetmap />
-          &ensp;OpenStreetMap
-        </Button>
-      )}
-
-      {show('garmin') && (
-        <Button
-          onClick={loginWithGarmin}
-          size="lg"
-          style={{ backgroundColor: '#1791FF', color: '#fff' }}
-          disabled={disabled('garmin')}
-        >
-          <SiGarmin style={{ fontSize: '400%', marginBlock: '-24px' }} />
-          &ensp;Garmin
-        </Button>
-      )}
+      ))}
     </div>
   );
 }

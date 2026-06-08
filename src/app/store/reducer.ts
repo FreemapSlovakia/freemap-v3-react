@@ -3,7 +3,7 @@ import {
   authWithFacebook,
   authWithGarmin,
   authWithGoogle,
-  authWithOsm,
+  authWithPopupOAuth,
 } from '@features/auth/model/actions.js';
 import { documentShow } from '@features/documents/model/actions.js';
 import {
@@ -190,7 +190,7 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       isAnyOf(
         authWithFacebook,
         authWithGoogle,
-        authWithOsm,
+        authWithPopupOAuth,
         authWithGarmin,
         authWithApple,
       ),
