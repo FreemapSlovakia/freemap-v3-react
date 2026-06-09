@@ -1,6 +1,5 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
-import { assertDef } from '@shared/assertDef.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { toLatLng, toLatLngArr } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -167,7 +166,7 @@ export function TrackingResult(): ReactElement {
                     interactive ? 'a' : 'b'
                   }`}
                   interactive={interactive}
-                  position={toLatLon(assertDef(track.trackPoints.at(-1)))}
+                  position={toLatLon(track.trackPoints.at(-1)!)}
                   color={color}
                   eventHandlers={{
                     click: handleClick,

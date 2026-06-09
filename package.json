@@ -23,6 +23,7 @@
     "start": "pnpm build:proto && pnpm sync-language-files && rspack serve --config rspack.config.ts",
     "test": "vitest run",
     "test:watch": "vitest",
+    "typecheck": "tsgo --noEmit -p .",
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "build": "pnpm build:proto && pnpm sync-language-files && tsgo --noEmit && rspack build --config rspack.config.ts",

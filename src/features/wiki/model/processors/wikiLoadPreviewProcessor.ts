@@ -117,7 +117,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
     const data = WikiResponse2Schema.parse(await res.json());
 
     const preview: WikiPreview = {
-      ...Object.values(data.query.pages)[0],
+      ...Object.values(data.query.pages)[0]!,
       lang,
       langTitle: title,
     };

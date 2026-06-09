@@ -29,7 +29,7 @@ const sameMinWidthModifier: Modifier<'sameMinWidth', Obj> = {
   phase: 'beforeWrite',
   requires: ['computeStyles'],
   fn({ state }) {
-    state.styles['popper'].minWidth = `${state.rects.reference.width}px`;
+    state.styles['popper']!.minWidth = `${state.rects.reference.width}px`;
   },
   effect({ state }) {
     state.elements['popper'].style.minWidth = `${

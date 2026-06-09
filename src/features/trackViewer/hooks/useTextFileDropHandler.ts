@@ -21,7 +21,7 @@ export function useTextFileDropHandler(
         return;
       }
 
-      const file = acceptedFiles[0];
+      const file = acceptedFiles[0]!;
 
       const reader = new FileReader();
 

@@ -47,7 +47,7 @@ export function InnerDistanceInfo({ length, lengthLabel }: Props) {
   );
 
   const handleUnitClick = () => {
-    setUnit((prev) => units[(units.indexOf(prev) + 1) % units.length]);
+    setUnit((prev) => units[(units.indexOf(prev) + 1) % units.length]!);
   };
 
   const num = length / lengthUnits[unit];

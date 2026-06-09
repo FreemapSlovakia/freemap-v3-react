@@ -174,17 +174,10 @@ export const drawingLinePolys = (state: RootState): boolean =>
 export const trackGeojsonIsSuitableForElevationChart = (
   state: RootState,
 ): boolean => {
-  const { trackGeojson } = state.trackViewer;
-
-  if (trackGeojson && trackGeojson.features) {
-    const firstGeojsonFeature = trackGeojson.features[0];
-
-    return (
-      firstGeojsonFeature && firstGeojsonFeature.geometry.type === 'LineString'
-    );
-  }
-
-  return false;
+  return (
+    state.trackViewer.trackGeojson?.features?.[0]?.geometry.type ===
+    'LineString'
+  );
 };
 
 export const askingCookieConsentSelector = (state: RootState): boolean =>

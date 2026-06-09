@@ -169,7 +169,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     lat,
     lon,
     azimuth,
-  } = image || {};
+  } = image ?? {};
 
   const premium = Boolean(image?.premium);
 

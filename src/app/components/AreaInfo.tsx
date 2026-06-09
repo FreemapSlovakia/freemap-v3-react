@@ -46,7 +46,7 @@ export function AreaInfo({
   );
 
   const handleUnitClick = () => {
-    setUnit((prev) => units[(units.indexOf(prev) + 1) % units.length]);
+    setUnit((prev) => units[(units.indexOf(prev) + 1) % units.length]!);
   };
 
   const num = length / areaUnits[unit];

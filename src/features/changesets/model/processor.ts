@@ -173,8 +173,9 @@ export const changesetsProcessor: Processor = {
       dispatch(changesetsSet(allChangesetsSoFar));
 
       if (arrayOfrawChangesets.length === 100) {
-        const toTimeOfOldestChangeset =
-          arrayOfrawChangesets.at(-1)!.getAttribute('closed_at');
+        const toTimeOfOldestChangeset = arrayOfrawChangesets
+          .at(-1)!
+          .getAttribute('closed_at');
 
         await loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);
 

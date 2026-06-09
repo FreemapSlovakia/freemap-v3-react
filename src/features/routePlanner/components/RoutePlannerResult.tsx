@@ -298,7 +298,7 @@ export function RoutePlannerResult(): ReactElement {
   const getSummary = useCallback(
     (showDiff?: boolean) => {
       const { distance } =
-        alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+        alternatives.find((_, alt) => alt === activeAlternativeIndex) ?? {};
 
       return distance ? (
         <Tooltip direction="top" permanent>

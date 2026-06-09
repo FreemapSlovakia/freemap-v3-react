@@ -734,7 +734,7 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
 
   const tracks1 = tracks.map((track) => ({
     ...track,
-    ...(tdMap.get(track.token) || {}),
+    ...(tdMap.get(track.token) ?? {}),
   }));
 
   for (const track of tracks1) {

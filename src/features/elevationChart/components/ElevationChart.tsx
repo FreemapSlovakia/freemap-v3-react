@@ -1,5 +1,4 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { assertDef } from '@shared/assertDef.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import clsx from 'clsx';
@@ -18,6 +17,7 @@ import {
   elevationChartClose,
   elevationChartSetActivePoint,
 } from '../model/actions.js';
+import { ElevationProfilePoint } from '../model/reducer.js';
 import classes from './ElevationChart.module.css';
 
 const ml = 50,
@@ -29,13 +29,15 @@ const ticks = new Array(11)
   .fill(0)
   .flatMap((_, k) => [1, 2.5, 2, 5].map((x) => x * 10 ** k));
 
+const EMPTY_ARRAY: ElevationProfilePoint[] = [];
+
 export default function ElevationChart(): ReactElement | null {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
   const elevationProfilePoints = useAppSelector(
-    (state) => state.elevationChart.elevationProfilePoints || [],
+    (state) => state.elevationChart.elevationProfilePoints ?? EMPTY_ARRAY,
   );
 
   const nf0 = useNumberFormat({
@@ -48,7 +50,7 @@ export default function ElevationChart(): ReactElement | null {
     maximumFractionDigits: 1,
   });
 
-  const { climbUp, climbDown } = assertDef(elevationProfilePoints.at(-1));
+  const { climbUp, climbDown } = elevationProfilePoints.at(-1) ?? {};
 
   const [width, setWidth] = useState(400);
 
@@ -67,7 +69,7 @@ export default function ElevationChart(): ReactElement | null {
 
     const chartMax = max + diff / 20;
 
-    const d = assertDef(elevationProfilePoints.at(-1)).distance;
+    const d = elevationProfilePoints.at(-1)?.distance ?? NaN;
 
     function mapX(distance: number) {
       return ml + ((width - ml - mr) * distance) / d;
@@ -144,10 +146,10 @@ export default function ElevationChart(): ReactElement | null {
       return;
     }
 
-    const ro = new ResizeObserver((e) => {
-      setWidth(e[0].contentRect.width);
+    const ro = new ResizeObserver(([e]) => {
+      setWidth(e!.contentRect.width);
 
-      setHeight(e[0].contentRect.height - (ref2 ? ref2.offsetHeight : 0));
+      setHeight(e.contentRect.height - (ref2 ? ref2.offsetHeight : 0));
     });
 
     ref.style.width =
@@ -308,8 +310,8 @@ export default function ElevationChart(): ReactElement | null {
               />
 
               {(limit ||
-                (Math.abs(mapY(y) - mapY(assertDef(hLines.at(-1)))) > 14 &&
-                  Math.abs(mapY(y) - mapY(assertDef(hLines.at(-2)))) > 14)) && (
+                (Math.abs(mapY(y) - mapY(hLines.at(-1)!)) > 14 &&
+                  Math.abs(mapY(y) - mapY(hLines.at(-2)!)) > 14)) && (
                 <text
                   x={ml - 10}
                   y={mapY(y)}
@@ -351,8 +353,7 @@ export default function ElevationChart(): ReactElement | null {
                 stroke={limit ? 'var(--bs-danger)' : 'var(--bs-body-color)'}
               />
 
-              {(limit ||
-                Math.abs(mapX(x) - mapX(assertDef(vLines.at(-1)))) > 20) && (
+              {(limit || Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20) && (
                 <text
                   x={mapX(x) - 5}
                   y={height - mb + 15}

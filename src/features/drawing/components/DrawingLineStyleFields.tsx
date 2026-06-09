@@ -88,7 +88,7 @@ export function DrawingLineStyleFields({
     }
 
     const ro = new ResizeObserver(([entry]) => {
-      setSvgWidth(entry.contentRect.width);
+      setSvgWidth(entry!.contentRect.width);
     });
 
     ro.observe(el);

@@ -223,7 +223,9 @@ export function useMenuHandler({
       const trackingVisual = afterPrefix(key, 'tracking-visual-');
 
       if (trackingVisual !== undefined) {
-        const [points, lines] = trackingVisual.split('').map((n) => n === '1');
+        const [points, lines] = trackingVisual
+          .split('')
+          .map((n) => n === '1') as [boolean, boolean];
 
         dispatch(trackingActions.setShowPoints(points));
 

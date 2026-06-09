@@ -32,9 +32,9 @@ export const routePlannerToggleElevationChartProcessor: Processor<
       dispatch(
         elevationChartSetTrackGeojson(
           lineString(
-            alternatives[activeAlternativeIndex].legs
-              .flatMap((leg) => leg.steps)
-              .flatMap((step) => step.geometry.coordinates),
+            alternatives[activeAlternativeIndex]!.legs.flatMap(
+              (leg) => leg.steps,
+            ).flatMap((step) => step.geometry.coordinates),
           ),
         ),
       );

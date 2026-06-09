@@ -18,7 +18,7 @@ export function getEffectiveChosenLanguage(
   }
 
   for (const lang of [
-    ...(window.navigator.languages || []),
+    ...(window.navigator.languages ?? []),
     window.navigator.language,
   ]) {
     const simplified = simplify(lang);

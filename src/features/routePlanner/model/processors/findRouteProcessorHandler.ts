@@ -3,7 +3,6 @@ import { clearMapFeatures, setTool } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
-import { assertDef } from '@shared/assertDef.js';
 import { isPremium } from '@shared/premium.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
@@ -260,7 +259,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
           time_limit: isochroneParams.timeLimit,
           distance_limit: isochroneParams.distanceLimit || -1,
-          point: assertDef(points[0]).lat + ',' + assertDef(points[0]).lon,
+          point: points[0]!.lat + ',' + points[0]!.lon,
         }),
       expectedStatus: 200,
       cancelActions: cancelTypes,
@@ -345,9 +344,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       errored.push(false);
     } else {
       // GH
-      alternativeSets.push(
-        fromGraphhopper(value, assertDef(segments[i]).transport),
-      );
+      alternativeSets.push(fromGraphhopper(value, segments[i].transport));
 
       errored.push(false);
     }

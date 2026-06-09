@@ -6,7 +6,6 @@ import {
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
-import { assertDef } from '@shared/assertDef.js';
 import { lineString } from '@turf/helpers';
 import { simplify as turfSimplify } from '@turf/simplify';
 import {
@@ -49,14 +48,14 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       lines: [...state.lines, payload],
     }))
     .addCase(drawingLineChangeProperties, (state, { payload }) => {
-      Object.assign(assertDef(state.lines[payload.index]), payload.properties);
+      Object.assign(state.lines[payload.index], payload.properties);
     })
     .addCase(drawingLineDelete, (state, { payload }) => ({
       ...state,
       lines: state.lines.filter((_, i) => i !== payload.lineIndex),
     }))
     .addCase(drawingLineDeletePoint, (state, { payload }) => {
-      const line = assertDef(state.lines[payload.lineIndex]);
+      const line = state.lines[payload.lineIndex];
 
       line.points = line.points.filter((point) => point.id !== payload.pointId);
     })
@@ -96,7 +95,7 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
 
         state.lines.push(line);
       } else {
-        line = assertDef(state.lines[action.payload.lineIndex]);
+        line = state.lines[action.payload.lineIndex];
       }
 
       line.points.splice(
@@ -108,28 +107,26 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       );
     })
     .addCase(drawingLineUpdatePoint, (state, { payload: { index, point } }) => {
-      const p = assertDef(state.lines[index]).points.find(
-        (pt) => pt.id === point.id,
-      );
+      const p = state.lines[index].points.find((pt) => pt.id === point.id);
 
       if (p) {
         Object.assign(p, point);
       }
     })
     .addCase(drawingLineRemovePoint, (state, action) => {
-      const line = assertDef(state.lines[action.payload.index]);
+      const line = state.lines[action.payload.index];
 
       line.points = line.points.filter(
         (point) => point.id !== action.payload.id,
       );
     })
     .addCase(drawingLineReverse, (state, { payload: { lineIndex } }) => {
-      reverse(assertDef(state.lines[lineIndex]).points);
+      reverse(state.lines[lineIndex].points);
     })
     .addCase(
       drawingLineSimplify,
       (state, { payload: { lineIndex, tolerance } }) => {
-        const line = assertDef(state.lines[lineIndex]);
+        const line = state.lines[lineIndex];
 
         if (line.points.length < 3) {
           return;
@@ -149,7 +146,7 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
     .addCase(drawingLineSplit, (state, action) => {
       const { lineIndex, pointId } = action.payload;
 
-      const line = assertDef(state.lines[lineIndex]);
+      const line = state.lines[lineIndex];
 
       const pos = line.points.findIndex((pt) => pt.id === pointId);
 
@@ -175,7 +172,7 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       (state, { payload: { pointId, lineIndex } }) => {
         state.drawing = true;
 
-        const { points } = assertDef(state.lines[lineIndex]);
+        const { points } = state.lines[lineIndex];
 
         if (points[0]?.id === pointId) {
           reverse(points);
@@ -211,9 +208,9 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
         return;
       }
 
-      const line1 = assertDef(state.lines[joinWith.lineIndex]);
+      const line1 = state.lines[joinWith.lineIndex];
 
-      const line2 = assertDef(state.lines[action.payload.lineIndex]);
+      const line2 = state.lines[action.payload.lineIndex];
 
       if (line1.points[0]?.id === joinWith.pointId) {
         reverse(line1.points);

@@ -5,7 +5,6 @@ import {
 } from '@app/store/selectors.js';
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
-import { assertDef } from '@shared/assertDef.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
@@ -73,9 +72,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
   const drawing = useAppSelector(drawingLinePolys);
 
-  const line = useAppSelector((state) =>
-    assertDef(state.drawingLines.lines[lineIndex]),
-  );
+  const line = useAppSelector((state) => state.drawingLines.lines[lineIndex]);
 
   const selected = useAppSelector(
     (state) =>
@@ -262,12 +259,8 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
                 lng: x?.lon ?? -1,
               })
             : {
-                lat: assertDef(
-                  ps[ps.length - (line.type === 'polygon' ? 2 : 1)],
-                ).lat,
-                lng: assertDef(
-                  ps[ps.length - (line.type === 'polygon' ? 2 : 1)],
-                ).lon,
+                lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
+                lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
               },
           { lat: coords.lat, lng: coords.lon },
           ...(line.type === 'line' || ps.length < 3

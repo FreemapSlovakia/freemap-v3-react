@@ -40,7 +40,7 @@ export function InfoBar(): ReactElement | null {
     return null;
   }
 
-  const InfoBarContent = infoBars[key];
+  const InfoBarContent = infoBars[key]!;
 
   return (
     <div className={classes['info-bar']}>

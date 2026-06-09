@@ -21,16 +21,16 @@ export const headingColorizer: Colorizer = {
   ],
   compute: (features) =>
     features.map((feature) => {
-      const coords = getCoords(feature);
+      const coords: [number, number][] = getCoords(feature);
 
-      let prev: number[] = coords[0];
+      let prev = coords[0];
 
       return coords.map((coord) => {
         let color = 0;
 
         if (coord !== prev) {
           // turf bearing returns -180..180; shift to 0..360 then normalize.
-          const b = bearing([prev[0], prev[1]], [coord[0], coord[1]]);
+          const b = bearing([prev![0], prev![1]], [coord[0], coord[1]]);
 
           color = (((b + 360) % 360) / 360 + Number.EPSILON) % 1;
         }

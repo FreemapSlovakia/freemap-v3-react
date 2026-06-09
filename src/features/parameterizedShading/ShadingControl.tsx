@@ -119,9 +119,17 @@ export default function ShadingControl() {
 
                   const parts = eleWidth.split(',').map((v) => Number(v));
 
-                  const ele = parts[0];
-                  const hwidth = parts[1] / 2 || 1;
-                  const opacity = parts[2] / 100 || 1;
+                  if (
+                    parts.length === 0 ||
+                    parts.length > 3 ||
+                    parts.some((v) => isNaN(v))
+                  ) {
+                    return;
+                  }
+
+                  const ele = parts[0]!;
+                  const hwidth = parts[1] === undefined ? 1 : parts[1] / 2;
+                  const opacity = parts[2] === undefined ? 1 : parts[2] / 100;
 
                   shadingComponent = {
                     id,
