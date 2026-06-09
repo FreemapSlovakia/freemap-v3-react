@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import { TrackPoint } from '../model/types.js';
 import { TrackingPoint, tooltipText } from './TrackingPoint.js';
 
-// TODO functional component with hooks was causing massive re-rendering
+// TODO hooks-based rewrite causes massive re-rendering; revisit
 export function TrackingResult(): ReactElement {
   const clickHandlerMemo = useRef<Record<string, () => void>>({});
 

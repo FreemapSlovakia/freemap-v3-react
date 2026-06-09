@@ -4,7 +4,7 @@ import type { MessagePaths } from '@shared/types/common.js';
 import { useEffect } from 'react';
 import type { Modal } from '../store/actions.js';
 
-// TODO Partiel because of missing documents (formerly tips)
+// TODO partial: some documents have no title key yet
 const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {
   legend: 'mainMenu.mapLegend',
   'file-import': 'trackViewer.uploadModal.title',

@@ -138,8 +138,8 @@ export function handleLocationChange(store: MyStore): void {
   const query =
     id === undefined ? parsedQuery : { ...parsedQuery, ...parseQuery(sq) };
 
-  // Old URL tool tokens (from before these tools were renamed) mapped to their
-  // current ids, so existing shared/bookmarked links keep working.
+  // Map legacy URL tool tokens to their current ids so older shared/bookmarked
+  // links keep working.
   const toolAliases: Record<string, Tool> = {
     'info-point': 'draw-points',
     'measure-area': 'draw-polygons',
