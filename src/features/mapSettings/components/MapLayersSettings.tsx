@@ -196,7 +196,7 @@ export function MapLayersSettings({
                       overlay={popover}
                       rootClose
                     >
-                      <div className={classes['opacity-button']}>
+                      <div className={classes.opacityButton}>
                         <button
                           type="button"
                           style={{
@@ -214,7 +214,7 @@ export function MapLayersSettings({
               <td
                 className={clsx(
                   'text-center',
-                  classes['map-shortcut-cfg'],
+                  classes.mapShortcutCfg,
                   'fm-should-have-keyboard',
                 )}
               >

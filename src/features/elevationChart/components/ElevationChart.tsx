@@ -180,7 +180,7 @@ export default function ElevationChart(): ReactElement | null {
       if (
         e.target instanceof Element &&
         e.target.matches(
-          `.${classes['elevation-chart']} svg, .${classes['elevation-chart']} svg *`,
+          `.${classes.elevationChart} svg, .${classes.elevationChart} svg *`,
         )
       ) {
         startPosRef.current = [e.clientX, e.clientY];
@@ -232,7 +232,7 @@ export default function ElevationChart(): ReactElement | null {
 
   return (
     <div
-      className={clsx(classes['elevation-chart'], 'm-2', 'p-2', 'rounded')}
+      className={clsx(classes.elevationChart, 'm-2', 'p-2', 'rounded')}
       ref={setRef}
       style={pos}
     >

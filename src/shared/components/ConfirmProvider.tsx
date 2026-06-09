@@ -172,8 +172,8 @@ export function ConfirmProvider({
       <Modal
         show={show}
         onHide={() => close(false)}
-        className={classes['modal']}
-        backdropClassName={classes['backdrop']}
+        className={classes.modal}
+        backdropClassName={classes.backdrop}
         size="sm"
         centered
       >

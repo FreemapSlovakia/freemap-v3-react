@@ -51,7 +51,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://en.osm.town/@FreemapSlovakia"
             target="_blank"
             rel="noopener noreferrer"
-            className={classes['mastodon-icon']}
+            className={classes.mastodonIcon}
             {...props}
           >
             <FaMastodon />
@@ -66,7 +66,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://www.facebook.com/FreemapSlovakia"
             target="_blank"
             rel="noopener noreferrer"
-            className={classes['fb-icon']}
+            className={classes.fbIcon}
             {...props}
           >
             <FaFacebook />
@@ -81,7 +81,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
             target="_blank"
             rel="noopener noreferrer"
-            className={classes['yt-icon']}
+            className={classes.ytIcon}
             {...props}
           >
             <FaYoutube />
@@ -96,7 +96,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://github.com/FreemapSlovakia"
             target="_blank"
             rel="noopener noreferrer"
-            className={classes['github-icon']}
+            className={classes.githubIcon}
             {...props}
           >
             <FaGithub />
@@ -113,7 +113,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://play.google.com/store/apps/details?id=sk.bigware.freemap"
             target="_blank"
             rel="noopener noreferrer"
-            className={classes['android-icon']}
+            className={classes.androidIcon}
             {...props}
           >
             <FaAndroid />
@@ -128,7 +128,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://apps.apple.com/sk/app/freemap/id6760855105"
             target="_blank"
             rel="noopener noreferrer"
-            className={classes['apple-icon']}
+            className={classes.appleIcon}
             {...props}
           >
             <FaApple />
@@ -145,7 +145,7 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
             href="https://status.freemap.sk/status/all"
             target="_blank"
             rel="noopener noreferrer"
-            className={classes['apple-icon']}
+            className={classes.appleIcon}
             {...props}
           >
             <MdMonitorHeart />

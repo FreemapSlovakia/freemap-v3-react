@@ -10,14 +10,14 @@ const cornerIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   className: '',
-  html: `<div class="${classes['corner-handle']}"></div>`,
+  html: `<div class="${classes.cornerHandle}"></div>`,
 });
 
 const moveIcon = divIcon({
   iconSize: [20, 20],
   iconAnchor: [10, 10],
   className: '',
-  html: `<div class="${classes['move-handle']}">${'<span></span>'.repeat(9)}</div>`,
+  html: `<div class="${classes.moveHandle}">${'<span></span>'.repeat(9)}</div>`,
 });
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168

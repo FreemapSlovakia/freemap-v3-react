@@ -319,7 +319,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           {layer.children.length > 0 ? (
             <div
               className={clsx(
-                classes['list-group-nested'],
+                classes.listGroupNested,
                 expanded.includes(id) || 'd-none',
               )}
             >
@@ -335,13 +335,13 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     <div>
       <Form.Group controlId="name">
         <Form.Label
-          className={clsx('d-flex', 'align-items-end', classes['grid-span'])}
+          className={clsx('d-flex', 'align-items-end', classes.gridSpan)}
         >
           {m?.general.name}
         </Form.Label>
 
         <Form.Control
-          className={classes['grid-span']}
+          className={classes.gridSpan}
           type="text"
           value={model.name}
           onChange={handlers.name}
@@ -375,7 +375,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           <Form.Label>{m?.mapLayers.url}</Form.Label>
 
           <Form.Control
-            className={classes['grid-span']}
+            className={classes.gridSpan}
             type="text"
             value={model.url}
             onChange={handlers.url}
@@ -386,7 +386,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       {model.technology === 'wms' && (
         <>
           <Button
-            className={clsx('mt-3', classes['grid-span'])}
+            className={clsx('mt-3', classes.gridSpan)}
             type="button"
             onClick={handleLoadLayersClick}
             disabled={!model.url.match(/^https?:\/\/\w+/) || loadingLayers}
@@ -402,16 +402,13 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           </Button>
 
           {wmsLayersFetchError && (
-            <Alert
-              className={clsx('mt-3', classes['grid-span'])}
-              variant="danger"
-            >
+            <Alert className={clsx('mt-3', classes.gridSpan)} variant="danger">
               {wmsLayersFetchError}
             </Alert>
           )}
 
           <ListGroup
-            className={clsx('mt-3', classes['grid-span'], 'overflow-auto')}
+            className={clsx('mt-3', classes.gridSpan, 'overflow-auto')}
             style={{ maxHeight: '400px' }}
             onSelect={handleLayerSelect}
           >

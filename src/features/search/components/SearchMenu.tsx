@@ -77,7 +77,7 @@ const wmsShapeSymbol: Record<string, ReactNode> = {
 export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
   ({ children }, ref) => {
     return (
-      <span className={classes['no-after']} ref={ref}>
+      <span className={classes.noAfter} ref={ref}>
         {children}
       </span>
     );
@@ -225,7 +225,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           <InputGroup className="flex-nowrap">
             <Form.Control
               type="search"
-              className={classes['search-input']}
+              className={classes.searchInput}
               onChange={handleChange}
               value={value}
               placeholder={m?.search.placeholder}
@@ -259,10 +259,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         </Dropdown.Toggle>
 
         <Dropdown.Menu
-          className={clsx(
-            classes['search-dropdown'],
-            'fm-dropdown-with-scroller',
-          )}
+          className={clsx(classes.searchDropdown, 'fm-dropdown-with-scroller')}
           popperConfig={fixedPopperConfig}
         >
           <div className="dropdown-long" ref={sc}>

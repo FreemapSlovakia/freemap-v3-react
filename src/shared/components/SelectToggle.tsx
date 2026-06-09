@@ -21,7 +21,7 @@ export const SelectToggle = forwardRef<
     <button
       type="button"
       ref={ref}
-      className={`form-select text-start ${classes['toggle']}${extra ? ` ${extra}` : ''}`}
+      className={`form-select text-start ${classes.toggle}${extra ? ` ${extra}` : ''}`}
       {...props}
     >
       {children}

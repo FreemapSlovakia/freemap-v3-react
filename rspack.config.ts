@@ -29,6 +29,17 @@ const prod = 'DEPLOYMENT' in process.env && process.env['DEPLOYMENT'] !== 'dev';
 const cssModuleRegex = /\.module\.css$/;
 const scssModuleRegex = /\.module\.scss$/;
 
+// In prod, extract CSS to files; in dev, inject via <style> for HMR.
+const styleOrExtractLoader = prod
+  ? {
+      loader: rspack.CssExtractRspackPlugin.loader,
+      options: {
+        publicPath: (resourcePath: string, context: string) =>
+          path.relative(path.dirname(resourcePath), context) + '/',
+      } satisfies CssExtractRspackLoaderOptions,
+    }
+  : 'style-loader';
+
 // Browser targets for CSS lowering. The `.css` files use native CSS nesting,
 // which `css-loader` does not transpile; without lowering it ships verbatim and
 // breaks on browsers lacking nesting support (Firefox < 117 incl. ESR 115,
@@ -160,18 +171,7 @@ const config: Configuration = {
       {
         test: /\.scss$/,
         use: [
-          prod
-            ? {
-                loader: rspack.CssExtractRspackPlugin.loader,
-                options: {
-                  publicPath: (resourcePath, context) => {
-                    return (
-                      path.relative(path.dirname(resourcePath), context) + '/'
-                    );
-                  },
-                } satisfies CssExtractRspackLoaderOptions,
-              }
-            : 'style-loader',
+          styleOrExtractLoader,
           {
             loader: 'css-loader',
             options: {
@@ -201,31 +201,44 @@ const config: Configuration = {
       },
       {
         test: /\.css$/,
-        use: [
-          prod
-            ? {
-                loader: rspack.CssExtractRspackPlugin.loader,
-                options: {
-                  publicPath: (resourcePath, context) => {
-                    return (
-                      path.relative(path.dirname(resourcePath), context) + '/'
-                    );
-                  },
-                } satisfies CssExtractRspackLoaderOptions,
-              }
-            : 'style-loader',
+        oneOf: [
           {
-            loader: 'css-loader',
-            options: {
-              modules: {
-                auto: cssModuleRegex,
-                namedExport: false,
-                exportLocalsConvention: 'as-is',
-                localIdentName: prod
-                  ? '[hash:base64:6]'
-                  : '[path][name]__[local]',
+            // CSS modules get a precise `*.module.d.css.ts` declaration emitted
+            // next to each file (see cssModulesDtsLoader.js). It must sit
+            // directly above css-loader so it receives css-loader's JS output
+            // (the locals object), which it parses to extract the class names.
+            test: cssModuleRegex,
+            use: [
+              styleOrExtractLoader,
+              {
+                loader: path.resolve('cssModulesDtsLoader.js'),
               },
-            },
+              {
+                loader: 'css-loader',
+                options: {
+                  modules: {
+                    namedExport: false,
+                    // camelCase kebab class names so they can be accessed as
+                    // `classes.fooBar` rather than `classes['foo-bar']`. The
+                    // dts loader picks up whatever keys css-loader emits.
+                    exportLocalsConvention: 'camelCaseOnly',
+                    localIdentName: prod
+                      ? '[hash:base64:6]'
+                      : '[path][name]__[local]',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            // Global stylesheets — no css-modules transform, no typings.
+            use: [
+              styleOrExtractLoader,
+              {
+                loader: 'css-loader',
+                options: { modules: false },
+              },
+            ],
           },
         ],
       },
@@ -245,6 +258,10 @@ const config: Configuration = {
         test: /\.mjs$/,
         include: /node_modules/,
         type: 'javascript/auto',
+        // Some published `.mjs` (e.g. react-qr-code) import dependencies
+        // without a file extension; relax fully-specified ESM resolution so
+        // those bare `qr.js/lib/QRCode`-style requests resolve.
+        resolve: { fullySpecified: false },
       },
       {
         test: /\.(wasm|wgsl)$/,

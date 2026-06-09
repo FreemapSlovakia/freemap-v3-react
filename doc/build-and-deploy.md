@@ -23,6 +23,17 @@ CSS minification therefore uses `rspack.LightningCssMinimizerRspackPlugin` with 
 
 **Don't** revert to cssnano or remove `cssTargets`. Lowering only runs in the prod minifier, so dev (style-loader, modern browser) is unaffected — verify real output with `DEPLOYMENT=prod npx rspack build`, then grep `dist/*.css` for stray `&` (should be 0).
 
+## Typed CSS modules need the `.d.css.ts` naming
+
+`*.module.css` files get a precise per-file declaration so `import classes from './x.module.css'` is typed with the actual class names instead of the loose `Record<string, string>` ambient fallback. The wiring (all in `rspack.config.ts` + `tsconfig.json` + `typings/global.d.ts`):
+
+- **`cssModulesDtsLoader.js`** (a repo-root custom loader, à la `markdown-loader.js`) sits directly **above** `css-loader` in the `.module.css` rule, so it receives css-loader's JS output and parses the `___CSS_LOADER_EXPORT___.locals = { … }` object for class names. Placing it below `css-loader` gives it raw CSS and produces empty declarations.
+- It emits **`x.module.d.css.ts`** — the `.d.<ext>.ts` form. Under `moduleResolution: nodenext`, TypeScript only finds a declaration for a `.css` import in that exact shape **and** only with **`allowArbitraryExtensions: true`** in `tsconfig.json`. The conventional `x.module.css.d.ts` sidecar (what off-the-shelf loaders like `css-modules-dts-loader` write) is silently ignored under `nodenext` — that's a dead end; don't reach for it.
+- The declarations are **gitignored** (`**/*.module.d.css.ts`) and regenerated each build, so the loader always runs in emit mode (nothing committed for a "verify" mode to check on a clean checkout).
+- The `declare module '*.css'` / `'*.scss'` ambients in `typings/global.d.ts` are still required — for **global** (non-module) stylesheet side-effect imports (`leaflet/dist/leaflet.css`, `./styles/index.scss`, …) and as a pre-build fallback for module CSS. Removing them yields `TS2882` errors. The generated `.d.css.ts` overrides the ambient for module imports when present.
+
+Symptom of breakage: `classes['typo']` stops being a type error (the ambient `Record` is shadowing because no `.d.css.ts` resolved) — check the loader order, the `.d.css.ts` naming, and `allowArbitraryExtensions`.
+
 ## nginx cache headers
 
 Live vhost configs are `etc/nginx/sites-available/www.freemap.sk` and `www.freemap.eu` (deployed under `/home/freemap/www`; no `.htaccess`). Rules that must hold:

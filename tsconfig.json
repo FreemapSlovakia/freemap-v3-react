@@ -10,6 +10,7 @@
     },
     "rootDir": "src",
     "esModuleInterop": true,
+    "allowArbitraryExtensions": true,
     "jsx": "react-jsx",
     "lib": ["ES2023", "dom", "dom.iterable", "WebWorker"],
     "module": "NodeNext",

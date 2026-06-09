@@ -416,12 +416,12 @@ export default function CurrentDrawingPropertiesModal({
               </Form.Group>
 
               <Form.Group className="mt-3">
-                <div className={classes['iconTextGrid']}>
-                  <Form.Label htmlFor="icon" className={classes['iconLabel']}>
+                <div className={classes.iconTextGrid}>
+                  <Form.Label htmlFor="icon" className={classes.iconLabel}>
                     {m?.drawing.edit.icon}
                   </Form.Label>
 
-                  <div className={classes['icon']}>
+                  <div className={classes.icon}>
                     <IconPicker
                       selected={
                         editedIconSpec?.kind === 'fa' ||
@@ -433,13 +433,13 @@ export default function CurrentDrawingPropertiesModal({
                     />
                   </div>
 
-                  <Form.Label htmlFor="text" className={classes['textLabel']}>
+                  <Form.Label htmlFor="text" className={classes.textLabel}>
                     {m?.drawing.edit.text}
                   </Form.Label>
 
                   <Form.Control
                     id="text"
-                    className={classes['text']}
+                    className={classes.text}
                     type="text"
                     maxLength={2}
                     value={

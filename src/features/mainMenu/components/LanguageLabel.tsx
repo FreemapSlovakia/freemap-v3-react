@@ -34,7 +34,7 @@ export function LanguageLabel({ children }: Props) {
     'start-0',
     'transition-opacity',
     'text-nowrap',
-    styles['transition'],
+    styles.transition,
   ];
 
   return (

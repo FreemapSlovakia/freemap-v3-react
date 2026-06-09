@@ -88,7 +88,7 @@ export default function ShadingControl() {
   }, [card, sc, rf]);
 
   return (
-    <Card body className={`${classes['shading-control']} mt-2 ms-2`}>
+    <Card body className={`${classes.shadingControl} mt-2 ms-2`}>
       <div className="fm-menu-scroller" ref={setCard}>
         <div />
 
@@ -282,7 +282,7 @@ export default function ShadingControl() {
           >
             <ListGroup.Item action eventKey="">
               <span
-                className={classes['shading-color']}
+                className={classes.shadingColor}
                 style={{
                   backgroundColor: Color(shading.backgroundColor).hex(),
                 }}
@@ -299,7 +299,7 @@ export default function ShadingControl() {
               >
                 {/^hillshade-|^slope-/.test(component.type) && (
                   <span
-                    className={classes['shading-color']}
+                    className={classes.shadingColor}
                     style={{
                       backgroundColor: Color(
                         component.colorStops[0].color,

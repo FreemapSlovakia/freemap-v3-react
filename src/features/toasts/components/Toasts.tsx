@@ -93,7 +93,7 @@ export function Toasts(): ReactElement {
   );
 
   return (
-    <div className={classes['toasts']}>
+    <div className={classes.toasts}>
       {items.map(
         ({ id, actions, style, msg, noClose, timeout, timeoutSince }) => {
           return (

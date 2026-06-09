@@ -25,7 +25,7 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
 
   return (
     <>
-      <dl className={clsx(classes['kvGrid'], 'mb-2')}>
+      <dl className={clsx(classes.kvGrid, 'mb-2')}>
         <dt>{m?.changesets.details.author}</dt>
         <dd>
           <AlertLink

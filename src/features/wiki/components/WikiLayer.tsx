@@ -44,7 +44,7 @@ class WikiIcon extends Icon {
 }
 
 const wikiIcon = new WikiIcon({
-  className: classes['wiki-icon'],
+  className: classes.wikiIcon,
   iconUrl: '',
   iconSize: [18, 18],
   iconAnchor: [9, 9],

@@ -129,7 +129,7 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
           <FaCamera /> <FaTrophy /> {m?.gallery.stats.leaderboard}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body className={clsx('d-flex', 'flex-column', classes['body'])}>
+      <Modal.Body className={clsx('d-flex', 'flex-column', classes.body)}>
         <Form.Group className="mb-2">
           <Form.Label>{m?.gallery.stats.timePeriod}</Form.Label>
           <Form.Select
@@ -180,7 +180,7 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                         <tr
                           key={i}
                           className={clsx({
-                            [classes['hideable']]: i > 2,
+                            [classes.hideable]: i > 2,
                             'table-primary': row.user.id === user?.id,
                           })}
                         >
@@ -202,10 +202,7 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                           state.result.perUser.length && (
                           <tr
                             key="me"
-                            className={clsx(
-                              classes['hideable'],
-                              'table-primary',
-                            )}
+                            className={clsx(classes.hideable, 'table-primary')}
                           >
                             <td className="text-end">
                               {state.result.me.userRank}
@@ -227,14 +224,14 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                               variant="link"
                               onClick={(e) => {
                                 e.currentTarget.parentElement?.parentElement?.parentElement?.classList.toggle(
-                                  classes['more'],
+                                  classes.more,
                                 );
                               }}
                             >
-                              <span className={classes['more-btn']}>
+                              <span className={classes.moreBtn}>
                                 {m?.gallery.stats.more}&hellip;
                               </span>
-                              <span className={classes['less-btn']}>
+                              <span className={classes.lessBtn}>
                                 {m?.gallery.stats.less}&hellip;
                               </span>
                             </Button>
@@ -282,8 +279,8 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                               <tr
                                 key={i}
                                 className={clsx({
-                                  [classes['separ']]: i === 0,
-                                  [classes['hideable']]: i > 2,
+                                  [classes.separ]: i === 0,
+                                  [classes.hideable]: i > 2,
                                   'table-primary': item.user.id === user?.id,
                                 })}
                               >
@@ -313,7 +310,7 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                               <tr
                                 key="me"
                                 className={clsx(
-                                  classes['hideable'],
+                                  classes.hideable,
                                   'table-primary',
                                 )}
                               >
@@ -334,14 +331,14 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                                     variant="link"
                                     onClick={(e) => {
                                       e.currentTarget.parentElement?.parentElement?.parentElement?.classList.toggle(
-                                        classes['more'],
+                                        classes.more,
                                       );
                                     }}
                                   >
-                                    <span className={classes['more-btn']}>
+                                    <span className={classes.moreBtn}>
                                       {m?.gallery.stats.more}&hellip;
                                     </span>
-                                    <span className={classes['less-btn']}>
+                                    <span className={classes.lessBtn}>
                                       {m?.gallery.stats.less}&hellip;
                                     </span>
                                   </Button>

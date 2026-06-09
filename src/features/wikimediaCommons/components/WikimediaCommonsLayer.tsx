@@ -25,7 +25,7 @@ function makeIcon(thumbUrl: string): Icon {
     iconAnchor: [ICON_SIZE / 2, ICON_SIZE / 2],
     popupAnchor: [0, -ICON_SIZE / 2],
     tooltipAnchor: [0, -ICON_SIZE / 2],
-    className: classes['photo-icon'],
+    className: classes.photoIcon,
   });
 }
 
@@ -99,7 +99,7 @@ export default function WikimediaCommonsLayer(): ReactElement {
             <>
               <div
                 className={clsx(
-                  classes['image-container'],
+                  classes.imageContainer,
                   'position-relative',
                   'mx-auto',
                 )}
@@ -118,7 +118,7 @@ export default function WikimediaCommonsLayer(): ReactElement {
                   (shown.licenseUrl ? (
                     <a
                       className={clsx(
-                        classes['license'],
+                        classes.license,
                         'position-absolute',
                         'bottom-0',
                         'end-0',
@@ -132,8 +132,8 @@ export default function WikimediaCommonsLayer(): ReactElement {
                   ) : (
                     <span
                       className={clsx(
-                        classes['license'],
-                        classes['license-text'],
+                        classes.license,
+                        classes.licenseText,
                         'position-absolute',
                         'bottom-0',
                         'end-0',

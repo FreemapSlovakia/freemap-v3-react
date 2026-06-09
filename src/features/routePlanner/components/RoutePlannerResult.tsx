@@ -48,7 +48,7 @@ import {
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import classes from './RoutePlannerResult.module.css';
 
-const pointDraggingClassName = classes['dragging'];
+const pointDraggingClassName = classes.dragging;
 
 export function RoutePlannerResult(): ReactElement {
   const rpm = useRoutePlannerMessages();

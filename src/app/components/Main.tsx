@@ -608,10 +608,10 @@ export function Main(): ReactElement {
 
           <Toasts />
 
-          <div className={classes['header']}>
+          <div className={classes.header}>
             {!askingCookieConsent && !window.fmEmbedded && <InfoBar />}
 
-            <div className={classes['menus']}>
+            <div className={classes.menus}>
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
                 <div />
 
@@ -765,7 +765,7 @@ export function Main(): ReactElement {
             )}
           </div>
 
-          <div className={classes['type-zoom-control']}>
+          <div className={classes.typeZoomControl}>
             <div>
               <div
                 className="fm-ib-scroller fm-ib-scroller-bottom"
@@ -785,14 +785,14 @@ export function Main(): ReactElement {
       )}
 
       <div {...getRootProps()}>
-        {isDragActive && <div className={classes['drag-to-map']} />}
+        {isDragActive && <div className={classes.dragToMap} />}
 
         <input {...getInputProps()} />
 
         {layers.some((layer) => layer[0] === 'V') && (
           <a
             href="https://www.maptiler.com"
-            className={classes['watermark']}
+            className={classes.watermark}
             target="_blank"
             rel="noopener noreferrer"
           >

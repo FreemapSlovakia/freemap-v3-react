@@ -32,7 +32,7 @@ export function ToolMenu({ children }: Props): ReactElement {
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Toolbar className={clsx('mt-2', classes['toolmenu'])}>
+      <Toolbar className={clsx('mt-2', classes.toolmenu)}>
         <ButtonToolbar>
           {toolDef && (
             <span className="align-self-center ms-1">

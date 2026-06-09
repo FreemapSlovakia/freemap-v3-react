@@ -34,7 +34,7 @@ export function Selection({
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Toolbar className={clsx('mt-2', classes['selection'])}>
+      <Toolbar className={clsx('mt-2', classes.selection)}>
         <ButtonToolbar>
           <LongPressTooltip breakpoint="sm" label={label}>
             {({ label, labelClassName, props }) => (

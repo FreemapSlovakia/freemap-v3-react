@@ -206,7 +206,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
 
       <Modal.Body>
         {items.length > 0 && (
-          <div className={classes['upload-items']}>
+          <div className={classes.uploadItems}>
             {items.map(
               ({
                 id,

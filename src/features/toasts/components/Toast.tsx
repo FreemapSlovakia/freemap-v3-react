@@ -80,7 +80,7 @@ export function Toast({
 
   return (
     <Alert
-      className={classes['toast']}
+      className={classes.toast}
       variant={style ?? 'primary'}
       onClick={clickHandler}
       onPointerEnter={handlePointerEnter}

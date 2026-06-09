@@ -77,7 +77,7 @@ export function ChangesetsResult(): ReactElement {
               direction="right"
               permanent
             >
-              <div className={classes['shortened']}>
+              <div className={classes.shortened}>
                 <b>
                   {changeset.userName}
                   {': '}

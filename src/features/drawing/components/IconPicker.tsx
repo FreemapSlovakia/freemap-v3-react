@@ -44,7 +44,7 @@ function IconGlyph(
     <svg
       viewBox={`0 0 ${GLYPH_BOX} ${GLYPH_BOX}`}
       overflow="visible"
-      className={classes['icon']}
+      className={classes.icon}
       aria-hidden="true"
     >
       {props.def

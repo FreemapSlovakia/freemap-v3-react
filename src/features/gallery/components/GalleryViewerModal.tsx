@@ -414,7 +414,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     )}
                   </Alert>
                 ) : (
-                  <div className={classes['image-container']}>
+                  <div className={classes.imageContainer}>
                     <img
                       key={imgKey}
                       ref={setImageElement}
@@ -481,7 +481,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
           </div>
 
           {image && (
-            <div className={clsx(classes['footer'], 'mt-3')}>
+            <div className={clsx(classes.footer, 'mt-3')}>
               {isFullscreen && imageIds && (
                 <>{`${index + 1} / ${imageIds.length}`} ｜ </>
               )}
@@ -518,7 +518,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               {' ｜ '}
 
               <Rating
-                className={classes['stars']}
+                className={classes.stars}
                 size={22}
                 initialValue={rating}
                 readonly
@@ -613,7 +613,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       {disabledPremium ? null : (
                         <Rating
                           className={clsx(
-                            classes['stars'],
+                            classes.stars,
                             'ms-1',
                             'flex-shrink-0',
                           )}
