@@ -1,7 +1,7 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { ReactElement } from 'react';
 import { Form, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { FaCompass, FaCopyright, FaRulerHorizontal } from 'react-icons/fa';
+import { useMapToDocumentExportMessages } from '../translations/useMapToDocumentExportMessages.js';
 
 export type Decoration = 'scaleBar' | 'northArrow' | 'attribution';
 
@@ -18,13 +18,11 @@ export function MapDecorationsField({
   attribution,
   onChange,
 }: Props): ReactElement {
-  const m = useMessages();
+  const m = useMapToDocumentExportMessages();
 
   return (
     <Form.Group className="mt-3">
-      <Form.Label className="d-block">
-        {m?.mapToDocumentExport.decorations}
-      </Form.Label>
+      <Form.Label className="d-block">{m?.decorations}</Form.Label>
 
       <ToggleButtonGroup
         type="checkbox"
@@ -42,7 +40,7 @@ export function MapDecorationsField({
           variant="outline-primary"
           className="rounded flex-grow-0"
         >
-          <FaRulerHorizontal /> {m?.mapToDocumentExport.scaleBar}
+          <FaRulerHorizontal /> {m?.scaleBar}
         </ToggleButton>
 
         <ToggleButton
@@ -51,7 +49,7 @@ export function MapDecorationsField({
           variant="outline-primary"
           className="rounded flex-grow-0"
         >
-          <FaCompass /> {m?.mapToDocumentExport.northArrow}
+          <FaCompass /> {m?.northArrow}
         </ToggleButton>
 
         <ToggleButton
@@ -60,7 +58,7 @@ export function MapDecorationsField({
           variant="outline-primary"
           className="rounded flex-grow-0"
         >
-          <FaCopyright /> {m?.mapToDocumentExport.attribution}
+          <FaCopyright /> {m?.attribution}
         </ToggleButton>
       </ToggleButtonGroup>
     </Form.Group>

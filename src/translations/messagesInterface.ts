@@ -5,13 +5,9 @@ import {
   GalleryColorizeBy,
   GalleryListOrder,
 } from '@features/gallery/model/actions.js';
-import {
-  CustomLayerOrder,
-  ExportableLayer,
-} from '@features/mapToDocumentExport/model/types.js';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
 import { DeepPartial } from '@shared/types/deepPartial.js';
-import { JSX, ReactElement, ReactNode } from 'react';
+import { JSX, ReactNode } from 'react';
 
 type Err = { err: string };
 
@@ -695,31 +691,6 @@ export type Messages = {
     };
     subscribeNotFound: (props: { id: string | number }) => JSX.Element;
     subscribeError: (props: { id: string | number }) => JSX.Element;
-  };
-  mapToDocumentExport: {
-    exportError: (props: Err) => string;
-    exporting: string;
-    exported: ({ url }: { url: string }) => JSX.Element;
-    cancelExportTitle: string;
-    cancelExportQuestion: string;
-    area: string;
-    format: string;
-    layersTitle: string;
-    mapDataTitle: string;
-    layers: Record<ExportableLayer, string>;
-    mapScale: string;
-    customLayerOrder: string;
-    orders: Record<CustomLayerOrder, string>;
-    decorations: string;
-    scaleBar: string;
-    northArrow: string;
-    attribution: string;
-    northArrowLetter: string;
-    alert: (licence?: ReactElement[]) => JSX.Element;
-    advancedSettings: string;
-    styles: string;
-    glow: string;
-    labelTitle: string;
   };
   myMaps: {
     addNew: string;

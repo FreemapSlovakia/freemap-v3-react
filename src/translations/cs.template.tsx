@@ -1000,62 +1000,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-  mapToDocumentExport: {
-    advancedSettings: 'Rozšířená nastavení',
-    styles: 'Styly datové vrstvy',
-    exportError: ({ err }) => addError(messages, 'Chyba exportu mapy', err),
-    exporting: 'Prosím počkejte, mapa se exportuje…',
-    cancelExportTitle: 'Zrušit export',
-    cancelExportQuestion: 'Opravdu chcete zrušit probíhající export?',
-    exported: ({ url }) => (
-      <>
-        Export mapy je dokončen.{' '}
-        <AlertLink href={url} target="_blank">
-          Otevřít.
-        </AlertLink>
-      </>
-    ),
-    area: 'Exportovat oblast',
-    format: 'Formát',
-    layersTitle: 'Volitelné vrstvy',
-    mapDataTitle: 'Mapová data',
-    layers: {
-      contours: 'Vrstevnice',
-      shading: 'Stínovaný reliéf',
-      hikingTrails: 'Turistické trasy',
-      bicycleTrails: 'Cyklotrasy',
-      skiTrails: 'Lyžařské trasy',
-      horseTrails: 'Jezdecké trasy',
-    },
-    mapScale: 'Rozlišení mapy',
-    orders: {
-      natural: 'Přirozené',
-      topmost: 'Navrchu',
-    },
-    customLayerOrder: 'Umístění mapových dat',
-    decorations: 'Dekorace mapy',
-    scaleBar: 'Měřítko',
-    northArrow: 'Směrová šipka',
-    attribution: 'Uvedení zdroje',
-    northArrowLetter: 'S',
-    glow: 'Záře',
-    alert: (licence) => (
-      <>
-        Upozornění:
-        <ul>
-          <li>
-            Exportuje se mapa <i>{outdoorMap}</i>.
-          </li>
-          <li>Export mapy může trvat i desítky sekund.</li>
-          <li>
-            Při publikované mapy je do ní nutno uvést její licenci:
-            <br />
-            <em>{licence}</em>
-          </li>
-        </ul>{' '}
-      </>
-    ),
-  },
 
   myMaps: {
     addNew: 'Přidat novou mapu',

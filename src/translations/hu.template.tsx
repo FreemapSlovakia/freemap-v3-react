@@ -1057,67 +1057,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-  mapToDocumentExport: {
-    exportError: ({ err }) =>
-      addError(messages, 'Hiba történt a térkép exportálásakor', err),
-
-    exporting: 'Kérjük várjon, a térkép exportálása folyamatban van…',
-    cancelExportTitle: 'Exportálás megszakítása',
-    cancelExportQuestion:
-      'Biztosan megszakítja a folyamatban lévő exportálást?',
-
-    exported: ({ url }) => (
-      <>
-        A térkép exportálása befelyeződött.{' '}
-        <AlertLink href={url} target="_blank">
-          Open.
-        </AlertLink>
-      </>
-    ),
-    area: 'Exportálandó terület',
-    format: 'Formátum',
-    layersTitle: 'Választható rétegek',
-    mapDataTitle: 'Térképadatok',
-    layers: {
-      contours: 'Szintvonalak',
-      shading: 'Domborzatárnyékolás',
-      hikingTrails: 'Turistautak',
-      bicycleTrails: 'Kerékpáros útvonalak',
-      skiTrails: 'Síútvonalak',
-      horseTrails: 'Lovaglóútvonalak',
-    },
-    mapScale: 'Térkép felbontása',
-    orders: {
-      natural: 'Természetes',
-      topmost: 'Legfelül',
-    },
-    customLayerOrder: 'Térképadatok elhelyezése',
-    decorations: 'Térképdíszítések',
-    scaleBar: 'Aránymérték',
-    northArrow: 'Iránytű',
-    attribution: 'Forrásmegjelölés',
-    northArrowLetter: 'É',
-    glow: 'Ragyogás',
-    alert: (licence) => (
-      <>
-        Megjegyzések:
-        <ul>
-          <li>
-            A <i>{outdoorMap}</i> fog exportáltatni.
-          </li>
-          <li>A térkép exportálása több tucat másodpercet is igénybe vehet.</li>
-          <li>
-            Megosztás előtt a térképet lássa el a következő szerzői jogi
-            közleménnyel:
-            <br />
-            <em>{licence}</em>
-          </li>
-        </ul>{' '}
-      </>
-    ),
-    advancedSettings: 'Speciális beállítások',
-    styles: 'Az adatréteg stílusai',
-  },
 
   myMaps: {
     addNew: 'Új térkép hozzáadása',

@@ -1021,65 +1021,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-  mapToDocumentExport: {
-
-    layers: {
-      contours: 'Poziomice',
-      shading: 'Cieniowanie rzeźby terenu',
-      hikingTrails: 'Szlaki piesze',
-      bicycleTrails: 'Trasy rowerowe',
-      skiTrails: 'Trasy narciarskie',
-      horseTrails: 'Szlaki konne',
-    },
-
-    advancedSettings: 'Zaawansowane opcje',
-    styles: 'Style warstwy danych',
-    exportError: ({ err }) => addError(messages, 'Błąd eksportu mapy', err),
-    exporting: 'Proszę czekać, trwa eksport mapy…',
-    cancelExportTitle: 'Anuluj eksport',
-    cancelExportQuestion: 'Czy na pewno chcesz anulować trwający eksport?',
-    exported: ({ url }) => (
-      <>
-        Eksport mapy zakończony.{' '}
-        <AlertLink href={url} target="_blank">
-          Otwórz.
-        </AlertLink>
-      </>
-    ),
-    area: 'Obszar eksportu',
-    format: 'Format',
-    layersTitle: 'Opcjonalne warstwy',
-    mapDataTitle: 'Dane mapy',
-    mapScale: 'Rozdzielczość mapy',
-    orders: {
-      natural: 'Naturalna',
-      topmost: 'Na wierzchu',
-    },
-    customLayerOrder: 'Umiejscowienie danych mapy',
-    decorations: 'Dekoracje mapy',
-    scaleBar: 'Podziałka',
-    northArrow: 'Strzałka północy',
-    attribution: 'Atrybucja',
-    northArrowLetter: 'N',
-    glow: 'Poświata',
-    alert: (licence) => (
-      <>
-        Uwagi:
-        <ul>
-          <li>
-            Eksportowana będzie mapa <i>{outdoorMap}</i>.
-          </li>
-          <li>Eksport mapy może potrwać kilkadziesiąt sekund.</li>
-          <li>
-            Udostępniając wyeksportowaną mapę, należy podać następującą
-            licencję:
-            <br />
-            <em>{licence}</em>
-          </li>
-        </ul>
-      </>
-    ),
-  },
 
   myMaps: {
     addNew: 'Dodaj nową mapę',

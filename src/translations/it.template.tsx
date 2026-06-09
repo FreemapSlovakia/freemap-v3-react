@@ -1028,63 +1028,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-  mapToDocumentExport: {
-    advancedSettings: 'Opzioni avanzate',
-    styles: 'Stili del livello dati',
-    exportError: ({ err }) => addError(messages, 'Error exporting map:', err),
-    exporting: 'Attendere prego, esportazione in corso…',
-    cancelExportTitle: 'Annulla esportazione',
-    cancelExportQuestion: "Vuoi davvero annullare l'esportazione in corso?",
-    exported: ({ url }) => (
-      <>
-        Esportazione mappa completata.{' '}
-        <AlertLink href={url} target="_blank">
-          Aprire.
-        </AlertLink>
-      </>
-    ),
-    area: 'Esporta area',
-    format: 'Formato',
-    layersTitle: 'Livelli opzionali',
-    mapDataTitle: 'Dati mappa',
-    layers: {
-      contours: 'Curve di livello',
-      shading: 'Rilievi ombreggiati',
-      hikingTrails: 'Percorsi escursionistici',
-      bicycleTrails: 'Percorsi ciclistici',
-      skiTrails: 'Percorsi sciistici',
-      horseTrails: 'Percorsi a cavallo',
-    },
-    mapScale: 'Risoluzione mappa',
-    orders: {
-      natural: 'Naturale',
-      topmost: 'In primo piano',
-    },
-    customLayerOrder: 'Posizionamento dei dati mappa',
-    decorations: 'Decorazioni mappa',
-    scaleBar: 'Barra della scala',
-    northArrow: 'Freccia del nord',
-    attribution: 'Attribuzione',
-    northArrowLetter: 'N',
-    glow: 'Alone',
-    alert: (licence) => (
-      <>
-        Note:
-        <ul>
-          <li>
-            Sarà esportata la mappa <i>{outdoorMap}</i> .
-          </li>
-          <li>L\'esportazione della mappa potrebbe durare diversi secondi.</li>
-          <li>
-            Prima di condividere la mappa esportata, aggiungi la seguente
-            attribuzione:
-            <br />
-            <em>{licence}</em>
-          </li>
-        </ul>{' '}
-      </>
-    ),
-  },
 
   myMaps: {
     addNew: 'Aggiungi nuova mappa',

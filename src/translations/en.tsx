@@ -981,65 +981,6 @@ const messages: Messages = {
       </>
     ),
   },
-  mapToDocumentExport: {
-    advancedSettings: 'Advanced options',
-    styles: 'Data layer styles',
-    exportError: ({ err }) => addError(messages, 'Error exporting map', err),
-    exporting: 'Please wait, exporting map…',
-    exported: ({ url }) => (
-      <>
-        Map export has finished.{' '}
-        <AlertLink href={url} target="_blank">
-          Open.
-        </AlertLink>
-      </>
-    ),
-    cancelExportTitle: 'Cancel export',
-    cancelExportQuestion: 'Do you really want to cancel the running export?',
-    area: 'Export area',
-    format: 'Format',
-    layersTitle: 'Optional layers',
-    mapDataTitle: 'Map data',
-    layers: {
-      contours: 'Contours',
-      shading: 'Shaded relief',
-      hikingTrails: 'Hiking trails',
-      bicycleTrails: 'Bicycle trails',
-      skiTrails: 'Ski trails',
-      horseTrails: 'Horse trails',
-    },
-    mapScale: 'Map resolution',
-    customLayerOrder: 'Map data placement',
-    orders: {
-      natural: 'Natural',
-      topmost: 'Topmost',
-    },
-    decorations: 'Map decorations',
-    scaleBar: 'Scale bar',
-    northArrow: 'North arrow',
-    attribution: 'Attribution',
-    northArrowLetter: 'N',
-    glow: 'Glow',
-    labelTitle: 'Labels',
-
-    alert: (licence) => (
-      <>
-        Notes:
-        <ul>
-          <li>
-            Exported will be <i>{outdoorMap}</i> map.
-          </li>
-          <li>Export of the map may last tens of seconds.</li>
-          <li>
-            Before sharing exported map accompain it with the following
-            attribution:
-            <br />
-            <em>{licence}</em>
-          </li>
-        </ul>{' '}
-      </>
-    ),
-  },
 
   myMaps: {
     addNew: 'Add new map',

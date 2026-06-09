@@ -46,6 +46,8 @@ import {
 } from '../model/types.js';
 import { useAreaCountries } from '../model/useAreaCountries.js';
 import { useExportSettings } from '../model/useExportSettings.js';
+import { loadMapToDocumentExportMessages } from '../translations/loadMapToDocumentExportMessages.js';
+import { useMapToDocumentExportMessages } from '../translations/useMapToDocumentExportMessages.js';
 import { DataLayerStyleFields } from './DataLayerStyleFields.js';
 import { ExportLayersField } from './ExportLayersField.js';
 import { MapDecorationsField } from './MapDecorationsField.js';
@@ -58,6 +60,8 @@ export default function MapToDocumentExportModal({
   show,
 }: Props): ReactElement {
   const m = useMessages();
+
+  const mtde = useMapToDocumentExportMessages();
 
   const {
     area,
@@ -212,9 +216,7 @@ export default function MapToDocumentExportModal({
         customLayerOrder,
         decorations: {
           scaleBar,
-          northArrow: northArrow
-            ? (m?.mapToDocumentExport.northArrowLetter ?? 'N')
-            : false,
+          northArrow: northArrow ? (mtde?.northArrowLetter ?? 'N') : false,
           attribution:
             attributionEnabled && attributionText ? attributionText : false,
         },
@@ -247,11 +249,14 @@ export default function MapToDocumentExportModal({
       close();
     } catch (err) {
       if (!ac.signal.aborted) {
+        const messages = await loadMapToDocumentExportMessages(
+          store.getState().l10n.language,
+        );
+
         dispatch(
           toastsAdd({
             style: 'danger',
-            messageKey: 'mapToDocumentExport.exportError',
-            messageParams: { err },
+            message: messages.exportError({ err }),
           }),
         );
       }
@@ -264,7 +269,7 @@ export default function MapToDocumentExportModal({
     store,
     dispatch,
     close,
-    m,
+    mtde,
     area,
     exportables,
     format,
@@ -286,8 +291,8 @@ export default function MapToDocumentExportModal({
   const handleCancel = useCallback(async () => {
     if (
       await confirm({
-        title: m?.mapToDocumentExport.cancelExportTitle,
-        message: m?.mapToDocumentExport.cancelExportQuestion,
+        title: mtde?.cancelExportTitle,
+        message: mtde?.cancelExportQuestion,
         confirmLabel: m?.general.yes,
         cancelLabel: m?.general.no,
         confirmStyle: 'danger',
@@ -297,7 +302,7 @@ export default function MapToDocumentExportModal({
       // tweak the options and try again.
       abortRef.current?.abort();
     }
-  }, [confirm, m]);
+  }, [confirm, m, mtde]);
 
   return (
     <Modal
@@ -317,7 +322,7 @@ export default function MapToDocumentExportModal({
 
       <Modal.Body as="fieldset" disabled={exporting}>
         <Alert variant="warning">
-          {m?.mapToDocumentExport.alert(
+          {mtde?.alert(
             attribution?.map(([type, elem]) => (
               <Fragment key={type}>{elem}, </Fragment>
             )),
@@ -325,9 +330,7 @@ export default function MapToDocumentExportModal({
         </Alert>
 
         <Form.Group>
-          <Form.Label className="d-block">
-            {m?.mapToDocumentExport.area}
-          </Form.Label>
+          <Form.Label className="d-block">{mtde?.area}</Form.Label>
 
           <MapAreaToggle
             area={area}
@@ -337,10 +340,7 @@ export default function MapToDocumentExportModal({
         </Form.Group>
 
         <Form.Group className="mt-3">
-          <Form.Label className="d-block">
-            {' '}
-            {m?.mapToDocumentExport.format}
-          </Form.Label>
+          <Form.Label className="d-block"> {mtde?.format}</Form.Label>
 
           <ToggleButtonGroup
             type="radio"
@@ -365,9 +365,7 @@ export default function MapToDocumentExportModal({
 
         <fieldset className="mt-3 border rounded p-3">
           <Form.Group>
-            <Form.Label className="d-block">
-              {m?.mapToDocumentExport.mapDataTitle}
-            </Form.Label>
+            <Form.Label className="d-block">{mtde?.mapDataTitle}</Form.Label>
 
             <ExportablesSelector
               value={exportables}
@@ -408,7 +406,7 @@ export default function MapToDocumentExportModal({
         />
 
         <Form.Group controlId="mapScale" className="mt-3">
-          <Form.Label>{m?.mapToDocumentExport.mapScale}</Form.Label>
+          <Form.Label>{mtde?.mapScale}</Form.Label>
 
           <InputGroup>
             <Form.Control

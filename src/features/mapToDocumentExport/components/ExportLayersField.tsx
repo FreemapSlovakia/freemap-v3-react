@@ -1,10 +1,10 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { ReactElement } from 'react';
 import { Form, ToggleButton } from 'react-bootstrap';
 import { FaBicycle, FaHiking, FaHorse, FaSkiing } from 'react-icons/fa';
 import { GiHills } from 'react-icons/gi';
 import { RxTarget } from 'react-icons/rx';
 import { EXPORTABLE_LAYERS, type ExportableLayer } from '../model/types.js';
+import { useMapToDocumentExportMessages } from '../translations/useMapToDocumentExportMessages.js';
 
 const LAYER_ICONS: Record<ExportableLayer, ReactElement> = {
   contours: <RxTarget />,
@@ -21,13 +21,11 @@ type Props = {
 };
 
 export function ExportLayersField({ value, onToggle }: Props): ReactElement {
-  const m = useMessages();
+  const m = useMapToDocumentExportMessages();
 
   return (
     <Form.Group className="mt-3">
-      <Form.Label className="d-block">
-        {m?.mapToDocumentExport.layersTitle}
-      </Form.Label>
+      <Form.Label className="d-block">{m?.layersTitle}</Form.Label>
 
       <div className="d-flex flex-wrap gap-2">
         {EXPORTABLE_LAYERS.map((layer) => (
@@ -41,7 +39,7 @@ export function ExportLayersField({ value, onToggle }: Props): ReactElement {
             checked={value.includes(layer)}
             onChange={() => onToggle(layer)}
           >
-            {LAYER_ICONS[layer]} {m?.mapToDocumentExport.layers[layer]}
+            {LAYER_ICONS[layer]} {m?.layers[layer]}
           </ToggleButton>
         ))}
       </div>
