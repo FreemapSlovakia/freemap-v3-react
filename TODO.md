@@ -14,6 +14,7 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
 - [~] **Enable `noUncheckedIndexedAccess`.** Flag still off in `tsconfig.json`,
   but the array/coordinate-heavy hotspots are now cleaned up against it (error
   count 348 → ~180).
+- [ ] Separate feasture-related messages from `src/translations/messagesInterface.ts` to feature directory (some are already handled)
 
 ## Softer / design opinions
 
