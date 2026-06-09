@@ -25,6 +25,7 @@ If a change makes `llms.txt` wrong but you can't fully fix it, say so explicitly
 - **Do not commit until I explicitly approve.** Leave the working tree dirty at the end of a task and wait for "commit"/"looks good"/similar. This overrides any "commit when done" instinct.
 - **When I tell you to commit, add yourself as co-author** via a `Co-Authored-By: Claude <noreply@anthropic.com>` trailer in the commit message.
 - **Run `npx biome check --write <changed files>` after every change set**, before reporting completion. The project uses Biome with import-order enforcement, so manually arranging imports is wasted effort. Pair with `npx tsgo --noEmit -p .` for type safety.
+- **Comments describe current behavior, not history.** Write comments, JSDoc, and test names in the present tense about what the code does now. Don't narrate how it used to work or what a refactor changed (no "previously…", "no longer…", "used to live under…", "dropped from…"). Change history belongs in the commit/diff, not in the source. (A backlog/changelog entry like `TODO.md` may use past tense — it's an explicit record of work done.)
 
 ## Translations
 
