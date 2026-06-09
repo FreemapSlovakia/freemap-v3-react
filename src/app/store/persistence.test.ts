@@ -3,7 +3,6 @@ import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer
 import { drawingSettingsInitialState } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
-import { locationInitialState } from '@features/location/model/reducer.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
@@ -15,7 +14,7 @@ import {
   PersistedAuthSchema,
   PersistedCookieConsentSchema,
   PersistedMapSchema,
-} from './rootReducer.js';
+} from './persistence.js';
 
 /**
  * Characterization tests: these pin the CURRENT behavior of the persistence
@@ -153,7 +152,7 @@ describe('getInitialState — parseWithFallback (slices once stored under `main`
     expect(getInitialState().cookieConsent?.cookieConsentResult).toBe(true);
   });
 
-  it('reads homeLocation / location / drawingSettings from `main` fallback too', () => {
+  it('reads homeLocation / drawingSettings from `main` fallback too', () => {
     seed({
       main: {
         homeLocation: { lat: 1, lon: 2 },
@@ -168,15 +167,21 @@ describe('getInitialState — parseWithFallback (slices once stored under `main`
       ...homeLocationInitialState,
       homeLocation: { lat: 1, lon: 2 },
     });
-    expect(initial.location).toEqual({
-      ...locationInitialState,
-      locate: true,
-    });
     // drawingSettings.style merges over the initial nested style.
     expect(initial.drawingSettings).toEqual({
       ...drawingSettingsInitialState,
       style: { ...drawingSettingsInitialState.style, color: '#ff0000' },
     });
+  });
+
+  it('does not rehydrate the `location` slice (no PERSIST entry)', () => {
+    // `location` has no entry, so persisted blobs for it are ignored.
+    seed({
+      location: { locate: true },
+      main: { locate: true, location: { lat: 1, lon: 2, accuracy: 5 } },
+    });
+
+    expect(getInitialState().location).toBeUndefined();
   });
 });
 

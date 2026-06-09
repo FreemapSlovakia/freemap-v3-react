@@ -20,7 +20,7 @@ function makeState(): RootState {
     l10n: { chosenLanguage: 'sk', language: 'en' },
     main: { hiddenInfoBars: { foo: 1 } },
     homeLocation: { homeLocation: { lat: 1, lon: 2 } },
-    // Present in state but deliberately NOT persisted (load-only slice).
+    // In state but not persisted (no PERSIST entry).
     location: { locate: true, location: { lat: 1, lon: 2, accuracy: 5 } },
     cookieConsent: { cookieConsentResult: true, analyticCookiesAllowed: false },
     drawingSettings: {
@@ -79,6 +79,7 @@ function makeState(): RootState {
       premium: true,
     },
     mapDetails: { excludeSources: [] },
+    trackViewer: { colorizeTrackBy: 'heartRate' },
   } as unknown as RootState;
 }
 
@@ -175,6 +176,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         premium: true,
       },
       mapDetails: { excludeSources: [] },
+      trackViewer: { colorizeTrackBy: 'heartRate' },
     });
   });
 
@@ -199,13 +201,13 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         'mapDetails',
         'objects',
         'routePlanner',
+        'trackViewer',
       ].sort(),
     );
   });
 
-  it('does NOT persist the `location` slice (load-only: read via fallback, never written)', () => {
-    // `location` is rehydrated from the legacy `main` fallback but the save side
-    // never writes it. Pin this asymmetry so the upcoming table refactor keeps it.
+  it('does NOT persist the `location` slice', () => {
+    // `location` has no PERSIST entry, so it is neither saved nor rehydrated.
     runMiddleware(makeState());
 
     const saved = JSON.parse(storage.getItem('store') ?? 'null');
@@ -262,6 +264,8 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.map?.layers).toEqual(['X']);
     expect(initial.map?.zoom).toBe(8);
     expect(initial.gallery?.recentTags).toEqual(['x']);
+    // trackViewer.colorizeTrackBy round-trips through save → rehydrate.
+    expect(initial.trackViewer?.colorizeTrackBy).toBe('heartRate');
 
     // premiumExpiration round-trips Date → ISO string → Date.
     expect(initial.auth?.user?.premiumExpiration).toBeInstanceOf(Date);

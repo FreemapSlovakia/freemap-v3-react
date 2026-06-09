@@ -1,5 +1,6 @@
 import { Middleware } from '@reduxjs/toolkit';
 import storage from 'local-storage-fallback';
+import { selectPersistedState } from '../persistence.js';
 import type { RootState } from '../store.js';
 
 export const statePersistingMiddleware: Middleware<{}, RootState> =
@@ -22,63 +23,7 @@ function persistSelectedState(state: RootState) {
     return;
   }
 
-  storage.setItem(
-    'store',
-    JSON.stringify({
-      l10n: {
-        chosenLanguage: state.l10n.chosenLanguage,
-      },
-      main: {
-        hiddenInfoBars: state.main.hiddenInfoBars,
-      },
-      homeLocation: {
-        homeLocation: state.homeLocation.homeLocation,
-      },
-      cookieConsent: {
-        cookieConsentResult: state.cookieConsent.cookieConsentResult,
-        analyticCookiesAllowed: state.cookieConsent.analyticCookiesAllowed,
-      },
-      drawingSettings: state.drawingSettings,
-      objects: {
-        selectedIcon: state.objects.selectedIcon,
-      },
-      routePlanner: {
-        preventHint: state.routePlanner.preventHint,
-        transportType: state.routePlanner.transportType,
-        milestones: state.routePlanner.milestones,
-      },
-      auth: {
-        user: state.auth.user && {
-          ...state.auth.user,
-          premiumExpiration: state.auth.user.premiumExpiration
-            ? (state.auth.user.premiumExpiration?.toISOString() ?? null)
-            : null,
-        },
-      },
-      map: {
-        layersSettings: state.map.layersSettings,
-        lat: state.map.lat,
-        lon: state.map.lon,
-        zoom: state.map.zoom,
-        layers: state.map.layers,
-        customLayers: state.map.customLayers,
-        legacyMapWarningSuppressions: state.map.legacyMapWarningSuppressions,
-        shading: state.map.shading,
-        maxZoom: state.map.maxZoom,
-        resolutionScale: state.map.resolutionScale,
-        featureScale: state.map.featureScale,
-        stravaHeatmapColor: state.map.stravaHeatmapColor,
-      },
-      gallery: {
-        colorizeBy: state.gallery.colorizeBy,
-        showDirection: state.gallery.showDirection,
-        showLegend: state.gallery.showLegend,
-        recentTags: state.gallery.recentTags,
-        premium: state.gallery.premium,
-      },
-      mapDetails: {
-        excludeSources: state.mapDetails.excludeSources,
-      },
-    } as Partial<RootState>),
-  );
+  // The selected subset + per-slice serialization lives in the `PERSIST` table
+  // (persistence.ts), shared with `getInitialState`'s rehydration.
+  storage.setItem('store', JSON.stringify(selectPersistedState(state)));
 }

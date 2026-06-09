@@ -15,7 +15,7 @@ many lazy chunks.
 ```
 src/
   app/            app shell, store wiring, routing-via-hash, top-level components
-    store/        store.ts, rootReducer.ts, processors.ts, actions.ts, selectors.ts, middleware/
+    store/        store.ts, rootReducer.ts, persistence.ts, processors.ts, actions.ts, selectors.ts, middleware/
     url/          state <-> URL-hash synchronization
     components/   Main.tsx (the shell), Layers, Tools, Results, modals host
     hooks/
@@ -63,8 +63,8 @@ Wiring a feature into the app is **explicit**, via three central registries:
 
 1. **`src/app/store/rootReducer.ts`** — add the reducer to the `reducers` map.
    The slice key there is its key in `RootState`. If the slice should survive a
-   reload, also add a `Persisted<X>Schema` + a rehydration block in
-   `getInitialState()` (see "State persistence").
+   reload, also add a `Persisted<X>Schema` + a `PERSIST` entry in
+   `src/app/store/persistence.ts` (see "State persistence").
 2. **`src/app/store/processors.ts`** — push every processor into the ordered
    `processors` array. **Order matters** (see processor middleware).
 3. **`src/shared/mapDefinitions.tsx`** (layers) / **`src/shared/toolDefinitions.tsx`**
@@ -126,21 +126,34 @@ customized to allow `Date`, `File`, and `Error` in actions/state.
 
 ## State persistence
 
-`statePersistingMiddleware` writes a curated subset of state to `localStorage`
-(key `store`) via `local-storage-fallback`. Rehydration is in
-`rootReducer.ts → getInitialState()`:
+Persistence is **table-driven** from a single source of truth: the `PERSIST`
+array in `src/app/store/persistence.ts`. One entry per slice drives **both**
+directions, keeping save and rehydrate in sync:
 
-- Each persisted slice has its own `Persisted<X>Schema` (Zod) and is
-  `safeParse`d independently, then merged over the slice's `initialState`. A bad
-  blob for one slice never nukes the rest.
-- **Legacy migrations live here**, e.g. `{ mapType, overlays } → { layers }`, and
-  `parseWithFallback` reads older state that used to live under `main`.
-- For schema-level backward compat, prefer the `<X>CompatSchema` (`z.preprocess`)
-  pattern documented in the root agent file rather than inline narrowing.
+- `selectPersistedState(state)` (called by `statePersistingMiddleware`) writes a
+  curated subset of state to `localStorage` (key `store`, via
+  `local-storage-fallback`) by running each entry's `persist(slice)` selector.
+- `getInitialState()` (re-exported from `rootReducer.ts`, used by `store.ts`)
+  rehydrates by running each entry through `schema.safeParse` → optional
+  `fallbackKey` → `rehydrate(initial, data)` merge.
 
-Adding persisted state = add to the slice + add a `Persisted<X>Schema` and a
-rehydration block here. Forgetting the block means the field silently won't
-persist.
+Each `PERSIST` entry is `{ key, schema, initial, rehydrate?, persist?, fallbackKey? }`:
+
+- **`schema`** — the slice's `Persisted<X>Schema` (Zod); `safeParse`d
+  independently, so a bad blob for one slice never nukes the rest.
+- **`initial`** — the slice's `initialState`, the merge base. Default `rehydrate`
+  is `{ ...initial, ...data }`; override for custom merges (e.g. `auth`'s user
+  guard, `drawingSettings`' nested `style` deep-merge).
+- **`persist`** — what to write on save. Omit it to make the slice
+  rehydrate-only (read but not saved).
+- **`fallbackKey`** — also reads state stored under another slice (e.g. `main`),
+  via the non-empty `parseWithFallback` rule.
+- Legacy blob shapes are handled in the schema itself via the `<X>CompatSchema`
+  (`z.preprocess`) pattern from the root agent file — e.g.
+  `PersistedMapCompatSchema` maps `{ mapType, overlays } → { layers }`.
+
+Adding persisted state = add to the slice + add **one `PERSIST` entry** (schema +
+`initial` + `persist`).
 
 ## URL ⇄ state synchronization
 

@@ -11,13 +11,6 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
       isolation + merge-over-initialState, the `Persisted*Schema` parsers, and
       the save side / round-trip (`statePersistingMiddleware`). Still TODO: pure
       reducer tests, and widening coverage beyond persistence.
-- [ ] **Reduce the manual central registries.**
-      `src/app/store/processors.ts` is a ~190-line hand-maintained array (merge
-      magnet) and `getInitialState()` repeats the same safeParse-then-merge block
-      ~15×. Make the persistence blocks table-driven (`[{ key, schema, initial }]`
-      looped) to remove the "forgot the rehydration block" footgun. Keep processor
-      *order* explicit (it's significant), but consider per-feature `processors`
-      exports collected centrally to cut conflicts.
 - [ ] **Enable `noUncheckedIndexedAccess`.** Currently `// TODO one day` in
       `tsconfig.json`. Heavy array/record indexing (layers, tiles, coordinates)
       means it would catch real `undefined` bugs. Sizable one-time cleanup.
