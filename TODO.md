@@ -11,9 +11,9 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   isolation + merge-over-initialState, the `Persisted*Schema` parsers, and
   the save side / round-trip (`statePersistingMiddleware`). Pure reducer tests
   now cover the `map`, `routePlanner`, `toasts`, `l10n`, `trackViewer`,
-  `objects`, `search`, and drawing points/lines slices. Still TODO: more
-  reducers (`gallery`, `tracking`, …), and widening coverage beyond reducers
-  (selectors, processors).
+  `objects`, `search`, `gallery`, `tracking`, and drawing points/lines slices —
+  the branchy slices with non-trivial logic. Still TODO: widening coverage
+  beyond reducers (selectors, processors).
 - [~] **Enable `noUncheckedIndexedAccess`.** Flag still off in `tsconfig.json`,
   but the array/coordinate-heavy hotspots are now cleaned up against it (error
   count 348 → ~180).
