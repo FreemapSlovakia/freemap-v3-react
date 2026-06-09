@@ -12,8 +12,10 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   the save side / round-trip (`statePersistingMiddleware`). Pure reducer tests
   now cover the `map`, `routePlanner`, `toasts`, `l10n`, `trackViewer`,
   `objects`, `search`, `gallery`, `tracking`, and drawing points/lines slices —
-  the branchy slices with non-trivial logic. Still TODO: widening coverage
-  beyond reducers (selectors, processors).
+  the branchy slices with non-trivial logic. The `src/app/store/selectors.ts`
+  selectors (picking-mode/cursor/gallery-visibility composition) are also
+  covered. Still TODO: widening coverage to processors (side-effect
+  middleware).
 - [~] **Enable `noUncheckedIndexedAccess`.** Flag still off in `tsconfig.json`,
   but the array/coordinate-heavy hotspots are now cleaned up against it (error
   count 348 → ~180).
