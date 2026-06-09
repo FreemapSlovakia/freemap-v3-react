@@ -365,8 +365,6 @@ export default function OfflineMapExportModal({
               area={area}
               onSelectVisible={() => setArea('visible')}
               onSelectArea={startSelecting}
-              visibleLabel={ome?.area.visible}
-              areaLabel={ome?.area.byArea}
             />
           </Form.Group>
 

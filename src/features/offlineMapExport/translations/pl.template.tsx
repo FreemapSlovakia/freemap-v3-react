@@ -2,11 +2,6 @@ import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { OfflineMapExportMessages } from './OfflineMapExportMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
-  area: {
-    visible: 'Widoczny obszar',
-    byArea: 'Wybrany obszar',
-    pickHint: 'Dostosuj prostokąt, aby wybrać obszar',
-  },
   format: 'Format',
   map: 'Mapa',
   unknownMapType: 'Nieznana mapa',

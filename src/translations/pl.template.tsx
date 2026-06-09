@@ -1021,10 +1021,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
   mapToDocumentExport: {
-    areas: {
-      visible: 'Widoczny obszar mapy',
-      byArea: 'Wybrany obszar',
-    },
 
     layers: {
       contours: 'Poziomice',

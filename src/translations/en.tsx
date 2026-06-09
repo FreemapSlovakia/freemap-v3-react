@@ -996,10 +996,6 @@ const messages: Messages = {
     cancelExportTitle: 'Cancel export',
     cancelExportQuestion: 'Do you really want to cancel the running export?',
     area: 'Export area',
-    areas: {
-      visible: 'Visible area of the map',
-      byArea: 'Selected area',
-    },
     format: 'Format',
     layersTitle: 'Optional layers',
     mapDataTitle: 'Map data',

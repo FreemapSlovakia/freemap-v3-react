@@ -702,10 +702,6 @@ export type Messages = {
     cancelExportTitle: string;
     cancelExportQuestion: string;
     area: string;
-    areas: {
-      visible: string;
-      byArea: string;
-    };
     format: string;
     layersTitle: string;
     mapDataTitle: string;

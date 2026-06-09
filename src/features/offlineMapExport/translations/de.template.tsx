@@ -6,11 +6,6 @@ const de: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   map: 'Karte',
   unknownMapType: 'Unbekannte Karte',
   downloadArea: 'Exportieren',
-  area: {
-    visible: 'Sichtbarer Bereich',
-    byArea: 'Ausgewählter Bereich',
-    pickHint: 'Passen Sie das Rechteck an, um den Bereich festzulegen',
-  },
   name: 'Name',
   zoomRange: 'Zoom-Bereich',
   scale: 'Maßstab',

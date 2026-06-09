@@ -1043,10 +1043,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     area: 'Esporta area',
-    areas: {
-      visible: 'Area visibile della mappa',
-      byArea: 'Area selezionata',
-    },
     format: 'Formato',
     layersTitle: 'Livelli opzionali',
     mapDataTitle: 'Dati mappa',

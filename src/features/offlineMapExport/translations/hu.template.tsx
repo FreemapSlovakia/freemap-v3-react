@@ -6,11 +6,6 @@ const hu: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   map: 'Térkép',
   unknownMapType: 'Ismeretlen térkép',
   downloadArea: 'Exportálni',
-  area: {
-    visible: 'Látható terület',
-    byArea: 'Kijelölt terület',
-    pickHint: 'Igazítsa a téglalapot a terület kijelöléséhez',
-  },
   name: 'Név',
   zoomRange: 'Nagyítási tartomány',
   scale: 'Lépték',

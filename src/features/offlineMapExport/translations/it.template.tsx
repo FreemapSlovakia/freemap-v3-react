@@ -6,11 +6,6 @@ const it: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   map: 'Mappa',
   unknownMapType: 'Mappa sconosciuta',
   downloadArea: 'Esporta',
-  area: {
-    visible: 'Area visibile',
-    byArea: 'Area selezionata',
-    pickHint: "Regola il rettangolo per selezionare l'area",
-  },
   name: 'Nome',
   zoomRange: 'Intervallo di zoom',
   scale: 'Scala',

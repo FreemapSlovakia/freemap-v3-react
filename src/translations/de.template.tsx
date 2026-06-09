@@ -1048,10 +1048,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
   mapToDocumentExport: {
-    areas: {
-      visible: 'Sichtbarer Kartenbereich',
-      byArea: 'Ausgewählter Bereich',
-    },
 
     advancedSettings: 'Erweiterte Optionen',
     styles: 'Stile der Datenschicht',

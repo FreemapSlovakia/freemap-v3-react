@@ -6,11 +6,6 @@ const sk: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   map: 'Mapa',
   unknownMapType: 'Neznáma mapa',
   downloadArea: 'Exportovať',
-  area: {
-    visible: 'Viditeľnú oblasť',
-    byArea: 'Označenú oblasť',
-    pickHint: 'Upravte obdĺžnik na výber oblasti',
-  },
   name: 'Názov',
   zoomRange: 'Rozsah priblíženia',
   scale: 'Mierka',

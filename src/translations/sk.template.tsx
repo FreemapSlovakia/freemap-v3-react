@@ -1045,10 +1045,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     area: 'Exportovať oblasť',
-    areas: {
-      visible: 'Viditeľnú oblasť mapy',
-      byArea: 'Označenú oblasť',
-    },
     format: 'Formát',
     layersTitle: 'Voliteľné vrstvy',
     mapDataTitle: 'Mapové dáta',

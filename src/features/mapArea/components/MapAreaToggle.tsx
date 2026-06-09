@@ -1,15 +1,14 @@
 import clsx from 'clsx';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import { ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { FaDrawPolygon, FaEye } from 'react-icons/fa';
+import { useMapAreaMessages } from '../translations/useMapAreaMessages.js';
 import type { MapAreaMode } from '../useMapAreaSelection.js';
 
 type Props = {
   area: MapAreaMode;
   onSelectVisible: () => void;
   onSelectArea: () => void;
-  visibleLabel: ReactNode;
-  areaLabel: ReactNode;
   className?: string;
 };
 
@@ -18,10 +17,10 @@ export function MapAreaToggle({
   area,
   onSelectVisible,
   onSelectArea,
-  visibleLabel,
-  areaLabel,
   className,
 }: Props): ReactElement {
+  const m = useMapAreaMessages();
+
   return (
     <ToggleButtonGroup
       type="radio"
@@ -36,7 +35,7 @@ export function MapAreaToggle({
         value="visible"
         onClick={onSelectVisible}
       >
-        <FaEye /> {visibleLabel}
+        <FaEye /> {m?.visible}
       </ToggleButton>
 
       <ToggleButton
@@ -46,7 +45,7 @@ export function MapAreaToggle({
         value="area"
         onClick={onSelectArea}
       >
-        <FaDrawPolygon /> {areaLabel}
+        <FaDrawPolygon /> {m?.byArea}
       </ToggleButton>
     </ToggleButtonGroup>
   );

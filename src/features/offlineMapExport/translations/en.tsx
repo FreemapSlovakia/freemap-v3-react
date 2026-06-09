@@ -5,11 +5,6 @@ const en: OfflineMapExportMessages = {
   map: 'Map',
   unknownMapType: 'Unknown map',
   downloadArea: 'Export',
-  area: {
-    visible: 'Visible area',
-    byArea: 'Selected area',
-    pickHint: 'Adjust the rectangle to set the area',
-  },
   name: 'Name',
   zoomRange: 'Zoom range',
   scale: 'Scale',

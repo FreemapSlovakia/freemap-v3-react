@@ -333,8 +333,6 @@ export default function MapToDocumentExportModal({
             area={area}
             onSelectVisible={() => setArea('visible')}
             onSelectArea={startSelecting}
-            visibleLabel={m?.mapToDocumentExport.areas.visible}
-            areaLabel={m?.mapToDocumentExport.areas.byArea}
           />
         </Form.Group>
 

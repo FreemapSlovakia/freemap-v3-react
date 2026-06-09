@@ -20,7 +20,8 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   but the array/coordinate-heavy hotspots are now cleaned up against it (error
   count 348 → ~180).
 - [~] Separate feature-related messages from `src/translations/messagesInterface.ts` to feature directory. Done so far: `supportUsModal`, `routePlanner`, `legend`, `wikimediaCommons`,
-  `offlineMapExport`. Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:`. Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a place that can't resolve local messages (toast `message` is typed `string`).
+  `offlineMapExport`, `mapArea` (the area-selection toggle/menu labels, which
+  also absorbed the duplicate `mapToDocumentExport.areas` strings). Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:`. Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a place that can't resolve local messages (toast `message` is typed `string`).
 
 ## Softer / design opinions
 

@@ -5,11 +5,6 @@ export type OfflineMapExportMessages = {
   map: string;
   unknownMapType: string;
   downloadArea: string;
-  area: {
-    visible: string;
-    byArea: string;
-    pickHint: string;
-  };
   name: string;
   zoomRange: string;
   scale: string;

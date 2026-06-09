@@ -1074,10 +1074,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     area: 'Exportálandó terület',
-    areas: {
-      visible: 'A térkép látható területe',
-      byArea: 'Kijelölt terület',
-    },
     format: 'Formátum',
     layersTitle: 'Választható rétegek',
     mapDataTitle: 'Térképadatok',
