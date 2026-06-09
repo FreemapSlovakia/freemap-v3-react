@@ -9,8 +9,9 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   `pnpm test`). Starter characterization tests pin the persistence layer:
   `getInitialState()` legacy migrations + `parseWithFallback` + per-slice
   isolation + merge-over-initialState, the `Persisted*Schema` parsers, and
-  the save side / round-trip (`statePersistingMiddleware`). Still TODO: pure
-  reducer tests, and widening coverage beyond persistence.
+  the save side / round-trip (`statePersistingMiddleware`). Pure reducer tests
+  now cover the `map`, `routePlanner`, and drawing-points slices. Still TODO:
+  more reducers, and widening coverage beyond reducers (selectors, processors).
 - [~] **Enable `noUncheckedIndexedAccess`.** Flag still off in `tsconfig.json`,
   but the array/coordinate-heavy hotspots are now cleaned up against it (error
   count 348 → ~180).
