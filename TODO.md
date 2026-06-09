@@ -11,9 +11,16 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
       isolation + merge-over-initialState, the `Persisted*Schema` parsers, and
       the save side / round-trip (`statePersistingMiddleware`). Still TODO: pure
       reducer tests, and widening coverage beyond persistence.
-- [ ] **Enable `noUncheckedIndexedAccess`.** Currently `// TODO one day` in
-      `tsconfig.json`. Heavy array/record indexing (layers, tiles, coordinates)
-      means it would catch real `undefined` bugs. Sizable one-time cleanup.
+- [~] **Enable `noUncheckedIndexedAccess`.** Flag still off in `tsconfig.json`,
+      but the array/coordinate-heavy hotspots are now cleaned up against it (error
+      count 348 → ~180). Fixed two real `undefined` bugs it surfaced: a dead
+      backward-compat branch in URL point parsing (`point[0][1]`), and a
+      layer-parse loop in `urlMapUtils` that could throw / infinite-loop.
+      Introduced `assertDef()` (`src/shared/assertDef.ts`) for must-exist lookups,
+      preferred `for…of` + `.entries()` over index loops / `forEach`, and kept
+      guards / `?? default` for genuine external input (never fabricate a
+      valid-looking value). Remaining: flip the flag on globally and clear the
+      long-tail errors across the other ~50 files.
 
 ## Softer / design opinions
 

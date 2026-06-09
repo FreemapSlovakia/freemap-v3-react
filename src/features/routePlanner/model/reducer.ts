@@ -5,6 +5,7 @@ import {
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import { assertDef } from '@shared/assertDef.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Feature, Polygon } from 'geojson';
 import {
@@ -223,8 +224,8 @@ export const routePlannerReducer = createReducer(
                   ? [
                       ...state.points.slice(0, -1),
                       {
-                        ...state.points.at(-1)!,
-                        transport: state.points.at(-2)!.transport,
+                        ...assertDef(state.points.at(-1)),
+                        transport: assertDef(state.points.at(-2)).transport,
                       },
                       { ...payload },
                     ]

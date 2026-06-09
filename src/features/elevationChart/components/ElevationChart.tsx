@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { assertDef } from '@shared/assertDef.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import clsx from 'clsx';
@@ -47,7 +48,7 @@ export default function ElevationChart(): ReactElement | null {
     maximumFractionDigits: 1,
   });
 
-  const { climbUp, climbDown } = elevationProfilePoints.at(-1)!;
+  const { climbUp, climbDown } = assertDef(elevationProfilePoints.at(-1));
 
   const [width, setWidth] = useState(400);
 
@@ -66,7 +67,7 @@ export default function ElevationChart(): ReactElement | null {
 
     const chartMax = max + diff / 20;
 
-    const d = elevationProfilePoints.at(-1)!.distance;
+    const d = assertDef(elevationProfilePoints.at(-1)).distance;
 
     function mapX(distance: number) {
       return ml + ((width - ml - mr) * distance) / d;
@@ -307,8 +308,8 @@ export default function ElevationChart(): ReactElement | null {
               />
 
               {(limit ||
-                (Math.abs(mapY(y) - mapY(hLines.at(-1)!)) > 14 &&
-                  Math.abs(mapY(y) - mapY(hLines.at(-2)!)) > 14)) && (
+                (Math.abs(mapY(y) - mapY(assertDef(hLines.at(-1)))) > 14 &&
+                  Math.abs(mapY(y) - mapY(assertDef(hLines.at(-2)))) > 14)) && (
                 <text
                   x={ml - 10}
                   y={mapY(y)}
@@ -350,7 +351,8 @@ export default function ElevationChart(): ReactElement | null {
                 stroke={limit ? 'var(--bs-danger)' : 'var(--bs-body-color)'}
               />
 
-              {(limit || Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20) && (
+              {(limit ||
+                Math.abs(mapX(x) - mapX(assertDef(vLines.at(-1)))) > 20) && (
                 <text
                   x={mapX(x) - 5}
                   y={height - mb + 15}

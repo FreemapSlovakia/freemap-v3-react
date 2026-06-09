@@ -195,7 +195,7 @@ function adaptGpsCoordinate(coord: WeirdGpsCoordinate) {
 
     const m2 = p.exec(value);
 
-    if (m1 && (!m2 || !m2[3])) {
+    if (m1 && !m2?.[3]) {
       return parse2(m1);
     }
 

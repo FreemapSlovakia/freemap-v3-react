@@ -77,7 +77,7 @@ export async function fetchOsmFullGeojson(
 
     const tags = way.tags ?? {};
 
-    return positionsEqual(coordinates[0], coordinates.at(-1)!) &&
+    return positionsEqual(coordinates[0], coordinates.at(-1)) &&
       shouldBeArea(tags)
       ? polygon([coordinates], tags)
       : lineString(coordinates, tags);

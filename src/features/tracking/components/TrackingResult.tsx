@@ -1,5 +1,6 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
+import { assertDef } from '@shared/assertDef.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { toLatLng, toLatLngArr } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -113,7 +114,9 @@ export function TrackingResult(): ReactElement {
         }
 
         const lastPoint =
-          track.trackPoints.length > 0 ? track.trackPoints.at(-1)! : null;
+          track.trackPoints.length > 0
+            ? assertDef(track.trackPoints.at(-1))
+            : null;
 
         return (
           <Fragment key={`trk-${track.token}`}>
@@ -158,7 +161,7 @@ export function TrackingResult(): ReactElement {
 
             {(showPoints || track.trackPoints.length === 0
               ? track.trackPoints
-              : [track.trackPoints.at(-1)!]
+              : [assertDef(track.trackPoints.at(-1))]
             ).map((tp, i) =>
               !showPoints || i === track.trackPoints.length - 1 ? (
                 <RichMarker
@@ -166,7 +169,7 @@ export function TrackingResult(): ReactElement {
                     interactive ? 'a' : 'b'
                   }`}
                   interactive={interactive}
-                  position={toLatLon(track.trackPoints.at(-1)!)}
+                  position={toLatLon(assertDef(track.trackPoints.at(-1)))}
                   color={color}
                   eventHandlers={{
                     click: handleClick,

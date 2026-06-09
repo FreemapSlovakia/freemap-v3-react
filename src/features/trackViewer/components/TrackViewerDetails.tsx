@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { assertDef } from '@shared/assertDef.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { smoothElevations } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -15,9 +16,9 @@ export function TrackViewerDetails(): ReactElement | null {
     (state) => state.trackViewer.trackGeojson,
   );
 
-  return trackGeojson ? (
-    <TrackViewerDetailsInt geometry={trackGeojson.features[0].geometry} />
-  ) : null;
+  const feature = trackGeojson?.features[0];
+
+  return feature ? <TrackViewerDetailsInt geometry={feature.geometry} /> : null;
 }
 
 export function TrackViewerDetailsInt({
@@ -55,7 +56,7 @@ export function TrackViewerDetailsInt({
   let finishTime: Date | undefined;
 
   if (startPoints.length) {
-    startTime = startPoints[0].startTime;
+    startTime = assertDef(startPoints[0]).startTime;
 
     if (startTime) {
       tableData.push(['startTime', timeFormat.format(startTime)]);
@@ -63,7 +64,7 @@ export function TrackViewerDetailsInt({
   }
 
   if (finishPoints.length) {
-    finishTime = finishPoints[0].finishTime;
+    finishTime = assertDef(finishPoints[0]).finishTime;
 
     if (finishTime) {
       tableData.push(['finishTime', timeFormat.format(finishTime)]);
@@ -86,7 +87,7 @@ export function TrackViewerDetailsInt({
   }
 
   if (finishPoints.length) {
-    const { length } = finishPoints[0];
+    const { length } = assertDef(finishPoints[0]);
 
     tableData.push(['distance', formatDistance(length, language)]);
 
@@ -114,16 +115,16 @@ export function TrackViewerDetailsInt({
 
   const smoothed = smoothElevations(geometry.coordinates, eleSmoothingFactor);
 
-  let [prevCoord] = smoothed;
+  let prevCoord = smoothed[0];
 
   for (const coord of smoothed) {
-    const distanceFromPrevPointInMeters = distance(coord, prevCoord, {
+    const distanceFromPrevPointInMeters = distance(coord, prevCoord!, {
       units: 'meters',
     });
 
     if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) {
       // otherwise the ele sums are very high
-      const ele = coord[2];
+      const ele = coord[2]!;
 
       if (ele < minEle) {
         minEle = ele;
@@ -133,7 +134,7 @@ export function TrackViewerDetailsInt({
         maxEle = ele;
       }
 
-      const eleDiff = ele - prevCoord[2];
+      const eleDiff = ele - prevCoord![2]!;
 
       if (eleDiff < 0) {
         downhillEleSum += eleDiff * -1;

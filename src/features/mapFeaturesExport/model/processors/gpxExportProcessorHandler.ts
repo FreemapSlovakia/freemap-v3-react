@@ -572,11 +572,11 @@ async function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
 
   const locusIcons = await Promise.all(pending.map((p) => p.locusIcon));
 
-  locusIcons.forEach((locusIcon, i) => {
+  for (const [i, locusIcon] of locusIcons.entries()) {
     if (locusIcon) {
       createElement(pending[i].extEle, [LOCUS_NS, 'locus:icon'], locusIcon);
     }
-  });
+  }
 }
 
 function appendNs(
@@ -679,7 +679,7 @@ function addPlannedRoute(
   // TODO add option to only export selected alternative
 
   if (withStops) {
-    points.forEach((point, i: number) => {
+    for (const [i, point] of points.entries()) {
       const midpointWptEle = createElement(
         doc.documentElement,
         'wpt',
@@ -696,10 +696,10 @@ function addPlannedRoute(
             ? rpm.finish // TODO not for roundtrip?
             : rpm.stop + ' ' + (i + 1),
       );
-    });
+    }
   }
 
-  alternatives.forEach(({ legs }, i: number) => {
+  for (const [i, { legs }] of alternatives.entries()) {
     const trkEle = createElement(doc.documentElement, 'trk');
 
     createElement(trkEle, 'name', rpm.alternative + ' ' + (i + 1));
@@ -713,7 +713,7 @@ function addPlannedRoute(
         }
       }
     }
-  });
+  }
 }
 
 function toLatLon(latLon: LatLon) {

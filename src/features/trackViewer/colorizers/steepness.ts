@@ -20,12 +20,12 @@ export const steepnessColorizer: Colorizer = {
       return smoothed.map((coord) => {
         const [lon, lat, ele] = coord;
 
-        const d = distance([lon, lat], prevCoord, { units: 'meters' });
+        const d = distance(coord, prevCoord!, { units: 'meters' });
 
         let angle = 0;
 
-        if (d > 0 && Number.isFinite(ele) && Number.isFinite(prevCoord[2])) {
-          angle = (ele - prevCoord[2]) / d;
+        if (d > 0 && Number.isFinite(ele) && Number.isFinite(prevCoord![2])) {
+          angle = (ele! - prevCoord![2]!) / d;
         }
 
         prevCoord = coord;
@@ -34,7 +34,7 @@ export const steepnessColorizer: Colorizer = {
           ? Math.max(0, Math.min(1, angle / 0.5 + 0.5))
           : 0.5;
 
-        return { lat, lon, color };
+        return { lat: lat!, lon: lon!, color };
       });
     }),
 };

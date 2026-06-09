@@ -121,24 +121,24 @@ async function resolveElevationProfilePointsViaApi(
 
   let prevEle: number | null | undefined;
 
-  z.array(z.number().nullable())
-    .parse(await res.json())
-    .forEach((ele, i) => {
-      if (prevEle !== undefined) {
-        const d = (ele ?? 0) - (prevEle ?? 0);
+  const eles = z.array(z.number().nullable()).parse(await res.json());
 
-        if (d > 0) {
-          climbUp += d;
-        } else {
-          climbDown -= d;
-        }
+  for (const [i, ele] of eles.entries()) {
+    if (prevEle !== undefined) {
+      const d = (ele ?? 0) - (prevEle ?? 0);
+
+      if (d > 0) {
+        climbUp += d;
+      } else {
+        climbDown -= d;
       }
+    }
 
-      // TODO following are computed data, should not go to store
-      Object.assign(elevationProfilePoints[i], { ele, climbUp, climbDown });
+    // TODO following are computed data, should not go to store
+    Object.assign(elevationProfilePoints[i], { ele, climbUp, climbDown });
 
-      prevEle = ele;
-    });
+    prevEle = ele;
+  }
 
   dispatch(elevationChartSetElevationProfile(elevationProfilePoints));
 }

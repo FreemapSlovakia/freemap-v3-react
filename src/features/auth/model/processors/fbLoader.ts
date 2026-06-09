@@ -38,7 +38,7 @@ export function loadFb(): Promise<void> {
 
     const fjs = document.getElementsByTagName('script')[0];
 
-    if (!fjs || !fjs.parentNode) {
+    if (!fjs?.parentNode) {
       reject(new Error('no script'));
     } else {
       fjs.parentNode.insertBefore(js, fjs);

@@ -1,3 +1,4 @@
+import { assertDef } from '@shared/assertDef.js';
 import type { LatLon } from '@shared/types/common.js';
 import { booleanContains } from '@turf/boolean-contains';
 import type { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
@@ -113,7 +114,7 @@ export function smoothElevations(
       );
     }
 
-    const eleSum = floatingWindowWithoutExtremes.reduce((a, b) => a + b[2], 0);
+    const eleSum = floatingWindowWithoutExtremes.reduce((a, b) => a + b[2]!, 0);
 
     let flotingWindowEle = eleSum / floatingWindowWithoutExtremes.length;
 
@@ -123,7 +124,7 @@ export function smoothElevations(
 
     prevFloatingWindowEle = flotingWindowEle;
 
-    return [lonLatEle[0], lonLatEle[1], flotingWindowEle];
+    return [lonLatEle[0]!, lonLatEle[1]!, flotingWindowEle];
   });
 }
 
@@ -162,7 +163,7 @@ export function mergeLines<T extends Geometry>(
 ): void {
   restart: for (;;) {
     for (let i = 0; i < features.length - 1; i++) {
-      const f1 = features[i];
+      const f1 = assertDef(features[i]);
 
       const g1 = f1.geometry;
 
@@ -171,7 +172,7 @@ export function mergeLines<T extends Geometry>(
       }
 
       for (let j = i + 1; j < features.length; j++) {
-        const f2 = features[j];
+        const f2 = assertDef(features[j]);
 
         const g2 = f2.geometry;
 
@@ -241,7 +242,7 @@ export function mergeLines<T extends Geometry>(
 
   restart: for (;;) {
     for (let i = 0; i < features.length; i++) {
-      const f1 = features[i];
+      const f1 = assertDef(features[i]);
 
       const g1 = f1.geometry;
 
@@ -254,7 +255,7 @@ export function mergeLines<T extends Geometry>(
           continue;
         }
 
-        const f2 = features[j];
+        const f2 = assertDef(features[j]);
 
         const g2 = f2.geometry;
 

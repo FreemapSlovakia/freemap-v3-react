@@ -25,11 +25,11 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
     }
   }
 
-  const lat = undefineNaN(parseFloat(latFrag));
+  const lat = undefineNaN(parseFloat(latFrag ?? ''));
 
-  const lon = undefineNaN(parseFloat(lonFrag));
+  const lon = undefineNaN(parseFloat(lonFrag ?? ''));
 
-  const zoom = undefineNaN(parseInt(zoomFrag, 10));
+  const zoom = undefineNaN(parseInt(zoomFrag ?? '', 10));
 
   let layersStr = query.get('layers');
 
@@ -48,13 +48,11 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
     while (layersStr.length) {
       const m = LAYERS_RE.exec(layersStr);
 
-      if (!m) {
+      if (!m?.[1]) {
         break;
       }
 
-      if (m[1]) {
-        layers.push(m[1]);
-      }
+      layers.push(m[1]);
 
       layersStr = layersStr.slice(m[1].length);
     }
@@ -97,8 +95,8 @@ function parseGeoUri(
     return undefined;
   }
 
-  let lat = parseFloat(m[1]);
-  let lon = parseFloat(m[2]);
+  let lat = parseFloat(m[1]!);
+  let lon = parseFloat(m[2]!);
   let zoom: number | undefined;
 
   const params = m[3];
@@ -107,20 +105,20 @@ function parseGeoUri(
     const qMatch = /(?:^|[;&])q=([^;&]*)/i.exec(params);
 
     if (qMatch) {
-      const qVal = decodeURIComponent(qMatch[1]);
+      const qVal = decodeURIComponent(qMatch[1]!);
 
       const llMatch = /^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/.exec(qVal);
 
       if (llMatch) {
-        lat = parseFloat(llMatch[1]);
-        lon = parseFloat(llMatch[2]);
+        lat = parseFloat(llMatch[1]!);
+        lon = parseFloat(llMatch[2]!);
       }
     }
 
     const zMatch = /(?:^|[;&])z=(\d+)/i.exec(params);
 
     if (zMatch) {
-      zoom = parseInt(zMatch[1], 10);
+      zoom = parseInt(zMatch[1]!, 10);
     }
   }
 

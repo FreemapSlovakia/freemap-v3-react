@@ -169,7 +169,9 @@ export function handleLocationChange(store: MyStore): void {
             }
 
             // backward compatibility
-            if (point[0] === 'm' && point[0][1] >= '0' && point[0][1] <= '9') {
+            const digit = point[1];
+
+            if (point[0] === 'm' && digit && digit >= '0' && digit <= '9') {
               point = 'manual/' + point.slice(1);
             }
 
@@ -376,7 +378,7 @@ export function handleLocationChange(store: MyStore): void {
         continue;
       }
 
-      const points = m[1]
+      const points = m[1]!
         .split(',')
         .map((point) =>
           point
@@ -384,8 +386,8 @@ export function handleLocationChange(store: MyStore): void {
             .map((coord) => parseFloat(coord))
             .filter((x) => !isNaN(x)),
         )
-        .filter((pair) => pair.length === 2)
-        .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
+        .filter((pair): pair is [number, number] => pair.length === 2)
+        .map(([lat, lon], id) => ({ lat, lon, id }));
 
       if (points.length > 0) {
         lines.push({
@@ -675,7 +677,7 @@ export function handleLocationChange(store: MyStore): void {
       continue;
     }
 
-    const [id, ...parts] = tracking.split('/');
+    const [id = '', ...parts] = tracking.split('/');
 
     let fromTime: Date | null = null;
 
@@ -700,7 +702,7 @@ export function handleLocationChange(store: MyStore): void {
         continue;
       }
 
-      const [, type, value] = m;
+      const [, type = '', value = ''] = m;
 
       switch (type) {
         case 'f':
@@ -1061,8 +1063,8 @@ function handleInfoPoint(
 
       return {
         coords: {
-          lat: parseFloat(m[1]),
-          lon: parseFloat(m[2]),
+          lat: parseFloat(m[1]!),
+          lon: parseFloat(m[2]!),
         },
         label,
         color,
@@ -1075,7 +1077,7 @@ function handleInfoPoint(
   const ipl = query['info-point-label'];
 
   if (ipl && ips.length) {
-    ips[0].label = typeof ipl === 'string' ? decodeURIComponent(ipl) : '';
+    ips[0]!.label = typeof ipl === 'string' ? decodeURIComponent(ipl) : '';
   }
 
   // compare

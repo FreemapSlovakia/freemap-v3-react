@@ -1,3 +1,4 @@
+import { assertDef } from '@shared/assertDef.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { length as turfLength } from '@turf/length';
 import { useMemo } from 'react';
@@ -28,6 +29,10 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
 
         const startLonlat = coords[0];
 
+        if (!startLonlat) {
+          continue;
+        }
+
         let startTime: Date | undefined;
 
         let finishTime: Date | undefined;
@@ -38,23 +43,23 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
           .parse(feature.properties && feature.properties['coordTimes']);
 
         if (times) {
-          startTime = new Date(times[0]);
+          startTime = new Date(times[0]!);
 
           finishTime = new Date(times.at(-1)!);
         }
 
         startPoints.push({
-          lat: startLonlat[1],
-          lon: startLonlat[0],
+          lat: startLonlat[1]!,
+          lon: startLonlat[0]!,
           length: 0,
           startTime,
         });
 
-        const finishLonLat = coords.at(-1)!;
+        const finishLonLat = assertDef(coords.at(-1));
 
         finishPoints.push({
-          lat: finishLonLat[1],
-          lon: finishLonLat[0],
+          lat: finishLonLat[1]!,
+          lon: finishLonLat[0]!,
           length,
           finishTime,
         });

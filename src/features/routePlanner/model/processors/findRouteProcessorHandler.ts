@@ -3,6 +3,7 @@ import { clearMapFeatures, setTool } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
+import { assertDef } from '@shared/assertDef.js';
 import { isPremium } from '@shared/premium.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
@@ -259,7 +260,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
           time_limit: isochroneParams.timeLimit,
           distance_limit: isochroneParams.distanceLimit || -1,
-          point: points[0].lat + ',' + points[0].lon,
+          point: assertDef(points[0]).lat + ',' + assertDef(points[0]).lon,
         }),
       expectedStatus: 200,
       cancelActions: cancelTypes,
@@ -311,9 +312,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
   let waypoints: Waypoint[] = [];
 
-  for (let i = 0; i < datas.length; i++) {
-    const data = datas[i];
-
+  for (const [i, data] of datas.entries()) {
     if (data.status === 'rejected') {
       dispatch(
         toastsAdd({
@@ -346,15 +345,21 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       errored.push(false);
     } else {
       // GH
-      alternativeSets.push(fromGraphhopper(value, segments[i].transport));
+      alternativeSets.push(
+        fromGraphhopper(value, assertDef(segments[i]).transport),
+      );
+
       errored.push(false);
     }
   }
 
   let alternatives: Alternative[];
 
-  if (alternativeSets.length === 1 && alternativeSets[0].length > 1) {
-    alternatives = alternativeSets[0];
+  if (
+    alternativeSets.length === 1 &&
+    assertDef(alternativeSets[0]).length > 1
+  ) {
+    alternatives = assertDef(alternativeSets[0]);
   } else {
     const tpd =
       alternativeSets.reduce((a, c) => a + (c[0]?.duration ?? 0), 0) /
@@ -362,11 +367,11 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
     const legs: Leg[] = [];
 
-    for (let i = 0; i < segments.length; i++) {
-      const segment = segments[i];
+    for (const [i, segment] of segments.entries()) {
+      const firstAlt = alternativeSets[i]?.[0];
 
-      if (alternativeSets[i][0]?.legs.length > 0) {
-        legs.push(...alternativeSets[i][0].legs);
+      if (firstAlt && firstAlt.legs.length > 0) {
+        legs.push(...firstAlt.legs);
         continue;
       }
 
@@ -396,9 +401,13 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       }
 
       for (let j = 0; j < coordinates.length - 1; j++) {
-        const dist = distance(coordinates[j], coordinates[j + 1], {
-          units: 'meters',
-        });
+        const dist = distance(
+          assertDef(coordinates[j]),
+          assertDef(coordinates[j + 1]),
+          {
+            units: 'meters',
+          },
+        );
 
         const duration = tpd * dist;
 

@@ -337,7 +337,7 @@ function addPlannedRoute(
   rpm: RoutePlannerMessages,
 ) {
   if (withStops) {
-    points.forEach((pt, i) => {
+    for (const [i, pt] of points.entries()) {
       features.push(
         point([pt.lon, pt.lat], {
           title:
@@ -348,7 +348,7 @@ function addPlannedRoute(
                 : rpm.stop + ' ' + (i + 1),
         }),
       );
-    });
+    }
   }
 
   if (selection === 'active') {
@@ -369,7 +369,7 @@ function addPlannedRoute(
     return;
   }
 
-  alternatives.forEach(({ legs }, i) => {
+  for (const [i, { legs }] of alternatives.entries()) {
     features.push(
       multiLineString(
         legs.flatMap((leg) =>
@@ -380,7 +380,7 @@ function addPlannedRoute(
         },
       ),
     );
-  });
+  }
 }
 
 function addTracking(

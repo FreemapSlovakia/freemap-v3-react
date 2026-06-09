@@ -44,7 +44,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
               source: 'osm',
               id: osmId,
               geojson:
-                positionsEqual(coordinates[0], coordinates.at(-1)!) &&
+                positionsEqual(coordinates[0], coordinates.at(-1)) &&
                 shouldBeArea(tags)
                   ? polygon([coordinates], tags)
                   : lineString(coordinates, tags),

@@ -5,6 +5,7 @@ import {
 } from '@app/store/selectors.js';
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { assertDef } from '@shared/assertDef.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
@@ -72,7 +73,9 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
   const drawing = useAppSelector(drawingLinePolys);
 
-  const line = useAppSelector((state) => state.drawingLines.lines[lineIndex]);
+  const line = useAppSelector((state) =>
+    assertDef(state.drawingLines.lines[lineIndex]),
+  );
 
   const selected = useAppSelector(
     (state) =>
@@ -178,11 +181,11 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     if (id0) {
       id = id0;
     } else if (pos === 0) {
-      id = points.length ? points[pos].id - 1 : 0;
+      id = points.length ? assertDef(points[pos]).id - 1 : 0;
     } else if (pos === points.length) {
-      id = points[pos - 1].id + 1;
+      id = assertDef(points[pos - 1]).id + 1;
     } else {
-      id = (points[pos - 1].id + points[pos].id) / 2;
+      id = (assertDef(points[pos - 1]).id + assertDef(points[pos]).id) / 2;
     }
 
     dispatch(
@@ -220,22 +223,23 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   const ps = useMemo(() => {
     const ps: Point[] = [];
 
-    for (let i = 0; i < points.length; i++) {
-      ps.push(points[i]);
+    for (const [i, point] of points.entries()) {
+      ps.push(point);
 
       if (i < points.length - 1 || line.type === 'polygon') {
-        const p1 = points[i];
+        const next = assertDef(points[(i + 1) % points.length]);
 
-        const p2 = points[(i + 1) % points.length];
+        const lat = (point.lat + next.lat) / 2;
 
-        const lat = (p1.lat + p2.lat) / 2;
-
-        const lon = (p1.lon + p2.lon) / 2;
+        const lon = (point.lon + next.lon) / 2;
 
         ps.push({
           lat,
           lon,
-          id: points.length - 1 === i ? points.length * 2 : (p1.id + p2.id) / 2,
+          id:
+            points.length - 1 === i
+              ? points.length * 2
+              : (point.id + next.id) / 2,
         });
       }
     }
@@ -258,13 +262,17 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
                 lng: x?.lon ?? -1,
               })
             : {
-                lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
-                lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
+                lat: assertDef(
+                  ps[ps.length - (line.type === 'polygon' ? 2 : 1)],
+                ).lat,
+                lng: assertDef(
+                  ps[ps.length - (line.type === 'polygon' ? 2 : 1)],
+                ).lon,
               },
           { lat: coords.lat, lng: coords.lon },
           ...(line.type === 'line' || ps.length < 3
             ? []
-            : [{ lat: ps[0].lat, lng: ps[0].lon }]),
+            : [{ lat: assertDef(ps[0]).lat, lng: assertDef(ps[0]).lon }]),
         ]
       : undefined;
 
@@ -277,9 +285,12 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   const language = useAppSelector((state) => state.l10n.language);
 
   if (line.type === 'line' && futureLinePositions?.length === 2) {
-    const a = [futureLinePositions[0].lng, futureLinePositions[0].lat];
+    const futureA = assertDef(futureLinePositions[0]);
+    const futureB = assertDef(futureLinePositions[1]);
 
-    const b = [futureLinePositions[1].lng, futureLinePositions[1].lat];
+    const a: [number, number] = [futureA.lng, futureA.lat];
+
+    const b: [number, number] = [futureB.lng, futureB.lat];
 
     const azimuth = bearingToAzimuth(bearing(a, b));
 
@@ -321,8 +332,8 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
         0,
         {
           id: 0,
-          lat: futureLinePositions[1].lat,
-          lon: futureLinePositions[1].lng,
+          lat: futureB.lat,
+          lon: futureB.lng,
         },
       ] satisfies PtDist,
     );
