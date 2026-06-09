@@ -1313,13 +1313,6 @@ const messages: Messages = {
     formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
     formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
-  wikimediaCommons: {
-    artist: 'Author',
-    license: 'License',
-    dateTime: 'Date',
-    moreResults:
-      'More photos are available. Zoom in to see results not shown here.',
-  },
 };
 
 export default messages;

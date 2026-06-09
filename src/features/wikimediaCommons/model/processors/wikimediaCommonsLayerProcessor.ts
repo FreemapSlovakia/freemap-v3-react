@@ -10,6 +10,7 @@ import { LatLonSchema } from '@shared/types/common.js';
 import distance from '@turf/distance';
 import { point } from '@turf/helpers';
 import z from 'zod';
+import { loadWikimediaCommonsMessages } from '../../translations/loadWikimediaCommonsMessages.js';
 import {
   WikimediaCommonsPhoto,
   wikimediaCommonsSetPhotos,
@@ -239,7 +240,7 @@ export const wikimediaCommonsLayerProcessor: Processor = {
       dispatch(
         toastsAdd({
           id: 'wikimediaCommons.moreResults',
-          messageKey: 'wikimediaCommons.moreResults',
+          message: (await loadWikimediaCommonsMessages(language)).moreResults,
           style: 'warning',
           cancelType: [
             clearMapFeatures.type,

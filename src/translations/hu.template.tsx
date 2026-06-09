@@ -1406,13 +1406,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
     formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
-  wikimediaCommons: {
-    artist: 'Szerző',
-    license: 'Licenc',
-    dateTime: 'Dátum',
-    moreResults:
-      'További fotók érhetők el. Nagyítson a térképen a nem megjelenített eredmények megtekintéséhez.',
-  },
 };
 
 export default messages;

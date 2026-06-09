@@ -1335,13 +1335,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
     formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
-  wikimediaCommons: {
-    artist: 'Autor',
-    license: 'Licence',
-    dateTime: 'Datum',
-    moreResults:
-      'K dispozici jsou další fotografie. Přibližte mapu pro zobrazení nezobrazených výsledků.',
-  },
 };
 
 export default messages;

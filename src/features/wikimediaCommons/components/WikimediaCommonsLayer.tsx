@@ -14,6 +14,7 @@ import {
   wikimediaCommonsLoadPreview,
   wikimediaCommonsSetPreview,
 } from '../model/actions.js';
+import { useWikimediaCommonsMessages } from '../translations/useWikimediaCommonsMessages.js';
 import classes from './WikimediaCommonsLayer.module.css';
 
 const ICON_SIZE = 40;
@@ -31,6 +32,8 @@ function makeIcon(thumbUrl: string): Icon {
 
 export default function WikimediaCommonsLayer(): ReactElement {
   const m = useMessages();
+
+  const wm = useWikimediaCommonsMessages();
 
   const photos = useAppSelector((state) => state.wikimediaCommons.photos);
 
@@ -147,14 +150,14 @@ export default function WikimediaCommonsLayer(): ReactElement {
               <div className="mt-3">
                 {shown.artist && (
                   <>
-                    {m?.wikimediaCommons.artist}: <b>{shown.artist}</b>
+                    {wm?.artist}: <b>{shown.artist}</b>
                   </>
                 )}
 
                 {shown.dateTime && (
                   <>
                     {shown.artist && ' ｜ '}
-                    {m?.wikimediaCommons.dateTime}: <b>{shown.dateTime}</b>
+                    {wm?.dateTime}: <b>{shown.dateTime}</b>
                   </>
                 )}
 

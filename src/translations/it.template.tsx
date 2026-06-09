@@ -1366,13 +1366,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
     formatSqlitedbTooltip: 'OsmAnd, Locus Map',
   },
-  wikimediaCommons: {
-    artist: 'Autore',
-    license: 'Licenza',
-    dateTime: 'Data',
-    moreResults:
-      'Sono disponibili altre foto. Ingrandisci la mappa per vedere i risultati non mostrati qui.',
-  },
 };
 
 export default messages;

@@ -847,12 +847,6 @@ export type Messages = {
     formatMbtilesTooltip: string;
     formatSqlitedbTooltip: string;
   };
-  wikimediaCommons: {
-    artist: string;
-    license: string;
-    dateTime: string;
-    moreResults: string;
-  };
 };
 
 export function addError(
