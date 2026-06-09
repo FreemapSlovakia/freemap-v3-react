@@ -49,3 +49,5 @@ minimumReleaseAgeExclude:
   - '@typescript/native-preview-win32-x64@7.0.0-dev.20260608.1'
   - '@typescript/native-preview@7.0.0-dev.20260608.1'
   - exifreader@4.41.0
+  - react-qr-code@2.1.1
+  - ts-checker-rspack-plugin@1.4.0
