@@ -903,6 +903,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     technology: 'Típus',
     loadWmsLayers: 'Rétegek betöltése',
     offlineMaps: 'Offline térképek',
+    legacy: 'elavult',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        A megjelenített térkép <b>{messages.mapLayers.letters[from]}</b>{' '}
+        elavult. Átváltasz a modern <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
   },
 
   elevationChart: {
@@ -1058,58 +1065,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  myMaps: {
-    addNew: 'Új térkép hozzáadása',
-    noMapFound: 'Nem található térkép',
-    save: 'Mentés',
-    delete: 'Törlés',
-    deleteConfirm: (name) => (
-      <>
-        Biztosan törli a(z) <i>{name}</i> térképet?
-      </>
-    ),
-    deleteTitle: 'Térkép törlése',
-
-    fetchError: ({ err }) =>
-      addError(messages, 'Hiba történt a térkép betöltéskor', err),
-
-    fetchListError: ({ err }) =>
-      addError(messages, 'Hiba történt a térképek betöltéskor', err),
-
-    deleteError: ({ err }) =>
-      addError(messages, 'Hiba történt a térkép törlésekor', err),
-
-    renameError: ({ err }) =>
-      addError(messages, 'Hiba történt a térkép átnevezésekor', err),
-
-    createError: ({ err }) =>
-      addError(messages, 'Hiba történt a térkép mentésekor', err),
-
-    saveError: ({ err }) =>
-      addError(messages, 'Hiba történt a térkép mentésekor', err),
-
-    legacy: 'elavult',
-    legacyMapWarning: ({ from, to }) => (
-      <>
-        A megjelenített térkép <b>{messages.mapLayers.letters[from]}</b>{' '}
-        elavult. Átváltasz a modern <b>{messages.mapLayers.letters[to]}</b>?
-      </>
-    ),
-    disconnect: 'Leválasztás',
-    loadToEmpty: 'Üres térképre',
-    loadInclMapAndPosition: 'A mentett alaptérképpel és pozíciójával',
-    savedMaps: 'Mentett térképek',
-    newMap: 'Új térkép',
-    SomeMap: ({ name }) => (
-      <>
-        Térkép <i>{name}</i>
-      </>
-    ),
-    writers: 'Szerkesztők',
-    conflictError: 'A térképet időközben módosították.',
-    addWriter: 'Szerkesztő hozzáadása',
-    disconnectAndClear: 'Lecsatlakozás és törlés',
-  },
 
   mapCtxMenu: {
     centerMap: 'Térkép középre helyezése ide',

@@ -37,6 +37,7 @@ import {
   mapsLoad,
   mapsSave,
 } from '../model/actions.js';
+import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 
 type Props = {
   onAdd: () => void;
@@ -78,6 +79,8 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
   const m = useMessages();
 
+  const mm = useMyMapsMessages();
+
   const confirm = useConfirm();
 
   const filteredMaps = sortedMaps.filter(
@@ -112,7 +115,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
               <Dropdown.Item as="button" onClick={() => setClear((b) => !b)}>
                 {clear ? <FaRegCheckSquare /> : <FaRegSquare />}{' '}
-                {m?.myMaps.loadToEmpty}
+                {mm?.loadToEmpty}
               </Dropdown.Item>
 
               <Dropdown.Item
@@ -120,14 +123,14 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 onClick={() => setInclPosition((b) => !b)}
               >
                 {inclPosition ? <FaRegCheckSquare /> : <FaRegSquare />}{' '}
-                {m?.myMaps.loadInclMapAndPosition}
+                {mm?.loadInclMapAndPosition}
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>
 
         {filteredMaps.length === 0 ? (
-          <p className="text-muted mb-0">{m?.myMaps.noMapFound}</p>
+          <p className="text-muted mb-0">{mm?.noMapFound}</p>
         ) : (
           <ListGroup>
             {filteredMaps.map((map) => {
@@ -192,14 +195,14 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                               disabled={!online}
                               onClick={() => dispatch(mapsSave(undefined))}
                             >
-                              <FaSave /> {m?.myMaps.save}
+                              <FaSave /> {mm?.save}
                             </Dropdown.Item>
                           )}
 
                           <Dropdown.Item
                             onClick={() => dispatch(mapsDisconnect())}
                           >
-                            <FaUnlink /> {m?.myMaps.disconnect}
+                            <FaUnlink /> {mm?.disconnect}
                           </Dropdown.Item>
 
                           <Dropdown.Item
@@ -208,7 +211,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                               dispatch(clearMapFeatures());
                             }}
                           >
-                            <FaEraser /> {m?.myMaps.disconnectAndClear}
+                            <FaEraser /> {mm?.disconnectAndClear}
                           </Dropdown.Item>
                         </>
                       )}
@@ -230,8 +233,8 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                             onClick={async () => {
                               if (
                                 await confirm({
-                                  title: m?.myMaps.deleteTitle,
-                                  message: m?.myMaps.deleteConfirm(map.name),
+                                  title: mm?.deleteTitle,
+                                  message: mm?.deleteConfirm(map.name),
                                   confirmLabel: m?.general.delete,
                                   confirmStyle: 'danger',
                                 })
@@ -255,7 +258,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
       <Modal.Footer>
         <Button onClick={onAdd} disabled={!online}>
-          <FaPlus /> {m?.myMaps.addNew}
+          <FaPlus /> {mm?.addNew}
         </Button>
 
         <Button variant="dark" onClick={close}>

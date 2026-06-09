@@ -27,7 +27,12 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   `loadCachedMapsMessages`), and `mapToDocumentExport` (the modal's error toast
   resolves via `loadMapToDocumentExportMessages`; the menu label stays in the
   global `mainMenu`). Removing it also dropped the last `ExportableLayer` /
-  `CustomLayerOrder` / `ReactElement` imports from `messagesInterface.ts`. Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:`. Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a place that can't resolve local messages (toast `message` is typed `string`).
+  `CustomLayerOrder` / `ReactElement` imports from `messagesInterface.ts`. Also
+  `myMaps` → its own bundle: the 4 maps load/save/delete processors drop their
+  `errorKey` for an explicit try/catch that skips `AbortError` and resolves the
+  message via `loadMyMapsMessages`, so even the error strings left the global
+  blob. Its two layer-concern keys (`legacy` tooltip + the JSX `legacyMapWarning`
+  processor toast) moved to the global `mapLayers` namespace. Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a non-component (e.g. `mapLayers.legacyMapWarning`), since toast `message` is typed `string`.
 
 ## Softer / design opinions
 

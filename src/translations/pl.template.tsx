@@ -865,6 +865,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     technology: 'Typ',
     loadWmsLayers: 'Wczytaj warstwy',
     offlineMaps: 'Mapy offline',
+    legacy: 'przestarzała',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Wyświetlana mapa <b>{messages.mapLayers.letters[from]}</b> jest
+        przestarzała. Przełączyć na nowoczesną{' '}
+        <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
   },
 
   elevationChart: {
@@ -1022,52 +1030,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  myMaps: {
-    addNew: 'Dodaj nową mapę',
-    legacy: 'przestarzała',
-    legacyMapWarning: ({ from, to }) => (
-      <>
-        Wyświetlana mapa <b>{messages.mapLayers.letters[from]}</b> jest
-        przestarzała. Przełączyć na nowoczesną{' '}
-        <b>{messages.mapLayers.letters[to]}</b>?
-      </>
-    ),
-    noMapFound: 'Nie znaleziono mapy',
-    save: 'Zapisz',
-    delete: 'Usuń',
-    disconnect: 'Odłącz',
-    deleteConfirm: (name) => (
-      <>
-        Czy na pewno chcesz usunąć mapę <i>{name}</i>?
-      </>
-    ),
-    deleteTitle: 'Usunięcie mapy',
-    fetchError: ({ err }) =>
-      addError(messages, 'Błąd podczas wczytywania mapy', err),
-    fetchListError: ({ err }) =>
-      addError(messages, 'Błąd podczas wczytywania map', err),
-    deleteError: ({ err }) =>
-      addError(messages, 'Błąd podczas usuwania mapy', err),
-    renameError: ({ err }) =>
-      addError(messages, 'Błąd podczas zmiany nazwy mapy', err),
-    createError: ({ err }) =>
-      addError(messages, 'Błąd podczas zapisywania mapy', err),
-    saveError: ({ err }) =>
-      addError(messages, 'Błąd podczas zapisywania mapy', err),
-    loadToEmpty: 'Do pustej mapy',
-    loadInclMapAndPosition: 'Wraz z zapisaną mapą tła i pozycją',
-    savedMaps: 'Zapisane mapy',
-    newMap: 'Nowa mapa',
-    SomeMap: ({ name }) => (
-      <>
-        Mapa <i>{name}</i>
-      </>
-    ),
-    writers: 'Edytorzy',
-    conflictError: 'Mapa została w międzyczasie zmodyfikowana.',
-    addWriter: 'Dodaj edytora',
-    disconnectAndClear: 'Odłącz i wyczyść',
-  },
 
   mapCtxMenu: {
     centerMap: 'Wyśrodkuj mapę tutaj',

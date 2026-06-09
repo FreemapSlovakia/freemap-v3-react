@@ -614,6 +614,8 @@ export type Messages = {
     };
     loadWmsLayers: string;
     offlineMaps: string;
+    legacy: string;
+    legacyMapWarning: (props: { from: string; to: string }) => JSX.Element;
   };
   elevationChart: {
     distance: string;
@@ -691,38 +693,6 @@ export type Messages = {
     };
     subscribeNotFound: (props: { id: string | number }) => JSX.Element;
     subscribeError: (props: { id: string | number }) => JSX.Element;
-  };
-  myMaps: {
-    addNew: string;
-    legacy: string;
-    legacyMapWarning: ({
-      from,
-      to,
-    }: {
-      from: string;
-      to: string;
-    }) => JSX.Element;
-    noMapFound: string;
-    save: string;
-    delete: string;
-    disconnect: string;
-    disconnectAndClear: string;
-    deleteConfirm: (name: string) => JSX.Element;
-    deleteTitle: string;
-    fetchError: (props: Err) => string;
-    fetchListError: (props: Err) => string;
-    deleteError: (props: Err) => string;
-    renameError: (props: Err) => string;
-    createError: (props: Err) => string;
-    saveError: (props: Err) => string;
-    loadToEmpty: string;
-    loadInclMapAndPosition: string;
-    savedMaps: string;
-    newMap: string;
-    SomeMap: (props: { name: string }) => JSX.Element;
-    writers: string;
-    addWriter: string;
-    conflictError: string;
   };
   mapCtxMenu: {
     centerMap: string;

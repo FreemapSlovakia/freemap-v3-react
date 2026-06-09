@@ -10,9 +10,12 @@ import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import { FaEraser, FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { mapsDisconnect, mapsSave } from '../model/actions.js';
+import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 
 export function MyMapsMenu(): ReactElement {
   const m = useMessages();
+
+  const mm = useMyMapsMessages();
 
   const activeMap = useAppSelector((state) => state.myMaps.activeMap);
 
@@ -44,7 +47,7 @@ export function MyMapsMenu(): ReactElement {
           </span>
 
           {activeMap?.canWrite && (
-            <LongPressTooltip breakpoint="xl" label={m?.myMaps.save}>
+            <LongPressTooltip breakpoint="xl" label={mm?.save}>
               {({ label, labelClassName, props }) => (
                 <Button
                   className="ms-1"
@@ -59,7 +62,7 @@ export function MyMapsMenu(): ReactElement {
             </LongPressTooltip>
           )}
 
-          <LongPressTooltip breakpoint="xl" label={m?.myMaps.disconnect}>
+          <LongPressTooltip breakpoint="xl" label={mm?.disconnect}>
             {({ label, labelClassName, props }) => (
               <Dropdown as={ButtonGroup} align="end" {...props}>
                 <Button
@@ -84,7 +87,7 @@ export function MyMapsMenu(): ReactElement {
                       dispatch(clearMapFeatures());
                     }}
                   >
-                    <FaEraser /> {m?.myMaps.disconnectAndClear}
+                    <FaEraser /> {mm?.disconnectAndClear}
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

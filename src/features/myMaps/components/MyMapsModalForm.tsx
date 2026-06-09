@@ -11,6 +11,7 @@ import { ReactTags, Tag } from 'react-tag-autocomplete';
 import 'react-tag-autocomplete/example/src/styles.css';
 import z from 'zod';
 import { type MapMeta, mapsLoadList, mapsSave } from '../model/actions.js';
+import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 
 type Props = {
   target?: MapMeta;
@@ -50,6 +51,8 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
   }, [target]);
 
   const m = useMessages();
+
+  const mm = useMyMapsMessages();
 
   const online = useOnline();
 
@@ -130,7 +133,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
             toastsAdd({
               id: 'myMaps.conflictError',
               style: 'danger',
-              messageKey: 'myMaps.conflictError',
+              message: mm?.conflictError ?? '',
             }),
           );
 
@@ -157,8 +160,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
         dispatch(
           toastsAdd({
             style: 'danger',
-            messageKey: 'myMaps.saveError',
-            messageParams: { err },
+            message: mm?.saveError({ err }) ?? '',
           }),
         );
       });
@@ -182,10 +184,10 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
 
           {isOwnMap && (
             <Form.Group controlId="writers" className="mb-3">
-              <Form.Label>{m?.myMaps.writers}</Form.Label>
+              <Form.Label>{mm?.writers}</Form.Label>
 
               <ReactTags
-                placeholderText={m?.myMaps.addWriter}
+                placeholderText={mm?.addWriter}
                 newOptionText={m?.general.newOptionText}
                 deleteButtonText={m?.general.deleteButtonText}
                 selected={writers.map((id) => ({
@@ -215,7 +217,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
       <Modal.Footer>
         {canSave && (
           <Button type="button" onClick={save} disabled={!name || !online}>
-            <FaSave /> {m?.myMaps.save}
+            <FaSave /> {mm?.save}
           </Button>
         )}
 

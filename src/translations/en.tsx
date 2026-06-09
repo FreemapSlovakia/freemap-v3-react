@@ -832,6 +832,13 @@ const messages: Messages = {
     },
     loadWmsLayers: 'Load layers',
     offlineMaps: 'Offline maps',
+    legacy: 'legacy',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Displayed map <b>{messages.mapLayers.letters[from]}</b> is a legacy one.
+        Switch to modern <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
   },
 
   elevationChart: {
@@ -980,46 +987,6 @@ const messages: Messages = {
         Error watching using token <i>{id}</i>.
       </>
     ),
-  },
-
-  myMaps: {
-    addNew: 'Add new map',
-    legacy: 'legacy',
-    legacyMapWarning: ({ from, to }) => (
-      <>
-        Displayed map <b>{messages.mapLayers.letters[from]}</b> is a legacy one.
-        Switch to modern <b>{messages.mapLayers.letters[to]}</b>?
-      </>
-    ),
-    noMapFound: 'No map found',
-    save: 'Save',
-    delete: 'Delete',
-    disconnect: 'Disconnect',
-    disconnectAndClear: 'Disconnect and clear',
-    deleteConfirm: (name) => (
-      <>
-        Do you really want to delete map <i>{name}</i>?
-      </>
-    ),
-    deleteTitle: 'Map deletion',
-    fetchError: ({ err }) => addError(messages, 'Error loading map', err),
-    fetchListError: ({ err }) => addError(messages, 'Error loading maps', err),
-    deleteError: ({ err }) => addError(messages, 'Error deleting map', err),
-    renameError: ({ err }) => addError(messages, 'Error renaming map', err),
-    createError: ({ err }) => addError(messages, 'Error saving map', err),
-    saveError: ({ err }) => addError(messages, 'Error saving map', err),
-    loadToEmpty: 'To empty map',
-    loadInclMapAndPosition: 'Include saved background map and position',
-    savedMaps: 'Saved maps',
-    newMap: 'New map',
-    SomeMap: ({ name }) => (
-      <>
-        Map <i>{name}</i>
-      </>
-    ),
-    writers: 'Editors',
-    addWriter: 'Add an editor',
-    conflictError: 'The map has been modified in the meantime.',
   },
 
   mapCtxMenu: {

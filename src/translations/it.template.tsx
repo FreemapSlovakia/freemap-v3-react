@@ -882,6 +882,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     technology: 'Tipo',
     loadWmsLayers: 'Carica livelli',
     offlineMaps: 'Mappe offline',
+    legacy: 'legacy',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        La mappa visualizzata <b>{messages.mapLayers.letters[from]}</b> è
+        legacy. Passare alla moderna <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
   },
 
   elevationChart: {
@@ -1029,51 +1036,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  myMaps: {
-    addNew: 'Aggiungi nuova mappa',
-    legacy: 'legacy',
-    legacyMapWarning: ({ from, to }) => (
-      <>
-        La mappa visualizzata <b>{messages.mapLayers.letters[from]}</b> è
-        legacy. Passare alla moderna <b>{messages.mapLayers.letters[to]}</b>?
-      </>
-    ),
-    noMapFound: 'Nessuna mappa trovata',
-    save: 'Salva',
-    delete: 'Elimina',
-    disconnect: 'Disconnetti',
-    deleteConfirm: (name) => (
-      <>
-        Sicuro di cancellare la mappa <i>{name}</i>?
-      </>
-    ),
-    deleteTitle: 'Eliminazione mappa',
-    fetchError: ({ err }) =>
-      addError(messages, 'Errore caricando la mappa:', err),
-    fetchListError: ({ err }) =>
-      addError(messages, 'Errore caricando le mappe:', err),
-    deleteError: ({ err }) =>
-      addError(messages, 'Errore eliminando la mappa:', err),
-    renameError: ({ err }) =>
-      addError(messages, 'Errore rinominando la mappa:', err),
-    createError: ({ err }) =>
-      addError(messages, 'Errore salvando la mappa:', err),
-    saveError: ({ err }) =>
-      addError(messages, 'Errore salvando la mappa:', err),
-    loadToEmpty: 'Su mappa vuota',
-    loadInclMapAndPosition: 'Inclusa la mappa di sfondo salvata e posizione',
-    savedMaps: 'Mappe salvate',
-    newMap: 'Nuova mappa',
-    SomeMap: ({ name }) => (
-      <>
-        Mappa <i>{name}</i>
-      </>
-    ),
-    writers: 'Editori',
-    conflictError: 'La mappa è stata modificata nel frattempo.',
-    addWriter: 'Aggiungi editor',
-    disconnectAndClear: 'Disconnetti e svuota',
-  },
 
   mapCtxMenu: {
     centerMap: 'Centra la mappa qui',

@@ -854,6 +854,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     loadWmsLayers: 'Načíst vrstvy',
     offlineMaps: 'Offline mapy',
+    legacy: 'zastaralá',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Zobrazená mapa <b>{messages.mapLayers.letters[from]}</b> je zastaralá.
+        Přepnout na moderní <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
   },
 
   elevationChart: {
@@ -1001,51 +1008,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  myMaps: {
-    addNew: 'Přidat novou mapu',
-    legacy: 'zastaralá',
-    legacyMapWarning: ({ from, to }) => (
-      <>
-        Zobrazená mapa <b>{messages.mapLayers.letters[from]}</b> je zastaralá.
-        Přepnout na moderní <b>{messages.mapLayers.letters[to]}</b>?
-      </>
-    ),
-    noMapFound: 'Žádná mapa nenalezena',
-    save: 'Uložit',
-    delete: 'Smazat',
-    disconnect: 'Odpojit',
-    deleteConfirm: (name) => (
-      <>
-        Opravdu si přejete smazat mapu <i>{name}</i>?
-      </>
-    ),
-    deleteTitle: 'Smazání mapy',
-    fetchError: ({ err }) =>
-      addError(messages, 'Nastala chyba při nahrávání mapy', err),
-    fetchListError: ({ err }) =>
-      addError(messages, 'Nastala chyba při nahrávání map', err),
-    deleteError: ({ err }) =>
-      addError(messages, 'Nastala chyba při mazání mapy', err),
-    renameError: ({ err }) =>
-      addError(messages, 'Nastala chyba při přejmenování mapy', err),
-    createError: ({ err }) =>
-      addError(messages, 'Nastala chyba při ukládání mapy', err),
-    saveError: ({ err }) =>
-      addError(messages, 'Nastala chyba při ukládání mapy', err),
-    loadToEmpty: 'Do čisté mapy',
-    loadInclMapAndPosition: 'Včetně uložené podkladové mapy a pozice',
-    savedMaps: 'Uložené mapy',
-    newMap: 'Nová mapa',
-    SomeMap: ({ name }) => (
-      <>
-        Mapa <i>{name}</i>
-      </>
-    ),
-    writers: 'Editori',
-    conflictError: 'Mapa byla mezitím modifikována.',
-    addWriter: 'Přidat editora',
-    disconnectAndClear: 'Odpojit a vyčistit',
-  },
 
   // check/improve translation
   mapCtxMenu: {

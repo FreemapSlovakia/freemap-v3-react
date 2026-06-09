@@ -882,6 +882,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     loadWmsLayers: 'Načítať vrstvy',
     offlineMaps: 'Offline mapy',
+    legacy: 'zastaralá',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Zobrazená mapa <b>{messages.mapLayers.letters[from]}</b> je zastaraná.
+        Prepnúť na modernú <b>{messages.mapLayers.letters[to]}</b>?
+      </>
+    ),
   },
 
   elevationChart: {
@@ -1030,51 +1037,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  myMaps: {
-    addNew: 'Pridať novú mapu',
-    legacy: 'zastaralá',
-    legacyMapWarning: ({ from, to }) => (
-      <>
-        Zobrazená mapa <b>{messages.mapLayers.letters[from]}</b> je zastaraná.
-        Prepnúť na modernú <b>{messages.mapLayers.letters[to]}</b>?
-      </>
-    ),
-    noMapFound: 'Žiadna mapa nenájdená',
-    save: 'Uložiť',
-    delete: 'Zmazať',
-    disconnect: 'Odpojiť',
-    disconnectAndClear: 'Odpojiť a vyčistiť',
-    deleteConfirm: (name) => (
-      <>
-        Naozaj si prajete vymazať mapu <i>{name}</i>?
-      </>
-    ),
-    deleteTitle: 'Vymazanie mapy',
-    fetchError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri načítavaní mapy', err),
-    fetchListError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri načítavaní máp', err),
-    deleteError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri mazaní mapy', err),
-    renameError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri premenovávaní mapy', err),
-    createError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri ukladaní mapy', err),
-    saveError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri ukladaní mapy', err),
-    loadToEmpty: 'Do čistej mapy',
-    loadInclMapAndPosition: 'Vrátane uloženej podkladovej mapy a pozície',
-    savedMaps: 'Uložené mapy',
-    newMap: 'Nová mapa',
-    SomeMap: ({ name }) => (
-      <>
-        Mapa <i>{name}</i>
-      </>
-    ),
-    writers: 'Editori',
-    addWriter: 'Pridať editora',
-    conflictError: 'Mapa bola medzičasom modifikovaná.',
-  },
 
   mapCtxMenu: {
     centerMap: 'Vycentrovať sem mapu',

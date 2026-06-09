@@ -11,6 +11,7 @@
     "src/features/mapArea/translations/{LANG}.tsx",
     "src/features/cachedMaps/translations/{LANG}.tsx",
     "src/features/mapToDocumentExport/translations/{LANG}.tsx",
+    "src/features/myMaps/translations/{LANG}.tsx",
     "src/app/components/embedMapModal/translations/{LANG}.tsx",
     "src/app/components/aboutModal/translations/{LANG}.tsx"
   ]

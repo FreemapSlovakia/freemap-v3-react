@@ -3,6 +3,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { handleTrackUpload } from '@features/tracking/model/processors/trackViewerUploadTrackProcessor.js';
+import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
   type MapData,
   MapMetaSchema,
@@ -13,72 +14,83 @@ import {
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
-  errorKey: 'myMaps.saveError',
   async handle({ getState, dispatch, action }) {
-    if (getState().trackViewer.trackGpx && !getState().trackViewer.trackUID) {
-      await handleTrackUpload({
-        dispatch,
+    try {
+      if (getState().trackViewer.trackGpx && !getState().trackViewer.trackUID) {
+        await handleTrackUpload({
+          dispatch,
+          getState,
+        });
+
+        dispatch(action);
+
+        return;
+      }
+
+      const { activeMap } = getState().myMaps;
+
+      const asNew = action.payload?.asCopy;
+
+      const patchExisting = activeMap && !asNew;
+
+      window._paq.push([
+        'trackEvent',
+        'MyMaps',
+        asNew ? 'copy' : patchExisting ? 'update' : 'create',
+      ]);
+
+      const res = await httpRequest({
         getState,
+        method: patchExisting ? 'PATCH' : 'POST',
+        url: `/maps/${patchExisting ? activeMap.id : ''}`,
+        expectedStatus: [200, 412],
+        headers: patchExisting
+          ? {
+              'If-Unmodified-Since': activeMap.modifiedAt.toUTCString(),
+            }
+          : {},
+        data: {
+          name: action.payload?.name,
+          public: true, // TODO
+          writers: action.payload?.writers,
+          data: getMapDataFromState(getState()),
+        },
       });
 
-      dispatch(action);
+      if (res.status === 412) {
+        const mm = await loadMyMapsMessages(getState().l10n.language);
 
-      return;
-    }
+        dispatch(
+          toastsAdd({
+            id: 'myMaps.conflictError',
+            style: 'danger',
+            message: mm.conflictError,
+          }),
+        );
 
-    const { activeMap } = getState().myMaps;
+        return;
+      }
 
-    const asNew = action.payload?.asCopy;
-
-    const patchExisting = activeMap && !asNew;
-
-    window._paq.push([
-      'trackEvent',
-      'MyMaps',
-      asNew ? 'copy' : patchExisting ? 'update' : 'create',
-    ]);
-
-    const res = await httpRequest({
-      getState,
-      method: patchExisting ? 'PATCH' : 'POST',
-      url: `/maps/${patchExisting ? activeMap.id : ''}`,
-      expectedStatus: [200, 412],
-      headers: patchExisting
-        ? {
-            'If-Unmodified-Since': activeMap.modifiedAt.toUTCString(),
-          }
-        : {},
-      data: {
-        name: action.payload?.name,
-        public: true, // TODO
-        writers: action.payload?.writers,
-        data: getMapDataFromState(getState()),
-      },
-    });
-
-    if (res.status === 412) {
       dispatch(
         toastsAdd({
-          id: 'myMaps.conflictError',
-          style: 'danger',
-          messageKey: 'myMaps.conflictError',
+          style: 'success',
+          timeout: 5000,
+          messageKey: 'general.saved',
         }),
       );
 
-      return;
+      dispatch(mapsLoadList());
+
+      dispatch(mapsSetMeta(MapMetaSchema.parse(await res.json())));
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      const mm = await loadMyMapsMessages(getState().l10n.language);
+
+      dispatch(toastsAdd({ style: 'danger', message: mm.saveError({ err }) }));
     }
-
-    dispatch(
-      toastsAdd({
-        style: 'success',
-        timeout: 5000,
-        messageKey: 'general.saved',
-      }),
-    );
-
-    dispatch(mapsLoadList());
-
-    dispatch(mapsSetMeta(MapMetaSchema.parse(await res.json())));
   },
 };
 

@@ -79,7 +79,7 @@ export const legacyMapWarningProcessor: Processor = {
       dispatch(
         toastsAdd({
           id: TOAST_PREFIX + def.type,
-          messageKey: 'myMaps.legacyMapWarning',
+          messageKey: 'mapLayers.legacyMapWarning',
           messageParams: {
             from: def.type,
             to: def.superseededBy!,

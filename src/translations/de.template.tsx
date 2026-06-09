@@ -894,6 +894,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     technology: 'Typ',
     loadWmsLayers: 'Layer laden',
     offlineMaps: 'Offline-Karten',
+    legacy: 'veraltet',
+    legacyMapWarning: ({ from, to }) => (
+      <>
+        Die angezeigte Karte <b>{messages.mapLayers.letters[from]}</b> ist
+        veraltet. Zur modernen <b>{messages.mapLayers.letters[to]}</b>wechseln?
+      </>
+    ),
   },
 
   elevationChart: {
@@ -1047,51 +1054,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         Fehler beim Beobachten mit Token <i>{id}</i>.
       </>
     ),
-  },
-  myMaps: {
-    addNew: 'Neue Karte hinzufügen',
-    legacy: 'veraltet',
-    legacyMapWarning: ({ from, to }) => (
-      <>
-        Die angezeigte Karte <b>{messages.mapLayers.letters[from]}</b> ist
-        veraltet. Zur modernen <b>{messages.mapLayers.letters[to]}</b>wechseln?
-      </>
-    ),
-    noMapFound: 'Keine Karte gefunden',
-    save: 'Speichern',
-    delete: 'Löschen',
-    disconnect: 'Trennen',
-    deleteConfirm: (name) => (
-      <>
-        Möchten Sie die Karte <i>{name}</i> wirklich löschen?
-      </>
-    ),
-    deleteTitle: 'Löschen der Karte',
-    fetchError: ({ err }) =>
-      addError(messages, 'Fehler beim Laden der Karte', err),
-    fetchListError: ({ err }) =>
-      addError(messages, 'Fehler beim Laden der Karten', err),
-    deleteError: ({ err }) =>
-      addError(messages, 'Fehler beim Löschen der Karte', err),
-    renameError: ({ err }) =>
-      addError(messages, 'Fehler beim Umbenennen der Karte', err),
-    createError: ({ err }) =>
-      addError(messages, 'Fehler beim Speichern der Karte', err),
-    saveError: ({ err }) =>
-      addError(messages, 'Fehler beim Speichern der Karte', err),
-    loadToEmpty: 'In leere Karte',
-    loadInclMapAndPosition: 'Mit gespeicherter Hintergrundkarte und Position',
-    savedMaps: 'Gespeicherte Karten',
-    newMap: 'Neue Karte',
-    SomeMap: ({ name }) => (
-      <>
-        Karte <i>{name}</i>
-      </>
-    ),
-    writers: 'Bearbeiter',
-    conflictError: 'Die Karte wurde inzwischen geändert.',
-    addWriter: 'Editor hinzufügen',
-    disconnectAndClear: 'Trennen und leeren',
   },
   mapCtxMenu: {
     centerMap: 'Karte hier zentrieren',

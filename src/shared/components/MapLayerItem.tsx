@@ -38,7 +38,7 @@ export function MapLayerItem({ def }: { def: MapLayerItemDef }): ReactElement {
         ))}
 
       {def.superseededBy && (
-        <FaHistory className="text-warning ms-1" title={m?.myMaps.legacy} />
+        <FaHistory className="text-warning ms-1" title={m?.mapLayers.legacy} />
       )}
 
       {def.experimental && (

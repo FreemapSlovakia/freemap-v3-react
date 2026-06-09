@@ -1,5 +1,6 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
@@ -24,6 +25,8 @@ function makeType() {
 
 export default function CustomMapsModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const mm = useMyMapsMessages();
 
   const dispatch = useDispatch();
 
@@ -69,8 +72,8 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
       if (
         !(await confirm({
-          title: m?.myMaps.deleteTitle,
-          message: m?.myMaps.deleteConfirm(name),
+          title: mm?.deleteTitle,
+          message: mm?.deleteConfirm(name),
           confirmLabel: m?.general.delete,
           confirmStyle: 'danger',
         }))
@@ -86,7 +89,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
         saveSettings({ settings: { customLayers: next }, keepOpen: true }),
       );
     },
-    [customLayers, dispatch, m, confirm],
+    [customLayers, dispatch, m, mm, confirm],
   );
 
   const handleSave = useCallback(() => {

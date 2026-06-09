@@ -11,12 +11,14 @@ import {
   RoutePointSchema,
   RoutingModeSchema,
 } from '@features/routePlanner/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { TrackedDeviceSchema } from '@features/tracking/model/types.js';
 import { ColorizingModeSchema } from '@features/trackViewer/model/actions.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import z from 'zod';
 import { GeoJSONFeatureCollectionSchema } from 'zod-geojson';
+import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import { MapMetaSchema, mapsLoad, mapsLoaded } from '../actions.js';
 
 const RoutePlannerMapDataCompatSchema = z.preprocess(
@@ -115,7 +117,6 @@ const MapsLoadResponseSchema = z.object({
 
 export const mapsLoadProcessor: Processor = {
   actionCreator: [mapsLoad, authSetUser, authLogout],
-  errorKey: 'myMaps.fetchError',
   handle: async ({ getState, dispatch, action }) => {
     const {
       auth,
@@ -135,36 +136,46 @@ export const mapsLoadProcessor: Processor = {
       ]);
     }
 
-    const res = await httpRequest({
-      getState,
-      url: `/maps/${loadMeta.id}`,
-      expectedStatus: 200,
-      cancelActions: [mapsLoad, authSetUser, authLogout],
-    });
+    try {
+      const res = await httpRequest({
+        getState,
+        url: `/maps/${loadMeta.id}`,
+        expectedStatus: 200,
+        cancelActions: [mapsLoad, authSetUser, authLogout],
+      });
 
-    const { meta, data } = MapsLoadResponseSchema.parse(await res.json());
+      const { meta, data } = MapsLoadResponseSchema.parse(await res.json());
 
-    if (data.map) {
-      if (loadMeta.ignoreMap) {
-        delete data.map.lat;
-        delete data.map.lon;
-        delete data.map.zoom;
+      if (data.map) {
+        if (loadMeta.ignoreMap) {
+          delete data.map.lat;
+          delete data.map.lon;
+          delete data.map.zoom;
+        }
+
+        if (loadMeta.ignoreLayers) {
+          delete data.map.layers;
+          delete data.map.shading;
+        }
       }
 
-      if (loadMeta.ignoreLayers) {
-        delete data.map.layers;
-        delete data.map.shading;
+      dispatch(
+        mapsLoaded({
+          merge: loadMeta.merge,
+          meta,
+          data,
+        }),
+      );
+
+      dispatch(setActiveModal(null));
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
       }
+
+      const mm = await loadMyMapsMessages(getState().l10n.language);
+
+      dispatch(toastsAdd({ style: 'danger', message: mm.fetchError({ err }) }));
     }
-
-    dispatch(
-      mapsLoaded({
-        merge: loadMeta.merge,
-        meta,
-        data,
-      }),
-    );
-
-    dispatch(setActiveModal(null));
   },
 };
