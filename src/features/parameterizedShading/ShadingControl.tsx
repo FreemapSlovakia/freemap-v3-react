@@ -104,6 +104,13 @@ export default function ShadingControl() {
               title="Add"
               variant="success"
               onSelect={(type0) => {
+                window._paq.push([
+                  'trackEvent',
+                  'MapShading',
+                  'add',
+                  type0 ?? undefined,
+                ]);
+
                 const id = Math.random();
 
                 let shadingComponent: ShadingComponent;

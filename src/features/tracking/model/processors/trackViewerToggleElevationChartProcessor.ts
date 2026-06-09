@@ -19,7 +19,7 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
           window._paq.push([
             'trackEvent',
             'TrackViewer',
-            'showElevationProfile',
+            'toggleElevationChart',
           ]);
 
           dispatch(

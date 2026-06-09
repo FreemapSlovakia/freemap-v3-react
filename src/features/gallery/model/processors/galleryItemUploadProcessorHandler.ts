@@ -17,6 +17,8 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     dispatch(gallerySetLayerDirty());
 
     if (getState().gallery.items.length === 0) {
+      window._paq.push(['trackEvent', 'Gallery', 'upload']);
+
       dispatch(
         toastsAdd({
           id: 'gallery.upload',

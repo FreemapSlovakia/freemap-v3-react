@@ -8,6 +8,8 @@ export const authDeleteAccountProcessor: Processor<typeof authDeleteAccount> = {
   actionCreator: authDeleteAccount,
   errorKey: 'general.deleteError',
   async handle({ getState, dispatch }) {
+    window._paq.push(['trackEvent', 'Auth', 'deleteAccount']);
+
     await httpRequest({
       getState,
       method: 'DELETE',

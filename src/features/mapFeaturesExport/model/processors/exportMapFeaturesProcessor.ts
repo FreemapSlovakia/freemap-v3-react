@@ -6,6 +6,19 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
   errorKey: 'exportMapFeatures.exportError',
   id: 'mapFeaturesExport',
   handle: async (...params) => {
+    const { type, target, exportables } = params[0].action.payload;
+
+    window._paq.push([
+      'trackEvent',
+      'FeaturesExport',
+      'export',
+      new URLSearchParams({
+        type,
+        target,
+        exportables: [...exportables].sort().join(','),
+      }).toString(),
+    ]);
+
     return (
       params[0].action.payload.target === 'garmin'
         ? await import(

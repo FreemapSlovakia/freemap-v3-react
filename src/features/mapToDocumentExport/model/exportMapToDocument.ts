@@ -93,7 +93,7 @@ export async function exportMapToDocument({
     },
   });
 
-  window._paq.push(['trackEvent', 'MapExport', 'export', format]);
+  window._paq.push(['trackEvent', 'DocumentExport', 'export', format]);
 
   const res = await fetch(`${fmMapserverUrl}/export`, {
     method: 'POST',

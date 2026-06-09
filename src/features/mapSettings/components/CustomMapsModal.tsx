@@ -80,6 +80,8 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
       const next = customLayers.filter((d) => d.type !== def.type);
 
+      window._paq.push(['trackEvent', 'MapSettings', 'delete', 'customMap']);
+
       dispatch(
         saveSettings({ settings: { customLayers: next }, keepOpen: true }),
       );
@@ -92,7 +94,16 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
       return;
     }
 
+    const isEdit = customLayers.some((d) => d.type === draft.type);
+
     const next = [...customLayers.filter((d) => d.type !== draft.type), draft];
+
+    window._paq.push([
+      'trackEvent',
+      'MapSettings',
+      isEdit ? 'update' : 'create',
+      'customMap',
+    ]);
 
     dispatch(
       saveSettings({

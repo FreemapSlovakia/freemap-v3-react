@@ -26,6 +26,13 @@ export async function handleLoginResponse(
     await res.json(),
   );
 
+  window._paq.push([
+    'trackEvent',
+    'Auth',
+    'login',
+    connect ? 'connect' : 'login',
+  ]);
+
   dispatch(
     toastsAdd({
       id: 'lcd',

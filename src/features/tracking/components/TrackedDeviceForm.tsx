@@ -81,6 +81,13 @@ export function TrackedDeviceForm(): ReactElement {
 
     const did = id.trim();
 
+    window._paq.push([
+      'trackEvent',
+      'Tracking',
+      forceNew || !device ? 'create' : 'update',
+      'watchedDevice',
+    ]);
+
     dispatch(
       trackingActions.saveTrackedDevice({
         token: did,

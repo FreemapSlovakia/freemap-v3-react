@@ -16,8 +16,8 @@ export const saveAccessTokenProcessor: Processor<
     window._paq.push([
       'trackEvent',
       'Tracking',
-      'saveAccessToken',
-      modifiedAccessTokenId ? 'modify' : 'create',
+      modifiedAccessTokenId ? 'update' : 'create',
+      'accessToken',
     ]);
 
     if (modifiedAccessTokenId) {

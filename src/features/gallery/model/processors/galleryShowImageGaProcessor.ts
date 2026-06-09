@@ -9,12 +9,7 @@ export const galleryShowImageGaProcessor: Processor = {
     } = getState();
 
     if (image) {
-      window._paq.push([
-        'trackEvent',
-        'Gallery',
-        'showPhoto',
-        image.id.toString(),
-      ]);
+      window._paq.push(['trackEvent', 'Gallery', 'showPhoto']);
     }
   },
 };

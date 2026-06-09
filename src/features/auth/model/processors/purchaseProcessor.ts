@@ -27,8 +27,9 @@ export const purchaseProcessor: Processor<typeof purchase> = {
     window._paq.push([
       'trackEvent',
       'Purchase',
-      'purchaseStart',
-      JSON.stringify(action.payload),
+      'start',
+      action.payload.type,
+      action.payload.type === 'credits' ? action.payload.amount : undefined,
     ]);
 
     const res = await httpRequest({
@@ -122,8 +123,9 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       window._paq.push([
         'trackEvent',
         'Purchase',
-        'purchaseSuccess',
-        JSON.stringify(action.payload),
+        'success',
+        action.payload.type,
+        action.payload.type === 'credits' ? action.payload.amount : undefined,
       ]);
 
       // refresh user data

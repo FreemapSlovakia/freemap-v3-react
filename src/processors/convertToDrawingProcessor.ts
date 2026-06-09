@@ -154,6 +154,13 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   transform: ({ getState, dispatch, action }) => {
     const { payload } = action;
 
+    window._paq.push([
+      'trackEvent',
+      'Drawing',
+      'convertToDrawing',
+      payload.type,
+    ]);
+
     const state = getState();
 
     if (payload.type === 'planned-route') {

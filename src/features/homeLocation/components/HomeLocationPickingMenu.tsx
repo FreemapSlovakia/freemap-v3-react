@@ -46,6 +46,8 @@ export default function HomeLocationPickingMenu(): ReactElement | null {
         throw new Error();
       }
 
+      window._paq.push(['trackEvent', 'HomeLocation', 'save']);
+
       dispatch(saveHomeLocation(selectingHomeLocation));
     } catch (error) {
       dispatch(

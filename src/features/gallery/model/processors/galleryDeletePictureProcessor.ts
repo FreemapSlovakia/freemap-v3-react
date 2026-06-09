@@ -18,6 +18,8 @@ export const galleryDeletePictureProcessor: Processor = {
       return;
     }
 
+    window._paq.push(['trackEvent', 'Gallery', 'deletePhoto']);
+
     const { id } = image;
 
     await httpRequest({

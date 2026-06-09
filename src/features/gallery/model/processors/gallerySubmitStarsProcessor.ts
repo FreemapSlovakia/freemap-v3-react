@@ -21,7 +21,7 @@ export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> =
         'trackEvent',
         'Gallery',
         'submitStars',
-        String(id),
+        undefined,
         stars,
       ]);
 

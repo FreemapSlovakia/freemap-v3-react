@@ -213,6 +213,13 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
   actionCreator: cacheTilesStart,
   errorKey: 'general.operationError',
   handle({ action, dispatch }) {
+    window._paq.push([
+      'trackEvent',
+      'MapCache',
+      'start',
+      action.payload.sourceType,
+    ]);
+
     // save initial metadata to IndexedDB
     saveCachedTileMap(action.payload);
 

@@ -116,7 +116,7 @@ const MapsLoadResponseSchema = z.object({
 export const mapsLoadProcessor: Processor = {
   actionCreator: [mapsLoad, authSetUser, authLogout],
   errorKey: 'myMaps.fetchError',
-  handle: async ({ getState, dispatch }) => {
+  handle: async ({ getState, dispatch, action }) => {
     const {
       auth,
       myMaps: { loadMeta },
@@ -124,6 +124,15 @@ export const mapsLoadProcessor: Processor = {
 
     if (!loadMeta || (auth.user && !auth.validated)) {
       return;
+    }
+
+    if (action.type === mapsLoad.type) {
+      window._paq.push([
+        'trackEvent',
+        'MyMaps',
+        'load',
+        loadMeta.merge ? 'merge' : 'replace',
+      ]);
     }
 
     const res = await httpRequest({

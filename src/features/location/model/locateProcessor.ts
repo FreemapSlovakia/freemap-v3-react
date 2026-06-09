@@ -11,6 +11,8 @@ export const locateProcessor: Processor = {
   actionCreator: toggleLocate,
   handle: async ({ getState, dispatch }) => {
     if (getState().location.locate) {
+      window._paq.push(['trackEvent', 'Location', 'locate']);
+
       dispatch(mapRefocus({ gpsTracked: true }));
 
       const map = await mapPromise;

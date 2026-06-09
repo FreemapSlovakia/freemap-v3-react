@@ -7,6 +7,8 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
   actionCreator: mapsDelete,
   errorKey: 'myMaps.deleteError',
   handle: async ({ getState, dispatch, action: { payload: id } }) => {
+    window._paq.push(['trackEvent', 'MyMaps', 'delete']);
+
     await httpRequest({
       getState,
       method: 'DELETE',

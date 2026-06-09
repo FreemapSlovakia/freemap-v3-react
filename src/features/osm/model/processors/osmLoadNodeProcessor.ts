@@ -14,6 +14,8 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
   handle: async ({ dispatch, action, getState }) => {
     const { id, focus, showToast } = action.payload;
 
+    window._paq.push(['trackEvent', 'Osm', 'view', 'node']);
+
     const res = await httpRequest({
       getState,
       url: `//api.openstreetmap.org/api/0.6/node/${id}.json`,

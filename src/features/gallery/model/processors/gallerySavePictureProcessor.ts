@@ -18,6 +18,8 @@ export const gallerySavePictureProcessor: Processor = {
       return;
     }
 
+    window._paq.push(['trackEvent', 'Gallery', 'savePhoto']);
+
     const { id } = image;
 
     await httpRequest({

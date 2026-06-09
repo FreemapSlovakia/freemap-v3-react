@@ -29,11 +29,9 @@ export const changesetsTrackProcessor: Processor = {
       sp.append('days', String(changesets.days));
     }
 
-    if (changesets.authorName) {
-      sp.append('authorName', changesets.authorName);
-    }
+    sp.append('byAuthor', String(Boolean(changesets.authorName)));
 
-    window._paq.push(['trackEvent', 'Changesets', 'set', sp.toString()]);
+    window._paq.push(['trackEvent', 'Changesets', 'search', sp.toString()]);
   },
 };
 

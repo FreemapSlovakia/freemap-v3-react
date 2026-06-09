@@ -8,7 +8,8 @@ export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
   transform: ({ getState, action }) => {
     const anonymous = !getState().auth.user;
 
-    return action.payload &&
+    const blocked =
+      action.payload &&
       [
         'my-maps',
         'gallery-upload',
@@ -16,12 +17,21 @@ export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
         'tracking-my',
         'offline-map-export',
       ].includes(action.payload) &&
-      anonymous
-      ? toastsAdd({
-          messageKey: 'general.unauthenticatedError',
-          style: 'danger',
-          cancelType: authSetUser.type,
-        })
-      : action;
+      anonymous;
+
+    if (blocked) {
+      return toastsAdd({
+        messageKey: 'general.unauthenticatedError',
+        style: 'danger',
+        cancelType: authSetUser.type,
+      });
+    }
+
+    // track every modal that actually opens (payload null closes a modal)
+    if (action.payload) {
+      window._paq.push(['trackEvent', 'Modal', 'open', action.payload]);
+    }
+
+    return action;
   },
 };

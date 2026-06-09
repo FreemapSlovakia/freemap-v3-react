@@ -21,6 +21,8 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   handle: async ({ dispatch, getState, action }) => {
     const { id, focus, showToast } = action.payload;
 
+    window._paq.push(['trackEvent', 'Osm', 'view', 'relation']);
+
     const res = await httpRequest({
       getState,
       url: `//api.openstreetmap.org/api/0.6/relation/${id}/full.json`,

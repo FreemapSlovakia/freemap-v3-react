@@ -11,6 +11,15 @@ export const l10nSetLanguageProcessor: Processor = {
   handle: async ({ dispatch, getState, action }) => {
     const { chosenLanguage } = getState().l10n;
 
+    if (l10nSetChosenLanguage.match(action)) {
+      window._paq.push([
+        'trackEvent',
+        'Language',
+        'set',
+        chosenLanguage ?? 'auto',
+      ]);
+    }
+
     const language = getEffectiveChosenLanguage(chosenLanguage);
 
     setMessages(

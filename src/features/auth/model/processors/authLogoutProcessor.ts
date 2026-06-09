@@ -8,6 +8,8 @@ export const authLogoutProcessor: Processor = {
   id: 'lcd',
   errorKey: 'auth.logOut.error',
   async handle({ dispatch, getState }) {
+    window._paq.push(['trackEvent', 'Auth', 'logout']);
+
     try {
       FB.logout();
     } catch {

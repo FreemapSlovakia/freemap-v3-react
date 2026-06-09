@@ -32,6 +32,12 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
     const patchExisting = activeMap && !asNew;
 
+    window._paq.push([
+      'trackEvent',
+      'MyMaps',
+      asNew ? 'copy' : patchExisting ? 'update' : 'create',
+    ]);
+
     const res = await httpRequest({
       getState,
       method: patchExisting ? 'PATCH' : 'POST',

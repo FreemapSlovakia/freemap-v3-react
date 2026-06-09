@@ -53,7 +53,7 @@ export function sendError(errDetails: ErrorDetails): void {
 
   const eventId = window.Sentry?.captureException(error);
 
-  window._paq.push(['trackEvent', 'Main', 'error', eventId]);
+  window._paq.push(['trackEvent', 'App', 'error']);
 
   if (errDetails.message === 'Script error.' || errDetails.filename === '') {
     // don't show to user
