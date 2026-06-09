@@ -355,11 +355,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
   let alternatives: Alternative[];
 
-  if (
-    alternativeSets.length === 1 &&
-    assertDef(alternativeSets[0]).length > 1
-  ) {
-    alternatives = assertDef(alternativeSets[0]);
+  if (alternativeSets.length === 1 && alternativeSets[0]!.length > 1) {
+    alternatives = alternativeSets[0]!;
   } else {
     const tpd =
       alternativeSets.reduce((a, c) => a + (c[0]?.duration ?? 0), 0) /
@@ -401,13 +398,9 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       }
 
       for (let j = 0; j < coordinates.length - 1; j++) {
-        const dist = distance(
-          assertDef(coordinates[j]),
-          assertDef(coordinates[j + 1]),
-          {
-            units: 'meters',
-          },
-        );
+        const dist = distance(coordinates[j]!, coordinates[j + 1]!, {
+          units: 'meters',
+        });
 
         const duration = tpd * dist;
 

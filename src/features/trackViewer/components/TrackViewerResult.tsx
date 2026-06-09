@@ -5,7 +5,6 @@ import {
   pointStyleFromProperties,
 } from '@features/drawing/model/styleFromProperties.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
-import { assertDef } from '@shared/assertDef.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
@@ -106,8 +105,8 @@ export default function TrackViewerResult({
 
     const closed =
       coords.length > 2 &&
-      assertDef(coords[0])[0] === assertDef(coords[coords.length - 1])[0] &&
-      assertDef(coords[0])[1] === assertDef(coords[coords.length - 1])[1];
+      coords[0]![0] === coords[coords.length - 1]![0] &&
+      coords[0]![1] === coords[coords.length - 1]![1];
 
     const style = lineStyleFromProperties(feature.properties, closed);
 

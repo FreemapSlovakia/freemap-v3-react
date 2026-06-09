@@ -255,6 +255,6 @@ function reverse(points: Point[]) {
   points.reverse();
 
   for (const [i, p] of points.entries()) {
-    p.id = assertDef(ids[i]);
+    p.id = ids[i]!;
   }
 }

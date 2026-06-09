@@ -8,7 +8,6 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
-import { assertDef } from '@shared/assertDef.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import {
   Changeset,
@@ -174,9 +173,8 @@ export const changesetsProcessor: Processor = {
       dispatch(changesetsSet(allChangesetsSoFar));
 
       if (arrayOfrawChangesets.length === 100) {
-        const toTimeOfOldestChangeset = assertDef(
-          arrayOfrawChangesets.at(-1),
-        ).getAttribute('closed_at');
+        const toTimeOfOldestChangeset =
+          arrayOfrawChangesets.at(-1)!.getAttribute('closed_at');
 
         await loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);
 

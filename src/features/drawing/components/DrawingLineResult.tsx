@@ -181,11 +181,11 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     if (id0) {
       id = id0;
     } else if (pos === 0) {
-      id = points.length ? assertDef(points[pos]).id - 1 : 0;
+      id = points.length ? points[pos]!.id - 1 : 0;
     } else if (pos === points.length) {
-      id = assertDef(points[pos - 1]).id + 1;
+      id = points[pos - 1]!.id + 1;
     } else {
-      id = (assertDef(points[pos - 1]).id + assertDef(points[pos]).id) / 2;
+      id = (points[pos - 1]!.id + points[pos]!.id) / 2;
     }
 
     dispatch(
@@ -227,7 +227,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
       ps.push(point);
 
       if (i < points.length - 1 || line.type === 'polygon') {
-        const next = assertDef(points[(i + 1) % points.length]);
+        const next = points[(i + 1) % points.length]!;
 
         const lat = (point.lat + next.lat) / 2;
 
@@ -272,7 +272,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           { lat: coords.lat, lng: coords.lon },
           ...(line.type === 'line' || ps.length < 3
             ? []
-            : [{ lat: assertDef(ps[0]).lat, lng: assertDef(ps[0]).lon }]),
+            : [{ lat: ps[0]!.lat, lng: ps[0]!.lon }]),
         ]
       : undefined;
 
@@ -285,8 +285,8 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   const language = useAppSelector((state) => state.l10n.language);
 
   if (line.type === 'line' && futureLinePositions?.length === 2) {
-    const futureA = assertDef(futureLinePositions[0]);
-    const futureB = assertDef(futureLinePositions[1]);
+    const futureA = futureLinePositions[0]!;
+    const futureB = futureLinePositions[1]!;
 
     const a: [number, number] = [futureA.lng, futureA.lat];
 

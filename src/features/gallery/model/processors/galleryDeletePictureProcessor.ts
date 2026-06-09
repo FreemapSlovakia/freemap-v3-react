@@ -1,6 +1,5 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { assertDef } from '@shared/assertDef.js';
 import {
   galleryClear,
   galleryDeletePicture,
@@ -46,7 +45,7 @@ export const galleryDeletePictureProcessor: Processor = {
           const newActiveImageId =
             newImageIds.length > idx
               ? newImageIds[idx]
-              : assertDef(newImageIds.at(-1));
+              : newImageIds.at(-1)!;
 
           dispatch(galleryRequestImage(newActiveImageId));
         }

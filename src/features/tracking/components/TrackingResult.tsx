@@ -114,9 +114,7 @@ export function TrackingResult(): ReactElement {
         }
 
         const lastPoint =
-          track.trackPoints.length > 0
-            ? assertDef(track.trackPoints.at(-1))
-            : null;
+          track.trackPoints.length > 0 ? track.trackPoints.at(-1)! : null;
 
         return (
           <Fragment key={`trk-${track.token}`}>
@@ -161,7 +159,7 @@ export function TrackingResult(): ReactElement {
 
             {(showPoints || track.trackPoints.length === 0
               ? track.trackPoints
-              : [assertDef(track.trackPoints.at(-1))]
+              : [track.trackPoints.at(-1)!]
             ).map((tp, i) =>
               !showPoints || i === track.trackPoints.length - 1 ? (
                 <RichMarker

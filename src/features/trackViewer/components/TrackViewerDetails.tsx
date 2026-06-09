@@ -1,5 +1,4 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { assertDef } from '@shared/assertDef.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { smoothElevations } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -56,7 +55,7 @@ export function TrackViewerDetailsInt({
   let finishTime: Date | undefined;
 
   if (startPoints.length) {
-    startTime = assertDef(startPoints[0]).startTime;
+    startTime = startPoints[0]!.startTime;
 
     if (startTime) {
       tableData.push(['startTime', timeFormat.format(startTime)]);
@@ -64,7 +63,7 @@ export function TrackViewerDetailsInt({
   }
 
   if (finishPoints.length) {
-    finishTime = assertDef(finishPoints[0]).finishTime;
+    finishTime = finishPoints[0]!.finishTime;
 
     if (finishTime) {
       tableData.push(['finishTime', timeFormat.format(finishTime)]);
@@ -87,7 +86,7 @@ export function TrackViewerDetailsInt({
   }
 
   if (finishPoints.length) {
-    const { length } = assertDef(finishPoints[0]);
+    const { length } = finishPoints[0]!;
 
     tableData.push(['distance', formatDistance(length, language)]);
 
