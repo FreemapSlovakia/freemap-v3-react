@@ -13,6 +13,16 @@ import { readFile, writeFile } from 'node:fs/promises';
 // is what TypeScript's `nodenext` resolution finds for a `.css` import when
 // `allowArbitraryExtensions` is enabled. The legacy `*.css.d.ts` sidecar name
 // is silently ignored under `nodenext`.
+//
+// Why a hand-rolled loader instead of an off-the-shelf one (e.g.
+// `css-modules-dts-loader`): every published generator emits the legacy
+// `*.css.d.ts` name, which `nodenext` ignores, and none expose an option to
+// emit the `.d.css.ts` form. The only ways to avoid a custom loader are worse:
+// switch the whole repo to `moduleResolution: node` (huge blast radius), or
+// use an editor-only TS plugin (no build-time / CI type checking, since
+// `tsgo`/`tsc` don't load language-service plugins). So this ~20-line loader
+// riding on css-loader's existing output is the cheapest way to get precise,
+// build-checked CSS-module types. See doc/build-and-deploy.md.
 
 const LOCALS_BLOCK = /\.locals\s*=\s*\{([\s\S]*?)\}/;
 const KEY = /(?:"([^"]+)"|'([^']+)'|([A-Za-z_$][\w$]*))\s*:/g;
