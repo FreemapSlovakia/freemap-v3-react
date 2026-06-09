@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { loadOfflineMapExportMessages } from '../translations/loadOfflineMapExportMessages.js';
 import { downloadMap } from './actions.js';
 
 export const downloadMapProcessor: Processor<typeof downloadMap> = {
@@ -21,7 +22,8 @@ export const downloadMapProcessor: Processor<typeof downloadMap> = {
       toastsAdd({
         id: 'offlineMapExport',
         style: 'success',
-        messageKey: 'offlineMapExport.success',
+        message: (await loadOfflineMapExportMessages(getState().l10n.language))
+          .success,
       }),
     );
   },

@@ -7,6 +7,7 @@
     "src/features/routePlanner/translations/{LANG}.tsx",
     "src/features/legend/translations/{LANG}.tsx",
     "src/features/wikimediaCommons/translations/{LANG}.tsx",
+    "src/features/offlineMapExport/translations/{LANG}.tsx",
     "src/app/components/embedMapModal/translations/{LANG}.tsx",
     "src/app/components/aboutModal/translations/{LANG}.tsx"
   ]

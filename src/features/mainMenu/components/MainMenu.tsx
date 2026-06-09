@@ -130,8 +130,7 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('offline-map-export')}>
-        <FaDatabase /> {m?.offlineMapExport.downloadMap} <kbd>e</kbd>{' '}
-        <kbd>m</kbd>
+        <FaDatabase /> {m?.mainMenu.offlineMapExport} <kbd>e</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item {...documentMenuItemProps('exports')}>

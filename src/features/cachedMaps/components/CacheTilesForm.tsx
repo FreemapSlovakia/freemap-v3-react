@@ -3,6 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
+import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
@@ -46,6 +47,8 @@ const AVG_TILE_SIZE = 20_000;
 
 export function CacheTilesForm(): ReactElement {
   const m = useMessages();
+
+  const ome = useOfflineMapExportMessages();
 
   const dispatch = useDispatch();
 
@@ -258,7 +261,7 @@ export function CacheTilesForm(): ReactElement {
 
       <Modal.Body>
         <Form.Group controlId="mapType">
-          <Form.Label>{m?.offlineMapExport.map}</Form.Label>
+          <Form.Label>{ome?.map}</Form.Label>
 
           <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
             <Dropdown.Toggle as={SelectToggle} className="w-100">
@@ -276,15 +279,15 @@ export function CacheTilesForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="downloadArea">
-          <Form.Label>{m?.offlineMapExport.downloadArea}</Form.Label>
+          <Form.Label>{ome?.downloadArea}</Form.Label>
 
           <MapAreaToggle
             className="mb-3"
             area={area}
             onSelectVisible={() => setArea('visible')}
             onSelectArea={startSelecting}
-            visibleLabel={m?.offlineMapExport.area.visible}
-            areaLabel={m?.offlineMapExport.area.byArea}
+            visibleLabel={ome?.area.visible}
+            areaLabel={ome?.area.byArea}
           />
         </Form.Group>
 
@@ -303,9 +306,7 @@ export function CacheTilesForm(): ReactElement {
 
         {mapDef && (
           <Form.Group controlId="zoomRange" className="mb-3">
-            <Form.Label className="required">
-              {m?.offlineMapExport.zoomRange}
-            </Form.Label>
+            <Form.Label className="required">{ome?.zoomRange}</Form.Label>
 
             <InputGroup>
               <Form.Control

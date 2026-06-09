@@ -122,6 +122,7 @@ export type Messages = {
     mapFeaturesExport: string;
     gpsDevicesMapExports: string;
     embedMap: string;
+    offlineMapExport: string;
     supportUs: string;
     help: string;
     back: string;
@@ -818,34 +819,6 @@ export type Messages = {
     lost: string;
     errorRequestingDevice: string;
     other: string;
-  };
-  offlineMapExport: {
-    downloadMap: string;
-    format: string;
-    map: string;
-    unknownMapType: string;
-    downloadArea: string;
-    area: { visible: string; byArea: string; pickHint: string };
-    name: string;
-    zoomRange: string;
-    scale: string;
-    email: string;
-    emailInfo: string;
-    success: string;
-    summaryTiles: string;
-    summaryPrice: (amount: ReactNode) => JSX.Element;
-    usageIntro: string;
-    usageDesktop: string;
-    usageAndroid: string;
-    usageIos: string;
-    usageWeb: string;
-    usageWebLead: string;
-    usageWebMid: string;
-    usageWebTrail: string;
-    formatMbtiles: string;
-    formatSqlitedb: string;
-    formatMbtilesTooltip: string;
-    formatSqlitedbTooltip: string;
   };
 };
 
