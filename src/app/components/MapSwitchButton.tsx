@@ -1,3 +1,4 @@
+import { hasRole } from '@features/auth/model/types.js';
 import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SubmenuHeader } from '@features/mainMenu/components/SubmenuHeader.js';
@@ -75,7 +76,9 @@ export function MapSwitchButton(): ReactElement {
       state.mapArea.selecting !== null,
   );
 
-  const isAdmin = useAppSelector((state) => Boolean(state.auth.user?.isAdmin));
+  const canPreviewLayers = useAppSelector((state) =>
+    hasRole(state.auth.user, 'layerPreview'),
+  );
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
 
@@ -318,7 +321,7 @@ export function MapSwitchButton(): ReactElement {
     return layerDefs
       .filter((def) => def.layer === layer)
       .map((def) => {
-        if (!isAdmin && !def.custom && def.adminOnly) {
+        if (!canPreviewLayers && !def.custom && def.adminOnly) {
           return null;
         }
 

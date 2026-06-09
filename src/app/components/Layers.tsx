@@ -1,3 +1,4 @@
+import { hasRole } from '@features/auth/model/types.js';
 import { toCachedLayerUrl } from '@features/cachedMaps/cachedTileUrl.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -271,7 +272,7 @@ export function Layers(): ReactElement | null {
     <>
       {integratedLayerDefs
         .filter(({ type }) => layers.includes(type))
-        .filter(({ adminOnly }) => user?.isAdmin || !adminOnly)
+        .filter(({ adminOnly }) => hasRole(user, 'layerPreview') || !adminOnly)
         .map((item) => getLayer(item))}
       {customLayerDefs
         .filter(({ type }) => layers.includes(type))

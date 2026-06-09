@@ -1,3 +1,4 @@
+import { hasRole } from '@features/auth/model/types.js';
 import {
   drawingLineJoinStart,
   drawingLineStopDrawing,
@@ -176,7 +177,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       layerDef &&
       (!('adminOnly' in layerDef) ||
         !layerDef.adminOnly ||
-        state.auth.user?.isAdmin)
+        hasRole(state.auth.user, 'layerPreview'))
         ? layerDef.type
         : undefined;
 

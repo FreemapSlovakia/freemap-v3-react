@@ -9,6 +9,7 @@ import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { isPremium } from '@shared/premium.js';
 import 'pannellum';
 import 'pannellum/build/pannellum.css';
+import { hasRole } from '@features/auth/model/types.js';
 import {
   ChangeEvent,
   Fragment,
@@ -323,7 +324,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   }, [dispatch]);
 
   const canEdit = Boolean(
-    image && user && (user.isAdmin || user.id === image.user.id),
+    image && (hasRole(user, 'galleryModerator') || user?.id === image.user.id),
   );
 
   const handleTagAdd = (tag: string) => {

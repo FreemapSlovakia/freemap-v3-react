@@ -20,6 +20,16 @@ export const AuthProviderSchema = z.enum([
 
 export type AuthProvider = z.infer<typeof AuthProviderSchema>;
 
+export const RoleSchema = z.enum([
+  'userManager',
+  'galleryModerator',
+  'mapModerator',
+  'trackingManager',
+  'layerPreview',
+]);
+
+export type Role = z.infer<typeof RoleSchema>;
+
 export const PurchaseSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('premium') }),
   z.object({ type: z.literal('credits'), amount: z.number() }),
@@ -85,6 +95,8 @@ export const UserSchema = z.object({
   description: z.string().nullable(),
   id: z.number(),
   isAdmin: z.boolean(),
+  // Default keeps already-persisted (pre-roles) users parseable on rehydrate.
+  roles: z.array(RoleSchema).default([]),
   language: z.string().nullish(),
   coordinates: LatLonSchema.nullable(),
   name: z.string(),
@@ -95,6 +107,11 @@ export const UserSchema = z.object({
 });
 
 export type User = z.infer<typeof UserSchema>;
+
+/** Whether the (possibly absent) user holds the given role. */
+export function hasRole(user: User | null | undefined, role: Role): boolean {
+  return Boolean(user?.roles.includes(role));
+}
 
 // Wire form for server responses: settings are parsed separately because
 // they may need legacy upgrade before validation.
