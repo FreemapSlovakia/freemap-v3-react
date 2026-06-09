@@ -1,7 +1,6 @@
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Spinner } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
-import spinnerbar from '@/images/spinnerbar.gif';
 import { Messages } from '@/translations/messagesInterface.js';
 import { getPreview, loadPreview } from '../imagePreview.js';
 import { GalleryTag } from '../model/actions.js';
@@ -82,11 +81,9 @@ export function GalleryUploadItem({
   return (
     <div key={id}>
       {showPreview2 && !previewKey ? (
-        <img
-          className="gallery-image gallery-image-upload"
-          src={spinnerbar}
-          alt={file.name}
-        />
+        <div className="gallery-image gallery-image-upload d-flex justify-content-center align-items-center">
+          <Spinner />
+        </div>
       ) : showPreview2 && previewKey ? (
         <div ref={canvasContainer} className="mb-3" />
       ) : (
