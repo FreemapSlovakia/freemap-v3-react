@@ -27,9 +27,12 @@ import {
   cacheTilesRestart,
   cacheTilesResume,
 } from '../model/actions.js';
+import { useCachedMapsMessages } from '../translations/useCachedMapsMessages.js';
 
 export function CachedMapsList(): ReactElement {
   const m = useMessages();
+
+  const cmm = useCachedMapsMessages();
 
   const dispatch = useDispatch();
 
@@ -52,13 +55,13 @@ export function CachedMapsList(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <BiWifiOff /> {m?.offline.offlineMaps}
+          <BiWifiOff /> {m?.mapLayers.offlineMaps}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         {cachedMaps.length === 0 ? (
-          <p className="text-muted mb-0">{m?.offline.emptyMessage}</p>
+          <p className="text-muted mb-0">{cmm?.emptyMessage}</p>
         ) : (
           <>
             <ListGroup>
@@ -84,19 +87,19 @@ export function CachedMapsList(): ReactElement {
                       <div className="d-flex flex-wrap align-items-center gap-2">
                         <small className="text-muted">
                           <span className="text-nowrap">
-                            {m?.offline.zoom}:{' '}
+                            {cmm?.zoom}:{' '}
                             <strong>
                               {cm.minZoom}&ndash;{cm.maxNativeZoom}
                             </strong>
                             {' · '}
                           </span>{' '}
                           <span className="text-nowrap">
-                            {m?.offline.tiles}:{' '}
+                            {cmm?.tiles}:{' '}
                             <strong>{nf.format(cm.tileCount)}</strong>
                             {' · '}
                           </span>{' '}
                           <span className="text-nowrap">
-                            {m?.offline.size}:{' '}
+                            {cmm?.size}:{' '}
                             <strong>
                               {formatSize(dl?.sizeBytes ?? cm.sizeBytes)}
                             </strong>
@@ -117,12 +120,10 @@ export function CachedMapsList(): ReactElement {
                             style={{ minWidth: 80 }}
                           />
                         ) : isComplete ? (
-                          <small className="text-success">
-                            {m?.offline.ready}
-                          </small>
+                          <small className="text-success">{cmm?.ready}</small>
                         ) : (
                           <small className="text-warning">
-                            {m?.offline.incomplete({ pct })}
+                            {cmm?.incomplete({ pct })}
                           </small>
                         )}
                       </div>
@@ -130,7 +131,7 @@ export function CachedMapsList(): ReactElement {
 
                     <div className="d-flex flex-wrap gap-2">
                       {!dl && isComplete && (
-                        <LongPressTooltip label={m?.offline.activate}>
+                        <LongPressTooltip label={cmm?.activate}>
                           {({ props }) => (
                             <Button
                               size="sm"
@@ -152,7 +153,7 @@ export function CachedMapsList(): ReactElement {
                       )}
 
                       {dl && dl.status === 'downloading' && (
-                        <LongPressTooltip label={m?.offline.pause}>
+                        <LongPressTooltip label={cmm?.pause}>
                           {({ props }) => (
                             <Button
                               size="sm"
@@ -169,7 +170,7 @@ export function CachedMapsList(): ReactElement {
                       )}
 
                       {dl && dl.status === 'paused' && (
-                        <LongPressTooltip label={m?.offline.resume}>
+                        <LongPressTooltip label={cmm?.resume}>
                           {({ props }) => (
                             <Button
                               size="sm"
@@ -203,7 +204,7 @@ export function CachedMapsList(): ReactElement {
                       )}
 
                       {!dl && !isComplete && (
-                        <LongPressTooltip label={m?.offline.resume}>
+                        <LongPressTooltip label={cmm?.resume}>
                           {({ props }) => (
                             <Button
                               size="sm"
@@ -275,7 +276,7 @@ export function CachedMapsList(): ReactElement {
             </ListGroup>
 
             <div className="text-muted text-end mt-2">
-              {m?.offline.total}: {formatSize(totalSize)}
+              {cmm?.total}: {formatSize(totalSize)}
             </div>
           </>
         )}
@@ -286,7 +287,7 @@ export function CachedMapsList(): ReactElement {
           variant="primary"
           onClick={() => dispatch(cachedMapsSetView('add'))}
         >
-          <FaPlus /> {m?.offline.addOfflineMap}
+          <FaPlus /> {cmm?.addOfflineMap}
         </Button>
 
         <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>

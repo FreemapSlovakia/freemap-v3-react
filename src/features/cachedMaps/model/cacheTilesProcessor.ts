@@ -11,6 +11,7 @@ import {
 } from '../cache.js';
 import type { CachedTileMapDef } from '../cachedTileMaps.js';
 import { toCachedLayerUrl } from '../cachedTileUrl.js';
+import { loadCachedMapsMessages } from '../translations/loadCachedMapsMessages.js';
 import {
   cachedMapDeleted,
   cachedMapRenamed,
@@ -63,7 +64,11 @@ function updateMeta(
   };
 }
 
-async function downloadTiles(meta: CachedTileMapDef, dispatch: Dispatch) {
+async function downloadTiles(
+  meta: CachedTileMapDef,
+  dispatch: Dispatch,
+  language: string,
+) {
   const id = meta.type;
 
   const abortController = new AbortController();
@@ -192,15 +197,16 @@ async function downloadTiles(meta: CachedTileMapDef, dispatch: Dispatch) {
 
     dispatch(cacheTilesComplete({ id }));
 
+    const cm = await loadCachedMapsMessages(language);
+
     dispatch(
       toastsAdd({
         style: 'success',
         timeout: 10_000,
-        messageKey: 'offline.cachedSuccess',
-        messageParams: { name: meta.name },
+        message: cm.cachedSuccess({ name: meta.name ?? '' }),
         actions: [
           {
-            nameKey: 'offline.activate',
+            name: cm.activate,
             action: mapToggleLayer({ type: id, enable: true }),
           },
         ],
@@ -212,7 +218,7 @@ async function downloadTiles(meta: CachedTileMapDef, dispatch: Dispatch) {
 export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
   actionCreator: cacheTilesStart,
   errorKey: 'general.operationError',
-  handle({ action, dispatch }) {
+  handle({ action, dispatch, getState }) {
     window._paq.push([
       'trackEvent',
       'MapCache',
@@ -224,18 +230,20 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
     saveCachedTileMap(action.payload);
 
     // fire and forget — runs in background
-    downloadTiles(action.payload, dispatch).catch((err) => {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
+    downloadTiles(action.payload, dispatch, getState().l10n.language).catch(
+      (err) => {
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return;
+        }
 
-      dispatch(
-        cacheTilesError({
-          id: action.payload.type,
-          error: err instanceof Error ? err.message : String(err),
-        }),
-      );
-    });
+        dispatch(
+          cacheTilesError({
+            id: action.payload.type,
+            error: err instanceof Error ? err.message : String(err),
+          }),
+        );
+      },
+    );
   },
 };
 
@@ -329,7 +337,7 @@ export const cacheTilesRestartProcessor: Processor<typeof cacheTilesRestart> = {
       return;
     }
 
-    downloadTiles(meta, dispatch).catch((err) => {
+    downloadTiles(meta, dispatch, getState().l10n.language).catch((err) => {
       if (err instanceof DOMException && err.name === 'AbortError') {
         return;
       }

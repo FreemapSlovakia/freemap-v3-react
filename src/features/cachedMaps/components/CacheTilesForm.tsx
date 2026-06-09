@@ -38,6 +38,7 @@ import { FaChevronLeft, FaSave } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import type { CachedTileMapDef } from '../cachedTileMaps.js';
 import { cachedMapsSetView, cacheTilesStart } from '../model/actions.js';
+import { useCachedMapsMessages } from '../translations/useCachedMapsMessages.js';
 
 type CacheableLayerDef = IntegratedLayerDef<IsTileLayerDef | IsWmsLayerDef> & {
   url: string;
@@ -49,6 +50,8 @@ export function CacheTilesForm(): ReactElement {
   const m = useMessages();
 
   const ome = useOfflineMapExportMessages();
+
+  const cm = useCachedMapsMessages();
 
   const dispatch = useDispatch();
 
@@ -135,11 +138,9 @@ export function CacheTilesForm(): ReactElement {
 
       const layerName = m?.mapLayers.letters[mapType] ?? mapType;
 
-      return m?.offline.namePrefix
-        ? `${m.offline.namePrefix} ${layerName}`
-        : layerName;
+      return cm?.namePrefix ? `${cm.namePrefix} ${layerName}` : layerName;
     });
-  }, [m, mapType, nameChanged]);
+  }, [m, cm, mapType, nameChanged]);
 
   const tileCount = useMemo(() => {
     if (!bbox) {
@@ -255,7 +256,7 @@ export function CacheTilesForm(): ReactElement {
     <form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <BiWifiOff /> {m?.offline.cacheOfflineMap}
+          <BiWifiOff /> {cm?.cacheOfflineMap}
         </Modal.Title>
       </Modal.Header>
 
@@ -347,7 +348,7 @@ export function CacheTilesForm(): ReactElement {
           !invalidMaxZoom &&
           tileCount > 50_000 && (
             <Alert variant="warning" className="mt-3 mb-0">
-              {m?.offline.largeDownload({
+              {cm?.largeDownload({
                 tiles: cnf.format(tileCount),
                 size:
                   estimatedSize !== undefined ? formatSize(estimatedSize) : '?',
@@ -359,11 +360,11 @@ export function CacheTilesForm(): ReactElement {
       <Modal.Footer className="flex-wrap">
         {tileCount !== undefined && (
           <div className="w-100 text-end">
-            {m?.offline.tiles}: <b>{cnf.format(tileCount)}</b>
+            {cm?.tiles}: <b>{cnf.format(tileCount)}</b>
             {estimatedSize !== undefined && (
               <>
                 {' '}
-                | {m?.offline.estSize}: <b>{formatSize(estimatedSize)}</b>
+                | {cm?.estSize}: <b>{formatSize(estimatedSize)}</b>
               </>
             )}
           </div>
@@ -380,7 +381,7 @@ export function CacheTilesForm(): ReactElement {
             !name.trim()
           }
         >
-          <FaSave /> {m?.offline.startCaching} <kbd>Enter</kbd>
+          <FaSave /> {cm?.startCaching} <kbd>Enter</kbd>
         </Button>
 
         <Button

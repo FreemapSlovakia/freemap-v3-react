@@ -617,6 +617,7 @@ export type Messages = {
       bluered: string;
     };
     loadWmsLayers: string;
+    offlineMaps: string;
   };
   elevationChart: {
     distance: string;
@@ -783,30 +784,6 @@ export type Messages = {
       success: ({ amount }: { amount: number }) => JSX.Element;
     };
     youHaveCredits: (amount: ReactNode, explainCredits: boolean) => JSX.Element;
-  };
-  offline: {
-    offlineMaps: string;
-    cacheOfflineMap: string;
-    addOfflineMap: string;
-    emptyMessage: string;
-    zoom: string;
-    tiles: string;
-    size: string;
-    status: string;
-    ready: string;
-    incomplete: (props: { pct: ReactNode }) => JSX.Element;
-    pause: string;
-    resume: string;
-    total: string;
-    largeDownload: (props: {
-      tiles: ReactNode;
-      size: ReactNode;
-    }) => JSX.Element;
-    estSize: string;
-    startCaching: string;
-    cachedSuccess: (props: { name: string }) => string;
-    activate: string;
-    namePrefix: string;
   };
   errorStatus: Record<number, string>;
   gpu: {

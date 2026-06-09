@@ -902,6 +902,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     technology: 'Típus',
     loadWmsLayers: 'Rétegek betöltése',
+    offlineMaps: 'Offline térképek',
   },
 
   elevationChart: {
@@ -1270,32 +1271,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  offline: {
-    offlineMaps: 'Offline térképek',
-    cacheOfflineMap: 'Térkép mentése offline használatra',
-    addOfflineMap: 'Offline térkép hozzáadása',
-    emptyMessage:
-      'Még nincsenek offline térképek mentve. Adj hozzá egyet, hogy internetkapcsolat nélkül is használhasd a térképeket.',
-    zoom: 'Nagyítás',
-    tiles: 'Csempék',
-    size: 'Méret',
-    status: 'Állapot',
-    ready: 'Kész',
-    incomplete: ({ pct }) => <>Hiányos ({pct} %)</>,
-    pause: 'Szünet',
-    resume: 'Folytatás',
-    total: 'Összesen',
-    largeDownload: ({ tiles, size }) => (
-      <>
-        Nagy letöltés: {tiles} csempe (~{size}). Ez eltarthat egy ideig.
-      </>
-    ),
-    estSize: 'Becsült méret',
-    startCaching: 'Letöltés indítása',
-    cachedSuccess: ({ name }) => `A(z) „${name}” térkép sikeresen letöltődött.`,
-    activate: 'Aktiválás',
-    namePrefix: 'Offline',
-  },
   errorStatus: {
     100: 'Folytatás',
     101: 'Protokollok váltása',

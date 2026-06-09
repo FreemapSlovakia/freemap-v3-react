@@ -521,7 +521,7 @@ export function MapSwitchButton(): ReactElement {
                         as="button"
                         eventKey="offlineMaps"
                       >
-                        <BiWifiOff /> {m?.offline.offlineMaps}
+                        <BiWifiOff /> {m?.mapLayers.offlineMaps}
                         {cachedMapsTotalSize > 0 &&
                           ` · ${formatSize(cachedMapsTotalSize)}`}{' '}
                         <kbd>m</kbd> <kbd>o</kbd>
