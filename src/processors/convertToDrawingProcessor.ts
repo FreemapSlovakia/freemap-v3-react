@@ -11,9 +11,11 @@ import {
   lineStyleFromProperties,
   pointStyleFromProperties,
 } from '@features/drawing/model/styleFromProperties.js';
+import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import { searchClear } from '@features/search/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
 import { mergeLines } from '@shared/geoutils.js';
@@ -383,20 +385,31 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
     const { id, tolerance } = action.payload;
 
-    const geojson = await fetchOsmFullGeojson(id, getState);
+    try {
+      const geojson = await fetchOsmFullGeojson(id, getState);
 
-    if (!geojson) {
-      return;
+      if (!geojson) {
+        return;
+      }
+
+      const { lineCount, pointCount } = geojsonToDrawing(
+        geojson,
+        tolerance,
+        getState,
+        dispatch,
+      );
+
+      selectAfterConvert(dispatch, getState, lineCount, pointCount);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      const om = await loadObjectsMessages(getState().l10n.language);
+
+      dispatch(
+        toastsAdd({ style: 'danger', message: om.fetchingError({ err }) }),
+      );
     }
-
-    const { lineCount, pointCount } = geojsonToDrawing(
-      geojson,
-      tolerance,
-      getState,
-      dispatch,
-    );
-
-    selectAfterConvert(dispatch, getState, lineCount, pointCount);
   },
-  errorKey: 'objects.fetchingError',
 };

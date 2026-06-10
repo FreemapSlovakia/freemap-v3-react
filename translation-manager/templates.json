@@ -14,6 +14,7 @@
     "src/features/myMaps/translations/{LANG}.tsx",
     "src/features/tracking/translations/{LANG}.tsx",
     "src/features/mapFeaturesExport/translations/{LANG}.tsx",
+    "src/features/objects/translations/{LANG}.tsx",
     "src/app/components/embedMapModal/translations/{LANG}.tsx",
     "src/app/components/aboutModal/translations/{LANG}.tsx"
   ]

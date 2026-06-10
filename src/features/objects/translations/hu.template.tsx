@@ -1,0 +1,32 @@
+import { getMessages } from '@features/l10n/messagesStore.js';
+import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { addError } from '@/translations/messagesInterface.js';
+import { ObjectsMessages } from './ObjectsMessages.js';
+
+const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
+  type: 'Típus',
+  lowZoomAlert: {
+    message: ({ minZoom }) =>
+      `Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a ${minZoom}. szintre kell nagyítani.`,
+    zoom: 'Nagyítás',
+  },
+  fetchingError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Hiba történt az objektumok (POI-k) beolvasásánál',
+      err,
+    ),
+  icon: {
+    pin: 'Tű',
+    ring: 'Gyűrű',
+    square: 'Négyzet',
+  },
+  convertAsPoint: 'Pontként',
+  convertWithGeometry: 'Teljes geometriával',
+  showAsLookup: 'Megjelenítés találatként',
+  convertAll: 'Minden látható objektum átalakítása rajzzá',
+  tooManyPoints: ({ limit }) =>
+    `Az eredmény ${limit} objektumra lett korlátozva.`,
+};
+
+export default hu;

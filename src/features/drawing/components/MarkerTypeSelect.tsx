@@ -1,5 +1,5 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
+import { useObjectsMessages } from '@features/objects/translations/useObjectsMessages.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { type ReactElement } from 'react';
@@ -28,7 +28,7 @@ export function MarkerTypeSelect({
   asSelect,
   className,
 }: Props): ReactElement {
-  const m = useMessages();
+  const om = useObjectsMessages();
 
   return (
     <Dropdown
@@ -40,7 +40,7 @@ export function MarkerTypeSelect({
         variant={asSelect ? undefined : 'secondary'}
       >
         {icons[value]}
-        {asSelect ? <> {m?.objects.icon[value]}</> : null}
+        {asSelect ? <> {om?.icon[value]}</> : null}
       </Dropdown.Toggle>
 
       <Dropdown.Menu popperConfig={fixedPopperConfig}>
@@ -50,7 +50,7 @@ export function MarkerTypeSelect({
             eventKey={markerType}
             active={value === markerType}
           >
-            {icons[markerType]} {m?.objects.icon[markerType]}
+            {icons[markerType]} {om?.icon[markerType]}
           </Dropdown.Item>
         ))}
       </Dropdown.Menu>

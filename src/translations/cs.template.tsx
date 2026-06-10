@@ -605,27 +605,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     source: 'Zdroj',
   },
 
-  objects: {
-    type: 'Typ',
-    lowZoomAlert: {
-      message: ({ minZoom }) =>
-        `Vyhledávání míst je možné až od přiblížení úrovně ${minZoom}.`,
-      zoom: 'Přiblíž',
-    },
-    tooManyPoints: ({ limit }) => `Výsledek byl omezen na ${limit} objektů.`,
-    fetchingError: ({ err }) =>
-      addError(messages, 'Nastala chyba při získávání objektů', err),
-    icon: {
-      pin: 'Špendlík',
-      ring: 'Kruhová',
-      square: 'Čtvercová',
-    },
-    convertAsPoint: 'Jako bod',
-    convertWithGeometry: 'S celou geometrií',
-    showAsLookup: 'Zobrazit jako Nález',
-    convertAll: 'Zkonvertovat všechny viditelné objekty na kreslení',
-  },
-
   external: {
     openInExternal: 'Sdílet / otevřít v ext. aplikaci',
     osm: 'OpenStreetMap',

@@ -443,26 +443,6 @@ export type Messages = {
     fetchingError: (props: Err) => string;
     detail: (props: { result: SearchResult }) => JSX.Element;
   };
-  objects: {
-    type: string;
-    lowZoomAlert: {
-      message: (props: { minZoom: number }) => string;
-      zoom: string;
-    };
-    tooManyPoints: (props: { limit: number }) => string;
-    fetchingError: (props: Err) => string;
-    // categories: Record<number, string>;
-    // subcategories: Record<number, string>;
-    icon: {
-      pin: string;
-      ring: string;
-      square: string;
-    };
-    convertAsPoint: string;
-    convertWithGeometry: string;
-    showAsLookup: string;
-    convertAll: string;
-  };
   external: {
     openInExternal: string;
     osm: string;

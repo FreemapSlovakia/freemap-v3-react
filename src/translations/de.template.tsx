@@ -641,33 +641,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     source: 'Quelle',
   },
 
-  objects: {
-    lowZoomAlert: {
-      message: ({ minZoom }) =>
-        `Um Objekte nach Typ anzuzeigen, müssen Sie mindestens auf Zoomstufe ${minZoom} heranzoomen.`,
-      zoom: 'Heranzoomen',
-    },
-
-    icon: {
-      pin: 'Stecknadel',
-      ring: 'Ring',
-      square: 'Quadrat',
-    },
-
-    convertAsPoint: 'Als Punkt',
-    convertWithGeometry: 'Mit voller Geometrie',
-    showAsLookup: 'Als Fund anzeigen',
-    convertAll: 'Alle sichtbaren Objekte in Zeichnung umwandeln',
-
-    type: 'Typ',
-
-    tooManyPoints: ({ limit }) =>
-      `Das Ergebnis wurde auf ${limit} Objekte begrenzt.`,
-
-    fetchingError: ({ err }) =>
-      addError(messages, 'Fehler beim Laden der Objekte (POIs)', err),
-  },
-
   external: {
     openInExternal: 'Teilen / In externer App öffnen',
     osm: 'OpenStreetMap',

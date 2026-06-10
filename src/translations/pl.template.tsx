@@ -618,28 +618,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     source: 'Źródło',
   },
 
-  objects: {
-    lowZoomAlert: {
-      message: ({ minZoom }) =>
-        `Aby zobaczyć obiekty według ich typu, powiększ co najmniej do poziomu ${minZoom}.`,
-      zoom: 'Powiększ',
-    },
-    icon: {
-      pin: 'Pinezka',
-      ring: 'Pierścień',
-      square: 'Kwadrat',
-    },
-    type: 'Typ',
-    tooManyPoints: ({ limit }) =>
-      `Wynik został ograniczony do ${limit} obiektów.`,
-    fetchingError: ({ err }) =>
-      addError(messages, 'Błąd podczas pobierania obiektów (POI)', err),
-    convertAsPoint: 'Jako punkt',
-    convertWithGeometry: 'Z pełną geometrią',
-    showAsLookup: 'Pokaż jako Wynik',
-    convertAll: 'Przekształć wszystkie widoczne obiekty na rysunek',
-  },
-
   external: {
     openInExternal: 'Udostępnij / Otwórz w zewnętrznej aplikacji.',
     osm: 'OpenStreetMap',

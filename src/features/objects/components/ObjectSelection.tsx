@@ -23,6 +23,7 @@ import {
 import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { toolSelector } from '@/app/store/selectors.js';
+import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
 function ObjectsToggleButton(): ReactElement {
   const tool = useAppSelector(toolSelector);
@@ -51,6 +52,8 @@ export default function ObjectSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const om = useObjectsMessages();
 
   const object = useAppSelector((state) => {
     const sel = state.main.selection;
@@ -146,7 +149,7 @@ export default function ObjectSelection(): ReactElement | null {
               dispatch(convertToDrawing({ type: 'objects', id: object.id }));
             }}
           >
-            <FaPencilAlt /> {m?.objects.convertAsPoint}
+            <FaPencilAlt /> {om?.convertAsPoint}
           </Dropdown.Item>
 
           {hasGeometry && (
@@ -168,7 +171,7 @@ export default function ObjectSelection(): ReactElement | null {
                 }
               }}
             >
-              <FaPencilAlt /> {m?.objects.convertWithGeometry}
+              <FaPencilAlt /> {om?.convertWithGeometry}
             </Dropdown.Item>
           )}
 
@@ -192,7 +195,7 @@ export default function ObjectSelection(): ReactElement | null {
               );
             }}
           >
-            <FaSearch /> {m?.objects.showAsLookup}
+            <FaSearch /> {om?.showAsLookup}
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>

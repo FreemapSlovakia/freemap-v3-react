@@ -8,6 +8,7 @@ import {
   OverpassCenterExtraSchema,
   overpassResultSchema,
 } from '@shared/types/overpass.js';
+import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 import {
   ObjectsResult,
   objectsSetFilter,
@@ -44,34 +45,112 @@ export const objectsFetchProcessor: Processor = {
       state.map.zoom,
       ...state.objects.active,
     ].join('\n'),
-  errorKey: 'objects.fetchingError',
   handle: async ({ dispatch, getState }) => {
-    const ents = getState().objects.active.map((tags) =>
-      tags.split(',').map((item) => item.split('=')),
-    );
+    try {
+      const ents = getState().objects.active.map((tags) =>
+        tags.split(',').map((item) => item.split('=')),
+      );
 
-    if (ents.length === 0) {
-      if (getState().objects.objects.length > 0) {
-        dispatch(objectsSetResult([]));
+      if (ents.length === 0) {
+        if (getState().objects.objects.length > 0) {
+          dispatch(objectsSetResult([]));
+        }
+
+        return;
       }
 
-      return;
-    }
+      if (getState().map.zoom < minZoom) {
+        const om = await loadObjectsMessages(getState().l10n.language);
 
-    if (getState().map.zoom < minZoom) {
-      setTimeout(() => {
+        setTimeout(() => {
+          dispatch(
+            toastsAdd({
+              id: 'objects.lowZoomAlert',
+              message: om.lowZoomAlert.message({ minZoom }),
+              style: 'warning',
+              actions: [
+                {
+                  name: om.lowZoomAlert.zoom,
+                  action: [mapRefocus({ zoom: minZoom })],
+                },
+              ],
+              cancelType: [
+                clearMapFeatures.type,
+                mapRefocus.type,
+                objectsSetFilter.type,
+              ],
+            }),
+          );
+        });
+
+        dispatch(objectsSetResult([]));
+
+        return;
+      }
+
+      const b = (await mapPromise).getBounds();
+
+      const query =
+        '[out:json][timeout:15]; (' +
+        ents
+          .map(
+            (ent) =>
+              'nwr' +
+              ent
+                .map(([key, value]) =>
+                  key.startsWith('!')
+                    ? `[!"${key.slice(1)}"]`
+                    : value
+                      ? `["${key}"~"(^|;\\s*)${value}(\\s*;|$)",i]`
+                      : `["${key}"]`,
+                )
+                .join('') +
+              `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})` +
+              ';',
+          )
+          .join('') +
+        `); out center ${limit};`;
+
+      const res = await httpRequest({
+        getState,
+        method: 'POST',
+        url: 'https://overpass.freemap.sk/api/interpreter',
+        // url: 'https://overpass-api.de/api/interpreter',
+        body: `data=${encodeURIComponent(query)}`,
+        expectedStatus: 200,
+        cancelActions: [
+          objectsSetFilter,
+          clearMapFeatures,
+          selectFeature,
+          mapRefocus,
+        ],
+      });
+
+      const result = OverpassResultCenterSchema.parse(await res.json())
+        .elements.filter((e) => e.tags)
+        .map(
+          (e) =>
+            ({
+              id: { type: 'osm', elementType: e.type, id: e.id },
+              coords:
+                e.type === 'node'
+                  ? { lat: e.lat, lon: e.lon }
+                  : {
+                      lat: e.center.lat,
+                      lon: e.center.lon,
+                    },
+              tags: e.tags ?? {},
+            }) satisfies ObjectsResult,
+        );
+
+      if (result.length >= limit) {
+        const om = await loadObjectsMessages(getState().l10n.language);
+
         dispatch(
           toastsAdd({
-            id: 'objects.lowZoomAlert',
-            messageKey: 'objects.lowZoomAlert.message',
-            messageParams: { minZoom },
+            id: 'objects.tooManyPoints',
+            message: om.tooManyPoints({ limit }),
             style: 'warning',
-            actions: [
-              {
-                nameKey: 'objects.lowZoomAlert.zoom',
-                action: [mapRefocus({ zoom: minZoom })],
-              },
-            ],
             cancelType: [
               clearMapFeatures.type,
               mapRefocus.type,
@@ -79,86 +158,19 @@ export const objectsFetchProcessor: Processor = {
             ],
           }),
         );
-      });
+      }
 
-      dispatch(objectsSetResult([]));
+      dispatch(objectsSetResult(result));
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
 
-      return;
-    }
+      const om = await loadObjectsMessages(getState().l10n.language);
 
-    const b = (await mapPromise).getBounds();
-
-    const query =
-      '[out:json][timeout:15]; (' +
-      ents
-        .map(
-          (ent) =>
-            'nwr' +
-            ent
-              .map(([key, value]) =>
-                key.startsWith('!')
-                  ? `[!"${key.slice(1)}"]`
-                  : value
-                    ? `["${key}"~"(^|;\\s*)${value}(\\s*;|$)",i]`
-                    : `["${key}"]`,
-              )
-              .join('') +
-            `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})` +
-            ';',
-        )
-        .join('') +
-      `); out center ${limit};`;
-
-    const res = await httpRequest({
-      getState,
-      method: 'POST',
-      url: 'https://overpass.freemap.sk/api/interpreter',
-      // url: 'https://overpass-api.de/api/interpreter',
-      body: `data=${encodeURIComponent(query)}`,
-      expectedStatus: 200,
-      cancelActions: [
-        objectsSetFilter,
-        clearMapFeatures,
-        selectFeature,
-        mapRefocus,
-      ],
-    });
-
-    const result = OverpassResultCenterSchema.parse(await res.json())
-      .elements.filter((e) => e.tags)
-      .map(
-        (e) =>
-          ({
-            id: { type: 'osm', elementType: e.type, id: e.id },
-            coords:
-              e.type === 'node'
-                ? { lat: e.lat, lon: e.lon }
-                : {
-                    lat: e.center.lat,
-                    lon: e.center.lon,
-                  },
-            tags: e.tags ?? {},
-          }) satisfies ObjectsResult,
-      );
-
-    if (result.length >= limit) {
       dispatch(
-        toastsAdd({
-          id: 'objects.tooManyPoints',
-          messageKey: 'objects.tooManyPoints',
-          messageParams: {
-            limit,
-          },
-          style: 'warning',
-          cancelType: [
-            clearMapFeatures.type,
-            mapRefocus.type,
-            objectsSetFilter.type,
-          ],
-        }),
+        toastsAdd({ style: 'danger', message: om.fetchingError({ err }) }),
       );
     }
-
-    dispatch(objectsSetResult(result));
   },
 };

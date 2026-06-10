@@ -638,37 +638,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     source: 'Forrás',
   },
 
-  objects: {
-    type: 'Típus',
-
-    lowZoomAlert: {
-      message: ({ minZoom }) =>
-        `Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a ${minZoom}. szintre kell nagyítani.`,
-      zoom: 'Nagyítás',
-    },
-
-    fetchingError: ({ err }) =>
-      addError(
-        messages,
-        'Hiba történt az objektumok (POI-k) beolvasásánál',
-        err,
-      ),
-
-    icon: {
-      pin: 'Tű',
-      ring: 'Gyűrű',
-      square: 'Négyzet',
-    },
-
-    convertAsPoint: 'Pontként',
-    convertWithGeometry: 'Teljes geometriával',
-    showAsLookup: 'Megjelenítés találatként',
-    convertAll: 'Minden látható objektum átalakítása rajzzá',
-
-    tooManyPoints: ({ limit }) =>
-      `Az eredmény ${limit} objektumra lett korlátozva.`,
-  },
-
   external: {
     openInExternal: 'Megosztás / megnyitás külső alkalmazásban',
     osm: 'OpenStreetMap',

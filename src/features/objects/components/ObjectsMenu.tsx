@@ -30,9 +30,12 @@ import {
   objectsSetFilter,
   setSelectedIcon,
 } from '../model/actions.js';
+import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
 export default function ObjectsMenu(): ReactElement {
   const m = useMessages();
+
+  const om = useObjectsMessages();
 
   const dispatch = useDispatch();
 
@@ -231,7 +234,7 @@ export default function ObjectsMenu(): ReactElement {
           <Form.Control
             type="search"
             style={{ width: '8em' }}
-            placeholder={m?.objects.type}
+            placeholder={om?.type}
             onChange={handleFilterSet}
             value={filter}
             onFocus={() => {
@@ -266,7 +269,7 @@ export default function ObjectsMenu(): ReactElement {
       />
 
       {hasObjects && (
-        <LongPressTooltip label={m?.objects.convertAll}>
+        <LongPressTooltip label={om?.convertAll}>
           {({ props }) => (
             <Button
               className="ms-1"
