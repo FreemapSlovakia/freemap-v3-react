@@ -1,4 +1,5 @@
 import { getMessageByKey, useMessages } from '@features/l10n/l10nInjector.js';
+import { useTrackingMessages } from '@features/tracking/translations/useTrackingMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { MessagePaths } from '@shared/types/common.js';
 import { useEffect } from 'react';
@@ -17,8 +18,6 @@ const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {
   'map-preferences': 'mapLayers.preferences',
   embed: 'mainMenu.embedMap',
   'support-us': 'mainMenu.supportUs',
-  'tracking-watched': 'tracking.trackedDevices.modalTitle',
-  'tracking-my': 'tracking.devices.modalTitle',
   'my-maps': 'tools.myMaps',
   'current-drawing-properties': 'drawing.edit.title',
   login: 'mainMenu.logIn',
@@ -30,6 +29,8 @@ const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {
 
 export function useHtmlMeta(): void {
   const m = useMessages();
+
+  const tm = useTrackingMessages();
 
   const activeModal = useAppSelector((state) => state.main.activeModal);
 
@@ -46,8 +47,17 @@ export function useHtmlMeta(): void {
 
     const modalKey = activeModal && modalTitleKeys[activeModal];
 
-    const fullTitle =
-      (modalKey ? getMessageByKey(m, modalKey) + ' | ' : '') + title;
+    // tracking modal titles live in the per-feature bundle, not global Messages
+    const modalTitle: string | undefined =
+      activeModal === 'tracking-watched'
+        ? tm?.trackedDevices.modalTitle
+        : activeModal === 'tracking-my'
+          ? tm?.devices.modalTitle
+          : modalKey
+            ? String(getMessageByKey(m, modalKey))
+            : undefined;
+
+    const fullTitle = (modalTitle ? modalTitle + ' | ' : '') + title;
 
     if (titleElement) {
       titleElement.innerText = fullTitle;
@@ -66,5 +76,5 @@ export function useHtmlMeta(): void {
     head
       .querySelector('meta[property="og:description"]')
       ?.setAttribute('content', description);
-  }, [m, activeModal]);
+  }, [m, tm, activeModal]);
 }

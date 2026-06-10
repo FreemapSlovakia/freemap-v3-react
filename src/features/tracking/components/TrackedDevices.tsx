@@ -6,10 +6,13 @@ import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
 import { FaEye, FaPlus, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
+import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 import { TrackedDevice } from './TrackedDevice.js';
 
 export function TrackedDevices(): ReactElement {
   const m = useMessages();
+
+  const tm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -19,16 +22,14 @@ export function TrackedDevices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaEye /> {m?.tracking.trackedDevices.modalTitle}
+          <FaEye /> {tm?.trackedDevices.modalTitle}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <p>{m?.tracking.trackedDevices.desc}</p>
+        <p>{tm?.trackedDevices.desc}</p>
 
-        <Alert variant="warning">
-          {m?.tracking.trackedDevices.storageWarning}
-        </Alert>
+        <Alert variant="warning">{tm?.trackedDevices.storageWarning}</Alert>
 
         {devices.length > 0 && (
           <ListGroup>

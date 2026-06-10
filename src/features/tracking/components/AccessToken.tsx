@@ -28,6 +28,7 @@ import { useDispatch } from 'react-redux';
 import { fixedPopperConfig } from '@/shared/fixedPopperConfig.js';
 import { trackingActions } from '../model/actions.js';
 import { AccessToken as AccessTokenType } from '../model/types.js';
+import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 type Props = {
   accessToken: AccessTokenType;
@@ -36,6 +37,8 @@ type Props = {
 
 export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
   const m = useMessages();
+
+  const tm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -56,15 +59,15 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
   const handleDelete = useCallback(async () => {
     if (
       await confirm({
-        title: m?.tracking.accessToken.deleteTitle,
-        message: m?.tracking.accessToken.delete(accessToken.token),
+        title: tm?.accessToken.deleteTitle,
+        message: tm?.accessToken.delete(accessToken.token),
         confirmLabel: m?.general.delete,
         confirmStyle: 'danger',
       })
     ) {
       dispatch(trackingActions.deleteAccessToken(accessToken.id));
     }
-  }, [accessToken.id, accessToken.token, dispatch, confirm, m]);
+  }, [accessToken.id, accessToken.token, dispatch, confirm, m, tm]);
 
   const handleCopyClick = useCallback(() => {
     copyToClipboard(
@@ -95,21 +98,21 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
 
   if (accessToken.timeFrom) {
     meta.push({
-      label: m?.tracking.accessToken.timeFrom ?? '',
+      label: tm?.accessToken.timeFrom ?? '',
       value: dateFormat.format(accessToken.timeFrom),
     });
   }
 
   if (accessToken.timeTo) {
     meta.push({
-      label: m?.tracking.accessToken.timeTo ?? '',
+      label: tm?.accessToken.timeTo ?? '',
       value: dateFormat.format(accessToken.timeTo),
     });
   }
 
   if (accessToken.note) {
     meta.push({
-      label: m?.tracking.accessToken.note ?? '',
+      label: tm?.accessToken.note ?? '',
       value: accessToken.note,
     });
   }
@@ -173,7 +176,7 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
 
           <Dropdown.Menu popperConfig={fixedPopperConfig}>
             <Dropdown.Item onClick={handleView}>
-              <FaRegEye /> {m?.tracking.devices.watch}
+              <FaRegEye /> {tm?.devices.watch}
             </Dropdown.Item>
 
             <Dropdown.Item onClick={handleModify}>

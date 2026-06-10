@@ -11,9 +11,12 @@ import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { TrackedDevice } from '../model/types.js';
+import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 export function TrackedDeviceForm(): ReactElement {
   const m = useMessages();
+
+  const tm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -113,12 +116,8 @@ export function TrackedDeviceForm(): ReactElement {
         <Modal.Title>
           <FaBullseye />{' '}
           {device && !forceNew
-            ? m?.tracking.trackedDevices.modifyTitle(
-                device.label || device.token,
-              )
-            : m?.tracking.trackedDevices.createTitle(
-                device?.label ?? device?.token,
-              )}
+            ? tm?.trackedDevices.modifyTitle(device.label || device.token)
+            : tm?.trackedDevices.createTitle(device?.label ?? device?.token)}
         </Modal.Title>
       </Modal.Header>
 
@@ -126,7 +125,7 @@ export function TrackedDeviceForm(): ReactElement {
         <Form.Group controlId="token" className="mb-3 ">
           {/* TODD: or ID */}
           <Form.Label className="required">
-            {m?.tracking.trackedDevice.token}
+            {tm?.trackedDevice.token}
           </Form.Label>
 
           <Form.Control
@@ -138,19 +137,19 @@ export function TrackedDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="label" className="mb-3">
-          <Form.Label>{m?.tracking.trackedDevice.label}</Form.Label>
+          <Form.Label>{tm?.trackedDevice.label}</Form.Label>
           <Form.Control value={label} onChange={setLabel} />
         </Form.Group>
 
         <Form.Group controlId="color" className="mb-3">
-          <Form.Label>{m?.tracking.trackedDevice.color}</Form.Label>
+          <Form.Label>{tm?.trackedDevice.color}</Form.Label>
           <InputGroup>
             <Form.Control type="color" value={color} onChange={setColor} />
           </InputGroup>
         </Form.Group>
 
         <Form.Group controlId="width" className="mb-3">
-          <Form.Label>{m?.tracking.trackedDevice.width}</Form.Label>
+          <Form.Label>{tm?.trackedDevice.width}</Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -165,13 +164,13 @@ export function TrackedDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="fromTime" className="mb-3">
-          <Form.Label>{m?.tracking.trackedDevice.fromTime}</Form.Label>
+          <Form.Label>{tm?.trackedDevice.fromTime}</Form.Label>
 
           <DateTime value={fromTime} onChange={setFromTime} />
         </Form.Group>
 
         <Form.Group controlId="maxAge" className="mb-3">
-          <Form.Label>{m?.tracking.trackedDevice.maxAge}</Form.Label>
+          <Form.Label>{tm?.trackedDevice.maxAge}</Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -187,7 +186,7 @@ export function TrackedDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="maxCount" className="mb-3">
-          <Form.Label>{m?.tracking.trackedDevice.maxCount}</Form.Label>
+          <Form.Label>{tm?.trackedDevice.maxCount}</Form.Label>
 
           <Form.Control
             type="number"
@@ -200,7 +199,7 @@ export function TrackedDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="splitDistance" className="mb-3">
-          <Form.Label>{m?.tracking.trackedDevice.splitDistance}</Form.Label>
+          <Form.Label>{tm?.trackedDevice.splitDistance}</Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -216,7 +215,7 @@ export function TrackedDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="splitDuration" className="mb-3">
-          <Form.Label>{m?.tracking.trackedDevice.splitDuration}</Form.Label>
+          <Form.Label>{tm?.trackedDevice.splitDuration}</Form.Label>
 
           <InputGroup>
             <Form.Control

@@ -7,9 +7,12 @@ import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
+import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 export function MyDeviceForm(): ReactElement {
   const m = useMessages();
+
+  const tm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -63,18 +66,16 @@ export function MyDeviceForm(): ReactElement {
         <Modal.Title>
           <FaBullseye />{' '}
           {device
-            ? m?.tracking.devices.modifyTitle({
+            ? tm?.devices.modifyTitle({
                 name: device.name,
               })
-            : m?.tracking.devices.createTitle}
+            : tm?.devices.createTitle}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Form.Group controlId="deviceName" className="mb-3">
-          <Form.Label className="required">
-            {m?.tracking.device.name}
-          </Form.Label>
+          <Form.Label className="required">{tm?.device.name}</Form.Label>
 
           <Form.Control
             type="text"
@@ -92,14 +93,14 @@ export function MyDeviceForm(): ReactElement {
 
           <Form.Control
             type="text"
-            placeholder={m?.tracking.device.generatedToken}
+            placeholder={tm?.device.generatedToken}
             value={token}
             onChange={setToken}
           />
         </Form.Group>
 
         <Form.Group controlId="maxCount" className="mb-3">
-          <Form.Label>{m?.tracking.device.maxCount}</Form.Label>
+          <Form.Label>{tm?.device.maxCount}</Form.Label>
 
           <Form.Control
             type="number"
@@ -112,7 +113,7 @@ export function MyDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="maxAge" className="mb-3">
-          <Form.Label>{m?.tracking.device.maxAge}</Form.Label>
+          <Form.Label>{tm?.device.maxAge}</Form.Label>
 
           <InputGroup>
             <Form.Control

@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import { fixedPopperConfig } from '@/shared/fixedPopperConfig.js';
 import { trackingActions } from '../model/actions.js';
 import { Device as DeviceType } from '../model/types.js';
+import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 type Props = {
   device: DeviceType;
@@ -25,6 +26,8 @@ type Props = {
 
 export function MyDevice({ device }: Props): ReactElement {
   const m = useMessages();
+
+  const tm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -47,15 +50,15 @@ export function MyDevice({ device }: Props): ReactElement {
   const handleDelete = useCallback(async () => {
     if (
       await confirm({
-        title: m?.tracking.devices.deleteTitle,
-        message: m?.tracking.devices.delete(device.name),
+        title: tm?.devices.deleteTitle,
+        message: tm?.devices.delete(device.name),
         confirmLabel: m?.general.delete,
         confirmStyle: 'danger',
       })
     ) {
       dispatch(trackingActions.deleteDevice(device.id));
     }
-  }, [device.id, device.name, dispatch, confirm, m]);
+  }, [device.id, device.name, dispatch, confirm, m, tm]);
 
   const handleShowAccessTokens = useCallback(() => {
     dispatch(trackingActions.showAccessTokens(device.id));
@@ -65,14 +68,14 @@ export function MyDevice({ device }: Props): ReactElement {
 
   if (device.maxCount) {
     meta.push({
-      label: m?.tracking.device.maxCount ?? '',
+      label: tm?.device.maxCount ?? '',
       value: nf.format(device.maxCount),
     });
   }
 
   if (typeof device.maxAge === 'number') {
     meta.push({
-      label: m?.tracking.device.maxAge ?? '',
+      label: tm?.device.maxAge ?? '',
       value: `${nf.format(device.maxAge / 60)} ${m?.general.minutes}`,
     });
   }
@@ -143,11 +146,11 @@ export function MyDevice({ device }: Props): ReactElement {
             </Dropdown.Item>
 
             <Dropdown.Item onClick={handleShowAccessTokens}>
-              <FaKey /> {m?.tracking.devices.watchTokens}
+              <FaKey /> {tm?.devices.watchTokens}
             </Dropdown.Item>
 
             <Dropdown.Item onClick={() => setShowQr(true)}>
-              <SiTraccar /> {m?.tracking.devices.traccarQrCode}
+              <SiTraccar /> {tm?.devices.traccarQrCode}
             </Dropdown.Item>
 
             <Dropdown.Divider />

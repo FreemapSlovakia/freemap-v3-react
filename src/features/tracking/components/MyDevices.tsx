@@ -6,10 +6,13 @@ import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
 import { FaMobileAlt, FaPlus, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
+import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 import { MyDevice } from './MyDevice.js';
 
 export function MyDevices(): ReactElement {
   const m = useMessages();
+
+  const tm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -23,12 +26,12 @@ export function MyDevices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaMobileAlt /> {m?.tracking.devices.modalTitle}
+          <FaMobileAlt /> {tm?.devices.modalTitle}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <Alert variant="secondary">{m?.tracking.devices.desc()}</Alert>
+        <Alert variant="secondary">{tm?.devices.desc()}</Alert>
 
         {devices.length > 0 && (
           <ListGroup>

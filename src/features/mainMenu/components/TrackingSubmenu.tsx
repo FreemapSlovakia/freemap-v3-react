@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useTrackingMessages } from '@features/tracking/translations/useTrackingMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
@@ -16,6 +17,8 @@ import { SubmenuHeader } from './SubmenuHeader.js';
 export function TrackingSubmenu(): ReactElement {
   const m = useMessages();
 
+  const tm = useTrackingMessages();
+
   const trackingDisplay = useAppSelector(
     (state) => state.tracking.showPoints + ',' + state.tracking.showLine,
   );
@@ -25,12 +28,11 @@ export function TrackingSubmenu(): ReactElement {
       <SubmenuHeader icon={<FaBullseye />} title={m?.tools.tracking} />
 
       <Dropdown.Item {...modalMenuItemProps('tracking-watched')}>
-        <FaRegEye /> {m?.tracking.trackedDevices.button} <kbd>g</kbd>{' '}
-        <kbd>w</kbd>
+        <FaRegEye /> {tm?.trackedDevices.button} <kbd>g</kbd> <kbd>w</kbd>
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('tracking-my')}>
-        <FaMobileAlt /> {m?.tracking.devices.button} <kbd>g</kbd> <kbd>d</kbd>
+        <FaMobileAlt /> {tm?.devices.button} <kbd>g</kbd> <kbd>d</kbd>
       </Dropdown.Item>
 
       <Dropdown.Divider />
@@ -45,7 +47,7 @@ export function TrackingSubmenu(): ReactElement {
         ) : (
           <FaRegCircle />
         )}{' '}
-        {m?.tracking.visual.points}
+        {tm?.visual.points}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" eventKey="tracking-visual-01">
@@ -54,7 +56,7 @@ export function TrackingSubmenu(): ReactElement {
         ) : (
           <FaRegCircle />
         )}{' '}
-        {m?.tracking.visual.line}
+        {tm?.visual.line}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" eventKey="tracking-visual-11">
@@ -63,7 +65,7 @@ export function TrackingSubmenu(): ReactElement {
         ) : (
           <FaRegCircle />
         )}{' '}
-        {m?.tracking.visual['line+points']}
+        {tm?.visual['line+points']}
       </Dropdown.Item>
     </>
   );

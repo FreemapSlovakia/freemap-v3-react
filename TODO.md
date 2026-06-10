@@ -32,7 +32,11 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   `errorKey` for an explicit try/catch that skips `AbortError` and resolves the
   message via `loadMyMapsMessages`, so even the error strings left the global
   blob. Its two layer-concern keys (`legacy` tooltip + the JSX `legacyMapWarning`
-  processor toast) moved to the global `mapLayers` namespace. Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a non-component (e.g. `mapLayers.legacyMapWarning`), since toast `message` is typed `string`.
+  processor toast) moved to the global `mapLayers` namespace. And `tracking` →
+  its own bundle, leaving only the two JSX websocket-toast keys
+  (`subscribeNotFound`/`subscribeError`) in a minimal global `tracking` block;
+  `useHtmlMeta` resolves the two tracking modal titles from the bundle instead of
+  the global key-map. Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a non-component (e.g. `mapLayers.legacyMapWarning`), since toast `message` is typed `string`.
 
 ## Softer / design opinions
 

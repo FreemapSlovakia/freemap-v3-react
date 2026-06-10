@@ -13,6 +13,7 @@ import { FaEdit, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { TrackedDevice as TrackedDeviceType } from '../model/types.js';
+import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 type Props = {
   device: TrackedDeviceType;
@@ -20,6 +21,8 @@ type Props = {
 
 export function TrackedDevice({ device }: Props): ReactElement {
   const m = useMessages();
+
+  const tm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -45,35 +48,35 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
   if (device.fromTime) {
     meta.push({
-      label: m?.tracking.trackedDevice.fromTime ?? '',
+      label: tm?.trackedDevice.fromTime ?? '',
       value: dateFormat.format(device.fromTime),
     });
   }
 
   if (typeof device.maxAge === 'number') {
     meta.push({
-      label: m?.tracking.trackedDevice.maxAge ?? '',
+      label: tm?.trackedDevice.maxAge ?? '',
       value: `${nf.format(device.maxAge / 60)} ${m?.general.minutes}`,
     });
   }
 
   if (device.maxCount) {
     meta.push({
-      label: m?.tracking.trackedDevice.maxCount ?? '',
+      label: tm?.trackedDevice.maxCount ?? '',
       value: nf.format(device.maxCount),
     });
   }
 
   if (device.splitDistance) {
     meta.push({
-      label: m?.tracking.trackedDevice.splitDistance ?? '',
+      label: tm?.trackedDevice.splitDistance ?? '',
       value: nf.format(device.splitDistance),
     });
   }
 
   if (device.splitDuration) {
     meta.push({
-      label: m?.tracking.trackedDevice.splitDuration ?? '',
+      label: tm?.trackedDevice.splitDuration ?? '',
       value: nf.format(device.splitDuration),
     });
   }

@@ -8,9 +8,12 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
+import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 export function AccessTokenForm(): ReactElement {
   const m = useMessages();
+
+  const tm = useTrackingMessages();
 
   const dispatch = useDispatch();
 
@@ -65,29 +68,29 @@ export function AccessTokenForm(): ReactElement {
         <Modal.Title>
           <FaBullseye />{' '}
           {accessToken
-            ? m?.tracking.accessTokens.modifyTitle({
+            ? tm?.accessTokens.modifyTitle({
                 token: accessToken.token,
                 deviceName,
               })
-            : m?.tracking.accessTokens.createTitle(deviceName)}
+            : tm?.accessTokens.createTitle(deviceName)}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Form.Group controlId="timeFrom" className="mb-3">
-          <Form.Label>{m?.tracking.accessToken.timeFrom}</Form.Label>
+          <Form.Label>{tm?.accessToken.timeFrom}</Form.Label>
 
           <DateTime value={timeFrom} onChange={setTimeFrom} />
         </Form.Group>
 
         <Form.Group controlId="timeTo" className="mb-3">
-          <Form.Label>{m?.tracking.accessToken.timeTo}</Form.Label>
+          <Form.Label>{tm?.accessToken.timeTo}</Form.Label>
 
           <DateTime value={timeTo} onChange={setTimeTo} />
         </Form.Group>
 
         {/* <Form.Group  controlId="listingLabel" className="mb-3">
-          <Form.Label>{m?.tracking.accessToken.listingLabel}</Form.Label>
+          <Form.Label>{tm?.accessToken.listingLabel}</Form.Label>
           <Form.Control
             value={listingLabel}
             onChange={setListingLabel}
@@ -96,7 +99,7 @@ export function AccessTokenForm(): ReactElement {
         </Form.Group> */}
 
         <Form.Group controlId="note" className="mb-3">
-          <Form.Label>{m?.tracking.accessToken.note}</Form.Label>
+          <Form.Label>{tm?.accessToken.note}</Form.Label>
 
           <Form.Control value={note} onChange={setNote} maxLength={255} />
         </Form.Group>
