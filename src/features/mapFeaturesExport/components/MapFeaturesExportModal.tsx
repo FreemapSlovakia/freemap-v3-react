@@ -38,6 +38,7 @@ import {
   ExportTypeSchema,
   exportMapFeatures,
 } from '../model/actions.js';
+import { useMapFeaturesExportMessages } from '../translations/useMapFeaturesExportMessages.js';
 import {
   ExportablesSelector,
   exportableDefinitions,
@@ -64,6 +65,8 @@ const toExportTarget = (value: string | null) =>
 
 export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const em = useMapFeaturesExportMessages();
 
   const dispatch = useDispatch();
 
@@ -117,8 +120,8 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
           await confirm({
             message:
               userHasGarmin === false
-                ? m?.exportMapFeatures.garmin.connectPrompt
-                : m?.exportMapFeatures.garmin.authPrompt,
+                ? em?.garmin.connectPrompt
+                : em?.garmin.authPrompt,
           })
         ) {
           dispatch(
@@ -138,7 +141,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
       description,
       activity,
       userHasGarmin,
-      m,
+      em,
       confirm,
     ],
   );
@@ -240,10 +243,10 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <Alert variant="warning">{m?.exportMapFeatures.licenseAlert}</Alert>
+          <Alert variant="warning">{em?.licenseAlert}</Alert>
 
           <Form.Group controlId="target" className="mb-3">
-            <Form.Label>{m?.exportMapFeatures.target}</Form.Label>
+            <Form.Label>{em?.target}</Form.Label>
 
             <div>
               <ButtonGroup>
@@ -262,7 +265,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                       {
                         download: (
                           <>
-                            <FaDownload /> {m?.exportMapFeatures.download}
+                            <FaDownload /> {em?.download}
                           </>
                         ),
                         gdrive: (
@@ -298,9 +301,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
           {isGarmin ? (
             <>
               <Form.Group controlId="courseName" className="mb-3">
-                <Form.Label>
-                  {m?.exportMapFeatures.garmin.courseName}
-                </Form.Label>
+                <Form.Label>{em?.garmin.courseName}</Form.Label>
 
                 <Form.Control
                   value={name}
@@ -309,9 +310,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
               </Form.Group>
 
               <Form.Group controlId="description" className="mb-3">
-                <Form.Label>
-                  {m?.exportMapFeatures.garmin.description}
-                </Form.Label>
+                <Form.Label>{em?.garmin.description}</Form.Label>
 
                 <Form.Control
                   as="textarea"
@@ -323,7 +322,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
               <Form.Group className="mb-3">
                 <Form.Label className="d-block">
-                  {m?.exportMapFeatures.garmin.activityType}
+                  {em?.garmin.activityType}
                 </Form.Label>
 
                 <div>
@@ -340,7 +339,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                           setActivity(activity === value ? '' : value)
                         }
                       >
-                        {m?.exportMapFeatures.garmin.at[labelKey]}
+                        {em?.garmin.at[labelKey]}
                       </ToggleButton>
                     ))}
                   </ButtonGroup>
@@ -349,7 +348,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
             </>
           ) : (
             <Form.Group controlId="format" className="mb-3">
-              <Form.Label>{m?.exportMapFeatures.format}</Form.Label>
+              <Form.Label>{em?.format}</Form.Label>
 
               <div>
                 <ButtonGroup>
@@ -407,7 +406,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                           disabled={!value}
                           onChange={() => handleCheckboxChange(type)}
                         >
-                          {icon} {m?.exportMapFeatures.what[type]}
+                          {icon} {em?.what[type]}
                         </ToggleButton>
                       );
                     })}
@@ -422,7 +421,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                   )
                   .map(([type, icon]) => (
                     <Form.Text key={type} className="d-block text-danger mt-2">
-                      {icon} {m?.exportMapFeatures.what[type]}{' '}
+                      {icon} {em?.what[type]}{' '}
                       {garminExportables?.[type] as string}
                     </Form.Text>
                   ))}
@@ -436,7 +435,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
             )}
 
             <Form.Text muted className="d-block mt-1">
-              {m?.exportMapFeatures.disabledAlert}
+              {em?.disabledAlert}
             </Form.Text>
           </Form.Group>
         </Modal.Body>

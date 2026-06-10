@@ -6,6 +6,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
 import { getExportables } from '../../garminExport.js';
+import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
 import { exportMapFeatures } from '../actions.js';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
@@ -73,12 +74,14 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   if (res.status === 401 && body === 'invalid oauth token') {
     dispatch(authWithGarmin({ connect: false, successAction: action }));
   } else if (res.status === 403 && body === 'missing permission') {
+    const em = await loadMapFeaturesExportMessages(getState().l10n.language);
+
     dispatch(
       toastsAdd({
         id: 'mapFeaturesExport',
         timeout: 5000,
         style: 'danger',
-        messageKey: 'exportMapFeatures.garmin.revoked',
+        message: em.garmin.revoked,
       }),
     );
   } else {

@@ -4,6 +4,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadGapi, startGoogleAuth } from '@shared/gapiLoader.js';
 import { hasProperty } from '@shared/types/typeUtils.js';
 import { Dispatch } from 'redux';
+import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
 import { ExportTarget } from '../actions.js';
 
 export const licenseNotice =
@@ -104,7 +105,9 @@ export async function upload(
           id: 'mapFeaturesExport',
           style: 'info',
           timeout: 5000,
-          messageKey: 'exportMapFeatures.exportedToDropbox',
+          message: (
+            await loadMapFeaturesExportMessages(getState().l10n.language)
+          ).exportedToDropbox,
         }),
       );
 
@@ -213,7 +216,9 @@ export async function upload(
           id: 'mapFeaturesExport',
           style: 'info',
           timeout: 5000,
-          messageKey: 'exportMapFeatures.exportedToGdrive',
+          message: (
+            await loadMapFeaturesExportMessages(getState().l10n.language)
+          ).exportedToGdrive,
         }),
       );
 

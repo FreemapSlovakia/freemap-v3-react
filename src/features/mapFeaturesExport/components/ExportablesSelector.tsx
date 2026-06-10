@@ -1,4 +1,3 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, ReactNode } from 'react';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
@@ -15,6 +14,7 @@ import {
 import { MdTimeline } from 'react-icons/md';
 import { TbMapPins } from 'react-icons/tb';
 import type { Exportable } from '../model/actions.js';
+import { useMapFeaturesExportMessages } from '../translations/useMapFeaturesExportMessages.js';
 
 // The selectable map-feature sources, in display order, with their icon and
 // whether Garmin Connect can receive them.
@@ -97,7 +97,7 @@ export function ExportablesSelector({
   available,
   onChange,
 }: Props): ReactElement {
-  const m = useMessages();
+  const em = useMapFeaturesExportMessages();
 
   const toggle = (type: Exportable) => {
     let next = value;
@@ -131,7 +131,7 @@ export function ExportablesSelector({
               disabled={!available.includes('|' + type + '|')}
               onChange={() => toggle(type)}
             >
-              {icon} {m?.exportMapFeatures.what[type]}
+              {icon} {em?.what[type]}
             </ToggleButton>
 
             <ToggleButton
@@ -143,8 +143,7 @@ export function ExportablesSelector({
               disabled={!value.includes('|' + type + '|')}
               onChange={() => toggle('plannedRouteWithStops')}
             >
-              <FaMapSigns />{' '}
-              {m?.exportMapFeatures.what['plannedRouteWithStops']}
+              <FaMapSigns /> {em?.what['plannedRouteWithStops']}
             </ToggleButton>
           </ButtonGroup>
         ) : (
@@ -158,7 +157,7 @@ export function ExportablesSelector({
             disabled={!available.includes('|' + type + '|')}
             onChange={() => toggle(type)}
           >
-            {icon} {m?.exportMapFeatures.what[type]}
+            {icon} {em?.what[type]}
           </ToggleButton>
         ),
       )}

@@ -674,50 +674,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorLoading: 'Dokument se nepodařilo načíst.',
   },
 
-  exportMapFeatures: {
-    download: 'Stáhnout',
-    format: 'Formát',
-    target: 'Cíl',
-    exportError: ({ err }) => addError(messages, 'Chyba exportu', err),
-    what: {
-      plannedRoute: 'vyhledanou trasu',
-      plannedRouteWithStops: 'se zastávkami',
-      objects: 'objekty (POI)',
-      pictures: 'fotografie (ve viditelné části mapy)',
-      drawingLines: 'kreslení - čáry',
-      drawingAreas: 'kreslení - polygony',
-      drawingPoints: 'kreslení - body',
-      tracking: 'sledování',
-      import: 'importovaný soubor',
-      search: 'nález',
-    },
-    disabledAlert:
-      'Aktivní jsou pouze volby jejichž objekty se nacházejí na mapě.',
-    licenseAlert:
-      'Exportovaný soubor může podléhat různým licencím, například licenci OpenStreetMap. Prosím dodržte podmínky těchto licencí při sdílení vyexportovaného souboru.',
-    exportedToDropbox: 'Soubor byl uložen do Dropboxu.',
-    exportedToGdrive: 'Soubor byl uložen do Google Drive.',
-    garmin: {
-      courseName: 'Název kurzu',
-      description: 'Popis',
-      activityType: 'Typ aktivity',
-      at: {
-        running: 'Běh',
-        hiking: 'Turistika',
-        other: 'Jiné',
-        mountain_biking: 'Horská cyklistika',
-        trailRunning: 'Trailový běh',
-        roadCycling: 'Silniční cyklistika',
-        gravelCycling: 'Štěrková cyklistika',
-      },
-      revoked: 'Export kurzu do Garminu byl zrušen.',
-      connectPrompt:
-        'Garmin účet ještě nemáte připojen. Chcete jej připojit nyní?',
-      authPrompt:
-        'Nejste ještě přihlášen Garminon. Přejete se přihlásit tetaz?',
-    },
-  },
-
   auth: {
     logIn: {
       with: 'Vyberte poskytovatele přihlášení',
@@ -898,7 +854,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-
   // check/improve translation
   mapCtxMenu: {
     centerMap: 'Zde centrovat mapu',
@@ -995,7 +950,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
   },
-
 
   errorStatus: {
     100: 'Pokračovat',

@@ -684,53 +684,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorLoading: 'Błąd podczas ładowania dokumentu.',
   },
 
-  exportMapFeatures: {
-    what: {
-      plannedRoute: 'znaleziona trasa',
-      plannedRouteWithStops: 'z przystankami',
-      objects: 'obiekty (POI)',
-      pictures: 'zdjęcia (w widocznym obszarze mapy)',
-      drawingLines: 'rysowanie – linie',
-      drawingAreas: 'rysowanie – poligony',
-      drawingPoints: 'rysowanie – punkty',
-      tracking: 'śledzenie na żywo',
-      import: 'zaimportowany plik',
-      search: 'wynik',
-    },
-
-    garmin: {
-      at: {
-        running: 'Bieganie',
-        hiking: 'Turystyka piesza',
-        other: 'Inne',
-        mountain_biking: 'Kolarstwo górskie',
-        trailRunning: 'Bieg terenowy',
-        roadCycling: 'Kolarstwo szosowe',
-        gravelCycling: 'Kolarstwo żwirowe',
-      },
-
-      courseName: 'Nazwa trasy',
-      description: 'Opis',
-      activityType: 'Typ aktywności',
-      revoked: 'Eksport trasy do Garmin został anulowany.',
-      connectPrompt:
-        'Twoje konto Garmin nie jest jeszcze podłączone. Chcesz je teraz połączyć?',
-      authPrompt:
-        'Nie jesteś jeszcze zalogowany do Garmin. Chcesz się teraz zalogować?',
-    },
-
-    download: 'Pobierz',
-    format: 'Format',
-    target: 'Cel',
-    exportError: ({ err }) => addError(messages, 'Błąd eksportu', err),
-    disabledAlert:
-      'Tylko opcje, których obiekty są widoczne na mapie, są aktywne.',
-    licenseAlert:
-      'Do pliku mogą mieć zastosowanie różne licencje – np. OpenStreetMap. Pamiętaj o podaniu wymaganych informacji przy udostępnianiu.',
-    exportedToDropbox: 'Plik został zapisany na Dropboxie.',
-    exportedToGdrive: 'Plik został zapisany na Dysku Google.',
-  },
-
   auth: {
     connect: {
       label: 'Połącz',
@@ -912,7 +865,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-
   mapCtxMenu: {
     centerMap: 'Wyśrodkuj mapę tutaj',
     measurePosition: 'Sprawdź współrzędne i wysokość',
@@ -1011,7 +963,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-
   errorStatus: {
     100: 'Kontynuuj',
     101: 'Przełączanie protokołów',
@@ -1085,7 +1036,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorRequestingDevice: 'Nie udało się utworzyć urządzenia GPU: ',
     other: 'Błąd podczas renderowania: ',
   },
-
 };
 
 export default messages;

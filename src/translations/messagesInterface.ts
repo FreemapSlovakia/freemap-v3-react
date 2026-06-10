@@ -492,45 +492,6 @@ export type Messages = {
   documents: {
     errorLoading: string;
   };
-  exportMapFeatures: {
-    download: string;
-    format: string;
-    target: string;
-    exportError: (props: Err) => string;
-    what: {
-      plannedRoute: string;
-      plannedRouteWithStops: string;
-      objects: string;
-      pictures: string;
-      drawingLines: string;
-      drawingAreas: string;
-      drawingPoints: string;
-      tracking: string;
-      import: string;
-      search: string;
-    };
-    disabledAlert: string;
-    licenseAlert: string;
-    exportedToDropbox: string;
-    exportedToGdrive: string;
-    garmin: {
-      courseName: string;
-      description: string;
-      activityType: string;
-      at: {
-        running: string;
-        hiking: string;
-        other: string;
-        mountain_biking: string;
-        trailRunning: string;
-        roadCycling: string;
-        gravelCycling: string;
-      };
-      revoked: string;
-      connectPrompt: string;
-      authPrompt: string;
-    };
-  };
   auth: {
     connect: {
       label: string;
