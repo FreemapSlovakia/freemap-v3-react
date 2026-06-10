@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -249,6 +250,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     parseInt(ratingFrom, 10) ?? 1,
     5,
   );
+
+  useDocumentTitle(show ? m?.gallery.filterModal.title : undefined);
 
   return (
     <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">

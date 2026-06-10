@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -26,6 +27,8 @@ export default function SupportUsModal({ show }: Props): ReactElement {
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
+
+  useDocumentTitle(show ? m?.mainMenu.supportUs : undefined);
 
   return (
     <Modal show={show} onHide={close}>

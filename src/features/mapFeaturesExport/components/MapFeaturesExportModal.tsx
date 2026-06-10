@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { authWithGarmin } from '@features/auth/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
@@ -67,6 +68,8 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const em = useMapFeaturesExportMessages();
+
+  useDocumentTitle(show ? m?.mainMenu.mapFeaturesExport : undefined);
 
   const dispatch = useDispatch();
 

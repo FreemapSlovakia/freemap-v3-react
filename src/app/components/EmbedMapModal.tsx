@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
@@ -193,6 +194,8 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
     },
     [cookiesEnabled],
   );
+
+  useDocumentTitle(show ? m?.mainMenu.embedMap : undefined);
 
   return (
     <Modal

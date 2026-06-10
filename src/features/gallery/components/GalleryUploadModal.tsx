@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
@@ -190,6 +191,8 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
       setDraggingOverDropzone(false);
     }
   }, [show]);
+
+  useDocumentTitle(show ? m?.gallery.uploadModal.title : undefined);
 
   return (
     <Modal

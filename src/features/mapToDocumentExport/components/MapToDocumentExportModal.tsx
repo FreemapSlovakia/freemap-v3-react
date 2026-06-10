@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
@@ -62,6 +63,8 @@ export default function MapToDocumentExportModal({
   const m = useMessages();
 
   const mtde = useMapToDocumentExportMessages();
+
+  useDocumentTitle(show ? m?.mainMenu.mapToDocumentExport : undefined);
 
   const {
     area,

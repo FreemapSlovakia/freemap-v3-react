@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import {
   authDeleteAccount,
@@ -66,6 +67,8 @@ export default function AccountModal({ show }: Props): ReactElement | null {
       }),
     );
   }, [dispatch]);
+
+  useDocumentTitle(show ? m?.mainMenu.account : undefined);
 
   if (!user) {
     return null;

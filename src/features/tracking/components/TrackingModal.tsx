@@ -1,8 +1,10 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
+import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 import { AccessTokenForm } from './AccessTokenForm.js';
 import { AccessTokens } from './AccessTokens.js';
 import { MyDeviceForm } from './MyDeviceForm.js';
@@ -21,6 +23,10 @@ import { TrackedDevices } from './TrackedDevices.js';
 type Props = { show: boolean };
 
 export default function TrackingModal({ show }: Props): ReactElement {
+  const isMy = useAppSelector(
+    (state) => state.main.activeModal === 'tracking-my',
+  );
+
   const view = useAppSelector((state) =>
     state.main.activeModal === 'tracking-my'
       ? state.tracking.modifiedDeviceId !== undefined
@@ -33,6 +39,16 @@ export default function TrackingModal({ show }: Props): ReactElement {
       : state.tracking.modifiedTrackedDevice !== undefined
         ? 'trackedDeviceForm'
         : 'trackedDevices',
+  );
+
+  const tm = useTrackingMessages();
+
+  useDocumentTitle(
+    !show
+      ? undefined
+      : isMy
+        ? tm?.devices.modalTitle
+        : tm?.trackedDevices.modalTitle,
   );
 
   const dispatch = useDispatch();

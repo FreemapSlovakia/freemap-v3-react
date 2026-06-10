@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { type ReactElement, useCallback, useState } from 'react';
@@ -20,6 +21,8 @@ export default function MyMapsModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const [editTarget, setEditTarget] = useState<MapMeta | 'new' | null>(null);
+
+  useDocumentTitle(show ? m?.tools.myMaps : undefined);
 
   return (
     <Modal

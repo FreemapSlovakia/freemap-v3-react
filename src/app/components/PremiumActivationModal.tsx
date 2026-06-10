@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
@@ -11,6 +12,8 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  useDocumentTitle(show ? m?.premium.title : undefined);
 
   function close() {
     dispatch(setActiveModal(null));

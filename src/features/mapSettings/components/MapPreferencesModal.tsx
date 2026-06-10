@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
@@ -58,6 +59,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   );
 
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
+
+  useDocumentTitle(show ? m?.mapLayers.preferences : undefined);
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));

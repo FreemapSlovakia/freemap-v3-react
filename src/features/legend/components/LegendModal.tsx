@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -55,6 +56,8 @@ export default function LegendModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const lm = useLegendMessages();
+
+  useDocumentTitle(show ? m?.mainMenu.mapLegend : undefined);
 
   function getSingleLegend(type: string) {
     return type === 'X' ? (

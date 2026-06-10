@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import { IconPicker } from '@features/drawing/components/IconPicker.js';
 import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
@@ -372,6 +373,8 @@ export default function CurrentDrawingPropertiesModal({
   );
 
   const invalidWidth = isInvalidFloat(editedWidth, false, 1, 99);
+
+  useDocumentTitle(show ? m?.drawing.edit.title : undefined);
 
   return (
     <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">

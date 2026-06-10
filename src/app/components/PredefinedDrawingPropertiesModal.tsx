@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
@@ -87,6 +88,8 @@ export default function PredefinedDrawingPropertiesModal({
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
+
+  useDocumentTitle(show ? m?.drawing.defProps.menuItem : undefined);
 
   return (
     <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">

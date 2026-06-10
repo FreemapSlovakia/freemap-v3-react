@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
@@ -43,6 +44,8 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
   const [showInMenu, setShowInMenu] = useState(true);
 
   const [showInToolbar, setShowInToolbar] = useState(false);
+
+  useDocumentTitle(show ? m?.mapLayers.customMaps : undefined);
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));

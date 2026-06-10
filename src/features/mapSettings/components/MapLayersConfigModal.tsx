@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -27,6 +28,8 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
+
+  useDocumentTitle(show ? m?.mapLayers.configureLayers : undefined);
 
   const handleSubmit = useCallback(
     (e: SubmitEvent) => {

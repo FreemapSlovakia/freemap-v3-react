@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
@@ -21,6 +22,8 @@ export default function AboutModal({ show }: Props): ReactElement {
   }
 
   const language = useAppSelector((state) => state.l10n.language);
+
+  useDocumentTitle(show ? m?.mainMenu.contacts : undefined);
 
   return (
     <Modal show={show} onHide={close}>

@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
@@ -22,6 +23,8 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const tvm = useTrackViewerMessages();
+
+  useDocumentTitle(show ? tvm?.uploadModal.title : undefined);
 
   const dispatch = useDispatch();
 

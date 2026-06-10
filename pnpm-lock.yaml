@@ -276,9 +276,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.17)
-      '@types/react-helmet':
-        specifier: ^6.1.11
-        version: 6.1.11
       '@types/react-rangeslider':
         specifier: ^2.2.7
         version: 2.2.7
@@ -1689,9 +1686,6 @@ packages:
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
     peerDependencies:
       '@types/react': ^19.2.0
-
-  '@types/react-helmet@6.1.11':
-    resolution: {integrity: sha512-0QcdGLddTERotCXo3VFlUSWO3ztraw8nZ6e3zJSgG7apwV5xt+pJUS8ewPBqT4NYB1optGLprNQzFleIY84u/g==}
 
   '@types/react-rangeslider@2.2.7':
     resolution: {integrity: sha512-6DVyCxcbwX/Ek11qHADb5sNGkGO+JXvmPhKXKG+GZcuGUT8W7t40ZBPEVgsTaRdNc4PZn8f9iK+eiwl8dwSB/Q==}
@@ -4843,10 +4837,6 @@ snapshots:
   '@types/rbush@4.0.0': {}
 
   '@types/react-dom@19.2.3(@types/react@19.2.17)':
-    dependencies:
-      '@types/react': 19.2.17
-
-  '@types/react-helmet@6.1.11':
     dependencies:
       '@types/react': 19.2.17
 
