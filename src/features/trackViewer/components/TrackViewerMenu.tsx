@@ -17,6 +17,7 @@ import { type ReactElement, useCallback } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
+  FaCloudDownloadAlt,
   FaCloudUploadAlt,
   FaInfoCircle,
   FaPaintBrush,
@@ -109,6 +110,30 @@ export function TrackViewerMenu(): ReactElement {
           )}
         </LongPressTooltip>
       )}
+
+      {canUpload && (
+        <LongPressTooltip breakpoint="sm" label={tvm?.strava.title}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => {
+                // Just open the picker; when Strava isn't linked the modal
+                // shows the official "Connect with Strava" button and
+                // auto-loads once linked.
+                dispatch(setActiveModal('strava-import'));
+              }}
+              {...props}
+            >
+              <FaCloudDownloadAlt />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
+
+      {/* Separate the import actions from the loaded-track actions. */}
+      {canUpload && hasTrack && <div className=" ms-1 vr align-self-stretch" />}
 
       {enableElevationChart && (
         <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>

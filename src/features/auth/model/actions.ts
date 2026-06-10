@@ -8,6 +8,8 @@ import type { AuthProvider, User } from './types.js';
 export const authWithPopupOAuth = createAction<{
   provider: PopupOAuthProvider;
   connect: boolean;
+  // Dispatched once the login/connect succeeds (e.g. to reopen a modal).
+  successAction?: Action;
 }>('AUTH_WITH_POPUP_OAUTH');
 
 // Second stage shared by all popup OAuth providers: the callback relayed a
@@ -16,6 +18,7 @@ export const authWithOAuthCode = createAction<{
   provider: PopupOAuthProvider;
   connect: boolean;
   code: string;
+  successAction?: Action;
 }>('AUTH_WITH_OAUTH_CODE');
 
 export const authWithFacebook = createAction<{

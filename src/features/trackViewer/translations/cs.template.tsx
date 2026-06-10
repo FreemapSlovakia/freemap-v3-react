@@ -35,6 +35,16 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     title: 'Importovat soubor',
     drop: 'Přetáhněte sem soubor GPX nebo GeoJSON, nebo sem klikněte pro jeho výběr.',
   },
+  strava: {
+    title: 'Importovat ze Stravy',
+    intro:
+      'Vyberte jednu ze svých aktivit na Stravě a importujte ji jako trasu.',
+    empty: 'Nebyly nalezeny žádné aktivity.',
+    loadError: 'Nepodařilo se načíst vaše aktivity ze Stravy.',
+    importError: 'Nepodařilo se importovat aktivitu.',
+    notConnected: 'Pro import aktivit propojte svůj účet se Stravou.',
+    connect: 'Propojit se Stravou',
+  },
   shareToast:
     'Trasa byla uložena na server a můžete ji sdílet zkopírovaním URL stránky.',
   fetchingError: ({ err }) =>

@@ -28,6 +28,8 @@ export function attachOAuthLoginMessageHandler(store: MyStore): void {
       return; // not started by this tab, or already handled
     }
 
+    const successAction = pendingOAuthLogins.get(nonce);
+
     pendingOAuthLogins.delete(nonce);
 
     bc.postMessage({ ok: true }); // tell the popup it can close
@@ -38,6 +40,7 @@ export function attachOAuthLoginMessageHandler(store: MyStore): void {
           provider: provider as keyof typeof popupOAuthProviders,
           code,
           connect: connect === 'true',
+          successAction,
         }),
       );
     }
