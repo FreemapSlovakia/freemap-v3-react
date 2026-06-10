@@ -32,11 +32,14 @@ import {
   trackViewerToggleElevationChart,
   trackViewerUploadTrack,
 } from '../model/actions.js';
+import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 export default TrackViewerMenu;
 
 export function TrackViewerMenu(): ReactElement {
   const m = useMessages();
+
+  const tvm = useTrackViewerMessages();
 
   const dispatch = useDispatch();
 
@@ -90,7 +93,7 @@ export function TrackViewerMenu(): ReactElement {
   return (
     <ToolMenu>
       {canUpload && (
-        <LongPressTooltip breakpoint="sm" label={m?.trackViewer.upload}>
+        <LongPressTooltip breakpoint="sm" label={tvm?.upload}>
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"
@@ -138,8 +141,7 @@ export function TrackViewerMenu(): ReactElement {
           }}
         >
           <Dropdown.Toggle id="colorizing_mode" variant="secondary">
-            <FaPaintBrush />{' '}
-            {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
+            <FaPaintBrush /> {tvm?.colorizingMode[colorizeTrackBy ?? 'none']}
           </Dropdown.Toggle>
 
           <Dropdown.Menu popperConfig={fixedPopperConfig}>
@@ -150,7 +152,7 @@ export function TrackViewerMenu(): ReactElement {
                 active={mode === colorizeTrackBy}
                 disabled={mode !== undefined && !isModeAvailable(mode)}
               >
-                {m?.trackViewer.colorizingMode[mode ?? 'none']}
+                {tvm?.colorizingMode[mode ?? 'none']}
               </Dropdown.Item>
             ))}
           </Dropdown.Menu>
@@ -158,7 +160,7 @@ export function TrackViewerMenu(): ReactElement {
       )}
 
       {enableElevationChart && (
-        <LongPressTooltip breakpoint="sm" label={m?.trackViewer.moreInfo}>
+        <LongPressTooltip breakpoint="sm" label={tvm?.moreInfo}>
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"
@@ -186,7 +188,7 @@ export function TrackViewerMenu(): ReactElement {
       )}
 
       {canUpload && hasTrack && (
-        <LongPressTooltip breakpoint="sm" label={m?.trackViewer.share}>
+        <LongPressTooltip breakpoint="sm" label={tvm?.share}>
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"

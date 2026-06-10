@@ -7,8 +7,9 @@ import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { distance } from '@turf/distance';
 import { Geometry } from 'geojson';
 import type { ReactElement } from 'react';
-import { Messages } from '@/translations/messagesInterface.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
+import { TrackViewerMessages } from '../translations/TrackViewerMessages.js';
+import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 export function TrackViewerDetails(): ReactElement | null {
   const trackGeojson = useAppSelector(
@@ -26,6 +27,8 @@ export function TrackViewerDetailsInt({
   geometry: Geometry;
 }): ReactElement | null {
   const m = useMessages();
+
+  const tvm = useTrackViewerMessages();
 
   const [startPoints, finishPoints] = useStartFinishPoints();
 
@@ -48,7 +51,7 @@ export function TrackViewerDetailsInt({
     minute: '2-digit',
   });
 
-  const tableData: [keyof Messages['trackViewer']['details'], string][] = [];
+  const tableData: [keyof TrackViewerMessages['details'], string][] = [];
 
   let startTime: Date | undefined;
 
@@ -81,7 +84,7 @@ export function TrackViewerDetailsInt({
 
     tableData.push([
       'duration',
-      m.trackViewer.details.durationValue({ h: hours, m: minutes }),
+      tvm?.details.durationValue({ h: hours, m: minutes }) ?? '',
     ]);
   }
 
@@ -172,7 +175,7 @@ export function TrackViewerDetailsInt({
   return (
     <dl className="m-0 dl-horizontal">
       {tableData.map(([key, value]) => [
-        <dt key={`${key}-dt`}>{(m?.trackViewer.details[key] ?? '') + ':'}</dt>,
+        <dt key={`${key}-dt`}>{(tvm?.details[key] ?? '') + ':'}</dt>,
 
         <dd key={`${key}-dd`} className="infoValue">
           {value}

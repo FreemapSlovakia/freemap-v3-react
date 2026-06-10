@@ -55,7 +55,15 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   `messageKey` and rendered by the global `Toasts` component (which resolves keys
   only against global Messages). The locale templates keep just that one
   locale-independent `detail` line (so generated files carry the `ChangesetDetails`
-  import); everything else now falls back through the bundle. Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a non-component (e.g. `mapLayers.legacyMapWarning`), since toast `message` is typed `string`.
+  import); everything else now falls back through the bundle. And `trackViewer`
+  → its own bundle, leaving only the JSX `info` toast key in a minimal global
+  block (same global-Toasts-renderer constraint as `changesets.detail`); the
+  three track download/load/upload processors (which live under `tracking/` — see
+  relocation note) drop their `errorKey`s for try/catch and switch their
+  `tooBig`/`shareToast` toasts to literal `message:` via `loadTrackViewerMessages`;
+  `useTextFileDropHandler` now takes `TrackViewerMessages` instead of global
+  `Messages`; `useHtmlMeta` resolves the `file-import` modal title from the bundle.
+  Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a non-component (e.g. `mapLayers.legacyMapWarning`), since toast `message` is typed `string`.
 
 ## Softer / design opinions
 

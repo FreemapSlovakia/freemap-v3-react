@@ -434,51 +434,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   trackViewer: {
-    colorizingMode: {
-      none: 'Inaktiv',
-      elevation: 'Höhe',
-      steepness: 'Steigung',
-      speed: 'Geschwindigkeit',
-      heartRate: 'Herzfrequenz',
-      cadence: 'Trittfrequenz',
-      power: 'Leistung',
-      temperature: 'Temperatur',
-      time: 'Zeit',
-      heading: 'Richtung',
-    },
-
-    details: {
-      startTime: 'Startzeit',
-      finishTime: 'Zielzeit',
-      duration: 'Dauer',
-      distance: 'Entfernung',
-      avgSpeed: 'Durchschnittsgeschwindigkeit',
-      minEle: 'Min. Höhe',
-      maxEle: 'Max. Höhe',
-      uphill: 'Gesamtanstieg',
-      downhill: 'Gesamtabstieg',
-      durationValue: ({ h, m }) => `${h} Stunden ${m} Minuten`,
-    },
-
-    uploadModal: {
-      title: 'Datei importieren',
-      drop: 'Ziehen Sie eine GPX- oder GeoJSON-Datei hierher oder klicken Sie hier zur Auswahl.',
-    },
-
-    upload: 'Hochladen',
-    moreInfo: 'Mehr Infos',
-    share: 'Auf Server speichern',
-    shareToast:
-      'Die Strecke wurde auf dem Server gespeichert und kann über die URL der Seite geteilt werden.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Fehler beim Laden der Streckendaten', err),
-    savingError: ({ err }) =>
-      addError(messages, 'Fehler beim Speichern der Strecke', err),
-    loadingError: 'Fehler beim Laden der Datei.',
-    onlyOne: 'Es wird nur eine einzelne Datei erwartet.',
-    invalidFormat: 'Die Datei hat kein unterstütztes Format oder ist ungültig.',
     info: () => <TrackViewerDetails />,
-    tooBigError: 'Die Datei ist zu groß.',
   },
 
   drawing: {

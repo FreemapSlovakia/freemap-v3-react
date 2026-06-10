@@ -16,6 +16,7 @@
     "src/features/mapFeaturesExport/translations/{LANG}.tsx",
     "src/features/objects/translations/{LANG}.tsx",
     "src/features/changesets/translations/{LANG}.tsx",
+    "src/features/trackViewer/translations/{LANG}.tsx",
     "src/app/components/embedMapModal/translations/{LANG}.tsx",
     "src/app/components/aboutModal/translations/{LANG}.tsx"
   ]

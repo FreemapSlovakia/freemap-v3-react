@@ -6,6 +6,7 @@ import {
   trackViewerSetTrackUID,
   trackViewerUploadTrack,
 } from '@features/trackViewer/model/actions.js';
+import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 import { Dispatch } from 'redux';
 import z from 'zod';
 
@@ -28,13 +29,12 @@ export async function handleTrackUpload({
       : -1;
 
     if (trackGpx.length > maxSize * 1000000) {
+      const tvm = await loadTrackViewerMessages(getState().l10n.language);
+
       dispatch(
         toastsAdd({
           id: 'trackViewer.tooBigError',
-          messageKey: 'trackViewer.tooBigError',
-          messageParams: {
-            maxSize,
-          },
+          message: tvm.tooBigError,
           style: 'danger',
         }),
       );
@@ -62,9 +62,11 @@ export async function handleTrackUpload({
     );
   }
 
+  const tvm = await loadTrackViewerMessages(getState().l10n.language);
+
   dispatch(
     toastsAdd({
-      messageKey: 'trackViewer.shareToast',
+      message: tvm.shareToast,
       style: 'info',
       id: 'trackViewer.shareToast',
       timeout: 5000,
@@ -74,6 +76,21 @@ export async function handleTrackUpload({
 
 export const trackViewerUploadTrackProcessor: Processor = {
   actionCreator: trackViewerUploadTrack,
-  errorKey: 'trackViewer.savingError',
-  handle: handleTrackUpload,
+  handle: async (params) => {
+    const { dispatch, getState } = params;
+
+    try {
+      await handleTrackUpload(params);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      const tvm = await loadTrackViewerMessages(getState().l10n.language);
+
+      dispatch(
+        toastsAdd({ style: 'danger', message: tvm.savingError({ err }) }),
+      );
+    }
+  },
 };

@@ -441,48 +441,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   trackViewer: {
-    upload: 'Nahrať',
-    moreInfo: 'Viac info',
-    share: 'Uložiť na server',
-    colorizingMode: {
-      none: 'Neaktívne',
-      elevation: 'Nadmorská výška',
-      steepness: 'Sklon',
-      speed: 'Rýchlosť',
-      heartRate: 'Tepová frekvencia',
-      cadence: 'Kadencia',
-      power: 'Výkon',
-      temperature: 'Teplota',
-      time: 'Čas',
-      heading: 'Smer',
-    },
-    details: {
-      startTime: 'Čas štartu',
-      finishTime: 'Čas v cieli',
-      duration: 'Trvanie',
-      distance: 'Vzdialenosť',
-      avgSpeed: 'Priemerná rýchlosť',
-      minEle: 'Najnižší bod',
-      maxEle: 'Najvyšší bod',
-      uphill: 'Celkové stúpanie',
-      downhill: 'Celkové klesanie',
-      durationValue: ({ h, m }) => `${h} hodín ${m} minút`,
-    },
-    uploadModal: {
-      title: 'Importovať súbor',
-      drop: 'Potiahnite sem súbor GPX alebo GeoJSON alebo kliknite sem pre jeho výber.',
-    },
-    shareToast:
-      'Trasa bola uložená na server a môžete ju zdieľať skopirovaním URL stránky.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri získavaní záznamu trasy', err),
-    savingError: ({ err }) =>
-      addError(messages, 'Nepodarilo sa uložiť trasu', err),
-    loadingError: 'Súbor sa nepodarilo načítať.',
-    onlyOne: 'Očakáva sa iba jeden súbor.',
-    invalidFormat: 'Súbor nie je v podporovanom formáte alebo je neplatný.',
     info: () => <TrackViewerDetails />,
-    tooBigError: 'Nahraný súbor je príliš veľký.',
   },
 
   drawing: {

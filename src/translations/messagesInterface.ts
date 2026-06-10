@@ -273,45 +273,9 @@ export type Messages = {
     distanceInfo: (props: { length: number }) => JSX.Element;
   };
   trackViewer: {
-    upload: string;
-    moreInfo: string;
-    share: string;
-    colorizingMode: {
-      none: string;
-      elevation: string;
-      steepness: string;
-      speed: string;
-      heartRate: string;
-      cadence: string;
-      power: string;
-      temperature: string;
-      time: string;
-      heading: string;
-    };
-    details: {
-      startTime: string;
-      finishTime: string;
-      duration: string;
-      distance: string;
-      avgSpeed: string;
-      minEle: string;
-      maxEle: string;
-      uphill: string;
-      downhill: string;
-      durationValue: ({ h, m }: { h: number; m: number }) => string;
-    };
-    uploadModal: {
-      title: string;
-      drop: string;
-    };
-    shareToast: string;
-    fetchingError: (props: Err) => string;
-    savingError: (props: Err) => string;
-    loadingError: string;
-    onlyOne: string;
-    invalidFormat: string;
+    // Dispatched as a toast messageKey and rendered to JSX by the global Toasts
+    // component, which resolves keys only against global Messages, so it stays.
     info: () => JSX.Element;
-    tooBigError: string;
   };
   drawing: {
     modify: string;

@@ -14,11 +14,14 @@ import {
   trackViewerSetTrackUID,
 } from '../model/actions.js';
 import { parseGeojsonFile } from '../parseGeojsonFile.js';
+import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 type Props = { show: boolean };
 
 export default function TrackViewerUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const tvm = useTrackViewerMessages();
 
   const dispatch = useDispatch();
 
@@ -48,7 +51,7 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
         const trackGeojson = parseGeojsonFile(text);
 
         if (!trackGeojson) {
-          handleLoadError(m?.trackViewer.invalidFormat ?? 'invalid format');
+          handleLoadError(tvm?.invalidFormat ?? 'invalid format');
 
           return;
         }
@@ -66,10 +69,10 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
 
       dispatch(elevationChartClose());
     },
-    [dispatch, m, handleLoadError],
+    [dispatch, tvm, handleLoadError],
   );
 
-  const handleDrop = useTextFileDropHandler(handleUpload, handleLoadError, m);
+  const handleDrop = useTextFileDropHandler(handleUpload, handleLoadError, tvm);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
@@ -87,7 +90,7 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
-        <Modal.Title>{m?.trackViewer.uploadModal.title}</Modal.Title>
+        <Modal.Title>{tvm?.uploadModal.title}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
@@ -97,7 +100,7 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
         >
           <input {...getInputProps()} />
 
-          {m?.trackViewer.uploadModal.drop}
+          {tvm?.uploadModal.drop}
         </div>
       </Modal.Body>
 

@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useTrackViewerMessages } from '@features/trackViewer/translations/useTrackViewerMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import clsx from 'clsx';
@@ -32,7 +32,7 @@ const ticks = new Array(11)
 const EMPTY_ARRAY: ElevationProfilePoint[] = [];
 
 export default function ElevationChart(): ReactElement | null {
-  const m = useMessages();
+  const tvm = useTrackViewerMessages();
 
   const dispatch = useDispatch();
 
@@ -403,8 +403,8 @@ export default function ElevationChart(): ReactElement | null {
 
       {typeof climbUp === 'number' && typeof climbDown === 'number' && (
         <p ref={setRef2}>
-          {m?.trackViewer.details.uphill}: {nf0.format(climbUp)}&nbsp;m,{' '}
-          {m?.trackViewer.details.downhill}: {nf0.format(climbDown)}&nbsp;m
+          {tvm?.details.uphill}: {nf0.format(climbUp)}&nbsp;m,{' '}
+          {tvm?.details.downhill}: {nf0.format(climbDown)}&nbsp;m
         </p>
       )}
     </div>

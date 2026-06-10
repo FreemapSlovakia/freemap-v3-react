@@ -1,5 +1,6 @@
 import { getMessageByKey, useMessages } from '@features/l10n/l10nInjector.js';
 import { useTrackingMessages } from '@features/tracking/translations/useTrackingMessages.js';
+import { useTrackViewerMessages } from '@features/trackViewer/translations/useTrackViewerMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { MessagePaths } from '@shared/types/common.js';
 import { useEffect } from 'react';
@@ -8,7 +9,6 @@ import type { Modal } from '../store/actions.js';
 // TODO partial: some documents have no title key yet
 const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {
   legend: 'mainMenu.mapLegend',
-  'file-import': 'trackViewer.uploadModal.title',
   about: 'mainMenu.contacts',
   'map-features-export': 'mainMenu.mapFeaturesExport',
   'map-to-document-export': 'mainMenu.mapToDocumentExport',
@@ -32,6 +32,8 @@ export function useHtmlMeta(): void {
 
   const tm = useTrackingMessages();
 
+  const tvm = useTrackViewerMessages();
+
   const activeModal = useAppSelector((state) => state.main.activeModal);
 
   useEffect(() => {
@@ -47,15 +49,17 @@ export function useHtmlMeta(): void {
 
     const modalKey = activeModal && modalTitleKeys[activeModal];
 
-    // tracking modal titles live in the per-feature bundle, not global Messages
+    // some modal titles live in per-feature bundles, not global Messages
     const modalTitle: string | undefined =
       activeModal === 'tracking-watched'
         ? tm?.trackedDevices.modalTitle
         : activeModal === 'tracking-my'
           ? tm?.devices.modalTitle
-          : modalKey
-            ? String(getMessageByKey(m, modalKey))
-            : undefined;
+          : activeModal === 'file-import'
+            ? tvm?.uploadModal.title
+            : modalKey
+              ? String(getMessageByKey(m, modalKey))
+              : undefined;
 
     const fullTitle = (modalTitle ? modalTitle + ' | ' : '') + title;
 
@@ -76,5 +80,5 @@ export function useHtmlMeta(): void {
     head
       .querySelector('meta[property="og:description"]')
       ?.setAttribute('content', description);
-  }, [m, tm, activeModal]);
+  }, [m, tm, tvm, activeModal]);
 }

@@ -32,6 +32,7 @@ import {
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
 import { parseGeojsonFile } from '@features/trackViewer/parseGeojsonFile.js';
+import { useTrackViewerMessages } from '@features/trackViewer/translations/useTrackViewerMessages.js';
 import { WikiLayer } from '@features/wiki/components/WikiLayer.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -318,6 +319,8 @@ const predefinedDrawingPropertiesModalFactory = () =>
 export function Main(): ReactElement {
   const m = useMessages();
 
+  const tvm = useTrackViewerMessages();
+
   const dispatch = useDispatch();
 
   const layers = useAppSelector((state) => state.map.layers);
@@ -456,14 +459,14 @@ export function Main(): ReactElement {
     [dispatch],
   );
 
-  const handleGpxDrop = useTextFileDropHandler(onGpxDrop, onGpxLoadError, m);
+  const handleGpxDrop = useTextFileDropHandler(onGpxDrop, onGpxLoadError, tvm);
 
   const onGeojsonDrop = useCallback(
     (text: string) => {
       const trackGeojson = parseGeojsonFile(text);
 
       if (!trackGeojson) {
-        onGpxLoadError(m?.trackViewer.invalidFormat ?? 'invalid format');
+        onGpxLoadError(tvm?.invalidFormat ?? 'invalid format');
 
         return;
       }
@@ -478,13 +481,13 @@ export function Main(): ReactElement {
 
       dispatch(elevationChartClose());
     },
-    [dispatch, m, onGpxLoadError],
+    [dispatch, tvm, onGpxLoadError],
   );
 
   const handleGeojsonDrop = useTextFileDropHandler(
     onGeojsonDrop,
     onGpxLoadError,
-    m,
+    tvm,
   );
 
   const onDrop = useCallback(
