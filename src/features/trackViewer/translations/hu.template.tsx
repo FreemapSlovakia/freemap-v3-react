@@ -35,6 +35,17 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     title: 'Fájl importálása',
     drop: 'Húzza ide a GPX- vagy GeoJSON-fájlt, vagy kattintson ide a kijelöléséhez.',
   },
+  strava: {
+    title: 'Importálás Stravából',
+    intro:
+      'Válasszon egyet a Strava-tevékenységei közül, hogy nyomvonalként importálja.',
+    empty: 'Nem található tevékenység.',
+    loadError: 'Nem sikerült betölteni a Strava-tevékenységeit.',
+    importError: 'Nem sikerült importálni a tevékenységet.',
+    notConnected:
+      'A tevékenységek importálásához kapcsolja össze a fiókját a Stravával.',
+    connect: 'Összekapcsolás a Stravával',
+  },
   shareToast:
     'Az útvonal el lett mentve a kiszolgálóra, és az oldal URL-jének másolásával megosztható.',
   fetchingError: ({ err }) =>

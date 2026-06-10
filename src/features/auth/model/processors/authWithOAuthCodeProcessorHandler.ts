@@ -9,7 +9,7 @@ const handle: ProcessorHandler<typeof authWithOAuthCode> = async ({
   dispatch,
   action,
 }) => {
-  const { provider, code, connect } = action.payload;
+  const { provider, code, connect, successAction } = action.payload;
 
   const res = await httpRequest({
     getState,
@@ -25,6 +25,12 @@ const handle: ProcessorHandler<typeof authWithOAuthCode> = async ({
   });
 
   await handleLoginResponse(res, getState, dispatch);
+
+  // Runs after handleLoginResponse, so it overrides its default modal switch
+  // (e.g. the connect flow's jump to the account modal).
+  if (successAction) {
+    dispatch(successAction);
+  }
 };
 
 export default handle;

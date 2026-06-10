@@ -1,7 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import type { Dispatch } from 'redux';
+import type { Action, Dispatch } from 'redux';
 import {
   type PopupOAuthProvider,
   pendingOAuthLogins,
@@ -22,6 +22,7 @@ export async function startPopupOAuth(
   connect: boolean,
   getState: () => RootState,
   dispatch: Dispatch,
+  successAction?: Action,
 ): Promise<void> {
   const cfg = popupOAuthProviders[provider];
 
@@ -41,7 +42,7 @@ export async function startPopupOAuth(
   // early), which would drop the nonce before the callback arrives.
   const nonce = crypto.randomUUID();
 
-  pendingOAuthLogins.add(nonce);
+  pendingOAuthLogins.set(nonce, successAction);
 
   // open window within user gesture handler (before further awaits)
   const w = window.open(
