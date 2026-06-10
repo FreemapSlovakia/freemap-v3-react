@@ -3,9 +3,8 @@ import { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "route-planner-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useRoutePlannerMessages(): RoutePlannerMessages | undefined {

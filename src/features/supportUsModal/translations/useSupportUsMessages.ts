@@ -3,9 +3,8 @@ import { SupportUsMessages } from './SupportUsMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "support-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useSupportUsMessages(): SupportUsMessages | undefined {

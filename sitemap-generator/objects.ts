@@ -5,11 +5,11 @@ import {
   categoryKeys,
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
-} from '../src/osm/osmNameResolver';
+} from '../src/osm/osmNameResolver.js';
 import {
   colorNames,
   osmTagToNameMapping,
-} from '../src/osm/osmTagToNameMapping-sk';
+} from '../src/osm/osmTagToNameMapping-sk.messages.js';
 
 const html = htm.bind(vhtml);
 

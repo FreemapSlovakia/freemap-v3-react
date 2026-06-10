@@ -3,9 +3,8 @@ import { TrackingMessages } from './TrackingMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "tracking-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useTrackingMessages(): TrackingMessages | undefined {

@@ -283,7 +283,7 @@ function parseFile(lang: string, template: string) {
 }
 
 function process(template: string) {
-  const enFile = parseFile('en', template);
+  const enFile = parseFile('en.messages', template);
 
   const enRoot = findRoot(enFile);
 
@@ -311,7 +311,7 @@ function process(template: string) {
     mergeIntoLocale(enRoot, root, otherLocales);
 
     writeFileSync(
-      template.replace('{LANG}', lang),
+      template.replace('{LANG}', lang + '.messages'),
 
       print(file, { quote: 'single', trailingComma: true }).code,
     );

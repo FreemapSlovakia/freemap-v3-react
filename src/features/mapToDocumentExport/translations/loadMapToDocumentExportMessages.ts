@@ -14,9 +14,8 @@ export async function loadMapToDocumentExportMessages(
   if (cacheLang !== language) {
     cache = (
       await import(
-        /* webpackExclude: /\.template\./ */
         /* webpackChunkName: "map-to-document-export-translation-[request]" */
-        `./${language}.tsx`
+        `./${language}.messages.tsx`
       )
     ).default;
 

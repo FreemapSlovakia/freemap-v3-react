@@ -3,9 +3,8 @@ import { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "changesets-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useChangesetsMessages(): ChangesetsMessages | undefined {

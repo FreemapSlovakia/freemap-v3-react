@@ -3,9 +3,8 @@ import { ContactsMessages } from './ContactsMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "contacts-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useContactsMessages(): ContactsMessages | undefined {

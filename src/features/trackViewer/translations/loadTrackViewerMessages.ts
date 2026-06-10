@@ -14,9 +14,8 @@ export async function loadTrackViewerMessages(
   if (cacheLang !== language) {
     cache = (
       await import(
-        /* webpackExclude: /\.template\./ */
         /* webpackChunkName: "track-viewer-translation-[request]" */
-        `./${language}.tsx`
+        `./${language}.messages.tsx`
       )
     ).default;
 

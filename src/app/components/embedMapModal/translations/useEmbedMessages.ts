@@ -3,9 +3,8 @@ import { EmbedMessages } from './EmbedMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "embed-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useEmbedMessages(): EmbedMessages | undefined {

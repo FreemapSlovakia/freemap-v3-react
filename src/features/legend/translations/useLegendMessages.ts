@@ -3,9 +3,8 @@ import { LegendMessages } from './LegendMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "legend-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useLegendMessages(): LegendMessages | undefined {

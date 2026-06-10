@@ -14,9 +14,8 @@ export async function loadObjectsMessages(
   if (cacheLang !== language) {
     cache = (
       await import(
-        /* webpackExclude: /\.template\./ */
         /* webpackChunkName: "objects-translation-[request]" */
-        `./${language}.tsx`
+        `./${language}.messages.tsx`
       )
     ).default;
 

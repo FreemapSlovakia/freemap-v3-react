@@ -3,9 +3,8 @@ import { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "map-features-export-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useMapFeaturesExportMessages():

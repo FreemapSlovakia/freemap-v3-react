@@ -18,7 +18,10 @@ export class RspackSyncLanguagesPlugin {
 
     for (const template of templatesConfig.templates) {
       sources.add(
-        path.resolve(this.options.root, template.replace('{LANG}', 'en')),
+        path.resolve(
+          this.options.root,
+          template.replace('{LANG}', 'en.messages'),
+        ),
       );
 
       for (const lang of templatesConfig.langs) {

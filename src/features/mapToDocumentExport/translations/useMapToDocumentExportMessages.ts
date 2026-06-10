@@ -3,9 +3,8 @@ import { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "map-to-document-export-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useMapToDocumentExportMessages():

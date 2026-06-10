@@ -14,9 +14,8 @@ export async function loadWikimediaCommonsMessages(
   if (cacheLang !== language) {
     cache = (
       await import(
-        /* webpackExclude: /\.template\./ */
         /* webpackChunkName: "wikimedia-commons-translation-[request]" */
-        `./${language}.tsx`
+        `./${language}.messages.tsx`
       )
     ).default;
 

@@ -30,11 +30,13 @@ const modalTitleKeys: Partial<Record<Modal, MessagePaths>> = {
 export function useHtmlMeta(): void {
   const m = useMessages();
 
+  const activeModal = useAppSelector((state) => state.main.activeModal);
+
+  // load these per-feature title bundles only while their modal is open, so the
+  // app shell doesn't eager-load them on startup just to set the tab title
   const tm = useTrackingMessages();
 
   const tvm = useTrackViewerMessages();
-
-  const activeModal = useAppSelector((state) => state.main.activeModal);
 
   useEffect(() => {
     if (!m) {

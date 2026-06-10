@@ -141,9 +141,8 @@ export async function getOsmMapping(lang: string): Promise<OsmMapping> {
   const lc = ['sk', 'cs', 'it', 'hu', 'de', 'pl'].includes(lang) ? lang : 'en';
 
   return import(
-    /* webpackChunkName: "[request]" */
-    /* webpackExclude: /\.template\./ */
-    `./osmTagToNameMapping-${lc}.ts`
+    /* webpackChunkName: "osm-tag-to-name-mapping-[request]" */
+    `./osmTagToNameMapping-${lc}.messages.ts`
   );
 }
 

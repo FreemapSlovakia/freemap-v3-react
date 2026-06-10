@@ -1,6 +1,2 @@
-cs.tsx
-hu.tsx
-it.tsx
-sk.tsx
-de.tsx
-pl.tsx
+*.messages.tsx
+!en.messages.tsx

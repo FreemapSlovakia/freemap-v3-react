@@ -3,9 +3,8 @@ import { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "track-viewer-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useTrackViewerMessages(): TrackViewerMessages | undefined {

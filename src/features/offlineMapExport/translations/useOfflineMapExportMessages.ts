@@ -3,9 +3,8 @@ import { OfflineMapExportMessages } from './OfflineMapExportMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "offline-map-export-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useOfflineMapExportMessages():

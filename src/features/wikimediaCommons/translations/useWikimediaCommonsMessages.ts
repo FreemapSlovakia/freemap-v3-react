@@ -3,9 +3,8 @@ import { WikimediaCommonsMessages } from './WikimediaCommonsMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "wikimedia-commons-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useWikimediaCommonsMessages():

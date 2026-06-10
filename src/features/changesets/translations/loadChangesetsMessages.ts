@@ -14,9 +14,8 @@ export async function loadChangesetsMessages(
   if (cacheLang !== language) {
     cache = (
       await import(
-        /* webpackExclude: /\.template\./ */
         /* webpackChunkName: "changesets-translation-[request]" */
-        `./${language}.tsx`
+        `./${language}.messages.tsx`
       )
     ).default;
 

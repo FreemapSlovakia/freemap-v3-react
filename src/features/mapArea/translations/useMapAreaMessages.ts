@@ -3,9 +3,8 @@ import { MapAreaMessages } from './MapAreaMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "map-area-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useMapAreaMessages(): MapAreaMessages | undefined {

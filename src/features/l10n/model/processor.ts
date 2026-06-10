@@ -25,9 +25,8 @@ export const l10nSetLanguageProcessor: Processor = {
     setMessages(
       (
         await import(
-          /* webpackExclude: /\.template\./ */
           /* webpackChunkName: "translation-[request]" */
-          `@/translations/${language}.tsx`
+          `@/translations/${language}.messages.tsx`
         )
       ).default,
     );

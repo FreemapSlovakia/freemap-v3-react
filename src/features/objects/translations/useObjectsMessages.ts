@@ -3,9 +3,8 @@ import { ObjectsMessages } from './ObjectsMessages.js';
 
 const factory = (language: string) =>
   import(
-    /* webpackExclude: /\.template\./ */
     /* webpackChunkName: "objects-translation-[request]" */
-    `./${language}.tsx`
+    `./${language}.messages.tsx`
   );
 
 export function useObjectsMessages(): ObjectsMessages | undefined {

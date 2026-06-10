@@ -8,7 +8,7 @@ piece of persisted state, or a new menu/tool/modal.
 
 React 19 SPA. **All application state lives in a single Redux store**; the store
 is the source of truth and is reflected into the URL hash. Side effects do
-**not** live in components or thunks — they live in *processors* (a custom
+**not** live in components or thunks — they live in _processors_ (a custom
 middleware, see below). The whole thing is bundled by **rspack** and split into
 many lazy chunks.
 
@@ -22,7 +22,7 @@ src/
   features/<name>/   one self-contained feature per folder (see "Feature anatomy")
   shared/         cross-feature utilities, components, hooks, and the two registries
                   (mapDefinitions.tsx = layers, toolDefinitions.tsx = tools)
-  translations/   global i18n master (en.tsx) + per-language files + Messages type
+  translations/   global i18n master (en.messages.tsx) + per-language files + Messages type
   processors/     a handful of cross-cutting processors not owned by one feature
   osm/, sw/, processors/, pica-gpu/, documents/, images/, static/
 ```
@@ -31,13 +31,13 @@ src/
 
 Defined in **both** `tsconfig.json` and `rspack.config.ts` (keep them in sync):
 
-| alias        | resolves to     |
-| ------------ | --------------- |
-| `@/*`        | `src/*`         |
-| `@app/*`     | `src/app/*`     |
-| `@shared/*`  | `src/shared/*`  |
-| `@features/*`| `src/features/*`|
-| `@osm/*`     | `src/osm/*`     |
+| alias         | resolves to      |
+| ------------- | ---------------- |
+| `@/*`         | `src/*`          |
+| `@app/*`      | `src/app/*`      |
+| `@shared/*`   | `src/shared/*`   |
+| `@features/*` | `src/features/*` |
+| `@osm/*`      | `src/osm/*`      |
 
 Imports use the `.js` extension (NodeNext module resolution) even for `.ts`/`.tsx`
 sources. `noPropertyAccessFromIndexSignature`, `noUnusedLocals/Parameters`, and
@@ -95,10 +95,10 @@ export const fooProcessor: Processor = {
 
 Two phases per dispatched action:
 
-- **`transform` runs *before* the reducer.** It may return a replacement action
+- **`transform` runs _before_ the reducer.** It may return a replacement action
   (mutate/redirect) or a falsy value to **swallow** the action entirely. Used for
   e.g. `setActiveModalTransformer`, `searchHighlightTrafo`.
-- **`handle` runs *after* the reducer**, with both `prevState` and live
+- **`handle` runs _after_ the reducer**, with both `prevState` and live
   `getState()`. Async handlers are awaited collectively; if any is still pending
   after a tick, a **progress spinner** is shown (`startProgress`/`stopProgress`)
   and a global processor-error toast + Sentry report covers unexpected rejections.
@@ -169,9 +169,9 @@ the hash-param docs in `src/static/llms.txt`.
 
 Two layers — global and per-feature:
 
-- **Global** (`src/translations/`): `en.tsx` is the master; `messagesInterface.ts`
+- **Global** (`src/translations/`): `en.messages.tsx` is the master; `messagesInterface.ts`
   is the **hand-maintained** `Messages` type that all locales are checked against;
-  `*.template.tsx` hold per-language overrides; plain `*.tsx` are **generated** by
+  `*.template.tsx` hold per-language overrides; plain `*.messages.tsx` are **generated** by
   `pnpm sync-language-files` (gitignored, but required for `tsgo`). The loaded
   bundle lives in a small subscribable module store (`features/l10n/messagesStore.ts`);
   components read it via `useMessages()` (backed by `useSyncExternalStore`), and
@@ -182,9 +182,9 @@ Two layers — global and per-feature:
   blob. Pattern: `<Feature>Messages.ts` (the type) + `use<Feature>Messages.ts`
   (`useLocalMessages(factory)` for components) + `load<Feature>Messages.ts`
   (a cached promise for use **outside** React — processors, exporters). The dynamic
-  `import(\`./${language}.tsx\`)` excludes `.template.` files.
-  Gotcha: toast `messageKey`s referenced from processors must resolve against the
-  **global** `Messages`, so those namespaces stay global even when the rest of the
+  `import(\`./${language}.tsx\`)`excludes`.template.`files.
+Gotcha: toast`messageKey`s referenced from processors must resolve against the
+**global** `Messages`, so those namespaces stay global even when the rest of the
   feature's strings are lazy.
 
 ## The two registries to keep honest
@@ -216,5 +216,5 @@ factory in `Main.tsx` rather than grepping for a static import.
   imports; run `npx biome check --write <files>` after edits.
 - SEO prerender / sitemap and the per-language `index-<lang>` HTML variants are in
   `doc/seo-prerender.md`.
-</content>
-</invoke>
+  </content>
+  </invoke>

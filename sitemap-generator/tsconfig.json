@@ -5,6 +5,7 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "nodenext",
     "target": "es6",
-    "sourceMap": true
+    "sourceMap": true,
+    "types": ["node"]
   }
 }
