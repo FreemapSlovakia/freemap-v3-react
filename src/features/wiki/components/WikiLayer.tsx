@@ -92,6 +92,7 @@ export function WikiLayer(): ReactElement {
   return (
     <>
       <Modal
+        scrollable
         show={loading !== null || preview !== null}
         onHide={close}
         size="lg"

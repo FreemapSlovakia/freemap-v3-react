@@ -316,6 +316,7 @@ export default function MapToDocumentExportModal({
       className={selectingArea ? 'd-none' : undefined}
       backdropClassName={selectingArea ? 'd-none' : undefined}
       enforceFocus={!selectingArea}
+      scrollable
     >
       <Modal.Header closeButton={!exporting}>
         <Modal.Title>
@@ -323,108 +324,112 @@ export default function MapToDocumentExportModal({
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body as="fieldset" disabled={exporting}>
-        <Alert variant="warning">
-          {mtde?.alert(
-            attribution?.map(([type, elem]) => (
-              <Fragment key={type}>{elem}, </Fragment>
-            )),
-          )}
-        </Alert>
+      <Modal.Body>
+        <fieldset disabled={exporting}>
+          <Alert variant="warning">
+            {mtde?.alert(
+              attribution?.map(([type, elem]) => (
+                <Fragment key={type}>{elem}, </Fragment>
+              )),
+            )}
+          </Alert>
 
-        <Form.Group>
-          <Form.Label className="d-block">{mtde?.area}</Form.Label>
-
-          <MapAreaToggle
-            area={area}
-            onSelectVisible={() => setArea('visible')}
-            onSelectArea={startSelecting}
-          />
-        </Form.Group>
-
-        <Form.Group className="mt-3">
-          <Form.Label className="d-block"> {mtde?.format}</Form.Label>
-
-          <ToggleButtonGroup
-            type="radio"
-            name="exportFormat"
-            value={format}
-            onChange={(value: Format) => updateSettings({ format: value })}
-          >
-            {FormatSchema.options.map((fmt) => (
-              <ToggleButton
-                key={fmt}
-                id={`exportFormat-${fmt}`}
-                value={fmt}
-                variant="outline-primary"
-              >
-                {fmt.toUpperCase()}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </Form.Group>
-
-        <ExportLayersField value={layers} onToggle={toggleLayer} />
-
-        <fieldset className="mt-3 border rounded p-3">
           <Form.Group>
-            <Form.Label className="d-block">{mtde?.mapDataTitle}</Form.Label>
+            <Form.Label className="d-block">{mtde?.area}</Form.Label>
 
-            <ExportablesSelector
-              value={exportables}
-              available={availableExportables}
-              onChange={setExportables}
+            <MapAreaToggle
+              area={area}
+              onSelectVisible={() => setArea('visible')}
+              onSelectArea={startSelecting}
             />
           </Form.Group>
 
-          <DataLayerStyleFields
-            disabled={exportables.length < 2}
-            glow={glow}
-            onGlowChange={(value) => updateSettings({ glow: value })}
-            glowColor={glowColor}
-            onGlowColorChange={(value) => updateSettings({ glowColor: value })}
-            glowWidth={glowWidth}
-            onGlowWidthChange={handleGlowWidthChange}
-            invalidGlowWidth={invalidGlowWidth}
-            labelColor={labelColor}
-            onLabelColorChange={(value) =>
-              updateSettings({ labelColor: value })
-            }
-            labelSize={labelSize}
-            onLabelSizeChange={handleLabelSizeChange}
-            invalidLabelSize={invalidLabelSize}
-            labelWeight={labelWeight}
-            onLabelWeightChange={handleLabelWeightChange}
-            invalidLabelWeight={invalidLabelWeight}
-            customLayerOrder={customLayerOrder}
-            onCustomLayerOrderChange={handleCustomLayerOrderChange}
-          />
-        </fieldset>
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block"> {mtde?.format}</Form.Label>
 
-        <MapDecorationsField
-          scaleBar={scaleBar}
-          northArrow={northArrow}
-          attribution={attributionEnabled}
-          onChange={handleDecorationsChange}
-        />
+            <ToggleButtonGroup
+              type="radio"
+              name="exportFormat"
+              value={format}
+              onChange={(value: Format) => updateSettings({ format: value })}
+            >
+              {FormatSchema.options.map((fmt) => (
+                <ToggleButton
+                  key={fmt}
+                  id={`exportFormat-${fmt}`}
+                  value={fmt}
+                  variant="outline-primary"
+                >
+                  {fmt.toUpperCase()}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Form.Group>
 
-        <Form.Group controlId="mapScale" className="mt-3">
-          <Form.Label>{mtde?.mapScale}</Form.Label>
+          <ExportLayersField value={layers} onToggle={toggleLayer} />
 
-          <InputGroup>
-            <Form.Control
-              type="number"
-              value={scale}
-              min={60}
-              max={960}
-              step={10}
-              isInvalid={invalidScale}
-              onChange={handleScaleChange}
+          <fieldset className="mt-3 border rounded p-3">
+            <Form.Group>
+              <Form.Label className="d-block">{mtde?.mapDataTitle}</Form.Label>
+
+              <ExportablesSelector
+                value={exportables}
+                available={availableExportables}
+                onChange={setExportables}
+              />
+            </Form.Group>
+
+            <DataLayerStyleFields
+              disabled={exportables.length < 2}
+              glow={glow}
+              onGlowChange={(value) => updateSettings({ glow: value })}
+              glowColor={glowColor}
+              onGlowColorChange={(value) =>
+                updateSettings({ glowColor: value })
+              }
+              glowWidth={glowWidth}
+              onGlowWidthChange={handleGlowWidthChange}
+              invalidGlowWidth={invalidGlowWidth}
+              labelColor={labelColor}
+              onLabelColorChange={(value) =>
+                updateSettings({ labelColor: value })
+              }
+              labelSize={labelSize}
+              onLabelSizeChange={handleLabelSizeChange}
+              invalidLabelSize={invalidLabelSize}
+              labelWeight={labelWeight}
+              onLabelWeightChange={handleLabelWeightChange}
+              invalidLabelWeight={invalidLabelWeight}
+              customLayerOrder={customLayerOrder}
+              onCustomLayerOrderChange={handleCustomLayerOrderChange}
             />
+          </fieldset>
 
-            <InputGroup.Text>DPI</InputGroup.Text>
-          </InputGroup>
-        </Form.Group>
+          <MapDecorationsField
+            scaleBar={scaleBar}
+            northArrow={northArrow}
+            attribution={attributionEnabled}
+            onChange={handleDecorationsChange}
+          />
+
+          <Form.Group controlId="mapScale" className="mt-3">
+            <Form.Label>{mtde?.mapScale}</Form.Label>
+
+            <InputGroup>
+              <Form.Control
+                type="number"
+                value={scale}
+                min={60}
+                max={960}
+                step={10}
+                isInvalid={invalidScale}
+                onChange={handleScaleChange}
+              />
+
+              <InputGroup.Text>DPI</InputGroup.Text>
+            </InputGroup>
+          </Form.Group>
+        </fieldset>
       </Modal.Body>
 
       <Modal.Footer>

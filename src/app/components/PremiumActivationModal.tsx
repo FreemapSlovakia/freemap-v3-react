@@ -20,7 +20,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
   }
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaGem className="text-info" /> {m?.premium.title}

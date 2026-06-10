@@ -26,7 +26,7 @@ export default function AboutModal({ show }: Props): ReactElement {
   useDocumentTitle(show ? m?.mainMenu.contacts : undefined);
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaRegAddressCard /> {m?.mainMenu.contacts}

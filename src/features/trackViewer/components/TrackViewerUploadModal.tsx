@@ -91,7 +91,7 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
 
   // {activeModal === 'file-import' && // TODO move to separate component
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>{tvm?.uploadModal.title}</Modal.Title>
       </Modal.Header>

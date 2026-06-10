@@ -36,7 +36,7 @@ export default function LoginModal({ show }: Props): ReactElement {
     ) : null;
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaSignInAlt /> {m?.mainMenu.logIn}

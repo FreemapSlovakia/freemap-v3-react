@@ -167,6 +167,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
   return (
     <Modal
+      scrollable
       show={show}
       onHide={close}
       size={view.mode === 'list' ? 'lg' : undefined}

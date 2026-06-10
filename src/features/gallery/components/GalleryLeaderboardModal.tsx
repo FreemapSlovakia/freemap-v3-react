@@ -123,7 +123,7 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaCamera /> <FaTrophy /> {m?.gallery.stats.leaderboard}

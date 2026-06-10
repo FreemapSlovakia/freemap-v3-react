@@ -254,161 +254,166 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
   useDocumentTitle(show ? m?.gallery.filterModal.title : undefined);
 
   return (
-    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
+    <Modal
+      show={show}
+      onHide={close}
+      contentClassName="bg-body-tertiary"
+      as="form"
+      onSubmit={handleFormSubmit}
+      scrollable
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <FaCamera /> <FaFilter /> {m?.gallery.filterModal.title}
         </Modal.Title>
       </Modal.Header>
 
-      <Form onSubmit={handleFormSubmit}>
-        <Modal.Body>
-          <Form.Group controlId="tag" className="mb-3">
-            <Form.Label>{m?.gallery.filterModal.tag}</Form.Label>
+      <Modal.Body>
+        <Form.Group controlId="tag" className="mb-3">
+          <Form.Label>{m?.gallery.filterModal.tag}</Form.Label>
 
-            <Form.Select value={tag} onChange={handleTagChange}>
-              <option value="" />
+          <Form.Select value={tag} onChange={handleTagChange}>
+            <option value="" />
 
-              <option value="⌘">« {m?.gallery.filterModal.noTags} »</option>
-              {tags.map(({ name, count }) => (
-                <option key={name} value={name}>
+            <option value="⌘">« {m?.gallery.filterModal.noTags} »</option>
+            {tags.map(({ name, count }) => (
+              <option key={name} value={name}>
+                {name} ({count})
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+
+        <Form.Group controlId="author" className="mb-3">
+          <Form.Label>{m?.gallery.filterModal.author}</Form.Label>
+
+          <Form.Select value={userId} onChange={handleUserIdChange}>
+            <option value="" />
+
+            {currentUserId ? (
+              <>
+                {users
+                  .filter(({ id }) => currentUserId === id)
+                  .map(({ id, name, count }) => (
+                    <option key={id} value={id}>
+                      {name} ({count})
+                    </option>
+                  ))}
+
+                <option disabled>──────────</option>
+              </>
+            ) : null}
+
+            {users
+              .filter(({ id }) => currentUserId !== id)
+              .map(({ id, name, count }) => (
+                <option key={id} value={id}>
                   {name} ({count})
                 </option>
               ))}
-            </Form.Select>
-          </Form.Group>
+          </Form.Select>
+        </Form.Group>
 
-          <Form.Group controlId="author" className="mb-3">
-            <Form.Label>{m?.gallery.filterModal.author}</Form.Label>
+        <Form.Group controlId="createdAt" className="mb-3">
+          <Form.Label>{m?.gallery.filterModal.createdAt}</Form.Label>
 
-            <Form.Select value={userId} onChange={handleUserIdChange}>
-              <option value="" />
+          <InputGroup>
+            <Form.Control
+              type="date"
+              value={createdAtFrom}
+              onChange={handleCreatedAtFromChange}
+            />
 
-              {currentUserId ? (
-                <>
-                  {users
-                    .filter(({ id }) => currentUserId === id)
-                    .map(({ id, name, count }) => (
-                      <option key={id} value={id}>
-                        {name} ({count})
-                      </option>
-                    ))}
+            <InputGroup.Text> - </InputGroup.Text>
 
-                  <option disabled>──────────</option>
-                </>
-              ) : null}
+            <Form.Control
+              type="date"
+              value={createdAtTo}
+              onChange={handleCreatedAtToChange}
+            />
+          </InputGroup>
+        </Form.Group>
 
-              {users
-                .filter(({ id }) => currentUserId !== id)
-                .map(({ id, name, count }) => (
-                  <option key={id} value={id}>
-                    {name} ({count})
-                  </option>
-                ))}
-            </Form.Select>
-          </Form.Group>
+        <Form.Group controlId="takenAt" className="mb-3">
+          <Form.Label>{m?.gallery.filterModal.takenAt}</Form.Label>
 
-          <Form.Group controlId="createdAt" className="mb-3">
-            <Form.Label>{m?.gallery.filterModal.createdAt}</Form.Label>
+          <InputGroup>
+            <Form.Control
+              type="date"
+              value={takenAtFrom}
+              onChange={handleTakenAtFromChange}
+            />
 
-            <InputGroup>
-              <Form.Control
-                type="date"
-                value={createdAtFrom}
-                onChange={handleCreatedAtFromChange}
-              />
+            <InputGroup.Text> - </InputGroup.Text>
 
-              <InputGroup.Text> - </InputGroup.Text>
+            <Form.Control
+              type="date"
+              value={takenAtTo}
+              onChange={handleTakenAtToChange}
+            />
+          </InputGroup>
+        </Form.Group>
 
-              <Form.Control
-                type="date"
-                value={createdAtTo}
-                onChange={handleCreatedAtToChange}
-              />
-            </InputGroup>
-          </Form.Group>
+        <Form.Group controlId="rating" className="mb-3">
+          <Form.Label>{m?.gallery.filterModal.rating}</Form.Label>
 
-          <Form.Group controlId="takenAt" className="mb-3">
-            <Form.Label>{m?.gallery.filterModal.takenAt}</Form.Label>
+          <InputGroup>
+            <Form.Control
+              type="number"
+              min={1}
+              max={ratingTo || 5}
+              step="any"
+              value={ratingFrom}
+              isInvalid={invalidRatingFrom}
+              onChange={handleRatingFromChange}
+            />
 
-            <InputGroup>
-              <Form.Control
-                type="date"
-                value={takenAtFrom}
-                onChange={handleTakenAtFromChange}
-              />
+            <InputGroup.Text> - </InputGroup.Text>
 
-              <InputGroup.Text> - </InputGroup.Text>
+            <Form.Control
+              type="number"
+              min={ratingFrom || 1}
+              max={5}
+              step="any"
+              value={ratingTo}
+              isInvalid={invalidRatingTo}
+              onChange={handleRatingToChange}
+            />
+          </InputGroup>
+        </Form.Group>
 
-              <Form.Control
-                type="date"
-                value={takenAtTo}
-                onChange={handleTakenAtToChange}
-              />
-            </InputGroup>
-          </Form.Group>
+        <Form.Check
+          className="mb-3"
+          id="filt-premiumOnly"
+          checked={Boolean(premium)}
+          onChange={handlePremiumChange}
+          label={m?.gallery.filterModal.premium}
+          ref={setPremiumCheck}
+        />
 
-          <Form.Group controlId="rating" className="mb-3">
-            <Form.Label>{m?.gallery.filterModal.rating}</Form.Label>
+        <Form.Check
+          className="mb-3"
+          id="filt-pano"
+          checked={Boolean(pano)}
+          onChange={handlePanoChange}
+          label={m?.gallery.filterModal.pano}
+          ref={setPanoCheck}
+        />
+      </Modal.Body>
 
-            <InputGroup>
-              <Form.Control
-                type="number"
-                min={1}
-                max={ratingTo || 5}
-                step="any"
-                value={ratingFrom}
-                isInvalid={invalidRatingFrom}
-                onChange={handleRatingFromChange}
-              />
+      <Modal.Footer>
+        <Button type="submit" disabled={invalidRatingFrom || invalidRatingTo}>
+          <FaCheck /> {m?.general.apply}
+        </Button>
 
-              <InputGroup.Text> - </InputGroup.Text>
+        <Button variant="warning" type="button" onClick={handleEraseClick}>
+          <FaEraser /> {m?.general.clear}
+        </Button>
 
-              <Form.Control
-                type="number"
-                min={ratingFrom || 1}
-                max={5}
-                step="any"
-                value={ratingTo}
-                isInvalid={invalidRatingTo}
-                onChange={handleRatingToChange}
-              />
-            </InputGroup>
-          </Form.Group>
-
-          <Form.Check
-            className="mb-3"
-            id="filt-premiumOnly"
-            checked={Boolean(premium)}
-            onChange={handlePremiumChange}
-            label={m?.gallery.filterModal.premium}
-            ref={setPremiumCheck}
-          />
-
-          <Form.Check
-            className="mb-3"
-            id="filt-pano"
-            checked={Boolean(pano)}
-            onChange={handlePanoChange}
-            label={m?.gallery.filterModal.pano}
-            ref={setPanoCheck}
-          />
-        </Modal.Body>
-
-        <Modal.Footer>
-          <Button type="submit" disabled={invalidRatingFrom || invalidRatingTo}>
-            <FaCheck /> {m?.general.apply}
-          </Button>
-
-          <Button variant="warning" type="button" onClick={handleEraseClick}>
-            <FaEraser /> {m?.general.clear}
-          </Button>
-
-          <Button variant="dark" type="button" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
-      </Form>
+        <Button variant="dark" type="button" onClick={close}>
+          <FaTimes /> {m?.general.cancel}
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 }

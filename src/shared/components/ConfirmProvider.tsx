@@ -176,6 +176,7 @@ export function ConfirmProvider({
         backdropClassName={classes.backdrop}
         size="sm"
         centered
+        scrollable
       >
         <Modal.Header closeButton>
           <Modal.Title>

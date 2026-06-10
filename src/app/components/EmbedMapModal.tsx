@@ -203,6 +203,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
       onHide={close}
       className="dynamic"
       contentClassName="bg-body-tertiary"
+      scrollable
     >
       <Modal.Header closeButton>
         <Modal.Title>

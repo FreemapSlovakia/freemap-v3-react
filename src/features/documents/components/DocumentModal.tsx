@@ -108,7 +108,7 @@ function DocumentModal({ show }: Props): ReactElement | null {
   const { title, icon } = document;
 
   return (
-    <Modal show={show} onHide={close} size="lg">
+    <Modal show={show} onHide={close} size="lg" scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
           {/* {!hidden && (

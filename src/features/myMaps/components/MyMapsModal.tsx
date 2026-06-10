@@ -26,6 +26,7 @@ export default function MyMapsModal({ show }: Props): ReactElement {
 
   return (
     <Modal
+      scrollable
       show={show}
       onHide={close}
       size="lg"

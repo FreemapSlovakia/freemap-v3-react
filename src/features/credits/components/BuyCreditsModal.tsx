@@ -37,47 +37,52 @@ export default function CurrentDrawingPropertiesModal({
   const invalidCredits = isInvalidInt(credits, true, 500);
 
   return (
-    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
-      <Form onSubmit={handleSubmit}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <FaCoins /> {m?.credits.buyCredits}
-          </Modal.Title>
-        </Modal.Header>
+    <Modal
+      show={show}
+      onHide={close}
+      contentClassName="bg-body-tertiary"
+      as="form"
+      onSubmit={handleSubmit}
+      scrollable
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>
+          <FaCoins /> {m?.credits.buyCredits}
+        </Modal.Title>
+      </Modal.Header>
 
-        <Modal.Body>
-          <CreditsAlert explainCredits />
+      <Modal.Body>
+        <CreditsAlert explainCredits />
 
-          <Form.Group controlId="amount">
-            <Form.Label className="required">{m?.credits.amount}</Form.Label>
+        <Form.Group controlId="amount">
+          <Form.Label className="required">{m?.credits.amount}</Form.Label>
 
-            <InputGroup>
-              <Form.Control
-                type="number"
-                value={credits}
-                min={500}
-                step={10}
-                isInvalid={invalidCredits}
-                onChange={(e) => setCredits(e.currentTarget.value)}
-              />
+          <InputGroup>
+            <Form.Control
+              type="number"
+              value={credits}
+              min={500}
+              step={10}
+              isInvalid={invalidCredits}
+              onChange={(e) => setCredits(e.currentTarget.value)}
+            />
 
-              <InputGroup.Text>
-                {m?.credits.credits} = {nf.format(Number(credits) / 100)} €
-              </InputGroup.Text>
-            </InputGroup>
-          </Form.Group>
-        </Modal.Body>
+            <InputGroup.Text>
+              {m?.credits.credits} = {nf.format(Number(credits) / 100)} €
+            </InputGroup.Text>
+          </InputGroup>
+        </Form.Group>
+      </Modal.Body>
 
-        <Modal.Footer>
-          <Button type="submit" disabled={invalidCredits}>
-            <FaCheck /> {m?.credits.buy}
-          </Button>
+      <Modal.Footer>
+        <Button type="submit" disabled={invalidCredits}>
+          <FaCheck /> {m?.credits.buy}
+        </Button>
 
-          <Button variant="dark" type="button" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
-      </Form>
+        <Button variant="dark" type="button" onClick={close}>
+          <FaTimes /> {m?.general.cancel}
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 }

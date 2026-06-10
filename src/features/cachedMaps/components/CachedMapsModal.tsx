@@ -19,6 +19,7 @@ export default function CachedMapsModal({ show }: Props): ReactElement {
 
   return (
     <Modal
+      scrollable
       show={show}
       onHide={() => dispatch(setActiveModal(null))}
       size="lg"

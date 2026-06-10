@@ -92,58 +92,63 @@ export default function PredefinedDrawingPropertiesModal({
   useDocumentTitle(show ? m?.drawing.defProps.menuItem : undefined);
 
   return (
-    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
-      <Form onSubmit={handleSubmit}>
-        <Modal.Header closeButton>
-          <Modal.Title>{m?.drawing.defProps.title}</Modal.Title>
-        </Modal.Header>
+    <Modal
+      show={show}
+      onHide={close}
+      contentClassName="bg-body-tertiary"
+      as="form"
+      onSubmit={handleSubmit}
+      scrollable
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>{m?.drawing.defProps.title}</Modal.Title>
+      </Modal.Header>
 
-        <Modal.Body>
-          <DrawingLineStyleFields
-            color={editedColor}
-            onColorChange={setEditedColor}
-            fillColor={editedFillColor}
-            onFillColorChange={setEditedFillColor}
-            width={editedWidth}
-            onWidthChange={setEditedWidth}
-            widthStep={0.1}
-            lineCap={editedLineCap}
-            onLineCapChange={setEditedLineCap}
-            lineJoin={editedLineJoin}
-            onLineJoinChange={setEditedLineJoin}
-            dashArray={editedDashArray}
-            onDashArrayChange={setEditedDashArray}
+      <Modal.Body>
+        <DrawingLineStyleFields
+          color={editedColor}
+          onColorChange={setEditedColor}
+          fillColor={editedFillColor}
+          onFillColorChange={setEditedFillColor}
+          width={editedWidth}
+          onWidthChange={setEditedWidth}
+          widthStep={0.1}
+          lineCap={editedLineCap}
+          onLineCapChange={setEditedLineCap}
+          lineJoin={editedLineJoin}
+          onLineJoinChange={setEditedLineJoin}
+          dashArray={editedDashArray}
+          onDashArrayChange={setEditedDashArray}
+        />
+
+        <Form.Group controlId="markerType" className="mt-3">
+          <Form.Label>{m?.drawing.edit.shape}</Form.Label>
+
+          <MarkerTypeSelect
+            asSelect
+            value={editedMarkerType}
+            onChange={setEditedMarkerType}
           />
+        </Form.Group>
+      </Modal.Body>
 
-          <Form.Group controlId="markerType" className="mt-3">
-            <Form.Label>{m?.drawing.edit.shape}</Form.Label>
+      <Modal.Footer>
+        <Button type="submit">
+          <FaCheck /> {m?.general.save}
+        </Button>
 
-            <MarkerTypeSelect
-              asSelect
-              value={editedMarkerType}
-              onChange={setEditedMarkerType}
-            />
-          </Form.Group>
-        </Modal.Body>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleApplyToAllClick}
+        >
+          <FaFill /> {m?.drawing.defProps.applyToAll}
+        </Button>
 
-        <Modal.Footer>
-          <Button type="submit">
-            <FaCheck /> {m?.general.save}
-          </Button>
-
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={handleApplyToAllClick}
-          >
-            <FaFill /> {m?.drawing.defProps.applyToAll}
-          </Button>
-
-          <Button variant="dark" type="button" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
-      </Form>
+        <Button variant="dark" type="button" onClick={close}>
+          <FaTimes /> {m?.general.cancel}
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 }

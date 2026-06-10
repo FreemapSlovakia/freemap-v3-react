@@ -57,6 +57,7 @@ export default function TrackingModal({ show }: Props): ReactElement {
 
   return (
     <Modal
+      scrollable
       onHide={() => {
         dispatch(setActiveModal(null));
       }}

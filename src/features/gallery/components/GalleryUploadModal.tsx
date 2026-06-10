@@ -200,6 +200,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
       onHide={handleClose}
       size="lg"
       contentClassName="bg-body-tertiary"
+      scrollable
     >
       <Modal.Header closeButton>
         <Modal.Title>

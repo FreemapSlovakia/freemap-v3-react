@@ -78,6 +78,7 @@ export default function WikimediaCommonsLayer(): ReactElement {
         show={loading !== null || preview !== null}
         onHide={close}
         size="xl"
+        scrollable
       >
         <Modal.Header closeButton>
           <Modal.Title>

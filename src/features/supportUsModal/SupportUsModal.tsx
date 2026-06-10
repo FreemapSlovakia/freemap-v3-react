@@ -31,7 +31,7 @@ export default function SupportUsModal({ show }: Props): ReactElement {
   useDocumentTitle(show ? m?.mainMenu.supportUs : undefined);
 
   return (
-    <Modal show={show} onHide={close}>
+    <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
           <FaHeart color="red" /> {m?.mainMenu.supportUs}{' '}
