@@ -75,11 +75,11 @@ import { toastsStopTimeoutProcessor } from '@features/toasts/model/processors/to
 import * as trackingAccessTokenProcessors from '@features/tracking/model/processors/trackingAccessTokenProcessors.js';
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
 import { trackingFollowProcessor } from '@features/tracking/model/processors/trackingFollowProcessors.js';
-import { trackViewerDownloadTrackProcessor } from '@features/tracking/model/processors/trackViewerDownloadTrackProcessor.js';
-import { trackViewerGpxLoadProcessor } from '@features/tracking/model/processors/trackViewerGpxLoadProcessor.js';
-import { trackViewerSetTrackDataProcessor } from '@features/tracking/model/processors/trackViewerSetTrackDataProcessor.js';
-import { trackViewerToggleElevationChartProcessor } from '@features/tracking/model/processors/trackViewerToggleElevationChartProcessor.js';
-import { trackViewerUploadTrackProcessor } from '@features/tracking/model/processors/trackViewerUploadTrackProcessor.js';
+import { trackViewerDownloadTrackProcessor } from '@features/trackViewer/model/processors/trackViewerDownloadTrackProcessor.js';
+import { trackViewerGpxLoadProcessor } from '@features/trackViewer/model/processors/trackViewerGpxLoadProcessor.js';
+import { trackViewerSetTrackDataProcessor } from '@features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.js';
+import { trackViewerToggleElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.js';
+import { trackViewerUploadTrackProcessor } from '@features/trackViewer/model/processors/trackViewerUploadTrackProcessor.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { wikimediaCommonsLayerProcessor } from '@features/wikimediaCommons/model/processors/wikimediaCommonsLayerProcessor.js';

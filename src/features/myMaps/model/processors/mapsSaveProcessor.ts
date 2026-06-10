@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { handleTrackUpload } from '@features/tracking/model/processors/trackViewerUploadTrackProcessor.js';
+import { handleTrackUpload } from '@features/trackViewer/model/processors/trackViewerUploadTrackProcessor.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
   type MapData,

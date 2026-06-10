@@ -95,8 +95,8 @@ from both the old and new identities.
 | `Changesets` | `search` | `days` + `byAuthor` (bool) query string | `Changesets`/`set` — *dropped `authorName` (PII)* | [`changesets/model/processor.ts`](../src/features/changesets/model/processor.ts) |
 | `RoutePlanner` | `search` | `transportType` + `mode` query string | *(unchanged)* | [`findRouteProcessorHandler.ts`](../src/features/routePlanner/model/processors/findRouteProcessorHandler.ts) |
 | `RoutePlanner` | `toggleElevationChart` | — | *(unchanged)* | [`toggleElevationChartProcessor.ts`](../src/features/routePlanner/model/processors/toggleElevationChartProcessor.ts) |
-| `TrackViewer` | `upload` | — | *(unchanged)* | [`trackViewerUploadTrackProcessor.ts`](../src/features/tracking/model/processors/trackViewerUploadTrackProcessor.ts) |
-| `TrackViewer` | `toggleElevationChart` | — | `TrackViewer`/`showElevationProfile` | [`trackViewerToggleElevationChartProcessor.ts`](../src/features/tracking/model/processors/trackViewerToggleElevationChartProcessor.ts) |
+| `TrackViewer` | `upload` | — | *(unchanged)* | [`trackViewerUploadTrackProcessor.ts`](../src/features/trackViewer/model/processors/trackViewerUploadTrackProcessor.ts) |
+| `TrackViewer` | `toggleElevationChart` | — | `TrackViewer`/`showElevationProfile` | [`trackViewerToggleElevationChartProcessor.ts`](../src/features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.ts) |
 | `Drawing` | `measure` | geometry type | *(unchanged)* | [`measurementProcessor.ts`](../src/features/drawing/model/measurementProcessor.ts) |
 | `Drawing` | `convertToDrawing` | source (`track`/`planned-route`/`objects`/`search-result`/`changesets`/…) | *(added 2026-06)* | [`convertToDrawingProcessor.ts`](../src/processors/convertToDrawingProcessor.ts) |
 | `Gallery` | `showPhoto` | — | `Gallery`/`showPhoto` — *dropped image id* | [`galleryShowImageGaProcessor.ts`](../src/features/gallery/model/processors/galleryShowImageGaProcessor.ts) |

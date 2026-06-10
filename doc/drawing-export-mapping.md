@@ -181,7 +181,7 @@ they're audited by eye and exercised through round-trip exports.
 | `src/features/export/osmandIconMapping.ts` | OsmAnd icon/background ↔ iconSpec/markerType |
 | `src/features/export/model/processors/gpxExportProcessorHandler.ts` | GPX writer (`addDrawingPoints`, `addDrawingLines`, marker SVG builder for Locus icon) |
 | `src/features/export/model/processors/geojsonExportProcessorHandler.ts` | GeoJSON writer |
-| `src/features/tracking/model/processors/trackViewerSetTrackDataProcessor.ts` | GPX → GeoJSON parser; injects canonical `freemap:*` / `osmand:*` / `gpx_style:hasFill` props onto wpt/trk features |
+| `src/features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.ts` | GPX → GeoJSON parser; injects canonical `freemap:*` / `osmand:*` / `gpx_style:hasFill` props onto wpt/trk features |
 | `src/processors/convertToDrawingProcessor.ts` | Turns parsed features into drawing state; hosts `pointStyleFromProperties` / `lineStyleFromProperties` priority chains |
 | `src/shared/drawingIcons.tsx` | iconSpec parser, FA loader, POI name↔URL maps, `tagsToPoiIconSpec` |
 | `src/shared/components/RichMarker.tsx` | Renderer the Locus icon SVG mirrors |
