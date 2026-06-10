@@ -7,6 +7,10 @@ import { setLocation, toggleLocate } from './actions.js';
 
 let watch: number | undefined;
 
+// bumped on every toggle so stale async callbacks (the coarse fix in
+// particular) can detect that locating was turned off or restarted meanwhile
+let session = 0;
+
 export const locateProcessor: Processor = {
   actionCreator: toggleLocate,
   handle: async ({ getState, dispatch }) => {
@@ -17,49 +21,82 @@ export const locateProcessor: Processor = {
 
       const map = await mapPromise;
 
-      watch = window.navigator.geolocation?.watchPosition(
-        ({ coords: { latitude, longitude, accuracy } }) => {
+      const mySession = ++session;
+
+      const applyFix = ({
+        latitude,
+        longitude,
+        accuracy,
+      }: GeolocationCoordinates) => {
+        if (mySession !== session) {
+          return;
+        }
+
+        dispatch(
+          setLocation({
+            lat: latitude,
+            lon: longitude,
+            accuracy,
+          }),
+        );
+
+        const { zoom, gpsTracked } = getState().map;
+
+        // adjust coordinates to prevent additional map micromovement
+        const latLng = map.unproject(
+          map.project(new LatLng(latitude, longitude), zoom).round(),
+          zoom,
+        );
+
+        if (gpsTracked) {
           dispatch(
-            setLocation({
-              lat: latitude,
-              lon: longitude,
-              accuracy,
+            mapRefocus({
+              lat: latLng.lat,
+              lon: latLng.lng,
+              gpsTracked: true,
             }),
           );
+        }
+      };
 
-          const { zoom, gpsTracked } = getState().map;
+      // phase 1: quick coarse fix so the marker appears immediately; ignored if
+      // the accurate watch already delivered a fix
+      window.navigator.geolocation?.getCurrentPosition(
+        ({ coords }) => {
+          if (!getState().location.location) {
+            applyFix(coords);
+          }
+        },
+        () => {},
+        { enableHighAccuracy: false, maximumAge: 600_000, timeout: 10_000 },
+      );
 
-          // adjust coordinates to prevent additional map micromovement
-          const latLng = map.unproject(
-            map.project(new LatLng(latitude, longitude), zoom).round(),
-            zoom,
-          );
+      // phase 2: accurate continuous tracking
+      watch = window.navigator.geolocation?.watchPosition(
+        ({ coords }) => {
+          applyFix(coords);
+        },
+        (err) => {
+          if (err.code === err.PERMISSION_DENIED) {
+            dispatch(toggleLocate(false));
 
-          if (gpsTracked) {
             dispatch(
-              mapRefocus({
-                lat: latLng.lat,
-                lon: latLng.lng,
-                gpsTracked: true,
+              toastsAdd({
+                id: 'main.locationError',
+                messageKey: 'main.locationError',
+                style: 'danger',
+                timeout: 5_000,
               }),
             );
           }
+          // POSITION_UNAVAILABLE / TIMEOUT: transient signal loss — keep the
+          // watch running so tracking recovers on its own once GPS returns
         },
-        () => {
-          dispatch(toggleLocate(false));
-
-          dispatch(
-            toastsAdd({
-              id: 'main.locationError',
-              messageKey: 'main.locationError',
-              style: 'danger',
-              timeout: 5000,
-            }),
-          );
-        },
-        { enableHighAccuracy: true, maximumAge: 0 },
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 30_000 },
       );
     } else if (window.navigator.geolocation && typeof watch === 'number') {
+      session++;
+
       dispatch(mapRefocus({ gpsTracked: false }));
 
       window.navigator.geolocation.clearWatch(watch);
