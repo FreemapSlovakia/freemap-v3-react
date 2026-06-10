@@ -1,10 +1,10 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import clsx from 'clsx';
 import type { CSSProperties, ReactElement } from 'react';
 import { AlertLink } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { Changeset, changesetsSetParams } from '../model/actions.js';
+import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 import classes from './ChangesetDetails.module.css';
 
 type Props = { changeset: Changeset };
@@ -12,7 +12,7 @@ type Props = { changeset: Changeset };
 const linkStyle: CSSProperties = { cursor: 'pointer' };
 
 export function ChangesetDetails({ changeset }: Props): ReactElement {
-  const m = useMessages();
+  const cm = useChangesetsMessages();
 
   const dispatch = useDispatch();
 
@@ -26,7 +26,7 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
   return (
     <>
       <dl className={clsx(classes.kvGrid, 'mb-2')}>
-        <dt>{m?.changesets.details.author}</dt>
+        <dt>{cm?.details.author}</dt>
         <dd>
           <AlertLink
             role="link"
@@ -39,18 +39,14 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
             {changeset.userName}
           </AlertLink>
         </dd>
-        <dt>{m?.changesets.details.description}</dt>
-        <dd>
-          {changeset.description || (
-            <i>{m?.changesets.details.noDescription}</i>
-          )}
-        </dd>
-        <dt>{m?.changesets.details.closedAt}</dt>
+        <dt>{cm?.details.description}</dt>
+        <dd>{changeset.description || <i>{cm?.details.noDescription}</i>}</dd>
+        <dt>{cm?.details.closedAt}</dt>
         <dd>{timeFormat.format(changeset.closedAt)}</dd>
       </dl>
 
       <p className="mb-0">
-        {m?.changesets.details.moreDetailsOn({
+        {cm?.details.moreDetailsOn({
           osmLink: (
             <AlertLink
               href={`https://www.openstreetmap.org/changeset/${changeset.id}`}

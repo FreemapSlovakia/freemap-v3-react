@@ -43,6 +43,9 @@ const getErrorMarkup = (ticketId?: string) => `
 const outdoorMap = 'Turystyka, Rower, Biegówki, Jazda konna';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
+  changesets: {
+    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+  },
   general: {
     iso: 'pl_PL',
     elevationProfile: 'Profil wysokościowy',
@@ -576,30 +579,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     savingError: ({ err }) => addError(messages, 'Błąd zapisu ustawień', err),
     customLayersDef: 'Definicja własnych warstw mapy',
     customLayersDefError: 'Nieprawidłowa definicja własnych warstw mapy.',
-  },
-
-  changesets: {
-    details: {
-      author: 'Autor:',
-      description: 'Opis:',
-      noDescription: 'bez opisu',
-      closedAt: 'Czas:',
-      moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <>
-          Więcej szczegółów na {osmLink} lub {achaviLink}.
-        </>
-      ),
-    },
-    allAuthors: 'Wszyscy autorzy',
-    refresh: 'Pobierz zestawy zmian dla bieżącego widoku mapy',
-    tooBig:
-      'Żądanie changesetów może zwrócić zbyt wiele elementów. Spróbuj przybliżyć mapę, wybrać mniej dni lub podać konkretnego autora.',
-    olderThan: ({ days }) => `${days} dni`,
-    olderThanFull: ({ days }) => `Changesety z ostatnich ${days} dni`,
-    notFound: 'Nie znaleziono żadnych changesetów.',
-    fetchError: ({ err }) =>
-      addError(messages, 'Błąd podczas pobierania changesetów', err),
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
   },
 
   mapDetails: {

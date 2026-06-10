@@ -414,27 +414,9 @@ export type Messages = {
     customLayersDefError: string;
   };
   changesets: {
-    allAuthors: string;
-    refresh: string;
-    tooBig: string;
-    olderThan: ({ days }: { days: number }) => string;
-    olderThanFull: ({ days }: { days: number }) => string;
-    notFound: string;
-    fetchError: (props: Err) => string;
+    // Dispatched as a toast messageKey and rendered to JSX by the global Toasts
+    // component, which resolves keys only against global Messages, so it stays.
     detail: ({ changeset }: { changeset: Changeset }) => JSX.Element;
-    details: {
-      author: string;
-      description: string;
-      noDescription: string;
-      closedAt: string;
-      moreDetailsOn: ({
-        osmLink,
-        achaviLink,
-      }: {
-        osmLink: JSX.Element;
-        achaviLink: JSX.Element;
-      }) => JSX.Element;
-    };
   };
   mapDetails: {
     sources: string;

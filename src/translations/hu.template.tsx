@@ -41,6 +41,9 @@ const getErrorMarkup = (ticketId?: string) => `
 const outdoorMap = 'Túrázás, Kerékpár, Síelés, Lovaglás';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
+  changesets: {
+    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+  },
   general: {
     iso: 'hu_HU',
     elevationProfile: 'Magassági profil',
@@ -588,35 +591,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Hiba történt a beállítások mentésénél', err),
     customLayersDef: 'Egyéni térképrétegek meghatározása',
     customLayersDefError: 'Érvénytelen egyéni térképréteg-meghatározás.',
-  },
-
-  changesets: {
-    allAuthors: 'Minden szerző',
-    refresh: 'Változáskészletek letöltése az aktuális térképnézethez',
-    tooBig:
-      'A változáskérések túl sok elemet adhatnak vissza. Kérlek, nagyíts rá, válassz kevesebb napot, vagy adj meg egy konkrét szerzőt.',
-
-    olderThan: ({ days }) => `${days} nap`,
-    olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
-    notFound: 'Nincs módosításkészlet.',
-    fetchError: ({ err }) =>
-      addError(
-        messages,
-        'Hiba történt a módosításkészletek beolvasásánál',
-        err,
-      ),
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-    details: {
-      author: 'Szerző:',
-      description: 'Leírás:',
-      noDescription: 'leírás nélküli',
-      closedAt: 'Idő:',
-      moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <>
-          További részletek itt: {osmLink} vagy itt: {achaviLink}.
-        </>
-      ),
-    },
   },
 
   mapDetails: {

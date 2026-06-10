@@ -41,6 +41,9 @@ const getErrorMarkup = (ticketId?: string) => `
 const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
+  changesets: {
+    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+  },
   general: {
     iso: 'it_IT',
     elevationProfile: 'Profilo altimetrico',
@@ -590,30 +593,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customLayersDef: 'Definizione di livelli mappa personalizzati',
     customLayersDefError:
       'Definizione di livelli mappa personalizzati non valida.',
-  },
-
-  changesets: {
-    allAuthors: 'Tutti gli autori',
-    refresh: 'Scarica i changeset per la vista corrente della mappa',
-    tooBig:
-      'La richiesta dei changeset potrebbe restituire troppi risultati. Per favore aumenta lo zoom, scegli meno giorni o inserici un autore specifico.',
-    olderThan: ({ days }) => `${days} giorni`,
-    olderThanFull: ({ days }) => `Changeset degli ultimi ${days} giorni`,
-    notFound: 'Nessun changeset trovato.',
-    fetchError: ({ err }) =>
-      addError(messages, 'Errore nel recupero dei changeset:', err),
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-    details: {
-      author: 'Autore:',
-      description: 'Descrizione:',
-      noDescription: 'senza descrizione',
-      closedAt: 'Ora:',
-      moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <>
-          Maggiori dettagli su {osmLink} o {achaviLink}.
-        </>
-      ),
-    },
   },
 
   mapDetails: {

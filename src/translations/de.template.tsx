@@ -42,6 +42,9 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Anwendungsfehler</h1>
 const outdoorMap = 'Wandern, Radfahren, Langlauf, Reiten';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
+  changesets: {
+    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+  },
   general: {
     iso: 'de_DE',
     elevationProfile: 'Höhenprofil',
@@ -595,31 +598,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customLayersDef: 'Definition benutzerdefinierter Kartenebenen',
     customLayersDefError:
       'Ungültige Definition benutzerdefinierter Kartenebenen.',
-  },
-
-  changesets: {
-    details: {
-      author: 'Autor:',
-      description: 'Beschreibung:',
-      noDescription: 'keine Beschreibung',
-      closedAt: 'Zeit:',
-      moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <>
-          Mehr Details auf {osmLink} oder {achaviLink}.
-        </>
-      ),
-    },
-
-    allAuthors: 'Alle Autoren',
-    refresh: 'Changesets für aktuellen Kartenausschnitt herunterladen',
-    tooBig:
-      'Die Anfrage nach Changesets kann zu viele Einträge zurückgeben. Bitte zoomen Sie näher heran, wählen Sie weniger Tage oder geben Sie einen bestimmten Autor ein.',
-    olderThan: ({ days }) => `${days} Tage`,
-    olderThanFull: ({ days }) => `Changesets der letzten ${days} Tage`,
-    notFound: 'Keine Changesets gefunden.',
-    fetchError: ({ err }) =>
-      addError(messages, 'Fehler beim Laden der Changesets', err),
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
   },
 
   mapDetails: {

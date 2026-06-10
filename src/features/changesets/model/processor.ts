@@ -9,6 +9,7 @@ import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
+import { loadChangesetsMessages } from '../translations/loadChangesetsMessages.js';
 import {
   Changeset,
   changesetsRefresh,
@@ -38,7 +39,6 @@ export const changesetsTrackProcessor: Processor = {
 export const changesetsProcessor: Processor = {
   id: 'changeset.detail',
   actionCreator: [changesetsSetParams, changesetsRefresh, setTool],
-  errorKey: 'changesets.fetchError',
   handle: async ({ dispatch, getState }) => {
     const state = getState();
 
@@ -52,151 +52,178 @@ export const changesetsProcessor: Processor = {
 
     const days2 = days ?? 3;
 
-    if (
-      !authorName &&
-      ((days2 > 2 && zoom < 10) ||
-        (days2 > 6 && zoom < 11) ||
-        (days2 > 13 && zoom < 12) ||
-        (days2 > 29 && zoom < 13))
-    ) {
-      dispatch(changesetsSet([]));
+    try {
+      if (
+        !authorName &&
+        ((days2 > 2 && zoom < 10) ||
+          (days2 > 6 && zoom < 11) ||
+          (days2 > 13 && zoom < 12) ||
+          (days2 > 29 && zoom < 13))
+      ) {
+        dispatch(changesetsSet([]));
 
-      dispatch(
-        toastsAdd({
-          id: 'changeset.detail',
-          messageKey: 'changesets.tooBig',
-          cancelType: [
-            selectFeature.type,
-            changesetsSetParams.type,
-            setTool.type,
-            clearMapFeatures.type,
-          ],
-          timeout: 5000,
-          style: 'warning',
-        }),
-      );
+        const cm = await loadChangesetsMessages(getState().l10n.language);
 
-      return;
-    }
-
-    dispatch(toastsRemove('changeset.detail'));
-
-    const t = new Date();
-
-    t.setDate(t.getDate() - (state.changesets.days ?? 3));
-
-    const fromTime = `${t.getFullYear()}/${
-      t.getMonth() + 1
-    }/${t.getDate()}T00:00:00+00:00`;
-
-    const bbox = (await mapPromise).getBounds().toBBoxString();
-
-    dispatch(changesetsSetLastFetchedBBox(bbox));
-
-    await loadChangesets(null, []);
-
-    async function loadChangesets(
-      toTime0: string | null,
-      changesetsFromPreviousRequest: Changeset[],
-    ): Promise<void> {
-      const res = await httpRequest({
-        getState,
-        url:
-          '//api.openstreetmap.org/api/0.6/changesets?' +
-          objectToURLSearchParams({
-            bbox,
-            time: fromTime + (toTime0 ? `,${toTime0}` : ''),
-            display_name: state.changesets.authorName ?? undefined,
-          }),
-        expectedStatus: [200, 404],
-        cancelActions: [
-          changesetsSetParams,
-          changesetsRefresh,
-          selectFeature,
-          clearMapFeatures,
-          setTool,
-        ],
-      });
-
-      const xml = new DOMParser().parseFromString(await res.text(), 'text/xml');
-
-      const rawChangesets = xml.getElementsByTagName('changeset');
-
-      const arrayOfrawChangesets = Array.from(rawChangesets);
-
-      const changesetsFromThisRequest = arrayOfrawChangesets
-        .map((rawChangeset) => {
-          const minLat = parseFloat(rawChangeset.getAttribute('min_lat') ?? '');
-
-          const maxLat = parseFloat(rawChangeset.getAttribute('max_lat') ?? '');
-
-          const minLon = parseFloat(rawChangeset.getAttribute('min_lon') ?? '');
-
-          const maxLon = parseFloat(rawChangeset.getAttribute('max_lon') ?? '');
-
-          const descriptionTag = Array.from(
-            rawChangeset.getElementsByTagName('tag'),
-          ).find((tag) => tag.getAttribute('k') === 'comment');
-
-          const changeset: Changeset = {
-            userName: rawChangeset.getAttribute('user') ?? '???',
-            id: Number(rawChangeset.getAttribute('id') ?? '???'),
-            centerLat: (minLat + maxLat) / 2.0,
-            centerLon: (minLon + maxLon) / 2.0,
-            closedAt: new Date(rawChangeset.getAttribute('closed_at') ?? '???'),
-            description: descriptionTag?.getAttribute('v') ?? '???',
-          };
-
-          return changeset;
-        })
-        .filter(
-          (changeset) =>
-            changeset.centerLat > 47.63617 &&
-            changeset.centerLat < 49.66746 &&
-            changeset.centerLon > 16.69965 &&
-            changeset.centerLon < 22.67475,
-        );
-
-      const allChangesetsSoFar = [...changesetsFromPreviousRequest];
-
-      const allChangesetSoFarIDs = allChangesetsSoFar.map((ch) => ch.id);
-
-      for (const ch of changesetsFromThisRequest) {
-        if (allChangesetSoFarIDs.indexOf(ch.id) < 0) {
-          // occasionally the changeset may already be here from previous ajax request
-          allChangesetsSoFar.push(ch);
-        }
-      }
-
-      dispatch(changesetsSet(allChangesetsSoFar));
-
-      if (arrayOfrawChangesets.length === 100) {
-        const toTimeOfOldestChangeset = arrayOfrawChangesets
-          .at(-1)!
-          .getAttribute('closed_at');
-
-        await loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);
-
-        return;
-      }
-
-      if (allChangesetsSoFar.length === 0) {
         dispatch(
           toastsAdd({
             id: 'changeset.detail',
-            messageKey: 'changesets.notFound',
+            message: cm.tooBig,
             cancelType: [
               selectFeature.type,
               changesetsSetParams.type,
               setTool.type,
               clearMapFeatures.type,
-              mapRefocus.type,
             ],
             timeout: 5000,
             style: 'warning',
           }),
         );
+
+        return;
       }
+
+      dispatch(toastsRemove('changeset.detail'));
+
+      const t = new Date();
+
+      t.setDate(t.getDate() - (state.changesets.days ?? 3));
+
+      const fromTime = `${t.getFullYear()}/${
+        t.getMonth() + 1
+      }/${t.getDate()}T00:00:00+00:00`;
+
+      const bbox = (await mapPromise).getBounds().toBBoxString();
+
+      dispatch(changesetsSetLastFetchedBBox(bbox));
+
+      await loadChangesets(null, []);
+
+      async function loadChangesets(
+        toTime0: string | null,
+        changesetsFromPreviousRequest: Changeset[],
+      ): Promise<void> {
+        const res = await httpRequest({
+          getState,
+          url:
+            '//api.openstreetmap.org/api/0.6/changesets?' +
+            objectToURLSearchParams({
+              bbox,
+              time: fromTime + (toTime0 ? `,${toTime0}` : ''),
+              display_name: state.changesets.authorName ?? undefined,
+            }),
+          expectedStatus: [200, 404],
+          cancelActions: [
+            changesetsSetParams,
+            changesetsRefresh,
+            selectFeature,
+            clearMapFeatures,
+            setTool,
+          ],
+        });
+
+        const xml = new DOMParser().parseFromString(
+          await res.text(),
+          'text/xml',
+        );
+
+        const rawChangesets = xml.getElementsByTagName('changeset');
+
+        const arrayOfrawChangesets = Array.from(rawChangesets);
+
+        const changesetsFromThisRequest = arrayOfrawChangesets
+          .map((rawChangeset) => {
+            const minLat = parseFloat(
+              rawChangeset.getAttribute('min_lat') ?? '',
+            );
+
+            const maxLat = parseFloat(
+              rawChangeset.getAttribute('max_lat') ?? '',
+            );
+
+            const minLon = parseFloat(
+              rawChangeset.getAttribute('min_lon') ?? '',
+            );
+
+            const maxLon = parseFloat(
+              rawChangeset.getAttribute('max_lon') ?? '',
+            );
+
+            const descriptionTag = Array.from(
+              rawChangeset.getElementsByTagName('tag'),
+            ).find((tag) => tag.getAttribute('k') === 'comment');
+
+            const changeset: Changeset = {
+              userName: rawChangeset.getAttribute('user') ?? '???',
+              id: Number(rawChangeset.getAttribute('id') ?? '???'),
+              centerLat: (minLat + maxLat) / 2.0,
+              centerLon: (minLon + maxLon) / 2.0,
+              closedAt: new Date(
+                rawChangeset.getAttribute('closed_at') ?? '???',
+              ),
+              description: descriptionTag?.getAttribute('v') ?? '???',
+            };
+
+            return changeset;
+          })
+          .filter(
+            (changeset) =>
+              changeset.centerLat > 47.63617 &&
+              changeset.centerLat < 49.66746 &&
+              changeset.centerLon > 16.69965 &&
+              changeset.centerLon < 22.67475,
+          );
+
+        const allChangesetsSoFar = [...changesetsFromPreviousRequest];
+
+        const allChangesetSoFarIDs = allChangesetsSoFar.map((ch) => ch.id);
+
+        for (const ch of changesetsFromThisRequest) {
+          if (allChangesetSoFarIDs.indexOf(ch.id) < 0) {
+            // occasionally the changeset may already be here from previous ajax request
+            allChangesetsSoFar.push(ch);
+          }
+        }
+
+        dispatch(changesetsSet(allChangesetsSoFar));
+
+        if (arrayOfrawChangesets.length === 100) {
+          const toTimeOfOldestChangeset = arrayOfrawChangesets
+            .at(-1)!
+            .getAttribute('closed_at');
+
+          await loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);
+
+          return;
+        }
+
+        if (allChangesetsSoFar.length === 0) {
+          const cm = await loadChangesetsMessages(getState().l10n.language);
+
+          dispatch(
+            toastsAdd({
+              id: 'changeset.detail',
+              message: cm.notFound,
+              cancelType: [
+                selectFeature.type,
+                changesetsSetParams.type,
+                setTool.type,
+                clearMapFeatures.type,
+                mapRefocus.type,
+              ],
+              timeout: 5000,
+              style: 'warning',
+            }),
+          );
+        }
+      }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      const cm = await loadChangesetsMessages(getState().l10n.language);
+
+      dispatch(toastsAdd({ style: 'danger', message: cm.fetchError({ err }) }));
     }
   },
 };

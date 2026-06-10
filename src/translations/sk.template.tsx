@@ -42,6 +42,9 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
 const outdoorMap = 'Turistika, Cyklo, Bežky, Jazdenie';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
+  changesets: {
+    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+  },
   general: {
     iso: 'sk_SK',
     elevationProfile: 'Výškový profil',
@@ -589,31 +592,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Nastala chyba pri ukladaní nastavení', err),
     customLayersDef: 'Definícia vlastných mapových vrstiev',
     customLayersDefError: 'Chybný formát definície vlasyných mapových vrstiev.',
-  },
-
-  changesets: {
-    allAuthors: 'Všetci autori',
-    refresh: 'Stiahnuť sady zmien pre aktuálny výrez mapy',
-    tooBig:
-      'Požiadavka na získanie zmien môže vrátiť veľa záznamov. Skúste priblížiť mapu, zvoliť menej dní, alebo zadať konkrétneho autora.',
-    olderThan: ({ days }) => `${days} dn${days === 3 ? 'i' : 'í'}`,
-    olderThanFull: ({ days }) =>
-      `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`,
-    notFound: 'Neboli nájdené žiadne zmeny.',
-    fetchError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri získavaní zmien', err),
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-    details: {
-      author: 'Autor:',
-      description: 'Popis:',
-      noDescription: 'bez popisu',
-      closedAt: 'Čas:',
-      moreDetailsOn: ({ osmLink, achaviLink }) => (
-        <>
-          Viac detailov na {osmLink}, alebo {achaviLink}.
-        </>
-      ),
-    },
   },
 
   mapDetails: {

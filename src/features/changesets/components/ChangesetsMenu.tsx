@@ -9,9 +9,12 @@ import { Button, Dropdown, Form, InputGroup } from 'react-bootstrap';
 import { FaDownload, FaEraser, FaPencilAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { changesetsRefresh, changesetsSetParams } from '../model/actions.js';
+import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 
 export default function ChangesetsMenu(): ReactElement {
   const m = useMessages();
+
+  const cm = useChangesetsMessages();
 
   const [authorName, setAuthorName] = useState<string | null>(
     useAppSelector((state) => state.changesets.authorName),
@@ -44,13 +47,13 @@ export default function ChangesetsMenu(): ReactElement {
         }}
       >
         <Dropdown.Toggle variant="secondary" id="days">
-          {m?.changesets.olderThanFull({ days }) ?? '…'}
+          {cm?.olderThanFull({ days }) ?? '…'}
         </Dropdown.Toggle>
 
         <Dropdown.Menu popperConfig={fixedPopperConfig}>
           {[3, 7, 14, 30].map((d) => (
             <Dropdown.Item key={d} eventKey={String(d)} active={d === days}>
-              {m?.changesets.olderThan({ days: d })}
+              {cm?.olderThan({ days: d })}
             </Dropdown.Item>
           ))}
         </Dropdown.Menu>
@@ -67,7 +70,7 @@ export default function ChangesetsMenu(): ReactElement {
         <InputGroup className="flex-nowrap">
           <Form.Control
             type="text"
-            placeholder={m?.changesets.allAuthors}
+            placeholder={cm?.allAuthors}
             onChange={(e) => {
               setAuthorName(e.target.value || null);
             }}
@@ -89,7 +92,7 @@ export default function ChangesetsMenu(): ReactElement {
         </InputGroup>
       </Form>
 
-      <LongPressTooltip label={m?.changesets.refresh}>
+      <LongPressTooltip label={cm?.refresh}>
         {({ label, labelClassName, props }) => (
           <Button
             className="ms-1"

@@ -48,7 +48,14 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   `objects.fetchingError` errorKey. The `objects.icon` marker-shape labels stay
   in the objects bundle (the `MarkerType` they label is owned by objects) and the
   drawing `MarkerTypeSelect` consumes them cross-feature via `useObjectsMessages`.
-  Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a non-component (e.g. `mapLayers.legacyMapWarning`), since toast `message` is typed `string`.
+  And `changesets` → its own bundle: the fetch processor drops its `errorKey` for
+  a try/catch and switches its `tooBig`/`notFound` toasts to literal `message:`
+  via `loadChangesetsMessages`. Only `changesets.detail` stays in a minimal global
+  `changesets` block — it's a JSX-returning function dispatched as a toast
+  `messageKey` and rendered by the global `Toasts` component (which resolves keys
+  only against global Messages). The locale templates keep just that one
+  locale-independent `detail` line (so generated files carry the `ChangesetDetails`
+  import); everything else now falls back through the bundle. Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a non-component (e.g. `mapLayers.legacyMapWarning`), since toast `message` is typed `string`.
 
 ## Softer / design opinions
 
