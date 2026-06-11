@@ -12,6 +12,7 @@ export const DocumentSchema = z.enum([
   'privacyPolicy',
   'termsOfService',
   'refundPolicy',
+  'premium',
   'shortcuts',
   'tracking',
 ]);

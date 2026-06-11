@@ -25,7 +25,7 @@ Na účely týchto zásad:
 - **Cookies** sú malé súbory, ktoré webová stránka ukladá do vášho zariadenia a ktoré obsahujú údaje o vašej histórii prehliadania.
 - **Krajina** označuje Slovenskú republiku.
 - **Zariadenie** znamená akékoľvek zariadenie, ktoré má prístup k službe, ako napríklad počítač, mobilný telefón alebo tablet.
-- **Spracovateľ platieb** je Paddle (Paddle.com Market Limited a jeho pridružené spoločnosti), ktorý vystupuje ako predajca na účet (Merchant of Record) pre platené predplatné Freemap Premium a spracúva platby v našom mene. Platené predplatné predáva spoločnosť Ing. Martin Ždila s.r.o.; podrobnosti nájdete v našich Obchodných podmienkach a Zásadách vrátenia peňazí.
+- **Spracovateľ platieb** je Lemon Squeezy (spoločnosť skupiny Stripe), ktorý vystupuje ako predajca na účet (Merchant of Record) pre platené predplatné Freemap Premium a Kredity a spracúva platby v našom mene. Predáva ich spoločnosť Ing. Martin Ždila s.r.o.; podrobnosti nájdete v našich Obchodných podmienkach a Zásadách vrátenia peňazí.
 - **Osobné údaje** sú akékoľvek informácie, ktoré sa týkajú identifikovateľnej osoby.
 - **Služba** znamená webovú stránku.
 - **Poskytovateľ služby** je fyzická alebo právnická osoba, ktorá spracúva údaje v mene spoločnosti. Ide napríklad o tretie strany, ktoré zabezpečujú funkcie služby.
@@ -84,7 +84,7 @@ Spoločnosť môže použiť osobné údaje na:
 Údaje môžeme zdieľať s:
 
 - poskytovateľmi služieb
-- so spracovateľom platieb Paddle pri kúpe Freemap Premium (fakturačné a platobné údaje zadané pri platbe spracúva priamo Paddle, my ich neuchovávame; dostávame len údaje potrebné na udelenie a správu predplatného)
+- so spracovateľom platieb Lemon Squeezy pri kúpe Freemap Premium (fakturačné a platobné údaje zadané pri platbe spracúva priamo Lemon Squeezy, my ich neuchovávame; dostávame len údaje potrebné na udelenie a správu predplatného)
 - pri fúzii alebo predaji firmy
 - ostatnými používateľmi (pri verejnom zdieľaní)
 - s vaším súhlasom

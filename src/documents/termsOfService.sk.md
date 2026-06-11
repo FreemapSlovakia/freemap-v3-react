@@ -30,7 +30,7 @@ Na účely týchto Podmienok:
 
 - **Kredity** označujú predplatený zostatok, ktorý si môžete kúpiť a míňať na funkcie Služby účtované podľa spotreby, ako je opísané nižšie.
 
-- **Paddle** označuje spoločnosť Paddle.com Market Limited a jej pridružené spoločnosti, ktoré vystupujú ako **predajca na účet (Merchant of Record)**, teda autorizovaný ďalší predajca Freemap Premium. Paddle zabezpečuje platbu, fakturáciu a príslušné dane a na Vašom platobnom výpise vystupuje ako predávajúci.
+- **Spracovateľ platieb** označuje tretiu stranu (platobnú bránu), ktorú používame na spracovanie platieb kartou a iných platieb v Našom mene. Spracovateľ platieb iba spracúva platby; nie je predávajúcim. Predávajúci je predajcom a zodpovedá za produkty, fakturáciu a za účtovanie a odvod príslušnej DPH.
 
 - **Predplatné** označuje opakujúce sa, automaticky sa obnovujúce právo používať Freemap Premium počas dohodnutého fakturačného obdobia.
 
@@ -53,17 +53,17 @@ Presný rozsah funkcií sa môže časom meniť. Jednotlivé prémiové funkcie 
 
 ## Cena a fakturácia
 
-Freemap Premium sa ponúka ako **ročné Predplatné** za cenu **8 EUR ročne** (aktuálna cena je vždy uvedená pri platbe a má prednosť pred akýmkoľvek údajom uvedeným tu). Cena zahŕňa príslušné dane, ak sa vyžadujú; konečnú sumu vrátane prípadnej DPH vypočíta a zobrazí Paddle pred potvrdením Vašej objednávky.
+Freemap Premium sa ponúka ako **ročné Predplatné** za cenu **8 EUR ročne** (aktuálna cena je vždy uvedená pri platbe a má prednosť pred akýmkoľvek údajom uvedeným tu). Ceny sú uvedené v eurách (EUR) a zahŕňajú príslušnú daň z pridanej hodnoty (DPH), ak sa vyžaduje; konečná suma vrátane prípadnej DPH sa zobrazí pred potvrdením Vašej objednávky. Ku každej platbe Vám vystavíme doklad alebo faktúru.
 
-Predplatné sa **automaticky obnovuje**: obnovuje sa automaticky na ďalšie jednoročné obdobia za vtedy platnú cenu, pokiaľ ho nezrušíte pred dátumom obnovenia. My (alebo Paddle v Našom mene) pri každom obnovení zaúčtujeme platbu z Vami poskytnutého platobného prostriedku.
+Predplatné sa **automaticky obnovuje**: obnovuje sa automaticky na ďalšie jednoročné obdobia za vtedy platnú cenu, pokiaľ ho nezrušíte pred dátumom obnovenia. Pri každom obnovení zaúčtujeme platbu z Vami poskytnutého platobného prostriedku prostredníctvom Nášho Spracovateľa platieb.
 
-## Platba a predajca na účet (Merchant of Record)
+## Platba
 
-Platby za Freemap Premium spracúva **Paddle** ako **predajca na účet (Merchant of Record)**. To znamená, že Vaša zmluva o kúpe je uzavretá s Paddle ako ďalším predajcom, že Paddle zodpovedá za fakturáciu a výber a odvod príslušných daní a že na Vašom výpise z karty alebo z účtu sa zobrazí názov Paddle (alebo „Paddle.net*“). Vaša kúpa preto navyše podlieha nákupným podmienkam Paddle dostupným na [https://www.paddle.com/legal/checkout-buyer-terms](https://www.paddle.com/legal/checkout-buyer-terms).
+Vaša zmluva o kúpe je uzavretá s Nami (Ing. Martin Ždila s.r.o.) ako Predávajúcim. Platby v Našom mene spracúva tretia strana — **Spracovateľ platieb** (platobná brána), ktorá zabezpečuje bezpečné spracovanie údajov Vašej karty alebo iného platobného prostriedku, no nie je zmluvnou stranou Vašej kúpy. Za fakturáciu, vystavovanie faktúr a za účtovanie a odvod príslušnej DPH zodpovedáme My. Na Vašom výpise z karty alebo z účtu sa zobrazí Náš názov (alebo odkaz na Freemap). Používanie platobnej brány môže navyše podliehať vlastným podmienkam jej poskytovateľa.
 
 ## Zrušenie
 
-Predplatné môžete kedykoľvek zrušiť s účinnosťou ku koncu aktuálneho fakturačného obdobia prostredníctvom odkazu na správu účtu alebo fakturácie, ktorý Vám bol poskytnutý (vrátane odkazu v e-maile od Paddle o kúpe alebo obnovení), alebo nás kontaktujte na freemap@freemap.sk. Po zrušení si zachovávate prístup k Freemap Premium do konca už zaplateného obdobia, po ktorom sa Predplatné neobnoví.
+Predplatné môžete kedykoľvek zrušiť s účinnosťou ku koncu aktuálneho fakturačného obdobia prostredníctvom možností správy účtu alebo fakturácie, ktoré Vám boli poskytnuté, alebo nás kontaktujte na freemap@freemap.sk. Po zrušení si zachovávate prístup k Freemap Premium do konca už zaplateného obdobia, po ktorom sa Predplatné neobnoví.
 
 ## Vratky a právo na odstúpenie
 
@@ -75,7 +75,7 @@ Vratky upravujú Naše [Zásady vrátenia peňazí](#document=refundPolicy), kto
 
 ## Kúpa a cena
 
-Kredity sa predávajú v množstve podľa Vášho výberu, s **minimálnym nákupom 500 Kreditov za 5 EUR** (aktuálna cena a dostupné množstvá sa vždy zobrazujú pri platbe a majú prednosť pred akýmkoľvek údajom uvedeným tu). Rovnako ako pri Freemap Premium platbu spracúva **Paddle** ako predajca na účet (Merchant of Record) a platia rovnaké platobné podmienky.
+Kredity sa predávajú v množstve podľa Vášho výberu, s **minimálnym nákupom 500 Kreditov za 5 EUR** (aktuálna cena a dostupné množstvá sa vždy zobrazujú pri platbe a majú prednosť pred akýmkoľvek údajom uvedeným tu). Rovnako ako pri Freemap Premium platbu v Našom mene spracúva Náš Spracovateľ platieb a platia rovnaké platobné podmienky. Ceny zahŕňajú príslušnú DPH, ak sa vyžaduje.
 
 ## Platnosť a používanie
 

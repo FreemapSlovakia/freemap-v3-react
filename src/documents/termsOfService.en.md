@@ -32,7 +32,7 @@ For the purposes of these Terms:
 
 - **Credits** means a prepaid balance You can purchase and spend on consumption-based features of the Service, as described below.
 
-- **Paddle** refers to Paddle.com Market Limited and its affiliates, who act as the **Merchant of Record** (authorized reseller) for Freemap Premium. Paddle handles the payment, invoicing and applicable taxes, and appears as the seller on Your payment statement.
+- **Payment Processor** refers to the third-party payment provider (payment gateway) We use to process card and other payments on Our behalf. The Payment Processor only processes payments; it is not the seller of the products. The Seller is the seller and merchant of record and is responsible for the products, billing, invoicing, and the charging and remittance of applicable VAT.
 
 - **Subscription** means the recurring, auto-renewing right to use Freemap Premium for the agreed billing period.
 
@@ -55,17 +55,17 @@ The exact set of features may evolve over time. We may add, change or remove ind
 
 ## Price and billing
 
-Freemap Premium is offered as a **yearly Subscription** at the price of **EUR 8 per year** (the current price is always shown at checkout and prevails over any figure stated here). The price is inclusive of applicable taxes where required; Paddle calculates and displays the final amount, including any VAT, before You confirm Your purchase.
+Freemap Premium is offered as a **yearly Subscription** at the price of **EUR 8 per year** (the current price is always shown at checkout and prevails over any figure stated here). Prices are stated in euro (EUR) and include applicable value-added tax (VAT) where required; the final amount, including any VAT, is shown before You confirm Your purchase. We issue You a receipt or invoice for each payment.
 
-The Subscription is **auto-renewing**: it renews automatically for successive one-year periods at the then-current price, unless You cancel before the renewal date. We (or Paddle on Our behalf) will charge the payment method You provided at each renewal.
+The Subscription is **auto-renewing**: it renews automatically for successive one-year periods at the then-current price, unless You cancel before the renewal date. We will charge the payment method You provided, through Our Payment Processor, at each renewal.
 
-## Payment and Merchant of Record
+## Payment
 
-Payments for Freemap Premium are processed by **Paddle**, acting as the **Merchant of Record**. This means that Your contract for the purchase is concluded with Paddle as reseller, that Paddle is responsible for billing, invoicing and the collection and remittance of applicable taxes, and that Paddle's name (or "Paddle.net*") appears on Your card or bank statement. Your purchase is therefore additionally subject to Paddle's buyer terms, available at [https://www.paddle.com/legal/checkout-buyer-terms](https://www.paddle.com/legal/checkout-buyer-terms).
+Your purchase contract is concluded with Us (Ing. Martin Ždila s.r.o.) as the Seller. Payments are processed on Our behalf by a third-party **Payment Processor** (payment gateway), which handles the secure processing of Your card or other payment details but is not a party to Your purchase. We are responsible for billing, issuing invoices, and charging and remitting applicable VAT. Our name (or a reference to Freemap) appears on Your card or bank statement. Your use of the Payment Processor's checkout may also be subject to that provider's own terms.
 
 ## Cancellation
 
-You may cancel Your Subscription at any time, effective at the end of the current billing period, through the account management or billing-management link provided to You (including the link in Your Paddle purchase or renewal email), or by contacting Us at freemap@freemap.sk. After cancellation You retain access to Freemap Premium until the end of the period You have already paid for, after which the Subscription will not renew.
+You may cancel Your Subscription at any time, effective at the end of the current billing period, through the account or billing management options provided to You, or by contacting Us at freemap@freemap.sk. After cancellation You retain access to Freemap Premium until the end of the period You have already paid for, after which the Subscription will not renew.
 
 ## Refunds and right of withdrawal
 
@@ -77,7 +77,7 @@ Refunds are governed by Our [Refund Policy](#document=refundPolicy), which forms
 
 ## Purchase and price
 
-Credits are sold in an amount of Your choice, with a **minimum purchase of 500 Credits for EUR 5** (the current price and available amounts are always shown at checkout and prevail over any figure stated here). As with Freemap Premium, payment is processed by **Paddle** as Merchant of Record, and the same payment terms apply.
+Credits are sold in an amount of Your choice, with a **minimum purchase of 500 Credits for EUR 5** (the current price and available amounts are always shown at checkout and prevail over any figure stated here). As with Freemap Premium, payment is processed on Our behalf by Our Payment Processor, and the same payment terms apply. Prices include applicable VAT where required.
 
 ## Validity and use
 

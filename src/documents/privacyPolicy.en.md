@@ -32,7 +32,7 @@ For the purposes of this Privacy Policy:
 
 - **Device** means any device that can access the Service such as a computer, a cellphone or a digital tablet.
 
-- **Payment Processor** refers to Paddle (Paddle.com Market Limited and its affiliates), who acts as the Merchant of Record for the paid Freemap Premium subscription and processes payments on Our behalf. The paid subscription is sold by Ing. Martin Ždila s.r.o.; see Our Terms of Service and Refund Policy for details.
+- **Payment Processor** refers to the third-party payment provider (payment gateway) who processes payments on Our behalf for the paid Freemap Premium subscription and Credits. The paid products are sold by Ing. Martin Ždila s.r.o., which is the seller and merchant of record; see Our Terms of Service and Refund Policy for details.
 
 - **Personal Data** is any information that relates to an identified or identifiable individual.
 
@@ -130,7 +130,7 @@ The Company may use Personal Data for the following purposes:
 We may share Your personal information in the following situations:
 
 - **With Service Providers:** We may share Your personal information with Service Providers to monitor and analyze the use of our Service, to contact You.
-- **With the Payment Processor:** When You purchase Freemap Premium, the payment is handled by Paddle as Merchant of Record. The billing and payment information You enter at checkout is provided directly to and processed by Paddle, not stored by Us; We receive only the information needed to grant and manage Your subscription (such as the fact and status of Your purchase).
+- **With the Payment Processor:** When You make a purchase, the payment is handled by Our third-party Payment Processor. The billing and payment information You enter at checkout (such as card details) is provided directly to and processed by the Payment Processor, not stored by Us; We receive only the information needed to grant and manage Your purchase (such as the fact and status of the purchase, and the data We need to issue Your invoice).
 - **For business transfers:** We may share or transfer Your personal information in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition of all or a portion of Our business to another company.
 - **With other users:** when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside. If You interact with other users or register through a Third-Party Social Media Service, Your contacts on the Third-Party Social Media Service may see Your name, profile, pictures and description of Your activity. Similarly, other users will be able to view descriptions of Your activity, communicate with You and view Your profile.
 - **With Your consent**: We may disclose Your personal information for any other purpose with Your consent.

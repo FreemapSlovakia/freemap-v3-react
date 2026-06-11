@@ -8,11 +8,11 @@ Naposledy aktualizované: 11. jún 2026
 
 Tieto Zásady vrátenia peňazí vysvetľujú, ako fungujú vratky pri predplatnom **Freemap Premium** a pri **Kreditoch**. Tvoria súčasť Našich [Obchodných podmienok](#document=termsOfService) a treba ich čítať spolu s nimi.
 
-# Kto predáva Freemap Premium
+# Kto predáva Freemap Premium a Kredity
 
-Freemap Premium poskytuje spoločnosť **Ing. Martin Ždila s.r.o.**, Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovenská republika (IČO: 50545876, IČ DPH: SK2120371594).
+Freemap Premium a Kredity predáva spoločnosť **Ing. Martin Ždila s.r.o.**, Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovenská republika (IČO: 50545876, IČ DPH: SK2120371594). Sme predávajúci a za vratky zodpovedáme My.
 
-Platby spracúva **Paddle** (Paddle.com Market Limited) ako **predajca na účet (Merchant of Record)**, teda autorizovaný ďalší predajca. Paddle zabezpečuje fakturáciu, dane a spracovanie vratiek. Názov Paddle sa zobrazuje na Vašom platobnom výpise a vratky sa vracajú na pôvodný platobný prostriedok prostredníctvom Paddle.
+Platby v Našom mene spracúva tretia strana — Spracovateľ platieb (platobná brána), ktorá iba spracúva platby. Vratky vydávame My a vracajú sa na Váš pôvodný platobný prostriedok prostredníctvom tohto spracovateľa.
 
 # Vrátenie peňazí do 14 dní bez udania dôvodu
 
@@ -21,7 +21,7 @@ O **plné vrátenie peňazí môžete požiadať do 14 dní** od:
 - prvej kúpy Freemap Premium, alebo
 - každého automatického obnovenia Vášho Predplatného.
 
-Počas tohto 14-dňového obdobia **nie je potrebné uvádzať dôvod** — stačí kontaktovať nás alebo Paddle a zaplatenú sumu Vám vrátime.
+Počas tohto 14-dňového obdobia **nie je potrebné uvádzať dôvod** — stačí kontaktovať nás alebo Lemon Squeezy a zaplatenú sumu Vám vrátime.
 
 Po vrátení peňazí sa Váš prístup k Freemap Premium ukončí a Váš účet sa vráti na bezplatnú úroveň.
 
@@ -43,10 +43,10 @@ Kredity sú predplatený zostatok používaný na funkcie účtované podľa spo
 
 O vrátenie peňazí požiadajte jedným z týchto spôsobov:
 
-- **napíšte nám** na freemap@freemap.sk z e-mailovej adresy použitej pri kúpe a, ak je k dispozícii, uveďte číslo objednávky alebo faktúry Paddle; alebo
-- **použite odkaz na správu fakturácie alebo doklad** v e-maile od Paddle o kúpe alebo obnovení, ktorý Vám umožní priamo kontaktovať podporu Paddle.
+- **napíšte nám** na freemap@freemap.sk z e-mailovej adresy použitej pri kúpe a, ak je k dispozícii, uveďte číslo objednávky alebo faktúry Lemon Squeezy; alebo
+- **použite odkaz na správu fakturácie alebo doklad** v e-maile od Lemon Squeezy o kúpe alebo obnovení, ktorý Vám umožní priamo kontaktovať podporu Lemon Squeezy.
 
-Žiadosti o vrátenie peňazí sa snažíme potvrdiť do niekoľkých pracovných dní. Po schválení vratky ju Paddle spracuje na Váš pôvodný platobný prostriedok; čas, kým sa prostriedky objavia, závisí od Vašej banky alebo vydavateľa karty.
+Žiadosti o vrátenie peňazí sa snažíme potvrdiť do niekoľkých pracovných dní. Po schválení vratky ju Lemon Squeezy spracuje na Váš pôvodný platobný prostriedok; čas, kým sa prostriedky objavia, závisí od Vašej banky alebo vydavateľa karty.
 
 # Zrušenie budúcich obnovení
 

@@ -10,11 +10,11 @@ Last updated: June 11, 2026
 
 This Refund Policy explains how refunds work for the **Freemap Premium** subscription and for **Credits**. It forms part of, and should be read together with, Our [Terms of Service](#document=termsOfService).
 
-# Who sells Freemap Premium
+# Who sells Freemap Premium and Credits
 
-Freemap Premium is provided by **Ing. Martin Ždila s.r.o.**, Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovak Republic (IČO: 50545876, IČ DPH: SK2120371594).
+Freemap Premium and Credits are sold by **Ing. Martin Ždila s.r.o.**, Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovak Republic (IČO: 50545876, IČ DPH: SK2120371594). We are the seller and are responsible for refunds.
 
-Payments are processed by **Paddle** (Paddle.com Market Limited), acting as the **Merchant of Record** (authorized reseller). Paddle handles billing, invoicing, taxes and the processing of refunds. Paddle's name appears on Your payment statement, and refunds are returned to the original payment method through Paddle.
+Payments are processed on Our behalf by a third-party payment processor (payment gateway), which only processes payments. Refunds are issued by Us and returned to Your original payment method through that processor.
 
 # 14-day, no-questions-asked refund
 
@@ -23,7 +23,7 @@ You may request a **full refund within 14 days** of:
 - Your initial purchase of Freemap Premium, or
 - each automatic renewal of Your Subscription.
 
-Within this 14-day window, **no reason is required** — simply contact Us or Paddle and We will refund the amount paid.
+Within this 14-day window, **no reason is required** — simply contact Us and We will refund the amount paid.
 
 After a refund is issued, Your Freemap Premium access ends and Your account reverts to the free tier.
 
@@ -43,12 +43,9 @@ Credits are a prepaid balance used for consumption-based features (currently off
 
 # How to request a refund
 
-To request a refund, please use either of the following:
+To request a refund, **email Us** at freemap@freemap.sk from the email address used for the purchase and, if available, include the order or invoice number from Your receipt.
 
-- **Email Us** at freemap@freemap.sk with the email address used for the purchase and, if available, the Paddle order or invoice number; or
-- **Use the billing-management or receipt link** in Your Paddle purchase or renewal email, which lets You contact Paddle support directly.
-
-We aim to acknowledge refund requests within a few business days. Once a refund is approved, Paddle processes it to Your original payment method; the time for the funds to appear depends on Your bank or card issuer.
+We aim to acknowledge refund requests within a few business days. Once a refund is approved, We process it to Your original payment method through Our payment processor; the time for the funds to appear depends on Your bank or card issuer.
 
 # Cancelling future renewals
 
