@@ -314,7 +314,7 @@ const config: Configuration = {
       MATOMO_SITE_ID: { www: '1' }[process.env['DEPLOYMENT']!] ?? null,
       SENTRY_DSN:
         {
-          www: 'https://77f1051cacd24791aae04fd7ce781875@bugsink.freemap.sk/1',
+          www: 'https://6a5c1cf5b7a1d03dd6346c1a0bf60449@sentry.freemap.sk/2',
         }[process.env['DEPLOYMENT']!] ?? null,
       FB_APP_ID: { www: '681854635902254' }[process.env['DEPLOYMENT']!] ?? null,
       GRAPHHOPPER_URL:

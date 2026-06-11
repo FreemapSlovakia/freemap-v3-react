@@ -17,10 +17,7 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "lint-staged": {
-    "*.{js,ts}": [
-      "biome check",
-      "git add"
-    ]
+    "*.{js,ts}": ["biome check", "git add"]
   },
   "scripts": {
     "start": "pnpm build:proto && pnpm sync-language-files && rspack serve --config rspack.config.ts",
@@ -32,8 +29,7 @@
     "build": "pnpm build:proto && pnpm sync-language-files && tsgo --noEmit && rspack build --config rspack.config.ts",
     "sync-language-files": "tsgo -p translation-manager/tsconfig.json && node --enable-source-maps translation-manager/sync-language-files.js",
     "postinstall": "patch-package",
-    "sentry-login": "sentry-cli --url https://bugsink.freemap.sk login",
-    "sentry-sourcemaps": "sentry-cli sourcemaps inject dist && sentry-cli --url https://bugsink.freemap.sk sourcemaps --org freemap  --project 1 upload dist",
+    "sentry-sourcemaps": "sentry-cli sourcemaps inject dist && sentry-cli --url https://sentry.freemap.sk sourcemaps --org sentry --project freemap-web upload dist",
     "dep": "reset; DEPLOYMENT=www pnpm build && pnpm sentry-sourcemaps && rsync -av dist/ fm3:WEB",
     "gen-sitemap": "cd sitemap-generator && tsx index.ts",
     "gen-poi-icon-bboxes": "node scripts/gen-poi-icon-bboxes.mjs",
