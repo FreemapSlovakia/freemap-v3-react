@@ -3,7 +3,8 @@ import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware
 import type { DrawingLineType } from '@features/drawing/model/actions/drawingLineActions.js';
 import { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
-import { getMessages } from '@features/l10n/messagesStore.js';
+import { GalleryMessages } from '@features/gallery/translations/GalleryMessages.js';
+import { loadGalleryMessages } from '@features/gallery/translations/loadGalleryMessages.js';
 import { ObjectsState } from '@features/objects/model/reducer.js';
 import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
@@ -137,7 +138,12 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   const set = new Set(action.payload.exportables);
 
   if (set.has('pictures')) {
-    addPictures(doc, await fetchPictures(getState), language);
+    addPictures(
+      doc,
+      await fetchPictures(getState),
+      language,
+      await loadGalleryMessages(language),
+    );
   }
 
   if (set.has('drawingLines')) {
@@ -225,7 +231,12 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 
 export default handle;
 
-function addPictures(doc: Document, pictures: Picture[], lang: string) {
+function addPictures(
+  doc: Document,
+  pictures: Picture[],
+  lang: string,
+  gm: GalleryMessages,
+) {
   for (const {
     lat,
     lon,
@@ -251,8 +262,6 @@ function addPictures(doc: Document, pictures: Picture[], lang: string) {
     if (title) {
       createElement(wptEle, 'name', title);
     }
-
-    const gm = getMessages()?.gallery;
 
     const lines: [string, string][] = [];
 

@@ -15,6 +15,7 @@ import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCamera, FaCheck, FaEraser, FaFilter, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { gallerySetFilter } from '../model/actions.js';
+import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
 type Props = { show: boolean };
 
@@ -22,6 +23,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const gm = useGalleryMessages();
 
   const filter = useAppSelector((state) => state.gallery.filter);
 
@@ -251,7 +254,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     5,
   );
 
-  useDocumentTitle(show ? m?.gallery.filterModal.title : undefined);
+  useDocumentTitle(show ? gm?.filterModal.title : undefined);
 
   return (
     <Modal
@@ -264,18 +267,18 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCamera /> <FaFilter /> {m?.gallery.filterModal.title}
+          <FaCamera /> <FaFilter /> {gm?.filterModal.title}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Form.Group controlId="tag" className="mb-3">
-          <Form.Label>{m?.gallery.filterModal.tag}</Form.Label>
+          <Form.Label>{gm?.filterModal.tag}</Form.Label>
 
           <Form.Select value={tag} onChange={handleTagChange}>
             <option value="" />
 
-            <option value="⌘">« {m?.gallery.filterModal.noTags} »</option>
+            <option value="⌘">« {gm?.filterModal.noTags} »</option>
             {tags.map(({ name, count }) => (
               <option key={name} value={name}>
                 {name} ({count})
@@ -285,7 +288,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="author" className="mb-3">
-          <Form.Label>{m?.gallery.filterModal.author}</Form.Label>
+          <Form.Label>{gm?.filterModal.author}</Form.Label>
 
           <Form.Select value={userId} onChange={handleUserIdChange}>
             <option value="" />
@@ -315,7 +318,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="createdAt" className="mb-3">
-          <Form.Label>{m?.gallery.filterModal.createdAt}</Form.Label>
+          <Form.Label>{gm?.filterModal.createdAt}</Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -335,7 +338,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="takenAt" className="mb-3">
-          <Form.Label>{m?.gallery.filterModal.takenAt}</Form.Label>
+          <Form.Label>{gm?.filterModal.takenAt}</Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -355,7 +358,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="rating" className="mb-3">
-          <Form.Label>{m?.gallery.filterModal.rating}</Form.Label>
+          <Form.Label>{gm?.filterModal.rating}</Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -387,7 +390,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
           id="filt-premiumOnly"
           checked={Boolean(premium)}
           onChange={handlePremiumChange}
-          label={m?.gallery.filterModal.premium}
+          label={gm?.filterModal.premium}
           ref={setPremiumCheck}
         />
 
@@ -396,7 +399,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
           id="filt-pano"
           checked={Boolean(pano)}
           onChange={handlePanoChange}
-          label={m?.gallery.filterModal.pano}
+          label={gm?.filterModal.pano}
           ref={setPanoCheck}
         />
       </Modal.Body>

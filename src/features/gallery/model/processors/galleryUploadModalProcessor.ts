@@ -1,7 +1,9 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import z from 'zod';
+import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   GalleryTagSchema,
   galleryEditPicture,
@@ -10,7 +12,6 @@ import {
 
 export const galleryUploadModalProcessor: Processor = {
   actionCreator: [setActiveModal, galleryEditPicture],
-  errorKey: 'gallery.tagsFetchingError',
   handle: async ({ getState, dispatch, action }) => {
     if (
       // don't load tags when canceling editing
@@ -22,11 +23,27 @@ export const galleryUploadModalProcessor: Processor = {
       return;
     }
 
-    const res = await httpRequest({
-      getState,
-      url: '/gallery/picture-tags',
-      expectedStatus: 200,
-    });
+    let res;
+
+    try {
+      res = await httpRequest({
+        getState,
+        url: '/gallery/picture-tags',
+        expectedStatus: 200,
+      });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      const gm = await loadGalleryMessages(getState().l10n.language);
+
+      dispatch(
+        toastsAdd({ style: 'danger', message: gm.tagsFetchingError({ err }) }),
+      );
+
+      return;
+    }
 
     dispatch(gallerySetTags(z.array(GalleryTagSchema).parse(await res.json())));
   },

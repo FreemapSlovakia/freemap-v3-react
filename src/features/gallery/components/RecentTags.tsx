@@ -1,8 +1,8 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import clsx from 'clsx';
 import { type ReactElement, ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
+import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
 export interface PictureModel {
   title: string;
@@ -27,7 +27,7 @@ export function RecentTags({
 }: Props): ReactElement | null {
   const recentTags = useAppSelector((state) => state.gallery.recentTags);
 
-  const m = useMessages();
+  const gm = useGalleryMessages();
 
   const tags = recentTags.filter((tag) => !existingTags.includes(tag));
 
@@ -44,7 +44,7 @@ export function RecentTags({
     >
       <div>{prefix}</div>
 
-      <div className="flex-shrink-0">{m?.gallery.recentTags}</div>
+      <div className="flex-shrink-0">{gm?.recentTags}</div>
 
       <div className="d-flex overflow-auto">
         {tags.map((tag) => (

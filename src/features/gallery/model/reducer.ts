@@ -12,8 +12,10 @@ import {
   type GalleryColorizeBy,
   type GalleryFilter,
   type GalleryItem,
+  type GalleryItemError,
   type GalleryTag,
   type GalleryUser,
+  type GalleryValidationError,
   galleryAddItem,
   galleryAddTag,
   galleryCancelShowOnTheMap,
@@ -64,7 +66,7 @@ export interface GalleryState {
   editModel: PictureModel | null;
   showPosition: boolean;
   language: string;
-  saveErrors: string[];
+  saveErrors: GalleryItemError[];
   colorizeBy: GalleryColorizeBy | null;
   recentTags: string[];
   showDirection: boolean;
@@ -361,15 +363,15 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
 );
 
 function getErrors(item: GalleryItem | PictureModel) {
-  const errors: string[] = [];
+  const errors: GalleryValidationError[] = [];
 
   if (!item.dirtyPosition) {
-    errors.push('gallery.missingPositionError');
+    errors.push('missingPositionError');
   } else {
     try {
       parseCoordinates(item.dirtyPosition);
     } catch {
-      errors.push('gallery.invalidPositionError');
+      errors.push('invalidPositionError');
     }
   }
 
@@ -379,7 +381,7 @@ function getErrors(item: GalleryItem | PictureModel) {
       typeof item.takenAt === 'string' &&
       Number.isNaN(new Date(item.takenAt).getTime()))
   ) {
-    errors.push('gallery.invalidTakenAt');
+    errors.push('invalidTakenAt');
   }
 
   return errors;

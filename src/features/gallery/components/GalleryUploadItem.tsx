@@ -3,7 +3,8 @@ import { Button, Spinner } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { Messages } from '@/translations/messagesInterface.js';
 import { getPreview, loadPreview } from '../imagePreview.js';
-import { GalleryTag } from '../model/actions.js';
+import { GalleryItemError, GalleryTag } from '../model/actions.js';
+import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
 
 interface Props {
@@ -12,7 +13,7 @@ interface Props {
   previewKey?: {};
   model: PictureModel;
   allTags: GalleryTag[];
-  errors: string[] | null | undefined;
+  errors: GalleryItemError[] | null | undefined;
   onRemove: (id: number) => void;
   onPositionPick: (id: number) => void;
   onModelChange: (id: number, model: PictureModel) => void;
@@ -37,6 +38,8 @@ export function GalleryUploadItem({
   onModelChange,
   onPreview,
 }: Props): ReactElement {
+  const gm = useGalleryMessages();
+
   const handleRemove = useCallback(() => {
     onRemove(id);
   }, [id, onRemove]);
@@ -91,7 +94,7 @@ export function GalleryUploadItem({
           className="mb-3 d-block mx-auto"
           onClick={handleLoadPreviewClick}
         >
-          {m?.gallery.uploadModal.loadPreview}
+          {gm?.uploadModal.loadPreview}
         </Button>
       )}
 

@@ -3,6 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
+import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryRemoveItem,
   gallerySetItemError,
@@ -19,10 +20,12 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     if (getState().gallery.items.length === 0) {
       window._paq.push(['trackEvent', 'Gallery', 'upload']);
 
+      const gm = await loadGalleryMessages(getState().l10n.language);
+
       dispatch(
         toastsAdd({
           id: 'gallery.upload',
-          messageKey: 'gallery.uploadModal.success',
+          message: gm.uploadModal.success,
           timeout: 5000,
           style: 'info',
         }),

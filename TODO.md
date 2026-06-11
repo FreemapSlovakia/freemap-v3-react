@@ -63,6 +63,18 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   `tooBig`/`shareToast` toasts to literal `message:` via `loadTrackViewerMessages`;
   `useTextFileDropHandler` now takes `TrackViewerMessages` instead of global
   `Messages`; `useHtmlMeta` resolves the `file-import` modal title from the bundle.
+  And `gallery` → its own bundle, leaving nothing in the global blob: the nine
+  fetch/save/delete/comment/rating/tag-load processors drop their `errorKey`s for
+  try/catch resolving the error functions via `loadGalleryMessages`, the
+  by-radius `noPicturesFound` and the upload `uploadModal.success` toasts switch
+  from `messageKey:` to literal `message:` the same way, and the GPX
+  `addPictures` exporter takes a `GalleryMessages` arg loaded via
+  `loadGalleryMessages(language)` instead of reading `getMessages().gallery`. The
+  three `getErrors` validation keys move to bare keys (`missingPositionError`
+  etc.) resolved against the bundle in `GalleryEditForm` (so `getMessageByKey`
+  drops its last gallery caller). Cross-feature consumers `DrawingPointSelection`,
+  `GalleryColorizeBySubmenu`, and `WikimediaCommonsLayer` read the bundle via
+  `useGalleryMessages`.
   Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a non-component (e.g. `mapLayers.legacyMapWarning`), since toast `message` is typed `string`.
 
 ## Softer / design opinions

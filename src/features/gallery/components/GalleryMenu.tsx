@@ -36,6 +36,7 @@ import {
   galleryToggleDirection,
   galleryToggleLegend,
 } from '../model/actions.js';
+import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { PictureLegend } from './PictureLegend.js';
 
 const isTrue = (value: string | null) => value === 'true';
@@ -44,6 +45,8 @@ export default function GalleryMenu() {
   const sc = useScrollClasses('horizontal');
 
   const m = useMessages();
+
+  const gm = useGalleryMessages();
 
   const dispatch = useDispatch();
 
@@ -74,11 +77,11 @@ export default function GalleryMenu() {
       } else if (eventKey.startsWith('all-')) {
         if (
           await confirm({
-            title: m?.gallery.allMyPhotos.title,
+            title: gm?.allMyPhotos.title,
             message:
               eventKey === 'all-premium'
-                ? m?.gallery.allMyPhotos.confirmPremium
-                : m?.gallery.allMyPhotos.confirmFree,
+                ? gm?.allMyPhotos.confirmPremium
+                : gm?.allMyPhotos.confirmFree,
             icon: eventKey === 'all-premium' ? <FaGem /> : <FaDove />,
             confirmLabel: m?.general.yes,
             cancelLabel: m?.general.no,
@@ -102,7 +105,7 @@ export default function GalleryMenu() {
         dispatch(galleryToggleLegend());
       }
     },
-    [dispatch, sendGalleryEmails, confirm, m],
+    [dispatch, sendGalleryEmails, confirm, m, gm],
   );
 
   const [hidden, setHidden] = usePersistentState<boolean>(
@@ -128,11 +131,7 @@ export default function GalleryMenu() {
 
             {!hidden && (
               <>
-                <LongPressTooltip
-                  label={m?.gallery.upload}
-                  kbd="p u"
-                  breakpoint="md"
-                >
+                <LongPressTooltip label={gm?.upload} kbd="p u" breakpoint="md">
                   {({ props, label, labelClassName }) => (
                     <Button
                       type="button"
@@ -147,11 +146,7 @@ export default function GalleryMenu() {
                   )}
                 </LongPressTooltip>
 
-                <LongPressTooltip
-                  label={m?.gallery.filter}
-                  kbd="p f"
-                  breakpoint="lg"
-                >
+                <LongPressTooltip label={gm?.filter} kbd="p f" breakpoint="lg">
                   {({ props, label, labelClassName }) => (
                     <Button
                       type="button"
@@ -180,7 +175,7 @@ export default function GalleryMenu() {
                   }
                 >
                   <LongPressTooltip
-                    label={m?.gallery.c[colorizeBy ?? 'disable']}
+                    label={gm?.c[colorizeBy ?? 'disable']}
                     breakpoint="sm"
                   >
                     {({ props, label, labelClassName }) => (
@@ -193,7 +188,7 @@ export default function GalleryMenu() {
 
                   <Dropdown.Menu popperConfig={fixedPopperConfig}>
                     {(
-                      Object.keys(m?.gallery.c ?? {}) as (
+                      Object.keys(gm?.c ?? {}) as (
                         | GalleryColorizeBy
                         | 'disable'
                       )[]
@@ -201,10 +196,10 @@ export default function GalleryMenu() {
                       <Dropdown.Item
                         eventKey={by}
                         key={by}
-                        title={m?.gallery.c[by]}
+                        title={gm?.c[by]}
                         active={colorizeBy === by}
                       >
-                        {m?.gallery.c[by] ?? '…'}
+                        {gm?.c[by] ?? '…'}
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>
@@ -216,10 +211,7 @@ export default function GalleryMenu() {
                     dispatch(galleryList(listBy as GalleryListOrder))
                   }
                 >
-                  <LongPressTooltip
-                    label={m?.gallery.showPhotosFrom}
-                    breakpoint="md"
-                  >
+                  <LongPressTooltip label={gm?.showPhotosFrom} breakpoint="md">
                     {({ props, label, labelClassName }) => (
                       <Dropdown.Toggle variant="secondary" {...props}>
                         <FaBook />{' '}
@@ -229,23 +221,23 @@ export default function GalleryMenu() {
                   </LongPressTooltip>
 
                   <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                    {(
-                      Object.keys(m?.gallery.f ?? {}) as GalleryListOrder[]
-                    ).map((key) => (
-                      <Dropdown.Item as="button" eventKey={key}>
-                        {m?.gallery.f[key]}{' '}
-                        {key === '-createdAt' && (
-                          <>
-                            <kbd>p</kbd> <kbd>l</kbd>
-                          </>
-                        )}
-                      </Dropdown.Item>
-                    ))}
+                    {(Object.keys(gm?.f ?? {}) as GalleryListOrder[]).map(
+                      (key) => (
+                        <Dropdown.Item as="button" eventKey={key}>
+                          {gm?.f[key]}{' '}
+                          {key === '-createdAt' && (
+                            <>
+                              <kbd>p</kbd> <kbd>l</kbd>
+                            </>
+                          )}
+                        </Dropdown.Item>
+                      ),
+                    )}
                   </Dropdown.Menu>
                 </Dropdown>
 
                 <LongPressTooltip
-                  label={m?.gallery.stats.leaderboard}
+                  label={gm?.stats.leaderboard}
                   kbd="p b"
                   breakpoint="lg"
                 >
@@ -278,12 +270,12 @@ export default function GalleryMenu() {
                   <Dropdown.Menu popperConfig={fixedPopperConfig}>
                     <Dropdown.Item as="button" eventKey="legend">
                       <Checkbox value={showLegend} /> <FaInfo />{' '}
-                      {m?.gallery.showLegend}
+                      {gm?.showLegend}
                     </Dropdown.Item>
 
                     <Dropdown.Item as="button" eventKey="direction">
                       <Checkbox value={showDirection} /> <FaLocationArrow />{' '}
-                      {m?.gallery.showDirection}
+                      {gm?.showDirection}
                     </Dropdown.Item>
 
                     {sendGalleryEmails !== undefined && (
@@ -296,11 +288,11 @@ export default function GalleryMenu() {
                         <Dropdown.Divider />
 
                         <Dropdown.Item as="button" eventKey="all-premium">
-                          <FaGem /> {m?.gallery.allMyPhotos.premium}
+                          <FaGem /> {gm?.allMyPhotos.premium}
                         </Dropdown.Item>
 
                         <Dropdown.Item as="button" eventKey="all-free">
-                          <FaDove /> {m?.gallery.allMyPhotos.free}
+                          <FaDove /> {gm?.allMyPhotos.free}
                         </Dropdown.Item>
                       </>
                     )}

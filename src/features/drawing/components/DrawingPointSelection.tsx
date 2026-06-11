@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { useGalleryMessages } from '@features/gallery/translations/useGalleryMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -17,6 +18,8 @@ export default function DrawingPointSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const gm = useGalleryMessages();
 
   const point = useAppSelector((state) =>
     state.main.selection?.type === 'draw-points'
@@ -124,7 +127,7 @@ export default function DrawingPointSelection(): ReactElement | null {
           <FaExternalLinkAlt />
           <span className="d-none d-sm-inline">
             {' '}
-            {m?.gallery.viewer.openInNewWindow}
+            {gm?.viewer.openInNewWindow}
           </span>
         </OpenInExternalAppMenuButton>
       </Selection>

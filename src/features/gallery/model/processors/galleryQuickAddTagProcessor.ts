@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryQuickAddTag,
   galleryQuickChangePremium,
@@ -12,7 +13,6 @@ export const galleryQuickAddTagProcessor: Processor<
   typeof galleryQuickAddTag | typeof galleryQuickChangePremium
 > = {
   actionCreator: [galleryQuickAddTag, galleryQuickChangePremium],
-  errorKey: 'gallery.savingError',
   async handle({ getState, dispatch, action }) {
     const { image } = getState().gallery;
 
@@ -22,26 +22,40 @@ export const galleryQuickAddTagProcessor: Processor<
 
     const { id } = image;
 
-    await httpRequest({
-      getState,
-      method: 'PUT',
-      url: `/gallery/pictures/${id}`,
-      data: {
-        title: image.title,
-        description: image.description,
-        tags:
-          galleryQuickAddTag.type === action.type
-            ? [...image.tags, action.payload]
-            : image.tags,
-        premium:
-          galleryQuickChangePremium.type === action.type
-            ? action.payload
-            : Boolean(image.premium),
-        takenAt: image.takenAt?.toISOString() ?? null,
-        position: { lat: image.lat, lon: image.lon },
-      },
-      expectedStatus: 204,
-    });
+    try {
+      await httpRequest({
+        getState,
+        method: 'PUT',
+        url: `/gallery/pictures/${id}`,
+        data: {
+          title: image.title,
+          description: image.description,
+          tags:
+            galleryQuickAddTag.type === action.type
+              ? [...image.tags, action.payload]
+              : image.tags,
+          premium:
+            galleryQuickChangePremium.type === action.type
+              ? action.payload
+              : Boolean(image.premium),
+          takenAt: image.takenAt?.toISOString() ?? null,
+          position: { lat: image.lat, lon: image.lon },
+        },
+        expectedStatus: 204,
+      });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      const gm = await loadGalleryMessages(getState().l10n.language);
+
+      dispatch(
+        toastsAdd({ style: 'danger', message: gm.savingError({ err }) }),
+      );
+
+      return;
+    }
 
     dispatch(
       toastsAdd({

@@ -10,6 +10,7 @@ import { countryCodeToFlag, Emoji } from '../../../shared/components/Emoji.js';
 import { UserChip } from '../../../shared/components/UserChip.js';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '../../../shared/hooks/useNumberFormat.js';
+import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import classes from './GalleryLeaderboardModal.module.css';
 
 type Props = { show: boolean };
@@ -60,6 +61,8 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const gm = useGalleryMessages();
 
   const [state, setState] = useState<
     | { type: 'error'; error: unknown }
@@ -126,19 +129,19 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCamera /> <FaTrophy /> {m?.gallery.stats.leaderboard}
+          <FaCamera /> <FaTrophy /> {gm?.stats.leaderboard}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className={clsx('d-flex', 'flex-column', classes.body)}>
         <Form.Group className="mb-2">
-          <Form.Label>{m?.gallery.stats.timePeriod}</Form.Label>
+          <Form.Label>{gm?.stats.timePeriod}</Form.Label>
           <Form.Select
             value={period}
             onChange={(e) => setPeriod(e.currentTarget.value)}
           >
-            <option value="">{m?.gallery.stats.allTime}</option>
-            <option value="90">{m?.gallery.stats.last3months}</option>
-            <option value="30">{m?.gallery.stats.last30days}</option>
+            <option value="">{gm?.stats.allTime}</option>
+            <option value="90">{gm?.stats.last3months}</option>
+            <option value="30">{gm?.stats.last30days}</option>
           </Form.Select>
         </Form.Group>
 
@@ -157,20 +160,18 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
             case 'success':
               return (
                 <>
-                  <h5 className="mt-2 mb-3">{m?.gallery.stats.perUser}</h5>
+                  <h5 className="mt-2 mb-3">{gm?.stats.perUser}</h5>
 
                   <Table striped bordered>
                     <thead>
                       <tr>
                         <th className="text-end">#</th>
-                        <th>{m?.gallery.stats.user}</th>
+                        <th>{gm?.stats.user}</th>
                         <th className="text-end">
                           <span className="d-none d-sm-inline">
-                            {m?.gallery.stats.numberOfPhotos}
+                            {gm?.stats.numberOfPhotos}
                           </span>
-                          <span className="d-sm-none">
-                            {m?.gallery.stats.photos}
-                          </span>
+                          <span className="d-sm-none">{gm?.stats.photos}</span>
                         </th>
                       </tr>
                     </thead>
@@ -229,10 +230,10 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                               }}
                             >
                               <span className={classes.moreBtn}>
-                                {m?.gallery.stats.more}&hellip;
+                                {gm?.stats.more}&hellip;
                               </span>
                               <span className={classes.lessBtn}>
-                                {m?.gallery.stats.less}&hellip;
+                                {gm?.stats.less}&hellip;
                               </span>
                             </Button>
                           </td>
@@ -241,27 +242,23 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                     </tbody>
                   </Table>
 
-                  <h5 className="mt-2 mb-3">
-                    {m?.gallery.stats.perUserPerCountry}
-                  </h5>
+                  <h5 className="mt-2 mb-3">{gm?.stats.perUserPerCountry}</h5>
 
                   <Table striped bordered>
                     <thead>
                       <tr>
                         <th className="text-center">
                           <span className="d-none d-sm-inline">
-                            {m?.gallery.stats.country}
+                            {gm?.stats.country}
                           </span>
                         </th>
                         <th className="text-end">#</th>
-                        <th>{m?.gallery.stats.user}</th>
+                        <th>{gm?.stats.user}</th>
                         <th className="text-end">
                           <span className="d-none d-sm-inline">
-                            {m?.gallery.stats.numberOfPhotos}
+                            {gm?.stats.numberOfPhotos}
                           </span>
-                          <span className="d-sm-none">
-                            {m?.gallery.stats.photos}
-                          </span>
+                          <span className="d-sm-none">{gm?.stats.photos}</span>
                         </th>
                       </tr>
                     </thead>
@@ -336,10 +333,10 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                                     }}
                                   >
                                     <span className={classes.moreBtn}>
-                                      {m?.gallery.stats.more}&hellip;
+                                      {gm?.stats.more}&hellip;
                                     </span>
                                     <span className={classes.lessBtn}>
-                                      {m?.gallery.stats.less}&hellip;
+                                      {gm?.stats.less}&hellip;
                                     </span>
                                   </Button>
                                 </td>

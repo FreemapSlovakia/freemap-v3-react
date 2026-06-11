@@ -1,3 +1,4 @@
+import { useGalleryMessages } from '@features/gallery/translations/useGalleryMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -32,6 +33,8 @@ function makeIcon(thumbUrl: string): Icon {
 
 export default function WikimediaCommonsLayer(): ReactElement {
   const m = useMessages();
+
+  const gm = useGalleryMessages();
 
   const wm = useWikimediaCommonsMessages();
 
@@ -179,7 +182,7 @@ export default function WikimediaCommonsLayer(): ReactElement {
           {shown && (
             <LongPressTooltip
               breakpoint="md"
-              label={m?.gallery.viewer.openInNewWindow}
+              label={gm?.viewer.openInNewWindow}
             >
               {({ label, labelClassName, props }) => (
                 <OpenInExternalAppMenuButton

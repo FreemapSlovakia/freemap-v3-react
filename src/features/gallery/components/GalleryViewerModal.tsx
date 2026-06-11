@@ -49,6 +49,7 @@ import {
   gallerySubmitComment,
   gallerySubmitStars,
 } from '../model/actions.js';
+import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { Azimuth } from './Azimuth.js';
 import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
 import { RecentTags } from './RecentTags.js';
@@ -60,6 +61,8 @@ type Props = { show: boolean };
 
 export default function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const gm = useGalleryMessages();
 
   const dispatch = useDispatch();
 
@@ -217,15 +220,15 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const handleDelete = useCallback(async () => {
     if (
       await confirm({
-        title: m?.gallery.viewer.deleteTitle,
-        message: m?.gallery.viewer.deletePrompt(image?.title),
+        title: gm?.viewer.deleteTitle,
+        message: gm?.viewer.deletePrompt(image?.title),
         confirmLabel: m?.general.delete,
         confirmStyle: 'danger',
       })
     ) {
       dispatch(galleryDeletePicture());
     }
-  }, [dispatch, confirm, m, image?.title]);
+  }, [dispatch, confirm, m, gm, image?.title]);
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {
@@ -347,7 +350,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCamera /> {m?.gallery.viewer.title}{' '}
+          <FaCamera /> {gm?.viewer.title}{' '}
           {imageIds && (
             <Form.Select
               value={index}
@@ -403,7 +406,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   />
                 ) : disabledPremium ? (
                   <Alert variant="warning" className="text-center mb-0">
-                    {m?.gallery.viewer.premiumOnly}
+                    {gm?.viewer.premiumOnly}
 
                     {becomePremium && (
                       <>
@@ -489,7 +492,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               {isFullscreen && title && <>{title} ｜ </>}
 
-              {m?.gallery.viewer.uploaded({
+              {gm?.viewer.uploaded({
                 username: <UserChip key={image.user.id} user={image.user} />,
                 createdAt: createdAt ? (
                   <b key={createdAt.getTime()}>
@@ -503,7 +506,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               {takenAt && (
                 <>
                   {' ｜ '}
-                  {m?.gallery.viewer.captured(
+                  {gm?.viewer.captured(
                     <b key={takenAt.getTime()}>{dateFormat.format(takenAt)}</b>,
                   )}
                 </>
@@ -541,7 +544,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <Form onSubmit={handleSave}>
                   <hr />
 
-                  <h5>{m?.gallery.viewer.modify}</h5>
+                  <h5>{gm?.viewer.modify}</h5>
 
                   <GalleryEditForm
                     model={editModel}
@@ -561,7 +564,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <>
                   <hr />
 
-                  <h5>{m?.gallery.viewer.comments}</h5>
+                  <h5>{gm?.viewer.comments}</h5>
 
                   {!comments ? null : comments.length ? (
                     comments.map((c) => (
@@ -572,7 +575,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     ))
                   ) : (
                     <p>
-                      <i>{m?.gallery.viewer.noComments}</i>
+                      <i>{gm?.viewer.noComments}</i>
                     </p>
                   )}
 
@@ -582,7 +585,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                         <InputGroup>
                           <Form.Control
                             type="text"
-                            placeholder={m?.gallery.viewer.newComment}
+                            placeholder={gm?.viewer.newComment}
                             value={comment}
                             onChange={(e) => {
                               dispatch(
@@ -598,7 +601,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                             type="submit"
                             disabled={comment.length < 1 || disabledPremium}
                           >
-                            {m?.gallery.viewer.addComment}
+                            {gm?.viewer.addComment}
                           </Button>
                         </InputGroup>
                       </Form.Group>
@@ -608,7 +611,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   {user && (
                     <div className="d-flex flex-wrap f-gap-1 align-items-center mb-3">
                       <span className="flex-shrink-0">
-                        {m?.gallery.viewer.yourRating}
+                        {gm?.viewer.yourRating}
                       </span>
 
                       {disabledPremium ? null : (
@@ -638,7 +641,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                           ｜
                           <Form.Check
                             id="chk-fast-premium"
-                            label={m?.gallery.uploadModal.premium}
+                            label={gm?.uploadModal.premium}
                             checked={premium}
                             onChange={handlePremiumChange}
                           />
@@ -687,7 +690,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
         <LongPressTooltip
           breakpoint="md"
-          label={m?.gallery.viewer.showOnTheMap}
+          label={gm?.viewer.showOnTheMap}
           kbd="s"
         >
           {({ label, labelClassName, props }) => (
@@ -722,10 +725,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
         )}
 
         {lat !== undefined && lon !== undefined && (
-          <LongPressTooltip
-            breakpoint="md"
-            label={m?.gallery.viewer.openInNewWindow}
-          >
+          <LongPressTooltip breakpoint="md" label={gm?.viewer.openInNewWindow}>
             {({ label, labelClassName, props }) => (
               <OpenInExternalAppMenuButton
                 lat={lat}

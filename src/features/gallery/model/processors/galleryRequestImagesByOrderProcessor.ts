@@ -1,8 +1,10 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import z from 'zod';
 import { createFilter } from '../../galleryUtils.js';
+import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryList,
   galleryRequestImage,
@@ -13,21 +15,39 @@ export const galleryRequestImagesByOrderProcessor: Processor<
   typeof galleryList
 > = {
   actionCreator: galleryList,
-  id: 'gallery.picturesFetchingError',
-  errorKey: 'gallery.picturesFetchingError',
   async handle({ getState, dispatch, action }) {
-    const res = await httpRequest({
-      getState,
-      url:
-        '/gallery/pictures?' +
-        objectToURLSearchParams({
-          by: 'order',
-          orderBy: action.payload.substring(1),
-          direction: action.payload[0] === '+' ? 'asc' : 'desc',
-          ...createFilter(getState().gallery.filter),
+    let res;
+
+    try {
+      res = await httpRequest({
+        getState,
+        url:
+          '/gallery/pictures?' +
+          objectToURLSearchParams({
+            by: 'order',
+            orderBy: action.payload.substring(1),
+            direction: action.payload[0] === '+' ? 'asc' : 'desc',
+            ...createFilter(getState().gallery.filter),
+          }),
+        expectedStatus: 200,
+      });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      const gm = await loadGalleryMessages(getState().l10n.language);
+
+      dispatch(
+        toastsAdd({
+          id: 'gallery.picturesFetchingError',
+          style: 'danger',
+          message: gm.picturesFetchingError({ err }),
         }),
-      expectedStatus: 200,
-    });
+      );
+
+      return;
+    }
 
     const ids = z
       .array(z.object({ id: z.number() }))

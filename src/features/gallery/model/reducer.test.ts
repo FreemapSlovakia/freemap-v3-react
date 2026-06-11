@@ -110,10 +110,10 @@ describe('galleryReducer — items CRUD', () => {
 
     const next = galleryReducer(
       state,
-      gallerySetItemError({ id: 1, error: 'boom' }),
+      gallerySetItemError({ id: 1, error: '~boom' }),
     );
 
-    expect(next.items[0].errors).toEqual(['boom']);
+    expect(next.items[0].errors).toEqual(['~boom']);
   });
 });
 
@@ -179,7 +179,7 @@ describe('galleryReducer — upload error gating', () => {
 
     const next = galleryReducer(state, galleryUpload());
 
-    expect(next.items[0].errors).toEqual(['gallery.missingPositionError']);
+    expect(next.items[0].errors).toEqual(['missingPositionError']);
     expect(next.uploadingId).toBe(2); // first item without errors
   });
 

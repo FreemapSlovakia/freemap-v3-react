@@ -9,16 +9,19 @@ import {
   galleryConfirmPickedPosition,
   gallerySetItemForPositionPicking,
 } from '../model/actions.js';
+import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
 export default function GalleryPositionPickingMenu(): ReactElement | null {
   const m = useMessages();
+
+  const gm = useGalleryMessages();
 
   const dispatch = useDispatch();
 
   return (
     <div>
       <Toolbar className="mt-2">
-        <div className="m-2">{m?.gallery.locationPicking.title}</div>
+        <div className="m-2">{gm?.locationPicking.title}</div>
 
         <LongPressTooltip breakpoint="sm" label={m?.general.ok}>
           {({ label, labelClassName, props }) => (

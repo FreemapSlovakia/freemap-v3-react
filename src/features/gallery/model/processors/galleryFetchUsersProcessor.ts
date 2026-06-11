@@ -6,7 +6,7 @@ import { GalleryUserSchema, gallerySetUsers } from '../actions.js';
 
 export const galleryFetchUsersProcessor: Processor = {
   actionCreator: setActiveModal,
-  // TODO errorKey: 'gallery.tagsFetchingError',
+  // TODO error handling (resolve via loadGalleryMessages)
   async handle({ getState, dispatch, action }) {
     if (setActiveModal.match(action) && action.payload !== 'gallery-filter') {
       return;

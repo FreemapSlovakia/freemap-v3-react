@@ -3,6 +3,16 @@ import { IsoDateSchema, type LatLon } from '@shared/types/common.js';
 import z from 'zod';
 import type { PictureModel } from '../components/GalleryEditForm.js';
 
+// Keys of `GalleryMessages` used to label item/edit-form validation failures.
+export type GalleryValidationError =
+  | 'missingPositionError'
+  | 'invalidPositionError'
+  | 'invalidTakenAt';
+
+// An item error is either a validation key (resolved against `GalleryMessages`)
+// or an upload failure shown verbatim, prefixed with `~`.
+export type GalleryItemError = GalleryValidationError | `~${string}`;
+
 export interface GalleryItem {
   id: number;
   title: string;
@@ -12,7 +22,7 @@ export interface GalleryItem {
   azimuth: number | null;
   dirtyPosition: string | '';
   premium: boolean;
-  errors: string[];
+  errors: GalleryItemError[];
   previewKey?: {};
   file: File;
 }
@@ -136,7 +146,7 @@ export const galleryMergeItem = createAction<
 
 export const gallerySetItemError = createAction<{
   id: number;
-  error: string;
+  error: GalleryItemError;
 }>('GALLERY_SET_ITEM_ERROR');
 
 export const gallerySetPickingPosition = createAction<LatLon>(

@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
+import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryRequestImage,
   gallerySavePicture,
@@ -10,7 +11,6 @@ import {
 
 export const gallerySavePictureProcessor: Processor = {
   actionCreator: gallerySavePicture,
-  errorKey: 'gallery.savingError',
   async handle({ getState, dispatch }) {
     const { image, editModel, saveErrors } = getState().gallery;
 
@@ -22,21 +22,35 @@ export const gallerySavePictureProcessor: Processor = {
 
     const { id } = image;
 
-    await httpRequest({
-      getState,
-      method: 'PUT',
-      url: `/gallery/pictures/${id}`,
-      data: {
-        ...editModel,
-        title: editModel.title || null,
-        description: editModel.description || null,
-        position: parseCoordinates(editModel.dirtyPosition),
-        dirtyPosition: undefined,
-        takenAt: editModel.takenAt ? new Date(editModel.takenAt) : null,
-        azimuth: editModel.azimuth ? parseFloat(editModel.azimuth) : null,
-      },
-      expectedStatus: 204,
-    });
+    try {
+      await httpRequest({
+        getState,
+        method: 'PUT',
+        url: `/gallery/pictures/${id}`,
+        data: {
+          ...editModel,
+          title: editModel.title || null,
+          description: editModel.description || null,
+          position: parseCoordinates(editModel.dirtyPosition),
+          dirtyPosition: undefined,
+          takenAt: editModel.takenAt ? new Date(editModel.takenAt) : null,
+          azimuth: editModel.azimuth ? parseFloat(editModel.azimuth) : null,
+        },
+        expectedStatus: 204,
+      });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      const gm = await loadGalleryMessages(getState().l10n.language);
+
+      dispatch(
+        toastsAdd({ style: 'danger', message: gm.savingError({ err }) }),
+      );
+
+      return;
+    }
 
     dispatch(
       toastsAdd({

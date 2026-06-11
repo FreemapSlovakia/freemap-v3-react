@@ -29,6 +29,7 @@ import {
   galleryToggleShowPreview,
   galleryUpload,
 } from '../model/actions.js';
+import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { PictureModel } from './GalleryEditForm.js';
 import { GalleryUploadItem } from './GalleryUploadItem.js';
 import classes from './GalleryUploadModal.module.css';
@@ -37,6 +38,8 @@ type Props = { show: boolean };
 
 export default function GalleryUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const gm = useGalleryMessages();
 
   const dispatch = useDispatch();
 
@@ -192,7 +195,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     }
   }, [show]);
 
-  useDocumentTitle(show ? m?.gallery.uploadModal.title : undefined);
+  useDocumentTitle(show ? gm?.uploadModal.title : undefined);
 
   return (
     <Modal
@@ -204,7 +207,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCamera /> <FaUpload /> {m?.gallery.uploadModal.title}
+          <FaCamera /> <FaUpload /> {gm?.uploadModal.title}
         </Modal.Title>
       </Modal.Header>
 
@@ -264,7 +267,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
               onChange={() => dispatch(galleryToggleShowPreview())}
               checked={showPreview}
               disabled={Boolean(items.length)}
-              label={m?.gallery.uploadModal.showPreview}
+              label={gm?.uploadModal.showPreview}
             />
 
             <Form.Check
@@ -272,7 +275,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
               type="checkbox"
               onChange={() => dispatch(galleryTogglePremium())}
               checked={premium}
-              label={m?.gallery.uploadModal.premium}
+              label={gm?.uploadModal.premium}
               ref={premiumCheck}
             />
 
@@ -293,7 +296,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
               {m && (
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: m.gallery.uploadModal.rules,
+                    __html: gm?.uploadModal.rules ?? '',
                   }}
                 />
               )}
@@ -311,8 +314,8 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
         >
           <FaUpload />{' '}
           {uploading
-            ? m?.gallery.uploadModal.uploading(items.length)
-            : m?.gallery.uploadModal.upload}
+            ? gm?.uploadModal.uploading(items.length)
+            : gm?.uploadModal.upload}
         </Button>
 
         <Button onClick={handleClose} variant="dark">

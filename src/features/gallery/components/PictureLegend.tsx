@@ -1,15 +1,15 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { FaCamera, FaPalette } from 'react-icons/fa';
+import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
 export function PictureLegend() {
   const colorizeBy = useAppSelector(
     (state) => state.map.layers.includes('I') && state.gallery.colorizeBy,
   );
 
-  const m = useMessages();
+  const gm = useGalleryMessages();
 
   const byDate = colorizeBy === 'takenAt' || colorizeBy === 'createdAt';
 
@@ -36,7 +36,7 @@ export function PictureLegend() {
   return (
     <div className="w-100" style={{ maxWidth: '400px' }}>
       <Toolbar className="mt-2 d-flex">
-        <LongPressTooltip label={m?.gallery.legend} breakpoint="sm">
+        <LongPressTooltip label={gm?.legend} breakpoint="sm">
           {({ props, label, labelClassName }) => (
             <span className="align-self-center ms-1" {...props}>
               <FaCamera /> <FaPalette />{' '}

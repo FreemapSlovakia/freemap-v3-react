@@ -1,4 +1,4 @@
-import { getMessageByKey, useMessages } from '@features/l10n/l10nInjector.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DateTime } from '@shared/components/DateTime.js';
 import '@shared/styles/react-tags.scss';
 import {
@@ -12,7 +12,13 @@ import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
-import { GalleryTag, galleryAddTag } from '../model/actions.js';
+import {
+  GalleryItemError,
+  GalleryTag,
+  GalleryValidationError,
+  galleryAddTag,
+} from '../model/actions.js';
+import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { Azimuth } from './Azimuth.js';
 import { RecentTags } from './RecentTags.js';
 
@@ -30,7 +36,7 @@ interface Props {
   id?: number;
   model: PictureModel;
   allTags: GalleryTag[];
-  errors: string[] | null | undefined;
+  errors: GalleryItemError[] | null | undefined;
   onPositionPick: undefined | (() => void);
   onModelChange: (model: PictureModel) => void;
 }
@@ -44,6 +50,8 @@ export function GalleryEditForm({
   onModelChange,
 }: Props): ReactElement {
   const m = useMessages();
+
+  const gm = useGalleryMessages();
 
   const changeModel = useCallback(
     (key: keyof PictureModel, value: unknown) => {
@@ -138,17 +146,13 @@ export function GalleryEditForm({
         <Alert variant="danger" key={error}>
           {error.startsWith('~')
             ? error.slice(1)
-            : (() => {
-                const v = getMessageByKey(m, error);
-
-                return typeof v === 'string' ? v : error;
-              })()}
+            : (gm?.[error as GalleryValidationError] ?? error)}
         </Alert>
       ))}
 
       <Form.Group controlId="pictureName" className="mb-3">
         <Form.Control
-          placeholder={m?.gallery.editForm.name}
+          placeholder={gm?.editForm.name}
           type="text"
           value={model.title}
           onChange={handleTitleChange}
@@ -158,7 +162,7 @@ export function GalleryEditForm({
 
       <Form.Group controlId="pictureDescription" className="mb-3">
         <Form.Control
-          placeholder={m?.gallery.editForm.description}
+          placeholder={gm?.editForm.description}
           as="textarea"
           value={model.description}
           onChange={handleDescriptionChange}
@@ -166,15 +170,15 @@ export function GalleryEditForm({
         />
       </Form.Group>
 
-      {m && (
+      {gm && (
         <Form.Group controlId="takenAt" className="mb-3">
           <DateTime
             value={model.takenAt}
             onChange={handleTakenAtChange}
             placeholders={{
-              date: m.gallery.editForm.takenAt.date,
-              time: m.gallery.editForm.takenAt.time,
-              datetime: m.gallery.editForm.takenAt.datetime,
+              date: gm.editForm.takenAt.date,
+              time: gm.editForm.takenAt.time,
+              datetime: gm.editForm.takenAt.datetime,
             }}
           />
         </Form.Group>
@@ -184,13 +188,13 @@ export function GalleryEditForm({
         <InputGroup>
           <Form.Control
             type="text"
-            placeholder={m?.gallery.editForm.location}
+            placeholder={gm?.editForm.location}
             onChange={handlePositionChange}
             value={model.dirtyPosition}
           />
 
           <Button onClick={onPositionPick}>
-            <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
+            <FaRegDotCircle /> {gm?.editForm.setLocation}
           </Button>
         </InputGroup>
       </Form.Group>
@@ -200,7 +204,7 @@ export function GalleryEditForm({
         className="mb-3 d-flex align-items-center"
       >
         <Form.Control
-          placeholder={m?.gallery.editForm.azimuth}
+          placeholder={gm?.editForm.azimuth}
           type="number"
           value={model.azimuth}
           onChange={handleAzimuthChange}
@@ -219,7 +223,7 @@ export function GalleryEditForm({
 
       <Form.Group controlId="tags" className="mb-3" key={key}>
         <ReactTags
-          placeholderText={m?.gallery.editForm.tags}
+          placeholderText={gm?.editForm.tags}
           newOptionText={m?.general.newOptionText}
           deleteButtonText={m?.general.deleteButtonText}
           selected={model.tags.map((tag) => ({ label: tag, value: tag }))}
@@ -246,7 +250,7 @@ export function GalleryEditForm({
         type="checkbox"
         onChange={handlePremiumChange}
         checked={model.premium}
-        label={m?.gallery.uploadModal.premium}
+        label={gm?.uploadModal.premium}
       />
     </div>
   );

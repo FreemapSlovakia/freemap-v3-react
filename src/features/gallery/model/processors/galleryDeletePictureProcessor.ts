@@ -1,5 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryClear,
   galleryDeletePicture,
@@ -10,7 +12,6 @@ import {
 
 export const galleryDeletePictureProcessor: Processor = {
   actionCreator: galleryDeletePicture,
-  errorKey: 'gallery.deletingError',
   async handle({ getState, dispatch }) {
     const { image } = getState().gallery;
 
@@ -22,12 +23,26 @@ export const galleryDeletePictureProcessor: Processor = {
 
     const { id } = image;
 
-    await httpRequest({
-      getState,
-      method: 'DELETE',
-      url: `/gallery/pictures/${id}`,
-      expectedStatus: 204,
-    });
+    try {
+      await httpRequest({
+        getState,
+        method: 'DELETE',
+        url: `/gallery/pictures/${id}`,
+        expectedStatus: 204,
+      });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      const gm = await loadGalleryMessages(getState().l10n.language);
+
+      dispatch(
+        toastsAdd({ style: 'danger', message: gm.deletingError({ err }) }),
+      );
+
+      return;
+    }
 
     dispatch(gallerySetLayerDirty());
 

@@ -5,6 +5,7 @@ import { Dropdown } from 'react-bootstrap';
 import { FaCamera, FaRegCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { IoIosColorPalette } from 'react-icons/io';
 import { GalleryColorizeBy } from '@/features/gallery/model/actions.js';
+import { useGalleryMessages } from '@/features/gallery/translations/useGalleryMessages.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function colorizeByMenuItemProps(colorizeBy: GalleryColorizeBy | '') {
@@ -16,6 +17,8 @@ export function colorizeByMenuItemProps(colorizeBy: GalleryColorizeBy | '') {
 export function GalleryColorizeBySubmenu(): JSX.Element {
   const m = useMessages();
 
+  const gm = useGalleryMessages();
+
   const colorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
 
   return (
@@ -24,49 +27,46 @@ export function GalleryColorizeBySubmenu(): JSX.Element {
         <FaCamera /> {m?.tools.photos}
       </Dropdown.Header>
 
-      <SubmenuHeader
-        icon={<IoIosColorPalette />}
-        title={m?.gallery.colorizeBy}
-      />
+      <SubmenuHeader icon={<IoIosColorPalette />} title={gm?.colorizeBy} />
 
       <Dropdown.Item as="button" {...colorizeByMenuItemProps('')}>
         {colorizeBy === null ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.disable}
+        {gm?.c.disable}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" {...colorizeByMenuItemProps('premium')}>
         {colorizeBy === 'premium' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.premium}
+        {gm?.c.premium}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" {...colorizeByMenuItemProps('mine')}>
         {colorizeBy === 'mine' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.mine}
+        {gm?.c.mine}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" {...colorizeByMenuItemProps('userId')}>
         {colorizeBy === 'userId' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.userId}
+        {gm?.c.userId}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" {...colorizeByMenuItemProps('rating')}>
         {colorizeBy === 'rating' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.rating}
+        {gm?.c.rating}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" {...colorizeByMenuItemProps('takenAt')}>
         {colorizeBy === 'takenAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.takenAt}
+        {gm?.c.takenAt}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" {...colorizeByMenuItemProps('createdAt')}>
         {colorizeBy === 'createdAt' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.createdAt}
+        {gm?.c.createdAt}
       </Dropdown.Item>
 
       <Dropdown.Item as="button" {...colorizeByMenuItemProps('season')}>
         {colorizeBy === 'season' ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
-        {m?.gallery.c.season}
+        {gm?.c.season}
       </Dropdown.Item>
     </>
   );

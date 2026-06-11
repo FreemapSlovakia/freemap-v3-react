@@ -4,6 +4,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import z from 'zod';
 import { createFilter } from '../../galleryUtils.js';
+import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryRequestImage,
   galleryRequestImages,
@@ -14,24 +15,42 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
   typeof galleryRequestImages
 > = {
   actionCreator: galleryRequestImages,
-  id: 'gallery.picturesFetchingError',
-  errorKey: 'gallery.picturesFetchingError',
   async handle({ getState, dispatch, action }) {
     const { lat, lon } = action.payload;
 
-    const res = await httpRequest({
-      getState,
-      url:
-        '/gallery/pictures?' +
-        objectToURLSearchParams({
-          by: 'radius',
-          lat,
-          lon,
-          distance: 5000 / 2 ** getState().map.zoom,
-          ...createFilter(getState().gallery.filter),
+    let res;
+
+    try {
+      res = await httpRequest({
+        getState,
+        url:
+          '/gallery/pictures?' +
+          objectToURLSearchParams({
+            by: 'radius',
+            lat,
+            lon,
+            distance: 5000 / 2 ** getState().map.zoom,
+            ...createFilter(getState().gallery.filter),
+          }),
+        expectedStatus: 200,
+      });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      const gm = await loadGalleryMessages(getState().l10n.language);
+
+      dispatch(
+        toastsAdd({
+          id: 'gallery.picturesFetchingError',
+          style: 'danger',
+          message: gm.picturesFetchingError({ err }),
         }),
-      expectedStatus: 200,
-    });
+      );
+
+      return;
+    }
 
     const ids = z
       .array(z.object({ id: z.number() }))
@@ -43,12 +62,14 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
     if (ids.length) {
       dispatch(galleryRequestImage(ids[0]));
     } else {
+      const gm = await loadGalleryMessages(getState().l10n.language);
+
       dispatch(
         toastsAdd({
           id: 'gallery.noPicturesFound',
           timeout: 5000,
           style: 'warning',
-          messageKey: 'gallery.noPicturesFound',
+          message: gm.noPicturesFound,
           cancelType: [galleryRequestImages.type],
         }),
       );
