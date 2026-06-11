@@ -349,6 +349,23 @@
           dsn: '<%= process.env["SENTRY_DSN"] %>',
           integrations: [],
           tracesSampleRate: 0,
+          ignoreErrors: [
+            // deliberate request cancellations (e.g. a new search supersedes a pending one)
+            /AbortError/,
+            // injected crypto-wallet / browser-extension JSON-RPC providers
+            /Internal JSON-RPC error/,
+            /promise rejection with keys: code, message/,
+            // Background Sync API quirks across browsers
+            /Attempted to register a sync event/,
+            // ubiquitous browser noise
+            /ResizeObserver loop/,
+            'Non-Error promise rejection captured',
+          ],
+          denyUrls: [
+            /^chrome-extension:\/\//,
+            /^moz-extension:\/\//,
+            /^safari-web-extension:\/\//,
+          ],
         });
       }
     </script>

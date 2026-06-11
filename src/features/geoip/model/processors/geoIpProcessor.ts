@@ -16,12 +16,6 @@ export const geoipProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    fetch(`${process.env['API_URL']}/geoip`).then((res) => {
-      if (!res.ok) {
-        throw new Error('nok');
-      }
-    });
-
     const data = await res.json();
 
     if (data.latitude) {
