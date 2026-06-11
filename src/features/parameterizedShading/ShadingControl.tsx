@@ -2,10 +2,10 @@
 import { mapSetShading } from '@features/map/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import ColorPicker from '@zdila/react-gradient-color-picker';
 import Color from 'color';
 import { produce } from 'immer';
 import { useCallback, useEffect, useState } from 'react';
-import ColorPicker from 'react-best-gradient-color-picker';
 import {
   Button,
   ButtonToolbar,

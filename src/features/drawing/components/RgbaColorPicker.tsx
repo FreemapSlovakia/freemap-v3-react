@@ -1,7 +1,7 @@
 import { rgbaStringToHexa, toRgbaString } from '@shared/colorAlpha.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import ColorPicker from '@zdila/react-gradient-color-picker';
 import { CSSProperties, ReactElement, useState } from 'react';
-import ColorPicker from 'react-best-gradient-color-picker';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 type Props = {

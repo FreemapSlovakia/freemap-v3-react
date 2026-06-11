@@ -95,6 +95,9 @@ importers:
       '@types/pannellum':
         specifier: ^2.5.0
         version: 2.5.0
+      '@zdila/react-gradient-color-picker':
+        specifier: ^3.1.0
+        version: 3.1.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       bootstrap:
         specifier: ^5.3.8
         version: 5.3.8(@popperjs/core@2.11.8)
@@ -146,9 +149,6 @@ importers:
       react:
         specifier: ^19.2.7
         version: 19.2.7
-      react-best-gradient-color-picker:
-        specifier: github:Delgado-tech/react-gradient-color-picker
-        version: https://codeload.github.com/Delgado-tech/react-gradient-color-picker/tar.gz/fe77d01cc1eb38936af82c71290187a62edf785f(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react-bootstrap:
         specifier: ^2.10.10
         version: 2.10.10(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -1877,6 +1877,16 @@ packages:
   '@yarnpkg/lockfile@1.1.0':
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
 
+  '@zdila/react-gradient-color-picker@3.1.0':
+    resolution: {integrity: sha512-8bpLzQZUlI+hagyM1TnPnoiJnXBThdsbtnqBvtI5v9w1pFnQCQISyD467k0n9J9sQEOOFe/vHhdBNskAOH4MGQ==}
+    peerDependencies:
+      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+
   acorn-import-phases@1.0.4:
     resolution: {integrity: sha512-wKmbr/DDiIXzEOiWrTTUcDm24kQ2vGfZQvM2fwg2vXqR5uW6aapr7ObPtj1th32b9u90/Pf4AItvdTh42fBmVQ==}
     engines: {node: '>=10.13.0'}
@@ -2595,9 +2605,6 @@ packages:
   local-storage-fallback@5.0.0:
     resolution: {integrity: sha512-n2PslxjlzDuWKTraKVeohjV/pWek7MBxccVxBsuyqiB4BeDOkN7hnjkGMj1KwGd3ZvmV6XZNfCUUmeSehFnP7g==}
 
-  lodash.throttle@4.1.1:
-    resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
-
   long@5.3.2:
     resolution: {integrity: sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==}
 
@@ -2848,17 +2855,6 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
       react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-
-  react-best-gradient-color-picker@https://codeload.github.com/Delgado-tech/react-gradient-color-picker/tar.gz/fe77d01cc1eb38936af82c71290187a62edf785f:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/Delgado-tech/react-gradient-color-picker/tar.gz/fe77d01cc1eb38936af82c71290187a62edf785f}
-    version: 3.0.14
-    peerDependencies:
-      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
 
   react-bootstrap@2.10.10:
     resolution: {integrity: sha512-gMckKUqn8aK/vCnfwoBpBVFUGT9SVQxwsYrp9yDHt0arXMamxALerliKBxr1TPbntirK/HGrUAHYbAeQTa9GHQ==}
@@ -3330,8 +3326,8 @@ packages:
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
 
-  tinycolor2@1.4.2:
-    resolution: {integrity: sha512-vJhccZPs965sV/L2sU4oRQVAos0pQXwsvTLkWYdqJ+a8Q5kPFzJTuOFwy7UniPli44NKQGAglksjvOcpo95aZA==}
+  tinycolor2@1.6.0:
+    resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
 
   tinyexec@1.2.4:
     resolution: {integrity: sha512-SHf/r48b7vOrjve9PxJo3MN5v5yuyjHvdUcrQffT3WXMUfnGmHDVbC4k3sHJaJTgZCwpUplIaAo5ANtMyp3YHg==}
@@ -5064,6 +5060,15 @@ snapshots:
 
   '@yarnpkg/lockfile@1.1.0': {}
 
+  '@zdila/react-gradient-color-picker@3.1.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      html2canvas: 1.4.1
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+      tinycolor2: 1.6.0
+    optionalDependencies:
+      '@types/react': 19.2.17
+
   acorn-import-phases@1.0.4(acorn@8.16.0):
     dependencies:
       acorn: 8.16.0
@@ -5731,8 +5736,6 @@ snapshots:
     dependencies:
       cookie: 1.1.1
 
-  lodash.throttle@4.1.1: {}
-
   long@5.3.2: {}
 
   loose-envify@1.4.0:
@@ -6001,16 +6004,6 @@ snapshots:
       react-dom: 19.2.7(react@19.2.7)
       react-stately: 3.47.0(react@19.2.7)
       use-sync-external-store: 1.6.0(react@19.2.7)
-
-  react-best-gradient-color-picker@https://codeload.github.com/Delgado-tech/react-gradient-color-picker/tar.gz/fe77d01cc1eb38936af82c71290187a62edf785f(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
-    dependencies:
-      html2canvas: 1.4.1
-      lodash.throttle: 4.1.1
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
-      tinycolor2: 1.4.2
-    optionalDependencies:
-      '@types/react': 19.2.17
 
   react-bootstrap@2.10.10(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
@@ -6429,7 +6422,7 @@ snapshots:
 
   tinybench@2.9.0: {}
 
-  tinycolor2@1.4.2: {}
+  tinycolor2@1.6.0: {}
 
   tinyexec@1.2.4: {}
 
