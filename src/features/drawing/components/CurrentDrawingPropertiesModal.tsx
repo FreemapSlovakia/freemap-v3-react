@@ -384,6 +384,11 @@ export default function CurrentDrawingPropertiesModal({
       as="form"
       onSubmit={handleSubmit}
       scrollable
+      // The color picker's popover is portalled to <body> (outside this
+      // modal's DOM), so the modal's focus trap would steal focus from its
+      // inputs the moment they're focused. Disable enforceFocus so R/G/B/A/HEX
+      // (and the sliders) stay editable.
+      enforceFocus={false}
     >
       <Modal.Header closeButton>
         <Modal.Title>{m?.drawing.edit.title}</Modal.Title>

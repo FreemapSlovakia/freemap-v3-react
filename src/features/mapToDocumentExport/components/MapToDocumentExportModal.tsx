@@ -315,8 +315,13 @@ export default function MapToDocumentExportModal({
       keyboard={!exporting}
       className={selectingArea ? 'd-none' : undefined}
       backdropClassName={selectingArea ? 'd-none' : undefined}
-      enforceFocus={!selectingArea}
       scrollable
+      // The color picker's popover is portalled to <body> (outside this
+      // modal's DOM), so the modal's focus trap would steal focus from its
+      // inputs the moment they're focused. Disable enforceFocus so R/G/B/A/HEX
+      // (and the sliders) stay editable.
+      enforceFocus={false}
+      // enforceFocus={!selectingArea}
     >
       <Modal.Header closeButton={!exporting}>
         <Modal.Title>
