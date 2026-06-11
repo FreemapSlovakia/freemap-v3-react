@@ -10,6 +10,8 @@ export const DocumentSchema = z.enum([
   'geocaching',
   'osm',
   'privacyPolicy',
+  'termsOfService',
+  'refundPolicy',
   'shortcuts',
   'tracking',
 ]);

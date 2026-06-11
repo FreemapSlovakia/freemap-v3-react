@@ -4,11 +4,11 @@ title: Zásady ochrany osobných údajov
 
 # Zásady ochrany osobných údajov
 
-Naposledy aktualizované: 2. máj 2022
+Naposledy aktualizované: 11. jún 2026
 
 Tieto Zásady ochrany osobných údajov opisujú naše pravidlá a postupy týkajúce sa zhromažďovania, používania a zverejňovania vašich údajov pri používaní služby a informujú vás o vašich právach na súkromie a o tom, ako vás zákon chráni.
 
-Vaše osobné údaje používame na poskytovanie a zlepšovanie služby. Používaním služby súhlasíte so zhromažďovaním a používaním informácií v súlade s týmito zásadami. Tento dokument bol vytvorený pomocou [generátora zásad ochrany osobných údajov](https://www.privacypolicies.com/privacy-policy-generator/).
+Vaše osobné údaje používame na poskytovanie a zlepšovanie služby. Používaním služby súhlasíte so zhromažďovaním a používaním informácií v súlade s týmito zásadami.
 
 # Výklad a definície
 
@@ -25,6 +25,7 @@ Na účely týchto zásad:
 - **Cookies** sú malé súbory, ktoré webová stránka ukladá do vášho zariadenia a ktoré obsahujú údaje o vašej histórii prehliadania.
 - **Krajina** označuje Slovenskú republiku.
 - **Zariadenie** znamená akékoľvek zariadenie, ktoré má prístup k službe, ako napríklad počítač, mobilný telefón alebo tablet.
+- **Spracovateľ platieb** je Paddle (Paddle.com Market Limited a jeho pridružené spoločnosti), ktorý vystupuje ako predajca na účet (Merchant of Record) pre platené predplatné Freemap Premium a spracúva platby v našom mene. Platené predplatné predáva spoločnosť Ing. Martin Ždila s.r.o.; podrobnosti nájdete v našich Obchodných podmienkach a Zásadách vrátenia peňazí.
 - **Osobné údaje** sú akékoľvek informácie, ktoré sa týkajú identifikovateľnej osoby.
 - **Služba** znamená webovú stránku.
 - **Poskytovateľ služby** je fyzická alebo právnická osoba, ktorá spracúva údaje v mene spoločnosti. Ide napríklad o tretie strany, ktoré zabezpečujú funkcie služby.
@@ -66,7 +67,7 @@ Používame cookies a podobné technológie (beacony, tagy, skripty) na sledovan
 - **Cookies pre súhlas s používaním cookies** – trvalé, ukladajú vašu voľbu.
 - **Funkčné cookies** – trvalé, pamätajú si vaše voľby ako jazyk či prihlásenie.
 
-Podrobnosti nájdete v našich zásadách používania cookies.
+Podrobnosti nájdete v časti o cookies vyššie. Cookies môžete kedykoľvek spravovať alebo odmietnuť v nastaveniach svojho prehliadača.
 
 ## Použitie osobných údajov
 
@@ -83,8 +84,8 @@ Spoločnosť môže použiť osobné údaje na:
 Údaje môžeme zdieľať s:
 
 - poskytovateľmi služieb
+- so spracovateľom platieb Paddle pri kúpe Freemap Premium (fakturačné a platobné údaje zadané pri platbe spracúva priamo Paddle, my ich neuchovávame; dostávame len údaje potrebné na udelenie a správu predplatného)
 - pri fúzii alebo predaji firmy
-- partnerskými organizáciami (napr. dcérske spoločnosti)
 - ostatnými používateľmi (pri verejnom zdieľaní)
 - s vaším súhlasom
 

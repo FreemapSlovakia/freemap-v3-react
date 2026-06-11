@@ -6,11 +6,11 @@ icon: FaLock
 
 # Privacy Policy
 
-Last updated: May 02, 2022
+Last updated: June 11, 2026
 
 This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.
 
-We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy. This Privacy Policy has been created with the help of the [Privacy Policy Generator](https://www.privacypolicies.com/privacy-policy-generator/).
+We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.
 
 # Interpretation and Definitions
 
@@ -31,6 +31,8 @@ For the purposes of this Privacy Policy:
 - **Country** refers to: Slovakia
 
 - **Device** means any device that can access the Service such as a computer, a cellphone or a digital tablet.
+
+- **Payment Processor** refers to Paddle (Paddle.com Market Limited and its affiliates), who acts as the Merchant of Record for the paid Freemap Premium subscription and processes payments on Our behalf. The paid subscription is sold by Ing. Martin Ždila s.r.o.; see Our Terms of Service and Refund Policy for details.
 
 - **Personal Data** is any information that relates to an identified or identifiable individual.
 
@@ -105,7 +107,7 @@ We use both Session and Persistent Cookies for the purposes set out below:
 
   Purpose: These Cookies allow us to remember choices You make when You use the Website, such as remembering your login details or language preference. The purpose of these Cookies is to provide You with a more personal experience and to avoid You having to re-enter your preferences every time You use the Website.
 
-For more information about the cookies we use and your choices regarding cookies, please visit our Cookies Policy or the Cookies section of our Privacy Policy.
+For more information about the cookies we use and your choices regarding cookies, please refer to the Cookies section above. You can manage or refuse cookies through Your browser settings at any time.
 
 ## Use of Your Personal Data
 
@@ -128,8 +130,8 @@ The Company may use Personal Data for the following purposes:
 We may share Your personal information in the following situations:
 
 - **With Service Providers:** We may share Your personal information with Service Providers to monitor and analyze the use of our Service, to contact You.
+- **With the Payment Processor:** When You purchase Freemap Premium, the payment is handled by Paddle as Merchant of Record. The billing and payment information You enter at checkout is provided directly to and processed by Paddle, not stored by Us; We receive only the information needed to grant and manage Your subscription (such as the fact and status of Your purchase).
 - **For business transfers:** We may share or transfer Your personal information in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition of all or a portion of Our business to another company.
-- **With Affiliates:** We may share Your information with Our affiliates, in which case we will require those affiliates to honor this Privacy Policy. Affiliates include Our parent company and any other subsidiaries, joint venture partners or other companies that We control or that are under common control with Us.
 - **With other users:** when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside. If You interact with other users or register through a Third-Party Social Media Service, Your contacts on the Third-Party Social Media Service may see Your name, profile, pictures and description of Your activity. Similarly, other users will be able to view descriptions of Your activity, communicate with You and view Your profile.
 - **With Your consent**: We may disclose Your personal information for any other purpose with Your consent.
 

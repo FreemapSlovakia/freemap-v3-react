@@ -6,7 +6,14 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { type ReactElement, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaList, FaLock, FaQuestion, FaRegCopyright } from 'react-icons/fa';
+import {
+  FaFileContract,
+  FaList,
+  FaLock,
+  FaMoneyBillWave,
+  FaQuestion,
+  FaRegCopyright,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { modalMenuItemProps } from '@/shared/hooks/useMenuHandler.js';
 import { setActiveModal } from '../store/actions.js';
@@ -46,9 +53,7 @@ export function CopyrightButton(): ReactElement {
   return (
     <Toolbar className="me-2 mb-2">
       <Dropdown>
-        <LongPressTooltip
-          label={(m?.mainMenu.mapLegend ?? '…') + ', Privacy policy'}
-        >
+        <LongPressTooltip label={m?.general.infoAndLegal ?? '…'}>
           {({ props }) => (
             <Dropdown.Toggle
               bsPrefix="fm-dropdown-toggle-nocaret"
@@ -93,6 +98,30 @@ export function CopyrightButton(): ReactElement {
             }}
           >
             <FaLock /> {m?.general.privacyPolicy}
+          </Dropdown.Item>
+
+          <Dropdown.Item
+            key="termsOfService"
+            href="#document=termsOfService"
+            onClick={(e) => {
+              e.preventDefault();
+
+              dispatch(documentShow('termsOfService'));
+            }}
+          >
+            <FaFileContract /> {m?.general.termsOfService}
+          </Dropdown.Item>
+
+          <Dropdown.Item
+            key="refundPolicy"
+            href="#document=refundPolicy"
+            onClick={(e) => {
+              e.preventDefault();
+
+              dispatch(documentShow('refundPolicy'));
+            }}
+          >
+            <FaMoneyBillWave /> {m?.general.refundPolicy}
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>

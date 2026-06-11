@@ -67,6 +67,9 @@ export type Messages = {
     success: string;
     expiration: string;
     privacyPolicy: string;
+    termsOfService: string;
+    refundPolicy: string;
+    infoAndLegal: string;
     newOptionText: string;
     deleteButtonText: string;
     accept: string;
