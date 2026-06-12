@@ -434,6 +434,9 @@ export type Messages = {
     premiumOnly: string;
     alreadyPremium: string;
     premiumUser: string;
+    payOnce: string;
+    paySubscription: string;
+    payWhatYouWant: string;
   };
   credits: {
     buyCredits: string;

@@ -4,6 +4,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { purchaseOnLogin } from '@features/auth/model/purchaseActions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { PolarEmbedCheckout } from '@polar-sh/checkout/embed';
 import z from 'zod';
 
 type CallbackResult = {
@@ -31,6 +32,124 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       action.payload.type,
       action.payload.type === 'credits' ? action.payload.amount : undefined,
     ]);
+
+    // New Polar flow (allowlisted users) — opens an embedded checkout overlay.
+    if (user.polarEnabled) {
+      const data =
+        action.payload.type === 'premium'
+          ? {
+              type: 'premium' as const,
+              recurring: Boolean(action.payload.recurring),
+              successUrl: location.origin + '/',
+            }
+          : {
+              type: 'credits' as const,
+              credits: action.payload.amount,
+              successUrl: location.origin + '/',
+            };
+
+      let checkoutUrl: string;
+
+      try {
+        const res = await httpRequest({
+          getState,
+          url: '/auth/polar/checkout',
+          method: 'POST',
+          expectedStatus: 200,
+          cancelActions: [],
+          data,
+        });
+
+        checkoutUrl = z
+          .object({ checkoutUrl: z.string() })
+          .parse(await res.json()).checkoutUrl;
+      } catch (err) {
+        console.error(err);
+
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.operationError',
+            messageParams: { err },
+          }),
+        );
+
+        return;
+      }
+
+      const theme = window.matchMedia?.('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+
+      let succeeded = false;
+
+      try {
+        const checkout = await PolarEmbedCheckout.create(checkoutUrl, {
+          theme,
+        });
+
+        await new Promise<void>((resolve) => {
+          checkout.addEventListener('success', (e) => {
+            // Keep the user in the app instead of redirecting to successUrl.
+            e.preventDefault();
+
+            succeeded = true;
+
+            checkout.close();
+          });
+
+          checkout.addEventListener('close', () => resolve());
+        });
+      } catch (err) {
+        console.error(err);
+
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.operationError',
+            messageParams: { err },
+          }),
+        );
+
+        return;
+      }
+
+      if (!succeeded) {
+        return; // closed without completing payment
+      }
+
+      window._paq.push([
+        'trackEvent',
+        'Purchase',
+        'success',
+        action.payload.type,
+        action.payload.type === 'credits' ? action.payload.amount : undefined,
+      ]);
+
+      // The webhook is the source of truth and is processed asynchronously, so
+      // refresh now and once more shortly after in case it hasn't landed yet.
+      dispatch(authInit());
+
+      setTimeout(() => dispatch(authInit()), 2500);
+
+      if (action.payload.type === 'premium') {
+        dispatch(
+          toastsAdd({ style: 'success', messageKey: 'premium.success' }),
+        );
+      } else {
+        dispatch(
+          toastsAdd({
+            style: 'success',
+            messageKey: 'credits.purchase.success',
+            messageParams: { amount: action.payload.amount },
+          }),
+        );
+
+        dispatch(setActiveModal(null));
+      }
+
+      return;
+    }
 
     const res = await httpRequest({
       getState,

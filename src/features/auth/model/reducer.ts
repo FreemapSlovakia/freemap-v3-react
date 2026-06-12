@@ -34,6 +34,7 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         credits: action.payload.credits,
         coordinates: action.payload.coordinates,
         hasPicture: action.payload.hasPicture,
+        polarEnabled: action.payload.polarEnabled,
       },
       validated: true,
     }))

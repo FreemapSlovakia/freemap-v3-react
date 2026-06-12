@@ -31,7 +31,10 @@ export const RoleSchema = z.enum([
 export type Role = z.infer<typeof RoleSchema>;
 
 export const PurchaseSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('premium') }),
+  // `recurring` is only meaningful for the Polar checkout flow (true = yearly
+  // auto-renewing subscription, false/undefined = one-time year). It is absent
+  // on stored purchase history items.
+  z.object({ type: z.literal('premium'), recurring: z.boolean().optional() }),
   z.object({ type: z.literal('credits'), amount: z.number() }),
 ]);
 
@@ -103,6 +106,10 @@ export const UserSchema = z.object({
   premiumExpiration: IsoDateSchema.nullable(),
   sendGalleryEmails: z.boolean(),
   hasPicture: z.boolean(),
+  // Whether the new Polar payment flow is enabled for this user (allowlisted on
+  // the backend during the Rovas→Polar migration). Defaults false for already
+  // persisted/rehydrated users.
+  polarEnabled: z.boolean().default(false),
   settings: UserSettingsSchema.optional(),
 });
 

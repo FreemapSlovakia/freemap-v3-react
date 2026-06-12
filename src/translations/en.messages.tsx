@@ -678,6 +678,9 @@ const messages: Messages = {
     premiumOnly: 'Only available with premium access.',
     alreadyPremium: 'You already have premium access.',
     premiumUser: 'User with premium access',
+    payOnce: 'Pay once — 1 year',
+    paySubscription: 'Subscribe yearly (auto-renews)',
+    payWhatYouWant: 'You choose the amount — €8 minimum.',
   },
 
   credits: {
