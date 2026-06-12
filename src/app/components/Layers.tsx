@@ -272,7 +272,9 @@ export function Layers(): ReactElement | null {
     <>
       {integratedLayerDefs
         .filter(({ type }) => layers.includes(type))
-        .filter(({ adminOnly }) => hasRole(user, 'layerPreview') || !adminOnly)
+        .filter(
+          ({ layerPreview }) => hasRole(user, 'layerPreview') || !layerPreview,
+        )
         .map((item) => getLayer(item))}
       {customLayerDefs
         .filter(({ type }) => layers.includes(type))

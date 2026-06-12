@@ -672,7 +672,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <li>entferntem Werbebanner</li>
           <li
             className="text-decoration-underline"
-            title="Strava Heatmap, hochauflösende detaillierte Schummerung der Slowakei und Tschechiens, höchste Zoomstufen der Outdoor-Karte, höchste Zoomstufen der Orthofotokarten der Slowakei und Tschechiens, verschiedene WMS-basierte Karten"
+            title="Hochauflösende detaillierte Schummerung der Slowakei und Tschechiens, höchste Zoomstufen der Outdoor-Karte, höchste Zoomstufen der Orthofotokarten der Slowakei und Tschechiens, verschiedene WMS-basierte Karten"
           >
             Premium-Kartenebenen
           </li>

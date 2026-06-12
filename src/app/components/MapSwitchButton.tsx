@@ -324,7 +324,7 @@ export function MapSwitchButton(): ReactElement {
     return layerDefs
       .filter((def) => def.layer === layer)
       .map((def) => {
-        if (!canPreviewLayers && !def.custom && def.adminOnly) {
+        if (!canPreviewLayers && !def.custom && def.layerPreview) {
           return null;
         }
 

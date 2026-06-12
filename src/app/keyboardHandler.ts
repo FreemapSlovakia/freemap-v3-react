@@ -175,8 +175,8 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
 
     const layerType =
       layerDef &&
-      (!('adminOnly' in layerDef) ||
-        !layerDef.adminOnly ||
+      (!('layerPreview' in layerDef) ||
+        !layerDef.layerPreview ||
         hasRole(state.auth.user, 'layerPreview'))
         ? layerDef.type
         : undefined;

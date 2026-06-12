@@ -116,7 +116,7 @@ type HasZIndex = {
 };
 
 export type IsIntegratedLayerDef = {
-  adminOnly?: boolean;
+  layerPreview?: boolean;
   icon: ReactElement;
   premiumFromZoom?: number;
   experimental?: boolean;
@@ -992,7 +992,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     maxNativeZoom: 15,
     zIndex: 3,
     errorTileUrl: transparent1x1,
-    // adminOnly: true,
     creditsPerMTile: 1000,
     countries: ['sk'],
     superseededBy: 'l2',
@@ -1007,7 +1006,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     attribution: [NLC_ATTR],
     minZoom: 8,
     shortcut: { code: 'KeyN', shift: true },
-    // adminOnly: true,
     countries: ['sk'],
   },
   // {
@@ -1049,6 +1047,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         zIndex: 3,
         errorTileUrl: transparent1x1,
         premiumFromZoom: 13,
+        layerPreview: true,
       }) satisfies IntegratedOverlayLayerDef,
   ),
   {

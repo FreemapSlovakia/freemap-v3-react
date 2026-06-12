@@ -685,7 +685,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <li>odstránenie reklamného baneru</li>
           <li
             className="text-decoration-underline"
-            title="Strava Heatmap, hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps"
+            title="hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps"
           >
             prémiovým mapovým vrstvám
           </li>
