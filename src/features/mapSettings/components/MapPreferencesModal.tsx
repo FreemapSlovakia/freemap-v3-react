@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -33,6 +34,10 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const initialMaxZoom = useAppSelector((state) => String(state.map.maxZoom));
+
+  const layerPreview = useAppSelector((state) =>
+    hasRole(state.auth.user, 'layerPreview'),
+  );
 
   const initialResolutionScale = useAppSelector((state) =>
     state.map.resolutionScale === null ? '' : String(state.map.resolutionScale),
@@ -219,31 +224,33 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
           </Form.Text>
         </Form.Group>
 
-        <Form.Group className="mt-3">
-          <Form.Label className="d-block">
-            {m?.mapLayers.stravaHeatmapColor}
-          </Form.Label>
+        {layerPreview && (
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">
+              {m?.mapLayers.stravaHeatmapColor}
+            </Form.Label>
 
-          <ToggleButtonGroup
-            type="radio"
-            name="stravaHeatmapColor"
-            value={stravaHeatmapColor}
-            onChange={(value) =>
-              setStravaHeatmapColor(value as StravaHeatmapColor)
-            }
-          >
-            {StravaHeatmapColorSchema.options.map((color) => (
-              <ToggleButton
-                key={color}
-                id={'shc-' + color}
-                value={color}
-                variant="outline-primary"
-              >
-                {m?.mapLayers.stravaHeatmapColors[color]}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </Form.Group>
+            <ToggleButtonGroup
+              type="radio"
+              name="stravaHeatmapColor"
+              value={stravaHeatmapColor}
+              onChange={(value) =>
+                setStravaHeatmapColor(value as StravaHeatmapColor)
+              }
+            >
+              {StravaHeatmapColorSchema.options.map((color) => (
+                <ToggleButton
+                  key={color}
+                  id={'shc-' + color}
+                  value={color}
+                  variant="outline-primary"
+                >
+                  {m?.mapLayers.stravaHeatmapColors[color]}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Form.Group>
+        )}
       </Modal.Body>
 
       <Modal.Footer>

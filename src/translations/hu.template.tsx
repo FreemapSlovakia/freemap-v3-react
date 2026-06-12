@@ -650,7 +650,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <li>reklámszalag eltávolítása</li>
           <li
             className="text-decoration-underline"
-            title="Strava Heatmap, Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, az Outdoor Map túratérkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotóinak legnagyobb nagyítási szintjei, különféle WMS-alapú térképek"
+            title="Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, az Outdoor Map túratérkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotóinak legnagyobb nagyítási szintjei, különféle WMS-alapú térképek"
           >
             prémium térképrétegek
           </li>

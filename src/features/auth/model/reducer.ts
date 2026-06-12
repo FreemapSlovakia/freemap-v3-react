@@ -27,7 +27,6 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         sendGalleryEmails: action.payload.sendGalleryEmails,
         id: action.payload.id,
         authToken: action.payload.authToken,
-        isAdmin: action.payload.isAdmin,
         roles: action.payload.roles,
         premiumExpiration: action.payload.premiumExpiration,
         authProviders: action.payload.authProviders,

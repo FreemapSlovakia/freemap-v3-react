@@ -30,7 +30,7 @@ Versione precedente (mappa aggiornata, stile non più)
 
 Mappe aggiuntive per Locus
 
-- [Ortofotomosaico SR, ombreggiatura DMR5, Sentieri forestali NLC (online) e Strava Heatmap](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
+- [Ortofotomosaico SR, ombreggiatura DMR5, Sentieri forestali NLC (online)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
 - [Strade forestali NLC (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
 
 ### OruxMaps

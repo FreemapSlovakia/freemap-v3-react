@@ -94,8 +94,6 @@ export const UserSchema = z.object({
   email: z.string().nullable(),
   description: z.string().nullable(),
   id: z.number(),
-  isAdmin: z.boolean(),
-  // Default keeps already-persisted (pre-roles) users parseable on rehydrate.
   roles: z.array(RoleSchema).default([]),
   language: z.string().nullish(),
   coordinates: LatLonSchema.nullable(),

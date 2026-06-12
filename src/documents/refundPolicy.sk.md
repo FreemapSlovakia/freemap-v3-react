@@ -21,7 +21,7 @@ O **plné vrátenie peňazí môžete požiadať do 14 dní** od:
 - prvej kúpy Freemap Premium, alebo
 - každého automatického obnovenia Vášho Predplatného.
 
-Počas tohto 14-dňového obdobia **nie je potrebné uvádzať dôvod** — stačí kontaktovať nás alebo Lemon Squeezy a zaplatenú sumu Vám vrátime.
+Počas tohto 14-dňového obdobia **nie je potrebné uvádzať dôvod** — stačí kontaktovať nás a zaplatenú sumu Vám vrátime.
 
 Po vrátení peňazí sa Váš prístup k Freemap Premium ukončí a Váš účet sa vráti na bezplatnú úroveň.
 
@@ -41,12 +41,9 @@ Kredity sú predplatený zostatok používaný na funkcie účtované podľa spo
 
 # Ako požiadať o vrátenie peňazí
 
-O vrátenie peňazí požiadajte jedným z týchto spôsobov:
+O vrátenie peňazí požiadajte **e-mailom** na freemap@freemap.sk z e-mailovej adresy použitej pri kúpe a, ak je k dispozícii, uveďte číslo objednávky alebo faktúry z Vášho dokladu.
 
-- **napíšte nám** na freemap@freemap.sk z e-mailovej adresy použitej pri kúpe a, ak je k dispozícii, uveďte číslo objednávky alebo faktúry Lemon Squeezy; alebo
-- **použite odkaz na správu fakturácie alebo doklad** v e-maile od Lemon Squeezy o kúpe alebo obnovení, ktorý Vám umožní priamo kontaktovať podporu Lemon Squeezy.
-
-Žiadosti o vrátenie peňazí sa snažíme potvrdiť do niekoľkých pracovných dní. Po schválení vratky ju Lemon Squeezy spracuje na Váš pôvodný platobný prostriedok; čas, kým sa prostriedky objavia, závisí od Vašej banky alebo vydavateľa karty.
+Žiadosti o vrátenie peňazí sa snažíme potvrdiť do niekoľkých pracovných dní. Po schválení vratky ju spracujeme na Váš pôvodný platobný prostriedok prostredníctvom Nášho Spracovateľa platieb; čas, kým sa prostriedky objavia, závisí od Vašej banky alebo vydavateľa karty.
 
 # Zrušenie budúcich obnovení
 

@@ -79,7 +79,7 @@ export function MapLayersSettings({
     ...customLayers.map((def) => ({
       ...def,
       countries: [],
-      adminOnly: false,
+      layerPreview: false,
       icon: <MdDashboardCustomize />,
       defaultInToolbar: false,
       defaultInMenu: false,

@@ -640,7 +640,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <li>odstranění reklamního baneru</li>
           <li
             className="text-decoration-underline"
-            title="Strava Heatmap, podrobné stínování Slovenska a Česka ve vysokém rozlišení, nejvyšší úrovně přiblížení Outdoor mapy, nejvyšší úrovně přiblížení ortofotomap Slovenska a Česka, různé mapy založené na WMS"
+            title="podrobné stínování Slovenska a Česka ve vysokém rozlišení, nejvyšší úrovně přiblížení Outdoor mapy, nejvyšší úrovně přiblížení ortofotomap Slovenska a Česka, různé mapy založené na WMS"
           >
             prémiové mapové vrstvy
           </li>
