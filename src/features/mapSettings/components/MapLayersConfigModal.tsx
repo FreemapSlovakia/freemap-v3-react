@@ -41,41 +41,37 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
   );
 
   return (
-    <Modal
-      show={show}
-      onHide={close}
-      scrollable
-      as="form"
-      onSubmit={handleSubmit}
-    >
-      <Modal.Header closeButton>
-        <Modal.Title>
-          <FaLayerGroup /> {m?.mapLayers.configureLayers}
-        </Modal.Title>
-      </Modal.Header>
+    <Modal show={show} onHide={close} scrollable>
+      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <FaLayerGroup /> {m?.mapLayers.configureLayers}
+          </Modal.Title>
+        </Modal.Header>
 
-      <Modal.Body>
-        <MapLayersSettings
-          layersSettings={layersSettings}
-          setLayersSettings={setLayersSettings}
-          customLayers={customLayerDefs}
-          cachedMaps={cachedMaps}
-        />
-      </Modal.Body>
+        <Modal.Body>
+          <MapLayersSettings
+            layersSettings={layersSettings}
+            setLayersSettings={setLayersSettings}
+            customLayers={customLayerDefs}
+            cachedMaps={cachedMaps}
+          />
+        </Modal.Body>
 
-      <Modal.Footer>
-        <Button
-          variant="primary"
-          type="submit"
-          disabled={layersSettings === initLayersSettings}
-        >
-          <FaCheck /> {m?.general.save}
-        </Button>
+        <Modal.Footer>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={layersSettings === initLayersSettings}
+          >
+            <FaCheck /> {m?.general.save}
+          </Button>
 
-        <Button variant="dark" type="button" onClick={close}>
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+          <Button variant="dark" type="button" onClick={close}>
+            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+          </Button>
+        </Modal.Footer>
+      </form>
     </Modal>
   );
 }

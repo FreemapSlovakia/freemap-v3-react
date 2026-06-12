@@ -232,296 +232,297 @@ export default function OfflineMapExportModal({
       className={selectingArea ? 'd-none' : undefined}
       backdropClassName={selectingArea ? 'd-none' : undefined}
       enforceFocus={!selectingArea}
-      as="form"
-      onSubmit={handleSubmit}
       scrollable
     >
-      <Modal.Header closeButton>
-        <Modal.Title>
-          <FaDatabase /> {m?.mainMenu.offlineMapExport} <ExperimentalFunction />
-        </Modal.Title>
-      </Modal.Header>
+      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <FaDatabase /> {m?.mainMenu.offlineMapExport}{' '}
+            <ExperimentalFunction />
+          </Modal.Title>
+        </Modal.Header>
 
-      <Modal.Body>
-        <div>
-          <p>
-            <strong>{ome?.usageIntro}</strong>
-          </p>
-          <ul>
-            <li>
-              <strong>{ome?.usageDesktop}</strong>{' '}
-              <a href="https://qgis.org/" target="_blank">
-                QGIS
-              </a>{' '}
-              (Windows/macOS/Linux),{' '}
-              <a href="https://www.maptiler.com/desktop/" target="_blank">
-                MapTiler Desktop
-              </a>
-            </li>
+        <Modal.Body>
+          <div>
+            <p>
+              <strong>{ome?.usageIntro}</strong>
+            </p>
+            <ul>
+              <li>
+                <strong>{ome?.usageDesktop}</strong>{' '}
+                <a href="https://qgis.org/" target="_blank">
+                  QGIS
+                </a>{' '}
+                (Windows/macOS/Linux),{' '}
+                <a href="https://www.maptiler.com/desktop/" target="_blank">
+                  MapTiler Desktop
+                </a>
+              </li>
 
-            <li>
-              <strong>{ome?.usageAndroid}</strong>{' '}
-              <a
-                href="https://play.google.com/store/apps/details?id=menion.android.locus"
-                target="_blank"
-              >
-                Locus Map
-              </a>
-              ,{' '}
-              <a
-                href="https://play.google.com/store/apps/details?id=menion.android.locus.pro"
-                target="_blank"
-              >
-                OruxMaps
-              </a>
-              ,{' '}
-              <a
-                href="https://play.google.com/store/apps/details?id=com.bodunov.galileo"
-                target="_blank"
-              >
-                Guru Maps
-              </a>
-              ,{' '}
-              <a
-                href="https://play.google.com/store/apps/details?id=net.osmand"
-                target="_blank"
-              >
-                OsmAnd
-              </a>
-            </li>
-
-            <li>
-              <strong>{ome?.usageIos}</strong>{' '}
-              <a
-                href="https://apps.apple.com/app/guru-maps-offline-maps-gps/id1032458712"
-                target="_blank"
-              >
-                Guru Maps
-              </a>
-              ,{' '}
-              <a
-                href="https://apps.apple.com/app/map-plus/id123456789"
-                target="_blank"
-              >
-                Map Plus
-              </a>
-              ,{' '}
-              <a
-                href="https://apps.apple.com/us/app/osmand-maps-travel-navigate/id934850257"
-                target="_blank"
-              >
-                OsmAnd
-              </a>
-            </li>
-
-            <li>
-              <strong>{ome?.usageWeb}</strong> {ome?.usageWebLead}{' '}
-              <a
-                href="https://github.com/consbio/mbtileserver"
-                target="_blank"
-                rel="noreferrer"
-              >
-                mbtileserver
-              </a>{' '}
-              {ome?.usageWebMid}{' '}
-              <a
-                href="https://github.com/maptiler/tileserver-gl"
-                target="_blank"
-                rel="noreferrer"
-              >
-                TileServer GL
-              </a>
-              {ome?.usageWebTrail}
-            </li>
-          </ul>
-        </div>
-
-        <CreditsAlert buy price={price} />
-
-        <hr />
-
-        <Form.Group controlId="mapType">
-          <Form.Label>{ome?.map}</Form.Label>
-
-          <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
-            <Dropdown.Toggle as={SelectToggle} className="w-100">
-              {mapDef ? getItem(mapDef) : ome?.unknownMapType}
-            </Dropdown.Toggle>
-
-            <Dropdown.Menu popperConfig={sameMinWidthPopperConfig}>
-              {mapDefs.map((def) => (
-                <Dropdown.Item key={def.type} eventKey={def.type}>
-                  {getItem(def)}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
-        </Form.Group>
-
-        <Form.Group controlId="downloadArea">
-          <Form.Label>{ome?.downloadArea}</Form.Label>
-
-          <MapAreaToggle
-            className="mb-3"
-            area={area}
-            onSelectVisible={() => setArea('visible')}
-            onSelectArea={startSelecting}
-          />
-        </Form.Group>
-
-        <Form.Group controlId="name" className="mb-3">
-          <Form.Label>{ome?.name}</Form.Label>
-
-          <Form.Control
-            type="text"
-            value={name}
-            onChange={(e) => {
-              setNameChanged(true);
-              setName(e.currentTarget.value);
-            }}
-          />
-        </Form.Group>
-
-        <Form.Group controlId="format" className="mb-3">
-          <Form.Label>{ome?.format}</Form.Label>
-
-          <ButtonGroup className="d-block">
-            <LongPressTooltip label={ome?.formatMbtilesTooltip}>
-              {({ props }) => (
-                <ToggleButton
-                  id="downloadFormat-mbtiles"
-                  type="radio"
-                  name="downloadFormat"
-                  variant="outline-primary"
-                  value="mbtiles"
-                  checked={format === 'mbtiles'}
-                  onChange={() => setFormat('mbtiles')}
-                  {...props}
+              <li>
+                <strong>{ome?.usageAndroid}</strong>{' '}
+                <a
+                  href="https://play.google.com/store/apps/details?id=menion.android.locus"
+                  target="_blank"
                 >
-                  {ome?.formatMbtiles}
-                </ToggleButton>
-              )}
-            </LongPressTooltip>
-
-            <LongPressTooltip label={ome?.formatSqlitedbTooltip}>
-              {({ props }) => (
-                <ToggleButton
-                  id="downloadFormat-sqlitedb"
-                  type="radio"
-                  name="downloadFormat"
-                  variant="outline-primary"
-                  value="sqlitedb"
-                  checked={format === 'sqlitedb'}
-                  onChange={() => setFormat('sqlitedb')}
-                  {...props}
+                  Locus Map
+                </a>
+                ,{' '}
+                <a
+                  href="https://play.google.com/store/apps/details?id=menion.android.locus.pro"
+                  target="_blank"
                 >
-                  {ome?.formatSqlitedb}
-                </ToggleButton>
-              )}
-            </LongPressTooltip>
-          </ButtonGroup>
-        </Form.Group>
-
-        {mapDef && (
-          <Form.Group controlId="zoomRange" className="mb-3">
-            <Form.Label className="required">{ome?.zoomRange}</Form.Label>
-
-            <InputGroup>
-              <Form.Control
-                type="number"
-                min={mapDef.minZoom ?? 0}
-                max={mapDef.maxNativeZoom}
-                value={minZoom}
-                isInvalid={invalidMinZoom}
-                onChange={(e) => setMinZoom(e.currentTarget.value)}
-              />
-
-              <InputGroup.Text>&ndash;</InputGroup.Text>
-
-              <Form.Control
-                type="number"
-                min={mapDef.minZoom ?? 0}
-                max={mapDef.maxNativeZoom}
-                value={maxZoom}
-                isInvalid={invalidMaxZoom}
-                onChange={(e) => setMaxZoom(e.currentTarget.value)}
-              />
-            </InputGroup>
-          </Form.Group>
-        )}
-
-        {mapDef?.extraScales && (
-          <Form.Group controlId="scale" className="mb-3">
-            <Form.Label>{ome?.scale}</Form.Label>
-
-            <ToggleButtonGroup
-              type="radio"
-              name="scale"
-              value={scale}
-              onChange={setScale}
-              className="d-flex"
-            >
-              {[1, ...mapDef.extraScales].map((scale) => (
-                <ToggleButton
-                  key={scale}
-                  id={`scale-${scale}`}
-                  value={String(scale)}
-                  variant="outline-primary"
+                  OruxMaps
+                </a>
+                ,{' '}
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.bodunov.galileo"
+                  target="_blank"
                 >
-                  {scale}×
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Form.Group>
-        )}
+                  Guru Maps
+                </a>
+                ,{' '}
+                <a
+                  href="https://play.google.com/store/apps/details?id=net.osmand"
+                  target="_blank"
+                >
+                  OsmAnd
+                </a>
+              </li>
 
-        <Form.Group controlId="email" className="mb-3">
-          <Form.Label className="required">{ome?.email}</Form.Label>
+              <li>
+                <strong>{ome?.usageIos}</strong>{' '}
+                <a
+                  href="https://apps.apple.com/app/guru-maps-offline-maps-gps/id1032458712"
+                  target="_blank"
+                >
+                  Guru Maps
+                </a>
+                ,{' '}
+                <a
+                  href="https://apps.apple.com/app/map-plus/id123456789"
+                  target="_blank"
+                >
+                  Map Plus
+                </a>
+                ,{' '}
+                <a
+                  href="https://apps.apple.com/us/app/osmand-maps-travel-navigate/id934850257"
+                  target="_blank"
+                >
+                  OsmAnd
+                </a>
+              </li>
 
-          <Form.Control
-            type="email"
-            value={email}
-            required
-            isInvalid={invalidEmail}
-            onChange={(e) => setEmail(e.currentTarget.value)}
-          />
-
-          <Form.Text className="text-muted">{ome?.emailInfo}</Form.Text>
-        </Form.Group>
-      </Modal.Body>
-
-      <Modal.Footer className="flex-wrap">
-        {tileCount !== undefined && mapDef && (
-          <div className="w-100 text-end">
-            {ome?.summaryTiles}: <b>{cnf.format(tileCount)}</b> ｜{' '}
-            <span
-              className={
-                price >= Math.floor(user?.credits ?? 0) ? 'text-danger' : ''
-              }
-            >
-              {ome?.summaryPrice(<b>{cnf.format(price)}</b>)}
-            </span>
+              <li>
+                <strong>{ome?.usageWeb}</strong> {ome?.usageWebLead}{' '}
+                <a
+                  href="https://github.com/consbio/mbtileserver"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  mbtileserver
+                </a>{' '}
+                {ome?.usageWebMid}{' '}
+                <a
+                  href="https://github.com/maptiler/tileserver-gl"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  TileServer GL
+                </a>
+                {ome?.usageWebTrail}
+              </li>
+            </ul>
           </div>
-        )}
 
-        <Button
-          variant="primary"
-          onClick={close}
-          type="submit"
-          disabled={
-            invalidEmail ||
-            invalidMinZoom ||
-            invalidMaxZoom ||
-            price >= Math.floor(user?.credits ?? 0)
-          }
-        >
-          <FaDownload /> {m?.general.export} <kbd>Enter</kbd>
-        </Button>
+          <CreditsAlert buy price={price} />
 
-        <Button variant="dark" onClick={close} type="button">
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+          <hr />
+
+          <Form.Group controlId="mapType">
+            <Form.Label>{ome?.map}</Form.Label>
+
+            <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
+              <Dropdown.Toggle as={SelectToggle} className="w-100">
+                {mapDef ? getItem(mapDef) : ome?.unknownMapType}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu popperConfig={sameMinWidthPopperConfig}>
+                {mapDefs.map((def) => (
+                  <Dropdown.Item key={def.type} eventKey={def.type}>
+                    {getItem(def)}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </Form.Group>
+
+          <Form.Group controlId="downloadArea">
+            <Form.Label>{ome?.downloadArea}</Form.Label>
+
+            <MapAreaToggle
+              className="mb-3"
+              area={area}
+              onSelectVisible={() => setArea('visible')}
+              onSelectArea={startSelecting}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="name" className="mb-3">
+            <Form.Label>{ome?.name}</Form.Label>
+
+            <Form.Control
+              type="text"
+              value={name}
+              onChange={(e) => {
+                setNameChanged(true);
+                setName(e.currentTarget.value);
+              }}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="format" className="mb-3">
+            <Form.Label>{ome?.format}</Form.Label>
+
+            <ButtonGroup className="d-block">
+              <LongPressTooltip label={ome?.formatMbtilesTooltip}>
+                {({ props }) => (
+                  <ToggleButton
+                    id="downloadFormat-mbtiles"
+                    type="radio"
+                    name="downloadFormat"
+                    variant="outline-primary"
+                    value="mbtiles"
+                    checked={format === 'mbtiles'}
+                    onChange={() => setFormat('mbtiles')}
+                    {...props}
+                  >
+                    {ome?.formatMbtiles}
+                  </ToggleButton>
+                )}
+              </LongPressTooltip>
+
+              <LongPressTooltip label={ome?.formatSqlitedbTooltip}>
+                {({ props }) => (
+                  <ToggleButton
+                    id="downloadFormat-sqlitedb"
+                    type="radio"
+                    name="downloadFormat"
+                    variant="outline-primary"
+                    value="sqlitedb"
+                    checked={format === 'sqlitedb'}
+                    onChange={() => setFormat('sqlitedb')}
+                    {...props}
+                  >
+                    {ome?.formatSqlitedb}
+                  </ToggleButton>
+                )}
+              </LongPressTooltip>
+            </ButtonGroup>
+          </Form.Group>
+
+          {mapDef && (
+            <Form.Group controlId="zoomRange" className="mb-3">
+              <Form.Label className="required">{ome?.zoomRange}</Form.Label>
+
+              <InputGroup>
+                <Form.Control
+                  type="number"
+                  min={mapDef.minZoom ?? 0}
+                  max={mapDef.maxNativeZoom}
+                  value={minZoom}
+                  isInvalid={invalidMinZoom}
+                  onChange={(e) => setMinZoom(e.currentTarget.value)}
+                />
+
+                <InputGroup.Text>&ndash;</InputGroup.Text>
+
+                <Form.Control
+                  type="number"
+                  min={mapDef.minZoom ?? 0}
+                  max={mapDef.maxNativeZoom}
+                  value={maxZoom}
+                  isInvalid={invalidMaxZoom}
+                  onChange={(e) => setMaxZoom(e.currentTarget.value)}
+                />
+              </InputGroup>
+            </Form.Group>
+          )}
+
+          {mapDef?.extraScales && (
+            <Form.Group controlId="scale" className="mb-3">
+              <Form.Label>{ome?.scale}</Form.Label>
+
+              <ToggleButtonGroup
+                type="radio"
+                name="scale"
+                value={scale}
+                onChange={setScale}
+                className="d-flex"
+              >
+                {[1, ...mapDef.extraScales].map((scale) => (
+                  <ToggleButton
+                    key={scale}
+                    id={`scale-${scale}`}
+                    value={String(scale)}
+                    variant="outline-primary"
+                  >
+                    {scale}×
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            </Form.Group>
+          )}
+
+          <Form.Group controlId="email" className="mb-3">
+            <Form.Label className="required">{ome?.email}</Form.Label>
+
+            <Form.Control
+              type="email"
+              value={email}
+              required
+              isInvalid={invalidEmail}
+              onChange={(e) => setEmail(e.currentTarget.value)}
+            />
+
+            <Form.Text className="text-muted">{ome?.emailInfo}</Form.Text>
+          </Form.Group>
+        </Modal.Body>
+
+        <Modal.Footer className="flex-wrap">
+          {tileCount !== undefined && mapDef && (
+            <div className="w-100 text-end">
+              {ome?.summaryTiles}: <b>{cnf.format(tileCount)}</b> ｜{' '}
+              <span
+                className={
+                  price >= Math.floor(user?.credits ?? 0) ? 'text-danger' : ''
+                }
+              >
+                {ome?.summaryPrice(<b>{cnf.format(price)}</b>)}
+              </span>
+            </div>
+          )}
+
+          <Button
+            variant="primary"
+            onClick={close}
+            type="submit"
+            disabled={
+              invalidEmail ||
+              invalidMinZoom ||
+              invalidMaxZoom ||
+              price >= Math.floor(user?.credits ?? 0)
+            }
+          >
+            <FaDownload /> {m?.general.export} <kbd>Enter</kbd>
+          </Button>
+
+          <Button variant="dark" onClick={close} type="button">
+            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+          </Button>
+        </Modal.Footer>
+      </form>
     </Modal>
   );
 }
