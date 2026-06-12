@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
@@ -235,13 +234,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         Máte zájem o vlastní reklamu na tomto místě? Neváhejte nás kontaktovat
         na {email}.
       </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="ekonomický software pro dobrovolníky">
-        <b>Freemap vytvářejí dobrovolníci.</b>{' '}
-        <span className="text-danger">Odměňte je za jejich práci</span>, svou
-        vlastní dobrovolnickou prací nebo penězi.
-      </RovasAd>
     ),
   },
 
@@ -638,18 +630,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     commonHeader: (
       <>
         <p>
-          <strong>Podpořte dobrovolníky, kteří vytvářejí tuto mapu!</strong>
+          <strong>Freemap Premium</strong> je volitelné roční předplatné, které
+          rozšiřuje aplikaci.
         </p>
         <p className="mb-1">
-          Za <b>8 hodin</b> vaší{' '}
-          <a
-            href="https://rovas.app/freemap-web"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            dobrovolnické práce
-          </a>{' '}
-          nebo <b>8 €</b> získáte na rok:
+          Za <b>8 €</b> ročně získáte:
         </p>
         <ul>
           <li>odstranění reklamního baneru</li>
@@ -657,24 +642,25 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             className="text-decoration-underline"
             title="Strava Heatmap, podrobné stínování Slovenska a Česka ve vysokém rozlišení, nejvyšší úrovně přiblížení Outdoor mapy, nejvyšší úrovně přiblížení ortofotomap Slovenska a Česka, různé mapy založené na WMS"
           >
-            prémiovým mapovým vrstvám
+            prémiové mapové vrstvy
           </li>
-          <li>prémiovým fotkám</li>
-          <li>multimodální vyhledávání trasy</li>
+          <li>prémiové fotky</li>
+          <li>multimodální plánování trasy</li>
         </ul>
+        <p className="mb-0">Freemap zůstává bezplatný a otevřený.</p>
       </>
     ),
     stepsForAnonymous: (
       <>
-        <div className="fw-bold">Postup</div>
+        <div className="fw-bold">Jak to funguje</div>
         <div className="mb-3">
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">Krok 1</span> - vytvořte si účet zde
-            ve Freemapu (níže)
+            <span className="fw-semibold">Krok 1</span> - přihlaste se nebo si
+            vytvořte bezplatný účet ve Freemapu (níže).
           </p>
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">Krok 2</span> - v aplikaci Rováš, kam
-            vás nasměrujeme po registraci, nám pošlete platbu.
+            <span className="fw-semibold">Krok 2</span> - budete přesměrováni k
+            dokončení platby.
           </p>
         </div>
       </>

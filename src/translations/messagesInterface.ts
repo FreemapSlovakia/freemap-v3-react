@@ -153,7 +153,6 @@ export type Messages = {
   };
   ad: {
     self: (email: ReactNode) => JSX.Element;
-    rovas: () => JSX.Element;
   };
   measurement: {
     distance: string;

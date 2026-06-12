@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
@@ -224,13 +223,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         Chcesz umieścić swoją reklamę w tym miejscu? Skontaktuj się z nami pod
         adresem {email}.
       </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="economic program for volunteers">
-        <b>Freemap is created by volunteers.</b>{' '}
-        <span className="text-danger">Reward them for their work</span>, with
-        your own volunteer work or with money.
-      </RovasAd>
     ),
   },
 
@@ -631,19 +623,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     commonHeader: (
       <>
         <p>
-          <strong>Wesprzyj wolontariuszy, którzy tworzą tę mapę!</strong>
+          <strong>Freemap Premium</strong> to opcjonalna roczna subskrypcja,
+          która rozszerza aplikację.
         </p>
         <p className="mb-1">
-          Za <b>8 godzin</b> swojej{' '}
-          <a
-            href="https://rovas.app/freemap-web"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            pracy wolontariackiej
-          </a>{' '}
-          lub <b>8 €</b>
-          otrzymasz roczny dostęp obejmujący:
+          Za <b>8 €</b> rocznie otrzymasz:
         </p>
         <ul>
           <li>usunięcie banera reklamowego</li>
@@ -651,25 +635,25 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
             className="text-decoration-underline"
             title="Strava Heatmap, szczegółowe cieniowanie Słowacji i Czech w wysokiej rozdzielczości, najwyższe poziomy powiększenia mapy Outdoor, najwyższe poziomy powiększenia map ortofoto Słowacji i Czech, różne mapy oparte na WMS"
           >
-            warstw map premium
+            warstwy map premium
           </li>
-          <li>zdjęć premium</li>
+          <li>zdjęcia premium</li>
           <li>multimodalne wyznaczanie trasy</li>
         </ul>
+        <p className="mb-0">Freemap pozostaje bezpłatny i otwarty.</p>
       </>
     ),
     stepsForAnonymous: (
       <>
-        <div className="fw-bold">Procedura</div>
+        <div className="fw-bold">Jak to działa</div>
         <div className="mb-3">
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">Krok 1</span> – utwórz konto w Freemap
-            (poniżej)
+            <span className="fw-semibold">Krok 1</span> – zaloguj się lub utwórz
+            bezpłatne konto Freemap (poniżej).
           </p>
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">Krok 2</span> – w aplikacji Rovas,
-            gdzie zostaniesz przekierowany po rejestracji, prześlij nam
-            płatność.
+            <span className="fw-semibold">Krok 2</span> – zostaniesz
+            przekierowany do dokończenia płatności.
           </p>
         </div>
       </>

@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
@@ -237,13 +236,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         Vuoi pubblicare il tuo annuncio qui? Non esitare a contattarci a {email}
         .
       </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="economic program for volunteers">
-        <b>Freemap is created by volunteers.</b>{' '}
-        <span className="text-danger">Reward them for their work</span>, with
-        your own volunteer work or with money.
-      </RovasAd>
     ),
   },
 
@@ -641,18 +633,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     commonHeader: (
       <>
         <p>
-          <strong>Sostieni i volontari che creano questa mappa!</strong>
+          <strong>Freemap Premium</strong> è un abbonamento annuale facoltativo
+          che potenzia l’app.
         </p>
         <p>
-          Con <b>8 ore</b> di{' '}
-          <a
-            href="https://rovas.app/freemap-web"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            lavoro volontario
-          </a>{' '}
-          oppure <b>8 €</b> otterrai un anno di accesso con:
+          Con <b>8 €</b> all’anno ottieni:
         </p>
         <ul>
           <li>rimozione del banner pubblicitario</li>
@@ -665,20 +650,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <li>foto premium</li>
           <li>routing multimodale</li>
         </ul>
+        <p className="mb-0">Freemap resta gratuita e aperta.</p>
       </>
     ),
     stepsForAnonymous: (
       <>
-        <div className="fw-bold">Procedura</div>
+        <div className="fw-bold">Come funziona</div>
         <div className="mb-3">
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">Passo 1</span> - crea un account qui
-            in Freemap (sotto)
+            <span className="fw-semibold">Passo 1</span> - accedi o crea un
+            account Freemap gratuito (sotto).
           </p>
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">Passo 2</span> - nell'applicazione
-            Rovas, dove ti indirizzeremo dopo la registrazione, inviaci il
-            pagamento.
+            <span className="fw-semibold">Passo 2</span> - verrai reindirizzato
+            per completare il pagamento.
           </p>
         </div>
       </>

@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
@@ -224,13 +223,6 @@ const messages: Messages = {
         Interested in placing your own ad here? Don’t hesitate to contact us at{' '}
         {email}.
       </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="economic program for volunteers">
-        <b>Freemap is created by volunteers.</b>{' '}
-        <span className="text-danger">Reward them for their work</span>, with
-        your own volunteer work or with money.
-      </RovasAd>
     ),
   },
 
@@ -625,18 +617,11 @@ const messages: Messages = {
     commonHeader: (
       <>
         <p>
-          <strong>Support the volunteers who create this map!</strong>
+          <strong>Freemap Premium</strong> is an optional yearly subscription
+          that enhances the app.
         </p>
         <p className="mb-1">
-          For <b>8 hours</b> of your{' '}
-          <a
-            href="https://rovas.app/freemap-web"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            volunteer work
-          </a>{' '}
-          or <b>8 €</b> you will have a year of access with:
+          For <b>8 €</b> per year you get:
         </p>
         <ul>
           <li>removed ad banner</li>
@@ -649,20 +634,20 @@ const messages: Messages = {
           <li>premium photos</li>
           <li>multimodal routing</li>
         </ul>
+        <p className="mb-0">Freemap stays free and open.</p>
       </>
     ),
     stepsForAnonymous: (
       <>
-        <div className="fw-bold">Procedure</div>
+        <div className="fw-bold">How it works</div>
         <div className="mb-3">
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">Step 1</span> - create an account here
-            in Freemap (below)
+            <span className="fw-semibold">Step 1</span> - sign in or create a
+            free Freemap account (below).
           </p>
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">Step 2</span> - in the Rovas
-            application, where we'll direct you after registration, send us the
-            payment.
+            <span className="fw-semibold">Step 2</span> - you'll be redirected
+            to complete the payment.
           </p>
         </div>
       </>

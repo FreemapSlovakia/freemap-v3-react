@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
@@ -233,13 +232,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         Möchten Sie hier Ihre eigene Werbung platzieren? Kontaktieren Sie uns
         gerne unter {email}.
       </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="economic program for volunteers">
-        <b>Freemap is created by volunteers.</b>{' '}
-        <span className="text-danger">Reward them for their work</span>, with
-        your own volunteer work or with money.
-      </RovasAd>
     ),
   },
 
@@ -653,23 +645,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     commonHeader: (
       <>
         <p>
-          <strong>
-            Unterstütze die Freiwilligen, die diese Karte erstellen!
-          </strong>
+          <strong>Freemap Premium</strong> ist ein optionales Jahresabo, das die
+          App erweitert.
         </p>
         <p className="mb-1">
-          Für <b>8 Stunden</b>deiner{' '}
-          <a
-            href="https://rovas.app/freemap-web"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            freiwilligen Arbeit
-          </a>{' '}
-          oder <b>8 €</b> erhältst du ein Jahr Zugang mit:
+          Für <b>8 €</b> pro Jahr erhältst du:
         </p>
         <ul>
-          <li>entferntem Werbebanner</li>
+          <li>entferntes Werbebanner</li>
           <li
             className="text-decoration-underline"
             title="Strava Heatmap, hochauflösende detaillierte Schummerung der Slowakei und Tschechiens, höchste Zoomstufen der Outdoor-Karte, höchste Zoomstufen der Orthofotokarten der Slowakei und Tschechiens, verschiedene WMS-basierte Karten"
@@ -679,21 +662,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <li>Premium-Fotos</li>
           <li>multimodale Routenplanung</li>
         </ul>
+        <p className="mb-0">Freemap bleibt kostenlos und offen.</p>
       </>
     ),
 
     stepsForAnonymous: (
       <>
-        <div className="fw-bold">Vorgehensweise</div>
+        <div className="fw-bold">So funktioniert es</div>
         <div className="mb-3">
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">Schritt 1</span> – Erstelle ein Konto
-            hier bei Freemap (unten)
+            <span className="fw-semibold">Schritt 1</span> – Melde dich an oder
+            erstelle ein kostenloses Freemap-Konto (unten).
           </p>
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">Schritt 2</span> – In der App Rováš,
-            zu der wir dich nach der Registrierung weiterleiten, sende uns die
-            Zahlung.
+            <span className="fw-semibold">Schritt 2</span> – Du wirst zur
+            Zahlung weitergeleitet.
           </p>
         </div>
       </>

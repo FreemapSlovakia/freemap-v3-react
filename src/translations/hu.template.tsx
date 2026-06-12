@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
@@ -236,13 +235,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         Szeretnéd, ha a saját hirdetésed lenne itt? Ne habozz kapcsolatba lépni
         velünk a következő címen: {email}.
       </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="economic program for volunteers">
-        <b>Freemap is created by volunteers.</b>{' '}
-        <span className="text-danger">Reward them for their work</span>, with
-        your own volunteer work or with money.
-      </RovasAd>
     ),
   },
 
@@ -648,20 +640,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     commonHeader: (
       <>
         <p>
-          <strong>
-            Támogasd az önkénteseket, akik ezt a térképet készítik!
-          </strong>
+          A <strong>Freemap Premium</strong> egy opcionális éves előfizetés,
+          amely kibővíti az alkalmazást.
         </p>
         <p className="mb-1">
-          <b>8 óra</b>{' '}
-          <a
-            href="https://rovas.app/freemap-web"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            önkéntes munkáért
-          </a>{' '}
-          vagy <b>8 €</b> összegért a következőket kaphatod egy évre:
+          <b>8 €</b> összegért évente a következőket kapod:
         </p>
         <ul>
           <li>reklámszalag eltávolítása</li>
@@ -674,20 +657,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           <li>prémium fényképek</li>
           <li>multimodális útvonaltervezés</li>
         </ul>
+        <p className="mb-0">A Freemap ingyenes és nyílt marad.</p>
       </>
     ),
     stepsForAnonymous: (
       <>
-        <div className="fw-bold">Eljárás</div>
+        <div className="fw-bold">Hogyan működik</div>
         <div className="mb-3">
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">1. lépés</span> - hozzon létre fiókot
-            itt a Freemapben (lent)
+            <span className="fw-semibold">1. lépés</span> - jelentkezzen be vagy
+            hozzon létre ingyenes Freemap-fiókot (lent).
           </p>
           <p className="mb-1 ms-3">
-            <span className="fw-semibold">2. lépés</span> - a Rovas
-            alkalmazásban, ahová a regisztráció után irányítjuk, küldje el
-            nekünk a fizetést.
+            <span className="fw-semibold">2. lépés</span> - átirányítjuk a
+            fizetés befejezéséhez.
           </p>
         </div>
       </>
