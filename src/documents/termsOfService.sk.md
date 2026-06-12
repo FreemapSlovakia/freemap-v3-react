@@ -18,7 +18,7 @@ Slová s veľkým začiatočným písmenom majú význam vymedzený za nasleduj�
 
 Na účely týchto Podmienok:
 
-- **Poskytovateľ / Predávajúci** (ďalej „My“, „Nás“ alebo „Naše“) označuje spoločnosť **Ing. Martin Ždila s.r.o.**, so sídlom Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovenská republika, IČO: 50545876, DIČ: 2120371594, IČ DPH: SK2120371594, zapísanú v Obchodnom registri Okresného súdu Košice I.
+- **Poskytovateľ / Predávajúci** (ďalej „My“, „Nás“ alebo „Naše“) označuje spoločnosť **Ing. Martin Ždila s.r.o.**, so sídlom Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovenská republika, IČO: 50545876, DIČ: 2120371594, IČ DPH: SK2120371594, zapísanú v Obchodnom registri Mestského súdu Košice, oddiel Sro, vložka č. 40119/V.
 
 - **Freemap Slovakia** označuje občianske združenie, ktoré prevádzkuje projekt a značku Freemap.sk. Bezplatné časti Služby poskytuje Freemap Slovakia; platené predplatné **Freemap Premium** predáva a poskytuje Predávajúci.
 

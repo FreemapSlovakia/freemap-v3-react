@@ -41,7 +41,7 @@ Kredity sú predplatený zostatok používaný na funkcie účtované podľa spo
 
 # Ako požiadať o vrátenie peňazí
 
-O vrátenie peňazí požiadajte **e-mailom** na freemap@freemap.sk z e-mailovej adresy použitej pri kúpe a, ak je k dispozícii, uveďte číslo objednávky alebo faktúry z Vášho dokladu.
+O vrátenie peňazí požiadajte **e-mailom** na info@zdila.sk z e-mailovej adresy použitej pri kúpe a, ak je k dispozícii, uveďte číslo objednávky alebo faktúry z Vášho dokladu.
 
 Žiadosti o vrátenie peňazí sa snažíme potvrdiť do niekoľkých pracovných dní. Po schválení vratky ju spracujeme na Váš pôvodný platobný prostriedok prostredníctvom Nášho Spracovateľa platieb; čas, kým sa prostriedky objavia, závisí od Vašej banky alebo vydavateľa karty.
 
@@ -57,5 +57,5 @@ Tieto Zásady vrátenia peňazí môžeme z času na čas aktualizovať. Aktuali
 
 Ak máte akékoľvek otázky k vráteniu peňazí, môžete nás kontaktovať:
 
-- E-mailom: freemap@freemap.sk
+- E-mailom: info@zdila.sk
 - Poštou: Ing. Martin Ždila s.r.o., Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovenská republika
