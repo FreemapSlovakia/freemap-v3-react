@@ -39,6 +39,12 @@ const en: MapFeaturesExportMessages = {
       gravelCycling: 'Gravel cycling',
     },
     revoked: 'Exporting course to Garmin has been revoked.',
+    exportError: 'Error exporting to Garmin.',
+    multipleLineStrings:
+      'The selection contains more than a single continuous line.',
+    noLineString: 'The selection contains no continuous line.',
+    multipleTracks: 'Multiple tracks are not supported. Select a single one.',
+    multipleLines: 'Multiple lines are not supported. Select a single one.',
     connectPrompt:
       "You don't have your Garmin account connected yet. Do you wish to do it now?",
     authPrompt:

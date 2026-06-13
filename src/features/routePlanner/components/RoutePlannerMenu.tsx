@@ -60,6 +60,7 @@ import {
   routePlannerToggleElevationChart,
   routePlannerToggleMilestones,
 } from '../model/actions.js';
+import { loadRoutePlannerMessages } from '../translations/loadRoutePlannerMessages.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
 
@@ -438,7 +439,8 @@ export default function RoutePlannerMenu(): ReactElement {
       dispatch(
         toastsAdd({
           id: 'routePlanner.noHomeAlert',
-          message: rpm?.noHomeAlert.msg ?? '',
+          messageKey: 'noHomeAlert.msg',
+          messageLoader: loadRoutePlannerMessages,
           style: 'warning',
           actions: [
             {

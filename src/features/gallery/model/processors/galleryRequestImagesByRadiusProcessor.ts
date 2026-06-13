@@ -55,14 +55,13 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
     if (ids.length) {
       dispatch(galleryRequestImage(ids[0]));
     } else {
-      const gm = await loadGalleryMessages(getState().l10n.language);
-
       dispatch(
         toastsAdd({
           id: 'gallery.noPicturesFound',
           timeout: 5000,
           style: 'warning',
-          message: gm.noPicturesFound,
+          messageKey: 'noPicturesFound',
+          messageLoader: loadGalleryMessages,
           cancelType: [galleryRequestImages.type],
         }),
       );

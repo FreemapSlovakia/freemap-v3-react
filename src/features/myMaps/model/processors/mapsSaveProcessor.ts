@@ -58,13 +58,12 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       });
 
       if (res.status === 412) {
-        const mm = await loadMyMapsMessages(getState().l10n.language);
-
         dispatch(
           toastsAdd({
             id: 'myMaps.conflictError',
             style: 'danger',
-            message: mm.conflictError,
+            messageKey: 'conflictError',
+            messageLoader: loadMyMapsMessages,
           }),
         );
 

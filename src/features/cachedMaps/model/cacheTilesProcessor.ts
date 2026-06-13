@@ -203,7 +203,9 @@ async function downloadTiles(
       toastsAdd({
         style: 'success',
         timeout: 10_000,
-        message: cm.cachedSuccess({ name: meta.name ?? '' }),
+        messageKey: 'cachedSuccess',
+        messageParams: { name: meta.name ?? '' },
+        messageLoader: loadCachedMapsMessages,
         actions: [
           {
             name: cm.activate,

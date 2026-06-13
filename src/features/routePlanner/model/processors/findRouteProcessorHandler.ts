@@ -276,11 +276,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     return;
   }
 
-  const rpm = await loadRoutePlannerMessages(getState().l10n.language);
-
   const rnfToastAction = toastsAdd({
     id: 'routePlanner',
-    message: rpm.routeNotFound,
+    messageKey: 'routeNotFound',
+    messageLoader: loadRoutePlannerMessages,
     style: 'warning',
     timeout: 5000,
   });
@@ -316,7 +315,9 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       dispatch(
         toastsAdd({
           id: 'routePlanner',
-          message: rpm.fetchingError({ err: data.reason }),
+          messageKey: 'fetchingError',
+          messageParams: { err: data.reason },
+          messageLoader: loadRoutePlannerMessages,
           style: 'danger',
           timeout: 5000,
         }),
@@ -463,7 +464,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     dispatch(
       toastsAdd({
         id: 'routePlanner.showMidpointHint',
-        message: rpm.showMidpointHint,
+        messageKey: 'showMidpointHint',
+        messageLoader: loadRoutePlannerMessages,
         style: 'info',
         actions,
         cancelType: [setTool.type, routePlannerAddPoint.type],

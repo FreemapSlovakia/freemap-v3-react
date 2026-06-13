@@ -66,7 +66,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     preventShowingAgain: 'Nicht erneut anzeigen',
     closeWithoutSaving: 'Fenster mit ungespeicherten Änderungen schließen?',
     back: 'Zurück',
-    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    internalError: ({ ticketId }) => (
+      <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
+    ),
     processorError: ({ err }) => addError(messages, 'Anwendungsfehler', err),
     seconds: 'Sekunden',
     minutes: 'Minuten',

@@ -25,14 +25,17 @@ import { SearchSelection } from '@features/search/components/SearchSelection.js'
 import { Toasts } from '@features/toasts/components/Toasts.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { TrackingSelection } from '@features/tracking/components/TrackingSelection.js';
-import { useTextFileDropHandler } from '@features/trackViewer/hooks/useTextFileDropHandler.js';
+import {
+  type TextFileDropError,
+  useTextFileDropHandler,
+} from '@features/trackViewer/hooks/useTextFileDropHandler.js';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
 import { parseGeojsonFile } from '@features/trackViewer/parseGeojsonFile.js';
-import { useTrackViewerMessages } from '@features/trackViewer/translations/useTrackViewerMessages.js';
+import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 import { WikiLayer } from '@features/wiki/components/WikiLayer.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -325,8 +328,6 @@ const predefinedDrawingPropertiesModalFactory = () =>
 export function Main(): ReactElement {
   const m = useMessages();
 
-  const tvm = useTrackViewerMessages();
-
   const dispatch = useDispatch();
 
   const layers = useAppSelector((state) => state.map.layers);
@@ -452,11 +453,12 @@ export function Main(): ReactElement {
   );
 
   const onGpxLoadError = useCallback(
-    (message: string) => {
+    (messageKey: TextFileDropError) => {
       dispatch(
         toastsAdd({
           id: 'trackViewer.loadError',
-          message,
+          messageKey,
+          messageLoader: loadTrackViewerMessages,
           style: 'danger',
           timeout: 5000,
         }),
@@ -465,14 +467,14 @@ export function Main(): ReactElement {
     [dispatch],
   );
 
-  const handleGpxDrop = useTextFileDropHandler(onGpxDrop, onGpxLoadError, tvm);
+  const handleGpxDrop = useTextFileDropHandler(onGpxDrop, onGpxLoadError);
 
   const onGeojsonDrop = useCallback(
     (text: string) => {
       const trackGeojson = parseGeojsonFile(text);
 
       if (!trackGeojson) {
-        onGpxLoadError(tvm?.invalidFormat ?? 'invalid format');
+        onGpxLoadError('invalidFormat');
 
         return;
       }
@@ -487,13 +489,12 @@ export function Main(): ReactElement {
 
       dispatch(elevationChartClose());
     },
-    [dispatch, tvm, onGpxLoadError],
+    [dispatch, onGpxLoadError],
   );
 
   const handleGeojsonDrop = useTextFileDropHandler(
     onGeojsonDrop,
     onGpxLoadError,
-    tvm,
   );
 
   const onDrop = useCallback(

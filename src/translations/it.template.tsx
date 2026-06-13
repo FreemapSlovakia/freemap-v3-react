@@ -65,7 +65,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     preventShowingAgain: 'Non mostrare più',
     closeWithoutSaving: 'Chiudere la finestra senza salvare?',
     back: 'Indietro',
-    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    internalError: ({ ticketId }) => (
+      <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
+    ),
 
     processorError: ({ err }) =>
       addError(messages, "Errore dell'applicazione:", err),

@@ -405,10 +405,13 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         return;
       }
 
-      const om = await loadObjectsMessages(getState().l10n.language);
-
       dispatch(
-        toastsAdd({ style: 'danger', message: om.fetchingError({ err }) }),
+        toastsAdd({
+          style: 'danger',
+          messageKey: 'fetchingError',
+          messageParams: { err },
+          messageLoader: loadObjectsMessages,
+        }),
       );
     }
   },

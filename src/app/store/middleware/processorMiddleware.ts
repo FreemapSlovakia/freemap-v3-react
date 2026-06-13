@@ -4,7 +4,7 @@ import {
 } from '@features/progress/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { MessagePaths } from '@shared/types/common.js';
+import type { Leaves, MessagePaths } from '@shared/types/common.js';
 import type { Action, Dispatch, Middleware } from 'redux';
 import type { RootState } from '../store.js';
 import { sendError } from './globalErrorHandler.js';
@@ -26,7 +26,10 @@ type ErrMessageKey<M> = {
  * (pre-bound to `getState`/`dispatch`), so it replaces the repeated
  * `if (AbortError) return; load messages; dispatch toast` block in handlers.
  */
-export type ToastError = <M, K extends ErrMessageKey<M>>(
+export type ToastError = <
+  M extends Record<string, unknown>,
+  K extends ErrMessageKey<M> & Leaves<M>,
+>(
   err: unknown,
   loadMessages: (language: string) => Promise<M>,
   messageKey: K,
@@ -186,16 +189,12 @@ export function createProcessorMiddleware() {
                 return;
               }
 
-              const messages = await loadMessages(getState().l10n.language);
-
-              const buildMessage = messages[messageKey] as (props: {
-                err: unknown;
-              }) => string;
-
               dispatch(
                 toastsAdd({
                   style: 'danger',
-                  message: buildMessage({ err }),
+                  messageKey,
+                  messageParams: { err },
+                  messageLoader: loadMessages,
                   ...(toastId === undefined ? {} : { id: toastId }),
                 }),
               );

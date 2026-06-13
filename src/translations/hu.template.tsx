@@ -66,7 +66,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeWithoutSaving:
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
     back: 'Vissza',
-    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    internalError: ({ ticketId }) => (
+      <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
+    ),
     processorError: ({ err }) => addError(messages, 'Alkalmazáshiba', err),
     seconds: 'másodperc',
     minutes: 'perc',

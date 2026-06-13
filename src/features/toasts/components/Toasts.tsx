@@ -1,7 +1,15 @@
 import type { RootAction } from '@app/store/rootAction.js';
 import { getMessageByKey, useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, ReactNode, useCallback, useMemo } from 'react';
+import type { Leaves } from '@shared/types/common.js';
+import {
+  type ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useDispatch } from 'react-redux';
 import { Messages } from '@/translations/messagesInterface.js';
 import {
@@ -12,6 +20,62 @@ import {
 } from '../model/actions.js';
 import { Toast } from './Toast.js';
 import classes from './Toasts.module.css';
+
+function resolveMessage(
+  m: unknown,
+  messageKey: string,
+  messageParams?: Record<string, unknown>,
+): ReactNode {
+  const v = getMessageByKey(m as Messages | undefined, messageKey);
+
+  if (typeof v === 'string') {
+    return v;
+  }
+
+  if (typeof v === 'function') {
+    return v.call(undefined, messageParams);
+  }
+
+  return '…';
+}
+
+// Resolves a toast message from a lazily-loaded per-feature bundle, re-running
+// when the language changes so the text follows language switches.
+function LazyToastMessage<T extends Record<string, unknown>>({
+  loader,
+  messageKey,
+  messageParams,
+}: {
+  loader: (language: string) => Promise<T>;
+  messageKey: Leaves<T>;
+  messageParams?: Record<string, unknown>;
+}): ReactElement {
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const [messages, setMessages] = useState<T>();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    loader(language).then((m) => {
+      if (!cancelled) {
+        setMessages(m);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loader, language]);
+
+  return (
+    <>
+      {messages === undefined
+        ? '…'
+        : resolveMessage(messages, messageKey, messageParams)}
+    </>
+  );
+}
 
 function tx(m: Messages | undefined, toastAction: ToastAction) {
   if ('name' in toastAction) {
@@ -43,21 +107,15 @@ export function Toasts(): ReactElement {
       Object.values(toasts)
         .map(
           ({ id, actions, style, noClose, timeout, timeoutSince, ...rest }) => {
-            let msg: ReactNode;
-
-            if ('message' in rest) {
-              msg = rest.message;
-            } else {
-              const v = getMessageByKey(m, rest.messageKey);
-
-              if (typeof v === 'string') {
-                msg = v;
-              } else if (typeof v === 'function') {
-                msg = v.call(undefined, rest.messageParams);
-              } else {
-                msg = '…';
-              }
-            }
+            const msg = rest.messageLoader ? (
+              <LazyToastMessage
+                loader={rest.messageLoader}
+                messageKey={rest.messageKey}
+                messageParams={rest.messageParams}
+              />
+            ) : (
+              resolveMessage(m, rest.messageKey, rest.messageParams)
+            );
 
             return {
               id,

@@ -20,12 +20,11 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     if (getState().gallery.items.length === 0) {
       window._paq.push(['trackEvent', 'Gallery', 'upload']);
 
-      const gm = await loadGalleryMessages(getState().l10n.language);
-
       dispatch(
         toastsAdd({
           id: 'gallery.upload',
-          message: gm.uploadModal.success,
+          messageKey: 'uploadModal.success',
+          messageLoader: loadGalleryMessages,
           timeout: 5000,
           style: 'info',
         }),

@@ -62,12 +62,11 @@ export const changesetsProcessor: Processor = {
       ) {
         dispatch(changesetsSet([]));
 
-        const cm = await loadChangesetsMessages(getState().l10n.language);
-
         dispatch(
           toastsAdd({
             id: 'changeset.detail',
-            message: cm.tooBig,
+            messageKey: 'tooBig',
+            messageLoader: loadChangesetsMessages,
             cancelType: [
               selectFeature.type,
               changesetsSetParams.type,
@@ -197,12 +196,11 @@ export const changesetsProcessor: Processor = {
         }
 
         if (allChangesetsSoFar.length === 0) {
-          const cm = await loadChangesetsMessages(getState().l10n.language);
-
           dispatch(
             toastsAdd({
               id: 'changeset.detail',
-              message: cm.notFound,
+              messageKey: 'notFound',
+              messageLoader: loadChangesetsMessages,
               cancelType: [
                 selectFeature.type,
                 changesetsSetParams.type,

@@ -66,7 +66,9 @@ export const objectsFetchProcessor: Processor = {
           dispatch(
             toastsAdd({
               id: 'objects.lowZoomAlert',
-              message: om.lowZoomAlert.message({ minZoom }),
+              messageKey: 'lowZoomAlert.message',
+              messageParams: { minZoom },
+              messageLoader: loadObjectsMessages,
               style: 'warning',
               actions: [
                 {
@@ -144,12 +146,12 @@ export const objectsFetchProcessor: Processor = {
         );
 
       if (result.length >= limit) {
-        const om = await loadObjectsMessages(getState().l10n.language);
-
         dispatch(
           toastsAdd({
             id: 'objects.tooManyPoints',
-            message: om.tooManyPoints({ limit }),
+            messageKey: 'tooManyPoints',
+            messageParams: { limit },
+            messageLoader: loadObjectsMessages,
             style: 'warning',
             cancelType: [
               clearMapFeatures.type,

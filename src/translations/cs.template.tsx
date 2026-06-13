@@ -67,7 +67,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     preventShowingAgain: 'Už více nezobrazovat',
     closeWithoutSaving: 'Zavřít okno bez uložení změn?',
     back: 'Zpět',
-    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    internalError: ({ ticketId }) => (
+      <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
+    ),
     processorError: ({ err }) => addError(messages, 'Chyba aplikace', err),
     seconds: 'sekundy',
     minutes: 'minuty',

@@ -61,7 +61,9 @@ const messages: Messages = {
     preventShowingAgain: "Don't show next time",
     closeWithoutSaving: 'Close the window with unsaved changes?',
     back: 'Back',
-    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    internalError: ({ ticketId }) => (
+      <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
+    ),
     processorError: ({ err }) => addError(messages, 'Application error', err),
     seconds: 'seconds',
     minutes: 'minutes',

@@ -29,7 +29,7 @@ export type Messages = {
     preventShowingAgain: string;
     closeWithoutSaving: string;
     back: string;
-    internalError: ({ ticketId }: { ticketId?: string }) => string;
+    internalError: ({ ticketId }: { ticketId?: string }) => JSX.Element;
     processorError: (props: Err) => string;
     seconds: string;
     minutes: string;

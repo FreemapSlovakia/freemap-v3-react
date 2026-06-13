@@ -240,7 +240,8 @@ export const wikimediaCommonsLayerProcessor: Processor = {
       dispatch(
         toastsAdd({
           id: 'wikimediaCommons.moreResults',
-          message: (await loadWikimediaCommonsMessages(language)).moreResults,
+          messageKey: 'moreResults',
+          messageLoader: loadWikimediaCommonsMessages,
           style: 'warning',
           cancelType: [
             clearMapFeatures.type,

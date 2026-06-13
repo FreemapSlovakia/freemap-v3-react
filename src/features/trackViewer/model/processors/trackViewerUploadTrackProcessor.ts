@@ -29,12 +29,11 @@ export async function handleTrackUpload({
       : -1;
 
     if (trackGpx.length > maxSize * 1000000) {
-      const tvm = await loadTrackViewerMessages(getState().l10n.language);
-
       dispatch(
         toastsAdd({
           id: 'trackViewer.tooBigError',
-          message: tvm.tooBigError,
+          messageKey: 'tooBigError',
+          messageLoader: loadTrackViewerMessages,
           style: 'danger',
         }),
       );
@@ -62,11 +61,10 @@ export async function handleTrackUpload({
     );
   }
 
-  const tvm = await loadTrackViewerMessages(getState().l10n.language);
-
   dispatch(
     toastsAdd({
-      message: tvm.shareToast,
+      messageKey: 'shareToast',
+      messageLoader: loadTrackViewerMessages,
       style: 'info',
       id: 'trackViewer.shareToast',
       timeout: 5000,
