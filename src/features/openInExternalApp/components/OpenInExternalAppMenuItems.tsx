@@ -22,6 +22,7 @@ import {
   getOpenStreetCamUrl,
   getOsmUrl,
   getPeakfinderUrl,
+  getStravaUrl,
   getWazeUrl,
   getZbgisUrl,
 } from '../externalUrlUtils.js';
@@ -201,6 +202,14 @@ export function OpenInExternalAppDropdownItems({
         eventKey="url"
       >
         OpenStreetCam
+      </Dropdown.Item>
+
+      <Dropdown.Item
+        href={getStravaUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        Strava
       </Dropdown.Item>
 
       <Dropdown.Item
