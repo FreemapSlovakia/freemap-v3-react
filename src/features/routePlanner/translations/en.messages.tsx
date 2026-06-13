@@ -3,6 +3,7 @@ import { addError } from '@/translations/messagesInterface.js';
 import { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const en: RoutePlannerMessages = {
+  selectHomeLocation: 'Select on the map',
   default: 'Route default',
   leg: 'Route leg',
   manualTooltip: 'Connect following segment with direct line',

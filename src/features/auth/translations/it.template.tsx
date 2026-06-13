@@ -4,6 +4,19 @@ import { addError } from '@/translations/messagesInterface.js';
 import { AuthMessages } from './AuthMessages.js';
 
 const it: DeepPartialWithRequiredObjects<AuthMessages> = {
+  account: {
+    name: 'Nome',
+    email: 'Email',
+    personalInfo: 'Dati personali',
+    authProviders: 'Provider di accesso',
+    delete: 'Elimina account',
+    deleteWarning:
+      'Sei sicuro di voler eliminare il tuo account? Verranno rimossi tutte le tue foto, i commenti e le valutazioni delle foto, le tue mappe e i dispositivi monitorati.',
+    picture: 'Foto del profilo',
+    choosePicture: 'Scegli foto',
+    pictureTooLarge: 'La foto è troppo grande. La dimensione massima è 5 MB.',
+    description: 'Su di me',
+  },
   connectLabel: 'Connetti',
   connectSuccess: 'Connesso',
   disconnectLabel: 'Disconnetti',

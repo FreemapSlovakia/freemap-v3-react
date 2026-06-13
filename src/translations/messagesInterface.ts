@@ -149,36 +149,6 @@ export type Messages = {
     infoBars: Record<string, () => JSX.Element>;
     cookieConsent: () => JSX.Element;
   };
-  settings: {
-    map: {
-      homeLocation: {
-        label: string;
-        select: string;
-        undefined: string;
-      };
-    };
-    account: {
-      name: string;
-      email: string;
-      sendGalleryEmails: string;
-      delete: string;
-      deleteWarning: string;
-      personalInfo: string;
-      authProviders: string;
-      description: string;
-      picture: string;
-      choosePicture: string;
-      pictureTooLarge: string;
-    };
-    layer: string;
-    overlayOpacity: string;
-    showInMenu: string;
-    showInToolbar: string;
-    saveSuccess: string;
-    savingError: (props: Err) => string;
-    customLayersDef: string;
-    customLayersDefError: string;
-  };
   mapDetails: {
     sources: string;
     source: string;

@@ -4,6 +4,19 @@ import { addError } from '@/translations/messagesInterface.js';
 import { AuthMessages } from './AuthMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
+  account: {
+    name: 'Név',
+    email: 'E-mail',
+    delete: 'Fiók törlése',
+    deleteWarning:
+      'Biztosan törölni szeretnéd a fiókodat? Ez eltávolítja az összes fotódat, fotómegjegyzésedet és értékelésedet, a térképeidet és a követett eszközeidet.',
+    personalInfo: 'Személyes adatok',
+    authProviders: 'Bejelentkezési szolgáltatók',
+    picture: 'Profilkép',
+    choosePicture: 'Kép kiválasztása',
+    pictureTooLarge: 'A kép túl nagy. Maximális méret 5 MB.',
+    description: 'Rólam',
+  },
   connectLabel: 'Csatlakozás',
   connectSuccess: 'Csatlakoztatva',
   disconnectLabel: 'Kapcsolat bontása',

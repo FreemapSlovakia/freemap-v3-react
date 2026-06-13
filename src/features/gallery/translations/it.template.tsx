@@ -4,6 +4,7 @@ import { addError } from '@/translations/messagesInterface.js';
 import { GalleryMessages } from './GalleryMessages.js';
 
 const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
+  sendGalleryEmails: 'Notifica i commenti alle foto via email',
   stats: {
     leaderboard: 'Classifica',
     country: 'Paese',

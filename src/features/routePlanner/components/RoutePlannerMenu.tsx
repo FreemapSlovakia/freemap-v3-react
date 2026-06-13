@@ -598,7 +598,7 @@ export default function RoutePlannerMenu(): ReactElement {
                 size="sm"
                 variant="secondary"
                 className="my-n1 ms-2"
-                title={m?.settings.map.homeLocation.select}
+                title={rpm?.selectHomeLocation}
               >
                 <FaCrosshairs className="pe-none" />
               </Button>
@@ -671,7 +671,7 @@ export default function RoutePlannerMenu(): ReactElement {
                     size="sm"
                     variant="secondary"
                     className="my-n1 ms-2"
-                    title={m?.settings.map.homeLocation.select}
+                    title={rpm?.selectHomeLocation}
                   >
                     <FaCrosshairs className="pe-none" />
                   </Button>

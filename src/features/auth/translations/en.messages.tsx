@@ -3,6 +3,19 @@ import { addError } from '@/translations/messagesInterface.js';
 import { AuthMessages } from './AuthMessages.js';
 
 const en: AuthMessages = {
+  account: {
+    name: 'Name',
+    email: 'Email',
+    description: 'About me',
+    delete: 'Delete account',
+    deleteWarning:
+      'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.',
+    personalInfo: 'Personal information',
+    authProviders: 'Login providers',
+    picture: 'Profile picture',
+    choosePicture: 'Choose picture',
+    pictureTooLarge: 'Picture is too large. Maximum size is 5 MB.',
+  },
   connectLabel: 'Connect',
   connectSuccess: 'Connected',
   disconnectLabel: 'Disconnect',

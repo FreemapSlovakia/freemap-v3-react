@@ -1,5 +1,7 @@
 import { saveSettings } from '@app/store/actions.js';
 import { usePictureCacheBust } from '@features/auth/pictureCacheBust.js';
+import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
+import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -20,6 +22,8 @@ export function PersonalInfoSection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const am = useAuthMessages();
 
   const user = useAppSelector((state) => state.auth.user);
 
@@ -68,7 +72,8 @@ export function PersonalInfoSection(): ReactElement | null {
     if (file.size > MAX_PICTURE_BYTES) {
       dispatch(
         toastsAdd({
-          messageKey: 'settings.account.pictureTooLarge',
+          messageKey: 'account.pictureTooLarge',
+          messageLoader: loadAuthMessages,
           style: 'danger',
           timeout: 5000,
         }),
@@ -127,7 +132,7 @@ export function PersonalInfoSection(): ReactElement | null {
       }}
     >
       <Form.Group className="mb-3">
-        <Form.Label>{m?.settings.account.picture}</Form.Label>
+        <Form.Label>{am?.account.picture}</Form.Label>
 
         <div className="d-flex align-items-center gap-3">
           {showsPicture && avatarSrc ? (
@@ -148,7 +153,7 @@ export function PersonalInfoSection(): ReactElement | null {
               size="sm"
               onClick={() => fileInputRef.current?.click()}
             >
-              <FaUpload /> {m?.settings.account.choosePicture}
+              <FaUpload /> {am?.account.choosePicture}
             </Button>
 
             {showsPicture && (
@@ -173,7 +178,7 @@ export function PersonalInfoSection(): ReactElement | null {
       </Form.Group>
 
       <Form.Group controlId="name" className="mb-3">
-        <Form.Label className="required">{m?.settings.account.name}</Form.Label>
+        <Form.Label className="required">{am?.account.name}</Form.Label>
 
         <Form.Control
           value={name}
@@ -187,7 +192,7 @@ export function PersonalInfoSection(): ReactElement | null {
       </Form.Group>
 
       <Form.Group controlId="email" className="mb-3">
-        <Form.Label>{m?.settings.account.email}</Form.Label>
+        <Form.Label>{am?.account.email}</Form.Label>
 
         <Form.Control
           type="email"
@@ -201,7 +206,7 @@ export function PersonalInfoSection(): ReactElement | null {
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="description">
-        <Form.Label>{m?.settings.account.description}</Form.Label>
+        <Form.Label>{am?.account.description}</Form.Label>
 
         <Form.Control
           as="textarea"

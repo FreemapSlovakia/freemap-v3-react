@@ -5,6 +5,8 @@ import {
   authInit,
   authStartLogout,
 } from '@features/auth/model/actions.js';
+import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
+import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PurchasesSection } from '@features/purchases/components/PurchasesSection.js';
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
@@ -40,6 +42,8 @@ export default function AccountModal({ show }: Props): ReactElement | null {
 
   const m = useMessages();
 
+  const am = useAuthMessages();
+
   const pm = usePurchasesMessages();
 
   const becomePremium = useBecomePremium();
@@ -54,7 +58,8 @@ export default function AccountModal({ show }: Props): ReactElement | null {
     dispatch(
       toastsAdd({
         id: 'account.delete',
-        messageKey: 'settings.account.deleteWarning',
+        messageKey: 'account.deleteWarning',
+        messageLoader: loadAuthMessages,
         style: 'danger',
         actions: [
           {
@@ -107,7 +112,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="personal">
             <Accordion.Header>
               <span>
-                <FaAddressCard /> {m?.settings.account.personalInfo}
+                <FaAddressCard /> {am?.account.personalInfo}
               </span>
             </Accordion.Header>
 
@@ -119,7 +124,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="accounts">
             <Accordion.Header>
               <span>
-                <FaUserCircle /> {m?.settings.account.authProviders}
+                <FaUserCircle /> {am?.account.authProviders}
               </span>
             </Accordion.Header>
 
@@ -153,7 +158,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
         </Button>
 
         <Button variant="danger" onClick={handleDeleteClick}>
-          <FaEraser /> {m?.settings.account.delete}
+          <FaEraser /> {am?.account.delete}
         </Button>
 
         <Button variant="dark" onClick={close}>

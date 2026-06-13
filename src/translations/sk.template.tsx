@@ -245,39 +245,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
   },
 
-  settings: {
-    map: {
-      homeLocation: {
-        label: 'Domovská poloha:',
-        select: 'Vybrať na mape',
-        undefined: 'neurčená',
-      },
-    },
-    account: {
-      name: 'Meno',
-      email: 'E-Mail',
-      description: 'O mne',
-      sendGalleryEmails: 'Upozorniť emailom na komentáre k fotkám',
-      delete: 'Zmazať účet',
-      deleteWarning:
-        'Naozaj si prajete zmazať svoj účet? Spolu s ním sa odstránia všetky vaše fotografie, komentáre a hodnotenia fotografií, vlastné mapy a sledované zariadenia.',
-      personalInfo: 'Osobné údaje',
-      authProviders: 'Poskytovatelia prihlásenia',
-      picture: 'Profilový obrázok',
-      choosePicture: 'Vybrať obrázok',
-      pictureTooLarge: 'Obrázok je príliš veľký. Maximálna veľkosť je 5 MB.',
-    },
-    layer: 'Mapa',
-    overlayOpacity: 'Viditeľnosť',
-    showInMenu: 'Zobraziť v menu',
-    showInToolbar: 'Zobraziť v lište',
-    saveSuccess: 'Zmeny boli uložené.',
-    savingError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri ukladaní nastavení', err),
-    customLayersDef: 'Definícia vlastných mapových vrstiev',
-    customLayersDefError: 'Chybný formát definície vlasyných mapových vrstiev.',
-  },
-
   mapDetails: {
     sources: 'Zdroje',
     source: 'Zdroj',

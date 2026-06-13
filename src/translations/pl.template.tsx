@@ -205,40 +205,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  settings: {
-    map: {
-      homeLocation: {
-        label: 'Lokalizacja domowa:',
-        select: 'Wybierz na mapie',
-        undefined: 'nieokreślona',
-      },
-    },
-
-    account: {
-      name: 'Imię',
-      email: 'Email',
-      sendGalleryEmails: 'Powiadamiaj o komentarzach do zdjęć emailem',
-      delete: 'Usuń konto',
-      deleteWarning:
-        'Czy na pewno chcesz usunąć swoje konto? Zostaną usunięte wszystkie Twoje zdjęcia, komentarze i oceny, własne mapy i śledzone urządzenia.',
-      personalInfo: 'Dane osobowe',
-      authProviders: 'Dostawcy logowania',
-      picture: 'Zdjęcie profilowe',
-      choosePicture: 'Wybierz zdjęcie',
-      pictureTooLarge: 'Zdjęcie jest za duże. Maksymalny rozmiar to 5 MB.',
-      description: 'O mnie',
-    },
-
-    layer: 'Mapa',
-    overlayOpacity: 'Przezroczystość',
-    showInMenu: 'Pokaż w menu',
-    showInToolbar: 'Pokaż na pasku narzędzi',
-    saveSuccess: 'Ustawienia zostały zapisane.',
-    savingError: ({ err }) => addError(messages, 'Błąd zapisu ustawień', err),
-    customLayersDef: 'Definicja własnych warstw mapy',
-    customLayersDefError: 'Nieprawidłowa definicja własnych warstw mapy.',
-  },
-
   mapDetails: {
     notFound: 'Nic tu nie znaleziono.',
     fetchingError: ({ err }) =>

@@ -217,39 +217,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  settings: {
-    map: {
-      homeLocation: {
-        label: 'Lakóhely:',
-        select: 'Kijelölés a térképen',
-        undefined: 'meghatározatlan',
-      },
-    },
-    account: {
-      name: 'Név',
-      email: 'E-mail',
-      sendGalleryEmails: 'Értesítés fotómegjegyzésekről e-mailben',
-      delete: 'Fiók törlése',
-      deleteWarning:
-        'Biztosan törölni szeretnéd a fiókodat? Ez eltávolítja az összes fotódat, fotómegjegyzésedet és értékelésedet, a térképeidet és a követett eszközeidet.',
-      personalInfo: 'Személyes adatok',
-      authProviders: 'Bejelentkezési szolgáltatók',
-      picture: 'Profilkép',
-      choosePicture: 'Kép kiválasztása',
-      pictureTooLarge: 'A kép túl nagy. Maximális méret 5 MB.',
-      description: 'Rólam',
-    },
-    layer: 'Térkép',
-    overlayOpacity: 'Átlátszóság',
-    showInMenu: 'Megjelenítés a menüben',
-    showInToolbar: 'Megjelenítés az eszköztáron',
-    saveSuccess: 'A beállítások el lettek mentve.',
-    savingError: ({ err }) =>
-      addError(messages, 'Hiba történt a beállítások mentésénél', err),
-    customLayersDef: 'Egyéni térképrétegek meghatározása',
-    customLayersDefError: 'Érvénytelen egyéni térképréteg-meghatározás.',
-  },
-
   mapDetails: {
     notFound: 'Itt nem találtunk semmit.',
 

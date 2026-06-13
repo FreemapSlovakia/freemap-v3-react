@@ -218,40 +218,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
   },
 
-  settings: {
-    map: {
-      homeLocation: {
-        label: 'Posizione di casa:',
-        select: 'Seleziona sulla mappa',
-        undefined: 'indefinito',
-      },
-    },
-    account: {
-      name: 'Nome',
-      email: 'Email',
-      sendGalleryEmails: 'Notifica i commenti alle foto via email',
-      personalInfo: 'Dati personali',
-      authProviders: 'Provider di accesso',
-      delete: 'Elimina account',
-      deleteWarning:
-        'Sei sicuro di voler eliminare il tuo account? Verranno rimossi tutte le tue foto, i commenti e le valutazioni delle foto, le tue mappe e i dispositivi monitorati.',
-      picture: 'Foto del profilo',
-      choosePicture: 'Scegli foto',
-      pictureTooLarge: 'La foto è troppo grande. La dimensione massima è 5 MB.',
-      description: 'Su di me',
-    },
-    layer: 'Livello',
-    overlayOpacity: 'Opacità',
-    showInMenu: 'Mostra nel menu',
-    showInToolbar: 'Mostra nella barra degli strumenti',
-    saveSuccess: 'Impostazioni salvate.',
-    savingError: ({ err }) =>
-      addError(messages, 'Errore nel salvataggio delle impostazioni:', err),
-    customLayersDef: 'Definizione di livelli mappa personalizzati',
-    customLayersDefError:
-      'Definizione di livelli mappa personalizzati non valida.',
-  },
-
   mapDetails: {
     notFound: 'Niente trovato qui.',
     fetchingError: ({ err }) =>

@@ -10,4 +10,16 @@ export type AuthMessages = {
   verifyError: (props: { err: unknown }) => string;
   logOutSuccess: string;
   logOutError: (props: { err: unknown }) => string;
+  account: {
+    name: string;
+    email: string;
+    description: string;
+    delete: string;
+    deleteWarning: string;
+    personalInfo: string;
+    authProviders: string;
+    picture: string;
+    choosePicture: string;
+    pictureTooLarge: string;
+  };
 };

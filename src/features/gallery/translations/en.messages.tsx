@@ -3,6 +3,7 @@ import { addError } from '@/translations/messagesInterface.js';
 import { GalleryMessages } from './GalleryMessages.js';
 
 const en: GalleryMessages = {
+  sendGalleryEmails: 'Notify photos comments via email',
   stats: {
     leaderboard: 'Leaderboard',
     country: 'Country',

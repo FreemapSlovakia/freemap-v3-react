@@ -208,38 +208,6 @@ const messages: Messages = {
     },
   },
 
-  settings: {
-    map: {
-      homeLocation: {
-        label: 'Home location:',
-        select: 'Select on the map',
-        undefined: 'undefined',
-      },
-    },
-    account: {
-      name: 'Name',
-      email: 'Email',
-      description: 'About me',
-      sendGalleryEmails: 'Notify photos comments via email',
-      delete: 'Delete account',
-      deleteWarning:
-        'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.',
-      personalInfo: 'Personal information',
-      authProviders: 'Login providers',
-      picture: 'Profile picture',
-      choosePicture: 'Choose picture',
-      pictureTooLarge: 'Picture is too large. Maximum size is 5 MB.',
-    },
-    layer: 'Map',
-    overlayOpacity: 'Opacity',
-    showInMenu: 'Show in menu',
-    showInToolbar: 'Show in toolbar',
-    saveSuccess: 'Settings have been saved.',
-    savingError: ({ err }) => addError(messages, 'Error saving settings', err),
-    customLayersDef: 'Custom map layers definition',
-    customLayersDefError: 'Invalid definition of custom map layers.',
-  },
-
   mapDetails: {
     sources: 'Sources',
     source: 'Source',

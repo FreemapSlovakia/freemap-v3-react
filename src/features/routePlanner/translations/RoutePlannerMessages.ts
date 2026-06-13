@@ -5,6 +5,7 @@ import type { RoutingMode } from '../model/actions.js';
 type Err = { err: string };
 
 export type RoutePlannerMessages = {
+  selectHomeLocation: string;
   default: string;
   leg: string;
   manualTooltip: string;

@@ -20,6 +20,7 @@ import {
   FaRegListAlt,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
+import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import classes from './MapLayersSettings.module.css';
 
 type Props = {
@@ -37,6 +38,8 @@ export function MapLayersSettings({
 }: Props): ReactElement {
   const m = useMessages();
 
+  const msm = useMapSettingsMessages();
+
   function getName(def: { type: string; custom: boolean; name?: string }) {
     const { type } = def;
 
@@ -49,7 +52,7 @@ export function MapLayersSettings({
 
   const popover = (
     <Popover id="popover-basic">
-      <Popover.Header as="h3">{m?.settings.overlayOpacity}</Popover.Header>
+      <Popover.Header as="h3">{msm?.overlayOpacity}</Popover.Header>
 
       <Popover.Body>
         <Form.Range
@@ -108,15 +111,15 @@ export function MapLayersSettings({
           <th />
 
           <th>
-            <FaEllipsisH title={m?.settings.showInToolbar} />
+            <FaEllipsisH title={msm?.showInToolbar} />
           </th>
 
           <th>
-            <FaRegListAlt title={m?.settings.showInMenu} />
+            <FaRegListAlt title={msm?.showInMenu} />
           </th>
 
           <th className="text-center">
-            <FaEye title={m?.settings.overlayOpacity} />
+            <FaEye title={msm?.overlayOpacity} />
           </th>
 
           <th className="text-center fm-should-have-keyboard">

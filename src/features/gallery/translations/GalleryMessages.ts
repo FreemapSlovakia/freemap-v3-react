@@ -4,6 +4,7 @@ import type { GalleryColorizeBy, GalleryListOrder } from '../model/actions.js';
 type Err = { err: unknown };
 
 export type GalleryMessages = {
+  sendGalleryEmails: string;
   stats: {
     leaderboard: string;
     country: string;

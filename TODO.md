@@ -140,7 +140,21 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   `auth/model/processors`). Both still depend on their parent feature (drawing's
   `drawingMeasure` action, auth's `authInit`/`purchaseOnLogin`), which is a fine
   dependency direction; the separate lazy chunks are unaffected (chunk names come
-  from the `webpackChunkName` comments, not the folder).
+  from the `webpackChunkName` comments, not the folder). Finally the grab-bag
+  global `settings` block was **split by consumer** (not moved as a unit), so a
+  component needing one settings string no longer pulls the whole blob:
+  `account.*` → the `auth` bundle (`AccountModal`/`PersonalInfoSection`;
+  `deleteWarning`/`pictureTooLarge` toasts via `loadAuthMessages`);
+  `account.sendGalleryEmails` → the `gallery` bundle (only `GalleryMenu` uses it);
+  the layer prefs (`overlayOpacity`/`showInMenu`/`showInToolbar`) plus the shared
+  save toasts (`saveSuccess`/`savingError`) → a new `mapSettings` bundle
+  (`MapLayersSettings`/`LayerVisibilityFields` via `useMapSettingsMessages`; the
+  `saveSettingsProcessor`/`l10n`/`homeLocation` save toasts via
+  `loadMapSettingsMessages`, the two processors dropping `errorKey` for
+  try/catch + `toastError`); `map.homeLocation.select` → the `routePlanner`
+  bundle as `selectHomeLocation` (its only consumer). Six dead keys were dropped
+  in the process (`general.tips`, `layer`, `customLayersDef`,
+  `customLayersDefError`, `map.homeLocation.{label,undefined}`).
   Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Since toasts gained `messageKey` + optional `messageLoader` (resolved against a per-feature bundle at render), even JSX-returning toast keys can leave the global blob — that's how `changesets.detail`, `trackViewer.info`, and the two `tracking.subscribe*` keys moved out. Still global-bound: `mapLayers.legacyMapWarning` (a JSX toast still dispatched with a global `messageKey`, not yet migrated to a `messageLoader`).
 
 ## Softer / design opinions

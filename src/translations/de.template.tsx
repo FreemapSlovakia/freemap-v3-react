@@ -214,43 +214,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  settings: {
-    map: {
-      homeLocation: {
-        label: 'Heimatposition:',
-        select: 'Auf der Karte auswählen',
-        undefined: 'nicht festgelegt',
-      },
-    },
-
-    account: {
-      name: 'Name',
-      email: 'E-Mail',
-      sendGalleryEmails:
-        'Benachrichtigungen zu Fotokommentaren per E-Mail erhalten',
-      delete: 'Konto löschen',
-      deleteWarning:
-        'Möchten Sie Ihr Konto wirklich löschen? Dabei werden alle Ihre Fotos, Kommentare und Bewertungen, Ihre Karten und überwachten Geräte entfernt.',
-      personalInfo: 'Persönliche Informationen',
-      authProviders: 'Anmeldeanbieter',
-      picture: 'Profilbild',
-      choosePicture: 'Bild auswählen',
-      pictureTooLarge: 'Bild ist zu groß. Maximale Größe beträgt 5 MB.',
-      description: 'Über mich',
-    },
-
-    layer: 'Karte',
-    overlayOpacity: 'Deckkraft',
-    showInMenu: 'Im Menü anzeigen',
-    showInToolbar: 'In der Werkzeugleiste anzeigen',
-    saveSuccess: 'Einstellungen wurden gespeichert.',
-    savingError: ({ err }) =>
-      addError(messages, 'Fehler beim Speichern der Einstellungen', err),
-    customLayersDef: 'Definition benutzerdefinierter Kartenebenen',
-    customLayersDefError:
-      'Ungültige Definition benutzerdefinierter Kartenebenen.',
-  },
-
   mapDetails: {
     notFound: 'Nichts hier gefunden.',
 
