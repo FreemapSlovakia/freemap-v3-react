@@ -12,6 +12,7 @@ import {
   MapDetailsSource,
   mapDetailsExcludeSources,
 } from '../model/actions.js';
+import { useMapDetailsMessages } from '../translations/useMapDetailsMessages.js';
 
 export function MapDetailsMenu(): ReactElement | null {
   // TODO what is this?
@@ -36,6 +37,8 @@ export function MapDetailsMenu(): ReactElement | null {
 
   const m = useMessages();
 
+  const mdm = useMapDetailsMessages();
+
   const dispatch = useDispatch();
 
   return (
@@ -56,9 +59,7 @@ export function MapDetailsMenu(): ReactElement | null {
         autoClose="outside"
         onToggle={(open) => setSourcesOpen(open)}
       >
-        <Dropdown.Toggle variant="secondary">
-          {m?.mapDetails.sources}
-        </Dropdown.Toggle>
+        <Dropdown.Toggle variant="secondary">{mdm?.sources}</Dropdown.Toggle>
 
         <Dropdown.Menu popperConfig={fixedPopperConfig}>
           {(

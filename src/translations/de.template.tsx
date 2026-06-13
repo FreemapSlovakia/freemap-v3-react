@@ -1,6 +1,5 @@
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -212,25 +211,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         analytics="Analytische Cookies"
       />
     ),
-  },
-
-  mapDetails: {
-    notFound: 'Nichts hier gefunden.',
-
-    fetchingError: ({ err }) =>
-      addError(messages, 'Fehler beim Laden der Details', err),
-
-    detail: ({ result }) => (
-      <ObjectDetails
-        result={result}
-        openText="Öffnen auf OpenStreetMap.org"
-        historyText="Verlauf"
-        editInJosmText="Bearbeiten in JOSM"
-      />
-    ),
-
-    sources: 'Quellen',
-    source: 'Quelle',
   },
 
   search: {

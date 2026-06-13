@@ -1,6 +1,5 @@
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -215,25 +214,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         analytics="Analitikus sütik"
       />
     ),
-  },
-
-  mapDetails: {
-    notFound: 'Itt nem találtunk semmit.',
-
-    fetchingError: ({ err }) =>
-      addError(messages, 'Hiba történt a részletek lekérésekor', err),
-
-    detail: ({ result }) => (
-      <ObjectDetails
-        result={result}
-        openText="Megnyitás az OpenStreetMap.org oldalon"
-        historyText="előzmények"
-        editInJosmText="Szerkesztés JOSM-ben"
-      />
-    ),
-
-    sources: 'Források',
-    source: 'Forrás',
   },
 
   search: {

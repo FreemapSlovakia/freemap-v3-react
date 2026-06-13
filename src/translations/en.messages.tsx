@@ -1,6 +1,5 @@
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { AlertLink } from 'react-bootstrap';
@@ -206,22 +205,6 @@ const messages: Messages = {
         </>
       ),
     },
-  },
-
-  mapDetails: {
-    sources: 'Sources',
-    source: 'Source',
-    notFound: 'Nothing found here.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Error fetching details', err),
-    detail: ({ result }) => (
-      <ObjectDetails
-        result={result}
-        openText="Open at OpenStreetMap.org"
-        historyText="history"
-        editInJosmText="Edit in JOSM"
-      />
-    ),
   },
 
   search: {

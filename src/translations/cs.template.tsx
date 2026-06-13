@@ -1,6 +1,5 @@
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -214,22 +213,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </>
       ),
     },
-  },
-
-  mapDetails: {
-    notFound: 'Nic se zde nenašlo.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Nastala chyba při získávání detailů', err),
-    detail: ({ result }) => (
-      <ObjectDetails
-        result={result}
-        openText="Otevřít na OpenStreetMap.org"
-        historyText="historie"
-        editInJosmText="Editovat v JOSM"
-      />
-    ),
-    sources: 'Zdroje',
-    source: 'Zdroj',
   },
 
   search: {

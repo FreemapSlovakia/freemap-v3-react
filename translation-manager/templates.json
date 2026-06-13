@@ -29,6 +29,7 @@
     "src/features/measurement/translations/{LANG}.tsx",
     "src/features/mapSettings/translations/{LANG}.tsx",
     "src/features/premium/translations/{LANG}.tsx",
+    "src/features/mapDetails/translations/{LANG}.tsx",
     "src/app/components/embedMapModal/translations/{LANG}.tsx",
     "src/app/components/aboutModal/translations/{LANG}.tsx"
   ]

@@ -34,6 +34,7 @@ import { point } from '@turf/helpers';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 
 export function ObjectsResult(): ReactElement | ReactElement[] | null {
   const m = useMessages();
@@ -111,7 +112,8 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
                 dispatch(
                   toastsAdd({
                     id: 'mapDetails.tags',
-                    messageKey: 'mapDetails.detail',
+                    messageKey: 'detail',
+                    messageLoader: loadObjectsMessages,
                     messageParams: {
                       result: {
                         id,

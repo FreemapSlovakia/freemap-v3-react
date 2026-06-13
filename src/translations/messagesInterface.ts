@@ -1,5 +1,5 @@
 import { HttpError } from '@app/httpRequest.js';
-import { SearchResult, SearchSource } from '@features/search/model/actions.js';
+import { SearchSource } from '@features/search/model/actions.js';
 import { DeepPartial } from '@shared/types/deepPartial.js';
 import { JSX, ReactNode } from 'react';
 
@@ -148,13 +148,6 @@ export type Messages = {
     copyright: string;
     infoBars: Record<string, () => JSX.Element>;
     cookieConsent: () => JSX.Element;
-  };
-  mapDetails: {
-    sources: string;
-    source: string;
-    notFound: string;
-    fetchingError: (props: Err) => string;
-    detail: (props: { result: SearchResult }) => JSX.Element;
   };
   search: {
     inProgress: string;

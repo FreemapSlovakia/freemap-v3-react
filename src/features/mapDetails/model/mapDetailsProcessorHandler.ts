@@ -34,6 +34,7 @@ import { toWgs84 } from '@turf/projection';
 import { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
 import { Dispatch } from 'redux';
+import { loadMapDetailsMessages } from '../translations/loadMapDetailsMessages.js';
 
 const OverpassResultBoundsSchema = overpassResultSchema(
   OverpassBoundsExtraSchema,
@@ -385,7 +386,8 @@ export async function handle(
     dispatch(
       toastsAdd({
         id: 'mapDetails.detail',
-        messageKey: 'mapDetails.notFound',
+        messageKey: 'notFound',
+        messageLoader: loadMapDetailsMessages,
         cancelType,
         timeout: 5000,
         style: 'warning',
