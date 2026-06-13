@@ -6,6 +6,7 @@ import {
   authStartLogout,
 } from '@features/auth/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
@@ -38,6 +39,8 @@ export default function AccountModal({ show }: Props): ReactElement | null {
   const user = useAppSelector((state) => state.auth.user);
 
   const m = useMessages();
+
+  const pm = usePurchasesMessages();
 
   const becomePremium = useBecomePremium();
 
@@ -92,7 +95,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="payments">
             <Accordion.Header>
               <span>
-                <FaShoppingBasket /> {m?.purchases.purchases}
+                <FaShoppingBasket /> {pm?.purchases}
               </span>
             </Accordion.Header>
 

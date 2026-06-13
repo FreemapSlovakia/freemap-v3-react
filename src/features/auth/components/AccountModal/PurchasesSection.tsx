@@ -5,6 +5,7 @@ import {
 } from '@features/auth/model/types.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
@@ -16,6 +17,8 @@ export function PurchasesSection(): ReactElement | null {
   const user = useAppSelector((state) => state.auth.user);
 
   const m = useMessages();
+
+  const pm = usePurchasesMessages();
 
   const becomePremium = useBecomePremium();
 
@@ -80,7 +83,7 @@ export function PurchasesSection(): ReactElement | null {
       state.result.intents?.some((intent) => intent.status === 'rejected'),
   );
 
-  const t = m?.purchases.bankIntentStatus;
+  const t = pm?.bankIntentStatus;
 
   const bankStatusMessages = useMemo(() => {
     if (!t || state.type !== 'success') {
@@ -136,9 +139,9 @@ export function PurchasesSection(): ReactElement | null {
   function itemToString(item: Purchase): undefined | string | JSX.Element {
     switch (item.type) {
       case 'premium':
-        return m?.purchases.premium;
+        return pm?.premium;
       case 'credits':
-        return m?.purchases.credits(item.amount);
+        return pm?.credits(item.amount);
       default:
         return 'Unknown';
     }
@@ -154,10 +157,10 @@ export function PurchasesSection(): ReactElement | null {
           <span>
             <FaExclamationTriangle />{' '}
             {user.premiumExpiration
-              ? m?.purchases.premiumExpired(
+              ? pm?.premiumExpired(
                   <b>{dateFormat.format(user.premiumExpiration!)}</b>,
                 )
-              : m?.purchases.notPremiumYet}
+              : pm?.notPremiumYet}
           </span>
 
           <Button onClick={becomePremium} className="m-n2 ms-2">
@@ -192,13 +195,13 @@ export function PurchasesSection(): ReactElement | null {
               <>
                 {showAwaitingBankPayment && (
                   <Alert variant="info">
-                    <FaShoppingBasket /> {m?.purchases.awaitingBankPayment}
+                    <FaShoppingBasket /> {pm?.awaitingBankPayment}
                   </Alert>
                 )}
 
                 {showBankPaymentFailed && (
                   <Alert variant="danger">
-                    <FaExclamationTriangle /> {m?.purchases.bankPaymentFailed}
+                    <FaExclamationTriangle /> {pm?.bankPaymentFailed}
                   </Alert>
                 )}
 
@@ -217,8 +220,8 @@ export function PurchasesSection(): ReactElement | null {
                 <Table>
                   <thead>
                     <tr>
-                      <th>{m?.purchases.date}</th>
-                      <th>{m?.purchases.item}</th>
+                      <th>{pm?.date}</th>
+                      <th>{pm?.item}</th>
                     </tr>
                   </thead>
 
@@ -226,7 +229,7 @@ export function PurchasesSection(): ReactElement | null {
                     {state.result.purchases.length === 0 ? (
                       <tr key="empty">
                         <td colSpan={2} className="text-center">
-                          {m?.purchases.noPurchases}
+                          {pm?.noPurchases}
                         </td>
                       </tr>
                     ) : (

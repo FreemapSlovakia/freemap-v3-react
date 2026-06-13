@@ -108,7 +108,17 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   `loadOsmMessages`; no React consumer, so loader-only), `ad`
   (`Ad` reads `self`/`rovas` JSX via `useAdMessages`; the `RovasAd` import left
   the global locale files with the block), and `documents` (`DocumentModal`'s
-  `errorLoading` via `useDocumentsMessages`).
+  `errorLoading` via `useDocumentsMessages`). And the global `purchases` block →
+  its own `purchases` bundle: `AccountModal`/`PurchasesSection` read it via
+  `usePurchasesMessages`, and the `awaitingBankPayment` pending-bank-transfer
+  toast in `auth`'s `purchaseProcessor` resolves via `loadPurchasesMessages`.
+  Deliberately a separate bundle rather than folded into `auth`: a production
+  rspack build confirmed each `<feature>-translation-<lang>` is its own async
+  chunk (string-only ones are a few hundred bytes), so keeping `purchases` apart
+  means the login modal (`auth`) doesn't download the bank-intent-status strings
+  it never shows — the chunk boundary follows the load moment, not the feature
+  folder. The always-loaded global `Messages` chunk (~17.5 kB en) is what further
+  feature extractions keep shrinking.
   Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Since toasts gained `messageKey` + optional `messageLoader` (resolved against a per-feature bundle at render), even JSX-returning toast keys can leave the global blob — that's how `changesets.detail`, `trackViewer.info`, and the two `tracking.subscribe*` keys moved out. Still global-bound: `mapLayers.legacyMapWarning` (a JSX toast still dispatched with a global `messageKey`, not yet migrated to a `messageLoader`).
 
 ## Softer / design opinions
