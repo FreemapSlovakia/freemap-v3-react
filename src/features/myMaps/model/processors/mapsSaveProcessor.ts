@@ -14,7 +14,7 @@ import {
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
-  async handle({ getState, dispatch, action }) {
+  async handle({ getState, dispatch, action, toastError }) {
     try {
       if (getState().trackViewer.trackGpx && !getState().trackViewer.trackUID) {
         await handleTrackUpload({
@@ -83,13 +83,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
       dispatch(mapsSetMeta(MapMetaSchema.parse(await res.json())));
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const mm = await loadMyMapsMessages(getState().l10n.language);
-
-      dispatch(toastsAdd({ style: 'danger', message: mm.saveError({ err }) }));
+      await toastError(err, loadMyMapsMessages, 'saveError');
     }
   },
 };

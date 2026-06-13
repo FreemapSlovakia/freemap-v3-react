@@ -1,6 +1,5 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryClear,
@@ -12,7 +11,7 @@ import {
 
 export const galleryDeletePictureProcessor: Processor = {
   actionCreator: galleryDeletePicture,
-  async handle({ getState, dispatch }) {
+  async handle({ getState, dispatch, toastError }) {
     const { image } = getState().gallery;
 
     if (!image) {
@@ -31,15 +30,7 @@ export const galleryDeletePictureProcessor: Processor = {
         expectedStatus: 204,
       });
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const gm = await loadGalleryMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: gm.deletingError({ err }) }),
-      );
+      await toastError(err, loadGalleryMessages, 'deletingError');
 
       return;
     }

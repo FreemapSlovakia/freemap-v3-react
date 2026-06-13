@@ -45,7 +45,7 @@ export const objectsFetchProcessor: Processor = {
       state.map.zoom,
       ...state.objects.active,
     ].join('\n'),
-  handle: async ({ dispatch, getState }) => {
+  handle: async ({ dispatch, getState, toastError }) => {
     try {
       const ents = getState().objects.active.map((tags) =>
         tags.split(',').map((item) => item.split('=')),
@@ -162,15 +162,7 @@ export const objectsFetchProcessor: Processor = {
 
       dispatch(objectsSetResult(result));
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const om = await loadObjectsMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: om.fetchingError({ err }) }),
-      );
+      await toastError(err, loadObjectsMessages, 'fetchingError');
     }
   },
 };

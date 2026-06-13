@@ -11,7 +11,7 @@ import {
 
 export const gallerySavePictureProcessor: Processor = {
   actionCreator: gallerySavePicture,
-  async handle({ getState, dispatch }) {
+  async handle({ getState, dispatch, toastError }) {
     const { image, editModel, saveErrors } = getState().gallery;
 
     if (!image || !editModel || saveErrors.length) {
@@ -39,15 +39,7 @@ export const gallerySavePictureProcessor: Processor = {
         expectedStatus: 204,
       });
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const gm = await loadGalleryMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: gm.savingError({ err }) }),
-      );
+      await toastError(err, loadGalleryMessages, 'savingError');
 
       return;
     }

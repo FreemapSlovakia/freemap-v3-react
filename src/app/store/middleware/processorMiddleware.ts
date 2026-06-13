@@ -15,6 +15,25 @@ export type BaseActionCreator<P = any, T extends string = string> = {
   match: (action: unknown) => action is PayloadAction<P, T>;
 };
 
+/** Keys of `M` whose value builds a toast message from an `{ err }` payload. */
+type ErrMessageKey<M> = {
+  [K in keyof M]: M[K] extends (props: { err: unknown }) => string ? K : never;
+}[keyof M];
+
+/**
+ * Dispatches a `danger` toast built from a lazily-loaded per-feature message
+ * bundle, skipping aborted requests. Injected into processor `handle` params
+ * (pre-bound to `getState`/`dispatch`), so it replaces the repeated
+ * `if (AbortError) return; load messages; dispatch toast` block in handlers.
+ */
+export type ToastError = <M, K extends ErrMessageKey<M>>(
+  err: unknown,
+  loadMessages: (language: string) => Promise<M>,
+  messageKey: K,
+  /** Toast id; reuse a fixed value to dedupe toasts from repeated fetches. */
+  id?: string,
+) => Promise<void>;
+
 type ActionOf<T extends BaseActionCreator> = ReturnType<T>;
 
 type ActionOfUnion<T extends BaseActionCreator[]> = ReturnType<T[number]>;
@@ -31,6 +50,7 @@ export type ProcessorHandler<T extends BaseActionCreator = BaseActionCreator> =
     getState: () => RootState;
     dispatch: Dispatch;
     action: ActionFrom<T>;
+    toastError: ToastError;
   }) => void | Promise<void>;
 
 export interface Processor<T extends BaseActionCreator = BaseActionCreator> {
@@ -156,12 +176,38 @@ export function createProcessorMiddleware() {
 
             let promise;
 
+            const toastError: ToastError = async (
+              err,
+              loadMessages,
+              messageKey,
+              toastId,
+            ) => {
+              if (err instanceof DOMException && err.name === 'AbortError') {
+                return;
+              }
+
+              const messages = await loadMessages(getState().l10n.language);
+
+              const buildMessage = messages[messageKey] as (props: {
+                err: unknown;
+              }) => string;
+
+              dispatch(
+                toastsAdd({
+                  style: 'danger',
+                  message: buildMessage({ err }),
+                  ...(toastId === undefined ? {} : { id: toastId }),
+                }),
+              );
+            };
+
             try {
               promise = handle({
                 getState,
                 dispatch,
                 action: a as ActionFrom<BaseActionCreator>,
                 prevState,
+                toastError,
               });
             } catch (err) {
               handleError(err);

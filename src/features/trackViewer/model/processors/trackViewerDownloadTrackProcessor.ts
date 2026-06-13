@@ -1,6 +1,5 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   trackViewerDownloadTrack,
   trackViewerSetData,
@@ -10,7 +9,7 @@ import z from 'zod';
 
 export const trackViewerDownloadTrackProcessor: Processor = {
   actionCreator: trackViewerDownloadTrack,
-  handle: async ({ dispatch, getState }) => {
+  handle: async ({ dispatch, getState, toastError }) => {
     const { trackUID } = getState().trackViewer;
 
     try {
@@ -29,15 +28,7 @@ export const trackViewerDownloadTrackProcessor: Processor = {
         }),
       );
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const tvm = await loadTrackViewerMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: tvm.fetchingError({ err }) }),
-      );
+      await toastError(err, loadTrackViewerMessages, 'fetchingError');
     }
   },
 };

@@ -77,20 +77,12 @@ export async function handleTrackUpload({
 export const trackViewerUploadTrackProcessor: Processor = {
   actionCreator: trackViewerUploadTrack,
   handle: async (params) => {
-    const { dispatch, getState } = params;
+    const { toastError } = params;
 
     try {
       await handleTrackUpload(params);
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const tvm = await loadTrackViewerMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: tvm.savingError({ err }) }),
-      );
+      await toastError(err, loadTrackViewerMessages, 'savingError');
     }
   },
 };

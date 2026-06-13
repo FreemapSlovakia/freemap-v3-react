@@ -15,7 +15,7 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
   typeof galleryRequestImages
 > = {
   actionCreator: galleryRequestImages,
-  async handle({ getState, dispatch, action }) {
+  async handle({ getState, dispatch, action, toastError }) {
     const { lat, lon } = action.payload;
 
     let res;
@@ -35,18 +35,11 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
         expectedStatus: 200,
       });
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const gm = await loadGalleryMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({
-          id: 'gallery.picturesFetchingError',
-          style: 'danger',
-          message: gm.picturesFetchingError({ err }),
-        }),
+      await toastError(
+        err,
+        loadGalleryMessages,
+        'picturesFetchingError',
+        'gallery.picturesFetchingError',
       );
 
       return;

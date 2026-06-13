@@ -11,7 +11,6 @@ import {
   RoutePointSchema,
   RoutingModeSchema,
 } from '@features/routePlanner/model/actions.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { TrackedDeviceSchema } from '@features/tracking/model/types.js';
 import { ColorizingModeSchema } from '@features/trackViewer/model/actions.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
@@ -117,7 +116,7 @@ const MapsLoadResponseSchema = z.object({
 
 export const mapsLoadProcessor: Processor = {
   actionCreator: [mapsLoad, authSetUser, authLogout],
-  handle: async ({ getState, dispatch, action }) => {
+  handle: async ({ getState, dispatch, action, toastError }) => {
     const {
       auth,
       myMaps: { loadMeta },
@@ -169,13 +168,7 @@ export const mapsLoadProcessor: Processor = {
 
       dispatch(setActiveModal(null));
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const mm = await loadMyMapsMessages(getState().l10n.language);
-
-      dispatch(toastsAdd({ style: 'danger', message: mm.fetchError({ err }) }));
+      await toastError(err, loadMyMapsMessages, 'fetchError');
     }
   },
 };
