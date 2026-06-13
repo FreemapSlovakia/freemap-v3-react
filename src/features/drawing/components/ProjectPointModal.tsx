@@ -10,6 +10,7 @@ import {
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 type Props = {
   show: boolean;
@@ -40,6 +41,8 @@ export function ProjectPointModal({
 
   const m = useMessages();
 
+  const dm = useDrawingMessages();
+
   const dispatch = useDispatch();
 
   const close = useCallback(() => {
@@ -59,12 +62,12 @@ export function ProjectPointModal({
     >
       <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
         <Modal.Header closeButton>
-          <Modal.Title>{m?.drawing.projection.projectPoint}</Modal.Title>
+          <Modal.Title>{dm?.projection.projectPoint}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Group controlId="distance" className="mb-3">
-            <Form.Label>{m?.drawing.projection.distance}</Form.Label>
+            <Form.Label>{dm?.projection.distance}</Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -79,7 +82,7 @@ export function ProjectPointModal({
           </Form.Group>
 
           <Form.Group controlId="azimuth">
-            <Form.Label>{m?.drawing.projection.azimuth}</Form.Label>
+            <Form.Label>{dm?.projection.azimuth}</Form.Label>
 
             <InputGroup>
               <Form.Control

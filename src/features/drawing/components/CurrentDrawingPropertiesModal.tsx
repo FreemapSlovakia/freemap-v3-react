@@ -26,6 +26,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../../../app/store/actions.js';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import classes from './CurrentDrawingPropertiesModal.module.css';
 
 type Props = { show: boolean };
@@ -38,6 +39,8 @@ export default function CurrentDrawingPropertiesModal({
   show,
 }: Props): ReactElement {
   const m = useMessages();
+
+  const dm = useDrawingMessages();
 
   const label = useAppSelector((state) => {
     const { selection } = state.main;
@@ -374,7 +377,7 @@ export default function CurrentDrawingPropertiesModal({
 
   const invalidWidth = isInvalidFloat(editedWidth, false, 1, 99);
 
-  useDocumentTitle(show ? m?.drawing.edit.title : undefined);
+  useDocumentTitle(show ? dm?.edit.title : undefined);
 
   return (
     <Modal
@@ -390,12 +393,12 @@ export default function CurrentDrawingPropertiesModal({
     >
       <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
         <Modal.Header closeButton>
-          <Modal.Title>{m?.drawing.edit.title}</Modal.Title>
+          <Modal.Title>{dm?.edit.title}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Group controlId="label">
-            <Form.Label>{m?.drawing.edit.label}</Form.Label>
+            <Form.Label>{dm?.edit.label}</Form.Label>
 
             <Form.Control
               autoFocus
@@ -404,13 +407,13 @@ export default function CurrentDrawingPropertiesModal({
               onChange={handleLocalLabelChange}
             />
 
-            <Form.Text muted>{m?.drawing.edit.hint}</Form.Text>
+            <Form.Text muted>{dm?.edit.hint}</Form.Text>
           </Form.Group>
 
           {drawType !== 'draw-line-poly' && (
             <>
               <Form.Group controlId="color" className="mt-3">
-                <Form.Label>{m?.drawing.edit.color}</Form.Label>
+                <Form.Label>{dm?.edit.color}</Form.Label>
 
                 <RgbaColorPicker
                   value={editedColor || COLORS.normal}
@@ -419,7 +422,7 @@ export default function CurrentDrawingPropertiesModal({
               </Form.Group>
 
               <Form.Group controlId="markerType" className="mt-3">
-                <Form.Label>{m?.drawing.edit.shape}</Form.Label>
+                <Form.Label>{dm?.edit.shape}</Form.Label>
 
                 <MarkerTypeSelect
                   asSelect
@@ -431,7 +434,7 @@ export default function CurrentDrawingPropertiesModal({
               <Form.Group className="mt-3">
                 <div className={classes.iconTextGrid}>
                   <Form.Label htmlFor="icon" className={classes.iconLabel}>
-                    {m?.drawing.edit.icon}
+                    {dm?.edit.icon}
                   </Form.Label>
 
                   <div className={classes.icon}>
@@ -447,7 +450,7 @@ export default function CurrentDrawingPropertiesModal({
                   </div>
 
                   <Form.Label htmlFor="text" className={classes.textLabel}>
-                    {m?.drawing.edit.text}
+                    {dm?.edit.text}
                   </Form.Label>
 
                   <Form.Control
@@ -462,7 +465,7 @@ export default function CurrentDrawingPropertiesModal({
                   />
                 </div>
 
-                <Form.Text muted>{m?.drawing.edit.textHint}</Form.Text>
+                <Form.Text muted>{dm?.edit.textHint}</Form.Text>
               </Form.Group>
             </>
           )}
@@ -490,7 +493,7 @@ export default function CurrentDrawingPropertiesModal({
               />
 
               <Form.Group controlId="type" className="mt-3">
-                <Form.Label>{m?.drawing.edit.type}</Form.Label>
+                <Form.Label>{dm?.edit.type}</Form.Label>
 
                 <Form.Select
                   value={editedType}

@@ -21,6 +21,7 @@
     "src/features/openInExternalApp/translations/{LANG}.tsx",
     "src/features/credits/translations/{LANG}.tsx",
     "src/features/auth/translations/{LANG}.tsx",
+    "src/features/drawing/translations/{LANG}.tsx",
     "src/app/components/embedMapModal/translations/{LANG}.tsx",
     "src/app/components/aboutModal/translations/{LANG}.tsx"
   ]

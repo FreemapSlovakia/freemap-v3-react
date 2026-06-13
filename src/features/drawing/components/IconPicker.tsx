@@ -1,4 +1,3 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
 import {
@@ -22,6 +21,7 @@ import {
 } from 'react';
 import { Button, Form, Overlay, Popover, Spinner } from 'react-bootstrap';
 import { FaXmark } from 'react-icons/fa6';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 const PAGE = 120;
 
@@ -93,7 +93,7 @@ type Props = {
 };
 
 export function IconPicker({ selected, onSelect }: Props): ReactElement {
-  const m = useMessages();
+  const dm = useDrawingMessages();
 
   const [open, setOpen] = useState(false);
 
@@ -172,7 +172,7 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
         ) : selectedSpec?.kind === 'fa' ? (
           <Spinner size="sm" />
         ) : (
-          (m?.drawing.edit.iconChoose ?? '')
+          (dm?.edit.iconChoose ?? '')
         )}
       </Button>
 
@@ -180,7 +180,7 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
         <Button
           variant="outline-secondary"
           onClick={() => onSelect(undefined)}
-          title={m?.drawing.edit.iconNone}
+          title={dm?.edit.iconNone}
         >
           <FaXmark />
         </Button>
@@ -200,7 +200,7 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
               autoFocus
               type="search"
               value={query}
-              placeholder={m?.drawing.edit.iconSearch}
+              placeholder={dm?.edit.iconSearch}
               onChange={(e) => {
                 setQuery(e.currentTarget.value);
 

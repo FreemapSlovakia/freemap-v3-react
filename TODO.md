@@ -98,7 +98,11 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   `toastError`'s `ErrMessageKey` only matches top-level error-function keys, so
   the previous `logIn.*`/`logOut.*` nesting couldn't carry the error toasts. The
   `auth` error strings still call `addError(getMessages()!, …)` for the global
-  `errorStatus`/`general.*` fallbacks.
+  `errorStatus`/`general.*` fallbacks. And the global `drawing` block → its own
+  `drawing` bundle (label-only, no toasts/errorKeys): the eight `drawing/`
+  components plus the app-level `PredefinedDrawingPropertiesModal` read it via
+  `useDrawingMessages`. The nested `edit`/`defProps`/`projection` sub-objects are
+  kept as-is (no `toastError` involvement, so no flattening needed).
   Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Since toasts gained `messageKey` + optional `messageLoader` (resolved against a per-feature bundle at render), even JSX-returning toast keys can leave the global blob — that's how `changesets.detail`, `trackViewer.info`, and the two `tracking.subscribe*` keys moved out. Still global-bound: `mapLayers.legacyMapWarning` (a JSX toast still dispatched with a global `messageKey`, not yet migrated to a `messageLoader`).
 
 ## Softer / design opinions
