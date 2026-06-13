@@ -5,7 +5,7 @@ import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { LineCompatSchema } from '@features/drawing/model/actions/drawingLineActions.js';
 import { DrawingPointCompatSchema } from '@features/drawing/model/actions/drawingPointActions.js';
 import { GalleryFilterSchema } from '@features/gallery/model/actions.js';
-import { ShadingSchema } from '@features/parameterizedShading/Shading.js';
+import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import {
   PickModeSchema,
   RoutePointSchema,

@@ -172,7 +172,7 @@ const adFactory = () =>
 const shadingControlFactory = () =>
   import(
     /* webpackChunkName: "shading-control" */
-    '@features/parameterizedShading/ShadingControl.js'
+    '@features/parameterizedShading/components/ShadingControl.js'
   );
 
 const elevationChartFactory = () =>

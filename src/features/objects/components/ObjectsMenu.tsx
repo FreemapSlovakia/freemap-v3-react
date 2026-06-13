@@ -1,11 +1,11 @@
 import { convertToDrawing } from '@app/store/actions.js';
-import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HideArrow } from '@features/search/components/SearchMenu.js';
 import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import type { Node, OsmMapping } from '@osm/types.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';

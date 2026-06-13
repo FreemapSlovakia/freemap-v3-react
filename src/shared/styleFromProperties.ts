@@ -1,4 +1,12 @@
 import {
+  type DrawingLineType,
+  isDrawingLineType,
+  isLineCap,
+  isLineJoin,
+  type LineCap,
+  type LineJoin,
+} from '@features/drawing/model/actions/drawingLineActions.js';
+import {
   MarkerType,
   MarkerTypeSchema,
 } from '@features/objects/model/actions.js';
@@ -7,14 +15,6 @@ import {
   osmAndBackgroundToMarkerType,
   osmAndIconToIconSpec,
 } from '@/features/mapFeaturesExport/osmandIconMapping.js';
-import {
-  type DrawingLineType,
-  isDrawingLineType,
-  isLineCap,
-  isLineJoin,
-  type LineCap,
-  type LineJoin,
-} from './actions/drawingLineActions.js';
 
 // Plucks drawing-point styling out of a GeoJSON feature's properties.
 // Priority: freemap-private (lossless round-trip) → OsmAnd → plain GeoJSON

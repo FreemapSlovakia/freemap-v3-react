@@ -10,8 +10,8 @@ import {
   Util,
 } from 'leaflet';
 import { Messages } from '@/translations/messagesInterface.js';
+import { Color, SHADING_COMPONENT_TYPES, Shading } from '../model/Shading.js';
 import { DataWriter } from './DataWriter.js';
-import { Color, SHADING_COMPONENT_TYPES, Shading } from './Shading.js';
 import classes from './ShadingLayer.module.css';
 import shadingWgslResource from './shading.wgsl';
 

@@ -22,7 +22,7 @@ import {
   SHADING_COMPONENT_TYPES,
   ShadingComponent,
   type ShadingComponentType,
-} from './Shading.js';
+} from '../model/Shading.js';
 import {
   MANAGEABLE_TYPES,
   ShadingComponentControl,

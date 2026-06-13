@@ -1,8 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import { IconPicker } from '@features/drawing/components/IconPicker.js';
-import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
-import { RgbaColorPicker } from '@features/drawing/components/RgbaColorPicker.js';
 import {
   type DrawingLineType,
   drawingLineChangeProperties,
@@ -11,6 +9,8 @@ import { drawingPointChangeProperties } from '@features/drawing/model/actions/dr
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { COLORS } from '@shared/colors.js';
+import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
+import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';

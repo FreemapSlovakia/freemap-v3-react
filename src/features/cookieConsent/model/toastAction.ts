@@ -1,5 +1,5 @@
-import { toastsAdd } from '../toasts/model/actions.js';
-import { applyCookieConsent } from './model/actions.js';
+import { toastsAdd } from '../../toasts/model/actions.js';
+import { applyCookieConsent } from './actions.js';
 
 export function createCookieConsentToastAction() {
   return toastsAdd({

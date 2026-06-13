@@ -7,10 +7,6 @@ import {
   Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
-import {
-  lineStyleFromProperties,
-  pointStyleFromProperties,
-} from '@features/drawing/model/styleFromProperties.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
@@ -19,6 +15,10 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
 import { mergeLines } from '@shared/geoutils.js';
+import {
+  lineStyleFromProperties,
+  pointStyleFromProperties,
+} from '@shared/styleFromProperties.js';
 import { flatten as turfFlatten } from '@turf/flatten';
 import { lineString } from '@turf/helpers';
 import { simplify } from '@turf/simplify';

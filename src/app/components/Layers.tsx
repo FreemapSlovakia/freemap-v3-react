@@ -21,7 +21,7 @@ const galleryLayerFactory = () =>
 const shadingLayerFactory = () =>
   import(
     /* webpackChunkName: "shading-layer" */
-    '@features/parameterizedShading/ShadingLayer.js'
+    '@features/parameterizedShading/components/ShadingLayer.js'
   );
 
 const maplibreLayerFactory = () =>

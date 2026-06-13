@@ -1,8 +1,8 @@
+import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import type { LineCap, LineJoin } from '../model/actions/drawingLineActions.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
-import { RgbaColorPicker } from './RgbaColorPicker.js';
 
 type Props = {
   color: string;

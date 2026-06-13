@@ -24,7 +24,7 @@ import { createReduxStore } from './store/store.js';
 import './styles/index.scss';
 import './styles/bootstrap-override.css';
 import './styles/index.css';
-import { createCookieConsentToastAction } from '@/features/cookieConsent/action.js';
+import { createCookieConsentToastAction } from '@/features/cookieConsent/model/toastAction.js';
 import { handleLocationChange } from './url/locationChangeHandler.js';
 import { setUrlUpdatingEnabled } from './url/urlUpdating.js';
 

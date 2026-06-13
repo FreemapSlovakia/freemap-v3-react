@@ -1,8 +1,8 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
-import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';

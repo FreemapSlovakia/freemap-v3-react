@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ShadingComponent, ShadingComponentType } from './Shading.js';
+import { ShadingComponent, ShadingComponentType } from '../model/Shading.js';
 
 export type Props = {
   diameter?: number;

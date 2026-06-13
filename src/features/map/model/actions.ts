@@ -1,5 +1,5 @@
 import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
-import { Shading } from '@features/parameterizedShading/Shading.js';
+import { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createAction } from '@reduxjs/toolkit';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { Shortcut, ShortcutSchema } from '@shared/types/common.js';
