@@ -251,18 +251,6 @@ export type Messages = {
     finishRoute: string;
     showPhotos: string;
   };
-  premium: {
-    title: string;
-    commonHeader: ReactNode;
-    stepsForAnonymous: ReactNode;
-    continue: string;
-    success: string;
-    becomePremium: string;
-    youArePremium: (date: string) => JSX.Element;
-    premiumOnly: string;
-    alreadyPremium: string;
-    premiumUser: string;
-  };
   errorStatus: Record<number, string>;
   gpu: {
     notSupported: string;

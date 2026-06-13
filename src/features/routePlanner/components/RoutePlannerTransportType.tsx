@@ -1,7 +1,7 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
-import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, ReactElement } from 'react';
@@ -20,7 +20,7 @@ export function RoutePlannerTransportType({
   value,
   withDefault = false,
 }: Props): ReactElement {
-  const m = useMessages();
+  const prm = usePremiumMessages();
 
   const rpm = useRoutePlannerMessages();
 
@@ -120,9 +120,7 @@ export function RoutePlannerTransportType({
                             'ms-1 text-' +
                             (becomePremium ? 'warning' : 'success')
                           }
-                          title={
-                            becomePremium ? m?.premium.premiumOnly : undefined
-                          }
+                          title={becomePremium ? prm?.premiumOnly : undefined}
                           onClick={becomePremium}
                         />
                       </>

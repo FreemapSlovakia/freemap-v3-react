@@ -1,9 +1,9 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures, setTool } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { isPremium } from '@features/premium/premium.js';
 import { ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
-import { isPremium } from '@shared/premium.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import distance from '@turf/distance';

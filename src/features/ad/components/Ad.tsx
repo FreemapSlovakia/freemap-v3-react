@@ -1,5 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { useLeftMarginAdjuster } from '@shared/hooks/useLeftMarginAdjuster.js';
 import clsx from 'clsx';
 import { type ReactElement, useEffect, useState } from 'react';

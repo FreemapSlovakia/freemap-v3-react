@@ -17,6 +17,7 @@ import { mapRefocus } from '@features/map/model/actions.js';
 import { MapAreaSelectionResult } from '@features/mapArea/components/MapAreaSelectionResult.js';
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
 import { MyMapsMenu } from '@features/myMaps/components/MyMapsMenu.js';
+import { isPremium } from '@features/premium/premium.js';
 import RouteLegSelection from '@features/routePlanner/components/RouteLegSelection.js';
 import RoutePointSelection from '@features/routePlanner/components/RoutePointSelection.js';
 import { routePlannerToggleElevationChart } from '@features/routePlanner/model/actions.js';
@@ -45,7 +46,6 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
-import { isPremium } from '@shared/premium.js';
 import fmLogo from '@/images/freemap-logo-print.png';
 import 'leaflet/dist/leaflet.css';
 import clsx from 'clsx';
@@ -304,7 +304,7 @@ const mapsModalFactory = () =>
 const premiumActivationModalFactory = () =>
   import(
     /* webpackChunkName: "premium-activation-modal" */
-    './PremiumActivationModal.js'
+    '@features/premium/components/PremiumActivationModal.js'
   );
 
 const galleryFilterModalFactory = () =>

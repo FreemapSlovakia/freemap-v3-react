@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
 import { Alert, Button, Modal } from 'react-bootstrap';
@@ -13,6 +14,8 @@ type Props = { show: boolean };
 
 export default function LoginModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const prm = usePremiumMessages();
 
   const am = useAuthMessages();
 
@@ -33,8 +36,8 @@ export default function LoginModal({ show }: Props): ReactElement {
   const renderPremiumInfo = () =>
     purchaseOnLogin?.type === 'premium' ? (
       <Alert variant="primary">
-        {m?.premium.commonHeader}
-        {m?.premium.stepsForAnonymous}
+        {prm?.commonHeader}
+        {prm?.stepsForAnonymous}
       </Alert>
     ) : null;
 

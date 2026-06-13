@@ -8,11 +8,12 @@ import {
 import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { PurchasesSection } from '@features/purchases/components/PurchasesSection.js';
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { type ReactElement, useCallback, useEffect } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import {
@@ -41,6 +42,8 @@ export default function AccountModal({ show }: Props): ReactElement | null {
   const user = useAppSelector((state) => state.auth.user);
 
   const m = useMessages();
+
+  const prm = usePremiumMessages();
 
   const am = useAuthMessages();
 
@@ -139,7 +142,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
         {becomePremium && (
           <>
             <Button onClick={becomePremium}>
-              <FaGem /> {m?.premium.becomePremium}
+              <FaGem /> {prm?.becomePremium}
             </Button>
 
             <div style={{ flexBasis: '100%' }} />

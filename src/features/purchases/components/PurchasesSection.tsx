@@ -5,9 +5,10 @@ import {
 } from '@features/auth/model/types.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { JSX, type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Alert, Button, Spinner, Table } from 'react-bootstrap';
@@ -17,6 +18,8 @@ export function PurchasesSection(): ReactElement | null {
   const user = useAppSelector((state) => state.auth.user);
 
   const m = useMessages();
+
+  const prm = usePremiumMessages();
 
   const pm = usePurchasesMessages();
 
@@ -164,13 +167,13 @@ export function PurchasesSection(): ReactElement | null {
           </span>
 
           <Button onClick={becomePremium} className="m-n2 ms-2">
-            <FaGem /> {m?.premium.becomePremium}
+            <FaGem /> {prm?.becomePremium}
           </Button>
         </Alert>
       ) : (
         <Alert variant="success">
           <FaGem />{' '}
-          {m?.premium.youArePremium(dateFormat.format(user.premiumExpiration!))}
+          {prm?.youArePremium(dateFormat.format(user.premiumExpiration!))}
         </Alert>
       )}
 

@@ -154,7 +154,16 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   try/catch + `toastError`); `map.homeLocation.select` → the `routePlanner`
   bundle as `selectHomeLocation` (its only consumer). Six dead keys were dropped
   in the process (`general.tips`, `layer`, `customLayersDef`,
-  `customLayersDefError`, `map.homeLocation.{label,undefined}`).
+  `customLayersDefError`, `map.homeLocation.{label,undefined}`). And the
+  cross-cutting global `premium` block → a new `premium` feature: its 12
+  consumers across app/auth/gallery/purchases/routePlanner/supportUsModal/shared
+  read it via `usePremiumMessages`, and the `success`/`alreadyPremium` toasts
+  (`purchaseProcessor`/`loginResponseHandler`) via `loadPremiumMessages`. To make
+  it a real feature rather than translations-only, the premium-specific code was
+  co-located in: `PremiumActivationModal` (from `app/components`, still lazy-
+  loaded from `Main`), `useBecomePremium` (from `shared/hooks`), and `isPremium`
+  (`premium.ts`, from `shared/`). The wide fan-in (~14 import sites) is the
+  correct direction — features depend on the premium feature.
   Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Since toasts gained `messageKey` + optional `messageLoader` (resolved against a per-feature bundle at render), even JSX-returning toast keys can leave the global blob — that's how `changesets.detail`, `trackViewer.info`, and the two `tracking.subscribe*` keys moved out. Still global-bound: `mapLayers.legacyMapWarning` (a JSX toast still dispatched with a global `messageKey`, not yet migrated to a `messageLoader`).
 
 ## Softer / design opinions
