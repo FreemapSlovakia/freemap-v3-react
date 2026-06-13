@@ -3,7 +3,6 @@ import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
@@ -13,11 +12,6 @@ import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import { addError, Messages } from './messagesInterface.js';
 import shared from './sk-shared.js';
-
-const nf00 = new Intl.NumberFormat('sk', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0n.\xa0m.';
 
@@ -386,9 +380,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       choosePicture: 'Vybrať obrázok',
       pictureTooLarge: 'Obrázok je príliš veľký. Maximálna veľkosť je 5 MB.',
     },
-    general: {
-      tips: 'Zobrazovať tipy po otvorení stránky',
-    },
     layer: 'Mapa',
     overlayOpacity: 'Viditeľnosť',
     showInMenu: 'Zobraziť v menu',
@@ -685,32 +676,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     premiumOnly: 'Dostupné len s prémiovým prístupom.',
     alreadyPremium: 'Už máte prémiový prístup.',
     premiumUser: 'Používateľ s prémiovým prístupom',
-  },
-
-  credits: {
-    buyCredits: 'Kúpiť kredity',
-    amount: 'Kredity',
-    credits: 'kreditov',
-    buy: 'Kúpiť',
-    purchase: {
-      success: ({ amount }) => (
-        <>Váš kredit bol navýšený o {nf00.format(amount)}.</>
-      ),
-    },
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        Máte {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="kreditov"
-            help="Kredity môžete využiť na [export offline máp]."
-          />
-        ) : (
-          'kreditov'
-        )}
-        .
-      </>
-    ),
   },
 
   errorStatus: {

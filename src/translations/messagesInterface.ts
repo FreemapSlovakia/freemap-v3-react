@@ -251,9 +251,6 @@ export type Messages = {
       choosePicture: string;
       pictureTooLarge: string;
     };
-    general: {
-      tips: string;
-    };
     layer: string;
     overlayOpacity: string;
     showInMenu: string;
@@ -403,16 +400,6 @@ export type Messages = {
     premiumOnly: string;
     alreadyPremium: string;
     premiumUser: string;
-  };
-  credits: {
-    buyCredits: string;
-    amount: string;
-    credits: string;
-    buy: string;
-    purchase: {
-      success: ({ amount }: { amount: number }) => JSX.Element;
-    };
-    youHaveCredits: (amount: ReactNode, explainCredits: boolean) => JSX.Element;
   };
   errorStatus: Record<number, string>;
   gpu: {

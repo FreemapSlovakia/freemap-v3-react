@@ -3,7 +3,6 @@ import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
@@ -12,11 +11,6 @@ import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './en-shared.js';
 import { addError, Messages } from './messagesInterface.js';
-
-const nf00 = new Intl.NumberFormat('en', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0a.s.l.';
 
@@ -349,9 +343,6 @@ const messages: Messages = {
       choosePicture: 'Choose picture',
       pictureTooLarge: 'Picture is too large. Maximum size is 5 MB.',
     },
-    general: {
-      tips: 'Show tips on page opening (only if Slovak or Czech language is selected)',
-    },
     layer: 'Map',
     overlayOpacity: 'Opacity',
     showInMenu: 'Show in menu',
@@ -642,32 +633,6 @@ const messages: Messages = {
     premiumOnly: 'Only available with premium access.',
     alreadyPremium: 'You already have premium access.',
     premiumUser: 'User with premium access',
-  },
-
-  credits: {
-    buyCredits: 'Buy credits',
-    amount: 'Credits',
-    credits: 'credits',
-    buy: 'Buy',
-    purchase: {
-      success: ({ amount }) => (
-        <>Your credit has been increased by {nf00.format(amount)}.</>
-      ),
-    },
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        You have {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="credits"
-            help="You can use credits to [offline maps export]."
-          />
-        ) : (
-          'credits'
-        )}
-        .
-      </>
-    ),
   },
 
   errorStatus: {

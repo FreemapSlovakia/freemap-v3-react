@@ -3,7 +3,6 @@ import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
@@ -13,11 +12,6 @@ import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import { addError, Messages } from './messagesInterface.js';
 import shared from './pl-shared.js';
-
-const nf00 = new Intl.NumberFormat('pl', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0n.p.m.'; // metry nad poziomem morza
 
@@ -353,10 +347,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       description: 'O mnie',
     },
 
-    general: {
-      tips: 'Pokaż porady przy otwarciu strony (tylko dla języka słowackiego lub czeskiego)',
-    },
-
     layer: 'Mapa',
     overlayOpacity: 'Przezroczystość',
     showInMenu: 'Pokaż w menu',
@@ -649,32 +639,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     premiumOnly: 'Dostępne tylko z dostępem premium.',
     alreadyPremium: 'Masz już dostęp premium.',
     premiumUser: 'Użytkownik z dostępem premium',
-  },
-
-  credits: {
-    purchase: {
-      success: ({ amount }) => (
-        <>Twój kredyt został zwiększony o {nf00.format(amount)}.</>
-      ),
-    },
-    buyCredits: 'Kup kredyty',
-    amount: 'Kredyty',
-    credits: 'kredytów',
-    buy: 'Kup',
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        Masz {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="kredytów"
-            help="Możesz użyć kredytów do [eksport map offline]."
-          />
-        ) : (
-          'kredytów'
-        )}
-        .
-      </>
-    ),
   },
 
   errorStatus: {

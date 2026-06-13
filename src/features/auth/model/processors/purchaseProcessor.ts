@@ -3,6 +3,7 @@ import { purchase, setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { purchaseOnLogin } from '@features/auth/model/purchaseActions.js';
+import { loadCreditsMessages } from '@features/credits/translations/loadCreditsMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import z from 'zod';
 
@@ -158,7 +159,8 @@ export const purchaseProcessor: Processor<typeof purchase> = {
           dispatch(
             toastsAdd({
               style: 'success',
-              messageKey: 'credits.purchase.success',
+              messageKey: 'purchase.success',
+              messageLoader: loadCreditsMessages,
               messageParams: {
                 amount: purchase.amount,
               },

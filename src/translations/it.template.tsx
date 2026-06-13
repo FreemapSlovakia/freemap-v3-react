@@ -3,7 +3,6 @@ import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
@@ -13,11 +12,6 @@ import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './it-shared.js';
 import { addError, Messages } from './messagesInterface.js';
-
-const nf00 = new Intl.NumberFormat('it', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0a.s.l.';
 
@@ -362,9 +356,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pictureTooLarge: 'La foto è troppo grande. La dimensione massima è 5 MB.',
       description: 'Su di me',
     },
-    general: {
-      tips: "Mostra i consigli all'apertura della pagina (solo se è selezionata la lingua ceca o slovacca)",
-    },
     layer: 'Livello',
     overlayOpacity: 'Opacità',
     showInMenu: 'Mostra nel menu',
@@ -659,32 +650,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     premiumOnly: 'Disponibile solo con accesso premium.',
     alreadyPremium: 'Hai già accesso premium.',
     premiumUser: 'Utente con accesso premium',
-  },
-
-  credits: {
-    buyCredits: 'Acquista crediti',
-    amount: 'Crediti',
-    credits: 'crediti',
-    buy: 'Acquista',
-    purchase: {
-      success: ({ amount }) => (
-        <>Il tuo credito è stato aumentato di {nf00.format(amount)}.</>
-      ),
-    },
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        Hai {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="crediti"
-            help="Puoi usare i crediti per [l'esportazione delle mappe offline]."
-          />
-        ) : (
-          'crediti'
-        )}
-        .
-      </>
-    ),
   },
 
   errorStatus: {

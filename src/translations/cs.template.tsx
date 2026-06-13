@@ -3,7 +3,6 @@ import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
@@ -13,11 +12,6 @@ import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './cs-shared.js';
 import { addError, Messages } from './messagesInterface.js';
-
-const nf00 = new Intl.NumberFormat('cs', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0n.\xa0m.';
 
@@ -356,9 +350,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pictureTooLarge: 'Obrázek je příliš velký. Maximální velikost je 5 MB.',
       description: 'O mně',
     },
-    general: {
-      tips: 'Zobrazovat tipy po otevření stránky',
-    },
     layer: 'Mapa',
     overlayOpacity: 'Viditelnost',
     showInMenu: 'Zobrazit v menu',
@@ -655,32 +646,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     premiumOnly: 'Dostupné pouze s prémiovým přístupem.',
     alreadyPremium: 'Máte již prémiový přístup.',
     premiumUser: 'Uživatel s prémiovým přístupem',
-  },
-
-  credits: {
-    buyCredits: 'Koupit kredity',
-    amount: 'Kredity',
-    credits: 'kreditů',
-    buy: 'Koupit',
-    purchase: {
-      success: ({ amount }) => (
-        <>Váš kredit byl navýšen o {nf00.format(amount)}.</>
-      ),
-    },
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        Máte {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="kreditů"
-            help="Kredity můžete využít ke [export offline map]."
-          />
-        ) : (
-          'kreditů'
-        )}
-        .
-      </>
-    ),
   },
 
   errorStatus: {

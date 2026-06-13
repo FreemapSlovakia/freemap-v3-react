@@ -6,6 +6,7 @@ import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaCoins, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useCreditsMessages } from '../translations/useCreditsMessages.js';
 import { CreditsAlert } from './CredistAlert.js';
 
 type Props = { show: boolean };
@@ -29,6 +30,8 @@ export default function CurrentDrawingPropertiesModal({
 
   const m = useMessages();
 
+  const cm = useCreditsMessages();
+
   const nf = useNumberFormat({
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -46,7 +49,7 @@ export default function CurrentDrawingPropertiesModal({
       <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCoins /> {m?.credits.buyCredits}
+            <FaCoins /> {cm?.buyCredits}
           </Modal.Title>
         </Modal.Header>
 
@@ -54,7 +57,7 @@ export default function CurrentDrawingPropertiesModal({
           <CreditsAlert explainCredits />
 
           <Form.Group controlId="amount">
-            <Form.Label className="required">{m?.credits.amount}</Form.Label>
+            <Form.Label className="required">{cm?.amount}</Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -67,7 +70,7 @@ export default function CurrentDrawingPropertiesModal({
               />
 
               <InputGroup.Text>
-                {m?.credits.credits} = {nf.format(Number(credits) / 100)} €
+                {cm?.credits} = {nf.format(Number(credits) / 100)} €
               </InputGroup.Text>
             </InputGroup>
           </Form.Group>
@@ -75,7 +78,7 @@ export default function CurrentDrawingPropertiesModal({
 
         <Modal.Footer>
           <Button type="submit" disabled={invalidCredits}>
-            <FaCheck /> {m?.credits.buy}
+            <FaCheck /> {cm?.buy}
           </Button>
 
           <Button variant="dark" type="button" onClick={close}>

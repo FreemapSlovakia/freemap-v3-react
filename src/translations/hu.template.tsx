@@ -3,7 +3,6 @@ import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
@@ -13,11 +12,6 @@ import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './hu-shared.js';
 import { addError, Messages } from './messagesInterface.js';
-
-const nf00 = new Intl.NumberFormat('hu', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0tszf.'; // méter a tengerszint fölött;
 
@@ -358,9 +352,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pictureTooLarge: 'A kép túl nagy. Maximális méret 5 MB.',
       description: 'Rólam',
     },
-    general: {
-      tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
-    },
     layer: 'Térkép',
     overlayOpacity: 'Átlátszóság',
     showInMenu: 'Megjelenítés a menüben',
@@ -668,32 +659,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
     alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
     premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
-  },
-
-  credits: {
-    buyCredits: 'Kredit vásárlása',
-    amount: 'Kreditek',
-    credits: 'kredit',
-    buy: 'Vásárlás',
-    purchase: {
-      success: ({ amount }) => (
-        <>A kreditje {nf00.format(amount)} összeggel növekedett.</>
-      ),
-    },
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        Van {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="kreditjeid"
-            help="A krediteket felhasználhatod [offline térképek exportjára]."
-          />
-        ) : (
-          'kredited'
-        )}
-        .
-      </>
-    ),
   },
 
   errorStatus: {

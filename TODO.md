@@ -80,7 +80,15 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   cross-feature consumers `MainMenu`, `MainMenuButton`, and the app-level
   `MapContextMenu` read it via `useOpenInExternalAppMessages`. The shared
   `openInExternal` launcher label moved into the bundle too (consumed
-  cross-feature rather than kept in a global namespace).
+  cross-feature rather than kept in a global namespace). And the global
+  `credits` block → its own `credits` bundle: `BuyCreditsModal`/`CreditsAlert`
+  read it via `useCreditsMessages`, and the cross-feature `credits.purchase.success`
+  toast in `auth`'s `purchaseProcessor` resolves via `loadCreditsMessages`. The
+  locale-specific `nf00` formatter and the `CreditsText` import (both used only
+  by `credits.purchase.success`/`youHaveCredits`) moved into the bundle and left
+  the global locale files. The neighbouring `purchases.premium`/`purchases.credits`
+  keys are purchase-listing item-type labels, so they stay with `purchases` (the
+  account/`auth` area), not the `credits`/`premium` bundles.
   Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Since toasts gained `messageKey` + optional `messageLoader` (resolved against a per-feature bundle at render), even JSX-returning toast keys can leave the global blob — that's how `changesets.detail`, `trackViewer.info`, and the two `tracking.subscribe*` keys moved out. Still global-bound: `mapLayers.legacyMapWarning` (a JSX toast still dispatched with a global `messageKey`, not yet migrated to a `messageLoader`).
 
 ## Softer / design opinions

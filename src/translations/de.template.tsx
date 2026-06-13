@@ -3,7 +3,6 @@ import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
@@ -13,11 +12,6 @@ import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './de-shared.js';
 import { addError, Messages } from './messagesInterface.js';
-
-const nf00 = new Intl.NumberFormat('de', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0ü.\xa0M.';
 
@@ -369,10 +363,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       description: 'Über mich',
     },
 
-    general: {
-      tips: 'Tipps beim Laden der Seite anzeigen (nur bei Spracheinstellung Slowakisch oder Tschechisch)',
-    },
-
     layer: 'Karte',
     overlayOpacity: 'Deckkraft',
     showInMenu: 'Im Menü anzeigen',
@@ -674,33 +664,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     premiumOnly: 'Nur mit Premium-Zugang verfügbar.',
     alreadyPremium: 'Du hast bereits Premium-Zugang.',
     premiumUser: 'Nutzer mit Premium-Zugang',
-  },
-  credits: {
-    buyCredits: 'Credits kaufen',
-    amount: 'Credits',
-    credits: 'Credits',
-    buy: 'Kaufen',
-
-    purchase: {
-      success: ({ amount }) => (
-        <>Dein Guthaben wurde um {nf00.format(amount)} erhöht.</>
-      ),
-    },
-
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        Sie haben {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="Credits"
-            help="Sie können Credits verwenden, um [Export von Offline-Karten]."
-          />
-        ) : (
-          'Credits'
-        )}
-        .
-      </>
-    ),
   },
   errorStatus: {
     100: 'Weiter',
