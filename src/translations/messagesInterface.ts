@@ -1,5 +1,4 @@
 import { HttpError } from '@app/httpRequest.js';
-import { Changeset } from '@features/changesets/model/actions.js';
 import { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
 import { DeepPartial } from '@shared/types/deepPartial.js';
@@ -164,11 +163,6 @@ export type Messages = {
     areaInfo: (props: { area: number; perimeter: number }) => JSX.Element;
     distanceInfo: (props: { length: number }) => JSX.Element;
   };
-  trackViewer: {
-    // Dispatched as a toast messageKey and rendered to JSX by the global Toasts
-    // component, which resolves keys only against global Messages, so it stays.
-    info: () => JSX.Element;
-  };
   drawing: {
     modify: string;
     edit: {
@@ -269,31 +263,12 @@ export type Messages = {
     customLayersDef: string;
     customLayersDefError: string;
   };
-  changesets: {
-    // Dispatched as a toast messageKey and rendered to JSX by the global Toasts
-    // component, which resolves keys only against global Messages, so it stays.
-    detail: ({ changeset }: { changeset: Changeset }) => JSX.Element;
-  };
   mapDetails: {
     sources: string;
     source: string;
     notFound: string;
     fetchingError: (props: Err) => string;
     detail: (props: { result: SearchResult }) => JSX.Element;
-  };
-  external: {
-    openInExternal: string;
-    osm: string;
-    oma: string;
-    googleMaps: string;
-    hiking_sk: string;
-    zbgis: string;
-    mapy_cz: string;
-    josm: string;
-    id: string;
-    window: string;
-    url: string;
-    image: string;
   };
   search: {
     inProgress: string;
@@ -406,12 +381,6 @@ export type Messages = {
   };
   osm: {
     fetchingError: (props: Err) => string;
-  };
-  tracking: {
-    // toast messages dispatched from the websocket middleware; the rest of the
-    // feature's strings live in features/tracking/translations
-    subscribeNotFound: (props: { id: string | number }) => JSX.Element;
-    subscribeError: (props: { id: string | number }) => JSX.Element;
   };
   mapCtxMenu: {
     centerMap: string;

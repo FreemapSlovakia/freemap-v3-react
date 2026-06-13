@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
@@ -52,6 +53,8 @@ export function OpenInExternalAppDropdownItems({
 }: Props): ReactElement {
   const m = useMessages();
 
+  const oeam = useOpenInExternalAppMessages();
+
   const hasShare = 'share' in window.navigator;
 
   const hasClipboard = Boolean(window.navigator.clipboard?.writeText);
@@ -61,18 +64,18 @@ export function OpenInExternalAppDropdownItems({
       {url && (
         <>
           <Dropdown.Item href={url} target="_blank" eventKey="url">
-            <FaWindowMaximize /> {m?.external.window}
+            <FaWindowMaximize /> {oeam?.window}
           </Dropdown.Item>
 
           {hasShare && (
             <Dropdown.Item as="button" {...openMenuItemProps('url')}>
-              <FaLink /> {m?.external.url}
+              <FaLink /> {oeam?.url}
             </Dropdown.Item>
           )}
 
           {'canShare' in window.navigator && (
             <Dropdown.Item as="button" {...openMenuItemProps('image')}>
-              <FaShareAlt /> {m?.external.image}
+              <FaShareAlt /> {oeam?.image}
             </Dropdown.Item>
           )}
 
@@ -94,7 +97,7 @@ export function OpenInExternalAppDropdownItems({
 
       {!url && hasShare && (
         <Dropdown.Item as="button" {...openMenuItemProps('url')}>
-          <FaLink /> {m?.external.url}
+          <FaLink /> {oeam?.url}
         </Dropdown.Item>
       )}
 
@@ -105,7 +108,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {m?.external.osm}
+        {oeam?.osm}
         {showKbdShortcut && (
           <>
             {' '}
@@ -119,7 +122,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {m?.external.mapy_cz}
+        {oeam?.mapy_cz}
         {showKbdShortcut && (
           <>
             {' '}
@@ -133,7 +136,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {m?.external.googleMaps}
+        {oeam?.googleMaps}
         {showKbdShortcut && (
           <>
             {' '}
@@ -213,7 +216,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {m?.external.oma} (SK)
+        {oeam?.oma} (SK)
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -221,7 +224,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {m?.external.hiking_sk} (SK)
+        {oeam?.hiking_sk} (SK)
         {showKbdShortcut && (
           <>
             {' '}
@@ -235,7 +238,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {m?.external.zbgis} (SK)
+        {oeam?.zbgis} (SK)
         {showKbdShortcut && (
           <>
             {' '}
@@ -247,7 +250,7 @@ export function OpenInExternalAppDropdownItems({
       <Dropdown.Divider />
 
       <Dropdown.Item as="button" {...openMenuItemProps('josm')}>
-        {m?.external.josm}
+        {oeam?.josm}
         {showKbdShortcut && (
           <>
             {' '}
@@ -261,7 +264,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {m?.external.id}
+        {oeam?.id}
         {showKbdShortcut && (
           <>
             {' '}

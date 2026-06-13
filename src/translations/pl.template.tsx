@@ -2,12 +2,10 @@ import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
-import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -43,9 +41,6 @@ const getErrorMarkup = (ticketId?: string) => `
 const outdoorMap = 'Turystyka, Rower, Biegówki, Jazda konna';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
-  changesets: {
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  },
   general: {
     iso: 'pl_PL',
     elevationProfile: 'Profil wysokościowy',
@@ -260,10 +255,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Długość" />,
   },
 
-  trackViewer: {
-    info: () => <TrackViewerDetails />,
-  },
-
   drawing: {
     edit: {
       title: 'Właściwości',
@@ -390,21 +381,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     sources: 'Źródła',
     source: 'Źródło',
-  },
-
-  external: {
-    openInExternal: 'Udostępnij / Otwórz w zewnętrznej aplikacji.',
-    osm: 'OpenStreetMap',
-    oma: 'OMA',
-    googleMaps: 'Google Maps',
-    hiking_sk: 'Hiking.sk',
-    zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.com',
-    josm: 'Edytuj w JOSM',
-    id: 'Edytuj w iD',
-    window: 'Nowe okno',
-    url: 'Udostępnij lokalizację',
-    image: 'Udostępnij zdjęcie',
   },
 
   search: {
@@ -601,20 +577,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   osm: {
     fetchingError: ({ err }) =>
       addError(messages, 'Błąd podczas pobierania danych OSM', err),
-  },
-
-  tracking: {
-    subscribeNotFound: ({ id }) => (
-      <>
-        Beobachtungstoken <i>{id}</i> existiert nicht.
-      </>
-    ),
-
-    subscribeError: ({ id }) => (
-      <>
-        Fehler beim Beobachten mit Token <i>{id}</i>.
-      </>
-    ),
   },
 
   mapCtxMenu: {

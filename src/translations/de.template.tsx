@@ -2,12 +2,10 @@ import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
-import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -42,9 +40,6 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Anwendungsfehler</h1>
 const outdoorMap = 'Wandern, Radfahren, Langlauf, Reiten';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
-  changesets: {
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  },
   general: {
     iso: 'de_DE',
     elevationProfile: 'Höhenprofil',
@@ -271,10 +266,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Länge" />,
   },
 
-  trackViewer: {
-    info: () => <TrackViewerDetails />,
-  },
-
   drawing: {
     edit: {
       title: 'Eigenschaften',
@@ -411,21 +402,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
     sources: 'Quellen',
     source: 'Quelle',
-  },
-
-  external: {
-    openInExternal: 'Teilen / In externer App öffnen',
-    osm: 'OpenStreetMap',
-    oma: 'OMA',
-    googleMaps: 'Google Maps',
-    hiking_sk: 'Hiking.sk',
-    zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.com',
-    josm: 'In JOSM bearbeiten',
-    id: 'In iD bearbeiten',
-    window: 'Neues Fenster',
-    url: 'Standort teilen',
-    image: 'Foto teilen',
   },
 
   search: {
@@ -626,19 +602,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Fehler beim Abrufen von OSM-Daten', err),
   },
 
-  tracking: {
-    subscribeNotFound: ({ id }) => (
-      <>
-        Beobachtungstoken <i>{id}</i> existiert nicht.
-      </>
-    ),
-
-    subscribeError: ({ id }) => (
-      <>
-        Fehler beim Beobachten mit Token <i>{id}</i>.
-      </>
-    ),
-  },
   mapCtxMenu: {
     centerMap: 'Karte hier zentrieren',
     measurePosition: 'Koordinaten und Höhe ermitteln',

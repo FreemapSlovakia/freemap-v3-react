@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
+import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -23,6 +24,8 @@ export function MainMenuButton(): ReactElement {
   const zoom = useAppSelector((state) => state.map.zoom);
 
   const m = useMessages();
+
+  const oeam = useOpenInExternalAppMessages();
 
   const sc = useScrollClasses('vertical');
 
@@ -59,7 +62,7 @@ export function MainMenuButton(): ReactElement {
             <Fragment key="openExternally">
               <SubmenuHeader
                 icon={<FaExternalLinkAlt />}
-                title={m?.external.openInExternal}
+                title={oeam?.openInExternal}
               />
 
               <OpenInExternalAppDropdownItems

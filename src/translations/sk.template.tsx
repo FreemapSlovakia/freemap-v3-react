@@ -2,12 +2,10 @@ import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
-import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -42,9 +40,6 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
 const outdoorMap = 'Turistika, Cyklo, Bežky, Jazdenie';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
-  changesets: {
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  },
   general: {
     iso: 'sk_SK',
     elevationProfile: 'Výškový profil',
@@ -296,10 +291,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Dĺžka" />,
   },
 
-  trackViewer: {
-    info: () => <TrackViewerDetails />,
-  },
-
   drawing: {
     modify: 'Vlastnosti',
     edit: {
@@ -423,21 +414,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         editInJosmText="Editovať v JOSM"
       />
     ),
-  },
-
-  external: {
-    openInExternal: 'Zdieľať / otvoriť v ext. aplikácii',
-    osm: 'OpenStreetMap',
-    oma: 'OMA',
-    googleMaps: 'Google Mapy',
-    hiking_sk: 'Hiking.sk',
-    zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.com',
-    josm: 'Editor JOSM',
-    id: 'Editor iD',
-    window: 'Nové okno',
-    url: 'Zdieľať polohu',
-    image: 'Zdieľať fotografiu',
   },
 
   search: {
@@ -639,19 +615,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   osm: {
     fetchingError: ({ err }) =>
       addError(messages, 'Nastala chyba pri získavaní OSM dát', err),
-  },
-
-  tracking: {
-    subscribeNotFound: ({ id }) => (
-      <>
-        Token sledovania <i>{id}</i> neexistuje.
-      </>
-    ),
-    subscribeError: ({ id }) => (
-      <>
-        Chyba sledovania pomocou sledovacieho tokenu <i>{id}</i>.
-      </>
-    ),
   },
 
   mapCtxMenu: {

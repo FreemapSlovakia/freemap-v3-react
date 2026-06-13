@@ -4,6 +4,16 @@ import { FaKey } from 'react-icons/fa';
 import { TrackingMessages } from './TrackingMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
+  subscribeNotFound: ({ id }) => (
+    <>
+      A(z) <i>{id}</i> figyelőkód nem létezik.
+    </>
+  ),
+  subscribeError: ({ id }) => (
+    <>
+      Hiba történt a(z) <i>{id}</i> kód használatának követésekor.
+    </>
+  ),
   trackedDevices: {
     button: 'Figyelt',
     modalTitle: 'Figyelt eszközök',

@@ -2,12 +2,10 @@ import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
-import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { AlertLink } from 'react-bootstrap';
@@ -256,10 +254,6 @@ const messages: Messages = {
     distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Length" />,
   },
 
-  trackViewer: {
-    info: () => <TrackViewerDetails />,
-  },
-
   drawing: {
     modify: 'Properties',
     edit: {
@@ -368,10 +362,6 @@ const messages: Messages = {
     customLayersDefError: 'Invalid definition of custom map layers.',
   },
 
-  changesets: {
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  },
-
   mapDetails: {
     sources: 'Sources',
     source: 'Source',
@@ -386,21 +376,6 @@ const messages: Messages = {
         editInJosmText="Edit in JOSM"
       />
     ),
-  },
-
-  external: {
-    openInExternal: 'Share / Open in external app.',
-    osm: 'OpenStreetMap',
-    oma: 'OMA',
-    googleMaps: 'Google Maps',
-    hiking_sk: 'Hiking.sk',
-    zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.com',
-    josm: 'Edit in JOSM',
-    id: 'Edit in iD',
-    window: 'New window',
-    url: 'Share location',
-    image: 'Share photo',
   },
 
   search: {
@@ -596,19 +571,6 @@ const messages: Messages = {
   osm: {
     fetchingError: ({ err }) =>
       addError(messages, 'Error fetching OSM data', err),
-  },
-
-  tracking: {
-    subscribeNotFound: ({ id }) => (
-      <>
-        Watch token <i>{id}</i> doesn't exist.
-      </>
-    ),
-    subscribeError: ({ id }) => (
-      <>
-        Error watching using token <i>{id}</i>.
-      </>
-    ),
   },
 
   mapCtxMenu: {

@@ -33,8 +33,9 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   message via `loadMyMapsMessages`, so even the error strings left the global
   blob. Its two layer-concern keys (`legacy` tooltip + the JSX `legacyMapWarning`
   processor toast) moved to the global `mapLayers` namespace. And `tracking` →
-  its own bundle, leaving only the two JSX websocket-toast keys
-  (`subscribeNotFound`/`subscribeError`) in a minimal global `tracking` block;
+  its own bundle: the two JSX websocket-toast keys
+  (`subscribeNotFound`/`subscribeError`) now resolve via `loadTrackingMessages`
+  in `trackingMiddleware`, so nothing is left in the global blob;
   `useHtmlMeta` resolves the two tracking modal titles from the bundle instead of
   the global key-map. And `exportMapFeatures` → its own `mapFeaturesExport/`
   bundle: the export processor drops its `errorKey` for a try/catch that resolves
@@ -50,14 +51,13 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   drawing `MarkerTypeSelect` consumes them cross-feature via `useObjectsMessages`.
   And `changesets` → its own bundle: the fetch processor drops its `errorKey` for
   a try/catch and switches its `tooBig`/`notFound` toasts to literal `message:`
-  via `loadChangesetsMessages`. Only `changesets.detail` stays in a minimal global
-  `changesets` block — it's a JSX-returning function dispatched as a toast
-  `messageKey` and rendered by the global `Toasts` component (which resolves keys
-  only against global Messages). The locale templates keep just that one
-  locale-independent `detail` line (so generated files carry the `ChangesetDetails`
-  import); everything else now falls back through the bundle. And `trackViewer`
-  → its own bundle, leaving only the JSX `info` toast key in a minimal global
-  block (same global-Toasts-renderer constraint as `changesets.detail`); the
+  via `loadChangesetsMessages`. The JSX `changesets.detail` toast also moved to the
+  bundle: `ChangesetsResult` dispatches it with `messageKey: 'detail'` +
+  `messageLoader: loadChangesetsMessages`, and the bundle's locale templates carry
+  the one locale-independent `detail` line plus the `ChangesetDetails` import. And
+  `trackViewer`
+  → its own bundle, including the JSX `info` toast key (dispatched from
+  `TrackViewerMenu` via `messageLoader: loadTrackViewerMessages`); the
   three track download/load/upload processors (which live under `tracking/` — see
   relocation note) drop their `errorKey`s for try/catch and switch their
   `tooBig`/`shareToast` toasts to literal `message:` via `loadTrackViewerMessages`;
@@ -74,8 +74,14 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   etc.) resolved against the bundle in `GalleryEditForm` (so `getMessageByKey`
   drops its last gallery caller). Cross-feature consumers `DrawingPointSelection`,
   `GalleryColorizeBySubmenu`, and `WikimediaCommonsLayer` read the bundle via
-  `useGalleryMessages`.
-  Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Still global-bound: toast `messageKey`s/`errorKey`s whose value is a JSX-returning function dispatched from a non-component (e.g. `mapLayers.legacyMapWarning`), since toast `message` is typed `string`.
+  `useGalleryMessages`. And the global `external` block → its own
+  `openInExternalApp` bundle (label-only, no toasts): the owning
+  `OpenInExternalAppMenuItems`/`OpenInExternalAppMenuButton` plus the
+  cross-feature consumers `MainMenu`, `MainMenuButton`, and the app-level
+  `MapContextMenu` read it via `useOpenInExternalAppMessages`. The shared
+  `openInExternal` launcher label moved into the bundle too (consumed
+  cross-feature rather than kept in a global namespace).
+  Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Since toasts gained `messageKey` + optional `messageLoader` (resolved against a per-feature bundle at render), even JSX-returning toast keys can leave the global blob — that's how `changesets.detail`, `trackViewer.info`, and the two `tracking.subscribe*` keys moved out. Still global-bound: `mapLayers.legacyMapWarning` (a JSX toast still dispatched with a global `messageKey`, not yet migrated to a `messageLoader`).
 
 ## Softer / design opinions
 
@@ -85,6 +91,18 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
 - [ ] **Minor processor-middleware cleanups.** Internal `any` casts;
       `Math.random()` for fallback toast IDs; duplicated transform/handle predicate
       logic. Low priority.
+- [ ] **Adopt React 19 hooks codebase-wide** (own session — it's a cross-cutting
+      decision, not a local cleanup). The app uses zero Suspense today; all async
+      loading goes through `useLazy` (`src/app/hooks/useLazy.ts`) + effects
+      (modal lazy-loading, `useLocalMessages`). Start at `useLazy` → `use` +
+      `<Suspense>`; then `LazyToastMessage` in `Toasts.tsx` falls out for free.
+      Gotcha: `use` needs a *stable* promise, but the `load*Messages` loaders
+      cache the resolved *value*, not the promise — so passing `loader(x)` inline
+      is the suspend-forever anti-pattern; add a per-key promise cache. Also
+      evaluate `useActionState`/`useFormStatus` for form submits, `useOptimistic`
+      for manual pending state, and **React Compiler** eligibility (decide first —
+      it would let many hand-written `useMemo`/`useCallback` be dropped, changing
+      how much manual hook churn is worthwhile).
 
 ## Premium / monetization
 

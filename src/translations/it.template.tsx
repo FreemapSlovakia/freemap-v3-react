@@ -2,12 +2,10 @@ import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
-import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -41,9 +39,6 @@ const getErrorMarkup = (ticketId?: string) => `
 const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
-  changesets: {
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  },
   general: {
     iso: 'it_IT',
     elevationProfile: 'Profilo altimetrico',
@@ -271,10 +266,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  trackViewer: {
-    info: () => <TrackViewerDetails />,
-  },
-
   drawing: {
     modify: 'Proprietà',
     edit: {
@@ -400,21 +391,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     sources: 'Fonti',
     source: 'Fonte',
-  },
-
-  external: {
-    openInExternal: 'Condividi / Apri su altra App.',
-    osm: 'OpenStreetMap',
-    oma: 'OMA',
-    googleMaps: 'Google Maps',
-    hiking_sk: 'Hiking.sk',
-    zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.com',
-    josm: 'Modifica con JOSM',
-    id: 'Modifica con iD',
-    window: 'Nuova finestra',
-    url: 'Condividi posizione',
-    image: 'Condividi foto',
   },
 
   search: {
@@ -612,19 +588,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   osm: {
     fetchingError: ({ err }) =>
       addError(messages, 'Errore durante il recupero dei dati OSM', err),
-  },
-
-  tracking: {
-    subscribeNotFound: ({ id }) => (
-      <>
-        Il token <i>{id}</i> non esiste.
-      </>
-    ),
-    subscribeError: ({ id }) => (
-      <>
-        Errore nell'utilizzo del token <i>{id}</i>.
-      </>
-    ),
   },
 
   mapCtxMenu: {

@@ -2,12 +2,10 @@ import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { RovasAd } from '@features/ad/components/RovasAd.js';
-import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { CreditsText } from '@features/credits/components/CreditsText.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -41,9 +39,6 @@ const getErrorMarkup = (ticketId?: string) => `
 const outdoorMap = 'Túrázás, Kerékpár, Síelés, Lovaglás';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
-  changesets: {
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  },
   general: {
     iso: 'hu_HU',
     elevationProfile: 'Magassági profil',
@@ -268,10 +263,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Távolság" />,
   },
 
-  trackViewer: {
-    info: () => <TrackViewerDetails />,
-  },
-
   drawing: {
     modify: 'Tulajdonságok',
     edit: {
@@ -398,21 +389,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
     sources: 'Források',
     source: 'Forrás',
-  },
-
-  external: {
-    openInExternal: 'Megosztás / megnyitás külső alkalmazásban',
-    osm: 'OpenStreetMap',
-    oma: 'OMA',
-    googleMaps: 'Google térkép',
-    hiking_sk: 'hiking.sk',
-    zbgis: 'ZBGIS',
-    mapy_cz: 'mapy.com',
-    josm: 'Szerkesztés JOSM-mal',
-    id: 'Szerkesztés iD-vel',
-    window: 'Új ablakban',
-    url: 'Hely megosztása',
-    image: 'Fénykép megosztása',
   },
 
   search: {
@@ -619,19 +595,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   osm: {
     fetchingError: ({ err }) =>
       addError(messages, 'Hiba történt az OSM-adatok lekérésénél', err),
-  },
-
-  tracking: {
-    subscribeNotFound: ({ id }) => (
-      <>
-        A(z) <i>{id}</i> figyelőkód nem létezik.
-      </>
-    ),
-    subscribeError: ({ id }) => (
-      <>
-        Hiba történt a(z) <i>{id}</i> kód használatának követésekor.
-      </>
-    ),
   },
 
   mapCtxMenu: {

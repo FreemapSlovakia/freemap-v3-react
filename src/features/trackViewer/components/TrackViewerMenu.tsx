@@ -33,6 +33,7 @@ import {
   trackViewerToggleElevationChart,
   trackViewerUploadTrack,
 } from '../model/actions.js';
+import { loadTrackViewerMessages } from '../translations/loadTrackViewerMessages.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 export default TrackViewerMenu;
@@ -194,7 +195,8 @@ export function TrackViewerMenu(): ReactElement {
                 dispatch(
                   toastsAdd({
                     id: 'trackViewer.trackInfo',
-                    messageKey: 'trackViewer.info',
+                    messageKey: 'info',
+                    messageLoader: loadTrackViewerMessages,
                     cancelType: [
                       clearMapFeatures.type,
                       trackViewerSetData.type,
