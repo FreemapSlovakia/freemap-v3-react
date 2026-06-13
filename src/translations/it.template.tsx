@@ -412,29 +412,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorLoading: 'Errore caricamento documento.',
   },
 
-  auth: {
-    logIn: {
-      with: 'Scegli un provider di accesso',
-      success: 'Accesso eseguito correttamente.',
-      logInError: ({ err }) => addError(messages, 'Error logging in:', err),
-      logInError2: 'Error logging in.',
-      verifyError: ({ err }) =>
-        addError(messages, 'Error verifying authentication:', err),
-    },
-    logOut: {
-      success: 'Disconnessione avvenuta correttamente.',
-      error: ({ err }) => addError(messages, 'Error logging out:', err),
-    },
-    connect: {
-      label: 'Connetti',
-      success: 'Connesso',
-    },
-    disconnect: {
-      label: 'Disconnetti',
-      success: 'Disconnesso',
-    },
-  },
-
   mapLayers: {
     showAll: 'Mostra tutti i livelli',
     filterMaps: 'Filtra mappe',

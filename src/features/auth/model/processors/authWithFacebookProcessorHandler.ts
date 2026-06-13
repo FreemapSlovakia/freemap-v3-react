@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
 import { authWithFacebook } from '../actions.js';
 import { loadFb } from './fbLoader.js';
 import { handleLoginResponse } from './loginResponseHandler.js';
@@ -24,7 +25,8 @@ const handle: ProcessorHandler<typeof authWithFacebook> = async ({
     if (response.status !== 'connected') {
       dispatch(
         toastsAdd({
-          messageKey: 'auth.logIn.logInError2',
+          messageKey: 'logInError2',
+          messageLoader: loadAuthMessages,
           style: 'danger',
         }),
       );

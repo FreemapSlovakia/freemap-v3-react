@@ -422,30 +422,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorLoading: 'Fehler beim Laden des Dokuments.',
   },
 
-  auth: {
-    connect: {
-      label: 'Verbinden',
-      success: 'Verbunden',
-    },
-    disconnect: {
-      label: 'Trennen',
-      success: 'Getrennt',
-    },
-    logIn: {
-      with: 'Wähle einen Anmeldeanbieter',
-      success: 'Du wurdest erfolgreich angemeldet.',
-      logInError: ({ err }) =>
-        addError(messages, 'Fehler bei der Anmeldung', err),
-      logInError2: 'Fehler bei der Anmeldung.',
-      verifyError: ({ err }) =>
-        addError(messages, 'Fehler bei der Authentifizierungsprüfung', err),
-    },
-    logOut: {
-      success: 'Du wurdest erfolgreich abgemeldet.',
-      error: ({ err }) => addError(messages, 'Fehler bei der Abmeldung', err),
-    },
-  },
-
   mapLayers: {
     letters: {
       S: 'Luftbild',

@@ -440,30 +440,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorLoading: 'Dokument sa nepodarilo načítať.',
   },
 
-  auth: {
-    connect: {
-      label: 'Pripojiť',
-      success: 'Pripojené',
-    },
-    disconnect: {
-      label: 'Odpojiť',
-      success: 'Odpojené',
-    },
-    logIn: {
-      with: 'Vyberte poskytovateľa prihlásenia',
-      success: 'Boli ste úspešne prihlásený.',
-      logInError: ({ err }) =>
-        addError(messages, 'Nepodarilo sa prihlásiť', err),
-      logInError2: 'Nepodarilo sa prihlásiť.',
-      verifyError: ({ err }) =>
-        addError(messages, 'Nepodarilo sa overiť prihlásenie', err),
-    },
-    logOut: {
-      success: 'Boli ste úspešne odhlásený.',
-      error: ({ err }) => addError(messages, 'Nepodarilo sa odhlásiť', err),
-    },
-  },
-
   mapLayers: {
     showMore: 'Ukázať viac máp',
     showAll: 'Ukázať všetky mapy',

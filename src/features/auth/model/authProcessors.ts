@@ -3,6 +3,7 @@ import type {
   Processor,
   ProcessorHandler,
 } from '@app/store/middleware/processorMiddleware.js';
+import { loadAuthMessages } from '../translations/loadAuthMessages.js';
 import {
   authWithApple,
   authWithFacebook,
@@ -21,9 +22,13 @@ function makeAuthProcessor<T extends BaseActionCreator>(
 ): Processor<T> {
   return {
     actionCreator,
-    id: 'lcd',
-    errorKey: 'auth.logIn.logInError',
-    handle: async (...params) => (await loader()).default(...params),
+    handle: async (params) => {
+      try {
+        return await (await loader()).default(params);
+      } catch (err) {
+        await params.toastError(err, loadAuthMessages, 'logInError', 'lcd');
+      }
+    },
   };
 }
 

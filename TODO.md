@@ -88,7 +88,17 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   by `credits.purchase.success`/`youHaveCredits`) moved into the bundle and left
   the global locale files. The neighbouring `purchases.premium`/`purchases.credits`
   keys are purchase-listing item-type labels, so they stay with `purchases` (the
-  account/`auth` area), not the `credits`/`premium` bundles.
+  account/`auth` area), not the `credits`/`premium` bundles. And the global
+  `auth` block → its own `auth` bundle: `LoginModal`/`AuthProvidersSection` read
+  it via `useAuthMessages`; the login/logout/disconnect processors resolve their
+  toasts via `loadAuthMessages` (the seven `auth-with-*` processors and
+  `authInit`/`authLogout` drop their `errorKey`s for a try/catch + `toastError`,
+  passing the old `'lcd'` toast id to preserve dedup). The keys were flattened
+  (`connectLabel`, `logInWith`, `logInError`, `logOutError`, …) because
+  `toastError`'s `ErrMessageKey` only matches top-level error-function keys, so
+  the previous `logIn.*`/`logOut.*` nesting couldn't carry the error toasts. The
+  `auth` error strings still call `addError(getMessages()!, …)` for the global
+  `errorStatus`/`general.*` fallbacks.
   Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Since toasts gained `messageKey` + optional `messageLoader` (resolved against a per-feature bundle at render), even JSX-returning toast keys can leave the global blob — that's how `changesets.detail`, `trackViewer.info`, and the two `tracking.subscribe*` keys moved out. Still global-bound: `mapLayers.legacyMapWarning` (a JSX toast still dispatched with a global `messageKey`, not yet migrated to a `messageLoader`).
 
 ## Softer / design opinions

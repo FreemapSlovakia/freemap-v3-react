@@ -1,11 +1,11 @@
 import { AuthProviders } from '@features/auth/components/AuthProviders.js';
 import { AuthProviderSchema } from '@features/auth/model/types.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement } from 'react';
 
 export function AuthProvidersSection(): ReactElement | null {
-  const m = useMessages();
+  const am = useAuthMessages();
 
   const user = useAppSelector((state) => state.auth.user);
 
@@ -17,7 +17,7 @@ export function AuthProvidersSection(): ReactElement | null {
     <>
       {user.authProviders.length < AuthProviderSchema.options.length && (
         <>
-          <p>{m?.auth.connect.label}</p>
+          <p>{am?.connectLabel}</p>
 
           <AuthProviders mode="connect" />
 
@@ -25,7 +25,7 @@ export function AuthProvidersSection(): ReactElement | null {
         </>
       )}
 
-      <p>{m?.auth.disconnect.label}</p>
+      <p>{am?.disconnectLabel}</p>
 
       <AuthProviders mode="disconnect" />
     </>

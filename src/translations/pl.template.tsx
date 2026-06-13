@@ -402,28 +402,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorLoading: 'Błąd podczas ładowania dokumentu.',
   },
 
-  auth: {
-    connect: {
-      label: 'Połącz',
-      success: 'Połączono',
-    },
-    disconnect: {
-      label: 'Odłącz',
-      success: 'Odłączono',
-    },
-    logIn: {
-      with: 'Wybierz dostawcę logowania',
-      success: 'Zalogowano pomyślnie.',
-      logInError: ({ err }) => addError(messages, 'Błąd logowania', err),
-      logInError2: 'Błąd logowania.',
-      verifyError: ({ err }) =>
-        addError(messages, 'Błąd weryfikacji logowania', err),
-    },
-    logOut: {
-      success: 'Wylogowano pomyślnie.',
-      error: ({ err }) => addError(messages, 'Błąd wylogowania', err),
-    },
-  },
   mapLayers: {
     letters: {
       S: 'Lotnicza',

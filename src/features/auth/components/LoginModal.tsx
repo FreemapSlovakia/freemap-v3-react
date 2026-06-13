@@ -6,12 +6,15 @@ import { type ReactElement, useCallback } from 'react';
 import { Alert, Button, Modal } from 'react-bootstrap';
 import { FaExclamationTriangle, FaSignInAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useAuthMessages } from '../translations/useAuthMessages.js';
 import { AuthProviders } from './AuthProviders.js';
 
 type Props = { show: boolean };
 
 export default function LoginModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const am = useAuthMessages();
 
   const dispatch = useDispatch();
 
@@ -52,7 +55,7 @@ export default function LoginModal({ show }: Props): ReactElement {
 
         {renderPremiumInfo()}
 
-        <p>{m?.auth.logIn.with}:</p>
+        <p>{am?.logInWith}:</p>
 
         <AuthProviders mode="login" />
       </Modal.Body>

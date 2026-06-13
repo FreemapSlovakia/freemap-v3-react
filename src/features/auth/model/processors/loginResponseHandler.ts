@@ -4,6 +4,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isPremium } from '@shared/premium.js';
 import { Dispatch } from 'redux';
 import z from 'zod';
+import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
 import { authSetUser } from '../actions.js';
 import {
   LoginResponseSchema,
@@ -36,7 +37,8 @@ export async function handleLoginResponse(
   dispatch(
     toastsAdd({
       id: 'lcd',
-      messageKey: connect ? 'auth.connect.success' : 'auth.logIn.success',
+      messageKey: connect ? 'connectSuccess' : 'logInSuccess',
+      messageLoader: loadAuthMessages,
       style: 'info',
       timeout: 5000,
     }),

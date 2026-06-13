@@ -282,27 +282,6 @@ export type Messages = {
   documents: {
     errorLoading: string;
   };
-  auth: {
-    connect: {
-      label: string;
-      success: string;
-    };
-    disconnect: {
-      label: string;
-      success: string;
-    };
-    logIn: {
-      with: string;
-      success: string;
-      logInError: (props: Err) => string;
-      logInError2: string;
-      verifyError: (props: Err) => string;
-    };
-    logOut: {
-      success: string;
-      error: (props: Err) => string;
-    };
-  };
   mapLayers: {
     showMore: string;
     showAll: string;

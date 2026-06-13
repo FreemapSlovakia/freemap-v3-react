@@ -397,29 +397,6 @@ const messages: Messages = {
     errorLoading: 'Error loading document.',
   },
 
-  auth: {
-    connect: {
-      label: 'Connect',
-      success: 'Connected',
-    },
-    disconnect: {
-      label: 'Disconnect',
-      success: 'Disconnected',
-    },
-    logIn: {
-      with: 'Choose a login provider',
-      success: 'You have been successfully logged in.',
-      logInError: ({ err }) => addError(messages, 'Error logging in', err),
-      logInError2: 'Error logging in.',
-      verifyError: ({ err }) =>
-        addError(messages, 'Error verifying authentication', err),
-    },
-    logOut: {
-      success: 'You have been successfully logged out.',
-      error: ({ err }) => addError(messages, 'Error logging out', err),
-    },
-  },
-
   mapLayers: {
     showMore: 'Show more maps',
     showAll: 'Show all maps',

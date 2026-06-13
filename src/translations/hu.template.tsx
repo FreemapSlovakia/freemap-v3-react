@@ -410,31 +410,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     errorLoading: 'Hiba történt a dokumentum betöltésekor.',
   },
 
-  auth: {
-    connect: {
-      label: 'Csatlakozás',
-      success: 'Csatlakoztatva',
-    },
-    disconnect: {
-      label: 'Kapcsolat bontása',
-      success: 'Lecsatlakoztatva',
-    },
-    logIn: {
-      with: 'Válasszon bejelentkezési szolgáltatót',
-      success: 'Sikeresen bejelentkezett.',
-      logInError: ({ err }) =>
-        addError(messages, 'Hiba történt a bejelentkezésnél', err),
-      logInError2: 'Hiba történt a bejelentkezésnél.',
-      verifyError: ({ err }) =>
-        addError(messages, 'Hiba történt a hitelesítés ellenőrzésénél', err),
-    },
-    logOut: {
-      success: 'Sikeresen kijelentkezett.',
-      error: ({ err }) =>
-        addError(messages, 'Hiba történt a kijelentkezésnél', err),
-    },
-  },
-
   mapLayers: {
     layers: 'Térképrétegek',
     photoFilterWarning: 'A fényképszűrés aktív',
