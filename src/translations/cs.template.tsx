@@ -1,8 +1,5 @@
-import { AreaInfo } from '@app/components/AreaInfo.js';
-import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
@@ -217,26 +214,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </>
       ),
     },
-  },
-
-  measurement: {
-    distance: 'Čára',
-    elevation: 'Bod',
-    area: 'Polygon',
-    elevationFetchError: ({ err }) =>
-      addError(messages, 'Nastala chyba při získávání výšky bodu', err),
-    elevationInfo: (params) => (
-      <ElevationInfo
-        {...params}
-        lang="cs"
-        tileMessage="Dlaždice"
-        maslMessage="Nadmořská výška"
-      />
-    ),
-    areaInfo: (props) => (
-      <AreaInfo {...props} areaLabel="Plocha" perimeterLabel="Obvod" />
-    ),
-    distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Délka" />,
   },
 
   settings: {

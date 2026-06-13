@@ -6,6 +6,7 @@ import {
   authStartLogout,
 } from '@features/auth/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { PurchasesSection } from '@features/purchases/components/PurchasesSection.js';
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -25,7 +26,6 @@ import {
 import { useDispatch } from 'react-redux';
 import { AuthProvidersSection } from './AuthProvidersSection.js';
 import { PersonalInfoSection } from './PersonalInfoSection.js';
-import { PurchasesSection } from './PurchasesSection.js';
 
 type Props = { show: boolean };
 

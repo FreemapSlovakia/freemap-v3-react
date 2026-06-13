@@ -118,7 +118,29 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   means the login modal (`auth`) doesn't download the bank-intent-status strings
   it never shows — the chunk boundary follows the load moment, not the feature
   folder. The always-loaded global `Messages` chunk (~17.5 kB en) is what further
-  feature extractions keep shrinking.
+  feature extractions keep shrinking. And the global `measurement` block → its
+  own `features/measurement/translations` bundle (loader-only): the
+  `measurementProcessor` (which lives under `drawing/model`) drops its `errorKey`
+  for a try/catch + `toastError` via `loadMeasurementMessages`, and its three
+  result toasts (`elevationInfo`/`areaInfo`/`distanceInfo`) switch to
+  `messageLoader`. Kept separate from `drawing` rather than merged, by the same
+  load-moment rule: the bundle drags the `ElevationInfo`/`AreaInfo`/`DistanceInfo`
+  result renderers (used essentially nowhere else), so folding them into the
+  `drawing` bundle would load them for every plain draw session; as a separate
+  bundle they load only when a measurement toast renders. The dead
+  `distance`/`elevation`/`area` label keys (no consumer) were dropped, and the
+  now-unused `ElevationInfoBaseProps` + the three component imports left
+  `messagesInterface.ts` / the global locale files with the block. To avoid
+  translations-only feature folders, the relevant code was co-located into the
+  new feature dirs: `measurement` gained `model/measurementProcessor.ts` (from
+  `drawing/model`) and `components/{AreaInfo,DistanceInfo}.tsx` (from
+  `app/components`, used only here); `purchases` gained
+  `components/PurchasesSection.tsx` (from `auth/components/AccountModal`, still
+  composed by `AccountModal`) and `model/processors/purchaseProcessor.ts` (from
+  `auth/model/processors`). Both still depend on their parent feature (drawing's
+  `drawingMeasure` action, auth's `authInit`/`purchaseOnLogin`), which is a fine
+  dependency direction; the separate lazy chunks are unaffected (chunk names come
+  from the `webpackChunkName` comments, not the folder).
   Toast/`errorKey` references that previously forced strings to stay global can be moved too: a processor dispatches the toast with a literal `message:` resolved via `load<Feature>Messages(language)` (as `wikimediaCommons` now does) instead of a global `messageKey:` — or, for the `errorKey` shortcut, an explicit try/catch (as the `myMaps` processors now do). Since toasts gained `messageKey` + optional `messageLoader` (resolved against a per-feature bundle at render), even JSX-returning toast keys can leave the global blob — that's how `changesets.detail`, `trackViewer.info`, and the two `tracking.subscribe*` keys moved out. Still global-bound: `mapLayers.legacyMapWarning` (a JSX toast still dispatched with a global `messageKey`, not yet migrated to a `messageLoader`).
 
 ## Softer / design opinions

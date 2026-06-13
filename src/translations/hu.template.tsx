@@ -1,8 +1,5 @@
-import { AreaInfo } from '@app/components/AreaInfo.js';
-import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
@@ -218,26 +215,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         analytics="Analitikus sütik"
       />
     ),
-  },
-
-  measurement: {
-    distance: 'Távolság',
-    elevation: 'Magasság',
-    area: 'Terület',
-    elevationFetchError: ({ err }) =>
-      addError(messages, 'Hiba történt a pont magasságának beolvasásakor', err),
-    elevationInfo: (params) => (
-      <ElevationInfo
-        {...params}
-        lang="hu"
-        tileMessage="Térképcsempe"
-        maslMessage="Magasság"
-      />
-    ),
-    areaInfo: (props) => (
-      <AreaInfo {...props} areaLabel="Terület" perimeterLabel="Kerület" />
-    ),
-    distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Távolság" />,
   },
 
   settings: {

@@ -1,8 +1,5 @@
-import { AreaInfo } from '@app/components/AreaInfo.js';
-import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
@@ -219,28 +216,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         </>
       ),
     },
-  },
-
-  measurement: {
-    distance: 'Linea',
-    elevation: 'Punto',
-    area: 'Poligono',
-    elevationFetchError: ({ err }) =>
-      addError(messages, 'Error fetching point elevation:', err),
-    elevationInfo: (params) => (
-      <ElevationInfo
-        {...params}
-        lang="cs"
-        tileMessage="Tile"
-        maslMessage="Elevazione"
-      />
-    ),
-    areaInfo: (props) => (
-      <AreaInfo {...props} areaLabel="Area" perimeterLabel="Perimetro" />
-    ),
-    distanceInfo: (props) => (
-      <DistanceInfo {...props} lengthLabel="Lunghezza" />
-    ),
   },
 
   settings: {

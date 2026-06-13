@@ -1,5 +1,4 @@
 import { HttpError } from '@app/httpRequest.js';
-import { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
 import { SearchResult, SearchSource } from '@features/search/model/actions.js';
 import { DeepPartial } from '@shared/types/deepPartial.js';
 import { JSX, ReactNode } from 'react';
@@ -149,15 +148,6 @@ export type Messages = {
     copyright: string;
     infoBars: Record<string, () => JSX.Element>;
     cookieConsent: () => JSX.Element;
-  };
-  measurement: {
-    distance: string;
-    elevation: string;
-    area: string;
-    elevationFetchError: (props: Err) => string;
-    elevationInfo: (props: ElevationInfoBaseProps) => JSX.Element;
-    areaInfo: (props: { area: number; perimeter: number }) => JSX.Element;
-    distanceInfo: (props: { length: number }) => JSX.Element;
   };
   settings: {
     map: {

@@ -1,8 +1,5 @@
-import { AreaInfo } from '@app/components/AreaInfo.js';
-import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
@@ -206,30 +203,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         analytics="Analityczne cookies"
       />
     ),
-  },
-
-  measurement: {
-    distance: 'Linia',
-    elevation: 'Punkt',
-    area: 'Wielokąt',
-    elevationFetchError: ({ err }) =>
-      addError(
-        messages,
-        'Wystąpił błąd podczas pobierania wysokości punktu',
-        err,
-      ),
-    elevationInfo: (params) => (
-      <ElevationInfo
-        {...params}
-        lang="pl"
-        tileMessage="Kafel"
-        maslMessage="Wysokość n.p.m."
-      />
-    ),
-    areaInfo: (props) => (
-      <AreaInfo {...props} areaLabel="Powierzchnia" perimeterLabel="Obwód" />
-    ),
-    distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Długość" />,
   },
 
   settings: {
