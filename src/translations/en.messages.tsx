@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
@@ -212,22 +211,6 @@ const messages: Messages = {
     },
   },
 
-  ad: {
-    self: (email) => (
-      <>
-        Interested in placing your own ad here? Don’t hesitate to contact us at{' '}
-        {email}.
-      </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="economic program for volunteers">
-        <b>Freemap is created by volunteers.</b>{' '}
-        <span className="text-danger">Reward them for their work</span>, with
-        your own volunteer work or with money.
-      </RovasAd>
-    ),
-  },
-
   measurement: {
     distance: 'Line',
     elevation: 'Point',
@@ -345,10 +328,6 @@ const messages: Messages = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
-  },
-
-  documents: {
-    errorLoading: 'Error loading document.',
   },
 
   mapLayers: {
@@ -488,11 +467,6 @@ const messages: Messages = {
         <li><a href="/#reset-local-storage">clear local data and load initial page</a></li>
       </ul>
     `,
-  },
-
-  osm: {
-    fetchingError: ({ err }) =>
-      addError(messages, 'Error fetching OSM data', err),
   },
 
   mapCtxMenu: {

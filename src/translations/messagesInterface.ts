@@ -150,10 +150,6 @@ export type Messages = {
     infoBars: Record<string, () => JSX.Element>;
     cookieConsent: () => JSX.Element;
   };
-  ad: {
-    self: (email: ReactNode) => JSX.Element;
-    rovas: () => JSX.Element;
-  };
   measurement: {
     distance: string;
     elevation: string;
@@ -234,9 +230,6 @@ export type Messages = {
     result: string;
     sources: Record<SearchSource, string>;
   };
-  documents: {
-    errorLoading: string;
-  };
   mapLayers: {
     showMore: string;
     showAll: string;
@@ -309,9 +302,6 @@ export type Messages = {
   };
   errorCatcher: {
     html: (ticketId?: string) => string;
-  };
-  osm: {
-    fetchingError: (props: Err) => string;
   };
   mapCtxMenu: {
     centerMap: string;

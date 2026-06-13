@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
@@ -249,22 +248,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
   },
 
-  ad: {
-    self: (email) => (
-      <>
-        Máš záujem o vlastnú reklamu na tomto mieste? Neváhaj nás kontaktovať na{' '}
-        {email}.
-      </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="ekonomický softvér pre dobrovoľnikov">
-        <b>Freemap je tvorený dobrovoľníkmi.</b>{' '}
-        <span className="text-danger">Odmeňte ich za ich prácu</span>, vašou
-        vlastnou dobrovoľníckou prácou alebo peniazmi.
-      </RovasAd>
-    ),
-  },
-
   measurement: {
     distance: 'Čiara',
     elevation: 'Bod',
@@ -388,10 +371,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
-  },
-
-  documents: {
-    errorLoading: 'Dokument sa nepodarilo načítať.',
   },
 
   mapLayers: {
@@ -531,11 +510,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         <li><a href="/#reset-local-storage">zmazať lokálne dáta a znovunačítať úvodnú stránku</a></li>
       </ul>
     `,
-  },
-
-  osm: {
-    fetchingError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri získavaní OSM dát', err),
   },
 
   mapCtxMenu: {

@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
@@ -218,22 +217,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  ad: {
-    self: (email) => (
-      <>
-        Möchten Sie hier Ihre eigene Werbung platzieren? Kontaktieren Sie uns
-        gerne unter {email}.
-      </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="economic program for volunteers">
-        <b>Freemap is created by volunteers.</b>{' '}
-        <span className="text-danger">Reward them for their work</span>, with
-        your own volunteer work or with money.
-      </RovasAd>
-    ),
-  },
-
   measurement: {
     distance: 'Linie',
     elevation: 'Punkt',
@@ -366,10 +349,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
-  },
-
-  documents: {
-    errorLoading: 'Fehler beim Laden des Dokuments.',
   },
 
   mapLayers: {
@@ -512,10 +491,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       <li><a href="/#reset-local-storage">Lokale Daten löschen und Startseite laden</a></li>
     </ul>
   `,
-  },
-  osm: {
-    fetchingError: ({ err }) =>
-      addError(messages, 'Fehler beim Abrufen von OSM-Daten', err),
   },
 
   mapCtxMenu: {

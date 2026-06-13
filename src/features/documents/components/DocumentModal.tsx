@@ -7,12 +7,15 @@ import { useDispatch } from 'react-redux';
 import { getDocuments } from '@/documents/index.js';
 import { ModalSchema, setActiveModal } from '../../../app/store/actions.js';
 import { DocumentSchema, documentShow } from '../model/actions.js';
+import { useDocumentsMessages } from '../translations/useDocumentsMessages.js';
 
 type Props = { show: boolean };
 
 export default DocumentModal;
 function DocumentModal({ show }: Props): ReactElement | null {
   const m = useMessages();
+
+  const docm = useDocumentsMessages();
 
   const dispatch = useDispatch();
 
@@ -45,12 +48,12 @@ function DocumentModal({ show }: Props): ReactElement | null {
         setContent(content);
       })
       .catch(() => {
-        setContent(m?.documents.errorLoading ?? null);
+        setContent(docm?.errorLoading ?? null);
       })
       .then(() => {
         setLoading(false);
       });
-  }, [document, m]);
+  }, [document, docm?.errorLoading]);
 
   function close() {
     dispatch(documentShow(null));

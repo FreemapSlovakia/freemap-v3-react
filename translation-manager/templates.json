@@ -22,6 +22,9 @@
     "src/features/credits/translations/{LANG}.tsx",
     "src/features/auth/translations/{LANG}.tsx",
     "src/features/drawing/translations/{LANG}.tsx",
+    "src/features/osm/translations/{LANG}.tsx",
+    "src/features/ad/translations/{LANG}.tsx",
+    "src/features/documents/translations/{LANG}.tsx",
     "src/app/components/embedMapModal/translations/{LANG}.tsx",
     "src/app/components/aboutModal/translations/{LANG}.tsx"
   ]

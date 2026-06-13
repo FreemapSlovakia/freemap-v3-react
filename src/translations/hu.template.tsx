@@ -1,7 +1,6 @@
 import { AreaInfo } from '@app/components/AreaInfo.js';
 import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
@@ -221,22 +220,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  ad: {
-    self: (email) => (
-      <>
-        Szeretnéd, ha a saját hirdetésed lenne itt? Ne habozz kapcsolatba lépni
-        velünk a következő címen: {email}.
-      </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="economic program for volunteers">
-        <b>Freemap is created by volunteers.</b>{' '}
-        <span className="text-danger">Reward them for their work</span>, with
-        your own volunteer work or with money.
-      </RovasAd>
-    ),
-  },
-
   measurement: {
     distance: 'Távolság',
     elevation: 'Magasság',
@@ -357,10 +340,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
-  },
-
-  documents: {
-    errorLoading: 'Hiba történt a dokumentum betöltésekor.',
   },
 
   mapLayers: {
@@ -509,11 +488,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         <li><a href="/#reset-local-storage">törli a helyi adatokat és betölti a kezdőoldalt</a></li>
       </ul>
     `,
-  },
-
-  osm: {
-    fetchingError: ({ err }) =>
-      addError(messages, 'Hiba történt az OSM-adatok lekérésénél', err),
   },
 
   mapCtxMenu: {
