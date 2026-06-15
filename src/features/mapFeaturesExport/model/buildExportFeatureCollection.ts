@@ -1,8 +1,4 @@
 import type { RootState } from '@app/store/store.js';
-import {
-  lineStyleFromProperties,
-  pointStyleFromProperties,
-} from '@features/drawing/model/styleFromProperties.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
 import type { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
@@ -21,6 +17,10 @@ import {
   svgToPngDataUrl,
   utf8ToBase64,
 } from '@shared/markerSvg.js';
+import {
+  lineStyleFromProperties,
+  pointStyleFromProperties,
+} from '@shared/styleFromProperties.js';
 import {
   featureCollection,
   lineString,

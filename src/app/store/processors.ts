@@ -6,7 +6,6 @@ import {
   authTrackProcessor,
 } from '@features/auth/model/processors/authInitProcessor.js';
 import { authLogoutProcessor } from '@features/auth/model/processors/authLogoutProcessor.js';
-import { purchaseProcessor } from '@features/auth/model/processors/purchaseProcessor.js';
 import {
   cachedMapDeletedProcessor,
   cachedMapRenamedProcessor,
@@ -21,7 +20,6 @@ import {
   changesetsTrackProcessor,
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
-import { measurementProcessor } from '@features/drawing/model/measurementProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
 import { galleryDeletePictureProcessor } from '@features/gallery/model/processors/galleryDeletePictureProcessor.js';
 import { galleryFetchUsersProcessor } from '@features/gallery/model/processors/galleryFetchUsersProcessor.js';
@@ -45,6 +43,7 @@ import { locateProcessor } from '@features/location/model/locateProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
 import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProcessor.js';
+import { measurementProcessor } from '@features/measurement/model/measurementProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
 import { mapsLoadProcessor } from '@features/myMaps/model/processors/mapsLoadProcessor.js';
@@ -57,6 +56,7 @@ import { openInExternalAppProcessor } from '@features/openInExternalApp/openInEx
 import { osmLoadNodeProcessor } from '@features/osm/model/processors/osmLoadNodeProcessor.js';
 import { osmLoadRelationProcessor } from '@features/osm/model/processors/osmLoadRelationProcessor.js';
 import { osmLoadWayProcessor } from '@features/osm/model/processors/osmLoadWayProcessor.js';
+import { purchaseProcessor } from '@features/purchases/model/processors/purchaseProcessor.js';
 import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/processors/findRouteProcessor.js';
 import { routePlannerRefocusMapProcessor } from '@features/routePlanner/model/processors/refocusMapProcessor.js';
 import { routePlannerSetFromCurrentPositionProcessor } from '@features/routePlanner/model/processors/setFromCurrentPositionProcessor.js';

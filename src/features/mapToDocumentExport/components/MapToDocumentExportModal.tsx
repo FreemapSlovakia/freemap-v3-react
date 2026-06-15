@@ -252,14 +252,12 @@ export default function MapToDocumentExportModal({
       close();
     } catch (err) {
       if (!ac.signal.aborted) {
-        const messages = await loadMapToDocumentExportMessages(
-          store.getState().l10n.language,
-        );
-
         dispatch(
           toastsAdd({
             style: 'danger',
-            message: messages.exportError({ err }),
+            messageKey: 'exportError',
+            messageParams: { err },
+            messageLoader: loadMapToDocumentExportMessages,
           }),
         );
       }

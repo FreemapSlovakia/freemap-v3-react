@@ -282,7 +282,7 @@ export default function GalleryMenu() {
                       <>
                         <Dropdown.Item as="button" eventKey="emails">
                           <Checkbox value={sendGalleryEmails} /> <FaEnvelope />{' '}
-                          {m?.settings.account.sendGalleryEmails}
+                          {gm?.sendGalleryEmails}
                         </Dropdown.Item>
 
                         <Dropdown.Divider />

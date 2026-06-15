@@ -22,8 +22,8 @@ export const downloadMapProcessor: Processor<typeof downloadMap> = {
       toastsAdd({
         id: 'offlineMapExport',
         style: 'success',
-        message: (await loadOfflineMapExportMessages(getState().l10n.language))
-          .success,
+        messageKey: 'success',
+        messageLoader: loadOfflineMapExportMessages,
       }),
     );
   },

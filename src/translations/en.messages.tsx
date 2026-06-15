@@ -1,23 +1,11 @@
-import { AreaInfo } from '@app/components/AreaInfo.js';
-import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
-import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
-import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './en-shared.js';
 import { addError, Messages } from './messagesInterface.js';
-
-const nf00 = new Intl.NumberFormat('en', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0a.s.l.';
 
@@ -60,7 +48,9 @@ const messages: Messages = {
     preventShowingAgain: "Don't show next time",
     closeWithoutSaving: 'Close the window with unsaved changes?',
     back: 'Back',
-    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    internalError: ({ ticketId }) => (
+      <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
+    ),
     processorError: ({ err }) => addError(messages, 'Application error', err),
     seconds: 'seconds',
     minutes: 'minutes',
@@ -217,182 +207,6 @@ const messages: Messages = {
     },
   },
 
-  ad: {
-    self: (email) => (
-      <>
-        Interested in placing your own ad here? Don’t hesitate to contact us at{' '}
-        {email}.
-      </>
-    ),
-  },
-
-  measurement: {
-    distance: 'Line',
-    elevation: 'Point',
-    area: 'Polygon',
-    elevationFetchError: ({ err }) =>
-      addError(messages, 'Error fetching point elevation', err),
-    elevationInfo: (params) => (
-      <ElevationInfo
-        {...params}
-        lang="cs"
-        tileMessage="Tile"
-        maslMessage="Elevation"
-      />
-    ),
-    areaInfo: (props) => (
-      <AreaInfo {...props} areaLabel="Area" perimeterLabel="Perimeter" />
-    ),
-    distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Length" />,
-  },
-
-  trackViewer: {
-    info: () => <TrackViewerDetails />,
-  },
-
-  drawing: {
-    modify: 'Properties',
-    edit: {
-      title: 'Properties',
-      color: 'Color',
-      fillColor: 'Fill color',
-      label: 'Label',
-      width: 'Width',
-      hint: 'To remove label leave this field empty.',
-      shape: 'Shape',
-      icon: 'Icon',
-      iconChoose: 'Choose icon…',
-      iconNone: 'No icon',
-      iconSearch: 'Search icons',
-      text: 'Text',
-      textHint: 'Icon or up to 2 characters shown inside the marker.',
-      type: 'Geometry type',
-      dashArray: 'Dash style',
-      lineCap: 'Line cap',
-      lineCapRound: 'Round',
-      lineCapButt: 'Butt',
-      lineCapSquare: 'Square',
-      lineJoin: 'Line join',
-      lineJoinRound: 'Round',
-      lineJoinMiter: 'Miter',
-      lineJoinBevel: 'Bevel',
-    },
-    continue: 'Continue',
-    join: 'Join',
-    split: 'Split',
-    stopDrawing: 'Stop drawing',
-    selectPointToJoin: 'Select point to join lines',
-    defProps: {
-      menuItem: 'Style settings',
-      title: 'Default drawing style settings',
-      applyToAll: 'Save and apply to all',
-    },
-    projection: {
-      projectPoint: 'Project point',
-      azimuth: 'Azimuth',
-      distance: 'Distance',
-    },
-    reverse: 'Reverse direction',
-    simplify: 'Simplify',
-  },
-
-  purchases: {
-    purchases: 'Purchases',
-    premiumExpired: (at) => <>Your premium access expired at {at}</>,
-    date: 'Date',
-    item: 'Item',
-    notPremiumYet: 'You are not premium yet.',
-    awaitingBankPayment:
-      'We are awaiting confirmation of the bank transfer. Premium will activate once the payment is received.',
-    bankPaymentFailed:
-      'Some bank transfers were rejected or expired. If you believe this is a mistake, please contact support.',
-    bankIntentStatus: {
-      pending_settlement:
-        'Bank transfer was placed and is awaiting settlement.',
-      manual_review:
-        'Bank transfer requires manual review (for example amount mismatch).',
-      paid: 'Bank transfer has been confirmed as paid.',
-      expired: 'Bank transfer expired before confirmation.',
-      failed: 'Bank transfer failed.',
-      rejected: 'Bank transfer was rejected.',
-      created: 'Bank transfer intent was created and is not yet settled.',
-      unknown: 'Bank transfer status reported by provider: {}.',
-    },
-    noPurchases: 'No purchases',
-    premium: 'Premium',
-    credits: (amount) => <>Credits (${amount})</>,
-  },
-
-  settings: {
-    map: {
-      homeLocation: {
-        label: 'Home location:',
-        select: 'Select on the map',
-        undefined: 'undefined',
-      },
-    },
-    account: {
-      name: 'Name',
-      email: 'Email',
-      description: 'About me',
-      sendGalleryEmails: 'Notify photos comments via email',
-      delete: 'Delete account',
-      deleteWarning:
-        'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.',
-      personalInfo: 'Personal information',
-      authProviders: 'Login providers',
-      picture: 'Profile picture',
-      choosePicture: 'Choose picture',
-      pictureTooLarge: 'Picture is too large. Maximum size is 5 MB.',
-    },
-    general: {
-      tips: 'Show tips on page opening (only if Slovak or Czech language is selected)',
-    },
-    layer: 'Map',
-    overlayOpacity: 'Opacity',
-    showInMenu: 'Show in menu',
-    showInToolbar: 'Show in toolbar',
-    saveSuccess: 'Settings have been saved.',
-    savingError: ({ err }) => addError(messages, 'Error saving settings', err),
-    customLayersDef: 'Custom map layers definition',
-    customLayersDefError: 'Invalid definition of custom map layers.',
-  },
-
-  changesets: {
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  },
-
-  mapDetails: {
-    sources: 'Sources',
-    source: 'Source',
-    notFound: 'Nothing found here.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Error fetching details', err),
-    detail: ({ result }) => (
-      <ObjectDetails
-        result={result}
-        openText="Open at OpenStreetMap.org"
-        historyText="history"
-        editInJosmText="Edit in JOSM"
-      />
-    ),
-  },
-
-  external: {
-    openInExternal: 'Share / Open in external app.',
-    osm: 'OpenStreetMap',
-    oma: 'OMA',
-    googleMaps: 'Google Maps',
-    hiking_sk: 'Hiking.sk',
-    zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.com',
-    josm: 'Edit in JOSM',
-    id: 'Edit in iD',
-    window: 'New window',
-    url: 'Share location',
-    image: 'Share photo',
-  },
-
   search: {
     inProgress: 'Searching…',
     noResults: 'No results found',
@@ -414,33 +228,6 @@ const messages: Messages = {
       'nominatim-reverse': 'Reverse geocoding',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
-    },
-  },
-
-  documents: {
-    errorLoading: 'Error loading document.',
-  },
-
-  auth: {
-    connect: {
-      label: 'Connect',
-      success: 'Connected',
-    },
-    disconnect: {
-      label: 'Disconnect',
-      success: 'Disconnected',
-    },
-    logIn: {
-      with: 'Choose a login provider',
-      success: 'You have been successfully logged in.',
-      logInError: ({ err }) => addError(messages, 'Error logging in', err),
-      logInError2: 'Error logging in.',
-      verifyError: ({ err }) =>
-        addError(messages, 'Error verifying authentication', err),
-    },
-    logOut: {
-      success: 'You have been successfully logged out.',
-      error: ({ err }) => addError(messages, 'Error logging out', err),
     },
   },
 
@@ -583,24 +370,6 @@ const messages: Messages = {
     `,
   },
 
-  osm: {
-    fetchingError: ({ err }) =>
-      addError(messages, 'Error fetching OSM data', err),
-  },
-
-  tracking: {
-    subscribeNotFound: ({ id }) => (
-      <>
-        Watch token <i>{id}</i> doesn't exist.
-      </>
-    ),
-    subscribeError: ({ id }) => (
-      <>
-        Error watching using token <i>{id}</i>.
-      </>
-    ),
-  },
-
   mapCtxMenu: {
     centerMap: 'Center a map here',
     measurePosition: 'Find coordinates and elevation',
@@ -610,85 +379,6 @@ const messages: Messages = {
     startRoute: 'Plan a route from here',
     finishRoute: 'Plan a route to here',
     showPhotos: 'Show nearby photos',
-  },
-
-  premium: {
-    title: 'Get premium access',
-    commonHeader: (
-      <>
-        <p>
-          <strong>Freemap Premium</strong> is an optional yearly subscription
-          that enhances the app.
-        </p>
-        <p className="mb-1">
-          For <b>8 €</b> per year you get:
-        </p>
-        <ul>
-          <li>removed ad banner</li>
-          <li
-            className="text-decoration-underline"
-            title="hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps"
-          >
-            premium map layers
-          </li>
-          <li>premium photos</li>
-          <li>multimodal routing</li>
-        </ul>
-        <p className="mb-0">Freemap stays free and open.</p>
-      </>
-    ),
-    stepsForAnonymous: (
-      <>
-        <div className="fw-bold">How it works</div>
-        <div className="mb-3">
-          <p className="mb-1 ms-3">
-            <span className="fw-semibold">Step 1</span> - sign in or create a
-            free Freemap account (below).
-          </p>
-          <p className="mb-1 ms-3">
-            <span className="fw-semibold">Step 2</span> - you'll be redirected
-            to complete the payment.
-          </p>
-        </div>
-      </>
-    ),
-    continue: 'Continue',
-    success: 'Congratulations, you have gained premium access!',
-    becomePremium: 'Get premium access',
-    youArePremium: (date) => (
-      <>
-        You have premium access until <b>{date}</b>.
-      </>
-    ),
-    premiumOnly: 'Only available with premium access.',
-    alreadyPremium: 'You already have premium access.',
-    premiumUser: 'User with premium access',
-  },
-
-  credits: {
-    buyCredits: 'Buy credits',
-    amount: 'Credits',
-    credits: 'credits',
-    buy: 'Buy',
-    purchase: {
-      success: ({ amount }) => (
-        <>Your credit has been increased by {nf00.format(amount)}.</>
-      ),
-    },
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        You have {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="credits"
-            help="You can use credits to [offline maps export]."
-          />
-        ) : (
-          'credits'
-        )}
-        .
-      </>
-    ),
   },
 
   errorStatus: {

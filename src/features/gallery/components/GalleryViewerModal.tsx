@@ -1,12 +1,13 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { isPremium } from '@features/premium/premium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import { isPremium } from '@shared/premium.js';
 import 'pannellum';
 import 'pannellum/build/pannellum.css';
 import { hasRole } from '@features/auth/model/types.js';
@@ -61,6 +62,8 @@ type Props = { show: boolean };
 
 export default function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const prm = usePremiumMessages();
 
   const gm = useGalleryMessages();
 
@@ -412,7 +415,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       <>
                         <br />
                         <Button onClick={becomePremium} className="mt-3">
-                          <FaGem /> {m?.premium.becomePremium}
+                          <FaGem /> {prm?.becomePremium}
                         </Button>
                       </>
                     )}

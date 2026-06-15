@@ -5,6 +5,7 @@ import {
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import {
   osmLoadNode,
   osmLoadRelation,
@@ -128,7 +129,8 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       dispatch(
         toastsAdd({
           id: 'mapDetails.tags',
-          messageKey: 'mapDetails.detail',
+          messageKey: 'detail',
+          messageLoader: loadObjectsMessages,
           messageParams: { result: action.payload.result },
           cancelType: [
             clearMapFeatures.type,

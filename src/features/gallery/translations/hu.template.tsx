@@ -4,6 +4,7 @@ import { addError } from '@/translations/messagesInterface.js';
 import { GalleryMessages } from './GalleryMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
+  sendGalleryEmails: 'Értesítés fotómegjegyzésekről e-mailben',
   stats: {
     leaderboard: 'Ranglista',
     country: 'Ország',

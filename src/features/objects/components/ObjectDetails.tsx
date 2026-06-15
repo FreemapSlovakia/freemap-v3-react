@@ -1,4 +1,3 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SearchResult } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
@@ -13,6 +12,7 @@ import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import { Fragment, ReactElement } from 'react';
 import { Button, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
+import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { SourceName } from './SourceName.js';
 
 type Props = {
@@ -148,7 +148,7 @@ export function ObjectDetails({
     );
   }
 
-  const m = useMessages();
+  const om = useObjectsMessages();
 
   return (
     <>
@@ -209,7 +209,7 @@ export function ObjectDetails({
       )}
 
       <span>
-        {m?.mapDetails.source}: <SourceName result={result} />
+        {om?.source}: <SourceName result={result} />
       </span>
     </>
   );

@@ -1,4 +1,4 @@
-import { serializeShading } from '@features/parameterizedShading/Shading.js';
+import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';

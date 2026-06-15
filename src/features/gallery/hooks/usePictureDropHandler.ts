@@ -1,4 +1,5 @@
 import { latLonToString } from '@shared/geoutils.js';
+import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import ExifReader, { Tags } from 'exifreader';
 import { useCallback } from 'react';
@@ -136,7 +137,7 @@ export function usePictureDropHandler(
           errors: [],
         });
 
-        if (showPreview) {
+        const startPreview = () => {
           // TODO adjust 618 by display width
           loadPreview(file, 618, (err, key) => {
             if (err) {
@@ -147,12 +148,29 @@ export function usePictureDropHandler(
               cb();
             }
           });
-        } else {
+        };
+
+        if (!showPreview) {
           cb();
+        } else if (isHeif) {
+          // Skip the auto-preview for HEIC the browser can't decode.
+          isHeicSupported().then((supported) => {
+            if (supported) {
+              startPreview();
+            } else {
+              cb();
+            }
+          });
+        } else {
+          startPreview();
         }
       };
 
-      reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
+      // HEIF stores EXIF in a metadata box that may sit past the first 128 KB,
+      // so read the whole file for those; JPEG keeps it in the header.
+      const isHeif = isHeicFile(file);
+
+      reader.readAsArrayBuffer(isHeif ? file : file.slice(0, 128 * 1024));
     },
     [showPreview, language, onItemAdd, onItemChange, premium],
   );

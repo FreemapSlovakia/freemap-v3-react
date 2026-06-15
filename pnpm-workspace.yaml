@@ -76,3 +76,11 @@ minimumReleaseAgeExclude:
   - '@zdila/react-gradient-color-picker@3.1.1'
   - protobufjs@8.6.3
   - '@zdila/react-gradient-color-picker@3.1.2'
+  - '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260614.1'
+  - '@typescript/native-preview-darwin-x64@7.0.0-dev.20260614.1'
+  - '@typescript/native-preview-linux-arm64@7.0.0-dev.20260614.1'
+  - '@typescript/native-preview-linux-arm@7.0.0-dev.20260614.1'
+  - '@typescript/native-preview-linux-x64@7.0.0-dev.20260614.1'
+  - '@typescript/native-preview-win32-arm64@7.0.0-dev.20260614.1'
+  - '@typescript/native-preview-win32-x64@7.0.0-dev.20260614.1'
+  - '@typescript/native-preview@7.0.0-dev.20260614.1'

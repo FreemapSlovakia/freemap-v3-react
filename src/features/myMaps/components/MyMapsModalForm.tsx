@@ -11,6 +11,7 @@ import { ReactTags, Tag } from 'react-tag-autocomplete';
 import 'react-tag-autocomplete/example/src/styles.css';
 import z from 'zod';
 import { type MapMeta, mapsLoadList, mapsSave } from '../model/actions.js';
+import { loadMyMapsMessages } from '../translations/loadMyMapsMessages.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 
 type Props = {
@@ -133,7 +134,8 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
             toastsAdd({
               id: 'myMaps.conflictError',
               style: 'danger',
-              message: mm?.conflictError ?? '',
+              messageKey: 'conflictError',
+              messageLoader: loadMyMapsMessages,
             }),
           );
 
@@ -160,7 +162,9 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
         dispatch(
           toastsAdd({
             style: 'danger',
-            message: mm?.saveError({ err }) ?? '',
+            messageKey: 'saveError',
+            messageParams: { err },
+            messageLoader: loadMyMapsMessages,
           }),
         );
       });

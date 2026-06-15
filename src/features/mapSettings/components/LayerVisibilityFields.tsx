@@ -1,6 +1,6 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
+import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 
 type Props = {
   showInMenu: boolean;
@@ -13,13 +13,13 @@ export function LayerVisibilityFields({
   showInToolbar,
   onChange,
 }: Props): ReactElement {
-  const m = useMessages();
+  const msm = useMapSettingsMessages();
 
   return (
     <div className="d-flex flex-wrap gap-3">
       <Form.Check
         id="layer-show-in-menu"
-        label={m?.settings.showInMenu}
+        label={msm?.showInMenu}
         checked={showInMenu}
         onChange={(e) =>
           onChange({
@@ -31,7 +31,7 @@ export function LayerVisibilityFields({
 
       <Form.Check
         id="layer-show-in-toolbar"
-        label={m?.settings.showInToolbar}
+        label={msm?.showInToolbar}
         checked={showInToolbar}
         onChange={(e) =>
           onChange({

@@ -1,4 +1,7 @@
+import type { JSX } from 'react';
+
 export type TrackViewerMessages = {
+  info: () => JSX.Element;
   upload: string;
   moreInfo: string;
   share: string;

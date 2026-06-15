@@ -12,12 +12,15 @@ import { FaExternalLinkAlt, FaMapMarkerAlt, FaTag } from 'react-icons/fa';
 import { TbAngle } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { drawingPointAdd } from '../model/actions/drawingPointActions.js';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import { ProjectPointModal } from './ProjectPointModal.js';
 
 export default function DrawingPointSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const dm = useDrawingMessages();
 
   const gm = useGalleryMessages();
 
@@ -83,7 +86,7 @@ export default function DrawingPointSelection(): ReactElement | null {
         label={m?.selections.drawPoints}
         deletable
       >
-        <LongPressTooltip breakpoint="sm" label={m?.drawing.modify}>
+        <LongPressTooltip breakpoint="sm" label={dm?.modify}>
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"
@@ -99,10 +102,7 @@ export default function DrawingPointSelection(): ReactElement | null {
           )}
         </LongPressTooltip>
 
-        <LongPressTooltip
-          breakpoint="sm"
-          label={m?.drawing.projection.projectPoint}
-        >
+        <LongPressTooltip breakpoint="sm" label={dm?.projection.projectPoint}>
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"

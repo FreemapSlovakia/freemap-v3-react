@@ -1,9 +1,9 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures, setTool } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { isPremium } from '@features/premium/premium.js';
 import { ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
-import { isPremium } from '@shared/premium.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import distance from '@turf/distance';
@@ -276,11 +276,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     return;
   }
 
-  const rpm = await loadRoutePlannerMessages(getState().l10n.language);
-
   const rnfToastAction = toastsAdd({
     id: 'routePlanner',
-    message: rpm.routeNotFound,
+    messageKey: 'routeNotFound',
+    messageLoader: loadRoutePlannerMessages,
     style: 'warning',
     timeout: 5000,
   });
@@ -316,7 +315,9 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       dispatch(
         toastsAdd({
           id: 'routePlanner',
-          message: rpm.fetchingError({ err: data.reason }),
+          messageKey: 'fetchingError',
+          messageParams: { err: data.reason },
+          messageLoader: loadRoutePlannerMessages,
           style: 'danger',
           timeout: 5000,
         }),
@@ -463,7 +464,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     dispatch(
       toastsAdd({
         id: 'routePlanner.showMidpointHint',
-        message: rpm.showMidpointHint,
+        messageKey: 'showMidpointHint',
+        messageLoader: loadRoutePlannerMessages,
         style: 'info',
         actions,
         cancelType: [setTool.type, routePlannerAddPoint.type],

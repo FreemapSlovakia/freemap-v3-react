@@ -12,7 +12,7 @@ import {
 import { gallerySetFilter } from '@features/gallery/model/actions.js';
 import { processGeoipResult } from '@features/geoip/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import { Shading } from '@features/parameterizedShading/Shading.js';
+import { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   defaultStravaHeatmapColor,

@@ -90,11 +90,7 @@ export function Toast({
         <CloseButton className="float-end" onClick={handleAlertDismiss} />
       )}
 
-      {typeof message === 'string' && message.startsWith('!HTML!') ? (
-        <span dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
-      ) : (
-        <span>{message}</span>
-      )}
+      <span>{message}</span>
 
       {buttonActions.length > 0 && (
         <ButtonToolbar className="mt-2">

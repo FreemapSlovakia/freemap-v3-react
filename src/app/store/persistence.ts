@@ -14,7 +14,7 @@ import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectInitialState } from '@features/objects/model/reducer.js';
-import { ShadingSchema } from '@features/parameterizedShading/Shading.js';
+import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
 import { ColorizingModeSchema } from '@features/trackViewer/model/actions.js';
 import { trackViewerInitialState } from '@features/trackViewer/model/reducer.js';

@@ -1,12 +1,5 @@
-import { AreaInfo } from '@app/components/AreaInfo.js';
-import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
-import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
-import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -14,11 +7,6 @@ import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import { addError, Messages } from './messagesInterface.js';
 import shared from './sk-shared.js';
-
-const nf00 = new Intl.NumberFormat('sk', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0n.\xa0m.';
 
@@ -41,9 +29,6 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
 const outdoorMap = 'Turistika, Cyklo, Bežky, Jazdenie';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
-  changesets: {
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  },
   general: {
     iso: 'sk_SK',
     elevationProfile: 'Výškový profil',
@@ -65,7 +50,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     preventShowingAgain: 'Už viac nezobrazovať',
     closeWithoutSaving: 'Zavrieť okno bez uloženia zmien?',
     back: 'Späť',
-    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    internalError: ({ ticketId }) => (
+      <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
+    ),
     processorError: ({ err }) => addError(messages, 'Chyba aplikácie', err),
     seconds: 'sekundy',
     minutes: 'minúty',
@@ -257,179 +244,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
   },
 
-  ad: {
-    self: (email) => (
-      <>
-        Máš záujem o vlastnú reklamu na tomto mieste? Neváhaj nás kontaktovať na{' '}
-        {email}.
-      </>
-    ),
-  },
-
-  measurement: {
-    distance: 'Čiara',
-    elevation: 'Bod',
-    area: 'Polygón',
-    elevationFetchError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri získavaní výšky bodu', err),
-    elevationInfo: (params) => (
-      <ElevationInfo
-        {...params}
-        lang="sk"
-        tileMessage="Dlaždica"
-        maslMessage="Nadmorská výška"
-      />
-    ),
-    areaInfo: (props) => (
-      <AreaInfo {...props} areaLabel="Plocha" perimeterLabel="Obvod" />
-    ),
-    distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Dĺžka" />,
-  },
-
-  trackViewer: {
-    info: () => <TrackViewerDetails />,
-  },
-
-  drawing: {
-    modify: 'Vlastnosti',
-    edit: {
-      title: 'Vlastnosti',
-      color: 'Farba',
-      fillColor: 'Farba výplne',
-      label: 'Popis',
-      width: 'Šírka',
-      hint: 'Ak chcete popis odstrániť, nechajte pole popisu prázdne.',
-      shape: 'Tvar',
-      icon: 'Ikona',
-      iconChoose: 'Vybrať ikonu…',
-      iconNone: 'Bez ikony',
-      iconSearch: 'Hľadať ikony',
-      text: 'Text',
-      textHint: 'Ikona alebo najviac 2 znaky zobrazené v značke.',
-      type: 'Typ geometrie',
-      dashArray: 'Štýl prerušovania',
-      lineCap: 'Koniec čiary',
-      lineCapRound: 'Okrúhly',
-      lineCapButt: 'Rovný',
-      lineCapSquare: 'Štvorcový',
-      lineJoin: 'Spoj čiar',
-      lineJoinRound: 'Okrúhly',
-      lineJoinMiter: 'Ostrý',
-      lineJoinBevel: 'Skosený',
-    },
-    continue: 'Pokračovať',
-    join: 'Spojiť',
-    split: 'Rozdeliť',
-    stopDrawing: 'Ukončiť kreslenie',
-    selectPointToJoin: 'Zvoľte bod pre spojenie čiar',
-    defProps: {
-      menuItem: 'Nastaviť štýl',
-      title: 'Nastavenie štýlu kreslenia',
-      applyToAll: 'Uložiť a aplikovať na všetko',
-    },
-    projection: {
-      projectPoint: 'Zamerať bod',
-      distance: 'Vzdialenosť',
-      azimuth: 'Azimut',
-    },
-    reverse: 'Obrátiť smer',
-    simplify: 'Zjednodušiť',
-  },
-
-  purchases: {
-    purchases: 'Nákupy',
-    premiumExpired: (at) => <>Váš prémiový prístup vypršal {at}</>,
-    date: 'Dátum',
-    item: 'Položka',
-    notPremiumYet: 'Ešte nemáte prémiový prístup.',
-    awaitingBankPayment:
-      'Čakáme na potvrdenie bankového prevodu. Prémiový prístup bude aktivovaný po prijatí platby.',
-    bankPaymentFailed:
-      'Niektoré bankové prevody boli zamietnuté alebo vypršali. Ak si myslíte, že ide o omyl, kontaktujte podporu.',
-    bankIntentStatus: {
-      pending_settlement:
-        'Bankový prevod je vytvorený a čaká na vysporiadanie.',
-      manual_review:
-        'Bankový prevod vyžaduje manuálne overenie (napr. nesúlad sumy).',
-      paid: 'Bankový prevod bol potvrdený ako zaplatený.',
-      expired: 'Bankový prevod vypršal pred potvrdením.',
-      failed: 'Bankový prevod zlyhal.',
-      rejected: 'Bankový prevod bol zamietnutý.',
-      created: 'Platobný zámer bol vytvorený a ešte nie je vysporiadaný.',
-      unknown: 'Poskytovateľ nahlásil stav bankového prevodu: {}.',
-    },
-    noPurchases: 'Žiadne nákupy',
-    premium: 'Prémium',
-    credits: (amount) => <>Kredity ({amount})</>,
-  },
-
-  settings: {
-    map: {
-      homeLocation: {
-        label: 'Domovská poloha:',
-        select: 'Vybrať na mape',
-        undefined: 'neurčená',
-      },
-    },
-    account: {
-      name: 'Meno',
-      email: 'E-Mail',
-      description: 'O mne',
-      sendGalleryEmails: 'Upozorniť emailom na komentáre k fotkám',
-      delete: 'Zmazať účet',
-      deleteWarning:
-        'Naozaj si prajete zmazať svoj účet? Spolu s ním sa odstránia všetky vaše fotografie, komentáre a hodnotenia fotografií, vlastné mapy a sledované zariadenia.',
-      personalInfo: 'Osobné údaje',
-      authProviders: 'Poskytovatelia prihlásenia',
-      picture: 'Profilový obrázok',
-      choosePicture: 'Vybrať obrázok',
-      pictureTooLarge: 'Obrázok je príliš veľký. Maximálna veľkosť je 5 MB.',
-    },
-    general: {
-      tips: 'Zobrazovať tipy po otvorení stránky',
-    },
-    layer: 'Mapa',
-    overlayOpacity: 'Viditeľnosť',
-    showInMenu: 'Zobraziť v menu',
-    showInToolbar: 'Zobraziť v lište',
-    saveSuccess: 'Zmeny boli uložené.',
-    savingError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri ukladaní nastavení', err),
-    customLayersDef: 'Definícia vlastných mapových vrstiev',
-    customLayersDefError: 'Chybný formát definície vlasyných mapových vrstiev.',
-  },
-
-  mapDetails: {
-    sources: 'Zdroje',
-    source: 'Zdroj',
-    notFound: 'Nič sa tu nenašlo.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri získavaní detailov', err),
-    detail: ({ result }) => (
-      <ObjectDetails
-        result={result}
-        openText="Otvoriť na OpenStreetMap.org"
-        historyText="história"
-        editInJosmText="Editovať v JOSM"
-      />
-    ),
-  },
-
-  external: {
-    openInExternal: 'Zdieľať / otvoriť v ext. aplikácii',
-    osm: 'OpenStreetMap',
-    oma: 'OMA',
-    googleMaps: 'Google Mapy',
-    hiking_sk: 'Hiking.sk',
-    zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.com',
-    josm: 'Editor JOSM',
-    id: 'Editor iD',
-    window: 'Nové okno',
-    url: 'Zdieľať polohu',
-    image: 'Zdieľať fotografiu',
-  },
-
   search: {
     inProgress: 'Hľadám…',
     noResults: 'Nenašli sa žiadne výsledky',
@@ -456,34 +270,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'nominatim-forward': 'Geokódovanie',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
-    },
-  },
-
-  documents: {
-    errorLoading: 'Dokument sa nepodarilo načítať.',
-  },
-
-  auth: {
-    connect: {
-      label: 'Pripojiť',
-      success: 'Pripojené',
-    },
-    disconnect: {
-      label: 'Odpojiť',
-      success: 'Odpojené',
-    },
-    logIn: {
-      with: 'Vyberte poskytovateľa prihlásenia',
-      success: 'Boli ste úspešne prihlásený.',
-      logInError: ({ err }) =>
-        addError(messages, 'Nepodarilo sa prihlásiť', err),
-      logInError2: 'Nepodarilo sa prihlásiť.',
-      verifyError: ({ err }) =>
-        addError(messages, 'Nepodarilo sa overiť prihlásenie', err),
-    },
-    logOut: {
-      success: 'Boli ste úspešne odhlásený.',
-      error: ({ err }) => addError(messages, 'Nepodarilo sa odhlásiť', err),
     },
   },
 
@@ -626,24 +412,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     `,
   },
 
-  osm: {
-    fetchingError: ({ err }) =>
-      addError(messages, 'Nastala chyba pri získavaní OSM dát', err),
-  },
-
-  tracking: {
-    subscribeNotFound: ({ id }) => (
-      <>
-        Token sledovania <i>{id}</i> neexistuje.
-      </>
-    ),
-    subscribeError: ({ id }) => (
-      <>
-        Chyba sledovania pomocou sledovacieho tokenu <i>{id}</i>.
-      </>
-    ),
-  },
-
   mapCtxMenu: {
     centerMap: 'Vycentrovať sem mapu',
     measurePosition: 'Zistiť súradnice a výšku bodu',
@@ -653,85 +421,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startRoute: 'Plánovať odtiaľ trasu',
     finishRoute: 'Plánovať sem trasu',
     showPhotos: 'Ukázať fotky v okolí',
-  },
-
-  premium: {
-    title: 'Získať prémiový prístup',
-    commonHeader: (
-      <>
-        <p>
-          <strong>Freemap Premium</strong> je voliteľné ročné predplatné, ktoré
-          rozširuje aplikáciu.
-        </p>
-        <p className="mb-1">
-          Za <b>8 €</b> ročne získate:
-        </p>
-        <ul>
-          <li>odstránenie reklamného baneru</li>
-          <li
-            className="text-decoration-underline"
-            title="hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps"
-          >
-            prémiové mapové vrstvy
-          </li>
-          <li>prémiové fotky</li>
-          <li>multimodálne plánovanie trasy</li>
-        </ul>
-        <p className="mb-0">Freemap zostáva bezplatný a otvorený.</p>
-      </>
-    ),
-    stepsForAnonymous: (
-      <>
-        <div className="fw-bold">Ako to funguje</div>
-        <div className="mb-3">
-          <p className="mb-1 ms-3">
-            <span className="fw-semibold">Krok 1</span> - prihláste sa alebo si
-            vytvorte bezplatný účet vo Freemape (nižšie).
-          </p>
-          <p className="mb-1 ms-3">
-            <span className="fw-semibold">Krok 2</span> - budete presmerovaní na
-            dokončenie platby.
-          </p>
-        </div>
-      </>
-    ),
-    continue: 'Pokračovať',
-    success: 'Gratulujeme, získali ste prémiový prístup!',
-    becomePremium: 'Získať prémiový prístup',
-    youArePremium: (date) => (
-      <>
-        Máte prémiový prístup do <b>{date}</b>.
-      </>
-    ),
-    premiumOnly: 'Dostupné len s prémiovým prístupom.',
-    alreadyPremium: 'Už máte prémiový prístup.',
-    premiumUser: 'Používateľ s prémiovým prístupom',
-  },
-
-  credits: {
-    buyCredits: 'Kúpiť kredity',
-    amount: 'Kredity',
-    credits: 'kreditov',
-    buy: 'Kúpiť',
-    purchase: {
-      success: ({ amount }) => (
-        <>Váš kredit bol navýšený o {nf00.format(amount)}.</>
-      ),
-    },
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        Máte {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="kreditov"
-            help="Kredity môžete využiť na [export offline máp]."
-          />
-        ) : (
-          'kreditov'
-        )}
-        .
-      </>
-    ),
   },
 
   errorStatus: {

@@ -28,7 +28,8 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
       toastsAdd({
         id: 'mapFeaturesExport',
         style: 'danger',
-        message: result || 'Error exporting to Garmin',
+        messageKey: result ?? 'garmin.exportError',
+        messageLoader: loadMapFeaturesExportMessages,
       }),
     );
 
@@ -74,14 +75,13 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   if (res.status === 401 && body === 'invalid oauth token') {
     dispatch(authWithGarmin({ connect: false, successAction: action }));
   } else if (res.status === 403 && body === 'missing permission') {
-    const em = await loadMapFeaturesExportMessages(getState().l10n.language);
-
     dispatch(
       toastsAdd({
         id: 'mapFeaturesExport',
         timeout: 5000,
         style: 'danger',
-        message: em.garmin.revoked,
+        messageKey: 'garmin.revoked',
+        messageLoader: loadMapFeaturesExportMessages,
       }),
     );
   } else {

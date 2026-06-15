@@ -15,11 +15,14 @@ import {
   drawingLineJoinStart,
   drawingLineSplit,
 } from '../model/actions/drawingLineActions.js';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 export default function DrawingLinePointSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const dm = useDrawingMessages();
 
   const selection = useAppSelector((state) => state.main.selection);
 
@@ -40,7 +43,7 @@ export default function DrawingLinePointSelection(): ReactElement | null {
   ) {
     return (
       <Toolbar className="mt-2">
-        <span className="me-2">{m?.drawing.selectPointToJoin}</span>
+        <span className="me-2">{dm?.selectPointToJoin}</span>
 
         <LongPressTooltip breakpoint="sm" kbd="Esc" label={m?.general.cancel}>
           {({ label, labelClassName, props }) => (
@@ -80,7 +83,7 @@ export default function DrawingLinePointSelection(): ReactElement | null {
       deletable={line.points.length > (line.type === 'line' ? 2 : 3)}
     >
       {line.type === 'line' && !end && (
-        <LongPressTooltip breakpoint="sm" label={m?.drawing.split}>
+        <LongPressTooltip breakpoint="sm" label={dm?.split}>
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"
@@ -96,7 +99,7 @@ export default function DrawingLinePointSelection(): ReactElement | null {
       )}
 
       {line.type === 'line' && end && (
-        <LongPressTooltip breakpoint="sm" label={m?.drawing.join}>
+        <LongPressTooltip breakpoint="sm" label={dm?.join}>
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"
@@ -112,7 +115,7 @@ export default function DrawingLinePointSelection(): ReactElement | null {
       )}
 
       {line.type === 'line' && end && (
-        <LongPressTooltip breakpoint="sm" label={m?.drawing.continue}>
+        <LongPressTooltip breakpoint="sm" label={dm?.continue}>
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"

@@ -12,8 +12,18 @@ export type GarminCourse = {
   coordinates: Position[];
 };
 
+/** Message-key paths into `MapFeaturesExportMessages` for export failures. */
+export type GarminExportError =
+  | 'garmin.multipleLineStrings'
+  | 'garmin.noLineString'
+  | 'garmin.multipleTracks'
+  | 'garmin.multipleLines';
+
 export function getExportables(): Partial<
-  Record<Exportable, (state: RootState) => GarminCourse | string | null>
+  Record<
+    Exportable,
+    (state: RootState) => GarminCourse | GarminExportError | null
+  >
 > {
   return {
     search({ search }: RootState) {
@@ -36,8 +46,8 @@ export function getExportables(): Partial<
           return lines.length === 1
             ? { coordinates: lines[0].coordinates }
             : lines.length > 1
-              ? 'contains more than single continuous linestring'
-              : 'contains no continuous linestring';
+              ? 'garmin.multipleLineStrings'
+              : 'garmin.noLineString';
         }
 
         case 'Feature': {
@@ -45,7 +55,7 @@ export function getExportables(): Partial<
 
           return geometry.type === 'LineString'
             ? { coordinates: geometry.coordinates }
-            : 'contains no continuous linestring';
+            : 'garmin.noLineString';
         }
       }
     },
@@ -66,8 +76,8 @@ export function getExportables(): Partial<
       return lines.length === 1
         ? { coordinates: lines[0].coordinates }
         : lines.length > 1
-          ? 'contains more than single continuous linestring'
-          : 'contains no continuous linestring';
+          ? 'garmin.multipleLineStrings'
+          : 'garmin.noLineString';
     },
 
     tracking({ tracking, main: { selection } }: RootState) {
@@ -97,7 +107,7 @@ export function getExportables(): Partial<
       } else if (tracking.tracks.length === 1) {
         track = tracking.tracks[0];
       } else {
-        return 'Multiple tracks are not supported. Select a single one.';
+        return 'garmin.multipleTracks';
       }
 
       return { coordinates: track.trackPoints.map((tp) => [tp.lon, tp.lat]) };
@@ -146,7 +156,7 @@ export function getExportables(): Partial<
       } else if (lines.length === 1) {
         line = lines[0];
       } else {
-        return 'Multiple lines are not supported. Select a single one.';
+        return 'garmin.multipleLines';
       }
 
       return { coordinates: line.points.map((p) => [p.lon, p.lat]) };

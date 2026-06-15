@@ -4,6 +4,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { wsClose, wsOpen } from '@features/websocket/model/actions.js';
 import { Dispatch, Middleware } from 'redux';
 import z from 'zod';
+import { loadTrackingMessages } from '../translations/loadTrackingMessages.js';
 import { TrackedDevice } from './types.js';
 
 const TrackingParamsSchema = z.union([
@@ -44,8 +45,9 @@ export function createTrackingMiddleware(): Middleware<
             id: 'tracking.subscribeError',
             messageKey:
               payload.error.code === 404
-                ? 'tracking.subscribeNotFound'
-                : 'tracking.subscribeError',
+                ? 'subscribeNotFound'
+                : 'subscribeError',
+            messageLoader: loadTrackingMessages,
             messageParams: {
               id: 'token' in params ? params.token : params.deviceId, // TODO use different message key
             },

@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { UserChip } from '@shared/components/UserChip.js';
 import { clsx } from 'clsx';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap';
@@ -7,7 +8,6 @@ import { FaCamera, FaTimes, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { countryCodeToFlag, Emoji } from '../../../shared/components/Emoji.js';
-import { UserChip } from '../../../shared/components/UserChip.js';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '../../../shared/hooks/useNumberFormat.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';

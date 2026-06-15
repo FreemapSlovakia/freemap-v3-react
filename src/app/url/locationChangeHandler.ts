@@ -41,7 +41,7 @@ import {
   type Color as ColorType,
   ShadingComponent,
   serializeShading,
-} from '@features/parameterizedShading/Shading.js';
+} from '@features/parameterizedShading/model/Shading.js';
 import {
   RoutePoint,
   routePlannerSetParams,

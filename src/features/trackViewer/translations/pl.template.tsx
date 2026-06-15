@@ -1,9 +1,11 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
+import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
+  info: () => <TrackViewerDetails />,
   colorizingMode: {
     none: 'Nieaktywne',
     elevation: 'Wysokość',

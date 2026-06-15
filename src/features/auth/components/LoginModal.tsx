@@ -1,17 +1,23 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
 import { Alert, Button, Modal } from 'react-bootstrap';
 import { FaExclamationTriangle, FaSignInAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useAuthMessages } from '../translations/useAuthMessages.js';
 import { AuthProviders } from './AuthProviders.js';
 
 type Props = { show: boolean };
 
 export default function LoginModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const prm = usePremiumMessages();
+
+  const am = useAuthMessages();
 
   const dispatch = useDispatch();
 
@@ -30,8 +36,8 @@ export default function LoginModal({ show }: Props): ReactElement {
   const renderPremiumInfo = () =>
     purchaseOnLogin?.type === 'premium' ? (
       <Alert variant="primary">
-        {m?.premium.commonHeader}
-        {m?.premium.stepsForAnonymous}
+        {prm?.commonHeader}
+        {prm?.stepsForAnonymous}
       </Alert>
     ) : null;
 
@@ -52,7 +58,7 @@ export default function LoginModal({ show }: Props): ReactElement {
 
         {renderPremiumInfo()}
 
-        <p>{m?.auth.logIn.with}:</p>
+        <p>{am?.logInWith}:</p>
 
         <AuthProviders mode="login" />
       </Modal.Body>

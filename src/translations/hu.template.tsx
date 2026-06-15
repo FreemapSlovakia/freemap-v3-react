@@ -1,12 +1,5 @@
-import { AreaInfo } from '@app/components/AreaInfo.js';
-import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
-import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
-import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -14,11 +7,6 @@ import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './hu-shared.js';
 import { addError, Messages } from './messagesInterface.js';
-
-const nf00 = new Intl.NumberFormat('hu', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0tszf.'; // méter a tengerszint fölött;
 
@@ -40,9 +28,6 @@ const getErrorMarkup = (ticketId?: string) => `
 const outdoorMap = 'Túrázás, Kerékpár, Síelés, Lovaglás';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
-  changesets: {
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  },
   general: {
     iso: 'hu_HU',
     elevationProfile: 'Magassági profil',
@@ -65,7 +50,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeWithoutSaving:
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
     back: 'Vissza',
-    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    internalError: ({ ticketId }) => (
+      <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
+    ),
     processorError: ({ err }) => addError(messages, 'Alkalmazáshiba', err),
     seconds: 'másodperc',
     minutes: 'perc',
@@ -229,182 +216,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  ad: {
-    self: (email) => (
-      <>
-        Szeretnéd, ha a saját hirdetésed lenne itt? Ne habozz kapcsolatba lépni
-        velünk a következő címen: {email}.
-      </>
-    ),
-  },
-
-  measurement: {
-    distance: 'Távolság',
-    elevation: 'Magasság',
-    area: 'Terület',
-    elevationFetchError: ({ err }) =>
-      addError(messages, 'Hiba történt a pont magasságának beolvasásakor', err),
-    elevationInfo: (params) => (
-      <ElevationInfo
-        {...params}
-        lang="hu"
-        tileMessage="Térképcsempe"
-        maslMessage="Magasság"
-      />
-    ),
-    areaInfo: (props) => (
-      <AreaInfo {...props} areaLabel="Terület" perimeterLabel="Kerület" />
-    ),
-    distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Távolság" />,
-  },
-
-  trackViewer: {
-    info: () => <TrackViewerDetails />,
-  },
-
-  drawing: {
-    modify: 'Tulajdonságok',
-    edit: {
-      title: 'Tulajdonságok',
-      color: 'Szín',
-      fillColor: 'Kitöltőszín',
-      label: 'Felirat',
-      width: 'Szélesség',
-      hint: 'A felirat eltávolításához hagyja üresen ezt a mezőt.',
-      shape: 'Forma',
-      icon: 'Ikon',
-      iconChoose: 'Ikon kiválasztása…',
-      iconNone: 'Nincs ikon',
-      iconSearch: 'Ikonok keresése',
-      text: 'Szöveg',
-      textHint: 'Ikon vagy legfeljebb 2 karakter jelenik meg a jelölőn belül.',
-      type: 'Geometria típusa',
-      dashArray: 'Szaggatás stílusa',
-      lineCap: 'Vonalvég',
-      lineCapRound: 'Kerek',
-      lineCapButt: 'Lapos',
-      lineCapSquare: 'Négyzetes',
-      lineJoin: 'Vonalcsatlakozás',
-      lineJoinRound: 'Kerek',
-      lineJoinMiter: 'Éles',
-      lineJoinBevel: 'Ferde',
-    },
-    continue: 'Folytatás',
-    join: 'Összekapcsolás',
-    split: 'Felosztás',
-    stopDrawing: 'Rajzolás befejezése',
-    selectPointToJoin: 'Válasszon pontot a vonalak összekapcsolásához',
-    reverse: 'Irány megfordítása',
-    simplify: 'Egyszerűsítés',
-    defProps: {
-      menuItem: 'Stílusbeállítások',
-      title: 'Rajzolási stílus beállításai',
-      applyToAll: 'Mentés és alkalmazás mindegyikre',
-    },
-
-    projection: {
-      projectPoint: 'Pont vetítése',
-      distance: 'Távolság',
-      azimuth: 'Azimut',
-    },
-  },
-
-  purchases: {
-    purchases: 'Vásárlások',
-    premiumExpired: (at) => <>A prémium hozzáférésed lejárt ekkor: {at}</>,
-    date: 'Dátum',
-    item: 'Tétel',
-    notPremiumYet: 'Még nincs prémium hozzáférésed.',
-    awaitingBankPayment:
-      'Várjuk a banki átutalás visszaigazolását. A prémium a fizetés beérkezése után aktiválódik.',
-    bankPaymentFailed:
-      'Néhány banki átutalás elutasításra került vagy lejárt. Ha úgy gondolod, hogy ez tévedés, vedd fel a kapcsolatot az ügyfélszolgálattal.',
-    bankIntentStatus: {
-      pending_settlement: 'A banki átutalás létrejött, és elszámolásra vár.',
-      manual_review:
-        'A banki átutalás kézi ellenőrzést igényel (pl. összegeltérés).',
-      paid: 'A banki átutalás fizetettként megerősítve.',
-      expired: 'A banki átutalás a megerősítés előtt lejárt.',
-      failed: 'A banki átutalás sikertelen volt.',
-      rejected: 'A banki átutalás elutasítva.',
-      created: 'A fizetési szándék létrejött, de még nincs elszámolva.',
-      unknown: 'A szolgáltató által jelentett banki státusz: {}.',
-    },
-    noPurchases: 'Nincsenek vásárlások',
-    premium: 'Prémium',
-    credits: (amount) => <>Kreditek ({amount})</>,
-  },
-
-  settings: {
-    map: {
-      homeLocation: {
-        label: 'Lakóhely:',
-        select: 'Kijelölés a térképen',
-        undefined: 'meghatározatlan',
-      },
-    },
-    account: {
-      name: 'Név',
-      email: 'E-mail',
-      sendGalleryEmails: 'Értesítés fotómegjegyzésekről e-mailben',
-      delete: 'Fiók törlése',
-      deleteWarning:
-        'Biztosan törölni szeretnéd a fiókodat? Ez eltávolítja az összes fotódat, fotómegjegyzésedet és értékelésedet, a térképeidet és a követett eszközeidet.',
-      personalInfo: 'Személyes adatok',
-      authProviders: 'Bejelentkezési szolgáltatók',
-      picture: 'Profilkép',
-      choosePicture: 'Kép kiválasztása',
-      pictureTooLarge: 'A kép túl nagy. Maximális méret 5 MB.',
-      description: 'Rólam',
-    },
-    general: {
-      tips: 'Megnyitáskor jelenjenek meg tippek (csak szolvák és cseh nyelvnél)',
-    },
-    layer: 'Térkép',
-    overlayOpacity: 'Átlátszóság',
-    showInMenu: 'Megjelenítés a menüben',
-    showInToolbar: 'Megjelenítés az eszköztáron',
-    saveSuccess: 'A beállítások el lettek mentve.',
-    savingError: ({ err }) =>
-      addError(messages, 'Hiba történt a beállítások mentésénél', err),
-    customLayersDef: 'Egyéni térképrétegek meghatározása',
-    customLayersDefError: 'Érvénytelen egyéni térképréteg-meghatározás.',
-  },
-
-  mapDetails: {
-    notFound: 'Itt nem találtunk semmit.',
-
-    fetchingError: ({ err }) =>
-      addError(messages, 'Hiba történt a részletek lekérésekor', err),
-
-    detail: ({ result }) => (
-      <ObjectDetails
-        result={result}
-        openText="Megnyitás az OpenStreetMap.org oldalon"
-        historyText="előzmények"
-        editInJosmText="Szerkesztés JOSM-ben"
-      />
-    ),
-
-    sources: 'Források',
-    source: 'Forrás',
-  },
-
-  external: {
-    openInExternal: 'Megosztás / megnyitás külső alkalmazásban',
-    osm: 'OpenStreetMap',
-    oma: 'OMA',
-    googleMaps: 'Google térkép',
-    hiking_sk: 'hiking.sk',
-    zbgis: 'ZBGIS',
-    mapy_cz: 'mapy.com',
-    josm: 'Szerkesztés JOSM-mal',
-    id: 'Szerkesztés iD-vel',
-    window: 'Új ablakban',
-    url: 'Hely megosztása',
-    image: 'Fénykép megosztása',
-  },
-
   search: {
     inProgress: 'Keresés…',
     noResults: 'Nincs találat',
@@ -426,35 +237,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'nominatim-forward': 'Geokódolás',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
-    },
-  },
-
-  documents: {
-    errorLoading: 'Hiba történt a dokumentum betöltésekor.',
-  },
-
-  auth: {
-    connect: {
-      label: 'Csatlakozás',
-      success: 'Csatlakoztatva',
-    },
-    disconnect: {
-      label: 'Kapcsolat bontása',
-      success: 'Lecsatlakoztatva',
-    },
-    logIn: {
-      with: 'Válasszon bejelentkezési szolgáltatót',
-      success: 'Sikeresen bejelentkezett.',
-      logInError: ({ err }) =>
-        addError(messages, 'Hiba történt a bejelentkezésnél', err),
-      logInError2: 'Hiba történt a bejelentkezésnél.',
-      verifyError: ({ err }) =>
-        addError(messages, 'Hiba történt a hitelesítés ellenőrzésénél', err),
-    },
-    logOut: {
-      success: 'Sikeresen kijelentkezett.',
-      error: ({ err }) =>
-        addError(messages, 'Hiba történt a kijelentkezésnél', err),
     },
   },
 
@@ -606,24 +388,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     `,
   },
 
-  osm: {
-    fetchingError: ({ err }) =>
-      addError(messages, 'Hiba történt az OSM-adatok lekérésénél', err),
-  },
-
-  tracking: {
-    subscribeNotFound: ({ id }) => (
-      <>
-        A(z) <i>{id}</i> figyelőkód nem létezik.
-      </>
-    ),
-    subscribeError: ({ id }) => (
-      <>
-        Hiba történt a(z) <i>{id}</i> kód használatának követésekor.
-      </>
-    ),
-  },
-
   mapCtxMenu: {
     centerMap: 'Térkép középre helyezése ide',
     measurePosition: 'Koordináták és magasság lekérdezése',
@@ -633,85 +397,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startRoute: 'Útvonal tervezése innen',
     finishRoute: 'Útvonal tervezése idáig',
     showPhotos: 'Közeli fotók megjelenítése',
-  },
-
-  premium: {
-    title: 'Prémium hozzáférés megszerzése',
-    commonHeader: (
-      <>
-        <p>
-          A <strong>Freemap Premium</strong> egy opcionális éves előfizetés,
-          amely kibővíti az alkalmazást.
-        </p>
-        <p className="mb-1">
-          <b>8 €</b> összegért évente a következőket kapod:
-        </p>
-        <ul>
-          <li>reklámszalag eltávolítása</li>
-          <li
-            className="text-decoration-underline"
-            title="Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, az Outdoor Map túratérkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotóinak legnagyobb nagyítási szintjei, különféle WMS-alapú térképek"
-          >
-            prémium térképrétegek
-          </li>
-          <li>prémium fényképek</li>
-          <li>multimodális útvonaltervezés</li>
-        </ul>
-        <p className="mb-0">A Freemap ingyenes és nyílt marad.</p>
-      </>
-    ),
-    stepsForAnonymous: (
-      <>
-        <div className="fw-bold">Hogyan működik</div>
-        <div className="mb-3">
-          <p className="mb-1 ms-3">
-            <span className="fw-semibold">1. lépés</span> - jelentkezzen be vagy
-            hozzon létre ingyenes Freemap-fiókot (lent).
-          </p>
-          <p className="mb-1 ms-3">
-            <span className="fw-semibold">2. lépés</span> - átirányítjuk a
-            fizetés befejezéséhez.
-          </p>
-        </div>
-      </>
-    ),
-    continue: 'Folytatás',
-    success: 'Gratulálunk, megszerezted a prémium hozzáférést!',
-    becomePremium: 'Prémium hozzáférés megszerzése',
-    youArePremium: (date) => (
-      <>
-        Prémium hozzáférésed érvényes eddig: <b>{date}</b>.
-      </>
-    ),
-    premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
-    alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
-    premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
-  },
-
-  credits: {
-    buyCredits: 'Kredit vásárlása',
-    amount: 'Kreditek',
-    credits: 'kredit',
-    buy: 'Vásárlás',
-    purchase: {
-      success: ({ amount }) => (
-        <>A kreditje {nf00.format(amount)} összeggel növekedett.</>
-      ),
-    },
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        Van {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="kreditjeid"
-            help="A krediteket felhasználhatod [offline térképek exportjára]."
-          />
-        ) : (
-          'kredited'
-        )}
-        .
-      </>
-    ),
   },
 
   errorStatus: {

@@ -39,6 +39,11 @@ const sk: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
       gravelCycling: 'Štrková cyklistika',
     },
     revoked: 'Exportovanie kurzu do Garminu bolo zrušené.',
+    exportError: 'Chyba pri exporte do Garminu.',
+    multipleLineStrings: 'Výber obsahuje viac než jednu súvislú čiaru.',
+    noLineString: 'Výber neobsahuje žiadnu súvislú čiaru.',
+    multipleTracks: 'Viacero trás nie je podporovaných. Vyberte jednu.',
+    multipleLines: 'Viacero čiar nie je podporovaných. Vyberte jednu.',
     connectPrompt:
       'Garmin účet ešte nemáte pripojený. Chcete ho pripojiť teraz?',
     authPrompt: 'Nie ste ešte prihlásený Garminon. Prajete sa prihlásiť tetaz?',

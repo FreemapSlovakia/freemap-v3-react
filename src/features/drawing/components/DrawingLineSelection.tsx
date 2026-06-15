@@ -29,12 +29,15 @@ import {
   drawingLineSimplify,
   drawingLineStopDrawing,
 } from '../model/actions/drawingLineActions.js';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import { ProjectPointModal } from './ProjectPointModal.js';
 
 export default function DrawingLineSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const dm = useDrawingMessages();
 
   const drawing = useAppSelector((state) => state.drawingLines.drawing);
 
@@ -165,11 +168,7 @@ export default function DrawingLineSelection(): ReactElement | null {
         deletable
       >
         {drawing && (
-          <LongPressTooltip
-            breakpoint="sm"
-            label={m?.drawing.stopDrawing}
-            kbd="Esc"
-          >
+          <LongPressTooltip breakpoint="sm" label={dm?.stopDrawing} kbd="Esc">
             {({ label, labelClassName, props }) => (
               <Button
                 className="ms-1"
@@ -184,7 +183,7 @@ export default function DrawingLineSelection(): ReactElement | null {
           </LongPressTooltip>
         )}
 
-        <LongPressTooltip breakpoint="sm" label={m?.drawing.modify}>
+        <LongPressTooltip breakpoint="sm" label={dm?.modify}>
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"
@@ -219,21 +218,21 @@ export default function DrawingLineSelection(): ReactElement | null {
             {isLine && line.points.length > 0 && (
               <Dropdown.Item eventKey="project-point">
                 <TbAngle />
-                &nbsp;{m?.drawing.projection.projectPoint ?? '…'}
+                &nbsp;{dm?.projection.projectPoint ?? '…'}
               </Dropdown.Item>
             )}
 
             {line.points.length > 2 && (
               <Dropdown.Item eventKey="simplify">
                 <FaCompressAlt />
-                &nbsp;{m?.drawing.simplify ?? '…'}
+                &nbsp;{dm?.simplify ?? '…'}
               </Dropdown.Item>
             )}
 
             {line.points.length > 1 && (
               <Dropdown.Item eventKey="reverse">
                 <FaExchangeAlt />
-                &nbsp;{m?.drawing.reverse ?? '…'}
+                &nbsp;{dm?.reverse ?? '…'}
               </Dropdown.Item>
             )}
           </Dropdown.Menu>

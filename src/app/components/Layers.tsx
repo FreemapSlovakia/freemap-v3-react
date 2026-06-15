@@ -1,9 +1,10 @@
 import { hasRole } from '@features/auth/model/types.js';
 import { toCachedLayerUrl } from '@features/cachedMaps/cachedTileUrl.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { isPremium } from '@features/premium/premium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs, LayerDef } from '@shared/mapDefinitions.js';
-import { isPremium } from '@shared/premium.js';
 import { type ReactElement, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import missingTile from '@/images/missing-tile-256x256.png';
@@ -21,7 +22,7 @@ const galleryLayerFactory = () =>
 const shadingLayerFactory = () =>
   import(
     /* webpackChunkName: "shading-layer" */
-    '@features/parameterizedShading/ShadingLayer.js'
+    '@features/parameterizedShading/components/ShadingLayer.js'
   );
 
 const maplibreLayerFactory = () =>
@@ -64,6 +65,8 @@ export function Layers(): ReactElement | null {
   const effectiveDpr = resolutionScale ?? (window.devicePixelRatio || 1);
 
   const m = useMessages();
+
+  const prm = usePremiumMessages();
 
   const dispatch = useDispatch();
 
@@ -122,7 +125,7 @@ export function Layers(): ReactElement | null {
             type,
             opacity,
             effPremiumFromZoom ?? 99,
-            effPremiumFromZoom ? m?.premium.premiumOnly : '',
+            effPremiumFromZoom ? prm?.premiumOnly : '',
             layerDef.layers.join(','),
             wmsHdpi ? 'hdpi' : 'ldpi',
           ].join('-')}
@@ -136,7 +139,7 @@ export function Layers(): ReactElement | null {
           transparent={layerDef.layer === 'overlay'}
           format={layerDef.layer === 'overlay' ? 'image/png' : 'image/jpeg'}
           premiumFromZoom={effPremiumFromZoom}
-          premiumOnlyText={m?.premium.premiumOnly}
+          premiumOnlyText={prm?.premiumOnly}
           onPremiumClick={
             effPremiumFromZoom === undefined ? undefined : handlePremiumClick
           }
@@ -152,7 +155,7 @@ export function Layers(): ReactElement | null {
             type,
             opacity,
             effPremiumFromZoom ?? 99,
-            effPremiumFromZoom ? m?.premium.premiumOnly : '',
+            effPremiumFromZoom ? prm?.premiumOnly : '',
           ].join('-')}
           url={layerDef.url}
           factory={shadingLayerFactory}
@@ -171,7 +174,7 @@ export function Layers(): ReactElement | null {
           zoomOffset={isHdpi ? 1 : 0}
           shading={shading}
           premiumFromZoom={effPremiumFromZoom}
-          premiumOnlyText={m?.premium.premiumOnly}
+          premiumOnlyText={prm?.premiumOnly}
           onPremiumClick={
             effPremiumFromZoom === undefined ? undefined : handlePremiumClick
           }
@@ -226,7 +229,7 @@ export function Layers(): ReactElement | null {
             type,
             opacity,
             effPremiumFromZoom ?? 99,
-            effPremiumFromZoom ? m?.premium.premiumOnly : '',
+            effPremiumFromZoom ? prm?.premiumOnly : '',
             resolutionScale ?? 'auto',
             effForcedScale ?? 'auto',
             effFeatureScale,
@@ -252,7 +255,7 @@ export function Layers(): ReactElement | null {
           zoomOffset={isHdpi ? 1 : -Math.log2(effFeatureScale)}
           cors={layerDef.cors ?? true}
           premiumFromZoom={effPremiumFromZoom}
-          premiumOnlyText={m?.premium.premiumOnly}
+          premiumOnlyText={prm?.premiumOnly}
           onPremiumClick={
             effPremiumFromZoom === undefined ? undefined : handlePremiumClick
           }

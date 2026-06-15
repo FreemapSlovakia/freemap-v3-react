@@ -10,6 +10,7 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { toolSelector } from '@/app/store/selectors.js';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 export default function DrawingMenu(): ReactElement | undefined {
   const activeTool = useAppSelector(toolSelector);
@@ -21,6 +22,8 @@ export default function DrawingMenu(): ReactElement | undefined {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const dm = useDrawingMessages();
 
   return (
     activeToolDef && (
@@ -59,7 +62,7 @@ export default function DrawingMenu(): ReactElement | undefined {
         </Dropdown>
 
         <LongPressTooltip
-          label={m?.drawing.defProps.menuItem}
+          label={dm?.defProps.menuItem}
           breakpoint="md"
           kbd="e d"
         >

@@ -3,6 +3,16 @@ import { FaKey } from 'react-icons/fa';
 import { TrackingMessages } from './TrackingMessages.js';
 
 const en: TrackingMessages = {
+  subscribeNotFound: ({ id }) => (
+    <>
+      Watch token <i>{id}</i> doesn't exist.
+    </>
+  ),
+  subscribeError: ({ id }) => (
+    <>
+      Error watching using token <i>{id}</i>.
+    </>
+  ),
   trackedDevices: {
     button: 'Watched',
     modalTitle: 'Watched Devices',

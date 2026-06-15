@@ -1,9 +1,11 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
+import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
+  info: () => <TrackViewerDetails />,
   upload: 'Carica',
   moreInfo: 'Maggiori info',
   share: 'Salva sul Server',

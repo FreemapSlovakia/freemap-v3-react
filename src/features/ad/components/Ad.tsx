@@ -1,11 +1,12 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { useLeftMarginAdjuster } from '@shared/hooks/useLeftMarginAdjuster.js';
 import clsx from 'clsx';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import tShirt from '@/images/fm-t-shirt.jpg';
 import { AdItem, useAd } from '../hooks/useAd.js';
+import { useAdMessages } from '../translations/useAdMessages.js';
 
 const ads: AdItem[] = [
   { id: 'tShirt', countries: ['SK'], chance: 4 }, // Freemap T-Shirt
@@ -16,6 +17,8 @@ export default function Ad(): ReactElement | null {
   const [closed, setClosed] = useState(false);
 
   const m = useMessages();
+
+  const adm = useAdMessages();
 
   const becomePremium = useBecomePremium();
 
@@ -58,7 +61,7 @@ export default function Ad(): ReactElement | null {
             className="border px-3 py-2 rounded bg-body text-body"
             style={{ maxWidth: '420px' }}
           >
-            {m?.ad.self(
+            {adm?.self(
               <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>,
             )}
           </div>

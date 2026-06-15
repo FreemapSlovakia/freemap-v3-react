@@ -6,6 +6,7 @@ import { mergeLines } from '@shared/geoutils.js';
 import { FeatureId } from '@shared/types/featureId.js';
 import { featureCollection, lineString, point } from '@turf/helpers';
 import type { Feature, LineString, Point, Polygon } from 'geojson';
+import { loadOsmMessages } from '../../translations/loadOsmMessages.js';
 import { osmLoadRelation } from '../osmActions.js';
 import {
   type OsmNode,
@@ -17,109 +18,112 @@ import { copyDisplayName } from './copyDisplayName.js';
 
 export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   actionCreator: osmLoadRelation,
-  errorKey: 'osm.fetchingError',
-  handle: async ({ dispatch, getState, action }) => {
-    const { id, focus, showToast } = action.payload;
+  handle: async ({ dispatch, getState, action, toastError }) => {
+    try {
+      const { id, focus, showToast } = action.payload;
 
-    window._paq.push(['trackEvent', 'Osm', 'view', 'relation']);
+      window._paq.push(['trackEvent', 'Osm', 'view', 'relation']);
 
-    const res = await httpRequest({
-      getState,
-      url: `//api.openstreetmap.org/api/0.6/relation/${id}/full.json`,
-      expectedStatus: 200,
-      cancelActions: [clearMapFeatures, searchSelectResult],
-    });
+      const res = await httpRequest({
+        getState,
+        url: `//api.openstreetmap.org/api/0.6/relation/${id}/full.json`,
+        expectedStatus: 200,
+        cancelActions: [clearMapFeatures, searchSelectResult],
+      });
 
-    const data = OsmResultSchema.parse(await res.json());
+      const data = OsmResultSchema.parse(await res.json());
 
-    const nodes: Record<number, OsmNode> = {};
+      const nodes: Record<number, OsmNode> = {};
 
-    const ways: Record<number, OsmWay> = {};
+      const ways: Record<number, OsmWay> = {};
 
-    for (const item of data.elements) {
-      if (item.type === 'node') {
-        nodes[item.id] = item;
-      } else if (item.type === 'way') {
-        ways[item.id] = item;
+      for (const item of data.elements) {
+        if (item.type === 'node') {
+          nodes[item.id] = item;
+        } else if (item.type === 'way') {
+          ways[item.id] = item;
+        }
       }
-    }
 
-    const relations = data.elements.filter(
-      (el): el is OsmRelation => el.type === 'relation',
-    );
+      const relations = data.elements.filter(
+        (el): el is OsmRelation => el.type === 'relation',
+      );
 
-    const features: Feature<Point | LineString | Polygon>[] = [];
+      const features: Feature<Point | LineString | Polygon>[] = [];
 
-    const polyFeatures: Feature<Point | LineString | Polygon>[] = [];
+      const polyFeatures: Feature<Point | LineString | Polygon>[] = [];
 
-    const relation = relations.find((relation) => relation.id === id);
+      const relation = relations.find((relation) => relation.id === id);
 
-    if (!relation) {
-      return;
-    }
+      if (!relation) {
+        return;
+      }
 
-    const tags: Record<string, string> = relation.tags ?? {};
+      const tags: Record<string, string> = relation.tags ?? {};
 
-    for (const member of relation.members) {
-      const { ref, type } = member;
+      for (const member of relation.members) {
+        const { ref, type } = member;
 
-      switch (type) {
-        case 'node': {
-          const n = nodes[ref];
+        switch (type) {
+          case 'node': {
+            const n = nodes[ref];
 
-          if (n) {
-            features.push(point([n.lon, n.lat], n.tags));
+            if (n) {
+              features.push(point([n.lon, n.lat], n.tags));
+            }
+
+            break;
           }
 
-          break;
-        }
+          case 'way': {
+            const w = ways[ref];
 
-        case 'way': {
-          const w = ways[ref];
+            if (w) {
+              (member.role === 'inner' || member.role === 'outer'
+                ? polyFeatures
+                : features
+              ).push(
+                lineString(
+                  w.nodes.map((ref) => [nodes[ref].lon, nodes[ref].lat]),
+                  member.role === 'outer' ? tags : w.tags,
+                ),
+              );
+            }
 
-          if (w) {
-            (member.role === 'inner' || member.role === 'outer'
-              ? polyFeatures
-              : features
-            ).push(
-              lineString(
-                w.nodes.map((ref) => [nodes[ref].lon, nodes[ref].lat]),
-                member.role === 'outer' ? tags : w.tags,
-              ),
-            );
+            break;
           }
 
-          break;
+          case 'relation':
+            // TODO add support for relations in relation
+            break;
+
+          default:
+            break;
         }
-
-        case 'relation':
-          // TODO add support for relations in relation
-          break;
-
-        default:
-          break;
       }
-    }
 
-    mergeLines<LineString | Point | Polygon>(polyFeatures, tags);
+      mergeLines<LineString | Point | Polygon>(polyFeatures, tags);
 
-    const osmId: FeatureId = { type: 'osm', elementType: 'relation', id };
+      const osmId: FeatureId = { type: 'osm', elementType: 'relation', id };
 
-    copyDisplayName(getState().search.selectedResult, osmId, tags);
+      copyDisplayName(getState().search.selectedResult, osmId, tags);
 
-    dispatch(
-      searchSelectResult({
-        result: {
-          source: 'osm',
-          id: osmId,
-          geojson: {
-            ...featureCollection([...polyFeatures, ...features]),
-            properties: tags,
+      dispatch(
+        searchSelectResult({
+          result: {
+            source: 'osm',
+            id: osmId,
+            geojson: {
+              ...featureCollection([...polyFeatures, ...features]),
+              properties: tags,
+            },
           },
-        },
-        showToast: showToast || window.isRobot,
-        focus,
-      }),
-    );
+          showToast: showToast || window.isRobot,
+          focus,
+        }),
+      );
+    } catch (err) {
+      await toastError(err, loadOsmMessages, 'fetchingError');
+    }
   },
 };

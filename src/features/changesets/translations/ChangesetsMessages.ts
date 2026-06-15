@@ -1,6 +1,8 @@
 import type { JSX, ReactNode } from 'react';
+import type { Changeset } from '../model/actions.js';
 
 export type ChangesetsMessages = {
+  detail: ({ changeset }: { changeset: Changeset }) => JSX.Element;
   allAuthors: string;
   refresh: string;
   tooBig: string;

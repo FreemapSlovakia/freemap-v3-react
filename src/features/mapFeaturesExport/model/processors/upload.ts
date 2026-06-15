@@ -105,9 +105,8 @@ export async function upload(
           id: 'mapFeaturesExport',
           style: 'info',
           timeout: 5000,
-          message: (
-            await loadMapFeaturesExportMessages(getState().l10n.language)
-          ).exportedToDropbox,
+          messageKey: 'exportedToDropbox',
+          messageLoader: loadMapFeaturesExportMessages,
         }),
       );
 
@@ -216,9 +215,8 @@ export async function upload(
           id: 'mapFeaturesExport',
           style: 'info',
           timeout: 5000,
-          message: (
-            await loadMapFeaturesExportMessages(getState().l10n.language)
-          ).exportedToGdrive,
+          messageKey: 'exportedToGdrive',
+          messageLoader: loadMapFeaturesExportMessages,
         }),
       );
 

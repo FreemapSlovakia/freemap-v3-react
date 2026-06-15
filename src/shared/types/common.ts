@@ -101,7 +101,7 @@ type Join<K, P> = K extends string | number
     : never
   : never;
 
-type Leaves<T, D extends number = 10> = [D] extends [never]
+export type Leaves<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends Record<string, unknown>
     ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]

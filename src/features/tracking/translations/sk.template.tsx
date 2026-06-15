@@ -4,6 +4,16 @@ import { FaKey } from 'react-icons/fa';
 import { TrackingMessages } from './TrackingMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<TrackingMessages> = {
+  subscribeNotFound: ({ id }) => (
+    <>
+      Token sledovania <i>{id}</i> neexistuje.
+    </>
+  ),
+  subscribeError: ({ id }) => (
+    <>
+      Chyba sledovania pomocou sledovacieho tokenu <i>{id}</i>.
+    </>
+  ),
   trackedDevices: {
     button: 'Sledované zariadenia',
     modalTitle: 'Sledované zariadenia',

@@ -1,5 +1,4 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
 import { exportMapFeatures } from '../actions.js';
 
@@ -7,7 +6,7 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
   actionCreator: exportMapFeatures,
   id: 'mapFeaturesExport',
   handle: async (...params) => {
-    const { getState, dispatch } = params[0];
+    const { toastError } = params[0];
 
     const { type, target, exportables } = params[0].action.payload;
 
@@ -40,15 +39,7 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
               )
       ).default(...params);
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const em = await loadMapFeaturesExportMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: em.exportError({ err }) }),
-      );
+      await toastError(err, loadMapFeaturesExportMessages, 'exportError');
     }
   },
 };

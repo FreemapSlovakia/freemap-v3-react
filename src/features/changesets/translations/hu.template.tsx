@@ -1,9 +1,11 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
+import { ChangesetDetails } from '../components/ChangesetDetails.js';
 import { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
+  detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
   allAuthors: 'Minden szerző',
   refresh: 'Változáskészletek letöltése az aktuális térképnézethez',
   tooBig:

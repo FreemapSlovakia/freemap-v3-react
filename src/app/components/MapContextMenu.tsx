@@ -8,6 +8,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
+import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
@@ -51,6 +52,8 @@ const initialState = {
 
 export function MapContextMenu(): ReactElement {
   const m = useMessages();
+
+  const oeam = useOpenInExternalAppMessages();
 
   const dispatch = useDispatch();
 
@@ -316,7 +319,7 @@ export function MapContextMenu(): ReactElement {
           {submenu === 'openExternally' ? (
             <>
               <Dropdown.Header>
-                <FaExternalLinkAlt /> {m?.external.openInExternal}
+                <FaExternalLinkAlt /> {oeam?.openInExternal}
               </Dropdown.Header>
 
               <Dropdown.Item as="button" eventKey="submenu-">
@@ -359,7 +362,7 @@ export function MapContextMenu(): ReactElement {
               {!window.fmEmbedded && (
                 <>
                   <Dropdown.Item as="button" eventKey="submenu-openExternally">
-                    <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
+                    <FaExternalLinkAlt /> {oeam?.openInExternal}{' '}
                     <FaChevronRight />
                   </Dropdown.Item>
 

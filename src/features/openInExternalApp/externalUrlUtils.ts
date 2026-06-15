@@ -115,3 +115,21 @@ export function getIdUrl(lat: number, lon: number, zoom: number): string {
 export function getOmaUrl(lat: number, lon: number, zoom: number): string {
   return `http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}`;
 }
+
+export function getStravaUrl(lat: number, lon: number, zoom: number): string {
+  const params = new URLSearchParams({
+    sport: 'All',
+    style: 'standard',
+    terrain: 'false',
+    labels: 'true',
+    poi: 'true',
+    cPhotos: 'true',
+    '3d': 'false',
+    gColor: 'mobileblue',
+    gOpacity: '100',
+  });
+
+  return `https://www.strava.com/maps/global-heatmap?${params}#${zoom}/${lat.toFixed(
+    4,
+  )}/${lon.toFixed(4)}`;
+}

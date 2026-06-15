@@ -1,9 +1,5 @@
 import { setTool } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
-import {
-  lineStyleFromProperties,
-  pointStyleFromProperties,
-} from '@features/drawing/model/styleFromProperties.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
@@ -11,6 +7,10 @@ import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import {
+  lineStyleFromProperties,
+  pointStyleFromProperties,
+} from '@shared/styleFromProperties.js';
 import { flatten } from '@turf/flatten';
 import {
   Feature,

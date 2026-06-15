@@ -1,3 +1,4 @@
+import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Spinner } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
@@ -81,9 +82,36 @@ export function GalleryUploadItem({
 
   const [showPreview2, setShowPreview2] = useState(showPreview);
 
+  // The browser may not be able to decode HEIC; if so, previews are unavailable.
+  const [previewSupported, setPreviewSupported] = useState(true);
+
+  useEffect(() => {
+    if (!isHeicFile(file)) {
+      setPreviewSupported(true);
+
+      return;
+    }
+
+    let cancelled = false;
+
+    isHeicSupported().then((supported) => {
+      if (!cancelled) {
+        setPreviewSupported(supported);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [file]);
+
   return (
     <div key={id}>
-      {showPreview2 && !previewKey ? (
+      {!previewSupported ? (
+        <Button className="mb-3 d-block mx-auto" disabled>
+          {gm?.uploadModal.loadPreview}
+        </Button>
+      ) : showPreview2 && !previewKey ? (
         <div className="gallery-image gallery-image-upload d-flex justify-content-center align-items-center">
           <Spinner />
         </div>

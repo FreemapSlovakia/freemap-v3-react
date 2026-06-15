@@ -45,7 +45,7 @@ export const objectsFetchProcessor: Processor = {
       state.map.zoom,
       ...state.objects.active,
     ].join('\n'),
-  handle: async ({ dispatch, getState }) => {
+  handle: async ({ dispatch, getState, toastError }) => {
     try {
       const ents = getState().objects.active.map((tags) =>
         tags.split(',').map((item) => item.split('=')),
@@ -66,7 +66,9 @@ export const objectsFetchProcessor: Processor = {
           dispatch(
             toastsAdd({
               id: 'objects.lowZoomAlert',
-              message: om.lowZoomAlert.message({ minZoom }),
+              messageKey: 'lowZoomAlert.message',
+              messageParams: { minZoom },
+              messageLoader: loadObjectsMessages,
               style: 'warning',
               actions: [
                 {
@@ -144,12 +146,12 @@ export const objectsFetchProcessor: Processor = {
         );
 
       if (result.length >= limit) {
-        const om = await loadObjectsMessages(getState().l10n.language);
-
         dispatch(
           toastsAdd({
             id: 'objects.tooManyPoints',
-            message: om.tooManyPoints({ limit }),
+            messageKey: 'tooManyPoints',
+            messageParams: { limit },
+            messageLoader: loadObjectsMessages,
             style: 'warning',
             cancelType: [
               clearMapFeatures.type,
@@ -162,15 +164,7 @@ export const objectsFetchProcessor: Processor = {
 
       dispatch(objectsSetResult(result));
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const om = await loadObjectsMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: om.fetchingError({ err }) }),
-      );
+      await toastError(err, loadObjectsMessages, 'fetchingError');
     }
   },
 };

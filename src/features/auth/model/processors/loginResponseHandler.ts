@@ -1,9 +1,11 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
+import { isPremium } from '@features/premium/premium.js';
+import { loadPremiumMessages } from '@features/premium/translations/loadPremiumMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { isPremium } from '@shared/premium.js';
 import { Dispatch } from 'redux';
 import z from 'zod';
+import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
 import { authSetUser } from '../actions.js';
 import {
   LoginResponseSchema,
@@ -36,7 +38,8 @@ export async function handleLoginResponse(
   dispatch(
     toastsAdd({
       id: 'lcd',
-      messageKey: connect ? 'auth.connect.success' : 'auth.logIn.success',
+      messageKey: connect ? 'connectSuccess' : 'logInSuccess',
+      messageLoader: loadAuthMessages,
       style: 'info',
       timeout: 5000,
     }),
@@ -61,7 +64,8 @@ export async function handleLoginResponse(
       dispatch(
         toastsAdd({
           id: 'premiumAlready',
-          messageKey: 'premium.alreadyPremium',
+          messageKey: 'alreadyPremium',
+          messageLoader: loadPremiumMessages,
           style: 'info',
           timeout: 5000,
         }),

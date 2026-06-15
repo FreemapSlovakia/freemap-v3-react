@@ -6,7 +6,12 @@ import { mapsDelete, mapsDisconnect, mapsLoadList } from '../actions.js';
 
 export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
   actionCreator: mapsDelete,
-  handle: async ({ getState, dispatch, action: { payload: id } }) => {
+  handle: async ({
+    getState,
+    dispatch,
+    action: { payload: id },
+    toastError,
+  }) => {
     window._paq.push(['trackEvent', 'MyMaps', 'delete']);
 
     try {
@@ -17,15 +22,7 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
         expectedStatus: 204,
       });
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const mm = await loadMyMapsMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: mm.deleteError({ err }) }),
-      );
+      await toastError(err, loadMyMapsMessages, 'deleteError');
 
       return;
     }

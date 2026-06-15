@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { AlertLink } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { askingCookieConsentSelector } from '@/app/store/selectors.js';
-import { createCookieConsentToastAction } from '@/features/cookieConsent/action.js';
+import { createCookieConsentToastAction } from '@/features/cookieConsent/model/toastAction.js';
 import { useAppSelector } from '@/shared/hooks/useAppSelector.js';
 
 type Props = {

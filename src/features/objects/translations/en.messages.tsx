@@ -1,8 +1,18 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { ObjectsMessages } from './ObjectsMessages.js';
 
 const en: ObjectsMessages = {
+  source: 'Source',
+  detail: ({ result }) => (
+    <ObjectDetails
+      result={result}
+      openText="Open at OpenStreetMap.org"
+      historyText="history"
+      editInJosmText="Edit in JOSM"
+    />
+  ),
   type: 'Type',
   lowZoomAlert: {
     message: ({ minZoom }) =>
