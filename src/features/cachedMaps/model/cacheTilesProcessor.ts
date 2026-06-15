@@ -228,15 +228,19 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
       action.payload.sourceType,
     ]);
 
-    // save initial metadata to IndexedDB
-    saveCachedTileMap(action.payload);
-
-    // fire and forget — runs in background
-    downloadTiles(action.payload, dispatch, getState().l10n.language).catch(
-      (err) => {
+    // save initial metadata to IndexedDB, then download in the background;
+    // surface a write failure (e.g. IndexedDB blocked) the same way as a
+    // download failure instead of leaving it as an unhandled rejection
+    saveCachedTileMap(action.payload)
+      .then(() =>
+        downloadTiles(action.payload, dispatch, getState().l10n.language),
+      )
+      .catch((err: unknown) => {
         if (err instanceof DOMException && err.name === 'AbortError') {
           return;
         }
+
+        console.error(err);
 
         dispatch(
           cacheTilesError({
@@ -244,8 +248,7 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
             error: err instanceof Error ? err.message : String(err),
           }),
         );
-      },
-    );
+      });
   },
 };
 

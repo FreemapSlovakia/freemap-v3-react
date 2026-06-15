@@ -83,6 +83,8 @@ const messages: Messages = {
     load: 'Load',
     unnamed: 'No name',
     enablePopup: 'Please enable pop-up windows for this site in you browser.',
+    broadcastChannelUnsupported:
+      'This action isn’t supported in your browser (BroadcastChannel is unavailable, e.g. in private mode or an in-app browser). Please use a standard window in a modern browser.',
     componentLoadingError:
       'Component loading error. Please check your internet connection.',
     offline: 'You are not connected to the internet.',

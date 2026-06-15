@@ -7,6 +7,7 @@ import { loadCreditsMessages } from '@features/credits/translations/loadCreditsM
 import { loadPremiumMessages } from '@features/premium/translations/loadPremiumMessages.js';
 import { loadPurchasesMessages } from '@features/purchases/translations/loadPurchasesMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { isBroadcastChannelSupported } from '@shared/broadcastChannelSupport.js';
 import z from 'zod';
 
 type CallbackResult = {
@@ -23,6 +24,22 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       dispatch(purchaseOnLogin(action.payload));
 
       dispatch(setActiveModal('login'));
+
+      return;
+    }
+
+    if (!isBroadcastChannelSupported()) {
+      // The payment popup relays its result back over a BroadcastChannel;
+      // without it the purchase could never complete. Warn instead of opening a
+      // dead popup.
+      dispatch(
+        toastsAdd({
+          id: 'broadcastChannelUnsupported',
+          style: 'danger',
+          messageKey: 'general.broadcastChannelUnsupported',
+          timeout: 5000,
+        }),
+      );
 
       return;
     }

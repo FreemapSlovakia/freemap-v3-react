@@ -74,6 +74,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     visual: 'Megjelenítés',
     enablePopup:
       'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
+    broadcastChannelUnsupported:
+      'Ezt a műveletet a böngészője nem támogatja (a BroadcastChannel nem érhető el, pl. privát módban vagy alkalmazásba ágyazott böngészőben). Használjon normál ablakot egy modern böngészőben.',
     export: 'Exportálás',
     expiration: 'Lejárat',
     modifiedAt: 'Módosítva',

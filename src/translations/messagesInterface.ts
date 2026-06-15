@@ -54,6 +54,7 @@ export type Messages = {
     load: string;
     unnamed: string;
     enablePopup: string;
+    broadcastChannelUnsupported: string;
     componentLoadingError: string;
     offline: string;
     connectionError: string;

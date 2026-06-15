@@ -93,6 +93,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     load: 'Carica',
     unnamed: 'Nessun nome',
     enablePopup: 'Per favore abilita i popup nel tuo browser per questo sito.',
+    broadcastChannelUnsupported:
+      'Questa azione non è supportata dal tuo browser (BroadcastChannel non è disponibile, ad es. in modalità privata o in un browser integrato in un’app). Usa una finestra normale in un browser moderno.',
     componentLoadingError:
       'Errore di caricamento. Per favore verifica la tua connessione internet.',
     offline: 'Non sei connesso a internet.',

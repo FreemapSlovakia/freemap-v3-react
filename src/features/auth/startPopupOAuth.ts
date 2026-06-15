@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { isBroadcastChannelSupported } from '@shared/broadcastChannelSupport.js';
 import type { Action, Dispatch } from 'redux';
 import {
   type PopupOAuthProvider,
@@ -24,6 +25,21 @@ export async function startPopupOAuth(
   dispatch: Dispatch,
   successAction?: Action,
 ): Promise<void> {
+  if (!isBroadcastChannelSupported()) {
+    // The popup relays the OAuth code back over a BroadcastChannel; without it
+    // the login could never complete. Warn instead of opening a dead popup.
+    dispatch(
+      toastsAdd({
+        id: 'broadcastChannelUnsupported',
+        style: 'danger',
+        messageKey: 'general.broadcastChannelUnsupported',
+        timeout: 5000,
+      }),
+    );
+
+    return;
+  }
+
   const cfg = popupOAuthProviders[provider];
 
   const res = await httpRequest({
