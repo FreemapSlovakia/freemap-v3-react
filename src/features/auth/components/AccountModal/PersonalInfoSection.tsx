@@ -4,6 +4,7 @@ import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.j
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   type ChangeEvent,
@@ -86,12 +87,17 @@ export function PersonalInfoSection(): ReactElement | null {
 
     const reader = new FileReader();
 
-    reader.onload = () => {
+    reader.onload = async () => {
       const result = reader.result as string;
       const base64 = result.slice(result.indexOf(',') + 1);
 
       setPicture(base64);
-      setPreviewUrl(result);
+
+      // Skip the local preview for HEIC the browser can't decode (the upload
+      // still works — the server transcodes it to WebP).
+      const previewable = !isHeicFile(file) || (await isHeicSupported());
+
+      setPreviewUrl(previewable ? result : null);
     };
 
     reader.readAsDataURL(file);
@@ -104,14 +110,21 @@ export function PersonalInfoSection(): ReactElement | null {
     setPreviewUrl(null);
   };
 
-  const showsPicture =
-    previewUrl !== null || (picture !== null && user.hasPicture);
+  // A new picture is staged (base64) but can't be previewed (unsupported HEIC).
+  const newPictureSelected = typeof picture === 'string';
 
+  // Don't fall back to the stored server image when a new, unpreviewable
+  // picture is staged — show the placeholder instead of a stale avatar.
   const avatarSrc =
     previewUrl ??
-    (picture !== null && user.hasPicture
+    (!newPictureSelected && picture !== null && user.hasPicture
       ? `${process.env['API_URL']}/auth/users/${user.id}/picture`
       : undefined);
+
+  const showsPicture = avatarSrc !== undefined;
+
+  const canRemovePicture =
+    newPictureSelected || (picture === undefined && user.hasPicture);
 
   return (
     <Form
@@ -156,7 +169,7 @@ export function PersonalInfoSection(): ReactElement | null {
               <FaUpload /> {am?.account.choosePicture}
             </Button>
 
-            {showsPicture && (
+            {canRemovePicture && (
               <Button
                 variant="outline-danger"
                 size="sm"

@@ -110,7 +110,11 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
 
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop: handleFileDrop,
-    accept: { 'image/jpeg': ['.jpg', '.jpeg'] },
+    accept: {
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/heic': ['.heic'],
+      'image/heif': ['.heif'],
+    },
   });
 
   const handlePositionPick = useCallback(
@@ -157,7 +161,9 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
       const droppedFiles = Array.from(event.dataTransfer?.files ?? []).filter(
         (file) =>
           file.type === 'image/jpeg' ||
-          /\.(jpe?g)$/i.test(file.name.toLowerCase()),
+          file.type === 'image/heic' ||
+          file.type === 'image/heif' ||
+          /\.(jpe?g|heic|heif)$/i.test(file.name.toLowerCase()),
       );
 
       if (droppedFiles.length) {
