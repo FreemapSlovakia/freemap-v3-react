@@ -123,7 +123,7 @@ export const LoginResponseSchema = z.object({
   connect: z.boolean(),
   clientData: z
     .object({
-      successAction: z.object({ type: z.string() }).optional(),
+      successAction: z.looseObject({ type: z.string() }).optional(),
     })
     .optional(),
 });

@@ -86,6 +86,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     unnamed: 'Bez názvu',
     enablePopup:
       'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
+    broadcastChannelUnsupported:
+      'Táto akcia nie je vo vašom prehliadači podporovaná (BroadcastChannel nie je k dispozícii, napr. v anonymnom režime alebo v prehliadači vstavanom v aplikácii). Použite štandardné okno v modernom prehliadači.',
     componentLoadingError:
       'Komponent sa nepodarilo načítať. Skontrolujte svoje pripojenie k internetu.',
     offline: 'Nie ste pripojený k internetu.',

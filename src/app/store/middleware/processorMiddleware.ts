@@ -189,6 +189,8 @@ export function createProcessorMiddleware() {
                 return;
               }
 
+              console.error(err);
+
               dispatch(
                 toastsAdd({
                   style: 'danger',

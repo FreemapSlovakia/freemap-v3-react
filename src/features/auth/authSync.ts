@@ -7,7 +7,18 @@ import type { User } from './model/types.js';
 // real session changes cross tabs (not unrelated actions), and so applying a
 // received user doesn't echo back.
 export function attachAuthSync(store: MyStore): void {
-  const bc = new BroadcastChannel('freemap-auth');
+  let bc: BroadcastChannel;
+
+  try {
+    bc = new BroadcastChannel('freemap-auth');
+  } catch (err) {
+    // BroadcastChannel is missing or blocked (unsupported browser / insecure
+    // context). Cross-tab session sync just won't happen there; skip it instead
+    // of throwing and aborting the rest of app startup.
+    console.warn('Cross-tab auth sync unavailable:', err);
+
+    return;
+  }
 
   const keyOf = (user: User | null) =>
     user ? `${user.id}:${user.authToken}` : '';

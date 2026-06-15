@@ -11,7 +11,18 @@ import {
 // holding the nonce) acts on it — this scopes the callback to the right tab and
 // guarantees the single-use code is redeemed exactly once.
 export function attachOAuthLoginMessageHandler(store: MyStore): void {
-  const bc = new BroadcastChannel('freemap-oauth');
+  let bc: BroadcastChannel;
+
+  try {
+    bc = new BroadcastChannel('freemap-oauth');
+  } catch (err) {
+    // BroadcastChannel is missing or blocked (unsupported browser / insecure
+    // context). The popup OAuth relay simply won't work there; skip it instead
+    // of throwing and aborting the rest of app startup.
+    console.warn('OAuth login message handler unavailable:', err);
+
+    return;
+  }
 
   bc.onmessage = (e) => {
     if (!e.data?.search) {

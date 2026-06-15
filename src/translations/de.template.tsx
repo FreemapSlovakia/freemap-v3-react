@@ -87,6 +87,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     unnamed: 'Kein Name',
     enablePopup:
       'Bitte aktivieren Sie Pop-up-Fenster für diese Seite in Ihrem Browser.',
+    broadcastChannelUnsupported:
+      'Diese Aktion wird von Ihrem Browser nicht unterstützt (BroadcastChannel ist nicht verfügbar, z. B. im privaten Modus oder in einem In-App-Browser). Bitte verwenden Sie ein normales Fenster in einem modernen Browser.',
     componentLoadingError:
       'Fehler beim Laden der Komponente. Bitte überprüfen Sie Ihre Internetverbindung.',
     offline: 'Sie sind nicht mit dem Internet verbunden.',
