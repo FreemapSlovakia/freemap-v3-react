@@ -5,18 +5,11 @@ const en: PremiumMessages = {
   commonHeader: (
     <>
       <p>
-        <strong>Support the volunteers who create this map!</strong>
+        <strong>Freemap Premium</strong> is an optional yearly subscription that
+        enhances the app.
       </p>
       <p className="mb-1">
-        For <b>8 hours</b> of your{' '}
-        <a
-          href="https://rovas.app/freemap-web"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          volunteer work
-        </a>{' '}
-        or <b>8 €</b> you will have a year of access with:
+        For <b>8 €</b> per year you get:
       </p>
       <ul>
         <li>removed ad banner</li>
@@ -29,20 +22,20 @@ const en: PremiumMessages = {
         <li>premium photos</li>
         <li>multimodal routing</li>
       </ul>
+      <p className="mb-0">Freemap stays free and open.</p>
     </>
   ),
   stepsForAnonymous: (
     <>
-      <div className="fw-bold">Procedure</div>
+      <div className="fw-bold">How it works</div>
       <div className="mb-3">
         <p className="mb-1 ms-3">
-          <span className="fw-semibold">Step 1</span> - create an account here
-          in Freemap (below)
+          <span className="fw-semibold">Step 1</span> - sign in or create a free
+          Freemap account (below).
         </p>
         <p className="mb-1 ms-3">
-          <span className="fw-semibold">Step 2</span> - in the Rovas
-          application, where we'll direct you after registration, send us the
-          payment.
+          <span className="fw-semibold">Step 2</span> - you'll be redirected to
+          complete the payment.
         </p>
       </div>
     </>
