@@ -46,7 +46,7 @@
     "@reduxjs/toolkit": "^2.12.0",
     "@restart/ui": "^1.9.4",
     "@samchon/openapi": "^6.0.1",
-    "@sentry/browser": "^10.57.0",
+    "@sentry/browser": "^10.58.0",
     "@tmcw/togeojson": "^7.1.2",
     "@turf/along": "^7.3.5",
     "@turf/area": "^7.3.5",
@@ -135,7 +135,7 @@
     "@types/vhtml": "^2.2.9",
     "@types/webpack-env": "^1.18.8",
     "@types/wicg-file-system-access": "^2023.10.7",
-    "@typescript/native-preview": "7.0.0-dev.20260614.1",
+    "@typescript/native-preview": "7.0.0-dev.20260615.1",
     "@webgpu/types": "^0.1.70",
     "css-loader": "^7.1.4",
     "gray-matter": "^4.0.3",
@@ -157,6 +157,6 @@
     "typescript": "^6.0.3",
     "utility-types": "^3.11.0",
     "v": "^0.3.0",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   }
 }
