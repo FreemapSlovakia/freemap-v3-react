@@ -488,7 +488,6 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 - **Max zoom** — global maximum zoom level
 - **Resolution scale** — simulates display pixel density and affects which tile variant is fetched (Auto by default)
 - **Feature size** — enlarges rendered labels and lines (no effect on satellite, shading, WMS, or vector (MapLibre) layers)
-- **Strava heatmap color** — hot / blue / purple / gray / blue–red
 
 ### Maps
 
@@ -547,11 +546,6 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 | Wikimedia Commons photos   | M   | wikimediaCommons  |   13 |            |              |                 |              | ⇧m       |           | Wikimedia Commons                                          |
 | Forest tracks NLC (2017)   | l1  | tile              |   11 |         15 |              |            1000 | l2           |          | sk        | © NLC Zvolen (legacy)                                      |
 | Forest tracks NLC          | l2  | maplibre          |    8 |            |              |                 |              | ⇧n       | sk        | © NLC Zvolen                                               |
-| Strava (all)               | s0  | tile              |    0 |         15 |           13 |                 |              | ⇧s       |           | © Strava heatmap                                           |
-| Strava (rides)             | s1  | tile              |    0 |         15 |           13 |                 |              |          |           | © Strava heatmap                                           |
-| Strava (runs)              | s2  | tile              |    0 |         15 |           13 |                 |              |          |           | © Strava heatmap                                           |
-| Strava (water activities)  | s3  | tile              |    0 |         15 |           13 |                 |              |          |           | © Strava heatmap                                           |
-| Strava (winter activities) | s4  | tile              |    0 |         15 |           13 |                 |              |          |           | © Strava heatmap                                           |
 | Parametric shading         | h   | parametricShading |      |         13 |              |                 |              | ⇧h       |           | Experimental; © Freemap, GEDTM30 (Europe)                  |
 | Parametric shading         | y   | parametricShading |      |         19 |           13 |                 |              | ⇧y       | sk        | Experimental; © Freemap; LLS DMR © ÚGKK SR                 |
 | Parametric shading         | z   | parametricShading |      |         18 |           13 |                 |              |          | cz        | Experimental; © Freemap, © ČÚZK                            |
@@ -559,7 +553,6 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 
 Notes:
 
-- Strava heatmap layers accept a color variant (hot / blue / purple / gray / blue–red), configurable in Map settings.
 - The `i` (Data layer) overlay hosts every tool's interactive features; hiding it hides those features without disabling the tools.
 - The single `X` "Outdoor" base map renders hiking, bicycle, ski and riding trails together — there are no longer separate per-activity trail layers.
 

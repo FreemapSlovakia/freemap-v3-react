@@ -27,6 +27,11 @@ export function createReduxStore() {
             value instanceof File ||
             value instanceof Error ||
             isPlain(value),
+          // A toast may carry a static per-feature message loader
+          // (`Toast.messageLoader`) so its text can re-resolve on language
+          // switch. Toasts are never persisted, so this function is safe here.
+          ignoredActionPaths: ['payload.messageLoader'],
+          ignoredPaths: [/^toasts\.toasts\.[^.]+\.messageLoader$/],
         },
       }).concat(
         errorHandlingMiddleware,

@@ -15,7 +15,7 @@ Freemap.sk is an open web and mobile mapping application for outdoor and everyda
 **Freemap Premium** is a yearly subscription that unlocks:
 
 - **No advertising** — the ad banner is removed.
-- **Premium map layers** — Strava Heatmap, hi-res detailed shading of Slovakia and Czechia, the highest zoom levels of the Outdoor Map and of the orthophoto maps of Slovakia and Czechia, and various WMS-based maps.
+- **Premium map layers** — hi-res detailed shading of Slovakia and Czechia, the highest zoom levels of the Outdoor Map and of the orthophoto maps of Slovakia and Czechia, and various WMS-based maps.
 - **Premium photos** — access to premium photographs shown on the map.
 - **Multimodal routing** — route planning combining multiple modes of transport.
 

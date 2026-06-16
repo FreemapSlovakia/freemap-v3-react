@@ -4,6 +4,7 @@ import { addError } from '@/translations/messagesInterface.js';
 import { GalleryMessages } from './GalleryMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
+  sendGalleryEmails: 'Upozornit emailem na komentáře k fotkám',
   stats: {
     leaderboard: 'Žebříček',
     country: 'Země',

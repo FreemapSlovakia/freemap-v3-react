@@ -49,7 +49,6 @@ function makeState(): RootState {
         email: 'a@b.c',
         description: null,
         id: 1,
-        isAdmin: false,
         coordinates: null,
         name: 'Tester',
         premiumExpiration: premiumDate,
@@ -145,7 +144,6 @@ describe('statePersistingMiddleware — what gets persisted', () => {
           email: 'a@b.c',
           description: null,
           id: 1,
-          isAdmin: false,
           coordinates: null,
           name: 'Tester',
           // Date serialized to ISO string (the toISOString() branch).

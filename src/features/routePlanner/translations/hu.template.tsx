@@ -4,6 +4,7 @@ import { addError } from '@/translations/messagesInterface.js';
 import { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
+  selectHomeLocation: 'Kijelölés a térképen',
   ghParams: {
     tripParameters: 'Út paraméterei',
     seed: 'Véletlenszám mag',

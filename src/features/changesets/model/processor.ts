@@ -39,7 +39,7 @@ export const changesetsTrackProcessor: Processor = {
 export const changesetsProcessor: Processor = {
   id: 'changeset.detail',
   actionCreator: [changesetsSetParams, changesetsRefresh, setTool],
-  handle: async ({ dispatch, getState }) => {
+  handle: async ({ dispatch, getState, toastError }) => {
     const state = getState();
 
     if (state.main.tool !== 'changesets') {
@@ -62,12 +62,11 @@ export const changesetsProcessor: Processor = {
       ) {
         dispatch(changesetsSet([]));
 
-        const cm = await loadChangesetsMessages(getState().l10n.language);
-
         dispatch(
           toastsAdd({
             id: 'changeset.detail',
-            message: cm.tooBig,
+            messageKey: 'tooBig',
+            messageLoader: loadChangesetsMessages,
             cancelType: [
               selectFeature.type,
               changesetsSetParams.type,
@@ -197,12 +196,11 @@ export const changesetsProcessor: Processor = {
         }
 
         if (allChangesetsSoFar.length === 0) {
-          const cm = await loadChangesetsMessages(getState().l10n.language);
-
           dispatch(
             toastsAdd({
               id: 'changeset.detail',
-              message: cm.notFound,
+              messageKey: 'notFound',
+              messageLoader: loadChangesetsMessages,
               cancelType: [
                 selectFeature.type,
                 changesetsSetParams.type,
@@ -217,13 +215,7 @@ export const changesetsProcessor: Processor = {
         }
       }
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const cm = await loadChangesetsMessages(getState().l10n.language);
-
-      dispatch(toastsAdd({ style: 'danger', message: cm.fetchError({ err }) }));
+      await toastError(err, loadChangesetsMessages, 'fetchError');
     }
   },
 };

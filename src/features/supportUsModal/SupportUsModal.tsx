@@ -1,13 +1,14 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { ShowModalLink } from '@shared/components/ShowModalLink.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { type ReactElement, useCallback } from 'react';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { ShowModalLink } from '../../shared/components/ShowModalLink.js';
 import { documentShow } from '../documents/model/actions.js';
 import { useSupportUsMessages } from './translations/useSupportUsMessages.js';
 
@@ -21,6 +22,8 @@ export default function SupportUsModal({ show }: Props): ReactElement {
   const lm = useSupportUsMessages();
 
   const m = useMessages();
+
+  const prm = usePremiumMessages();
 
   const dispatch = useDispatch();
 
@@ -48,7 +51,7 @@ export default function SupportUsModal({ show }: Props): ReactElement {
           <Alert variant="warning">
             <span dangerouslySetInnerHTML={{ __html: lm?.alert.line1 ?? '' }} />
             <Button onClick={becomePremium} className="my-3 mx-auto d-block">
-              <FaGem /> {m?.premium.becomePremium}
+              <FaGem /> {prm?.becomePremium}
             </Button>
             {lm?.alert.line2}
           </Alert>

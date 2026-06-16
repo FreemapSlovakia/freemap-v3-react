@@ -196,7 +196,7 @@ export function CacheTilesForm(): ReactElement {
         countries: _countries,
         superseededBy: _s,
         experimental: _e,
-        adminOnly: _a,
+        layerPreview: _lp,
         premiumFromZoom: _p,
         ...rest
       } = mapDef as Record<string, unknown> & typeof mapDef;

@@ -1,9 +1,19 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { ObjectsMessages } from './ObjectsMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
+  source: 'Źródło',
+  detail: ({ result }) => (
+    <ObjectDetails
+      result={result}
+      openText="Otwórz na OpenStreetMap.org"
+      historyText="historia"
+      editInJosmText="Edytuj w JOSM"
+    />
+  ),
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Aby zobaczyć obiekty według ich typu, powiększ co najmniej do poziomu ${minZoom}.`,

@@ -9,12 +9,16 @@ import { Button, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { useTextFileDropHandler } from '../hooks/useTextFileDropHandler.js';
+import {
+  type TextFileDropError,
+  useTextFileDropHandler,
+} from '../hooks/useTextFileDropHandler.js';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from '../model/actions.js';
 import { parseGeojsonFile } from '../parseGeojsonFile.js';
+import { loadTrackViewerMessages } from '../translations/loadTrackViewerMessages.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 type Props = { show: boolean };
@@ -33,11 +37,12 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
   }, [dispatch]);
 
   const handleLoadError = useCallback(
-    (message: string) => {
+    (messageKey: TextFileDropError) => {
       dispatch(
         toastsAdd({
           id: 'trackViewer.loadError',
-          message,
+          messageKey,
+          messageLoader: loadTrackViewerMessages,
           style: 'danger',
           timeout: 5000,
         }),
@@ -54,7 +59,7 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
         const trackGeojson = parseGeojsonFile(text);
 
         if (!trackGeojson) {
-          handleLoadError(tvm?.invalidFormat ?? 'invalid format');
+          handleLoadError('invalidFormat');
 
           return;
         }
@@ -72,10 +77,10 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
 
       dispatch(elevationChartClose());
     },
-    [dispatch, tvm, handleLoadError],
+    [dispatch, handleLoadError],
   );
 
-  const handleDrop = useTextFileDropHandler(handleUpload, handleLoadError, tvm);
+  const handleDrop = useTextFileDropHandler(handleUpload, handleLoadError);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,

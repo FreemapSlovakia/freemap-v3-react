@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
@@ -32,7 +32,7 @@ export function OpenInExternalAppMenuButton({
   children,
   className,
 }: Props): ReactElement {
-  const m = useMessages();
+  const oeam = useOpenInExternalAppMessages();
 
   const { handleSelect, menuShown, handleMenuToggle } = useMenuHandler({
     pointTitle,
@@ -51,7 +51,7 @@ export function OpenInExternalAppMenuButton({
       show={menuShown}
       onToggle={handleMenuToggle}
     >
-      <Dropdown.Toggle variant="secondary" title={m?.external.openInExternal}>
+      <Dropdown.Toggle variant="secondary" title={oeam?.openInExternal}>
         {children}
       </Dropdown.Toggle>
 

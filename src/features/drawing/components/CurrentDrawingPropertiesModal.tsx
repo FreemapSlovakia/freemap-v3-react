@@ -1,8 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import { IconPicker } from '@features/drawing/components/IconPicker.js';
-import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
-import { RgbaColorPicker } from '@features/drawing/components/RgbaColorPicker.js';
 import {
   type DrawingLineType,
   drawingLineChangeProperties,
@@ -11,6 +9,8 @@ import { drawingPointChangeProperties } from '@features/drawing/model/actions/dr
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { COLORS } from '@shared/colors.js';
+import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
+import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
@@ -26,6 +26,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../../../app/store/actions.js';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import classes from './CurrentDrawingPropertiesModal.module.css';
 
 type Props = { show: boolean };
@@ -38,6 +39,8 @@ export default function CurrentDrawingPropertiesModal({
   show,
 }: Props): ReactElement {
   const m = useMessages();
+
+  const dm = useDrawingMessages();
 
   const label = useAppSelector((state) => {
     const { selection } = state.main;
@@ -374,15 +377,13 @@ export default function CurrentDrawingPropertiesModal({
 
   const invalidWidth = isInvalidFloat(editedWidth, false, 1, 99);
 
-  useDocumentTitle(show ? m?.drawing.edit.title : undefined);
+  useDocumentTitle(show ? dm?.edit.title : undefined);
 
   return (
     <Modal
       show={show}
       onHide={close}
       contentClassName="bg-body-tertiary"
-      as="form"
-      onSubmit={handleSubmit}
       scrollable
       // The color picker's popover is portalled to <body> (outside this
       // modal's DOM), so the modal's focus trap would steal focus from its
@@ -390,137 +391,141 @@ export default function CurrentDrawingPropertiesModal({
       // (and the sliders) stay editable.
       enforceFocus={false}
     >
-      <Modal.Header closeButton>
-        <Modal.Title>{m?.drawing.edit.title}</Modal.Title>
-      </Modal.Header>
+      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+        <Modal.Header closeButton>
+          <Modal.Title>{dm?.edit.title}</Modal.Title>
+        </Modal.Header>
 
-      <Modal.Body>
-        <Form.Group controlId="label">
-          <Form.Label>{m?.drawing.edit.label}</Form.Label>
+        <Modal.Body>
+          <Form.Group controlId="label">
+            <Form.Label>{dm?.edit.label}</Form.Label>
 
-          <Form.Control
-            autoFocus
-            type="text"
-            value={editedLabel ?? ''}
-            onChange={handleLocalLabelChange}
-          />
+            <Form.Control
+              autoFocus
+              type="text"
+              value={editedLabel ?? ''}
+              onChange={handleLocalLabelChange}
+            />
 
-          <Form.Text muted>{m?.drawing.edit.hint}</Form.Text>
-        </Form.Group>
+            <Form.Text muted>{dm?.edit.hint}</Form.Text>
+          </Form.Group>
 
-        {drawType !== 'draw-line-poly' && (
-          <>
-            <Form.Group controlId="color" className="mt-3">
-              <Form.Label>{m?.drawing.edit.color}</Form.Label>
+          {drawType !== 'draw-line-poly' && (
+            <>
+              <Form.Group controlId="color" className="mt-3">
+                <Form.Label>{dm?.edit.color}</Form.Label>
 
-              <RgbaColorPicker
-                value={editedColor || COLORS.normal}
-                onChange={setEditedColor}
-              />
-            </Form.Group>
+                <RgbaColorPicker
+                  value={editedColor || COLORS.normal}
+                  onChange={setEditedColor}
+                />
+              </Form.Group>
 
-            <Form.Group controlId="markerType" className="mt-3">
-              <Form.Label>{m?.drawing.edit.shape}</Form.Label>
+              <Form.Group controlId="markerType" className="mt-3">
+                <Form.Label>{dm?.edit.shape}</Form.Label>
 
-              <MarkerTypeSelect
-                asSelect
-                value={editedMarkerType}
-                onChange={setEditedMarkerType}
-              />
-            </Form.Group>
+                <MarkerTypeSelect
+                  asSelect
+                  value={editedMarkerType}
+                  onChange={setEditedMarkerType}
+                />
+              </Form.Group>
 
-            <Form.Group className="mt-3">
-              <div className={classes.iconTextGrid}>
-                <Form.Label htmlFor="icon" className={classes.iconLabel}>
-                  {m?.drawing.edit.icon}
-                </Form.Label>
+              <Form.Group className="mt-3">
+                <div className={classes.iconTextGrid}>
+                  <Form.Label htmlFor="icon" className={classes.iconLabel}>
+                    {dm?.edit.icon}
+                  </Form.Label>
 
-                <div className={classes.icon}>
-                  <IconPicker
-                    selected={
-                      editedIconSpec?.kind === 'fa' ||
-                      editedIconSpec?.kind === 'poi'
-                        ? editedIcon
-                        : undefined
+                  <div className={classes.icon}>
+                    <IconPicker
+                      selected={
+                        editedIconSpec?.kind === 'fa' ||
+                        editedIconSpec?.kind === 'poi'
+                          ? editedIcon
+                          : undefined
+                      }
+                      onSelect={(spec) => setEditedIcon(spec ?? '')}
+                    />
+                  </div>
+
+                  <Form.Label htmlFor="text" className={classes.textLabel}>
+                    {dm?.edit.text}
+                  </Form.Label>
+
+                  <Form.Control
+                    id="text"
+                    className={classes.text}
+                    type="text"
+                    maxLength={2}
+                    value={
+                      editedIconSpec?.kind === 'text' ? editedIconSpec.text : ''
                     }
-                    onSelect={(spec) => setEditedIcon(spec ?? '')}
+                    onChange={(e) => setEditedIcon(e.currentTarget.value)}
                   />
                 </div>
 
-                <Form.Label htmlFor="text" className={classes.textLabel}>
-                  {m?.drawing.edit.text}
-                </Form.Label>
+                <Form.Text muted>{dm?.edit.textHint}</Form.Text>
+              </Form.Group>
+            </>
+          )}
 
-                <Form.Control
-                  id="text"
-                  className={classes.text}
-                  type="text"
-                  maxLength={2}
-                  value={
-                    editedIconSpec?.kind === 'text' ? editedIconSpec.text : ''
-                  }
-                  onChange={(e) => setEditedIcon(e.currentTarget.value)}
-                />
-              </div>
+          {drawType === 'draw-line-poly' && (
+            <>
+              <DrawingLineStyleFields
+                color={editedColor || COLORS.normal}
+                onColorChange={setEditedColor}
+                fillColor={
+                  editedType === 'polygon' ? editedFillColor : undefined
+                }
+                onFillColorChange={
+                  editedType === 'polygon' ? setEditedFillColor : undefined
+                }
+                width={editedWidth}
+                onWidthChange={setEditedWidth}
+                invalidWidth={invalidWidth}
+                lineCap={editedLineCap}
+                onLineCapChange={setEditedLineCap}
+                lineJoin={editedLineJoin}
+                onLineJoinChange={setEditedLineJoin}
+                dashArray={editedDash}
+                onDashArrayChange={setEditedDash}
+              />
 
-              <Form.Text muted>{m?.drawing.edit.textHint}</Form.Text>
-            </Form.Group>
-          </>
-        )}
+              <Form.Group controlId="type" className="mt-3">
+                <Form.Label>{dm?.edit.type}</Form.Label>
 
-        {drawType === 'draw-line-poly' && (
-          <>
-            <DrawingLineStyleFields
-              color={editedColor || COLORS.normal}
-              onColorChange={setEditedColor}
-              fillColor={editedType === 'polygon' ? editedFillColor : undefined}
-              onFillColorChange={
-                editedType === 'polygon' ? setEditedFillColor : undefined
-              }
-              width={editedWidth}
-              onWidthChange={setEditedWidth}
-              invalidWidth={invalidWidth}
-              lineCap={editedLineCap}
-              onLineCapChange={setEditedLineCap}
-              lineJoin={editedLineJoin}
-              onLineJoinChange={setEditedLineJoin}
-              dashArray={editedDash}
-              onDashArrayChange={setEditedDash}
-            />
+                <Form.Select
+                  value={editedType}
+                  onChange={(e) => {
+                    const newType = e.currentTarget.value as DrawingLineType;
 
-            <Form.Group controlId="type" className="mt-3">
-              <Form.Label>{m?.drawing.edit.type}</Form.Label>
+                    setEditedType(newType);
 
-              <Form.Select
-                value={editedType}
-                onChange={(e) => {
-                  const newType = e.currentTarget.value as DrawingLineType;
+                    if (newType === 'polygon' && !editedFillColor) {
+                      setEditedFillColor(editedColor);
+                    }
+                  }}
+                  disabled={!polyPoints || polyPoints.length < 3}
+                >
+                  <option value="line">{m?.selections.drawLines}</option>
+                  <option value="polygon">{m?.selections.drawPolygons}</option>
+                </Form.Select>
+              </Form.Group>
+            </>
+          )}
+        </Modal.Body>
 
-                  setEditedType(newType);
+        <Modal.Footer>
+          <Button type="submit" variant="info" disabled={invalidWidth}>
+            <FaCheck /> {m?.general.save}
+          </Button>
 
-                  if (newType === 'polygon' && !editedFillColor) {
-                    setEditedFillColor(editedColor);
-                  }
-                }}
-                disabled={!polyPoints || polyPoints.length < 3}
-              >
-                <option value="line">{m?.selections.drawLines}</option>
-                <option value="polygon">{m?.selections.drawPolygons}</option>
-              </Form.Select>
-            </Form.Group>
-          </>
-        )}
-      </Modal.Body>
-
-      <Modal.Footer>
-        <Button type="submit" variant="info" disabled={invalidWidth}>
-          <FaCheck /> {m?.general.save}
-        </Button>
-
-        <Button variant="dark" type="button" onClick={close}>
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+          <Button variant="dark" type="button" onClick={close}>
+            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+          </Button>
+        </Modal.Footer>
+      </form>
     </Modal>
   );
 }

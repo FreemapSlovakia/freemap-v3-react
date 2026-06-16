@@ -3,6 +3,7 @@ import {
   setSelectingHomeLocation,
 } from '@features/homeLocation/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { loadMapSettingsMessages } from '@features/mapSettings/translations/loadMapSettingsMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
@@ -53,7 +54,8 @@ export default function HomeLocationPickingMenu(): ReactElement | null {
       dispatch(
         toastsAdd({
           id: 'homeLocation.savingError',
-          messageKey: 'settings.savingError',
+          messageKey: 'savingError',
+          messageLoader: loadMapSettingsMessages,
           messageParams: { err: error },
           style: 'danger',
         }),

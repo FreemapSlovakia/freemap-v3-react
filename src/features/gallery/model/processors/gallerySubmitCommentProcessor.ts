@@ -1,12 +1,11 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import { galleryRequestImage, gallerySubmitComment } from '../actions.js';
 
 export const gallerySubmitCommentProcessor: Processor = {
   actionCreator: gallerySubmitComment,
-  async handle({ getState, dispatch }) {
+  async handle({ getState, dispatch, toastError }) {
     const { image } = getState().gallery;
 
     if (!image) {
@@ -29,15 +28,7 @@ export const gallerySubmitCommentProcessor: Processor = {
         expectedStatus: 200,
       });
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const gm = await loadGalleryMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: gm.commentAddingError({ err }) }),
-      );
+      await toastError(err, loadGalleryMessages, 'commentAddingError');
 
       return;
     }

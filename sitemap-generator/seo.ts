@@ -113,17 +113,6 @@ export const hubs: Hub[] = [
     },
   },
   {
-    param: 'layers=X~s0',
-    title: {
-      en: 'Strava heatmap',
-      sk: 'Strava heatmap',
-    },
-    description: {
-      en: 'Strava heatmap overlay on Freemap.sk — visualise the most popular running, cycling, water and winter activity routes on top of the detailed outdoor map.',
-      sk: 'Prekryv Strava heatmap na Freemap.sk — zobrazte najpopulárnejšie bežecké, cyklistické, vodné a zimné trasy nad detailnou turistickou mapou.',
-    },
-  },
-  {
     param: 'layers=X~w',
     title: {
       en: 'Wikipedia on the map',

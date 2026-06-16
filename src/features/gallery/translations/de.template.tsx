@@ -4,6 +4,8 @@ import { addError } from '@/translations/messagesInterface.js';
 import { GalleryMessages } from './GalleryMessages.js';
 
 const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
+  sendGalleryEmails:
+    'Benachrichtigungen zu Fotokommentaren per E-Mail erhalten',
   stats: {
     leaderboard: 'Bestenliste',
     country: 'Land',

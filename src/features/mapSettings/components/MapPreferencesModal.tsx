@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -33,6 +34,10 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const initialMaxZoom = useAppSelector((state) => String(state.map.maxZoom));
+
+  const layerPreview = useAppSelector((state) =>
+    hasRole(state.auth.user, 'layerPreview'),
+  );
 
   const initialResolutionScale = useAppSelector((state) =>
     state.map.resolutionScale === null ? '' : String(state.map.resolutionScale),
@@ -135,130 +140,132 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       show={show}
       onHide={close}
       contentClassName="bg-body-tertiary"
-      as="form"
-      onSubmit={handleSubmit}
       scrollable
     >
-      <Modal.Header closeButton>
-        <Modal.Title>
-          <FaCog /> {m?.mapLayers.preferences}
-        </Modal.Title>
-      </Modal.Header>
+      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <FaCog /> {m?.mapLayers.preferences}
+          </Modal.Title>
+        </Modal.Header>
 
-      <Modal.Body>
-        <Form.Group controlId="maxZoom">
-          <Form.Label>{m?.mapLayers.maxZoom}</Form.Label>
+        <Modal.Body>
+          <Form.Group controlId="maxZoom">
+            <Form.Label>{m?.mapLayers.maxZoom}</Form.Label>
 
-          <Form.Control
-            type="number"
-            min={0}
-            max={99}
-            value={maxZoom}
-            isInvalid={invalidMaxZoom}
-            onChange={handleMaxZoomChange}
-          />
-        </Form.Group>
+            <Form.Control
+              type="number"
+              min={0}
+              max={99}
+              value={maxZoom}
+              isInvalid={invalidMaxZoom}
+              onChange={handleMaxZoomChange}
+            />
+          </Form.Group>
 
-        <Form.Group className="mt-3">
-          <Form.Label className="d-block">
-            {m?.mapLayers.resolutionScale}
-          </Form.Label>
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">
+              {m?.mapLayers.resolutionScale}
+            </Form.Label>
 
-          <ToggleButtonGroup
-            type="radio"
-            name="resolutionScale"
-            value={resolutionScale}
-            onChange={setResolutionScale}
-          >
-            <ToggleButton id="rs-auto" value="" variant="outline-primary">
-              {m?.mapLayers.resolutionScaleAuto}
-            </ToggleButton>
-
-            {['1', '2', '3', '4'].map((scale) => (
-              <ToggleButton
-                key={scale}
-                id={'rs-' + scale}
-                value={scale}
-                variant="outline-primary"
-              >
-                {scale}×
+            <ToggleButtonGroup
+              type="radio"
+              name="resolutionScale"
+              value={resolutionScale}
+              onChange={setResolutionScale}
+            >
+              <ToggleButton id="rs-auto" value="" variant="outline-primary">
+                {m?.mapLayers.resolutionScaleAuto}
               </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
 
-          <Form.Text muted className="d-block">
-            {m?.mapLayers.resolutionScaleHelp}
-          </Form.Text>
-        </Form.Group>
+              {['1', '2', '3', '4'].map((scale) => (
+                <ToggleButton
+                  key={scale}
+                  id={'rs-' + scale}
+                  value={scale}
+                  variant="outline-primary"
+                >
+                  {scale}×
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
 
-        <Form.Group className="mt-3">
-          <Form.Label className="d-block">
-            {m?.mapLayers.featureScale}
-          </Form.Label>
+            <Form.Text muted className="d-block">
+              {m?.mapLayers.resolutionScaleHelp}
+            </Form.Text>
+          </Form.Group>
 
-          <ToggleButtonGroup
-            type="radio"
-            name="featureScale"
-            value={featureScale}
-            onChange={setFeatureScale}
-          >
-            {['0.5', '1', '2', '4'].map((scale) => (
-              <ToggleButton
-                key={scale}
-                id={'fs-' + scale}
-                value={scale}
-                variant="outline-primary"
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">
+              {m?.mapLayers.featureScale}
+            </Form.Label>
+
+            <ToggleButtonGroup
+              type="radio"
+              name="featureScale"
+              value={featureScale}
+              onChange={setFeatureScale}
+            >
+              {['0.5', '1', '2', '4'].map((scale) => (
+                <ToggleButton
+                  key={scale}
+                  id={'fs-' + scale}
+                  value={scale}
+                  variant="outline-primary"
+                >
+                  {scale}×
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+
+            <Form.Text muted className="d-block">
+              {m?.mapLayers.featureScaleHelp}
+            </Form.Text>
+          </Form.Group>
+
+          {layerPreview && (
+            <Form.Group className="mt-3">
+              <Form.Label className="d-block">
+                {m?.mapLayers.stravaHeatmapColor}
+              </Form.Label>
+
+              <ToggleButtonGroup
+                type="radio"
+                name="stravaHeatmapColor"
+                value={stravaHeatmapColor}
+                onChange={(value) =>
+                  setStravaHeatmapColor(value as StravaHeatmapColor)
+                }
               >
-                {scale}×
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
+                {StravaHeatmapColorSchema.options.map((color) => (
+                  <ToggleButton
+                    key={color}
+                    id={'shc-' + color}
+                    value={color}
+                    variant="outline-primary"
+                  >
+                    {m?.mapLayers.stravaHeatmapColors[color]}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            </Form.Group>
+          )}
+        </Modal.Body>
 
-          <Form.Text muted className="d-block">
-            {m?.mapLayers.featureScaleHelp}
-          </Form.Text>
-        </Form.Group>
-
-        <Form.Group className="mt-3">
-          <Form.Label className="d-block">
-            {m?.mapLayers.stravaHeatmapColor}
-          </Form.Label>
-
-          <ToggleButtonGroup
-            type="radio"
-            name="stravaHeatmapColor"
-            value={stravaHeatmapColor}
-            onChange={(value) =>
-              setStravaHeatmapColor(value as StravaHeatmapColor)
-            }
+        <Modal.Footer>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={!dirty || invalidMaxZoom}
           >
-            {StravaHeatmapColorSchema.options.map((color) => (
-              <ToggleButton
-                key={color}
-                id={'shc-' + color}
-                value={color}
-                variant="outline-primary"
-              >
-                {m?.mapLayers.stravaHeatmapColors[color]}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </Form.Group>
-      </Modal.Body>
+            <FaCheck /> {m?.general.save}
+          </Button>
 
-      <Modal.Footer>
-        <Button
-          variant="primary"
-          type="submit"
-          disabled={!dirty || invalidMaxZoom}
-        >
-          <FaCheck /> {m?.general.save}
-        </Button>
-
-        <Button variant="dark" type="button" onClick={close}>
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+          <Button variant="dark" type="button" onClick={close}>
+            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+          </Button>
+        </Modal.Footer>
+      </form>
     </Modal>
   );
 }

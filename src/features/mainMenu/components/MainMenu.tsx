@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import { type ReactElement } from 'react';
@@ -41,6 +42,8 @@ export function MainMenu(): ReactElement {
   const toolDef = toolDefinitions.find((t) => t.tool === tool);
 
   const m = useMessages();
+
+  const oeam = useOpenInExternalAppMessages();
 
   return (
     <>
@@ -117,7 +120,7 @@ export function MainMenu(): ReactElement {
       <Dropdown.Divider />
 
       <Dropdown.Item as="button" eventKey="submenu-openExternally">
-        <FaExternalLinkAlt /> {m?.external.openInExternal} <FaChevronRight />
+        <FaExternalLinkAlt /> {oeam?.openInExternal} <FaChevronRight />
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('map-features-export')}>

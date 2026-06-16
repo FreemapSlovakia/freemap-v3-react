@@ -31,7 +31,6 @@ const validUser = {
   email: 'a@b.c',
   description: null,
   id: 1,
-  isAdmin: false,
   coordinates: null,
   name: 'Tester',
   premiumExpiration: '2026-05-17T12:00:48.000Z',

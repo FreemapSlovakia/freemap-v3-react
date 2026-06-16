@@ -1,3 +1,4 @@
+import { activeMapToolSelector } from '@app/store/selectors.js';
 import { ChangesetsResult } from '@features/changesets/components/ChangesetsResult.js';
 import { DrawingLinesResult } from '@features/drawing/components/DrawingLinesResult.js';
 import { DrawingPointsResult } from '@features/drawing/components/DrawingPointsResult.js';
@@ -18,6 +19,15 @@ export function Results(): ReactElement {
 
   const hasObjects = useAppSelector(
     (state) => state.objects.objects.length > 0,
+  );
+
+  // Mount the route-planner result only once route planning is engaged — a
+  // route exists, or its tool is active (so map clicks add points). This keeps
+  // the feature's lazy message bundle out of the initial boot.
+  const showRoutePlanner = useAppSelector(
+    (state) =>
+      state.routePlanner.points.length > 0 ||
+      activeMapToolSelector(state) === 'route-planner',
   );
 
   const opacity = useAppSelector(
@@ -46,7 +56,7 @@ export function Results(): ReactElement {
 
       {hasObjects && <ObjectsResult />}
 
-      <RoutePlannerResult />
+      {showRoutePlanner && <RoutePlannerResult />}
 
       <DrawingLinesResult />
 

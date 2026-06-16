@@ -1,6 +1,5 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import z from 'zod';
 import { createFilter } from '../../galleryUtils.js';
@@ -15,7 +14,7 @@ export const galleryRequestImagesByOrderProcessor: Processor<
   typeof galleryList
 > = {
   actionCreator: galleryList,
-  async handle({ getState, dispatch, action }) {
+  async handle({ getState, dispatch, action, toastError }) {
     let res;
 
     try {
@@ -32,18 +31,11 @@ export const galleryRequestImagesByOrderProcessor: Processor<
         expectedStatus: 200,
       });
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const gm = await loadGalleryMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({
-          id: 'gallery.picturesFetchingError',
-          style: 'danger',
-          message: gm.picturesFetchingError({ err }),
-        }),
+      await toastError(
+        err,
+        loadGalleryMessages,
+        'picturesFetchingError',
+        'gallery.picturesFetchingError',
       );
 
       return;

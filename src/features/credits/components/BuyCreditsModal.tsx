@@ -6,6 +6,7 @@ import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaCoins, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useCreditsMessages } from '../translations/useCreditsMessages.js';
 import { CreditsAlert } from './CredistAlert.js';
 
 type Props = { show: boolean };
@@ -29,6 +30,8 @@ export default function CurrentDrawingPropertiesModal({
 
   const m = useMessages();
 
+  const cm = useCreditsMessages();
+
   const nf = useNumberFormat({
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -41,48 +44,48 @@ export default function CurrentDrawingPropertiesModal({
       show={show}
       onHide={close}
       contentClassName="bg-body-tertiary"
-      as="form"
-      onSubmit={handleSubmit}
       scrollable
     >
-      <Modal.Header closeButton>
-        <Modal.Title>
-          <FaCoins /> {m?.credits.buyCredits}
-        </Modal.Title>
-      </Modal.Header>
+      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <FaCoins /> {cm?.buyCredits}
+          </Modal.Title>
+        </Modal.Header>
 
-      <Modal.Body>
-        <CreditsAlert explainCredits />
+        <Modal.Body>
+          <CreditsAlert explainCredits />
 
-        <Form.Group controlId="amount">
-          <Form.Label className="required">{m?.credits.amount}</Form.Label>
+          <Form.Group controlId="amount">
+            <Form.Label className="required">{cm?.amount}</Form.Label>
 
-          <InputGroup>
-            <Form.Control
-              type="number"
-              value={credits}
-              min={500}
-              step={10}
-              isInvalid={invalidCredits}
-              onChange={(e) => setCredits(e.currentTarget.value)}
-            />
+            <InputGroup>
+              <Form.Control
+                type="number"
+                value={credits}
+                min={500}
+                step={10}
+                isInvalid={invalidCredits}
+                onChange={(e) => setCredits(e.currentTarget.value)}
+              />
 
-            <InputGroup.Text>
-              {m?.credits.credits} = {nf.format(Number(credits) / 100)} €
-            </InputGroup.Text>
-          </InputGroup>
-        </Form.Group>
-      </Modal.Body>
+              <InputGroup.Text>
+                {cm?.credits} = {nf.format(Number(credits) / 100)} €
+              </InputGroup.Text>
+            </InputGroup>
+          </Form.Group>
+        </Modal.Body>
 
-      <Modal.Footer>
-        <Button type="submit" disabled={invalidCredits}>
-          <FaCheck /> {m?.credits.buy}
-        </Button>
+        <Modal.Footer>
+          <Button type="submit" disabled={invalidCredits}>
+            <FaCheck /> {cm?.buy}
+          </Button>
 
-        <Button variant="dark" type="button" onClick={close}>
-          <FaTimes /> {m?.general.cancel}
-        </Button>
-      </Modal.Footer>
+          <Button variant="dark" type="button" onClick={close}>
+            <FaTimes /> {m?.general.cancel}
+          </Button>
+        </Modal.Footer>
+      </form>
     </Modal>
   );
 }

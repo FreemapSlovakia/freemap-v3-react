@@ -1,11 +1,11 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement } from 'react';
 import { Alert, Button } from 'react-bootstrap';
 import { FaCoins } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useCreditsMessages } from '../translations/useCreditsMessages.js';
 
 type Props = { buy?: boolean; price?: number; explainCredits?: boolean };
 
@@ -20,7 +20,7 @@ export function CreditsAlert({
 
   const nf = useNumberFormat();
 
-  const m = useMessages();
+  const cm = useCreditsMessages();
 
   return !user ? null : (
     <Alert
@@ -28,7 +28,7 @@ export function CreditsAlert({
     >
       <div className="d-flex justify-content-between  gap-4">
         <span>
-          {m?.credits.youHaveCredits(
+          {cm?.youHaveCredits(
             <b>{nf.format(Math.floor(user.credits))}</b>,
             explainCredits,
           )}
@@ -40,7 +40,7 @@ export function CreditsAlert({
             className="m-n2 ms-2"
             onClick={() => dispatch(setActiveModal('credits-purchase'))}
           >
-            <FaCoins /> {m?.credits.buyCredits}
+            <FaCoins /> {cm?.buyCredits}
           </Button>
         )}
       </div>

@@ -1,9 +1,19 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
+import { ObjectDetails } from '../components/ObjectDetails.js';
 import { ObjectsMessages } from './ObjectsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
+  source: 'Forrás',
+  detail: ({ result }) => (
+    <ObjectDetails
+      result={result}
+      openText="Megnyitás az OpenStreetMap.org oldalon"
+      historyText="előzmények"
+      editInJosmText="Szerkesztés JOSM-ben"
+    />
+  ),
   type: 'Típus',
   lowZoomAlert: {
     message: ({ minZoom }) =>

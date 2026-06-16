@@ -1,7 +1,5 @@
 import { HttpError } from '@app/httpRequest.js';
-import { Changeset } from '@features/changesets/model/actions.js';
-import { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
-import { SearchResult, SearchSource } from '@features/search/model/actions.js';
+import { SearchSource } from '@features/search/model/actions.js';
 import { DeepPartial } from '@shared/types/deepPartial.js';
 import { JSX, ReactNode } from 'react';
 
@@ -29,7 +27,7 @@ export type Messages = {
     preventShowingAgain: string;
     closeWithoutSaving: string;
     back: string;
-    internalError: ({ ticketId }: { ticketId?: string }) => string;
+    internalError: ({ ticketId }: { ticketId?: string }) => JSX.Element;
     processorError: (props: Err) => string;
     seconds: string;
     minutes: string;
@@ -56,6 +54,7 @@ export type Messages = {
     load: string;
     unnamed: string;
     enablePopup: string;
+    broadcastChannelUnsupported: string;
     componentLoadingError: string;
     offline: string;
     connectionError: string;
@@ -151,150 +150,6 @@ export type Messages = {
     infoBars: Record<string, () => JSX.Element>;
     cookieConsent: () => JSX.Element;
   };
-  ad: {
-    self: (email: ReactNode) => JSX.Element;
-    rovas: () => JSX.Element;
-  };
-  measurement: {
-    distance: string;
-    elevation: string;
-    area: string;
-    elevationFetchError: (props: Err) => string;
-    elevationInfo: (props: ElevationInfoBaseProps) => JSX.Element;
-    areaInfo: (props: { area: number; perimeter: number }) => JSX.Element;
-    distanceInfo: (props: { length: number }) => JSX.Element;
-  };
-  trackViewer: {
-    // Dispatched as a toast messageKey and rendered to JSX by the global Toasts
-    // component, which resolves keys only against global Messages, so it stays.
-    info: () => JSX.Element;
-  };
-  drawing: {
-    modify: string;
-    edit: {
-      title: string;
-      color: string;
-      fillColor: string;
-      label: string;
-      width: string;
-      hint: string;
-      shape: string;
-      icon: string;
-      iconChoose: string;
-      iconNone: string;
-      iconSearch: string;
-      text: string;
-      textHint: string;
-      type: string;
-      dashArray: string;
-      lineCap: string;
-      lineCapRound: string;
-      lineCapButt: string;
-      lineCapSquare: string;
-      lineJoin: string;
-      lineJoinRound: string;
-      lineJoinMiter: string;
-      lineJoinBevel: string;
-    };
-    split: string;
-    join: string;
-    continue: string;
-    stopDrawing: string;
-    selectPointToJoin: string;
-    defProps: {
-      menuItem: string;
-      title: string;
-      applyToAll: string;
-    };
-    projection: {
-      projectPoint: string;
-      distance: string;
-      azimuth: string;
-    };
-    reverse: string;
-    simplify: string;
-  };
-  purchases: {
-    purchases: string;
-    premiumExpired: (at: ReactNode) => JSX.Element;
-    date: string;
-    item: string;
-    notPremiumYet: string;
-    awaitingBankPayment: string;
-    bankPaymentFailed: string;
-    bankIntentStatus: {
-      pending_settlement: string;
-      manual_review: string;
-      paid: string;
-      expired: string;
-      failed: string;
-      rejected: string;
-      created: string;
-      unknown: string;
-    };
-    noPurchases: string;
-    premium: string;
-    credits: (amount: ReactNode) => JSX.Element;
-  };
-  settings: {
-    map: {
-      homeLocation: {
-        label: string;
-        select: string;
-        undefined: string;
-      };
-    };
-    account: {
-      name: string;
-      email: string;
-      sendGalleryEmails: string;
-      delete: string;
-      deleteWarning: string;
-      personalInfo: string;
-      authProviders: string;
-      description: string;
-      picture: string;
-      choosePicture: string;
-      pictureTooLarge: string;
-    };
-    general: {
-      tips: string;
-    };
-    layer: string;
-    overlayOpacity: string;
-    showInMenu: string;
-    showInToolbar: string;
-    saveSuccess: string;
-    savingError: (props: Err) => string;
-    customLayersDef: string;
-    customLayersDefError: string;
-  };
-  changesets: {
-    // Dispatched as a toast messageKey and rendered to JSX by the global Toasts
-    // component, which resolves keys only against global Messages, so it stays.
-    detail: ({ changeset }: { changeset: Changeset }) => JSX.Element;
-  };
-  mapDetails: {
-    sources: string;
-    source: string;
-    notFound: string;
-    fetchingError: (props: Err) => string;
-    detail: (props: { result: SearchResult }) => JSX.Element;
-  };
-  external: {
-    openInExternal: string;
-    osm: string;
-    oma: string;
-    googleMaps: string;
-    hiking_sk: string;
-    zbgis: string;
-    mapy_cz: string;
-    josm: string;
-    id: string;
-    window: string;
-    url: string;
-    image: string;
-  };
   search: {
     inProgress: string;
     noResults: string;
@@ -306,30 +161,6 @@ export type Messages = {
     placeholder: string;
     result: string;
     sources: Record<SearchSource, string>;
-  };
-  documents: {
-    errorLoading: string;
-  };
-  auth: {
-    connect: {
-      label: string;
-      success: string;
-    };
-    disconnect: {
-      label: string;
-      success: string;
-    };
-    logIn: {
-      with: string;
-      success: string;
-      logInError: (props: Err) => string;
-      logInError2: string;
-      verifyError: (props: Err) => string;
-    };
-    logOut: {
-      success: string;
-      error: (props: Err) => string;
-    };
   };
   mapLayers: {
     showMore: string;
@@ -404,15 +235,6 @@ export type Messages = {
   errorCatcher: {
     html: (ticketId?: string) => string;
   };
-  osm: {
-    fetchingError: (props: Err) => string;
-  };
-  tracking: {
-    // toast messages dispatched from the websocket middleware; the rest of the
-    // feature's strings live in features/tracking/translations
-    subscribeNotFound: (props: { id: string | number }) => JSX.Element;
-    subscribeError: (props: { id: string | number }) => JSX.Element;
-  };
   mapCtxMenu: {
     centerMap: string;
     measurePosition: string;
@@ -422,31 +244,6 @@ export type Messages = {
     startRoute: string;
     finishRoute: string;
     showPhotos: string;
-  };
-  premium: {
-    title: string;
-    commonHeader: ReactNode;
-    stepsForAnonymous: ReactNode;
-    continue: string;
-    success: string;
-    becomePremium: string;
-    youArePremium: (date: string) => JSX.Element;
-    premiumOnly: string;
-    alreadyPremium: string;
-    premiumUser: string;
-    payOnce: string;
-    paySubscription: string;
-    payWhatYouWant: string;
-  };
-  credits: {
-    buyCredits: string;
-    amount: string;
-    credits: string;
-    buy: string;
-    purchase: {
-      success: ({ amount }: { amount: number }) => JSX.Element;
-    };
-    youHaveCredits: (amount: ReactNode, explainCredits: boolean) => JSX.Element;
   };
   errorStatus: Record<number, string>;
   gpu: {

@@ -4,6 +4,7 @@ import { addError } from '@/translations/messagesInterface.js';
 import { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
+  selectHomeLocation: 'Vybrat na mapě',
   ghParams: {
     tripParameters: 'Parametry výletu',
     seed: 'Random seed',

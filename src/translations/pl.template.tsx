@@ -1,13 +1,5 @@
-import { AreaInfo } from '@app/components/AreaInfo.js';
-import { DistanceInfo } from '@app/components/DistanceInfo.js';
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
-import { RovasAd } from '@features/ad/components/RovasAd.js';
-import { ChangesetDetails } from '@features/changesets/components/ChangesetDetails.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
-import { CreditsText } from '@features/credits/components/CreditsText.js';
-import { ElevationInfo } from '@features/elevationChart/components/ElevationInfo.js';
-import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import { TrackViewerDetails } from '@features/trackViewer/components/TrackViewerDetails.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
@@ -15,11 +7,6 @@ import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import { addError, Messages } from './messagesInterface.js';
 import shared from './pl-shared.js';
-
-const nf00 = new Intl.NumberFormat('pl', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
 
 const masl = 'm\xa0n.p.m.'; // metry nad poziomem morza
 
@@ -43,9 +30,6 @@ const getErrorMarkup = (ticketId?: string) => `
 const outdoorMap = 'Turystyka, Rower, Biegówki, Jazda konna';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
-  changesets: {
-    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  },
   general: {
     iso: 'pl_PL',
     elevationProfile: 'Profil wysokościowy',
@@ -67,7 +51,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     preventShowingAgain: 'Nie pokazuj ponownie',
     closeWithoutSaving: 'Zamknąć okno bez zapisywania zmian?',
     back: 'Wstecz',
-    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    internalError: ({ ticketId }) => (
+      <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
+    ),
     processorError: ({ err }) => addError(messages, 'Błąd aplikacji', err),
     seconds: 'sekundy',
     minutes: 'minuty',
@@ -100,6 +86,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     load: 'Wczytaj',
     unnamed: 'Bez nazwy',
     enablePopup: 'Włącz wyskakujące okna dla tej strony w swojej przeglądarce.',
+    broadcastChannelUnsupported:
+      'Ta czynność nie jest obsługiwana w Twojej przeglądarce (BroadcastChannel jest niedostępny, np. w trybie prywatnym lub w przeglądarce wbudowanej w aplikację). Użyj zwykłego okna w nowoczesnej przeglądarce.',
     componentLoadingError:
       'Błąd ładowania komponentu. Sprawdź swoje połączenie z internetem.',
     offline: 'Brak połączenia z internetem.',
@@ -218,193 +206,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
   },
 
-  ad: {
-    self: (email) => (
-      <>
-        Chcesz umieścić swoją reklamę w tym miejscu? Skontaktuj się z nami pod
-        adresem {email}.
-      </>
-    ),
-    rovas: () => (
-      <RovasAd rovasDesc="economic program for volunteers">
-        <b>Freemap is created by volunteers.</b>{' '}
-        <span className="text-danger">Reward them for their work</span>, with
-        your own volunteer work or with money.
-      </RovasAd>
-    ),
-  },
-
-  measurement: {
-    distance: 'Linia',
-    elevation: 'Punkt',
-    area: 'Wielokąt',
-    elevationFetchError: ({ err }) =>
-      addError(
-        messages,
-        'Wystąpił błąd podczas pobierania wysokości punktu',
-        err,
-      ),
-    elevationInfo: (params) => (
-      <ElevationInfo
-        {...params}
-        lang="pl"
-        tileMessage="Kafel"
-        maslMessage="Wysokość n.p.m."
-      />
-    ),
-    areaInfo: (props) => (
-      <AreaInfo {...props} areaLabel="Powierzchnia" perimeterLabel="Obwód" />
-    ),
-    distanceInfo: (props) => <DistanceInfo {...props} lengthLabel="Długość" />,
-  },
-
-  trackViewer: {
-    info: () => <TrackViewerDetails />,
-  },
-
-  drawing: {
-    edit: {
-      title: 'Właściwości',
-      color: 'Kolor',
-      fillColor: 'Kolor wypełnienia',
-      label: 'Etykieta',
-      width: 'Szerokość',
-      hint: 'Aby usunąć etykietę, pozostaw to pole puste.',
-      shape: 'Kształt',
-      icon: 'Ikona',
-      iconChoose: 'Wybierz ikonę…',
-      iconNone: 'Bez ikony',
-      iconSearch: 'Szukaj ikon',
-      text: 'Tekst',
-      textHint: 'Ikona lub maksymalnie 2 znaki wyświetlane w znaczniku.',
-      type: 'Typ geometrii',
-      dashArray: 'Styl kreskowania',
-      lineCap: 'Zakończenie linii',
-      lineCapRound: 'Okrągłe',
-      lineCapButt: 'Płaskie',
-      lineCapSquare: 'Kwadratowe',
-      lineJoin: 'Połączenie linii',
-      lineJoinRound: 'Okrągłe',
-      lineJoinMiter: 'Ostre',
-      lineJoinBevel: 'Ścięte',
-    },
-    defProps: {
-      menuItem: 'Ustawienia stylu',
-      title: 'Domyślne ustawienia stylu rysowania',
-      applyToAll: 'Zapisz i zastosuj do wszystkich',
-    },
-    projection: {
-      projectPoint: 'Wyznacz punkt',
-      azimuth: 'Azymut',
-      distance: 'Dystans',
-    },
-    modify: 'Właściwości',
-    continue: 'Kontynuuj',
-    join: 'Połącz',
-    split: 'Podziel',
-    stopDrawing: 'Zakończ rysowanie',
-    selectPointToJoin: 'Wybierz punkt do połączenia linii',
-    reverse: 'Odwróć kierunek',
-    simplify: 'Uprość',
-  },
-
-  purchases: {
-    purchases: 'Zakupy',
-    premiumExpired: (at) => <>Twój dostęp premium wygasł {at}</>,
-    date: 'Data',
-    item: 'Pozycja',
-    notPremiumYet: 'Nie masz jeszcze dostępu premium.',
-    awaitingBankPayment:
-      'Czekamy na potwierdzenie przelewu bankowego. Premium aktywuje się po otrzymaniu płatności.',
-    bankPaymentFailed:
-      'Niektóre przelewy bankowe zostały odrzucone lub wygasły. Jeśli uważasz, że to pomyłka, skontaktuj się z pomocą.',
-    bankIntentStatus: {
-      pending_settlement:
-        'Przelew bankowy został utworzony i oczekuje na rozliczenie.',
-      manual_review:
-        'Przelew bankowy wymaga ręcznej weryfikacji (np. niezgodność kwoty).',
-      paid: 'Przelew bankowy został potwierdzony jako opłacony.',
-      expired: 'Przelew bankowy wygasł przed potwierdzeniem.',
-      failed: 'Przelew bankowy nie powiódł się.',
-      rejected: 'Przelew bankowy został odrzucony.',
-      created:
-        'Intencja płatności została utworzona i nie została jeszcze rozliczona.',
-      unknown: 'Status przelewu zgłoszony przez dostawcę: {}.',
-    },
-    noPurchases: 'Brak zakupów',
-    premium: 'Premium',
-    credits: (amount) => <>Kredyty ({amount})</>,
-  },
-
-  settings: {
-    map: {
-      homeLocation: {
-        label: 'Lokalizacja domowa:',
-        select: 'Wybierz na mapie',
-        undefined: 'nieokreślona',
-      },
-    },
-
-    account: {
-      name: 'Imię',
-      email: 'Email',
-      sendGalleryEmails: 'Powiadamiaj o komentarzach do zdjęć emailem',
-      delete: 'Usuń konto',
-      deleteWarning:
-        'Czy na pewno chcesz usunąć swoje konto? Zostaną usunięte wszystkie Twoje zdjęcia, komentarze i oceny, własne mapy i śledzone urządzenia.',
-      personalInfo: 'Dane osobowe',
-      authProviders: 'Dostawcy logowania',
-      picture: 'Zdjęcie profilowe',
-      choosePicture: 'Wybierz zdjęcie',
-      pictureTooLarge: 'Zdjęcie jest za duże. Maksymalny rozmiar to 5 MB.',
-      description: 'O mnie',
-    },
-
-    general: {
-      tips: 'Pokaż porady przy otwarciu strony (tylko dla języka słowackiego lub czeskiego)',
-    },
-
-    layer: 'Mapa',
-    overlayOpacity: 'Przezroczystość',
-    showInMenu: 'Pokaż w menu',
-    showInToolbar: 'Pokaż na pasku narzędzi',
-    saveSuccess: 'Ustawienia zostały zapisane.',
-    savingError: ({ err }) => addError(messages, 'Błąd zapisu ustawień', err),
-    customLayersDef: 'Definicja własnych warstw mapy',
-    customLayersDefError: 'Nieprawidłowa definicja własnych warstw mapy.',
-  },
-
-  mapDetails: {
-    notFound: 'Nic tu nie znaleziono.',
-    fetchingError: ({ err }) =>
-      addError(messages, 'Błąd podczas pobierania szczegółów', err),
-    detail: ({ result }) => (
-      <ObjectDetails
-        result={result}
-        openText="Otwórz na OpenStreetMap.org"
-        historyText="historia"
-        editInJosmText="Edytuj w JOSM"
-      />
-    ),
-    sources: 'Źródła',
-    source: 'Źródło',
-  },
-
-  external: {
-    openInExternal: 'Udostępnij / Otwórz w zewnętrznej aplikacji.',
-    osm: 'OpenStreetMap',
-    oma: 'OMA',
-    googleMaps: 'Google Maps',
-    hiking_sk: 'Hiking.sk',
-    zbgis: 'ZBGIS',
-    mapy_cz: 'Mapy.com',
-    josm: 'Edytuj w JOSM',
-    id: 'Edytuj w iD',
-    window: 'Nowe okno',
-    url: 'Udostępnij lokalizację',
-    image: 'Udostępnij zdjęcie',
-  },
-
   search: {
     inProgress: 'Wyszukiwanie…',
     noResults: 'Brak wyników',
@@ -430,32 +231,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
   },
 
-  documents: {
-    errorLoading: 'Błąd podczas ładowania dokumentu.',
-  },
-
-  auth: {
-    connect: {
-      label: 'Połącz',
-      success: 'Połączono',
-    },
-    disconnect: {
-      label: 'Odłącz',
-      success: 'Odłączono',
-    },
-    logIn: {
-      with: 'Wybierz dostawcę logowania',
-      success: 'Zalogowano pomyślnie.',
-      logInError: ({ err }) => addError(messages, 'Błąd logowania', err),
-      logInError2: 'Błąd logowania.',
-      verifyError: ({ err }) =>
-        addError(messages, 'Błąd weryfikacji logowania', err),
-    },
-    logOut: {
-      success: 'Wylogowano pomyślnie.',
-      error: ({ err }) => addError(messages, 'Błąd wylogowania', err),
-    },
-  },
   mapLayers: {
     letters: {
       S: 'Lotnicza',
@@ -596,25 +371,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     `,
   },
 
-  osm: {
-    fetchingError: ({ err }) =>
-      addError(messages, 'Błąd podczas pobierania danych OSM', err),
-  },
-
-  tracking: {
-    subscribeNotFound: ({ id }) => (
-      <>
-        Beobachtungstoken <i>{id}</i> existiert nicht.
-      </>
-    ),
-
-    subscribeError: ({ id }) => (
-      <>
-        Fehler beim Beobachten mit Token <i>{id}</i>.
-      </>
-    ),
-  },
-
   mapCtxMenu: {
     centerMap: 'Wyśrodkuj mapę tutaj',
     measurePosition: 'Sprawdź współrzędne i wysokość',
@@ -624,93 +380,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startRoute: 'Zaplanuj trasę stąd',
     finishRoute: 'Zaplanuj trasę tutaj',
     showPhotos: 'Pokaż zdjęcia w pobliżu',
-  },
-
-  premium: {
-    title: 'Uzyskaj dostęp premium',
-    commonHeader: (
-      <>
-        <p>
-          <strong>Wesprzyj wolontariuszy, którzy tworzą tę mapę!</strong>
-        </p>
-        <p className="mb-1">
-          Za <b>8 godzin</b> swojej{' '}
-          <a
-            href="https://rovas.app/freemap-web"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            pracy wolontariackiej
-          </a>{' '}
-          lub <b>8 €</b>
-          otrzymasz roczny dostęp obejmujący:
-        </p>
-        <ul>
-          <li>usunięcie banera reklamowego</li>
-          <li
-            className="text-decoration-underline"
-            title="Strava Heatmap, szczegółowe cieniowanie Słowacji i Czech w wysokiej rozdzielczości, najwyższe poziomy powiększenia mapy Outdoor, najwyższe poziomy powiększenia map ortofoto Słowacji i Czech, różne mapy oparte na WMS"
-          >
-            warstw map premium
-          </li>
-          <li>zdjęć premium</li>
-          <li>multimodalne wyznaczanie trasy</li>
-        </ul>
-      </>
-    ),
-    stepsForAnonymous: (
-      <>
-        <div className="fw-bold">Procedura</div>
-        <div className="mb-3">
-          <p className="mb-1 ms-3">
-            <span className="fw-semibold">Krok 1</span> – utwórz konto w Freemap
-            (poniżej)
-          </p>
-          <p className="mb-1 ms-3">
-            <span className="fw-semibold">Krok 2</span> – w aplikacji Rovas,
-            gdzie zostaniesz przekierowany po rejestracji, prześlij nam
-            płatność.
-          </p>
-        </div>
-      </>
-    ),
-    continue: 'Kontynuuj',
-    success: 'Gratulacje, uzyskano dostęp premium!',
-    becomePremium: 'Uzyskaj dostęp premium',
-    youArePremium: (date) => (
-      <>
-        Masz dostęp premium do <b>{date}</b>.
-      </>
-    ),
-    premiumOnly: 'Dostępne tylko z dostępem premium.',
-    alreadyPremium: 'Masz już dostęp premium.',
-    premiumUser: 'Użytkownik z dostępem premium',
-  },
-
-  credits: {
-    purchase: {
-      success: ({ amount }) => (
-        <>Twój kredyt został zwiększony o {nf00.format(amount)}.</>
-      ),
-    },
-    buyCredits: 'Kup kredyty',
-    amount: 'Kredyty',
-    credits: 'kredytów',
-    buy: 'Kup',
-    youHaveCredits: (amount, explainCredits) => (
-      <>
-        Masz {amount}{' '}
-        {explainCredits ? (
-          <CreditsText
-            credits="kredytów"
-            help="Możesz użyć kredytów do [eksport map offline]."
-          />
-        ) : (
-          'kredytów'
-        )}
-        .
-      </>
-    ),
   },
 
   errorStatus: {

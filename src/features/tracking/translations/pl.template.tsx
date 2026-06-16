@@ -4,6 +4,16 @@ import { FaKey } from 'react-icons/fa';
 import { TrackingMessages } from './TrackingMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
+  subscribeNotFound: ({ id }) => (
+    <>
+      Beobachtungstoken <i>{id}</i> existiert nicht.
+    </>
+  ),
+  subscribeError: ({ id }) => (
+    <>
+      Fehler beim Beobachten mit Token <i>{id}</i>.
+    </>
+  ),
   trackedDevices: {
     button: 'Obserwowane',
     modalTitle: 'Obserwowane urządzenia',

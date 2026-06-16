@@ -50,7 +50,7 @@
     "@reduxjs/toolkit": "^2.12.0",
     "@restart/ui": "^1.9.4",
     "@samchon/openapi": "^6.0.1",
-    "@sentry/browser": "^10.57.0",
+    "@sentry/browser": "^10.58.0",
     "@tmcw/togeojson": "^7.1.2",
     "@turf/along": "^7.3.5",
     "@turf/area": "^7.3.5",
@@ -69,7 +69,7 @@
     "@turf/projection": "^7.3.5",
     "@turf/simplify": "^7.3.5",
     "@types/pannellum": "^2.5.0",
-    "@zdila/react-gradient-color-picker": "^3.1.2",
+    "@zdila/react-gradient-color-picker": "^3.2.0",
     "bootstrap": "^5.3.8",
     "clsx": "^2.1.1",
     "color": "^5.0.3",
@@ -108,7 +108,7 @@
   "devDependencies": {
     "@babel/parser": "^7.29.7",
     "@babel/types": "^7.29.7",
-    "@biomejs/biome": "^2.4.16",
+    "@biomejs/biome": "^2.5.0",
     "@resvg/resvg-js": "^2.6.2",
     "@rspack/cli": "^2.0.8",
     "@rspack/core": "^2.0.8",
@@ -127,7 +127,7 @@
     "@types/google.picker": "^0.0.52",
     "@types/leaflet": "^1.9.21",
     "@types/mapbox__geojson-area": "^0.2.6",
-    "@types/node": "^24.13.1",
+    "@types/node": "^24.13.2",
     "@types/rbush": "^4.0.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
@@ -139,7 +139,7 @@
     "@types/vhtml": "^2.2.9",
     "@types/webpack-env": "^1.18.8",
     "@types/wicg-file-system-access": "^2023.10.7",
-    "@typescript/native-preview": "7.0.0-dev.20260610.1",
+    "@typescript/native-preview": "7.0.0-dev.20260615.1",
     "@webgpu/types": "^0.1.70",
     "css-loader": "^7.1.4",
     "gray-matter": "^4.0.3",
@@ -161,6 +161,6 @@
     "typescript": "^6.0.3",
     "utility-types": "^3.11.0",
     "v": "^0.3.0",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   }
 }

@@ -32,7 +32,7 @@ Older version (map updated, style not):
 
 Additional maps for Locus:
 
-- [Orthophoto SR, DMR5 hillshading, NLC forest roads (online), and Strava Heatmap](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
+- [Orthophoto SR, DMR5 hillshading, NLC forest roads (online)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
 - [NLC forest roads (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
 
 ### OruxMaps

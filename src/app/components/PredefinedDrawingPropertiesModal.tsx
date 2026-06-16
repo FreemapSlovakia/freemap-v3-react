@@ -1,7 +1,8 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
-import { MarkerTypeSelect } from '@features/drawing/components/MarkerTypeSelect.js';
+import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
@@ -15,6 +16,8 @@ export default function PredefinedDrawingPropertiesModal({
   show,
 }: Props): ReactElement {
   const m = useMessages();
+
+  const dm = useDrawingMessages();
 
   const color = useAppSelector((state) => state.drawingSettings.style.color);
 
@@ -89,15 +92,13 @@ export default function PredefinedDrawingPropertiesModal({
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  useDocumentTitle(show ? m?.drawing.defProps.menuItem : undefined);
+  useDocumentTitle(show ? dm?.defProps.menuItem : undefined);
 
   return (
     <Modal
       show={show}
       onHide={close}
       contentClassName="bg-body-tertiary"
-      as="form"
-      onSubmit={handleSubmit}
       scrollable
       // The color picker's popover is portalled to <body> (outside this
       // modal's DOM), so the modal's focus trap would steal focus from its
@@ -105,55 +106,57 @@ export default function PredefinedDrawingPropertiesModal({
       // (and the sliders) stay editable.
       enforceFocus={false}
     >
-      <Modal.Header closeButton>
-        <Modal.Title>{m?.drawing.defProps.title}</Modal.Title>
-      </Modal.Header>
+      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+        <Modal.Header closeButton>
+          <Modal.Title>{dm?.defProps.title}</Modal.Title>
+        </Modal.Header>
 
-      <Modal.Body>
-        <DrawingLineStyleFields
-          color={editedColor}
-          onColorChange={setEditedColor}
-          fillColor={editedFillColor}
-          onFillColorChange={setEditedFillColor}
-          width={editedWidth}
-          onWidthChange={setEditedWidth}
-          widthStep={0.1}
-          lineCap={editedLineCap}
-          onLineCapChange={setEditedLineCap}
-          lineJoin={editedLineJoin}
-          onLineJoinChange={setEditedLineJoin}
-          dashArray={editedDashArray}
-          onDashArrayChange={setEditedDashArray}
-        />
-
-        <Form.Group controlId="markerType" className="mt-3">
-          <Form.Label>{m?.drawing.edit.shape}</Form.Label>
-
-          <MarkerTypeSelect
-            asSelect
-            value={editedMarkerType}
-            onChange={setEditedMarkerType}
+        <Modal.Body>
+          <DrawingLineStyleFields
+            color={editedColor}
+            onColorChange={setEditedColor}
+            fillColor={editedFillColor}
+            onFillColorChange={setEditedFillColor}
+            width={editedWidth}
+            onWidthChange={setEditedWidth}
+            widthStep={0.1}
+            lineCap={editedLineCap}
+            onLineCapChange={setEditedLineCap}
+            lineJoin={editedLineJoin}
+            onLineJoinChange={setEditedLineJoin}
+            dashArray={editedDashArray}
+            onDashArrayChange={setEditedDashArray}
           />
-        </Form.Group>
-      </Modal.Body>
 
-      <Modal.Footer>
-        <Button type="submit">
-          <FaCheck /> {m?.general.save}
-        </Button>
+          <Form.Group controlId="markerType" className="mt-3">
+            <Form.Label>{dm?.edit.shape}</Form.Label>
 
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={handleApplyToAllClick}
-        >
-          <FaFill /> {m?.drawing.defProps.applyToAll}
-        </Button>
+            <MarkerTypeSelect
+              asSelect
+              value={editedMarkerType}
+              onChange={setEditedMarkerType}
+            />
+          </Form.Group>
+        </Modal.Body>
 
-        <Button variant="dark" type="button" onClick={close}>
-          <FaTimes /> {m?.general.cancel}
-        </Button>
-      </Modal.Footer>
+        <Modal.Footer>
+          <Button type="submit">
+            <FaCheck /> {m?.general.save}
+          </Button>
+
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleApplyToAllClick}
+          >
+            <FaFill /> {dm?.defProps.applyToAll}
+          </Button>
+
+          <Button variant="dark" type="button" onClick={close}>
+            <FaTimes /> {m?.general.cancel}
+          </Button>
+        </Modal.Footer>
+      </form>
     </Modal>
   );
 }

@@ -1,5 +1,5 @@
-import { RgbaColorPicker } from '@features/drawing/components/RgbaColorPicker.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import type { ChangeEvent, ReactElement } from 'react';
 import {
   Form,

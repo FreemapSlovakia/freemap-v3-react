@@ -1,4 +1,9 @@
+import type { SearchResult } from '@features/search/model/actions.js';
+import type { JSX } from 'react';
+
 export type ObjectsMessages = {
+  source: string;
+  detail: (props: { result: SearchResult }) => JSX.Element;
   type: string;
   lowZoomAlert: {
     message: (props: { minZoom: number }) => string;

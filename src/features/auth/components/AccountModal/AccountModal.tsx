@@ -5,10 +5,15 @@ import {
   authInit,
   authStartLogout,
 } from '@features/auth/model/actions.js';
+import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
+import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { PurchasesSection } from '@features/purchases/components/PurchasesSection.js';
+import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useBecomePremium } from '@shared/hooks/useBecomePremium.js';
 import { type ReactElement, useCallback, useEffect } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import {
@@ -24,7 +29,6 @@ import {
 import { useDispatch } from 'react-redux';
 import { AuthProvidersSection } from './AuthProvidersSection.js';
 import { PersonalInfoSection } from './PersonalInfoSection.js';
-import { PurchasesSection } from './PurchasesSection.js';
 
 type Props = { show: boolean };
 
@@ -39,6 +43,12 @@ export default function AccountModal({ show }: Props): ReactElement | null {
 
   const m = useMessages();
 
+  const prm = usePremiumMessages();
+
+  const am = useAuthMessages();
+
+  const pm = usePurchasesMessages();
+
   const becomePremium = useBecomePremium();
 
   const close = useCallback(() => {
@@ -51,7 +61,8 @@ export default function AccountModal({ show }: Props): ReactElement | null {
     dispatch(
       toastsAdd({
         id: 'account.delete',
-        messageKey: 'settings.account.deleteWarning',
+        messageKey: 'account.deleteWarning',
+        messageLoader: loadAuthMessages,
         style: 'danger',
         actions: [
           {
@@ -92,7 +103,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="payments">
             <Accordion.Header>
               <span>
-                <FaShoppingBasket /> {m?.purchases.purchases}
+                <FaShoppingBasket /> {pm?.purchases}
               </span>
             </Accordion.Header>
 
@@ -104,7 +115,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="personal">
             <Accordion.Header>
               <span>
-                <FaAddressCard /> {m?.settings.account.personalInfo}
+                <FaAddressCard /> {am?.account.personalInfo}
               </span>
             </Accordion.Header>
 
@@ -116,7 +127,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="accounts">
             <Accordion.Header>
               <span>
-                <FaUserCircle /> {m?.settings.account.authProviders}
+                <FaUserCircle /> {am?.account.authProviders}
               </span>
             </Accordion.Header>
 
@@ -131,7 +142,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
         {becomePremium && (
           <>
             <Button onClick={becomePremium}>
-              <FaGem /> {m?.premium.becomePremium}
+              <FaGem /> {prm?.becomePremium}
             </Button>
 
             <div style={{ flexBasis: '100%' }} />
@@ -150,7 +161,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
         </Button>
 
         <Button variant="danger" onClick={handleDeleteClick}>
-          <FaEraser /> {m?.settings.account.delete}
+          <FaEraser /> {am?.account.delete}
         </Button>
 
         <Button variant="dark" onClick={close}>

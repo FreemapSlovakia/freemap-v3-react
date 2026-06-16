@@ -1,7 +1,6 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import z from 'zod';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
@@ -12,7 +11,7 @@ import {
 
 export const galleryUploadModalProcessor: Processor = {
   actionCreator: [setActiveModal, galleryEditPicture],
-  handle: async ({ getState, dispatch, action }) => {
+  handle: async ({ getState, dispatch, action, toastError }) => {
     if (
       // don't load tags when canceling editing
       (galleryEditPicture.match(action) && !getState().gallery.editModel) ||
@@ -32,15 +31,7 @@ export const galleryUploadModalProcessor: Processor = {
         expectedStatus: 200,
       });
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const gm = await loadGalleryMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: gm.tagsFetchingError({ err }) }),
-      );
+      await toastError(err, loadGalleryMessages, 'tagsFetchingError');
 
       return;
     }

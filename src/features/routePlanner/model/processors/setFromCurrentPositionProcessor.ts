@@ -12,18 +12,17 @@ export const routePlannerSetFromCurrentPositionProcessor: Processor<
   typeof routePlannerSetFromCurrentPosition
 > = {
   actionCreator: routePlannerSetFromCurrentPosition,
-  handle: async ({ dispatch, getState, action }) => {
+  handle: async ({ dispatch, action }) => {
     let position;
 
     try {
       position = await getCurrentPosition();
     } catch {
-      const rpm = await loadRoutePlannerMessages(getState().l10n.language);
-
       dispatch(
         toastsAdd({
           id: 'routePlanner.gpsError',
-          message: rpm.gpsError,
+          messageKey: 'gpsError',
+          messageLoader: loadRoutePlannerMessages,
           style: 'danger',
           timeout: 5000,
         }),

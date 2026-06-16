@@ -4,6 +4,7 @@ import { addError } from '@/translations/messagesInterface.js';
 import { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
+  selectHomeLocation: 'Vybrať na mape',
   default: 'Predvolený',
   leg: 'Úsek trasy',
   manualTooltip: 'Prepoj nasledujúci segment priamou čiarou',

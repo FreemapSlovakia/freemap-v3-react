@@ -1,8 +1,8 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import type { LineCap, LineJoin } from '../model/actions/drawingLineActions.js';
-import { RgbaColorPicker } from './RgbaColorPicker.js';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 type Props = {
   color: string;
@@ -37,7 +37,7 @@ export function DrawingLineStyleFields({
   dashArray,
   onDashArrayChange,
 }: Props): ReactElement {
-  const m = useMessages();
+  const dm = useDrawingMessages();
 
   const [inputs, setInputs] = useState<string[]>(() => [
     ...dashArray.map(String),
@@ -101,14 +101,14 @@ export function DrawingLineStyleFields({
   return (
     <>
       <Form.Group controlId="color" className="mt-3">
-        <Form.Label>{m?.drawing.edit.color}</Form.Label>
+        <Form.Label>{dm?.edit.color}</Form.Label>
 
         <RgbaColorPicker value={color} onChange={onColorChange} />
       </Form.Group>
 
       {onFillColorChange && (
         <Form.Group controlId="fillColor" className="mt-3">
-          <Form.Label>{m?.drawing.edit.fillColor}</Form.Label>
+          <Form.Label>{dm?.edit.fillColor}</Form.Label>
 
           <RgbaColorPicker
             value={fillColor ?? color}
@@ -118,7 +118,7 @@ export function DrawingLineStyleFields({
       )}
 
       <Form.Group controlId="width" className="mt-3">
-        <Form.Label>{m?.drawing.edit.width}</Form.Label>
+        <Form.Label>{dm?.edit.width}</Form.Label>
 
         <Form.Control
           type="number"
@@ -132,33 +132,33 @@ export function DrawingLineStyleFields({
       </Form.Group>
 
       <Form.Group controlId="lineCap" className="mt-3">
-        <Form.Label>{m?.drawing.edit.lineCap}</Form.Label>
+        <Form.Label>{dm?.edit.lineCap}</Form.Label>
 
         <Form.Select
           value={lineCap}
           onChange={(e) => onLineCapChange(e.currentTarget.value as LineCap)}
         >
-          <option value="round">{m?.drawing.edit.lineCapRound}</option>
-          <option value="butt">{m?.drawing.edit.lineCapButt}</option>
-          <option value="square">{m?.drawing.edit.lineCapSquare}</option>
+          <option value="round">{dm?.edit.lineCapRound}</option>
+          <option value="butt">{dm?.edit.lineCapButt}</option>
+          <option value="square">{dm?.edit.lineCapSquare}</option>
         </Form.Select>
       </Form.Group>
 
       <Form.Group controlId="lineJoin" className="mt-3">
-        <Form.Label>{m?.drawing.edit.lineJoin}</Form.Label>
+        <Form.Label>{dm?.edit.lineJoin}</Form.Label>
 
         <Form.Select
           value={lineJoin}
           onChange={(e) => onLineJoinChange(e.currentTarget.value as LineJoin)}
         >
-          <option value="round">{m?.drawing.edit.lineJoinRound}</option>
-          <option value="miter">{m?.drawing.edit.lineJoinMiter}</option>
-          <option value="bevel">{m?.drawing.edit.lineJoinBevel}</option>
+          <option value="round">{dm?.edit.lineJoinRound}</option>
+          <option value="miter">{dm?.edit.lineJoinMiter}</option>
+          <option value="bevel">{dm?.edit.lineJoinBevel}</option>
         </Form.Select>
       </Form.Group>
 
       <Form.Group controlId="dashArray" className="mt-3">
-        <Form.Label>{m?.drawing.edit.dashArray}</Form.Label>
+        <Form.Label>{dm?.edit.dashArray}</Form.Label>
 
         <div className="d-flex flex-wrap gap-1 mb-2">
           {inputs.map((val, i) => (

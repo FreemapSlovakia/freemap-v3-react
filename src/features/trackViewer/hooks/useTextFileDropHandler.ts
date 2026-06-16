@@ -1,22 +1,23 @@
 import { useCallback } from 'react';
 import { FileRejection } from 'react-dropzone';
-import { TrackViewerMessages } from '../translations/TrackViewerMessages.js';
+
+/** Keys into `TrackViewerMessages` for file-drop failures. */
+export type TextFileDropError = 'invalidFormat' | 'onlyOne' | 'loadingError';
 
 export function useTextFileDropHandler(
   onDrop: (text: string, file: File) => void,
-  onLoadError: (msg: string) => void,
-  tvm?: TrackViewerMessages,
+  onLoadError: (messageKey: TextFileDropError) => void,
 ): (acceptedFiles: File[], fileRejections?: FileRejection[]) => void {
   return useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[] = []) => {
       if (fileRejections.length) {
-        onLoadError(tvm?.invalidFormat ?? 'invalid format');
+        onLoadError('invalidFormat');
 
         return;
       }
 
       if (acceptedFiles.length !== 1) {
-        onLoadError(tvm?.onlyOne ?? 'many files');
+        onLoadError('onlyOne');
 
         return;
       }
@@ -31,16 +32,16 @@ export function useTextFileDropHandler(
         if (typeof reader.result === 'string') {
           onDrop(reader.result, file);
         } else {
-          onLoadError(tvm?.loadingError ?? 'loading error');
+          onLoadError('loadingError');
         }
       };
 
       reader.onerror = () => {
-        onLoadError(tvm?.loadingError ?? 'loading error');
+        onLoadError('loadingError');
 
         reader.abort();
       };
     },
-    [onDrop, onLoadError, tvm],
+    [onDrop, onLoadError],
   );
 }

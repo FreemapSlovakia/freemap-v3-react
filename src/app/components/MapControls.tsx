@@ -35,12 +35,16 @@ export function MapControls(): ReactElement | null {
   const map = useMap();
 
   const handleFullscreenClick = useCallback(() => {
-    if (!document.exitFullscreen) {
-      // unsupported
-    } else if (document.fullscreenElement) {
-      document.exitFullscreen();
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
     } else {
-      document.body.requestFullscreen();
+      try {
+        // Some WebViews advertise the API but reject (or throw synchronously)
+        // with "Fullscreen is not supported"; swallow both.
+        document.body.requestFullscreen().catch(() => {});
+      } catch {
+        // ignore
+      }
     }
   }, []);
 
@@ -114,7 +118,7 @@ export function MapControls(): ReactElement | null {
         </LongPressTooltip>
       )}
 
-      {'exitFullscreen' in document && (
+      {document.fullscreenEnabled && (
         <LongPressTooltip
           label={
             document.fullscreenElement

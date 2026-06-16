@@ -13,7 +13,7 @@ Na podporu ďalšieho vývoja a pokrytie prevádzkových nákladov služby ponú
 **Freemap Premium** je ročné predplatné, ktoré sprístupňuje:
 
 - **Odstránenie reklamného banneru** — mapa bez reklám.
-- **Prémiové mapové vrstvy** — Strava Heatmap, podrobné tieňovanie Slovenska a Česka vo vysokom rozlíšení, najvyššie úrovne priblíženia Outdoor mapy a ortofotomáp Slovenska a Česka a rôzne mapy založené na WMS.
+- **Prémiové mapové vrstvy** — podrobné tieňovanie Slovenska a Česka vo vysokom rozlíšení, najvyššie úrovne priblíženia Outdoor mapy a ortofotomáp Slovenska a Česka a rôzne mapy založené na WMS.
 - **Prémiové fotografie** — prístup k prémiovým fotografiám zobrazeným na mape.
 - **Multimodálne plánovanie trás** — plánovanie trasy kombinujúce viacero druhov dopravy.
 

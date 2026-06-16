@@ -13,7 +13,7 @@ export const galleryQuickAddTagProcessor: Processor<
   typeof galleryQuickAddTag | typeof galleryQuickChangePremium
 > = {
   actionCreator: [galleryQuickAddTag, galleryQuickChangePremium],
-  async handle({ getState, dispatch, action }) {
+  async handle({ getState, dispatch, action, toastError }) {
     const { image } = getState().gallery;
 
     if (!image) {
@@ -44,15 +44,7 @@ export const galleryQuickAddTagProcessor: Processor<
         expectedStatus: 204,
       });
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const gm = await loadGalleryMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: gm.savingError({ err }) }),
-      );
+      await toastError(err, loadGalleryMessages, 'savingError');
 
       return;
     }

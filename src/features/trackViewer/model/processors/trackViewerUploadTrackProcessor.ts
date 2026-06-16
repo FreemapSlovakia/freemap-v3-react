@@ -29,12 +29,11 @@ export async function handleTrackUpload({
       : -1;
 
     if (trackGpx.length > maxSize * 1000000) {
-      const tvm = await loadTrackViewerMessages(getState().l10n.language);
-
       dispatch(
         toastsAdd({
           id: 'trackViewer.tooBigError',
-          message: tvm.tooBigError,
+          messageKey: 'tooBigError',
+          messageLoader: loadTrackViewerMessages,
           style: 'danger',
         }),
       );
@@ -62,11 +61,10 @@ export async function handleTrackUpload({
     );
   }
 
-  const tvm = await loadTrackViewerMessages(getState().l10n.language);
-
   dispatch(
     toastsAdd({
-      message: tvm.shareToast,
+      messageKey: 'shareToast',
+      messageLoader: loadTrackViewerMessages,
       style: 'info',
       id: 'trackViewer.shareToast',
       timeout: 5000,
@@ -77,20 +75,12 @@ export async function handleTrackUpload({
 export const trackViewerUploadTrackProcessor: Processor = {
   actionCreator: trackViewerUploadTrack,
   handle: async (params) => {
-    const { dispatch, getState } = params;
+    const { toastError } = params;
 
     try {
       await handleTrackUpload(params);
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
-
-      const tvm = await loadTrackViewerMessages(getState().l10n.language);
-
-      dispatch(
-        toastsAdd({ style: 'danger', message: tvm.savingError({ err }) }),
-      );
+      await toastError(err, loadTrackViewerMessages, 'savingError');
     }
   },
 };

@@ -33,6 +33,11 @@ export type MapFeaturesExportMessages = {
       gravelCycling: string;
     };
     revoked: string;
+    exportError: string;
+    multipleLineStrings: string;
+    noLineString: string;
+    multipleTracks: string;
+    multipleLines: string;
     connectPrompt: string;
     authPrompt: string;
   };

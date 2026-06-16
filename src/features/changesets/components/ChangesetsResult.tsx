@@ -8,6 +8,7 @@ import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { Changeset, changesetsSetParams } from '../model/actions.js';
+import { loadChangesetsMessages } from '../translations/loadChangesetsMessages.js';
 import classes from './ChangesetsResult.module.css';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -43,7 +44,8 @@ export function ChangesetsResult(): ReactElement {
     dispatch(
       toastsAdd({
         id: 'changeset.detail',
-        messageKey: 'changesets.detail',
+        messageKey: 'detail',
+        messageLoader: loadChangesetsMessages,
         messageParams: {
           changeset,
         },

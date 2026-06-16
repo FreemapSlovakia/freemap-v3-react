@@ -24,7 +24,7 @@ import { createReduxStore } from './store/store.js';
 import './styles/index.scss';
 import './styles/bootstrap-override.css';
 import './styles/index.css';
-import { createCookieConsentToastAction } from '@/features/cookieConsent/action.js';
+import { createCookieConsentToastAction } from '@/features/cookieConsent/model/toastAction.js';
 import { handleLocationChange } from './url/locationChangeHandler.js';
 import { setUrlUpdatingEnabled } from './url/urlUpdating.js';
 
@@ -68,11 +68,17 @@ store.dispatch(
 
 store.dispatch(authInit());
 
-getCachedTileMaps().then((maps) => {
-  if (maps.length > 0) {
-    store.dispatch(cachedMapsLoaded(maps));
-  }
-});
+getCachedTileMaps()
+  .then((maps) => {
+    if (maps.length > 0) {
+      store.dispatch(cachedMapsLoaded(maps));
+    }
+  })
+  .catch((err) => {
+    // IndexedDB can be unavailable or blocked (private mode / insecure
+    // context); offline maps are simply unavailable then.
+    console.warn('Reading cached tile maps failed:', err);
+  });
 
 syncStaticCache().catch((err) => {
   console.warn('Static cache sync failed:', err);

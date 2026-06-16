@@ -10,6 +10,7 @@ import {
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 type Props = {
   show: boolean;
@@ -40,6 +41,8 @@ export function ProjectPointModal({
 
   const m = useMessages();
 
+  const dm = useDrawingMessages();
+
   const dispatch = useDispatch();
 
   const close = useCallback(() => {
@@ -55,54 +58,54 @@ export function ProjectPointModal({
       show={show}
       onHide={onClose}
       contentClassName="bg-body-tertiary"
-      as="form"
-      onSubmit={handleSubmit}
       scrollable
     >
-      <Modal.Header closeButton>
-        <Modal.Title>{m?.drawing.projection.projectPoint}</Modal.Title>
-      </Modal.Header>
+      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+        <Modal.Header closeButton>
+          <Modal.Title>{dm?.projection.projectPoint}</Modal.Title>
+        </Modal.Header>
 
-      <Modal.Body>
-        <Form.Group controlId="distance" className="mb-3">
-          <Form.Label>{m?.drawing.projection.distance}</Form.Label>
+        <Modal.Body>
+          <Form.Group controlId="distance" className="mb-3">
+            <Form.Label>{dm?.projection.distance}</Form.Label>
 
-          <InputGroup>
-            <Form.Control
-              type="number"
-              value={distance}
-              onChange={(e) => setDistance(e.currentTarget.value)}
-              min={0}
-            />
+            <InputGroup>
+              <Form.Control
+                type="number"
+                value={distance}
+                onChange={(e) => setDistance(e.currentTarget.value)}
+                min={0}
+              />
 
-            <InputGroup.Text>m</InputGroup.Text>
-          </InputGroup>
-        </Form.Group>
+              <InputGroup.Text>m</InputGroup.Text>
+            </InputGroup>
+          </Form.Group>
 
-        <Form.Group controlId="azimuth">
-          <Form.Label>{m?.drawing.projection.azimuth}</Form.Label>
+          <Form.Group controlId="azimuth">
+            <Form.Label>{dm?.projection.azimuth}</Form.Label>
 
-          <InputGroup>
-            <Form.Control
-              type="number"
-              value={azimuth}
-              onChange={(e) => setAzimuth(e.currentTarget.value)}
-            />
+            <InputGroup>
+              <Form.Control
+                type="number"
+                value={azimuth}
+                onChange={(e) => setAzimuth(e.currentTarget.value)}
+              />
 
-            <InputGroup.Text>°</InputGroup.Text>
-          </InputGroup>
-        </Form.Group>
-      </Modal.Body>
+              <InputGroup.Text>°</InputGroup.Text>
+            </InputGroup>
+          </Form.Group>
+        </Modal.Body>
 
-      <Modal.Footer>
-        <Button type="submit" disabled={!isValid()}>
-          Add
-        </Button>
+        <Modal.Footer>
+          <Button type="submit" disabled={!isValid()}>
+            Add
+          </Button>
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+          <Button variant="dark" onClick={close}>
+            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
+          </Button>
+        </Modal.Footer>
+      </form>
     </Modal>
   );
 }
