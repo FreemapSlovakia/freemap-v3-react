@@ -1,10 +1,18 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaCheck, FaCoins, FaTimes } from 'react-icons/fa';
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  Form,
+  InputGroup,
+  Modal,
+} from 'react-bootstrap';
+import { FaCheck, FaCoins, FaStopwatch, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useCreditsMessages } from '../translations/useCreditsMessages.js';
 import { CreditsAlert } from './CredistAlert.js';
@@ -22,10 +30,22 @@ export default function CurrentDrawingPropertiesModal({
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
+  const polarEnabled = useAppSelector((state) => state.auth.user?.polarEnabled);
+
+  const buyPolar = () => {
+    dispatch(purchase({ type: 'credits', amount: Number(credits) }));
+  };
+
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    dispatch(purchase({ type: 'credits', amount: Number(credits) }));
+    buyPolar();
+  };
+
+  const buyWithChrons = () => {
+    dispatch(
+      purchase({ type: 'credits', amount: Number(credits), via: 'rovas' }),
+    );
   };
 
   const m = useMessages();
@@ -74,12 +94,50 @@ export default function CurrentDrawingPropertiesModal({
               </InputGroup.Text>
             </InputGroup>
           </Form.Group>
+
+          {polarEnabled && (
+            <>
+              <hr className="mt-4" />
+
+              <p className="mt-3 mb-0 text-body-secondary">{cm?.chronsHint}</p>
+            </>
+          )}
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit" disabled={invalidCredits}>
-            <FaCheck /> {cm?.buy}
-          </Button>
+          {polarEnabled ? (
+            <Dropdown as={ButtonGroup}>
+              <Button
+                variant="primary"
+                type="button"
+                disabled={invalidCredits}
+                onClick={buyPolar}
+              >
+                <FaCheck /> {cm?.buy}
+              </Button>
+
+              <Dropdown.Toggle
+                split
+                variant="primary"
+                id="credits-buy"
+                disabled={invalidCredits}
+              />
+
+              <Dropdown.Menu renderOnMount popperConfig={{ strategy: 'fixed' }}>
+                <Dropdown.Item
+                  className="text-nowrap"
+                  disabled={invalidCredits}
+                  onClick={buyWithChrons}
+                >
+                  <FaStopwatch /> {cm?.payWithChrons}
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          ) : (
+            <Button type="submit" disabled={invalidCredits}>
+              <FaCheck /> {cm?.buy}
+            </Button>
+          )}
 
           <Button variant="dark" type="button" onClick={close}>
             <FaTimes /> {m?.general.cancel}

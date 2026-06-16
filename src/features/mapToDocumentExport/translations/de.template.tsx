@@ -9,6 +9,7 @@ const de: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Kartenexport', err),
   cancelExportTitle: 'Export abbrechen',
+  labelTitle: 'Beschriftungen',
   cancelExportQuestion: 'Möchten Sie den laufenden Export wirklich abbrechen?',
   area: 'Exportbereich',
   format: 'Format',

@@ -52,9 +52,11 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Dostupné pouze s prémiovým přístupem.',
   alreadyPremium: 'Máte již prémiový přístup.',
   premiumUser: 'Uživatel s prémiovým přístupem',
-  payOnce: 'Zaplatit jednorázově — 1 rok',
+  payOnce: 'Zaplatit jednorázově na jeden rok',
   paySubscription: 'Roční předplatné (automatické obnovení)',
-  payWhatYouWant: 'Částku si zvolíte sami — minimálně 8 €.',
+  payWithChrons: 'Zaplatit chrony',
+  chronsHint:
+    'Dáváte přednost chronům? Zaplaťte ze svého zůstatku v Rovasu místo kartou.',
 };
 
 export default cs;

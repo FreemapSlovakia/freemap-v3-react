@@ -16,7 +16,7 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
         <li>rimozione del banner pubblicitario</li>
         <li
           className="text-decoration-underline"
-          title="Strava Heatmap, ombreggiatura dettagliata ad alta risoluzione di Slovacchia e Cechia, livelli di zoom più alti della mappa Outdoor, livelli di zoom più alti delle mappe ortofoto di Slovacchia e Cechia, varie mappe basate su WMS"
+          title="ombreggiatura dettagliata ad alta risoluzione di Slovacchia e Cechia, livelli di zoom più alti della mappa Outdoor, livelli di zoom più alti delle mappe ortofoto di Slovacchia e Cechia, varie mappe basate su WMS"
         >
           livelli mappa premium
         </li>
@@ -52,9 +52,11 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Disponibile solo con accesso premium.',
   alreadyPremium: 'Hai già accesso premium.',
   premiumUser: 'Utente con accesso premium',
-  payOnce: 'Paga una volta — 1 anno',
+  payOnce: 'Paga una volta per un anno',
   paySubscription: 'Abbonamento annuale (rinnovo automatico)',
-  payWhatYouWant: 'Scegli tu l’importo — minimo 8 €.',
+  payWithChrons: 'Paga con i Chron',
+  chronsHint:
+    'Preferisci i Chron? Paga dal tuo saldo Rovas invece che con la carta.',
 };
 
 export default it;

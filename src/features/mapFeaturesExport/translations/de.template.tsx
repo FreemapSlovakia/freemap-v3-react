@@ -17,6 +17,14 @@ const de: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     search: 'Fund',
   },
   garmin: {
+    exportError: 'Fehler beim Export zu Garmin.',
+    multipleLineStrings:
+      'Die Auswahl enthält mehr als eine durchgehende Linie.',
+    noLineString: 'Die Auswahl enthält keine durchgehende Linie.',
+    multipleTracks:
+      'Mehrere Tracks werden nicht unterstützt. Wählen Sie einen aus.',
+    multipleLines:
+      'Mehrere Linien werden nicht unterstützt. Wählen Sie eine aus.',
     at: {
       running: 'Laufen',
       hiking: 'Wandern',

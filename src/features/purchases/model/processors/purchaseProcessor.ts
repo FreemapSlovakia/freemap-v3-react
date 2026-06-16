@@ -54,7 +54,9 @@ export const purchaseProcessor: Processor<typeof purchase> = {
     ]);
 
     // New Polar flow (allowlisted users) — opens an embedded checkout overlay.
-    if (user.polarEnabled) {
+    // Users can still explicitly choose Rovas (to pay with chrons), which falls
+    // through to the legacy flow below.
+    if (user.polarEnabled && action.payload.via !== 'rovas') {
       // Active UI language so the Polar checkout renders in the same language.
       const lang = getState().l10n.language ?? undefined;
 
@@ -186,6 +188,10 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       return;
     }
 
+    // `via` is a client-only provider selector; the legacy Rovas endpoint has a
+    // strict schema, so strip it before sending.
+    const { via: _via, ...rovasPayload } = action.payload;
+
     const res = await httpRequest({
       getState,
       url: '/auth/purchaseToken',
@@ -194,7 +200,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       cancelActions: [],
       data: {
         callbackUrl: location.origin + '/purchaseCallback.html',
-        ...action.payload,
+        ...rovasPayload,
       },
     });
 

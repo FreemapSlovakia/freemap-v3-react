@@ -52,9 +52,10 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Dostępne tylko z dostępem premium.',
   alreadyPremium: 'Masz już dostęp premium.',
   premiumUser: 'Użytkownik z dostępem premium',
-  payOnce: 'Zapłać jednorazowo — 1 rok',
+  payOnce: 'Zapłać jednorazowo za jeden rok',
   paySubscription: 'Subskrypcja roczna (odnawia się automatycznie)',
-  payWhatYouWant: 'Kwotę wybierasz sam — minimum 8 €.',
+  payWithChrons: 'Zapłać chronami',
+  chronsHint: 'Wolisz chrony? Zapłać ze swojego salda Rovas zamiast kartą.',
 };
 
 export default pl;

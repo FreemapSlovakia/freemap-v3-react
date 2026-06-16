@@ -12,6 +12,9 @@ const sk: DeepPartialWithRequiredObjects<CreditsMessages> = {
   amount: 'Kredity',
   credits: 'kreditov',
   buy: 'Kúpiť',
+  payWithChrons: 'Zaplatiť chronmi',
+  chronsHint:
+    'Uprednostňujete chrony? Zaplaťte zo svojho zostatku v Rovase namiesto kartou.',
   purchase: {
     success: ({ amount }) => (
       <>Váš kredit bol navýšený o {nf00.format(amount)}.</>

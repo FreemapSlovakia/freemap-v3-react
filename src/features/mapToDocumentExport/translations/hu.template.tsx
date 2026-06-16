@@ -9,6 +9,7 @@ const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a térkép exportálásakor', err),
   cancelExportTitle: 'Exportálás megszakítása',
+  labelTitle: 'Címkék',
   cancelExportQuestion: 'Biztosan megszakítja a folyamatban lévő exportálást?',
   area: 'Exportálandó terület',
   format: 'Formátum',

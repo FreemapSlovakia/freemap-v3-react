@@ -8,6 +8,7 @@ const outdoorMap = 'Turystyka, Rower, Biegówki, Jazda konna';
 const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Błąd eksportu mapy', err),
   cancelExportTitle: 'Anuluj eksport',
+  labelTitle: 'Etykiety',
   cancelExportQuestion: 'Czy na pewno chcesz anulować trwający eksport?',
   area: 'Obszar eksportu',
   format: 'Format',

@@ -26,6 +26,11 @@ const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   exportedToDropbox: 'Fájl elmentve a Dropboxba.',
   exportedToGdrive: 'Fájl elmentve a Google Drive-ra.',
   garmin: {
+    exportError: 'Hiba a Garminba való exportálás során.',
+    multipleLineStrings: 'A kijelölés egynél több folytonos vonalat tartalmaz.',
+    noLineString: 'A kijelölés nem tartalmaz folytonos vonalat.',
+    multipleTracks: 'Több nyomvonal nem támogatott. Válasszon egyet.',
+    multipleLines: 'Több vonal nem támogatott. Válasszon egyet.',
     courseName: 'Tanfolyam neve',
     description: 'Leírás',
     activityType: 'Tevékenység típusa',

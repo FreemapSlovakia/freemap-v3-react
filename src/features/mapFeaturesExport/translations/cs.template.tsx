@@ -27,6 +27,11 @@ const cs: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   exportedToDropbox: 'Soubor byl uložen do Dropboxu.',
   exportedToGdrive: 'Soubor byl uložen do Google Drive.',
   garmin: {
+    exportError: 'Chyba při exportu do Garminu.',
+    multipleLineStrings: 'Výběr obsahuje více než jednu souvislou čáru.',
+    noLineString: 'Výběr neobsahuje žádnou souvislou čáru.',
+    multipleTracks: 'Více tras není podporováno. Vyberte jednu.',
+    multipleLines: 'Více čar není podporováno. Vyberte jednu.',
     courseName: 'Název kurzu',
     description: 'Popis',
     activityType: 'Typ aktivity',

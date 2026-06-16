@@ -52,9 +52,11 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
   alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
   premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
-  payOnce: 'Egyszeri fizetés — 1 év',
+  payOnce: 'Egyszeri fizetés egy évre',
   paySubscription: 'Éves előfizetés (automatikus megújítás)',
-  payWhatYouWant: 'Az összeget te választod meg — legalább 8 €.',
+  payWithChrons: 'Fizetés chronnal',
+  chronsHint:
+    'Inkább chront használna? Fizessen a Rovas-egyenlegéből kártya helyett.',
 };
 
 export default hu;

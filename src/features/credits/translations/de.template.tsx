@@ -12,6 +12,9 @@ const de: DeepPartialWithRequiredObjects<CreditsMessages> = {
   amount: 'Credits',
   credits: 'Credits',
   buy: 'Kaufen',
+  payWithChrons: 'Mit Chrons bezahlen',
+  chronsHint:
+    'Lieber mit Chrons? Zahlen Sie mit Ihrem Rovas-Guthaben statt per Karte.',
   purchase: {
     success: ({ amount }) => (
       <>Dein Guthaben wurde um {nf00.format(amount)} erhöht.</>

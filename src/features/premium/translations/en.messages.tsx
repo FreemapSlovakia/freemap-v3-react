@@ -51,9 +51,10 @@ const en: PremiumMessages = {
   premiumOnly: 'Only available with premium access.',
   alreadyPremium: 'You already have premium access.',
   premiumUser: 'User with premium access',
-  payOnce: 'Pay once — 1 year',
+  payOnce: 'Pay once for one year',
   paySubscription: 'Subscribe yearly (auto-renews)',
-  payWhatYouWant: 'You choose the amount — €8 minimum.',
+  payWithChrons: 'Pay with Chrons',
+  chronsHint: 'Prefer Chrons? Pay from your Rovas balance instead of by card.',
 };
 
 export default en;

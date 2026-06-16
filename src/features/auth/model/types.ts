@@ -30,12 +30,21 @@ export const RoleSchema = z.enum([
 
 export type Role = z.infer<typeof RoleSchema>;
 
+// `via` selects the payment provider for the purchase action (Polar by default
+// for allowlisted users, or Rovas/chrons when the user picks it). `recurring`
+// is only meaningful for the Polar premium flow. Both are absent on stored
+// purchase history items.
 export const PurchaseSchema = z.discriminatedUnion('type', [
-  // `recurring` is only meaningful for the Polar checkout flow (true = yearly
-  // auto-renewing subscription, false/undefined = one-time year). It is absent
-  // on stored purchase history items.
-  z.object({ type: z.literal('premium'), recurring: z.boolean().optional() }),
-  z.object({ type: z.literal('credits'), amount: z.number() }),
+  z.object({
+    type: z.literal('premium'),
+    recurring: z.boolean().optional(),
+    via: z.enum(['polar', 'rovas']).optional(),
+  }),
+  z.object({
+    type: z.literal('credits'),
+    amount: z.number(),
+    via: z.enum(['polar', 'rovas']).optional(),
+  }),
 ]);
 
 export type Purchase = z.infer<typeof PurchaseSchema>;

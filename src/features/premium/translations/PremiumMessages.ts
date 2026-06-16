@@ -13,5 +13,6 @@ export type PremiumMessages = {
   premiumUser: string;
   payOnce: string;
   paySubscription: string;
-  payWhatYouWant: string;
+  payWithChrons: string;
+  chronsHint: string;
 };
