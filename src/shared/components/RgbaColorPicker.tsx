@@ -1,7 +1,8 @@
+import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { rgbaStringToHexa, toRgbaString } from '@shared/colorAlpha.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import ColorPicker from '@zdila/react-gradient-color-picker';
-import { CSSProperties, ReactElement, useState } from 'react';
+import { CSSProperties, ReactElement, useRef, useState } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 type Props = {
@@ -33,6 +34,10 @@ export function RgbaColorPicker({
 
   const [show, setShow] = useState(false);
 
+  // Holds the last forwarded color so the drag-end handler can commit it as a
+  // single history entry (see onDragStart/onDragEnd below).
+  const latestColorRef = useRef<string | null>(null);
+
   return (
     <OverlayTrigger
       trigger="click"
@@ -52,7 +57,25 @@ export function RgbaColorPicker({
               onChange={(c) => {
                 const hexa = rgbaStringToHexa(c);
 
-                onChange(alpha ? hexa : hexa.slice(0, 7));
+                const result = alpha ? hexa : hexa.slice(0, 7);
+
+                latestColorRef.current = result;
+
+                onChange(result);
+              }}
+              // Suspend history writes for the whole pointer drag so the stream
+              // of intermediate colors collapses into one entry instead of
+              // flooding pushState (Safari caps it at 100/10s).
+              onDragStart={() => {
+                setUrlUpdatingEnabled(false);
+              }}
+              onDragEnd={() => {
+                // Re-enable first so the flush commits one history entry.
+                setUrlUpdatingEnabled(true);
+
+                if (latestColorRef.current !== null) {
+                  onChange(latestColorRef.current);
+                }
               }}
               width={236}
               height={120}

@@ -1,11 +1,13 @@
 // import { Chrome, rgbaToHexa } from '@uiw/react-color';
+
+import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { mapSetShading } from '@features/map/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import ColorPicker from '@zdila/react-gradient-color-picker';
 import Color from 'color';
 import { produce } from 'immer';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button,
   ButtonToolbar,
@@ -39,6 +41,10 @@ export default function ShadingControl() {
   );
 
   const dispatch = useDispatch();
+
+  // Holds the shading produced by the most recent color-picker onChange so the
+  // drag-end handler can commit it as a single history entry.
+  const latestShadingRef = useRef(shading);
 
   const [color, setColor] = useState('');
 
@@ -479,6 +485,19 @@ export default function ShadingControl() {
             hideColorTypeBtns
             hideInputs
             hideInputType
+            // Suspend history writes for the whole pointer drag so the stream of
+            // intermediate colors collapses into one entry instead of flooding
+            // pushState (Safari caps it at 100/10s). The live map keeps updating
+            // because onChange still dispatches on every frame.
+            onDragStart={() => {
+              setUrlUpdatingEnabled(false);
+            }}
+            onDragEnd={() => {
+              // Re-enable first so the flush dispatch commits one history entry.
+              setUrlUpdatingEnabled(true);
+
+              dispatch(mapSetShading(latestShadingRef.current));
+            }}
             value={(() => {
               let v: string;
 
@@ -550,23 +569,23 @@ export default function ShadingControl() {
                 colorStops = [{ value: 0, color: c }];
               }
 
-              dispatch(
-                mapSetShading(
-                  produce(shading, (draft) => {
-                    if (id === undefined) {
-                      draft.backgroundColor = colorStops[0].color;
-                    } else {
-                      const component = draft.components.find(
-                        (component) => component.id === id,
-                      );
+              const next = produce(shading, (draft) => {
+                if (id === undefined) {
+                  draft.backgroundColor = colorStops[0].color;
+                } else {
+                  const component = draft.components.find(
+                    (component) => component.id === id,
+                  );
 
-                      if (component) {
-                        component.colorStops = colorStops;
-                      }
-                    }
-                  }),
-                ),
-              );
+                  if (component) {
+                    component.colorStops = colorStops;
+                  }
+                }
+              });
+
+              latestShadingRef.current = next;
+
+              dispatch(mapSetShading(next));
             }}
           />
         </Form>

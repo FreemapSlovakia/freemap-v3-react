@@ -34,16 +34,6 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   `main`, `mapLayers`, `errorCatcher`, `errorStatus`, plus small app-level
   `search`/`gpu`/`mapCtxMenu`.
 
-## Bugs to investigate
-
-- [ ] **`history.pushState()` rate-limit crash (Sentry FREEMAP-WEB-R).** iOS
-      Safari throws `SecurityError: Attempt to use history.pushState() more than
-      100 times per 10 seconds`. Stack: `setToolProcessor` → `urlProcessor.ts`
-      (`history[method](...)`). Suggests a feedback loop where a state change
-      triggers a URL write that triggers another state change (>100×/10s).
-      Investigate the loop and, regardless, wrap the `history[method]` call so the
-      browser rate-limit can't bubble as an unhandled error.
-
 ## Softer / design opinions
 
 - [ ] **Derive `Messages` from `en.tsx`.** `src/translations/messagesInterface.ts`

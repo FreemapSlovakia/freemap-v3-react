@@ -1,3 +1,4 @@
+import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { produce } from 'immer';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ShadingComponent, ShadingComponentType } from '../model/Shading.js';
@@ -32,6 +33,14 @@ export function ShadingComponentControl({
     dx: number;
     dy: number;
   } | null>(null);
+
+  // Suspend history writes for the whole dial drag so the stream of azimuth/
+  // elevation values collapses into one entry instead of flooding pushState
+  // (Safari caps it at 100/10s). `latestComponents` holds the last value so
+  // drag-end can commit it as a single history entry.
+  const suspendedRef = useRef(false);
+
+  const latestComponentsRef = useRef<ShadingComponent[] | null>(null);
 
   const svg = useRef<SVGSVGElement | null>(null);
 
@@ -77,25 +86,33 @@ export function ShadingComponentControl({
 
       const dragged = dragging;
 
-      onChange(
-        produce(shadings, (draft) => {
-          const shading = draft.find((shading) => shading.id === dragged.id);
+      const next = produce(shadings, (draft) => {
+        const shading = draft.find((shading) => shading.id === dragged.id);
 
-          if (
-            shading?.type === 'hillshade-classic' ||
-            shading?.type === 'slope-classic'
-          ) {
-            shading.elevation = elevation;
-          }
+        if (
+          shading?.type === 'hillshade-classic' ||
+          shading?.type === 'slope-classic'
+        ) {
+          shading.elevation = elevation;
+        }
 
-          if (
-            shading?.type === 'hillshade-classic' ||
-            shading?.type === 'hillshade-igor'
-          ) {
-            shading.azimuth = azimuth;
-          }
-        }),
-      );
+        if (
+          shading?.type === 'hillshade-classic' ||
+          shading?.type === 'hillshade-igor'
+        ) {
+          shading.azimuth = azimuth;
+        }
+      });
+
+      if (!suspendedRef.current) {
+        suspendedRef.current = true;
+
+        setUrlUpdatingEnabled(false);
+      }
+
+      latestComponentsRef.current = next;
+
+      onChange(next);
     },
     [radius, dragging, onChange, shadings, getCoordinates],
   );
@@ -141,8 +158,21 @@ export function ShadingComponentControl({
   );
 
   const handleMouseUp = useCallback(() => {
+    if (suspendedRef.current) {
+      suspendedRef.current = false;
+
+      // Re-enable first so the flush commits one history entry.
+      setUrlUpdatingEnabled(true);
+
+      if (latestComponentsRef.current) {
+        onChange(latestComponentsRef.current);
+
+        latestComponentsRef.current = null;
+      }
+    }
+
     setDragging(null);
-  }, []);
+  }, [onChange]);
 
   useEffect(() => {
     const body = document.body;
@@ -165,6 +195,17 @@ export function ShadingComponentControl({
       body.removeEventListener('mouseleave', handleMouseUp);
     };
   }, [handleMouseDown, handleMouseUp, handleMouseMove]);
+
+  useEffect(
+    () => () => {
+      if (suspendedRef.current) {
+        suspendedRef.current = false;
+
+        setUrlUpdatingEnabled(true);
+      }
+    },
+    [],
+  );
 
   function setSvg(element: SVGSVGElement | null) {
     svg.current = element;
