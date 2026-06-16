@@ -113,10 +113,6 @@ export const UserSchema = z.object({
   premiumExpiration: IsoDateSchema.nullable(),
   sendGalleryEmails: z.boolean(),
   hasPicture: z.boolean(),
-  // Whether the new Polar payment flow is enabled for this user (allowlisted on
-  // the backend during the Rovas→Polar migration). Defaults false for already
-  // persisted/rehydrated users.
-  polarEnabled: z.boolean().default(false),
   settings: UserSettingsSchema.optional(),
 });
 

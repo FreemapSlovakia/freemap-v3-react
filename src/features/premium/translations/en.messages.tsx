@@ -40,7 +40,6 @@ const en: PremiumMessages = {
       </div>
     </>
   ),
-  continue: 'Continue',
   success: 'Congratulations, you have gained premium access!',
   becomePremium: 'Get premium access',
   youArePremium: (date) => (

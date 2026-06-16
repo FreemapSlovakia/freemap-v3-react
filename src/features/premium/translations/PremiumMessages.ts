@@ -4,7 +4,6 @@ export type PremiumMessages = {
   title: string;
   commonHeader: ReactNode;
   stepsForAnonymous: ReactNode;
-  continue: string;
   success: string;
   becomePremium: string;
   youArePremium: (date: string) => JSX.Element;

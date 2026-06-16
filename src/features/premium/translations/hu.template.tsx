@@ -41,7 +41,6 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       </div>
     </>
   ),
-  continue: 'Folytatás',
   success: 'Gratulálunk, megszerezted a prémium hozzáférést!',
   becomePremium: 'Prémium hozzáférés megszerzése',
   youArePremium: (date) => (

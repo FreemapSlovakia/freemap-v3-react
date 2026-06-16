@@ -41,7 +41,6 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
       </div>
     </>
   ),
-  continue: 'Pokračovat',
   success: 'Gratulujeme, získali jste prémiový přístup!',
   becomePremium: 'Získat prémiový přístup',
   youArePremium: (date) => (

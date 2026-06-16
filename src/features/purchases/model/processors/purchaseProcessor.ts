@@ -53,10 +53,10 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       action.payload.type === 'credits' ? action.payload.amount : undefined,
     ]);
 
-    // New Polar flow (allowlisted users) — opens an embedded checkout overlay.
-    // Users can still explicitly choose Rovas (to pay with chrons), which falls
-    // through to the legacy flow below.
-    if (user.polarEnabled && action.payload.via !== 'rovas') {
+    // Polar flow — opens an embedded checkout overlay. Users can still
+    // explicitly choose Rovas (to pay with chrons), which falls through to the
+    // legacy flow below.
+    if (action.payload.via !== 'rovas') {
       // Active UI language so the Polar checkout renders in the same language.
       const lang = getState().l10n.language ?? undefined;
 

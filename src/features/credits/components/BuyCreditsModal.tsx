@@ -1,6 +1,5 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
@@ -29,8 +28,6 @@ export default function CurrentDrawingPropertiesModal({
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
-
-  const polarEnabled = useAppSelector((state) => state.auth.user?.polarEnabled);
 
   const buyPolar = () => {
     dispatch(purchase({ type: 'credits', amount: Number(credits) }));
@@ -95,49 +92,39 @@ export default function CurrentDrawingPropertiesModal({
             </InputGroup>
           </Form.Group>
 
-          {polarEnabled && (
-            <>
-              <hr className="mt-4" />
+          <hr className="mt-4" />
 
-              <p className="mt-3 mb-0 text-body-secondary">{cm?.chronsHint}</p>
-            </>
-          )}
+          <p className="mt-3 mb-0 text-body-secondary">{cm?.chronsHint}</p>
         </Modal.Body>
 
         <Modal.Footer>
-          {polarEnabled ? (
-            <Dropdown as={ButtonGroup}>
-              <Button
-                variant="primary"
-                type="button"
-                disabled={invalidCredits}
-                onClick={buyPolar}
-              >
-                <FaCheck /> {cm?.buy}
-              </Button>
-
-              <Dropdown.Toggle
-                split
-                variant="primary"
-                id="credits-buy"
-                disabled={invalidCredits}
-              />
-
-              <Dropdown.Menu renderOnMount popperConfig={{ strategy: 'fixed' }}>
-                <Dropdown.Item
-                  className="text-nowrap"
-                  disabled={invalidCredits}
-                  onClick={buyWithChrons}
-                >
-                  <FaStopwatch /> {cm?.payWithChrons}
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          ) : (
-            <Button type="submit" disabled={invalidCredits}>
+          <Dropdown as={ButtonGroup}>
+            <Button
+              variant="primary"
+              type="button"
+              disabled={invalidCredits}
+              onClick={buyPolar}
+            >
               <FaCheck /> {cm?.buy}
             </Button>
-          )}
+
+            <Dropdown.Toggle
+              split
+              variant="primary"
+              id="credits-buy"
+              disabled={invalidCredits}
+            />
+
+            <Dropdown.Menu renderOnMount popperConfig={{ strategy: 'fixed' }}>
+              <Dropdown.Item
+                className="text-nowrap"
+                disabled={invalidCredits}
+                onClick={buyWithChrons}
+              >
+                <FaStopwatch /> {cm?.payWithChrons}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
 
           <Button variant="dark" type="button" onClick={close}>
             <FaTimes /> {m?.general.cancel}

@@ -43,7 +43,6 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
       </div>
     </>
   ),
-  continue: 'Weiter',
   success: 'Glückwunsch, du hast Premium-Zugang erhalten!',
   becomePremium: 'Premium-Zugang erhalten',
   youArePremium: (date) => (
