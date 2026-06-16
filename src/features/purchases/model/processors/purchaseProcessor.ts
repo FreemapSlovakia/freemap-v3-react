@@ -55,17 +55,22 @@ export const purchaseProcessor: Processor<typeof purchase> = {
 
     // New Polar flow (allowlisted users) — opens an embedded checkout overlay.
     if (user.polarEnabled) {
+      // Active UI language so the Polar checkout renders in the same language.
+      const lang = getState().l10n.language ?? undefined;
+
       const data =
         action.payload.type === 'premium'
           ? {
               type: 'premium' as const,
               recurring: Boolean(action.payload.recurring),
               successUrl: location.origin + '/',
+              lang,
             }
           : {
               type: 'credits' as const,
               credits: action.payload.amount,
               successUrl: location.origin + '/',
+              lang,
             };
 
       let checkoutUrl: string;
@@ -116,8 +121,13 @@ export const purchaseProcessor: Processor<typeof purchase> = {
             succeeded = true;
 
             checkout.close();
+
+            // `close()` removes the iframe but does NOT emit a `close` event, so
+            // resolve here — otherwise the processor would hang forever.
+            resolve();
           });
 
+          // Fires when the user dismisses the checkout without completing it.
           checkout.addEventListener('close', () => resolve());
         });
       } catch (err) {
