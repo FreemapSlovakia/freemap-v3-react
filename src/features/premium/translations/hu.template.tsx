@@ -52,6 +52,9 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
   alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
   premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
+  payOnce: 'Egyszeri fizetés — 1 év',
+  paySubscription: 'Éves előfizetés (automatikus megújítás)',
+  payWhatYouWant: 'Az összeget te választod meg — legalább 8 €.',
 };
 
 export default hu;

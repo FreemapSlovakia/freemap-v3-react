@@ -54,6 +54,9 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Nur mit Premium-Zugang verfügbar.',
   alreadyPremium: 'Du hast bereits Premium-Zugang.',
   premiumUser: 'Nutzer mit Premium-Zugang',
+  payOnce: 'Einmalig zahlen — 1 Jahr',
+  paySubscription: 'Jährliches Abo (verlängert sich automatisch)',
+  payWhatYouWant: 'Sie wählen den Betrag — mindestens 8 €.',
 };
 
 export default de;

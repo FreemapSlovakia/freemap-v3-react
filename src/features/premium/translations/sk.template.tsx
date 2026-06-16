@@ -52,6 +52,9 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Dostupné len s prémiovým prístupom.',
   alreadyPremium: 'Už máte prémiový prístup.',
   premiumUser: 'Používateľ s prémiovým prístupom',
+  payOnce: 'Zaplatiť jednorazovo — 1 rok',
+  paySubscription: 'Ročné predplatné (automatické obnovenie)',
+  payWhatYouWant: 'Sumu si zvolíte sami — minimálne 8 €.',
 };
 
 export default sk;
