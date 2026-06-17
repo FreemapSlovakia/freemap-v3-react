@@ -98,7 +98,7 @@ function findRoot(file: File) {
       continue;
     }
 
-    const { typeName, typeParameters } = typeReference;
+    const { typeName, typeArguments } = typeReference;
 
     if (!isObjectExpression(declaration.init)) {
       continue;
@@ -107,10 +107,10 @@ function findRoot(file: File) {
     const tn =
       (typeName.name === 'DeepPartial' ||
         typeName.name === 'DeepPartialWithRequiredObjects') &&
-      typeParameters?.params.length === 1 &&
-      isTSTypeReference(typeParameters?.params[0]) &&
-      isIdentifier(typeParameters?.params[0].typeName)
-        ? typeParameters?.params[0].typeName.name
+      typeArguments?.params.length === 1 &&
+      isTSTypeReference(typeArguments?.params[0]) &&
+      isIdentifier(typeArguments?.params[0].typeName)
+        ? typeArguments?.params[0].typeName.name
         : typeName.name;
 
     if (!tn.endsWith('Messages') && tn !== 'OsmTagToNameMapping') {
