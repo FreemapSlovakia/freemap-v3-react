@@ -19,10 +19,7 @@ import { routePlannerInitialState } from '@features/routePlanner/model/reducer.j
 import { ColorizingModeSchema } from '@features/trackViewer/model/actions.js';
 import { trackViewerInitialState } from '@features/trackViewer/model/reducer.js';
 import { LanguageSchema } from '@shared/langUtils.js';
-import {
-  CustomLayerDefArrayCompatSchema,
-  StravaHeatmapColorSchema,
-} from '@shared/mapDefinitions.js';
+import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import { LatLonSchema } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
@@ -53,7 +50,6 @@ export const PersistedMapSchema = z
     maxZoom: z.number(),
     resolutionScale: z.number().nullable(),
     featureScale: z.number(),
-    stravaHeatmapColor: StravaHeatmapColorSchema,
   })
   .partial();
 
@@ -185,7 +181,6 @@ const PERSIST: PersistEntry[] = [
       maxZoom: m.maxZoom,
       resolutionScale: m.resolutionScale,
       featureScale: m.featureScale,
-      stravaHeatmapColor: m.stravaHeatmapColor,
     }),
   }),
   defineEntry({

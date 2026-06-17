@@ -300,11 +300,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       I: 'Fotografie',
       l1: 'Lesné cesty NLC (2017)',
       l2: 'Lesné cesty NLC',
-      s0: 'Strava (Všetko)',
-      s1: 'Strava (Cyklojazdy)',
-      s2: 'Strava (Beh)',
-      s3: 'Strava (Vodné aktivity)',
-      s4: 'Strava (Zimné aktivity)',
       w: 'Wikipedia',
       M: 'Fotografie z Wikimedia Commons',
       '5': 'Tieňovanie terénu',
@@ -370,14 +365,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Veľkosť prvkov',
     featureScaleHelp:
       'Zväčšuje vykreslené popisy a čiary. Nemá vplyv na satelitné, tieňované, WMS ani vektorové (MapLibre) vrstvy.',
-    stravaHeatmapColor: 'Farba Strava heatmapy',
-    stravaHeatmapColors: {
-      hot: 'Horúca',
-      blue: 'Modrá',
-      purple: 'Fialová',
-      gray: 'Sivá',
-      bluered: 'Modro-červená',
-    },
     layer: {
       layer: 'Vrstva',
       base: 'Základná',

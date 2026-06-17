@@ -20,19 +20,19 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   but the array/coordinate-heavy hotspots are now cleaned up against it (error
   count 348 → ~180).
 - [x] **Separate feature-related messages from `src/translations/messagesInterface.ts`
-  into per-feature lazy bundles.** Every feature-specific block now lives in its
-  feature's `translations/` bundle (own webpack chunk per language, resolved via
-  `use<Feature>Messages` in components and `load<Feature>Messages` for
-  processor/toast strings); toast keys carry an optional `messageLoader`, so even
-  JSX-returning toasts could leave the global blob. Cross-cutting blocks were
-  split by ownership (e.g. `settings` across auth/gallery/mapSettings/
-  routePlanner, `mapDetails` across objects + a new mapDetails bundle), and a few
-  bundle-only feature dirs gained co-located code so they are real features
-  (`measurement`, `purchases`, `premium`). Dead keys were dropped along the way.
-  What stays in the global blob is deliberate — boot-critical/shared strings and
-  registries: `general`, `generic`, `theme`, `selections`, `tools`, `mainMenu`,
-  `main`, `mapLayers`, `errorCatcher`, `errorStatus`, plus small app-level
-  `search`/`gpu`/`mapCtxMenu`.
+      into per-feature lazy bundles.** Every feature-specific block now lives in its
+      feature's `translations/` bundle (own webpack chunk per language, resolved via
+      `use<Feature>Messages` in components and `load<Feature>Messages` for
+      processor/toast strings); toast keys carry an optional `messageLoader`, so even
+      JSX-returning toasts could leave the global blob. Cross-cutting blocks were
+      split by ownership (e.g. `settings` across auth/gallery/mapSettings/
+      routePlanner, `mapDetails` across objects + a new mapDetails bundle), and a few
+      bundle-only feature dirs gained co-located code so they are real features
+      (`measurement`, `purchases`, `premium`). Dead keys were dropped along the way.
+      What stays in the global blob is deliberate — boot-critical/shared strings and
+      registries: `general`, `generic`, `theme`, `selections`, `tools`, `mainMenu`,
+      `main`, `mapLayers`, `errorCatcher`, `errorStatus`, plus small app-level
+      `search`/`gpu`/`mapCtxMenu`.
 
 ## Softer / design opinions
 
@@ -47,8 +47,8 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
       loading goes through `useLazy` (`src/app/hooks/useLazy.ts`) + effects
       (modal lazy-loading, `useLocalMessages`). Start at `useLazy` → `use` +
       `<Suspense>`; then `LazyToastMessage` in `Toasts.tsx` falls out for free.
-      Gotcha: `use` needs a *stable* promise, but the `load*Messages` loaders
-      cache the resolved *value*, not the promise — so passing `loader(x)` inline
+      Gotcha: `use` needs a _stable_ promise, but the `load*Messages` loaders
+      cache the resolved _value_, not the promise — so passing `loader(x)` inline
       is the suspend-forever anti-pattern; add a per-key promise cache. Also
       evaluate `useActionState`/`useFormStatus` for form submits, `useOptimistic`
       for manual pending state, and **React Compiler** eligibility (decide first —
@@ -67,7 +67,7 @@ limits; avoid third-party data (license risk — see Strava) and community conte
       contributors have no intent to flag their own photos premium-only.
       Action: remove the "premium photos" bullet from the premium modal copy in
       all 7 locales (`en.messages.tsx` + `sk/cs/de/pl/hu/it.template.tsx`),
-      regenerate locale files. (Strava heatmap already removed.)
+      regenerate locale files.
 - [ ] **Premium feature — Map → image/document export** (Tier 1). Gate high
       resolution, large format, PDF/vector output, and no-watermark behind
       premium (or credits). Print-quality rendering is our own compute, clearly

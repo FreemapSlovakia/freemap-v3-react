@@ -14,11 +14,7 @@ import { processGeoipResult } from '@features/geoip/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
-import {
-  defaultStravaHeatmapColor,
-  integratedLayerDefs,
-  StravaHeatmapColor,
-} from '@shared/mapDefinitions.js';
+import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import {
   MapStateBase,
   mapRefocus,
@@ -42,7 +38,6 @@ export interface MapState extends MapStateBase {
   maxZoom: number;
   resolutionScale: number | null;
   featureScale: number;
-  stravaHeatmapColor: StravaHeatmapColor;
   shading: Shading;
 }
 
@@ -65,7 +60,6 @@ export const mapInitialState: MapState = {
   maxZoom: 20,
   resolutionScale: null,
   featureScale: 1,
-  stravaHeatmapColor: defaultStravaHeatmapColor,
   shading: {
     backgroundColor: [0x00, 0x00, 0x00, 0x00],
     components: [
@@ -104,10 +98,6 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
 
       if (payload.maxZoom !== undefined) {
         state.maxZoom = payload.maxZoom;
-      }
-
-      if (payload.stravaHeatmapColor !== undefined) {
-        state.stravaHeatmapColor = payload.stravaHeatmapColor;
       }
     })
     .addCase(gallerySetFilter, (state) => {

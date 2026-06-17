@@ -2,7 +2,6 @@ import { LayerSettingsSchema } from '@features/map/model/actions.js';
 import {
   CustomLayerDefArrayCompatSchema,
   CustomLayerDefSchema,
-  StravaHeatmapColorSchema,
 } from '@shared/mapDefinitions.js';
 import z from 'zod';
 import { IsoDateSchema, LatLonSchema } from '@/shared/types/common.js';
@@ -86,7 +85,6 @@ export const UserSettingsSchema = z.object({
   layersSettings: z.record(z.string(), LayerSettingsSchema).optional(),
   customLayers: z.array(CustomLayerDefSchema).optional(),
   maxZoom: z.number().optional(),
-  stravaHeatmapColor: StravaHeatmapColorSchema.optional(),
 });
 
 export type UserSettings = z.infer<typeof UserSettingsSchema>;

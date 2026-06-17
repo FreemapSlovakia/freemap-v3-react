@@ -68,7 +68,6 @@ function makeState(): RootState {
       maxZoom: 20,
       resolutionScale: null,
       featureScale: 1,
-      stravaHeatmapColor: 'purple',
     },
     gallery: {
       colorizeBy: null,
@@ -164,7 +163,6 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         maxZoom: 20,
         resolutionScale: null,
         featureScale: 1,
-        stravaHeatmapColor: 'purple',
       },
       gallery: {
         colorizeBy: null,

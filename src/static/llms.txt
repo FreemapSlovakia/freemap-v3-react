@@ -8,7 +8,7 @@ Key facts:
 
 - Built on OpenStreetMap data; the map is continuously updated from the OSM database.
 - Displays marked hiking, biking, skiing and riding trails, and supports high-resolution (retina) displays.
-- Background and overlay layers include the Strava heatmap, NLC forest roads, aerial imagery, public transport, Wikipedia, and community photos.
+- Background and overlay layers include the NLC forest roads, aerial imagery, public transport, Wikipedia, and community photos.
 - Tools: search (by name or category), route planning (walking, cycling, stroller, wheelchair, car, skiing, etc.), map annotation (points, lines, polygons), measurement (distance, elevation, area, position), GPX track viewing, personal saved maps, live tracking, and export (GPX, GeoJSON, PDF, SVG, PNG, JPG).
 - Users can generate embed code to place the map on their own websites.
 - The application is a single-page application (SPA) and reflects its state in the URL.

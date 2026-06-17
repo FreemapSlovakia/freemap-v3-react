@@ -10,10 +10,7 @@ import {
 import { setLocation, toggleLocate } from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
-import type {
-  CustomLayerDef,
-  StravaHeatmapColor,
-} from '@shared/mapDefinitions.js';
+import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { OsmFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
 import type { DrawingStyle } from '@/features/drawing/model/reducers/drawingSettingsReducer.js';
@@ -106,7 +103,6 @@ type Settings = {
   overlayPaneOpacity?: number;
   customLayers?: CustomLayerDef[];
   maxZoom?: number;
-  stravaHeatmapColor?: StravaHeatmapColor;
   drawing?: Partial<DrawingStyle>;
 };
 

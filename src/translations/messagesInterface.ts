@@ -214,14 +214,6 @@ export type Messages = {
     resolutionScaleHelp: string;
     featureScale: string;
     featureScaleHelp: string;
-    stravaHeatmapColor: string;
-    stravaHeatmapColors: {
-      hot: string;
-      blue: string;
-      purple: string;
-      gray: string;
-      bluered: string;
-    };
     loadWmsLayers: string;
     offlineMaps: string;
     legacy: string;

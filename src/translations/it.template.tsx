@@ -268,11 +268,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       I: 'Foto',
       l1: 'Tracce forestali NLC (2017)',
       l2: 'Tracce forestali NLC',
-      s0: 'Strava (tutti)',
-      s1: 'Strava (bici)',
-      s2: 'Strava (corsa)',
-      s3: 'Strava (sport acquatici)',
-      s4: 'Strava (sport invernali)',
       w: 'Wikipedia',
       '5': 'Ombreggiatura del terreno',
       '6': 'Ombreggiatura della superficie',
@@ -332,14 +327,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Dimensione degli elementi',
     featureScaleHelp:
       'Ingrandisce etichette e linee renderizzate. Non ha effetto sui livelli satellitari, di ombreggiatura, WMS o vettoriali (MapLibre).',
-    stravaHeatmapColor: 'Colore della heatmap Strava',
-    stravaHeatmapColors: {
-      hot: 'Caldo',
-      blue: 'Blu',
-      purple: 'Viola',
-      gray: 'Grigio',
-      bluered: 'Blu-rosso',
-    },
     layer: {
       layer: 'Livello',
       base: 'Base',

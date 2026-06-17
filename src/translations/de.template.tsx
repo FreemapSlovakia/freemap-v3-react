@@ -255,11 +255,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       I: 'Fotos',
       l1: 'Forststraßen NLC (2017)',
       l2: 'Forststraßen NLC',
-      s0: 'Strava (alle)',
-      s1: 'Strava (Fahrten)',
-      s2: 'Strava (Läufe)',
-      s3: 'Strava (Wasseraktivitäten)',
-      s4: 'Strava (Winteraktivitäten)',
       w: 'Wikipedia',
       '5': 'Geländeschattierung',
       '6': 'Oberflächenschattierung',
@@ -329,14 +324,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Objektgröße',
     featureScaleHelp:
       'Vergrößert gerenderte Beschriftungen und Linien. Hat keine Auswirkung auf Satelliten-, Schattierungs-, WMS- oder Vektor-Ebenen (MapLibre).',
-    stravaHeatmapColor: 'Farbe der Strava-Heatmap',
-    stravaHeatmapColors: {
-      hot: 'Heiß',
-      blue: 'Blau',
-      purple: 'Violett',
-      gray: 'Grau',
-      bluered: 'Blau-rot',
-    },
     layer: {
       layer: 'Ebene',
       base: 'Basis',

@@ -57,10 +57,6 @@ export function CacheTilesForm(): ReactElement {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
-  const stravaHeatmapColor = useAppSelector(
-    (state) => state.map.stravaHeatmapColor,
-  );
-
   const mapDefs = useMemo(() => {
     const integrated = integratedLayerDefs
       .filter(
@@ -72,10 +68,7 @@ export function CacheTilesForm(): ReactElement {
           ? 'https:' + layer.url
           : layer.url;
 
-        return {
-          ...layer,
-          url: url.replace('{stravaColor}', stravaHeatmapColor),
-        };
+        return { ...layer, url };
       });
 
     const custom = customLayers
@@ -89,7 +82,7 @@ export function CacheTilesForm(): ReactElement {
       }));
 
     return [...integrated, ...custom];
-  }, [customLayers, stravaHeatmapColor]);
+  }, [customLayers]);
 
   const layers = useAppSelector((state) => state.map.layers);
 

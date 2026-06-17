@@ -262,11 +262,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       I: 'Fényképek',
       l1: 'Erdészeti utak NLC (2017)',
       l2: 'Erdészeti utak NLC',
-      s0: 'Strava (minden)',
-      s1: 'Strava (lovaglás)',
-      s2: 'Strava (futás)',
-      s3: 'Strava (vízi tevékenységek)',
-      s4: 'Strava (téli tevékenységek)',
       w: 'Wikipedia',
       '5': 'Terepárnyékolás',
       '6': 'Felszínárnyékolás',
@@ -334,14 +329,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Elemek mérete',
     featureScaleHelp:
       'Megnöveli a megjelenített feliratokat és vonalakat. Nincs hatással a műholdas, árnyékolt, WMS és vektoros (MapLibre) rétegekre.',
-    stravaHeatmapColor: 'Strava hőtérkép színe',
-    stravaHeatmapColors: {
-      hot: 'Forró',
-      blue: 'Kék',
-      purple: 'Lila',
-      gray: 'Szürke',
-      bluered: 'Kék-piros',
-    },
     layer: {
       layer: 'Réteg',
       base: 'Alap',

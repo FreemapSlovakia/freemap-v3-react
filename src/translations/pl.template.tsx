@@ -247,11 +247,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       I: 'Zdjęcia',
       l1: 'Leśne drogi NLC (2017)',
       l2: 'Leśne drogi NLC',
-      s0: 'Strava (wszystko)',
-      s1: 'Strava (jazdy)',
-      s2: 'Strava (biegi)',
-      s3: 'Strava (sporty wodne)',
-      s4: 'Strava (sporty zimowe)',
       w: 'Wikipedia',
       '5': 'Cieniowanie terenu',
       '6': 'Cieniowanie powierzchni',
@@ -318,14 +313,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Rozmiar elementów',
     featureScaleHelp:
       'Powiększa renderowane etykiety i linie. Nie ma wpływu na warstwy satelitarne, cieniowania, WMS ani wektorowe (MapLibre).',
-    stravaHeatmapColor: 'Kolor mapy ciepła Strava',
-    stravaHeatmapColors: {
-      hot: 'Gorący',
-      blue: 'Niebieski',
-      purple: 'Fioletowy',
-      gray: 'Szary',
-      bluered: 'Niebiesko-czerwony',
-    },
     layer: {
       layer: 'Warstwa',
       base: 'Podstawowa',

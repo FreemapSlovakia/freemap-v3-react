@@ -58,10 +58,6 @@ export function Layers(): ReactElement | null {
 
   const featureScale = useAppSelector((state) => state.map.featureScale);
 
-  const stravaHeatmapColor = useAppSelector(
-    (state) => state.map.stravaHeatmapColor,
-  );
-
   const effectiveDpr = resolutionScale ?? (window.devicePixelRatio || 1);
 
   const m = useMessages();
@@ -198,8 +194,6 @@ export function Layers(): ReactElement | null {
     }
 
     if (layerDef.technology === 'tile') {
-      const url = layerDef.url.replace('{stravaColor}', stravaHeatmapColor);
-
       const effFeatureScale = isHdpi ? 1 : featureScale;
 
       const autoTileScale = (window.devicePixelRatio || 1) * effFeatureScale;
@@ -233,9 +227,9 @@ export function Layers(): ReactElement | null {
             resolutionScale ?? 'auto',
             effForcedScale ?? 'auto',
             effFeatureScale,
-            url,
+            layerDef.url,
           ].join('-')}
-          url={url}
+          url={layerDef.url}
           minZoom={minZoom}
           maxZoom={maxZoom}
           maxNativeZoom={
