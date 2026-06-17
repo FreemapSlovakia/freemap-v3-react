@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "lint-staged": {
-    "*.{js,ts}": ["biome check", "git add"]
+    "*.{js,ts}": [
+      "biome check",
+      "git add"
+    ]
   },
   "scripts": {
     "start": "pnpm build:proto && pnpm sync-language-files && rspack serve --config rspack.config.ts",
@@ -41,6 +44,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@mapbox/tilebelt": "^2.0.3",
     "@maplibre/maplibre-gl-leaflet": "^0.1.3",
+    "@polar-sh/checkout": "^0.3.0",
     "@popperjs/core": "^2.11.8",
     "@react-leaflet/core": "^3.0.0",
     "@reduxjs/toolkit": "^2.12.0",

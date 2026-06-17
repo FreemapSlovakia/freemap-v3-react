@@ -79,6 +79,7 @@ const cs: DeepPartialWithRequiredObjects<TrackingMessages> = {
     width: 'Šířka',
   },
   devices: {
+    traccarQrCode: 'Traccar QR kód',
     button: 'Moje zařízení',
     modalTitle: 'Moje sledovaná zařízení',
     createTitle: 'Nové zařízení',

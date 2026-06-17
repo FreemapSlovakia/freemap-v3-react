@@ -23,7 +23,7 @@ const en: PurchasesMessages = {
   },
   noPurchases: 'No purchases',
   premium: 'Premium',
-  credits: (amount) => <>Credits (${amount})</>,
+  credits: (amount) => <>Credits ({amount})</>,
 };
 
 export default en;

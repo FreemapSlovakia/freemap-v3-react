@@ -11,6 +11,8 @@ const en: CreditsMessages = {
   amount: 'Credits',
   credits: 'credits',
   buy: 'Buy',
+  payWithChrons: 'Pay with Chrons',
+  chronsHint: 'Prefer Chrons? Pay from your Rovas balance instead of by card.',
   purchase: {
     success: ({ amount }) => (
       <>Your credit has been increased by {nf00.format(amount)}.</>

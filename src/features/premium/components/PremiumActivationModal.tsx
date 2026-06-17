@@ -2,8 +2,8 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { ReactElement } from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import { FaGem, FaTimes } from 'react-icons/fa';
+import { Button, ButtonGroup, Dropdown, Modal } from 'react-bootstrap';
+import { FaGem, FaRegGem, FaStopwatch, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { usePremiumMessages } from '../translations/usePremiumMessages.js';
 
@@ -22,6 +22,12 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
+  function buy(opts: { recurring?: boolean; via?: 'rovas' } = {}) {
+    dispatch(setActiveModal(null));
+
+    dispatch(purchase({ type: 'premium', ...opts }));
+  }
+
   return (
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
@@ -30,19 +36,38 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>{prm?.commonHeader}</Modal.Body>
+      <Modal.Body>
+        {prm?.commonHeader}
+
+        <hr />
+
+        <p className="mb-0 text-body-secondary">{prm?.chronsHint}</p>
+      </Modal.Body>
 
       <Modal.Footer>
-        <Button
-          variant="primary"
-          onClick={() => {
-            dispatch(setActiveModal(null));
+        <Dropdown as={ButtonGroup}>
+          <Button variant="primary" onClick={() => buy({ recurring: true })}>
+            <FaGem /> {prm?.paySubscription}
+          </Button>
 
-            dispatch(purchase({ type: 'premium' }));
-          }}
-        >
-          <FaGem /> {prm?.continue}
-        </Button>
+          <Dropdown.Toggle split variant="primary" id="premium-buy" />
+
+          <Dropdown.Menu renderOnMount popperConfig={{ strategy: 'fixed' }}>
+            <Dropdown.Item
+              className="text-nowrap"
+              onClick={() => buy({ recurring: false })}
+            >
+              <FaRegGem /> {prm?.payOnce}
+            </Dropdown.Item>
+
+            <Dropdown.Item
+              className="text-nowrap"
+              onClick={() => buy({ via: 'rovas' })}
+            >
+              <FaStopwatch /> {prm?.payWithChrons}
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
 
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.cancel}

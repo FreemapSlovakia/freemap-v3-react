@@ -155,10 +155,9 @@ export function PurchasesSection(): ReactElement | null {
       {becomePremium ? (
         <Alert
           variant="warning"
-          className="d-flex justify-content-between gap-4"
+          className="d-flex justify-content-between gap-4 align-items-center"
         >
-          <span>
-            <FaExclamationTriangle />{' '}
+          <span className="flex-grow-1">
             {user.premiumExpiration
               ? pm?.premiumExpired(
                   <b>{dateFormat.format(user.premiumExpiration!)}</b>,
@@ -166,7 +165,7 @@ export function PurchasesSection(): ReactElement | null {
               : pm?.notPremiumYet}
           </span>
 
-          <Button onClick={becomePremium} className="m-n2 ms-2">
+          <Button className="m-n2 ms-0" onClick={becomePremium}>
             <FaGem /> {prm?.becomePremium}
           </Button>
         </Alert>

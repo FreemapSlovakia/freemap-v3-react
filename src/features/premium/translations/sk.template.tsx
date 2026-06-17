@@ -16,7 +16,7 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
         <li>odstránenie reklamného baneru</li>
         <li
           className="text-decoration-underline"
-          title="hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps"
+          title="detailné tieňovanie reliéfu Slovenska a Česka vo vysokom rozlíšení, najvyššie úrovne priblíženia Outdoor mapy, najvyššie úrovne priblíženia ortofotomáp Slovenska a Česka, rôzne mapy založené na WMS"
         >
           prémiové mapové vrstvy
         </li>
@@ -41,7 +41,6 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
       </div>
     </>
   ),
-  continue: 'Pokračovať',
   success: 'Gratulujeme, získali ste prémiový prístup!',
   becomePremium: 'Získať prémiový prístup',
   youArePremium: (date) => (
@@ -52,6 +51,11 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Dostupné len s prémiovým prístupom.',
   alreadyPremium: 'Už máte prémiový prístup.',
   premiumUser: 'Používateľ s prémiovým prístupom',
+  payOnce: 'Zaplatiť jednorazovo na jeden rok',
+  paySubscription: 'Ročné predplatné (automatické obnovenie)',
+  payWithChrons: 'Zaplatiť chronmi',
+  chronsHint:
+    'Uprednostňujete chrony? Zaplaťte zo svojho zostatku v Rovase namiesto kartou.',
 };
 
 export default sk;

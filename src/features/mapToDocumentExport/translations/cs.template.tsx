@@ -8,6 +8,7 @@ const outdoorMap = 'Turistika, Cyklo, Běžky, Jízda';
 const cs: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Chyba exportu mapy', err),
   cancelExportTitle: 'Zrušit export',
+  labelTitle: 'Popisky',
   cancelExportQuestion: 'Opravdu chcete zrušit probíhající export?',
   area: 'Exportovat oblast',
   format: 'Formát',

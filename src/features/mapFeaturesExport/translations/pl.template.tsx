@@ -17,6 +17,11 @@ const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     search: 'wynik',
   },
   garmin: {
+    exportError: 'Błąd eksportu do Garmina.',
+    multipleLineStrings: 'Zaznaczenie zawiera więcej niż jedną ciągłą linię.',
+    noLineString: 'Zaznaczenie nie zawiera żadnej ciągłej linii.',
+    multipleTracks: 'Wiele śladów nie jest obsługiwanych. Wybierz jeden.',
+    multipleLines: 'Wiele linii nie jest obsługiwanych. Wybierz jedną.',
     at: {
       running: 'Bieganie',
       hiking: 'Turystyka piesza',

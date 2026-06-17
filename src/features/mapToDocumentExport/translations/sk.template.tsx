@@ -9,6 +9,7 @@ const sk: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) =>
     addError(getMessages()!, 'Chyba exportovania mapy', err),
   cancelExportTitle: 'Zrušiť export',
+  labelTitle: 'Popisy',
   cancelExportQuestion: 'Naozaj chcete zrušiť prebiehajúci export?',
   area: 'Exportovať oblasť',
   format: 'Formát',

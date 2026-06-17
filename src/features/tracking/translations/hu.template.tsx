@@ -80,6 +80,7 @@ const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
     width: 'Szélesség',
   },
   devices: {
+    traccarQrCode: 'Traccar QR-kód',
     button: 'Készülékeim',
     modalTitle: 'Követett készülékeim',
     createTitle: 'Követendő készülék létrehozása',

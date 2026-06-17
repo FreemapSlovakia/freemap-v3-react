@@ -9,6 +9,7 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) =>
     addError(getMessages()!, 'Error exporting map:', err),
   cancelExportTitle: 'Annulla esportazione',
+  labelTitle: 'Etichette',
   cancelExportQuestion: "Vuoi davvero annullare l'esportazione in corso?",
   area: 'Esporta area',
   format: 'Formato',

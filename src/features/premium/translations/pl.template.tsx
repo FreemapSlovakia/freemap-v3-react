@@ -41,7 +41,6 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       </div>
     </>
   ),
-  continue: 'Kontynuuj',
   success: 'Gratulacje, uzyskano dostęp premium!',
   becomePremium: 'Uzyskaj dostęp premium',
   youArePremium: (date) => (
@@ -52,6 +51,10 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Dostępne tylko z dostępem premium.',
   alreadyPremium: 'Masz już dostęp premium.',
   premiumUser: 'Użytkownik z dostępem premium',
+  payOnce: 'Zapłać jednorazowo za jeden rok',
+  paySubscription: 'Subskrypcja roczna (odnawia się automatycznie)',
+  payWithChrons: 'Zapłać chronami',
+  chronsHint: 'Wolisz chrony? Zapłać ze swojego salda Rovas zamiast kartą.',
 };
 
 export default pl;

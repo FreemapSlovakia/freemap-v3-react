@@ -40,7 +40,6 @@ const en: PremiumMessages = {
       </div>
     </>
   ),
-  continue: 'Continue',
   success: 'Congratulations, you have gained premium access!',
   becomePremium: 'Get premium access',
   youArePremium: (date) => (
@@ -51,6 +50,10 @@ const en: PremiumMessages = {
   premiumOnly: 'Only available with premium access.',
   alreadyPremium: 'You already have premium access.',
   premiumUser: 'User with premium access',
+  payOnce: 'Pay once for one year',
+  paySubscription: 'Subscribe yearly (auto-renews)',
+  payWithChrons: 'Pay with Chrons',
+  chronsHint: 'Prefer Chrons? Pay from your Rovas balance instead of by card.',
 };
 
 export default en;

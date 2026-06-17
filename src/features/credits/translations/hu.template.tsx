@@ -12,6 +12,9 @@ const hu: DeepPartialWithRequiredObjects<CreditsMessages> = {
   amount: 'Kreditek',
   credits: 'kredit',
   buy: 'Vásárlás',
+  payWithChrons: 'Fizetés chronnal',
+  chronsHint:
+    'Inkább chront használna? Fizessen a Rovas-egyenlegéből kártya helyett.',
   purchase: {
     success: ({ amount }) => (
       <>A kreditje {nf00.format(amount)} összeggel növekedett.</>

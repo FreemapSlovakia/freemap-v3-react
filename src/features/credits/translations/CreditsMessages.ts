@@ -5,6 +5,8 @@ export type CreditsMessages = {
   amount: string;
   credits: string;
   buy: string;
+  payWithChrons: string;
+  chronsHint: string;
   purchase: {
     success: ({ amount }: { amount: number }) => JSX.Element;
   };

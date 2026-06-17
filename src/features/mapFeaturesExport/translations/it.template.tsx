@@ -26,6 +26,11 @@ const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   exportedToDropbox: 'Il file è stato salvato su Dropbox.',
   exportedToGdrive: 'Il file è stato salvato su Google Drive.',
   garmin: {
+    exportError: 'Errore durante l’esportazione su Garmin.',
+    multipleLineStrings: 'La selezione contiene più di una linea continua.',
+    noLineString: 'La selezione non contiene alcuna linea continua.',
+    multipleTracks: 'Più tracce non sono supportate. Selezionane una sola.',
+    multipleLines: 'Più linee non sono supportate. Selezionane una sola.',
     courseName: 'Nome del corso',
     description: 'Descrizione',
     activityType: 'Tipo di attività',

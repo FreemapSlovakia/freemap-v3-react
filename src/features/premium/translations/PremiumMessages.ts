@@ -4,11 +4,14 @@ export type PremiumMessages = {
   title: string;
   commonHeader: ReactNode;
   stepsForAnonymous: ReactNode;
-  continue: string;
   success: string;
   becomePremium: string;
   youArePremium: (date: string) => JSX.Element;
   premiumOnly: string;
   alreadyPremium: string;
   premiumUser: string;
+  payOnce: string;
+  paySubscription: string;
+  payWithChrons: string;
+  chronsHint: string;
 };

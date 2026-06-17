@@ -79,6 +79,7 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     width: 'Szerokość',
   },
   devices: {
+    traccarQrCode: 'Kod QR Traccar',
     button: 'Moje urządzenia',
     modalTitle: 'Moje śledzone urządzenia',
     createTitle: 'Utwórz urządzenie śledzące',

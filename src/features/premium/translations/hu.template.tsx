@@ -41,7 +41,6 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       </div>
     </>
   ),
-  continue: 'Folytatás',
   success: 'Gratulálunk, megszerezted a prémium hozzáférést!',
   becomePremium: 'Prémium hozzáférés megszerzése',
   youArePremium: (date) => (
@@ -52,6 +51,11 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
   alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
   premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
+  payOnce: 'Egyszeri fizetés egy évre',
+  paySubscription: 'Éves előfizetés (automatikus megújítás)',
+  payWithChrons: 'Fizetés chronnal',
+  chronsHint:
+    'Inkább chront használna? Fizessen a Rovas-egyenlegéből kártya helyett.',
 };
 
 export default hu;

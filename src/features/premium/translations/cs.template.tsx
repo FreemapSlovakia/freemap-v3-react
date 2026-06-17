@@ -41,7 +41,6 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
       </div>
     </>
   ),
-  continue: 'Pokračovat',
   success: 'Gratulujeme, získali jste prémiový přístup!',
   becomePremium: 'Získat prémiový přístup',
   youArePremium: (date) => (
@@ -52,6 +51,11 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumOnly: 'Dostupné pouze s prémiovým přístupem.',
   alreadyPremium: 'Máte již prémiový přístup.',
   premiumUser: 'Uživatel s prémiovým přístupem',
+  payOnce: 'Zaplatit jednorázově na jeden rok',
+  paySubscription: 'Roční předplatné (automatické obnovení)',
+  payWithChrons: 'Zaplatit chrony',
+  chronsHint:
+    'Dáváte přednost chronům? Zaplaťte ze svého zůstatku v Rovasu místo kartou.',
 };
 
 export default cs;
