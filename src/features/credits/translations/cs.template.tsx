@@ -1,4 +1,5 @@
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { RovasLink } from '@shared/components/RovasLink.js';
 import { CreditsText } from '../components/CreditsText.js';
 import { CreditsMessages } from './CreditsMessages.js';
 
@@ -13,8 +14,12 @@ const cs: DeepPartialWithRequiredObjects<CreditsMessages> = {
   credits: 'kreditů',
   buy: 'Koupit',
   payWithChrons: 'Zaplatit chrony',
-  chronsHint:
-    'Dáváte přednost chronům? Zaplaťte ze svého zůstatku v Rovasu místo kartou.',
+  chronsHint: (
+    <>
+      Pokud chcete získat prémiový přístup za dobrovolnickou práci nahlášenou v{' '}
+      <RovasLink>Rováši</RovasLink>, zvolte platbu chrony.
+    </>
+  ),
   purchase: {
     success: ({ amount }) => (
       <>Váš kredit byl navýšen o {nf00.format(amount)}.</>

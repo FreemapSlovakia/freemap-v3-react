@@ -1,4 +1,5 @@
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { RovasLink } from '@shared/components/RovasLink.js';
 import { PremiumMessages } from './PremiumMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
@@ -54,8 +55,12 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
   payOnce: 'Zaplatit jednorázově na jeden rok',
   paySubscription: 'Roční předplatné (automatické obnovení)',
   payWithChrons: 'Zaplatit chrony',
-  chronsHint:
-    'Dáváte přednost chronům? Zaplaťte ze svého zůstatku v Rovasu místo kartou.',
+  chronsHint: (
+    <>
+      Pokud chcete získat prémiový přístup za dobrovolnickou práci nahlášenou v{' '}
+      <RovasLink>Rováši</RovasLink>, zvolte platbu chrony.
+    </>
+  ),
 };
 
 export default cs;

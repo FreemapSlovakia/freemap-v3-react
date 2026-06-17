@@ -13,5 +13,5 @@ export type PremiumMessages = {
   payOnce: string;
   paySubscription: string;
   payWithChrons: string;
-  chronsHint: string;
+  chronsHint: ReactNode;
 };

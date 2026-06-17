@@ -1,2 +1,4 @@
 *.messages.tsx
 !en.messages.tsx
+# Legacy monolithic locale files (replaced by *.messages.tsx)
+/[a-z][a-z].tsx

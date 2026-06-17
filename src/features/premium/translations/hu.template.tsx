@@ -1,4 +1,5 @@
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { RovasLink } from '@shared/components/RovasLink.js';
 import { PremiumMessages } from './PremiumMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
@@ -54,8 +55,13 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   payOnce: 'Egyszeri fizetés egy évre',
   paySubscription: 'Éves előfizetés (automatikus megújítás)',
   payWithChrons: 'Fizetés chronnal',
-  chronsHint:
-    'Inkább chront használna? Fizessen a Rovas-egyenlegéből kártya helyett.',
+  chronsHint: (
+    <>
+      Ha prémium hozzáférést szeretnél önkéntes munkáért, amelyet a{' '}
+      <RovasLink>Rovasban</RovasLink> jelentettél be, válaszd a chronokkal
+      történő fizetést.
+    </>
+  ),
 };
 
 export default hu;

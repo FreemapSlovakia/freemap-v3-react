@@ -1,3 +1,4 @@
+import { RovasLink } from '@shared/components/RovasLink.js';
 import { PremiumMessages } from './PremiumMessages.js';
 
 const en: PremiumMessages = {
@@ -53,7 +54,12 @@ const en: PremiumMessages = {
   payOnce: 'Pay once for one year',
   paySubscription: 'Subscribe yearly (auto-renews)',
   payWithChrons: 'Pay with Chrons',
-  chronsHint: 'Prefer Chrons? Pay from your Rovas balance instead of by card.',
+  chronsHint: (
+    <>
+      If you want to get premium access for volunteer work reported in{' '}
+      <RovasLink>Rovas</RovasLink>, choose to pay with Chrons.
+    </>
+  ),
 };
 
 export default en;
