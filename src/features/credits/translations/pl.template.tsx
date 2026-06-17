@@ -1,4 +1,5 @@
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { RovasLink } from '@shared/components/RovasLink.js';
 import { CreditsText } from '../components/CreditsText.js';
 import { CreditsMessages } from './CreditsMessages.js';
 
@@ -13,7 +14,12 @@ const pl: DeepPartialWithRequiredObjects<CreditsMessages> = {
   credits: 'kredytów',
   buy: 'Kup',
   payWithChrons: 'Zapłać chronami',
-  chronsHint: 'Wolisz chrony? Zapłać ze swojego salda Rovas zamiast kartą.',
+  chronsHint: (
+    <>
+      Jeśli chcesz uzyskać dostęp premium za pracę wolontariacką zgłoszoną w{' '}
+      <RovasLink>Rovas</RovasLink>, wybierz płatność chronami.
+    </>
+  ),
   purchase: {
     success: ({ amount }) => (
       <>Twój kredyt został zwiększony o {nf00.format(amount)}.</>

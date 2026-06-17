@@ -1,4 +1,5 @@
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { RovasLink } from '@shared/components/RovasLink.js';
 import { PremiumMessages } from './PremiumMessages.js';
 
 const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
@@ -56,8 +57,12 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
   payOnce: 'Einmalig für ein Jahr zahlen',
   paySubscription: 'Jährliches Abo (verlängert sich automatisch)',
   payWithChrons: 'Mit Chrons bezahlen',
-  chronsHint:
-    'Lieber mit Chrons? Zahlen Sie mit Ihrem Rovas-Guthaben statt per Karte.',
+  chronsHint: (
+    <>
+      Wenn Sie Premium-Zugang für in <RovasLink>Rovas</RovasLink> gemeldete
+      ehrenamtliche Arbeit erhalten möchten, wählen Sie die Zahlung mit Chrons.
+    </>
+  ),
 };
 
 export default de;

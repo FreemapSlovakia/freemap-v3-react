@@ -1,3 +1,4 @@
+import { RovasLink } from '@shared/components/RovasLink.js';
 import { CreditsText } from '../components/CreditsText.js';
 import { CreditsMessages } from './CreditsMessages.js';
 
@@ -12,7 +13,12 @@ const en: CreditsMessages = {
   credits: 'credits',
   buy: 'Buy',
   payWithChrons: 'Pay with Chrons',
-  chronsHint: 'Prefer Chrons? Pay from your Rovas balance instead of by card.',
+  chronsHint: (
+    <>
+      If you want to get premium access for volunteer work reported in{' '}
+      <RovasLink>Rovas</RovasLink>, choose to pay with Chrons.
+    </>
+  ),
   purchase: {
     success: ({ amount }) => (
       <>Your credit has been increased by {nf00.format(amount)}.</>

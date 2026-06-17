@@ -6,7 +6,7 @@ export type CreditsMessages = {
   credits: string;
   buy: string;
   payWithChrons: string;
-  chronsHint: string;
+  chronsHint: ReactNode;
   purchase: {
     success: ({ amount }: { amount: number }) => JSX.Element;
   };
