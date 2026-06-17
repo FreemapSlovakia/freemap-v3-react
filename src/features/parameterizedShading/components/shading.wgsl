@@ -91,9 +91,13 @@ fn get_normal(pos: vec2<i32>, exaggeration: f32) -> vec3<f32> {
 fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     let pos2 = vec2<i32>(i32(pos.x + 2), i32(pos.y + 2));
 
-    let elev = get_elev(pos2); // TODO make lazy-memo
+    var elev = get_elev(pos2); // TODO make lazy-memo
 
     let is_nan = !(get_elev(pos2) < 0.0 || get_elev(pos2) > -1.0);
+
+    if is_nan {
+        elev = 0;
+    }
 
     var sum_rgb = vec3<f32>(0.0);
     var sum_alpha = 0.0;
