@@ -67,7 +67,7 @@ export const mapInitialState: MapState = {
   featureScale: 1,
   stravaHeatmapColor: defaultStravaHeatmapColor,
   shading: {
-    backgroundColor: [0x00, 0x00, 0x00, 1],
+    backgroundColor: [0x00, 0x00, 0x00, 0x00],
     components: [
       {
         id: 1,

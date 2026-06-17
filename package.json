@@ -69,7 +69,7 @@
     "@turf/projection": "^7.3.5",
     "@turf/simplify": "^7.3.5",
     "@types/pannellum": "^2.5.0",
-    "@zdila/react-gradient-color-picker": "^3.2.0",
+    "@zdila/react-gradient-color-picker": "^3.3.0",
     "bootstrap": "^5.3.8",
     "clsx": "^2.1.1",
     "color": "^5.0.3",

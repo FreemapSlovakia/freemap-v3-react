@@ -107,3 +107,4 @@ minimumReleaseAgeExclude:
   - '@vitest/utils@4.1.9'
   - vitest@4.1.9
   - '@zdila/react-gradient-color-picker@3.2.0'
+  - '@zdila/react-gradient-color-picker@3.3.0'
