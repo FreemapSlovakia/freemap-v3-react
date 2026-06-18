@@ -97,6 +97,11 @@ class LShadingLayer extends LGridLayer {
     if (!navigator.gpu) {
       this.gpuObjectsPromise = Promise.reject(new GpuError('notSupported'));
 
+      // Keep the rejection handled so it never escapes as an unhandled
+      // rejection before a tile awaits it; createTileAsync still propagates the
+      // error to showError when tiles load.
+      this.gpuObjectsPromise.catch(() => {});
+
       return;
     }
 
@@ -218,6 +223,10 @@ class LShadingLayer extends LGridLayer {
     };
 
     this.gpuObjectsPromise = initGpuObjects();
+
+    // See the notSupported branch above: keep the rejection handled so a GPU
+    // init failure (e.g. noAdapter) doesn't surface as an unhandled rejection.
+    this.gpuObjectsPromise.catch(() => {});
   }
 
   onRemove(map: LeafletMap): this {
