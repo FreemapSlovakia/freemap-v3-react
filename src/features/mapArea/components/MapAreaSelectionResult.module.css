@@ -4,7 +4,32 @@
   background-color: #fff;
   border: 2px solid #3388ff;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
-  cursor: pointer;
+}
+
+:global(.leaflet-container) .side-handle-h,
+:global(.leaflet-container) .side-handle-v {
+  height: 100%;
+  width: 100%;
+  background-color: #fff;
+  border: 2px solid #3388ff;
+  border-radius: 2px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+}
+
+:global(.leaflet-container) .side-handle-h {
+  cursor: ns-resize;
+}
+
+:global(.leaflet-container) .side-handle-v {
+  cursor: ew-resize;
+}
+
+:global(.leaflet-container) .cursor-nwse {
+  cursor: nwse-resize;
+}
+
+:global(.leaflet-container) .cursor-nesw {
+  cursor: nesw-resize;
 }
 
 :global(.leaflet-container) .move-handle {
