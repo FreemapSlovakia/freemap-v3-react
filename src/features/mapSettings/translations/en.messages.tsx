@@ -7,6 +7,7 @@ const en: MapSettingsMessages = {
   showInMenu: 'Show in menu',
   showInToolbar: 'Show in toolbar',
   saveSuccess: 'Settings have been saved.',
+  customMapSaved: 'Custom map has been saved.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Error saving settings', err),
 };

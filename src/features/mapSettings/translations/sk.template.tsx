@@ -8,6 +8,7 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInMenu: 'Zobraziť v menu',
   showInToolbar: 'Zobraziť v lište',
   saveSuccess: 'Zmeny boli uložené.',
+  customMapSaved: 'Vlastná mapa bola uložená.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri ukladaní nastavení', err),
 };

@@ -115,6 +115,11 @@ export const saveSettings = createAction<{
     picture?: string | null;
   };
   keepOpen?: boolean;
+  /**
+   * When set, the success toast offers an action to activate (display) the
+   * layer of this type, unless it is already active.
+   */
+  activateLayerType?: string;
 }>('SAVE_SETTINGS');
 
 export const applySettings = createAction<

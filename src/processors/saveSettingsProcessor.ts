@@ -7,6 +7,8 @@ import {
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import { bumpPictureCacheBust } from '@features/auth/pictureCacheBust.js';
+import { getMessages } from '@features/l10n/messagesStore.js';
+import { mapToggleLayer } from '@features/map/model/actions.js';
 import { loadMapSettingsMessages } from '@features/mapSettings/translations/loadMapSettingsMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 
@@ -14,7 +16,7 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   actionCreator: saveSettings,
   handle: async ({ dispatch, getState, action, toastError }) => {
     try {
-      const { settings, user, keepOpen } = action.payload;
+      const { settings, user, keepOpen, activateLayerType } = action.payload;
 
       if (getState().auth.user) {
         await httpRequest({
@@ -67,13 +69,29 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
 
       window._paq.push(['trackEvent', 'Settings', 'save']);
 
+      const offerActivate =
+        activateLayerType !== undefined &&
+        !getState().map.layers.includes(activateLayerType);
+
       dispatch(
         toastsAdd({
           id: 'settings.saved',
-          messageKey: 'saveSuccess',
+          messageKey:
+            activateLayerType !== undefined ? 'customMapSaved' : 'saveSuccess',
           messageLoader: loadMapSettingsMessages,
           style: 'info',
-          timeout: 5000,
+          timeout: offerActivate ? 10_000 : 5000,
+          actions: offerActivate
+            ? [
+                {
+                  name: getMessages()?.mapLayers.activate ?? '',
+                  action: mapToggleLayer({
+                    type: activateLayerType,
+                    enable: true,
+                  }),
+                },
+              ]
+            : undefined,
         }),
       );
 

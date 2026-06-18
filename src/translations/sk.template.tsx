@@ -338,6 +338,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     configureLayers: 'Nastavenie mapových vrstiev',
     customMaps: 'Vlastné mapy',
     addCustomMap: 'Pridať vlastnú mapu',
+    activate: 'Aktivovať',
     customMapsEmptyMessage:
       'Zatiaľ nie sú definované žiadne vlastné mapy. Pridajte jednu na zobrazenie vlastného zdroja máp.',
     base: 'Základné vrstvy',

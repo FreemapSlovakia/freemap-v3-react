@@ -3,5 +3,6 @@ export type MapSettingsMessages = {
   showInMenu: string;
   showInToolbar: string;
   saveSuccess: string;
+  customMapSaved: string;
   savingError: (props: { err: unknown }) => string;
 };

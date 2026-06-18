@@ -185,6 +185,7 @@ export type Messages = {
     configureLayers: string;
     customMaps: string;
     addCustomMap: string;
+    activate: string;
     customMapsEmptyMessage: string;
     base: string;
     overlay: string;
