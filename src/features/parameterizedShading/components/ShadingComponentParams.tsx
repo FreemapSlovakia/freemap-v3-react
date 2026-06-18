@@ -41,6 +41,7 @@ export function ShadingComponentParams({
             type="number"
             min={0.1}
             step={0.1}
+            max={100}
             value={component.exaggeration.toFixed(1)}
             onChange={(e) =>
               patch('exaggeration', Number(e.currentTarget.value))

@@ -20,40 +20,42 @@ export function ShadingComponentList({
 
   return (
     <ListGroup
-      className="my-2"
+      className={'my-2 ' + classes.list}
       activeKey={selectedId ?? ''}
       onSelect={(e) => onSelect(e ? Number(e) : undefined)}
     >
       <ListGroup.Item action eventKey="">
         <span
-          className={classes.shadingColor}
+          className={'rounded border ' + classes.shadingColor}
           style={{ backgroundColor: Color(shading.backgroundColor).hexa() }}
-        />{' '}
-        {sm?.background}
+        />
+        <span>{sm?.background}</span>
       </ListGroup.Item>
 
       {shading.components.map((component) => (
-        <ListGroup.Item
-          action
-          key={component.id}
-          eventKey={component.id}
-          className="fm-ellipsis"
-        >
-          {/^hillshade-|^slope-/.test(component.type) && (
+        <ListGroup.Item action key={component.id} eventKey={component.id}>
+          {/^hillshade-|^slope-/.test(component.type) ? (
             <span
-              className={classes.shadingColor}
+              className={'rounded border ' + classes.shadingColor}
               style={{
                 backgroundColor: Color(component.colorStops[0].color).hexa(),
               }}
             />
-          )}{' '}
-          {sm?.types[component.type]}
-          {(component.type === 'hillshade-classic' ||
-            component.type === 'hillshade-igor') &&
-            ' ◯ ' + (component.azimuth * (180 / Math.PI)).toFixed(1)}
-          {(component.type === 'hillshade-classic' ||
-            component.type === 'slope-classic') &&
-            ' ↥ ' + (component.elevation * (180 / Math.PI)).toFixed(1)}
+          ) : (
+            <span
+              className={'rounded border ' + classes.shadingColor}
+              style={{ visibility: 'hidden' }}
+            />
+          )}
+          <span>{sm?.types[component.type]}</span>
+          <small>
+            {(component.type === 'hillshade-classic' ||
+              component.type === 'hillshade-igor') &&
+              '∠ ' + (component.azimuth * (180 / Math.PI)).toFixed(1)}
+            {(component.type === 'hillshade-classic' ||
+              component.type === 'slope-classic') &&
+              ' ↥ ' + (component.elevation * (180 / Math.PI)).toFixed(1)}
+          </small>
         </ListGroup.Item>
       ))}
     </ListGroup>
