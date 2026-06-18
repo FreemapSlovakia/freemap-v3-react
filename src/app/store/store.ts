@@ -4,6 +4,7 @@ import { createTrackingMiddleware } from '@features/tracking/model/trackingMiddl
 import { createWebsocketMiddleware } from '@features/websocket/model/webSocketMiddleware.js';
 import { combineReducers, configureStore, isPlain } from '@reduxjs/toolkit';
 import { errorHandlingMiddleware } from '../store/middleware/errorHandlingMiddleware.js';
+import { perfWatchdogMiddleware } from '../store/middleware/perfWatchdog.js';
 import { createProcessorMiddleware } from '../store/middleware/processorMiddleware.js';
 import { statePersistingMiddleware } from '../store/middleware/statePersistingMiddleware.js';
 import { processors } from './processors.js';
@@ -34,6 +35,7 @@ export function createReduxStore() {
           ignoredPaths: [/^toasts\.toasts\.[^.]+\.messageLoader$/],
         },
       }).concat(
+        perfWatchdogMiddleware,
         errorHandlingMiddleware,
         statePersistingMiddleware,
         createWebsocketMiddleware(),

@@ -20,6 +20,7 @@ import { Main } from './components/Main.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
 import { init, setEmbedFeatures } from './store/actions.js';
 import { setStore as setErrorHandlerStore } from './store/middleware/globalErrorHandler.js';
+import { startPerfWatchdog } from './store/middleware/perfWatchdog.js';
 import { createReduxStore } from './store/store.js';
 import './styles/index.scss';
 import './styles/bootstrap-override.css';
@@ -56,6 +57,8 @@ document.body.classList.add(window.fmEmbedded ? 'embedded' : 'full');
 const store = createReduxStore();
 
 setErrorHandlerStore(store);
+
+startPerfWatchdog();
 
 store.dispatch(invokeGeoip());
 

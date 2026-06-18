@@ -1,0 +1,164 @@
+import type { Middleware, UnknownAction } from '@reduxjs/toolkit';
+import type { RootState } from '../store.js';
+
+/**
+ * Detects main-thread stalls and Redux dispatch storms in the field and
+ * reports them to Sentry / Matomo, so freezes we cannot reproduce locally
+ * leave a trace pointing at the action(s) that triggered them.
+ *
+ * The detector is a cross-browser timer watchdog (works in Firefox, which has
+ * no `longtask` API); an additional `longtask` PerformanceObserver gives
+ * precise blocking durations on Chromium-based browsers (Chrome, Edge).
+ */
+
+// Ring buffer of the most recent dispatched action types, oldest first.
+const RECENT_CAP = 60;
+const recentActions: { type: string; t: number }[] = [];
+
+// Per-tick counters, reset every watchdog tick.
+let tickActionCount = 0;
+const tickActionTypes = new Map<string, number>();
+
+// A blocked main thread delays the watchdog by at least this much.
+const TICK_MS = 1000;
+const STALL_MS = 3000;
+
+// More dispatches than this within a single tick implies a runaway loop.
+const STORM_THRESHOLD = 800;
+
+// A single synchronous task longer than this is "high CPU" worth reporting.
+const LONGTASK_MS = 1500;
+
+// Don't flood Sentry while a freeze persists.
+const REPORT_THROTTLE_MS = 20000;
+let lastReportAt = 0;
+
+// Bundle parsing and first render are expected to be heavy; ignore the startup
+// window so it doesn't drown the signal with a report on every page load.
+const WARMUP_MS = 8000;
+let startedAt = 0;
+
+/** Records every dispatched action for stall/storm correlation. */
+export const perfWatchdogMiddleware: Middleware<{}, RootState> =
+  () => (next) => (action) => {
+    const { type } = action as UnknownAction;
+
+    recentActions.push({ type, t: Date.now() });
+
+    if (recentActions.length > RECENT_CAP) {
+      recentActions.shift();
+    }
+
+    tickActionCount += 1;
+
+    tickActionTypes.set(type, (tickActionTypes.get(type) ?? 0) + 1);
+
+    return next(action);
+  };
+
+function topActionTypes(): string {
+  return [...tickActionTypes.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([type, count]) => `${type}×${count}`)
+    .join(', ');
+}
+
+function jsHeapMB(): number | undefined {
+  // Non-standard, Chromium-only.
+  const mem = (performance as { memory?: { usedJSHeapSize: number } }).memory;
+
+  return mem ? Math.round(mem.usedJSHeapSize / 1048576) : undefined;
+}
+
+function report(
+  kind: 'stall' | 'storm' | 'longtask',
+  message: string,
+  extra: Record<string, unknown>,
+): void {
+  const now = Date.now();
+
+  const fullExtra = {
+    ...extra,
+    topActions: topActionTypes(),
+    recentActions: recentActions.map((a) => a.type).join(' → '),
+    jsHeapMB: jsHeapMB(),
+  };
+
+  // Always log to the console so an affected user can read it live, even
+  // during warm-up or while remote reporting is throttled.
+  console.warn('perf watchdog:', message, fullExtra);
+
+  // Rate-limit the remote events so a sustained freeze doesn't flood Sentry.
+  if (now - startedAt < WARMUP_MS || now - lastReportAt < REPORT_THROTTLE_MS) {
+    return;
+  }
+
+  lastReportAt = now;
+
+  window.Sentry?.captureMessage(message, {
+    level: 'warning',
+    tags: { perf: kind },
+    extra: fullExtra,
+  });
+
+  window._paq?.push(['trackEvent', 'Perf', kind, message]);
+}
+
+/** Starts the timer watchdog and (where supported) the longtask observer. */
+export function startPerfWatchdog(): void {
+  startedAt = Date.now();
+
+  let expected = Date.now() + TICK_MS;
+
+  const tick = () => {
+    const now = Date.now();
+    const drift = now - expected;
+    const actions = tickActionCount;
+
+    if (drift > STALL_MS) {
+      report('stall', `Main thread stalled for ~${drift} ms`, {
+        stallMs: drift,
+        actionsDuringStall: actions,
+      });
+    } else if (actions > STORM_THRESHOLD) {
+      report('storm', `Dispatch storm: ${actions} actions in one tick`, {
+        actionsPerTick: actions,
+      });
+    }
+
+    tickActionCount = 0;
+
+    tickActionTypes.clear();
+
+    expected = now + TICK_MS;
+
+    setTimeout(tick, TICK_MS);
+  };
+
+  setTimeout(tick, TICK_MS);
+
+  if (typeof PerformanceObserver === 'function') {
+    try {
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.duration >= LONGTASK_MS) {
+            report(
+              'longtask',
+              `Long task blocked UI for ~${Math.round(entry.duration)} ms`,
+              {
+                longTaskMs: Math.round(entry.duration),
+              },
+            );
+          }
+        }
+      });
+
+      // Throws in browsers without longtask support (Firefox, Safari).
+      // Not buffered: the load-time long task is expected and uninteresting.
+      observer.observe({ type: 'longtask' });
+    } catch {
+      // No longtask support; the timer watchdog covers these browsers.
+    }
+  }
+}
