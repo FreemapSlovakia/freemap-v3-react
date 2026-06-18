@@ -142,6 +142,10 @@ async function downloadTiles(
 
         const response = await fetch(fetchUrl, {
           signal: abortController.signal,
+          // match ScaledTileLayer's tile <img> requests so providers that
+          // require a Referer header — e.g. OSM's usage policy — aren't blocked
+          // (and 403s aren't silently counted as downloaded) during caching.
+          referrerPolicy: 'strict-origin-when-cross-origin',
         });
 
         if (response.ok) {
