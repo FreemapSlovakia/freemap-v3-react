@@ -94,7 +94,7 @@ export function MapContextMenu(): ReactElement {
         maxHeight:
           window.innerHeight / 2 +
           Math.abs(e.containerPoint.y - window.innerHeight / 2) -
-          15,
+          10,
       });
     }
 
@@ -313,7 +313,11 @@ export function MapContextMenu(): ReactElement {
           ],
         }}
       >
-        <div className="fm-menu-scroller" ref={sc}>
+        <div
+          className="fm-menu-scroller"
+          ref={sc}
+          style={{ maxHeight: contextMenu.maxHeight }}
+        >
           <div />
 
           {submenu === 'openExternally' ? (
