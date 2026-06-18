@@ -34,16 +34,6 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     title: 'Importuj plik',
     drop: 'Upuść plik GPX lub GeoJSON tutaj lub kliknij, aby go wybrać.',
   },
-  strava: {
-    title: 'Importuj ze Stravy',
-    intro:
-      'Wybierz jedną ze swoich aktywności w Stravie, aby zaimportować ją jako trasę.',
-    empty: 'Nie znaleziono żadnych aktywności.',
-    loadError: 'Nie udało się wczytać Twoich aktywności ze Stravy.',
-    importError: 'Nie udało się zaimportować aktywności.',
-    notConnected: 'Aby importować aktywności, połącz swoje konto ze Stravą.',
-    connect: 'Połącz ze Stravą',
-  },
   upload: 'Prześlij',
   moreInfo: 'Więcej informacji',
   share: 'Zapisz na serwerze',

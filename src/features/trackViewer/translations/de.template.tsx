@@ -34,17 +34,6 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     title: 'Datei importieren',
     drop: 'Ziehen Sie eine GPX- oder GeoJSON-Datei hierher oder klicken Sie hier zur Auswahl.',
   },
-  strava: {
-    title: 'Aus Strava importieren',
-    intro:
-      'Wählen Sie eine Ihrer Strava-Aktivitäten aus, um sie als Track zu importieren.',
-    empty: 'Keine Aktivitäten gefunden.',
-    loadError: 'Ihre Strava-Aktivitäten konnten nicht geladen werden.',
-    importError: 'Die Aktivität konnte nicht importiert werden.',
-    notConnected:
-      'Verbinden Sie Ihr Konto mit Strava, um Aktivitäten zu importieren.',
-    connect: 'Mit Strava verbinden',
-  },
   upload: 'Hochladen',
   moreInfo: 'Mehr Infos',
   share: 'Auf Server speichern',

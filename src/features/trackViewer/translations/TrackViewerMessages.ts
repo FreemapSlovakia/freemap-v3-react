@@ -33,15 +33,6 @@ export type TrackViewerMessages = {
     title: string;
     drop: string;
   };
-  strava: {
-    title: string;
-    intro: string;
-    empty: string;
-    loadError: string;
-    importError: string;
-    notConnected: string;
-    connect: string;
-  };
   shareToast: string;
   fetchingError: (props: { err: unknown }) => string;
   savingError: (props: { err: unknown }) => string;

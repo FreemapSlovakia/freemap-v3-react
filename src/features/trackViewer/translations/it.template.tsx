@@ -37,16 +37,6 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     title: 'Importa file',
     drop: 'Trascina qui un file GPX o GeoJSON oppure clicca per selezionarlo.',
   },
-  strava: {
-    title: 'Importa da Strava',
-    intro:
-      'Scegli una delle tue attività di Strava per importarla come traccia.',
-    empty: 'Nessuna attività trovata.',
-    loadError: 'Impossibile caricare le tue attività di Strava.',
-    importError: "Impossibile importare l'attività.",
-    notConnected: 'Collega il tuo account a Strava per importare le attività.',
-    connect: 'Collega con Strava',
-  },
   shareToast:
     "La traccia è stata salvata sul server e può essere condivisa copiando l'URL della pagina.",
   fetchingError: ({ err }) =>

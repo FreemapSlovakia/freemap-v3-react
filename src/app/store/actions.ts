@@ -49,7 +49,6 @@ const BASIC_MODALS = [
   'offline-map-export',
   'offline-maps',
   'premium',
-  'strava-import',
   'support-us',
   'tracking-my',
   'tracking-watched',

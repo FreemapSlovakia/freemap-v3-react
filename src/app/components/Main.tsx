@@ -283,12 +283,6 @@ const trackViewerUploadModalFactory = () =>
     '@features/trackViewer/components/TrackViewerUploadModal.js'
   );
 
-const stravaImportModalFactory = () =>
-  import(
-    /* webpackChunkName: "strava-import-modal" */
-    '@features/trackViewer/components/StravaImportModal.js'
-  );
-
 const loginModalFactory = () =>
   import(
     /* webpackChunkName: "login-modal" */
@@ -930,11 +924,6 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal === 'file-import'}
         factory={trackViewerUploadModalFactory}
-      />
-
-      <AsyncModal
-        show={activeModal === 'strava-import'}
-        factory={stravaImportModalFactory}
       />
 
       <AsyncModal show={activeModal === 'login'} factory={loginModalFactory} />

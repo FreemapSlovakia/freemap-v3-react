@@ -36,15 +36,6 @@ const en: TrackViewerMessages = {
     title: 'Import file',
     drop: 'Drop a GPX or GeoJSON file here, or click here to select it.',
   },
-  strava: {
-    title: 'Import from Strava',
-    intro: 'Pick one of your Strava activities to import it as a track.',
-    empty: 'No activities found.',
-    loadError: 'Failed to load your Strava activities.',
-    importError: 'Failed to import the activity.',
-    notConnected: 'Connect your account with Strava to import activities.',
-    connect: 'Connect with Strava',
-  },
   shareToast:
     'The track has been saved to the server and can be shared by copying page URL.',
   fetchingError: ({ err }) =>

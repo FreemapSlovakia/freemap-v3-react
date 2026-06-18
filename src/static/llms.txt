@@ -196,7 +196,7 @@ The marker icon can be globally changed (pin/ring/square).
 - Keyboard shortcut: <kbd>g</kbd> <kbd>g</kbd>
 - URL path: `/#tool=import-file` (legacy `/#tool=track-viewer` still works)
 
-Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=upload-track`), which accepts GPX and GeoJSON files. **Import from Strava** (shown only when the account is connected with Strava, URL path: `/#show=strava-import`) lists the athlete's Strava activities and imports the chosen one as a track. Once a track is loaded, the toolbar offers:
+Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=upload-track`), which accepts GPX and GeoJSON files. Once a track is loaded, the toolbar offers:
 
 - **Elevation profile** — chart of elevation along the track (with total climb/descent)
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled)

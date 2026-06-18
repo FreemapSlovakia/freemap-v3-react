@@ -9,7 +9,6 @@ import {
   FaGithub,
   FaGoogle,
   FaMicrosoft,
-  FaStrava,
 } from 'react-icons/fa';
 import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
@@ -70,12 +69,6 @@ const PROVIDERS: ProviderDef[] = [
     style: { backgroundColor: '#1791FF', color: '#fff' },
   },
   {
-    provider: 'strava',
-    label: 'Strava',
-    icon: <FaStrava />,
-    style: { backgroundColor: '#fc4c02', color: '#fff' },
-  },
-  {
     provider: 'github',
     label: 'GitHub',
     icon: <FaGithub />,
@@ -98,20 +91,6 @@ function loginAction(provider: AuthProvider, connect: boolean) {
     default:
       return authWithPopupOAuth({ provider, connect });
   }
-}
-
-// Strava's single API app accepts only the www.freemap.sk callback domain, so
-// its login/connect popup only works there. Disconnect doesn't use the popup,
-// so it stays available everywhere.
-function isProviderAvailable(
-  provider: AuthProvider,
-  mode: Props['mode'],
-): boolean {
-  return (
-    provider !== 'strava' ||
-    mode === 'disconnect' ||
-    location.hostname === 'www.freemap.sk'
-  );
 }
 
 type Props = { mode: 'login' | 'connect' | 'disconnect' };
@@ -144,14 +123,6 @@ export function AuthProviders({ mode }: Props): ReactElement {
     [dispatch, mode, confirm],
   );
 
-  function show(provider: AuthProvider) {
-    return (
-      mode === 'login' ||
-      (mode === 'connect' && !authProviders?.includes(provider)) ||
-      (mode === 'disconnect' && authProviders?.includes(provider))
-    );
-  }
-
   function disabled(provider: AuthProvider) {
     if (mode === 'login') {
       return cookieConsentResult === null;
@@ -168,9 +139,7 @@ export function AuthProviders({ mode }: Props): ReactElement {
 
   return (
     <div className="d-grid gap-2">
-      {PROVIDERS.filter(
-        (def) => isProviderAvailable(def.provider, mode) && show(def.provider),
-      ).map((def) => (
+      {PROVIDERS.map((def) => (
         <Button
           key={def.provider}
           onClick={() => handleClick(def.provider)}
