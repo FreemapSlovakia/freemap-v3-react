@@ -70,6 +70,7 @@ export async function startPopupOAuth(
         redirect_uri: location.origin + '/authCallback.html',
         scope: cfg.scope,
         state: `${provider}:${connect}:${nonce}`,
+        ...cfg.extraParams,
       }).toString(),
     `${provider}-login`,
     `width=600,height=550,left=${window.screen.width / 2 - 600 / 2},top=${

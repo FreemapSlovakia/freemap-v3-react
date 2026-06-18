@@ -4,7 +4,7 @@ import type { Action } from 'redux';
 // popup window. The popup redirects to `/authCallback.html`, which relays the
 // `code` (and `state`) back to the app over a BroadcastChannel; the server then
 // exchanges the code for a token (see `makeOAuthLoginHandler` in the API).
-export type PopupOAuthProvider = 'osm' | 'github' | 'microsoft';
+export type PopupOAuthProvider = 'osm' | 'github' | 'strava' | 'microsoft';
 
 // In-flight popup logins for THIS tab, keyed by nonce → optional action to
 // dispatch on success. The callback echoes the nonce back in `state`; only the
@@ -19,6 +19,7 @@ type PopupOAuthProviderConfig = {
   scope: string;
   /** API endpoint: GET returns the client ID, POST completes the login. */
   loginPath: string;
+  extraParams?: Record<string, string>;
 };
 
 export const popupOAuthProviders: Record<
@@ -34,6 +35,12 @@ export const popupOAuthProviders: Record<
     authorizeUrl: 'https://github.com/login/oauth/authorize',
     scope: 'read:user user:email',
     loginPath: '/auth/login-github',
+  },
+  strava: {
+    authorizeUrl: 'https://www.strava.com/oauth/authorize',
+    scope: 'read',
+    loginPath: '/auth/login-strava',
+    extraParams: { approval_prompt: 'auto' },
   },
   microsoft: {
     authorizeUrl:

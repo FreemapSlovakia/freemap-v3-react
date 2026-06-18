@@ -3,8 +3,8 @@ import type { Action } from 'redux';
 import type { PopupOAuthProvider } from '../popupOAuthProviders.js';
 import type { AuthProvider, User } from './types.js';
 
-// First stage shared by all popup OAuth providers (osm, github, microsoft):
-// opens the provider's authorize popup.
+// First stage shared by all popup OAuth providers (osm, github, strava,
+// microsoft): opens the provider's authorize popup.
 export const authWithPopupOAuth = createAction<{
   provider: PopupOAuthProvider;
   connect: boolean;

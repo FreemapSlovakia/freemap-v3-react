@@ -13,6 +13,7 @@ export const AuthProviderSchema = z.enum([
   'google',
   'apple',
   'github',
+  'strava',
   'microsoft',
 ]);
 
