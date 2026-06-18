@@ -36,22 +36,27 @@ export function useAd(ads: AdItem[], timeout = 30_000): AdId | null {
       return;
     }
 
-    const totalWeight = availableAds.reduce((sum, ad) => sum + ad.chance, 0);
-
     const pickAd = () => {
-      let chosenAdId: AdId | undefined;
+      // Avoid repeating the previous ad, but only when another one exists;
+      // with a single available ad there's nothing else to pick.
+      const candidates =
+        availableAds.length > 1
+          ? availableAds.filter((ad) => ad.id !== lastAdId.current)
+          : availableAds;
 
-      while (!chosenAdId || chosenAdId === lastAdId.current) {
-        let r = Math.random() * totalWeight;
+      const totalWeight = candidates.reduce((sum, ad) => sum + ad.chance, 0);
 
-        for (const ad of availableAds) {
-          if (r < ad.chance) {
-            chosenAdId = ad.id;
-            break;
-          }
+      let r = Math.random() * totalWeight;
 
-          r -= ad.chance;
+      let chosenAdId = candidates[candidates.length - 1].id;
+
+      for (const ad of candidates) {
+        if (r < ad.chance) {
+          chosenAdId = ad.id;
+          break;
         }
+
+        r -= ad.chance;
       }
 
       lastAdId.current = chosenAdId;
