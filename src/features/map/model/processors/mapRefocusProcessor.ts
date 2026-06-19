@@ -14,6 +14,13 @@ export const mapRefocusProcessor: Processor = {
 
     const map = await mapPromise;
 
+    // The map may have been unmounted (its container detached, panes removed)
+    // while this async handler was pending; touching it would throw on the
+    // missing _mapPane.
+    if (!map.getContainer().isConnected) {
+      return;
+    }
+
     let fixedLon = lon;
 
     while (fixedLon < -180) {
