@@ -1,3 +1,4 @@
+import { RovasAd } from '@features/ad/components/RovasAd.js';
 import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AdMessages } from './AdMessages.js';
 
@@ -7,6 +8,13 @@ const sk: DeepPartialWithRequiredObjects<AdMessages> = {
       Máš záujem o vlastnú reklamu na tomto mieste? Neváhaj nás kontaktovať na{' '}
       {email}.
     </>
+  ),
+  rovas: () => (
+    <RovasAd name="Rováš" rovasDesc="ekonomika, ktorá odmeňuje prácu">
+      <b>Nechaj sa odmeniť za prácu, ktorú robíš.</b> Zaznamenaj ľubovoľnú
+      dobrovoľnícku činnosť podľa vlastného výberu, nechaj ju overiť komunitou a
+      zarábaj chrony.
+    </RovasAd>
   ),
 };
 

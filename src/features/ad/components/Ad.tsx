@@ -10,6 +10,7 @@ import { useAdMessages } from '../translations/useAdMessages.js';
 
 const ads: AdItem[] = [
   { id: 'tShirt', countries: ['SK'], chance: 4 }, // Freemap T-Shirt
+  { id: 'rovas', chance: 1 }, // Rovas
   { id: 'self', chance: 8 }, // self promo
 ];
 
@@ -65,6 +66,8 @@ export default function Ad(): ReactElement | null {
               <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>,
             )}
           </div>
+        ) : ad === 'rovas' ? (
+          adm?.rovas()
         ) : ad === 'tShirt' ? (
           <a
             href="https://nabezky.sk/freemap_t-shirt"
