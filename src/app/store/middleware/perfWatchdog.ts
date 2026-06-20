@@ -111,17 +111,33 @@ export function startPerfWatchdog(): void {
 
   let expected = Date.now() + TICK_MS;
 
+  // Backgrounded tabs have their timers throttled or suspended, so the drift on
+  // the first tick after returning to the foreground is just the time spent
+  // hidden — not a real main-thread stall. Skip stall/storm evaluation for any
+  // tick whose interval overlapped a hidden period, and resync the clock when
+  // the tab becomes visible again.
+  let hiddenSinceTick = document.hidden;
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      hiddenSinceTick = true;
+    } else {
+      expected = Date.now() + TICK_MS;
+    }
+  });
+
   const tick = () => {
     const now = Date.now();
     const drift = now - expected;
     const actions = tickActionCount;
+    const wasForeground = !document.hidden && !hiddenSinceTick;
 
-    if (drift > STALL_MS) {
+    if (wasForeground && drift > STALL_MS) {
       report('stall', `Main thread stalled for ~${drift} ms`, {
         stallMs: drift,
         actionsDuringStall: actions,
       });
-    } else if (actions > STORM_THRESHOLD) {
+    } else if (wasForeground && actions > STORM_THRESHOLD) {
       report('storm', `Dispatch storm: ${actions} actions in one tick`, {
         actionsPerTick: actions,
       });
@@ -130,6 +146,8 @@ export function startPerfWatchdog(): void {
     tickActionCount = 0;
 
     tickActionTypes.clear();
+
+    hiddenSinceTick = document.hidden;
 
     expected = now + TICK_MS;
 
