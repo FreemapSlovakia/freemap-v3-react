@@ -1,4 +1,5 @@
 import { mapSetEsriAttribution } from '@features/map/model/actions.js';
+import toastsClasses from '@features/toasts/components/Toasts.module.css';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -66,7 +67,10 @@ export function useAttributionInfo() {
         let el: Element | null = e.target;
 
         while (el) {
-          if (el instanceof HTMLElement && el.classList.contains('fm-toasts')) {
+          if (
+            el instanceof HTMLElement &&
+            el.classList.contains(toastsClasses.toasts)
+          ) {
             return;
           }
 
