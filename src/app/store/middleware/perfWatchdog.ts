@@ -118,11 +118,17 @@ export function startPerfWatchdog(): void {
   // the tab becomes visible again.
   let hiddenSinceTick = document.hidden;
 
+  // performance.now() of the last foreground transition. A longtask entry whose
+  // start predates it overlapped a hidden period and carries the inflated
+  // sleep/freeze duration the throttled observer reports, so it is dropped.
+  let becameVisibleAt = performance.now();
+
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       hiddenSinceTick = true;
     } else {
       expected = Date.now() + TICK_MS;
+      becameVisibleAt = performance.now();
     }
   });
 
@@ -160,6 +166,10 @@ export function startPerfWatchdog(): void {
     try {
       const observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
+          if (document.hidden || entry.startTime < becameVisibleAt) {
+            continue;
+          }
+
           if (entry.duration >= LONGTASK_MS) {
             report(
               'longtask',
