@@ -136,35 +136,35 @@ export function smoothElevations(
   coords: number[][],
   eleSmoothingFactor: number,
 ): number[][] {
-  let prevFloatingWindowEle = 0;
+  const half = Math.floor(eleSmoothingFactor / 2);
+
+  let prevEle = 0;
 
   return coords.map((lonLatEle, i) => {
-    const floatingWindow = coords
-      .slice(i, i + eleSmoothingFactor)
-      .filter((e) => e)
-      .sort();
+    // Centered window, clamped at the ends. A forward-only window would
+    // phase-shift the profile and collapse at the end, flattening the last
+    // points to a carried-forward value (zeroing the final grade).
+    const window = coords
+      .slice(Math.max(0, i - half), i + half + 1)
+      .map((c) => c[2])
+      .filter((e): e is number => typeof e === 'number' && Number.isFinite(e))
+      // Sorted by elevation so the extreme-removal below drops the actual
+      // highest and lowest samples.
+      .sort((a, b) => a - b);
 
-    let floatingWindowWithoutExtremes = floatingWindow;
+    // Drop the highest and lowest sample to reject spikes, but only when the
+    // window is large enough to keep a meaningful average.
+    const trimmed = window.length >= 5 ? window.slice(1, -1) : window;
 
-    if (eleSmoothingFactor >= 5) {
-      // ignore highest and smallest value
-      floatingWindowWithoutExtremes = floatingWindow.splice(
-        1,
-        floatingWindow.length - 2,
-      );
+    let ele = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
+
+    if (!Number.isFinite(ele)) {
+      ele = prevEle;
     }
 
-    const eleSum = floatingWindowWithoutExtremes.reduce((a, b) => a + b[2]!, 0);
+    prevEle = ele;
 
-    let flotingWindowEle = eleSum / floatingWindowWithoutExtremes.length;
-
-    if (Number.isNaN(flotingWindowEle)) {
-      flotingWindowEle = prevFloatingWindowEle;
-    }
-
-    prevFloatingWindowEle = flotingWindowEle;
-
-    return [lonLatEle[0]!, lonLatEle[1]!, flotingWindowEle];
+    return [lonLatEle[0]!, lonLatEle[1]!, ele];
   });
 }
 

@@ -5,6 +5,13 @@ import type { Colorizer } from './types.js';
 
 const SMOOTHING = 5;
 
+// Grade is measured over at least this horizontal span rather than between
+// adjacent vertices. Dense router shape points at a sharp bend are only metres
+// apart, so dividing a coarse-DEM rise by that near-zero run reads as a cliff;
+// a fixed baseline removes those spikes and low-pass-filters toward the DEM's
+// real (~30 m) resolution.
+const BASELINE_METERS = 30;
+
 export const steepnessColorizer: Colorizer = {
   needsElevation: true,
   palette: [
@@ -18,20 +25,57 @@ export const steepnessColorizer: Colorizer = {
 
       const smoothed = smoothElevations(coords, SMOOTHING);
 
-      let prevCoord = smoothed[0];
+      // Cumulative horizontal distance so a slope can be taken over a fixed
+      // span regardless of how densely the vertices are spaced.
+      const cum: number[] = [0];
+
+      for (let i = 1; i < smoothed.length; i++) {
+        cum[i] =
+          cum[i - 1]! +
+          distance(smoothed[i - 1]!, smoothed[i]!, { units: 'meters' });
+      }
+
+      const total = cum[cum.length - 1] ?? 0;
+
+      const span = Math.min(BASELINE_METERS, total);
 
       return smoothed.map((coord, i) => {
-        const [lon, lat, ele] = coord;
+        const [lon, lat] = coord;
 
-        const d = distance(coord, prevCoord!, { units: 'meters' });
+        // Center a fixed-length window on the point, shifting it inward at the
+        // ends so the grade is always taken over the same span instead of a
+        // collapsing (and noisy) near-zero run.
+        let lo = cum[i]! - span / 2;
 
-        let angle = 0;
+        let hi = cum[i]! + span / 2;
 
-        if (d > 0 && Number.isFinite(ele) && Number.isFinite(prevCoord![2])) {
-          angle = (ele! - prevCoord![2]!) / d;
+        if (lo < 0) {
+          hi -= lo;
+          lo = 0;
         }
 
-        prevCoord = coord;
+        if (hi > total) {
+          lo -= hi - total;
+          hi = total;
+        }
+
+        lo = Math.max(0, lo);
+
+        let j = i;
+
+        while (j > 0 && cum[j]! > lo) {
+          j--;
+        }
+
+        let k = i;
+
+        while (k < smoothed.length - 1 && cum[k]! < hi) {
+          k++;
+        }
+
+        const run = cum[k]! - cum[j]!;
+
+        const angle = run > 0 ? (smoothed[k]![2]! - smoothed[j]![2]!) / run : 0;
 
         // Smoothing carries a value forward across holes, so a gap is decided
         // from the original coordinate, not the smoothed one.
