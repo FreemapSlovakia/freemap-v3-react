@@ -11,6 +11,7 @@ import {
   trackViewerGpxLoad,
   trackViewerResolveElevationPrompt,
   trackViewerSetData,
+  trackViewerSetElevation,
   trackViewerSetElevationPrompt,
   trackViewerSetTrackUID,
 } from './actions.js';
@@ -25,6 +26,9 @@ export interface TrackViewerStateBase {
 export interface TrackViewerState extends TrackViewerStateBase {
   colorizeTrackBy: ColorizingMode | null;
   elevationPrompt: 'chart' | null;
+  // Whether the user has answered the elevation prompt for the loaded track,
+  // so we don't ask again every time the chart opens.
+  elevationResolved: boolean;
 }
 
 export const cleanState: TrackViewerStateBase = {
@@ -37,6 +41,7 @@ export const cleanState: TrackViewerStateBase = {
 export const trackViewerInitialState: TrackViewerState = {
   colorizeTrackBy: null,
   elevationPrompt: null,
+  elevationResolved: false,
   ...cleanState,
 };
 
@@ -52,7 +57,15 @@ export const trackViewerReducer = createReducer(
       .addCase(trackViewerSetData, (state, action) => {
         state.trackGpx = action.payload.trackGpx ?? state.trackGpx;
 
-        state.trackGeojson = action.payload.trackGeojson ?? state.trackGeojson;
+        // A new track is a fresh elevation decision.
+        if (action.payload.trackGeojson) {
+          state.trackGeojson = action.payload.trackGeojson;
+
+          state.elevationResolved = false;
+        }
+      })
+      .addCase(trackViewerSetElevation, (state, action) => {
+        state.trackGeojson = action.payload;
       })
       .addCase(trackViewerSetTrackUID, (state, action) => {
         state.trackUID = action.payload;
@@ -68,6 +81,8 @@ export const trackViewerReducer = createReducer(
       })
       .addCase(trackViewerResolveElevationPrompt, (state) => {
         state.elevationPrompt = null;
+
+        state.elevationResolved = true;
       })
       .addCase(trackViewerGpxLoad, (state, action) => {
         state.gpxUrl = action.payload;

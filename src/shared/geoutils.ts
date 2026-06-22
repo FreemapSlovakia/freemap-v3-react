@@ -1,6 +1,12 @@
 import type { LatLon } from '@shared/types/common.js';
 import { booleanContains } from '@turf/boolean-contains';
-import type { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
+import type {
+  Feature,
+  GeoJsonProperties,
+  Geometry,
+  LineString,
+  Position,
+} from 'geojson';
 import type { LatLngLiteral } from 'leaflet';
 
 export type GpsCoordStyle = 'DMS' | 'DM' | 'D';
@@ -93,6 +99,35 @@ export function containsElevations(geojson: Feature): boolean {
     geojson.geometry.coordinates.length > 0 &&
     geojson.geometry.coordinates.every((c) => c.length === 3)
   );
+}
+
+/**
+ * Elevation coverage across the coordinates of the given `LineString` features:
+ * `'none'` when no point carries elevation, `'full'` when every point does,
+ * `'partial'` otherwise (and when there are no coordinates at all → `'none'`).
+ */
+export function elevationCoverage(
+  features: Feature<LineString>[],
+): 'none' | 'partial' | 'full' {
+  let withEle = 0;
+
+  let total = 0;
+
+  for (const feature of features) {
+    for (const coord of feature.geometry.coordinates) {
+      total++;
+
+      if (coord.length >= 3 && Number.isFinite(coord[2])) {
+        withEle++;
+      }
+    }
+  }
+
+  if (withEle === 0) {
+    return 'none';
+  }
+
+  return withEle === total ? 'full' : 'partial';
 }
 
 // TODO consider distance between points

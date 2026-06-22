@@ -38,13 +38,24 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     drop: 'Trascina qui un file GPX o GeoJSON oppure clicca per selezionarlo.',
   },
   elevationFill: {
-    title: 'Aggiungi quota',
-    message:
-      'Questa traccia non ha dati di quota. Aggiungerli dal server? ' +
-      '«Sovrascrivi tutto» offre un profilo più uniforme e coerente; ' +
-      '«Riempi mancanti» mantiene i valori registrati.',
-    fillMissing: 'Riempi mancanti',
+    title: 'Dati di quota',
+    introNone: 'Questa traccia non ha dati di quota.',
+    introPartial: 'In alcuni punti di questa traccia manca la quota.',
+    introFull:
+      'Questa traccia ha già la quota, ma il modello NASA SRTM (~30 m) è ' +
+      'spesso più preciso.',
+    question: 'Cosa vuoi fare?',
     overrideAll: 'Sovrascrivi tutto',
+    overrideAllDesc:
+      'sostituisci ogni punto con il modello SRTM — un profilo uniforme e ' +
+      'coerente',
+    fillMissing: 'Riempi mancanti',
+    fillMissingDesc:
+      'mantieni i valori registrati e riempi solo le lacune (potrebbero ' +
+      'esserci scalini dove i due dati si incontrano)',
+    keep: 'Mantieni registrati',
+    keepDesc: 'usa la quota memorizzata nella traccia',
+    add: 'Aggiungi quota',
   },
   shareToast:
     "La traccia è stata salvata sul server e può essere condivisa copiando l'URL della pagina.",

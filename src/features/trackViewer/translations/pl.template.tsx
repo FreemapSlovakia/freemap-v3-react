@@ -35,13 +35,22 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     drop: 'Upuść plik GPX lub GeoJSON tutaj lub kliknij, aby go wybrać.',
   },
   elevationFill: {
-    title: 'Dodaj wysokość',
-    message:
-      'Ten ślad nie zawiera danych o wysokości. Dodać je z serwera? ' +
-      '„Zastąp wszystkie” daje gładszy, spójny profil; ' +
-      '„Uzupełnij brakujące” zachowuje zarejestrowane wartości.',
-    fillMissing: 'Uzupełnij brakujące',
+    title: 'Dane wysokości',
+    introNone: 'Ten ślad nie zawiera danych o wysokości.',
+    introPartial: 'W niektórych punktach tego śladu brakuje wysokości.',
+    introFull:
+      'Ten ślad ma już dane wysokości, ale model NASA SRTM (~30 m) jest ' +
+      'często dokładniejszy.',
+    question: 'Co chcesz zrobić?',
     overrideAll: 'Zastąp wszystkie',
+    overrideAllDesc: 'zastąp każdy punkt modelem SRTM — gładki, spójny profil',
+    fillMissing: 'Uzupełnij brakujące',
+    fillMissingDesc:
+      'zachowaj zarejestrowane wartości i uzupełnij tylko luki (na styku obu ' +
+      'źródeł mogą wystąpić skoki)',
+    keep: 'Zachowaj zarejestrowane',
+    keepDesc: 'użyj wysokości zapisanej w śladzie',
+    add: 'Dodaj wysokość',
   },
   upload: 'Prześlij',
   moreInfo: 'Więcej informacji',

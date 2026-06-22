@@ -35,13 +35,24 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     drop: 'Ziehen Sie eine GPX- oder GeoJSON-Datei hierher oder klicken Sie hier zur Auswahl.',
   },
   elevationFill: {
-    title: 'Höhe ergänzen',
-    message:
-      'Diese Spur enthält keine Höhendaten. Vom Server ergänzen? ' +
-      '„Alle überschreiben“ ergibt ein glatteres, einheitliches Profil; ' +
-      '„Fehlende ergänzen“ behält die aufgezeichneten Werte.',
-    fillMissing: 'Fehlende ergänzen',
+    title: 'Höhendaten',
+    introNone: 'Diese Spur enthält keine Höhendaten.',
+    introPartial: 'Bei einigen Punkten dieser Spur fehlt die Höhe.',
+    introFull:
+      'Diese Spur hat bereits Höhendaten, aber das NASA-SRTM-Modell (~30 m) ' +
+      'ist oft genauer.',
+    question: 'Was möchten Sie tun?',
     overrideAll: 'Alle überschreiben',
+    overrideAllDesc:
+      'jeden Punkt aus dem SRTM-Geländemodell ersetzen — ein glattes, ' +
+      'einheitliches Profil',
+    fillMissing: 'Fehlende ergänzen',
+    fillMissingDesc:
+      'die aufgezeichneten Werte behalten und nur die Lücken füllen (an den ' +
+      'Übergängen kann es Stufen geben)',
+    keep: 'Aufgezeichnete behalten',
+    keepDesc: 'die in der Spur gespeicherte Höhe verwenden',
+    add: 'Höhe ergänzen',
   },
   upload: 'Hochladen',
   moreInfo: 'Mehr Infos',

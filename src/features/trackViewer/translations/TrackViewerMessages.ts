@@ -35,9 +35,17 @@ export type TrackViewerMessages = {
   };
   elevationFill: {
     title: string;
-    message: string;
-    fillMissing: string;
+    introNone: string;
+    introPartial: string;
+    introFull: string;
+    question: string;
     overrideAll: string;
+    overrideAllDesc: string;
+    fillMissing: string;
+    fillMissingDesc: string;
+    keep: string;
+    keepDesc: string;
+    add: string;
   };
   shareToast: string;
   fetchingError: (props: { err: unknown }) => string;

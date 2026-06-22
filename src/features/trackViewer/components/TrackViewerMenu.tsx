@@ -19,6 +19,7 @@ import {
   FaChartArea,
   FaCloudUploadAlt,
   FaInfoCircle,
+  FaMountain,
   FaPaintBrush,
   FaPencilAlt,
   FaUpload,
@@ -29,6 +30,7 @@ import {
   ColorizingModeSchema,
   trackViewerColorizeTrackBy,
   trackViewerSetData,
+  trackViewerSetElevationPrompt,
   trackViewerToggleElevationChart,
   trackViewerUploadTrack,
 } from '../model/actions.js';
@@ -57,6 +59,10 @@ export function TrackViewerMenu(): ReactElement {
 
   const colorizeTrackBy = useAppSelector(
     (state) => state.trackViewer.colorizeTrackBy,
+  );
+
+  const elevationResolved = useAppSelector(
+    (state) => state.trackViewer.elevationResolved,
   );
 
   const enableElevationChart = useAppSelector(
@@ -133,6 +139,24 @@ export function TrackViewerMenu(): ReactElement {
                 {...props}
               >
                 <FaChartArea />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
+
+        {enableElevationChart && elevationResolved && (
+          <LongPressTooltip breakpoint="sm" label={tvm?.elevationFill.title}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => {
+                  dispatch(trackViewerSetElevationPrompt('chart'));
+                }}
+                {...props}
+              >
+                <FaMountain />
                 <span className={labelClassName}> {label}</span>
               </Button>
             )}

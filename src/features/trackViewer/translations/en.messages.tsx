@@ -37,13 +37,24 @@ const en: TrackViewerMessages = {
     drop: 'Drop a GPX or GeoJSON file here, or click here to select it.',
   },
   elevationFill: {
-    title: 'Add elevation',
-    message:
-      'This track is missing elevation. Add it from the server? ' +
-      '“Override all” gives a smoother, consistent profile; ' +
-      '“Fill missing” keeps the recorded values.',
-    fillMissing: 'Fill missing',
+    title: 'Elevation data',
+    introNone: 'This track has no elevation data.',
+    introPartial: 'This track is missing elevation for some points.',
+    introFull:
+      'This track already has elevation, but the NASA SRTM model (~30 m) is ' +
+      'often more precise.',
+    question: 'What would you like to do?',
     overrideAll: 'Override all',
+    overrideAllDesc:
+      'replace every point from the SRTM terrain model — a smooth, ' +
+      'consistent profile',
+    fillMissing: 'Fill missing',
+    fillMissingDesc:
+      'keep the recorded values and fill only the gaps (may step where the ' +
+      'two sources meet)',
+    keep: 'Keep recorded',
+    keepDesc: 'use the elevation stored in the track',
+    add: 'Add elevation',
   },
   shareToast:
     'The track has been saved to the server and can be shared by copying page URL.',

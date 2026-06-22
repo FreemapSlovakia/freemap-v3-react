@@ -1,5 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import type { Feature, LineString } from 'geojson';
 import type { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaMountain, FaTimes } from 'react-icons/fa';
@@ -17,44 +19,86 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const show = useAppSelector(
+  const open = useAppSelector(
     (state) => state.trackViewer.elevationPrompt !== null,
   );
 
-  if (!show) {
+  const coverage = useAppSelector((state) =>
+    elevationCoverage(
+      (state.trackViewer.trackGeojson?.features ?? []).filter(
+        (f): f is Feature<LineString> => f.geometry.type === 'LineString',
+      ),
+    ),
+  );
+
+  if (!open || !tvm) {
     return null;
   }
 
+  const ef = tvm.elevationFill;
+
   const close = () => dispatch(trackViewerSetElevationPrompt(null));
+
+  const resolve = (mode: 'missing' | 'all' | 'keep') =>
+    dispatch(trackViewerResolveElevationPrompt({ mode }));
+
+  const intro =
+    coverage === 'none'
+      ? ef.introNone
+      : coverage === 'partial'
+        ? ef.introPartial
+        : ef.introFull;
 
   return (
     <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaMountain /> {tvm?.elevationFill.title}
+          <FaMountain /> {ef.title}
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>{tvm?.elevationFill.message}</Modal.Body>
+      <Modal.Body>
+        <p>{intro}</p>
+
+        {coverage !== 'none' && (
+          <>
+            <p className="mb-1">{ef.question}</p>
+
+            <ul className="mb-0">
+              <li>
+                <strong>{ef.overrideAll}</strong> — {ef.overrideAllDesc}
+              </li>
+
+              {coverage === 'partial' ? (
+                <li>
+                  <strong>{ef.fillMissing}</strong> — {ef.fillMissingDesc}
+                </li>
+              ) : (
+                <li>
+                  <strong>{ef.keep}</strong> — {ef.keepDesc}
+                </li>
+              )}
+            </ul>
+          </>
+        )}
+      </Modal.Body>
 
       <Modal.Footer>
-        <Button
-          variant="primary"
-          onClick={() =>
-            dispatch(trackViewerResolveElevationPrompt({ mode: 'all' }))
-          }
-        >
-          {tvm?.elevationFill.overrideAll}
+        <Button variant="primary" onClick={() => resolve('all')}>
+          {coverage === 'none' ? ef.add : ef.overrideAll}
         </Button>
 
-        <Button
-          variant="secondary"
-          onClick={() =>
-            dispatch(trackViewerResolveElevationPrompt({ mode: 'missing' }))
-          }
-        >
-          {tvm?.elevationFill.fillMissing}
-        </Button>
+        {coverage === 'partial' && (
+          <Button variant="secondary" onClick={() => resolve('missing')}>
+            {ef.fillMissing}
+          </Button>
+        )}
+
+        {coverage === 'full' && (
+          <Button variant="secondary" onClick={() => resolve('keep')}>
+            {ef.keep}
+          </Button>
+        )}
 
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.cancel}

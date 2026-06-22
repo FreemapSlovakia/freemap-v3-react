@@ -46,10 +46,22 @@ export const trackViewerSetElevationPrompt = createAction<'chart' | null>(
   'TRACK_VIEWER_SET_ELEVATION_PROMPT',
 );
 
-/** User's answer to the elevation fill prompt: fill gaps or override all. */
+/**
+ * User's answer to the elevation prompt: fill only the gaps, override every
+ * point from the server, or keep the track's recorded elevation as-is.
+ */
 export const trackViewerResolveElevationPrompt = createAction<{
-  mode: 'missing' | 'all';
+  mode: 'missing' | 'all' | 'keep';
 }>('TRACK_VIEWER_RESOLVE_ELEVATION_PROMPT');
+
+/**
+ * Caches server-resolved elevation back into the loaded track. Unlike
+ * {@link trackViewerSetData} this is not a fresh load, so it preserves the
+ * user's elevation decision for the track.
+ */
+export const trackViewerSetElevation = createAction<FeatureCollection>(
+  'TRACK_VIEWER_SET_ELEVATION',
+);
 
 export const trackViewerGpxLoad = createAction<string>('TRACK_VIEWER_GPX_LOAD');
 

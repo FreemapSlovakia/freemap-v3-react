@@ -38,13 +38,23 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     drop: 'Húzza ide a GPX- vagy GeoJSON-fájlt, vagy kattintson ide a kijelöléséhez.',
   },
   elevationFill: {
-    title: 'Magasság hozzáadása',
-    message:
-      'Ennek a nyomvonalnak nincs magassági adata. Kitölti a szerverről? ' +
-      'Az „Összes felülírása” simább, egységes profilt ad; ' +
-      'a „Hiányzók pótlása” megtartja a rögzített értékeket.',
-    fillMissing: 'Hiányzók pótlása',
+    title: 'Magassági adatok',
+    introNone: 'Ennek a nyomvonalnak nincsenek magassági adatai.',
+    introPartial: 'A nyomvonal néhány pontjáról hiányzik a magasság.',
+    introFull:
+      'A nyomvonalnak már vannak magassági adatai, de a NASA SRTM modell ' +
+      '(~30 m) gyakran pontosabb.',
+    question: 'Mit szeretne tenni?',
     overrideAll: 'Összes felülírása',
+    overrideAllDesc:
+      'minden pont cseréje az SRTM modellből — sima, egységes profil',
+    fillMissing: 'Hiányzók pótlása',
+    fillMissingDesc:
+      'a rögzített értékek megtartása és csak a hézagok kitöltése (a két ' +
+      'forrás találkozásánál lépcső jelenhet meg)',
+    keep: 'Rögzített megtartása',
+    keepDesc: 'a nyomvonalban tárolt magasság használata',
+    add: 'Magasság hozzáadása',
   },
   shareToast:
     'Az útvonal el lett mentve a kiszolgálóra, és az oldal URL-jének másolásával megosztható.',

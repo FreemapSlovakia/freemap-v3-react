@@ -38,13 +38,23 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     drop: 'Přetáhněte sem soubor GPX nebo GeoJSON, nebo sem klikněte pro jeho výběr.',
   },
   elevationFill: {
-    title: 'Doplnit nadmořskou výšku',
-    message:
-      'Tato trasa nemá nadmořskou výšku. Doplnit ji ze serveru? ' +
-      '„Přepsat vše“ poskytne plynulejší a konzistentní profil; ' +
-      '„Doplnit chybějící“ zachová zaznamenané hodnoty.',
-    fillMissing: 'Doplnit chybějící',
+    title: 'Nadmořská výška',
+    introNone: 'Tato trasa nemá údaje o nadmořské výšce.',
+    introPartial: 'Této trase chybí nadmořská výška u některých bodů.',
+    introFull:
+      'Tato trasa už má nadmořskou výšku, ale model NASA SRTM (~30 m) bývá ' +
+      'často přesnější.',
+    question: 'Co chcete udělat?',
     overrideAll: 'Přepsat vše',
+    overrideAllDesc:
+      'nahradit každý bod z modelu SRTM — plynulý a konzistentní profil',
+    fillMissing: 'Doplnit chybějící',
+    fillMissingDesc:
+      'zachovat zaznamenané hodnoty a doplnit jen mezery (na rozhraní obou ' +
+      'zdrojů může vzniknout skok)',
+    keep: 'Ponechat zaznamenané',
+    keepDesc: 'použít nadmořskou výšku uloženou v trase',
+    add: 'Doplnit výšku',
   },
   shareToast:
     'Trasa byla uložena na server a můžete ji sdílet zkopírovaním URL stránky.',

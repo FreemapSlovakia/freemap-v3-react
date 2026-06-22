@@ -2,7 +2,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { elevationChartSetTrackGeojson } from '@features/elevationChart/model/actions.js';
 import {
   trackViewerResolveElevationPrompt,
-  trackViewerSetData,
+  trackViewerSetElevation,
 } from '@features/trackViewer/model/actions.js';
 import { enrichElevations } from '@shared/elevation.js';
 import { Feature, LineString } from 'geojson';
@@ -22,28 +22,28 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       (f): f is Feature<LineString> => f.geometry.type === 'LineString',
     );
 
-    const enriched = await enrichElevations(
-      lineFeatures,
-      action.payload.mode,
-      getState,
-    );
+    const { mode } = action.payload;
 
-    // Splice the enriched lines back into the collection (other features
-    // untouched) and cache the result so the chart, colorize and export all
-    // reuse it.
-    let i = 0;
+    // 'keep' opens the chart on the recorded elevation as-is; 'missing'/'all'
+    // fetch from the server first and cache the result back into trackGeojson
+    // so the chart, colorize and export all reuse it.
+    let lines = lineFeatures;
 
-    const features = trackGeojson.features.map((f) =>
-      f.geometry.type === 'LineString' ? enriched[i++]! : f,
-    );
+    if (mode !== 'keep') {
+      lines = await enrichElevations(lineFeatures, mode, getState);
 
-    dispatch(
-      trackViewerSetData({ trackGeojson: { ...trackGeojson, features } }),
-    );
+      let i = 0;
 
-    // Open the chart on the now-enriched first line. If the server still had no
-    // data for some points, the chart's own API path fills the remainder.
-    const first = enriched[0];
+      const features = trackGeojson.features.map((f) =>
+        f.geometry.type === 'LineString' ? lines[i++]! : f,
+      );
+
+      dispatch(trackViewerSetElevation({ ...trackGeojson, features }));
+    }
+
+    // Open the chart on the first line. If the server still had no data for
+    // some points, the chart's own API path fills the remainder.
+    const first = lines[0];
 
     if (first) {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
