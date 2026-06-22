@@ -59,14 +59,15 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       return;
     }
 
-    // Open the chart on the first line. If the server still had no data for
-    // some points, the chart's own API path fills the remainder.
+    // Open the chart on the first line, rendering its elevation as-is: 'keep'
+    // shows the recorded values with their gaps, while a fill/override has
+    // already written the server values into these same coordinates.
     const first = lines[0];
 
     if (first) {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
-      dispatch(elevationChartSetTrackGeojson(first));
+      dispatch(elevationChartSetTrackGeojson(first, true));
     }
   },
 };

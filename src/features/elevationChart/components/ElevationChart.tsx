@@ -57,7 +57,9 @@ export default function ElevationChart(): ReactElement | null {
   const [height, setHeight] = useState(300);
 
   const [mapX, mapY, d, vLines, hLines] = useMemo(() => {
-    const eles = elevationProfilePoints.map((pt) => pt.ele);
+    const eles = elevationProfilePoints
+      .map((pt) => pt.ele)
+      .filter((ele) => Number.isFinite(ele));
 
     const min = Math.min(...eles);
 
@@ -250,25 +252,55 @@ export default function ElevationChart(): ReactElement | null {
           fill="var(--bs-body-bg)"
         />
 
-        <polygon
-          points={
-            `${ml},${mapY(elevationProfilePoints[0].ele)} ` +
-            elevationProfilePoints
-              .map((pt) => mapX(pt.distance) + ',' + mapY(pt.ele))
-              .join(' ') +
-            ` ${width - mr},${height - mb} ${ml},${height - mb}`
-          }
-          fill="var(--bs-primary-bg-subtle)"
-        />
+        {/* Split into runs of points with elevation; a missing value breaks
+            the line and its area fill rather than dropping to the baseline. */}
+        {(() => {
+          const segments: ElevationProfilePoint[][] = [];
 
-        <polyline
-          points={elevationProfilePoints
-            .map((pt) => mapX(pt.distance) + ',' + mapY(pt.ele))
-            .join(' ')}
-          stroke="var(--bs-primary)"
-          strokeWidth={1}
-          fill="none"
-        />
+          let current: ElevationProfilePoint[] = [];
+
+          for (const pt of elevationProfilePoints) {
+            if (Number.isFinite(pt.ele)) {
+              current.push(pt);
+            } else if (current.length) {
+              segments.push(current);
+
+              current = [];
+            }
+          }
+
+          if (current.length) {
+            segments.push(current);
+          }
+
+          return segments.map((seg, i) => {
+            const line = seg
+              .map((pt) => mapX(pt.distance) + ',' + mapY(pt.ele))
+              .join(' ');
+
+            const baseY = height - mb;
+
+            return (
+              <Fragment key={'seg' + i}>
+                <polygon
+                  points={
+                    `${mapX(seg[0]!.distance)},${baseY} ` +
+                    line +
+                    ` ${mapX(seg.at(-1)!.distance)},${baseY}`
+                  }
+                  fill="var(--bs-primary-bg-subtle)"
+                />
+
+                <polyline
+                  points={line}
+                  stroke="var(--bs-primary)"
+                  strokeWidth={1}
+                  fill="none"
+                />
+              </Fragment>
+            );
+          });
+        })()}
 
         {pointerX !== undefined && (
           <line

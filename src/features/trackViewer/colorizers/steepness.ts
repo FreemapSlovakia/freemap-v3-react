@@ -14,11 +14,13 @@ export const steepnessColorizer: Colorizer = {
   ],
   compute: (features) =>
     features.map((feature) => {
-      const smoothed = smoothElevations(getCoords(feature), SMOOTHING);
+      const coords = getCoords(feature);
+
+      const smoothed = smoothElevations(coords, SMOOTHING);
 
       let prevCoord = smoothed[0];
 
-      return smoothed.map((coord) => {
+      return smoothed.map((coord, i) => {
         const [lon, lat, ele] = coord;
 
         const d = distance(coord, prevCoord!, { units: 'meters' });
@@ -31,11 +33,15 @@ export const steepnessColorizer: Colorizer = {
 
         prevCoord = coord;
 
+        // Smoothing carries a value forward across holes, so a gap is decided
+        // from the original coordinate, not the smoothed one.
+        const gap = !(coords[i]!.length >= 3 && Number.isFinite(coords[i]![2]));
+
         const color = Number.isFinite(angle)
           ? Math.max(0, Math.min(1, angle / 0.5 + 0.5))
           : 0.5;
 
-        return { lat: lat!, lon: lon!, color };
+        return { lat: lat!, lon: lon!, color, gap };
       });
     }),
 };

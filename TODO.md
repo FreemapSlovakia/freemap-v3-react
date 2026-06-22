@@ -82,7 +82,7 @@ limits; avoid third-party data (license risk — see Strava) and community conte
       (`gis.nlcsk.org`), ŠGÚDŠ geology WMS (`ags.geology.sk`), and ÚGKK ortho/DMR
       (LLS DMR). Own renders (Outdoor map, parametric hillshade SK/CZ) are fine.
 
-## Elevation & track colorization (in progress on `feat/graphhopper-elevation`)
+## Elevation & track colorization (in progress on `feat/elevation-colorization`)
 
 Context: GraphHopper now returns per-point elevation inline (with `0` as its
 no-data sentinel, normalized to 2D). The aim is one shared elevation-acquisition
@@ -100,23 +100,44 @@ GraphHopper ≈ DEM); prompt the user where the data's provenance is unknown
 - [x] Elevation chart: require *every* coordinate to carry elevation
       (`containsElevations`) and share the `/geotools/elevation` call via
       `fetchElevations` (`src/shared/elevation.ts`).
-- [ ] **`enrichElevations(features, 'missing' | 'all')`** in `src/shared/elevation.ts`
+- [x] **`enrichElevations(features, 'missing' | 'all')`** in `src/shared/elevation.ts`
       on top of `fetchElevations`: `missing` fills only coords lacking `z`,
       `all` overwrites every `z`. Foundation for the consumers below.
-- [ ] **Gap rendering.** Elevation chart (`ElevationChart.tsx`) currently draws
-      one SVG polyline assuming numeric `ele`; split into contiguous finite runs
-      (min/max ignoring `NaN`). Colorize (`colorizeByValues` + Hotline render
-      loop) currently collapses missing → mid-palette; mark gaps and split each
-      feature's points into runs, skipping gaps. Add a gap marker to
-      `ColorizedPoint`.
+- [x] **Gap rendering.** Elevation chart (`ElevationChart.tsx`) splits the SVG
+      polyline/area into contiguous finite runs (min/max ignoring `NaN`; climb
+      accumulation resets across `null` API points). Colorize (`colorizeByValues`
+      + the two elevation-derived colorizers) flags missing values as gaps on
+      `ColorizedPoint`, and the Hotline render loop splits each feature's points
+      into gap-free runs.
+- [ ] **Densify sparse lines for rendering (chart + colorize + details).** Since
+      the chart now plots recorded vertices verbatim (no server resampling), a
+      *sparse* line (planned route, coarsely-digitized track) draws a coarse,
+      straight-segment profile. Add opt-A densification: resample **only segments
+      long enough to matter** (gate on segment length in px / point-count ≪ chart
+      width) and DEM-sample the new points, **only when elevation is full or
+      overridden** — never for *Keep recorded* (resampling erases the gaps) nor
+      *Fill missing* (injects the recorded-vs-DEM seam between recorded points).
+      Dense recorded GPX stays a no-op, so no track's details numbers change
+      unexpectedly. Storage: a cached, derived `renderTrackGeojson`
+      (`FeatureCollection`) on the trackViewer slice — **not** written into
+      `trackGeojson` (keeps export/source clean); cleared on `trackViewerSetData`
+      and on re-enrich, recomputed lazily only when absent (the field *is* the
+      cache). Chart, Hotline colorize (`TrackViewerResult`), and details
+      (`TrackViewerDetails`) read `renderTrackGeojson ?? trackGeojson`. The
+      resample+fetch is async — lift a `densifyAlong(line, getState)` helper from
+      the chart's existing API path (`along` + `fetchElevations`). Rejected opt-B
+      (always resample at screen resolution): smoother everywhere but silently
+      replaces recorded measurements with DEM values in stats/colors.
 - [ ] **Promote `colorizers/`** out of `src/features/trackViewer/` to a shared
       location so routePlanner + tracking can reuse them. `Colorizer.isAvailable`
       already gates which modes apply per feature.
-- [ ] **trackViewer**: prompt-on-trigger when elevation is missing/partial —
-      **Fill missing / Override all / (later) Show as-is with gaps** — remembered
-      as a setting and mirrored in the menu. Result drives `enrichElevations`
-      writing `z` into `trackGeojson` (cached; static data). Hint that "Override
-      all" avoids the recorded-vs-DEM seam (steepness spikes at gap edges).
+- [x] **trackViewer**: prompt-on-trigger (chart / elevation-colorize / info)
+      when elevation is missing/partial — **Fill missing / Override all / Keep
+      recorded** — answered once per track. Result drives `enrichElevations`
+      writing `z` into `trackGeojson` (cached; static data). Full-elevation tracks
+      skip the prompt; an explicit "update elevation" button overrides from the
+      server via a plain confirm. The prompt hints that "Override all" avoids the
+      recorded-vs-DEM seam (steepness spikes at gap edges).
 - [ ] **tracking**: add colorize + elevation chart, reusing the shared colorizers
       via a `TrackPoint[] → Feature<LineString>` adapter (coords `[lon,lat,alt?]`,
       `coordinateProperties` keyed for speed/time/heading). Colorizers viable:

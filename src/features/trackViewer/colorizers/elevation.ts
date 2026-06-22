@@ -13,7 +13,9 @@ export const elevationColorizer: Colorizer = {
   ],
   compute: (features) =>
     features.map((feature) => {
-      const smoothed = smoothElevations(getCoords(feature), SMOOTHING);
+      const coords = getCoords(feature);
+
+      const smoothed = smoothElevations(coords, SMOOTHING);
 
       const eles = smoothed
         .map((coord) => coord[2])
@@ -23,13 +25,17 @@ export const elevationColorizer: Colorizer = {
 
       const minEle = eles.length ? Math.min(...eles) : 0;
 
-      return smoothed.map((coord) => {
+      return smoothed.map((coord, i) => {
+        // Smoothing carries a value forward across holes, so a gap is decided
+        // from the original coordinate, not the smoothed one.
+        const gap = !(coords[i]!.length >= 3 && Number.isFinite(coords[i]![2]));
+
         const color =
           range > 0 && Number.isFinite(coord[2])
             ? (coord[2] - minEle) / range
             : 0.5;
 
-        return { lat: coord[1], lon: coord[0], color };
+        return { lat: coord[1], lon: coord[0], color, gap };
       });
     }),
 };

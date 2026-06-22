@@ -30,9 +30,12 @@ const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
   getState,
   action,
 }) => {
-  const trackGeojson = action.payload;
+  const { trackGeojson, keepRecorded } = action.payload;
 
-  if (containsElevations(trackGeojson)) {
+  // `keepRecorded` shows the recorded elevation verbatim (gaps included); a
+  // fully-elevated track is read locally regardless. Everything else samples a
+  // complete profile from the server.
+  if (keepRecorded || containsElevations(trackGeojson)) {
     resolveElevationProfilePointsLocally(trackGeojson, dispatch);
   } else {
     await resolveElevationProfilePointsViaApi(getState, trackGeojson, dispatch);
@@ -63,7 +66,8 @@ function resolveElevationProfilePointsLocally(
     elevationProfilePoints.push({
       lat,
       lon,
-      ele,
+      // A coordinate without a finite `z` becomes a gap in the chart.
+      ele: Number.isFinite(ele) ? ele! : Number.NaN,
       distance: dist,
     });
 
@@ -115,11 +119,14 @@ async function resolveElevationProfilePointsViaApi(
 
   let climbDown = 0;
 
-  let prevEle: number | null | undefined;
+  let prevEle: number | undefined;
 
   for (const [i, ele] of eles.entries()) {
-    if (prevEle !== undefined) {
-      const d = (ele ?? 0) - (prevEle ?? 0);
+    // A no-data point (null) breaks the climb accumulation: we don't know the
+    // terrain across the gap, so it resets the baseline rather than counting a
+    // bogus jump to/from it.
+    if (prevEle !== undefined && ele != null) {
+      const d = ele - prevEle;
 
       if (d > 0) {
         climbUp += d;
@@ -131,7 +138,7 @@ async function resolveElevationProfilePointsViaApi(
     // TODO following are computed data, should not go to store
     Object.assign(elevationProfilePoints[i], { ele, climbUp, climbDown });
 
-    prevEle = ele;
+    prevEle = ele ?? undefined;
   }
 
   dispatch(elevationChartSetElevationProfile(elevationProfilePoints));

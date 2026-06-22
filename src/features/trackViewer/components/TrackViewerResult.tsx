@@ -26,7 +26,37 @@ import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { colorizers } from '../colorizers/index.js';
+import type { ColorizedPoint } from '../colorizers/types.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
+
+/**
+ * Split colorized points into contiguous runs, breaking at gaps (points whose
+ * value is missing). Runs shorter than two points can't form a line and are
+ * dropped, leaving a visible hole rather than a bridge across missing data.
+ */
+function splitOnGaps(points: ColorizedPoint[]): ColorizedPoint[][] {
+  const runs: ColorizedPoint[][] = [];
+
+  let current: ColorizedPoint[] = [];
+
+  for (const point of points) {
+    if (point.gap) {
+      if (current.length > 1) {
+        runs.push(current);
+      }
+
+      current = [];
+    } else {
+      current.push(point);
+    }
+  }
+
+  if (current.length > 1) {
+    runs.push(current);
+  }
+
+  return runs;
+}
 
 interface GetFeatures {
   (type: 'LineString'): Feature<LineString>[];
@@ -208,16 +238,18 @@ export default function TrackViewerResult({
       {activeColorizer &&
         activeColorizer
           .compute(getFeatures('LineString'))
-          .map((positions, i) => (
-            <Hotline
-              key={`${colorizeTrackBy}-${i}`}
-              data={positions}
-              getVal={(p) => p.point.color}
-              getLat={(p) => p.point.lat}
-              getLng={(p) => p.point.lon}
-              options={hotlineOptions}
-            />
-          ))}
+          .flatMap((positions, i) =>
+            splitOnGaps(positions).map((run, j) => (
+              <Hotline
+                key={`${colorizeTrackBy}-${i}-${j}`}
+                data={run}
+                getVal={(p) => p.point.color}
+                getLat={(p) => p.point.lat}
+                getLng={(p) => p.point.lon}
+                options={hotlineOptions}
+              />
+            )),
+          )}
 
       {colorizeTrackBy === null &&
         features.map(({ lineData, style }, i) => {

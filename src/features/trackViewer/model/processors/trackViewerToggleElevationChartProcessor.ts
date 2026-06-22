@@ -35,12 +35,13 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
     // Prompt only when elevation is actually missing and the user hasn't
     // decided yet. A track with full elevation (from any source) opens the
     // chart straight away — overriding it is the explicit "update" button's
-    // job. Partial/missing tracks ask how to fill; the chart's own API path
-    // fills any gaps the user chooses to leave.
+    // job. The chart renders the recorded coordinates as-is, so a track the
+    // user chose to keep partial shows its gaps instead of a fabricated
+    // server profile.
     if (elevationResolved || elevationCoverage(lineFeatures) === 'full') {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
-      dispatch(elevationChartSetTrackGeojson(first));
+      dispatch(elevationChartSetTrackGeojson(first, true));
 
       return;
     }

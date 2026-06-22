@@ -67,15 +67,15 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
                 <strong>{ef.overrideAll}</strong> — {ef.overrideAllDesc}
               </li>
 
-              {coverage === 'partial' ? (
+              {coverage === 'partial' && (
                 <li>
                   <strong>{ef.fillMissing}</strong> — {ef.fillMissingDesc}
                 </li>
-              ) : (
-                <li>
-                  <strong>{ef.keep}</strong> — {ef.keepDesc}
-                </li>
               )}
+
+              <li>
+                <strong>{ef.keep}</strong> — {ef.keepDesc}
+              </li>
             </ul>
           </>
         )}
@@ -92,7 +92,7 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
           </Button>
         )}
 
-        {coverage === 'full' && (
+        {coverage !== 'none' && (
           <Button variant="secondary" onClick={() => resolve('keep')}>
             {ef.keep}
           </Button>

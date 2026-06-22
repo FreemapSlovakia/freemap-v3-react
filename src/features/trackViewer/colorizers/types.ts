@@ -11,6 +11,9 @@ export interface ColorizedPoint {
   lat: number;
   lon: number;
   color: number;
+  // True when the underlying value is missing. The colorized line breaks at
+  // such points instead of drawing through a misleading mid-palette color.
+  gap?: boolean;
 }
 
 export interface Colorizer {
@@ -24,8 +27,9 @@ export interface Colorizer {
 
 /**
  * Build positions by normalizing per-coord values to 0..1 via min/max
- * across each feature. NaN inputs collapse to mid-palette (0.5), which is
- * also the fallback when the value range is degenerate. Keeping the
+ * across each feature. NaN inputs are flagged as gaps (the line breaks
+ * there); they keep the mid-palette color (0.5) only as a harmless filler,
+ * which is also the fallback when the value range is degenerate. Keeping the
  * Hotline input within [0, 1] avoids CanvasGradient crashes.
  */
 export function colorizeByValues(
@@ -49,9 +53,11 @@ export function colorizeByValues(
     return coords.map((coord, i) => {
       const v = values[i];
 
-      const color = range > 0 && Number.isFinite(v) ? (v - min) / range : 0.5;
+      const finite = Number.isFinite(v);
 
-      return { lat: coord[1], lon: coord[0], color };
+      const color = range > 0 && finite ? (v - min) / range : 0.5;
+
+      return { lat: coord[1], lon: coord[0], color, gap: !finite };
     });
   });
 }
