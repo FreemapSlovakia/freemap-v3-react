@@ -1,6 +1,7 @@
 import { Tool } from '@app/store/actions.js';
 import type { ReactElement } from 'react';
 import {
+  FaBullseye,
   FaDrawPolygon,
   FaFileImport,
   FaInfo,
@@ -71,5 +72,11 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <FaPencilAlt />,
     msgKey: 'changesets',
     kbd: 'KeyX',
+  },
+  {
+    tool: 'tracking',
+    icon: <FaBullseye />,
+    msgKey: 'tracking',
+    kbd: 'KeyT',
   },
 ];

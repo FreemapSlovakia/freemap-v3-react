@@ -139,14 +139,18 @@ GraphHopper ≈ DEM); prompt the user where the data's provenance is unknown
       skip the prompt; an explicit "update elevation" button overrides from the
       server via a plain confirm. The prompt hints that "Override all" avoids the
       recorded-vs-DEM seam (steepness spikes at gap edges).
-- [ ] **tracking**: add colorize + elevation chart, reusing the shared colorizers
-      via a `TrackPoint[] → Feature<LineString>` adapter (coords `[lon,lat,alt?]`,
-      `coordinateProperties` keyed for speed/time/heading). Colorizers viable:
-      elevation, steepness, speed, time, heading — **plus battery and GSM signal
-      strength** (new colorizers reading `TrackPoint.battery` / `.gsmSignal`).
-      Elevation fill is **ephemeral** (live data streams new bare points; don't
-      cache into store). New decision: **move the whole `TrackingSubmenu` content
-      into a new toolbar**; the main-menu item just toggles that toolbar.
+- [x] **tracking**: colorize + elevation chart, reusing the shared colorizers via
+      a `TrackPoint[] → Feature<LineString>` adapter (`trackGeojson.ts`: coords
+      `[lon,lat,alt?]`, `coordTimes`, `coordinateProperties` for battery/gsmSignal).
+      New `battery` + `gsmSignal` colorizers (shared, gated by `isAvailable`) on an
+      absolute 0–100 % scale via `coordPropColorizerAbsolute` (so a color means the
+      same across tracks). Tracking is now a real **tool**
+      (`ToolSchema`/`toolDefinitions`, <kbd>g</kbd> <kbd>t</kbd>) whose toolbar
+      (`TrackingMenu`) holds the old `TrackingSubmenu` items (watched/my devices,
+      visual) plus colorize + elevation-chart toggle; `TrackingSubmenu` and the
+      `tracking-visual-*` menu plumbing were removed. The chart uses recorded
+      altitude as-is (`keepRecorded`) — no fetch/cache, so it stays ephemeral for
+      live data. Colorize mode is persisted (`PersistedTrackingSchema`).
 - [x] **routePlanner**: auto `ensureRouteElevations('missing')` (lazy, cached
       per result via `elevationsFilled`) writes DEM-filled `z` back into the
       alternatives' step coordinates, so the chart (now rendered from local

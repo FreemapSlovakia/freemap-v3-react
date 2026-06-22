@@ -12,6 +12,8 @@ const en: ColorizerMessages = {
     temperature: 'Temperature',
     time: 'Time',
     heading: 'Heading',
+    battery: 'Battery',
+    gsmSignal: 'GSM signal',
   },
 };
 

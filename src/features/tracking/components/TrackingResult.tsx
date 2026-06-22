@@ -1,5 +1,8 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
+import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
+import { colorizers, type HotlinePalette } from '@shared/colorizers/index.js';
+import { splitOnGaps } from '@shared/colorizers/types.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { toLatLng, toLatLngArr } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -9,9 +12,17 @@ import { distance } from '@turf/distance';
 import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
 import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
+import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { TrackPoint } from '../model/types.js';
+import { trackPointsToFeature } from '../trackGeojson.js';
 import { TrackingPoint, tooltipText } from './TrackingPoint.js';
+
+type HotlineOpts = {
+  weight: number;
+  outlineWidth: number;
+  palette: HotlinePalette | undefined;
+};
 
 // TODO hooks-based rewrite causes massive re-rendering; revisit
 export function TrackingResult(): ReactElement {
@@ -30,6 +41,32 @@ export function TrackingResult(): ReactElement {
   );
 
   const tracks = useAppSelector((state) => state.tracking.tracks);
+
+  const colorizeBy = useAppSelector((state) => state.tracking.colorizeBy);
+
+  const activeColorizer = colorizeBy ? colorizers[colorizeBy] : null;
+
+  // Stable per (colorizer, width) so the Hotline's options-effect doesn't fire
+  // on every render; tracks may each carry their own line width.
+  const hotlineOptionsFor = useMemo(() => {
+    const cache = new Map<number, HotlineOpts>();
+
+    return (w: number): HotlineOpts => {
+      let opts = cache.get(w);
+
+      if (!opts) {
+        opts = {
+          weight: w,
+          outlineWidth: 0,
+          palette: activeColorizer?.palette,
+        };
+
+        cache.set(w, opts);
+      }
+
+      return opts;
+    };
+  }, [activeColorizer]);
 
   const tracks1 = useMemo(() => {
     const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));
@@ -115,6 +152,18 @@ export function TrackingResult(): ReactElement {
         const lastPoint =
           track.trackPoints.length > 0 ? track.trackPoints.at(-1)! : null;
 
+        // Colorized runs per segment; empty when the active mode has no data
+        // for this track, in which case the plain colored line is kept.
+        const colorizedRuns = activeColorizer
+          ? segments.flatMap((segment) =>
+              activeColorizer
+                .compute([trackPointsToFeature(segment)])
+                .flatMap(splitOnGaps),
+            )
+          : [];
+
+        const showColorized = colorizedRuns.length > 0;
+
         return (
           <Fragment key={`trk-${track.token}`}>
             {lastPoint && typeof lastPoint.accuracy === 'number' && (
@@ -139,21 +188,56 @@ export function TrackingResult(): ReactElement {
 
             {showLine &&
               track.trackPoints.length > 1 &&
-              segments.map((segment, i) => (
-                <Polyline
-                  key={`seg-${i}-${activeTrackId === track.token}-${
-                    interactive ? 'a' : 'b'
-                  }`}
-                  positions={toLatLngArr(segment)}
-                  weight={width}
-                  color={color}
-                  bubblingMouseEvents={false}
-                  eventHandlers={{
-                    click: handleClick,
-                  }}
-                  interactive={interactive}
-                  opacity={track.token === activeTrackId ? 1 : 0.75}
-                />
+              (showColorized ? (
+                <>
+                  {/* Invisible hit line per segment: the colorized Hotline is a
+                      non-interactive canvas, so clicks select the track here. */}
+                  {segments.map((segment, i) => (
+                    <Polyline
+                      key={`hit-${i}-${activeTrackId === track.token}-${
+                        interactive ? 'a' : 'b'
+                      }`}
+                      positions={toLatLngArr(segment)}
+                      weight={width + 8}
+                      opacity={0}
+                      bubblingMouseEvents={false}
+                      eventHandlers={{
+                        click: handleClick,
+                      }}
+                      interactive={interactive}
+                    />
+                  ))}
+
+                  {colorizedRuns.map((run, j) => (
+                    <Hotline
+                      key={`hot-${colorizeBy}-${j}-${
+                        activeTrackId === track.token
+                      }`}
+                      data={run}
+                      getVal={(p) => p.point.color}
+                      getLat={(p) => p.point.lat}
+                      getLng={(p) => p.point.lon}
+                      options={hotlineOptionsFor(width)}
+                    />
+                  ))}
+                </>
+              ) : (
+                segments.map((segment, i) => (
+                  <Polyline
+                    key={`seg-${i}-${activeTrackId === track.token}-${
+                      interactive ? 'a' : 'b'
+                    }`}
+                    positions={toLatLngArr(segment)}
+                    weight={width}
+                    color={color}
+                    bubblingMouseEvents={false}
+                    eventHandlers={{
+                      click: handleClick,
+                    }}
+                    interactive={interactive}
+                    opacity={track.token === activeTrackId ? 1 : 0.75}
+                  />
+                ))
               ))}
 
             {(showPoints || track.trackPoints.length === 0
@@ -205,6 +289,8 @@ export function TrackingResult(): ReactElement {
           </Fragment>
         );
       })}
+
+      <ElevationChartActivePoint />
     </>
   );
 }

@@ -24,6 +24,7 @@ export const ToolSchema = z.enum([
   'map-details',
   'objects',
   'route-planner',
+  'tracking',
 ]);
 
 export type Tool = z.infer<typeof ToolSchema>;

@@ -16,6 +16,7 @@ import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectInitialState } from '@features/objects/model/reducer.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
+import { trackingInitialState } from '@features/tracking/model/reducer.js';
 import { trackViewerInitialState } from '@features/trackViewer/model/reducer.js';
 import { ColorizingModeSchema } from '@shared/colorizers/index.js';
 import { LanguageSchema } from '@shared/langUtils.js';
@@ -110,6 +111,12 @@ export const PersistedRoutePlannerSchema = z
 export const PersistedTrackViewerSchema = z
   .object({
     colorizeTrackBy: ColorizingModeSchema.nullable(),
+  })
+  .partial();
+
+export const PersistedTrackingSchema = z
+  .object({
+    colorizeBy: ColorizingModeSchema.nullable(),
   })
   .partial();
 
@@ -264,6 +271,12 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedTrackViewerSchema,
     initial: trackViewerInitialState,
     persist: (t) => ({ colorizeTrackBy: t.colorizeTrackBy }),
+  }),
+  defineEntry({
+    key: 'tracking',
+    schema: PersistedTrackingSchema,
+    initial: trackingInitialState,
+    persist: (t) => ({ colorizeBy: t.colorizeBy }),
   }),
   defineEntry({
     key: 'mapDetails',

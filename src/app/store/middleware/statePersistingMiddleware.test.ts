@@ -78,6 +78,7 @@ function makeState(): RootState {
     },
     mapDetails: { excludeSources: [] },
     trackViewer: { colorizeTrackBy: 'heartRate' },
+    tracking: { colorizeBy: 'speed' },
   } as unknown as RootState;
 }
 
@@ -173,6 +174,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
       },
       mapDetails: { excludeSources: [] },
       trackViewer: { colorizeTrackBy: 'heartRate' },
+      tracking: { colorizeBy: 'speed' },
     });
   });
 
@@ -198,6 +200,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         'objects',
         'routePlanner',
         'trackViewer',
+        'tracking',
       ].sort(),
     );
   });
@@ -262,6 +265,8 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.gallery?.recentTags).toEqual(['x']);
     // trackViewer.colorizeTrackBy round-trips through save → rehydrate.
     expect(initial.trackViewer?.colorizeTrackBy).toBe('heartRate');
+    // tracking.colorizeBy round-trips through save → rehydrate.
+    expect(initial.tracking?.colorizeBy).toBe('speed');
 
     // premiumExpiration round-trips Date → ISO string → Date.
     expect(initial.auth?.user?.premiumExpiration).toBeInstanceOf(Date);

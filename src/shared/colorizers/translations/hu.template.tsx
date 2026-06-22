@@ -13,6 +13,8 @@ const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     temperature: 'Hőmérséklet',
     time: 'Idő',
     heading: 'Irány',
+    battery: 'Akkumulátor',
+    gsmSignal: 'GSM-jel',
   },
 };
 

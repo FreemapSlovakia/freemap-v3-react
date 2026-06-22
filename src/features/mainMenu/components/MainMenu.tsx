@@ -6,7 +6,6 @@ import { type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,
-  FaBullseye,
   FaCamera,
   FaChevronRight,
   FaCode,
@@ -111,11 +110,6 @@ export function MainMenu(): ReactElement {
               </Dropdown.Item>
             ),
         )}
-
-      <Dropdown.Item as="button" eventKey="submenu-tracking">
-        <FaBullseye /> {m?.tools.tracking}
-        <FaChevronRight />
-      </Dropdown.Item>
 
       <Dropdown.Divider />
 

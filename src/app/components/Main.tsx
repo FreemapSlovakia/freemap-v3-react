@@ -103,6 +103,12 @@ const changesetsMenuFactory = () =>
     '@features/changesets/components/ChangesetsMenu.js'
   );
 
+const trackingMenuFactory = () =>
+  import(
+    /* webpackChunkName: "tracking-menu" */
+    '@features/tracking/components/TrackingMenu.js'
+  );
+
 const drawingMenuFactory = () =>
   import(
     /* webpackChunkName: "drawing-menu" */
@@ -711,6 +717,8 @@ export function Main(): ReactElement {
                   <AsyncComponent factory={drawingMenuFactory} />
                 ) : tool === 'map-details' ? (
                   <MapDetailsMenu />
+                ) : tool === 'tracking' ? (
+                  <AsyncComponent factory={trackingMenuFactory} />
                 ) : (
                   <ToolMenu />
                 ))}

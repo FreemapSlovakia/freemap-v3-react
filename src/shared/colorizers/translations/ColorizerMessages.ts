@@ -10,5 +10,7 @@ export type ColorizerMessages = {
     temperature: string;
     time: string;
     heading: string;
+    battery: string;
+    gsmSignal: string;
   };
 };

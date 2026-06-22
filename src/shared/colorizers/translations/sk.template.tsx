@@ -13,6 +13,8 @@ const sk: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     temperature: 'Teplota',
     time: 'Čas',
     heading: 'Smer',
+    battery: 'Batéria',
+    gsmSignal: 'GSM signál',
   },
 };
 
