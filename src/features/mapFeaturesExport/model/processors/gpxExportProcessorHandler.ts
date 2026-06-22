@@ -717,8 +717,17 @@ function addPlannedRoute(
 
     for (const leg of legs) {
       for (const step of leg.steps) {
-        for (const [lon, lat] of step.geometry.coordinates) {
-          createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
+        for (const [lon, lat, ele] of step.geometry.coordinates) {
+          const trkptEle = createElement(
+            trksegEle,
+            'trkpt',
+            undefined,
+            toLatLon({ lat, lon }),
+          );
+
+          if (ele !== undefined) {
+            createElement(trkptEle, 'ele', ele.toString());
+          }
         }
       }
     }

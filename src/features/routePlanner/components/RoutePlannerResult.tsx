@@ -43,6 +43,7 @@ import {
   routePlannerSetFinish,
   routePlannerSetPoint,
   routePlannerSetStart,
+  StepCoordinate,
   StepMode,
 } from '../model/actions.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
@@ -740,7 +741,7 @@ export function RoutePlannerResult(): ReactElement {
   );
 }
 
-function reverse(c: [number, number]) {
+function reverse(c: StepCoordinate) {
   return [c[1], c[0]] as [number, number];
 }
 

@@ -64,6 +64,9 @@ export interface Leg {
   duration: number;
 }
 
+/** A `[lon, lat]` or `[lon, lat, ele]` coordinate; arity can vary per point. */
+export type StepCoordinate = [number, number] | [number, number, number];
+
 export interface Step {
   maneuver: {
     type:
@@ -90,7 +93,7 @@ export interface Step {
   name: string;
   mode: StepMode;
   geometry: {
-    coordinates: [number, number][];
+    coordinates: StepCoordinate[];
   };
   extra?: RouteStepExtra;
 }
