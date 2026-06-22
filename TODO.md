@@ -81,4 +81,61 @@ limits; avoid third-party data (license risk — see Strava) and community conte
       confirm licenses permit gating/charging for NLC forestry WMS
       (`gis.nlcsk.org`), ŠGÚDŠ geology WMS (`ags.geology.sk`), and ÚGKK ortho/DMR
       (LLS DMR). Own renders (Outdoor map, parametric hillshade SK/CZ) are fine.
-      </content>
+
+## Elevation & track colorization (in progress on `feat/graphhopper-elevation`)
+
+Context: GraphHopper now returns per-point elevation inline (with `0` as its
+no-data sentinel, normalized to 2D). The aim is one shared elevation-acquisition
+layer feeding one shared colorizer/consumer layer across routePlanner,
+trackViewer, tracking, and export. Sample tracks of every shape live in
+[`samples/`](./samples/) (regenerate via `node samples/gen-samples.mjs`).
+
+Guiding principle: **gaps are the honest default; enrichment is opt-in.** Fill
+elevation automatically only where intent is unambiguous (planned route, where
+GraphHopper ≈ DEM); prompt the user where the data's provenance is unknown
+(imported tracks).
+
+- [x] Carry GraphHopper elevation through routes + GPX export; normalize the
+      `0` sentinel to 2D per-coordinate (`StepCoordinate`).
+- [x] Elevation chart: require *every* coordinate to carry elevation
+      (`containsElevations`) and share the `/geotools/elevation` call via
+      `fetchElevations` (`src/shared/elevation.ts`).
+- [ ] **`enrichElevations(features, 'missing' | 'all')`** in `src/shared/elevation.ts`
+      on top of `fetchElevations`: `missing` fills only coords lacking `z`,
+      `all` overwrites every `z`. Foundation for the consumers below.
+- [ ] **Gap rendering.** Elevation chart (`ElevationChart.tsx`) currently draws
+      one SVG polyline assuming numeric `ele`; split into contiguous finite runs
+      (min/max ignoring `NaN`). Colorize (`colorizeByValues` + Hotline render
+      loop) currently collapses missing → mid-palette; mark gaps and split each
+      feature's points into runs, skipping gaps. Add a gap marker to
+      `ColorizedPoint`.
+- [ ] **Promote `colorizers/`** out of `src/features/trackViewer/` to a shared
+      location so routePlanner + tracking can reuse them. `Colorizer.isAvailable`
+      already gates which modes apply per feature.
+- [ ] **trackViewer**: prompt-on-trigger when elevation is missing/partial —
+      **Fill missing / Override all / (later) Show as-is with gaps** — remembered
+      as a setting and mirrored in the menu. Result drives `enrichElevations`
+      writing `z` into `trackGeojson` (cached; static data). Hint that "Override
+      all" avoids the recorded-vs-DEM seam (steepness spikes at gap edges).
+- [ ] **tracking**: add colorize + elevation chart, reusing the shared colorizers
+      via a `TrackPoint[] → Feature<LineString>` adapter (coords `[lon,lat,alt?]`,
+      `coordinateProperties` keyed for speed/time/heading). Colorizers viable:
+      elevation, steepness, speed, time, heading — **plus battery and GSM signal
+      strength** (new colorizers reading `TrackPoint.battery` / `.gsmSignal`).
+      Elevation fill is **ephemeral** (live data streams new bare points; don't
+      cache into store). New decision: **move the whole `TrackingSubmenu` content
+      into a new toolbar**; the main-menu item just toggles that toolbar.
+- [ ] **routePlanner**: auto `ensureRouteElevations('missing')` (lazy, cached by
+      result timestamp) so chart + colorize read local data; no prompt.
+- [ ] **export**: opt-in control (none / fill missing / override all) on the same
+      `enrichElevations` helper. (Was the dropped `feat/export-fill-elevation`
+      work — rebuild on the shared infra rather than re-applying the old branch.)
+
+### Idea for later — multi-property track chart
+
+Generalize the elevation chart into a multi-property chart: X axis = time **or**
+distance; Y axis selectable among elevation, speed, orientation/heading, GSM
+signal, battery level, distance, time, … Applies to trackViewer and tracking
+(and, where data exists, the planned route). The colorizer data adapters already
+expose most of these series, so the chart and the colorizers could share one
+per-track "series" extraction layer.
