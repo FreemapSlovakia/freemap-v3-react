@@ -37,6 +37,15 @@ const sk: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     title: 'Importovať súbor',
     drop: 'Potiahnite sem súbor GPX alebo GeoJSON alebo kliknite sem pre jeho výber.',
   },
+  elevationFill: {
+    title: 'Doplniť nadmorskú výšku',
+    message:
+      'Táto trasa nemá nadmorskú výšku. Doplniť ju zo servera? ' +
+      '„Prepísať všetko“ poskytne plynulejší a konzistentný profil; ' +
+      '„Doplniť chýbajúce“ zachová zaznamenané hodnoty.',
+    fillMissing: 'Doplniť chýbajúce',
+    overrideAll: 'Prepísať všetko',
+  },
   shareToast:
     'Trasa bola uložená na server a môžete ju zdieľať skopirovaním URL stránky.',
   fetchingError: ({ err }) =>

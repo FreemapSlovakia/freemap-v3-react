@@ -36,6 +36,15 @@ const en: TrackViewerMessages = {
     title: 'Import file',
     drop: 'Drop a GPX or GeoJSON file here, or click here to select it.',
   },
+  elevationFill: {
+    title: 'Add elevation',
+    message:
+      'This track is missing elevation. Add it from the server? ' +
+      '“Override all” gives a smoother, consistent profile; ' +
+      '“Fill missing” keeps the recorded values.',
+    fillMissing: 'Fill missing',
+    overrideAll: 'Override all',
+  },
   shareToast:
     'The track has been saved to the server and can be shared by copying page URL.',
   fetchingError: ({ err }) =>

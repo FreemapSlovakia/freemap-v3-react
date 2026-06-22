@@ -38,6 +38,19 @@ export const trackViewerToggleElevationChart = createAction(
   'TRACK_VIEWER_TOGGLE_ELEVATION_CHART',
 );
 
+/**
+ * The elevation consumer waiting on a fill decision. Opens the fill/override
+ * prompt; `null` closes it. Currently only the elevation chart triggers it.
+ */
+export const trackViewerSetElevationPrompt = createAction<'chart' | null>(
+  'TRACK_VIEWER_SET_ELEVATION_PROMPT',
+);
+
+/** User's answer to the elevation fill prompt: fill gaps or override all. */
+export const trackViewerResolveElevationPrompt = createAction<{
+  mode: 'missing' | 'all';
+}>('TRACK_VIEWER_RESOLVE_ELEVATION_PROMPT');
+
 export const trackViewerGpxLoad = createAction<string>('TRACK_VIEWER_GPX_LOAD');
 
 export const trackViewerDelete = createAction('TRACK_VIEWER_DELETE');

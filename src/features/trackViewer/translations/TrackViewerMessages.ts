@@ -33,6 +33,12 @@ export type TrackViewerMessages = {
     title: string;
     drop: string;
   };
+  elevationFill: {
+    title: string;
+    message: string;
+    fillMissing: string;
+    overrideAll: string;
+  };
   shareToast: string;
   fetchingError: (props: { err: unknown }) => string;
   savingError: (props: { err: unknown }) => string;

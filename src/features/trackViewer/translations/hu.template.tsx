@@ -37,6 +37,15 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     title: 'Fájl importálása',
     drop: 'Húzza ide a GPX- vagy GeoJSON-fájlt, vagy kattintson ide a kijelöléséhez.',
   },
+  elevationFill: {
+    title: 'Magasság hozzáadása',
+    message:
+      'Ennek a nyomvonalnak nincs magassági adata. Kitölti a szerverről? ' +
+      'Az „Összes felülírása” simább, egységes profilt ad; ' +
+      'a „Hiányzók pótlása” megtartja a rögzített értékeket.',
+    fillMissing: 'Hiányzók pótlása',
+    overrideAll: 'Összes felülírása',
+  },
   shareToast:
     'Az útvonal el lett mentve a kiszolgálóra, és az oldal URL-jének másolásával megosztható.',
   fetchingError: ({ err }) =>

@@ -9,7 +9,9 @@ import {
   trackViewerDelete,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
+  trackViewerResolveElevationPrompt,
   trackViewerSetData,
+  trackViewerSetElevationPrompt,
   trackViewerSetTrackUID,
 } from './actions.js';
 
@@ -22,6 +24,7 @@ export interface TrackViewerStateBase {
 
 export interface TrackViewerState extends TrackViewerStateBase {
   colorizeTrackBy: ColorizingMode | null;
+  elevationPrompt: 'chart' | null;
 }
 
 export const cleanState: TrackViewerStateBase = {
@@ -33,6 +36,7 @@ export const cleanState: TrackViewerStateBase = {
 
 export const trackViewerInitialState: TrackViewerState = {
   colorizeTrackBy: null,
+  elevationPrompt: null,
   ...cleanState,
 };
 
@@ -58,6 +62,12 @@ export const trackViewerReducer = createReducer(
       })
       .addCase(trackViewerColorizeTrackBy, (state, action) => {
         state.colorizeTrackBy = action.payload;
+      })
+      .addCase(trackViewerSetElevationPrompt, (state, action) => {
+        state.elevationPrompt = action.payload;
+      })
+      .addCase(trackViewerResolveElevationPrompt, (state) => {
+        state.elevationPrompt = null;
       })
       .addCase(trackViewerGpxLoad, (state, action) => {
         state.gpxUrl = action.payload;

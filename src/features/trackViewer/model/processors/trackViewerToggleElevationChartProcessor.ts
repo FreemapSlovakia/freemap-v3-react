@@ -3,7 +3,11 @@ import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
 } from '@features/elevationChart/model/actions.js';
-import { trackViewerToggleElevationChart } from '@features/trackViewer/model/actions.js';
+import {
+  trackViewerSetElevationPrompt,
+  trackViewerToggleElevationChart,
+} from '@features/trackViewer/model/actions.js';
+import { containsElevations } from '@shared/geoutils.js';
 import { Feature, LineString } from 'geojson';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
@@ -11,24 +15,29 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
   handle: async ({ dispatch, getState }) => {
     if (getState().elevationChart.elevationProfilePoints) {
       dispatch(elevationChartClose());
-    } else {
-      const { trackGeojson } = getState().trackViewer;
 
-      for (const feature of trackGeojson?.features ?? []) {
-        if (feature.geometry.type === 'LineString') {
-          window._paq.push([
-            'trackEvent',
-            'TrackViewer',
-            'toggleElevationChart',
-          ]);
-
-          dispatch(
-            elevationChartSetTrackGeojson(feature as Feature<LineString>),
-          );
-
-          break;
-        }
-      }
+      return;
     }
+
+    const feature = getState().trackViewer.trackGeojson?.features.find(
+      (f): f is Feature<LineString> => f.geometry.type === 'LineString',
+    );
+
+    if (!feature) {
+      return;
+    }
+
+    // The chart can fetch missing elevation from the server, but for an
+    // imported track the user decides whether to fill only the gaps or
+    // override everything — so prompt instead of silently fetching.
+    if (!containsElevations(feature)) {
+      dispatch(trackViewerSetElevationPrompt('chart'));
+
+      return;
+    }
+
+    window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
+
+    dispatch(elevationChartSetTrackGeojson(feature));
   },
 };

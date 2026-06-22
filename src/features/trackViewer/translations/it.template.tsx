@@ -37,6 +37,15 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     title: 'Importa file',
     drop: 'Trascina qui un file GPX o GeoJSON oppure clicca per selezionarlo.',
   },
+  elevationFill: {
+    title: 'Aggiungi quota',
+    message:
+      'Questa traccia non ha dati di quota. Aggiungerli dal server? ' +
+      '«Sovrascrivi tutto» offre un profilo più uniforme e coerente; ' +
+      '«Riempi mancanti» mantiene i valori registrati.',
+    fillMissing: 'Riempi mancanti',
+    overrideAll: 'Sovrascrivi tutto',
+  },
   shareToast:
     "La traccia è stata salvata sul server e può essere condivisa copiando l'URL della pagina.",
   fetchingError: ({ err }) =>

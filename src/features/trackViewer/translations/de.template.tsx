@@ -34,6 +34,15 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     title: 'Datei importieren',
     drop: 'Ziehen Sie eine GPX- oder GeoJSON-Datei hierher oder klicken Sie hier zur Auswahl.',
   },
+  elevationFill: {
+    title: 'Höhe ergänzen',
+    message:
+      'Diese Spur enthält keine Höhendaten. Vom Server ergänzen? ' +
+      '„Alle überschreiben“ ergibt ein glatteres, einheitliches Profil; ' +
+      '„Fehlende ergänzen“ behält die aufgezeichneten Werte.',
+    fillMissing: 'Fehlende ergänzen',
+    overrideAll: 'Alle überschreiben',
+  },
   upload: 'Hochladen',
   moreInfo: 'Mehr Infos',
   share: 'Auf Server speichern',
