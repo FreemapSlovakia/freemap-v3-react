@@ -75,6 +75,15 @@ export const trackViewerSetElevation = createAction<FeatureCollection>(
   'TRACK_VIEWER_SET_ELEVATION',
 );
 
+/**
+ * Caches a render-only densified copy of the track (extra DEM-sampled points on
+ * long segments) for the chart, colorize and details. It is never exported and
+ * never treated as the source; it is cleared whenever `trackGeojson` changes.
+ */
+export const trackViewerSetRenderGeojson = createAction<FeatureCollection>(
+  'TRACK_VIEWER_SET_RENDER_GEOJSON',
+);
+
 export const trackViewerGpxLoad = createAction<string>('TRACK_VIEWER_GPX_LOAD');
 
 export const trackViewerDelete = createAction('TRACK_VIEWER_DELETE');

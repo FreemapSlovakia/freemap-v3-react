@@ -16,11 +16,16 @@ import {
   trackViewerSetData,
   trackViewerSetElevation,
   trackViewerSetElevationPrompt,
+  trackViewerSetRenderGeojson,
   trackViewerSetTrackUID,
 } from './actions.js';
 
 export interface TrackViewerStateBase {
   trackGeojson: FeatureCollection | null;
+  // Render-only densified copy of `trackGeojson` (extra DEM-sampled points on
+  // long segments). A cache: `null` means consumers read `trackGeojson`. Never
+  // exported; cleared whenever `trackGeojson` changes.
+  renderTrackGeojson: FeatureCollection | null;
   trackGpx: string | null;
   trackUID: string | null;
   gpxUrl: string | null;
@@ -39,6 +44,7 @@ export interface TrackViewerState extends TrackViewerStateBase {
 
 export const cleanState: TrackViewerStateBase = {
   trackGeojson: null,
+  renderTrackGeojson: null,
   trackGpx: null,
   trackUID: null,
   gpxUrl: null, // TODO to separate reducer (?)
@@ -68,6 +74,9 @@ export const trackViewerReducer = createReducer(
         if (action.payload.trackGeojson) {
           state.trackGeojson = action.payload.trackGeojson;
 
+          // Invalidate the densified render cache for the new track.
+          state.renderTrackGeojson = null;
+
           state.elevationResolved = false;
 
           state.elevationOverridden = false;
@@ -91,6 +100,12 @@ export const trackViewerReducer = createReducer(
       })
       .addCase(trackViewerSetElevation, (state, action) => {
         state.trackGeojson = action.payload;
+
+        // Re-enriched elevation invalidates the densified render cache.
+        state.renderTrackGeojson = null;
+      })
+      .addCase(trackViewerSetRenderGeojson, (state, action) => {
+        state.renderTrackGeojson = action.payload;
       })
       .addCase(trackViewerSetTrackUID, (state, action) => {
         state.trackUID = action.payload;

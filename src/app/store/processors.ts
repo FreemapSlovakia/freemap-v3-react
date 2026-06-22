@@ -76,6 +76,7 @@ import { toastsStopTimeoutProcessor } from '@features/toasts/model/processors/to
 import * as trackingAccessTokenProcessors from '@features/tracking/model/processors/trackingAccessTokenProcessors.js';
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
 import { trackingFollowProcessor } from '@features/tracking/model/processors/trackingFollowProcessors.js';
+import { trackViewerDensifyProcessor } from '@features/trackViewer/model/processors/trackViewerDensifyProcessor.js';
 import { trackViewerDownloadTrackProcessor } from '@features/trackViewer/model/processors/trackViewerDownloadTrackProcessor.js';
 import { trackViewerGpxLoadProcessor } from '@features/trackViewer/model/processors/trackViewerGpxLoadProcessor.js';
 import { trackViewerResolveElevationPromptProcessor } from '@features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.js';
@@ -140,6 +141,7 @@ export const processors = [
   trackViewerUploadTrackProcessor,
   trackViewerToggleElevationChartProcessor,
   trackViewerResolveElevationPromptProcessor,
+  trackViewerDensifyProcessor,
   routePlannerFindRouteProcessor,
   galleryDeletePictureProcessor,
   galleryFetchUsersProcessor,

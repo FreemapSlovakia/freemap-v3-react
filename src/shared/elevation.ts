@@ -1,7 +1,11 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import type { ActionCreatorMatchable } from '@shared/cancelRegister.js';
-import type { Feature, LineString } from 'geojson';
+import { along } from '@turf/along';
+import { distance } from '@turf/distance';
+import { getCoord, getCoords } from '@turf/invariant';
+import { length } from '@turf/length';
+import type { Feature, LineString, Position } from 'geojson';
 import z from 'zod';
 
 const ElevationsSchema = z.array(z.number().nullable());
@@ -80,4 +84,104 @@ export async function enrichElevations(
   });
 
   return enriched;
+}
+
+/**
+ * Densifies a `LineString` for rendering: every segment long enough to draw as
+ * a coarse straight line gets intermediate points inserted at roughly screen
+ * resolution, each DEM-sampled from the elevation API. Existing vertices keep
+ * their elevation; only the inserted points are sampled. A dense line (no
+ * segment long enough) is a no-op and the same feature reference is returned.
+ *
+ * Per-point series (`coordTimes`, `coordinateProperties`) are dropped — they
+ * can't be meaningfully interpolated onto inserted points — so this output is
+ * for elevation-derived rendering (chart, elevation/steepness colorize,
+ * climb/descent stats), not for export.
+ */
+export async function densifyAlong(
+  feature: Feature<LineString>,
+  getState: () => RootState,
+  cancelActions?: ActionCreatorMatchable[],
+): Promise<Feature<LineString>> {
+  const coords = getCoords(feature);
+
+  if (coords.length < 2) {
+    return feature;
+  }
+
+  const totalKm = length(feature);
+
+  // ~2 px per sample at the current viewport width, never finer than 100 m.
+  const stepKm = Math.min(0.1, totalKm / (window.innerWidth / 2));
+
+  if (!(stepKm > 0)) {
+    return feature;
+  }
+
+  // Points to insert, tagged with the vertex they follow, so one batched
+  // request fills them all.
+  const inserts: { after: number; lon: number; lat: number }[] = [];
+
+  let cumKm = 0;
+
+  for (let i = 0; i < coords.length - 1; i++) {
+    const segKm = distance(coords[i], coords[i + 1], { units: 'kilometers' });
+
+    // Only subdivide segments that would otherwise span several pixels.
+    if (segKm > stepKm * 2) {
+      const parts = Math.round(segKm / stepKm);
+
+      for (let k = 1; k < parts; k++) {
+        const [lon, lat] = getCoord(
+          along(feature, cumKm + (segKm * k) / parts, {
+            units: 'kilometers',
+          }),
+        );
+
+        inserts.push({ after: i, lon, lat });
+      }
+    }
+
+    cumKm += segKm;
+  }
+
+  if (inserts.length === 0) {
+    return feature;
+  }
+
+  const eles = await fetchElevations(
+    inserts.map(({ lat, lon }) => [lat, lon]),
+    getState,
+    cancelActions,
+  );
+
+  const out: Position[] = [];
+
+  let ins = 0;
+
+  for (let i = 0; i < coords.length; i++) {
+    out.push(coords[i].slice());
+
+    while (ins < inserts.length && inserts[ins].after === i) {
+      const { lon, lat } = inserts[ins];
+
+      const ele = eles[ins];
+
+      out.push(ele == null ? [lon, lat] : [lon, lat, ele]);
+
+      ins++;
+    }
+  }
+
+  const properties = { ...(feature.properties ?? {}) };
+
+  delete properties['coordTimes'];
+
+  delete properties['coordinateProperties'];
+
+  return {
+    type: 'Feature',
+    properties,
+    geometry: { type: 'LineString', coordinates: out },
+  };
 }

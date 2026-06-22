@@ -8,6 +8,7 @@ import {
 import { trackInfoToast } from '@features/trackViewer/model/trackInfoToast.js';
 import { enrichElevations } from '@shared/elevation.js';
 import { Feature, LineString } from 'geojson';
+import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 export const trackViewerResolveElevationPromptProcessor: Processor<
   typeof trackViewerResolveElevationPrompt
@@ -61,8 +62,14 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
 
     // Open the chart on the first line, rendering its elevation as-is: 'keep'
     // shows the recorded values with their gaps, while a fill/override has
-    // already written the server values into these same coordinates.
-    const first = lines[0];
+    // already written the server values into these same coordinates. An
+    // override may also densify a sparse line so the profile isn't coarse.
+    await ensureRenderGeojson(getState, dispatch);
+
+    const first =
+      getState().trackViewer.renderTrackGeojson?.features.find(
+        (f): f is Feature<LineString> => f.geometry.type === 'LineString',
+      ) ?? lines[0];
 
     if (first) {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);

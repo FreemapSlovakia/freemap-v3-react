@@ -109,25 +109,24 @@ GraphHopper ≈ DEM); prompt the user where the data's provenance is unknown
       + the two elevation-derived colorizers) flags missing values as gaps on
       `ColorizedPoint`, and the Hotline render loop splits each feature's points
       into gap-free runs.
-- [ ] **Densify sparse lines for rendering (chart + colorize + details).** Since
-      the chart now plots recorded vertices verbatim (no server resampling), a
-      *sparse* line (planned route, coarsely-digitized track) draws a coarse,
-      straight-segment profile. Add opt-A densification: resample **only segments
-      long enough to matter** (gate on segment length in px / point-count ≪ chart
-      width) and DEM-sample the new points, **only when elevation is full or
-      overridden** — never for *Keep recorded* (resampling erases the gaps) nor
-      *Fill missing* (injects the recorded-vs-DEM seam between recorded points).
-      Dense recorded GPX stays a no-op, so no track's details numbers change
-      unexpectedly. Storage: a cached, derived `renderTrackGeojson`
-      (`FeatureCollection`) on the trackViewer slice — **not** written into
-      `trackGeojson` (keeps export/source clean); cleared on `trackViewerSetData`
-      and on re-enrich, recomputed lazily only when absent (the field *is* the
-      cache). Chart, Hotline colorize (`TrackViewerResult`), and details
-      (`TrackViewerDetails`) read `renderTrackGeojson ?? trackGeojson`. The
-      resample+fetch is async — lift a `densifyAlong(line, getState)` helper from
-      the chart's existing API path (`along` + `fetchElevations`). Rejected opt-B
-      (always resample at screen resolution): smoother everywhere but silently
-      replaces recorded measurements with DEM values in stats/colors.
+- [x] **Densify sparse lines for rendering (chart + colorize + details).** Opt-A
+      done. `densifyAlong(feature, getState, cancelActions?)` in
+      `src/shared/elevation.ts` inserts intermediate points (at ~2 px / ≤100 m
+      spacing via `along`) only into segments long enough to matter, DEM-samples
+      just the inserted points (existing vertices keep their elevation), drops
+      `coordTimes`/`coordinateProperties` (can't be interpolated), and is a
+      reference-equal no-op for dense lines. Cached as a derived
+      `renderTrackGeojson` on the trackViewer slice (separate from `trackGeojson`,
+      never exported; cleared on `trackViewerSetData` / `trackViewerSetElevation`),
+      built lazily by `ensureRenderGeojson` **only after a server override**
+      (`elevationOverridden`) — the one state where every point is known DEM-derived,
+      so inserted DEM points add no seam. A track's own recorded elevation is left
+      alone even when full (no DEM injected between measured points), as are *fill
+      missing* / *keep recorded*. A `trackViewerDensifyProcessor` (on
+      `trackViewerSetElevation`) keeps it fresh for the colorize + details
+      consumers; the chart paths `await ensureRenderGeojson` then feed the
+      densified line. Consumers read `renderTrackGeojson ?? trackGeojson`
+      (`Results.tsx` → `TrackViewerResult`, `TrackViewerDetails`).
 - [x] **Promote `colorizers/`** out of `src/features/trackViewer/` to a shared
       location (`src/shared/colorizers/`, imported via `@shared/colorizers/…`) so
       routePlanner + tracking can reuse them. `Colorizer.isAvailable` already

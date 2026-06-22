@@ -9,6 +9,7 @@ import {
 } from '@features/trackViewer/model/actions.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { Feature, LineString } from 'geojson';
+import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,
@@ -41,7 +42,17 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
     if (elevationResolved || elevationCoverage(lineFeatures) === 'full') {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
-      dispatch(elevationChartSetTrackGeojson(first, true));
+      // Densify a sparse line first so the chart isn't a coarse straight-segment
+      // profile; a no-op (and so a fall back to the recorded line) when nothing
+      // needs subdividing.
+      await ensureRenderGeojson(getState, dispatch);
+
+      const renderFirst =
+        getState().trackViewer.renderTrackGeojson?.features.find(
+          (f): f is Feature<LineString> => f.geometry.type === 'LineString',
+        ) ?? first;
+
+      dispatch(elevationChartSetTrackGeojson(renderFirst, true));
 
       return;
     }

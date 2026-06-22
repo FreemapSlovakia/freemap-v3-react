@@ -12,8 +12,11 @@ import { TrackViewerMessages } from '../translations/TrackViewerMessages.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 export function TrackViewerDetails(): ReactElement | null {
+  // Stats read the densified render copy when present (a sparse line's
+  // straight-segment climb/descent is coarse); otherwise the recorded track.
   const trackGeojson = useAppSelector(
-    (state) => state.trackViewer.trackGeojson,
+    (state) =>
+      state.trackViewer.renderTrackGeojson ?? state.trackViewer.trackGeojson,
   );
 
   const feature = trackGeojson?.features[0];
