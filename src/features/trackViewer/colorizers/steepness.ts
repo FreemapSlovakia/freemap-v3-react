@@ -6,6 +6,7 @@ import type { Colorizer } from './types.js';
 const SMOOTHING = 5;
 
 export const steepnessColorizer: Colorizer = {
+  needsElevation: true,
   palette: [
     { r: 0, g: 255, b: 0, t: 0.0 },
     { r: 255, g: 255, b: 255, t: 0.5 },

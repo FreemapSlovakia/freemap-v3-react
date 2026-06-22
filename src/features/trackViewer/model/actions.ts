@@ -39,19 +39,31 @@ export const trackViewerToggleElevationChart = createAction(
 );
 
 /**
- * The elevation consumer waiting on a fill decision. Opens the fill/override
- * prompt; `null` closes it. Currently only the elevation chart triggers it.
+ * What waits on the elevation fill decision: opening the elevation chart,
+ * applying an elevation-derived colorize mode, or showing the track-info toast
+ * (its stats depend on elevation). The resolve processor routes to the right
+ * consumer once the user has answered.
  */
-export const trackViewerSetElevationPrompt = createAction<'chart' | null>(
-  'TRACK_VIEWER_SET_ELEVATION_PROMPT',
-);
+export type ElevationConsumer =
+  | { type: 'chart' }
+  | { type: 'colorize'; mode: ColorizingMode }
+  | { type: 'info' };
+
+/**
+ * Opens the elevation fill/override prompt for the given consumer; `null`
+ * closes it.
+ */
+export const trackViewerSetElevationPrompt =
+  createAction<ElevationConsumer | null>('TRACK_VIEWER_SET_ELEVATION_PROMPT');
 
 /**
  * User's answer to the elevation prompt: fill only the gaps, override every
- * point from the server, or keep the track's recorded elevation as-is.
+ * point from the server, or keep the track's recorded elevation as-is. Carries
+ * the consumer so the processor knows what to do once elevation is settled.
  */
 export const trackViewerResolveElevationPrompt = createAction<{
   mode: 'missing' | 'all' | 'keep';
+  consumer: ElevationConsumer;
 }>('TRACK_VIEWER_RESOLVE_ELEVATION_PROMPT');
 
 /**

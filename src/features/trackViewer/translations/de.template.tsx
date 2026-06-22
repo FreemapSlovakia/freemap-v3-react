@@ -53,6 +53,9 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     keep: 'Aufgezeichnete behalten',
     keepDesc: 'die in der Spur gespeicherte Höhe verwenden',
     add: 'Höhe ergänzen',
+    update: 'Höhe aktualisieren',
+    updateConfirm:
+      'Die Höhe der Spur durch das NASA-SRTM-Geländemodell (~30 m) ersetzen?',
   },
   upload: 'Hochladen',
   moreInfo: 'Mehr Infos',

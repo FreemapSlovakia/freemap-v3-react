@@ -39,4 +39,9 @@ export type ColorizingMode = (typeof colorizingModes)[number];
 
 export const ColorizingModeSchema = z.enum(colorizingModes);
 
+/** Whether a colorize mode is derived from the elevation coordinate. */
+export function colorizerNeedsElevation(mode: ColorizingMode): boolean {
+  return Boolean(colorizers[mode].needsElevation);
+}
+
 export type { ColorizedPoint, Colorizer, HotlinePalette } from './types.js';

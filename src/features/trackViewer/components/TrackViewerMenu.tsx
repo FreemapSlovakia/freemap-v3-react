@@ -1,15 +1,12 @@
-import {
-  clearMapFeatures,
-  convertToDrawing,
-  setActiveModal,
-} from '@app/store/actions.js';
+import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { flatten } from '@turf/flatten';
 import type { Feature, LineString } from 'geojson';
@@ -25,16 +22,20 @@ import {
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { colorizers, colorizingModes } from '../colorizers/index.js';
+import {
+  colorizerNeedsElevation,
+  colorizers,
+  colorizingModes,
+} from '../colorizers/index.js';
 import {
   ColorizingModeSchema,
   trackViewerColorizeTrackBy,
-  trackViewerSetData,
+  trackViewerResolveElevationPrompt,
   trackViewerSetElevationPrompt,
   trackViewerToggleElevationChart,
   trackViewerUploadTrack,
 } from '../model/actions.js';
-import { loadTrackViewerMessages } from '../translations/loadTrackViewerMessages.js';
+import { trackInfoToast } from '../model/trackInfoToast.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 import TrackViewerElevationPromptModal from './TrackViewerElevationPromptModal.js';
 
@@ -46,6 +47,8 @@ export function TrackViewerMenu(): ReactElement {
   const tvm = useTrackViewerMessages();
 
   const dispatch = useDispatch();
+
+  const confirm = useConfirm();
 
   const hasTrack = useAppSelector((state) =>
     Boolean(state.trackViewer.trackGeojson),
@@ -63,6 +66,10 @@ export function TrackViewerMenu(): ReactElement {
 
   const elevationResolved = useAppSelector(
     (state) => state.trackViewer.elevationResolved,
+  );
+
+  const elevationOverridden = useAppSelector(
+    (state) => state.trackViewer.elevationOverridden,
   );
 
   const enableElevationChart = useAppSelector(
@@ -84,6 +91,17 @@ export function TrackViewerMenu(): ReactElement {
 
     return !isAvailable || isAvailable(lineFeatures);
   };
+
+  const coverage = elevationCoverage(lineFeatures);
+
+  // Overriding from the server makes sense only while the track still has some
+  // recorded elevation to replace and hasn't already been fully overridden.
+  const canUpdateElevation = coverage !== 'none' && !elevationOverridden;
+
+  // Only ask how to fill elevation when some is actually missing and the user
+  // hasn't decided yet. Tracks that already have full elevation proceed
+  // straight away — the explicit "update" button covers overriding them.
+  const needsElevationDecision = coverage !== 'full' && !elevationResolved;
 
   const handleConvertToDrawing = useCallback(() => {
     const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
@@ -145,14 +163,30 @@ export function TrackViewerMenu(): ReactElement {
           </LongPressTooltip>
         )}
 
-        {enableElevationChart && elevationResolved && (
-          <LongPressTooltip breakpoint="sm" label={tvm?.elevationFill.title}>
+        {enableElevationChart && canUpdateElevation && (
+          <LongPressTooltip breakpoint="sm" label={tvm?.elevationFill.update}>
             {({ label, labelClassName, props }) => (
               <Button
                 className="ms-1"
                 variant="secondary"
-                onClick={() => {
-                  dispatch(trackViewerSetElevationPrompt('chart'));
+                onClick={async () => {
+                  // The button means "overwrite from the server", so a plain
+                  // confirm is enough — no need for the adaptive fill/keep
+                  // modal. Show the info toast afterwards.
+                  if (
+                    await confirm({
+                      title: tvm?.elevationFill.title,
+                      message: tvm?.elevationFill.updateConfirm,
+                      confirmLabel: tvm?.elevationFill.update,
+                    })
+                  ) {
+                    dispatch(
+                      trackViewerResolveElevationPrompt({
+                        mode: 'all',
+                        consumer: { type: 'info' },
+                      }),
+                    );
+                  }
                 }}
                 {...props}
               >
@@ -167,11 +201,22 @@ export function TrackViewerMenu(): ReactElement {
           <Dropdown
             className="ms-1"
             onSelect={(approach) => {
-              dispatch(
-                trackViewerColorizeTrackBy(
-                  ColorizingModeSchema.nullable().parse(approach),
-                ),
-              );
+              const mode = ColorizingModeSchema.nullable().parse(approach);
+
+              // Elevation-derived modes route through the same fill prompt as
+              // the chart, but only while elevation is missing and undecided;
+              // otherwise apply directly.
+              if (
+                mode &&
+                colorizerNeedsElevation(mode) &&
+                needsElevationDecision
+              ) {
+                dispatch(
+                  trackViewerSetElevationPrompt({ type: 'colorize', mode }),
+                );
+              } else {
+                dispatch(trackViewerColorizeTrackBy(mode));
+              }
             }}
           >
             <Dropdown.Toggle id="colorizing_mode" variant="secondary">
@@ -200,18 +245,13 @@ export function TrackViewerMenu(): ReactElement {
                 className="ms-1"
                 variant="secondary"
                 onClick={() => {
-                  dispatch(
-                    toastsAdd({
-                      id: 'trackViewer.trackInfo',
-                      messageKey: 'info',
-                      messageLoader: loadTrackViewerMessages,
-                      cancelType: [
-                        clearMapFeatures.type,
-                        trackViewerSetData.type,
-                      ],
-                      style: 'info',
-                    }),
-                  );
+                  // The info stats depend on elevation, so settle it first when
+                  // some is missing and the user hasn't decided yet.
+                  if (needsElevationDecision) {
+                    dispatch(trackViewerSetElevationPrompt({ type: 'info' }));
+                  } else {
+                    dispatch(trackInfoToast);
+                  }
                 }}
                 {...props}
               >

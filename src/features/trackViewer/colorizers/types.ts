@@ -17,6 +17,9 @@ export interface Colorizer {
   palette: HotlinePalette;
   isAvailable?: (features: Feature<LineString>[]) => boolean;
   compute: (features: Feature<LineString>[]) => ColorizedPoint[][];
+  // Derived from the elevation coordinate, so it benefits from the same
+  // fill/override prompt the elevation chart uses.
+  needsElevation?: boolean;
 }
 
 /**

@@ -56,6 +56,9 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     keep: 'Mantieni registrati',
     keepDesc: 'usa la quota memorizzata nella traccia',
     add: 'Aggiungi quota',
+    update: 'Aggiorna quota',
+    updateConfirm:
+      'Sostituire la quota della traccia con il modello NASA SRTM (~30 m)?',
   },
   shareToast:
     "La traccia è stata salvata sul server e può essere condivisa copiando l'URL della pagina.",

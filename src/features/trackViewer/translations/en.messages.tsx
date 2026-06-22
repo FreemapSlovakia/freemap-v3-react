@@ -55,6 +55,9 @@ const en: TrackViewerMessages = {
     keep: 'Keep recorded',
     keepDesc: 'use the elevation stored in the track',
     add: 'Add elevation',
+    update: 'Update elevation',
+    updateConfirm:
+      "Replace the track's elevation with the NASA SRTM terrain model (~30 m)?",
   },
   shareToast:
     'The track has been saved to the server and can be shared by copying page URL.',

@@ -46,6 +46,8 @@ export type TrackViewerMessages = {
     keep: string;
     keepDesc: string;
     add: string;
+    update: string;
+    updateConfirm: string;
   };
   shareToast: string;
   fetchingError: (props: { err: unknown }) => string;

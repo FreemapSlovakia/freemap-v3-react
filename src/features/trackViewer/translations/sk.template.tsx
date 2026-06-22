@@ -55,6 +55,8 @@ const sk: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     keep: 'Ponechať zaznamenané',
     keepDesc: 'použiť nadmorskú výšku uloženú v trase',
     add: 'Doplniť výšku',
+    update: 'Aktualizovať výšku',
+    updateConfirm: 'Nahradiť nadmorskú výšku trasy modelom NASA SRTM (~30 m)?',
   },
   shareToast:
     'Trasa bola uložená na server a môžete ju zdieľať skopirovaním URL stránky.',

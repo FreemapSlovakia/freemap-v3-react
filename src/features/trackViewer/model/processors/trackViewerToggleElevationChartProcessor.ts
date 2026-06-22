@@ -7,6 +7,7 @@ import {
   trackViewerSetElevationPrompt,
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
+import { elevationCoverage } from '@shared/geoutils.js';
 import { Feature, LineString } from 'geojson';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
@@ -20,17 +21,23 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
 
     const { trackGeojson, elevationResolved } = getState().trackViewer;
 
-    const first = trackGeojson?.features.find(
-      (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-    );
+    const lineFeatures =
+      trackGeojson?.features.filter(
+        (f): f is Feature<LineString> => f.geometry.type === 'LineString',
+      ) ?? [];
+
+    const first = lineFeatures[0];
 
     if (!first) {
       return;
     }
 
-    // Already decided for this track: open the chart straight away. The chart's
-    // own API path fills any elevation the user chose to leave as gaps.
-    if (elevationResolved) {
+    // Prompt only when elevation is actually missing and the user hasn't
+    // decided yet. A track with full elevation (from any source) opens the
+    // chart straight away — overriding it is the explicit "update" button's
+    // job. Partial/missing tracks ask how to fill; the chart's own API path
+    // fills any gaps the user chooses to leave.
+    if (elevationResolved || elevationCoverage(lineFeatures) === 'full') {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
       dispatch(elevationChartSetTrackGeojson(first));
@@ -38,9 +45,6 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
       return;
     }
 
-    // First time: the user decides whether to fill gaps, override every point
-    // from the terrain model (often more precise than recorded data), or keep
-    // the recorded elevation. The prompt processor then opens the chart.
-    dispatch(trackViewerSetElevationPrompt('chart'));
+    dispatch(trackViewerSetElevationPrompt({ type: 'chart' }));
   },
 };

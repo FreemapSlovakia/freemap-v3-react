@@ -19,9 +19,7 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const open = useAppSelector(
-    (state) => state.trackViewer.elevationPrompt !== null,
-  );
+  const consumer = useAppSelector((state) => state.trackViewer.elevationPrompt);
 
   const coverage = useAppSelector((state) =>
     elevationCoverage(
@@ -31,7 +29,7 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
     ),
   );
 
-  if (!open || !tvm) {
+  if (!consumer || !tvm) {
     return null;
   }
 
@@ -40,7 +38,7 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
   const close = () => dispatch(trackViewerSetElevationPrompt(null));
 
   const resolve = (mode: 'missing' | 'all' | 'keep') =>
-    dispatch(trackViewerResolveElevationPrompt({ mode }));
+    dispatch(trackViewerResolveElevationPrompt({ mode, consumer }));
 
   const intro =
     coverage === 'none'

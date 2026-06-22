@@ -55,6 +55,9 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     keep: 'Rögzített megtartása',
     keepDesc: 'a nyomvonalban tárolt magasság használata',
     add: 'Magasság hozzáadása',
+    update: 'Magasság frissítése',
+    updateConfirm:
+      'Lecseréli a nyomvonal magasságát a NASA SRTM modellre (~30 m)?',
   },
   shareToast:
     'Az útvonal el lett mentve a kiszolgálóra, és az oldal URL-jének másolásával megosztható.',

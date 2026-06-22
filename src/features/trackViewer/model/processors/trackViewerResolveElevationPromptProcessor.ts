@@ -1,9 +1,11 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { elevationChartSetTrackGeojson } from '@features/elevationChart/model/actions.js';
 import {
+  trackViewerColorizeTrackBy,
   trackViewerResolveElevationPrompt,
   trackViewerSetElevation,
 } from '@features/trackViewer/model/actions.js';
+import { trackInfoToast } from '@features/trackViewer/model/trackInfoToast.js';
 import { enrichElevations } from '@shared/elevation.js';
 import { Feature, LineString } from 'geojson';
 
@@ -22,11 +24,11 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       (f): f is Feature<LineString> => f.geometry.type === 'LineString',
     );
 
-    const { mode } = action.payload;
+    const { mode, consumer } = action.payload;
 
-    // 'keep' opens the chart on the recorded elevation as-is; 'missing'/'all'
-    // fetch from the server first and cache the result back into trackGeojson
-    // so the chart, colorize and export all reuse it.
+    // 'keep' uses the recorded elevation as-is; 'missing'/'all' fetch from the
+    // server first and cache the result back into trackGeojson so the chart,
+    // colorize and export all reuse it.
     let lines = lineFeatures;
 
     if (mode !== 'keep') {
@@ -39,6 +41,22 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       );
 
       dispatch(trackViewerSetElevation({ ...trackGeojson, features }));
+    }
+
+    if (consumer.type === 'colorize') {
+      // The colorize renders from trackGeojson, which the enrich above already
+      // refreshed; applying the mode is all that's left.
+      dispatch(trackViewerColorizeTrackBy(consumer.mode));
+
+      return;
+    }
+
+    if (consumer.type === 'info') {
+      // The info panel's stats (ascent, descent, min/max) read the now-filled
+      // elevation from trackGeojson.
+      dispatch(trackInfoToast);
+
+      return;
     }
 
     // Open the chart on the first line. If the server still had no data for

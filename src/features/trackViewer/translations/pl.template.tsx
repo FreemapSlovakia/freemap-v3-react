@@ -51,6 +51,8 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     keep: 'Zachowaj zarejestrowane',
     keepDesc: 'użyj wysokości zapisanej w śladzie',
     add: 'Dodaj wysokość',
+    update: 'Zaktualizuj wysokość',
+    updateConfirm: 'Zastąpić wysokość śladu modelem NASA SRTM (~30 m)?',
   },
   upload: 'Prześlij',
   moreInfo: 'Więcej informacji',
