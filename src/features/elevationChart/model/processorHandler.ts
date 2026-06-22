@@ -1,8 +1,8 @@
-import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
+import { fetchElevations } from '@shared/elevation.js';
 import { containsElevations } from '@shared/geoutils.js';
 import { along } from '@turf/along';
 import { distance } from '@turf/distance';
@@ -18,7 +18,6 @@ import {
   Polygon,
 } from 'geojson';
 import { Dispatch } from 'redux';
-import z from 'zod';
 import {
   elevationChartClose,
   elevationChartSetElevationProfile,
@@ -101,27 +100,22 @@ async function resolveElevationProfilePointsViaApi(
     });
   }
 
-  const res = await httpRequest({
+  const eles = await fetchElevations(
+    elevationProfilePoints.map(({ lat, lon }) => [lat, lon]),
     getState,
-    method: 'POST',
-    url: '/geotools/elevation',
-    data: elevationProfilePoints.map(({ lat, lon }) => [lat, lon]),
-    expectedStatus: 200,
-    cancelActions: [
+    [
       elevationChartSetTrackGeojson,
       selectFeature,
       elevationChartClose,
       clearMapFeatures,
     ],
-  });
+  );
 
   let climbUp = 0;
 
   let climbDown = 0;
 
   let prevEle: number | null | undefined;
-
-  const eles = z.array(z.number().nullable()).parse(await res.json());
 
   for (const [i, ele] of eles.entries()) {
     if (prevEle !== undefined) {

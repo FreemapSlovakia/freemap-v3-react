@@ -81,11 +81,17 @@ export function getCurrentPosition(): Promise<LatLon> {
   });
 }
 
+/**
+ * True only when every coordinate of a `LineString` carries elevation. Any gap
+ * (an all-2D OSRM track, or a GraphHopper route with no-data points) yields
+ * `false` so the consumer fills elevation from the server rather than rendering
+ * a profile with holes.
+ */
 export function containsElevations(geojson: Feature): boolean {
   return (
     geojson.geometry.type === 'LineString' &&
-    Array.isArray(geojson.geometry.coordinates[0]) &&
-    geojson.geometry.coordinates[0].length === 3
+    geojson.geometry.coordinates.length > 0 &&
+    geojson.geometry.coordinates.every((c) => c.length === 3)
   );
 }
 
