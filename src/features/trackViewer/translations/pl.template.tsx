@@ -6,18 +6,6 @@ import { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   info: () => <TrackViewerDetails />,
-  colorizingMode: {
-    none: 'Nieaktywne',
-    elevation: 'Wysokość',
-    steepness: 'Stromość',
-    speed: 'Prędkość',
-    heartRate: 'Tętno',
-    cadence: 'Kadencja',
-    power: 'Moc',
-    temperature: 'Temperatura',
-    time: 'Czas',
-    heading: 'Kierunek',
-  },
   details: {
     startTime: 'Czas rozpoczęcia',
     finishTime: 'Czas zakończenia',

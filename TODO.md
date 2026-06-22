@@ -128,9 +128,10 @@ GraphHopper ≈ DEM); prompt the user where the data's provenance is unknown
       the chart's existing API path (`along` + `fetchElevations`). Rejected opt-B
       (always resample at screen resolution): smoother everywhere but silently
       replaces recorded measurements with DEM values in stats/colors.
-- [ ] **Promote `colorizers/`** out of `src/features/trackViewer/` to a shared
-      location so routePlanner + tracking can reuse them. `Colorizer.isAvailable`
-      already gates which modes apply per feature.
+- [x] **Promote `colorizers/`** out of `src/features/trackViewer/` to a shared
+      location (`src/shared/colorizers/`, imported via `@shared/colorizers/…`) so
+      routePlanner + tracking can reuse them. `Colorizer.isAvailable` already
+      gates which modes apply per feature.
 - [x] **trackViewer**: prompt-on-trigger (chart / elevation-colorize / info)
       when elevation is missing/partial — **Fill missing / Override all / Keep
       recorded** — answered once per track. Result drives `enrichElevations`
@@ -146,8 +147,17 @@ GraphHopper ≈ DEM); prompt the user where the data's provenance is unknown
       Elevation fill is **ephemeral** (live data streams new bare points; don't
       cache into store). New decision: **move the whole `TrackingSubmenu` content
       into a new toolbar**; the main-menu item just toggles that toolbar.
-- [ ] **routePlanner**: auto `ensureRouteElevations('missing')` (lazy, cached by
-      result timestamp) so chart + colorize read local data; no prompt.
+- [x] **routePlanner**: auto `ensureRouteElevations('missing')` (lazy, cached
+      per result via `elevationsFilled`) writes DEM-filled `z` back into the
+      alternatives' step coordinates, so the chart (now rendered from local
+      coordinates, keepRecorded) and the new colorize dropdown read complete
+      local data; no prompt. Colorize renders the active alternative as a
+      Hotline (its own white outline; the halo stays for leg-select/drag),
+      gated by `Colorizer.isAvailable` (routes expose Elevation, Steepness,
+      Time, Heading). The local elevation resolver now also accumulates
+      climb/descent, so the chart keeps those totals. Colorize-mode labels
+      moved to a shared `src/shared/colorizers/translations/` bundle
+      (`useColorizerMessages`).
 - [ ] **export**: opt-in control (none / fill missing / override all) on the same
       `enrichElevations` helper. (Was the dropped `feat/export-fill-elevation`
       work — rebuild on the shared infra rather than re-applying the old branch.)

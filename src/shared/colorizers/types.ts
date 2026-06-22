@@ -16,6 +16,35 @@ export interface ColorizedPoint {
   gap?: boolean;
 }
 
+/**
+ * Split colorized points into contiguous runs, breaking at gaps (points whose
+ * value is missing). Runs shorter than two points can't form a line and are
+ * dropped, leaving a visible hole rather than a bridge across missing data.
+ */
+export function splitOnGaps(points: ColorizedPoint[]): ColorizedPoint[][] {
+  const runs: ColorizedPoint[][] = [];
+
+  let current: ColorizedPoint[] = [];
+
+  for (const point of points) {
+    if (point.gap) {
+      if (current.length > 1) {
+        runs.push(current);
+      }
+
+      current = [];
+    } else {
+      current.push(point);
+    }
+  }
+
+  if (current.length > 1) {
+    runs.push(current);
+  }
+
+  return runs;
+}
+
 export interface Colorizer {
   palette: HotlinePalette;
   isAvailable?: (features: Feature<LineString>[]) => boolean;

@@ -1,6 +1,12 @@
 import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  colorizerNeedsElevation,
+  colorizers,
+  colorizingModes,
+} from '@shared/colorizers/index.js';
+import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -23,11 +29,6 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
-  colorizerNeedsElevation,
-  colorizers,
-  colorizingModes,
-} from '../colorizers/index.js';
-import {
   ColorizingModeSchema,
   trackViewerColorizeTrackBy,
   trackViewerResolveElevationPrompt,
@@ -45,6 +46,8 @@ export function TrackViewerMenu(): ReactElement {
   const m = useMessages();
 
   const tvm = useTrackViewerMessages();
+
+  const cm = useColorizerMessages();
 
   const dispatch = useDispatch();
 
@@ -220,7 +223,7 @@ export function TrackViewerMenu(): ReactElement {
             }}
           >
             <Dropdown.Toggle id="colorizing_mode" variant="secondary">
-              <FaPaintBrush /> {tvm?.colorizingMode[colorizeTrackBy ?? 'none']}
+              <FaPaintBrush /> {cm?.mode[colorizeTrackBy ?? 'none']}
             </Dropdown.Toggle>
 
             <Dropdown.Menu popperConfig={fixedPopperConfig}>
@@ -231,7 +234,7 @@ export function TrackViewerMenu(): ReactElement {
                   active={mode === colorizeTrackBy}
                   disabled={mode !== undefined && !isModeAvailable(mode)}
                 >
-                  {tvm?.colorizingMode[mode ?? 'none']}
+                  {cm?.mode[mode ?? 'none']}
                 </Dropdown.Item>
               ))}
             </Dropdown.Menu>

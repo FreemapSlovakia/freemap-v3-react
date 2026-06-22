@@ -2,9 +2,9 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { osmClear } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import { colorizerNeedsElevation } from '@shared/colorizers/index.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { Feature, FeatureCollection, LineString } from 'geojson';
-import { colorizerNeedsElevation } from '../colorizers/index.js';
 import {
   type ColorizingMode,
   type ElevationConsumer,

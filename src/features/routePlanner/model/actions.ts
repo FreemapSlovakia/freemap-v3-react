@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { ColorizingMode } from '@shared/colorizers/index.js';
 import {
   TransportType,
   TransportTypeSchema,
@@ -203,6 +204,17 @@ export const routePlannerSetActiveAlternativeIndex = createAction<number>(
 
 export const routePlannerToggleElevationChart = createAction(
   'ROUTE_PLANNER_TOGGLE_ELEVATION_CHART',
+);
+
+export const routePlannerColorizeBy = createAction<ColorizingMode | null>(
+  'ROUTE_PLANNER_COLORIZE_BY',
+);
+
+// Replaces the route's alternatives with copies whose missing elevations have
+// been filled from the terrain model, and marks the fill as done so it isn't
+// repeated for the same result.
+export const routePlannerSetEnrichedAlternatives = createAction<Alternative[]>(
+  'ROUTE_PLANNER_SET_ENRICHED_ALTERNATIVES',
 );
 
 export const routePlannerSwapEnds = createAction('ROUTE_PLANNER_SWAP_ENDS');

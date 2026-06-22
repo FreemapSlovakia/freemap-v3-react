@@ -5,18 +5,6 @@ export type TrackViewerMessages = {
   upload: string;
   moreInfo: string;
   share: string;
-  colorizingMode: {
-    none: string;
-    elevation: string;
-    steepness: string;
-    speed: string;
-    heartRate: string;
-    cadence: string;
-    power: string;
-    temperature: string;
-    time: string;
-    heading: string;
-  };
   details: {
     startTime: string;
     finishTime: string;

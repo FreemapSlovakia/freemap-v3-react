@@ -57,6 +57,7 @@ import { osmLoadNodeProcessor } from '@features/osm/model/processors/osmLoadNode
 import { osmLoadRelationProcessor } from '@features/osm/model/processors/osmLoadRelationProcessor.js';
 import { osmLoadWayProcessor } from '@features/osm/model/processors/osmLoadWayProcessor.js';
 import { purchaseProcessor } from '@features/purchases/model/processors/purchaseProcessor.js';
+import { routePlannerColorizeProcessor } from '@features/routePlanner/model/processors/colorizeProcessor.js';
 import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/processors/findRouteProcessor.js';
 import { routePlannerRefocusMapProcessor } from '@features/routePlanner/model/processors/refocusMapProcessor.js';
 import { routePlannerSetFromCurrentPositionProcessor } from '@features/routePlanner/model/processors/setFromCurrentPositionProcessor.js';
@@ -157,6 +158,7 @@ export const processors = [
   galleryMakeAllPremiumOrFreeProcessor,
   routePlannerRefocusMapProcessor,
   routePlannerToggleElevationChartProcessor,
+  routePlannerColorizeProcessor,
   routePlannerSetFromCurrentPositionProcessor,
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),

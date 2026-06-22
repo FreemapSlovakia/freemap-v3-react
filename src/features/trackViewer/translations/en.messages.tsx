@@ -8,18 +8,6 @@ const en: TrackViewerMessages = {
   upload: 'Upload',
   moreInfo: 'More info',
   share: 'Save on server',
-  colorizingMode: {
-    none: 'Inactive',
-    elevation: 'Elevation',
-    steepness: 'Steepness',
-    speed: 'Speed',
-    heartRate: 'Heart rate',
-    cadence: 'Cadence',
-    power: 'Power',
-    temperature: 'Temperature',
-    time: 'Time',
-    heading: 'Heading',
-  },
   details: {
     startTime: 'Start time',
     finishTime: 'Finish time',

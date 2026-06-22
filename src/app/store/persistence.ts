@@ -16,8 +16,8 @@ import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectInitialState } from '@features/objects/model/reducer.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
-import { ColorizingModeSchema } from '@features/trackViewer/model/actions.js';
 import { trackViewerInitialState } from '@features/trackViewer/model/reducer.js';
+import { ColorizingModeSchema } from '@shared/colorizers/index.js';
 import { LanguageSchema } from '@shared/langUtils.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
@@ -103,6 +103,7 @@ export const PersistedRoutePlannerSchema = z
     preventHint: z.boolean(),
     transportType: TransportTypeCompatSchema,
     milestones: z.union([z.literal('abs'), z.literal('rel'), z.literal(false)]),
+    colorizeBy: ColorizingModeSchema.nullable(),
   })
   .partial();
 
@@ -255,6 +256,7 @@ const PERSIST: PersistEntry[] = [
       preventHint: r.preventHint,
       transportType: r.transportType,
       milestones: r.milestones,
+      colorizeBy: r.colorizeBy,
     }),
   }),
   defineEntry({

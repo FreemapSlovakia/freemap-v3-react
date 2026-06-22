@@ -54,6 +54,12 @@ function resolveElevationProfilePointsLocally(
 
   let prevPt: [number, number, number] | undefined;
 
+  let climbUp = 0;
+
+  let climbDown = 0;
+
+  let prevEle: number | undefined;
+
   const elevationProfilePoints: ElevationProfilePoint[] = [];
 
   for (const pt of getCoords(trackGeojson)) {
@@ -63,12 +69,33 @@ function resolveElevationProfilePointsLocally(
       dist += distance([lon, lat], prevPt, { units: 'meters' });
     }
 
+    // A missing `z` breaks the climb accumulation: we don't know the terrain
+    // across the gap, so it resets the baseline rather than counting a bogus
+    // jump to/from it.
+    if (Number.isFinite(ele)) {
+      if (prevEle !== undefined) {
+        const d = ele! - prevEle;
+
+        if (d > 0) {
+          climbUp += d;
+        } else {
+          climbDown -= d;
+        }
+      }
+
+      prevEle = ele!;
+    } else {
+      prevEle = undefined;
+    }
+
     elevationProfilePoints.push({
       lat,
       lon,
       // A coordinate without a finite `z` becomes a gap in the chart.
       ele: Number.isFinite(ele) ? ele! : Number.NaN,
       distance: dist,
+      climbUp,
+      climbDown,
     });
 
     prevPt = pt;

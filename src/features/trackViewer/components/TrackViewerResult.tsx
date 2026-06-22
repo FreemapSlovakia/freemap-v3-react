@@ -2,6 +2,8 @@ import { setTool } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { colorizers } from '@shared/colorizers/index.js';
+import { splitOnGaps } from '@shared/colorizers/types.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
@@ -25,38 +27,7 @@ import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
-import { colorizers } from '../colorizers/index.js';
-import type { ColorizedPoint } from '../colorizers/types.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
-
-/**
- * Split colorized points into contiguous runs, breaking at gaps (points whose
- * value is missing). Runs shorter than two points can't form a line and are
- * dropped, leaving a visible hole rather than a bridge across missing data.
- */
-function splitOnGaps(points: ColorizedPoint[]): ColorizedPoint[][] {
-  const runs: ColorizedPoint[][] = [];
-
-  let current: ColorizedPoint[] = [];
-
-  for (const point of points) {
-    if (point.gap) {
-      if (current.length > 1) {
-        runs.push(current);
-      }
-
-      current = [];
-    } else {
-      current.push(point);
-    }
-  }
-
-  if (current.length > 1) {
-    runs.push(current);
-  }
-
-  return runs;
-}
 
 interface GetFeatures {
   (type: 'LineString'): Feature<LineString>[];

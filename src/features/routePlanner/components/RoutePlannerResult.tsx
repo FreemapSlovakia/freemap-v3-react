@@ -5,6 +5,8 @@ import {
 } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { useMap } from '@features/map/hooks/useMap.js';
+import { colorizers } from '@shared/colorizers/index.js';
+import { splitOnGaps } from '@shared/colorizers/types.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -12,7 +14,7 @@ import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
-import { Feature, Point } from 'geojson';
+import { Feature, LineString, Point } from 'geojson';
 import {
   DragEndEvent,
   LatLng,
@@ -32,10 +34,12 @@ import { FaPlay, FaStop } from 'react-icons/fa';
 import {
   CircleMarker,
   GeoJSON,
+  Pane,
   Polyline,
   Tooltip,
   useMapEvent,
 } from 'react-leaflet';
+import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import {
   routePlannerAddPoint,
@@ -77,6 +81,8 @@ export function RoutePlannerResult(): ReactElement {
   );
 
   const mode = useAppSelector((state) => state.routePlanner.mode);
+
+  const colorizeBy = useAppSelector((state) => state.routePlanner.colorizeBy);
 
   const timestamp = useAppSelector((state) => state.routePlanner.timestamp);
 
@@ -570,6 +576,60 @@ export function RoutePlannerResult(): ReactElement {
     ],
   );
 
+  const activeColorizer = colorizeBy ? colorizers[colorizeBy] : null;
+
+  // Colorize only the active alternative: build one continuous line from its
+  // coordinates and split it into gap-free runs the Hotline can draw. The line
+  // carries its own white outline, so the route's halo is hidden underneath.
+  const colorizedRuns = useMemo(() => {
+    const alternative = alternatives[activeAlternativeIndex];
+
+    if (!activeColorizer || !alternative) {
+      return [];
+    }
+
+    // Consecutive steps share their boundary vertex, so drop the duplicate to
+    // avoid a zero-length segment at each step end (which would, e.g., snap the
+    // heading colorize to north there).
+    const coordinates = alternative.legs
+      .flatMap((leg) => leg.steps)
+      .flatMap((step) => step.geometry.coordinates)
+      .filter(
+        (c, i, all) =>
+          i === 0 || c[0] !== all[i - 1]![0] || c[1] !== all[i - 1]![1],
+      );
+
+    if (coordinates.length < 2) {
+      return [];
+    }
+
+    const feature: Feature<LineString> = {
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'LineString', coordinates },
+    };
+
+    return activeColorizer.compute([feature]).flatMap(splitOnGaps);
+  }, [activeColorizer, alternatives, activeAlternativeIndex]);
+
+  // Replace the active alternative's plain line with the Hotline only once
+  // colorized runs exist; until then (e.g. elevation still being fetched) the
+  // normal line stays visible instead of flashing blank.
+  const showColorized = colorizedRuns.length > 0;
+
+  // Stable reference so react-leaflet-hotline's options-effect doesn't fire on
+  // every render.
+  const hotlineOptions = useMemo(
+    () => ({
+      weight: 6,
+      // The white/blue selection outline is drawn as a wider polyline beneath
+      // the canvas, so the hotline itself carries none.
+      outlineWidth: 0,
+      palette: activeColorizer?.palette,
+    }),
+    [activeColorizer],
+  );
+
   const paths = useMemo(
     () =>
       alternatives
@@ -591,11 +651,26 @@ export function RoutePlannerResult(): ReactElement {
                 routeSlice.geometry.coordinates.length < 2 ? null : (
                   // background halo
                   <Polyline
-                    key={`slice-${i}-${interactive}`}
+                    key={`slice-${i}-${interactive}-${
+                      showColorized && alt === activeAlternativeIndex
+                    }`}
                     interactive={interactive}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}
                     weight={10}
+                    // Hidden under the colorized line (which has its own
+                    // outline), but kept for leg selection and segment drag.
+                    // The colorized line is a Leaflet canvas above the overlay
+                    // pane, so the hit halo moves to a pane above it to stay
+                    // clickable.
+                    pane={
+                      showColorized && alt === activeAlternativeIndex
+                        ? 'fm-routeplanner-hit'
+                        : undefined
+                    }
+                    opacity={
+                      showColorized && alt === activeAlternativeIndex ? 0 : 1
+                    }
                     color={
                       selectedSegment === routeSlice.legIndex &&
                       alt === activeAlternativeIndex
@@ -633,7 +708,26 @@ export function RoutePlannerResult(): ReactElement {
                 leg.steps.map((step) => ({ legIndex, ...step })),
               )
               .map((routeSlice, i: number) =>
-                routeSlice.geometry.coordinates.length < 2 ? null : (
+                routeSlice.geometry.coordinates.length <
+                2 ? null : showColorized && alt === activeAlternativeIndex ? (
+                  // The colorized Hotline replaces the active alternative's
+                  // line, but its white/blue selection outline is still drawn
+                  // here, beneath the canvas (a wider line whose edges show).
+                  <Polyline
+                    key={`outline-${timestamp}-${alt}-${i}-${interactive}`}
+                    ref={bringToFront}
+                    positions={routeSlice.geometry.coordinates.map(reverse)}
+                    weight={10}
+                    pathOptions={{
+                      color:
+                        selectedSegment === routeSlice.legIndex
+                          ? '#156efd'
+                          : '#fff',
+                    }}
+                    interactive={false}
+                    bubblingMouseEvents={false}
+                  />
+                ) : (
                   // foreground
                   <Polyline
                     key={`slice-${timestamp}-${alt}-${i}-${interactive}`}
@@ -677,6 +771,7 @@ export function RoutePlannerResult(): ReactElement {
       onlyStart,
       alternatives,
       activeAlternativeIndex,
+      showColorized,
       timestamp,
       interactive,
       selectedSegment,
@@ -688,6 +783,10 @@ export function RoutePlannerResult(): ReactElement {
 
   return (
     <>
+      {/* Above the hotline canvas (overlay pane, zIndex 400) so the invisible
+          hit halo stays clickable while colorizing. */}
+      <Pane name="fm-routeplanner-hit" style={{ zIndex: 450 }} />
+
       {!window.fmEmbedded && routePlannerToolActive && dragLatLng && (
         <RichMarker
           interactive={false}
@@ -700,6 +799,17 @@ export function RoutePlannerResult(): ReactElement {
       {pointElements}
 
       {paths}
+
+      {colorizedRuns.map((run, i) => (
+        <Hotline
+          key={`colorize-${colorizeBy}-${timestamp}-${activeAlternativeIndex}-${i}`}
+          data={run}
+          getVal={(p) => p.point.color}
+          getLat={(p) => p.point.lat}
+          getLng={(p) => p.point.lon}
+          options={hotlineOptions}
+        />
+      ))}
 
       {milestones.map((milestone, i) => (
         <CircleMarker

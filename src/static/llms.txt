@@ -180,6 +180,11 @@ Routing modes:
   - Visiting places
   - Visiting places (roundtrip)
 
+Once a route is found the toolbar also offers:
+
+- **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Heading (only modes the route has data for are shown); missing elevations are filled from the terrain model on demand
+- **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing, and kilometre/percent milestone toggles
+
 ### Objects (POIs)
 
 - Access: Main menu > Objects (POIs)

@@ -5,6 +5,7 @@ import {
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import type { ColorizingMode } from '@shared/colorizers/index.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Feature, Polygon } from 'geojson';
 import {
@@ -15,10 +16,12 @@ import {
   RoutePoint,
   RoutingMode,
   routePlannerAddPoint,
+  routePlannerColorizeBy,
   routePlannerDelete,
   routePlannerPreventHint,
   routePlannerRemovePoint,
   routePlannerSetActiveAlternativeIndex,
+  routePlannerSetEnrichedAlternatives,
   routePlannerSetFinish,
   routePlannerSetIsochroneParams,
   routePlannerSetIsochrones,
@@ -42,9 +45,16 @@ export interface RoutePlannerCleanResultState {
   activeAlternativeIndex: number;
   timestamp: number | null;
   isochrones: Feature<Polygon>[] | null;
+  // Whether the current result's missing elevations have been filled from the
+  // terrain model, so the chart and colorize read complete local data without
+  // refetching.
+  elevationsFilled: boolean;
 }
 
 export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
+  // Survives a re-route: the chosen mode stays applied, and a new result just
+  // refills elevations and recolorizes.
+  colorizeBy: ColorizingMode | null;
   points: RoutePoint[];
   finishOnly: boolean;
   pickMode: PickMode | null;
@@ -60,9 +70,11 @@ const clearResult: RoutePlannerCleanResultState = {
   activeAlternativeIndex: 0,
   timestamp: null,
   isochrones: null,
+  elevationsFilled: false,
 };
 
 export const cleanState: RoutePlannerCleanState = {
+  colorizeBy: null,
   points: [],
   finishOnly: false,
   pickMode: null,
@@ -319,6 +331,14 @@ export const routePlannerReducer = createReducer(
         ...state,
         activeAlternativeIndex: action.payload,
       }))
+      .addCase(routePlannerColorizeBy, (state, action) => {
+        state.colorizeBy = action.payload;
+      })
+      .addCase(routePlannerSetEnrichedAlternatives, (state, action) => {
+        state.alternatives = action.payload;
+
+        state.elevationsFilled = true;
+      })
       .addCase(routePlannerSetRoundtripParams, (state, { payload }) => ({
         ...state,
         roundtripParams: {

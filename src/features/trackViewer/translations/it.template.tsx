@@ -9,18 +9,6 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   upload: 'Carica',
   moreInfo: 'Maggiori info',
   share: 'Salva sul Server',
-  colorizingMode: {
-    none: 'Inattivo',
-    elevation: 'Elevazione',
-    steepness: 'Ripidezza',
-    speed: 'Velocità',
-    heartRate: 'Frequenza cardiaca',
-    cadence: 'Cadenza',
-    power: 'Potenza',
-    temperature: 'Temperatura',
-    time: 'Tempo',
-    heading: 'Direzione',
-  },
   details: {
     startTime: 'Ora inizio',
     finishTime: 'Ora fine',

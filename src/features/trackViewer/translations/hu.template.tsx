@@ -9,18 +9,6 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   upload: 'Feltöltés',
   moreInfo: 'További információ',
   share: 'Mentés a kiszolgálóra',
-  colorizingMode: {
-    none: 'Inaktív',
-    elevation: 'Magasság',
-    steepness: 'Meredekség',
-    speed: 'Sebesség',
-    heartRate: 'Pulzusszám',
-    cadence: 'Kadencia',
-    power: 'Teljesítmény',
-    temperature: 'Hőmérséklet',
-    time: 'Idő',
-    heading: 'Irány',
-  },
   details: {
     startTime: 'Indulási idő',
     finishTime: 'Érkezési idő',

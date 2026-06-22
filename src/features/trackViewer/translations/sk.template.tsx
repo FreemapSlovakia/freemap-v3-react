@@ -9,18 +9,6 @@ const sk: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   upload: 'Nahrať',
   moreInfo: 'Viac info',
   share: 'Uložiť na server',
-  colorizingMode: {
-    none: 'Neaktívne',
-    elevation: 'Nadmorská výška',
-    steepness: 'Sklon',
-    speed: 'Rýchlosť',
-    heartRate: 'Tepová frekvencia',
-    cadence: 'Kadencia',
-    power: 'Výkon',
-    temperature: 'Teplota',
-    time: 'Čas',
-    heading: 'Smer',
-  },
   details: {
     startTime: 'Čas štartu',
     finishTime: 'Čas v cieli',
