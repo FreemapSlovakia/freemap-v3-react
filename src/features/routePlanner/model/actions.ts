@@ -5,7 +5,7 @@ import {
   TransportTypeSchema,
 } from '@shared/transportTypeDefs.js';
 import { type LatLon, LatLonSchema } from '@shared/types/common.js';
-import { Feature, Polygon } from 'geojson';
+import { Feature, LineString, Polygon } from 'geojson';
 import z from 'zod';
 
 export const RoutePointSchema = z.object({
@@ -210,11 +210,16 @@ export const routePlannerColorizeBy = createAction<ColorizingMode | null>(
   'ROUTE_PLANNER_COLORIZE_BY',
 );
 
-// Replaces the route's alternatives with copies whose missing elevations have
-// been filled from the terrain model, and marks the fill as done so it isn't
-// repeated for the same result.
-export const routePlannerSetEnrichedAlternatives = createAction<Alternative[]>(
-  'ROUTE_PLANNER_SET_ENRICHED_ALTERNATIVES',
+/**
+ * Caches a render-only line for the active alternative: every elevation comes
+ * from our terrain model (the router's own elevation is ignored) and long
+ * segments are densified at DEM resolution. Fed to the elevation chart and the
+ * elevation/steepness colorize only; the source `alternatives` (and thus export
+ * and the drawn route) stay GraphHopper's. Cleared whenever the result or the
+ * active alternative changes.
+ */
+export const routePlannerSetRenderGeojson = createAction<Feature<LineString>>(
+  'ROUTE_PLANNER_SET_RENDER_GEOJSON',
 );
 
 export const routePlannerSwapEnds = createAction('ROUTE_PLANNER_SWAP_ENDS');

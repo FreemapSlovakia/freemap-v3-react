@@ -7,7 +7,7 @@ import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { ColorizingMode } from '@shared/colorizers/index.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
-import { Feature, Polygon } from 'geojson';
+import { Feature, LineString, Polygon } from 'geojson';
 import {
   Alternative,
   IsochroneParams,
@@ -21,7 +21,6 @@ import {
   routePlannerPreventHint,
   routePlannerRemovePoint,
   routePlannerSetActiveAlternativeIndex,
-  routePlannerSetEnrichedAlternatives,
   routePlannerSetFinish,
   routePlannerSetIsochroneParams,
   routePlannerSetIsochrones,
@@ -29,6 +28,7 @@ import {
   routePlannerSetParams,
   routePlannerSetPickMode,
   routePlannerSetPoint,
+  routePlannerSetRenderGeojson,
   routePlannerSetResult,
   routePlannerSetRoundtripParams,
   routePlannerSetStart,
@@ -45,10 +45,12 @@ export interface RoutePlannerCleanResultState {
   activeAlternativeIndex: number;
   timestamp: number | null;
   isochrones: Feature<Polygon>[] | null;
-  // Whether the current result's missing elevations have been filled from the
-  // terrain model, so the chart and colorize read complete local data without
-  // refetching.
-  elevationsFilled: boolean;
+  // Render-only line for the active alternative: every elevation from our DEM
+  // (router elevation ignored), long segments densified. A cache for the chart
+  // and elevation colorize; `null` falls back to the alternative's own
+  // coordinates. Never exported. Cleared with the result or on alternative
+  // switch.
+  renderGeojson: Feature<LineString> | null;
 }
 
 export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
@@ -70,7 +72,7 @@ const clearResult: RoutePlannerCleanResultState = {
   activeAlternativeIndex: 0,
   timestamp: null,
   isochrones: null,
-  elevationsFilled: false,
+  renderGeojson: null,
 };
 
 export const cleanState: RoutePlannerCleanState = {
@@ -330,14 +332,14 @@ export const routePlannerReducer = createReducer(
       .addCase(routePlannerSetActiveAlternativeIndex, (state, action) => ({
         ...state,
         activeAlternativeIndex: action.payload,
+        // A different alternative needs its own render line.
+        renderGeojson: null,
       }))
       .addCase(routePlannerColorizeBy, (state, action) => {
         state.colorizeBy = action.payload;
       })
-      .addCase(routePlannerSetEnrichedAlternatives, (state, action) => {
-        state.alternatives = action.payload;
-
-        state.elevationsFilled = true;
+      .addCase(routePlannerSetRenderGeojson, (state, action) => {
+        state.renderGeojson = action.payload;
       })
       .addCase(routePlannerSetRoundtripParams, (state, { payload }) => ({
         ...state,

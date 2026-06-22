@@ -14,7 +14,7 @@ import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
-import { Feature, LineString, Point } from 'geojson';
+import { Feature, Point } from 'geojson';
 import {
   DragEndEvent,
   LatLng,
@@ -82,6 +82,10 @@ export function RoutePlannerResult(): ReactElement {
   const mode = useAppSelector((state) => state.routePlanner.mode);
 
   const colorizeBy = useAppSelector((state) => state.routePlanner.colorizeBy);
+
+  const renderGeojson = useAppSelector(
+    (state) => state.routePlanner.renderGeojson,
+  );
 
   const timestamp = useAppSelector((state) => state.routePlanner.timestamp);
 
@@ -580,36 +584,46 @@ export function RoutePlannerResult(): ReactElement {
   // Colorize only the active alternative: build one continuous line from its
   // coordinates and split it into gap-free runs the Hotline can draw. The line
   // carries its own white outline, so the route's halo is hidden underneath.
+  // Elevation-derived modes use the densified DEM render line once it's ready
+  // (`renderGeojson`); otherwise the alternative's own coordinates.
   const colorizedRuns = useMemo(() => {
-    const alternative = alternatives[activeAlternativeIndex];
-
-    if (!activeColorizer || !alternative) {
+    if (!activeColorizer) {
       return [];
     }
 
-    // Consecutive steps share their boundary vertex, so drop the duplicate to
-    // avoid a zero-length segment at each step end (which would, e.g., snap the
-    // heading colorize to north there).
-    const coordinates = alternative.legs
-      .flatMap((leg) => leg.steps)
-      .flatMap((step) => step.geometry.coordinates)
-      .filter(
-        (c, i, all) =>
-          i === 0 || c[0] !== all[i - 1]![0] || c[1] !== all[i - 1]![1],
-      );
+    let feature = renderGeojson;
 
-    if (coordinates.length < 2) {
-      return [];
+    if (!feature) {
+      const alternative = alternatives[activeAlternativeIndex];
+
+      if (!alternative) {
+        return [];
+      }
+
+      // Consecutive steps share their boundary vertex, so drop the duplicate to
+      // avoid a zero-length segment at each step end (which would, e.g., snap
+      // the heading colorize to north there).
+      const coordinates = alternative.legs
+        .flatMap((leg) => leg.steps)
+        .flatMap((step) => step.geometry.coordinates)
+        .filter(
+          (c, i, all) =>
+            i === 0 || c[0] !== all[i - 1]![0] || c[1] !== all[i - 1]![1],
+        );
+
+      if (coordinates.length < 2) {
+        return [];
+      }
+
+      feature = {
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates },
+      };
     }
-
-    const feature: Feature<LineString> = {
-      type: 'Feature',
-      properties: {},
-      geometry: { type: 'LineString', coordinates },
-    };
 
     return activeColorizer.compute([feature]).flatMap(splitOnGaps);
-  }, [activeColorizer, alternatives, activeAlternativeIndex]);
+  }, [activeColorizer, renderGeojson, alternatives, activeAlternativeIndex]);
 
   // Replace the active alternative's plain line with the Hotline only once
   // colorized runs exist; until then (e.g. elevation still being fetched) the

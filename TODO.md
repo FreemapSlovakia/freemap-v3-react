@@ -126,7 +126,15 @@ GraphHopper ≈ DEM); prompt the user where the data's provenance is unknown
       `trackViewerSetElevation`) keeps it fresh for the colorize + details
       consumers; the chart paths `await ensureRenderGeojson` then feed the
       densified line. Consumers read `renderTrackGeojson ?? trackGeojson`
-      (`Results.tsx` → `TrackViewerResult`, `TrackViewerDetails`).
+      (`Results.tsx` → `TrackViewerResult`, `TrackViewerDetails`). **Route planner**
+      gets the same render-only treatment via `ensureRouteRenderGeojson` →
+      `renderGeojson`: a planned route has no recorded measurement, so the router's
+      own (different-DEM, shape-point-density) elevation is *always* ignored —
+      `enrichElevations('all')` overrides every vertex from our DEM, then
+      `densifyAlong` adds DEM points on long segments. Fed to the chart +
+      elevation/steepness colorize only; `alternatives` stay GraphHopper's so
+      export and the drawn route/distances are untouched (replaced the old
+      `elevationsFilled` / `routePlannerSetEnrichedAlternatives` write-into-source).
 - [x] **Promote `colorizers/`** out of `src/features/trackViewer/` to a shared
       location (`src/shared/colorizers/`, imported via `@shared/colorizers/…`) so
       routePlanner + tracking can reuse them. `Colorizer.isAvailable` already

@@ -1,21 +1,31 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { colorizerNeedsElevation } from '@shared/colorizers/index.js';
-import { routePlannerColorizeBy, routePlannerSetResult } from '../actions.js';
-import { ensureRouteElevations } from '../ensureRouteElevations.js';
+import {
+  routePlannerColorizeBy,
+  routePlannerSetActiveAlternativeIndex,
+  routePlannerSetResult,
+} from '../actions.js';
+import { ensureRouteRenderGeojson } from '../ensureRouteRenderGeojson.js';
 
 export const routePlannerColorizeProcessor: Processor<
-  typeof routePlannerColorizeBy | typeof routePlannerSetResult
+  | typeof routePlannerColorizeBy
+  | typeof routePlannerSetResult
+  | typeof routePlannerSetActiveAlternativeIndex
 > = {
-  actionCreator: [routePlannerColorizeBy, routePlannerSetResult],
+  actionCreator: [
+    routePlannerColorizeBy,
+    routePlannerSetResult,
+    routePlannerSetActiveAlternativeIndex,
+  ],
   handle: async ({ dispatch, getState }) => {
     const { colorizeBy } = getState().routePlanner;
 
-    // Elevation-derived modes need a complete local profile; the result is
-    // cached so switching between them refetches nothing. Re-running on a new
-    // result refills the (now reset) cache while the mode stays applied. Other
-    // modes read recorded coordinate properties and need no fill.
+    // Elevation-derived modes need the densified DEM render line; it's cached
+    // so switching between them refetches nothing. A new result or a different
+    // alternative resets that cache, so rebuild it while the mode stays
+    // applied. Other modes (e.g. heading) read the route coordinates directly.
     if (colorizeBy && colorizerNeedsElevation(colorizeBy)) {
-      await ensureRouteElevations(getState, dispatch);
+      await ensureRouteRenderGeojson(getState, dispatch);
     }
   },
 };
