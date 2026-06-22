@@ -32,7 +32,9 @@ export function TrackViewerDetailsInt({
 
   const [startPoints, finishPoints] = useStartFinishPoints();
 
-  const eleSmoothingFactor = 5;
+  // Only count elevation change between points at least this far apart, so a
+  // dense, jittery profile doesn't inflate the climb/descent totals.
+  const gainStepMeters = 50;
 
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -115,7 +117,7 @@ export function TrackViewerDetailsInt({
 
   let downhillEleSum = 0;
 
-  const smoothed = smoothElevations(geometry.coordinates, eleSmoothingFactor);
+  const smoothed = smoothElevations(geometry.coordinates);
 
   let prevCoord = smoothed[0];
 
@@ -124,7 +126,7 @@ export function TrackViewerDetailsInt({
       units: 'meters',
     });
 
-    if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) {
+    if (gainStepMeters < distanceFromPrevPointInMeters) {
       // otherwise the ele sums are very high
       const ele = coord[2]!;
 

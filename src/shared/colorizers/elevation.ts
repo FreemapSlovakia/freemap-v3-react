@@ -2,8 +2,6 @@ import { smoothElevations } from '@shared/geoutils.js';
 import { getCoords } from '@turf/invariant';
 import type { Colorizer } from './types.js';
 
-const SMOOTHING = 5;
-
 export const elevationColorizer: Colorizer = {
   needsElevation: true,
   palette: [
@@ -15,7 +13,7 @@ export const elevationColorizer: Colorizer = {
     features.map((feature) => {
       const coords = getCoords(feature);
 
-      const smoothed = smoothElevations(coords, SMOOTHING);
+      const smoothed = smoothElevations(coords);
 
       const eles = smoothed
         .map((coord) => coord[2])

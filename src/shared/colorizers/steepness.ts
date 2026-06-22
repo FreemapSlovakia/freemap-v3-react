@@ -1,16 +1,17 @@
-import { smoothElevations } from '@shared/geoutils.js';
-import { distance } from '@turf/distance';
+import {
+  cumulativeDistances,
+  DEM_RESOLUTION_METERS,
+  smoothElevations,
+} from '@shared/geoutils.js';
 import { getCoords } from '@turf/invariant';
 import type { Colorizer } from './types.js';
 
-const SMOOTHING = 5;
-
-// Grade is measured over at least this horizontal span rather than between
-// adjacent vertices. Dense router shape points at a sharp bend are only metres
-// apart, so dividing a coarse-DEM rise by that near-zero run reads as a cliff;
-// a fixed baseline removes those spikes and low-pass-filters toward the DEM's
-// real (~30 m) resolution.
-const BASELINE_METERS = 30;
+// Grade is measured over a fixed horizontal span rather than between adjacent
+// vertices. Dense router shape points at a sharp bend are only metres apart, so
+// dividing a coarse-DEM rise by that near-zero run reads as a cliff; a fixed
+// baseline removes those spikes and low-pass-filters toward the DEM's
+// resolution.
+const BASELINE_METERS = DEM_RESOLUTION_METERS;
 
 export const steepnessColorizer: Colorizer = {
   needsElevation: true,
@@ -23,17 +24,11 @@ export const steepnessColorizer: Colorizer = {
     features.map((feature) => {
       const coords = getCoords(feature);
 
-      const smoothed = smoothElevations(coords, SMOOTHING);
+      const smoothed = smoothElevations(coords);
 
-      // Cumulative horizontal distance so a slope can be taken over a fixed
-      // span regardless of how densely the vertices are spaced.
-      const cum: number[] = [0];
-
-      for (let i = 1; i < smoothed.length; i++) {
-        cum[i] =
-          cum[i - 1]! +
-          distance(smoothed[i - 1]!, smoothed[i]!, { units: 'meters' });
-      }
+      // Slope is taken over a fixed span regardless of how densely the vertices
+      // are spaced; the inward-shifting window below keeps that span constant.
+      const cum = cumulativeDistances(smoothed);
 
       const total = cum[cum.length - 1] ?? 0;
 

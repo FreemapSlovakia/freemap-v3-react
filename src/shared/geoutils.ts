@@ -1,5 +1,6 @@
 import type { LatLon } from '@shared/types/common.js';
 import { booleanContains } from '@turf/boolean-contains';
+import { distance } from '@turf/distance';
 import type {
   Feature,
   GeoJsonProperties,
@@ -130,22 +131,76 @@ export function elevationCoverage(
   return withEle === total ? 'full' : 'partial';
 }
 
-// TODO consider distance between points
-// returns array of [lat, lon, smoothedEle] triplets
+/**
+ * Horizontal span (in metres) over which elevation is low-pass filtered, and
+ * the baseline over which slope is measured. SRTM is ~30 m, so relief finer
+ * than this is DEM noise rather than real terrain; smoothing toward it also
+ * stops dense router shape points (metres apart at a bend) from being denoised
+ * differently than sparse ones on a straight.
+ */
+export const DEM_RESOLUTION_METERS = 30;
+
+/**
+ * Cumulative horizontal distance (metres) along the path, so any windowing can
+ * span a fixed metric length regardless of how densely the vertices are spaced.
+ * `cum[0]` is `0`; `cum[i]` is the distance from the first vertex to vertex `i`.
+ */
+export function cumulativeDistances(coords: number[][]): number[] {
+  const cum: number[] = [0];
+
+  for (let i = 1; i < coords.length; i++) {
+    cum[i] =
+      cum[i - 1]! +
+      distance(coords[i - 1]!, coords[i]!, {
+        units: 'meters',
+      });
+  }
+
+  return cum;
+}
+
+/**
+ * Inclusive `[lo, hi]` index range of the vertices within `±spanMeters / 2` of
+ * vertex `i` along the path, given precomputed cumulative distances `cum`. The
+ * window is centered and clamped (it shrinks at the ends rather than shifting),
+ * so a derived value never phase-shifts or collapses to a forward-only span.
+ */
+export function metricWindow(
+  cum: number[],
+  i: number,
+  spanMeters: number,
+): [number, number] {
+  const half = spanMeters / 2;
+
+  let lo = i;
+
+  while (lo > 0 && cum[i]! - cum[lo - 1]! <= half) {
+    lo--;
+  }
+
+  let hi = i;
+
+  while (hi < cum.length - 1 && cum[hi + 1]! - cum[i]! <= half) {
+    hi++;
+  }
+
+  return [lo, hi];
+}
+
+// returns array of [lon, lat, smoothedEle] triplets
 export function smoothElevations(
   coords: number[][],
-  eleSmoothingFactor: number,
+  spanMeters: number = DEM_RESOLUTION_METERS,
 ): number[][] {
-  const half = Math.floor(eleSmoothingFactor / 2);
+  const cum = cumulativeDistances(coords);
 
   let prevEle = 0;
 
   return coords.map((lonLatEle, i) => {
-    // Centered window, clamped at the ends. A forward-only window would
-    // phase-shift the profile and collapse at the end, flattening the last
-    // points to a carried-forward value (zeroing the final grade).
+    const [lo, hi] = metricWindow(cum, i, spanMeters);
+
     const window = coords
-      .slice(Math.max(0, i - half), i + half + 1)
+      .slice(lo, hi + 1)
       .map((c) => c[2])
       .filter((e): e is number => typeof e === 'number' && Number.isFinite(e))
       // Sorted by elevation so the extreme-removal below drops the actual
