@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { RovasLink } from '@shared/components/RovasLink.js';
+import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { CreditsText } from '../components/CreditsText.js';
 import { CreditsMessages } from './CreditsMessages.js';
 
