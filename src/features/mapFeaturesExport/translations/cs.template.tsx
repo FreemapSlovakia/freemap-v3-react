@@ -7,6 +7,12 @@ const cs: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Stáhnout',
   format: 'Formát',
   target: 'Cíl',
+  elevation: {
+    label: 'Nadmořská výška',
+    none: 'Ponechat',
+    missing: 'Doplnit chybějící',
+    all: 'Přepsat vše',
+  },
   exportError: ({ err }) => addError(getMessages()!, 'Chyba exportu', err),
   what: {
     plannedRoute: 'vyhledanou trasu',

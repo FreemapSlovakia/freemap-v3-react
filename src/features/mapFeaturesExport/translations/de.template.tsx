@@ -46,6 +46,12 @@ const de: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Download',
   format: 'Format',
   target: 'Ziel',
+  elevation: {
+    label: 'Höhe',
+    none: 'Beibehalten',
+    missing: 'Fehlende ergänzen',
+    all: 'Alle überschreiben',
+  },
   exportError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Exportieren', err),
   disabledAlert:

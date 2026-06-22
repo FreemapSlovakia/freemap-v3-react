@@ -162,9 +162,15 @@ GraphHopper ≈ DEM); prompt the user where the data's provenance is unknown
       climb/descent, so the chart keeps those totals. Colorize-mode labels
       moved to a shared `src/shared/colorizers/translations/` bundle
       (`useColorizerMessages`).
-- [ ] **export**: opt-in control (none / fill missing / override all) on the same
-      `enrichElevations` helper. (Was the dropped `feat/export-fill-elevation`
-      work — rebuild on the shared infra rather than re-applying the old branch.)
+- [x] **export**: opt-in **Elevation** control (Keep recorded / Fill missing /
+      Override all) in the map-data export modal (`ExportElevationSchema`,
+      persisted, hidden for Garmin). Both export paths reuse the shared
+      `fetchElevations` (`src/shared/elevation.ts`): GeoJSON via `fillFcElevations`
+      on a cloned FeatureCollection, GPX via `fillGpxElevations` filling/replacing
+      `<ele>` on wpt/trkpt/rtept. Polygons (and `fm:type=polygon` GPX tracks) are
+      skipped. `enrichElevations` stays the LineString-feature path used by
+      routePlanner/trackViewer; the export fills points + lines in one batched
+      request, so it builds on the same shared fetch rather than that wrapper.
 
 ### Idea for later — multi-property track chart
 

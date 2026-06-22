@@ -6,6 +6,12 @@ const en: MapFeaturesExportMessages = {
   download: 'Download',
   format: 'Format',
   target: 'Target',
+  elevation: {
+    label: 'Elevation',
+    none: 'Keep recorded',
+    missing: 'Fill missing',
+    all: 'Override all',
+  },
   exportError: ({ err }) => addError(getMessages()!, 'Error exporting', err),
   what: {
     plannedRoute: 'found route',

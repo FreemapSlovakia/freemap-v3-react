@@ -51,6 +51,12 @@ const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   },
   format: 'Formátum',
   target: 'Cél',
+  elevation: {
+    label: 'Magasság',
+    none: 'Megtartás',
+    missing: 'Hiányzók pótlása',
+    all: 'Összes felülírása',
+  },
 };
 
 export default hu;
