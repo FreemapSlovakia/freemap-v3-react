@@ -41,6 +41,7 @@ export const urlProcessor: Processor = {
       search,
       objects,
       wikimediaCommons,
+      wiki,
     } = getState();
 
     if (!isUrlUpdatingEnabled()) {
@@ -89,6 +90,8 @@ export const urlProcessor: Processor = {
       objects.active,
       wikimediaCommons.preview?.pageId,
       wikimediaCommons.loading,
+      wiki.preview,
+      wiki.loading,
     ];
 
     const restChanged =
@@ -362,6 +365,12 @@ export const urlProcessor: Processor = {
       const wmcPageId =
         wikimediaCommons.preview?.pageId ?? wikimediaCommons.loading;
 
+      const wikiKey =
+        wiki.loading ??
+        (wiki.preview
+          ? `${wiki.preview.lang}:${wiki.preview.langTitle}`
+          : null);
+
       const show =
         encodeActiveModal(main.activeModal) ??
         encodeActiveModal(
@@ -369,7 +378,9 @@ export const urlProcessor: Processor = {
             ? { type: 'gallery-viewer', id: gallery.activeImageId }
             : wmcPageId
               ? { type: 'wmc', pageId: wmcPageId }
-              : null,
+              : wikiKey
+                ? { type: 'wiki', key: wikiKey }
+                : null,
         );
 
       if (show !== null) {

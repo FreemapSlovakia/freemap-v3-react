@@ -52,6 +52,10 @@ import {
   trackViewerGpxLoad,
 } from '@features/trackViewer/model/actions.js';
 import {
+  wikiLoadPreview,
+  wikiSetPreview,
+} from '@features/wiki/model/actions.js';
+import {
   wikimediaCommonsLoadPreview,
   wikimediaCommonsSetPreview,
 } from '@features/wikimediaCommons/model/actions.js';
@@ -674,8 +678,26 @@ export function handleLocationChange(store: MyStore): void {
       dispatch(wikimediaCommonsSetPreview(null));
     }
 
+    if (next?.type === 'wiki') {
+      const w = getState().wiki;
+
+      const current =
+        w.loading ??
+        (w.preview ? `${w.preview.lang}:${w.preview.langTitle}` : null);
+
+      if (current !== next.key) {
+        dispatch(wikiLoadPreview(next.key));
+      }
+    } else if (getState().wiki.preview || getState().wiki.loading) {
+      dispatch(wikiSetPreview(null));
+    }
+
     const mainNext =
-      next?.type === 'gallery-viewer' || next?.type === 'wmc' ? null : next;
+      next?.type === 'gallery-viewer' ||
+      next?.type === 'wmc' ||
+      next?.type === 'wiki'
+        ? null
+        : next;
 
     if (
       encodeActiveModal(getState().main.activeModal) !==

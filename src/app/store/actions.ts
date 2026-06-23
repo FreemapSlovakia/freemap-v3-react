@@ -97,7 +97,8 @@ export type ActiveModal =
   | { type: 'tracking-watched'; token?: string }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
-  | { type: 'wmc'; pageId: number };
+  | { type: 'wmc'; pageId: number }
+  | { type: 'wiki'; key: string };
 
 /** Modal types that round-trip through the URL as `show=<type>[/<arg>]`. */
 const URL_SERIALIZABLE: ReadonlySet<string> = new Set(BASIC_MODALS);
@@ -123,6 +124,8 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
       return `gallery-viewer/${modal.id}`;
     case 'wmc':
       return `wmc/${modal.pageId}`;
+    case 'wiki':
+      return `wiki/${modal.key}`;
     default:
       return URL_SERIALIZABLE.has(modal.type) ? modal.type : null;
   }
@@ -165,6 +168,8 @@ export function decodeShow(raw: string): ActiveModal | null {
 
       return arg && Number.isFinite(pageId) ? { type: 'wmc', pageId } : null;
     }
+    case 'wiki':
+      return arg ? { type: 'wiki', key: arg } : null;
     default: {
       const r = ShowModalSchema.safeParse(type);
 
