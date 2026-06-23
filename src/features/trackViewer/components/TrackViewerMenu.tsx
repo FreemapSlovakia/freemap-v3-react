@@ -120,7 +120,7 @@ export function TrackViewerMenu(): ReactElement {
     <>
       <TrackViewerElevationPromptModal />
 
-      <ToolMenu>
+      <ToolMenu tool="import-file">
         {canUpload && (
           <LongPressTooltip breakpoint="sm" label={tvm?.upload}>
             {({ label, labelClassName, props }) => (

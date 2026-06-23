@@ -1,7 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { toolDefinitions } from '@shared/toolDefinitions.js';
+import { isDrawTool, toolDefinitions } from '@shared/toolDefinitions.js';
 import { type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -22,7 +22,7 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import { IoLanguage } from 'react-icons/io5';
-import { toolSelector } from '@/app/store/selectors.js';
+import { toolsSelector } from '@/app/store/selectors.js';
 import {
   documentMenuItemProps,
   modalMenuItemProps,
@@ -36,9 +36,7 @@ export function MainMenu(): ReactElement {
     state.map.layers.includes('I'),
   );
 
-  const tool = useAppSelector(toolSelector);
-
-  const toolDef = toolDefinitions.find((t) => t.tool === tool);
+  const tools = useAppSelector(toolsSelector);
 
   const m = useMessages();
 
@@ -85,7 +83,11 @@ export function MainMenu(): ReactElement {
         <FaRegMap /> {m?.tools.myMaps} <kbd>g</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item as="button" eventKey="drawing">
+      <Dropdown.Item
+        as="button"
+        eventKey="drawing"
+        active={tools.some(isDrawTool)}
+      >
         <FaPencilRuler /> {m?.tools.measurement}
       </Dropdown.Item>
 
@@ -95,10 +97,10 @@ export function MainMenu(): ReactElement {
           ({ tool: newTool, icon, msgKey, kbd }) =>
             newTool && (
               <Dropdown.Item
-                href={`?tool=${tool}`}
+                href={`?tools=${newTool}`}
                 key={newTool}
                 eventKey={'tool-' + newTool}
-                active={toolDef?.tool === newTool}
+                active={tools.includes(newTool)}
               >
                 {icon} {m?.tools[msgKey]}{' '}
                 {kbd && (

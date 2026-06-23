@@ -1,6 +1,6 @@
 import {
-  ActionCreatorMatchable,
   CancelItem,
+  CancelTriggers,
   cancelRegister,
 } from '@shared/cancelRegister.js';
 import { clearMapFeatures } from './store/actions.js';
@@ -19,12 +19,13 @@ export class HttpError extends Error {
   }
 }
 
-interface HttpRequestParams extends Omit<RequestInit, 'signal'> {
+interface HttpRequestParams
+  extends Omit<RequestInit, 'signal'>,
+    CancelTriggers {
   url: string;
   data?: unknown;
   getState: () => RootState;
   expectedStatus?: number | number[] | null;
-  cancelActions?: ActionCreatorMatchable[];
 }
 
 export function addHeader(
@@ -56,6 +57,10 @@ export async function httpRequest({
     // selectFeature,
     // setActiveModal -- TODO we should maybe cancel only if closing modal
   ],
+  actionPredicate,
+  statePredicate,
+  stateChangePredicate,
+  predicatesOperation,
   data,
   ...rest
 }: HttpRequestParams): Promise<Response> {
@@ -63,11 +68,20 @@ export async function httpRequest({
 
   let cancelItem: CancelItem | undefined;
 
-  if (cancelActions && cancelActions.length) {
+  if (
+    cancelActions?.length ||
+    actionPredicate ||
+    statePredicate ||
+    stateChangePredicate
+  ) {
     ac = new AbortController();
 
     cancelItem = {
       cancelActions,
+      actionPredicate,
+      statePredicate,
+      stateChangePredicate,
+      predicatesOperation,
       cancel(reason) {
         ac?.abort(
           reason === undefined

@@ -39,7 +39,7 @@ export default function ChangesetsMenu(): ReactElement {
   const dispatch = useDispatch();
 
   return (
-    <ToolMenu>
+    <ToolMenu tool="changesets">
       <Dropdown
         className="ms-1"
         onSelect={(d) => {

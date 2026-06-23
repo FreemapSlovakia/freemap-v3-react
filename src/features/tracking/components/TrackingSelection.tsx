@@ -6,14 +6,15 @@ import { FaBullseye, FaEye } from 'react-icons/fa';
 import { FaPencil } from 'react-icons/fa6';
 import { useDispatch } from 'react-redux';
 import { setActiveModal, setTool } from '@/app/store/actions.js';
-import { toolSelector } from '@/app/store/selectors.js';
 import { LongPressTooltip } from '@/shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@/shared/hooks/useAppSelector.js';
 
 export function TrackingSelection(): ReactElement {
   const m = useMessages();
 
-  const tool = useAppSelector(toolSelector);
+  const trackingOpen = useAppSelector((state) =>
+    state.main.tools.includes('tracking'),
+  );
 
   const dispatch = useDispatch();
 
@@ -26,7 +27,7 @@ export function TrackingSelection(): ReactElement {
               <Button
                 {...props}
                 variant="dark"
-                disabled={tool === 'tracking'}
+                disabled={trackingOpen}
                 onClick={() => dispatch(setTool('tracking'))}
               >
                 <FaBullseye />

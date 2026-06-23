@@ -22,11 +22,12 @@ import {
 } from 'react-icons/fa';
 import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
-import { toolSelector } from '@/app/store/selectors.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
 function ObjectsToggleButton(): ReactElement {
-  const tool = useAppSelector(toolSelector);
+  const objectsOpen = useAppSelector((state) =>
+    state.main.tools.includes('objects'),
+  );
 
   const m = useMessages();
 
@@ -38,7 +39,7 @@ function ObjectsToggleButton(): ReactElement {
         <Button
           {...props}
           variant="dark"
-          disabled={tool === 'objects'}
+          disabled={objectsOpen}
           onClick={() => dispatch(setTool('objects'))}
         >
           <TbMapPins />

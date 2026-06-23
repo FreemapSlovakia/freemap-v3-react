@@ -96,6 +96,9 @@ button#freemap-logo {
 
     padding: 0.25rem;
     margin-inline: 0.5rem;
+
+    border: 0;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
   }
 
   @media print {
@@ -111,8 +114,33 @@ button#freemap-logo {
   }
 }
 
+/* The focused tool toolbar (its title also renders as a filled/active pill). */
+.fm-toolbar-active {
+  @media screen {
+    outline: 4px solid rgba(13, 110, 253, 0.8);
+
+    &.fm-toolbar-selection {
+      /*outline: 4px solid rgba(25, 135, 34, 0.8);*/
+      outline: 4px solid rgba(13, 202, 240, 0.8);
+    }
+    outline-offset: -1px;
+  }
+}
+
 .fm-ib-scroller {
   overflow: auto;
+}
+
+/* The toolbar has no bottom room, and `useLeftMarginAdjuster` removes the left
+   margin of non-first toolbars so they pack tightly — so the active outline
+   would be clipped at the bottom and left by `overflow: auto`. Extend the clip
+   box on those edges with padding and cancel the size change with a matching
+   negative margin, so the outline shows without shifting layout. */
+.fm-ib-scroller-top {
+  padding-bottom: 4px;
+  margin-bottom: -4px;
+  padding-left: 4px;
+  margin-left: -4px;
 }
 
 .input-group > input.form-control {

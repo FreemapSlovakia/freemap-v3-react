@@ -1,5 +1,6 @@
 import {
   clearMapFeatures,
+  closeTool,
   ExternalTarget,
   Modal,
   openInExternalApp,
@@ -64,6 +65,8 @@ export function useMenuHandler({
   const zoom = useAppSelector((state) => state.map.zoom);
 
   const layers = useAppSelector((state) => state.map.layers);
+
+  const tools = useAppSelector((state) => state.main.tools);
 
   const [menuShown, setShow] = useState(false);
 
@@ -164,7 +167,18 @@ export function useMenuHandler({
       const tool = afterPrefix(key, 'tool-');
 
       if (tool !== undefined) {
-        dispatch(setTool(tool || null));
+        if (!tool) {
+          dispatch(setTool(null));
+        } else {
+          const parsed = ToolSchema.safeParse(tool);
+
+          if (parsed.success) {
+            const t = parsed.data;
+
+            // Menu items toggle: close if open, otherwise open and focus it.
+            dispatch(tools.includes(t) ? closeTool(t) : setTool(t));
+          }
+        }
 
         setShow(false);
 
@@ -260,6 +274,7 @@ export function useMenuHandler({
       pointTitle,
       zoom,
       layers,
+      tools,
       sendGalleryEmails,
     ],
   );

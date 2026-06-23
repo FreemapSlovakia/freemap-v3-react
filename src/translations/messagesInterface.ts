@@ -15,6 +15,8 @@ export type Messages = {
     delete: string;
     remove: string;
     close: string;
+    collapse: string;
+    expand: string;
     apply: string;
     exitFullscreen: string;
     fullscreen: string;
@@ -106,6 +108,7 @@ export type Messages = {
     changesets: string;
     mapDetails: string;
     tracking: string;
+    myMap: string;
     myMaps: string;
   };
   mainMenu: {

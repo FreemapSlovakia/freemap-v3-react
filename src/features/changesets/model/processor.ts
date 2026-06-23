@@ -3,8 +3,10 @@ import {
   clearMapFeatures,
   selectFeature,
   setTool,
+  setTools,
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
@@ -38,13 +40,24 @@ export const changesetsTrackProcessor: Processor = {
 
 export const changesetsProcessor: Processor = {
   id: 'changeset.detail',
-  actionCreator: [changesetsSetParams, changesetsRefresh, setTool],
-  handle: async ({ dispatch, getState, toastError }) => {
-    const state = getState();
-
-    if (state.main.tool !== 'changesets') {
+  actionCreator: [changesetsSetParams, changesetsRefresh, setTool, setTools],
+  handle: async ({ action, dispatch, getState, toastError }) => {
+    // setTool fires for every tool; only (re)fetch when changesets is the one
+    // being opened, not when some other tool opens while changesets stays up.
+    if (setTool.match(action) && action.payload !== 'changesets') {
       return;
     }
+
+    const state = getState();
+
+    if (!state.main.tools.includes('changesets')) {
+      return;
+    }
+
+    // Cancel the fetch/toasts whenever the changesets tool leaves the open set —
+    // closeTool('changesets'), setTool(null) (close all), restore without it.
+    const changesetsClosed = (s: RootState) =>
+      !s.main.tools.includes('changesets');
 
     const { zoom } = state.map;
 
@@ -70,9 +83,9 @@ export const changesetsProcessor: Processor = {
             cancelType: [
               selectFeature.type,
               changesetsSetParams.type,
-              setTool.type,
               clearMapFeatures.type,
             ],
+            statePredicate: changesetsClosed,
             timeout: 5000,
             style: 'warning',
           }),
@@ -116,8 +129,8 @@ export const changesetsProcessor: Processor = {
             changesetsRefresh,
             selectFeature,
             clearMapFeatures,
-            setTool,
           ],
+          statePredicate: changesetsClosed,
         });
 
         const xml = new DOMParser().parseFromString(
@@ -204,10 +217,10 @@ export const changesetsProcessor: Processor = {
               cancelType: [
                 selectFeature.type,
                 changesetsSetParams.type,
-                setTool.type,
                 clearMapFeatures.type,
                 mapRefocus.type,
               ],
+              statePredicate: changesetsClosed,
               timeout: 5000,
               style: 'warning',
             }),

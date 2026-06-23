@@ -9,11 +9,11 @@ import { ReactElement } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import { FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { toolSelector } from '@/app/store/selectors.js';
+import { openDrawToolSelector } from '@/app/store/selectors.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 export default function DrawingMenu(): ReactElement | undefined {
-  const activeTool = useAppSelector(toolSelector);
+  const activeTool = useAppSelector(openDrawToolSelector);
 
   const activeToolDef =
     (activeTool ?? undefined) &&
@@ -27,7 +27,7 @@ export default function DrawingMenu(): ReactElement | undefined {
 
   return (
     activeToolDef && (
-      <ToolMenu>
+      <ToolMenu tool={activeToolDef.tool}>
         <Dropdown
           className="ms-1"
           onSelect={(tool) => dispatch(setTool(ToolSchema.parse(tool)))}

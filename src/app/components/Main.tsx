@@ -41,7 +41,6 @@ import { WikiLayer } from '@features/wiki/components/WikiLayer.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
-import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
@@ -59,7 +58,7 @@ import { setActiveModal, setTool } from '../store/actions.js';
 import {
   askingCookieConsentSelector,
   showGalleryPickerSelector,
-  toolSelector,
+  toolsSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from '../store/selectors.js';
 import { AsyncComponent } from './AsyncComponent.js';
@@ -334,7 +333,9 @@ export function Main(): ReactElement {
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
-  const tool = useAppSelector(toolSelector);
+  const tools = useAppSelector(toolsSelector);
+
+  const activeTool = useAppSelector((state) => state.main.activeTool);
 
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
@@ -546,7 +547,10 @@ export function Main(): ReactElement {
     disabled: activeModal !== null,
   });
 
-  const selectionMenu = showMenu ? selectionType : null;
+  // A selection toolbar shows only when the selection is the active thing
+  // (no tool focused). While a tool is active — e.g. drawing, where the line
+  // being drawn is selected internally — its own toolbar is the active one.
+  const selectionMenu = showMenu && activeTool === null ? selectionType : null;
 
   const scLogo = useScrollClasses('horizontal');
 
@@ -700,28 +704,28 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={galleryMenuFactory} />
               )}
 
-              {/* tool menus; TODO put wrapper to separate component and use it directly in menu components */}
+              {/* tool menus; one per open tool, stacked in the order opened */}
 
               {showMenu &&
-                (!tool ? null : tool === 'objects' ? (
-                  <AsyncComponent factory={objectsMenuFactory} />
-                ) : tool === 'route-planner' ? (
-                  <AsyncComponent factory={routePlannerMenuFactory} />
-                ) : tool === 'import-file' ? (
-                  <AsyncComponent factory={trackViewerMenuFactory} />
-                ) : tool === 'changesets' ? (
-                  <AsyncComponent factory={changesetsMenuFactory} />
-                ) : tool === 'draw-lines' ||
-                  tool === 'draw-points' ||
-                  tool === 'draw-polygons' ? (
-                  <AsyncComponent factory={drawingMenuFactory} />
-                ) : tool === 'map-details' ? (
-                  <MapDetailsMenu />
-                ) : tool === 'tracking' ? (
-                  <AsyncComponent factory={trackingMenuFactory} />
-                ) : (
-                  <ToolMenu />
-                ))}
+                tools.map((t) =>
+                  t === 'objects' ? (
+                    <AsyncComponent key={t} factory={objectsMenuFactory} />
+                  ) : t === 'route-planner' ? (
+                    <AsyncComponent key={t} factory={routePlannerMenuFactory} />
+                  ) : t === 'import-file' ? (
+                    <AsyncComponent key={t} factory={trackViewerMenuFactory} />
+                  ) : t === 'changesets' ? (
+                    <AsyncComponent key={t} factory={changesetsMenuFactory} />
+                  ) : t === 'draw-lines' ||
+                    t === 'draw-points' ||
+                    t === 'draw-polygons' ? (
+                    <AsyncComponent key={t} factory={drawingMenuFactory} />
+                  ) : t === 'map-details' ? (
+                    <MapDetailsMenu key={t} />
+                  ) : t === 'tracking' ? (
+                    <AsyncComponent key={t} factory={trackingMenuFactory} />
+                  ) : null,
+                )}
 
               {selectionMenu === 'search' ? (
                 <SearchSelection />

@@ -1,20 +1,21 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { mapToggleLayer } from '@features/map/model/actions.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useCallback } from 'react';
-import { Button, ButtonToolbar, Dropdown } from 'react-bootstrap';
+import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import {
+  FaAngleLeft,
+  FaAngleRight,
   FaBook,
   FaCamera,
-  FaCaretLeft,
-  FaCaretRight,
   FaCog,
   FaDove,
   FaEnvelope,
@@ -23,6 +24,7 @@ import {
   FaInfo,
   FaLocationArrow,
   FaPalette,
+  FaTimes,
   FaTrophy,
   FaUpload,
 } from 'react-icons/fa';
@@ -38,8 +40,6 @@ import {
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { PictureLegend } from './PictureLegend.js';
-
-const isTrue = (value: string | null) => value === 'true';
 
 export default function GalleryMenu() {
   const sc = useScrollClasses('horizontal');
@@ -108,11 +108,7 @@ export default function GalleryMenu() {
     [dispatch, sendGalleryEmails, confirm, m, gm],
   );
 
-  const [hidden, setHidden] = usePersistentState<boolean>(
-    'fm.galleryMenu.collapsed',
-    String,
-    isTrue,
-  );
+  const [hidden, setHidden] = usePersistentBoolean('fm.galleryMenu.collapsed');
 
   return (
     <>
@@ -301,13 +297,37 @@ export default function GalleryMenu() {
               </>
             )}
 
-            <Button
-              className="ms-1"
-              variant={hidden ? 'primary' : 'dark'}
-              onClick={() => setHidden((hidden) => !hidden)}
-            >
-              {hidden ? <FaCaretRight /> : <FaCaretLeft />}
-            </Button>
+            <ButtonGroup className="ms-1">
+              <LongPressTooltip
+                label={hidden ? m?.general.expand : m?.general.collapse}
+              >
+                {({ props }) => (
+                  <Button
+                    variant={hidden ? 'primary' : 'dark'}
+                    onClick={() => setHidden((hidden) => !hidden)}
+                    {...props}
+                  >
+                    {hidden ? <FaAngleRight /> : <FaAngleLeft />}
+                  </Button>
+                )}
+              </LongPressTooltip>
+
+              {!hidden && (
+                <LongPressTooltip label={m?.general.close}>
+                  {({ props }) => (
+                    <Button
+                      variant="dark"
+                      onClick={() =>
+                        dispatch(mapToggleLayer({ type: 'I', enable: false }))
+                      }
+                      {...props}
+                    >
+                      <FaTimes />
+                    </Button>
+                  )}
+                </LongPressTooltip>
+              )}
+            </ButtonGroup>
           </ButtonToolbar>
         </Toolbar>
       </div>

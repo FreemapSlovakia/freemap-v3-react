@@ -1,10 +1,26 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { combineResults } from '@shared/cancelRegister.js';
 import { toastsRemove } from '../actions.js';
 
 export const toastsCancelTypeProcessor: Processor = {
-  handle: async ({ dispatch, getState, action }) => {
-    const toCancel = Object.values(getState().toasts.toasts).filter(
-      ({ cancelType }) => matches(action.type, cancelType),
+  handle: async ({ dispatch, getState, prevState, action }) => {
+    const state = getState();
+
+    const toCancel = Object.values(state.toasts.toasts).filter((toast) =>
+      combineResults(
+        [
+          toast.cancelType === undefined
+            ? undefined
+            : matches(action.type, toast.cancelType),
+          toast.actionPredicate?.(action),
+          toast.statePredicate?.(state),
+          toast.stateChangePredicate
+            ? toast.stateChangePredicate(state) !==
+              toast.stateChangePredicate(prevState)
+            : undefined,
+        ],
+        toast.predicatesOperation,
+      ),
     );
 
     for (const { id } of toCancel) {

@@ -82,7 +82,7 @@ export function TrackingMenu(): ReactElement {
   }, [tracks, selectedToken]);
 
   return (
-    <ToolMenu>
+    <ToolMenu tool="tracking">
       <LongPressTooltip
         breakpoint="sm"
         label={tm?.trackedDevices.button}

@@ -2,6 +2,7 @@ import {
   clearMapFeatures,
   selectFeature,
   setTool,
+  setTools,
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
@@ -146,10 +147,19 @@ export const routePlannerReducer = createReducer(
                 : null
             : null,
       }))
-      .addCase(setTool, (state) => ({
-        ...state,
-        pickMode: 'start',
-      }))
+      // Arm point-picking only when route-planner is the tool being opened
+      // (or restored) — not on every setTool, which now also fires when other
+      // tools open alongside an already-open route-planner.
+      .addCase(setTool, (state, action) =>
+        action.payload === 'route-planner'
+          ? { ...state, pickMode: 'start' }
+          : state,
+      )
+      .addCase(setTools, (state, action) =>
+        action.payload.includes('route-planner')
+          ? { ...state, pickMode: 'start' }
+          : state,
+      )
       .addCase(clearMapFeatures, (state) => ({
         ...routePlannerInitialState,
         preventHint: state.preventHint,

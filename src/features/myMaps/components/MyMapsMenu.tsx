@@ -4,10 +4,18 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import type { ReactElement } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
-import { FaEraser, FaRegMap, FaSave, FaUnlink } from 'react-icons/fa';
+import {
+  FaAngleLeft,
+  FaAngleRight,
+  FaEraser,
+  FaRegMap,
+  FaSave,
+  FaUnlink,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { mapsDisconnect, mapsSave } from '../model/actions.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
@@ -23,6 +31,8 @@ export function MyMapsMenu(): ReactElement {
 
   const sc = useScrollClasses('horizontal');
 
+  const [hidden, setHidden] = usePersistentBoolean('fm.myMapsMenu.collapsed');
+
   return (
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
@@ -30,23 +40,23 @@ export function MyMapsMenu(): ReactElement {
       <Toolbar className="mt-2">
         <ButtonToolbar>
           <LongPressTooltip breakpoint="xl" label={m?.tools.myMaps}>
-            {({ label, labelClassName, props }) => (
+            {({ labelClassName, props }) => (
               <Button
                 variant="primary"
                 onClick={() => dispatch(setActiveModal('my-maps'))}
                 {...props}
               >
                 <FaRegMap />
-                <span className={labelClassName}> {label}</span>
+                <span className={labelClassName} />
               </Button>
             )}
           </LongPressTooltip>
 
           <span className="align-self-center mx-1">
-            {activeMap?.name ?? '???'}
+            {m?.tools.myMap}: {activeMap?.name ?? '???'}
           </span>
 
-          {activeMap?.canWrite && (
+          {!hidden && activeMap?.canWrite && (
             <LongPressTooltip breakpoint="xl" label={mm?.save}>
               {({ label, labelClassName, props }) => (
                 <Button
@@ -62,35 +72,52 @@ export function MyMapsMenu(): ReactElement {
             </LongPressTooltip>
           )}
 
-          <LongPressTooltip breakpoint="xl" label={mm?.disconnect}>
-            {({ label, labelClassName, props }) => (
-              <Dropdown as={ButtonGroup} align="end" {...props}>
-                <Button
-                  className="ms-1"
-                  variant="secondary"
-                  onClick={() => dispatch(mapsDisconnect())}
-                >
-                  <FaUnlink />
-                  <span className={labelClassName}> {label}</span>
-                </Button>
-
-                <Dropdown.Toggle
-                  split
-                  variant="secondary"
-                  id="dropdown-split-basic"
-                />
-
-                <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                  <Dropdown.Item
-                    onClick={() => {
-                      dispatch(mapsDisconnect());
-                      dispatch(clearMapFeatures());
-                    }}
+          {!hidden && (
+            <LongPressTooltip breakpoint="xl" label={mm?.disconnect}>
+              {({ label, labelClassName, props }) => (
+                <Dropdown as={ButtonGroup} align="end" {...props}>
+                  <Button
+                    className="ms-1"
+                    variant="secondary"
+                    onClick={() => dispatch(mapsDisconnect())}
                   >
-                    <FaEraser /> {mm?.disconnectAndClear}
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
+                    <FaUnlink />
+                    <span className={labelClassName}> {label}</span>
+                  </Button>
+
+                  <Dropdown.Toggle
+                    split
+                    variant="secondary"
+                    id="dropdown-split-basic"
+                  />
+
+                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                    <Dropdown.Item
+                      onClick={() => {
+                        dispatch(mapsDisconnect());
+                        dispatch(clearMapFeatures());
+                      }}
+                    >
+                      <FaEraser /> {mm?.disconnectAndClear}
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              )}
+            </LongPressTooltip>
+          )}
+
+          <LongPressTooltip
+            label={hidden ? m?.general.expand : m?.general.collapse}
+          >
+            {({ props }) => (
+              <Button
+                className="ms-1"
+                variant="dark"
+                onClick={() => setHidden((hidden) => !hidden)}
+                {...props}
+              >
+                {hidden ? <FaAngleRight /> : <FaAngleLeft />}
+              </Button>
             )}
           </LongPressTooltip>
         </ButtonToolbar>

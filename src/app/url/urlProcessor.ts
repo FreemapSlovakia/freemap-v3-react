@@ -86,7 +86,7 @@ export const urlProcessor: Processor = {
       search.osmWayId,
       trackViewer.trackUID,
       myMaps.activeMap,
-      main.tool,
+      main.tools.join(','),
       objects.active,
       wikimediaCommons.preview?.pageId,
       wikimediaCommons.loading,
@@ -131,8 +131,9 @@ export const urlProcessor: Processor = {
       queryParts.push(['shading', serializeShading(map.shading)]);
     }
 
-    if (main.tool) {
-      queryParts.push(['tool', main.tool]);
+    if (main.tools.length > 0) {
+      // In the order the tools were opened — matches the rendered toolbar order.
+      queryParts.push(['tools', main.tools.join(',')]);
     }
 
     const mapId = myMaps.loadMeta?.id || myMaps.activeMap?.id;

@@ -5,11 +5,12 @@ import { Button } from 'react-bootstrap';
 import { FaRoute } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setTool } from '@/app/store/actions.js';
-import { toolSelector } from '@/app/store/selectors.js';
 import { LongPressTooltip } from '@/shared/components/LongPressTooltip.js';
 
 export function RoutePlannerToggleButton(): ReactElement | undefined | false {
-  const tool = useAppSelector(toolSelector);
+  const routePlannerOpen = useAppSelector((state) =>
+    state.main.tools.includes('route-planner'),
+  );
 
   const m = useMessages();
 
@@ -21,7 +22,7 @@ export function RoutePlannerToggleButton(): ReactElement | undefined | false {
         <Button
           {...props}
           variant="dark"
-          disabled={tool === 'route-planner'}
+          disabled={routePlannerOpen}
           onClick={() => dispatch(setTool('route-planner'))}
         >
           <FaRoute />

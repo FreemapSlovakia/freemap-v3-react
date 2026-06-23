@@ -1,15 +1,13 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { cancelRegister } from '@shared/cancelRegister.js';
+import { cancelRegister, cancelTriggered } from '@shared/cancelRegister.js';
 
 export const cancelProcessor: Processor = {
-  async handle({ action }) {
-    for (const { cancelActions, cancel } of cancelRegister) {
-      for (const cancelAction of cancelActions) {
-        if (cancelAction.match(action)) {
-          cancel('Canceled by ' + action.type + ' action');
+  async handle({ action, prevState, getState }) {
+    const state = getState();
 
-          break;
-        }
+    for (const item of cancelRegister) {
+      if (cancelTriggered(item, action, prevState, state)) {
+        item.cancel('Canceled by ' + action.type + ' action');
       }
     }
   },

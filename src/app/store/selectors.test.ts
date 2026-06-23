@@ -25,8 +25,16 @@ import type { RootState } from './store.js';
 type Overrides = Partial<Record<keyof RootState, Record<string, unknown>>>;
 
 function makeState(o: Overrides = {}): RootState {
+  // Convenience: a `tool` override sets it as the single open + active tool.
+  const { tool, ...mainRest } = (o.main ?? {}) as { tool?: string };
+
   return {
-    main: { tool: null, selection: undefined, ...o.main },
+    main: {
+      tools: tool ? [tool] : [],
+      activeTool: tool ?? null,
+      selection: undefined,
+      ...mainRest,
+    },
     map: { layers: [], ...o.map },
     homeLocation: { selectingHomeLocation: false, ...o.homeLocation },
     routePlanner: { pickMode: null, ...o.routePlanner },
@@ -100,9 +108,8 @@ describe('activeMapToolSelector', () => {
 });
 
 describe('showGalleryPickerSelector', () => {
-  it('shows the picker for the photos tool with the gallery overlay on', () => {
+  it('shows the picker with the gallery overlay on and no active map-click tool', () => {
     const state = makeState({
-      main: { tool: 'photos' },
       map: { layers: ['X', 'I'] },
     });
 
@@ -111,7 +118,6 @@ describe('showGalleryPickerSelector', () => {
 
   it('hides the picker without the gallery overlay', () => {
     const state = makeState({
-      main: { tool: 'photos' },
       map: { layers: ['X'] },
     });
 
@@ -275,19 +281,21 @@ describe('selectingModeSelector', () => {
 });
 
 describe('drawingLinePolys', () => {
-  it('is true while drawing a line', () => {
-    expect(
-      drawingLinePolys(makeState({ drawingLines: { drawing: true } })),
-    ).toBe(true);
-  });
-
-  it('is true for the draw-lines and draw-polygons tools', () => {
+  it('is true for the active draw-lines and draw-polygons tools', () => {
     expect(drawingLinePolys(makeState({ main: { tool: 'draw-lines' } }))).toBe(
       true,
     );
     expect(
       drawingLinePolys(makeState({ main: { tool: 'draw-polygons' } })),
     ).toBe(true);
+  });
+
+  it('is false when the drawing tool is open but not active', () => {
+    expect(
+      drawingLinePolys(
+        makeState({ main: { tools: ['draw-lines'], activeTool: null } }),
+      ),
+    ).toBe(false);
   });
 
   it('is false while a picking mode owns the map', () => {
@@ -299,8 +307,8 @@ describe('drawingLinePolys', () => {
     expect(drawingLinePolys(state)).toBe(false);
   });
 
-  it('is false for an unrelated tool', () => {
-    expect(drawingLinePolys(makeState({ main: { tool: 'photos' } }))).toBe(
+  it('is false for an unrelated active tool', () => {
+    expect(drawingLinePolys(makeState({ main: { tool: 'objects' } }))).toBe(
       false,
     );
   });

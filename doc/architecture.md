@@ -158,9 +158,9 @@ Adding persisted state = add to the slice + add **one `PERSIST` entry** (schema 
 ## URL ⇄ state synchronization
 
 `src/app/url/` (`urlProcessor.ts`, `urlUpdating.ts`, `locationChangeHandler.ts`,
-`urlMapUtils.ts`). The map position/zoom, active layers, tool, and several modal
-flags are encoded in the URL hash (`#map=…`, `layers=…`, `#tool=…`, `#show=…`,
-etc.). `urlProcessor` is the **last** processor in the array so it observes the
+`urlMapUtils.ts`). The map position/zoom, active layers, open tools, and several
+modal flags are encoded in the URL hash (`#map=…`, `layers=…`, `#tools=…`,
+`#show=…`, etc.; `tools=` is comma-separated, legacy single `tool=` still read). `urlProcessor` is the **last** processor in the array so it observes the
 final state. `hashchange` is handled by `locationChangeHandler`. When you add
 state that should be shareable/bookmarkable, wire it through here **and** update
 the hash-param docs in `src/static/llms.txt`.

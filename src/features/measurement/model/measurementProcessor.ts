@@ -3,14 +3,15 @@ import {
   clearMapFeatures,
   deleteFeature,
   selectFeature,
-  setTool,
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { loadMeasurementMessages } from '@features/measurement/translations/loadMeasurementMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { isDrawTool } from '@shared/toolDefinitions.js';
 import type { LatLon } from '@shared/types/common.js';
 import { area } from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
@@ -21,9 +22,12 @@ const cancelType = [
   clearMapFeatures.type,
   selectFeature.type,
   deleteFeature.type,
-  setTool.type,
   mapRefocus.type,
 ];
+
+// Dismiss the measurement readouts when no drawing tool is open anymore — not
+// merely when some other tool opens (the draw tool stays open then).
+const drawingClosed = (state: RootState) => !state.main.tools.some(isDrawTool);
 
 export const measurementProcessor: Processor<typeof drawingMeasure> = {
   actionCreator: drawingMeasure,
@@ -54,6 +58,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               messageParams: toastParams,
               id: 'measurementInfo',
               cancelType,
+              statePredicate: drawingClosed,
             }),
           );
 
@@ -61,6 +66,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             getState,
             url: `/geotools/elevation?coordinates=${point.lat},${point.lon}`,
             cancelActions: [drawingMeasure, clearMapFeatures],
+            statePredicate: drawingClosed,
           });
 
           elevation = z
@@ -80,6 +86,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               elevation,
             },
             cancelType,
+            statePredicate: drawingClosed,
           }),
         );
       }
@@ -140,6 +147,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               },
               id: 'measurementInfo',
               cancelType,
+              statePredicate: drawingClosed,
             }),
           );
         } else if (type === 'line' && points.length > 1) {
@@ -155,6 +163,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               },
               id: 'measurementInfo',
               cancelType,
+              statePredicate: drawingClosed,
             }),
           );
         }

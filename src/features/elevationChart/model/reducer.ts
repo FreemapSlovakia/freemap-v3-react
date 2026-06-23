@@ -1,4 +1,4 @@
-import { selectFeature, setTool } from '@app/store/actions.js';
+import { closeTool, selectFeature, setTool } from '@app/store/actions.js';
 import {
   drawingLineAddPoint,
   drawingLineRemovePoint,
@@ -40,7 +40,16 @@ export const elevationChartReducer = createReducer(initialState, (builder) =>
     .addCase(elevationChartSetElevationProfile, (state, action) => {
       state.elevationProfilePoints = action.payload;
     })
-    .addCase(setTool, setInitialState)
+    // Clear the chart when its owning tool is closed (or all tools are), not on
+    // every setTool — other tools now open alongside route-planner/track-viewer.
+    .addCase(closeTool, (state, action) =>
+      action.payload === 'route-planner' || action.payload === 'import-file'
+        ? initialState
+        : state,
+    )
+    .addCase(setTool, (state, action) =>
+      action.payload === null ? initialState : state,
+    )
     .addCase(selectFeature, setInitialState)
     .addCase(routePlannerSetResult, setInitialState)
     .addCase(drawingLineAddPoint, setInitialState)

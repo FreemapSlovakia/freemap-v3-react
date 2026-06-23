@@ -28,11 +28,16 @@ export function createReduxStore() {
             value instanceof File ||
             value instanceof Error ||
             isPlain(value),
-          // A toast may carry a static per-feature message loader
-          // (`Toast.messageLoader`) so its text can re-resolve on language
-          // switch. Toasts are never persisted, so this function is safe here.
-          ignoredActionPaths: ['payload.messageLoader'],
-          ignoredPaths: [/^toasts\.toasts\.[^.]+\.messageLoader$/],
+          // A toast may carry functions: a per-feature message loader
+          // (`Toast.messageLoader`, re-resolved on language switch) and the
+          // optional dismissal predicates. Toasts are never persisted, so these
+          // are safe here.
+          ignoredActionPaths: [
+            /^payload\.(messageLoader|actionPredicate|statePredicate|stateChangePredicate)$/,
+          ],
+          ignoredPaths: [
+            /^toasts\.toasts\.[^.]+\.(messageLoader|actionPredicate|statePredicate|stateChangePredicate)$/,
+          ],
         },
       }).concat(
         perfWatchdogMiddleware,

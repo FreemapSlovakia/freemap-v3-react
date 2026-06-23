@@ -42,7 +42,7 @@ export function MapDetailsMenu(): ReactElement | null {
   const dispatch = useDispatch();
 
   return (
-    <ToolMenu>
+    <ToolMenu tool="map-details">
       <Dropdown
         className="ms-1"
         onSelect={(selection, e) => {

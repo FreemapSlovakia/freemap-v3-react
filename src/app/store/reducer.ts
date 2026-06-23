@@ -21,7 +21,14 @@ import {
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import {
+  dedupeOpenTools,
+  isDrawTool,
+  isMapClickTool,
+} from '@shared/toolDefinitions.js';
+import {
+  activateTool,
   clearMapFeatures,
+  closeTool,
   convertToDrawing,
   deleteFeature,
   hideInfoBar,
@@ -32,11 +39,14 @@ import {
   setEmbedFeatures,
   setErrorTicketId,
   setTool,
+  setTools,
   Tool,
 } from './actions.js';
 
 export interface MainState {
-  tool: Tool | null;
+  tools: Tool[];
+  /** The focused tool whose toolbar is highlighted; the click owner if it's a map-click tool. */
+  activeTool: Tool | null;
   activeModal: Modal | null;
   errorTicketId: string | undefined;
   embedFeatures: string[];
@@ -46,7 +56,8 @@ export interface MainState {
 }
 
 export const mainInitialState: MainState = {
-  tool: null,
+  tools: [],
+  activeTool: null,
   activeModal: null,
   errorTicketId: undefined,
   embedFeatures: [],
@@ -62,29 +73,72 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         return;
       }
 
-      state.selection =
-        action.payload === state.tool ||
-        action.payload === null ||
-        (action.payload === 'route-planner' &&
-          (state.selection?.type === 'route-point' ||
-            state.selection?.type === 'route-leg')) ||
-        ((action.payload === 'draw-lines' ||
-          action.payload === 'draw-polygons') &&
-          (state.selection?.type === 'draw-line-poly' ||
-            state.selection?.type === 'line-point')) ||
-        (action.payload === 'draw-points' &&
-          state.selection?.type === 'draw-points') ||
-        (action.payload === 'objects' && state.selection?.type === 'objects') ||
-        (action.payload === 'tracking' &&
-          state.selection?.type === 'tracking') ||
-        (action.payload === 'map-details' && state.selection?.type === 'search')
-          ? state.selection
-          : null;
+      const next = action.payload;
 
-      state.tool = action.payload;
+      if (next === null) {
+        state.tools = [];
+        state.activeTool = null;
+
+        return;
+      }
+
+      // A tool and a selection are mutually exclusive: focusing a tool drops the
+      // selection (so e.g. opening the drawing tool with a line selected starts a
+      // fresh line instead of extending the selected one).
+      state.selection = null;
+
+      // Open `next` at the end if new, keeping the order tools were opened in
+      // (an already-open tool keeps its slot). The draw-* tools share one menu,
+      // so a new draw tool replaces the open one in place.
+      const drawIndex = isDrawTool(next)
+        ? state.tools.findIndex(isDrawTool)
+        : -1;
+
+      if (drawIndex >= 0) {
+        state.tools[drawIndex] = next;
+      } else if (!state.tools.includes(next)) {
+        state.tools.push(next);
+      }
+
+      // Only map-click tools become active; opening an overlay just deactivates
+      // whatever was active (and dropped the selection above).
+      state.activeTool = isMapClickTool(next) ? next : null;
+    })
+    .addCase(setTools, (state, action) => {
+      const tools = dedupeOpenTools(action.payload);
+
+      state.tools = tools;
+
+      state.activeTool = tools.filter(isMapClickTool).at(-1) ?? null;
+    })
+    .addCase(activateTool, (state, action) => {
+      // Only map-click tools can be focused. Clicking the title toggles focus:
+      // activate, or deactivate if already active (then nothing owns map clicks).
+      if (!isMapClickTool(action.payload)) {
+        return;
+      }
+
+      if (state.activeTool === action.payload) {
+        state.activeTool = null;
+      } else if (state.tools.includes(action.payload)) {
+        state.activeTool = action.payload;
+        // A tool and a selection are mutually exclusive.
+        state.selection = null;
+      }
+    })
+    .addCase(closeTool, (state, action) => {
+      state.tools = state.tools.filter((t) => t !== action.payload);
+
+      if (state.activeTool === action.payload) {
+        state.activeTool = null;
+      }
     })
     .addCase(drawingLineStopDrawing, (state) => {
-      state.tool = null;
+      state.tools = state.tools.filter((t) => !isDrawTool(t));
+
+      if (state.activeTool && isDrawTool(state.activeTool)) {
+        state.activeTool = null;
+      }
     })
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;
@@ -127,22 +181,15 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
 
       state.selection = action.payload;
 
-      // if (action.payload?.type === 'objects' && state.tool !== 'objects') {
-      //   state.tool = 'objects';
-      // } else if (
-      //   state.tool !== 'objects' &&
-      //   state.tool !== 'changesets' &&
-      //   state.tool !== 'import-file' &&
-      //   (state.tool !== 'route-planner' ||
-      //     (action.payload?.type !== 'route-point' &&
-      //       action.payload?.type !== 'route-leg')) &&
-      //   action.payload !== null
-      // ) {
-      //   state.tool = null;
-      // }
+      // Selecting a feature is the active thing now — deactivate any tool (its
+      // toolbar stays open, just unfocused).
+      if (action.payload) {
+        state.activeTool = null;
+      }
     })
     .addCase(convertToDrawing, (state) => {
-      state.tool = null;
+      state.tools = [];
+      state.activeTool = null;
     })
     .addCase(drawingLineJoinFinish, (state, { payload }) => {
       state.selection = payload.selection;

@@ -3,7 +3,6 @@ import {
   clearMapFeatures,
   deleteFeature,
   selectFeature,
-  setTool,
 } from '@app/store/actions.js';
 import { RootState } from '@app/store/store.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
@@ -44,10 +43,13 @@ const cancelType = [
   clearMapFeatures.type,
   selectFeature.type,
   deleteFeature.type,
-  setTool.type,
-
   searchSetQuery.type,
 ];
+
+// Dismiss the details toast when the map-details tool is closed — not merely
+// when another tool opens alongside it.
+const mapDetailsClosed = (state: RootState) =>
+  !state.main.tools.includes('map-details');
 
 export async function handle(
   [lat, lon]: [number, number],
@@ -389,6 +391,7 @@ export async function handle(
         messageKey: 'notFound',
         messageLoader: loadMapDetailsMessages,
         cancelType,
+        statePredicate: mapDetailsClosed,
         timeout: 5000,
         style: 'warning',
       }),

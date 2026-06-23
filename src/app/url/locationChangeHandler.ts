@@ -64,6 +64,7 @@ import {
   CustomLayerDefArrayCompatSchema,
   integratedLayerDefMap,
 } from '@shared/mapDefinitions.js';
+import { dedupeOpenTools } from '@shared/toolDefinitions.js';
 import {
   type TransportType,
   TransportTypeCompatSchema,
@@ -78,7 +79,7 @@ import {
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
-  setTool,
+  setTools,
   Tool,
   ToolSchema,
 } from '../store/actions.js';
@@ -147,15 +148,27 @@ export function handleLocationChange(store: MyStore): void {
     'track-viewer': 'import-file',
   };
 
-  const tool =
-    !query['tool'] || typeof query['tool'] !== 'string'
-      ? null
-      : (toolAliases[query['tool']] ??
-        ToolSchema.safeParse(query['tool']).data ??
-        null);
+  // `tools=` is comma-separated; `tool=` is the legacy single-tool param.
+  const toolParam = query['tools'] ?? query['tool'];
 
-  if (getState().main.tool !== tool) {
-    dispatch(setTool(tool));
+  const tools = dedupeOpenTools(
+    typeof toolParam !== 'string' || !toolParam
+      ? []
+      : toolParam
+          .split(',')
+          .map((t) => toolAliases[t] ?? ToolSchema.safeParse(t).data)
+          .filter((t): t is Tool => Boolean(t)),
+  );
+
+  // Compare against the deduped form `setTools` will store, so a URL with
+  // duplicate/draw-collapsed tools doesn't re-dispatch on every location change.
+  const currentTools = getState().main.tools;
+
+  if (
+    currentTools.length !== tools.length ||
+    currentTools.some((t, i) => t !== tools[i])
+  ) {
+    dispatch(setTools(tools));
   }
 
   {

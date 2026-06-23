@@ -36,6 +36,8 @@ const messages: Messages = {
     delete: 'Delete',
     remove: 'Remove',
     close: 'Close',
+    collapse: 'Collapse',
+    expand: 'Expand',
     apply: 'Apply',
     exitFullscreen: 'Exit fullscreen mode',
     fullscreen: 'Fullscreen',
@@ -142,6 +144,7 @@ const messages: Messages = {
     mapDetails: 'Map details',
     tracking: 'Live tracking',
     myMaps: 'My maps',
+    myMap: 'My map',
   },
 
   mainMenu: {

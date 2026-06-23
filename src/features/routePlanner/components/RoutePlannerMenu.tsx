@@ -511,7 +511,7 @@ export default function RoutePlannerMenu(): ReactElement {
     useState(false);
 
   return (
-    <ToolMenu>
+    <ToolMenu tool="route-planner">
       <RoutePlannerTransportType
         onChange={(transportType) =>
           dispatch(routePlannerSetTransportType(transportType!))

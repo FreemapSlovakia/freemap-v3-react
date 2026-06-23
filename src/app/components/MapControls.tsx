@@ -63,7 +63,7 @@ export function MapControls(): ReactElement | null {
   }, [forceUpdate]);
 
   return !map ? null : (
-    <Toolbar className="mx-2 mb-2">
+    <Toolbar className="m-2">
       {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
         <MapSwitchButton />
       )}

@@ -1,11 +1,14 @@
 import {
+  activateTool,
   applySettings,
   clearMapFeatures,
+  closeTool,
   selectFeature,
   setTool,
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { isDrawTool } from '@shared/toolDefinitions.js';
 import { lineString } from '@turf/helpers';
 import { simplify as turfSimplify } from '@turf/simplify';
 import {
@@ -232,11 +235,19 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
 
       state.joinWith = undefined;
     })
-    .addMatcher(isAnyOf(setTool, drawingLineStopDrawing), (state) => ({
-      ...state,
-      drawing: false,
-      joinWith: undefined,
-    })),
+    .addCase(closeTool, (state, action) =>
+      isDrawTool(action.payload)
+        ? { ...state, drawing: false, joinWith: undefined }
+        : state,
+    )
+    .addMatcher(
+      isAnyOf(setTool, activateTool, drawingLineStopDrawing),
+      (state) => ({
+        ...state,
+        drawing: false,
+        joinWith: undefined,
+      }),
+    ),
 );
 
 function linefilter(line: Line) {

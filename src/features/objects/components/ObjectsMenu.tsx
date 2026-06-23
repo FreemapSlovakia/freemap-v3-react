@@ -222,7 +222,7 @@ export default function ObjectsMenu(): ReactElement {
   );
 
   return (
-    <ToolMenu>
+    <ToolMenu tool="objects">
       <Dropdown
         className="ms-1"
         id="objectsMenuDropdown"

@@ -21,6 +21,47 @@ export interface ToolDefinition {
   draw?: true;
 }
 
+/**
+ * Tools that react to clicking on the map. Only one of them can be open at a
+ * time (otherwise a map click would be ambiguous); the remaining tools are
+ * overlays that may be open simultaneously with each other and with one of
+ * these.
+ */
+export const MAP_CLICK_TOOLS: Tool[] = [
+  'draw-points',
+  'draw-lines',
+  'draw-polygons',
+  'map-details',
+  'route-planner',
+];
+
+export function isMapClickTool(tool: Tool | null | undefined): boolean {
+  return tool != null && MAP_CLICK_TOOLS.includes(tool);
+}
+
+/** The three draw-* tools share one menu, so at most one is ever open. */
+export function isDrawTool(tool: Tool | null | undefined): boolean {
+  return tool != null && tool.startsWith('draw-');
+}
+
+/** Drops duplicates and keeps at most one draw-* tool (they share one menu). */
+export function dedupeOpenTools(tools: Tool[]): Tool[] {
+  const result: Tool[] = [];
+
+  for (const tool of tools) {
+    if (
+      result.includes(tool) ||
+      (isDrawTool(tool) && result.some(isDrawTool))
+    ) {
+      continue;
+    }
+
+    result.push(tool);
+  }
+
+  return result;
+}
+
 export const toolDefinitions: ToolDefinition[] = [
   {
     tool: 'route-planner',

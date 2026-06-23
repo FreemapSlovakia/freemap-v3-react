@@ -4,7 +4,7 @@ import type { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { toolSelector } from '@/app/store/selectors.js';
+import { activeModeSelector } from '@/app/store/selectors.js';
 import {
   drawingLineAddPoint,
   type Point,
@@ -16,7 +16,7 @@ const EMPTY: Point[] = [];
 export default function DrawingLinesTool(): null {
   const selection = useAppSelector((state) => state.main.selection);
 
-  const tool = useAppSelector(toolSelector);
+  const tool = useAppSelector(activeModeSelector);
 
   const linePoints = useAppSelector((state) =>
     state.main.selection?.type === 'draw-line-poly'

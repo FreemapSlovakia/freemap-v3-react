@@ -88,7 +88,25 @@ export type Modal = z.infer<typeof ModalSchema>;
 
 export type ShowModal = z.infer<typeof ShowModalSchema>;
 
+/**
+ * Opens a tool and makes it the active (focused) one, keeping the others open;
+ * `null` closes everything. The `draw-*` tools are mutually exclusive (they
+ * share one menu). The transient "reset on tool change" reducers listen to this.
+ */
 export const setTool = createAction<Tool | null>('SET_TOOL');
+
+/** Replaces the whole open-tools set (used by URL restore and "close all"). */
+export const setTools = createAction<Tool[]>('SET_TOOLS');
+
+/**
+ * Focuses an already-open tool (clicking its toolbar title) without reopening
+ * it — so no "reset on tool change" side effects fire. Only the active tool, if
+ * it is a map-click tool, captures map clicks.
+ */
+export const activateTool = createAction<Tool>('ACTIVATE_TOOL');
+
+/** Closes a single tool, leaving the others open. */
+export const closeTool = createAction<Tool>('CLOSE_TOOL');
 
 export const setActiveModal = createAction<Modal | null>('SET_ACTIVE_MODAL');
 

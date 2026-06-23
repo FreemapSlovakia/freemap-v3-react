@@ -1,12 +1,24 @@
 import { PickMode } from '@features/routePlanner/model/actions.js';
 import { Track } from '@features/tracking/model/types.js';
+import { isDrawTool } from '@shared/toolDefinitions.js';
 import { createSelector } from 'reselect';
 import marker from '@/images/cursors/marker.svg';
 import pencil from '@/images/cursors/pencil.svg';
 import { Tool } from '../store/actions.js';
 import type { RootState } from '../store/store.js';
 
-export const toolSelector = (state: RootState): Tool | null => state.main.tool;
+export const toolsSelector = (state: RootState): Tool[] => state.main.tools;
+
+// The focused/active tool — i.e. the one that owns map clicks. The reducer only
+// ever sets `activeTool` to a map-click tool (or null), so it always reflects
+// "the active mode" without further filtering.
+export const activeModeSelector = (state: RootState): Tool | null =>
+  state.main.activeTool;
+
+// The open draw-* tool, regardless of which tool is focused (the three draw
+// tools share one menu, so at most one is open).
+export const openDrawToolSelector = (state: RootState): Tool | null =>
+  state.main.tools.find(isDrawTool) ?? null;
 
 export const mapLayersSelector = (state: RootState): string[] =>
   state.map.layers;
@@ -41,15 +53,15 @@ export const pickingModeSelector = (state: RootState): boolean =>
   galleryShowPositionSelector(state) ||
   mapAreaSelectingSelector(state);
 
-// The active tool as far as map interaction is concerned: the selected tool,
-// but masked to null while a picking mode owns the map so map-click tools go
-// inert. Map-interaction code should read this; menus/processors that want the
-// genuinely-selected tool should use toolSelector.
+// The active tool as far as map interaction is concerned: the open map-click
+// tool, but masked to null while a picking mode owns the map so it goes inert.
+// Map-interaction code should read this; menus/processors that want the open
+// set should use toolsSelector / activeModeSelector.
 export const activeMapToolSelector = (state: RootState): Tool | null =>
-  pickingModeSelector(state) ? null : state.main.tool;
+  pickingModeSelector(state) ? null : activeModeSelector(state);
 
 export const showGalleryPickerSelector = createSelector(
-  toolSelector,
+  activeMapToolSelector,
   mapLayersSelector,
   galleryPickingPositionForIdSelector,
   galleryShowPositionSelector,
@@ -65,8 +77,8 @@ export const showGalleryPickerSelector = createSelector(
     drawingLine,
     mapAreaSelecting,
   ) =>
-    (!tool ||
-      ['photos', 'import-file', 'objects', 'changesets'].includes(tool)) &&
+    // gallery picker is available only when no map-click tool owns the click
+    !tool &&
     layers.includes('I') &&
     galleryPickingPositionForId === null &&
     !galleryShowPosition &&
@@ -154,23 +166,27 @@ export const trackingTrackSelector = createSelector(
       : undefined,
 );
 
-export const selectingModeSelector = (state: RootState): boolean =>
-  !window.fmEmbedded &&
-  !pickingModeSelector(state) &&
-  !state.drawingLines.drawing &&
-  (state.main.tool === null ||
-    state.main.tool === 'import-file' ||
-    state.main.tool === 'changesets' ||
-    state.main.tool === 'objects' ||
-    state.main.tool === 'tracking' ||
-    (state.main.tool === 'route-planner' &&
-      state.routePlanner.pickMode === null));
+export const selectingModeSelector = (state: RootState): boolean => {
+  const mode = activeModeSelector(state);
 
-export const drawingLinePolys = (state: RootState): boolean =>
-  !pickingModeSelector(state) &&
-  (state.drawingLines.drawing ||
-    state.main.tool === 'draw-lines' ||
-    state.main.tool === 'draw-polygons');
+  return (
+    !window.fmEmbedded &&
+    !pickingModeSelector(state) &&
+    !state.drawingLines.drawing &&
+    // selection works when no map-click tool captures the click, except a
+    // route-planner that is actively picking points
+    (mode === null ||
+      (mode === 'route-planner' && state.routePlanner.pickMode === null))
+  );
+};
+
+export const drawingLinePolys = (state: RootState): boolean => {
+  // Only the active drawing tool captures clicks / edits lines — being merely
+  // open (visible toolbar) must not.
+  const tool = activeMapToolSelector(state);
+
+  return tool === 'draw-lines' || tool === 'draw-polygons';
+};
 
 export const trackGeojsonIsSuitableForElevationChart = (
   state: RootState,

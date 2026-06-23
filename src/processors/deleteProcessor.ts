@@ -55,8 +55,8 @@ export const deleteProcessor: Processor = {
 
       // dispatch(searchSetQuery({ query: '' }));
     } else if (
-      state.main.tool === 'import-file' ||
-      state.main.tool === 'map-details'
+      state.main.tools.includes('import-file') ||
+      state.main.tools.includes('map-details')
     ) {
       dispatch(trackViewerDelete());
     }

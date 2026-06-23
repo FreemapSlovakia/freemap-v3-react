@@ -116,9 +116,11 @@ While a saved map is loaded ("connected"), a toolbar shows the map name with **S
 
 - Access: Main menu > Drawing and measurement
 - Keyboard shortcut:
-  - <kbd>g</kbd> <kbd>p</kbd> for drawing points (markers) / measuring coordinates and elevation; URL path: `/#tool=draw-points`
-  - <kbd>g</kbd> <kbd>l</kbd> for drawing lines / measuring distance and azimuth; URL path: `/#tool=draw-lines`
-  - <kbd>g</kbd> <kbd>n</kbd> for drawing polygons / measuring area; URL path: `/#tool=draw-polygons`
+  - <kbd>g</kbd> <kbd>p</kbd> for drawing points (markers) / measuring coordinates and elevation; URL path: `/#tools=draw-points`
+  - <kbd>g</kbd> <kbd>l</kbd> for drawing lines / measuring distance and azimuth; URL path: `/#tools=draw-lines`
+  - <kbd>g</kbd> <kbd>n</kbd> for drawing polygons / measuring area; URL path: `/#tools=draw-polygons`
+
+Several tools can be open at once: their toolbars are stacked in the order opened, and the `tools=` URL parameter lists them comma-separated (e.g. `/#tools=route-planner,objects,changesets`). The map-click tools (route finder, drawing, map details) are mutually exclusive as the *active* one — only the active tool reacts to map clicks, switched by clicking a toolbar's title. (The legacy single-tool `tool=` parameter still works.)
 
 Toggles the drawing and measurement toolbar. The toolbar lets the user switch between Point / Line / Polygon and open **Style settings** (<kbd>e</kbd> <kbd>d</kbd>), the default drawing style (color, fill color, width, line cap, line join, dash style, shape) applied to new drawings.
 
@@ -199,7 +201,7 @@ The marker icon can be globally changed (pin/ring/square).
 
 - Access: Main menu > File import
 - Keyboard shortcut: <kbd>g</kbd> <kbd>g</kbd>
-- URL path: `/#tool=import-file` (legacy `/#tool=track-viewer` still works)
+- URL path: `/#tools=import-file` (legacy `/#tool=import-file` and the old `track-viewer` alias still work)
 
 Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=upload-track`), which accepts GPX and GeoJSON files. Once a track is loaded, the toolbar offers:
 
@@ -214,7 +216,7 @@ Toggles the file import toolbar. **Upload** opens the file import modal (URL pat
 
 - Access: Main menu > Map details
 - Keyboard shortcut: <kbd>g</kbd> <kbd>i</kbd>
-- URL path: `/#tool=map-details`
+- URL path: `/#tools=map-details`
 
 Toggles the map details toolbar. Clicking a location queries information about it, grouped by source (each toggleable via the **Sources** dropdown):
 
@@ -228,7 +230,7 @@ Selecting a feature opens a detail popup with its OSM tags, a link to open it at
 
 - Access: Main menu > Map changes
 - Keyboard shortcut: <kbd>g</kbd> <kbd>x</kbd>
-- URL path: `/#tool=changesets`
+- URL path: `/#tools=changesets`
 
 Toggles the OSM changes toolbar, which contains: a dropdown to select the time window (changesets from the last 3, 7, 14, or 30 days), an "All authors" text input to filter by OSM username, a clear button, a button to download the changesets, and an edit button.
 OSM changes matching the selected parameters are displayed on the map as markers showing the mapper's name and changeset description.

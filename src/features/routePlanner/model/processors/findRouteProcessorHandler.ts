@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
-import { clearMapFeatures, setTool } from '@app/store/actions.js';
+import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import { ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
@@ -35,6 +36,9 @@ import {
 import { updateRouteTypes } from './findRouteProcessor.js';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures];
+
+const routePlannerClosed = (state: RootState) =>
+  !state.main.tools.includes('route-planner');
 
 enum GraphhopperSign {
   UNKNOWN = -99,
@@ -469,7 +473,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         messageLoader: loadRoutePlannerMessages,
         style: 'info',
         actions,
-        cancelType: [setTool.type, routePlannerAddPoint.type],
+        cancelType: routePlannerAddPoint.type,
+        statePredicate: routePlannerClosed,
       }),
     );
   }

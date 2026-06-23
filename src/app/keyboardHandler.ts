@@ -18,6 +18,7 @@ import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import {
+  activateTool,
   clearMapFeatures,
   deleteFeature,
   openInExternalApp,
@@ -93,7 +94,13 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       return selectFeature(null);
     }
 
-    if (!showingModal && !suspendedModal && state.main.tool) {
+    // Back out gradually: first unfocus the active tool (keeping it open), then
+    // on a further Esc close all open tools.
+    if (!showingModal && !suspendedModal && state.main.activeTool) {
+      return activateTool(state.main.activeTool);
+    }
+
+    if (!showingModal && !suspendedModal && state.main.tools.length > 0) {
       return setTool(null);
     }
 

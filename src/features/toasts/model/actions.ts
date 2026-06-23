@@ -1,5 +1,6 @@
 import type { RootAction } from '@app/store/rootAction.js';
-import { createAction } from '@reduxjs/toolkit';
+import type { RootState } from '@app/store/store.js';
+import { createAction, type UnknownAction } from '@reduxjs/toolkit';
 import type { Leaves, MessagePaths } from '@shared/types/common.js';
 import { ButtonVariant } from 'react-bootstrap/esm/types.js';
 import type { Messages } from '@/translations/messagesInterface.js';
@@ -30,7 +31,13 @@ export type Toast<T = Messages> = {
     | 'dark';
   actions?: ToastAction[];
   id?: string;
+  // Dismissal conditions, combined per `predicatesOperation` (default OR). The
+  // `cancelType` action-type match mirrors `cancelActions` on httpRequest.
   cancelType?: string | string[] | RegExp;
+  actionPredicate?: (action: UnknownAction) => boolean;
+  statePredicate?: (state: RootState) => boolean;
+  stateChangePredicate?: (state: RootState) => unknown;
+  predicatesOperation?: 'AND' | 'OR';
   noClose?: boolean;
 };
 
