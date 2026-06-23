@@ -1,4 +1,4 @@
-import { activateTool, closeTool, Tool } from '@app/store/actions.js';
+import { setTool, Tool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
@@ -61,7 +61,11 @@ export function ToolMenu({ tool, children }: Props): ReactElement {
                   <Button
                     variant="outline-primary"
                     active={isActive}
-                    onClick={() => dispatch(activateTool(tool))}
+                    onClick={() =>
+                      dispatch(
+                        setTool({ tool, mode: isActive ? 'open' : 'activate' }),
+                      )
+                    }
                     {...props}
                   >
                     {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}{' '}
@@ -99,7 +103,7 @@ export function ToolMenu({ tool, children }: Props): ReactElement {
                 {({ props }) => (
                   <Button
                     variant="dark"
-                    onClick={() => dispatch(closeTool(tool))}
+                    onClick={() => dispatch(setTool({ tool, mode: 'close' }))}
                     {...props}
                   >
                     <FaTimes />

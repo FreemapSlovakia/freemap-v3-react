@@ -117,11 +117,11 @@ button#freemap-logo {
 /* The focused tool toolbar (its title also renders as a filled/active pill). */
 .fm-toolbar-active {
   @media screen {
-    outline: 4px solid rgba(13, 110, 253, 0.8);
+    outline: 2px solid rgba(13, 110, 253, 0.8);
 
     &.fm-toolbar-selection {
-      /*outline: 4px solid rgba(25, 135, 34, 0.8);*/
-      outline: 4px solid rgba(13, 202, 240, 0.8);
+      /*outline: 2px solid rgba(25, 135, 34, 0.8);*/
+      outline: 2px solid rgba(13, 202, 240, 0.8);
     }
     outline-offset: -1px;
   }

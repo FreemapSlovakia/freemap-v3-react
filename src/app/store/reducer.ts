@@ -26,9 +26,7 @@ import {
   isMapClickTool,
 } from '@shared/toolDefinitions.js';
 import {
-  activateTool,
   clearMapFeatures,
-  closeTool,
   convertToDrawing,
   deleteFeature,
   hideInfoBar,
@@ -73,36 +71,40 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         return;
       }
 
-      const next = action.payload;
+      const { tool, mode } = action.payload;
 
-      if (next === null) {
-        state.tools = [];
-        state.activeTool = null;
+      if (mode === 'close') {
+        state.tools = state.tools.filter((t) => t !== tool);
+
+        if (state.activeTool === tool) {
+          state.activeTool = null;
+        }
 
         return;
       }
 
-      // A tool and a selection are mutually exclusive: focusing a tool drops the
-      // selection (so e.g. opening the drawing tool with a line selected starts a
-      // fresh line instead of extending the selected one).
-      state.selection = null;
-
-      // Open `next` at the end if new, keeping the order tools were opened in
-      // (an already-open tool keeps its slot). The draw-* tools share one menu,
+      // open / activate: ensure the tool is open, keeping the order tools were
+      // opened in (already-open keeps its slot). The draw-* tools share one menu,
       // so a new draw tool replaces the open one in place.
-      const drawIndex = isDrawTool(next)
+      const drawIndex = isDrawTool(tool)
         ? state.tools.findIndex(isDrawTool)
         : -1;
 
       if (drawIndex >= 0) {
-        state.tools[drawIndex] = next;
-      } else if (!state.tools.includes(next)) {
-        state.tools.push(next);
+        state.tools[drawIndex] = tool;
+      } else if (!state.tools.includes(tool)) {
+        state.tools.push(tool);
       }
 
-      // Only map-click tools become active; opening an overlay just deactivates
-      // whatever was active (and dropped the selection above).
-      state.activeTool = isMapClickTool(next) ? next : null;
+      if (mode === 'activate') {
+        // Focus it (overlays can't be active); a tool and a selection are
+        // mutually exclusive, so drop the selection.
+        state.activeTool = isMapClickTool(tool) ? tool : null;
+        state.selection = null;
+      } else if (state.activeTool === tool) {
+        // mode 'open' is passive — deactivate this tool if it was the active one.
+        state.activeTool = null;
+      }
     })
     .addCase(setTools, (state, action) => {
       const tools = dedupeOpenTools(action.payload);
@@ -110,28 +112,6 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       state.tools = tools;
 
       state.activeTool = tools.filter(isMapClickTool).at(-1) ?? null;
-    })
-    .addCase(activateTool, (state, action) => {
-      // Only map-click tools can be focused. Clicking the title toggles focus:
-      // activate, or deactivate if already active (then nothing owns map clicks).
-      if (!isMapClickTool(action.payload)) {
-        return;
-      }
-
-      if (state.activeTool === action.payload) {
-        state.activeTool = null;
-      } else if (state.tools.includes(action.payload)) {
-        state.activeTool = action.payload;
-        // A tool and a selection are mutually exclusive.
-        state.selection = null;
-      }
-    })
-    .addCase(closeTool, (state, action) => {
-      state.tools = state.tools.filter((t) => t !== action.payload);
-
-      if (state.activeTool === action.payload) {
-        state.activeTool = null;
-      }
     })
     .addCase(drawingLineStopDrawing, (state) => {
       state.tools = state.tools.filter((t) => !isDrawTool(t));

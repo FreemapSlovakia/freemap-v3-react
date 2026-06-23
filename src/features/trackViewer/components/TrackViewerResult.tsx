@@ -92,7 +92,7 @@ export default function TrackViewerResult({
   const dispatch = useDispatch();
 
   const setThisTool = () => {
-    dispatch(setTool('import-file'));
+    dispatch(setTool({ tool: 'import-file', mode: 'open' }));
   };
 
   // TODO rather compute some hash or better - detect real change

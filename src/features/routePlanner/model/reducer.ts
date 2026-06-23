@@ -147,17 +147,26 @@ export const routePlannerReducer = createReducer(
                 : null
             : null,
       }))
-      // Arm point-picking only when route-planner is the tool being opened
-      // (or restored) — not on every setTool, which now also fires when other
-      // tools open alongside an already-open route-planner.
+      // Arm point-picking when route-planner is focused (or restored): fall back
+      // to finishing an existing route, or starting a new one. Only when nothing
+      // is already armed, and not on a passive `open`.
       .addCase(setTool, (state, action) =>
-        action.payload === 'route-planner'
-          ? { ...state, pickMode: 'start' }
+        action.payload.tool === 'route-planner' &&
+        action.payload.mode === 'activate'
+          ? {
+              ...state,
+              pickMode:
+                state.pickMode ?? (getStart(state) ? 'finish' : 'start'),
+            }
           : state,
       )
       .addCase(setTools, (state, action) =>
         action.payload.includes('route-planner')
-          ? { ...state, pickMode: 'start' }
+          ? {
+              ...state,
+              pickMode:
+                state.pickMode ?? (getStart(state) ? 'finish' : 'start'),
+            }
           : state,
       )
       .addCase(clearMapFeatures, (state) => ({

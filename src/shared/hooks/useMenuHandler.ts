@@ -1,12 +1,12 @@
 import {
   clearMapFeatures,
-  closeTool,
   ExternalTarget,
   Modal,
   openInExternalApp,
   saveSettings,
   setActiveModal,
   setTool,
+  setTools,
   Tool,
   ToolSchema,
 } from '@app/store/actions.js';
@@ -168,7 +168,7 @@ export function useMenuHandler({
 
       if (tool !== undefined) {
         if (!tool) {
-          dispatch(setTool(null));
+          dispatch(setTools([]));
         } else {
           const parsed = ToolSchema.safeParse(tool);
 
@@ -176,7 +176,12 @@ export function useMenuHandler({
             const t = parsed.data;
 
             // Menu items toggle: close if open, otherwise open and focus it.
-            dispatch(tools.includes(t) ? closeTool(t) : setTool(t));
+            dispatch(
+              setTool({
+                tool: t,
+                mode: tools.includes(t) ? 'close' : 'activate',
+              }),
+            );
           }
         }
 
@@ -188,7 +193,12 @@ export function useMenuHandler({
       if (key === 'drawing') {
         const parsed = ToolSchema.safeParse(storage.getItem('fm.drawingTool'));
 
-        dispatch(setTool(parsed.success ? parsed.data : 'draw-points'));
+        dispatch(
+          setTool({
+            tool: parsed.success ? parsed.data : 'draw-points',
+            mode: 'activate',
+          }),
+        );
 
         setShow(false);
 

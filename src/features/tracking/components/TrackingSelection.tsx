@@ -28,7 +28,9 @@ export function TrackingSelection(): ReactElement {
                 {...props}
                 variant="dark"
                 disabled={trackingOpen}
-                onClick={() => dispatch(setTool('tracking'))}
+                onClick={() =>
+                  dispatch(setTool({ tool: 'tracking', mode: 'open' }))
+                }
               >
                 <FaBullseye />
               </Button>

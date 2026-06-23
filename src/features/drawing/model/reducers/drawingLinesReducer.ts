@@ -1,14 +1,12 @@
 import {
-  activateTool,
   applySettings,
   clearMapFeatures,
-  closeTool,
   selectFeature,
   setTool,
+  setTools,
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
-import { isDrawTool } from '@shared/toolDefinitions.js';
 import { lineString } from '@turf/helpers';
 import { simplify as turfSimplify } from '@turf/simplify';
 import {
@@ -235,13 +233,10 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
 
       state.joinWith = undefined;
     })
-    .addCase(closeTool, (state, action) =>
-      isDrawTool(action.payload)
-        ? { ...state, drawing: false, joinWith: undefined }
-        : state,
-    )
+    // Any tool open/close/focus change or stopping aborts the in-progress draft
+    // (during active drawing only addPoint fires, never setTool).
     .addMatcher(
-      isAnyOf(setTool, activateTool, drawingLineStopDrawing),
+      isAnyOf(setTool, setTools, drawingLineStopDrawing),
       (state) => ({
         ...state,
         drawing: false,

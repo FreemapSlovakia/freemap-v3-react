@@ -446,7 +446,7 @@ export function Main(): ReactElement {
 
       dispatch(setActiveModal(null));
 
-      dispatch(setTool('import-file'));
+      dispatch(setTool({ tool: 'import-file', mode: 'open' }));
 
       dispatch(elevationChartClose());
     },
@@ -486,7 +486,7 @@ export function Main(): ReactElement {
 
       dispatch(setActiveModal(null));
 
-      dispatch(setTool('import-file'));
+      dispatch(setTool({ tool: 'import-file', mode: 'open' }));
 
       dispatch(elevationChartClose());
     },

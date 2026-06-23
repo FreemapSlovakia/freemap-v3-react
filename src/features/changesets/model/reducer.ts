@@ -1,9 +1,4 @@
-import {
-  clearMapFeatures,
-  closeTool,
-  setTool,
-  setTools,
-} from '@app/store/actions.js';
+import { clearMapFeatures, setTool, setTools } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   Changeset,
@@ -29,26 +24,23 @@ export const initialState: ChangesetsState = {
 export const changesetReducer = createReducer(initialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => initialState)
-    // Opening the tool starts a fresh 3-day query; closing it (or closing all
-    // tools via setTool(null)) clears the changesets off the map, like photos.
+    // Opening the tool starts a fresh 3-day query; closing it clears the
+    // changesets off the map, like photos.
     .addCase(setTool, (state, action) =>
-      action.payload === 'changesets'
-        ? { ...initialState, days: 3 }
-        : action.payload === null
+      action.payload.tool === 'changesets'
+        ? action.payload.mode === 'close'
           ? initialState
-          : state,
+          : { ...initialState, days: 3 }
+        : state,
     )
-    // URL restore opens tools via setTools — apply the same fresh-on-open /
-    // clear-on-absent behavior so a restored #tools=changesets actually loads.
+    // URL restore opens tools via setTools (and `[]` closes all) — apply the
+    // same fresh-on-open / clear-on-absent behavior.
     .addCase(setTools, (state, action) =>
       action.payload.includes('changesets')
         ? state.days === null
           ? { ...initialState, days: 3 }
           : state
         : initialState,
-    )
-    .addCase(closeTool, (state, action) =>
-      action.payload === 'changesets' ? initialState : state,
     )
     .addCase(changesetsSet, (state, action) => {
       state.changesets = action.payload;

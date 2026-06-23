@@ -40,7 +40,7 @@ function ObjectsToggleButton(): ReactElement {
           {...props}
           variant="dark"
           disabled={objectsOpen}
-          onClick={() => dispatch(setTool('objects'))}
+          onClick={() => dispatch(setTool({ tool: 'objects', mode: 'open' }))}
         >
           <TbMapPins />
         </Button>
@@ -87,7 +87,9 @@ export default function ObjectSelection(): ReactElement | null {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  dispatch(setTool('route-planner'));
+                  dispatch(
+                    setTool({ tool: 'route-planner', mode: 'activate' }),
+                  );
 
                   dispatch(
                     routePlannerSetStart({
@@ -108,7 +110,9 @@ export default function ObjectSelection(): ReactElement | null {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  dispatch(setTool('route-planner'));
+                  dispatch(
+                    setTool({ tool: 'route-planner', mode: 'activate' }),
+                  );
 
                   dispatch(
                     routePlannerSetFinish({

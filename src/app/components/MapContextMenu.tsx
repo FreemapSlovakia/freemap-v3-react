@@ -207,7 +207,7 @@ export function MapContextMenu(): ReactElement {
           break;
 
         case 'startLine':
-          dispatch(setTool('draw-lines'));
+          dispatch(setTool({ tool: 'draw-lines', mode: 'activate' }));
 
           dispatch(
             drawingLineAddPoint({
@@ -230,7 +230,7 @@ export function MapContextMenu(): ReactElement {
           break;
 
         case 'startRoute':
-          dispatch(setTool('route-planner'));
+          dispatch(setTool({ tool: 'route-planner', mode: 'activate' }));
 
           dispatch(
             routePlannerSetStart({
@@ -244,7 +244,7 @@ export function MapContextMenu(): ReactElement {
           break;
 
         case 'finishRoute':
-          dispatch(setTool('route-planner'));
+          dispatch(setTool({ tool: 'route-planner', mode: 'activate' }));
 
           dispatch(
             routePlannerSetFinish({

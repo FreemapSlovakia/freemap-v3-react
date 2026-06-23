@@ -6,17 +6,19 @@ import storage from 'local-storage-fallback';
 export const setToolProcessor: Processor<typeof setTool> = {
   actionCreator: setTool,
   async handle({ action, getState }) {
-    const tool = action.payload;
+    const { tool, mode } = action.payload;
 
-    if (tool) {
-      window._paq.push(['trackEvent', 'Tool', 'set', tool]);
+    if (mode === 'close') {
+      return;
+    }
 
-      if (
-        getState().cookieConsent.cookieConsentResult !== null &&
-        isDrawTool(tool)
-      ) {
-        storage.setItem('fm.drawingTool', tool);
-      }
+    window._paq.push(['trackEvent', 'Tool', 'set', tool]);
+
+    if (
+      getState().cookieConsent.cookieConsentResult !== null &&
+      isDrawTool(tool)
+    ) {
+      storage.setItem('fm.drawingTool', tool);
     }
   },
 };

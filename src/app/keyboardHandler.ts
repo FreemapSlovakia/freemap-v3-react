@@ -18,7 +18,6 @@ import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import {
-  activateTool,
   clearMapFeatures,
   deleteFeature,
   openInExternalApp,
@@ -26,6 +25,7 @@ import {
   setActiveModal,
   setSelectingHomeLocation,
   setTool,
+  setTools,
 } from './store/actions.js';
 import { showGalleryViewerSelector } from './store/selectors.js';
 import { MyStore, RootState } from './store/store.js';
@@ -97,11 +97,11 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     // Back out gradually: first unfocus the active tool (keeping it open), then
     // on a further Esc close all open tools.
     if (!showingModal && !suspendedModal && state.main.activeTool) {
-      return activateTool(state.main.activeTool);
+      return setTool({ tool: state.main.activeTool, mode: 'open' });
     }
 
     if (!showingModal && !suspendedModal && state.main.tools.length > 0) {
-      return setTool(null);
+      return setTools([]);
     }
 
     return undefined;
@@ -256,7 +256,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       );
 
       if (toolDefinition?.kbd) {
-        return setTool(toolDefinition.tool);
+        return setTool({ tool: toolDefinition.tool, mode: 'activate' });
       }
 
       if (event.code === 'KeyW') {

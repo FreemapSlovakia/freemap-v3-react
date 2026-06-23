@@ -23,7 +23,9 @@ export function RoutePlannerToggleButton(): ReactElement | undefined | false {
           {...props}
           variant="dark"
           disabled={routePlannerOpen}
-          onClick={() => dispatch(setTool('route-planner'))}
+          onClick={() =>
+            dispatch(setTool({ tool: 'route-planner', mode: 'open' }))
+          }
         >
           <FaRoute />
         </Button>

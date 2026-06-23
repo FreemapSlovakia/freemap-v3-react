@@ -43,8 +43,12 @@ export const changesetsProcessor: Processor = {
   actionCreator: [changesetsSetParams, changesetsRefresh, setTool, setTools],
   handle: async ({ action, dispatch, getState, toastError }) => {
     // setTool fires for every tool; only (re)fetch when changesets is the one
-    // being opened, not when some other tool opens while changesets stays up.
-    if (setTool.match(action) && action.payload !== 'changesets') {
+    // being opened, not when some other tool opens while changesets stays up,
+    // nor when changesets itself is being closed.
+    if (
+      setTool.match(action) &&
+      (action.payload.tool !== 'changesets' || action.payload.mode === 'close')
+    ) {
       return;
     }
 
@@ -55,7 +59,7 @@ export const changesetsProcessor: Processor = {
     }
 
     // Cancel the fetch/toasts whenever the changesets tool leaves the open set —
-    // closeTool('changesets'), setTool(null) (close all), restore without it.
+    // closing it, closing all tools, or a restore without it.
     const changesetsClosed = (s: RootState) =>
       !s.main.tools.includes('changesets');
 

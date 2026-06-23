@@ -33,7 +33,11 @@ export default function DrawingMenu(): ReactElement | undefined {
           breakpoint="lg"
           name={m?.general.drawingTool}
           value={activeTool}
-          onSelect={(tool) => dispatch(setTool(ToolSchema.parse(tool)))}
+          onSelect={(tool) =>
+            dispatch(
+              setTool({ tool: ToolSchema.parse(tool), mode: 'activate' }),
+            )
+          }
           options={toolDefinitions
             .filter((td) => td.draw)
             .map(({ tool, icon, msgKey: key, kbd }) => ({

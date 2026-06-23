@@ -266,7 +266,10 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
       lines: [],
     };
 
-    for (const action of [drawingLineStopDrawing(), setTool(null)]) {
+    for (const action of [
+      drawingLineStopDrawing(),
+      setTool({ tool: 'draw-lines', mode: 'close' }),
+    ]) {
       const next = drawingLinesReducer(state, action);
 
       expect(next.drawing).toBe(false);
