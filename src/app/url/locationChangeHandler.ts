@@ -634,8 +634,8 @@ export function handleLocationChange(store: MyStore): void {
   }
 
   {
-    // Unified modal/overlay param. Legacy `document=`/`tip=<key>` links fold
-    // into the packed `show=document/<key>` form.
+    // Unified modal/overlay param. Legacy `document=`/`tip=`/`image=`/`wmc=`
+    // links fold into the packed `show=type/arg` form.
     const showRaw =
       typeof query['show'] === 'string'
         ? query['show']
@@ -643,15 +643,45 @@ export function handleLocationChange(store: MyStore): void {
           ? `document/${query['document']}`
           : typeof query['tip'] === 'string'
             ? `document/${query['tip']}`
-            : undefined;
+            : typeof query['image'] === 'string'
+              ? `gallery-viewer/${query['image']}`
+              : typeof query['wmc'] === 'string'
+                ? `wmc/${query['wmc']}`
+                : undefined;
 
-    const nextModal = showRaw === undefined ? null : decodeShow(showRaw);
+    const next = showRaw === undefined ? null : decodeShow(showRaw);
+
+    // The gallery viewer and the Wikimedia Commons preview own their own slice
+    // state; everything else lives in main.activeModal.
+    if (next?.type === 'gallery-viewer') {
+      if (getState().gallery.activeImageId !== next.id) {
+        dispatch(galleryRequestImage(next.id));
+      }
+    } else if (getState().gallery.activeImageId) {
+      dispatch(galleryClear());
+    }
+
+    if (next?.type === 'wmc') {
+      const wmc = getState().wikimediaCommons;
+
+      if (wmc.preview?.pageId !== next.pageId && wmc.loading !== next.pageId) {
+        dispatch(wikimediaCommonsLoadPreview(next.pageId));
+      }
+    } else if (
+      getState().wikimediaCommons.preview ||
+      getState().wikimediaCommons.loading
+    ) {
+      dispatch(wikimediaCommonsSetPreview(null));
+    }
+
+    const mainNext =
+      next?.type === 'gallery-viewer' || next?.type === 'wmc' ? null : next;
 
     if (
       encodeActiveModal(getState().main.activeModal) !==
-      encodeActiveModal(nextModal)
+      encodeActiveModal(mainNext)
     ) {
-      dispatch(setActiveModal(nextModal));
+      dispatch(setActiveModal(mainNext));
     }
   }
 
@@ -934,35 +964,6 @@ function handleGallery(
     if (Object.keys(newFilter).length !== 0) {
       dispatch(gallerySetFilter({ ...filter, ...newFilter }));
     }
-  }
-
-  if (typeof query['image'] === 'string') {
-    const imageId = Number(query['image']);
-
-    if (getState().gallery.activeImageId !== imageId) {
-      dispatch(galleryRequestImage(imageId));
-    }
-  } else if (getState().gallery.activeImageId) {
-    dispatch(galleryClear());
-  }
-
-  if (typeof query['wmc'] === 'string') {
-    const pageId = Number(query['wmc']);
-
-    const wmcState = getState().wikimediaCommons;
-
-    if (
-      Number.isFinite(pageId) &&
-      wmcState.preview?.pageId !== pageId &&
-      wmcState.loading !== pageId
-    ) {
-      dispatch(wikimediaCommonsLoadPreview(pageId));
-    }
-  } else if (
-    getState().wikimediaCommons.preview ||
-    getState().wikimediaCommons.loading
-  ) {
-    dispatch(wikimediaCommonsSetPreview(null));
   }
 
   const cb = GalleryColorizeBySchema.safeParse(query['gallery-cb']);

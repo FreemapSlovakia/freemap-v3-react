@@ -55,7 +55,7 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
       it would let many hand-written `useMemo`/`useCallback` be dropped, changing
       how much manual hook churn is worthwhile).
 
-## Modal/overlay state unification — Phase 2
+## Modal/overlay state unification
 
 Phase 1 (done) made `state.main.activeModal` a `Selection`-like discriminated
 union `{ type; …args } | null`, folded the `document` overlay into it, drove the
@@ -64,19 +64,22 @@ and unified URL serialization through the packed `show=type/arg` codec
 (`encodeActiveModal`/`decodeShow` in `src/app/store/actions.ts`), with backward
 compat for `document=`/`tip=`/legacy `show=` renames.
 
-- [ ] **Fold `gallery-viewer` into `activeModal`.** Replace `gallery.activeImageId`
-      with `activeModal.type === 'gallery-viewer'` (id arg). Move the `next`/`prev`
-      resolution out of the `galleryRequestImage` reducer into
-      `galleryRequestImageProcessor`; it dispatches `setActiveModal({type:'gallery-viewer', id})`
-      then fetches. Update `showGalleryViewerSelector`, the delete/stars/comment
-      processors, and `GalleryViewerModal`. Drop the bespoke `image=` serialize
-      block in `urlProcessor.ts` and the `image=` deserialize in
-      `locationChangeHandler.ts` (now handled by the unified codec — already in
-      `decodeShow`/`encodeActiveModal`).
-- [ ] **Fold `wmc` into `activeModal`.** Modal show → `activeModal.type === 'wmc'`
-      (pageId arg). `wikimediaCommonsLoadPreview` also dispatches
-      `setActiveModal({type:'wmc', pageId})`; `preview`/`loading` stay fetch status.
-      Drop the `wmc=` serialize/deserialize blocks (handled by the codec).
+Phase 2 (done) routed the gallery viewer and the Wikimedia Commons preview
+through the same `show=` param (`show=gallery-viewer/<id>`, `show=wmc/<pageId>`),
+dropping the bespoke `image=`/`wmc=` serialize/deserialize blocks (kept as legacy
+read-aliases). Their slice state (`gallery.activeImageId`,
+`wikimediaCommons.preview/loading`) is unchanged — only the URL layer was
+unified.
+
+Optional deeper cleanup (not required; `show=` is already the single param):
+
+- [ ] **Fold `gallery-viewer`/`wmc` state into `activeModal`.** Replace
+      `gallery.activeImageId` / `wikimediaCommons.preview` with
+      `activeModal.type === 'gallery-viewer' | 'wmc'` as the source of truth. Needs
+      moving the `next`/`prev` resolution out of the `galleryRequestImage` reducer
+      into a processor, and updating `showGalleryViewerSelector`,
+      `GalleryViewerModal`, and the gallery delete/stars/comment processors. Higher
+      churn, no user-visible change — only do it if the dual state becomes a problem.
 - [ ] **Delete dead `src/features/documents/model/reducer.ts`.** Its `documentKey`
       slice is not wired into `rootReducer`; the document overlay now lives in
       `activeModal`.

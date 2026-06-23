@@ -250,17 +250,6 @@ export const urlProcessor: Processor = {
       historyParts.push(['track-colorize-by', trackViewer.colorizeTrackBy]);
     }
 
-    if (gallery.activeImageId) {
-      queryParts.push(['image', gallery.activeImageId]);
-    }
-
-    const wmcPageId =
-      wikimediaCommons.preview?.pageId ?? wikimediaCommons.loading;
-
-    if (wmcPageId) {
-      queryParts.push(['wmc', wmcPageId]);
-    }
-
     if (changesets.days) {
       queryParts.push(['changesets-days', changesets.days]);
     }
@@ -368,7 +357,20 @@ export const urlProcessor: Processor = {
     }
 
     {
-      const show = encodeActiveModal(main.activeModal);
+      // The gallery viewer and the Wikimedia Commons preview keep their own
+      // slice state but serialize through the same packed `show=` param.
+      const wmcPageId =
+        wikimediaCommons.preview?.pageId ?? wikimediaCommons.loading;
+
+      const show =
+        encodeActiveModal(main.activeModal) ??
+        encodeActiveModal(
+          gallery.activeImageId
+            ? { type: 'gallery-viewer', id: gallery.activeImageId }
+            : wmcPageId
+              ? { type: 'wmc', pageId: wmcPageId }
+              : null,
+        );
 
       if (show !== null) {
         queryParts.push(['show', show]);
