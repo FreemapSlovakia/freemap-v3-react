@@ -23,6 +23,7 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   tooManyPoints: ({ limit }) => `Výsledok bol obmedzený na ${limit} objektov.`,
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri získavaní objektov', err),
+  markerShape: 'Tvar značky',
   icon: {
     pin: 'Špendlík',
     ring: 'Okrúhla',

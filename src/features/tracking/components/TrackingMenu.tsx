@@ -11,12 +11,12 @@ import {
 } from '@shared/colorizers/index.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useMemo } from 'react';
-import { Button, Dropdown } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import {
   FaChartArea,
   FaMobileAlt,
@@ -115,8 +115,13 @@ export function TrackingMenu(): ReactElement {
         )}
       </LongPressTooltip>
 
-      <Dropdown
+      <SelectDropdown
         className="ms-1"
+        id="tracking_visual"
+        breakpoint="sm"
+        toggleIcon={<FaRegEye />}
+        name={m?.general.visual}
+        value={display}
         onSelect={(key) => {
           const [points, line] = (key ?? '11')
             .split('')
@@ -126,53 +131,35 @@ export function TrackingMenu(): ReactElement {
 
           dispatch(trackingActions.setShowLine(line));
         }}
-      >
-        <Dropdown.Toggle id="tracking_visual" variant="secondary">
-          <FaRegEye /> {m?.general.visual}
-        </Dropdown.Toggle>
+        options={[
+          { value: '10', label: tm?.visual.points },
+          { value: '01', label: tm?.visual.line },
+          { value: '11', label: tm?.visual['line+points'] },
+        ]}
+      />
 
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
-          <Dropdown.Item eventKey="10" active={display === '10'}>
-            {tm?.visual.points}
-          </Dropdown.Item>
-
-          <Dropdown.Item eventKey="01" active={display === '01'}>
-            {tm?.visual.line}
-          </Dropdown.Item>
-
-          <Dropdown.Item eventKey="11" active={display === '11'}>
-            {tm?.visual['line+points']}
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-
-      <Dropdown
+      <SelectDropdown
         className="ms-1"
+        id="tracking_colorize"
+        breakpoint="sm"
+        toggleIcon={<FaPaintBrush />}
+        name={cm?.colorizeBy}
+        value={colorizeBy ?? 'none'}
         onSelect={(mode) => {
           dispatch(
             trackingActions.setColorizeBy(
-              ColorizingModeSchema.nullable().parse(mode),
+              ColorizingModeSchema.nullable().parse(
+                mode === 'none' ? null : mode,
+              ),
             ),
           );
         }}
-      >
-        <Dropdown.Toggle id="tracking_colorize" variant="secondary">
-          <FaPaintBrush /> {cm?.mode[colorizeBy ?? 'none']}
-        </Dropdown.Toggle>
-
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
-          {[undefined, ...colorizingModes].map((mode) => (
-            <Dropdown.Item
-              eventKey={mode}
-              key={mode || 'none'}
-              active={mode === colorizeBy}
-              disabled={mode !== undefined && !isModeAvailable(mode)}
-            >
-              {cm?.mode[mode ?? 'none']}
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
+        options={[undefined, ...colorizingModes].map((mode) => ({
+          value: mode ?? 'none',
+          label: cm?.mode[mode ?? 'none'],
+          disabled: mode !== undefined && !isModeAvailable(mode),
+        }))}
+      />
 
       {chartTrack && (
         <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>

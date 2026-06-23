@@ -22,7 +22,6 @@ const pl: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   tooBig:
     'Żądanie changesetów może zwrócić zbyt wiele elementów. Spróbuj przybliżyć mapę, wybrać mniej dni lub podać konkretnego autora.',
   olderThan: ({ days }) => `${days} dni`,
-  olderThanFull: ({ days }) => `Changesety z ostatnich ${days} dni`,
   notFound: 'Nie znaleziono żadnych changesetów.',
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas pobierania changesetów', err),

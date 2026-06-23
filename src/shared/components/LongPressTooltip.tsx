@@ -14,6 +14,12 @@ export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 type Props = {
   label?: ReactNode;
+  /**
+   * Name of the control. When set, the tooltip shows on hover/long-press even
+   * while the inline label is visible: expanded it reads as `name`, collapsed as
+   * `name: label` (so the hidden value stays discoverable).
+   */
+  name?: ReactNode;
   delay?: number;
   breakpoint?: Breakpoint;
   kbd?: string;
@@ -49,6 +55,7 @@ function getMinWidthForBreakpoint(breakpoint: Breakpoint): number {
 
 export function LongPressTooltip({
   label = '…',
+  name,
   kbd,
   delay = 500,
   breakpoint,
@@ -85,7 +92,7 @@ export function LongPressTooltip({
 
   const handleStart = useCallback(
     (e: PointerEvent) => {
-      if (!labelHidden || timeoutRef.current) {
+      if ((!labelHidden && name == null) || timeoutRef.current) {
         return;
       }
 
@@ -97,7 +104,7 @@ export function LongPressTooltip({
         setShow(true);
       }, delay);
     },
-    [delay, labelHidden],
+    [delay, labelHidden, name],
   );
 
   const handleClear = useCallback(() => {
@@ -135,6 +142,17 @@ export function LongPressTooltip({
     </Fragment>
   ));
 
+  const tooltipBody =
+    name == null ? (
+      label
+    ) : labelHidden ? (
+      <>
+        {name}: {label}
+      </>
+    ) : (
+      name
+    );
+
   return (
     <>
       {children({
@@ -157,11 +175,11 @@ export function LongPressTooltip({
         labelClassName: `d-none d-${breakpoint}-inline`,
       })}
 
-      {target && labelHidden && (
+      {target && (labelHidden || name != null) && (
         <Overlay target={target} show={show} placement="top" flip>
           {(props) => (
             <Tooltip {...props}>
-              {label}
+              {tooltipBody}
               {kbdEl}
             </Tooltip>
           )}

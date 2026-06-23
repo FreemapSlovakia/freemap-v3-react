@@ -11,6 +11,7 @@ import {
 } from '@shared/colorizers/index.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -37,6 +38,7 @@ import {
   Form,
   InputGroup,
 } from 'react-bootstrap';
+import { BiShapePolygon } from 'react-icons/bi';
 import {
   FaBullseye,
   FaChartArea,
@@ -53,6 +55,7 @@ import {
   FaStop,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
+import { PiGraph } from 'react-icons/pi';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import {
@@ -73,6 +76,13 @@ import {
 import { loadRoutePlannerMessages } from '../translations/loadRoutePlannerMessages.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
+
+const modeIcons: Record<RoutingMode, ReactElement> = {
+  route: <MdTimeline />,
+  trip: <PiGraph />,
+  roundtrip: <BiShapePolygon />,
+  isochrone: <FaBullseye />,
+};
 
 function useParam(
   initValue: number,
@@ -538,11 +548,13 @@ export default function RoutePlannerMenu(): ReactElement {
                 activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
               ]
             }
+            name={rpm?.modeLabel}
             breakpoint="sm"
           >
             {({ props, label, labelClassName }) => (
               <Dropdown.Toggle id="mode" variant="secondary" {...props}>
-                <MdTimeline /> <span className={labelClassName}>{label}</span>
+                {modeIcons[activeMode]}{' '}
+                <span className={labelClassName}>{label}</span>
               </Dropdown.Toggle>
             )}
           </LongPressTooltip>
@@ -559,6 +571,7 @@ export default function RoutePlannerMenu(): ReactElement {
                   title={rpm?.mode[mode]}
                   active={activeMode === mode}
                 >
+                  {modeIcons[mode]}{' '}
                   {rpm?.mode[mode === 'roundtrip' ? 'routndtrip-gh' : mode] ??
                     '…'}
                 </Dropdown.Item>
@@ -569,31 +582,24 @@ export default function RoutePlannerMenu(): ReactElement {
       )}
 
       {activeTTDef?.api === 'osrm' && (
-        <Dropdown
+        <SelectDropdown
           className="ms-1"
+          id="mode"
+          breakpoint="sm"
+          name={rpm?.modeLabel}
+          value={activeMode}
           onSelect={(mode) => {
             dispatch(routePlannerSetMode(mode as RoutingMode));
           }}
-        >
-          <Dropdown.Toggle id="mode" variant="secondary">
-            {rpm?.mode[activeMode] ?? '…'}
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            {(['route', 'trip', 'roundtrip'] satisfies RoutingMode[]).map(
-              (mode) => (
-                <Dropdown.Item
-                  eventKey={mode}
-                  key={mode}
-                  title={rpm?.mode[mode]}
-                  active={activeMode === mode}
-                >
-                  {rpm?.mode[mode] ?? '…'}
-                </Dropdown.Item>
-              ),
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
+          options={(['route', 'trip', 'roundtrip'] satisfies RoutingMode[]).map(
+            (mode) => ({
+              value: mode,
+              label: rpm?.mode[mode] ?? '…',
+              icon: modeIcons[mode],
+              title: rpm?.mode[mode],
+            }),
+          )}
+        />
       )}
 
       <ButtonGroup className="ms-1">
@@ -730,38 +736,32 @@ export default function RoutePlannerMenu(): ReactElement {
       </ButtonGroup>
 
       {routeFound && (
-        <Dropdown
+        <SelectDropdown
           className="ms-1"
           id="route-colorizing-mode"
+          breakpoint="sm"
+          toggleIcon={<FaPaintBrush />}
+          name={cm?.colorizeBy}
+          value={colorizeBy ?? 'none'}
           onSelect={(mode) => {
             dispatch(
               routePlannerColorizeBy(
-                ColorizingModeSchema.nullable().parse(mode),
+                ColorizingModeSchema.nullable().parse(
+                  mode === 'none' ? null : mode,
+                ),
               ),
             );
           }}
-        >
-          <Dropdown.Toggle variant="secondary">
-            <FaPaintBrush /> {cm?.mode[colorizeBy ?? 'none']}
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            {/* Unlike imported tracks, a planned route can never carry recorded
-                sensor data (heart rate, cadence, …), so those modes are hidden
-                rather than shown disabled. */}
-            {[undefined, ...colorizingModes.filter(isModeAvailable)].map(
-              (mode) => (
-                <Dropdown.Item
-                  eventKey={mode}
-                  key={mode || 'none'}
-                  active={mode === colorizeBy}
-                >
-                  {cm?.mode[mode ?? 'none']}
-                </Dropdown.Item>
-              ),
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
+          // Unlike imported tracks, a planned route can never carry recorded
+          // sensor data (heart rate, cadence, …), so those modes are hidden
+          // rather than shown disabled.
+          options={[undefined, ...colorizingModes.filter(isModeAvailable)].map(
+            (mode) => ({
+              value: mode ?? 'none',
+              label: cm?.mode[mode ?? 'none'],
+            }),
+          )}
+        />
       )}
 
       {routeFound && (

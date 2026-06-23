@@ -1,6 +1,7 @@
 import { ColorizerMessages } from './ColorizerMessages.js';
 
 const en: ColorizerMessages = {
+  colorizeBy: 'Colorize by',
   mode: {
     none: 'Inactive',
     elevation: 'Elevation',

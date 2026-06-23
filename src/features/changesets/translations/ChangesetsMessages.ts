@@ -6,8 +6,8 @@ export type ChangesetsMessages = {
   allAuthors: string;
   refresh: string;
   tooBig: string;
+  timeWindow: string;
   olderThan: (props: { days: number }) => string;
-  olderThanFull: (props: { days: number }) => string;
   notFound: string;
   fetchError: (props: { err: unknown }) => string;
   details: {

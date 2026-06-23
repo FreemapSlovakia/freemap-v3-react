@@ -264,6 +264,7 @@ export default function ObjectsMenu(): ReactElement {
 
       <MarkerTypeSelect
         className="ms-1"
+        breakpoint="lg"
         value={selectedIconValue}
         onChange={handleIconChange}
       />

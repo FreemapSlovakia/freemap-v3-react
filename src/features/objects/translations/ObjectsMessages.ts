@@ -11,6 +11,7 @@ export type ObjectsMessages = {
   };
   tooManyPoints: (props: { limit: number }) => string;
   fetchingError: (props: { err: unknown }) => string;
+  markerShape: string;
   icon: {
     pin: string;
     ring: string;

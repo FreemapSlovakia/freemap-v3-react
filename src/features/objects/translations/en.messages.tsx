@@ -22,6 +22,7 @@ const en: ObjectsMessages = {
   tooManyPoints: ({ limit }) => `Result was limited to ${limit} objects.`,
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Error fetching objects (POIs)', err),
+  markerShape: 'Marker shape',
   icon: {
     pin: 'Pin',
     ring: 'Ring',

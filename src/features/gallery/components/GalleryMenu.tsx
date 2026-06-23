@@ -172,6 +172,7 @@ export default function GalleryMenu() {
                 >
                   <LongPressTooltip
                     label={gm?.c[colorizeBy ?? 'disable']}
+                    name={gm?.colorizeBy}
                     breakpoint="sm"
                   >
                     {({ props, label, labelClassName }) => (

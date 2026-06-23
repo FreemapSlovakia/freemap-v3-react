@@ -74,6 +74,7 @@ const messages: Messages = {
     deleted: 'Deleted.',
     saved: 'Saved.',
     visual: 'Display',
+    drawingTool: 'Drawing tool',
     copyOk: 'Copied to clipboard.',
     noCookies: () => (
       <>
@@ -227,7 +228,7 @@ const messages: Messages = {
       geojson: 'GeoJSON',
       tile: 'Tile',
       coords: 'Coordinates',
-      'overpass-nearby': 'Nearby ',
+      'overpass-nearby': 'Nearby',
       'overpass-surrounding': 'Containing features',
       'nominatim-forward': 'Forward geocoding',
       'nominatim-reverse': 'Reverse geocoding',

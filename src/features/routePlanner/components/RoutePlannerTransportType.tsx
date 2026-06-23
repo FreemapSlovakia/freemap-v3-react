@@ -44,6 +44,7 @@ export function RoutePlannerTransportType({
     >
       <LongPressTooltip
         breakpoint="lg"
+        name={rpm?.transportTypeLabel}
         label={
           activeTTDef ? (
             <>

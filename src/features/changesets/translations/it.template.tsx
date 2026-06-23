@@ -11,7 +11,6 @@ const it: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   tooBig:
     'La richiesta dei changeset potrebbe restituire troppi risultati. Per favore aumenta lo zoom, scegli meno giorni o inserici un autore specifico.',
   olderThan: ({ days }) => `${days} giorni`,
-  olderThanFull: ({ days }) => `Changeset degli ultimi ${days} giorni`,
   notFound: 'Nessun changeset trovato.',
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Errore nel recupero dei changeset:', err),

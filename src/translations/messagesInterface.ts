@@ -50,6 +50,7 @@ export type Messages = {
     saved: string;
     deleted: string;
     visual: string;
+    drawingTool: string;
     copyOk: string;
     noCookies: () => JSX.Element;
     name: string;

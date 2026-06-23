@@ -74,6 +74,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleted: 'Zmazané.',
     saved: 'Uložené.',
     visual: 'Zobrazenie',
+    drawingTool: 'Kresliaci nástroj',
     copyOk: 'Skopírované do schránky.',
     noCookies: () => (
       <>

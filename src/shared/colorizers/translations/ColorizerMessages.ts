@@ -1,4 +1,5 @@
 export type ColorizerMessages = {
+  colorizeBy: string;
   mode: {
     none: string;
     elevation: string;

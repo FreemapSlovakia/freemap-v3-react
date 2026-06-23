@@ -1,12 +1,12 @@
 import { setActiveModal, setTool, ToolSchema } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import { ReactElement } from 'react';
-import { Button, Dropdown } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { openDrawToolSelector } from '@/app/store/selectors.js';
@@ -28,38 +28,21 @@ export default function DrawingMenu(): ReactElement | undefined {
   return (
     activeToolDef && (
       <ToolMenu tool={activeToolDef.tool}>
-        <Dropdown
+        <SelectDropdown
           className="ms-1"
+          breakpoint="lg"
+          name={m?.general.drawingTool}
+          value={activeTool}
           onSelect={(tool) => dispatch(setTool(ToolSchema.parse(tool)))}
-        >
-          <LongPressTooltip
-            breakpoint="lg"
-            label={m?.selections[activeToolDef.msgKey as 'drawPoints']}
-          >
-            {({ label, labelClassName, props }) => (
-              <Dropdown.Toggle variant="secondary" {...props}>
-                {activeToolDef.icon}{' '}
-                <span className={labelClassName}> {label}</span>
-              </Dropdown.Toggle>
-            )}
-          </LongPressTooltip>
-
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            {toolDefinitions
-              .filter((td) => td.draw)
-              .map(({ tool, icon, msgKey: key, kbd }) => (
-                <Dropdown.Item
-                  as="button"
-                  eventKey={tool}
-                  key={tool}
-                  active={tool === activeTool}
-                >
-                  {icon} {m?.selections[key as 'drawPoints'] ?? '…'}{' '}
-                  <kbd>g</kbd> <kbd>{kbd?.slice(3).toLowerCase()}</kbd>
-                </Dropdown.Item>
-              ))}
-          </Dropdown.Menu>
-        </Dropdown>
+          options={toolDefinitions
+            .filter((td) => td.draw)
+            .map(({ tool, icon, msgKey: key, kbd }) => ({
+              value: tool,
+              label: m?.selections[key as 'drawPoints'] ?? '…',
+              icon,
+              kbd: `g ${kbd?.slice(3).toLowerCase()}`,
+            }))}
+        />
 
         <LongPressTooltip
           label={dm?.defProps.menuItem}

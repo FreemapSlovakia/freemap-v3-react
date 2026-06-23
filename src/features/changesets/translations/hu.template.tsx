@@ -11,7 +11,6 @@ const hu: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   tooBig:
     'A változáskérések túl sok elemet adhatnak vissza. Kérlek, nagyíts rá, válassz kevesebb napot, vagy adj meg egy konkrét szerzőt.',
   olderThan: ({ days }) => `${days} nap`,
-  olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
   notFound: 'Nincs módosításkészlet.',
   fetchError: ({ err }) =>
     addError(

@@ -11,8 +11,6 @@ const cs: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   tooBig:
     'Požadavek na získání změn může vrátit spoustu záznamů. Zkuste přiblížit mapu, zvolit méně dní, nebo zadat konkrétního autora.',
   olderThan: ({ days }) => `${days} dn ${days === 3 ? 'i' : 'í'}`,
-  olderThanFull: ({ days }) =>
-    `Změny novější než ${days} dn ${days === 3 ? 'i' : 'í'}`,
   notFound: 'Nebyly nalezeny žádné změny.',
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při získávání změn', err),

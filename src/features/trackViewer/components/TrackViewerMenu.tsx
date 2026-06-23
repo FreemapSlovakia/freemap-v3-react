@@ -10,14 +10,14 @@ import { useColorizerMessages } from '@shared/colorizers/translations/useColoriz
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { flatten } from '@turf/flatten';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useCallback } from 'react';
-import { Button, Dropdown } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import {
   FaChartArea,
   FaCloudUploadAlt,
@@ -207,10 +207,17 @@ export function TrackViewerMenu(): ReactElement {
         )}
 
         {enableElevationChart && (
-          <Dropdown
+          <SelectDropdown
             className="ms-1"
+            id="colorizing_mode"
+            breakpoint="sm"
+            toggleIcon={<FaPaintBrush />}
+            name={cm?.colorizeBy}
+            value={colorizeTrackBy ?? 'none'}
             onSelect={(approach) => {
-              const mode = ColorizingModeSchema.nullable().parse(approach);
+              const mode = ColorizingModeSchema.nullable().parse(
+                approach === 'none' ? null : approach,
+              );
 
               // Elevation-derived modes route through the same fill prompt as
               // the chart, but only while elevation is missing and undecided;
@@ -227,24 +234,12 @@ export function TrackViewerMenu(): ReactElement {
                 dispatch(trackViewerColorizeTrackBy(mode));
               }
             }}
-          >
-            <Dropdown.Toggle id="colorizing_mode" variant="secondary">
-              <FaPaintBrush /> {cm?.mode[colorizeTrackBy ?? 'none']}
-            </Dropdown.Toggle>
-
-            <Dropdown.Menu popperConfig={fixedPopperConfig}>
-              {[undefined, ...colorizingModes].map((mode) => (
-                <Dropdown.Item
-                  eventKey={mode}
-                  key={mode || 'none'}
-                  active={mode === colorizeTrackBy}
-                  disabled={mode !== undefined && !isModeAvailable(mode)}
-                >
-                  {cm?.mode[mode ?? 'none']}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
+            options={[undefined, ...colorizingModes].map((mode) => ({
+              value: mode ?? 'none',
+              label: cm?.mode[mode ?? 'none'],
+              disabled: mode !== undefined && !isModeAvailable(mode),
+            }))}
+          />
         )}
 
         {enableElevationChart && (

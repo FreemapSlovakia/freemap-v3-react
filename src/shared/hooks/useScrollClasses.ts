@@ -53,15 +53,10 @@ export function useScrollClasses(
     [handleScroll],
   );
 
-  const resizeObserver = useRef(
-    window.ResizeObserver
-      ? new ResizeObserver((entries) => {
-          for (const entry of entries) {
-            handleScroll(entry.target);
-          }
-        })
-      : undefined,
-  );
+  // Created on first observe so callers that never attach the ref (the common
+  // case) don't allocate one. A bare `useRef(new ResizeObserver(…))` would
+  // construct and discard one on every render.
+  const resizeObserver = useRef<ResizeObserver | undefined>(undefined);
 
   const refSetter = useCallback(
     (e: HTMLDivElement | null) => {
@@ -77,6 +72,14 @@ export function useScrollClasses(
         e.addEventListener('scroll', handleScrollEvent);
 
         handleScroll(e);
+
+        if (!resizeObserver.current && window.ResizeObserver) {
+          resizeObserver.current = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+              handleScroll(entry.target);
+            }
+          });
+        }
 
         resizeObserver.current?.observe(e);
       } else if (e) {

@@ -39,6 +39,7 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     motorcycle: 'Motocykel',
     manual: 'Priama čiara',
   },
+  transportTypeLabel: 'Spôsob dopravy',
   development: 'vo vývoji',
   mode: {
     route: 'V určenom poradí',
@@ -47,6 +48,7 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     'routndtrip-gh': 'Výlet',
     isochrone: 'Izochróny',
   },
+  modeLabel: 'Režim trasovania',
   alternative: 'Alternatíva',
   distance: ({ value, diff }) => (
     <>

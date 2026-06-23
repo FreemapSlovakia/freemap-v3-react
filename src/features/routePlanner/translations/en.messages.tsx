@@ -38,6 +38,7 @@ const en: RoutePlannerMessages = {
     motorcycle: 'Motorcycle',
     manual: 'Straight line',
   },
+  transportTypeLabel: 'Transport type',
   development: 'in development',
   mode: {
     route: 'Ordered',
@@ -46,6 +47,7 @@ const en: RoutePlannerMessages = {
     'routndtrip-gh': 'Roundtrip',
     isochrone: 'Isochrones',
   },
+  modeLabel: 'Routing mode',
   alternative: 'Alternative',
   distance: ({ value, diff }) => (
     <>

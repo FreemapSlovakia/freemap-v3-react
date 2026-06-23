@@ -1,12 +1,12 @@
 import { convertToDrawing } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useState } from 'react';
-import { Button, Dropdown, Form, InputGroup } from 'react-bootstrap';
-import { FaDownload, FaEraser, FaPencilAlt } from 'react-icons/fa';
+import { Button, Form, InputGroup } from 'react-bootstrap';
+import { FaDownload, FaEraser, FaHistory, FaPencilAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { changesetsRefresh, changesetsSetParams } from '../model/actions.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
@@ -40,24 +40,21 @@ export default function ChangesetsMenu(): ReactElement {
 
   return (
     <ToolMenu tool="changesets">
-      <Dropdown
+      <SelectDropdown
         className="ms-1"
+        id="days"
+        breakpoint="lg"
+        toggleIcon={<FaHistory />}
+        name={cm?.timeWindow}
+        value={String(days)}
         onSelect={(d) => {
           dispatch(changesetsSetParams({ days: Number(d) }));
         }}
-      >
-        <Dropdown.Toggle variant="secondary" id="days">
-          {cm?.olderThanFull({ days }) ?? '…'}
-        </Dropdown.Toggle>
-
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
-          {[3, 7, 14, 30].map((d) => (
-            <Dropdown.Item key={d} eventKey={String(d)} active={d === days}>
-              {cm?.olderThan({ days: d })}
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
+        options={[3, 7, 14, 30].map((d) => ({
+          value: String(d),
+          label: cm?.olderThan({ days: d }),
+        }))}
+      />
 
       <Form
         className="ms-1 d-flex flex-nowrap"

@@ -1,9 +1,8 @@
 import type { MarkerType } from '@features/objects/model/actions.js';
 import { useObjectsMessages } from '@features/objects/translations/useObjectsMessages.js';
-import { SelectToggle } from '@shared/components/SelectToggle.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import type { Breakpoint } from '@shared/components/LongPressTooltip.js';
+import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { type ReactElement } from 'react';
-import { Dropdown } from 'react-bootstrap';
 import { FaCircle, FaMapMarker, FaSquare } from 'react-icons/fa';
 
 const markerTypes: MarkerType[] = ['pin', 'ring', 'square'];
@@ -19,6 +18,8 @@ type Props = {
   onChange: (markerType: MarkerType) => void;
   /** Render as a native-like select with a visible label (e.g. in forms). */
   asSelect?: boolean;
+  /** Below this breakpoint the shape name collapses into the tooltip. */
+  breakpoint?: Breakpoint;
   className?: string;
 };
 
@@ -26,34 +27,24 @@ export function MarkerTypeSelect({
   value,
   onChange,
   asSelect,
+  breakpoint,
   className,
 }: Props): ReactElement {
   const om = useObjectsMessages();
 
   return (
-    <Dropdown
+    <SelectDropdown
       className={className}
-      onSelect={(eventKey) => onChange(eventKey as MarkerType)}
-    >
-      <Dropdown.Toggle
-        as={asSelect ? SelectToggle : undefined}
-        variant={asSelect ? undefined : 'secondary'}
-      >
-        {icons[value]}
-        {asSelect ? <> {om?.icon[value]}</> : null}
-      </Dropdown.Toggle>
-
-      <Dropdown.Menu popperConfig={fixedPopperConfig}>
-        {markerTypes.map((markerType) => (
-          <Dropdown.Item
-            key={markerType}
-            eventKey={markerType}
-            active={value === markerType}
-          >
-            {icons[markerType]} {om?.icon[markerType]}
-          </Dropdown.Item>
-        ))}
-      </Dropdown.Menu>
-    </Dropdown>
+      asSelect={asSelect}
+      breakpoint={breakpoint}
+      name={om?.markerShape}
+      value={value}
+      onSelect={(markerType) => onChange(markerType as MarkerType)}
+      options={markerTypes.map((markerType) => ({
+        value: markerType,
+        label: om?.icon[markerType],
+        icon: icons[markerType],
+      }))}
+    />
   );
 }

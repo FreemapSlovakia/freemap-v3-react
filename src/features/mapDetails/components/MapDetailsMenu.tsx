@@ -1,12 +1,14 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, type ReactNode, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
+import { FaDatabase } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   MapDetailsSource,
@@ -41,6 +43,31 @@ export function MapDetailsMenu(): ReactElement | null {
 
   const dispatch = useDispatch();
 
+  const sources: {
+    key: MapDetailsSource;
+    name: ReactNode;
+    selected: boolean;
+  }[] = [
+    ...(
+      [
+        'nominatim-reverse',
+        'overpass-nearby',
+        'overpass-surrounding',
+      ] as MapDetailsSource[]
+    ).map((source) => ({
+      key: source,
+      name: m?.search.sources[source],
+      selected: !excludeSources.has(source),
+    })),
+    ...activeWmsLayerDefs.map((def) => ({
+      key: `wms:${def.type}` as MapDetailsSource,
+      name: `${def.custom ? def.name : m?.mapLayers.letters[def.type]} (WMS)`,
+      selected: !excludeSources.has(`wms:${def.type}`),
+    })),
+  ];
+
+  const selectedNames = sources.filter((s) => s.selected).map((s) => s.name);
+
   return (
     <ToolMenu tool="map-details">
       <Dropdown
@@ -59,38 +86,36 @@ export function MapDetailsMenu(): ReactElement | null {
         autoClose="outside"
         onToggle={(open) => setSourcesOpen(open)}
       >
-        <Dropdown.Toggle variant="secondary">{mdm?.sources}</Dropdown.Toggle>
+        {/* No breakpoint so the tooltip always shows and enumerates the
+            selected sources; the "Sources:" prefix collapses on its own. */}
+        <LongPressTooltip
+          label={
+            <>
+              {mdm?.sources}:{' '}
+              {selectedNames.length
+                ? selectedNames.flatMap((n, i) => (i ? [', ', n] : [n]))
+                : '—'}
+            </>
+          }
+        >
+          {({ props }) => (
+            <Dropdown.Toggle variant="secondary" {...props}>
+              <FaDatabase />
+              <span className="d-none d-sm-inline"> {mdm?.sources}:</span>{' '}
+              {selectedNames.length}
+            </Dropdown.Toggle>
+          )}
+        </LongPressTooltip>
 
         <Dropdown.Menu popperConfig={fixedPopperConfig}>
-          {(
-            [
-              'nominatim-reverse',
-              'overpass-nearby',
-              'overpass-surrounding',
-            ] as MapDetailsSource[]
-          ).map((source) => (
+          {sources.map((source) => (
             <Dropdown.Item
               as="button"
-              key={source}
-              eventKey={source}
-              active={!excludeSources.has(source as MapDetailsSource)}
+              key={source.key}
+              eventKey={source.key}
+              active={source.selected}
             >
-              <Checkbox
-                value={!excludeSources.has(source as MapDetailsSource)}
-              />{' '}
-              {m?.search.sources[source]}
-            </Dropdown.Item>
-          ))}
-
-          {activeWmsLayerDefs.map((def) => (
-            <Dropdown.Item
-              as="button"
-              key={def.type}
-              eventKey={`wms:${def.type}`}
-              active={!excludeSources.has(`wms:${def.type}`)}
-            >
-              <Checkbox value={!excludeSources.has(`wms:${def.type}`)} />{' '}
-              {def.custom ? def.name : m?.mapLayers.letters[def.type]} (WMS)
+              <Checkbox value={source.selected} /> {source.name}
             </Dropdown.Item>
           ))}
         </Dropdown.Menu>

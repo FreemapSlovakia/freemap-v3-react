@@ -2,6 +2,7 @@ import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { ColorizerMessages } from './ColorizerMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<ColorizerMessages> = {
+  colorizeBy: 'Vyfarbiť podľa',
   mode: {
     none: 'Neaktívne',
     elevation: 'Nadmorská výška',

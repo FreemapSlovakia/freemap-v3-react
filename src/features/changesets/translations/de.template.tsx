@@ -22,7 +22,6 @@ const de: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   tooBig:
     'Die Anfrage nach Changesets kann zu viele Einträge zurückgeben. Bitte zoomen Sie näher heran, wählen Sie weniger Tage oder geben Sie einen bestimmten Autor ein.',
   olderThan: ({ days }) => `${days} Tage`,
-  olderThanFull: ({ days }) => `Changesets der letzten ${days} Tage`,
   notFound: 'Keine Changesets gefunden.',
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Changesets', err),

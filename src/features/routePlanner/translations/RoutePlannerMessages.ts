@@ -30,8 +30,10 @@ export type RoutePlannerMessages = {
     home: string;
   };
   transportType: Record<TransportTypeMsgKey, string>;
+  transportTypeLabel: string;
   development: string;
   mode: Record<RoutingMode | 'routndtrip-gh', string>;
+  modeLabel: string;
   alternative: string;
   distance: ({ value, diff }: { value: string; diff?: string }) => JSX.Element;
   duration: ({

@@ -9,8 +9,8 @@ const en: ChangesetsMessages = {
   refresh: 'Download changesets for current map view',
   tooBig:
     'Changesets request may return too many items. Please try zoom in, choose fewer days or enter the specific author.',
+  timeWindow: 'Time window',
   olderThan: ({ days }) => `${days} days`,
-  olderThanFull: ({ days }) => `Changesets from last ${days} days`,
   notFound: 'No changesets found.',
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Error fetching changesets', err),
