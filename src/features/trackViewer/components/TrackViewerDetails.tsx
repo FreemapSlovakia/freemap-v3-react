@@ -1,11 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
-import { smoothElevations } from '@shared/geoutils.js';
+import { elevationCoverage, smoothElevations } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { distance } from '@turf/distance';
-import { Geometry } from 'geojson';
+import { Feature, Geometry, LineString } from 'geojson';
 import type { ReactElement } from 'react';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
 import { TrackViewerMessages } from '../translations/TrackViewerMessages.js';
@@ -34,6 +34,20 @@ export function TrackViewerDetailsInt({
   const tvm = useTrackViewerMessages();
 
   const [startPoints, finishPoints] = useStartFinishPoints();
+
+  const elevationDecision = useAppSelector(
+    (state) => state.trackViewer.elevationDecision,
+  );
+
+  // Coverage of the recorded source track (not the densified render copy) to
+  // distinguish complete from partial recorded elevation in the source row.
+  const elevationCov = useAppSelector((state) =>
+    elevationCoverage(
+      (state.trackViewer.trackGeojson?.features ?? []).filter(
+        (f): f is Feature<LineString> => f.geometry.type === 'LineString',
+      ),
+    ),
+  );
 
   // Only count elevation change between points at least this far apart, so a
   // dense, jittery profile doesn't inflate the climb/descent totals.
@@ -176,6 +190,21 @@ export function TrackViewerDetailsInt({
     'downhill',
     `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`,
   ]);
+
+  if (elevationCov !== 'none') {
+    // 'missing' keeps the recorded values and only fills gaps from the model, so
+    // it's a mix — distinct from a full 'all' overwrite.
+    const sourceValue =
+      elevationDecision === 'all'
+        ? tvm?.details.sourceFilled
+        : elevationDecision === 'missing'
+          ? tvm?.details.sourceFilledGaps
+          : elevationCov === 'partial'
+            ? tvm?.details.sourcePartial
+            : tvm?.details.sourceOriginal;
+
+    tableData.push(['source', sourceValue ?? '']);
+  }
 
   return (
     <dl className="m-0 dl-horizontal">

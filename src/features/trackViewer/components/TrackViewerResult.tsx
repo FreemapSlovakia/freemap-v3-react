@@ -3,7 +3,12 @@ import { selectingModeSelector } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { colorizers } from '@shared/colorizers/index.js';
-import { splitOnGaps } from '@shared/colorizers/types.js';
+import {
+  NO_DATA_COLOR,
+  NO_DATA_OPACITY,
+  noDataRuns,
+  splitOnGaps,
+} from '@shared/colorizers/types.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
@@ -209,8 +214,21 @@ export default function TrackViewerResult({
       {activeColorizer &&
         activeColorizer
           .compute(getFeatures('LineString'))
-          .flatMap((positions, i) =>
-            splitOnGaps(positions).map((run, j) => (
+          .flatMap((positions, i) => [
+            ...noDataRuns(positions).map((run, j) => (
+              <Polyline
+                key={`nodata-${colorizeTrackBy}-${i}-${j}`}
+                positions={run.map((p): [number, number] => [p.lat, p.lon])}
+                weight={4}
+                pathOptions={{
+                  color: NO_DATA_COLOR,
+                  opacity: NO_DATA_OPACITY,
+                  lineCap: 'round',
+                }}
+                interactive={false}
+              />
+            )),
+            ...splitOnGaps(positions).map((run, j) => (
               <Hotline
                 key={`${colorizeTrackBy}-${i}-${j}`}
                 data={run}
@@ -220,7 +238,7 @@ export default function TrackViewerResult({
                 options={hotlineOptions}
               />
             )),
-          )}
+          ])}
 
       {colorizeTrackBy === null &&
         features.map(({ lineData, style }, i) => {

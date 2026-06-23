@@ -8,6 +8,7 @@ import { Feature, FeatureCollection, LineString } from 'geojson';
 import {
   type ColorizingMode,
   type ElevationConsumer,
+  type ElevationFillMode,
   trackViewerColorizeTrackBy,
   trackViewerDelete,
   trackViewerDownloadTrack,
@@ -34,13 +35,14 @@ export interface TrackViewerStateBase {
 export interface TrackViewerState extends TrackViewerStateBase {
   colorizeTrackBy: ColorizingMode | null;
   elevationPrompt: ElevationConsumer | null;
-  // Whether the user has answered the elevation prompt for the loaded track,
-  // so we don't ask again every time the chart opens.
-  elevationResolved: boolean;
-  // Whether every point's elevation now comes from the terrain model, so
-  // offering another server overwrite would be pointless.
-  elevationOverridden: boolean;
+  // The user's elevation decision for the loaded track: 'undecided' until they
+  // answer the prompt (so we don't ask again, and the info panel can report the
+  // source), then the chosen fill mode. 'all' means every point now comes from
+  // the terrain model, so another server overwrite would be pointless.
+  elevationDecision: ElevationDecision;
 }
+
+export type ElevationDecision = 'undecided' | ElevationFillMode;
 
 export const cleanState: TrackViewerStateBase = {
   trackGeojson: null,
@@ -53,8 +55,7 @@ export const cleanState: TrackViewerStateBase = {
 export const trackViewerInitialState: TrackViewerState = {
   colorizeTrackBy: null,
   elevationPrompt: null,
-  elevationResolved: false,
-  elevationOverridden: false,
+  elevationDecision: 'undecided',
   ...cleanState,
 };
 
@@ -77,9 +78,7 @@ export const trackViewerReducer = createReducer(
           // Invalidate the densified render cache for the new track.
           state.renderTrackGeojson = null;
 
-          state.elevationResolved = false;
-
-          state.elevationOverridden = false;
+          state.elevationDecision = 'undecided';
 
           // A persisted elevation-derived colorize mode would render as a flat
           // mid-palette on a track that lacks full elevation; drop it so the
@@ -122,11 +121,7 @@ export const trackViewerReducer = createReducer(
       .addCase(trackViewerResolveElevationPrompt, (state, action) => {
         state.elevationPrompt = null;
 
-        state.elevationResolved = true;
-
-        if (action.payload.mode === 'all') {
-          state.elevationOverridden = true;
-        }
+        state.elevationDecision = action.payload.mode;
       })
       .addCase(trackViewerGpxLoad, (state, action) => {
         state.gpxUrl = action.payload;

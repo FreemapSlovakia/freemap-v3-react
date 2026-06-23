@@ -16,10 +16,17 @@ export interface ColorizedPoint {
   gap?: boolean;
 }
 
+// {@link noDataRuns} stretches a colorizer can't value are drawn as a neutral,
+// slightly thinner, semi-transparent line: it reads as "no value here" and
+// stays distinct from a full-strength colored run by form rather than hue, so
+// it never collides with a palette color (e.g. the gray of `elevation`).
+export const NO_DATA_COLOR = '#808080';
+export const NO_DATA_OPACITY = 2 / 3;
+
 /**
  * Split colorized points into contiguous runs, breaking at gaps (points whose
  * value is missing). Runs shorter than two points can't form a line and are
- * dropped, leaving a visible hole rather than a bridge across missing data.
+ * dropped, leaving a hole the {@link noDataRuns} fill spans in a neutral color.
  */
 export function splitOnGaps(points: ColorizedPoint[]): ColorizedPoint[][] {
   const runs: ColorizedPoint[][] = [];
@@ -39,6 +46,38 @@ export function splitOnGaps(points: ColorizedPoint[]): ColorizedPoint[][] {
   }
 
   if (current.length > 1) {
+    runs.push(current);
+  }
+
+  return runs;
+}
+
+/**
+ * The complement of {@link splitOnGaps}: runs covering every edge that touches
+ * a gap, including the valid points bordering each gap so the run connects to
+ * the colorized line. Drawn in {@link NO_DATA_COLOR} so stretches the colorizer
+ * has no value for stay visible instead of leaving a hole.
+ */
+export function noDataRuns(points: ColorizedPoint[]): ColorizedPoint[][] {
+  const runs: ColorizedPoint[][] = [];
+
+  let current: ColorizedPoint[] = [];
+
+  for (let i = 0; i < points.length - 1; i++) {
+    if (points[i]!.gap || points[i + 1]!.gap) {
+      if (current.length === 0) {
+        current.push(points[i]!);
+      }
+
+      current.push(points[i + 1]!);
+    } else if (current.length > 0) {
+      runs.push(current);
+
+      current = [];
+    }
+  }
+
+  if (current.length > 0) {
     runs.push(current);
   }
 

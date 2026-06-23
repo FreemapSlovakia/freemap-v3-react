@@ -83,7 +83,11 @@ export function TrackingMenu(): ReactElement {
 
   return (
     <ToolMenu>
-      <LongPressTooltip breakpoint="sm" label={tm?.trackedDevices.button}>
+      <LongPressTooltip
+        breakpoint="sm"
+        label={tm?.trackedDevices.button}
+        kbd="g w"
+      >
         {({ label, labelClassName, props }) => (
           <Button
             className="ms-1"
@@ -97,7 +101,7 @@ export function TrackingMenu(): ReactElement {
         )}
       </LongPressTooltip>
 
-      <LongPressTooltip breakpoint="sm" label={tm?.devices.button}>
+      <LongPressTooltip breakpoint="sm" label={tm?.devices.button} kbd="g d">
         {({ label, labelClassName, props }) => (
           <Button
             className="ms-1"

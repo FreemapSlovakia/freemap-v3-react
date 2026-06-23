@@ -17,6 +17,11 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     uphill: 'Całkowite podejście',
     downhill: 'Całkowite zejście',
     durationValue: ({ h, m }) => `${h} godz. ${m} min`,
+    source: 'Źródło wysokości',
+    sourceOriginal: 'zarejestrowana',
+    sourcePartial: 'zarejestrowana, niepełna',
+    sourceFilledGaps: 'zarejestrowana, luki uzupełnione (NASA SRTM)',
+    sourceFilled: 'model terenu NASA SRTM',
   },
   uploadModal: {
     title: 'Importuj plik',
@@ -36,11 +41,15 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     fillMissingDesc:
       'zachowaj zarejestrowane wartości i uzupełnij tylko luki (na styku obu ' +
       'źródeł mogą wystąpić skoki)',
-    keep: 'Zachowaj zarejestrowane',
+    keep: 'Nie zmieniaj',
     keepDesc: 'użyj wysokości zapisanej w śladzie',
     add: 'Dodaj wysokość',
     update: 'Zaktualizuj wysokość',
     updateConfirm: 'Zastąpić wysokość śladu modelem NASA SRTM (~30 m)?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'Brakująca wysokość została uzupełniona.'
+        : 'Wysokość została nadpisana.',
   },
   upload: 'Prześlij',
   moreInfo: 'Więcej informacji',

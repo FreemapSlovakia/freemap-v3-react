@@ -16,6 +16,11 @@ export type TrackViewerMessages = {
     uphill: string;
     downhill: string;
     durationValue: (props: { h: number; m: number }) => string;
+    source: string;
+    sourceOriginal: string;
+    sourcePartial: string;
+    sourceFilledGaps: string;
+    sourceFilled: string;
   };
   uploadModal: {
     title: string;
@@ -36,6 +41,7 @@ export type TrackViewerMessages = {
     add: string;
     update: string;
     updateConfirm: string;
+    updatedToast: (props: { mode: 'missing' | 'all' }) => string;
   };
   shareToast: string;
   fetchingError: (props: { err: unknown }) => string;

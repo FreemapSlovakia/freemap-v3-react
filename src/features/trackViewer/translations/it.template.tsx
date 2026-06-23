@@ -20,6 +20,11 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     uphill: 'Acesca totale',
     downhill: 'Discesa totale',
     durationValue: ({ h, m }) => `${h} ore ${m} minuti`,
+    source: 'Origine quota',
+    sourceOriginal: 'registrata',
+    sourcePartial: 'registrata, incompleta',
+    sourceFilledGaps: 'registrata, lacune riempite (NASA SRTM)',
+    sourceFilled: 'modello del terreno NASA SRTM',
   },
   uploadModal: {
     title: 'Importa file',
@@ -41,12 +46,16 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     fillMissingDesc:
       'mantieni i valori registrati e riempi solo le lacune (potrebbero ' +
       'esserci scalini dove i due dati si incontrano)',
-    keep: 'Mantieni registrati',
+    keep: 'Non modificare',
     keepDesc: 'usa la quota memorizzata nella traccia',
     add: 'Aggiungi quota',
     update: 'Aggiorna quota',
     updateConfirm:
       'Sostituire la quota della traccia con il modello NASA SRTM (~30 m)?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'La quota mancante è stata riempita.'
+        : 'La quota è stata sovrascritta.',
   },
   shareToast:
     "La traccia è stata salvata sul server e può essere condivisa copiando l'URL della pagina.",

@@ -19,6 +19,11 @@ const en: TrackViewerMessages = {
     uphill: 'Total climb',
     downhill: 'Total descend',
     durationValue: ({ h, m }) => `${h} hours ${m} minutes`,
+    source: 'Elevation source',
+    sourceOriginal: 'recorded',
+    sourcePartial: 'recorded, incomplete',
+    sourceFilledGaps: 'recorded, gaps filled (NASA SRTM)',
+    sourceFilled: 'NASA SRTM terrain model',
   },
   uploadModal: {
     title: 'Import file',
@@ -40,12 +45,16 @@ const en: TrackViewerMessages = {
     fillMissingDesc:
       'keep the recorded values and fill only the gaps (may step where the ' +
       'two sources meet)',
-    keep: 'Keep recorded',
+    keep: 'Leave unchanged',
     keepDesc: 'use the elevation stored in the track',
     add: 'Add elevation',
     update: 'Update elevation',
     updateConfirm:
       "Replace the track's elevation with the NASA SRTM terrain model (~30 m)?",
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'Missing elevation has been filled.'
+        : 'Elevation has been overwritten.',
   },
   shareToast:
     'The track has been saved to the server and can be shared by copying page URL.',

@@ -6,7 +6,12 @@ import {
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { colorizers } from '@shared/colorizers/index.js';
-import { splitOnGaps } from '@shared/colorizers/types.js';
+import {
+  NO_DATA_COLOR,
+  NO_DATA_OPACITY,
+  noDataRuns,
+  splitOnGaps,
+} from '@shared/colorizers/types.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -586,7 +591,7 @@ export function RoutePlannerResult(): ReactElement {
   // carries its own white outline, so the route's halo is hidden underneath.
   // Elevation-derived modes use the densified DEM render line once it's ready
   // (`renderGeojson`); otherwise the alternative's own coordinates.
-  const colorizedRuns = useMemo(() => {
+  const colorizedPositions = useMemo(() => {
     if (!activeColorizer) {
       return [];
     }
@@ -622,13 +627,25 @@ export function RoutePlannerResult(): ReactElement {
       };
     }
 
-    return activeColorizer.compute([feature]).flatMap(splitOnGaps);
+    return activeColorizer.compute([feature]);
   }, [activeColorizer, renderGeojson, alternatives, activeAlternativeIndex]);
 
+  const colorizedRuns = useMemo(
+    () => colorizedPositions.flatMap(splitOnGaps),
+    [colorizedPositions],
+  );
+
+  // Stretches the mode can't value (e.g. missing elevation), drawn in a neutral
+  // color so the route stays continuous instead of breaking at the gap.
+  const noDataRunsList = useMemo(
+    () => colorizedPositions.flatMap(noDataRuns),
+    [colorizedPositions],
+  );
+
   // Replace the active alternative's plain line with the Hotline only once
-  // colorized runs exist; until then (e.g. elevation still being fetched) the
-  // normal line stays visible instead of flashing blank.
-  const showColorized = colorizedRuns.length > 0;
+  // colorized (or no-data) runs exist; until then (e.g. elevation still being
+  // fetched) the normal line stays visible instead of flashing blank.
+  const showColorized = colorizedRuns.length > 0 || noDataRunsList.length > 0;
 
   // Stable reference so react-leaflet-hotline's options-effect doesn't fire on
   // every render.
@@ -781,6 +798,20 @@ export function RoutePlannerResult(): ReactElement {
       {pointElements}
 
       {paths}
+
+      {noDataRunsList.map((run, i) => (
+        <Polyline
+          key={`nodata-${colorizeBy}-${timestamp}-${activeAlternativeIndex}-${i}`}
+          positions={run.map((p): [number, number] => [p.lat, p.lon])}
+          weight={4}
+          pathOptions={{
+            color: NO_DATA_COLOR,
+            opacity: NO_DATA_OPACITY,
+            lineCap: 'round',
+          }}
+          interactive={false}
+        />
+      ))}
 
       {colorizedRuns.map((run, i) => (
         <Hotline

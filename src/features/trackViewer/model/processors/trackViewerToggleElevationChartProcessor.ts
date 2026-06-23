@@ -20,7 +20,7 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
       return;
     }
 
-    const { trackGeojson, elevationResolved } = getState().trackViewer;
+    const { trackGeojson, elevationDecision } = getState().trackViewer;
 
     const lineFeatures =
       trackGeojson?.features.filter(
@@ -39,7 +39,10 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
     // job. The chart renders the recorded coordinates as-is, so a track the
     // user chose to keep partial shows its gaps instead of a fabricated
     // server profile.
-    if (elevationResolved || elevationCoverage(lineFeatures) === 'full') {
+    if (
+      elevationDecision !== 'undecided' ||
+      elevationCoverage(lineFeatures) === 'full'
+    ) {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
       // Densify a sparse line first so the chart isn't a coarse straight-segment

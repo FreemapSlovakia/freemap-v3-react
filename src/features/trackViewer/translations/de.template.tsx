@@ -17,6 +17,11 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     uphill: 'Gesamtanstieg',
     downhill: 'Gesamtabstieg',
     durationValue: ({ h, m }) => `${h} Stunden ${m} Minuten`,
+    source: 'Höhenquelle',
+    sourceOriginal: 'aufgezeichnet',
+    sourcePartial: 'aufgezeichnet, unvollständig',
+    sourceFilledGaps: 'aufgezeichnet, Lücken ergänzt (NASA SRTM)',
+    sourceFilled: 'NASA-SRTM-Geländemodell',
   },
   uploadModal: {
     title: 'Datei importieren',
@@ -38,12 +43,16 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     fillMissingDesc:
       'die aufgezeichneten Werte behalten und nur die Lücken füllen (an den ' +
       'Übergängen kann es Stufen geben)',
-    keep: 'Aufgezeichnete behalten',
+    keep: 'Nichts ändern',
     keepDesc: 'die in der Spur gespeicherte Höhe verwenden',
     add: 'Höhe ergänzen',
     update: 'Höhe aktualisieren',
     updateConfirm:
       'Die Höhe der Spur durch das NASA-SRTM-Geländemodell (~30 m) ersetzen?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'Fehlende Höhe wurde ergänzt.'
+        : 'Die Höhe wurde überschrieben.',
   },
   upload: 'Hochladen',
   moreInfo: 'Mehr Infos',

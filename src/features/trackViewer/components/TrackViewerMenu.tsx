@@ -67,12 +67,8 @@ export function TrackViewerMenu(): ReactElement {
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
-  const elevationResolved = useAppSelector(
-    (state) => state.trackViewer.elevationResolved,
-  );
-
-  const elevationOverridden = useAppSelector(
-    (state) => state.trackViewer.elevationOverridden,
+  const elevationDecision = useAppSelector(
+    (state) => state.trackViewer.elevationDecision,
   );
 
   const enableElevationChart = useAppSelector(
@@ -99,12 +95,13 @@ export function TrackViewerMenu(): ReactElement {
 
   // Overriding from the server makes sense only while the track still has some
   // recorded elevation to replace and hasn't already been fully overridden.
-  const canUpdateElevation = coverage !== 'none' && !elevationOverridden;
+  const canUpdateElevation = coverage !== 'none' && elevationDecision !== 'all';
 
   // Only ask how to fill elevation when some is actually missing and the user
   // hasn't decided yet. Tracks that already have full elevation proceed
   // straight away — the explicit "update" button covers overriding them.
-  const needsElevationDecision = coverage !== 'full' && !elevationResolved;
+  const needsElevationDecision =
+    coverage !== 'full' && elevationDecision === 'undecided';
 
   const handleConvertToDrawing = useCallback(() => {
     const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
@@ -173,9 +170,18 @@ export function TrackViewerMenu(): ReactElement {
                 className="ms-1"
                 variant="secondary"
                 onClick={async () => {
-                  // The button means "overwrite from the server", so a plain
-                  // confirm is enough — no need for the adaptive fill/keep
-                  // modal. Show the info toast afterwards.
+                  // With only some points missing, defer to the adaptive modal
+                  // so the user can fill just the gaps instead of overwriting
+                  // the recorded values.
+                  if (coverage === 'partial') {
+                    dispatch(trackViewerSetElevationPrompt({ type: 'update' }));
+
+                    return;
+                  }
+
+                  // A fully-elevated track has no gaps to fill, so overwriting
+                  // from the server is the only update — a plain confirm is
+                  // enough. A success toast reports the outcome afterwards.
                   if (
                     await confirm({
                       title: tvm?.elevationFill.title,
@@ -186,7 +192,7 @@ export function TrackViewerMenu(): ReactElement {
                     dispatch(
                       trackViewerResolveElevationPrompt({
                         mode: 'all',
-                        consumer: { type: 'info' },
+                        consumer: { type: 'update' },
                       }),
                     );
                   }

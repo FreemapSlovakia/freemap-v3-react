@@ -47,7 +47,10 @@ export const trackViewerToggleElevationChart = createAction(
 export type ElevationConsumer =
   | { type: 'chart' }
   | { type: 'colorize'; mode: ColorizingMode }
-  | { type: 'info' };
+  | { type: 'info' }
+  // The explicit "update elevation" action: fills/overwrites and reports the
+  // outcome in a toast. Has no "keep" option (that would just be a cancel).
+  | { type: 'update' };
 
 /**
  * Opens the elevation fill/override prompt for the given consumer; `null`
@@ -61,8 +64,11 @@ export const trackViewerSetElevationPrompt =
  * point from the server, or keep the track's recorded elevation as-is. Carries
  * the consumer so the processor knows what to do once elevation is settled.
  */
+/** How the prompt fills elevation: gaps only, every point, or not at all. */
+export type ElevationFillMode = 'missing' | 'all' | 'keep';
+
 export const trackViewerResolveElevationPrompt = createAction<{
-  mode: 'missing' | 'all' | 'keep';
+  mode: ElevationFillMode;
   consumer: ElevationConsumer;
 }>('TRACK_VIEWER_RESOLVE_ELEVATION_PROMPT');
 

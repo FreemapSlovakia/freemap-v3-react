@@ -2,7 +2,12 @@ import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { colorizers, type HotlinePalette } from '@shared/colorizers/index.js';
-import { splitOnGaps } from '@shared/colorizers/types.js';
+import {
+  NO_DATA_COLOR,
+  NO_DATA_OPACITY,
+  noDataRuns,
+  splitOnGaps,
+} from '@shared/colorizers/types.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { toLatLng, toLatLngArr } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -152,17 +157,22 @@ export function TrackingResult(): ReactElement {
         const lastPoint =
           track.trackPoints.length > 0 ? track.trackPoints.at(-1)! : null;
 
-        // Colorized runs per segment; empty when the active mode has no data
+        // Colorized points per segment; empty when the active mode has no data
         // for this track, in which case the plain colored line is kept.
-        const colorizedRuns = activeColorizer
+        const colorizedPositions = activeColorizer
           ? segments.flatMap((segment) =>
-              activeColorizer
-                .compute([trackPointsToFeature(segment)])
-                .flatMap(splitOnGaps),
+              activeColorizer.compute([trackPointsToFeature(segment)]),
             )
           : [];
 
-        const showColorized = colorizedRuns.length > 0;
+        const colorizedRuns = colorizedPositions.flatMap(splitOnGaps);
+
+        // Stretches the mode can't value, drawn in a neutral color so the line
+        // stays continuous instead of breaking at the gap.
+        const noDataRunsList = colorizedPositions.flatMap(noDataRuns);
+
+        const showColorized =
+          colorizedRuns.length > 0 || noDataRunsList.length > 0;
 
         return (
           <Fragment key={`trk-${track.token}`}>
@@ -205,6 +215,25 @@ export function TrackingResult(): ReactElement {
                         click: handleClick,
                       }}
                       interactive={interactive}
+                    />
+                  ))}
+
+                  {noDataRunsList.map((run, j) => (
+                    <Polyline
+                      key={`nodata-${colorizeBy}-${j}-${
+                        activeTrackId === track.token
+                      }`}
+                      positions={run.map((p): [number, number] => [
+                        p.lat,
+                        p.lon,
+                      ])}
+                      weight={Math.max(1, width - 2)}
+                      pathOptions={{
+                        color: NO_DATA_COLOR,
+                        opacity: NO_DATA_OPACITY,
+                        lineCap: 'round',
+                      }}
+                      interactive={false}
                     />
                   ))}
 

@@ -61,11 +61,13 @@ export default function ElevationChart(): ReactElement | null {
       .map((pt) => pt.ele)
       .filter((ele) => Number.isFinite(ele));
 
-    const min = Math.min(...eles);
+    const min = eles.length ? Math.min(...eles) : 0;
 
-    const max = Math.max(...eles);
+    const max = eles.length ? Math.max(...eles) : 0;
 
-    const diff = max - min;
+    // Guard an empty or flat profile (no finite elevations, or all equal): a
+    // zero span would make `mapY` divide by zero and emit NaN chart geometry.
+    const diff = max - min || 1;
 
     const chartMin = min - diff / 20;
 

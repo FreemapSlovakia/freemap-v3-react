@@ -20,6 +20,11 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     uphill: 'Összes emelkedés',
     downhill: 'Összes lejtés',
     durationValue: ({ h, m }) => `${h} óra ${m} perc`,
+    source: 'Magasság forrása',
+    sourceOriginal: 'rögzített',
+    sourcePartial: 'rögzített, hiányos',
+    sourceFilledGaps: 'rögzített, hézagok kitöltve (NASA SRTM)',
+    sourceFilled: 'NASA SRTM domborzatmodell',
   },
   uploadModal: {
     title: 'Fájl importálása',
@@ -40,12 +45,16 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     fillMissingDesc:
       'a rögzített értékek megtartása és csak a hézagok kitöltése (a két ' +
       'forrás találkozásánál lépcső jelenhet meg)',
-    keep: 'Rögzített megtartása',
+    keep: 'Ne változzon semmi',
     keepDesc: 'a nyomvonalban tárolt magasság használata',
     add: 'Magasság hozzáadása',
     update: 'Magasság frissítése',
     updateConfirm:
       'Lecseréli a nyomvonal magasságát a NASA SRTM modellre (~30 m)?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'A hiányzó magasság ki lett töltve.'
+        : 'A magasság felül lett írva.',
   },
   shareToast:
     'Az útvonal el lett mentve a kiszolgálóra, és az oldal URL-jének másolásával megosztható.',

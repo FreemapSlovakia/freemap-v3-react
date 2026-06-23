@@ -1,11 +1,15 @@
+import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { elevationChartSetTrackGeojson } from '@features/elevationChart/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   trackViewerColorizeTrackBy,
   trackViewerResolveElevationPrompt,
+  trackViewerSetData,
   trackViewerSetElevation,
 } from '@features/trackViewer/model/actions.js';
 import { trackInfoToast } from '@features/trackViewer/model/trackInfoToast.js';
+import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 import { enrichElevations } from '@shared/elevation.js';
 import { Feature, LineString } from 'geojson';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
@@ -56,6 +60,24 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       // The info panel's stats (ascent, descent, min/max) read the now-filled
       // elevation from trackGeojson.
       dispatch(trackInfoToast);
+
+      return;
+    }
+
+    if (consumer.type === 'update') {
+      // The explicit "update elevation" action reports the outcome; `keep` never
+      // reaches here (the modal hides it for this consumer).
+      dispatch(
+        toastsAdd({
+          id: 'trackViewer.elevationUpdated',
+          messageKey: 'elevationFill.updatedToast',
+          messageParams: { mode },
+          messageLoader: loadTrackViewerMessages,
+          cancelType: [clearMapFeatures.type, trackViewerSetData.type],
+          timeout: 5000,
+          style: 'success',
+        }),
+      );
 
       return;
     }

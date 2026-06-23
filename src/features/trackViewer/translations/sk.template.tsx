@@ -20,6 +20,11 @@ const sk: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     uphill: 'Celkové stúpanie',
     downhill: 'Celkové klesanie',
     durationValue: ({ h, m }) => `${h} hodín ${m} minút`,
+    source: 'Zdroj výšky',
+    sourceOriginal: 'zaznamenaná',
+    sourcePartial: 'zaznamenaná, neúplná',
+    sourceFilledGaps: 'zaznamenaná, medzery doplnené (NASA SRTM)',
+    sourceFilled: 'model terénu NASA SRTM',
   },
   uploadModal: {
     title: 'Importovať súbor',
@@ -40,11 +45,15 @@ const sk: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     fillMissingDesc:
       'zachovať zaznamenané hodnoty a doplniť len medzery (na rozhraní ' +
       'oboch zdrojov môže vzniknúť skok)',
-    keep: 'Ponechať zaznamenané',
+    keep: 'Nič nemeniť',
     keepDesc: 'použiť nadmorskú výšku uloženú v trase',
     add: 'Doplniť výšku',
     update: 'Aktualizovať výšku',
     updateConfirm: 'Nahradiť nadmorskú výšku trasy modelom NASA SRTM (~30 m)?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'Chýbajúca nadmorská výška bola doplnená.'
+        : 'Nadmorská výška bola prepísaná.',
   },
   shareToast:
     'Trasa bola uložená na server a môžete ju zdieľať skopirovaním URL stránky.',

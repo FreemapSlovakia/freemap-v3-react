@@ -40,6 +40,10 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
   const resolve = (mode: 'missing' | 'all' | 'keep') =>
     dispatch(trackViewerResolveElevationPrompt({ mode, consumer }));
 
+  // "Update elevation" is an explicit change request, so offering "leave
+  // unchanged" there would just duplicate Cancel.
+  const offerKeep = consumer.type !== 'update';
+
   const intro =
     coverage === 'none'
       ? ef.introNone
@@ -73,9 +77,11 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
                 </li>
               )}
 
-              <li>
-                <strong>{ef.keep}</strong> — {ef.keepDesc}
-              </li>
+              {offerKeep && (
+                <li>
+                  <strong>{ef.keep}</strong> — {ef.keepDesc}
+                </li>
+              )}
             </ul>
           </>
         )}
@@ -92,7 +98,7 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
           </Button>
         )}
 
-        {coverage !== 'none' && (
+        {coverage !== 'none' && offerKeep && (
           <Button variant="secondary" onClick={() => resolve('keep')}>
             {ef.keep}
           </Button>
