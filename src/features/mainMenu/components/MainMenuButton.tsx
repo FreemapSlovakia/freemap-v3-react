@@ -11,7 +11,6 @@ import { LanguageSubmenu } from './LanguageSubmenu.js';
 import { MainMenu } from './MainMenu.js';
 import { OpenExternallySubmenu } from './OpenExternallySubmenu.js';
 import { SocialButtons } from './SocialButtons.js';
-import { TrackingSubmenu } from './TrackingSubmenu.js';
 
 export function MainMenuButton(): ReactElement {
   const m = useMessages();
@@ -51,8 +50,6 @@ export function MainMenuButton(): ReactElement {
             <OpenExternallySubmenu />
           ) : submenu === 'language' ? (
             <LanguageSubmenu />
-          ) : submenu === 'tracking' ? (
-            <TrackingSubmenu />
           ) : null}
 
           {submenu === null && (

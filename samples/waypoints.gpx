@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="freemap sample generator" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1">
+  <wpt lat="48.7400000" lon="21.0540000"><ele>600</ele><name>WP 1</name></wpt>
+  <wpt lat="48.7592501" lon="21.0766043"><ele>790</ele><name>WP 2</name></wpt>
+  <wpt lat="48.7708710" lon="21.0975444"><ele>603</ele><name>WP 3</name></wpt>
+  <wpt lat="48.7817997" lon="21.1231408"><ele>406</ele><name>WP 4</name></wpt>
+</gpx>

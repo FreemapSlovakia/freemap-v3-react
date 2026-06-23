@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { exportMapFeatures } from '../actions.js';
 import { buildExportFeatureCollection } from '../buildExportFeatureCollection.js';
+import { fillFcElevations } from './fillElevations.js';
 import { licenseNotice, upload } from './upload.js';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
@@ -11,7 +12,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 }) => {
   const set = new Set(action.payload.exportables);
 
-  const fc = await buildExportFeatureCollection({
+  let fc = await buildExportFeatureCollection({
     getState,
     include: {
       pictures: set.has('pictures'),
@@ -30,6 +31,16 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     pointMode: { props: true },
     options: { route: 'all', trackingPoints: true },
   });
+
+  const { elevation } = action.payload;
+
+  if (elevation === 'missing' || elevation === 'all') {
+    // Clone first so the fill never mutates coordinate arrays still referenced
+    // by the store (imported / lookup features are pushed by reference).
+    fc = structuredClone(fc);
+
+    await fillFcElevations(fc, elevation, getState);
+  }
 
   const { target } = action.payload;
 

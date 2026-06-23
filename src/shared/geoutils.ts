@@ -1,6 +1,13 @@
 import type { LatLon } from '@shared/types/common.js';
 import { booleanContains } from '@turf/boolean-contains';
-import type { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
+import { distance } from '@turf/distance';
+import type {
+  Feature,
+  GeoJsonProperties,
+  Geometry,
+  LineString,
+  Position,
+} from 'geojson';
 import type { LatLngLiteral } from 'leaflet';
 
 export type GpsCoordStyle = 'DMS' | 'DM' | 'D';
@@ -81,49 +88,138 @@ export function getCurrentPosition(): Promise<LatLon> {
   });
 }
 
+/**
+ * True only when every coordinate of a `LineString` carries elevation. Any gap
+ * (an all-2D OSRM track, or a GraphHopper route with no-data points) yields
+ * `false` so the consumer fills elevation from the server rather than rendering
+ * a profile with holes.
+ */
 export function containsElevations(geojson: Feature): boolean {
   return (
     geojson.geometry.type === 'LineString' &&
-    Array.isArray(geojson.geometry.coordinates[0]) &&
-    geojson.geometry.coordinates[0].length === 3
+    geojson.geometry.coordinates.length > 0 &&
+    geojson.geometry.coordinates.every((c) => c.length === 3)
   );
 }
 
-// TODO consider distance between points
-// returns array of [lat, lon, smoothedEle] triplets
+/**
+ * Elevation coverage across the coordinates of the given `LineString` features:
+ * `'none'` when no point carries elevation, `'full'` when every point does,
+ * `'partial'` otherwise (and when there are no coordinates at all → `'none'`).
+ */
+export function elevationCoverage(
+  features: Feature<LineString>[],
+): 'none' | 'partial' | 'full' {
+  let withEle = 0;
+
+  let total = 0;
+
+  for (const feature of features) {
+    for (const coord of feature.geometry.coordinates) {
+      total++;
+
+      if (coord.length >= 3 && Number.isFinite(coord[2])) {
+        withEle++;
+      }
+    }
+  }
+
+  if (withEle === 0) {
+    return 'none';
+  }
+
+  return withEle === total ? 'full' : 'partial';
+}
+
+/**
+ * Horizontal span (in metres) over which elevation is low-pass filtered, and
+ * the baseline over which slope is measured. SRTM is ~30 m, so relief finer
+ * than this is DEM noise rather than real terrain; smoothing toward it also
+ * stops dense router shape points (metres apart at a bend) from being denoised
+ * differently than sparse ones on a straight.
+ */
+export const DEM_RESOLUTION_METERS = 30;
+
+/**
+ * Cumulative horizontal distance (metres) along the path, so any windowing can
+ * span a fixed metric length regardless of how densely the vertices are spaced.
+ * `cum[0]` is `0`; `cum[i]` is the distance from the first vertex to vertex `i`.
+ */
+export function cumulativeDistances(coords: number[][]): number[] {
+  const cum: number[] = [0];
+
+  for (let i = 1; i < coords.length; i++) {
+    cum[i] =
+      cum[i - 1]! +
+      distance(coords[i - 1]!, coords[i]!, {
+        units: 'meters',
+      });
+  }
+
+  return cum;
+}
+
+/**
+ * Inclusive `[lo, hi]` index range of the vertices within `±spanMeters / 2` of
+ * vertex `i` along the path, given precomputed cumulative distances `cum`. The
+ * window is centered and clamped (it shrinks at the ends rather than shifting),
+ * so a derived value never phase-shifts or collapses to a forward-only span.
+ */
+export function metricWindow(
+  cum: number[],
+  i: number,
+  spanMeters: number,
+): [number, number] {
+  const half = spanMeters / 2;
+
+  let lo = i;
+
+  while (lo > 0 && cum[i]! - cum[lo - 1]! <= half) {
+    lo--;
+  }
+
+  let hi = i;
+
+  while (hi < cum.length - 1 && cum[hi + 1]! - cum[i]! <= half) {
+    hi++;
+  }
+
+  return [lo, hi];
+}
+
+// returns array of [lon, lat, smoothedEle] triplets
 export function smoothElevations(
   coords: number[][],
-  eleSmoothingFactor: number,
+  spanMeters: number = DEM_RESOLUTION_METERS,
 ): number[][] {
-  let prevFloatingWindowEle = 0;
+  const cum = cumulativeDistances(coords);
+
+  let prevEle = 0;
 
   return coords.map((lonLatEle, i) => {
-    const floatingWindow = coords
-      .slice(i, i + eleSmoothingFactor)
-      .filter((e) => e)
-      .sort();
+    const [lo, hi] = metricWindow(cum, i, spanMeters);
 
-    let floatingWindowWithoutExtremes = floatingWindow;
+    const window = coords
+      .slice(lo, hi + 1)
+      .map((c) => c[2])
+      .filter((e): e is number => typeof e === 'number' && Number.isFinite(e))
+      // Sorted by elevation so the extreme-removal below drops the actual
+      // highest and lowest samples.
+      .sort((a, b) => a - b);
 
-    if (eleSmoothingFactor >= 5) {
-      // ignore highest and smallest value
-      floatingWindowWithoutExtremes = floatingWindow.splice(
-        1,
-        floatingWindow.length - 2,
-      );
+    // Drop the highest and lowest sample to reject spikes, but only when the
+    // window is large enough to keep a meaningful average.
+    const trimmed = window.length >= 5 ? window.slice(1, -1) : window;
+
+    let ele = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
+
+    if (!Number.isFinite(ele)) {
+      ele = prevEle;
     }
 
-    const eleSum = floatingWindowWithoutExtremes.reduce((a, b) => a + b[2]!, 0);
+    prevEle = ele;
 
-    let flotingWindowEle = eleSum / floatingWindowWithoutExtremes.length;
-
-    if (Number.isNaN(flotingWindowEle)) {
-      flotingWindowEle = prevFloatingWindowEle;
-    }
-
-    prevFloatingWindowEle = flotingWindowEle;
-
-    return [lonLatEle[0]!, lonLatEle[1]!, flotingWindowEle];
+    return [lonLatEle[0]!, lonLatEle[1]!, ele];
   });
 }
 

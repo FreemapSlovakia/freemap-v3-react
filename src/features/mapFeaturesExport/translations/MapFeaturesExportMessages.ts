@@ -2,6 +2,12 @@ export type MapFeaturesExportMessages = {
   download: string;
   format: string;
   target: string;
+  elevation: {
+    label: string;
+    none: string;
+    missing: string;
+    all: string;
+  };
   exportError: (props: { err: unknown }) => string;
   what: {
     plannedRoute: string;

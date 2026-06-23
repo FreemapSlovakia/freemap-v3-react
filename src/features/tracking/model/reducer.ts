@@ -3,6 +3,7 @@ import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { rpcEvent, rpcResponse } from '@features/rpc/model/actions.js';
 import { wsStateChanged } from '@features/websocket/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import type { ColorizingMode } from '@shared/colorizers/index.js';
 import z from 'zod';
 import { trackingActions } from './actions.js';
 import {
@@ -31,9 +32,10 @@ export interface TrackingState {
   tracks: Track[];
   showLine: boolean;
   showPoints: boolean;
+  colorizeBy: ColorizingMode | null;
 }
 
-const initialState: TrackingState = {
+export const trackingInitialState: TrackingState = {
   devices: [],
   accessTokens: [],
   accessTokensDeviceId: undefined,
@@ -44,11 +46,12 @@ const initialState: TrackingState = {
   tracks: [],
   showLine: true,
   showPoints: true,
+  colorizeBy: null,
 };
 
-export const trackingReducer = createReducer(initialState, (builder) =>
+export const trackingReducer = createReducer(trackingInitialState, (builder) =>
   builder
-    .addCase(clearMapFeatures, () => initialState)
+    .addCase(clearMapFeatures, () => trackingInitialState)
     .addCase(trackingActions.delete, (state, { payload }) => ({
       ...state,
       trackedDevices: state.trackedDevices.filter(
@@ -114,6 +117,10 @@ export const trackingReducer = createReducer(initialState, (builder) =>
     .addCase(trackingActions.setShowLine, (state, { payload }) => ({
       ...state,
       showLine: payload,
+    }))
+    .addCase(trackingActions.setColorizeBy, (state, { payload }) => ({
+      ...state,
+      colorizeBy: payload,
     }))
     .addCase(wsStateChanged, (state, { payload }) =>
       payload.state === 1 ? state : { ...state, tracks: [] },
@@ -200,10 +207,11 @@ export const trackingReducer = createReducer(initialState, (builder) =>
           ...state,
           trackedDevices: [
             ...(merge ? state.trackedDevices : []),
-            ...(tracking?.trackedDevices ?? initialState.trackedDevices),
+            ...(tracking?.trackedDevices ??
+              trackingInitialState.trackedDevices),
           ],
-          showLine: tracking?.showLine ?? initialState.showLine,
-          showPoints: tracking?.showPoints ?? initialState.showPoints,
+          showLine: tracking?.showLine ?? trackingInitialState.showLine,
+          showPoints: tracking?.showPoints ?? trackingInitialState.showPoints,
         };
       },
     ),

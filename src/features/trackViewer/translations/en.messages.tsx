@@ -8,18 +8,6 @@ const en: TrackViewerMessages = {
   upload: 'Upload',
   moreInfo: 'More info',
   share: 'Save on server',
-  colorizingMode: {
-    none: 'Inactive',
-    elevation: 'Elevation',
-    steepness: 'Steepness',
-    speed: 'Speed',
-    heartRate: 'Heart rate',
-    cadence: 'Cadence',
-    power: 'Power',
-    temperature: 'Temperature',
-    time: 'Time',
-    heading: 'Heading',
-  },
   details: {
     startTime: 'Start time',
     finishTime: 'Finish time',
@@ -31,10 +19,42 @@ const en: TrackViewerMessages = {
     uphill: 'Total climb',
     downhill: 'Total descend',
     durationValue: ({ h, m }) => `${h} hours ${m} minutes`,
+    source: 'Elevation source',
+    sourceOriginal: 'recorded',
+    sourcePartial: 'recorded, incomplete',
+    sourceFilledGaps: 'recorded, gaps filled (NASA SRTM)',
+    sourceFilled: 'NASA SRTM terrain model',
   },
   uploadModal: {
     title: 'Import file',
     drop: 'Drop a GPX or GeoJSON file here, or click here to select it.',
+  },
+  elevationFill: {
+    title: 'Elevation data',
+    introNone: 'This track has no elevation data.',
+    introPartial: 'This track is missing elevation for some points.',
+    introFull:
+      'This track already has elevation, but the NASA SRTM model (~30 m) is ' +
+      'often more precise.',
+    question: 'What would you like to do?',
+    overrideAll: 'Override all',
+    overrideAllDesc:
+      'replace every point from the SRTM terrain model — a smooth, ' +
+      'consistent profile',
+    fillMissing: 'Fill missing',
+    fillMissingDesc:
+      'keep the recorded values and fill only the gaps (may step where the ' +
+      'two sources meet)',
+    keep: 'Leave unchanged',
+    keepDesc: 'use the elevation stored in the track',
+    add: 'Add elevation',
+    update: 'Update elevation',
+    updateConfirm:
+      "Replace the track's elevation with the NASA SRTM terrain model (~30 m)?",
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'Missing elevation has been filled.'
+        : 'Elevation has been overwritten.',
   },
   shareToast:
     'The track has been saved to the server and can be shared by copying page URL.',

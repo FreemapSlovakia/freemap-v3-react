@@ -57,6 +57,7 @@ import { osmLoadNodeProcessor } from '@features/osm/model/processors/osmLoadNode
 import { osmLoadRelationProcessor } from '@features/osm/model/processors/osmLoadRelationProcessor.js';
 import { osmLoadWayProcessor } from '@features/osm/model/processors/osmLoadWayProcessor.js';
 import { purchaseProcessor } from '@features/purchases/model/processors/purchaseProcessor.js';
+import { routePlannerColorizeProcessor } from '@features/routePlanner/model/processors/colorizeProcessor.js';
 import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/processors/findRouteProcessor.js';
 import { routePlannerRefocusMapProcessor } from '@features/routePlanner/model/processors/refocusMapProcessor.js';
 import { routePlannerSetFromCurrentPositionProcessor } from '@features/routePlanner/model/processors/setFromCurrentPositionProcessor.js';
@@ -75,8 +76,10 @@ import { toastsStopTimeoutProcessor } from '@features/toasts/model/processors/to
 import * as trackingAccessTokenProcessors from '@features/tracking/model/processors/trackingAccessTokenProcessors.js';
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
 import { trackingFollowProcessor } from '@features/tracking/model/processors/trackingFollowProcessors.js';
+import { trackViewerDensifyProcessor } from '@features/trackViewer/model/processors/trackViewerDensifyProcessor.js';
 import { trackViewerDownloadTrackProcessor } from '@features/trackViewer/model/processors/trackViewerDownloadTrackProcessor.js';
 import { trackViewerGpxLoadProcessor } from '@features/trackViewer/model/processors/trackViewerGpxLoadProcessor.js';
+import { trackViewerResolveElevationPromptProcessor } from '@features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.js';
 import { trackViewerSetTrackDataProcessor } from '@features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.js';
 import { trackViewerToggleElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.js';
 import { trackViewerUploadTrackProcessor } from '@features/trackViewer/model/processors/trackViewerUploadTrackProcessor.js';
@@ -137,6 +140,8 @@ export const processors = [
   trackViewerGpxLoadProcessor,
   trackViewerUploadTrackProcessor,
   trackViewerToggleElevationChartProcessor,
+  trackViewerResolveElevationPromptProcessor,
+  trackViewerDensifyProcessor,
   routePlannerFindRouteProcessor,
   galleryDeletePictureProcessor,
   galleryFetchUsersProcessor,
@@ -155,6 +160,7 @@ export const processors = [
   galleryMakeAllPremiumOrFreeProcessor,
   routePlannerRefocusMapProcessor,
   routePlannerToggleElevationChartProcessor,
+  routePlannerColorizeProcessor,
   routePlannerSetFromCurrentPositionProcessor,
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),

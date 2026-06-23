@@ -28,6 +28,7 @@ import {
   routePlannerSetResult,
   routePlannerSetStart,
   Step,
+  StepCoordinate,
   StepMode,
   Waypoint,
 } from '../actions.js';
@@ -381,7 +382,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           ?.geometry.coordinates.at(-1);
 
         if (lastPt) {
-          coordinates[0] = lastPt;
+          coordinates[0] = [lastPt[0], lastPt[1]];
         }
       }
 
@@ -391,7 +392,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
             .coordinates[0];
 
         if (firstPt) {
-          coordinates[coordinates.length - 1] = firstPt;
+          coordinates[coordinates.length - 1] = [firstPt[0], firstPt[1]];
         }
       }
 
@@ -485,7 +486,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         url: process.env['GRAPHHOPPER_URL'] + '/route',
         data: {
           snap_preventions: ['trunk', 'motorway', 'tunnel', 'ferry'],
-          // elevation: true, // if to return also elevations
+          elevation: true,
           algorithm:
             mode === 'roundtrip'
               ? 'round_trip'
@@ -674,10 +675,15 @@ function fromGraphhopper(
                 } as Partial<Record<TransportType, StepMode>>
               )[transportType] ?? 'error'),
         geometry: {
-          coordinates: path.points.coordinates.slice(
-            instruction.interval[0],
-            instruction.interval[1] + 1,
-          ) as [number, number][],
+          // GraphHopper yields 0 when elevation is unavailable; normalize such
+          // points to 2D so the bogus sea-level reading doesn't leak downstream.
+          // Arities can be mixed within a single response, so map per-point.
+          coordinates: path.points.coordinates
+            .slice(instruction.interval[0], instruction.interval[1] + 1)
+            .map(
+              (c): StepCoordinate =>
+                c[2] ? [c[0]!, c[1]!, c[2]] : [c[0]!, c[1]!],
+            ),
         },
       });
 

@@ -50,6 +50,12 @@ const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
       "Non hai ancora effettuato l'accesso a Garminon. Vuoi accedere questa volta?",
   },
   target: 'Destinazione',
+  elevation: {
+    label: 'Quota',
+    none: 'Mantieni',
+    missing: 'Riempi mancanti',
+    all: 'Sovrascrivi tutto',
+  },
 };
 
 export default it;

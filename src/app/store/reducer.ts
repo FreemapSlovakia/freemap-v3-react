@@ -75,6 +75,8 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         (action.payload === 'draw-points' &&
           state.selection?.type === 'draw-points') ||
         (action.payload === 'objects' && state.selection?.type === 'objects') ||
+        (action.payload === 'tracking' &&
+          state.selection?.type === 'tracking') ||
         (action.payload === 'map-details' && state.selection?.type === 'search')
           ? state.selection
           : null;

@@ -43,6 +43,12 @@ const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Pobierz',
   format: 'Format',
   target: 'Cel',
+  elevation: {
+    label: 'Wysokość',
+    none: 'Zachowaj',
+    missing: 'Uzupełnij brakujące',
+    all: 'Nadpisz wszystkie',
+  },
   exportError: ({ err }) => addError(getMessages()!, 'Błąd eksportu', err),
   disabledAlert:
     'Tylko opcje, których obiekty są widoczne na mapie, są aktywne.',

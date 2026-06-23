@@ -162,6 +162,7 @@ export const selectingModeSelector = (state: RootState): boolean =>
     state.main.tool === 'import-file' ||
     state.main.tool === 'changesets' ||
     state.main.tool === 'objects' ||
+    state.main.tool === 'tracking' ||
     (state.main.tool === 'route-planner' &&
       state.routePlanner.pickMode === null));
 

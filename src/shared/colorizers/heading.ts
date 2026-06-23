@@ -23,21 +23,23 @@ export const headingColorizer: Colorizer = {
     features.map((feature) => {
       const coords: [number, number][] = getCoords(feature);
 
-      let prev = coords[0];
+      let lastColor = 0;
 
-      return coords.map((coord) => {
-        let color = 0;
+      return coords.map((coord, i) => {
+        const next = coords[i + 1];
 
-        if (coord !== prev) {
+        // Heading at a point is the bearing of the segment leaving it. The last
+        // point, and any zero-length segment (e.g. a coordinate duplicated
+        // where two route steps meet), reuse the previous heading instead of
+        // snapping to north.
+        if (next && (next[0] !== coord[0] || next[1] !== coord[1])) {
           // turf bearing returns -180..180; shift to 0..360 then normalize.
-          const b = bearing([prev![0], prev![1]], [coord[0], coord[1]]);
+          const b = bearing([coord[0], coord[1]], [next[0], next[1]]);
 
-          color = (((b + 360) % 360) / 360 + Number.EPSILON) % 1;
+          lastColor = (((b + 360) % 360) / 360 + Number.EPSILON) % 1;
         }
 
-        prev = coord;
-
-        return { lat: coord[1], lon: coord[0], color };
+        return { lat: coord[1], lon: coord[0], color: lastColor };
       });
     }),
 };

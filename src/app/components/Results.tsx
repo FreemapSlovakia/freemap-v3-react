@@ -13,8 +13,11 @@ import { AsyncComponent } from './AsyncComponent.js';
 import { LocationResult } from './LocationResult.js';
 
 export function Results(): ReactElement {
+  // Prefer the densified render copy (extra DEM-sampled points on long
+  // segments) when present; otherwise the recorded track.
   const trackGeojson = useAppSelector(
-    (state) => state.trackViewer.trackGeojson,
+    (state) =>
+      state.trackViewer.renderTrackGeojson ?? state.trackViewer.trackGeojson,
   );
 
   const hasObjects = useAppSelector(

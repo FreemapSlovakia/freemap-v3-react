@@ -9,18 +9,6 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   upload: 'Feltöltés',
   moreInfo: 'További információ',
   share: 'Mentés a kiszolgálóra',
-  colorizingMode: {
-    none: 'Inaktív',
-    elevation: 'Magasság',
-    steepness: 'Meredekség',
-    speed: 'Sebesség',
-    heartRate: 'Pulzusszám',
-    cadence: 'Kadencia',
-    power: 'Teljesítmény',
-    temperature: 'Hőmérséklet',
-    time: 'Idő',
-    heading: 'Irány',
-  },
   details: {
     startTime: 'Indulási idő',
     finishTime: 'Érkezési idő',
@@ -32,10 +20,41 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     uphill: 'Összes emelkedés',
     downhill: 'Összes lejtés',
     durationValue: ({ h, m }) => `${h} óra ${m} perc`,
+    source: 'Magasság forrása',
+    sourceOriginal: 'rögzített',
+    sourcePartial: 'rögzített, hiányos',
+    sourceFilledGaps: 'rögzített, hézagok kitöltve (NASA SRTM)',
+    sourceFilled: 'NASA SRTM domborzatmodell',
   },
   uploadModal: {
     title: 'Fájl importálása',
     drop: 'Húzza ide a GPX- vagy GeoJSON-fájlt, vagy kattintson ide a kijelöléséhez.',
+  },
+  elevationFill: {
+    title: 'Magassági adatok',
+    introNone: 'Ennek a nyomvonalnak nincsenek magassági adatai.',
+    introPartial: 'A nyomvonal néhány pontjáról hiányzik a magasság.',
+    introFull:
+      'A nyomvonalnak már vannak magassági adatai, de a NASA SRTM modell ' +
+      '(~30 m) gyakran pontosabb.',
+    question: 'Mit szeretne tenni?',
+    overrideAll: 'Összes felülírása',
+    overrideAllDesc:
+      'minden pont cseréje az SRTM modellből — sima, egységes profil',
+    fillMissing: 'Hiányzók pótlása',
+    fillMissingDesc:
+      'a rögzített értékek megtartása és csak a hézagok kitöltése (a két ' +
+      'forrás találkozásánál lépcső jelenhet meg)',
+    keep: 'Ne változzon semmi',
+    keepDesc: 'a nyomvonalban tárolt magasság használata',
+    add: 'Magasság hozzáadása',
+    update: 'Magasság frissítése',
+    updateConfirm:
+      'Lecseréli a nyomvonal magasságát a NASA SRTM modellre (~30 m)?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'A hiányzó magasság ki lett töltve.'
+        : 'A magasság felül lett írva.',
   },
   shareToast:
     'Az útvonal el lett mentve a kiszolgálóra, és az oldal URL-jének másolásával megosztható.',

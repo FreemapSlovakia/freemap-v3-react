@@ -9,18 +9,6 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   upload: 'Nahrát',
   moreInfo: 'Více info',
   share: 'Uložit na server',
-  colorizingMode: {
-    none: 'Neaktivní',
-    elevation: 'Nadmořská výška',
-    steepness: 'Sklon',
-    speed: 'Rychlost',
-    heartRate: 'Tepová frekvence',
-    cadence: 'Kadence',
-    power: 'Výkon',
-    temperature: 'Teplota',
-    time: 'Čas',
-    heading: 'Směr',
-  },
   details: {
     startTime: 'Čas startu',
     finishTime: 'Čas v cíli',
@@ -32,10 +20,40 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     uphill: 'Celkové stoupání',
     downhill: 'Celkové klesání',
     durationValue: ({ h, m }) => `${h} hodin ${m} minut`,
+    source: 'Zdroj výšky',
+    sourceOriginal: 'zaznamenaná',
+    sourcePartial: 'zaznamenaná, neúplná',
+    sourceFilledGaps: 'zaznamenaná, mezery doplněné (NASA SRTM)',
+    sourceFilled: 'model terénu NASA SRTM',
   },
   uploadModal: {
     title: 'Importovat soubor',
     drop: 'Přetáhněte sem soubor GPX nebo GeoJSON, nebo sem klikněte pro jeho výběr.',
+  },
+  elevationFill: {
+    title: 'Nadmořská výška',
+    introNone: 'Tato trasa nemá údaje o nadmořské výšce.',
+    introPartial: 'Této trase chybí nadmořská výška u některých bodů.',
+    introFull:
+      'Tato trasa už má nadmořskou výšku, ale model NASA SRTM (~30 m) bývá ' +
+      'často přesnější.',
+    question: 'Co chcete udělat?',
+    overrideAll: 'Přepsat vše',
+    overrideAllDesc:
+      'nahradit každý bod z modelu SRTM — plynulý a konzistentní profil',
+    fillMissing: 'Doplnit chybějící',
+    fillMissingDesc:
+      'zachovat zaznamenané hodnoty a doplnit jen mezery (na rozhraní obou ' +
+      'zdrojů může vzniknout skok)',
+    keep: 'Nic neměnit',
+    keepDesc: 'použít nadmořskou výšku uloženou v trase',
+    add: 'Doplnit výšku',
+    update: 'Aktualizovat výšku',
+    updateConfirm: 'Nahradit nadmořskou výšku trasy modelem NASA SRTM (~30 m)?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'Chybějící nadmořská výška byla doplněna.'
+        : 'Nadmořská výška byla přepsána.',
   },
   shareToast:
     'Trasa byla uložena na server a můžete ji sdílet zkopírovaním URL stránky.',

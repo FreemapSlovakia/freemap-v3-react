@@ -71,6 +71,14 @@ a.leaflet-control-layers-toggle {
   }
 }
 
+/* The Hotline colorize layer is a full-viewport canvas in the overlay pane. It
+   only paints (the line is interactive:false), but unlike an SVG renderer the
+   canvas container keeps pointer-events, so it swallows every click over the
+   map. Let clicks fall through to the SVG route/track halos beneath it. */
+.leaflet-overlay-pane canvas {
+  pointer-events: none;
+}
+
 @media (max-width: 720px) {
   .leaflet-control-scale {
     margin-bottom: 4rem !important;

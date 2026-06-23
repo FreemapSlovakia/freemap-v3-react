@@ -180,6 +180,11 @@ Routing modes:
   - Visiting places
   - Visiting places (roundtrip)
 
+Once a route is found the toolbar also offers:
+
+- **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Heading (only modes the route has data for are shown); missing elevations are filled from the terrain model on demand
+- **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing, and kilometre/percent milestone toggles
+
 ### Objects (POIs)
 
 - Access: Main menu > Objects (POIs)
@@ -237,9 +242,14 @@ Clicking the marker will open the toast with the following details:
 
 ### Live tracking
 
-- Access: Main menu > Live tracking
+- Access: Main menu > Live tracking, or keyboard shortcut <kbd>g</kbd> <kbd>t</kbd>
 
-Live tracking lets a user register their own devices (so others can follow their position) and watch other people's devices. Supported tracker apps/devices include OsmAnd, Locus, Traccar, and similar. It opens a submenu leading to two managers: **My tracked devices** and **Watched devices**.
+Live tracking lets a user register their own devices (so others can follow their position) and watch other people's devices. Supported tracker apps/devices include OsmAnd, Locus, Traccar, and similar. It opens a **toolbar** with:
+
+- **Watched devices** and **My tracked devices** — open the two managers (also reachable directly via <kbd>g</kbd> <kbd>w</kbd> and <kbd>g</kbd> <kbd>d</kbd>)
+- **Visual** — what to draw for tracks: points, line, or line + points
+- **Colorize by** — color the watched tracks by a per-point value; modes are shown only when the tracks carry the data: Elevation, Steepness, Speed, Time, Heading, Battery, GSM signal (Inactive = solid track color)
+- **Elevation profile** — a chart of the selected (or first) track that reports altitude; uses the recorded altitudes as-is
 
 #### My tracked devices
 
@@ -340,6 +350,8 @@ Opens a modal to export the user's own map data as a GPX or GeoJSON file. Only t
 - live tracking
 - imported file
 - highlighted map feature
+
+For the file/Google Drive/Dropbox targets an **Elevation** control chooses whether to fill elevation from the elevation API into exported points, lines and the planned route: *Keep recorded* (leave as-is), *Fill missing* (only coordinates lacking elevation), or *Override all* (replace every elevation). Polygons are always skipped.
 
 The target can be a downloaded file, Google Drive, Dropbox, or Garmin Connect. Exporting a planned route to Garmin Connect as a course (experimental) requires a connected Garmin account and lets the user choose a course name and activity type (running, hiking, mountain biking, trail running, road/gravel cycling, other).
 

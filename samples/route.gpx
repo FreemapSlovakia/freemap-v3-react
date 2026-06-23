@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="freemap sample generator" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1">
+  <rte>
+    <name>Sample route</name>
+    <rtept lat="48.7400000" lon="21.0540000"><ele>600</ele></rtept>
+    <rtept lat="48.7483937" lon="21.0636634"><ele>807</ele></rtept>
+    <rtept lat="48.7559603" lon="21.0724428"><ele>810</ele></rtept>
+    <rtept lat="48.7621709" lon="21.0806899"><ele>792</ele></rtept>
+    <rtept lat="48.7669864" lon="21.0888911"><ele>790</ele></rtept>
+    <rtept lat="48.7708710" lon="21.0975444"><ele>603</ele></rtept>
+    <rtept lat="48.7746246" lon="21.1070334"><ele>380</ele></rtept>
+    <rtept lat="48.7790949" lon="21.1175304"><ele>372</ele></rtept>
+    <rtept lat="48.7848705" lon="21.1289524"><ele>422</ele></rtept>
+    <rtept lat="48.7920692" lon="21.1409826"><ele>431</ele></rtept>
+  </rte>
+</gpx>

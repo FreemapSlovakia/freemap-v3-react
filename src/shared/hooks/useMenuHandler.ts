@@ -13,7 +13,6 @@ import { Document, documentShow } from '@features/documents/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { Submenu } from '@features/mainMenu/components/submenu.js';
 import { mapRefocus } from '@features/map/model/actions.js';
-import { trackingActions } from '@features/tracking/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Language } from '@shared/langUtils.js';
 import storage from 'local-storage-fallback';
@@ -28,7 +27,6 @@ export type EventKey =
   | 'close'
   | 'gallery'
   | 'galEmails'
-  | `tracking-visual-${'0' | '1'}${'0' | '1'}`
   | `submenu-${NonNullable<Submenu> | ''}`
   | `document-${Document}`
   | `tool-${Tool}`
@@ -216,20 +214,6 @@ export function useMenuHandler({
         );
 
         setShow(false);
-
-        return;
-      }
-
-      const trackingVisual = afterPrefix(key, 'tracking-visual-');
-
-      if (trackingVisual !== undefined) {
-        const [points, lines] = trackingVisual
-          .split('')
-          .map((n) => n === '1') as [boolean, boolean];
-
-        dispatch(trackingActions.setShowPoints(points));
-
-        dispatch(trackingActions.setShowLine(lines));
 
         return;
       }

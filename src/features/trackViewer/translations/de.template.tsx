@@ -6,18 +6,6 @@ import { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   info: () => <TrackViewerDetails />,
-  colorizingMode: {
-    none: 'Inaktiv',
-    elevation: 'Höhe',
-    steepness: 'Steigung',
-    speed: 'Geschwindigkeit',
-    heartRate: 'Herzfrequenz',
-    cadence: 'Trittfrequenz',
-    power: 'Leistung',
-    temperature: 'Temperatur',
-    time: 'Zeit',
-    heading: 'Richtung',
-  },
   details: {
     startTime: 'Startzeit',
     finishTime: 'Zielzeit',
@@ -29,10 +17,42 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     uphill: 'Gesamtanstieg',
     downhill: 'Gesamtabstieg',
     durationValue: ({ h, m }) => `${h} Stunden ${m} Minuten`,
+    source: 'Höhenquelle',
+    sourceOriginal: 'aufgezeichnet',
+    sourcePartial: 'aufgezeichnet, unvollständig',
+    sourceFilledGaps: 'aufgezeichnet, Lücken ergänzt (NASA SRTM)',
+    sourceFilled: 'NASA-SRTM-Geländemodell',
   },
   uploadModal: {
     title: 'Datei importieren',
     drop: 'Ziehen Sie eine GPX- oder GeoJSON-Datei hierher oder klicken Sie hier zur Auswahl.',
+  },
+  elevationFill: {
+    title: 'Höhendaten',
+    introNone: 'Diese Spur enthält keine Höhendaten.',
+    introPartial: 'Bei einigen Punkten dieser Spur fehlt die Höhe.',
+    introFull:
+      'Diese Spur hat bereits Höhendaten, aber das NASA-SRTM-Modell (~30 m) ' +
+      'ist oft genauer.',
+    question: 'Was möchten Sie tun?',
+    overrideAll: 'Alle überschreiben',
+    overrideAllDesc:
+      'jeden Punkt aus dem SRTM-Geländemodell ersetzen — ein glattes, ' +
+      'einheitliches Profil',
+    fillMissing: 'Fehlende ergänzen',
+    fillMissingDesc:
+      'die aufgezeichneten Werte behalten und nur die Lücken füllen (an den ' +
+      'Übergängen kann es Stufen geben)',
+    keep: 'Nichts ändern',
+    keepDesc: 'die in der Spur gespeicherte Höhe verwenden',
+    add: 'Höhe ergänzen',
+    update: 'Höhe aktualisieren',
+    updateConfirm:
+      'Die Höhe der Spur durch das NASA-SRTM-Geländemodell (~30 m) ersetzen?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'Fehlende Höhe wurde ergänzt.'
+        : 'Die Höhe wurde überschrieben.',
   },
   upload: 'Hochladen',
   moreInfo: 'Mehr Infos',

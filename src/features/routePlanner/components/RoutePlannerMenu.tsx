@@ -4,11 +4,18 @@ import {
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  ColorizingModeSchema,
+  colorizers,
+  colorizingModes,
+} from '@shared/colorizers/index.js';
+import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
+import type { Feature, LineString } from 'geojson';
 import {
   ChangeEvent,
   Children,
@@ -20,6 +27,7 @@ import {
   SubmitEvent,
   SyntheticEvent,
   useCallback,
+  useMemo,
   useState,
 } from 'react';
 import {
@@ -37,6 +45,7 @@ import {
   FaEllipsisV,
   FaHome,
   FaMapMarkerAlt,
+  FaPaintBrush,
   FaPencilAlt,
   FaPlay,
   FaRegCheckSquare,
@@ -48,6 +57,7 @@ import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   RoutingMode,
+  routePlannerColorizeBy,
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
   routePlannerSetIsochroneParams,
@@ -383,6 +393,43 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.alternatives.length > 0,
   );
 
+  const colorizeBy = useAppSelector((state) => state.routePlanner.colorizeBy);
+
+  const alternatives = useAppSelector(
+    (state) => state.routePlanner.alternatives,
+  );
+
+  const activeAlternativeIndex = useAppSelector(
+    (state) => state.routePlanner.activeAlternativeIndex,
+  );
+
+  const cm = useColorizerMessages();
+
+  // The active alternative as a single line, used only to gate which colorize
+  // modes apply (e.g. speed needs timestamps a planned route lacks).
+  const lineFeatures = useMemo<Feature<LineString>[]>(() => {
+    const coordinates =
+      alternatives[activeAlternativeIndex]?.legs
+        .flatMap((leg) => leg.steps)
+        .flatMap((step) => step.geometry.coordinates) ?? [];
+
+    return coordinates.length < 2
+      ? []
+      : [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'LineString', coordinates },
+          },
+        ];
+  }, [alternatives, activeAlternativeIndex]);
+
+  const isModeAvailable = (mode: (typeof colorizingModes)[number]) => {
+    const { isAvailable } = colorizers[mode];
+
+    return !isAvailable || isAvailable(lineFeatures);
+  };
+
   const elevationProfileIsVisible = useAppSelector((state) =>
     Boolean(state.elevationChart.elevationProfilePoints),
   );
@@ -681,6 +728,41 @@ export default function RoutePlannerMenu(): ReactElement {
           </>
         )}
       </ButtonGroup>
+
+      {routeFound && (
+        <Dropdown
+          className="ms-1"
+          id="route-colorizing-mode"
+          onSelect={(mode) => {
+            dispatch(
+              routePlannerColorizeBy(
+                ColorizingModeSchema.nullable().parse(mode),
+              ),
+            );
+          }}
+        >
+          <Dropdown.Toggle variant="secondary">
+            <FaPaintBrush /> {cm?.mode[colorizeBy ?? 'none']}
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+            {/* Unlike imported tracks, a planned route can never carry recorded
+                sensor data (heart rate, cadence, …), so those modes are hidden
+                rather than shown disabled. */}
+            {[undefined, ...colorizingModes.filter(isModeAvailable)].map(
+              (mode) => (
+                <Dropdown.Item
+                  eventKey={mode}
+                  key={mode || 'none'}
+                  active={mode === colorizeBy}
+                >
+                  {cm?.mode[mode ?? 'none']}
+                </Dropdown.Item>
+              ),
+            )}
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
 
       {routeFound && (
         <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>

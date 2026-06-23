@@ -81,4 +81,109 @@ limits; avoid third-party data (license risk — see Strava) and community conte
       confirm licenses permit gating/charging for NLC forestry WMS
       (`gis.nlcsk.org`), ŠGÚDŠ geology WMS (`ags.geology.sk`), and ÚGKK ortho/DMR
       (LLS DMR). Own renders (Outdoor map, parametric hillshade SK/CZ) are fine.
-      </content>
+
+## Elevation & track colorization (in progress on `feat/elevation-colorization`)
+
+Context: GraphHopper now returns per-point elevation inline (with `0` as its
+no-data sentinel, normalized to 2D). The aim is one shared elevation-acquisition
+layer feeding one shared colorizer/consumer layer across routePlanner,
+trackViewer, tracking, and export. Sample tracks of every shape live in
+[`samples/`](./samples/) (regenerate via `node samples/gen-samples.mjs`).
+
+Guiding principle: **gaps are the honest default; enrichment is opt-in.** Fill
+elevation automatically only where intent is unambiguous (planned route, where
+GraphHopper ≈ DEM); prompt the user where the data's provenance is unknown
+(imported tracks).
+
+- [x] Carry GraphHopper elevation through routes + GPX export; normalize the
+      `0` sentinel to 2D per-coordinate (`StepCoordinate`).
+- [x] Elevation chart: require *every* coordinate to carry elevation
+      (`containsElevations`) and share the `/geotools/elevation` call via
+      `fetchElevations` (`src/shared/elevation.ts`).
+- [x] **`enrichElevations(features, 'missing' | 'all')`** in `src/shared/elevation.ts`
+      on top of `fetchElevations`: `missing` fills only coords lacking `z`,
+      `all` overwrites every `z`. Foundation for the consumers below.
+- [x] **Gap rendering.** Elevation chart (`ElevationChart.tsx`) splits the SVG
+      polyline/area into contiguous finite runs (min/max ignoring `NaN`; climb
+      accumulation resets across `null` API points). Colorize (`colorizeByValues`
+      + the two elevation-derived colorizers) flags missing values as gaps on
+      `ColorizedPoint`, and the Hotline render loop splits each feature's points
+      into gap-free runs.
+- [x] **Densify sparse lines for rendering (chart + colorize + details).** Opt-A
+      done. `densifyAlong(feature, getState, cancelActions?)` in
+      `src/shared/elevation.ts` inserts intermediate points (at ~2 px / ≤100 m
+      spacing via `along`) only into segments long enough to matter, DEM-samples
+      just the inserted points (existing vertices keep their elevation), drops
+      `coordTimes`/`coordinateProperties` (can't be interpolated), and is a
+      reference-equal no-op for dense lines. Cached as a derived
+      `renderTrackGeojson` on the trackViewer slice (separate from `trackGeojson`,
+      never exported; cleared on `trackViewerSetData` / `trackViewerSetElevation`),
+      built lazily by `ensureRenderGeojson` **only after a server override**
+      (`elevationOverridden`) — the one state where every point is known DEM-derived,
+      so inserted DEM points add no seam. A track's own recorded elevation is left
+      alone even when full (no DEM injected between measured points), as are *fill
+      missing* / *keep recorded*. A `trackViewerDensifyProcessor` (on
+      `trackViewerSetElevation`) keeps it fresh for the colorize + details
+      consumers; the chart paths `await ensureRenderGeojson` then feed the
+      densified line. Consumers read `renderTrackGeojson ?? trackGeojson`
+      (`Results.tsx` → `TrackViewerResult`, `TrackViewerDetails`). **Route planner**
+      gets the same render-only treatment via `ensureRouteRenderGeojson` →
+      `renderGeojson`: a planned route has no recorded measurement, so the router's
+      own (different-DEM, shape-point-density) elevation is *always* ignored —
+      `enrichElevations('all')` overrides every vertex from our DEM, then
+      `densifyAlong` adds DEM points on long segments. Fed to the chart +
+      elevation/steepness colorize only; `alternatives` stay GraphHopper's so
+      export and the drawn route/distances are untouched (replaced the old
+      `elevationsFilled` / `routePlannerSetEnrichedAlternatives` write-into-source).
+- [x] **Promote `colorizers/`** out of `src/features/trackViewer/` to a shared
+      location (`src/shared/colorizers/`, imported via `@shared/colorizers/…`) so
+      routePlanner + tracking can reuse them. `Colorizer.isAvailable` already
+      gates which modes apply per feature.
+- [x] **trackViewer**: prompt-on-trigger (chart / elevation-colorize / info)
+      when elevation is missing/partial — **Fill missing / Override all / Keep
+      recorded** — answered once per track. Result drives `enrichElevations`
+      writing `z` into `trackGeojson` (cached; static data). Full-elevation tracks
+      skip the prompt; an explicit "update elevation" button overrides from the
+      server via a plain confirm. The prompt hints that "Override all" avoids the
+      recorded-vs-DEM seam (steepness spikes at gap edges).
+- [x] **tracking**: colorize + elevation chart, reusing the shared colorizers via
+      a `TrackPoint[] → Feature<LineString>` adapter (`trackGeojson.ts`: coords
+      `[lon,lat,alt?]`, `coordTimes`, `coordinateProperties` for battery/gsmSignal).
+      New `battery` + `gsmSignal` colorizers (shared, gated by `isAvailable`) on an
+      absolute 0–100 % scale via `coordPropColorizerAbsolute` (so a color means the
+      same across tracks). Tracking is now a real **tool**
+      (`ToolSchema`/`toolDefinitions`, <kbd>g</kbd> <kbd>t</kbd>) whose toolbar
+      (`TrackingMenu`) holds the old `TrackingSubmenu` items (watched/my devices,
+      visual) plus colorize + elevation-chart toggle; `TrackingSubmenu` and the
+      `tracking-visual-*` menu plumbing were removed. The chart uses recorded
+      altitude as-is (`keepRecorded`) — no fetch/cache, so it stays ephemeral for
+      live data. Colorize mode is persisted (`PersistedTrackingSchema`).
+- [x] **routePlanner**: auto `ensureRouteElevations('missing')` (lazy, cached
+      per result via `elevationsFilled`) writes DEM-filled `z` back into the
+      alternatives' step coordinates, so the chart (now rendered from local
+      coordinates, keepRecorded) and the new colorize dropdown read complete
+      local data; no prompt. Colorize renders the active alternative as a
+      Hotline (its own white outline; the halo stays for leg-select/drag),
+      gated by `Colorizer.isAvailable` (routes expose Elevation, Steepness,
+      Time, Heading). The local elevation resolver now also accumulates
+      climb/descent, so the chart keeps those totals. Colorize-mode labels
+      moved to a shared `src/shared/colorizers/translations/` bundle
+      (`useColorizerMessages`).
+- [x] **export**: opt-in **Elevation** control (Keep recorded / Fill missing /
+      Override all) in the map-data export modal (`ExportElevationSchema`,
+      persisted, hidden for Garmin). Both export paths reuse the shared
+      `fetchElevations` (`src/shared/elevation.ts`): GeoJSON via `fillFcElevations`
+      on a cloned FeatureCollection, GPX via `fillGpxElevations` filling/replacing
+      `<ele>` on wpt/trkpt/rtept. Polygons (and `fm:type=polygon` GPX tracks) are
+      skipped. `enrichElevations` stays the LineString-feature path used by
+      routePlanner/trackViewer; the export fills points + lines in one batched
+      request, so it builds on the same shared fetch rather than that wrapper.
+
+### Idea for later — multi-property track chart
+
+Generalize the elevation chart into a multi-property chart: X axis = time **or**
+distance; Y axis selectable among elevation, speed, orientation/heading, GSM
+signal, battery level, distance, time, … Applies to trackViewer and tracking
+(and, where data exists, the planned route). The colorizer data adapters already
+expose most of these series, so the chart and the colorizers could share one
+per-track "series" extraction layer.

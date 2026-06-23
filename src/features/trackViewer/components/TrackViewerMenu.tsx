@@ -1,15 +1,18 @@
-import {
-  clearMapFeatures,
-  convertToDrawing,
-  setActiveModal,
-} from '@app/store/actions.js';
+import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  colorizerNeedsElevation,
+  colorizers,
+  colorizingModes,
+} from '@shared/colorizers/index.js';
+import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { flatten } from '@turf/flatten';
 import type { Feature, LineString } from 'geojson';
@@ -19,21 +22,23 @@ import {
   FaChartArea,
   FaCloudUploadAlt,
   FaInfoCircle,
+  FaMountain,
   FaPaintBrush,
   FaPencilAlt,
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { colorizers, colorizingModes } from '../colorizers/index.js';
 import {
   ColorizingModeSchema,
   trackViewerColorizeTrackBy,
-  trackViewerSetData,
+  trackViewerResolveElevationPrompt,
+  trackViewerSetElevationPrompt,
   trackViewerToggleElevationChart,
   trackViewerUploadTrack,
 } from '../model/actions.js';
-import { loadTrackViewerMessages } from '../translations/loadTrackViewerMessages.js';
+import { trackInfoToast } from '../model/trackInfoToast.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
+import TrackViewerElevationPromptModal from './TrackViewerElevationPromptModal.js';
 
 export default TrackViewerMenu;
 
@@ -42,7 +47,11 @@ export function TrackViewerMenu(): ReactElement {
 
   const tvm = useTrackViewerMessages();
 
+  const cm = useColorizerMessages();
+
   const dispatch = useDispatch();
+
+  const confirm = useConfirm();
 
   const hasTrack = useAppSelector((state) =>
     Boolean(state.trackViewer.trackGeojson),
@@ -56,6 +65,10 @@ export function TrackViewerMenu(): ReactElement {
 
   const colorizeTrackBy = useAppSelector(
     (state) => state.trackViewer.colorizeTrackBy,
+  );
+
+  const elevationDecision = useAppSelector(
+    (state) => state.trackViewer.elevationDecision,
   );
 
   const enableElevationChart = useAppSelector(
@@ -78,6 +91,18 @@ export function TrackViewerMenu(): ReactElement {
     return !isAvailable || isAvailable(lineFeatures);
   };
 
+  const coverage = elevationCoverage(lineFeatures);
+
+  // Overriding from the server makes sense only while the track still has some
+  // recorded elevation to replace and hasn't already been fully overridden.
+  const canUpdateElevation = coverage !== 'none' && elevationDecision !== 'all';
+
+  // Only ask how to fill elevation when some is actually missing and the user
+  // hasn't decided yet. Tracks that already have full elevation proceed
+  // straight away — the explicit "update" button covers overriding them.
+  const needsElevationDecision =
+    coverage !== 'full' && elevationDecision === 'undecided';
+
   const handleConvertToDrawing = useCallback(() => {
     const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
 
@@ -92,139 +117,194 @@ export function TrackViewerMenu(): ReactElement {
   }, [dispatch, m]);
 
   return (
-    <ToolMenu>
-      {canUpload && (
-        <LongPressTooltip breakpoint="sm" label={tvm?.upload}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => {
-                dispatch(setActiveModal('file-import'));
-              }}
-              {...props}
-            >
-              <FaUpload />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+    <>
+      <TrackViewerElevationPromptModal />
 
-      {/* Separate the import action from the loaded-track actions. */}
-      {canUpload && hasTrack && <div className=" ms-1 vr align-self-stretch" />}
-
-      {enableElevationChart && (
-        <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              active={elevationChartActive}
-              onClick={() => {
-                dispatch(trackViewerToggleElevationChart());
-              }}
-              {...props}
-            >
-              <FaChartArea />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
-
-      {enableElevationChart && (
-        <Dropdown
-          className="ms-1"
-          onSelect={(approach) => {
-            dispatch(
-              trackViewerColorizeTrackBy(
-                ColorizingModeSchema.nullable().parse(approach),
-              ),
-            );
-          }}
-        >
-          <Dropdown.Toggle id="colorizing_mode" variant="secondary">
-            <FaPaintBrush /> {tvm?.colorizingMode[colorizeTrackBy ?? 'none']}
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            {[undefined, ...colorizingModes].map((mode) => (
-              <Dropdown.Item
-                eventKey={mode}
-                key={mode || 'none'}
-                active={mode === colorizeTrackBy}
-                disabled={mode !== undefined && !isModeAvailable(mode)}
+      <ToolMenu>
+        {canUpload && (
+          <LongPressTooltip breakpoint="sm" label={tvm?.upload}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => {
+                  dispatch(setActiveModal('file-import'));
+                }}
+                {...props}
               >
-                {tvm?.colorizingMode[mode ?? 'none']}
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
+                <FaUpload />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
 
-      {enableElevationChart && (
-        <LongPressTooltip breakpoint="sm" label={tvm?.moreInfo}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => {
+        {/* Separate the import action from the loaded-track actions. */}
+        {canUpload && hasTrack && (
+          <div className=" ms-1 vr align-self-stretch" />
+        )}
+
+        {enableElevationChart && (
+          <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                active={elevationChartActive}
+                onClick={() => {
+                  dispatch(trackViewerToggleElevationChart());
+                }}
+                {...props}
+              >
+                <FaChartArea />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
+
+        {enableElevationChart && canUpdateElevation && (
+          <LongPressTooltip breakpoint="sm" label={tvm?.elevationFill.update}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={async () => {
+                  // With only some points missing, defer to the adaptive modal
+                  // so the user can fill just the gaps instead of overwriting
+                  // the recorded values.
+                  if (coverage === 'partial') {
+                    dispatch(trackViewerSetElevationPrompt({ type: 'update' }));
+
+                    return;
+                  }
+
+                  // A fully-elevated track has no gaps to fill, so overwriting
+                  // from the server is the only update — a plain confirm is
+                  // enough. A success toast reports the outcome afterwards.
+                  if (
+                    await confirm({
+                      title: tvm?.elevationFill.title,
+                      message: tvm?.elevationFill.updateConfirm,
+                      confirmLabel: tvm?.elevationFill.update,
+                    })
+                  ) {
+                    dispatch(
+                      trackViewerResolveElevationPrompt({
+                        mode: 'all',
+                        consumer: { type: 'update' },
+                      }),
+                    );
+                  }
+                }}
+                {...props}
+              >
+                <FaMountain />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
+
+        {enableElevationChart && (
+          <Dropdown
+            className="ms-1"
+            onSelect={(approach) => {
+              const mode = ColorizingModeSchema.nullable().parse(approach);
+
+              // Elevation-derived modes route through the same fill prompt as
+              // the chart, but only while elevation is missing and undecided;
+              // otherwise apply directly.
+              if (
+                mode &&
+                colorizerNeedsElevation(mode) &&
+                needsElevationDecision
+              ) {
                 dispatch(
-                  toastsAdd({
-                    id: 'trackViewer.trackInfo',
-                    messageKey: 'info',
-                    messageLoader: loadTrackViewerMessages,
-                    cancelType: [
-                      clearMapFeatures.type,
-                      trackViewerSetData.type,
-                    ],
-                    style: 'info',
-                  }),
+                  trackViewerSetElevationPrompt({ type: 'colorize', mode }),
                 );
-              }}
-              {...props}
-            >
-              <FaInfoCircle />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+              } else {
+                dispatch(trackViewerColorizeTrackBy(mode));
+              }
+            }}
+          >
+            <Dropdown.Toggle id="colorizing_mode" variant="secondary">
+              <FaPaintBrush /> {cm?.mode[colorizeTrackBy ?? 'none']}
+            </Dropdown.Toggle>
 
-      {canUpload && hasTrack && (
-        <LongPressTooltip breakpoint="sm" label={tvm?.share}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => dispatch(trackViewerUploadTrack())}
-              {...props}
-            >
-              <FaCloudUploadAlt />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+            <Dropdown.Menu popperConfig={fixedPopperConfig}>
+              {[undefined, ...colorizingModes].map((mode) => (
+                <Dropdown.Item
+                  eventKey={mode}
+                  key={mode || 'none'}
+                  active={mode === colorizeTrackBy}
+                  disabled={mode !== undefined && !isModeAvailable(mode)}
+                >
+                  {cm?.mode[mode ?? 'none']}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
 
-      {hasTrack && (
-        <LongPressTooltip breakpoint="sm" label={m?.general.convertToDrawing}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={handleConvertToDrawing}
-              {...props}
-            >
-              <FaPencilAlt />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+        {enableElevationChart && (
+          <LongPressTooltip breakpoint="sm" label={tvm?.moreInfo}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => {
+                  // The info stats depend on elevation, so settle it first when
+                  // some is missing and the user hasn't decided yet.
+                  if (needsElevationDecision) {
+                    dispatch(trackViewerSetElevationPrompt({ type: 'info' }));
+                  } else {
+                    dispatch(trackInfoToast);
+                  }
+                }}
+                {...props}
+              >
+                <FaInfoCircle />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
 
-      {hasTrack && <DeleteButton />}
-    </ToolMenu>
+        {canUpload && hasTrack && (
+          <LongPressTooltip breakpoint="sm" label={tvm?.share}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => dispatch(trackViewerUploadTrack())}
+                {...props}
+              >
+                <FaCloudUploadAlt />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
+
+        {hasTrack && (
+          <LongPressTooltip breakpoint="sm" label={m?.general.convertToDrawing}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={handleConvertToDrawing}
+                {...props}
+              >
+                <FaPencilAlt />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
+
+        {hasTrack && <DeleteButton />}
+      </ToolMenu>
+    </>
   );
 }

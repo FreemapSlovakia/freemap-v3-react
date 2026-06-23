@@ -2,6 +2,13 @@ import { setTool } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { colorizers } from '@shared/colorizers/index.js';
+import {
+  NO_DATA_COLOR,
+  NO_DATA_OPACITY,
+  noDataRuns,
+  splitOnGaps,
+} from '@shared/colorizers/types.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
@@ -25,7 +32,6 @@ import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
-import { colorizers } from '../colorizers/index.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
 
 interface GetFeatures {
@@ -208,16 +214,31 @@ export default function TrackViewerResult({
       {activeColorizer &&
         activeColorizer
           .compute(getFeatures('LineString'))
-          .map((positions, i) => (
-            <Hotline
-              key={`${colorizeTrackBy}-${i}`}
-              data={positions}
-              getVal={(p) => p.point.color}
-              getLat={(p) => p.point.lat}
-              getLng={(p) => p.point.lon}
-              options={hotlineOptions}
-            />
-          ))}
+          .flatMap((positions, i) => [
+            ...noDataRuns(positions).map((run, j) => (
+              <Polyline
+                key={`nodata-${colorizeTrackBy}-${i}-${j}`}
+                positions={run.map((p): [number, number] => [p.lat, p.lon])}
+                weight={4}
+                pathOptions={{
+                  color: NO_DATA_COLOR,
+                  opacity: NO_DATA_OPACITY,
+                  lineCap: 'round',
+                }}
+                interactive={false}
+              />
+            )),
+            ...splitOnGaps(positions).map((run, j) => (
+              <Hotline
+                key={`${colorizeTrackBy}-${i}-${j}`}
+                data={run}
+                getVal={(p) => p.point.color}
+                getLat={(p) => p.point.lat}
+                getLng={(p) => p.point.lon}
+                options={hotlineOptions}
+              />
+            )),
+          ])}
 
       {colorizeTrackBy === null &&
         features.map(({ lineData, style }, i) => {

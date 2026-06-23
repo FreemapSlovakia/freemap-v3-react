@@ -1,10 +1,11 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { ColorizingMode } from '@shared/colorizers/index.js';
 import {
   TransportType,
   TransportTypeSchema,
 } from '@shared/transportTypeDefs.js';
 import { type LatLon, LatLonSchema } from '@shared/types/common.js';
-import { Feature, Polygon } from 'geojson';
+import { Feature, LineString, Polygon } from 'geojson';
 import z from 'zod';
 
 export const RoutePointSchema = z.object({
@@ -64,6 +65,9 @@ export interface Leg {
   duration: number;
 }
 
+/** A `[lon, lat]` or `[lon, lat, ele]` coordinate; arity can vary per point. */
+export type StepCoordinate = [number, number] | [number, number, number];
+
 export interface Step {
   maneuver: {
     type:
@@ -90,7 +94,7 @@ export interface Step {
   name: string;
   mode: StepMode;
   geometry: {
-    coordinates: [number, number][];
+    coordinates: StepCoordinate[];
   };
   extra?: RouteStepExtra;
 }
@@ -200,6 +204,22 @@ export const routePlannerSetActiveAlternativeIndex = createAction<number>(
 
 export const routePlannerToggleElevationChart = createAction(
   'ROUTE_PLANNER_TOGGLE_ELEVATION_CHART',
+);
+
+export const routePlannerColorizeBy = createAction<ColorizingMode | null>(
+  'ROUTE_PLANNER_COLORIZE_BY',
+);
+
+/**
+ * Caches a render-only line for the active alternative: every elevation comes
+ * from our terrain model (the router's own elevation is ignored) and long
+ * segments are densified at DEM resolution. Fed to the elevation chart and the
+ * elevation/steepness colorize only; the source `alternatives` (and thus export
+ * and the drawn route) stay GraphHopper's. Cleared whenever the result or the
+ * active alternative changes.
+ */
+export const routePlannerSetRenderGeojson = createAction<Feature<LineString>>(
+  'ROUTE_PLANNER_SET_RENDER_GEOJSON',
 );
 
 export const routePlannerSwapEnds = createAction('ROUTE_PLANNER_SWAP_ENDS');

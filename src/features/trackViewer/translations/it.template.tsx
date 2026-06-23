@@ -9,18 +9,6 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   upload: 'Carica',
   moreInfo: 'Maggiori info',
   share: 'Salva sul Server',
-  colorizingMode: {
-    none: 'Inattivo',
-    elevation: 'Elevazione',
-    steepness: 'Ripidezza',
-    speed: 'Velocità',
-    heartRate: 'Frequenza cardiaca',
-    cadence: 'Cadenza',
-    power: 'Potenza',
-    temperature: 'Temperatura',
-    time: 'Tempo',
-    heading: 'Direzione',
-  },
   details: {
     startTime: 'Ora inizio',
     finishTime: 'Ora fine',
@@ -32,10 +20,42 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     uphill: 'Acesca totale',
     downhill: 'Discesa totale',
     durationValue: ({ h, m }) => `${h} ore ${m} minuti`,
+    source: 'Origine quota',
+    sourceOriginal: 'registrata',
+    sourcePartial: 'registrata, incompleta',
+    sourceFilledGaps: 'registrata, lacune riempite (NASA SRTM)',
+    sourceFilled: 'modello del terreno NASA SRTM',
   },
   uploadModal: {
     title: 'Importa file',
     drop: 'Trascina qui un file GPX o GeoJSON oppure clicca per selezionarlo.',
+  },
+  elevationFill: {
+    title: 'Dati di quota',
+    introNone: 'Questa traccia non ha dati di quota.',
+    introPartial: 'In alcuni punti di questa traccia manca la quota.',
+    introFull:
+      'Questa traccia ha già la quota, ma il modello NASA SRTM (~30 m) è ' +
+      'spesso più preciso.',
+    question: 'Cosa vuoi fare?',
+    overrideAll: 'Sovrascrivi tutto',
+    overrideAllDesc:
+      'sostituisci ogni punto con il modello SRTM — un profilo uniforme e ' +
+      'coerente',
+    fillMissing: 'Riempi mancanti',
+    fillMissingDesc:
+      'mantieni i valori registrati e riempi solo le lacune (potrebbero ' +
+      'esserci scalini dove i due dati si incontrano)',
+    keep: 'Non modificare',
+    keepDesc: 'usa la quota memorizzata nella traccia',
+    add: 'Aggiungi quota',
+    update: 'Aggiorna quota',
+    updateConfirm:
+      'Sostituire la quota della traccia con il modello NASA SRTM (~30 m)?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'La quota mancante è stata riempita.'
+        : 'La quota è stata sovrascritta.',
   },
   shareToast:
     "La traccia è stata salvata sul server e può essere condivisa copiando l'URL della pagina.",

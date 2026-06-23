@@ -1,9 +1,11 @@
-import { distance } from '@turf/distance';
+import { cumulativeDistances, metricWindow } from '@shared/geoutils.js';
 import { getCoords } from '@turf/invariant';
 import type { Feature, LineString } from 'geojson';
 import { type Colorizer, colorizeByValues } from './types.js';
 
-const WINDOW = 5;
+// Speed is averaged over this horizontal span to absorb GPS jitter and
+// quantized timestamps; a single short segment can otherwise read as a spike.
+const SMOOTHING_METERS = 50;
 
 function getTimes(
   feature: Feature<LineString>,
@@ -36,28 +38,20 @@ export const speedColorizer: Colorizer = {
 
       const times = getTimes(feature, coords.length);
 
-      // Per-point speed in m/s, averaged over a small window to absorb
-      // GPS jitter and quantized timestamps.
+      const cum = cumulativeDistances(coords);
+
+      // Per-point speed in m/s, taken as path length over elapsed time across a
+      // fixed metric window centered on the point.
       const values = coords.map((_, i) => {
         if (!times) {
           return NaN;
         }
 
-        const j = Math.max(0, i - WINDOW);
+        const [lo, hi] = metricWindow(cum, i, SMOOTHING_METERS);
 
-        const k = Math.min(coords.length - 1, i + WINDOW);
+        const d = cum[hi]! - cum[lo]!;
 
-        let d = 0;
-
-        for (let n = j + 1; n <= k; n++) {
-          d += distance(
-            [coords[n][0], coords[n][1]],
-            [coords[n - 1][0], coords[n - 1][1]],
-            { units: 'meters' },
-          );
-        }
-
-        const dt = (times[k] - times[j]) / 1000;
+        const dt = (times[hi]! - times[lo]!) / 1000;
 
         return dt > 0 && Number.isFinite(d) ? d / dt : NaN;
       });

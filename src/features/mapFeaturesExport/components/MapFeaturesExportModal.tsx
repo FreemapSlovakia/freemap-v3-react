@@ -33,6 +33,8 @@ import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import {
   Exportable,
+  ExportElevation,
+  ExportElevationSchema,
   ExportTarget,
   ExportTargetSchema,
   ExportType,
@@ -63,6 +65,9 @@ const toExportType = (value: string | null) =>
 
 const toExportTarget = (value: string | null) =>
   ExportTargetSchema.safeParse(value).data ?? 'download';
+
+const toExportElevation = (value: string | null) =>
+  ExportElevationSchema.safeParse(value).data ?? 'none';
 
 export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const m = useMessages();
@@ -95,6 +100,12 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     toExportTarget,
   );
 
+  const [elevation, , setElevation] = usePersistentState<ExportElevation>(
+    'fm.exportFeatures.elevation',
+    String,
+    toExportElevation,
+  );
+
   const [name, setName] = useState('');
 
   const [description, setDescription] = useState('');
@@ -116,6 +127,8 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
         name: name || undefined,
         description: description || undefined,
         activity: activity || undefined,
+        // Garmin course export has its own elevation handling.
+        elevation: target === 'garmin' ? undefined : elevation,
       });
 
       if (target === 'garmin' && !userHasGarmin) {
@@ -143,6 +156,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
       name,
       description,
       activity,
+      elevation,
       userHasGarmin,
       em,
       confirm,
@@ -367,6 +381,31 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                       disabled={!exportables.length}
                     >
                       {exportType === 'gpx' ? 'GPX' : 'GeoJSON'}
+                    </ToggleButton>
+                  ))}
+                </ButtonGroup>
+              </div>
+            </Form.Group>
+          )}
+
+          {!isGarmin && (
+            <Form.Group controlId="elevation" className="mb-3">
+              <Form.Label>{em?.elevation.label}</Form.Label>
+
+              <div>
+                <ButtonGroup>
+                  {ExportElevationSchema.options.map((option) => (
+                    <ToggleButton
+                      id={'ele-' + option}
+                      key={option}
+                      type="radio"
+                      variant="outline-primary"
+                      value={option}
+                      checked={elevation === option}
+                      onChange={setElevation}
+                      disabled={!exportables.length}
+                    >
+                      {em?.elevation[option]}
                     </ToggleButton>
                   ))}
                 </ButtonGroup>

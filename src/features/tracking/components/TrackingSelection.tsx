@@ -1,12 +1,57 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Selection } from '@shared/components/Selection.js';
 import type { ReactElement } from 'react';
-import { FaBullseye } from 'react-icons/fa';
+import { Button } from 'react-bootstrap';
+import { FaBullseye, FaEye } from 'react-icons/fa';
+import { FaPencil } from 'react-icons/fa6';
+import { useDispatch } from 'react-redux';
+import { setActiveModal, setTool } from '@/app/store/actions.js';
+import { toolSelector } from '@/app/store/selectors.js';
+import { LongPressTooltip } from '@/shared/components/LongPressTooltip.js';
+import { useAppSelector } from '@/shared/hooks/useAppSelector.js';
 
 export function TrackingSelection(): ReactElement {
   const m = useMessages();
 
+  const tool = useAppSelector(toolSelector);
+
+  const dispatch = useDispatch();
+
   return (
-    <Selection icon={<FaBullseye />} label={m?.selections.tracking} deletable />
+    <Selection
+      icon={
+        <>
+          <LongPressTooltip label={m?.tools.tracking}>
+            {({ props }) => (
+              <Button
+                {...props}
+                variant="dark"
+                disabled={tool === 'tracking'}
+                onClick={() => dispatch(setTool('tracking'))}
+              >
+                <FaBullseye />
+              </Button>
+            )}
+          </LongPressTooltip>{' '}
+          <FaEye />
+        </>
+      }
+      label={m?.selections.tracking}
+      deletable
+      noLeftMargin
+    >
+      <LongPressTooltip label={m?.general.modify}>
+        {({ props }) => (
+          <Button
+            {...props}
+            className="ms-1"
+            variant="secondary"
+            onClick={() => dispatch(setActiveModal('tracking-watched'))} // TODO show active device
+          >
+            <FaPencil />
+          </Button>
+        )}
+      </LongPressTooltip>
+    </Selection>
   );
 }

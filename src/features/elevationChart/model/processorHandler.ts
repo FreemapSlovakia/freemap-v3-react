@@ -1,8 +1,8 @@
-import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
+import { fetchElevations } from '@shared/elevation.js';
 import { containsElevations } from '@shared/geoutils.js';
 import { along } from '@turf/along';
 import { distance } from '@turf/distance';
@@ -18,7 +18,6 @@ import {
   Polygon,
 } from 'geojson';
 import { Dispatch } from 'redux';
-import z from 'zod';
 import {
   elevationChartClose,
   elevationChartSetElevationProfile,
@@ -31,9 +30,12 @@ const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
   getState,
   action,
 }) => {
-  const trackGeojson = action.payload;
+  const { trackGeojson, keepRecorded } = action.payload;
 
-  if (containsElevations(trackGeojson)) {
+  // `keepRecorded` shows the recorded elevation verbatim (gaps included); a
+  // fully-elevated track is read locally regardless. Everything else samples a
+  // complete profile from the server.
+  if (keepRecorded || containsElevations(trackGeojson)) {
     resolveElevationProfilePointsLocally(trackGeojson, dispatch);
   } else {
     await resolveElevationProfilePointsViaApi(getState, trackGeojson, dispatch);
@@ -52,6 +54,12 @@ function resolveElevationProfilePointsLocally(
 
   let prevPt: [number, number, number] | undefined;
 
+  let climbUp = 0;
+
+  let climbDown = 0;
+
+  let prevEle: number | undefined;
+
   const elevationProfilePoints: ElevationProfilePoint[] = [];
 
   for (const pt of getCoords(trackGeojson)) {
@@ -61,11 +69,33 @@ function resolveElevationProfilePointsLocally(
       dist += distance([lon, lat], prevPt, { units: 'meters' });
     }
 
+    // A missing `z` breaks the climb accumulation: we don't know the terrain
+    // across the gap, so it resets the baseline rather than counting a bogus
+    // jump to/from it.
+    if (Number.isFinite(ele)) {
+      if (prevEle !== undefined) {
+        const d = ele! - prevEle;
+
+        if (d > 0) {
+          climbUp += d;
+        } else {
+          climbDown -= d;
+        }
+      }
+
+      prevEle = ele!;
+    } else {
+      prevEle = undefined;
+    }
+
     elevationProfilePoints.push({
       lat,
       lon,
-      ele,
+      // A coordinate without a finite `z` becomes a gap in the chart.
+      ele: Number.isFinite(ele) ? ele! : Number.NaN,
       distance: dist,
+      climbUp,
+      climbDown,
     });
 
     prevPt = pt;
@@ -101,31 +131,29 @@ async function resolveElevationProfilePointsViaApi(
     });
   }
 
-  const res = await httpRequest({
+  const eles = await fetchElevations(
+    elevationProfilePoints.map(({ lat, lon }) => [lat, lon]),
     getState,
-    method: 'POST',
-    url: '/geotools/elevation',
-    data: elevationProfilePoints.map(({ lat, lon }) => [lat, lon]),
-    expectedStatus: 200,
-    cancelActions: [
+    [
       elevationChartSetTrackGeojson,
       selectFeature,
       elevationChartClose,
       clearMapFeatures,
     ],
-  });
+  );
 
   let climbUp = 0;
 
   let climbDown = 0;
 
-  let prevEle: number | null | undefined;
-
-  const eles = z.array(z.number().nullable()).parse(await res.json());
+  let prevEle: number | undefined;
 
   for (const [i, ele] of eles.entries()) {
-    if (prevEle !== undefined) {
-      const d = (ele ?? 0) - (prevEle ?? 0);
+    // A no-data point (null) breaks the climb accumulation: we don't know the
+    // terrain across the gap, so it resets the baseline rather than counting a
+    // bogus jump to/from it.
+    if (prevEle !== undefined && ele != null) {
+      const d = ele - prevEle;
 
       if (d > 0) {
         climbUp += d;
@@ -137,7 +165,7 @@ async function resolveElevationProfilePointsViaApi(
     // TODO following are computed data, should not go to store
     Object.assign(elevationProfilePoints[i], { ele, climbUp, climbDown });
 
-    prevEle = ele;
+    prevEle = ele ?? undefined;
   }
 
   dispatch(elevationChartSetElevationProfile(elevationProfilePoints));

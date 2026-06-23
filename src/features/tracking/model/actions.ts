@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { ColorizingMode } from '@shared/colorizers/index.js';
 import {
   AccessToken,
   AccessTokenBase,
@@ -53,6 +54,10 @@ export const trackingActions = {
   setShowPoints: createAction<boolean>('TRACKING_SET_SHOW_POINTS'),
 
   setShowLine: createAction<boolean>('TRACKING_SET_SHOW_LINE'),
+
+  setColorizeBy: createAction<ColorizingMode | null>(
+    'TRACKING_SET_COLORIZE_BY',
+  ),
 
   delete: createAction<{ token: string | number }>('TRACKING_DELETE'),
 };

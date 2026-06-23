@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import type { DrawingLineType } from '@features/drawing/model/actions/drawingLineActions.js';
 import { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
@@ -15,6 +16,7 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
+import { fetchElevations } from '@shared/elevation.js';
 import {
   buildMarkerSvg,
   resolveMarkerGlyph,
@@ -31,6 +33,7 @@ import {
 } from '../../osmandIconMapping.js';
 import { exportMapFeatures } from '../actions.js';
 import { fetchPictures, Picture } from './fetchPictures.js';
+import { exportElevationCancelActions } from './fillElevations.js';
 import {
   addAttribute,
   createElement,
@@ -187,6 +190,12 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     }
   }
 
+  const { elevation } = action.payload;
+
+  if (elevation === 'missing' || elevation === 'all') {
+    await fillGpxElevations(doc, elevation, getState);
+  }
+
   // order nodes
 
   const r = getSupportedGpxElements(doc);
@@ -230,6 +239,85 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 };
 
 export default handle;
+
+// Fills `<ele>` into `<wpt>`/`<trkpt>`/`<rtept>` elements via the elevation
+// API. `missing` adds it only where absent; `all` also overwrites existing
+// values. Points inside polygon tracks (drawing areas, tagged `fm:type=polygon`)
+// are skipped — elevation has no meaning for an area outline. A new `<ele>` is
+// inserted as the first child to satisfy the GPX schema element order.
+async function fillGpxElevations(
+  doc: Document,
+  mode: 'missing' | 'all',
+  getState: () => RootState,
+): Promise<void> {
+  const polygonTrks = new Set<Element>();
+
+  for (const trk of Array.from(doc.getElementsByTagNameNS(GPX_NS, 'trk'))) {
+    for (const type of Array.from(trk.getElementsByTagNameNS(FM_NS, 'type'))) {
+      if (type.textContent === 'polygon') {
+        polygonTrks.add(trk);
+      }
+    }
+  }
+
+  const eleOf = (el: Element) =>
+    Array.from(el.children).find(
+      (child) => child.namespaceURI === GPX_NS && child.localName === 'ele',
+    );
+
+  const inPolygonTrk = (el: Element) => {
+    for (let p: Element | null = el; p; p = p.parentElement) {
+      if (p.namespaceURI === GPX_NS && p.localName === 'trk') {
+        return polygonTrks.has(p);
+      }
+    }
+
+    return false;
+  };
+
+  const candidates: { el: Element; existing: Element | undefined }[] = [];
+
+  for (const tag of ['wpt', 'trkpt', 'rtept']) {
+    for (const el of Array.from(doc.getElementsByTagNameNS(GPX_NS, tag))) {
+      if (tag === 'trkpt' && inPolygonTrk(el)) {
+        continue;
+      }
+
+      const existing = eleOf(el);
+
+      if (mode === 'all' || !existing) {
+        candidates.push({ el, existing });
+      }
+    }
+  }
+
+  const eles = await fetchElevations(
+    candidates.map(({ el }) => [
+      Number(el.getAttribute('lat')),
+      Number(el.getAttribute('lon')),
+    ]),
+    getState,
+    exportElevationCancelActions,
+  );
+
+  candidates.forEach(({ el, existing }, i) => {
+    const ele = eles[i];
+
+    if (ele == null) {
+      return;
+    }
+
+    if (existing) {
+      existing.textContent = String(ele);
+    } else {
+      const eleEl = doc.createElementNS(GPX_NS, 'ele');
+
+      eleEl.textContent = String(ele);
+
+      el.insertBefore(eleEl, el.firstChild);
+    }
+  });
+}
 
 function addPictures(
   doc: Document,
@@ -717,8 +805,17 @@ function addPlannedRoute(
 
     for (const leg of legs) {
       for (const step of leg.steps) {
-        for (const [lon, lat] of step.geometry.coordinates) {
-          createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
+        for (const [lon, lat, ele] of step.geometry.coordinates) {
+          const trkptEle = createElement(
+            trksegEle,
+            'trkpt',
+            undefined,
+            toLatLon({ lat, lon }),
+          );
+
+          if (ele !== undefined) {
+            createElement(trkptEle, 'ele', ele.toString());
+          }
         }
       }
     }
