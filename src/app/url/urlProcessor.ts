@@ -1,4 +1,5 @@
 import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
+import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -366,10 +367,7 @@ export const urlProcessor: Processor = {
         wikimediaCommons.preview?.pageId ?? wikimediaCommons.loading;
 
       const wikiKey =
-        wiki.loading ??
-        (wiki.preview
-          ? `${wiki.preview.lang}:${wiki.preview.langTitle}`
-          : null);
+        wiki.loading ?? (wiki.preview ? wikiPreviewKey(wiki.preview) : null);
 
       const show =
         encodeActiveModal(main.activeModal) ??

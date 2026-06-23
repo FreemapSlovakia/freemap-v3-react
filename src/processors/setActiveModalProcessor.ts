@@ -8,10 +8,7 @@ export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
   transform: ({ getState, action }) => {
     const anonymous = !getState().auth.user;
 
-    const type =
-      typeof action.payload === 'string'
-        ? action.payload
-        : action.payload?.type;
+    const type = action.payload?.type;
 
     const blocked =
       type &&

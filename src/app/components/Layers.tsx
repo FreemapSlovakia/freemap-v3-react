@@ -67,7 +67,7 @@ export function Layers(): ReactElement | null {
   const dispatch = useDispatch();
 
   const handlePremiumClick = useCallback(() => {
-    dispatch(setActiveModal('premium'));
+    dispatch(setActiveModal({ type: 'premium' }));
   }, [dispatch]);
 
   function getLayer(layerDef: LayerDef) {

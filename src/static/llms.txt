@@ -93,13 +93,13 @@ Toggles the photos toolbar and the community-photos map layer. Photos appear as 
 
 **Upload modal:** drag-and-drop or pick photos; per photo set name, description, capture date/time, location (with "Set the location" on the map), azimuth (shooting direction), tags, and an optional "make available only to premium users" flag. Shows the gallery rules (max 10 MB, landscapes/documentation only, own photos only, published under CC BY-SA 4.0, etc.).
 
-**Photo viewer:** shows the full image with CC BY-SA 4.0 attribution, uploader, capture date and rating; users can comment, rate, modify (own photos), delete, show on the map, open fullscreen, or open in an external app. Photos can be navigated sequentially (e.g. "1 / 51").
+**Photo viewer:** shows the full image with CC BY-SA 4.0 attribution, uploader, capture date and rating; users can comment, rate, modify (own photos), delete, show on the map, open fullscreen, or open in an external app. Photos can be navigated sequentially (e.g. "1 / 51"). URL path (open photo): `/#show=gallery-viewer/<id>` (legacy `/#image=<id>` still works).
 
 ### My maps
 
 - Access: Main menu > My maps
 - Keyboard shortcut: <kbd>g</kbd> <kbd>m</kbd>
-- URL path: `/#show=maps`
+- URL path: `/#show=my-maps` (legacy `/#show=maps` still works)
 
 Opens the user-saved maps manager in a modal. Each saved map stores the current state: active map layers, drawing, planned route, watched live-tracked devices, and GPX track.
 
@@ -203,7 +203,7 @@ The marker icon can be globally changed (pin/ring/square).
 - Keyboard shortcut: <kbd>g</kbd> <kbd>g</kbd>
 - URL path: `/#tools=import-file` (legacy `/#tool=import-file` and the old `track-viewer` alias still work)
 
-Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=upload-track`), which accepts GPX and GeoJSON files. Once a track is loaded, the toolbar offers:
+Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=file-import`; legacy `/#show=upload-track` still works), which accepts GPX and GeoJSON files. Once a track is loaded, the toolbar offers:
 
 - **Elevation profile** — chart of elevation along the track (with total climb/descent)
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled)
@@ -573,6 +573,8 @@ Notes:
 ##### Internal layer codes
 
 The id values above are used in deep links via the `layers=` URL param: one base-layer code, optionally followed by `~` and the concatenated overlay codes (e.g. `layers=X~I` = Outdoor base + Photos overlay). They are **advisory** for interpreting links and do **not** grant permission to scrape tiles or data; respect each layer's attribution and license.
+
+Clicking a marker on the Wikipedia or Wikimedia Commons overlay opens a preview modal, addressable via the unified `show=` param: `/#show=wiki/<lang>:<title>` for a Wikipedia article and `/#show=wmc/<pageId>` for a Wikimedia Commons photo (legacy `/#wmc=<pageId>` still works).
 
 ## Links
 

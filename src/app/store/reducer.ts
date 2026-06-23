@@ -122,10 +122,7 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       state.selection = null;
     })
     .addCase(setActiveModal, (state, action) => {
-      state.activeModal =
-        typeof action.payload === 'string'
-          ? ({ type: action.payload } as ActiveModal)
-          : action.payload;
+      state.activeModal = action.payload;
     })
     .addCase(documentShow, (state, action) => {
       state.activeModal = action.payload

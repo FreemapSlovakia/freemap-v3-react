@@ -24,7 +24,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
     if (!user) {
       dispatch(purchaseOnLogin(action.payload));
 
-      dispatch(setActiveModal('login'));
+      dispatch(setActiveModal({ type: 'login' }));
 
       return;
     }

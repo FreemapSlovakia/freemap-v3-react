@@ -55,6 +55,7 @@ import {
   wikiLoadPreview,
   wikiSetPreview,
 } from '@features/wiki/model/actions.js';
+import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import {
   wikimediaCommonsLoadPreview,
   wikimediaCommonsSetPreview,
@@ -682,8 +683,7 @@ export function handleLocationChange(store: MyStore): void {
       const w = getState().wiki;
 
       const current =
-        w.loading ??
-        (w.preview ? `${w.preview.lang}:${w.preview.langTitle}` : null);
+        w.loading ?? (w.preview ? wikiPreviewKey(w.preview) : null);
 
       if (current !== next.key) {
         dispatch(wikiLoadPreview(next.key));

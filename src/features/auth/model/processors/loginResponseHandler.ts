@@ -78,6 +78,6 @@ export async function handleLoginResponse(
   if (clientData?.successAction) {
     dispatch(clientData.successAction);
   } else if (connect) {
-    dispatch(setActiveModal('account'));
+    dispatch(setActiveModal({ type: 'account' }));
   }
 }

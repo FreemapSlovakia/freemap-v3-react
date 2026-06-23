@@ -24,7 +24,7 @@ export function useBecomePremium() {
         dispatch(galleryClear());
       }
 
-      dispatch(setActiveModal('premium'));
+      dispatch(setActiveModal({ type: 'premium' }));
     },
     [dispatch, showGalleryViewer],
   );

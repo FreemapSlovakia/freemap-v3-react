@@ -505,7 +505,7 @@ export function Main(): ReactElement {
       );
 
       if (pictureFiles.length) {
-        dispatch(setActiveModal('gallery-upload')); // if no user then it displays valuable error
+        dispatch(setActiveModal({ type: 'gallery-upload' })); // if no user then it displays valuable error
 
         if (authenticated) {
           handlePicturesDrop(pictureFiles);

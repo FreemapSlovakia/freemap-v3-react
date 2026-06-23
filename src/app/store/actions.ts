@@ -33,7 +33,7 @@ export const ToolSchema = z.enum([
 
 export type Tool = z.infer<typeof ToolSchema>;
 
-const BASIC_MODALS = [
+const URL_MODAL_IDS = [
   'about',
   'account',
   'credits-purchase',
@@ -59,7 +59,7 @@ const BASIC_MODALS = [
   'tracking-watched',
 ] as const;
 
-export const ShowModalSchema = z.enum(BASIC_MODALS);
+export const UrlModalIdSchema = z.enum(URL_MODAL_IDS);
 
 /** Legacy modal ids (from old shared links) mapped to their current name. */
 const MODAL_RENAMES: Record<string, string> = {
@@ -77,15 +77,12 @@ const MODAL_RENAMES: Record<string, string> = {
   maps: 'my-maps',
 };
 
-export const ModalSchema = z.enum([
-  ...BASIC_MODALS,
-  'tips',
+export const ModalIdSchema = z.enum([
+  ...URL_MODAL_IDS,
   'current-drawing-properties',
 ]);
 
-export type Modal = z.infer<typeof ModalSchema>;
-
-export type ShowModal = z.infer<typeof ShowModalSchema>;
+export type ModalId = z.infer<typeof ModalIdSchema>;
 
 /**
  * The open modal/overlay. A discriminated union so a modal can carry an
@@ -93,15 +90,12 @@ export type ShowModal = z.infer<typeof ShowModalSchema>;
  * at a time. `null` means no modal.
  */
 export type ActiveModal =
-  | { type: Exclude<Modal, 'tracking-watched'> }
+  | { type: Exclude<ModalId, 'tracking-watched'> }
   | { type: 'tracking-watched'; token?: string }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
   | { type: 'wmc'; pageId: number }
   | { type: 'wiki'; key: string };
-
-/** Modal types that round-trip through the URL as `show=<type>[/<arg>]`. */
-const URL_SERIALIZABLE: ReadonlySet<string> = new Set(BASIC_MODALS);
 
 /**
  * Serializes the open modal to the packed `show=` value (`type` or `type/arg`),
@@ -127,7 +121,8 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
     case 'wiki':
       return `wiki/${modal.key}`;
     default:
-      return URL_SERIALIZABLE.has(modal.type) ? modal.type : null;
+      // Only URL-serializable ids go in `show=`; current-drawing-properties doesn't.
+      return UrlModalIdSchema.safeParse(modal.type).success ? modal.type : null;
   }
 }
 
@@ -171,7 +166,7 @@ export function decodeShow(raw: string): ActiveModal | null {
     case 'wiki':
       return arg ? { type: 'wiki', key: arg } : null;
     default: {
-      const r = ShowModalSchema.safeParse(type);
+      const r = UrlModalIdSchema.safeParse(type);
 
       return r.success ? { type: r.data } : null;
     }
@@ -195,7 +190,19 @@ export const setTool = createAction<{ tool: Tool; mode: ToolMode }>('SET_TOOL');
 /** Replaces the whole open-tools set (URL restore; `[]` closes everything). */
 export const setTools = createAction<Tool[]>('SET_TOOLS');
 
-export const setActiveModal = createAction<ActiveModal | Modal | null>(
+/**
+ * Wraps an arg-less modal named by a `ModalId` into an `ActiveModal`, for the
+ * few call sites that open a modal chosen at runtime. The branch on
+ * `tracking-watched` is what lets the result narrow into the union — TypeScript
+ * can't distribute a `ModalId`-typed discriminant across the union members.
+ */
+export function modalOf(modalId: ModalId): ActiveModal {
+  return modalId === 'tracking-watched'
+    ? { type: 'tracking-watched' }
+    : { type: modalId };
+}
+
+export const setActiveModal = createAction<ActiveModal | null>(
   'SET_ACTIVE_MODAL',
 );
 

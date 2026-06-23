@@ -43,7 +43,7 @@ export function MyMapsMenu(): ReactElement {
             {({ labelClassName, props }) => (
               <Button
                 variant="primary"
-                onClick={() => dispatch(setActiveModal('my-maps'))}
+                onClick={() => dispatch(setActiveModal({ type: 'my-maps' }))}
                 {...props}
               >
                 <FaRegMap />

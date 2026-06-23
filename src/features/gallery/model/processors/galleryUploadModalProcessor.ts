@@ -16,8 +16,8 @@ export const galleryUploadModalProcessor: Processor = {
       // don't load tags when canceling editing
       (galleryEditPicture.match(action) && !getState().gallery.editModel) ||
       (setActiveModal.match(action) &&
-        action.payload !== 'gallery-filter' &&
-        action.payload !== 'gallery-upload')
+        action.payload?.type !== 'gallery-filter' &&
+        action.payload?.type !== 'gallery-upload')
     ) {
       return;
     }

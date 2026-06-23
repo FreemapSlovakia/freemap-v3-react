@@ -251,7 +251,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       }
 
       if (event.code === 'KeyM') {
-        return setActiveModal('my-maps');
+        return setActiveModal({ type: 'my-maps' });
       }
 
       const toolDefinition = toolDefinitions.find(
@@ -263,11 +263,11 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       }
 
       if (event.code === 'KeyW') {
-        return setActiveModal('tracking-watched');
+        return setActiveModal({ type: 'tracking-watched' });
       }
 
       if (event.code === 'KeyD') {
-        return setActiveModal('tracking-my');
+        return setActiveModal({ type: 'tracking-my' });
       }
 
       return undefined;
@@ -319,13 +319,13 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
           return galleryList('-createdAt');
 
         case 'KeyU':
-          return setActiveModal('gallery-upload');
+          return setActiveModal({ type: 'gallery-upload' });
 
         case 'KeyF':
-          return setActiveModal('gallery-filter');
+          return setActiveModal({ type: 'gallery-filter' });
 
         case 'KeyB':
-          return setActiveModal('gallery-leaderboard');
+          return setActiveModal({ type: 'gallery-leaderboard' });
 
         default:
           return undefined;
@@ -335,22 +335,22 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     if (initCode === 'KeyE') {
       switch (event.code) {
         case 'KeyA':
-          return setActiveModal('account');
+          return setActiveModal({ type: 'account' });
 
         case 'KeyG':
-          return setActiveModal('map-features-export');
+          return setActiveModal({ type: 'map-features-export' });
 
         case 'KeyP':
-          return setActiveModal('map-to-document-export');
+          return setActiveModal({ type: 'map-to-document-export' });
 
         case 'KeyE':
-          return setActiveModal('embed');
+          return setActiveModal({ type: 'embed' });
 
         case 'KeyD':
-          return setActiveModal('drawing-properties');
+          return setActiveModal({ type: 'drawing-properties' });
 
         case 'KeyM':
-          return setActiveModal('offline-map-export');
+          return setActiveModal({ type: 'offline-map-export' });
       }
 
       return undefined;
@@ -359,19 +359,19 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     if (initCode === 'KeyM') {
       switch (event.code) {
         case 'KeyP':
-          return setActiveModal('map-preferences');
+          return setActiveModal({ type: 'map-preferences' });
 
         case 'KeyO':
-          return setActiveModal('offline-maps');
+          return setActiveModal({ type: 'offline-maps' });
 
         case 'KeyY':
-          return setActiveModal('map-layers-config');
+          return setActiveModal({ type: 'map-layers-config' });
 
         case 'KeyC':
-          return setActiveModal('custom-maps');
+          return setActiveModal({ type: 'custom-maps' });
 
         case 'KeyL':
-          return setActiveModal('legend');
+          return setActiveModal({ type: 'legend' });
       }
 
       return undefined;

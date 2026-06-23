@@ -5,7 +5,7 @@ import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { getDocuments } from '@/documents/index.js';
-import { ModalSchema, setActiveModal } from '../../../app/store/actions.js';
+import { decodeShow, setActiveModal } from '../../../app/store/actions.js';
 import { DocumentSchema, documentShow } from '../model/actions.js';
 import { useDocumentsMessages } from '../translations/useDocumentsMessages.js';
 
@@ -92,10 +92,10 @@ function DocumentModal({ show }: Props): ReactElement | null {
             return;
           }
 
-          const show = ModalSchema.safeParse(sp.get('show'));
+          const modal = decodeShow(sp.get('show') ?? '');
 
-          if (show.success) {
-            dispatch(setActiveModal(show.data));
+          if (modal) {
+            dispatch(setActiveModal(modal));
           } else {
             const document = DocumentSchema.safeParse(sp.get('document'));
 

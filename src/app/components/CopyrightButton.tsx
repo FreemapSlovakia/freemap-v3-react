@@ -81,7 +81,7 @@ export function CopyrightButton(): ReactElement {
               onClick={(e) => {
                 e.preventDefault();
 
-                dispatch(setActiveModal('legend'));
+                dispatch(setActiveModal({ type: 'legend' }));
               }}
             >
               <FaList /> {m?.mainMenu.mapLegend} <kbd>m</kbd> <kbd>l</kbd>
