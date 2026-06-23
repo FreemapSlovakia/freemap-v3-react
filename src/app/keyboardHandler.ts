@@ -44,12 +44,17 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     state.gallery.showPosition ||
     state.mapArea.selecting;
 
+  // Overlays that own their open-state outside main.activeModal: the gallery
+  // viewer, and the Wikimedia Commons / Wikipedia previews (each shown while
+  // loading or once previewed). The picking/selecting overlays are tracked by
+  // `suspendedModal` instead.
   const showingModal =
-    Boolean(state.main.activeModal) || Boolean(state.gallery.activeImageId);
-  //  ||
-  // state.homeLocation.selectingHomeLocation ||
-  // state.gallery.pickingPositionForId ||
-  // state.gallery.showPosition;
+    Boolean(state.main.activeModal) ||
+    Boolean(state.gallery.activeImageId) ||
+    Boolean(state.wikimediaCommons.preview) ||
+    Boolean(state.wikimediaCommons.loading) ||
+    Boolean(state.wiki.preview) ||
+    Boolean(state.wiki.loading);
 
   if (!withModifiers && event.code === 'Escape') {
     if (document.querySelector('*[aria-expanded=true]') !== null) {
