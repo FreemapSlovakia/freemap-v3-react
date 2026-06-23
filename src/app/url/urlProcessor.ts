@@ -4,7 +4,7 @@ import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import { hash } from 'ohash';
-import { encodeActiveModal } from '../store/actions.js';
+import { encodeActiveModal } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
 import { isUrlUpdatingEnabled } from './urlUpdating.js';
 

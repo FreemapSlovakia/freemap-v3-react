@@ -26,7 +26,6 @@ import {
   isMapClickTool,
 } from '@shared/toolDefinitions.js';
 import {
-  ActiveModal,
   clearMapFeatures,
   convertToDrawing,
   deleteFeature,
@@ -40,6 +39,7 @@ import {
   setTools,
   Tool,
 } from './actions.js';
+import type { ActiveModal } from './activeModal.js';
 
 export interface MainState {
   tools: Tool[];

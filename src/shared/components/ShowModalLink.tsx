@@ -1,7 +1,8 @@
 import { MouseEvent, ReactNode, useCallback } from 'react';
 import { Anchor } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { ModalId, modalOf, setActiveModal } from '../../app/store/actions.js';
+import { setActiveModal } from '../../app/store/actions.js';
+import { ModalId, modalOf } from '../../app/store/activeModal.js';
 
 type Props = {
   modal: ModalId;

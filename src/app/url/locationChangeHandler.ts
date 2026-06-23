@@ -75,8 +75,6 @@ import type { LatLon } from '@shared/types/common.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
-  decodeShow,
-  encodeActiveModal,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
@@ -84,6 +82,7 @@ import {
   Tool,
   ToolSchema,
 } from '../store/actions.js';
+import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
@@ -654,7 +653,7 @@ export function handleLocationChange(store: MyStore): void {
                 ? `wmc/${query['wmc']}`
                 : undefined;
 
-    const next = showRaw === undefined ? null : decodeShow(showRaw);
+    const next = showRaw === undefined ? null : decodeActiveModal(showRaw);
 
     // The gallery viewer and the Wikimedia Commons preview own their own slice
     // state; everything else lives in main.activeModal.
