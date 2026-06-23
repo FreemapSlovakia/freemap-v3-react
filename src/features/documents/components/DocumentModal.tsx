@@ -1,3 +1,5 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { decodeActiveModal } from '@app/store/activeModal.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
@@ -5,8 +7,6 @@ import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { getDocuments } from '@/documents/index.js';
-import { setActiveModal } from '../../../app/store/actions.js';
-import { decodeActiveModal } from '../../../app/store/activeModal.js';
 import { DocumentSchema, documentShow } from '../model/actions.js';
 import { useDocumentsMessages } from '../translations/useDocumentsMessages.js';
 
