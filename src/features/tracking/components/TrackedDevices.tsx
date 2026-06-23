@@ -5,7 +5,6 @@ import type { ReactElement } from 'react';
 import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
 import { FaEye, FaPlus, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { trackingActions } from '../model/actions.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 import { TrackedDevice } from './TrackedDevice.js';
 
@@ -44,7 +43,7 @@ export function TrackedDevices(): ReactElement {
         <Button
           type="button"
           onClick={() => {
-            dispatch(trackingActions.modifyTrackedDevice(null));
+            dispatch(setActiveModal({ type: 'tracking-watched', token: '' }));
           }}
         >
           <FaPlus /> {m?.general.add}

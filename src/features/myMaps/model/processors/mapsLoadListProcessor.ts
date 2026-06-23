@@ -12,7 +12,7 @@ export const mapsLoadListProcessor: Processor = {
     try {
       if (
         getState().auth.validated &&
-        getState().main.activeModal === 'my-maps'
+        getState().main.activeModal?.type === 'my-maps'
       ) {
         const res = await httpRequest({
           getState,

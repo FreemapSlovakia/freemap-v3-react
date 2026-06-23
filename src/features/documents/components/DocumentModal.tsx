@@ -19,7 +19,11 @@ function DocumentModal({ show }: Props): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const documentKey = useAppSelector((state) => state.main.documentKey);
+  const documentKey = useAppSelector((state) =>
+    state.main.activeModal?.type === 'document'
+      ? state.main.activeModal.key
+      : null,
+  );
 
   const language = useAppSelector((state) => state.l10n.language);
 

@@ -13,15 +13,13 @@ export const trackingActions = {
     'TRACKING_SET_TRACKED_DEVICES',
   ),
 
-  modifyTrackedDevice: createAction<TrackedDevice | null | undefined>(
-    'TRACKING_MODIFY_TRACKED_DEVICE',
-  ),
-
   deleteTrackedDevice: createAction<string>('TRACKING_DELETE_TRACKED_DEVICE'),
 
-  saveTrackedDevice: createAction<TrackedDevice>(
-    'TRACKING_SAVE_TRACKED_DEVICE',
-  ),
+  saveTrackedDevice: createAction<{
+    device: TrackedDevice;
+    /** Token of the edited device (so a renamed token replaces the old entry); null when creating. */
+    previousToken: string | null;
+  }>('TRACKING_SAVE_TRACKED_DEVICE'),
 
   setDevices: createAction<Device[]>('TRACKING_SET_DEVICES'),
 

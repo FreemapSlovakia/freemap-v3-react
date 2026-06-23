@@ -3,7 +3,7 @@ import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import { hash } from 'ohash';
-import { ShowModalSchema } from '../store/actions.js';
+import { encodeActiveModal } from '../store/actions.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
 import { isUrlUpdatingEnabled } from './urlUpdating.js';
 
@@ -77,7 +77,6 @@ export const urlProcessor: Processor = {
       routePlanner.mode,
       routePlanner.transportType,
       routePlanner.roundtripParams,
-      main.documentKey,
       tracking.trackedDevices,
       trackViewer.colorizeTrackBy,
       trackViewer.gpxUrl,
@@ -369,15 +368,11 @@ export const urlProcessor: Processor = {
     }
 
     {
-      const result = ShowModalSchema.safeParse(main.activeModal);
+      const show = encodeActiveModal(main.activeModal);
 
-      if (result.success) {
-        queryParts.push(['show', result.data]);
+      if (show !== null) {
+        queryParts.push(['show', show]);
       }
-    }
-
-    if (main.documentKey !== null) {
-      queryParts.push(['document', main.documentKey]);
     }
 
     if (main.embedFeatures.length) {

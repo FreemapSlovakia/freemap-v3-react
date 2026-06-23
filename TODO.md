@@ -55,6 +55,32 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
       it would let many hand-written `useMemo`/`useCallback` be dropped, changing
       how much manual hook churn is worthwhile).
 
+## Modal/overlay state unification — Phase 2
+
+Phase 1 (done) made `state.main.activeModal` a `Selection`-like discriminated
+union `{ type; …args } | null`, folded the `document` overlay into it, drove the
+watched-device form from `activeModal.token` (removed `modifiedTrackedDevice`),
+and unified URL serialization through the packed `show=type/arg` codec
+(`encodeActiveModal`/`decodeShow` in `src/app/store/actions.ts`), with backward
+compat for `document=`/`tip=`/legacy `show=` renames.
+
+- [ ] **Fold `gallery-viewer` into `activeModal`.** Replace `gallery.activeImageId`
+      with `activeModal.type === 'gallery-viewer'` (id arg). Move the `next`/`prev`
+      resolution out of the `galleryRequestImage` reducer into
+      `galleryRequestImageProcessor`; it dispatches `setActiveModal({type:'gallery-viewer', id})`
+      then fetches. Update `showGalleryViewerSelector`, the delete/stars/comment
+      processors, and `GalleryViewerModal`. Drop the bespoke `image=` serialize
+      block in `urlProcessor.ts` and the `image=` deserialize in
+      `locationChangeHandler.ts` (now handled by the unified codec — already in
+      `decodeShow`/`encodeActiveModal`).
+- [ ] **Fold `wmc` into `activeModal`.** Modal show → `activeModal.type === 'wmc'`
+      (pageId arg). `wikimediaCommonsLoadPreview` also dispatches
+      `setActiveModal({type:'wmc', pageId})`; `preview`/`loading` stay fetch status.
+      Drop the `wmc=` serialize/deserialize blocks (handled by the codec).
+- [ ] **Delete dead `src/features/documents/model/reducer.ts`.** Its `documentKey`
+      slice is not wired into `rootReducer`; the document overlay now lives in
+      `activeModal`.
+
 ## Premium / monetization
 
 Context: payment provider (Polar) acceptable-use rules and content licensing

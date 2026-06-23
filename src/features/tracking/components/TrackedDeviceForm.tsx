@@ -1,4 +1,4 @@
-import { selectFeature } from '@app/store/actions.js';
+import { selectFeature, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DateTime } from '@shared/components/DateTime.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
@@ -20,28 +20,31 @@ export function TrackedDeviceForm(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const { device, forceNew } = useAppSelector((state) => {
+  const { device, forceNew, previousToken } = useAppSelector((state) => {
+    const am = state.main.activeModal;
+
+    const token = am?.type === 'tracking-watched' ? am.token : undefined;
+
     let device: TrackedDevice | undefined;
 
     let forceNew = false;
 
-    const modified = state.tracking.modifiedTrackedDevice;
-
-    if (modified != null) {
-      device = state.tracking.trackedDevices.find(
-        (d) => d.token === modified.token,
-      );
+    if (token) {
+      device = state.tracking.trackedDevices.find((d) => d.token === token);
 
       if (!device) {
-        device = modified;
+        device = { token } as TrackedDevice;
 
         forceNew = true;
       }
+    } else {
+      forceNew = true;
     }
 
     return {
       device,
       forceNew,
+      previousToken: forceNew ? null : (device?.token ?? null),
     };
   }, shallowEqual);
 
@@ -93,21 +96,26 @@ export function TrackedDeviceForm(): ReactElement {
 
     dispatch(
       trackingActions.saveTrackedDevice({
-        token: did,
-        label: label.trim() || null,
-        color: color === '#7239a8' ? null : color.trim() || null,
-        fromTime: fromTime === '' ? null : new Date(fromTime),
-        maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
-        maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
-        width: width === '' ? null : Number.parseInt(width, 10),
-        splitDistance:
-          splitDistance === '' ? null : Number.parseInt(splitDistance, 10),
-        splitDuration:
-          splitDuration === '' ? null : Number.parseInt(splitDuration, 10),
+        device: {
+          token: did,
+          label: label.trim() || null,
+          color: color === '#7239a8' ? null : color.trim() || null,
+          fromTime: fromTime === '' ? null : new Date(fromTime),
+          maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
+          maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
+          width: width === '' ? null : Number.parseInt(width, 10),
+          splitDistance:
+            splitDistance === '' ? null : Number.parseInt(splitDistance, 10),
+          splitDuration:
+            splitDuration === '' ? null : Number.parseInt(splitDuration, 10),
+        },
+        previousToken,
       }),
     );
 
     dispatch(selectFeature({ type: 'tracking', id: did }));
+
+    dispatch(setActiveModal({ type: 'tracking-watched' }));
   };
 
   return (
@@ -251,7 +259,7 @@ export function TrackedDeviceForm(): ReactElement {
           variant="dark"
           type="button"
           onClick={() => {
-            dispatch(trackingActions.modifyTrackedDevice(undefined));
+            dispatch(setActiveModal({ type: 'tracking-watched' }));
           }}
         >
           <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>

@@ -4,6 +4,10 @@ import {
   setAnalyticCookiesAllowed,
 } from '@features/cookieConsent/model/actions.js';
 import {
+  type Document,
+  DocumentSchema,
+} from '@features/documents/model/actions.js';
+import {
   saveHomeLocation,
   setSelectingHomeLocation,
 } from '@features/homeLocation/model/actions.js';
@@ -57,26 +61,21 @@ const BASIC_MODALS = [
 
 export const ShowModalSchema = z.enum(BASIC_MODALS);
 
-export const ShowModalCompatSchema = z.preprocess(
-  (v) =>
-    (typeof v === 'string' &&
-      ({
-        'export-map': 'map-to-document-export',
-        'export-gpx': 'map-features-export',
-        'export-map-features': 'map-features-export',
-        'export-pdf': 'map-to-document-export',
-        'download-map': 'offline-map-export',
-        supportUs: 'support-us',
-        mapSettings: 'map-layers-config',
-        'map-settings': 'map-layers-config',
-        'remove-ads': 'premium',
-        'upload-track': 'file-import',
-        'buy-credits': 'credits-purchase',
-        maps: 'my-maps',
-      }[v] as string | undefined)) ||
-    v,
-  ShowModalSchema,
-);
+/** Legacy modal ids (from old shared links) mapped to their current name. */
+const MODAL_RENAMES: Record<string, string> = {
+  'export-map': 'map-to-document-export',
+  'export-gpx': 'map-features-export',
+  'export-map-features': 'map-features-export',
+  'export-pdf': 'map-to-document-export',
+  'download-map': 'offline-map-export',
+  supportUs: 'support-us',
+  mapSettings: 'map-layers-config',
+  'map-settings': 'map-layers-config',
+  'remove-ads': 'premium',
+  'upload-track': 'file-import',
+  'buy-credits': 'credits-purchase',
+  maps: 'my-maps',
+};
 
 export const ModalSchema = z.enum([
   ...BASIC_MODALS,
@@ -87,6 +86,92 @@ export const ModalSchema = z.enum([
 export type Modal = z.infer<typeof ModalSchema>;
 
 export type ShowModal = z.infer<typeof ShowModalSchema>;
+
+/**
+ * The open modal/overlay. A discriminated union so a modal can carry an
+ * argument (e.g. the document key or watched-device token). At most one is open
+ * at a time. `null` means no modal.
+ */
+export type ActiveModal =
+  | { type: Exclude<Modal, 'tracking-watched'> }
+  | { type: 'tracking-watched'; token?: string }
+  | { type: 'document'; key: Document }
+  | { type: 'gallery-viewer'; id: number }
+  | { type: 'wmc'; pageId: number };
+
+/** Modal types that round-trip through the URL as `show=<type>[/<arg>]`. */
+const URL_SERIALIZABLE: ReadonlySet<string> = new Set(BASIC_MODALS);
+
+/**
+ * Serializes the open modal to the packed `show=` value (`type` or `type/arg`),
+ * or `null` when it has no URL representation. The literal `/` survives because
+ * `serializeQuery` un-escapes `%2F`.
+ */
+export function encodeActiveModal(modal: ActiveModal | null): string | null {
+  if (!modal) {
+    return null;
+  }
+
+  switch (modal.type) {
+    case 'tracking-watched':
+      return modal.token
+        ? `tracking-watched/${modal.token}`
+        : 'tracking-watched';
+    case 'document':
+      return `document/${modal.key}`;
+    case 'gallery-viewer':
+      return `gallery-viewer/${modal.id}`;
+    case 'wmc':
+      return `wmc/${modal.pageId}`;
+    default:
+      return URL_SERIALIZABLE.has(modal.type) ? modal.type : null;
+  }
+}
+
+/**
+ * Parses a packed `show=` value (`type` or `type/arg`) into an `ActiveModal`,
+ * applying legacy name renames. Returns `null` when nothing valid is named.
+ */
+export function decodeShow(raw: string): ActiveModal | null {
+  if (!raw) {
+    return null;
+  }
+
+  const slash = raw.indexOf('/');
+
+  const rawType = slash === -1 ? raw : raw.slice(0, slash);
+
+  const arg = slash === -1 ? undefined : raw.slice(slash + 1);
+
+  const type = MODAL_RENAMES[rawType] ?? rawType;
+
+  switch (type) {
+    case 'tracking-watched':
+      return arg
+        ? { type: 'tracking-watched', token: arg }
+        : { type: 'tracking-watched' };
+    case 'document': {
+      const r = DocumentSchema.safeParse(arg);
+
+      return r.success ? { type: 'document', key: r.data } : null;
+    }
+    case 'gallery-viewer': {
+      const id = Number(arg);
+
+      return arg && Number.isFinite(id) ? { type: 'gallery-viewer', id } : null;
+    }
+    case 'wmc': {
+      const pageId = Number(arg);
+
+      return arg && Number.isFinite(pageId) ? { type: 'wmc', pageId } : null;
+    }
+    default: {
+      const r = ShowModalSchema.safeParse(type);
+
+      return r.success ? { type: r.data } : null;
+    }
+  }
+}
 
 /**
  * Sets a single tool's state, the only action for opening/focusing/closing one:
@@ -105,7 +190,9 @@ export const setTool = createAction<{ tool: Tool; mode: ToolMode }>('SET_TOOL');
 /** Replaces the whole open-tools set (URL restore; `[]` closes everything). */
 export const setTools = createAction<Tool[]>('SET_TOOLS');
 
-export const setActiveModal = createAction<Modal | null>('SET_ACTIVE_MODAL');
+export const setActiveModal = createAction<ActiveModal | Modal | null>(
+  'SET_ACTIVE_MODAL',
+);
 
 export { setLocation };
 

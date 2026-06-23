@@ -360,7 +360,7 @@ The target can be a downloaded file, Google Drive, Dropbox, or Garmin Connect. E
 ### Maps for GPS devices
 
 - Access: Main menu > Maps for GPS devices
-- URL path: `/#document=exports`
+- URL path: `/#show=document/exports` (legacy `/#document=exports` still works)
 
 Opens a modal with instructions to get various maps for GPS devices:
 

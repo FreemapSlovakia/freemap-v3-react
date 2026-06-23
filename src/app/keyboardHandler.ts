@@ -45,9 +45,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     state.mapArea.selecting;
 
   const showingModal =
-    Boolean(state.main.activeModal) ||
-    Boolean(state.gallery.activeImageId) ||
-    Boolean(state.main.documentKey);
+    Boolean(state.main.activeModal) || Boolean(state.gallery.activeImageId);
   //  ||
   // state.homeLocation.selectingHomeLocation ||
   // state.gallery.pickingPositionForId ||

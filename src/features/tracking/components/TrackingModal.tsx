@@ -24,22 +24,26 @@ type Props = { show: boolean };
 
 export default function TrackingModal({ show }: Props): ReactElement {
   const isMy = useAppSelector(
-    (state) => state.main.activeModal === 'tracking-my',
+    (state) => state.main.activeModal?.type === 'tracking-my',
   );
 
-  const view = useAppSelector((state) =>
-    state.main.activeModal === 'tracking-my'
-      ? state.tracking.modifiedDeviceId !== undefined
+  const view = useAppSelector((state) => {
+    const am = state.main.activeModal;
+
+    if (am?.type === 'tracking-my') {
+      return state.tracking.modifiedDeviceId !== undefined
         ? 'deviceForm'
         : state.tracking.accessTokensDeviceId
           ? state.tracking.modifiedAccessTokenId !== undefined
             ? 'accessTokenForm'
             : 'accessTokens'
-          : 'devices'
-      : state.tracking.modifiedTrackedDevice !== undefined
-        ? 'trackedDeviceForm'
-        : 'trackedDevices',
-  );
+          : 'devices';
+    }
+
+    return am?.type === 'tracking-watched' && am.token !== undefined
+      ? 'trackedDeviceForm'
+      : 'trackedDevices';
+  });
 
   const tm = useTrackingMessages();
 

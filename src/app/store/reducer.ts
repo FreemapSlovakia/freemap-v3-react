@@ -26,11 +26,11 @@ import {
   isMapClickTool,
 } from '@shared/toolDefinitions.js';
 import {
+  ActiveModal,
   clearMapFeatures,
   convertToDrawing,
   deleteFeature,
   hideInfoBar,
-  Modal,
   Selection,
   selectFeature,
   setActiveModal,
@@ -45,11 +45,10 @@ export interface MainState {
   tools: Tool[];
   /** The focused tool whose toolbar is highlighted; the click owner if it's a map-click tool. */
   activeTool: Tool | null;
-  activeModal: Modal | null;
+  activeModal: ActiveModal | null;
   errorTicketId: string | undefined;
   embedFeatures: string[];
   selection: Selection | null;
-  documentKey: string | null;
   hiddenInfoBars: Record<string, number>;
 }
 
@@ -60,7 +59,6 @@ export const mainInitialState: MainState = {
   errorTicketId: undefined,
   embedFeatures: [],
   selection: null,
-  documentKey: null,
   hiddenInfoBars: {},
 };
 
@@ -124,14 +122,15 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       state.selection = null;
     })
     .addCase(setActiveModal, (state, action) => {
-      state.activeModal = action.payload;
+      state.activeModal =
+        typeof action.payload === 'string'
+          ? ({ type: action.payload } as ActiveModal)
+          : action.payload;
     })
     .addCase(documentShow, (state, action) => {
-      state.documentKey = action.payload;
-
-      if (action.payload) {
-        state.activeModal = null;
-      }
+      state.activeModal = action.payload
+        ? { type: 'document', key: action.payload }
+        : null;
     })
     .addCase(setErrorTicketId, (state, action) => {
       state.errorTicketId = action.payload;

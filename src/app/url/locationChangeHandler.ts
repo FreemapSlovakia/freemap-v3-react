@@ -4,10 +4,6 @@ import {
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
 import {
-  DocumentSchema,
-  documentShow,
-} from '@features/documents/model/actions.js';
-import {
   drawingLineSetLines,
   Line,
   type LineCap,
@@ -74,8 +70,8 @@ import type { LatLon } from '@shared/types/common.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
-  ShowModalCompatSchema,
-  ShowModalSchema,
+  decodeShow,
+  encodeActiveModal,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
@@ -637,26 +633,26 @@ export function handleLocationChange(store: MyStore): void {
     );
   }
 
-  const activeModal = getState().main.activeModal;
+  {
+    // Unified modal/overlay param. Legacy `document=`/`tip=<key>` links fold
+    // into the packed `show=document/<key>` form.
+    const showRaw =
+      typeof query['show'] === 'string'
+        ? query['show']
+        : typeof query['document'] === 'string'
+          ? `document/${query['document']}`
+          : typeof query['tip'] === 'string'
+            ? `document/${query['tip']}`
+            : undefined;
 
-  const result = ShowModalCompatSchema.safeParse(query['show']);
+    const nextModal = showRaw === undefined ? null : decodeShow(showRaw);
 
-  if (result.success) {
-    if (result.data !== activeModal) {
-      dispatch(setActiveModal(result.data));
+    if (
+      encodeActiveModal(getState().main.activeModal) !==
+      encodeActiveModal(nextModal)
+    ) {
+      dispatch(setActiveModal(nextModal));
     }
-  } else if (ShowModalSchema.safeParse(activeModal).success) {
-    dispatch(setActiveModal(null));
-  }
-
-  const doc = DocumentSchema.safeParse(query['document'] ?? query['tip']);
-
-  if (doc.success) {
-    if (getState().main.documentKey !== doc.data) {
-      dispatch(documentShow(doc.data));
-    }
-  } else if (getState().main.documentKey) {
-    dispatch(documentShow(null));
   }
 
   const embed = query['embed'];

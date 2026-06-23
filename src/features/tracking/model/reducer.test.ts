@@ -31,7 +31,6 @@ const withTracks = (tracks: Track[]) => ({
   accessTokensDeviceId: undefined,
   modifiedDeviceId: undefined,
   modifiedAccessTokenId: undefined,
-  modifiedTrackedDevice: undefined,
   trackedDevices: [],
   tracks,
   showLine: true,
@@ -40,33 +39,54 @@ const withTracks = (tracks: Track[]) => ({
 });
 
 describe('trackingReducer — tracked devices', () => {
-  it('saveTrackedDevice replaces the one being edited and clears the editor', () => {
+  it('saveTrackedDevice replaces the edited device, re-appending it', () => {
     const state = {
       ...withTracks([]),
       trackedDevices: [td('a', { label: 'old' }), td('b')],
-      modifiedTrackedDevice: td('a'),
     };
 
     const next = trackingReducer(
       state,
-      trackingActions.saveTrackedDevice(td('a', { label: 'new' })),
+      trackingActions.saveTrackedDevice({
+        device: td('a', { label: 'new' }),
+        previousToken: 'a',
+      }),
     );
 
     // 'a' is removed then re-appended at the end with the new label.
     expect(next.trackedDevices.map((d) => d.token)).toEqual(['b', 'a']);
     expect(next.trackedDevices.at(-1)?.label).toBe('new');
-    expect(next.modifiedTrackedDevice).toBeUndefined();
   });
 
-  it('saveTrackedDevice with no editor target just appends', () => {
+  it('saveTrackedDevice with no previous token just appends', () => {
     const state = { ...withTracks([]), trackedDevices: [td('a')] };
 
     const next = trackingReducer(
       state,
-      trackingActions.saveTrackedDevice(td('b')),
+      trackingActions.saveTrackedDevice({
+        device: td('b'),
+        previousToken: null,
+      }),
     );
 
     expect(next.trackedDevices.map((d) => d.token)).toEqual(['a', 'b']);
+  });
+
+  it('saveTrackedDevice with a renamed token drops the old entry', () => {
+    const state = {
+      ...withTracks([]),
+      trackedDevices: [td('a'), td('b')],
+    };
+
+    const next = trackingReducer(
+      state,
+      trackingActions.saveTrackedDevice({
+        device: td('c'),
+        previousToken: 'a',
+      }),
+    );
+
+    expect(next.trackedDevices.map((d) => d.token)).toEqual(['b', 'c']);
   });
 
   it('deleteTrackedDevice removes by token', () => {

@@ -8,15 +8,20 @@ export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
   transform: ({ getState, action }) => {
     const anonymous = !getState().auth.user;
 
+    const type =
+      typeof action.payload === 'string'
+        ? action.payload
+        : action.payload?.type;
+
     const blocked =
-      action.payload &&
+      type &&
       [
         'my-maps',
         'gallery-upload',
         'account',
         'tracking-my',
         'offline-map-export',
-      ].includes(action.payload) &&
+      ].includes(type) &&
       anonymous;
 
     if (blocked) {
@@ -28,8 +33,8 @@ export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
     }
 
     // track every modal that actually opens (payload null closes a modal)
-    if (action.payload) {
-      window._paq.push(['trackEvent', 'Modal', 'open', action.payload]);
+    if (type) {
+      window._paq.push(['trackEvent', 'Modal', 'open', type]);
     }
 
     return action;
