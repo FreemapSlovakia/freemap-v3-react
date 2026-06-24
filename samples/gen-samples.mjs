@@ -192,6 +192,86 @@ ${coords}
 
 write('track-full.kml', kmlTrack('Full track', pts));
 
+// A styled drawing (not a GPS track): labelled points with marker
+// colour/icon/shape, dashed and capped/joined lines, and a filled polygon —
+// every styling property Freemap reads on import. Native KML LineStyle/PolyStyle
+// carry colour/width/fill (KML colours are aabbggrr); ExtendedData carries the
+// simplestyle keys KML has no element for (dasharray, line cap/join, markerType,
+// marker-symbol/icon).
+function kmlDrawing() {
+  const ext = (pairs) =>
+    `<ExtendedData>${pairs
+      .map(([n, v]) => `<Data name="${n}"><value>${v}</value></Data>`)
+      .join('')}</ExtendedData>`;
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Styled drawing</name>
+    <Style id="line-red"><LineStyle><color>ff0000ff</color><width>5</width></LineStyle></Style>
+    <Style id="line-blue"><LineStyle><color>ffff0000</color><width>2</width></LineStyle></Style>
+    <Style id="area"><LineStyle><color>ff0080ff</color><width>3</width></LineStyle><PolyStyle><color>7f00a0ff</color></PolyStyle></Style>
+    <Placemark>
+      <name>Restaurant (pin, Garmin sym)</name>
+      ${ext([
+        ['marker-color', '#e53935'],
+        ['marker-symbol', 'Restaurant'],
+        ['markerType', 'pin'],
+      ])}
+      <Point><coordinates>21.10,48.75</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Peak (ring, POI icon)</name>
+      ${ext([
+        ['marker-color', '#1e88e5'],
+        ['icon', 'poi:peak'],
+        ['markerType', 'ring'],
+      ])}
+      <Point><coordinates>21.11,48.76</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Bike (square, FA icon)</name>
+      ${ext([
+        ['marker-color', '#43a047'],
+        ['icon', 'fa:bicycle'],
+        ['markerType', 'square'],
+      ])}
+      <Point><coordinates>21.12,48.75</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Dashed red line</name>
+      <styleUrl>#line-red</styleUrl>
+      ${ext([
+        ['stroke-dasharray', '10 6'],
+        ['stroke-linecap', 'round'],
+        ['stroke-linejoin', 'round'],
+      ])}
+      <LineString><coordinates>21.09,48.74 21.11,48.745 21.13,48.74</coordinates></LineString>
+    </Placemark>
+    <Placemark>
+      <name>Thin blue line</name>
+      <styleUrl>#line-blue</styleUrl>
+      ${ext([
+        ['stroke-linecap', 'butt'],
+        ['stroke-linejoin', 'miter'],
+      ])}
+      <LineString><coordinates>21.09,48.77 21.13,48.77</coordinates></LineString>
+    </Placemark>
+    <Placemark>
+      <name>Filled area</name>
+      <styleUrl>#area</styleUrl>
+      ${ext([
+        ['stroke-dasharray', '4 4'],
+        ['stroke-linejoin', 'bevel'],
+      ])}
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>21.09,48.75 21.10,48.78 21.13,48.78 21.13,48.75 21.09,48.75</coordinates></LinearRing></outerBoundaryIs></Polygon>
+    </Placemark>
+  </Document>
+</kml>
+`;
+}
+
+write('drawing.kml', kmlDrawing());
+
 // --- TCX ---------------------------------------------------------------
 
 // Activity/Lap/Track with HR + cadence (core) and speed + watts (ActivityExtension
