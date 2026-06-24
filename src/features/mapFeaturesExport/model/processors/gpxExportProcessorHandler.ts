@@ -53,6 +53,12 @@ const FM_NS = 'https://www.freemap.sk/GPX/1/0';
 // emit `<osmand:icon>`, `<osmand:background>` and `<osmand:color>`.
 const OSMAND_NS = 'https://osmand.net';
 
+// Garmin TrackPointExtension namespace for per-point sensor values (heart rate,
+// cadence, …). togeojson reads these back into `coordinateProperties` when the
+// element prefix is `gpxtpx`, so emitting them keeps a GeoJSON-sourced track
+// lossless on re-export.
+const GPXTPX_NS = 'http://www.garmin.com/xmlschemas/TrackPointExtension/v1';
+
 // The namespace that namespace declarations themselves live in. Declaring
 // `xmlns:*` attributes via setAttributeNS with this namespace makes
 // XMLSerializer treat them as in-scope prefixes instead of redeclaring them
@@ -85,6 +91,8 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:fm', FM_NS);
 
   doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:osmand', OSMAND_NS);
+
+  doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:gpxtpx', GPXTPX_NS);
 
   addAttribute(doc.documentElement, 'version', '1.1');
 
@@ -958,12 +966,128 @@ function getSupportedGpxElements(doc: Document) {
   );
 }
 
+// coordinateProperties key (as togeojson pluralizes it) -> Garmin
+// TrackPointExtension child local name. togeojson maps `<gpxtpx:hr>` &c. back to
+// these keys on import, so emitting them round-trips the per-point sensor data.
+const GPXTPX_POINT_PROPS: Record<string, string> = {
+  heart: 'hr',
+  cads: 'cad',
+  atemps: 'atemp',
+  speeds: 'speed',
+  courses: 'course',
+};
+
+// Non-namespaced trackpoint extensions togeojson reads as `<name>` -> `${name}s`.
+const CUSTOM_POINT_PROPS: Record<string, string> = {
+  powers: 'power',
+};
+
+// Reads one per-point value out of a feature's `coordinateProperties`. `seg` is
+// the segment index for Multi* geometries (togeojson nests the arrays per
+// segment) or null for a single LineString (the arrays are flat).
+function coordPropAt(
+  props: Feature['properties'],
+  key: string,
+  seg: number | null,
+  i: number,
+): number | string | undefined {
+  const cp = props?.['coordinateProperties'] as
+    | Record<string, unknown>
+    | undefined;
+
+  const arr = cp?.[key];
+
+  if (!Array.isArray(arr)) {
+    return undefined;
+  }
+
+  const row =
+    seg === null ? arr : Array.isArray(arr[seg]) ? arr[seg] : undefined;
+
+  const value = (row as unknown[] | undefined)?.[i];
+
+  return typeof value === 'number' || typeof value === 'string'
+    ? value
+    : undefined;
+}
+
+function addName(parent: Element, feature: Feature): void {
+  const name = feature.properties?.['name'];
+
+  if (name) {
+    createElement(parent, 'name', String(name));
+  }
+}
+
+// Emits a `<trkpt>`/`<rtept>` with elevation, time and per-point sensor
+// extensions reconstructed from the coordinate and `coordinateProperties`, so a
+// track imported as GeoJSON re-exports at the same fidelity as a preserved raw
+// GPX would.
+function addTrackPoint(
+  parent: Element,
+  name: 'trkpt' | 'rtept',
+  coord: number[],
+  props: Feature['properties'],
+  seg: number | null,
+  i: number,
+): void {
+  const ptEle = createElement(
+    parent,
+    name,
+    undefined,
+    toLatLon({ lat: coord[1], lon: coord[0] }),
+  );
+
+  if (typeof coord[2] === 'number') {
+    createElement(ptEle, 'ele', coord[2].toString());
+  }
+
+  const time = coordPropAt(props, 'times', seg, i);
+
+  if (time != null) {
+    createElement(ptEle, 'time', String(time));
+  }
+
+  const tpx = Object.entries(GPXTPX_POINT_PROPS)
+    .map(([key, local]) => [local, coordPropAt(props, key, seg, i)] as const)
+    .filter((e): e is [string, number | string] => e[1] != null);
+
+  const custom = Object.entries(CUSTOM_POINT_PROPS)
+    .map(([key, local]) => [local, coordPropAt(props, key, seg, i)] as const)
+    .filter((e): e is [string, number | string] => e[1] != null);
+
+  if (tpx.length === 0 && custom.length === 0) {
+    return;
+  }
+
+  const ext = createElement(ptEle, 'extensions');
+
+  if (tpx.length) {
+    const tpxEle = createElement(ext, [
+      GPXTPX_NS,
+      'gpxtpx:TrackPointExtension',
+    ]);
+
+    for (const [local, value] of tpx) {
+      createElement(tpxEle, [GPXTPX_NS, `gpxtpx:${local}`], String(value));
+    }
+  }
+
+  for (const [local, value] of custom) {
+    createElement(ext, local, String(value));
+  }
+}
+
 function addGeojson(doc: Document, geojson: Feature | FeatureCollection) {
-  for (const pass of ['wpt', 'trk'] as const) {
+  for (const pass of ['wpt', 'rte', 'trk'] as const) {
     for (const feature of geojson.type === 'FeatureCollection'
       ? geojson.features
       : [geojson]) {
       const g = feature.geometry;
+
+      // togeojson tags GPX routes with `_gpxType: 'rte'`; emit those as `<rte>`
+      // so the route/track distinction survives a GeoJSON round-trip.
+      const isRoute = feature.properties?.['_gpxType'] === 'rte';
 
       switch (g.type) {
         case 'Point':
@@ -982,14 +1106,12 @@ function addGeojson(doc: Document, geojson: Feature | FeatureCollection) {
               createElement(wptEle, 'ele', feature.properties['ele']);
             }
 
-            if (feature.properties?.['name']) {
-              createElement(wptEle, 'name', feature.properties['name']);
-            }
+            addName(wptEle, feature);
           }
 
           break;
 
-        case 'MultiPoint': {
+        case 'MultiPoint':
           if (pass === 'wpt') {
             for (const pt of g.coordinates) {
               const wptEle = createElement(
@@ -1006,37 +1128,38 @@ function addGeojson(doc: Document, geojson: Feature | FeatureCollection) {
                 createElement(wptEle, 'ele', feature.properties['ele']);
               }
 
-              if (feature.properties?.['name']) {
-                createElement(wptEle, 'name', feature.properties['name']);
-              }
+              addName(wptEle, feature);
             }
           }
 
           break;
-        }
 
-        case 'LineString': {
-          if (pass === 'trk') {
-            const trkEle = createElement(doc.documentElement, 'trk');
+        case 'LineString':
+          if (isRoute ? pass === 'rte' : pass === 'trk') {
+            const parentEle = createElement(
+              doc.documentElement,
+              isRoute ? 'rte' : 'trk',
+            );
 
-            if (feature.properties?.['name']) {
-              createElement(trkEle, 'name', feature.properties['name']);
-            }
+            addName(parentEle, feature);
 
-            const trksegEle = createElement(trkEle, 'trkseg');
+            const ptParent = isRoute
+              ? parentEle
+              : createElement(parentEle, 'trkseg');
 
-            for (const pt of g.coordinates) {
-              createElement(
-                trksegEle,
-                'trkpt',
-                undefined,
-                toLatLon({ lat: pt[1], lon: pt[0] }),
+            g.coordinates.forEach((pt, i) => {
+              addTrackPoint(
+                ptParent,
+                isRoute ? 'rtept' : 'trkpt',
+                pt,
+                feature.properties,
+                null,
+                i,
               );
-            }
+            });
           }
 
           break;
-        }
 
         case 'Polygon':
 
@@ -1045,22 +1168,15 @@ function addGeojson(doc: Document, geojson: Feature | FeatureCollection) {
           if (pass === 'trk') {
             const trkEle = createElement(doc.documentElement, 'trk');
 
-            if (feature.properties?.['name']) {
-              createElement(trkEle, 'name', feature.properties['name']);
-            }
+            addName(trkEle, feature);
 
-            for (const seg of g.coordinates) {
+            g.coordinates.forEach((seg, s) => {
               const trksegEle = createElement(trkEle, 'trkseg');
 
-              for (const pt of seg) {
-                createElement(
-                  trksegEle,
-                  'trkpt',
-                  undefined,
-                  toLatLon({ lat: pt[1], lon: pt[0] }),
-                );
-              }
-            }
+              seg.forEach((pt, i) => {
+                addTrackPoint(trksegEle, 'trkpt', pt, feature.properties, s, i);
+              });
+            });
           }
 
           break;
@@ -1069,22 +1185,22 @@ function addGeojson(doc: Document, geojson: Feature | FeatureCollection) {
           if (pass === 'trk') {
             const trkEle = createElement(doc.documentElement, 'trk');
 
-            if (feature.properties?.['name']) {
-              createElement(trkEle, 'name', feature.properties['name']);
-            }
+            addName(trkEle, feature);
 
             for (const seg0 of g.coordinates) {
               for (const seg of seg0) {
                 const trksegEle = createElement(trkEle, 'trkseg');
 
-                for (const pt of seg) {
-                  createElement(
+                seg.forEach((pt, i) => {
+                  addTrackPoint(
                     trksegEle,
                     'trkpt',
-                    undefined,
-                    toLatLon({ lat: pt[1], lon: pt[0] }),
+                    pt,
+                    feature.properties,
+                    null,
+                    i,
                   );
-                }
+                });
               }
             }
           }
