@@ -145,7 +145,6 @@ export function ShortcutRecorder({
 
   return (
     <Button
-      type="button"
       size="sm"
       variant="light"
       tabIndex={0}

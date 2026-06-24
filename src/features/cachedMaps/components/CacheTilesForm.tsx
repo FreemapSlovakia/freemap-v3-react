@@ -379,7 +379,6 @@ export function CacheTilesForm(): ReactElement {
 
         <Button
           variant="dark"
-          type="button"
           onClick={() => dispatch(cachedMapsSetView('list'))}
         >
           <FaChevronLeft /> {m?.general.back}

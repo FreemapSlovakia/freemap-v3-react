@@ -101,7 +101,6 @@ export default function CurrentDrawingPropertiesModal({
           <Dropdown as={ButtonGroup}>
             <Button
               variant="primary"
-              type="button"
               disabled={invalidCredits}
               onClick={buyPolar}
             >
@@ -126,7 +125,7 @@ export default function CurrentDrawingPropertiesModal({
             </Dropdown.Menu>
           </Dropdown>
 
-          <Button variant="dark" type="button" onClick={close}>
+          <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel}
           </Button>
         </Modal.Footer>

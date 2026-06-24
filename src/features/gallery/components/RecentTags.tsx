@@ -50,7 +50,6 @@ export function RecentTags({
         {tags.map((tag) => (
           <Button
             key={tag}
-            type="button"
             onClick={() => onAdd(tag)}
             variant="secondary"
             size="sm"

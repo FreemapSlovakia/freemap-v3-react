@@ -1,4 +1,8 @@
 import {
+  type Breakpoint,
+  getMinWidthForBreakpoint,
+} from '@shared/breakpoints.js';
+import {
   Fragment,
   MouseEvent,
   PointerEvent,
@@ -9,8 +13,6 @@ import {
   useState,
 } from 'react';
 import { Overlay, Tooltip } from 'react-bootstrap';
-
-export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 type Props = {
   label?: ReactNode;
@@ -35,23 +37,6 @@ type Props = {
     labelClassName: string;
   }) => ReactNode;
 };
-
-function getMinWidthForBreakpoint(breakpoint: Breakpoint): number {
-  switch (breakpoint) {
-    case 'xs':
-      return 0;
-    case 'sm':
-      return 576;
-    case 'md':
-      return 768;
-    case 'lg':
-      return 992;
-    case 'xl':
-      return 1200;
-    case 'xxl':
-      return 1400;
-  }
-}
 
 export function LongPressTooltip({
   label = '…',

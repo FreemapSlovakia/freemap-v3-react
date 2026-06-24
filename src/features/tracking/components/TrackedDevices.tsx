@@ -41,7 +41,6 @@ export function TrackedDevices(): ReactElement {
 
       <Modal.Footer>
         <Button
-          type="button"
           onClick={() => {
             dispatch(setActiveModal({ type: 'tracking-watched', token: '' }));
           }}
@@ -51,7 +50,6 @@ export function TrackedDevices(): ReactElement {
 
         <Button
           variant="dark"
-          type="button"
           onClick={() => {
             dispatch(setActiveModal(null));
           }}

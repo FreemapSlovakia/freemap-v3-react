@@ -130,7 +130,6 @@ export default function GalleryMenu() {
                 <LongPressTooltip label={gm?.upload} kbd="p u" breakpoint="md">
                   {({ props, label, labelClassName }) => (
                     <Button
-                      type="button"
                       variant="secondary"
                       className="ms-1"
                       onClick={() =>
@@ -147,7 +146,6 @@ export default function GalleryMenu() {
                 <LongPressTooltip label={gm?.filter} kbd="p f" breakpoint="lg">
                   {({ props, label, labelClassName }) => (
                     <Button
-                      type="button"
                       className="ms-1"
                       variant="secondary"
                       onClick={() =>
@@ -244,7 +242,6 @@ export default function GalleryMenu() {
                 >
                   {({ props, label, labelClassName }) => (
                     <Button
-                      type="button"
                       className="ms-1"
                       variant="secondary"
                       onClick={() =>

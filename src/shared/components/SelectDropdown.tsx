@@ -1,9 +1,10 @@
+import type { Breakpoint } from '@shared/breakpoints.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { type Breakpoint, LongPressTooltip } from './LongPressTooltip.js';
+import { LongPressTooltip } from './LongPressTooltip.js';
 
 export type SelectDropdownOption = {
   value: string;

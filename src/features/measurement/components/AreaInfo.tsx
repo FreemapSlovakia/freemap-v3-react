@@ -82,7 +82,7 @@ export function AreaInfo({
           value={value}
         />
 
-        <Button type="button" onClick={handleUnitClick} className="w-10">
+        <Button onClick={handleUnitClick} className="w-10">
           {unit}
         </Button>
 

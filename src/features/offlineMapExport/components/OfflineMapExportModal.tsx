@@ -518,7 +518,7 @@ export default function OfflineMapExportModal({
             <FaDownload /> {m?.general.export} <kbd>Enter</kbd>
           </Button>
 
-          <Button variant="dark" onClick={close} type="button">
+          <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>

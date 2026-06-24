@@ -139,7 +139,6 @@ export function MyDeviceForm(): ReactElement {
         </Button>
 
         <Button
-          type="button"
           variant="dark"
           onClick={() => {
             dispatch(trackingActions.modifyDevice(undefined));

@@ -67,7 +67,7 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
             <FaCheck /> {m?.general.save}
           </Button>
 
-          <Button variant="dark" type="button" onClick={close}>
+          <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>

@@ -1,6 +1,10 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  Action,
+  ActionDivider,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
@@ -9,7 +13,7 @@ import {
   type ReactNode,
   useCallback,
 } from 'react';
-import { Button, ListGroup } from 'react-bootstrap';
+import { ListGroup } from 'react-bootstrap';
 import { FaEdit, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -45,10 +49,11 @@ export function TrackedDevice({ device }: Props): ReactElement {
     dispatch(trackingActions.deleteTrackedDevice(device.token));
   }, [device.token, dispatch]);
 
-  const meta: { label: string; value: ReactNode }[] = [];
+  const meta: { key: string; label: string; value: ReactNode }[] = [];
 
   if (device.fromTime) {
     meta.push({
+      key: 'fromTime',
       label: tm?.trackedDevice.fromTime ?? '',
       value: dateFormat.format(device.fromTime),
     });
@@ -56,6 +61,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
   if (typeof device.maxAge === 'number') {
     meta.push({
+      key: 'maxAge',
       label: tm?.trackedDevice.maxAge ?? '',
       value: `${nf.format(device.maxAge / 60)} ${m?.general.minutes}`,
     });
@@ -63,6 +69,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
   if (device.maxCount) {
     meta.push({
+      key: 'maxCount',
       label: tm?.trackedDevice.maxCount ?? '',
       value: nf.format(device.maxCount),
     });
@@ -70,6 +77,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
   if (device.splitDistance) {
     meta.push({
+      key: 'splitDistance',
       label: tm?.trackedDevice.splitDistance ?? '',
       value: nf.format(device.splitDistance),
     });
@@ -77,13 +85,14 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
   if (device.splitDuration) {
     meta.push({
+      key: 'splitDuration',
       label: tm?.trackedDevice.splitDuration ?? '',
       value: nf.format(device.splitDuration),
     });
   }
 
   return (
-    <ListGroup.Item className="d-flex flex-wrap align-items-center gap-2">
+    <ListGroup.Item className="d-flex align-items-center gap-2">
       <div
         style={{
           backgroundColor: device.color || '#7239a8',
@@ -93,7 +102,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
         }}
       />
 
-      <div className="flex-grow-1 me-2">
+      <div className="flex-grow-1 me-2 min-w-0">
         <div>
           <code>{device.token}</code>
           {device.label && <> · {device.label}</>}
@@ -101,7 +110,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
         <small className="text-muted">
           {meta.map((item, i) => (
-            <Fragment key={item.label}>
+            <Fragment key={item.key}>
               {i > 0 && ' · '}
               <span className="text-nowrap">
                 {item.label}: <strong>{item.value}</strong>
@@ -111,34 +120,25 @@ export function TrackedDevice({ device }: Props): ReactElement {
         </small>
       </div>
 
-      <div className="d-flex flex-wrap gap-2">
-        <LongPressTooltip label={m?.general.modify}>
-          {({ props }) => (
-            <Button
-              size="sm"
-              variant="outline-secondary"
-              type="button"
-              onClick={handleModify}
-              {...props}
-            >
-              <FaEdit />
-            </Button>
-          )}
-        </LongPressTooltip>
+      <div className="flex-shrink-0">
+        <ResponsiveActions align="end" toggleLabel={m?.general.actions}>
+          <Action
+            icon={<FaEdit />}
+            label={m?.general.modify}
+            onClick={handleModify}
+            showFrom="sm"
+          />
 
-        <LongPressTooltip label={m?.general.delete}>
-          {({ props }) => (
-            <Button
-              variant="outline-danger"
-              size="sm"
-              type="button"
-              onClick={handleDelete}
-              {...props}
-            >
-              <FaTimes />
-            </Button>
-          )}
-        </LongPressTooltip>
+          <ActionDivider />
+
+          <Action
+            icon={<FaTimes />}
+            label={m?.general.delete}
+            variant="danger"
+            onClick={handleDelete}
+            showFrom="sm"
+          />
+        </ResponsiveActions>
       </div>
     </ListGroup.Item>
   );

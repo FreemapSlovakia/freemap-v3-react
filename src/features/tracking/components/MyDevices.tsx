@@ -43,18 +43,11 @@ export function MyDevices(): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button
-          type="button"
-          onClick={() => dispatch(trackingActions.modifyDevice(null))}
-        >
+        <Button onClick={() => dispatch(trackingActions.modifyDevice(null))}>
           <FaPlus /> {m?.general.add}
         </Button>
 
-        <Button
-          variant="dark"
-          type="button"
-          onClick={() => dispatch(setActiveModal(null))}
-        >
+        <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>

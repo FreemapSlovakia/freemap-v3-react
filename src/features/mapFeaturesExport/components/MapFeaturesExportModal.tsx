@@ -495,7 +495,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
             <FaFileExport /> {m?.general.export}
           </Button>
 
-          <Button type="button" variant="dark" onClick={close}>
+          <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>

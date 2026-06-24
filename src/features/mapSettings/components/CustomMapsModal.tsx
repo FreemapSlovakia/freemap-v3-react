@@ -4,7 +4,11 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  Action,
+  ActionDivider,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
@@ -203,9 +207,9 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
                 {customLayers.map((def) => (
                   <ListGroup.Item
                     key={def.type}
-                    className="d-flex flex-wrap align-items-center gap-2"
+                    className="d-flex align-items-center gap-2"
                   >
-                    <div className="flex-grow-1 me-2">
+                    <div className="flex-grow-1 me-2 min-w-0">
                       <div>{def.name || `{${def.type}}`}</div>
 
                       <small className="text-muted">
@@ -220,44 +224,43 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
                       </small>
                     </div>
 
-                    <div className="d-flex flex-wrap gap-2">
-                      <LongPressTooltip label={m?.mapLayers.activate}>
-                        {({ props }) => (
-                          <Button
-                            size="sm"
-                            variant={
-                              activeLayers.includes(def.type)
-                                ? 'primary'
-                                : 'outline-primary'
-                            }
-                            active={activeLayers.includes(def.type)}
-                            onClick={() =>
-                              dispatch(mapToggleLayer({ type: def.type }))
-                            }
-                            {...props}
-                          >
-                            <FaEye />
-                          </Button>
-                        )}
-                      </LongPressTooltip>
-
-                      <Button
-                        size="sm"
-                        variant="outline-secondary"
-                        onClick={() => handleEditClick(def.type)}
-                        title={m?.general.modify}
+                    <div className="flex-shrink-0">
+                      <ResponsiveActions
+                        align="end"
+                        toggleLabel={m?.general.actions}
                       >
-                        <FaPencilAlt />
-                      </Button>
+                        <Action
+                          icon={<FaEye />}
+                          label={m?.mapLayers.activate}
+                          variant={
+                            activeLayers.includes(def.type)
+                              ? 'primary'
+                              : 'outline-primary'
+                          }
+                          active={activeLayers.includes(def.type)}
+                          onClick={() =>
+                            dispatch(mapToggleLayer({ type: def.type }))
+                          }
+                          showFrom="sm"
+                        />
 
-                      <Button
-                        size="sm"
-                        variant="outline-danger"
-                        onClick={() => handleDeleteClick(def)}
-                        title={m?.general.delete}
-                      >
-                        <FaTrash />
-                      </Button>
+                        <Action
+                          icon={<FaPencilAlt />}
+                          label={m?.general.modify}
+                          onClick={() => handleEditClick(def.type)}
+                          showFrom="sm"
+                        />
+
+                        <ActionDivider />
+
+                        <Action
+                          icon={<FaTrash />}
+                          label={m?.general.delete}
+                          variant="danger"
+                          onClick={() => handleDeleteClick(def)}
+                          showFrom="sm"
+                        />
+                      </ResponsiveActions>
                     </div>
                   </ListGroup.Item>
                 ))}
@@ -266,11 +269,11 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button type="button" variant="primary" onClick={handleAddClick}>
+            <Button variant="primary" onClick={handleAddClick}>
               <FaPlus /> {m?.mapLayers.addCustomMap}
             </Button>
 
-            <Button variant="dark" type="button" onClick={close}>
+            <Button variant="dark" onClick={close}>
               <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
             </Button>
           </Modal.Footer>
@@ -298,16 +301,11 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button
-              variant="primary"
-              type="button"
-              onClick={handleSave}
-              disabled={!draft}
-            >
+            <Button variant="primary" onClick={handleSave} disabled={!draft}>
               <FaCheck /> {m?.general.save}
             </Button>
 
-            <Button variant="dark" type="button" onClick={goToList}>
+            <Button variant="dark" onClick={goToList}>
               <FaTimes /> {m?.general.cancel}
             </Button>
           </Modal.Footer>

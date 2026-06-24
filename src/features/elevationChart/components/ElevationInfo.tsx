@@ -126,7 +126,7 @@ export function ElevationInfo({
       <InputGroup size="sm" className="my-2">
         <Form.Control readOnly className="fm-fs-content" value={coordinates} />
 
-        <Button type="button" onClick={handleNextFormatClick}>
+        <Button onClick={handleNextFormatClick}>
           <TbDecimal />
         </Button>
 

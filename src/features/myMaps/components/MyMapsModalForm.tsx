@@ -220,7 +220,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
 
       <Modal.Footer>
         {canSave && (
-          <Button type="button" onClick={save} disabled={!name || !online}>
+          <Button onClick={save} disabled={!name || !online}>
             <FaSave /> {mm?.save}
           </Button>
         )}

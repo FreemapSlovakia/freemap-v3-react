@@ -236,7 +236,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             {results.length ? (
               <Button
                 variant="secondary"
-                type="button"
                 onClick={() => inputRef.current?.focus()}
               >
                 <FaCaretDown />

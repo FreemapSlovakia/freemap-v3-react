@@ -144,15 +144,11 @@ export default function PredefinedDrawingPropertiesModal({
             <FaCheck /> {m?.general.save}
           </Button>
 
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={handleApplyToAllClick}
-          >
+          <Button variant="secondary" onClick={handleApplyToAllClick}>
             <FaFill /> {dm?.defProps.applyToAll}
           </Button>
 
-          <Button variant="dark" type="button" onClick={close}>
+          <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel}
           </Button>
         </Modal.Footer>

@@ -1,6 +1,11 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import {
+  Action,
+  ActionDivider,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -17,7 +22,6 @@ import {
   FaCloudDownloadAlt,
   FaCog,
   FaEdit,
-  FaEllipsisV,
   FaEraser,
   FaFilter,
   FaPlus,
@@ -142,9 +146,9 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 <ListGroup.Item
                   key={map.id}
                   variant={isActive ? 'primary' : undefined}
-                  className="d-flex flex-wrap align-items-center gap-2"
+                  className="d-flex align-items-center gap-2"
                 >
-                  <div className="flex-grow-1 me-2">
+                  <div className="flex-grow-1 me-2 min-w-0">
                     <div>{map.name}</div>
 
                     <small className="text-muted">
@@ -160,17 +164,15 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                     </small>
                   </div>
 
-                  <Dropdown align="end">
-                    <Dropdown.Toggle
-                      variant="outline-secondary"
-                      size="sm"
-                      aria-label={m?.general.actions}
+                  <div className="flex-shrink-0">
+                    <ResponsiveActions
+                      align="end"
+                      toggleLabel={m?.general.actions}
                     >
-                      <FaEllipsisV />
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                      <Dropdown.Item
+                      <Action
+                        icon={<FaCloudDownloadAlt />}
+                        variant="primary"
+                        label={m?.general.load}
                         disabled={!online}
                         onClick={() =>
                           dispatch(
@@ -182,73 +184,77 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                             }),
                           )
                         }
-                      >
-                        <FaCloudDownloadAlt /> {m?.general.load}
-                      </Dropdown.Item>
+                        showFrom="sm"
+                      />
+
+                      {isActive && <ActionDivider />}
+
+                      {isActive && map.canWrite && (
+                        <Action
+                          icon={<FaSave />}
+                          label={mm?.save}
+                          disabled={!online}
+                          onClick={() => dispatch(mapsSave(undefined))}
+                          showFrom="never"
+                        />
+                      )}
 
                       {isActive && (
-                        <>
-                          <Dropdown.Divider />
+                        <Action
+                          icon={<FaUnlink />}
+                          label={mm?.disconnect}
+                          onClick={() => dispatch(mapsDisconnect())}
+                          showFrom="never"
+                        />
+                      )}
 
-                          {map.canWrite && (
-                            <Dropdown.Item
-                              disabled={!online}
-                              onClick={() => dispatch(mapsSave(undefined))}
-                            >
-                              <FaSave /> {mm?.save}
-                            </Dropdown.Item>
-                          )}
+                      {isActive && (
+                        <Action
+                          icon={<FaEraser />}
+                          label={mm?.disconnectAndClear}
+                          onClick={() => {
+                            dispatch(mapsDisconnect());
+                            dispatch(clearMapFeatures());
+                          }}
+                          showFrom="never"
+                        />
+                      )}
 
-                          <Dropdown.Item
-                            onClick={() => dispatch(mapsDisconnect())}
-                          >
-                            <FaUnlink /> {mm?.disconnect}
-                          </Dropdown.Item>
+                      {isOwn && <ActionDivider />}
 
-                          <Dropdown.Item
-                            onClick={() => {
-                              dispatch(mapsDisconnect());
-                              dispatch(clearMapFeatures());
-                            }}
-                          >
-                            <FaEraser /> {mm?.disconnectAndClear}
-                          </Dropdown.Item>
-                        </>
+                      {isOwn && (
+                        <Action
+                          icon={<FaEdit />}
+                          label={m?.general.modify}
+                          disabled={!online}
+                          onClick={() => onEdit(map)}
+                          showFrom="lg"
+                        />
                       )}
 
                       {isOwn && (
-                        <>
-                          <Dropdown.Divider />
-
-                          <Dropdown.Item
-                            disabled={!online}
-                            onClick={() => onEdit(map)}
-                          >
-                            <FaEdit /> {m?.general.modify}
-                          </Dropdown.Item>
-
-                          <Dropdown.Item
-                            disabled={!online}
-                            className="text-danger"
-                            onClick={async () => {
-                              if (
-                                await confirm({
-                                  title: mm?.deleteTitle,
-                                  message: mm?.deleteConfirm(map.name),
-                                  confirmLabel: m?.general.delete,
-                                  confirmStyle: 'danger',
-                                })
-                              ) {
-                                dispatch(mapsDelete(map.id));
-                              }
-                            }}
-                          >
-                            <FaTrash /> {m?.general.delete}
-                          </Dropdown.Item>
-                        </>
+                        <Action
+                          icon={<FaTrash />}
+                          label={m?.general.delete}
+                          variant="danger"
+                          disabled={!online}
+                          onClick={async () => {
+                            if (
+                              await confirm({
+                                title: mm?.deleteTitle,
+                                message: mm?.deleteConfirm(map.name),
+                                confirmLabel: m?.general.delete,
+                                confirmStyle: 'danger',
+                              })
+                            ) {
+                              dispatch(mapsDelete(map.id));
+                            }
+                          }}
+                          showFrom="lg"
+                        />
                       )}
-                    </Dropdown.Menu>
-                  </Dropdown>
+                    </ResponsiveActions>
+                  </div>
                 </ListGroup.Item>
               );
             })}

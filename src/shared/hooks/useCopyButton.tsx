@@ -36,7 +36,7 @@ export function useCopyButton(text: string) {
   return (
     <LongPressTooltip label="Copy to clipboard">
       {({ props }) => (
-        <Button type="button" onClick={handleCopyClick} {...props}>
+        <Button onClick={handleCopyClick} {...props}>
           {checked ? <FaCheck /> : <FaCopy />}
         </Button>
       )}

@@ -408,11 +408,11 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
             <FaCheck /> {m?.general.apply}
           </Button>
 
-          <Button variant="warning" type="button" onClick={handleEraseClick}>
+          <Button variant="warning" onClick={handleEraseClick}>
             <FaEraser /> {m?.general.clear}
           </Button>
 
-          <Button variant="dark" type="button" onClick={close}>
+          <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel}
           </Button>
         </Modal.Footer>

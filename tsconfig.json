@@ -25,6 +25,7 @@
     "strict": true,
     "strictNullChecks": true,
     "target": "ES2022",
+    // "exactOptionalPropertyTypes": true, // TODO one day
     // "noUncheckedIndexedAccess": true, // TODO one day
     "types": [
       "gapi",

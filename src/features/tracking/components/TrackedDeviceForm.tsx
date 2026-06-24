@@ -257,7 +257,6 @@ export function TrackedDeviceForm(): ReactElement {
 
         <Button
           variant="dark"
-          type="button"
           onClick={() => {
             dispatch(setActiveModal({ type: 'tracking-watched' }));
           }}

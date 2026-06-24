@@ -3,6 +3,11 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  Action,
+  ActionDivider,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import {
   Fragment,
@@ -10,22 +15,9 @@ import {
   type ReactNode,
   useCallback,
 } from 'react';
-import {
-  Button,
-  Dropdown,
-  ListGroup,
-  OverlayTrigger,
-  Tooltip,
-} from 'react-bootstrap';
-import {
-  FaClipboard,
-  FaEdit,
-  FaEllipsisV,
-  FaRegEye,
-  FaTrash,
-} from 'react-icons/fa';
+import { Button, ListGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { FaClipboard, FaEdit, FaRegEye, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { fixedPopperConfig } from '@/shared/fixedPopperConfig.js';
 import { trackingActions } from '../model/actions.js';
 import { AccessToken as AccessTokenType } from '../model/types.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
@@ -83,15 +75,17 @@ export function AccessToken({ accessToken }: Props): ReactElement {
     );
   }, [accessToken.token, dispatch]);
 
-  const meta: { label: string; value: ReactNode }[] = [];
+  const meta: { key: string; label: string; value: ReactNode }[] = [];
 
   meta.push({
+    key: 'createdAt',
     label: m?.general.createdAt ?? '',
     value: dateFormat.format(accessToken.createdAt),
   });
 
   if (accessToken.timeFrom) {
     meta.push({
+      key: 'timeFrom',
       label: tm?.accessToken.timeFrom ?? '',
       value: dateFormat.format(accessToken.timeFrom),
     });
@@ -99,6 +93,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
 
   if (accessToken.timeTo) {
     meta.push({
+      key: 'timeTo',
       label: tm?.accessToken.timeTo ?? '',
       value: dateFormat.format(accessToken.timeTo),
     });
@@ -106,14 +101,15 @@ export function AccessToken({ accessToken }: Props): ReactElement {
 
   if (accessToken.note) {
     meta.push({
+      key: 'note',
       label: tm?.accessToken.note ?? '',
       value: accessToken.note,
     });
   }
 
   return (
-    <ListGroup.Item className="d-flex flex-wrap align-items-center gap-2">
-      <div className="flex-grow-1 me-2">
+    <ListGroup.Item className="d-flex align-items-center gap-2">
+      <div className="flex-grow-1 me-2 min-w-0">
         <div className="d-flex flex-wrap align-items-center gap-2">
           <OverlayTrigger
             trigger={['hover', 'focus']}
@@ -137,7 +133,6 @@ export function AccessToken({ accessToken }: Props): ReactElement {
                 onClick={handleCopyClick}
                 size="sm"
                 variant="outline-secondary"
-                type="button"
                 {...props}
               >
                 <FaClipboard />
@@ -148,7 +143,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
 
         <small className="text-muted">
           {meta.map((item, i) => (
-            <Fragment key={item.label}>
+            <Fragment key={item.key}>
               {i > 0 && ' · '}
               <span className="text-nowrap">
                 {item.label}: <strong>{item.value}</strong>
@@ -158,32 +153,32 @@ export function AccessToken({ accessToken }: Props): ReactElement {
         </small>
       </div>
 
-      <div className="d-flex flex-wrap gap-2">
-        <Dropdown align="end">
-          <Dropdown.Toggle
-            variant="outline-secondary"
-            size="sm"
-            aria-label={m?.general.actions}
-          >
-            <FaEllipsisV />
-          </Dropdown.Toggle>
+      <div className="flex-shrink-0">
+        <ResponsiveActions align="end" toggleLabel={m?.general.actions}>
+          <Action
+            icon={<FaRegEye />}
+            label={tm?.devices.watch}
+            onClick={handleView}
+            showFrom="lg"
+          />
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            <Dropdown.Item onClick={handleView}>
-              <FaRegEye /> {tm?.devices.watch}
-            </Dropdown.Item>
+          <Action
+            icon={<FaEdit />}
+            label={m?.general.modify}
+            onClick={handleModify}
+            showFrom="md"
+          />
 
-            <Dropdown.Item onClick={handleModify}>
-              <FaEdit /> {m?.general.modify}
-            </Dropdown.Item>
+          <ActionDivider />
 
-            <Dropdown.Divider />
-
-            <Dropdown.Item className="text-danger" onClick={handleDelete}>
-              <FaTrash /> {m?.general.delete}
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+          <Action
+            icon={<FaTrash />}
+            label={m?.general.delete}
+            variant="danger"
+            onClick={handleDelete}
+            showFrom="md"
+          />
+        </ResponsiveActions>
       </div>
     </ListGroup.Item>
   );

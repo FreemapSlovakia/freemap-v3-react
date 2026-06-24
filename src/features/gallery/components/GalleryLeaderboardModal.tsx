@@ -353,7 +353,7 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
         })()}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="dark" type="button" onClick={close}>
+        <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close}
         </Button>
       </Modal.Footer>

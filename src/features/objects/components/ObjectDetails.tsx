@@ -188,7 +188,7 @@ export function ObjectDetails({
       )}
 
       {!window.fmEmbedded && parsedId.success && (
-        <Button type="button" onClick={handleEditInJosm} className="mb-4">
+        <Button onClick={handleEditInJosm} className="mb-4">
           {editInJosmText}
         </Button>
       )}

@@ -52,7 +52,6 @@ export function AccessTokens(): ReactElement {
 
       <Modal.Footer>
         <Button
-          type="button"
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(null));
           }}
@@ -61,7 +60,6 @@ export function AccessTokens(): ReactElement {
         </Button>
 
         <Button
-          type="button"
           variant="dark"
           onClick={() => {
             dispatch(trackingActions.showAccessTokens(undefined));

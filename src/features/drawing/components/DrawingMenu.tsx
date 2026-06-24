@@ -56,7 +56,6 @@ export default function DrawingMenu(): ReactElement | undefined {
           {({ props, label, labelClassName }) => (
             <Button
               variant="secondary"
-              type="button"
               className="ms-1"
               onClick={() =>
                 dispatch(setActiveModal({ type: 'drawing-properties' }))

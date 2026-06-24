@@ -387,7 +387,6 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         <>
           <Button
             className={clsx('mt-3', classes.gridSpan)}
-            type="button"
             onClick={handleLoadLayersClick}
             disabled={!model.url.match(/^https?:\/\/\w+/) || loadingLayers}
           >

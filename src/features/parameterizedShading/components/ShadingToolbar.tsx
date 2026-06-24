@@ -49,7 +49,6 @@ export function ShadingToolbar({
 
       <Button
         className="ms-1"
-        type="button"
         disabled={!canRemove}
         variant="danger"
         onClick={onRemove}

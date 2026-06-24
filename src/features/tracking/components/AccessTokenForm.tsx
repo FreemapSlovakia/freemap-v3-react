@@ -112,7 +112,6 @@ export function AccessTokenForm(): ReactElement {
 
         <Button
           variant="dark"
-          type="button"
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(undefined));
           }}

@@ -1,5 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import {
+  Action,
+  ActionDivider,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
@@ -10,12 +15,11 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Dropdown, ListGroup, Overlay, Tooltip } from 'react-bootstrap';
-import { FaEdit, FaEllipsisV, FaKey, FaTrash } from 'react-icons/fa';
+import { ListGroup, Overlay, Tooltip } from 'react-bootstrap';
+import { FaEdit, FaKey, FaTrash } from 'react-icons/fa';
 import { SiTraccar } from 'react-icons/si';
 import QRCode from 'react-qr-code';
 import { useDispatch } from 'react-redux';
-import { fixedPopperConfig } from '@/shared/fixedPopperConfig.js';
 import { trackingActions } from '../model/actions.js';
 import { Device as DeviceType } from '../model/types.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
@@ -64,10 +68,11 @@ export function MyDevice({ device }: Props): ReactElement {
     dispatch(trackingActions.showAccessTokens(device.id));
   }, [device.id, dispatch]);
 
-  const meta: { label: string; value: ReactNode }[] = [];
+  const meta: { key: string; label: string; value: ReactNode }[] = [];
 
   if (device.maxCount) {
     meta.push({
+      key: 'maxCount',
       label: tm?.device.maxCount ?? '',
       value: nf.format(device.maxCount),
     });
@@ -75,30 +80,32 @@ export function MyDevice({ device }: Props): ReactElement {
 
   if (typeof device.maxAge === 'number') {
     meta.push({
+      key: 'maxAge',
       label: tm?.device.maxAge ?? '',
       value: `${nf.format(device.maxAge / 60)} ${m?.general.minutes}`,
     });
   }
 
   meta.push({
+    key: 'createdAt',
     label: m?.general.createdAt ?? '',
     value: dateFormat.format(device.createdAt),
   });
 
-  const dropdownRef = useRef<HTMLButtonElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
 
   const [showQr, setShowQr] = useState(false);
 
   return (
-    <ListGroup.Item className="d-flex flex-wrap align-items-center gap-2">
-      <div className="flex-grow-1 me-2">
+    <ListGroup.Item className="d-flex align-items-center gap-2">
+      <div className="flex-grow-1 me-2 min-w-0">
         <div>
           <code>{device.token}</code> · {device.name}
         </div>
 
         <small className="text-muted">
           {meta.map((item, i) => (
-            <Fragment key={item.label}>
+            <Fragment key={item.key}>
               {i > 0 && ' · '}
               <span className="text-nowrap">
                 {item.label}: <strong>{item.value}</strong>
@@ -108,10 +115,10 @@ export function MyDevice({ device }: Props): ReactElement {
         </small>
       </div>
 
-      <div className="d-flex flex-wrap gap-2">
+      <div ref={actionsRef} className="flex-shrink-0">
         {showQr && (
           <Overlay
-            target={dropdownRef.current}
+            target={actionsRef.current}
             show
             rootClose
             onHide={() => setShowQr(false)}
@@ -130,36 +137,38 @@ export function MyDevice({ device }: Props): ReactElement {
           </Overlay>
         )}
 
-        <Dropdown align="end">
-          <Dropdown.Toggle
-            ref={dropdownRef}
-            variant="outline-secondary"
-            size="sm"
-            aria-label={m?.general.actions}
-          >
-            <FaEllipsisV />
-          </Dropdown.Toggle>
+        <ResponsiveActions align="end" toggleLabel={m?.general.actions}>
+          <Action
+            icon={<FaEdit />}
+            label={m?.general.modify}
+            onClick={handleModify}
+            showFrom="md"
+          />
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            <Dropdown.Item onClick={handleModify}>
-              <FaEdit /> {m?.general.modify}
-            </Dropdown.Item>
+          <Action
+            icon={<FaKey />}
+            label={tm?.devices.watchTokens}
+            onClick={handleShowAccessTokens}
+            showFrom="lg"
+          />
 
-            <Dropdown.Item onClick={handleShowAccessTokens}>
-              <FaKey /> {tm?.devices.watchTokens}
-            </Dropdown.Item>
+          <Action
+            icon={<SiTraccar />}
+            label={tm?.devices.traccarQrCode}
+            onClick={() => setShowQr(true)}
+            showFrom="lg"
+          />
 
-            <Dropdown.Item onClick={() => setShowQr(true)}>
-              <SiTraccar /> {tm?.devices.traccarQrCode}
-            </Dropdown.Item>
+          <ActionDivider />
 
-            <Dropdown.Divider />
-
-            <Dropdown.Item className="text-danger" onClick={handleDelete}>
-              <FaTrash /> {m?.general.delete}
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+          <Action
+            icon={<FaTrash />}
+            label={m?.general.delete}
+            variant="danger"
+            onClick={handleDelete}
+            showFrom="md"
+          />
+        </ResponsiveActions>
       </div>
     </ListGroup.Item>
   );
