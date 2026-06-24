@@ -246,7 +246,7 @@ export function CacheTilesForm(): ReactElement {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="d-contents">
       <Modal.Header closeButton>
         <Modal.Title>
           <BiWifiOff /> {cm?.cacheOfflineMap}

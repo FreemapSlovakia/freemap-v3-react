@@ -118,7 +118,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       contentClassName="bg-body-tertiary"
       scrollable
     >
-      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+      <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
             <FaCog /> {m?.mapLayers.preferences}

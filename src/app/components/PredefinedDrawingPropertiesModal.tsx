@@ -106,7 +106,7 @@ export default function PredefinedDrawingPropertiesModal({
       // (and the sliders) stay editable.
       enforceFocus={false}
     >
-      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+      <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>{dm?.defProps.title}</Modal.Title>
         </Modal.Header>

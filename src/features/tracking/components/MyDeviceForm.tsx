@@ -61,7 +61,7 @@ export function MyDeviceForm(): ReactElement {
   const invalidName = !/.*\w.*/.test(name) || name.length > 255;
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} className="d-contents">
       <Modal.Header closeButton>
         <Modal.Title>
           <FaBullseye />{' '}

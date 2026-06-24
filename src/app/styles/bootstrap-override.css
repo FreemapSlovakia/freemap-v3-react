@@ -2,6 +2,12 @@
   z-index: 10000;
 }
 
+/* a <form> that wraps Modal.Header/Body/Footer must be transparent to the
+   scrollable-modal flex chain, so its box is removed from layout */
+.d-contents {
+  display: contents;
+}
+
 /* dynamic modal width — auto-widen the modal to fit its content */
 @media (min-width: 768px) {
   .modal.dynamic {

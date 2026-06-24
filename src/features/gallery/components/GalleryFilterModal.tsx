@@ -263,7 +263,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
       contentClassName="bg-body-tertiary"
       scrollable
     >
-      <form onSubmit={handleFormSubmit} style={{ display: 'contents' }}>
+      <form onSubmit={handleFormSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
             <FaCamera /> <FaFilter /> {gm?.filterModal.title}

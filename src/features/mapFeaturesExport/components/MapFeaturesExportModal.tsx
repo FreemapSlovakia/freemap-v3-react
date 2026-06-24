@@ -252,7 +252,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
   return (
     <Modal show={show} onHide={close} size="lg" scrollable>
-      <form onSubmit={runExport} style={{ display: 'contents' }}>
+      <form onSubmit={runExport} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
             <FaFileExport /> {m?.mainMenu.mapFeaturesExport}
