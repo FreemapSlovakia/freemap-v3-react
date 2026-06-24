@@ -56,9 +56,9 @@ export type ResolvedToast = StoredToast & {
 const toastsAddAction = createAction('TOASTS_ADD', (toast: StoredToast) => {
   return {
     payload: {
-      actions: [],
       id: Math.random().toString(36).slice(2),
       ...toast,
+      actions: toast.actions ?? [],
       timeoutSince: toast.timeout === undefined ? undefined : Date.now(),
     } satisfies ResolvedToast,
   };
