@@ -1,6 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { trackViewerSetData } from '@features/trackViewer/model/actions.js';
+import { normalizePowerExtension } from '@features/trackViewer/normalizePowerExtension.js';
 import * as toGeoJSON from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
 
@@ -34,6 +35,9 @@ export const trackViewerSetTrackDataProcessor: Processor<
       enrichWaypointsWithExtensions(gpxAsXml, trackGeojson);
 
       enrichTracksWithExtensions(gpxAsXml, trackGeojson);
+
+      // Garmin power lands under `gpxpx:PowerExtensions`; alias it to `powers`.
+      normalizePowerExtension(trackGeojson.features);
     }
 
     if (action.payload.focus && trackGeojson) {

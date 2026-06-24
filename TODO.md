@@ -235,9 +235,10 @@ KMZ needs an unzip step.
       then route the inner `.kml` through the KML path.
 - [ ] **KML/KMZ export** (#500): hand-write the XML (togeojson is import-only),
       reusing the `geojsonToGpxDoc` pattern. TCX export only fits tracks.
-- [ ] **Power channel mismatch** (pre-existing): Garmin `<gpxpx:PowerExtension>`
-      parses to `coordinateProperties['gpxpx:PowerExtensions']`, but the power
-      colorizer reads `powers`. Standard Garmin power files don't colorize.
+- [x] **Power channel mismatch fixed.** Garmin `<gpxpx:PowerExtension>` parses to
+      `coordinateProperties['gpxpx:PowerExtensions']`; `normalizePowerExtension`
+      (in the GPX import path) aliases it to `powers` so the power colorizer and
+      re-export pick it up like the plain `<power>` extension.
 - [x] **Dropped the retained raw source string.** Removed `trackGpx` from
       trackViewer state; it survives only as a transient set-data input the
       processor parses to GeoJSON. share-upload + My Maps save now serialize the
