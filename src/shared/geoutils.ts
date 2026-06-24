@@ -141,6 +141,15 @@ export function elevationCoverage(
 export const DEM_RESOLUTION_METERS = 30;
 
 /**
+ * Ground distance (metres) covered by one screen pixel at a Web-Mercator zoom
+ * and latitude, assuming 256 px tiles. Lets a smoothing window be expressed in
+ * pixels and converted to the metric span the colorizers work in.
+ */
+export function metersPerPixel(zoom: number, lat: number): number {
+  return (156543.03392 * Math.cos((lat * Math.PI) / 180)) / 2 ** zoom;
+}
+
+/**
  * Cumulative horizontal distance (metres) along the path, so any windowing can
  * span a fixed metric length regardless of how densely the vertices are spaced.
  * `cum[0]` is `0`; `cum[i]` is the distance from the first vertex to vertex `i`.
@@ -187,40 +196,201 @@ export function metricWindow(
   return [lo, hi];
 }
 
+/**
+ * Low-pass a per-point numeric series by averaging over a centered metric
+ * window (`cum` are the cumulative distances of the series' path). Non-finite
+ * samples are ignored; the highest and lowest sample in a window of ≥5 are
+ * dropped to reject spikes. A window with no finite sample yet seen carries the
+ * last computed value forward (NaN until the first finite window), so a leading
+ * hole stays NaN rather than injecting a fake value into callers' value range;
+ * callers decide gaps from the original samples.
+ *
+ * The window is advanced with two pointers: it is centered on a monotonically
+ * increasing `cum`, so both bounds only move forward and each vertex enters and
+ * leaves once. A running sum/count yields the mean, and monotonic index deques
+ * track the window's current min and max so the spike-trim drops one of each
+ * without re-sorting — O(n) overall instead of O(n·window·log window).
+ */
+export function smoothValues(
+  values: number[],
+  cum: number[],
+  spanMeters: number,
+): number[] {
+  const n = values.length;
+
+  const out = new Array<number>(n);
+
+  const half = spanMeters / 2;
+
+  let lo = 0;
+
+  let hi = -1;
+
+  let sum = 0;
+
+  let count = 0;
+
+  // Index deques over finite samples only: maxDq values non-increasing, minDq
+  // non-decreasing, so each front is the window's current max/min. `head`
+  // cursors pop the front without an O(window) Array.shift.
+  const maxDq: number[] = [];
+
+  let maxHead = 0;
+
+  const minDq: number[] = [];
+
+  let minHead = 0;
+
+  let prev = NaN;
+
+  for (let i = 0; i < n; i++) {
+    const left = cum[i]! - half;
+
+    const right = cum[i]! + half;
+
+    // Pull the right edge in to cover every vertex within +half of point i.
+    while (hi + 1 < n && cum[hi + 1]! <= right) {
+      hi++;
+
+      const v = values[hi]!;
+
+      if (Number.isFinite(v)) {
+        sum += v;
+
+        count++;
+
+        while (
+          maxDq.length > maxHead &&
+          values[maxDq[maxDq.length - 1]!]! <= v
+        ) {
+          maxDq.pop();
+        }
+
+        maxDq.push(hi);
+
+        while (
+          minDq.length > minHead &&
+          values[minDq[minDq.length - 1]!]! >= v
+        ) {
+          minDq.pop();
+        }
+
+        minDq.push(hi);
+      }
+    }
+
+    // Drop the left edge for vertices now beyond -half of point i.
+    while (lo < n && cum[lo]! < left) {
+      const v = values[lo]!;
+
+      if (Number.isFinite(v)) {
+        sum -= v;
+
+        count--;
+
+        if (maxDq.length > maxHead && maxDq[maxHead] === lo) {
+          maxHead++;
+        }
+
+        if (minDq.length > minHead && minDq[minHead] === lo) {
+          minHead++;
+        }
+      }
+
+      lo++;
+    }
+
+    let v: number;
+
+    if (count === 0) {
+      v = prev;
+    } else if (count >= 5) {
+      // Drop the single highest and lowest sample to reject spikes.
+      v =
+        (sum - values[maxDq[maxHead]!]! - values[minDq[minHead]!]!) /
+        (count - 2);
+    } else {
+      v = sum / count;
+    }
+
+    if (!Number.isFinite(v)) {
+      v = prev;
+    }
+
+    prev = v;
+
+    out[i] = v;
+  }
+
+  return out;
+}
+
+/**
+ * Smooth a per-point series sampled along `coords` with {@link smoothValues}.
+ * `spanMeters <= 0` returns `values` unchanged (no smoothing), so a colorizer
+ * with no zoom passed keeps its raw samples.
+ */
+export function smoothSeries(
+  coords: number[][],
+  values: number[],
+  spanMeters: number,
+): number[] {
+  return spanMeters > 0
+    ? smoothValues(values, cumulativeDistances(coords), spanMeters)
+    : values;
+}
+
+/**
+ * Circular low-pass of a per-point angle series (degrees) over a centered
+ * metric window: angles are averaged as unit vectors so values that wrap (e.g.
+ * 350° and 10° → 0°) combine correctly instead of through their meaningless
+ * numeric mean. `spanMeters <= 0` returns the input unchanged; a window whose
+ * vectors fully cancel keeps the point's own angle.
+ */
+export function smoothAngles(
+  anglesDeg: number[],
+  cum: number[],
+  spanMeters: number,
+): number[] {
+  if (spanMeters <= 0) {
+    return anglesDeg;
+  }
+
+  return anglesDeg.map((angle, i) => {
+    const [lo, hi] = metricWindow(cum, i, spanMeters);
+
+    let x = 0;
+
+    let y = 0;
+
+    for (let j = lo; j <= hi; j++) {
+      const a = anglesDeg[j]!;
+
+      if (Number.isFinite(a)) {
+        const r = (a * Math.PI) / 180;
+
+        x += Math.cos(r);
+
+        y += Math.sin(r);
+      }
+    }
+
+    return x === 0 && y === 0 ? angle : (Math.atan2(y, x) * 180) / Math.PI;
+  });
+}
+
 // returns array of [lon, lat, smoothedEle] triplets
 export function smoothElevations(
   coords: number[][],
   spanMeters: number = DEM_RESOLUTION_METERS,
 ): number[][] {
-  const cum = cumulativeDistances(coords);
+  const eles = coords.map((c) =>
+    typeof c[2] === 'number' && Number.isFinite(c[2]) ? c[2] : NaN,
+  );
 
-  let prevEle = 0;
+  const smoothed = smoothValues(eles, cumulativeDistances(coords), spanMeters);
 
-  return coords.map((lonLatEle, i) => {
-    const [lo, hi] = metricWindow(cum, i, spanMeters);
-
-    const window = coords
-      .slice(lo, hi + 1)
-      .map((c) => c[2])
-      .filter((e): e is number => typeof e === 'number' && Number.isFinite(e))
-      // Sorted by elevation so the extreme-removal below drops the actual
-      // highest and lowest samples.
-      .sort((a, b) => a - b);
-
-    // Drop the highest and lowest sample to reject spikes, but only when the
-    // window is large enough to keep a meaningful average.
-    const trimmed = window.length >= 5 ? window.slice(1, -1) : window;
-
-    let ele = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
-
-    if (!Number.isFinite(ele)) {
-      ele = prevEle;
-    }
-
-    prevEle = ele;
-
-    return [lonLatEle[0]!, lonLatEle[1]!, ele];
-  });
+  return coords.map((c, i) => [c[0]!, c[1]!, smoothed[i]!]);
 }
 
 export function toLatLng({ lat, lon }: LatLon): LatLngLiteral {

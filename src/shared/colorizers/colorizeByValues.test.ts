@@ -5,7 +5,7 @@ import {
   colorizeByValues,
   noDataRuns,
   splitOnGaps,
-} from './types.js';
+} from './colorize.js';
 
 function points(gaps: boolean[]): ColorizedPoint[] {
   return gaps.map((gap, lon) => ({ lat: 0, lon, color: 0, gap }));

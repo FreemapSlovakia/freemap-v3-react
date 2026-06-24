@@ -1,7 +1,8 @@
 import { cumulativeDistances, metricWindow } from '@shared/geoutils.js';
 import { getCoords } from '@turf/invariant';
 import type { Feature, LineString } from 'geojson';
-import { type Colorizer, colorizeByValues } from './types.js';
+import { type Colorizer, colorizeByValues } from '../colorize.js';
+import { featureSmoothingSpan } from '../smoothing.js';
 
 // Speed is averaged over this horizontal span to absorb GPS jitter and
 // quantized timestamps; a single short segment can otherwise read as a spike.
@@ -32,13 +33,15 @@ export const speedColorizer: Colorizer = {
 
       return getTimes(f, coords.length) !== null;
     }),
-  compute: (features) =>
+  compute: (features, options) =>
     colorizeByValues(features, (feature) => {
       const coords = getCoords(feature);
 
       const times = getTimes(feature, coords.length);
 
       const cum = cumulativeDistances(coords);
+
+      const span = featureSmoothingSpan(SMOOTHING_METERS, coords, options);
 
       // Per-point speed in m/s, taken as path length over elapsed time across a
       // fixed metric window centered on the point.
@@ -47,7 +50,7 @@ export const speedColorizer: Colorizer = {
           return NaN;
         }
 
-        const [lo, hi] = metricWindow(cum, i, SMOOTHING_METERS);
+        const [lo, hi] = metricWindow(cum, i, span);
 
         const d = cum[hi]! - cum[lo]!;
 

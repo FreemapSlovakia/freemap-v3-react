@@ -2,13 +2,14 @@ import { setTool } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
-import { colorizers } from '@shared/colorizers/index.js';
 import {
   NO_DATA_COLOR,
   NO_DATA_OPACITY,
   noDataRuns,
   splitOnGaps,
-} from '@shared/colorizers/types.js';
+} from '@shared/colorizers/colorize.js';
+import { colorizers } from '@shared/colorizers/index.js';
+import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
@@ -75,6 +76,18 @@ export default function TrackViewerResult({
     flatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
 
   const activeColorizer = colorizeTrackBy ? colorizers[colorizeTrackBy] : null;
+
+  const zoom = useAppSelector((state) => state.map.zoom);
+
+  // Memoized so the per-zoom colorize cache survives across renders.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: getFeatures derives only from trackGeojson
+  const lineFeatures = useMemo(() => getFeatures('LineString'), [trackGeojson]);
+
+  const colorizedPositions = useZoomColorize(
+    activeColorizer,
+    lineFeatures,
+    zoom,
+  );
 
   // Stable reference so react-leaflet-hotline's options-effect doesn't fire
   // (and schedule a canvas redraw) on every render.
@@ -212,33 +225,31 @@ export default function TrackViewerResult({
       ))}
 
       {activeColorizer &&
-        activeColorizer
-          .compute(getFeatures('LineString'))
-          .flatMap((positions, i) => [
-            ...noDataRuns(positions).map((run, j) => (
-              <Polyline
-                key={`nodata-${colorizeTrackBy}-${i}-${j}`}
-                positions={run.map((p): [number, number] => [p.lat, p.lon])}
-                weight={4}
-                pathOptions={{
-                  color: NO_DATA_COLOR,
-                  opacity: NO_DATA_OPACITY,
-                  lineCap: 'round',
-                }}
-                interactive={false}
-              />
-            )),
-            ...splitOnGaps(positions).map((run, j) => (
-              <Hotline
-                key={`${colorizeTrackBy}-${i}-${j}`}
-                data={run}
-                getVal={(p) => p.point.color}
-                getLat={(p) => p.point.lat}
-                getLng={(p) => p.point.lon}
-                options={hotlineOptions}
-              />
-            )),
-          ])}
+        colorizedPositions.flatMap((positions, i) => [
+          ...noDataRuns(positions).map((run, j) => (
+            <Polyline
+              key={`nodata-${colorizeTrackBy}-${i}-${j}`}
+              positions={run.map((p): [number, number] => [p.lat, p.lon])}
+              weight={4}
+              pathOptions={{
+                color: NO_DATA_COLOR,
+                opacity: NO_DATA_OPACITY,
+                lineCap: 'round',
+              }}
+              interactive={false}
+            />
+          )),
+          ...splitOnGaps(positions).map((run, j) => (
+            <Hotline
+              key={`${colorizeTrackBy}-${i}-${j}`}
+              data={run}
+              getVal={(p) => p.point.color}
+              getLat={(p) => p.point.lat}
+              getLng={(p) => p.point.lon}
+              options={hotlineOptions}
+            />
+          )),
+        ])}
 
       {colorizeTrackBy === null &&
         features.map(({ lineData, style }, i) => {

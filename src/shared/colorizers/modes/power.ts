@@ -1,4 +1,4 @@
-import { coordPropColorizer } from './coordPropColorizer.js';
+import { coordPropColorizer } from '../coordPropColorizer.js';
 
 // `power` is a common custom GPX extension; togeojson pluralises to `powers`.
 export const powerColorizer = coordPropColorizer('powers', [

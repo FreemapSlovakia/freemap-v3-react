@@ -1,4 +1,4 @@
-import { coordPropColorizerAbsolute } from './coordPropColorizer.js';
+import { coordPropColorizerAbsolute } from '../coordPropColorizer.js';
 
 // Absolute 0–100 % scale so a color means the same across tracks: empty → red,
 // full → green.

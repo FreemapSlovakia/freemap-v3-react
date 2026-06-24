@@ -1,5 +1,5 @@
 import { getCoords } from '@turf/invariant';
-import { type Colorizer, colorizeByValues } from './types.js';
+import { type Colorizer, colorizeByValues } from '../colorize.js';
 
 /**
  * Colour by elapsed time along the track. Offered only when real per-point
