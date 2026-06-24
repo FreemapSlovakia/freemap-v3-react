@@ -25,7 +25,7 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   },
   uploadModal: {
     title: 'Datei importieren',
-    drop: 'Ziehen Sie eine GPX-, KML-, TCX- oder GeoJSON-Datei hierher oder klicken Sie hier zur Auswahl.',
+    drop: 'Ziehen Sie eine GPX-, KML-, KMZ-, TCX- oder GeoJSON-Datei hierher oder klicken Sie hier zur Auswahl.',
   },
   elevationFill: {
     title: 'Höhendaten',

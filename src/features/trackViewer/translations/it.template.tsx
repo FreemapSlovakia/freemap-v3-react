@@ -28,7 +28,7 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   },
   uploadModal: {
     title: 'Importa file',
-    drop: 'Trascina qui un file GPX, KML, TCX o GeoJSON oppure clicca per selezionarlo.',
+    drop: 'Trascina qui un file GPX, KML, KMZ, TCX o GeoJSON oppure clicca per selezionarlo.',
   },
   elevationFill: {
     title: 'Dati di quota',

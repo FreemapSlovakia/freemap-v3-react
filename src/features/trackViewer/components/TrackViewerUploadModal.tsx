@@ -23,7 +23,7 @@ import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.j
 
 // Picker filter shown to the user; the actual validation lives in the dropzone
 // `accept` prop (matched by these same extensions).
-const TRACK_FILE_EXTENSIONS = '.gpx,.kml,.tcx,.geojson,.json';
+const TRACK_FILE_EXTENSIONS = '.gpx,.kml,.kmz,.tcx,.geojson,.json';
 
 type Props = { show: boolean };
 
@@ -92,6 +92,7 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
     accept: {
       'application/gpx+xml': ['.gpx'],
       'application/vnd.google-earth.kml+xml': ['.kml'],
+      'application/vnd.google-earth.kmz': ['.kmz'],
       'application/vnd.garmin.tcx+xml': ['.tcx'],
       'application/geo+json': ['.geojson'],
       'application/json': ['.json'],

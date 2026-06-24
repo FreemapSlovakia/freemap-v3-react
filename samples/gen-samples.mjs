@@ -1,6 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { strToU8, zipSync } from 'fflate';
 
 // Regenerate the sample tracks: `node samples/gen-samples.mjs`.
 // Deterministic, so re-running produces identical files. Extend the synthetic
@@ -280,7 +281,16 @@ function kmlDrawing() {
 `;
 }
 
-write('drawing.kml', kmlDrawing());
+const drawingKml = kmlDrawing();
+write('drawing.kml', drawingKml);
+
+// KMZ = the same KML zipped as doc.kml. A fixed mtime (the sample epoch) keeps
+// the output byte-stable across runs.
+writeFileSync(
+  `${OUT}/drawing.kmz`,
+  zipSync({ 'doc.kml': [strToU8(drawingKml), { mtime: START_MS }] }),
+);
+console.log('wrote drawing.kmz');
 
 // --- TCX ---------------------------------------------------------------
 

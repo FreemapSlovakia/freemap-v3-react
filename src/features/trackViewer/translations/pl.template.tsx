@@ -25,7 +25,7 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   },
   uploadModal: {
     title: 'Importuj plik',
-    drop: 'Upuść plik GPX, KML, TCX lub GeoJSON tutaj lub kliknij, aby go wybrać.',
+    drop: 'Upuść plik GPX, KML, KMZ, TCX lub GeoJSON tutaj lub kliknij, aby go wybrać.',
   },
   elevationFill: {
     title: 'Dane wysokości',

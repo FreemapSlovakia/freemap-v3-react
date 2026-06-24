@@ -497,7 +497,7 @@ export function Main(): ReactElement {
       }
 
       const trackFiles = acceptedFiles.filter((file) =>
-        /\.(gpx|kml|tcx|geojson|json)$/i.test(file.name),
+        /\.(gpx|kml|kmz|tcx|geojson|json)$/i.test(file.name),
       );
 
       if (trackFiles.length) {

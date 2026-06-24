@@ -28,7 +28,7 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   },
   uploadModal: {
     title: 'Importovat soubor',
-    drop: 'Přetáhněte sem soubor GPX, KML, TCX nebo GeoJSON, nebo sem klikněte pro jeho výběr.',
+    drop: 'Přetáhněte sem soubor GPX, KML, KMZ, TCX nebo GeoJSON, nebo sem klikněte pro jeho výběr.',
   },
   elevationFill: {
     title: 'Nadmořská výška',

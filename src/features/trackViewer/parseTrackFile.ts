@@ -104,7 +104,8 @@ export function parseTrackFile(
 
   const root = doc?.documentElement.localName;
 
-  if (name.endsWith('.kml') || root === 'kml') {
+  // `.kmz` arrives already unzipped to KML text (the drop handler unpacks it).
+  if (name.endsWith('.kml') || name.endsWith('.kmz') || root === 'kml') {
     return doc ? toGeojson(toGeoJSON.kml(doc)) : { kind: 'error' };
   }
 

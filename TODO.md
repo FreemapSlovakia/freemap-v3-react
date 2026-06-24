@@ -231,8 +231,9 @@ KMZ needs an unzip step.
 - [x] **TCX normalization.** Relocates togeojson's top-level `cadences`/`speeds`/
       `watts`/`heartRates` onto `coordinateProperties.{cads,speeds,powers,heart}`
       so cadence/speed/power/HR colorize like an imported GPX.
-- [ ] **KMZ**: add an unzip step (e.g. `fflate`) + binary read for `.kmz`,
-      then route the inner `.kml` through the KML path.
+- [x] **KMZ import.** The drop handler reads `.kmz` as bytes and `extractKmlFromKmz`
+      (lazy `fflate`) unzips the root `.kml` (prefers `doc.kml`), which then flows
+      through the existing KML path. Bundled icons/overlays are ignored.
 - [ ] **KML/KMZ export** (#500): hand-write the XML (togeojson is import-only),
       reusing the `geojsonToGpxDoc` pattern. TCX export only fits tracks.
 - [x] **Power channel mismatch fixed.** Garmin `<gpxpx:PowerExtension>` parses to
