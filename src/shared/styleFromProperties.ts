@@ -67,10 +67,15 @@ export function pointStyleFromProperties(
       ? MarkerTypeSchema.safeParse(rawMarkerType).data
       : undefined) ?? osmAndBackgroundToMarkerType(get('osmand:background'));
 
+  // A plain `icon` is our iconSpec (`poi:`/`fa:`/literal). togeojson also
+  // surfaces a KML `<IconStyle>` image href under this key — a URL, which is
+  // not an icon spec — so ignore path-like values.
+  const plainIcon = get('icon');
+
   const icon =
     get('freemap:icon') ??
     osmAndIconToIconSpec(get('osmand:icon')) ??
-    get('icon') ??
+    (plainIcon && !plainIcon.includes('/') ? plainIcon : undefined) ??
     garminSymToIconSpec(get('sym') ?? get('marker-symbol'));
 
   const color =
@@ -80,7 +85,10 @@ export function pointStyleFromProperties(
       properties,
       get('marker-color'),
       'marker-color-opacity',
-    );
+    ) ??
+    // KML `<IconStyle><color>` tint, the closest thing KML has to a marker
+    // colour.
+    withSimplestyleOpacity(properties, get('icon-color'), 'icon-opacity');
 
   const pointStyle = { markerType, icon, color };
 

@@ -48,4 +48,25 @@ describe('pointStyleFromProperties — simplestyle opacity', () => {
 
     expect(style.color).toBe('#e5393580');
   });
+
+  it('keeps a plain iconSpec but ignores a KML IconStyle URL', () => {
+    expect(pointStyleFromProperties({ icon: 'poi:peak' }).icon).toBe(
+      'poi:peak',
+    );
+
+    expect(
+      pointStyleFromProperties({
+        icon: 'http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png',
+      }).icon,
+    ).toBeUndefined();
+  });
+
+  it('falls back to the KML icon-color tint for the marker colour', () => {
+    const style = pointStyleFromProperties({
+      'icon-color': '#ffff00',
+      'icon-opacity': 1,
+    });
+
+    expect(style.color).toBe('#ffff00');
+  });
 });
