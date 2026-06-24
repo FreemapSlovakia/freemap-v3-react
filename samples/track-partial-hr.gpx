@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="freemap sample generator" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1">
   <trk>
-    <name>Full track</name>
+    <name>Partial heart rate</name>
     <trkseg>
       <trkpt lat="48.7400000" lon="21.0540000">
         <ele>600</ele>
@@ -288,7 +288,6 @@
         <time>2024-06-01T08:02:40.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>135</gpxtpx:hr>
             <gpxtpx:cad>90</gpxtpx:cad>
             <gpxtpx:atemp>21.4</gpxtpx:atemp>
             <gpxtpx:speed>3.18</gpxtpx:speed>
@@ -302,7 +301,6 @@
         <time>2024-06-01T08:02:48.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>130</gpxtpx:hr>
             <gpxtpx:cad>90</gpxtpx:cad>
             <gpxtpx:atemp>21.5</gpxtpx:atemp>
             <gpxtpx:speed>2.88</gpxtpx:speed>
@@ -316,7 +314,6 @@
         <time>2024-06-01T08:02:56.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>126</gpxtpx:hr>
             <gpxtpx:cad>90</gpxtpx:cad>
             <gpxtpx:atemp>21.6</gpxtpx:atemp>
             <gpxtpx:speed>2.57</gpxtpx:speed>
@@ -330,7 +327,6 @@
         <time>2024-06-01T08:03:04.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>121</gpxtpx:hr>
             <gpxtpx:cad>89</gpxtpx:cad>
             <gpxtpx:atemp>21.7</gpxtpx:atemp>
             <gpxtpx:speed>2.28</gpxtpx:speed>
@@ -344,7 +340,6 @@
         <time>2024-06-01T08:03:12.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>116</gpxtpx:hr>
             <gpxtpx:cad>89</gpxtpx:cad>
             <gpxtpx:atemp>21.8</gpxtpx:atemp>
             <gpxtpx:speed>2.01</gpxtpx:speed>
@@ -358,7 +353,6 @@
         <time>2024-06-01T08:03:20.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>111</gpxtpx:hr>
             <gpxtpx:cad>89</gpxtpx:cad>
             <gpxtpx:atemp>21.8</gpxtpx:atemp>
             <gpxtpx:speed>1.75</gpxtpx:speed>
@@ -372,7 +366,6 @@
         <time>2024-06-01T08:03:28.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>107</gpxtpx:hr>
             <gpxtpx:cad>88</gpxtpx:cad>
             <gpxtpx:atemp>21.9</gpxtpx:atemp>
             <gpxtpx:speed>1.53</gpxtpx:speed>
@@ -386,7 +379,6 @@
         <time>2024-06-01T08:03:36.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>103</gpxtpx:hr>
             <gpxtpx:cad>88</gpxtpx:cad>
             <gpxtpx:atemp>21.9</gpxtpx:atemp>
             <gpxtpx:speed>1.34</gpxtpx:speed>
@@ -400,7 +392,6 @@
         <time>2024-06-01T08:03:44.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>99</gpxtpx:hr>
             <gpxtpx:cad>87</gpxtpx:cad>
             <gpxtpx:atemp>22</gpxtpx:atemp>
             <gpxtpx:speed>1.19</gpxtpx:speed>
@@ -414,7 +405,6 @@
         <time>2024-06-01T08:03:52.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>95</gpxtpx:hr>
             <gpxtpx:cad>86</gpxtpx:cad>
             <gpxtpx:atemp>22</gpxtpx:atemp>
             <gpxtpx:speed>1.08</gpxtpx:speed>
@@ -428,7 +418,6 @@
         <time>2024-06-01T08:04:00.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>92</gpxtpx:hr>
             <gpxtpx:cad>86</gpxtpx:cad>
             <gpxtpx:atemp>22</gpxtpx:atemp>
             <gpxtpx:speed>1.02</gpxtpx:speed>
@@ -442,7 +431,6 @@
         <time>2024-06-01T08:04:08.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>89</gpxtpx:hr>
             <gpxtpx:cad>85</gpxtpx:cad>
             <gpxtpx:atemp>22</gpxtpx:atemp>
             <gpxtpx:speed>1</gpxtpx:speed>
@@ -456,7 +444,6 @@
         <time>2024-06-01T08:04:16.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>87</gpxtpx:hr>
             <gpxtpx:cad>84</gpxtpx:cad>
             <gpxtpx:atemp>22</gpxtpx:atemp>
             <gpxtpx:speed>1.03</gpxtpx:speed>
@@ -470,7 +457,6 @@
         <time>2024-06-01T08:04:24.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>86</gpxtpx:hr>
             <gpxtpx:cad>83</gpxtpx:cad>
             <gpxtpx:atemp>22</gpxtpx:atemp>
             <gpxtpx:speed>1.1</gpxtpx:speed>
@@ -484,7 +470,6 @@
         <time>2024-06-01T08:04:32.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>85</gpxtpx:hr>
             <gpxtpx:cad>83</gpxtpx:cad>
             <gpxtpx:atemp>22</gpxtpx:atemp>
             <gpxtpx:speed>1.22</gpxtpx:speed>
@@ -498,7 +483,6 @@
         <time>2024-06-01T08:04:40.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>85</gpxtpx:hr>
             <gpxtpx:cad>82</gpxtpx:cad>
             <gpxtpx:atemp>21.9</gpxtpx:atemp>
             <gpxtpx:speed>1.38</gpxtpx:speed>
@@ -512,7 +496,6 @@
         <time>2024-06-01T08:04:48.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>85</gpxtpx:hr>
             <gpxtpx:cad>81</gpxtpx:cad>
             <gpxtpx:atemp>21.9</gpxtpx:atemp>
             <gpxtpx:speed>1.58</gpxtpx:speed>
@@ -526,7 +509,6 @@
         <time>2024-06-01T08:04:56.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>87</gpxtpx:hr>
             <gpxtpx:cad>80</gpxtpx:cad>
             <gpxtpx:atemp>21.8</gpxtpx:atemp>
             <gpxtpx:speed>1.81</gpxtpx:speed>
@@ -540,7 +522,6 @@
         <time>2024-06-01T08:05:04.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>88</gpxtpx:hr>
             <gpxtpx:cad>79</gpxtpx:cad>
             <gpxtpx:atemp>21.7</gpxtpx:atemp>
             <gpxtpx:speed>2.06</gpxtpx:speed>
@@ -554,7 +535,6 @@
         <time>2024-06-01T08:05:12.000Z</time>
         <extensions>
           <gpxtpx:TrackPointExtension>
-            <gpxtpx:hr>91</gpxtpx:hr>
             <gpxtpx:cad>78</gpxtpx:cad>
             <gpxtpx:atemp>21.7</gpxtpx:atemp>
             <gpxtpx:speed>2.34</gpxtpx:speed>

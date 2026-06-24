@@ -24,6 +24,9 @@ function pt(i) {
     cad: Math.round(80 + 10 * Math.sin(t * 5)),
     atemp: Math.round((18 + 4 * Math.sin(t * 3)) * 10) / 10,
     power: Math.round(200 + 80 * Math.sin(t * 7)),
+    // Recorded speed (m/s) and course (degrees, two full sweeps over the track).
+    speed: Math.round((3 + 2 * Math.sin(t * 9)) * 100) / 100,
+    course: Math.round((t * 720) % 360),
   };
 }
 
@@ -40,13 +43,20 @@ function trkpt(p, { ele = true, time = true, ext = false } = {}) {
   if (ele) lines.push(`        <ele>${p.ele}</ele>`);
   if (time) lines.push(`        <time>${p.time}</time>`);
   if (ext) {
-    lines.push(
-      `        <extensions>`,
-      `          <gpxtpx:TrackPointExtension>`,
-      `            <gpxtpx:hr>${p.hr}</gpxtpx:hr>`,
+    const tpx = [`          <gpxtpx:TrackPointExtension>`];
+    // Heart rate may be absent for a stretch (sensor dropout) — omit the tag so
+    // the importer sees a real gap rather than a zero.
+    if (p.hr != null) tpx.push(`            <gpxtpx:hr>${p.hr}</gpxtpx:hr>`);
+    tpx.push(
       `            <gpxtpx:cad>${p.cad}</gpxtpx:cad>`,
       `            <gpxtpx:atemp>${p.atemp}</gpxtpx:atemp>`,
+      `            <gpxtpx:speed>${p.speed}</gpxtpx:speed>`,
+      `            <gpxtpx:course>${p.course}</gpxtpx:course>`,
       `          </gpxtpx:TrackPointExtension>`,
+    );
+    lines.push(
+      `        <extensions>`,
+      ...tpx,
       `          <gpxpx:PowerExtension><gpxpx:PowerInWatts>${p.power}</gpxpx:PowerInWatts></gpxpx:PowerExtension>`,
       `        </extensions>`,
     );
@@ -102,6 +112,23 @@ write(
   );
 }
 
+// Partial heart rate: HR present in the first and last third, dropped in the
+// middle — exercises gap rendering of the HR colorizer (other channels stay
+// continuous). The middle still carries cadence/temperature/speed/course.
+{
+  const gapped = pts.map((p, i) =>
+    i >= 20 && i < 40 ? { ...p, hr: null } : p,
+  );
+  write(
+    'track-partial-hr.gpx',
+    gpxTrack('Partial heart rate', [gapped], {
+      ele: true,
+      time: true,
+      ext: true,
+    }),
+  );
+}
+
 // Multiple segments (gaps between recording sessions).
 write(
   'track-multisegment.gpx',
@@ -149,6 +176,8 @@ function lineFeature(usePts, { ele = true, props = {} } = {}) {
         cads: usePts.map((p) => p.cad),
         atemps: usePts.map((p) => p.atemp),
         powers: usePts.map((p) => p.power),
+        speeds: usePts.map((p) => p.speed),
+        courses: usePts.map((p) => p.course),
       },
       ...props,
     },
@@ -171,6 +200,18 @@ function fc(features) {
 write(
   'track-full.geojson',
   fc([lineFeature(pts, { props: { name: 'Full track' } })]),
+);
+
+// Heart rate missing in the middle third (null entries in the `heart` array) —
+// exercises HR gap rendering while the other channels stay continuous.
+write(
+  'track-partial-hr.geojson',
+  fc([
+    lineFeature(
+      pts.map((p, i) => (i >= 20 && i < 40 ? { ...p, hr: null } : p)),
+      { props: { name: 'Partial heart rate' } },
+    ),
+  ]),
 );
 
 // 2D LineString, no elevation.
