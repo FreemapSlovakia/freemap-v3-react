@@ -177,7 +177,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('import')) {
-    addGpx(doc, trackViewer);
+    addImportedTrack(doc, trackViewer);
   }
 
   if (set.has('search')) {
@@ -915,26 +915,8 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
   }
 }
 
-function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
-  if (trackGpx) {
-    const domParser = new DOMParser();
-
-    const gpxDoc: XMLDocument = domParser.parseFromString(trackGpx, 'text/xml');
-
-    const r = getSupportedGpxElements(gpxDoc);
-
-    const nodes: Node[] = [];
-
-    let curr: Node | null;
-
-    while ((curr = r.iterateNext())) {
-      nodes.push(curr);
-    }
-
-    for (const node of nodes) {
-      doc.documentElement.appendChild(node);
-    }
-  } else if (trackGeojson) {
+function addImportedTrack(doc: Document, { trackGeojson }: TrackViewerState) {
+  if (trackGeojson) {
     addGeojson(doc, trackGeojson);
   }
 }

@@ -88,7 +88,6 @@ const MapMapDataCompatSchema = z.preprocess(
 
 const TrackViewerMapDataSchema = z.object({
   trackGeojson: GeoJSONFeatureCollectionSchema.nullable().optional(),
-  trackGpx: z.string().nullable().optional(),
   trackUID: z.string().nullable().optional(),
   gpxUrl: z.string().nullable().optional(),
   colorizeTrackBy: ColorizingModeSchema.nullable().optional(),

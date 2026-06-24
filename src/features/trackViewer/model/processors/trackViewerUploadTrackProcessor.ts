@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import { geojsonToGpxDoc } from '@features/mapFeaturesExport/model/processors/gpxFromGeojson.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   trackViewerSetTrackUID,
@@ -17,13 +18,19 @@ export async function handleTrackUpload({
   dispatch: Dispatch;
   getState: () => RootState;
 }): Promise<void> {
-  const { trackGpx, trackUID } = getState().trackViewer;
+  const { trackGeojson, trackUID } = getState().trackViewer;
 
-  if (!trackGpx) {
+  if (!trackGeojson) {
     return;
   }
 
   if (!trackUID) {
+    // The raw import is not retained; serialize the loaded track to GPX for the
+    // share endpoint.
+    const trackGpx = new XMLSerializer().serializeToString(
+      geojsonToGpxDoc(trackGeojson),
+    );
+
     const maxSize = process.env['MAX_GPX_TRACK_SIZE_IN_MB']
       ? parseInt(process.env['MAX_GPX_TRACK_SIZE_IN_MB'], 10)
       : -1;

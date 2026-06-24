@@ -55,11 +55,10 @@ export const trackViewerSetTrackDataProcessor: Processor<
       }
     }
 
+    // GPX input is parsed to GeoJSON here and not retained; re-dispatch with
+    // only the derived GeoJSON (and focus), never the raw string.
     return action.payload.trackGpx
-      ? trackViewerSetData({
-          ...action.payload,
-          trackGeojson,
-        })
+      ? trackViewerSetData({ trackGeojson, focus: action.payload.focus })
       : action;
   },
 };

@@ -238,20 +238,13 @@ KMZ needs an unzip step.
 - [ ] **Power channel mismatch** (pre-existing): Garmin `<gpxpx:PowerExtension>`
       parses to `coordinateProperties['gpxpx:PowerExtensions']`, but the power
       colorizer reads `powers`. Standard Garmin power files don't colorize.
-- [ ] **Decide: keep the raw source string?** Today the reducer still preserves
-      `trackGpx`. Re-examined its three consumers:
-      - *share-upload* (`/tracklogs`) — not a blocker; rework the server endpoint
-        to accept GeoJSON / `{ data, mediaType }`.
-      - *My Maps* — does **not** need it: `getMapDataFromState` already saves
-        `trackGeojson`, and display restores from that; only the save-time
-        pre-upload (`mapsSaveProcessor.ts:19`) touches `trackGpx`, i.e. the same
-        share-upload above.
-      - *lossless GPX re-export* — now largely covered by the `addGeojson` fix.
-      Remaining gap if dropped: `addGeojson` emits only `<ele>`+`<name>` for
-      waypoints (loses `sym`/`time`/`desc`/`cmt`/links) and drops unmapped
-      third-party extensions. So dropping `trackGpx` is viable **if** paired with
-      a small `addGeojson` waypoint-fidelity bump. Leaning: drop + unify on
-      GeoJSON so KML/TCX are first-class.
+- [x] **Dropped the retained raw source string.** Removed `trackGpx` from
+      trackViewer state; it survives only as a transient set-data input the
+      processor parses to GeoJSON. share-upload + My Maps save now serialize the
+      loaded GeoJSON to GPX via `geojsonToGpxDoc`; the export `import` path goes
+      straight through `addGeojson`. Safe because the track+waypoint export is
+      now lossless. (Truly exotic third-party GPX extensions are no longer
+      preserved — an accepted trade-off; freemap.sk is not a file host.)
 
 ### Idea for later — multi-property track chart
 
