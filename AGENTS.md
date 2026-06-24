@@ -10,6 +10,7 @@ Deeper format/architecture references live in [`doc/`](./doc/). Consult them bef
 - [Drawing feature export/import format mapping](./doc/drawing-export-mapping.md) — GPX/GeoJSON write+read for drawing points/lines/polygons, the `fm:*` lossless-shadow design, and the curated Garmin/OsmAnd icon dictionaries. **Read this before changing anything in `src/features/export/` or in the drawing-conversion processors.**
 - [SEO bot-prerender architecture](./doc/seo-prerender.md) — how crawlers get static HTML snapshots while humans get the SPA: the `sitemap-generator/` (homepages, layer/tool hub pages, per-feature POI pages), the nginx `/__prerender` routing, and the `rspack` `index-<lang>` variants. **Read this before changing `sitemap-generator/`, the sitemap/robots wiring, or the bot routing in the nginx vhost.**
 - [Build & deploy gotchas](./doc/build-and-deploy.md) — the `DEPLOYMENT` env var (not `--mode`) selects the prod build, native CSS nesting must be downleveled via LightningCSS, and the nginx cache-header rules (entry HTML `no-store`, only hashed assets `immutable`). **Read this before changing `rspack.config.ts`, the CSS pipeline, or the nginx vhosts.**
+- [UI conventions](./doc/ui-conventions.md) — what each react-bootstrap button `variant` means by role (`dark` = dismiss/close, `primary` = main CTA, `secondary` = default neutral action, `danger` = destructive, `outline-primary` = toggle, `warning` = upsell). **Read this before picking a `variant` for a new `<Button>`.**
 
 ## Keeping `llms.txt` in sync
 

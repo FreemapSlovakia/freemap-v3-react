@@ -132,7 +132,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
               <Button
                 onClick={handleCopyClick}
                 size="sm"
-                variant="outline-secondary"
+                variant="secondary"
                 {...props}
               >
                 <FaClipboard />

@@ -517,7 +517,7 @@ export default function CurrentDrawingPropertiesModal({
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit" variant="info" disabled={invalidWidth}>
+          <Button type="submit" variant="primary" disabled={invalidWidth}>
             <FaCheck /> {m?.general.save}
           </Button>
 

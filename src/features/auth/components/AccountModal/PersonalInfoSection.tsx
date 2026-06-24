@@ -160,7 +160,7 @@ export function PersonalInfoSection(): ReactElement | null {
             <FaUserCircle size={64} className="text-secondary" />
           )}
 
-          <div className="d-flex gap-2 flex-wrap">
+          <div className="d-flex gap-2 flex-wrap flex-row">
             <Button
               variant="secondary"
               size="sm"
@@ -170,11 +170,7 @@ export function PersonalInfoSection(): ReactElement | null {
             </Button>
 
             {canRemovePicture && (
-              <Button
-                variant="outline-danger"
-                size="sm"
-                onClick={handleRemovePicture}
-              >
+              <Button variant="danger" size="sm" onClick={handleRemovePicture}>
                 <FaTimes /> {m?.general.remove}
               </Button>
             )}
