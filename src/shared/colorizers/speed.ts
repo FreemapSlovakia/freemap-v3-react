@@ -1,24 +1,16 @@
 import { cumulativeDistances, metricWindow } from '@shared/geoutils.js';
 import { getCoords } from '@turf/invariant';
-import type { Feature, LineString } from 'geojson';
-import { type Colorizer, colorizeByValues } from './types.js';
+import {
+  type Colorizer,
+  colorizeByValues,
+  hasNumericArray,
+  readCoordTimes,
+  readNumericArray,
+} from './types.js';
 
 // Speed is averaged over this horizontal span to absorb GPS jitter and
 // quantized timestamps; a single short segment can otherwise read as a spike.
 const SMOOTHING_METERS = 50;
-
-function getTimes(
-  feature: Feature<LineString>,
-  expectedLength: number,
-): number[] | null {
-  const raw = feature.properties?.['coordTimes'];
-
-  if (!Array.isArray(raw) || raw.length !== expectedLength) {
-    return null;
-  }
-
-  return raw.map((t) => (typeof t === 'string' ? new Date(t).getTime() : NaN));
-}
 
 export const speedColorizer: Colorizer = {
   palette: [
@@ -27,21 +19,28 @@ export const speedColorizer: Colorizer = {
     { r: 255, g: 0, b: 0, t: 1.0 },
   ],
   isAvailable: (features) =>
-    features.some((f) => {
-      const coords = f.geometry.coordinates;
-
-      return getTimes(f, coords.length) !== null;
-    }),
+    hasNumericArray(features, 'speeds') ||
+    features.some(
+      (f) => readCoordTimes(f, f.geometry.coordinates.length) !== null,
+    ),
   compute: (features) =>
     colorizeByValues(features, (feature) => {
       const coords = getCoords(feature);
 
-      const times = getTimes(feature, coords.length);
+      // Prefer the device-recorded speed (m/s) when present; the colorizer
+      // normalizes per track, so the unit only has to be consistent.
+      const recorded = readNumericArray(feature, 'speeds', coords.length);
+
+      if (recorded && recorded.some((v) => Number.isFinite(v))) {
+        return { coords, values: recorded };
+      }
+
+      // Otherwise derive per-point speed in m/s as path length over elapsed
+      // time across a fixed metric window centered on the point.
+      const times = readCoordTimes(feature, coords.length);
 
       const cum = cumulativeDistances(coords);
 
-      // Per-point speed in m/s, taken as path length over elapsed time across a
-      // fixed metric window centered on the point.
       const values = coords.map((_, i) => {
         if (!times) {
           return NaN;

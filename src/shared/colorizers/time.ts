@@ -1,5 +1,5 @@
 import { getCoords } from '@turf/invariant';
-import { type Colorizer, colorizeByValues } from './types.js';
+import { type Colorizer, colorizeByValues, readCoordTimes } from './types.js';
 
 /**
  * Colour by elapsed time along the track. Offered only when real per-point
@@ -14,28 +14,21 @@ export const timeColorizer: Colorizer = {
   ],
   isAvailable: (features) =>
     features.some((feature) => {
-      const raw = feature.properties?.['coordTimes'];
-
-      return (
-        Array.isArray(raw) &&
-        raw.length === feature.geometry.coordinates.length &&
-        raw.some((t) => typeof t === 'string' && !isNaN(new Date(t).getTime()))
+      const times = readCoordTimes(
+        feature,
+        feature.geometry.coordinates.length,
       );
+
+      return times !== null && times.some((t) => Number.isFinite(t));
     }),
   compute: (features) =>
     colorizeByValues(features, (feature) => {
       const coords = getCoords(feature);
 
-      const rawTimes = feature.properties?.['coordTimes'];
-
       // Missing timestamps become NaN, which colorizeByValues renders as gaps —
       // so a track without time draws nothing rather than an index ramp.
       const values =
-        Array.isArray(rawTimes) && rawTimes.length === coords.length
-          ? rawTimes.map((t) =>
-              typeof t === 'string' ? new Date(t).getTime() : NaN,
-            )
-          : coords.map(() => NaN);
+        readCoordTimes(feature, coords.length) ?? coords.map(() => NaN);
 
       return { coords, values };
     }),

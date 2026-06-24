@@ -160,3 +160,26 @@ export function hasNumericArray(
     return arr !== null && arr.some((v) => Number.isFinite(v));
   });
 }
+
+/**
+ * Reads per-point timestamps as epoch millis. togeojson puts GPX/KML times under
+ * `coordinateProperties.times`; live tracking writes a top-level `coordTimes`.
+ * Returns null unless an array of the expected length is present; bad entries
+ * become NaN.
+ */
+export function readCoordTimes(
+  feature: Feature<LineString>,
+  expectedLength: number,
+): number[] | null {
+  const cp = feature.properties?.['coordinateProperties'] as
+    | Record<string, unknown>
+    | undefined;
+
+  const raw = cp?.['times'] ?? feature.properties?.['coordTimes'];
+
+  if (!Array.isArray(raw) || raw.length !== expectedLength) {
+    return null;
+  }
+
+  return raw.map((t) => (typeof t === 'string' ? new Date(t).getTime() : NaN));
+}
