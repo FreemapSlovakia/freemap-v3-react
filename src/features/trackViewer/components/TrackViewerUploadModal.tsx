@@ -21,6 +21,10 @@ import { parseTrackFile } from '../parseTrackFile.js';
 import { loadTrackViewerMessages } from '../translations/loadTrackViewerMessages.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
+// Picker filter shown to the user; the actual validation lives in the dropzone
+// `accept` prop (matched by these same extensions).
+const TRACK_FILE_EXTENSIONS = '.gpx,.kml,.tcx,.geojson,.json';
+
 type Props = { show: boolean };
 
 export default function TrackViewerUploadModal({ show }: Props): ReactElement {
@@ -80,13 +84,17 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
+    // Validates dropped/picked files (matched by the extensions below). The
+    // file-picker's type labels come from the input's `accept` *attribute*,
+    // which we override to extensions only (see the <input>) — browsers render
+    // a clean `*.ext` per entry instead of the raw MIME string they show for
+    // types they recognize (e.g. KML, GeoJSON).
     accept: {
       'application/gpx+xml': ['.gpx'],
       'application/vnd.google-earth.kml+xml': ['.kml'],
       'application/vnd.garmin.tcx+xml': ['.tcx'],
       'application/geo+json': ['.geojson'],
-      'application/json': ['.json', '.geojson'],
-      'application/octet-stream': ['.gpx', '.kml', '.tcx', '.geojson', '.json'],
+      'application/json': ['.json'],
     },
     multiple: false,
   });
@@ -103,7 +111,9 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
           {...getRootProps()}
           className={clsx('dropzone', isDragActive && ' dropzone-dropping')}
         >
-          <input {...getInputProps()} />
+          {/* Extensions only, so the OS picker shows clean `*.ext` entries
+              rather than raw MIME labels; validation still uses the prop. */}
+          <input {...getInputProps({ accept: TRACK_FILE_EXTENSIONS })} />
 
           {tvm?.uploadModal.drop}
         </div>
