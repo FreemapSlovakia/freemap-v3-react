@@ -35,7 +35,7 @@ import {
   trackViewerSetTrackUID,
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
-import { parseGeojsonFile } from '@features/trackViewer/parseGeojsonFile.js';
+import { parseTrackFile } from '@features/trackViewer/parseTrackFile.js';
 import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 import { WikiLayer } from '@features/wiki/components/WikiLayer.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
@@ -438,22 +438,7 @@ export function Main(): ReactElement {
     onPictureUpdated,
   );
 
-  const onGpxDrop = useCallback(
-    (trackGpx: string) => {
-      dispatch(trackViewerSetTrackUID(null));
-
-      dispatch(trackViewerSetData({ trackGpx, focus: true }));
-
-      dispatch(setActiveModal(null));
-
-      dispatch(setTool({ tool: 'import-file', mode: 'open' }));
-
-      dispatch(elevationChartClose());
-    },
-    [dispatch],
-  );
-
-  const onGpxLoadError = useCallback(
+  const onTrackLoadError = useCallback(
     (messageKey: TextFileDropError) => {
       dispatch(
         toastsAdd({
@@ -468,21 +453,23 @@ export function Main(): ReactElement {
     [dispatch],
   );
 
-  const handleGpxDrop = useTextFileDropHandler(onGpxDrop, onGpxLoadError);
+  const onTrackDrop = useCallback(
+    (text: string, file: File) => {
+      const parsed = parseTrackFile(text, file.name);
 
-  const onGeojsonDrop = useCallback(
-    (text: string) => {
-      const trackGeojson = parseGeojsonFile(text);
-
-      if (!trackGeojson) {
-        onGpxLoadError('invalidFormat');
+      if (parsed.kind === 'error') {
+        onTrackLoadError('invalidFormat');
 
         return;
       }
 
       dispatch(trackViewerSetTrackUID(null));
 
-      dispatch(trackViewerSetData({ trackGeojson, focus: true }));
+      dispatch(
+        parsed.kind === 'gpx'
+          ? trackViewerSetData({ trackGpx: parsed.text, focus: true })
+          : trackViewerSetData({ trackGeojson: parsed.geojson, focus: true }),
+      );
 
       dispatch(setActiveModal(null));
 
@@ -490,13 +477,10 @@ export function Main(): ReactElement {
 
       dispatch(elevationChartClose());
     },
-    [dispatch, onGpxLoadError],
+    [dispatch, onTrackLoadError],
   );
 
-  const handleGeojsonDrop = useTextFileDropHandler(
-    onGeojsonDrop,
-    onGpxLoadError,
-  );
+  const handleTrackDrop = useTextFileDropHandler(onTrackDrop, onTrackLoadError);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -512,31 +496,15 @@ export function Main(): ReactElement {
         }
       }
 
-      const gpxFiles = acceptedFiles.filter((file) =>
-        file.name.toLowerCase().endsWith('.gpx'),
+      const trackFiles = acceptedFiles.filter((file) =>
+        /\.(gpx|kml|tcx|geojson|json)$/i.test(file.name),
       );
 
-      if (gpxFiles.length) {
-        handleGpxDrop(gpxFiles);
-      }
-
-      const geojsonFiles = acceptedFiles.filter((file) => {
-        const name = file.name.toLowerCase();
-
-        return name.endsWith('.geojson') || name.endsWith('.json');
-      });
-
-      if (geojsonFiles.length) {
-        handleGeojsonDrop(geojsonFiles);
+      if (trackFiles.length) {
+        handleTrackDrop(trackFiles);
       }
     },
-    [
-      handlePicturesDrop,
-      handleGpxDrop,
-      handleGeojsonDrop,
-      dispatch,
-      authenticated,
-    ],
+    [handlePicturesDrop, handleTrackDrop, dispatch, authenticated],
   );
 
   useShareFile(onDrop);

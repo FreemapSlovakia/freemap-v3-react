@@ -223,14 +223,14 @@ KMZ needs an unzip step.
       removes the fidelity reason for keeping the raw source string.
 - [x] **Colorizers read recorded speed/course/bearing**, fall back to computed;
       timestamps normalized to `coordinateProperties.times` ∪ `coordTimes`.
-- [ ] **Import boundary** `parseToGeojson(text|bytes, filename)`: dispatch on
-      extension/content to togeojson `gpx`/`kml`/`tcx` or `parseGeojsonFile`;
-      wire into both drop paths (`Main.tsx` `onDrop`, `TrackViewerUploadModal`).
-- [ ] **TCX normalization.** togeojson's `tcx` puts the extended channels as
-      *top-level* props under different names (`cadences`, `speeds`, `watts`,
-      `heartRates`) instead of `coordinateProperties.{cads,speeds,powers,heart}`.
-      Remap + hoist them in the import boundary so the existing colorizers pick
-      them up. (Do this when TCX import lands.)
+- [x] **Import boundary** `parseTrackFile(text, filename)`: resolves format by
+      extension (falling back to the XML root element) to togeojson
+      `gpx`/`kml`/`tcx` or `parseGeojsonFile`; wired into both drop paths
+      (`Main.tsx` `onDrop`, `TrackViewerUploadModal`). GPX stays raw text for the
+      set-data processor; KML/TCX/GeoJSON become a FeatureCollection.
+- [x] **TCX normalization.** Relocates togeojson's top-level `cadences`/`speeds`/
+      `watts`/`heartRates` onto `coordinateProperties.{cads,speeds,powers,heart}`
+      so cadence/speed/power/HR colorize like an imported GPX.
 - [ ] **KMZ**: add an unzip step (e.g. `fflate`) + binary read for `.kmz`,
       then route the inner `.kml` through the KML path.
 - [ ] **KML/KMZ export** (#500): hand-write the XML (togeojson is import-only),

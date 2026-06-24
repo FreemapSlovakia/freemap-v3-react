@@ -28,7 +28,7 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   },
   uploadModal: {
     title: 'Fájl importálása',
-    drop: 'Húzza ide a GPX- vagy GeoJSON-fájlt, vagy kattintson ide a kijelöléséhez.',
+    drop: 'Húzza ide a GPX-, KML-, TCX- vagy GeoJSON-fájlt, vagy kattintson ide a kijelöléséhez.',
   },
   elevationFill: {
     title: 'Magassági adatok',

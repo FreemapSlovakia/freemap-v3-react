@@ -17,7 +17,7 @@ import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from '../model/actions.js';
-import { parseGeojsonFile } from '../parseGeojsonFile.js';
+import { parseTrackFile } from '../parseTrackFile.js';
 import { loadTrackViewerMessages } from '../translations/loadTrackViewerMessages.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
@@ -53,25 +53,21 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
 
   const handleUpload = useCallback(
     (text: string, file: File) => {
-      const name = file.name.toLowerCase();
+      const parsed = parseTrackFile(text, file.name);
 
-      if (name.endsWith('.geojson') || name.endsWith('.json')) {
-        const trackGeojson = parseGeojsonFile(text);
+      if (parsed.kind === 'error') {
+        handleLoadError('invalidFormat');
 
-        if (!trackGeojson) {
-          handleLoadError('invalidFormat');
-
-          return;
-        }
-
-        dispatch(trackViewerSetTrackUID(null));
-
-        dispatch(trackViewerSetData({ trackGeojson, focus: true }));
-      } else {
-        dispatch(trackViewerSetTrackUID(null));
-
-        dispatch(trackViewerSetData({ trackGpx: text, focus: true }));
+        return;
       }
+
+      dispatch(trackViewerSetTrackUID(null));
+
+      dispatch(
+        parsed.kind === 'gpx'
+          ? trackViewerSetData({ trackGpx: parsed.text, focus: true })
+          : trackViewerSetData({ trackGeojson: parsed.geojson, focus: true }),
+      );
 
       dispatch(setActiveModal(null));
 
@@ -84,12 +80,13 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,
-    // TODO add KML/KMZ once a parser is wired up
     accept: {
       'application/gpx+xml': ['.gpx'],
+      'application/vnd.google-earth.kml+xml': ['.kml'],
+      'application/vnd.garmin.tcx+xml': ['.tcx'],
       'application/geo+json': ['.geojson'],
       'application/json': ['.json', '.geojson'],
-      'application/octet-stream': ['.gpx', '.geojson', '.json'],
+      'application/octet-stream': ['.gpx', '.kml', '.tcx', '.geojson', '.json'],
     },
     multiple: false,
   });
