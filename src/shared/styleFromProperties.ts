@@ -122,6 +122,22 @@ export function lineStyleFromProperties(
     return typeof v === 'string' && v ? v : undefined;
   };
 
+  // Simplestyle emits numeric values (e.g. togeojson writes `stroke-width` as a
+  // number), while our `freemap:*`/`osmand:*` extensions are strings; accept
+  // both.
+  const getNum = (key: string): number | undefined => {
+    const v = properties?.[key];
+
+    const n =
+      typeof v === 'number'
+        ? v
+        : typeof v === 'string'
+          ? Number(v)
+          : Number.NaN;
+
+    return Number.isFinite(n) ? n : undefined;
+  };
+
   const rawType = get('freemap:type');
 
   const type: DrawingLineType | undefined = isDrawingLineType(rawType)
@@ -140,10 +156,8 @@ export function lineStyleFromProperties(
     get('osmand:fill_color') ??
     withSimplestyleOpacity(properties, get('fill'), 'fill-opacity');
 
-  const rawWidth =
-    get('freemap:width') ?? get('osmand:width') ?? get('stroke-width');
-  const widthNum = rawWidth ? Number(rawWidth) : Number.NaN;
-  const width = Number.isFinite(widthNum) ? widthNum : undefined;
+  const width =
+    getNum('freemap:width') ?? getNum('osmand:width') ?? getNum('stroke-width');
 
   const rawCap = get('freemap:lineCap') ?? get('stroke-linecap');
   const lineCap = isLineCap(rawCap) ? rawCap : undefined;

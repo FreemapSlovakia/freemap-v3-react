@@ -29,6 +29,17 @@ describe('lineStyleFromProperties — simplestyle opacity', () => {
     expect(style.color).toBe('#0000ff');
   });
 
+  it('reads a numeric simplestyle stroke-width', () => {
+    expect(lineStyleFromProperties({ 'stroke-width': 5 }, false).width).toBe(5);
+    expect(lineStyleFromProperties({ 'stroke-width': 2 }, false).width).toBe(2);
+  });
+
+  it('reads a string freemap:width', () => {
+    expect(lineStyleFromProperties({ 'freemap:width': '3' }, false).width).toBe(
+      3,
+    );
+  });
+
   it('prefers the lossless freemap:* colour over simplestyle', () => {
     const style = lineStyleFromProperties(
       { 'freemap:fillColor': '#11223344', fill: '#ffffff', 'fill-opacity': 0 },
