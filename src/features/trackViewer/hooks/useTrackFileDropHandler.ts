@@ -3,11 +3,14 @@ import { FileRejection } from 'react-dropzone';
 import { extractKmlFromKmz } from '../kmz.js';
 
 /** Keys into `TrackViewerMessages` for file-drop failures. */
-export type TextFileDropError = 'invalidFormat' | 'onlyOne' | 'loadingError';
+export type TrackFileDropError = 'invalidFormat' | 'onlyOne' | 'loadingError';
 
-export function useTextFileDropHandler(
+// Reads a single dropped track file and hands its KML/GPX/TCX/GeoJSON text to
+// `onDrop`. Plain-text formats are read directly; a `.kmz` is unzipped to its
+// contained KML first.
+export function useTrackFileDropHandler(
   onDrop: (text: string, file: File) => void,
-  onLoadError: (messageKey: TextFileDropError) => void,
+  onLoadError: (messageKey: TrackFileDropError) => void,
 ): (acceptedFiles: File[], fileRejections?: FileRejection[]) => void {
   return useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[] = []) => {

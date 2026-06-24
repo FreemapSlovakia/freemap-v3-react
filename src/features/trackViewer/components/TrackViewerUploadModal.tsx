@@ -10,9 +10,9 @@ import { useDropzone } from 'react-dropzone';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
-  type TextFileDropError,
-  useTextFileDropHandler,
-} from '../hooks/useTextFileDropHandler.js';
+  type TrackFileDropError,
+  useTrackFileDropHandler,
+} from '../hooks/useTrackFileDropHandler.js';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
@@ -41,7 +41,7 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
   }, [dispatch]);
 
   const handleLoadError = useCallback(
-    (messageKey: TextFileDropError) => {
+    (messageKey: TrackFileDropError) => {
       dispatch(
         toastsAdd({
           id: 'trackViewer.loadError',
@@ -80,7 +80,7 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
     [dispatch, handleLoadError],
   );
 
-  const handleDrop = useTextFileDropHandler(handleUpload, handleLoadError);
+  const handleDrop = useTrackFileDropHandler(handleUpload, handleLoadError);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleDrop,

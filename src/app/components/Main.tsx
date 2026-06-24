@@ -27,9 +27,9 @@ import { Toasts } from '@features/toasts/components/Toasts.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { TrackingSelection } from '@features/tracking/components/TrackingSelection.js';
 import {
-  type TextFileDropError,
-  useTextFileDropHandler,
-} from '@features/trackViewer/hooks/useTextFileDropHandler.js';
+  type TrackFileDropError,
+  useTrackFileDropHandler,
+} from '@features/trackViewer/hooks/useTrackFileDropHandler.js';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
@@ -439,7 +439,7 @@ export function Main(): ReactElement {
   );
 
   const onTrackLoadError = useCallback(
-    (messageKey: TextFileDropError) => {
+    (messageKey: TrackFileDropError) => {
       dispatch(
         toastsAdd({
           id: 'trackViewer.loadError',
@@ -480,7 +480,10 @@ export function Main(): ReactElement {
     [dispatch, onTrackLoadError],
   );
 
-  const handleTrackDrop = useTextFileDropHandler(onTrackDrop, onTrackLoadError);
+  const handleTrackDrop = useTrackFileDropHandler(
+    onTrackDrop,
+    onTrackLoadError,
+  );
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
