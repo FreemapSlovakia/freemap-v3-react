@@ -10,11 +10,37 @@ import {
   MarkerType,
   MarkerTypeSchema,
 } from '@features/objects/model/actions.js';
+import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { garminSymToIconSpec } from '@/features/mapFeaturesExport/garminSymMapping.js';
 import {
   osmAndBackgroundToMarkerType,
   osmAndIconToIconSpec,
 } from '@/features/mapFeaturesExport/osmandIconMapping.js';
+
+// Simplestyle splits a colour into a base hex plus a separate `*-opacity`
+// number (e.g. `fill` + `fill-opacity`). Foreign imports (KML, third-party
+// GeoJSON) use that split, so fold the opacity back into a `#RRGGBBAA` colour;
+// our own `freemap:*` colours already carry alpha and skip this path.
+function withSimplestyleOpacity(
+  properties: Record<string, unknown> | null | undefined,
+  color: string | undefined,
+  opacityKey: string,
+): string | undefined {
+  if (!color || !/^#[0-9a-fA-F]{6}$/.test(color)) {
+    return color;
+  }
+
+  const raw = properties?.[opacityKey];
+
+  const opacity =
+    typeof raw === 'number'
+      ? raw
+      : typeof raw === 'string'
+        ? Number(raw)
+        : Number.NaN;
+
+  return Number.isFinite(opacity) ? joinColorAlpha(color, opacity) : color;
+}
 
 // Plucks drawing-point styling out of a GeoJSON feature's properties.
 // Priority: freemap-private (lossless round-trip) → OsmAnd → plain GeoJSON
@@ -48,7 +74,13 @@ export function pointStyleFromProperties(
     garminSymToIconSpec(get('sym') ?? get('marker-symbol'));
 
   const color =
-    get('freemap:color') ?? get('osmand:color') ?? get('marker-color');
+    get('freemap:color') ??
+    get('osmand:color') ??
+    withSimplestyleOpacity(
+      properties,
+      get('marker-color'),
+      'marker-color-opacity',
+    );
 
   const pointStyle = { markerType, icon, color };
 
@@ -90,10 +122,15 @@ export function lineStyleFromProperties(
       ? 'polygon'
       : undefined;
 
-  const color = get('freemap:color') ?? get('osmand:color') ?? get('stroke');
+  const color =
+    get('freemap:color') ??
+    get('osmand:color') ??
+    withSimplestyleOpacity(properties, get('stroke'), 'stroke-opacity');
 
   const fillColor =
-    get('freemap:fillColor') ?? get('osmand:fill_color') ?? get('fill');
+    get('freemap:fillColor') ??
+    get('osmand:fill_color') ??
+    withSimplestyleOpacity(properties, get('fill'), 'fill-opacity');
 
   const rawWidth =
     get('freemap:width') ?? get('osmand:width') ?? get('stroke-width');
