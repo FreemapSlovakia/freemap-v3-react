@@ -128,7 +128,7 @@ export function TrackViewerMenu(): ReactElement {
                 className="ms-1"
                 variant="secondary"
                 onClick={() => {
-                  dispatch(setActiveModal('file-import'));
+                  dispatch(setActiveModal({ type: 'file-import' }));
                 }}
                 {...props}
               >

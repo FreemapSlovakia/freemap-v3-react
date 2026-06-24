@@ -1,3 +1,4 @@
+import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
@@ -37,8 +38,8 @@ export function TrackedDevice({ device }: Props): ReactElement {
   const nf = useNumberFormat();
 
   const handleModify = useCallback(() => {
-    dispatch(trackingActions.modifyTrackedDevice(device));
-  }, [device, dispatch]);
+    dispatch(setActiveModal({ type: 'tracking-watched', token: device.token }));
+  }, [device.token, dispatch]);
 
   const handleDelete = useCallback(() => {
     dispatch(trackingActions.deleteTrackedDevice(device.token));

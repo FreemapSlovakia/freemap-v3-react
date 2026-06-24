@@ -92,7 +92,9 @@ export function TrackingMenu(): ReactElement {
           <Button
             className="ms-1"
             variant="secondary"
-            onClick={() => dispatch(setActiveModal('tracking-watched'))}
+            onClick={() =>
+              dispatch(setActiveModal({ type: 'tracking-watched' }))
+            }
             {...props}
           >
             <FaRegEye />
@@ -106,7 +108,7 @@ export function TrackingMenu(): ReactElement {
           <Button
             className="ms-1"
             variant="secondary"
-            onClick={() => dispatch(setActiveModal('tracking-my'))}
+            onClick={() => dispatch(setActiveModal({ type: 'tracking-my' }))}
             {...props}
           >
             <FaMobileAlt />

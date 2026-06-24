@@ -27,7 +27,6 @@ export interface TrackingState {
   accessTokensDeviceId: number | undefined;
   modifiedDeviceId: number | null | undefined;
   modifiedAccessTokenId: number | null | undefined;
-  modifiedTrackedDevice: TrackedDevice | null | undefined;
   trackedDevices: TrackedDevice[];
   tracks: Track[];
   showLine: boolean;
@@ -41,7 +40,6 @@ export const trackingInitialState: TrackingState = {
   accessTokensDeviceId: undefined,
   modifiedDeviceId: undefined,
   modifiedAccessTokenId: undefined,
-  modifiedTrackedDevice: undefined,
   trackedDevices: [],
   tracks: [],
   showLine: true,
@@ -65,7 +63,6 @@ export const trackingReducer = createReducer(trackingInitialState, (builder) =>
       accessTokensDeviceId: undefined,
       modifiedDeviceId: undefined,
       modifiedAccessTokenId: undefined,
-      modifiedTrackedDevice: undefined,
     }))
     .addCase(trackingActions.setDevices, (state, { payload }) => ({
       ...state,
@@ -92,20 +89,18 @@ export const trackingReducer = createReducer(trackingInitialState, (builder) =>
       ...state,
       trackedDevices: payload,
     }))
-    .addCase(trackingActions.modifyTrackedDevice, (state, { payload }) => ({
-      ...state,
-      modifiedTrackedDevice: payload,
-    }))
-    .addCase(trackingActions.saveTrackedDevice, (state, { payload }) => ({
-      ...state,
-      trackedDevices: [
-        ...state.trackedDevices.filter(
-          (d) => d.token !== state.modifiedTrackedDevice?.token,
-        ),
-        payload,
-      ],
-      modifiedTrackedDevice: undefined,
-    }))
+    .addCase(
+      trackingActions.saveTrackedDevice,
+      (state, { payload: { device, previousToken } }) => ({
+        ...state,
+        trackedDevices: [
+          ...state.trackedDevices.filter(
+            (d) => d.token !== previousToken && d.token !== device.token,
+          ),
+          device,
+        ],
+      }),
+    )
     .addCase(trackingActions.deleteTrackedDevice, (state, { payload }) => ({
       ...state,
       trackedDevices: state.trackedDevices.filter((d) => d.token !== payload),

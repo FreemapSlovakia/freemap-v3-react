@@ -1,3 +1,5 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { decodeActiveModal } from '@app/store/activeModal.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
@@ -5,7 +7,6 @@ import { Button, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { getDocuments } from '@/documents/index.js';
-import { ModalSchema, setActiveModal } from '../../../app/store/actions.js';
 import { DocumentSchema, documentShow } from '../model/actions.js';
 import { useDocumentsMessages } from '../translations/useDocumentsMessages.js';
 
@@ -19,7 +20,11 @@ function DocumentModal({ show }: Props): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const documentKey = useAppSelector((state) => state.main.documentKey);
+  const documentKey = useAppSelector((state) =>
+    state.main.activeModal?.type === 'document'
+      ? state.main.activeModal.key
+      : null,
+  );
 
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -88,10 +93,10 @@ function DocumentModal({ show }: Props): ReactElement | null {
             return;
           }
 
-          const show = ModalSchema.safeParse(sp.get('show'));
+          const modal = decodeActiveModal(sp.get('show') ?? '');
 
-          if (show.success) {
-            dispatch(setActiveModal(show.data));
+          if (modal) {
+            dispatch(setActiveModal(modal));
           } else {
             const document = DocumentSchema.safeParse(sp.get('document'));
 

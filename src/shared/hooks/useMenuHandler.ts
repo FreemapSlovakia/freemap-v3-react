@@ -1,7 +1,6 @@
 import {
   clearMapFeatures,
   ExternalTarget,
-  Modal,
   openInExternalApp,
   saveSettings,
   setActiveModal,
@@ -10,6 +9,7 @@ import {
   Tool,
   ToolSchema,
 } from '@app/store/actions.js';
+import { ModalId, modalOf } from '@app/store/activeModal.js';
 import { Document, documentShow } from '@features/documents/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { Submenu } from '@features/mainMenu/components/submenu.js';
@@ -33,12 +33,12 @@ export type EventKey =
   | `tool-${Tool}`
   | `lang-${Language | ''}`
   | `open-${ExternalTarget}`
-  | `modal-${Modal}`;
+  | `modal-${ModalId}`;
 
-export function modalMenuItemProps(modal: Modal) {
+export function modalMenuItemProps(modalId: ModalId) {
   return {
-    eventKey: `modal-${modal}`,
-    href: `#show=${modal}`,
+    eventKey: `modal-${modalId}`,
+    href: `#show=${modalId}`,
   };
 }
 
@@ -139,7 +139,7 @@ export function useMenuHandler({
       const modal = afterPrefix(key, 'modal-');
 
       if (modal !== undefined) {
-        dispatch(setActiveModal(modal));
+        dispatch(setActiveModal(modalOf(modal)));
 
         setShow(false);
 

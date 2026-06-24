@@ -505,7 +505,7 @@ export function Main(): ReactElement {
       );
 
       if (pictureFiles.length) {
-        dispatch(setActiveModal('gallery-upload')); // if no user then it displays valuable error
+        dispatch(setActiveModal({ type: 'gallery-upload' })); // if no user then it displays valuable error
 
         if (authenticated) {
           handlePicturesDrop(pictureFiles);
@@ -596,8 +596,6 @@ export function Main(): ReactElement {
     (state) => state.homeLocation.selectingHomeLocation,
   );
 
-  const documentKey = useAppSelector((state) => state.main.documentKey);
-
   const showPosition = useAppSelector((state) => state.gallery.showPosition);
 
   const pickingPosition = useAppSelector(
@@ -641,9 +639,7 @@ export function Main(): ReactElement {
                   {(!window.fmEmbedded || embedFeatures.includes('search')) && (
                     <SearchMenu
                       hidden={!showMenu}
-                      preventShortcut={
-                        Boolean(activeModal) || Boolean(documentKey)
-                      }
+                      preventShortcut={Boolean(activeModal)}
                     />
                   )}
                 </Toolbar>
@@ -856,109 +852,118 @@ export function Main(): ReactElement {
           [
             ...(isUserValidated ? ['tracking-my'] : []),
             'tracking-watched',
-          ].includes(activeModal)
+          ].includes(activeModal.type)
         }
         factory={trackingModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'account'}
+        show={activeModal?.type === 'account'}
         factory={accountModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'offline-map-export'}
+        show={activeModal?.type === 'offline-map-export'}
         factory={downloadMapModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'offline-maps'}
+        show={activeModal?.type === 'offline-maps'}
         factory={cachedMapsModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'map-layers-config'}
+        show={activeModal?.type === 'map-layers-config'}
         factory={mapLayersConfigModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'custom-maps'}
+        show={activeModal?.type === 'custom-maps'}
         factory={customMapsModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'map-preferences'}
+        show={activeModal?.type === 'map-preferences'}
         factory={mapPreferencesModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'embed'}
+        show={activeModal?.type === 'embed'}
         factory={embedMapModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'map-features-export'}
+        show={activeModal?.type === 'map-features-export'}
         factory={exportGpxModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'map-to-document-export'}
+        show={activeModal?.type === 'map-to-document-export'}
         factory={exportMapModalFactory}
       />
 
       <AsyncModal
-        show={!activeModal && documentKey !== null}
+        show={activeModal?.type === 'document'}
         factory={documentModalFactory}
       />
 
-      <AsyncModal show={activeModal === 'about'} factory={aboutModalFactory} />
+      <AsyncModal
+        show={activeModal?.type === 'about'}
+        factory={aboutModalFactory}
+      />
 
       <AsyncModal
-        show={activeModal === 'credits-purchase'}
+        show={activeModal?.type === 'credits-purchase'}
         factory={buyCreditModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'support-us'}
+        show={activeModal?.type === 'support-us'}
         factory={supportUsModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'legend'}
+        show={activeModal?.type === 'legend'}
         factory={legendModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'current-drawing-properties'}
+        show={activeModal?.type === 'current-drawing-properties'}
         factory={currentDrawingPropertiesModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'file-import'}
+        show={activeModal?.type === 'file-import'}
         factory={trackViewerUploadModalFactory}
       />
 
-      <AsyncModal show={activeModal === 'login'} factory={loginModalFactory} />
-
-      <AsyncModal show={activeModal === 'my-maps'} factory={mapsModalFactory} />
+      <AsyncModal
+        show={activeModal?.type === 'login'}
+        factory={loginModalFactory}
+      />
 
       <AsyncModal
-        show={activeModal === 'premium'}
+        show={activeModal?.type === 'my-maps'}
+        factory={mapsModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'premium'}
         factory={premiumActivationModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'gallery-filter'}
+        show={activeModal?.type === 'gallery-filter'}
         factory={galleryFilterModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'gallery-leaderboard'}
+        show={activeModal?.type === 'gallery-leaderboard'}
         factory={galleryLeaderboardModalFactory}
       />
 
       <AsyncModal
-        show={activeModal === 'drawing-properties'}
+        show={activeModal?.type === 'drawing-properties'}
         factory={predefinedDrawingPropertiesModalFactory}
       />
 

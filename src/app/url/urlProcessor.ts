@@ -1,9 +1,10 @@
 import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
+import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import { hash } from 'ohash';
-import { ShowModalSchema } from '../store/actions.js';
+import { encodeActiveModal } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
 import { isUrlUpdatingEnabled } from './urlUpdating.js';
 
@@ -41,6 +42,7 @@ export const urlProcessor: Processor = {
       search,
       objects,
       wikimediaCommons,
+      wiki,
     } = getState();
 
     if (!isUrlUpdatingEnabled()) {
@@ -77,7 +79,6 @@ export const urlProcessor: Processor = {
       routePlanner.mode,
       routePlanner.transportType,
       routePlanner.roundtripParams,
-      main.documentKey,
       tracking.trackedDevices,
       trackViewer.colorizeTrackBy,
       trackViewer.gpxUrl,
@@ -90,6 +91,8 @@ export const urlProcessor: Processor = {
       objects.active,
       wikimediaCommons.preview?.pageId,
       wikimediaCommons.loading,
+      wiki.preview,
+      wiki.loading,
     ];
 
     const restChanged =
@@ -251,17 +254,6 @@ export const urlProcessor: Processor = {
       historyParts.push(['track-colorize-by', trackViewer.colorizeTrackBy]);
     }
 
-    if (gallery.activeImageId) {
-      queryParts.push(['image', gallery.activeImageId]);
-    }
-
-    const wmcPageId =
-      wikimediaCommons.preview?.pageId ?? wikimediaCommons.loading;
-
-    if (wmcPageId) {
-      queryParts.push(['wmc', wmcPageId]);
-    }
-
     if (changesets.days) {
       queryParts.push(['changesets-days', changesets.days]);
     }
@@ -369,15 +361,29 @@ export const urlProcessor: Processor = {
     }
 
     {
-      const result = ShowModalSchema.safeParse(main.activeModal);
+      // The gallery viewer and the Wikimedia Commons preview keep their own
+      // slice state but serialize through the same packed `show=` param.
+      const wmcPageId =
+        wikimediaCommons.preview?.pageId ?? wikimediaCommons.loading;
 
-      if (result.success) {
-        queryParts.push(['show', result.data]);
+      const wikiKey =
+        wiki.loading ?? (wiki.preview ? wikiPreviewKey(wiki.preview) : null);
+
+      const show =
+        encodeActiveModal(main.activeModal) ??
+        encodeActiveModal(
+          gallery.activeImageId
+            ? { type: 'gallery-viewer', id: gallery.activeImageId }
+            : wmcPageId
+              ? { type: 'wmc', pageId: wmcPageId }
+              : wikiKey
+                ? { type: 'wiki', key: wikiKey }
+                : null,
+        );
+
+      if (show !== null) {
+        queryParts.push(['show', show]);
       }
-    }
-
-    if (main.documentKey !== null) {
-      queryParts.push(['document', main.documentKey]);
     }
 
     if (main.embedFeatures.length) {

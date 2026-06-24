@@ -31,7 +31,7 @@ export function GalleryModals(): ReactElement {
 
   const showUploadModal = useAppSelector(
     (state) =>
-      state.main.activeModal === 'gallery-upload' &&
+      state.main.activeModal?.type === 'gallery-upload' &&
       state.gallery.pickingPositionForId === null,
   );
 

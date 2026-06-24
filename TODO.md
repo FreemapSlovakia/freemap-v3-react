@@ -55,6 +55,37 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
       it would let many hand-written `useMemo`/`useCallback` be dropped, changing
       how much manual hook churn is worthwhile).
 
+## Modal/overlay state unification
+
+Phase 1 (done) made `state.main.activeModal` a `Selection`-like discriminated
+union `{ type; …args } | null`, folded the `document` overlay into it, drove the
+watched-device form from `activeModal.token` (removed `modifiedTrackedDevice`),
+and unified URL serialization through the packed `show=type/arg` codec
+(`encodeActiveModal`/`decodeShow` in `src/app/store/actions.ts`), with backward
+compat for `document=`/`tip=`/legacy `show=` renames.
+
+Phase 2 (done) routed the gallery viewer, the Wikimedia Commons preview, and the
+Wikipedia (`wiki`) preview through the same `show=` param
+(`show=gallery-viewer/<id>`, `show=wmc/<pageId>`, `show=wiki/<lang>:<title>`),
+dropping the bespoke `image=`/`wmc=` serialize/deserialize blocks (kept as legacy
+read-aliases). Their slice state (`gallery.activeImageId`,
+`wikimediaCommons.preview/loading`, `wiki.preview/loading`) is unchanged — only
+the URL layer was unified.
+
+Optional deeper cleanup (not required; `show=` is already the single param):
+
+- [ ] **Fold `gallery-viewer`/`wmc`/`wiki` state into `activeModal`.** Replace
+      `gallery.activeImageId` / `wikimediaCommons.preview` / `wiki.preview` with
+      `activeModal.type === 'gallery-viewer' | 'wmc' | 'wiki'` as the source of
+      truth. Needs moving the `next`/`prev` resolution out of the
+      `galleryRequestImage` reducer into a processor, and updating
+      `showGalleryViewerSelector`, `GalleryViewerModal`, and the gallery
+      delete/stars/comment processors. Higher churn, no user-visible change — only
+      do it if the dual state becomes a problem.
+- [ ] **Delete dead `src/features/documents/model/reducer.ts`.** Its `documentKey`
+      slice is not wired into `rootReducer`; the document overlay now lives in
+      `activeModal`.
+
 ## Premium / monetization
 
 Context: payment provider (Polar) acceptable-use rules and content licensing

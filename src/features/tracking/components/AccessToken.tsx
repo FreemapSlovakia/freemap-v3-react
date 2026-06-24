@@ -32,10 +32,9 @@ import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 type Props = {
   accessToken: AccessTokenType;
-  deviceName: string;
 };
 
-export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
+export function AccessToken({ accessToken }: Props): ReactElement {
   const m = useMessages();
 
   const tm = useTrackingMessages();
@@ -79,15 +78,10 @@ export function AccessToken({ accessToken, deviceName }: Props): ReactElement {
   }, [accessToken.token, dispatch]);
 
   const handleView = useCallback(() => {
-    dispatch(setActiveModal('tracking-watched'));
-
     dispatch(
-      trackingActions.modifyTrackedDevice({
-        token: accessToken.token,
-        label: deviceName,
-      }),
+      setActiveModal({ type: 'tracking-watched', token: accessToken.token }),
     );
-  }, [accessToken.token, deviceName, dispatch]);
+  }, [accessToken.token, dispatch]);
 
   const meta: { label: string; value: ReactNode }[] = [];
 

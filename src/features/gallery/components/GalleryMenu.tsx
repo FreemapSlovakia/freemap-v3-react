@@ -133,7 +133,9 @@ export default function GalleryMenu() {
                       type="button"
                       variant="secondary"
                       className="ms-1"
-                      onClick={() => dispatch(setActiveModal('gallery-upload'))}
+                      onClick={() =>
+                        dispatch(setActiveModal({ type: 'gallery-upload' }))
+                      }
                       {...props}
                     >
                       <FaUpload />{' '}
@@ -148,7 +150,9 @@ export default function GalleryMenu() {
                       type="button"
                       className="ms-1"
                       variant="secondary"
-                      onClick={() => dispatch(setActiveModal('gallery-filter'))}
+                      onClick={() =>
+                        dispatch(setActiveModal({ type: 'gallery-filter' }))
+                      }
                       active={filterIsActive}
                       {...props}
                     >
@@ -244,7 +248,9 @@ export default function GalleryMenu() {
                       className="ms-1"
                       variant="secondary"
                       onClick={() =>
-                        dispatch(setActiveModal('gallery-leaderboard'))
+                        dispatch(
+                          setActiveModal({ type: 'gallery-leaderboard' }),
+                        )
                       }
                       active={filterIsActive}
                       {...props}

@@ -1,10 +1,11 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { ModalId, modalOf } from '@app/store/activeModal.js';
 import { MouseEvent, ReactNode, useCallback } from 'react';
 import { Anchor } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { Modal, setActiveModal } from '../../app/store/actions.js';
 
 type Props = {
-  modal: Modal;
+  modal: ModalId;
   children: ReactNode;
 };
 
@@ -15,7 +16,7 @@ export function ShowModalLink({ modal, children }: Props) {
     (e: MouseEvent) => {
       e.preventDefault();
 
-      dispatch(setActiveModal(modal));
+      dispatch(setActiveModal(modalOf(modal)));
     },
     [dispatch, modal],
   );

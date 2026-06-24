@@ -58,7 +58,9 @@ export default function DrawingMenu(): ReactElement | undefined {
               variant="secondary"
               type="button"
               className="ms-1"
-              onClick={() => dispatch(setActiveModal('drawing-properties'))}
+              onClick={() =>
+                dispatch(setActiveModal({ type: 'drawing-properties' }))
+              }
               {...props}
             >
               <FaPalette /> <span className={labelClassName}>{label}</span>

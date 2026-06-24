@@ -14,6 +14,7 @@ import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { OsmFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
 import type { DrawingStyle } from '@/features/drawing/model/reducers/drawingSettingsReducer.js';
+import type { ActiveModal } from './activeModal.js';
 
 export const ToolSchema = z.enum([
   'changesets',
@@ -28,65 +29,6 @@ export const ToolSchema = z.enum([
 ]);
 
 export type Tool = z.infer<typeof ToolSchema>;
-
-const BASIC_MODALS = [
-  'about',
-  'account',
-  'credits-purchase',
-  'custom-maps',
-  'drawing-properties',
-  'embed',
-  'file-import',
-  'gallery-filter',
-  'gallery-leaderboard',
-  'gallery-upload',
-  'legend',
-  'login',
-  'map-features-export',
-  'map-layers-config',
-  'map-preferences',
-  'map-to-document-export',
-  'my-maps',
-  'offline-map-export',
-  'offline-maps',
-  'premium',
-  'support-us',
-  'tracking-my',
-  'tracking-watched',
-] as const;
-
-export const ShowModalSchema = z.enum(BASIC_MODALS);
-
-export const ShowModalCompatSchema = z.preprocess(
-  (v) =>
-    (typeof v === 'string' &&
-      ({
-        'export-map': 'map-to-document-export',
-        'export-gpx': 'map-features-export',
-        'export-map-features': 'map-features-export',
-        'export-pdf': 'map-to-document-export',
-        'download-map': 'offline-map-export',
-        supportUs: 'support-us',
-        mapSettings: 'map-layers-config',
-        'map-settings': 'map-layers-config',
-        'remove-ads': 'premium',
-        'upload-track': 'file-import',
-        'buy-credits': 'credits-purchase',
-        maps: 'my-maps',
-      }[v] as string | undefined)) ||
-    v,
-  ShowModalSchema,
-);
-
-export const ModalSchema = z.enum([
-  ...BASIC_MODALS,
-  'tips',
-  'current-drawing-properties',
-]);
-
-export type Modal = z.infer<typeof ModalSchema>;
-
-export type ShowModal = z.infer<typeof ShowModalSchema>;
 
 /**
  * Sets a single tool's state, the only action for opening/focusing/closing one:
@@ -105,7 +47,9 @@ export const setTool = createAction<{ tool: Tool; mode: ToolMode }>('SET_TOOL');
 /** Replaces the whole open-tools set (URL restore; `[]` closes everything). */
 export const setTools = createAction<Tool[]>('SET_TOOLS');
 
-export const setActiveModal = createAction<Modal | null>('SET_ACTIVE_MODAL');
+export const setActiveModal = createAction<ActiveModal | null>(
+  'SET_ACTIVE_MODAL',
+);
 
 export { setLocation };
 

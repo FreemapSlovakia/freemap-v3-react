@@ -38,7 +38,9 @@ export function CreditsAlert({
           <Button
             type="button"
             className="m-n2 ms-2"
-            onClick={() => dispatch(setActiveModal('credits-purchase'))}
+            onClick={() =>
+              dispatch(setActiveModal({ type: 'credits-purchase' }))
+            }
           >
             <FaCoins /> {cm?.buyCredits}
           </Button>

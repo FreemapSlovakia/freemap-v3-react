@@ -189,7 +189,7 @@ export default function DrawingLineSelection(): ReactElement | null {
               className="ms-1"
               variant="secondary"
               onClick={() =>
-                dispatch(setActiveModal('current-drawing-properties'))
+                dispatch(setActiveModal({ type: 'current-drawing-properties' }))
               }
               {...props}
             >

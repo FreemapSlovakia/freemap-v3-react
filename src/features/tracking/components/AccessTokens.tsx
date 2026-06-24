@@ -44,11 +44,7 @@ export function AccessTokens(): ReactElement {
         {accessTokens.length > 0 && (
           <ListGroup>
             {accessTokens.map((accessToken) => (
-              <AccessToken
-                key={accessToken.id}
-                accessToken={accessToken}
-                deviceName={deviceName}
-              />
+              <AccessToken key={accessToken.id} accessToken={accessToken} />
             ))}
           </ListGroup>
         )}

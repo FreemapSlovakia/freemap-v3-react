@@ -4,10 +4,6 @@ import {
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
 import {
-  DocumentSchema,
-  documentShow,
-} from '@features/documents/model/actions.js';
-import {
   drawingLineSetLines,
   Line,
   type LineCap,
@@ -56,6 +52,11 @@ import {
   trackViewerGpxLoad,
 } from '@features/trackViewer/model/actions.js';
 import {
+  wikiLoadPreview,
+  wikiSetPreview,
+} from '@features/wiki/model/actions.js';
+import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
+import {
   wikimediaCommonsLoadPreview,
   wikimediaCommonsSetPreview,
 } from '@features/wikimediaCommons/model/actions.js';
@@ -74,8 +75,6 @@ import type { LatLon } from '@shared/types/common.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
-  ShowModalCompatSchema,
-  ShowModalSchema,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
@@ -83,6 +82,7 @@ import {
   Tool,
   ToolSchema,
 } from '../store/actions.js';
+import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
@@ -637,26 +637,73 @@ export function handleLocationChange(store: MyStore): void {
     );
   }
 
-  const activeModal = getState().main.activeModal;
+  {
+    // Unified modal/overlay param. Legacy `document=`/`tip=`/`image=`/`wmc=`
+    // links fold into the packed `show=type/arg` form.
+    const showRaw =
+      typeof query['show'] === 'string'
+        ? query['show']
+        : typeof query['document'] === 'string'
+          ? `document/${query['document']}`
+          : typeof query['tip'] === 'string'
+            ? `document/${query['tip']}`
+            : typeof query['image'] === 'string'
+              ? `gallery-viewer/${query['image']}`
+              : typeof query['wmc'] === 'string'
+                ? `wmc/${query['wmc']}`
+                : undefined;
 
-  const result = ShowModalCompatSchema.safeParse(query['show']);
+    const next = showRaw === undefined ? null : decodeActiveModal(showRaw);
 
-  if (result.success) {
-    if (result.data !== activeModal) {
-      dispatch(setActiveModal(result.data));
+    // The gallery viewer and the Wikimedia Commons preview own their own slice
+    // state; everything else lives in main.activeModal.
+    if (next?.type === 'gallery-viewer') {
+      if (getState().gallery.activeImageId !== next.id) {
+        dispatch(galleryRequestImage(next.id));
+      }
+    } else if (getState().gallery.activeImageId) {
+      dispatch(galleryClear());
     }
-  } else if (ShowModalSchema.safeParse(activeModal).success) {
-    dispatch(setActiveModal(null));
-  }
 
-  const doc = DocumentSchema.safeParse(query['document'] ?? query['tip']);
+    if (next?.type === 'wmc') {
+      const wmc = getState().wikimediaCommons;
 
-  if (doc.success) {
-    if (getState().main.documentKey !== doc.data) {
-      dispatch(documentShow(doc.data));
+      if (wmc.preview?.pageId !== next.pageId && wmc.loading !== next.pageId) {
+        dispatch(wikimediaCommonsLoadPreview(next.pageId));
+      }
+    } else if (
+      getState().wikimediaCommons.preview ||
+      getState().wikimediaCommons.loading
+    ) {
+      dispatch(wikimediaCommonsSetPreview(null));
     }
-  } else if (getState().main.documentKey) {
-    dispatch(documentShow(null));
+
+    if (next?.type === 'wiki') {
+      const w = getState().wiki;
+
+      const current =
+        w.loading ?? (w.preview ? wikiPreviewKey(w.preview) : null);
+
+      if (current !== next.key) {
+        dispatch(wikiLoadPreview(next.key));
+      }
+    } else if (getState().wiki.preview || getState().wiki.loading) {
+      dispatch(wikiSetPreview(null));
+    }
+
+    const mainNext =
+      next?.type === 'gallery-viewer' ||
+      next?.type === 'wmc' ||
+      next?.type === 'wiki'
+        ? null
+        : next;
+
+    if (
+      encodeActiveModal(getState().main.activeModal) !==
+      encodeActiveModal(mainNext)
+    ) {
+      dispatch(setActiveModal(mainNext));
+    }
   }
 
   const embed = query['embed'];
@@ -938,35 +985,6 @@ function handleGallery(
     if (Object.keys(newFilter).length !== 0) {
       dispatch(gallerySetFilter({ ...filter, ...newFilter }));
     }
-  }
-
-  if (typeof query['image'] === 'string') {
-    const imageId = Number(query['image']);
-
-    if (getState().gallery.activeImageId !== imageId) {
-      dispatch(galleryRequestImage(imageId));
-    }
-  } else if (getState().gallery.activeImageId) {
-    dispatch(galleryClear());
-  }
-
-  if (typeof query['wmc'] === 'string') {
-    const pageId = Number(query['wmc']);
-
-    const wmcState = getState().wikimediaCommons;
-
-    if (
-      Number.isFinite(pageId) &&
-      wmcState.preview?.pageId !== pageId &&
-      wmcState.loading !== pageId
-    ) {
-      dispatch(wikimediaCommonsLoadPreview(pageId));
-    }
-  } else if (
-    getState().wikimediaCommons.preview ||
-    getState().wikimediaCommons.loading
-  ) {
-    dispatch(wikimediaCommonsSetPreview(null));
   }
 
   const cb = GalleryColorizeBySchema.safeParse(query['gallery-cb']);

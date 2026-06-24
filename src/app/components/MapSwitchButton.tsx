@@ -125,7 +125,7 @@ export function MapSwitchButton(): ReactElement {
         }
 
         if (x instanceof SVGElement && x.dataset['filter']) {
-          dispatch(setActiveModal('gallery-filter'));
+          dispatch(setActiveModal({ type: 'gallery-filter' }));
 
           return true;
         }
@@ -149,7 +149,7 @@ export function MapSwitchButton(): ReactElement {
 
         dispatch(cachedMapsSetView('list'));
 
-        dispatch(setActiveModal('offline-maps'));
+        dispatch(setActiveModal({ type: 'offline-maps' }));
       } else if (eventKey.startsWith('layer-')) {
         dispatch(mapToggleLayer({ type: eventKey.slice(6) }));
       } else {

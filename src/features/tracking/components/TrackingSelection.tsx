@@ -6,6 +6,7 @@ import { FaBullseye, FaEye } from 'react-icons/fa';
 import { FaPencil } from 'react-icons/fa6';
 import { useDispatch } from 'react-redux';
 import { setActiveModal, setTool } from '@/app/store/actions.js';
+import { trackingActiveTrackIdSelector } from '@/app/store/selectors.js';
 import { LongPressTooltip } from '@/shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@/shared/hooks/useAppSelector.js';
 
@@ -15,6 +16,8 @@ export function TrackingSelection(): ReactElement {
   const trackingOpen = useAppSelector((state) =>
     state.main.tools.includes('tracking'),
   );
+
+  const selectedToken = useAppSelector(trackingActiveTrackIdSelector);
 
   const dispatch = useDispatch();
 
@@ -49,7 +52,18 @@ export function TrackingSelection(): ReactElement {
             {...props}
             className="ms-1"
             variant="secondary"
-            onClick={() => dispatch(setActiveModal('tracking-watched'))} // TODO show active device
+            onClick={() =>
+              dispatch(
+                setActiveModal(
+                  selectedToken == null
+                    ? { type: 'tracking-watched' }
+                    : {
+                        type: 'tracking-watched',
+                        token: String(selectedToken),
+                      },
+                ),
+              )
+            }
           >
             <FaPencil />
           </Button>

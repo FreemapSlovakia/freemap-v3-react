@@ -30,7 +30,6 @@ import {
   convertToDrawing,
   deleteFeature,
   hideInfoBar,
-  Modal,
   Selection,
   selectFeature,
   setActiveModal,
@@ -40,16 +39,16 @@ import {
   setTools,
   Tool,
 } from './actions.js';
+import type { ActiveModal } from './activeModal.js';
 
 export interface MainState {
   tools: Tool[];
   /** The focused tool whose toolbar is highlighted; the click owner if it's a map-click tool. */
   activeTool: Tool | null;
-  activeModal: Modal | null;
+  activeModal: ActiveModal | null;
   errorTicketId: string | undefined;
   embedFeatures: string[];
   selection: Selection | null;
-  documentKey: string | null;
   hiddenInfoBars: Record<string, number>;
 }
 
@@ -60,7 +59,6 @@ export const mainInitialState: MainState = {
   errorTicketId: undefined,
   embedFeatures: [],
   selection: null,
-  documentKey: null,
   hiddenInfoBars: {},
 };
 
@@ -127,11 +125,9 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       state.activeModal = action.payload;
     })
     .addCase(documentShow, (state, action) => {
-      state.documentKey = action.payload;
-
-      if (action.payload) {
-        state.activeModal = null;
-      }
+      state.activeModal = action.payload
+        ? { type: 'document', key: action.payload }
+        : null;
     })
     .addCase(setErrorTicketId, (state, action) => {
       state.errorTicketId = action.payload;
