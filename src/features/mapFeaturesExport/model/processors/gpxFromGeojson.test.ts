@@ -26,8 +26,11 @@ describe('geojsonToGpxDoc round-trip', () => {
       heart: [120, 130, 140],
       cads: [80, 82, 84],
       atemps: [21, 21.5, 22],
+      wtemps: [15, 15.5, 16],
+      depths: [3, 4, 5],
       speeds: [2.5, 3, 3.5],
       courses: [10, 20, 30],
+      bearings: [12, 22, 32],
       powers: [200, 210, 220],
     };
 
@@ -74,13 +77,22 @@ describe('geojsonToGpxDoc round-trip', () => {
     expect(f!.geometry).toMatchObject({ type: 'LineString', coordinates });
   });
 
-  it('preserves a waypoint name and elevation', () => {
+  it('preserves waypoint metadata and elevation', () => {
+    const properties = {
+      name: 'WP',
+      sym: 'Summit',
+      type: 'peak',
+      cmt: 'a comment',
+      desc: 'a description',
+      time: '2020-01-01T00:00:00.000Z',
+    };
+
     const [f] = roundTrip(
       fc([
         {
           type: 'Feature',
-          properties: { name: 'WP', ele: '555' },
-          geometry: { type: 'Point', coordinates: [17.0, 48.0] },
+          properties,
+          geometry: { type: 'Point', coordinates: [17.0, 48.0, 555] },
         },
       ]),
     );
@@ -89,7 +101,7 @@ describe('geojsonToGpxDoc round-trip', () => {
       type: 'Point',
       coordinates: [17.0, 48.0, 555],
     });
-    expect(f!.properties?.['name']).toBe('WP');
+    expect(f!.properties).toMatchObject(properties);
   });
 
   it('preserves per-segment sensor data across a MultiLineString', () => {

@@ -14,8 +14,11 @@ const GPXTPX_POINT_PROPS: Record<string, string> = {
   heart: 'hr',
   cads: 'cad',
   atemps: 'atemp',
+  wtemps: 'wtemp',
+  depths: 'depth',
   speeds: 'speed',
   courses: 'course',
+  bearings: 'bearing',
 };
 
 // Non-namespaced trackpoint extensions togeojson reads as `<name>` -> `${name}s`.
@@ -57,6 +60,37 @@ function addName(parent: Element, feature: Feature): void {
 
   if (name) {
     createElement(parent, 'name', String(name));
+  }
+}
+
+// `<wpt>` child elements togeojson reads back into feature properties, in GPX
+// 1.1 schema order (these follow `<ele>`).
+const WAYPOINT_META = ['time', 'name', 'cmt', 'desc', 'sym', 'type'] as const;
+
+// Emits a `<wpt>` for a Point coordinate with its elevation (from the
+// coordinate, or an `ele` property as our own GeoJSON export writes it) and the
+// standard waypoint metadata, so an imported waypoint round-trips losslessly.
+function addWaypoint(doc: Document, coord: number[], feature: Feature): void {
+  const wptEle = createElement(
+    doc.documentElement,
+    'wpt',
+    undefined,
+    toLatLon({ lat: coord[1], lon: coord[0] }),
+  );
+
+  const ele =
+    typeof coord[2] === 'number' ? coord[2] : feature.properties?.['ele'];
+
+  if (ele != null && ele !== '') {
+    createElement(wptEle, 'ele', String(ele));
+  }
+
+  for (const tag of WAYPOINT_META) {
+    const value = feature.properties?.[tag];
+
+    if (value != null && value !== '') {
+      createElement(wptEle, tag, String(value));
+    }
   }
 }
 
@@ -138,21 +172,7 @@ export function addGeojson(
       switch (g.type) {
         case 'Point':
           if (pass === 'wpt') {
-            const wptEle = createElement(
-              doc.documentElement,
-              'wpt',
-              undefined,
-              toLatLon({
-                lat: g.coordinates[1],
-                lon: g.coordinates[0],
-              }),
-            );
-
-            if (feature.properties?.['ele']) {
-              createElement(wptEle, 'ele', feature.properties['ele']);
-            }
-
-            addName(wptEle, feature);
+            addWaypoint(doc, g.coordinates, feature);
           }
 
           break;
@@ -160,21 +180,7 @@ export function addGeojson(
         case 'MultiPoint':
           if (pass === 'wpt') {
             for (const pt of g.coordinates) {
-              const wptEle = createElement(
-                doc.documentElement,
-                'wpt',
-                undefined,
-                toLatLon({
-                  lat: pt[1],
-                  lon: pt[0],
-                }),
-              );
-
-              if (feature.properties?.['ele']) {
-                createElement(wptEle, 'ele', feature.properties['ele']);
-              }
-
-              addName(wptEle, feature);
+              addWaypoint(doc, pt, feature);
             }
           }
 
