@@ -163,6 +163,71 @@ write(
     .join('\n')}\n${GPX_TAIL}`,
 );
 
+// --- KML ---------------------------------------------------------------
+
+// A gx:Track carries per-point timestamps and 3D coords; togeojson reads it as
+// a LineString with `coordTimes` (KML has no native HR/cadence/etc.).
+function kmlTrack(name, usePts) {
+  const whens = usePts.map((p) => `        <when>${p.time}</when>`).join('\n');
+  const coords = usePts
+    .map(
+      (p) =>
+        `        <gx:coord>${p.lon.toFixed(7)} ${p.lat.toFixed(7)} ${p.ele}</gx:coord>`,
+    )
+    .join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+  <Document>
+    <Placemark>
+      <name>${name}</name>
+      <gx:Track>
+${whens}
+${coords}
+      </gx:Track>
+    </Placemark>
+  </Document>
+</kml>
+`;
+}
+
+write('track-full.kml', kmlTrack('Full track', pts));
+
+// --- TCX ---------------------------------------------------------------
+
+// Activity/Lap/Track with HR + cadence (core) and speed + watts (ActivityExtension
+// ns3). The importer relocates these onto coordinateProperties.
+function tcxRide(name, usePts) {
+  const tps = usePts
+    .map(
+      (p) => `        <Trackpoint>
+          <Time>${p.time}</Time>
+          <Position><LatitudeDegrees>${p.lat.toFixed(7)}</LatitudeDegrees><LongitudeDegrees>${p.lon.toFixed(7)}</LongitudeDegrees></Position>
+          <AltitudeMeters>${p.ele}</AltitudeMeters>
+          <HeartRateBpm><Value>${p.hr}</Value></HeartRateBpm>
+          <Cadence>${p.cad}</Cadence>
+          <Extensions><ns3:TPX><ns3:Speed>${p.speed}</ns3:Speed><ns3:Watts>${p.power}</ns3:Watts></ns3:TPX></Extensions>
+        </Trackpoint>`,
+    )
+    .join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" xmlns:ns3="http://www.garmin.com/xmlschemas/ActivityExtension/v2">
+  <Activities>
+    <Activity Sport="Biking">
+      <Id>${usePts[0].time}</Id>
+      <Name>${name}</Name>
+      <Lap StartTime="${usePts[0].time}">
+        <Track>
+${tps}
+        </Track>
+      </Lap>
+    </Activity>
+  </Activities>
+</TrainingCenterDatabase>
+`;
+}
+
+write('track-full.tcx', tcxRide('Full ride', pts));
+
 // --- GeoJSON -----------------------------------------------------------
 
 function lineFeature(usePts, { ele = true, props = {} } = {}) {
