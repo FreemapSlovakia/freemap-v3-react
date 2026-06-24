@@ -234,7 +234,7 @@ export default function OfflineMapExportModal({
       enforceFocus={!selectingArea}
       scrollable
     >
-      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+      <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
             <FaDatabase /> {m?.mainMenu.offlineMapExport}{' '}

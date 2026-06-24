@@ -63,7 +63,7 @@ export default function CurrentDrawingPropertiesModal({
       contentClassName="bg-body-tertiary"
       scrollable
     >
-      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+      <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
             <FaCoins /> {cm?.buyCredits}

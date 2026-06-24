@@ -60,7 +60,7 @@ export function ProjectPointModal({
       contentClassName="bg-body-tertiary"
       scrollable
     >
-      <form onSubmit={handleSubmit} style={{ display: 'contents' }}>
+      <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>{dm?.projection.projectPoint}</Modal.Title>
         </Modal.Header>

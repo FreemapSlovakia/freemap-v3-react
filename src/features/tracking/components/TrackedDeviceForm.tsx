@@ -119,7 +119,7 @@ export function TrackedDeviceForm(): ReactElement {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} className="d-contents">
       <Modal.Header closeButton>
         <Modal.Title>
           <FaBullseye />{' '}
