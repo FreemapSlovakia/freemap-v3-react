@@ -468,7 +468,11 @@ export const urlProcessor: Processor = {
           ? 'replaceState'
           : 'pushState';
 
-      history[method]({ sq }, '', '/' + (urlSearch ? '#' + urlSearch : ''));
+      history[method](
+        { sq },
+        '',
+        window.location.pathname + (urlSearch ? '#' + urlSearch : ''),
+      );
 
       if (window.fmEmbedded) {
         window.parent.postMessage(
