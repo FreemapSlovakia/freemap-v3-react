@@ -1,16 +1,16 @@
 import z from 'zod';
-import { batteryColorizer } from './battery.js';
-import { cadenceColorizer } from './cadence.js';
-import { elevationColorizer } from './elevation.js';
-import { gsmSignalColorizer } from './gsmSignal.js';
-import { headingColorizer } from './heading.js';
-import { heartRateColorizer } from './heartRate.js';
-import { powerColorizer } from './power.js';
-import { speedColorizer } from './speed.js';
-import { steepnessColorizer } from './steepness.js';
-import { temperatureColorizer } from './temperature.js';
-import { timeColorizer } from './time.js';
-import type { Colorizer } from './types.js';
+import type { Colorizer } from './colorize.js';
+import { batteryColorizer } from './modes/battery.js';
+import { cadenceColorizer } from './modes/cadence.js';
+import { elevationColorizer } from './modes/elevation.js';
+import { gsmSignalColorizer } from './modes/gsmSignal.js';
+import { headingColorizer } from './modes/heading.js';
+import { heartRateColorizer } from './modes/heartRate.js';
+import { powerColorizer } from './modes/power.js';
+import { speedColorizer } from './modes/speed.js';
+import { steepnessColorizer } from './modes/steepness.js';
+import { temperatureColorizer } from './modes/temperature.js';
+import { timeColorizer } from './modes/time.js';
 
 export const colorizers = {
   elevation: elevationColorizer,
@@ -50,4 +50,4 @@ export function colorizerNeedsElevation(mode: ColorizingMode): boolean {
   return Boolean(colorizers[mode].needsElevation);
 }
 
-export type { ColorizedPoint, Colorizer, HotlinePalette } from './types.js';
+export type { ColorizedPoint, Colorizer, HotlinePalette } from './colorize.js';

@@ -1,4 +1,4 @@
-import { coordPropColorizer } from './coordPropColorizer.js';
+import { coordPropColorizer } from '../coordPropColorizer.js';
 
 export const heartRateColorizer = coordPropColorizer('heart', [
   { r: 0, g: 100, b: 255, t: 0.0 },

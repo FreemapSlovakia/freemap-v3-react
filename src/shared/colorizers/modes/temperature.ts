@@ -1,4 +1,4 @@
-import { coordPropColorizer } from './coordPropColorizer.js';
+import { coordPropColorizer } from '../coordPropColorizer.js';
 
 // `gpxtpx:atemp` → `atemps` (air temperature in °C).
 export const temperatureColorizer = coordPropColorizer('atemps', [

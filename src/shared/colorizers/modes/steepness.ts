@@ -4,7 +4,8 @@ import {
   smoothElevations,
 } from '@shared/geoutils.js';
 import { getCoords } from '@turf/invariant';
-import type { Colorizer } from './types.js';
+import type { Colorizer } from '../colorize.js';
+import { featureSmoothingSpan } from '../smoothing.js';
 
 // Grade is measured over a fixed horizontal span rather than between adjacent
 // vertices. Dense router shape points at a sharp bend are only metres apart, so
@@ -20,11 +21,16 @@ export const steepnessColorizer: Colorizer = {
     { r: 255, g: 255, b: 255, t: 0.5 },
     { r: 255, g: 0, b: 0, t: 1.0 },
   ],
-  compute: (features) =>
+  compute: (features, options) =>
     features.map((feature) => {
       const coords = getCoords(feature);
 
-      const smoothed = smoothElevations(coords);
+      // Both the elevation denoising and the grade baseline widen with zoom-out
+      // so the colored line generalizes at small scales instead of showing
+      // sub-pixel grade wiggle.
+      const baseline = featureSmoothingSpan(BASELINE_METERS, coords, options);
+
+      const smoothed = smoothElevations(coords, baseline);
 
       // Slope is taken over a fixed span regardless of how densely the vertices
       // are spaced; the inward-shifting window below keeps that span constant.
@@ -32,7 +38,7 @@ export const steepnessColorizer: Colorizer = {
 
       const total = cum[cum.length - 1] ?? 0;
 
-      const span = Math.min(BASELINE_METERS, total);
+      const span = Math.min(baseline, total);
 
       return smoothed.map((coord, i) => {
         const [lon, lat] = coord;

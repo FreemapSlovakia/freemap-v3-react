@@ -1,3 +1,4 @@
+import { smoothSeries } from '@shared/geoutils.js';
 import type { Feature, LineString } from 'geojson';
 
 export type HotlinePalette = Array<{
@@ -84,48 +85,85 @@ export function noDataRuns(points: ColorizedPoint[]): ColorizedPoint[][] {
   return runs;
 }
 
+export interface ColorizeOptions {
+  // Current integer map zoom. Value-smoothing windows widen when zoomed out so
+  // sub-pixel wiggle in the source data doesn't read as color noise; omitted
+  // (e.g. export, tests) the colorizer keeps its intrinsic baseline span.
+  zoom?: number;
+}
+
 export interface Colorizer {
   palette: HotlinePalette;
   isAvailable?: (features: Feature<LineString>[]) => boolean;
-  compute: (features: Feature<LineString>[]) => ColorizedPoint[][];
+  compute: (
+    features: Feature<LineString>[],
+    options?: ColorizeOptions,
+  ) => ColorizedPoint[][];
   // Derived from the elevation coordinate, so it benefits from the same
   // fill/override prompt the elevation chart uses.
   needsElevation?: boolean;
 }
 
 /**
- * Build positions by normalizing per-coord values to 0..1 via min/max
- * across each feature. NaN inputs are flagged as gaps (the line breaks
- * there); they keep the mid-palette color (0.5) only as a harmless filler,
- * which is also the fallback when the value range is degenerate. Keeping the
- * Hotline input within [0, 1] avoids CanvasGradient crashes.
+ * Build positions by normalizing per-coord values to 0..1 via min/max across
+ * each feature. A `smoothSpan` (metres) low-passes the values along the path
+ * before normalizing — the shared zoom-aware generalization every scalar mode
+ * uses. NaN inputs are flagged as gaps from the *original* samples (the line
+ * breaks there); they keep the mid-palette color (0.5) only as a harmless
+ * filler, which is also the fallback when the value range is degenerate.
+ * Keeping the Hotline input within [0, 1] avoids CanvasGradient crashes.
  */
 export function colorizeByValues(
   features: Feature<LineString>[],
   perFeature: (feature: Feature<LineString>) => {
     coords: number[][];
     values: number[];
+    smoothSpan?: number;
+    // Fixed `[min, max]` for an absolute scale, with the color clamped into it
+    // so it means the same across tracks; omitted, values normalize against the
+    // feature's own smoothed min/max.
+    range?: [number, number];
   },
 ): ColorizedPoint[][] {
   return features.map((feature) => {
-    const { coords, values } = perFeature(feature);
+    const {
+      coords,
+      values,
+      smoothSpan,
+      range: fixedRange,
+    } = perFeature(feature);
 
-    const valid = values.filter((v): v is number => Number.isFinite(v));
+    const smoothed = smoothSeries(coords, values, smoothSpan ?? 0);
 
-    const min = valid.length ? Math.min(...valid) : 0;
+    let min: number;
 
-    const max = valid.length ? Math.max(...valid) : 0;
+    let max: number;
+
+    if (fixedRange) {
+      [min, max] = fixedRange;
+    } else {
+      const valid = smoothed.filter((v): v is number => Number.isFinite(v));
+
+      min = valid.length ? Math.min(...valid) : 0;
+
+      max = valid.length ? Math.max(...valid) : 0;
+    }
 
     const range = max - min;
 
     return coords.map((coord, i) => {
-      const v = values[i];
+      const v = smoothed[i];
 
-      const finite = Number.isFinite(v);
+      // Gaps come from the original sample, not the smoothed value, which may
+      // have carried a neighbor forward across a hole.
+      const gap = !Number.isFinite(values[i]);
 
-      const color = range > 0 && finite ? (v - min) / range : 0.5;
+      const color =
+        range > 0 && Number.isFinite(v)
+          ? Math.max(0, Math.min(1, (v - min) / range))
+          : 0.5;
 
-      return { lat: coord[1], lon: coord[0], color, gap: !finite };
+      return { lat: coord[1], lon: coord[0], color, gap };
     });
   });
 }

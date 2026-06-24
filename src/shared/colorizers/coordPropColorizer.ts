@@ -5,7 +5,8 @@ import {
   type HotlinePalette,
   hasNumericArray,
   readNumericArray,
-} from './types.js';
+} from './colorize.js';
+import { featureSmoothingSpan } from './smoothing.js';
 
 /**
  * Like {@link coordPropColorizer} but maps each value onto a fixed `[min, max]`
@@ -22,25 +23,20 @@ export function coordPropColorizerAbsolute(
   return {
     palette,
     isAvailable: (features) => hasNumericArray(features, key),
-    compute: (features) =>
-      features.map((feature) => {
+    compute: (features, options) =>
+      colorizeByValues(features, (feature) => {
         const coords = getCoords(feature);
 
         const values =
           readNumericArray(feature, key, coords.length) ??
           coords.map(() => NaN);
 
-        return coords.map((coord, i) => {
-          const v = values[i];
-
-          const finite = Number.isFinite(v);
-
-          const color = finite
-            ? Math.max(0, Math.min(1, (v - min) / (max - min)))
-            : 0.5;
-
-          return { lat: coord[1], lon: coord[0], color, gap: !finite };
-        });
+        return {
+          coords,
+          values,
+          smoothSpan: featureSmoothingSpan(0, coords, options),
+          range: [min, max],
+        };
       }),
   };
 }
@@ -57,7 +53,7 @@ export function coordPropColorizer(
   return {
     palette,
     isAvailable: (features) => hasNumericArray(features, key),
-    compute: (features) =>
+    compute: (features, options) =>
       colorizeByValues(features, (feature) => {
         const coords = getCoords(feature);
 
@@ -65,7 +61,11 @@ export function coordPropColorizer(
           readNumericArray(feature, key, coords.length) ??
           coords.map(() => NaN);
 
-        return { coords, values };
+        return {
+          coords,
+          values,
+          smoothSpan: featureSmoothingSpan(0, coords, options),
+        };
       }),
   };
 }

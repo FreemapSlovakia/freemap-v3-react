@@ -6,7 +6,8 @@ import {
   hasNumericArray,
   readCoordTimes,
   readNumericArray,
-} from './types.js';
+} from '../colorize.js';
+import { featureSmoothingSpan } from '../smoothing.js';
 
 // Speed is averaged over this horizontal span to absorb GPS jitter and
 // quantized timestamps; a single short segment can otherwise read as a spike.
@@ -23,20 +24,24 @@ export const speedColorizer: Colorizer = {
     features.some(
       (f) => readCoordTimes(f, f.geometry.coordinates.length) !== null,
     ),
-  compute: (features) =>
+  compute: (features, options) =>
     colorizeByValues(features, (feature) => {
       const coords = getCoords(feature);
 
+      const span = featureSmoothingSpan(SMOOTHING_METERS, coords, options);
+
       // Prefer the device-recorded speed (m/s) when present; the colorizer
-      // normalizes per track, so the unit only has to be consistent.
+      // normalizes per track, so the unit only has to be consistent. It's a raw
+      // per-point series, so it's low-passed over the same span.
       const recorded = readNumericArray(feature, 'speeds', coords.length);
 
       if (recorded && recorded.some((v) => Number.isFinite(v))) {
-        return { coords, values: recorded };
+        return { coords, values: recorded, smoothSpan: span };
       }
 
-      // Otherwise derive per-point speed in m/s as path length over elapsed
-      // time across a fixed metric window centered on the point.
+      // Otherwise derive per-point speed in m/s as path length over elapsed time
+      // across the fixed metric window centered on the point — here the window
+      // itself is the smoothing.
       const times = readCoordTimes(feature, coords.length);
 
       const cum = cumulativeDistances(coords);
@@ -46,7 +51,7 @@ export const speedColorizer: Colorizer = {
           return NaN;
         }
 
-        const [lo, hi] = metricWindow(cum, i, SMOOTHING_METERS);
+        const [lo, hi] = metricWindow(cum, i, span);
 
         const d = cum[hi]! - cum[lo]!;
 

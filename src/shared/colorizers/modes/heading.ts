@@ -1,11 +1,8 @@
+import { cumulativeDistances, smoothAngles } from '@shared/geoutils.js';
 import { bearing } from '@turf/bearing';
 import { getCoords } from '@turf/invariant';
-import { type Colorizer, readNumericArray } from './types.js';
-
-// Map a compass bearing (degrees) onto the 0..1 hue wheel, normalizing any
-// out-of-range value first. The EPSILON nudge keeps exact north off the 0 edge.
-const toHue = (deg: number) =>
-  ((((deg % 360) + 360) % 360) / 360 + Number.EPSILON) % 1;
+import { type Colorizer, readNumericArray } from '../colorize.js';
+import { featureSmoothingSpan } from '../smoothing.js';
 
 /**
  * Colour by compass bearing, mapped cyclically onto a hue wheel so opposite
@@ -25,34 +22,47 @@ export const headingColorizer: Colorizer = {
     { r: 255, g: 0, b: 255, t: 5 / 6 },
     { r: 255, g: 0, b: 0, t: 1.0 },
   ],
-  compute: (features) =>
+  compute: (features, options) =>
     features.map((feature) => {
       const coords: [number, number][] = getCoords(feature);
 
       const recorded = readNumericArray(feature, 'courses', coords.length);
 
-      let lastColor = 0;
+      let last = 0;
 
-      return coords.map((coord, i) => {
+      // Heading at a point is the device-recorded course when present, else the
+      // bearing of the segment leaving it. The last point, and any zero-length
+      // segment (e.g. a coordinate duplicated where two route steps meet),
+      // reuse the previous heading instead of snapping to north.
+      const bearings = coords.map((coord, i) => {
         const rec = recorded?.[i];
 
         if (rec != null && Number.isFinite(rec)) {
-          lastColor = toHue(rec);
+          last = rec;
         } else {
           const next = coords[i + 1];
 
-          // Heading at a point is the bearing of the segment leaving it. The
-          // last point, and any zero-length segment (e.g. a coordinate
-          // duplicated where two route steps meet), reuse the previous heading
-          // instead of snapping to north.
           if (next && (next[0] !== coord[0] || next[1] !== coord[1])) {
-            lastColor = toHue(
-              bearing([coord[0], coord[1]], [next[0], next[1]]),
-            );
+            last = bearing([coord[0], coord[1]], [next[0], next[1]]);
           }
         }
 
-        return { lat: coord[1], lon: coord[0], color: lastColor };
+        return last;
+      });
+
+      // Bearings wrap, so smoothing must be circular (vector-averaged).
+      const smoothed = smoothAngles(
+        bearings,
+        cumulativeDistances(coords),
+        featureSmoothingSpan(0, coords, options),
+      );
+
+      return coords.map((coord, i) => {
+        // smoothAngles (and turf bearing) yield −180..180; shift to the 0..1
+        // hue wheel.
+        const color = ((smoothed[i]! + 360) % 360) / 360;
+
+        return { lat: coord[1], lon: coord[0], color };
       });
     }),
 };

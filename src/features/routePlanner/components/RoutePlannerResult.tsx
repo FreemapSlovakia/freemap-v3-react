@@ -5,13 +5,14 @@ import {
 } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { useMap } from '@features/map/hooks/useMap.js';
-import { colorizers } from '@shared/colorizers/index.js';
 import {
   NO_DATA_COLOR,
   NO_DATA_OPACITY,
   noDataRuns,
   splitOnGaps,
-} from '@shared/colorizers/types.js';
+} from '@shared/colorizers/colorize.js';
+import { colorizers } from '@shared/colorizers/index.js';
+import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -19,7 +20,7 @@ import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
-import { Feature, Point } from 'geojson';
+import { Feature, LineString, Point } from 'geojson';
 import {
   DragEndEvent,
   LatLng,
@@ -591,44 +592,50 @@ export function RoutePlannerResult(): ReactElement {
   // carries its own white outline, so the route's halo is hidden underneath.
   // Elevation-derived modes use the densified DEM render line once it's ready
   // (`renderGeojson`); otherwise the alternative's own coordinates.
-  const colorizedPositions = useMemo(() => {
+  const colorizeFeatures = useMemo<Feature<LineString>[]>(() => {
     if (!activeColorizer) {
       return [];
     }
 
-    let feature = renderGeojson;
+    if (renderGeojson) {
+      return [renderGeojson];
+    }
 
-    if (!feature) {
-      const alternative = alternatives[activeAlternativeIndex];
+    const alternative = alternatives[activeAlternativeIndex];
 
-      if (!alternative) {
-        return [];
-      }
+    if (!alternative) {
+      return [];
+    }
 
-      // Consecutive steps share their boundary vertex, so drop the duplicate to
-      // avoid a zero-length segment at each step end (which would, e.g., snap
-      // the heading colorize to north there).
-      const coordinates = alternative.legs
-        .flatMap((leg) => leg.steps)
-        .flatMap((step) => step.geometry.coordinates)
-        .filter(
-          (c, i, all) =>
-            i === 0 || c[0] !== all[i - 1]![0] || c[1] !== all[i - 1]![1],
-        );
+    // Consecutive steps share their boundary vertex, so drop the duplicate to
+    // avoid a zero-length segment at each step end (which would, e.g., snap
+    // the heading colorize to north there).
+    const coordinates = alternative.legs
+      .flatMap((leg) => leg.steps)
+      .flatMap((step) => step.geometry.coordinates)
+      .filter(
+        (c, i, all) =>
+          i === 0 || c[0] !== all[i - 1]![0] || c[1] !== all[i - 1]![1],
+      );
 
-      if (coordinates.length < 2) {
-        return [];
-      }
+    if (coordinates.length < 2) {
+      return [];
+    }
 
-      feature = {
+    return [
+      {
         type: 'Feature',
         properties: {},
         geometry: { type: 'LineString', coordinates },
-      };
-    }
-
-    return activeColorizer.compute([feature]);
+      },
+    ];
   }, [activeColorizer, renderGeojson, alternatives, activeAlternativeIndex]);
+
+  const colorizedPositions = useZoomColorize(
+    activeColorizer,
+    colorizeFeatures,
+    zoom,
+  );
 
   const colorizedRuns = useMemo(
     () => colorizedPositions.flatMap(splitOnGaps),

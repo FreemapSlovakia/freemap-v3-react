@@ -1,13 +1,14 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
-import { colorizers, type HotlinePalette } from '@shared/colorizers/index.js';
 import {
+  type ColorizedPoint,
   NO_DATA_COLOR,
   NO_DATA_OPACITY,
   noDataRuns,
   splitOnGaps,
-} from '@shared/colorizers/types.js';
+} from '@shared/colorizers/colorize.js';
+import { colorizers, type HotlinePalette } from '@shared/colorizers/index.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { toLatLng, toLatLngArr } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -29,6 +30,46 @@ type HotlineOpts = {
   palette: HotlinePalette | undefined;
 };
 
+// Break a track's points into segments at the configured distance/duration
+// gaps, so each continuous run is rendered (and colorized) on its own.
+function splitTrackSegments(track: {
+  trackPoints: TrackPoint[];
+  splitDistance?: number | null;
+  splitDuration?: number | null;
+}): TrackPoint[][] {
+  const segments: TrackPoint[][] = [];
+
+  let curSegment: TrackPoint[] | null = null;
+
+  let prevTp: TrackPoint | undefined;
+
+  for (const tp of track.trackPoints) {
+    if (
+      prevTp &&
+      ((typeof track.splitDistance === 'number' &&
+        distance([tp.lon, tp.lat], [prevTp.lon, prevTp.lat], {
+          units: 'meters',
+        }) > track.splitDistance) ||
+        (typeof track.splitDuration === 'number' &&
+          tp.ts.getTime() - prevTp.ts.getTime() > track.splitDuration * 60000))
+    ) {
+      curSegment = null;
+    }
+
+    if (!curSegment) {
+      curSegment = [];
+
+      segments.push(curSegment);
+    }
+
+    curSegment.push(tp);
+
+    prevTp = tp;
+  }
+
+  return segments;
+}
+
 // TODO hooks-based rewrite causes massive re-rendering; revisit
 export function TrackingResult(): ReactElement {
   const clickHandlerMemo = useRef<Record<string, () => void>>({});
@@ -48,6 +89,8 @@ export function TrackingResult(): ReactElement {
   const tracks = useAppSelector((state) => state.tracking.tracks);
 
   const colorizeBy = useAppSelector((state) => state.tracking.colorizeBy);
+
+  const zoom = useAppSelector((state) => state.map.zoom);
 
   const activeColorizer = colorizeBy ? colorizers[colorizeBy] : null;
 
@@ -106,6 +149,32 @@ export function TrackingResult(): ReactElement {
   const interactive =
     useAppSelector(selectingModeSelector) || window.fmEmbedded;
 
+  // Segment + colorize each track once per (tracks, colorizer, zoom) rather than
+  // on every render: live tracking re-renders frequently (hover, selection),
+  // and the windowed smoothing is far too costly to repeat each time.
+  const perTrack = useMemo(() => {
+    const map = new Map<
+      string,
+      { segments: TrackPoint[][]; colorizedPositions: ColorizedPoint[][] }
+    >();
+
+    for (const track of tracks1) {
+      const segments = splitTrackSegments(track);
+
+      // Colorized points per segment; empty when the active mode has no data
+      // for this track, in which case the plain colored line is kept.
+      const colorizedPositions = activeColorizer
+        ? segments.flatMap((segment) =>
+            activeColorizer.compute([trackPointsToFeature(segment)], { zoom }),
+          )
+        : [];
+
+      map.set(track.token, { segments, colorizedPositions });
+    }
+
+    return map;
+  }, [tracks1, activeColorizer, zoom]);
+
   return (
     <>
       {tracks1.map((track) => {
@@ -123,47 +192,10 @@ export function TrackingResult(): ReactElement {
           clickHandlerMemo.current[track.token] = handleClick;
         }
 
-        const segments: TrackPoint[][] = [];
-
-        let curSegment: TrackPoint[] | null = null;
-
-        let prevTp: TrackPoint | undefined;
-
-        for (const tp of track.trackPoints) {
-          if (
-            prevTp &&
-            ((typeof track.splitDistance === 'number' &&
-              distance([tp.lon, tp.lat], [prevTp.lon, prevTp.lat], {
-                units: 'meters',
-              }) > track.splitDistance) ||
-              (typeof track.splitDuration === 'number' &&
-                tp.ts.getTime() - prevTp.ts.getTime() >
-                  track.splitDuration * 60000))
-          ) {
-            curSegment = null;
-          }
-
-          if (!curSegment) {
-            curSegment = [];
-
-            segments.push(curSegment);
-          }
-
-          curSegment.push(tp);
-
-          prevTp = tp;
-        }
+        const { segments, colorizedPositions } = perTrack.get(track.token)!;
 
         const lastPoint =
           track.trackPoints.length > 0 ? track.trackPoints.at(-1)! : null;
-
-        // Colorized points per segment; empty when the active mode has no data
-        // for this track, in which case the plain colored line is kept.
-        const colorizedPositions = activeColorizer
-          ? segments.flatMap((segment) =>
-              activeColorizer.compute([trackPointsToFeature(segment)]),
-            )
-          : [];
 
         const colorizedRuns = colorizedPositions.flatMap(splitOnGaps);
 

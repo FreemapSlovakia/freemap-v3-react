@@ -1,4 +1,4 @@
-import { coordPropColorizer } from './coordPropColorizer.js';
+import { coordPropColorizer } from '../coordPropColorizer.js';
 
 // togeojson plural-izes `gpxtpx:cad` → `cads` on coordinateProperties.
 export const cadenceColorizer = coordPropColorizer('cads', [

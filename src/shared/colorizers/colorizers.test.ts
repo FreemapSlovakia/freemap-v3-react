@@ -1,9 +1,9 @@
 import { gpx } from '@tmcw/togeojson';
 import type { Feature, LineString } from 'geojson';
 import { describe, expect, it } from 'vitest';
-import { headingColorizer } from './heading.js';
-import { speedColorizer } from './speed.js';
-import { timeColorizer } from './time.js';
+import { headingColorizer } from './modes/heading.js';
+import { speedColorizer } from './modes/speed.js';
+import { timeColorizer } from './modes/time.js';
 
 // Builds a single-segment LineString feature with the given coordinates and
 // per-point `coordinateProperties` arrays, mirroring what `@tmcw/togeojson`

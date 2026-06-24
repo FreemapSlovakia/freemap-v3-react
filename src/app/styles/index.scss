@@ -1,11 +1,11 @@
 @use "~bootstrap/scss/bootstrap" with (
-    $enable-shadows: true,
-    $enable-gradients: true,
-    $enable-negative-margins: true
+  $enable-shadows: true,
+  $enable-gradients: true,
+  $enable-negative-margins: true
 );
 
 // Bootstrap ships no min-width:0 utility; needed so flex children can shrink
 // below their content width (lets inner text wrap instead of overflowing).
 .min-w-0 {
-    min-width: 0;
+  min-width: 0;
 }
