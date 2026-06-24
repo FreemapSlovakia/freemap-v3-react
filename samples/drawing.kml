@@ -5,18 +5,24 @@
     <Style id="line-red"><LineStyle><color>ff0000ff</color><width>5</width></LineStyle></Style>
     <Style id="line-blue"><LineStyle><color>ffff0000</color><width>2</width></LineStyle></Style>
     <Style id="area"><LineStyle><color>ff0080ff</color><width>3</width></LineStyle><PolyStyle><color>7f00a0ff</color></PolyStyle></Style>
+    <Style id="pt-red"><IconStyle><color>ff3539e5</color><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png</href></Icon></IconStyle></Style>
+    <Style id="pt-blue"><IconStyle><color>ffe5881e</color><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png</href></Icon></IconStyle></Style>
+    <Style id="pt-green"><IconStyle><color>ff47a043</color><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png</href></Icon></IconStyle></Style>
     <Placemark>
       <name>Restaurant (pin, Garmin sym)</name>
+      <styleUrl>#pt-red</styleUrl>
       <ExtendedData><Data name="marker-color"><value>#e53935</value></Data><Data name="marker-symbol"><value>Restaurant</value></Data><Data name="markerType"><value>pin</value></Data></ExtendedData>
       <Point><coordinates>21.10,48.75</coordinates></Point>
     </Placemark>
     <Placemark>
       <name>Peak (ring, POI icon)</name>
+      <styleUrl>#pt-blue</styleUrl>
       <ExtendedData><Data name="marker-color"><value>#1e88e5</value></Data><Data name="icon"><value>poi:peak</value></Data><Data name="markerType"><value>ring</value></Data></ExtendedData>
       <Point><coordinates>21.11,48.76</coordinates></Point>
     </Placemark>
     <Placemark>
       <name>Bike (square, FA icon)</name>
+      <styleUrl>#pt-green</styleUrl>
       <ExtendedData><Data name="marker-color"><value>#43a047</value></Data><Data name="icon"><value>fa:bicycle</value></Data><Data name="markerType"><value>square</value></Data></ExtendedData>
       <Point><coordinates>21.12,48.75</coordinates></Point>
     </Placemark>

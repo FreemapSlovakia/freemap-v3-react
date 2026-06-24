@@ -194,15 +194,19 @@ write('track-full.kml', kmlTrack('Full track', pts));
 
 // A styled drawing (not a GPS track): labelled points with marker
 // colour/icon/shape, dashed and capped/joined lines, and a filled polygon —
-// every styling property Freemap reads on import. Native KML LineStyle/PolyStyle
-// carry colour/width/fill (KML colours are aabbggrr); ExtendedData carries the
-// simplestyle keys KML has no element for (dasharray, line cap/join, markerType,
-// marker-symbol/icon).
+// every styling property Freemap reads on import. Native KML Line/Poly/IconStyle
+// carry colour/width/fill/marker-tint (KML colours are aabbggrr) so the file
+// also renders in Google Earth; ExtendedData carries the simplestyle keys KML
+// has no element for (dasharray, line cap/join, markerType, marker-symbol/icon).
+// Points tint the white pushpin so Google Earth shows the marker colour; Freemap
+// ignores the IconStyle URL and uses the ExtendedData instead.
 function kmlDrawing() {
   const ext = (pairs) =>
     `<ExtendedData>${pairs
       .map(([n, v]) => `<Data name="${n}"><value>${v}</value></Data>`)
       .join('')}</ExtendedData>`;
+  const pin = (id, abgr) =>
+    `<Style id="${id}"><IconStyle><color>${abgr}</color><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png</href></Icon></IconStyle></Style>`;
   return `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
@@ -210,8 +214,12 @@ function kmlDrawing() {
     <Style id="line-red"><LineStyle><color>ff0000ff</color><width>5</width></LineStyle></Style>
     <Style id="line-blue"><LineStyle><color>ffff0000</color><width>2</width></LineStyle></Style>
     <Style id="area"><LineStyle><color>ff0080ff</color><width>3</width></LineStyle><PolyStyle><color>7f00a0ff</color></PolyStyle></Style>
+    ${pin('pt-red', 'ff3539e5')}
+    ${pin('pt-blue', 'ffe5881e')}
+    ${pin('pt-green', 'ff47a043')}
     <Placemark>
       <name>Restaurant (pin, Garmin sym)</name>
+      <styleUrl>#pt-red</styleUrl>
       ${ext([
         ['marker-color', '#e53935'],
         ['marker-symbol', 'Restaurant'],
@@ -221,6 +229,7 @@ function kmlDrawing() {
     </Placemark>
     <Placemark>
       <name>Peak (ring, POI icon)</name>
+      <styleUrl>#pt-blue</styleUrl>
       ${ext([
         ['marker-color', '#1e88e5'],
         ['icon', 'poi:peak'],
@@ -230,6 +239,7 @@ function kmlDrawing() {
     </Placemark>
     <Placemark>
       <name>Bike (square, FA icon)</name>
+      <styleUrl>#pt-green</styleUrl>
       ${ext([
         ['marker-color', '#43a047'],
         ['icon', 'fa:bicycle'],
