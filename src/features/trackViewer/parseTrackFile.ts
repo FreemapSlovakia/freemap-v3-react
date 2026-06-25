@@ -1,15 +1,8 @@
 import * as toGeoJSON from '@tmcw/togeojson';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import { enrichGpxExtensions } from './enrichGpxExtensions.js';
+import { normalizePowerExtension } from './normalizePowerExtension.js';
 import { parseGeojsonFile } from './parseGeojsonFile.js';
-
-// A dropped/opened track file resolved to how the store should consume it. GPX
-// stays raw text — the set-data processor parses and enriches it for the
-// drawing-conversion path; KML/TCX/GeoJSON are converted to a FeatureCollection
-// here.
-export type ParsedTrackFile =
-  | { kind: 'gpx'; text: string }
-  | { kind: 'geojson'; geojson: FeatureCollection }
-  | { kind: 'error' };
 
 // togeojson's `tcx` exposes the extended channels as top-level properties under
 // names the colorizers don't read; relocate them onto `coordinateProperties` so
@@ -73,48 +66,98 @@ function parseXml(text: string): Document | null {
   return doc.getElementsByTagName('parsererror').length > 0 ? null : doc;
 }
 
-// togeojson types geometry as nullable (it can drop a degenerate line);
-// keep only real geometries and surface the result as a plain FeatureCollection.
-function toGeojson(fc: FeatureCollection<Geometry | null>): ParsedTrackFile {
-  const features = fc.features.filter(
-    (f): f is Feature<Geometry> => f.geometry != null,
-  );
+// The track-viewer / convert-to-drawing pipeline keys a feature's label on
+// `name`. Foreign GeoJSON carries it under `title` (Mapbox simplestyle) or
+// `label`; normalize to `name` so labels survive for every format alike.
+function normalizeName<G extends Geometry | null>(
+  feature: Feature<G>,
+): Feature<G> {
+  const props = feature.properties;
 
-  return features.length > 0
-    ? { kind: 'geojson', geojson: { type: 'FeatureCollection', features } }
-    : { kind: 'error' };
+  if (!props || props['name'] != null) {
+    return feature;
+  }
+
+  const label =
+    typeof props['title'] === 'string'
+      ? props['title']
+      : typeof props['label'] === 'string'
+        ? props['label']
+        : undefined;
+
+  return label === undefined
+    ? feature
+    : { ...feature, properties: { ...props, name: label } };
+}
+
+// The single finalizer every format funnels through: drop null-geometry
+// features (togeojson can emit them) and normalize labels. Returns null when
+// nothing usable remains (treated as a parse error).
+function toGeojson(
+  fc: FeatureCollection<Geometry | null>,
+): FeatureCollection | null {
+  const features = fc.features
+    .filter((f): f is Feature<Geometry> => f.geometry != null)
+    .map(normalizeName);
+
+  return features.length > 0 ? { type: 'FeatureCollection', features } : null;
 }
 
 // Resolves a track file's format from its name, falling back to its XML root
-// element, and converts it for the store. Unknown files default to GPX, matching
-// the historical drop behavior.
+// element, and converts it to a FeatureCollection for the store — GPX via
+// togeojson plus our `freemap:*` / `osmand:*` enrichment, KML/TCX/GeoJSON
+// likewise. Unknown XML is tried as GPX; non-XML (and empty results) yield null.
 export function parseTrackFile(
   text: string,
   filename: string,
-): ParsedTrackFile {
+): FeatureCollection | null {
   const name = filename.toLowerCase();
 
   if (name.endsWith('.geojson') || name.endsWith('.json')) {
-    const geojson = parseGeojsonFile(text);
+    const fc = parseGeojsonFile(text);
 
-    return geojson ? { kind: 'geojson', geojson } : { kind: 'error' };
+    return fc ? toGeojson(fc) : null;
   }
 
   const doc = parseXml(text);
 
-  const root = doc?.documentElement.localName;
-
-  // `.kmz` arrives already unzipped to KML text (the drop handler unpacks it).
-  if (name.endsWith('.kml') || name.endsWith('.kmz') || root === 'kml') {
-    return doc ? toGeojson(toGeoJSON.kml(doc)) : { kind: 'error' };
+  if (!doc) {
+    return null;
   }
 
-  if (name.endsWith('.tcx') || root === 'TrainingCenterDatabase') {
-    return doc
-      ? toGeojson(normalizeTcx(toGeoJSON.tcx(doc)))
-      : { kind: 'error' };
+  // A recognized root element is authoritative (so a mislabeled extension still
+  // imports); the file extension only disambiguates unrecognized XML, and
+  // `.kmz` was unzipped to KML upstream. Anything else is treated as GPX.
+  const root = doc.documentElement.localName;
+
+  const format =
+    root === 'kml'
+      ? 'kml'
+      : root === 'TrainingCenterDatabase'
+        ? 'tcx'
+        : root === 'gpx'
+          ? 'gpx'
+          : name.endsWith('.kml') || name.endsWith('.kmz')
+            ? 'kml'
+            : name.endsWith('.tcx')
+              ? 'tcx'
+              : 'gpx';
+
+  if (format === 'kml') {
+    return toGeojson(toGeoJSON.kml(doc));
   }
 
-  // GPX — explicit, sniffed, or the historical default for unknown files.
-  return { kind: 'gpx', text };
+  if (format === 'tcx') {
+    return toGeojson(normalizeTcx(toGeoJSON.tcx(doc)));
+  }
+
+  // GPX: enrich togeojson's output with our canonical `freemap:*` / `osmand:*`
+  // keys and alias Garmin power so the drawing converter and colorizers read it.
+  const geojson = toGeoJSON.gpx(doc);
+
+  enrichGpxExtensions(doc, geojson);
+
+  normalizePowerExtension(geojson.features);
+
+  return toGeojson(geojson);
 }

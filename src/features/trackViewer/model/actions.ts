@@ -15,7 +15,6 @@ export interface TrackPoint extends LatLon {
 }
 
 export const trackViewerSetData = createAction<{
-  trackGpx?: string;
   trackGeojson?: FeatureCollection;
   focus?: boolean;
 }>('TRACK_VIEWER_SET_TRACK_DATA');

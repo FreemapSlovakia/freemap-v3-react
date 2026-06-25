@@ -8,6 +8,13 @@ export const GPX_STYLE_NS = 'http://www.topografix.com/GPX/gpx_style/0/2';
 
 export const LOCUS_NS = 'http://www.locusmap.eu';
 
+// Freemap-private namespace, the lossless source of truth for drawing styling
+// (markerType + icon spec + color) that has no standard GPX equivalent.
+export const FM_NS = 'https://www.freemap.sk/GPX/1/0';
+
+// OsmAnd's GPX extension namespace (icon/background/color, fill_color, width).
+export const OSMAND_NS = 'https://osmand.net';
+
 // The namespace that namespace declarations themselves live in. Declaring
 // `xmlns:*` attributes via setAttributeNS with this namespace makes
 // XMLSerializer treat them as in-scope prefixes instead of redeclaring them

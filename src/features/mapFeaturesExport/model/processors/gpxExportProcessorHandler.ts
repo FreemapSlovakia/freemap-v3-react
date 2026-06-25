@@ -35,25 +35,18 @@ import { exportElevationCancelActions } from './fillElevations.js';
 import {
   addAttribute,
   createElement,
+  FM_NS,
   GARMIN_NS,
   GPX_NS,
   GPX_STYLE_NS,
   GPXTPX_NS,
   LOCUS_NS,
+  OSMAND_NS,
   toLatLon,
   XMLNS_NS,
 } from './gpxExporter.js';
 import { addGeojson } from './gpxFromGeojson.js';
 import { exportBlob, upload } from './upload.js';
-
-// Freemap-private namespace for lossless round-trip of drawing-point styling
-// (markerType + icon spec + color) that has no standard GPX equivalent. Other
-// consumers ignore unknown extension elements per the GPX spec.
-const FM_NS = 'https://www.freemap.sk/GPX/1/0';
-
-// OsmAnd's GPX waypoint extension namespace, declared on the root so we can
-// emit `<osmand:icon>`, `<osmand:background>` and `<osmand:color>`.
-const OSMAND_NS = 'https://osmand.net';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 

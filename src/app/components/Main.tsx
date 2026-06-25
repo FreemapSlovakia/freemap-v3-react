@@ -455,9 +455,9 @@ export function Main(): ReactElement {
 
   const onTrackDrop = useCallback(
     (text: string, file: File) => {
-      const parsed = parseTrackFile(text, file.name);
+      const trackGeojson = parseTrackFile(text, file.name);
 
-      if (parsed.kind === 'error') {
+      if (!trackGeojson) {
         onTrackLoadError('invalidFormat');
 
         return;
@@ -465,11 +465,7 @@ export function Main(): ReactElement {
 
       dispatch(trackViewerSetTrackUID(null));
 
-      dispatch(
-        parsed.kind === 'gpx'
-          ? trackViewerSetData({ trackGpx: parsed.text, focus: true })
-          : trackViewerSetData({ trackGeojson: parsed.geojson, focus: true }),
-      );
+      dispatch(trackViewerSetData({ trackGeojson, focus: true }));
 
       dispatch(setActiveModal(null));
 

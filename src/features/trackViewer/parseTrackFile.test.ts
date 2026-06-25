@@ -17,20 +17,52 @@ const TCX = `<?xml version="1.0"?>
   </Track></Lap></Activity></Activities>
 </TrainingCenterDatabase>`;
 
+const GPX = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:fm="https://www.freemap.sk/GPX/1/0" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1">
+ <trk><name>T</name>
+  <extensions><fm:color>#ff0000ff</fm:color></extensions>
+  <trkseg>
+   <trkpt lat="48" lon="17"><extensions><gpxpx:PowerExtension><gpxpx:PowerInWatts>200</gpxpx:PowerInWatts></gpxpx:PowerExtension></extensions></trkpt>
+   <trkpt lat="48.1" lon="17.1"><extensions><gpxpx:PowerExtension><gpxpx:PowerInWatts>210</gpxpx:PowerInWatts></gpxpx:PowerExtension></extensions></trkpt>
+  </trkseg>
+ </trk>
+</gpx>`;
+
 describe('parseTrackFile', () => {
-  it('keeps GPX as raw text for the processor', () => {
-    const r = parseTrackFile('<gpx/>', 'track.gpx');
+  it('converts GPX, enriching freemap:* and aliasing Garmin power', () => {
+    const r = parseTrackFile(GPX, 'track.gpx');
 
-    expect(r).toEqual({ kind: 'gpx', text: '<gpx/>' });
+    expect(r).not.toBeNull();
+
+    if (r) {
+      const f = r.features[0]!;
+
+      expect(f.properties?.['freemap:color']).toBe('#ff0000ff');
+
+      const cp = f.properties?.['coordinateProperties'] as Record<
+        string,
+        unknown
+      >;
+
+      expect(cp['powers']).toEqual([200, 210]);
+      expect(cp['gpxpx:PowerExtensions']).toBeUndefined();
+    }
   });
 
-  it('defaults unknown content to GPX', () => {
-    const r = parseTrackFile('whatever', 'track.dat');
-
-    expect(r.kind).toBe('gpx');
+  it('detects GPX by content when the extension is generic', () => {
+    expect(parseTrackFile(GPX, 'track.dat')).not.toBeNull();
   });
 
-  it('parses a dropped GeoJSON file', () => {
+  it('lets a recognized root element override a wrong extension', () => {
+    // GPX content mislabeled as .tcx must still import as GPX, not error.
+    expect(parseTrackFile(GPX, 'mislabeled.tcx')).not.toBeNull();
+  });
+
+  it('reports an error for non-XML content', () => {
+    expect(parseTrackFile('whatever', 'track.dat')).toBeNull();
+  });
+
+  it('parses a dropped GeoJSON file and normalizes title -> name', () => {
     const r = parseTrackFile(
       JSON.stringify({
         type: 'Feature',
@@ -40,31 +72,31 @@ describe('parseTrackFile', () => {
       'x.geojson',
     );
 
-    expect(r.kind).toBe('geojson');
+    expect(r?.features[0]?.properties?.['name']).toBe('X');
   });
 
   it('converts KML to GeoJSON', () => {
     const r = parseTrackFile(KML, 'path.kml');
 
-    expect(r.kind).toBe('geojson');
+    expect(r).not.toBeNull();
 
-    if (r.kind === 'geojson') {
-      expect(r.geojson.features[0]?.geometry.type).toBe('LineString');
-      expect(r.geojson.features[0]?.properties?.['name']).toBe('Path');
+    if (r) {
+      expect(r.features[0]?.geometry.type).toBe('LineString');
+      expect(r.features[0]?.properties?.['name']).toBe('Path');
     }
   });
 
   it('detects KML by content when the extension is generic', () => {
-    expect(parseTrackFile(KML, 'path.xml').kind).toBe('geojson');
+    expect(parseTrackFile(KML, 'path.xml')).not.toBeNull();
   });
 
   it('converts TCX and normalizes channels onto coordinateProperties', () => {
     const r = parseTrackFile(TCX, 'ride.tcx');
 
-    expect(r.kind).toBe('geojson');
+    expect(r).not.toBeNull();
 
-    if (r.kind === 'geojson') {
-      const f = r.geojson.features[0] as Feature<LineString>;
+    if (r) {
+      const f = r.features[0] as Feature<LineString>;
 
       // Elevation rides in the coordinates; the rest moves under coordProps.
       expect(f.geometry.coordinates).toEqual([
@@ -89,10 +121,10 @@ describe('parseTrackFile', () => {
   });
 
   it('reports an error for unparseable XML claiming to be KML', () => {
-    expect(parseTrackFile('<kml><broken', 'x.kml').kind).toBe('error');
+    expect(parseTrackFile('<kml><broken', 'x.kml')).toBeNull();
   });
 
   it('reports an error for invalid GeoJSON', () => {
-    expect(parseTrackFile('not json', 'x.geojson').kind).toBe('error');
+    expect(parseTrackFile('not json', 'x.geojson')).toBeNull();
   });
 });

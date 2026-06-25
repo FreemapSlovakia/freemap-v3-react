@@ -57,9 +57,9 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
 
   const handleUpload = useCallback(
     (text: string, file: File) => {
-      const parsed = parseTrackFile(text, file.name);
+      const trackGeojson = parseTrackFile(text, file.name);
 
-      if (parsed.kind === 'error') {
+      if (!trackGeojson) {
         handleLoadError('invalidFormat');
 
         return;
@@ -67,11 +67,7 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
 
       dispatch(trackViewerSetTrackUID(null));
 
-      dispatch(
-        parsed.kind === 'gpx'
-          ? trackViewerSetData({ trackGpx: parsed.text, focus: true })
-          : trackViewerSetData({ trackGeojson: parsed.geojson, focus: true }),
-      );
+      dispatch(trackViewerSetData({ trackGeojson, focus: true }));
 
       dispatch(setActiveModal(null));
 
