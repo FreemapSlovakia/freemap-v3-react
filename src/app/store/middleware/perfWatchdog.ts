@@ -78,8 +78,17 @@ function report(
 ): void {
   const now = Date.now();
 
+  // Page age separates a genuine fresh-session freeze from a tab that has been
+  // open for hours (a backgrounded/zombie tab whose timer drift is throttling,
+  // not a real stall); visibility tells whether the report fired in the
+  // foreground. Both are needed to triage these reports without a release tag.
+  const pageAgeMs = Math.round(performance.now());
+  const visibility = document.visibilityState;
+
   const fullExtra = {
     ...extra,
+    pageAgeMs,
+    visibility,
     topActions: topActionTypes(),
     recentActions: recentActions.map((a) => a.type).join(' → '),
     jsHeapMB: jsHeapMB(),
@@ -98,7 +107,7 @@ function report(
 
   window.Sentry?.captureMessage(message, {
     level: 'warning',
-    tags: { perf: kind },
+    tags: { perf: kind, visibility },
     extra: fullExtra,
   });
 
