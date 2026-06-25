@@ -235,7 +235,7 @@ export const urlProcessor: Processor = {
     }
 
     if (trackViewer.gpxUrl) {
-      historyParts.push(['gpx-url', trackViewer.gpxUrl]);
+      historyParts.push(['import-url', trackViewer.gpxUrl]);
     }
 
     if (search.osmNodeId && search.osmNodeId > 0) {

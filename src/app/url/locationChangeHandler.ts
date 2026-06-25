@@ -422,7 +422,10 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(drawingLineSetLines(lines));
   }
 
-  const gpxUrl = query['gpx-url'] || query['load']; /* backward compatibility */
+  const gpxUrl =
+    query['import-url'] ||
+    query['gpx-url'] ||
+    query['load']; /* `gpx-url` and `load` kept for backward compatibility */
 
   if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
     dispatch(trackViewerGpxLoad(gpxUrl));

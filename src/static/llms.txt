@@ -203,7 +203,7 @@ The marker icon can be globally changed (pin/ring/square).
 - Keyboard shortcut: <kbd>g</kbd> <kbd>g</kbd>
 - URL path: `/#tools=import-file` (legacy `/#tool=import-file` and the old `track-viewer` alias still work)
 
-Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=file-import`; legacy `/#show=upload-track` still works), which accepts GPX, KML, KMZ, TCX and GeoJSON files. Once a track is loaded, the toolbar offers:
+Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=file-import`; legacy `/#show=upload-track` still works), which accepts GPX, KML, KMZ, TCX and GeoJSON files. An external track can also be loaded directly by URL via `/#import-url=<URL>` (legacy `gpx-url=` and `load=` still work), supporting the same GPX, KML, KMZ, TCX and GeoJSON formats. Once a track is loaded, the toolbar offers:
 
 - **Elevation profile** — chart of elevation along the track (with total climb/descent)
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled)

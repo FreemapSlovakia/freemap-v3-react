@@ -1,6 +1,7 @@
 import * as toGeoJSON from '@tmcw/togeojson';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { enrichGpxExtensions } from './enrichGpxExtensions.js';
+import { extractKmlFromKmz } from './kmz.js';
 import { normalizePowerExtension } from './normalizePowerExtension.js';
 import { parseGeojsonFile } from './parseGeojsonFile.js';
 
@@ -122,7 +123,12 @@ export function parseTrackFile(
   const doc = parseXml(text);
 
   if (!doc) {
-    return null;
+    // Not XML — fall back to GeoJSON detection by content, so a JSON body
+    // imports even without a .geojson/.json extension (e.g. a URL with a
+    // query string, or a mislabeled file).
+    const fc = parseGeojsonFile(text);
+
+    return fc ? toGeojson(fc) : null;
   }
 
   // A recognized root element is authoritative (so a mislabeled extension still
@@ -160,4 +166,36 @@ export function parseTrackFile(
   normalizePowerExtension(geojson.features);
 
   return toGeojson(geojson);
+}
+
+// A ZIP archive (and therefore a KMZ) opens with the local-file-header magic
+// bytes `PK\x03\x04`.
+function isZip(bytes: Uint8Array): boolean {
+  return (
+    bytes.length >= 4 &&
+    bytes[0] === 0x50 &&
+    bytes[1] === 0x4b &&
+    bytes[2] === 0x03 &&
+    bytes[3] === 0x04
+  );
+}
+
+// Parses raw track bytes of any supported format, detecting KMZ by content
+// rather than by name: a ZIP archive is unzipped to its contained KML first,
+// and everything else is decoded as UTF-8 text. Both paths funnel through
+// `parseTrackFile`, so the same GPX/KML/TCX/GeoJSON handling applies. Returns
+// null when nothing usable parses.
+export async function parseTrackData(
+  buffer: ArrayBuffer,
+  filename: string,
+): Promise<FeatureCollection | null> {
+  const bytes = new Uint8Array(buffer);
+
+  if (isZip(bytes)) {
+    const kml = await extractKmlFromKmz(buffer);
+
+    return kml == null ? null : parseTrackFile(kml, filename);
+  }
+
+  return parseTrackFile(new TextDecoder('utf-8').decode(bytes), filename);
 }

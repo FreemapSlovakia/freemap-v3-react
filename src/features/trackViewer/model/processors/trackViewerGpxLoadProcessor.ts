@@ -5,7 +5,7 @@ import {
   trackViewerGpxLoad,
   trackViewerSetData,
 } from '@features/trackViewer/model/actions.js';
-import { parseTrackFile } from '@features/trackViewer/parseTrackFile.js';
+import { parseTrackData } from '@features/trackViewer/parseTrackFile.js';
 import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 
 export const trackViewerGpxLoadProcessor: Processor = {
@@ -24,7 +24,7 @@ export const trackViewerGpxLoadProcessor: Processor = {
         expectedStatus: 200,
       });
 
-      const trackGeojson = parseTrackFile(await res.text(), url);
+      const trackGeojson = await parseTrackData(await res.arrayBuffer(), url);
 
       if (!trackGeojson) {
         // The fetch succeeded; the content just isn't a supported/usable track.
