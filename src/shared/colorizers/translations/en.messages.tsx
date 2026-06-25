@@ -2,6 +2,7 @@ import { ColorizerMessages } from './ColorizerMessages.js';
 
 const en: ColorizerMessages = {
   colorizeBy: 'Colorize by',
+  premiumDuringLaunch: 'Premium — free during launch',
   mode: {
     none: 'Inactive',
     elevation: 'Elevation',

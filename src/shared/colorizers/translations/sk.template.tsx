@@ -3,6 +3,7 @@ import { ColorizerMessages } from './ColorizerMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Vyfarbiť podľa',
+  premiumDuringLaunch: 'Prémiové — počas uvedenia zadarmo',
   mode: {
     none: 'Neaktívne',
     elevation: 'Nadmorská výška',

@@ -1,5 +1,6 @@
 export type ColorizerMessages = {
   colorizeBy: string;
+  premiumDuringLaunch: string;
   mode: {
     none: string;
     elevation: string;

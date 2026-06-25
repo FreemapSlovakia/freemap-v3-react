@@ -19,6 +19,7 @@ import { type ReactElement, useMemo } from 'react';
 import { Button } from 'react-bootstrap';
 import {
   FaChartArea,
+  FaGem,
   FaMobileAlt,
   FaPaintBrush,
   FaRegEye,
@@ -160,6 +161,18 @@ export function TrackingMenu(): ReactElement {
           value: mode ?? 'none',
           label: cm?.mode[mode ?? 'none'],
           disabled: mode !== undefined && !isModeAvailable(mode),
+          // Launch badge: every mode except the free trio is premium, shown
+          // free for now. Tracked by hand — drop when the launch ends.
+          extra:
+            mode &&
+            mode !== 'elevation' &&
+            mode !== 'speed' &&
+            mode !== 'time' ? (
+              <FaGem
+                className="ms-1 text-info"
+                title={cm?.premiumDuringLaunch}
+              />
+            ) : undefined,
         }))}
       />
 

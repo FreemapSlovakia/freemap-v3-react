@@ -46,6 +46,7 @@ import {
   FaCrosshairs,
   FaDiceThree,
   FaEllipsisV,
+  FaGem,
   FaHome,
   FaMapMarkerAlt,
   FaPaintBrush,
@@ -772,6 +773,18 @@ export default function RoutePlannerMenu(): ReactElement {
             (mode) => ({
               value: mode ?? 'none',
               label: cm?.mode[mode ?? 'none'],
+              // Launch badge: every mode except the free trio is premium, shown
+              // free for now. Tracked by hand — drop when the launch ends.
+              extra:
+                mode &&
+                mode !== 'elevation' &&
+                mode !== 'speed' &&
+                mode !== 'time' ? (
+                  <FaGem
+                    className="ms-1 text-info"
+                    title={cm?.premiumDuringLaunch}
+                  />
+                ) : undefined,
             }),
           )}
         />

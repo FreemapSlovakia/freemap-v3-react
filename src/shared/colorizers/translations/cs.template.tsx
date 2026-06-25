@@ -2,6 +2,7 @@ import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { ColorizerMessages } from './ColorizerMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<ColorizerMessages> = {
+  premiumDuringLaunch: 'Prémiové — během uvedení zdarma',
   mode: {
     none: 'Neaktivní',
     elevation: 'Nadmořská výška',
