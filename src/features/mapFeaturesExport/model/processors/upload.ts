@@ -10,8 +10,32 @@ import { ExportTarget } from '../actions.js';
 export const licenseNotice =
   'Various licenses may apply - like OpenStreetMap (https://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';
 
+type ExportFileType = 'gpx' | 'geojson' | 'kml' | 'kmz';
+
+// MIME type + save-dialog extensions per export file type. The type string
+// doubles as the filename extension (`freemap-export-….<type>`).
+const FILE_META: Record<ExportFileType, { mime: string; exts: string[] }> = {
+  gpx: { mime: 'application/gpx+xml', exts: ['.gpx'] },
+  geojson: { mime: 'application/geo+json', exts: ['.geojson', '.json'] },
+  kml: { mime: 'application/vnd.google-earth.kml+xml', exts: ['.kml'] },
+  kmz: { mime: 'application/vnd.google-earth.kmz', exts: ['.kmz'] },
+};
+
+// Builds the export Blob with the right MIME, with one wrinkle centralized:
+// Dropbox rejects some typed MIMEs (e.g. `application/gpx+xml`), so that target
+// gets a neutral `application/octet-stream`; every other target gets `mime`.
+export function exportBlob(
+  parts: BlobPart[],
+  mime: string,
+  target: ExportTarget,
+): Blob {
+  return new Blob(parts, {
+    type: target === 'dropbox' ? 'application/octet-stream' : mime,
+  });
+}
+
 export async function upload(
-  type: 'gpx' | 'geojson',
+  type: ExportFileType,
   data: Blob,
   target: ExportTarget,
   getState: () => RootState,
@@ -187,10 +211,7 @@ export async function upload(
             [
               JSON.stringify({
                 name: `freemap-export-${new Date().toISOString()}.${type}`,
-                mimeType:
-                  type === 'gpx'
-                    ? 'application/gpx+xml'
-                    : 'application/geo+json',
+                mimeType: FILE_META[type].mime,
                 parents: [folder.id],
               }),
             ],
@@ -239,7 +260,7 @@ export async function upload(
   return true;
 }
 
-async function saveFile(blob: Blob, type: 'gpx' | 'geojson') {
+async function saveFile(blob: Blob, type: ExportFileType) {
   const suggestedName = `freemap-export-${new Date().toISOString()}.${type}`;
 
   if ('showSaveFilePicker' in window) {
@@ -249,7 +270,7 @@ async function saveFile(blob: Blob, type: 'gpx' | 'geojson') {
         {
           description: blob.type || 'File',
           accept: {
-            [blob.type]: type === 'gpx' ? ['.gpx'] : ['.geojson', '.json'],
+            [blob.type]: FILE_META[type].exts,
           } as any,
         },
       ],

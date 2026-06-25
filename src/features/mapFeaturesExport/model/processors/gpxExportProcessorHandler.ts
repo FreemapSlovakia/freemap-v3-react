@@ -44,7 +44,7 @@ import {
   XMLNS_NS,
 } from './gpxExporter.js';
 import { addGeojson } from './gpxFromGeojson.js';
-import { upload } from './upload.js';
+import { exportBlob, upload } from './upload.js';
 
 // Freemap-private namespace for lossless round-trip of drawing-point styling
 // (markerType + icon spec + color) that has no standard GPX equivalent. Other
@@ -221,12 +221,11 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   if (
     await upload(
       'gpx',
-      new Blob([new XMLSerializer().serializeToString(doc)], {
-        type:
-          target === 'dropbox'
-            ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
-            : 'application/gpx+xml',
-      }),
+      exportBlob(
+        [new XMLSerializer().serializeToString(doc)],
+        'application/gpx+xml',
+        target,
+      ),
       target,
       getState,
       dispatch,

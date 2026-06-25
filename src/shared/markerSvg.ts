@@ -13,6 +13,7 @@ import {
   MARKER_VIEWBOX_WIDTH,
   poiIconGlyphRect,
 } from '@shared/poiIconGlyph.js';
+import { escapeXml } from '@shared/stringUtils.js';
 
 // Glyph color: matches RichMarker's GLYPH_COLOR ('black'), drawn on the white
 // inset. Kept literal here so the export pipeline doesn't need a runtime lookup.
@@ -20,15 +21,6 @@ const GLYPH_COLOR_LITERAL = 'black';
 
 // Flattened Font Awesome icon geometry, as returned by `faIconToSvg`.
 type FaSvg = { width: number; height: number; path: string };
-
-export function escapeXml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
 
 // UTF-8-safe base64 so non-ASCII content survives btoa.
 export function utf8ToBase64(s: string): string {

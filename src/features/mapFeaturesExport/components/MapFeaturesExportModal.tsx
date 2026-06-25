@@ -32,6 +32,7 @@ import {
 import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import {
+  EXPORT_FORMAT_LABELS,
   Exportable,
   ExportElevation,
   ExportElevationSchema,
@@ -380,7 +381,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                       onChange={setType}
                       disabled={!exportables.length}
                     >
-                      {exportType === 'gpx' ? 'GPX' : 'GeoJSON'}
+                      {EXPORT_FORMAT_LABELS[exportType]}
                     </ToggleButton>
                   ))}
                 </ButtonGroup>

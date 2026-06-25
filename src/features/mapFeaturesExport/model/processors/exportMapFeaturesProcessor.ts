@@ -1,6 +1,32 @@
-import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type {
+  Processor,
+  ProcessorHandler,
+} from '@app/store/middleware/processorMiddleware.js';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
-import { exportMapFeatures } from '../actions.js';
+import { type ExportType, exportMapFeatures } from '../actions.js';
+
+type HandlerModule = { default: ProcessorHandler<typeof exportMapFeatures> };
+
+// One lazily-loaded handler chunk per format. Typed as a full record so adding
+// a member to ExportTypeSchema without a handler is a compile error (rather
+// than silently falling through to a default branch).
+const formatHandlers: Record<ExportType, () => Promise<HandlerModule>> = {
+  gpx: () =>
+    import(
+      /* webpackChunkName: "gpx-export-processor-handler" */
+      './gpxExportProcessorHandler.js'
+    ),
+  geojson: () =>
+    import(
+      /* webpackChunkName: "geojson-export-processor-handler" */
+      './geojsonExportProcessorHandler.js'
+    ),
+  kml: () =>
+    import(
+      /* webpackChunkName: "kml-export-processor-handler" */
+      './kmlExportProcessorHandler.js'
+    ),
+};
 
 export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
   actionCreator: exportMapFeatures,
@@ -22,22 +48,15 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
     ]);
 
     try {
-      return (
+      const module =
         target === 'garmin'
           ? await import(
               /* webpackChunkName: "garmin-export-processor-handler" */
               './garminExportProcessorHandler.js'
             )
-          : type === 'gpx'
-            ? await import(
-                /* webpackChunkName: "gpx-export-processor-handler" */
-                './gpxExportProcessorHandler.js'
-              )
-            : await import(
-                /* webpackChunkName: "geojson-export-processor-handler" */
-                './geojsonExportProcessorHandler.js'
-              )
-      ).default(...params);
+          : await formatHandlers[type]();
+
+      return module.default(...params);
     } catch (err) {
       await toastError(err, loadMapFeaturesExportMessages, 'exportError');
     }

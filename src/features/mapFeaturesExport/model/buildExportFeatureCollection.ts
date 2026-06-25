@@ -363,7 +363,9 @@ function addPlannedRoute(
         }
       }
 
-      features.push(lineString(coords, {}));
+      if (coords.length >= 2) {
+        features.push(lineString(coords, {}));
+      }
     }
 
     return;
@@ -398,23 +400,28 @@ function addTracking(
   for (const track of tracks1) {
     const stroke = track.color ? splitColorAlpha(track.color) : undefined;
 
-    features.push(
-      lineString(
-        track.trackPoints.map((tp) => [tp.lon, tp.lat]),
-        {
-          title: track.label,
-          stroke: stroke?.color,
-          'stroke-opacity':
-            stroke && stroke.opacity < 1 ? stroke.opacity : undefined,
-          'stroke-width': track.width,
-          maxAge: track.maxAge,
-          maxCount: track.maxCount,
-          fromTime: track.fromTime,
-          splitDistance: track.splitDistance,
-          splitDuration: track.splitDuration,
-        },
-      ),
-    );
+    // A line needs ≥2 points; a device that has produced 0 or 1 fix would make
+    // turf's lineString throw and abort the whole export, so emit only the
+    // points for it.
+    if (track.trackPoints.length >= 2) {
+      features.push(
+        lineString(
+          track.trackPoints.map((tp) => [tp.lon, tp.lat]),
+          {
+            title: track.label,
+            stroke: stroke?.color,
+            'stroke-opacity':
+              stroke && stroke.opacity < 1 ? stroke.opacity : undefined,
+            'stroke-width': track.width,
+            maxAge: track.maxAge,
+            maxCount: track.maxCount,
+            fromTime: track.fromTime,
+            splitDistance: track.splitDistance,
+            splitDuration: track.splitDuration,
+          },
+        ),
+      );
+    }
 
     if (!trackingPoints) {
       continue;
