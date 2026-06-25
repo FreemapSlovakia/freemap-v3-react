@@ -7,3 +7,5 @@ sitemap.tgz
 
 # Generated CSS Module typings
 **/*.module.d.css.ts
+
+tracklogs
