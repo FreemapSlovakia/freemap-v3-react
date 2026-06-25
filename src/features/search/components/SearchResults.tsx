@@ -58,22 +58,27 @@ export function SearchResults(): ReactElement | null {
 
   const annotateFeature = useCallback(
     async (feature: Feature, layer: Layer, isBg: boolean) => {
-      const genericName =
+      const genericName: string =
         feature.properties?.['__fm_genericName'] ||
-        (isOsm &&
-          (await getGenericNameFromOsmElement(
-            feature.properties ?? {},
-            feature.geometry.type === 'Point'
-              ? 'node'
-              : feature.geometry.type === 'LineString'
-                ? 'way'
-                : 'relation',
-            language,
-          )));
+        (isOsm
+          ? await getGenericNameFromOsmElement(
+              feature.properties ?? {},
+              feature.geometry.type === 'Point'
+                ? 'node'
+                : feature.geometry.type === 'LineString'
+                  ? 'way'
+                  : 'relation',
+              language,
+            )
+          : '') ||
+        '';
 
-      const displayName =
+      const displayName: string =
         feature.properties?.['__fm_displayName'] ||
-        (isOsm && getNameFromOsmElement(feature.properties ?? {}, language));
+        (isOsm
+          ? getNameFromOsmElement(feature.properties ?? {}, language)
+          : '') ||
+        '';
 
       const isPoi = !(layer instanceof Path || layer instanceof Polygon);
 
