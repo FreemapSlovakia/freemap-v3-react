@@ -1,7 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { exportMapFeatures } from '../actions.js';
-import { buildFilledFc } from './buildFilledFc.js';
+import { buildFilledFeatureCollection } from './buildFilledFeatureCollection.js';
 import { geojsonToKml } from './geojsonToKml.js';
 import { exportBlob, upload } from './upload.js';
 
@@ -13,7 +13,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   // Visual export: bake each point into a raster marker (KML viewers render
   // only raster `<Icon>` hrefs), keeping the lightweight props as a fallback
   // tint when no canvas is available to rasterize.
-  const fc = await buildFilledFc(
+  const fc = await buildFilledFeatureCollection(
     getState,
     action,
     { props: true, pngMarker: true },

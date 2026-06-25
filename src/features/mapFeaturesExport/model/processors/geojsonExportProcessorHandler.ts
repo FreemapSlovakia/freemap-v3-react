@@ -1,7 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { exportMapFeatures } from '../actions.js';
-import { buildFilledFc } from './buildFilledFc.js';
+import { buildFilledFeatureCollection } from './buildFilledFeatureCollection.js';
 import { exportBlob, licenseNotice, upload } from './upload.js';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
@@ -11,7 +11,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 }) => {
   // Data export: lightweight styling properties, every route alternative, a
   // point per GPS sample. Icons stay as `icon`/`marker-symbol` props.
-  const fc = await buildFilledFc(
+  const fc = await buildFilledFeatureCollection(
     getState,
     action,
     { props: true },

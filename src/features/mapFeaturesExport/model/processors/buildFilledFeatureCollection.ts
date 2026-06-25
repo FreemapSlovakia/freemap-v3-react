@@ -18,7 +18,7 @@ import { fillFcElevations } from './fillElevations.js';
  * Only the geometry is cloned — properties, which can hold large baked marker
  * data URLs, are shared by reference since the fill never touches them.
  */
-export async function buildFilledFc(
+export async function buildFilledFeatureCollection(
   getState: () => RootState,
   action: ReturnType<typeof exportMapFeatures>,
   pointMode: PointRenderMode,
