@@ -9,7 +9,7 @@ Key facts:
 - Built on OpenStreetMap data; the map is continuously updated from the OSM database.
 - Displays marked hiking, biking, skiing and riding trails, and supports high-resolution (retina) displays.
 - Background and overlay layers include the NLC forest roads, aerial imagery, public transport, Wikipedia, and community photos.
-- Tools: search (by name or category), route planning (walking, cycling, stroller, wheelchair, car, skiing, etc.), map annotation (points, lines, polygons), measurement (distance, elevation, area, position), GPX track viewing, personal saved maps, live tracking, and export (GPX, GeoJSON, PDF, SVG, PNG, JPG).
+- Tools: search (by name or category), route planning (walking, cycling, stroller, wheelchair, car, skiing, etc.), map annotation (points, lines, polygons), measurement (distance, elevation, area, position), GPX track viewing, personal saved maps, live tracking, and export (GPX, GeoJSON, KML/KMZ, PDF, SVG, PNG, JPG).
 - Users can generate embed code to place the map on their own websites.
 - The application is a single-page application (SPA) and reflects its state in the URL.
 
@@ -203,7 +203,7 @@ The marker icon can be globally changed (pin/ring/square).
 - Keyboard shortcut: <kbd>g</kbd> <kbd>g</kbd>
 - URL path: `/#tools=import-file` (legacy `/#tool=import-file` and the old `track-viewer` alias still work)
 
-Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=file-import`; legacy `/#show=upload-track` still works), which accepts GPX and GeoJSON files. Once a track is loaded, the toolbar offers:
+Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=file-import`; legacy `/#show=upload-track` still works), which accepts GPX, KML, KMZ, TCX and GeoJSON files. Once a track is loaded, the toolbar offers:
 
 - **Elevation profile** — chart of elevation along the track (with total climb/descent)
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled)
@@ -343,7 +343,7 @@ While the export runs the modal stays open with its controls disabled and a spin
 - Keyboard shortcut: <kbd>e</kbd> <kbd>g</kbd>
 - URL path: `/#show=map-features-export`
 
-Opens a modal to export the user's own map data as a GPX or GeoJSON file. Only the data types that actually have something on the map are selectable:
+Opens a modal to export the user's own map data as a GPX, GeoJSON or KML file. The KML option emits a self-contained KMZ (zipped KML plus packaged PNG marker icons) when point icons are present, and a plain KML otherwise. Only the data types that actually have something on the map are selectable:
 
 - found (planned) route, optionally including stops
 - objects (POIs)

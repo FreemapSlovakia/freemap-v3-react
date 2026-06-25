@@ -10,11 +10,37 @@ import {
   MarkerType,
   MarkerTypeSchema,
 } from '@features/objects/model/actions.js';
+import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { garminSymToIconSpec } from '@/features/mapFeaturesExport/garminSymMapping.js';
 import {
   osmAndBackgroundToMarkerType,
   osmAndIconToIconSpec,
 } from '@/features/mapFeaturesExport/osmandIconMapping.js';
+
+// Simplestyle splits a colour into a base hex plus a separate `*-opacity`
+// number (e.g. `fill` + `fill-opacity`). Foreign imports (KML, third-party
+// GeoJSON) use that split, so fold the opacity back into a `#RRGGBBAA` colour;
+// our own `freemap:*` colours already carry alpha and skip this path.
+function withSimplestyleOpacity(
+  properties: Record<string, unknown> | null | undefined,
+  color: string | undefined,
+  opacityKey: string,
+): string | undefined {
+  if (!color || !/^#[0-9a-fA-F]{6}$/.test(color)) {
+    return color;
+  }
+
+  const raw = properties?.[opacityKey];
+
+  const opacity =
+    typeof raw === 'number'
+      ? raw
+      : typeof raw === 'string'
+        ? Number(raw)
+        : Number.NaN;
+
+  return Number.isFinite(opacity) ? joinColorAlpha(color, opacity) : color;
+}
 
 // Plucks drawing-point styling out of a GeoJSON feature's properties.
 // Priority: freemap-private (lossless round-trip) → OsmAnd → plain GeoJSON
@@ -41,14 +67,28 @@ export function pointStyleFromProperties(
       ? MarkerTypeSchema.safeParse(rawMarkerType).data
       : undefined) ?? osmAndBackgroundToMarkerType(get('osmand:background'));
 
+  // A plain `icon` is our iconSpec (`poi:`/`fa:`/literal). togeojson also
+  // surfaces a KML `<IconStyle>` image href under this key — a URL, which is
+  // not an icon spec — so ignore path-like values.
+  const plainIcon = get('icon');
+
   const icon =
     get('freemap:icon') ??
     osmAndIconToIconSpec(get('osmand:icon')) ??
-    get('icon') ??
+    (plainIcon && !plainIcon.includes('/') ? plainIcon : undefined) ??
     garminSymToIconSpec(get('sym') ?? get('marker-symbol'));
 
   const color =
-    get('freemap:color') ?? get('osmand:color') ?? get('marker-color');
+    get('freemap:color') ??
+    get('osmand:color') ??
+    withSimplestyleOpacity(
+      properties,
+      get('marker-color'),
+      'marker-color-opacity',
+    ) ??
+    // KML `<IconStyle><color>` tint, the closest thing KML has to a marker
+    // colour.
+    withSimplestyleOpacity(properties, get('icon-color'), 'icon-opacity');
 
   const pointStyle = { markerType, icon, color };
 
@@ -82,6 +122,22 @@ export function lineStyleFromProperties(
     return typeof v === 'string' && v ? v : undefined;
   };
 
+  // Simplestyle emits numeric values (e.g. togeojson writes `stroke-width` as a
+  // number), while our `freemap:*`/`osmand:*` extensions are strings; accept
+  // both.
+  const getNum = (key: string): number | undefined => {
+    const v = properties?.[key];
+
+    const n =
+      typeof v === 'number'
+        ? v
+        : typeof v === 'string'
+          ? Number(v)
+          : Number.NaN;
+
+    return Number.isFinite(n) ? n : undefined;
+  };
+
   const rawType = get('freemap:type');
 
   const type: DrawingLineType | undefined = isDrawingLineType(rawType)
@@ -90,15 +146,18 @@ export function lineStyleFromProperties(
       ? 'polygon'
       : undefined;
 
-  const color = get('freemap:color') ?? get('osmand:color') ?? get('stroke');
+  const color =
+    get('freemap:color') ??
+    get('osmand:color') ??
+    withSimplestyleOpacity(properties, get('stroke'), 'stroke-opacity');
 
   const fillColor =
-    get('freemap:fillColor') ?? get('osmand:fill_color') ?? get('fill');
+    get('freemap:fillColor') ??
+    get('osmand:fill_color') ??
+    withSimplestyleOpacity(properties, get('fill'), 'fill-opacity');
 
-  const rawWidth =
-    get('freemap:width') ?? get('osmand:width') ?? get('stroke-width');
-  const widthNum = rawWidth ? Number(rawWidth) : Number.NaN;
-  const width = Number.isFinite(widthNum) ? widthNum : undefined;
+  const width =
+    getNum('freemap:width') ?? getNum('osmand:width') ?? getNum('stroke-width');
 
   const rawCap = get('freemap:lineCap') ?? get('stroke-linecap');
   const lineCap = isLineCap(rawCap) ? rawCap : undefined;

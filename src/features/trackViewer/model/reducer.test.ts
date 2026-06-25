@@ -16,26 +16,21 @@ import { trackViewerInitialState, trackViewerReducer } from './reducer.js';
 const fc: FeatureCollection = { type: 'FeatureCollection', features: [] };
 
 describe('trackViewerReducer — setData', () => {
-  it('sets gpx and geojson', () => {
+  it('stores the geojson', () => {
     const next = trackViewerReducer(
       trackViewerInitialState,
-      trackViewerSetData({ trackGpx: '<gpx/>', trackGeojson: fc }),
-    );
-
-    expect(next.trackGpx).toBe('<gpx/>');
-    expect(next.trackGeojson).toBe(fc);
-  });
-
-  it('keeps the existing value for fields omitted from the payload', () => {
-    const state = { ...trackViewerInitialState, trackGpx: 'old' };
-
-    const next = trackViewerReducer(
-      state,
       trackViewerSetData({ trackGeojson: fc }),
     );
 
-    expect(next.trackGpx).toBe('old'); // not clobbered by undefined
     expect(next.trackGeojson).toBe(fc);
+  });
+
+  it('keeps the existing geojson when the payload omits it', () => {
+    const state = { ...trackViewerInitialState, trackGeojson: fc };
+
+    const next = trackViewerReducer(state, trackViewerSetData({ focus: true }));
+
+    expect(next.trackGeojson).toBe(fc); // not clobbered by an omitted field
   });
 });
 
@@ -72,20 +67,20 @@ describe('trackViewerReducer — reset actions', () => {
   it('delete clears the track but preserves the colorize mode', () => {
     const state = {
       ...trackViewerInitialState,
-      trackGpx: 'g',
+      trackGeojson: fc,
       trackUID: 'u',
       colorizeTrackBy: 'elevation' as const,
     };
 
     const next = trackViewerReducer(state, trackViewerDelete());
 
-    expect(next.trackGpx).toBeNull();
+    expect(next.trackGeojson).toBeNull();
     expect(next.trackUID).toBeNull();
     expect(next.colorizeTrackBy).toBe('elevation');
   });
 
   it('clearMapFeatures resets everything to initial', () => {
-    const state = { ...trackViewerInitialState, trackGpx: 'g' };
+    const state = { ...trackViewerInitialState, trackGeojson: fc };
 
     expect(trackViewerReducer(state, clearMapFeatures())).toEqual(
       trackViewerInitialState,
@@ -95,7 +90,7 @@ describe('trackViewerReducer — reset actions', () => {
   it('osmClear resets everything to initial (including colorize mode)', () => {
     const state = {
       ...trackViewerInitialState,
-      trackGpx: 'g',
+      trackGeojson: fc,
       colorizeTrackBy: 'elevation' as const,
     };
 

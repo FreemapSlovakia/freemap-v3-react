@@ -1,53 +1,32 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { exportMapFeatures } from '../actions.js';
-import { buildExportFeatureCollection } from '../buildExportFeatureCollection.js';
-import { fillFcElevations } from './fillElevations.js';
-import { licenseNotice, upload } from './upload.js';
+import { buildFilledFeatureCollection } from './buildFilledFeatureCollection.js';
+import { exportBlob, licenseNotice, upload } from './upload.js';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,
   action,
   dispatch,
 }) => {
-  const set = new Set(action.payload.exportables);
-
-  let fc = await buildExportFeatureCollection({
+  // Data export: lightweight styling properties, every route alternative, a
+  // point per GPS sample. Icons stay as `icon`/`marker-symbol` props.
+  const fc = await buildFilledFeatureCollection(
     getState,
-    include: {
-      pictures: set.has('pictures'),
-      drawingLines: set.has('drawingLines'),
-      drawingAreas: set.has('drawingAreas'),
-      drawingPoints: set.has('drawingPoints'),
-      objects: set.has('objects'),
-      plannedRoute: set.has('plannedRoute'),
-      plannedRouteWithStops: set.has('plannedRouteWithStops'),
-      tracking: set.has('tracking'),
-      import: set.has('import'),
-      search: set.has('search'),
+    action,
+    { props: true },
+    {
+      route: 'all',
+      trackingPoints: true,
     },
-    // Data export: lightweight styling properties, every route alternative, a
-    // point per GPS sample. Icons stay as `icon`/`marker-symbol` props.
-    pointMode: { props: true },
-    options: { route: 'all', trackingPoints: true },
-  });
-
-  const { elevation } = action.payload;
-
-  if (elevation === 'missing' || elevation === 'all') {
-    // Clone first so the fill never mutates coordinate arrays still referenced
-    // by the store (imported / lookup features are pushed by reference).
-    fc = structuredClone(fc);
-
-    await fillFcElevations(fc, elevation, getState);
-  }
+  );
 
   const { target } = action.payload;
 
   if (
     await upload(
       'geojson',
-      new Blob(
+      exportBlob(
         [
           JSON.stringify({
             ...fc,
@@ -61,12 +40,8 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
             },
           }),
         ],
-        {
-          type:
-            target === 'dropbox'
-              ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
-              : 'application/geo+json',
-        },
+        'application/geo+json',
+        target,
       ),
       target,
       getState,

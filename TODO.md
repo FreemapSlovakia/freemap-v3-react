@@ -210,6 +210,44 @@ GraphHopper ≈ DEM); prompt the user where the data's provenance is unknown
       routePlanner/trackViewer; the export fills points + lines in one batched
       request, so it builds on the same shared fetch rather than that wrapper.
 
+## KML / TCX import & export (on `feat/kml-tcx-import`)
+
+Goal: import KML/KMZ (#605) and TCX, and export KML/KMZ (#500). togeojson
+already bundles `kml`/`tcx` parsers, so KML/TCX import needs no new dependency;
+KMZ needs an unzip step.
+
+- [x] **GeoJSON-transfer export is lossless.** `addGeojson` (now
+      `gpxFromGeojson.ts`) round-trips per-point elevation/time and the
+      `gpxtpx` sensor channels (hr, cad, atemp, speed, course, bearing) plus
+      `<power>`, and re-emits routes as `<rte>` via togeojson's `_gpxType`. This
+      removes the fidelity reason for keeping the raw source string.
+- [x] **Colorizers read recorded speed/course/bearing**, fall back to computed;
+      timestamps normalized to `coordinateProperties.times` ∪ `coordTimes`.
+- [x] **Import boundary** `parseTrackFile(text, filename)`: resolves format by
+      extension (falling back to the XML root element) to togeojson
+      `gpx`/`kml`/`tcx` or `parseGeojsonFile`; wired into both drop paths
+      (`Main.tsx` `onDrop`, `TrackViewerUploadModal`). GPX stays raw text for the
+      set-data processor; KML/TCX/GeoJSON become a FeatureCollection.
+- [x] **TCX normalization.** Relocates togeojson's top-level `cadences`/`speeds`/
+      `watts`/`heartRates` onto `coordinateProperties.{cads,speeds,powers,heart}`
+      so cadence/speed/power/HR colorize like an imported GPX.
+- [x] **KMZ import.** The drop handler reads `.kmz` as bytes and `extractKmlFromKmz`
+      (lazy `fflate`) unzips the root `.kml` (prefers `doc.kml`), which then flows
+      through the existing KML path. Bundled icons/overlays are ignored.
+- [ ] **KML/KMZ export** (#500): hand-write the XML (togeojson is import-only),
+      reusing the `geojsonToGpxDoc` pattern. TCX export only fits tracks.
+- [x] **Power channel mismatch fixed.** Garmin `<gpxpx:PowerExtension>` parses to
+      `coordinateProperties['gpxpx:PowerExtensions']`; `normalizePowerExtension`
+      (in the GPX import path) aliases it to `powers` so the power colorizer and
+      re-export pick it up like the plain `<power>` extension.
+- [x] **Dropped the retained raw source string.** Removed `trackGpx` from
+      trackViewer state; it survives only as a transient set-data input the
+      processor parses to GeoJSON. share-upload + My Maps save now serialize the
+      loaded GeoJSON to GPX via `geojsonToGpxDoc`; the export `import` path goes
+      straight through `addGeojson`. Safe because the track+waypoint export is
+      now lossless. (Truly exotic third-party GPX extensions are no longer
+      preserved — an accepted trade-off; freemap.sk is not a file host.)
+
 ### Idea for later — multi-property track chart
 
 Generalize the elevation chart into a multi-property chart: X axis = time **or**

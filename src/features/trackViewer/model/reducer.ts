@@ -27,7 +27,6 @@ export interface TrackViewerStateBase {
   // long segments). A cache: `null` means consumers read `trackGeojson`. Never
   // exported; cleared whenever `trackGeojson` changes.
   renderTrackGeojson: FeatureCollection | null;
-  trackGpx: string | null;
   trackUID: string | null;
   gpxUrl: string | null;
 }
@@ -47,7 +46,6 @@ export type ElevationDecision = 'undecided' | ElevationFillMode;
 export const cleanState: TrackViewerStateBase = {
   trackGeojson: null,
   renderTrackGeojson: null,
-  trackGpx: null,
   trackUID: null,
   gpxUrl: null, // TODO to separate reducer (?)
 };
@@ -69,8 +67,6 @@ export const trackViewerReducer = createReducer(
         colorizeTrackBy: state.colorizeTrackBy,
       }))
       .addCase(trackViewerSetData, (state, action) => {
-        state.trackGpx = action.payload.trackGpx ?? state.trackGpx;
-
         // A new track is a fresh elevation decision.
         if (action.payload.trackGeojson) {
           state.trackGeojson = action.payload.trackGeojson;

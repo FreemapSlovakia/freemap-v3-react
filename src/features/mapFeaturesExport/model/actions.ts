@@ -22,9 +22,17 @@ export const ExportTargetSchema = z.enum([
 
 export type ExportTarget = z.infer<typeof ExportTargetSchema>;
 
-export const ExportTypeSchema = z.enum(['gpx', 'geojson']);
+export const ExportTypeSchema = z.enum(['gpx', 'geojson', 'kml']);
 
 export type ExportType = z.infer<typeof ExportTypeSchema>;
+
+// Button labels per format. Typed as a full record so adding a member to
+// ExportTypeSchema without a label is a compile error.
+export const EXPORT_FORMAT_LABELS: Record<ExportType, string> = {
+  gpx: 'GPX',
+  geojson: 'GeoJSON',
+  kml: 'KML',
+};
 
 /**
  * Whether to fill elevation into exported features: `none` leaves coordinates

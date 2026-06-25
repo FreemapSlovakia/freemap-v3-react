@@ -1,13 +1,14 @@
 import { cumulativeDistances, smoothAngles } from '@shared/geoutils.js';
 import { bearing } from '@turf/bearing';
 import { getCoords } from '@turf/invariant';
-import type { Colorizer } from '../colorize.js';
+import { type Colorizer, readNumericArray } from '../colorize.js';
 import { featureSmoothingSpan } from '../smoothing.js';
 
 /**
- * Colour by compass bearing of each segment, mapped cyclically onto a hue
- * wheel so opposite directions get opposite colours. North maps to red,
- * East to yellow-green, South to cyan, West to magenta.
+ * Colour by compass bearing, mapped cyclically onto a hue wheel so opposite
+ * directions get opposite colours. North maps to red, East to yellow-green,
+ * South to cyan, West to magenta. Prefers the device-recorded course when the
+ * track carries one, otherwise derives heading from the segment geometry.
  */
 export const headingColorizer: Colorizer = {
   // Hotline lerps RGB linearly between stops, so a 7-stop wheel is enough
@@ -25,17 +26,25 @@ export const headingColorizer: Colorizer = {
     features.map((feature) => {
       const coords: [number, number][] = getCoords(feature);
 
+      const recorded = readNumericArray(feature, 'courses', coords.length);
+
       let last = 0;
 
-      // Heading at a point is the bearing of the segment leaving it. The last
-      // point, and any zero-length segment (e.g. a coordinate duplicated where
-      // two route steps meet), reuse the previous heading instead of snapping
-      // to north.
+      // Heading at a point is the device-recorded course when present, else the
+      // bearing of the segment leaving it. The last point, and any zero-length
+      // segment (e.g. a coordinate duplicated where two route steps meet),
+      // reuse the previous heading instead of snapping to north.
       const bearings = coords.map((coord, i) => {
-        const next = coords[i + 1];
+        const rec = recorded?.[i];
 
-        if (next && (next[0] !== coord[0] || next[1] !== coord[1])) {
-          last = bearing([coord[0], coord[1]], [next[0], next[1]]);
+        if (rec != null && Number.isFinite(rec)) {
+          last = rec;
+        } else {
+          const next = coords[i + 1];
+
+          if (next && (next[0] !== coord[0] || next[1] !== coord[1])) {
+            last = bearing([coord[0], coord[1]], [next[0], next[1]]);
+          }
         }
 
         return last;

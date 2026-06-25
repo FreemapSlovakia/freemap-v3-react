@@ -24,8 +24,6 @@ import {
   utf8ToBase64,
 } from '@shared/markerSvg.js';
 import { escapeHtml } from '@shared/stringUtils.js';
-import type { LatLon } from '@shared/types/common.js';
-import { Feature, FeatureCollection } from 'geojson';
 import { iconSpecToGarminSym } from '../../garminSymMapping.js';
 import {
   iconSpecToOsmAndIcon,
@@ -37,27 +35,18 @@ import { exportElevationCancelActions } from './fillElevations.js';
 import {
   addAttribute,
   createElement,
+  FM_NS,
   GARMIN_NS,
   GPX_NS,
   GPX_STYLE_NS,
+  GPXTPX_NS,
   LOCUS_NS,
+  OSMAND_NS,
+  toLatLon,
+  XMLNS_NS,
 } from './gpxExporter.js';
-import { upload } from './upload.js';
-
-// Freemap-private namespace for lossless round-trip of drawing-point styling
-// (markerType + icon spec + color) that has no standard GPX equivalent. Other
-// consumers ignore unknown extension elements per the GPX spec.
-const FM_NS = 'https://www.freemap.sk/GPX/1/0';
-
-// OsmAnd's GPX waypoint extension namespace, declared on the root so we can
-// emit `<osmand:icon>`, `<osmand:background>` and `<osmand:color>`.
-const OSMAND_NS = 'https://osmand.net';
-
-// The namespace that namespace declarations themselves live in. Declaring
-// `xmlns:*` attributes via setAttributeNS with this namespace makes
-// XMLSerializer treat them as in-scope prefixes instead of redeclaring them
-// on every child element.
-const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
+import { addGeojson } from './gpxFromGeojson.js';
+import { exportBlob, upload } from './upload.js';
 
 // TODO instead of creating XML directly, create JSON and serialize it to XML
 
@@ -85,6 +74,8 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:fm', FM_NS);
 
   doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:osmand', OSMAND_NS);
+
+  doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:gpxtpx', GPXTPX_NS);
 
   addAttribute(doc.documentElement, 'version', '1.1');
 
@@ -179,7 +170,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('import')) {
-    addGpx(doc, trackViewer);
+    addImportedTrack(doc, trackViewer);
   }
 
   if (set.has('search')) {
@@ -223,12 +214,11 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   if (
     await upload(
       'gpx',
-      new Blob([new XMLSerializer().serializeToString(doc)], {
-        type:
-          target === 'dropbox'
-            ? 'application/octet-stream' /* 'application/gpx+xml' is denied */
-            : 'application/gpx+xml',
-      }),
+      exportBlob(
+        [new XMLSerializer().serializeToString(doc)],
+        'application/gpx+xml',
+        target,
+      ),
       target,
       getState,
       dispatch,
@@ -822,13 +812,6 @@ function addPlannedRoute(
   }
 }
 
-function toLatLon(latLon: LatLon) {
-  return {
-    lat: latLon.lat.toString(),
-    lon: latLon.lon.toString(),
-  };
-}
-
 function toLocusAlpha(opacity: number): string {
   return Math.round(Math.max(0, Math.min(1, opacity)) * 255)
     .toString(16)
@@ -924,26 +907,8 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
   }
 }
 
-function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
-  if (trackGpx) {
-    const domParser = new DOMParser();
-
-    const gpxDoc: XMLDocument = domParser.parseFromString(trackGpx, 'text/xml');
-
-    const r = getSupportedGpxElements(gpxDoc);
-
-    const nodes: Node[] = [];
-
-    let curr: Node | null;
-
-    while ((curr = r.iterateNext())) {
-      nodes.push(curr);
-    }
-
-    for (const node of nodes) {
-      doc.documentElement.appendChild(node);
-    }
-  } else if (trackGeojson) {
+function addImportedTrack(doc: Document, { trackGeojson }: TrackViewerState) {
+  if (trackGeojson) {
     addGeojson(doc, trackGeojson);
   }
 }
@@ -956,141 +921,4 @@ function getSupportedGpxElements(doc: Document) {
     XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
     null,
   );
-}
-
-function addGeojson(doc: Document, geojson: Feature | FeatureCollection) {
-  for (const pass of ['wpt', 'trk'] as const) {
-    for (const feature of geojson.type === 'FeatureCollection'
-      ? geojson.features
-      : [geojson]) {
-      const g = feature.geometry;
-
-      switch (g.type) {
-        case 'Point':
-          if (pass === 'wpt') {
-            const wptEle = createElement(
-              doc.documentElement,
-              'wpt',
-              undefined,
-              toLatLon({
-                lat: g.coordinates[1],
-                lon: g.coordinates[0],
-              }),
-            );
-
-            if (feature.properties?.['ele']) {
-              createElement(wptEle, 'ele', feature.properties['ele']);
-            }
-
-            if (feature.properties?.['name']) {
-              createElement(wptEle, 'name', feature.properties['name']);
-            }
-          }
-
-          break;
-
-        case 'MultiPoint': {
-          if (pass === 'wpt') {
-            for (const pt of g.coordinates) {
-              const wptEle = createElement(
-                doc.documentElement,
-                'wpt',
-                undefined,
-                toLatLon({
-                  lat: pt[1],
-                  lon: pt[0],
-                }),
-              );
-
-              if (feature.properties?.['ele']) {
-                createElement(wptEle, 'ele', feature.properties['ele']);
-              }
-
-              if (feature.properties?.['name']) {
-                createElement(wptEle, 'name', feature.properties['name']);
-              }
-            }
-          }
-
-          break;
-        }
-
-        case 'LineString': {
-          if (pass === 'trk') {
-            const trkEle = createElement(doc.documentElement, 'trk');
-
-            if (feature.properties?.['name']) {
-              createElement(trkEle, 'name', feature.properties['name']);
-            }
-
-            const trksegEle = createElement(trkEle, 'trkseg');
-
-            for (const pt of g.coordinates) {
-              createElement(
-                trksegEle,
-                'trkpt',
-                undefined,
-                toLatLon({ lat: pt[1], lon: pt[0] }),
-              );
-            }
-          }
-
-          break;
-        }
-
-        case 'Polygon':
-
-        // eslint-disable-next-line no-fallthrough
-        case 'MultiLineString':
-          if (pass === 'trk') {
-            const trkEle = createElement(doc.documentElement, 'trk');
-
-            if (feature.properties?.['name']) {
-              createElement(trkEle, 'name', feature.properties['name']);
-            }
-
-            for (const seg of g.coordinates) {
-              const trksegEle = createElement(trkEle, 'trkseg');
-
-              for (const pt of seg) {
-                createElement(
-                  trksegEle,
-                  'trkpt',
-                  undefined,
-                  toLatLon({ lat: pt[1], lon: pt[0] }),
-                );
-              }
-            }
-          }
-
-          break;
-
-        case 'MultiPolygon':
-          if (pass === 'trk') {
-            const trkEle = createElement(doc.documentElement, 'trk');
-
-            if (feature.properties?.['name']) {
-              createElement(trkEle, 'name', feature.properties['name']);
-            }
-
-            for (const seg0 of g.coordinates) {
-              for (const seg of seg0) {
-                const trksegEle = createElement(trkEle, 'trkseg');
-
-                for (const pt of seg) {
-                  createElement(
-                    trksegEle,
-                    'trkpt',
-                    undefined,
-                    toLatLon({ lat: pt[1], lon: pt[0] }),
-                  );
-                }
-              }
-            }
-          }
-
-          break;
-      }
-    }
-  }
 }

@@ -16,7 +16,10 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
   async handle({ getState, dispatch, action, toastError }) {
     try {
-      if (getState().trackViewer.trackGpx && !getState().trackViewer.trackUID) {
+      if (
+        getState().trackViewer.trackGeojson &&
+        !getState().trackViewer.trackUID
+      ) {
         await handleTrackUpload({
           dispatch,
           getState,

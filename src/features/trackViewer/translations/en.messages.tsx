@@ -27,7 +27,7 @@ const en: TrackViewerMessages = {
   },
   uploadModal: {
     title: 'Import file',
-    drop: 'Drop a GPX or GeoJSON file here, or click here to select it.',
+    drop: 'Drop a GPX, KML, KMZ, TCX or GeoJSON file here, or click here to select it.',
   },
   elevationFill: {
     title: 'Elevation data',

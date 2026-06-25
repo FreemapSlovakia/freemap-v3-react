@@ -73,7 +73,7 @@ export function useAvailableExportables(): string {
       exportables.push('tracking');
     }
 
-    if (state.trackViewer.trackGpx || state.trackViewer.trackGeojson) {
+    if (state.trackViewer.trackGeojson) {
       exportables.push('import');
     }
 

@@ -15,7 +15,12 @@ export default defineConfig({
       { find: /^@osm\//, replacement: `${src}/osm/` },
       { find: /^@\//, replacement: `${src}/` },
       // Stub static assets — rspack's asset loaders don't run under Vitest.
-      { find: /\.(png|jpe?g|gif|svg|webp|css|scss)$/, replacement: assetStub },
+      // The pattern must span the whole id (not just the extension) so the
+      // alias replaces the entire path with the stub rather than mangling it.
+      {
+        find: /^.*\.(png|jpe?g|gif|svg|webp|css|scss)$/,
+        replacement: assetStub,
+      },
     ],
   },
   // Note: the transitively-imported `mapDefinitions.tsx` / `transportTypeDefs.tsx`
