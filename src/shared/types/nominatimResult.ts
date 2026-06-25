@@ -4,7 +4,9 @@ import { GeoJSONGeometrySchema } from 'zod-geojson';
 export const NominatimResultSchema = z.object({
   osm_id: z.number().optional(),
   osm_type: z.enum(['node', 'way', 'relation']).optional(),
-  geojson: GeoJSONGeometrySchema,
+  // Nominatim only includes geojson (requested via polygon_geojson) for results
+  // that have geometry; it is absent otherwise.
+  geojson: GeoJSONGeometrySchema.optional(),
   lat: z.string(),
   lon: z.string(),
   name: z.string().optional(),
