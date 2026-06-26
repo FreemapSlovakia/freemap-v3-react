@@ -130,5 +130,16 @@ function enrichTracksWithExtensions(
     if (gpxStyleFill) {
       props['gpx_style:hasFill'] = 'true';
     }
+
+    // togeojson reads the gpx_style `<width>` as millimetres and scales it to
+    // pixels (×96/25.4), so a "6" becomes ~23 px. Real-world writers (Locus, …)
+    // mean pixels, so override `stroke-width` with the raw value as pixels.
+    const gpxStyleWidth = trk
+      .getElementsByTagNameNS(GPX_STYLE_NS, 'width')[0]
+      ?.textContent?.trim();
+
+    if (gpxStyleWidth && Number.isFinite(Number(gpxStyleWidth))) {
+      props['stroke-width'] = Number(gpxStyleWidth);
+    }
   }
 }

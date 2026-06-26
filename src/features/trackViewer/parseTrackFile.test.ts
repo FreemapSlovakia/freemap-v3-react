@@ -137,6 +137,25 @@ describe('parseTrackFile', () => {
     expect(parseTrackFile('not json', 'x.geojson')).toBeNull();
   });
 
+  it('keeps a gpx_style line width in pixels (not mm-scaled by togeojson)', () => {
+    const gpx = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+ <trk><name>T</name>
+  <extensions>
+   <line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+    <color>0000FF</color><opacity>0.7</opacity><width>6.0</width>
+   </line>
+  </extensions>
+  <trkseg><trkpt lat="48" lon="17"/><trkpt lat="48.1" lon="17.1"/></trkseg>
+ </trk>
+</gpx>`;
+
+    const f = parseTrackFile(gpx, 't.gpx')?.features[0];
+
+    // togeojson would scale 6 mm → ~22.7 px; we honor it as 6 px.
+    expect(f?.properties?.['stroke-width']).toBe(6);
+  });
+
   it('stamps fm:kind from the source: route and waypoint for GPX rte/wpt', () => {
     const r = parseTrackFile(GPX_ROUTE_AND_WAYPOINT, 'r.gpx');
 
