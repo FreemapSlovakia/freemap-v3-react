@@ -98,5 +98,73 @@ signal, battery level, distance, time, … Applies to trackViewer and tracking
 (and, where data exists, the planned route). The colorizer data adapters already
 expose most of these series, so the chart and the colorizers could share one
 per-track "series" extraction layer.
-</content>
-</invoke>
+
+## Track viewer: generic geodata vs. recorded tracks
+
+The track viewer began as a GPX recording viewer and grew into a general geodata
+viewer (GPX/KML/KMZ/TCX/GeoJSON, later maybe GPKG). Affordances written for a
+single recorded GPS log now misfire on arbitrary imported geometry. The
+through-line of the fixes below is **provenance, not heuristics**: tag each
+feature at parse time with what it actually was in the source and key behavior
+off that — never re-derive "is this a track?" from density/timestamps.
+
+- [ ] **Tag feature provenance at parse time.** In `parseTrackFile`, normalize a
+      stable own property (e.g. `fm:kind: 'track' | 'route' | 'waypoint' |
+      'feature'`) from togeojson's `_gpxType` (`trk`/`rte`), Point waypoints, TCX
+      (always `track`), and KML/GeoJSON (`feature`). Also stamp `fm:source`
+      (originating filename) for multi-file views. This is the foundation for
+      everything below.
+- [ ] **Start/finish markers + distance labels only for `fm:kind === 'track'`.**
+      A KML/GeoJSON full of lines/polygons gets no flags (kills the clutter).
+      With a single track keep the permanent distance tooltip; with several show
+      it on hover/selection only.
+- [ ] **One track = one unit (single- or multi-segment).** A `<trk>` with
+      multiple `<trkseg>` is one interrupted recording → togeojson emits a single
+      `MultiLineString` (coordTimes nested per segment). Today `flatten()` in
+      `TrackViewerResult` / `useStartFinishPoints` explodes it into N lines → N
+      start/finish marker pairs. Treat the MultiLineString as one track: one
+      start flag, one finish flag + total distance. Flatten only for rendering
+      the polylines, not for markers/stats.
+- [~] **Multi-segment stats & elevation profile.** Aggregate distance/time across
+      segments with the inter-segment gap excluded (no phantom straight-line
+      distance across a pause). Elevation profile lays segments end-to-end on the
+      cumulative-distance axis with a visible discontinuity at the boundary, not
+      a sloped bridge. **Done:** the elevation chart now charts a `MultiLineString`
+      track — `elevationChartSetTrackGeojson` accepts it, the chart handler is
+      segment-aware (gap break + climb-baseline reset between segments, no jump
+      distance), `containsElevations`/`elevationCoverage`/`enrichElevations` are
+      multi-segment-aware, and the suitability selector + toggle/resolve
+      processors no longer drop `MultiLineString`. `densifyAlong` /
+      `ensureRenderGeojson` densify a `MultiLineString` per segment (no inserts
+      across the gap), so a server elevation override gets the same chart detail
+      as a single-segment track. A new `trackViewerSetElevation` processor
+      refreshes an already-open chart when elevation is refilled (it no longer
+      goes stale until re-opened). **Still TODO:** the "more info" toast stats and
+      start/finish markers treating a multi-segment recording as one unit
+      (overlaps the marker item above).
+- [ ] **Operate on a chosen track, not `features[0]`.** Elevation chart / "more
+      info" / colorize currently silently pick the first line; `trackGeojsonIs
+      SuitableForElevationChart` even checks `features[0]` (wrongly disables the
+      chart when the first feature is a waypoint/polygon). With multiple tracks,
+      clicking a line selects it and the actions operate on the selection (or an
+      explicit "All"); single track behaves as today.
+- [ ] **Waypoints on the elevation profile.** Pair `<wpt>` points onto the
+      profile by time when both the waypoint and track have timestamps (handles
+      self-crossing tracks); else by spatial projection onto the polyline within a
+      max-snap-distance; else omit.
+- [ ] **Honest, non-destructive convert-to-drawing.** Drawing state lives in the
+      URL hash, so per-vertex HR/cadence/elevation genuinely can't be carried —
+      accept the loss instead of fighting it. (a) Keep the source track loaded
+      after converting (or convert into a new drawing rather than consuming the
+      track) so the rich data isn't gone. (b) Warn before converting only when
+      there's data to lose (`fm:kind === 'track'` with sensor/elevation series).
+      (c) Offer the simplify prompt only for `fm:kind === 'track'`; routes and
+      generic geometry convert at full fidelity with no prompt.
+- [ ] **Open/add multiple files into one view.** Append parsed features into the
+      existing `trackGeojson` (instead of replacing), each carrying `fm:kind` /
+      `fm:source`. Needs an "Add file(s)…" path (or multi-select) and the
+      selection model above. Provenance tags drive a small legend/list with
+      per-source show/hide/remove. Unlike multi-*segment* (one activity), multiple
+      *tracks* are not auto-concatenated for stats — default to the selected
+      track, optionally offer an "All tracks" aggregate.
+

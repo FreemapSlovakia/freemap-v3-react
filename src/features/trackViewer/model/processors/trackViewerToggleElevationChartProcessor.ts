@@ -8,8 +8,13 @@ import {
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
 import { elevationCoverage } from '@shared/geoutils.js';
-import { Feature, LineString } from 'geojson';
+import { Feature, LineString, MultiLineString } from 'geojson';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
+
+// A multi-segment recording arrives as a single `MultiLineString` feature; it's
+// one track, charted as one unit (segments laid end-to-end).
+const isLineLike = (f: Feature): f is Feature<LineString | MultiLineString> =>
+  f.geometry.type === 'LineString' || f.geometry.type === 'MultiLineString';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,
@@ -22,10 +27,7 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
 
     const { trackGeojson, elevationDecision } = getState().trackViewer;
 
-    const lineFeatures =
-      trackGeojson?.features.filter(
-        (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-      ) ?? [];
+    const lineFeatures = trackGeojson?.features.filter(isLineLike) ?? [];
 
     const first = lineFeatures[0];
 
@@ -51,9 +53,8 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
       await ensureRenderGeojson(getState, dispatch);
 
       const renderFirst =
-        getState().trackViewer.renderTrackGeojson?.features.find(
-          (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-        ) ?? first;
+        getState().trackViewer.renderTrackGeojson?.features.find(isLineLike) ??
+        first;
 
       dispatch(elevationChartSetTrackGeojson(renderFirst, true));
 

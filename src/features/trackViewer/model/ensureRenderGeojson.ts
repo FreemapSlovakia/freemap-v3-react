@@ -2,7 +2,7 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
 import { densifyAlong } from '@shared/elevation.js';
-import type { Feature, LineString } from 'geojson';
+import type { Feature, LineString, MultiLineString } from 'geojson';
 import type { Dispatch } from 'redux';
 import {
   trackViewerDelete,
@@ -10,8 +10,10 @@ import {
   trackViewerSetRenderGeojson,
 } from './actions.js';
 
-const isLine = (f: Feature): f is Feature<LineString> =>
-  f.geometry.type === 'LineString';
+// A multi-segment recording arrives as a single `MultiLineString` feature; it
+// densifies per segment.
+const isLine = (f: Feature): f is Feature<LineString | MultiLineString> =>
+  f.geometry.type === 'LineString' || f.geometry.type === 'MultiLineString';
 
 /**
  * Lazily builds the densified render copy of the loaded track and caches it via

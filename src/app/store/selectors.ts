@@ -191,10 +191,10 @@ export const drawingLinePolys = (state: RootState): boolean => {
 export const trackGeojsonIsSuitableForElevationChart = (
   state: RootState,
 ): boolean => {
-  return (
-    state.trackViewer.trackGeojson?.features?.[0]?.geometry.type ===
-    'LineString'
-  );
+  const type = state.trackViewer.trackGeojson?.features?.[0]?.geometry.type;
+
+  // `MultiLineString` is a multi-segment recording (an interrupted track).
+  return type === 'LineString' || type === 'MultiLineString';
 };
 
 export const askingCookieConsentSelector = (state: RootState): boolean =>

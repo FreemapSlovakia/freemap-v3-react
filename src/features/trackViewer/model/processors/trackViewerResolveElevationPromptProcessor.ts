@@ -11,8 +11,12 @@ import {
 import { trackInfoToast } from '@features/trackViewer/model/trackInfoToast.js';
 import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 import { enrichElevations } from '@shared/elevation.js';
-import { Feature, LineString } from 'geojson';
+import { Feature, LineString, MultiLineString } from 'geojson';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
+
+// A multi-segment recording arrives as a single `MultiLineString` feature.
+const isLineLike = (f: Feature): f is Feature<LineString | MultiLineString> =>
+  f.geometry.type === 'LineString' || f.geometry.type === 'MultiLineString';
 
 export const trackViewerResolveElevationPromptProcessor: Processor<
   typeof trackViewerResolveElevationPrompt
@@ -25,9 +29,7 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       return;
     }
 
-    const lineFeatures = trackGeojson.features.filter(
-      (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-    );
+    const lineFeatures = trackGeojson.features.filter(isLineLike);
 
     const { mode, consumer } = action.payload;
 
@@ -42,7 +44,7 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       let i = 0;
 
       const features = trackGeojson.features.map((f) =>
-        f.geometry.type === 'LineString' ? lines[i++]! : f,
+        isLineLike(f) ? lines[i++]! : f,
       );
 
       dispatch(trackViewerSetElevation({ ...trackGeojson, features }));
@@ -89,9 +91,8 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
     await ensureRenderGeojson(getState, dispatch);
 
     const first =
-      getState().trackViewer.renderTrackGeojson?.features.find(
-        (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-      ) ?? lines[0];
+      getState().trackViewer.renderTrackGeojson?.features.find(isLineLike) ??
+      lines[0];
 
     if (first) {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);

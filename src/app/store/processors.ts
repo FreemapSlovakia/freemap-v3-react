@@ -79,6 +79,7 @@ import { trackingFollowProcessor } from '@features/tracking/model/processors/tra
 import { trackViewerDensifyProcessor } from '@features/trackViewer/model/processors/trackViewerDensifyProcessor.js';
 import { trackViewerDownloadTrackProcessor } from '@features/trackViewer/model/processors/trackViewerDownloadTrackProcessor.js';
 import { trackViewerGpxLoadProcessor } from '@features/trackViewer/model/processors/trackViewerGpxLoadProcessor.js';
+import { trackViewerRefreshElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerRefreshElevationChartProcessor.js';
 import { trackViewerResolveElevationPromptProcessor } from '@features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.js';
 import { trackViewerSetTrackDataProcessor } from '@features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.js';
 import { trackViewerToggleElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.js';
@@ -141,6 +142,7 @@ export const processors = [
   trackViewerUploadTrackProcessor,
   trackViewerToggleElevationChartProcessor,
   trackViewerResolveElevationPromptProcessor,
+  trackViewerRefreshElevationChartProcessor,
   trackViewerDensifyProcessor,
   routePlannerFindRouteProcessor,
   galleryDeletePictureProcessor,
