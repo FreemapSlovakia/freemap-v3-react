@@ -23,5 +23,6 @@
   & svg {
     cursor: move;
     user-select: none;
+    font-size: 12px;
   }
 }

@@ -1,6 +1,10 @@
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { elevationChartSetTrackGeojson } from '@features/elevationChart/model/actions.js';
-import { isTrackLine, resolveActiveTrack } from '../../trackSelection.js';
+import {
+  isTrackLine,
+  resolveActiveTrack,
+  trackWaypoints,
+} from '../../trackSelection.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 const handle: ProcessorHandler = async ({ dispatch, getState }) => {
@@ -23,6 +27,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState }) => {
     elevationChartSetTrackGeojson(
       rendered && isTrackLine(rendered) ? rendered : active.feature,
       true,
+      trackWaypoints(trackGeojson),
     ),
   );
 };

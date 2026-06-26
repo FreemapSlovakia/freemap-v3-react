@@ -12,7 +12,7 @@ import { trackInfoToast } from '@features/trackViewer/model/trackInfoToast.js';
 import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 import { enrichElevations } from '@shared/elevation.js';
 import { Feature, LineString, MultiLineString } from 'geojson';
-import { resolveActiveTrack } from '../../trackSelection.js';
+import { resolveActiveTrack, trackWaypoints } from '../../trackSelection.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 // A multi-segment recording arrives as a single `MultiLineString` feature.
@@ -108,7 +108,13 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
     if (first) {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
-      dispatch(elevationChartSetTrackGeojson(first, true));
+      dispatch(
+        elevationChartSetTrackGeojson(
+          first,
+          true,
+          trackWaypoints(after.trackGeojson),
+        ),
+      );
     }
   },
 };

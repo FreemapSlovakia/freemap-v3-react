@@ -1,6 +1,5 @@
 import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
-import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
 import { fetchElevations } from '@shared/elevation.js';
 import { containsElevations, lineSegments } from '@shared/geoutils.js';
@@ -9,32 +8,80 @@ import { distance } from '@turf/distance';
 import { getCoord } from '@turf/invariant';
 import { length } from '@turf/length';
 import { Feature, LineString, MultiLineString, Position } from 'geojson';
-import { Dispatch } from 'redux';
 import {
+  type ElevationWaypoint,
   elevationChartClose,
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
 } from './actions.js';
-import type { ElevationProfilePoint } from './reducer.js';
+import type {
+  ElevationProfilePoint,
+  ElevationProfileWaypoint,
+} from './reducer.js';
+
+// A waypoint nearer than this to the track is considered "on" it and pinned to
+// the profile; farther ones (a POI off to the side) are omitted.
+const WAYPOINT_SNAP_METERS = 100;
 
 const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
   dispatch,
   getState,
   action,
 }) => {
-  const { trackGeojson, keepRecorded } = action.payload;
+  const { trackGeojson, keepRecorded, waypoints } = action.payload;
 
   // `keepRecorded` shows the recorded elevation verbatim (gaps included); a
   // fully-elevated track is read locally regardless. Everything else samples a
   // complete profile from the server.
-  if (keepRecorded || containsElevations(trackGeojson)) {
-    resolveElevationProfilePointsLocally(trackGeojson, dispatch);
-  } else {
-    await resolveElevationProfilePointsViaApi(getState, trackGeojson, dispatch);
-  }
+  const points =
+    keepRecorded || containsElevations(trackGeojson)
+      ? resolveElevationProfilePointsLocally(trackGeojson)
+      : await resolveElevationProfilePointsViaApi(getState, trackGeojson);
+
+  dispatch(
+    elevationChartSetElevationProfile({
+      points,
+      waypoints: pairWaypoints(points, waypoints),
+    }),
+  );
 };
 
 export default handle;
+
+// Pins each waypoint to the profile at its nearest track point (matching the
+// profile's own distance axis), dropping any farther than the snap threshold.
+// Self-crossing tracks can mis-snap; good enough until time-based pairing.
+function pairWaypoints(
+  points: ElevationProfilePoint[],
+  waypoints: ElevationWaypoint[],
+): ElevationProfileWaypoint[] {
+  // Only points with a real elevation can carry a marker (and a y-position).
+  const elevated = points.filter((p) => Number.isFinite(p.ele));
+
+  if (elevated.length === 0) {
+    return [];
+  }
+
+  return waypoints.flatMap((wp) => {
+    let nearest = elevated[0]!;
+
+    let nearestMeters = Infinity;
+
+    for (const p of elevated) {
+      const d = distance([wp.lon, wp.lat], [p.lon, p.lat], { units: 'meters' });
+
+      if (d < nearestMeters) {
+        nearestMeters = d;
+
+        nearest = p;
+      }
+    }
+
+    return nearestMeters <= WAYPOINT_SNAP_METERS
+      ? [{ distance: nearest.distance, ele: nearest.ele, label: wp.label }]
+      : [];
+  });
+}
 
 // A point that breaks the chart line between two recording segments: a
 // non-finite `ele` (so the chart splits the line), placed at the segment-end
@@ -57,8 +104,7 @@ function gapPoint(
 
 function resolveElevationProfilePointsLocally(
   trackGeojson: Feature<LineString | MultiLineString>,
-  dispatch: Dispatch<RootAction>,
-) {
+): ElevationProfilePoint[] {
   let dist = 0;
 
   let prevPt: Position | undefined;
@@ -124,14 +170,13 @@ function resolveElevationProfilePointsLocally(
     }
   }
 
-  dispatch(elevationChartSetElevationProfile(elevationProfilePoints));
+  return elevationProfilePoints;
 }
 
 async function resolveElevationProfilePointsViaApi(
   getState: () => RootState,
   trackGeojson: Feature<LineString | MultiLineString>,
-  dispatch: Dispatch<RootAction>,
-) {
+): Promise<ElevationProfilePoint[]> {
   // Sample each segment at ~screen resolution onto a shared distance axis, with
   // a gap entry between segments. `gap` entries keep their non-finite `ele`
   // (no server lookup, no climb across the pause).
@@ -247,9 +292,5 @@ async function resolveElevationProfilePointsViaApi(
     prevEle = ele ?? undefined;
   }
 
-  dispatch(
-    elevationChartSetElevationProfile(
-      entries.map(({ gap: _gap, ...point }) => point),
-    ),
-  );
+  return entries.map(({ gap: _gap, ...point }) => point);
 }

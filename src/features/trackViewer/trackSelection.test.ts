@@ -1,6 +1,10 @@
 import type { Feature, FeatureCollection } from 'geojson';
 import { describe, expect, it } from 'vitest';
-import { resolveActiveTrack, trackLineFeatures } from './trackSelection.js';
+import {
+  resolveActiveTrack,
+  trackLineFeatures,
+  trackWaypoints,
+} from './trackSelection.js';
 
 const point: Feature = {
   type: 'Feature',
@@ -64,5 +68,20 @@ describe('resolveActiveTrack', () => {
 
   it('is undefined when there are no lines', () => {
     expect(resolveActiveTrack(fc([point]), null)).toBeUndefined();
+  });
+});
+
+describe('trackWaypoints', () => {
+  it('extracts Point features as lat/lon with their name label', () => {
+    const named: Feature = {
+      type: 'Feature',
+      properties: { name: 'Hut' },
+      geometry: { type: 'Point', coordinates: [17, 48] },
+    };
+
+    expect(trackWaypoints(fc([named, line('a'), point]))).toEqual([
+      { lat: 48, lon: 17, label: 'Hut' },
+      { lat: 0, lon: 0, label: undefined },
+    ]);
   });
 });

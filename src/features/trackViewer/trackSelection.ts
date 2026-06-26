@@ -48,3 +48,26 @@ export function resolveActiveTrack(
 
   return lines[0];
 }
+
+/** Standalone points (GPX `<wpt>`) to mark along the elevation profile. */
+export function trackWaypoints(
+  fc: FeatureCollection | null | undefined,
+): { lat: number; lon: number; label?: string }[] {
+  return (fc?.features ?? []).flatMap((feature) => {
+    if (feature.geometry.type !== 'Point') {
+      return [];
+    }
+
+    const [lon, lat] = feature.geometry.coordinates;
+
+    const name = feature.properties?.['name'];
+
+    return [
+      {
+        lat: lat!,
+        lon: lon!,
+        label: typeof name === 'string' ? name : undefined,
+      },
+    ];
+  });
+}

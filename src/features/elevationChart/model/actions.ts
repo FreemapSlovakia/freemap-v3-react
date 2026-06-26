@@ -1,6 +1,16 @@
-import { ElevationProfilePoint } from '@features/elevationChart/model/reducer.js';
+import {
+  ElevationProfilePoint,
+  ElevationProfileWaypoint,
+} from '@features/elevationChart/model/reducer.js';
 import { createAction } from '@reduxjs/toolkit';
 import { Feature, LineString, MultiLineString } from 'geojson';
+
+/** A waypoint to pair onto the profile (by nearest track point). */
+export interface ElevationWaypoint {
+  lat: number;
+  lon: number;
+  label?: string;
+}
 
 export const elevationChartSetTrackGeojson = createAction(
   'ELEVATION_CHART_SET_TRACK_GEOJSON',
@@ -8,11 +18,13 @@ export const elevationChartSetTrackGeojson = createAction(
   // it's missing) instead of sampling a complete profile from the server. A
   // `MultiLineString` is a multi-segment recording (an interrupted track): its
   // segments are laid end-to-end on the distance axis with a break between them.
+  // `waypoints` are points (e.g. GPX <wpt>) to mark along the profile.
   (
     trackGeojson: Feature<LineString | MultiLineString>,
     keepRecorded = false,
+    waypoints: ElevationWaypoint[] = [],
   ) => ({
-    payload: { trackGeojson, keepRecorded },
+    payload: { trackGeojson, keepRecorded, waypoints },
   }),
 );
 
@@ -23,6 +35,7 @@ export const elevationChartSetActivePoint =
     'ELEVATION_CHART_SET_ACTIVE_POINT',
   );
 
-export const elevationChartSetElevationProfile = createAction<
-  ElevationProfilePoint[]
->('ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS');
+export const elevationChartSetElevationProfile = createAction<{
+  points: ElevationProfilePoint[];
+  waypoints: ElevationProfileWaypoint[];
+}>('ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS');

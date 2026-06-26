@@ -8,7 +8,11 @@ import {
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
 import { elevationCoverage } from '@shared/geoutils.js';
-import { isTrackLine, resolveActiveTrack } from '../../trackSelection.js';
+import {
+  isTrackLine,
+  resolveActiveTrack,
+  trackWaypoints,
+} from '../../trackSelection.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
@@ -55,6 +59,7 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
         elevationChartSetTrackGeojson(
           rendered && isTrackLine(rendered) ? rendered : active.feature,
           true,
+          trackWaypoints(trackGeojson),
         ),
       );
 

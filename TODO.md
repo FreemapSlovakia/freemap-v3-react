@@ -90,14 +90,25 @@ limits; avoid third-party data (license risk — see Strava) and community conte
       (`gis.nlcsk.org`), ŠGÚDŠ geology WMS (`ags.geology.sk`), and ÚGKK ortho/DMR
       (LLS DMR). Own renders (Outdoor map, parametric hillshade SK/CZ) are fine.
 
-## Idea for later — multi-property track chart
+## Elevation / track chart
 
-Generalize the elevation chart into a multi-property chart: X axis = time **or**
-distance; Y axis selectable among elevation, speed, orientation/heading, GSM
-signal, battery level, distance, time, … Applies to trackViewer and tracking
-(and, where data exists, the planned route). The colorizer data adapters already
-expose most of these series, so the chart and the colorizers could share one
-per-track "series" extraction layer.
+- [ ] **Multi-property track chart.** Generalize the elevation chart into a
+      multi-property chart: X axis = time **or** distance; Y axis selectable among
+      elevation, speed, orientation/heading, GSM signal, battery level, distance,
+      time, … Applies to trackViewer and tracking (and, where data exists, the
+      planned route). The colorizer data adapters already expose most of these
+      series, so the chart and the colorizers could share one per-track "series"
+      extraction layer.
+- [ ] **Toggle waypoints in the chart.** An option to show/hide the waypoint
+      markers + labels on the chart.
+- [ ] **Waypoint distance ticks on the x axis.** Option to show each waypoint's
+      distance value along the x axis.
+- [ ] **Waypoint elevation readout.** Option to show a waypoint's elevation —
+      either on the y axis or appended to the waypoint label (design undecided).
+- [ ] **Save chart image.** A button to export the chart as an image (SVG).
+- [ ] **Further chart enrichments.** Axis units, and think about what else is
+      useful (grid/legend, hover crosshair readout, gradient/steepness shading,
+      min/max/avg markers, …).
 
 ## Track viewer: generic geodata vs. recorded tracks
 
@@ -159,10 +170,16 @@ off that — never re-derive "is this a track?" from density/timestamps.
       load. `trackGeojsonIsSuitableForElevationChart` now checks "any line
       exists" instead of `features[0]` (fixing the waypoint/polygon-first bug).
       No "All tracks" aggregate — separate activities aren't auto-concatenated.
-- [ ] **Waypoints on the elevation profile.** Pair `<wpt>` points onto the
-      profile by time when both the waypoint and track have timestamps (handles
-      self-crossing tracks); else by spatial projection onto the polyline within a
-      max-snap-distance; else omit.
+- [~] **Waypoints on the elevation profile.** Standalone points (GPX `<wpt>`)
+      are pinned onto the chart with a stem, a dot on the line, and the name as
+      a label. `elevationChartSetTrackGeojson` takes a `waypoints` arg (the
+      trackViewer passes its Point features via `trackWaypoints`); the chart
+      handler pins each to the nearest profile point on the same distance axis,
+      dropping any farther than `WAYPOINT_SNAP_METERS` (100 m). **Refinement:**
+      pairing is spatial nearest-*profile-point* (good for dense recordings; a
+      self-crossing track can mis-snap, and a very sparse line could miss a
+      mid-segment waypoint) — could upgrade to time-based when both sides have
+      timestamps, and to nearest-point-on-segment for sparse lines.
 - [x] **Honest convert-to-drawing.** Drawing state lives in the URL hash, so
       per-vertex HR/cadence/elevation can't be carried. Keeping the source track
       visible (tried first) duplicated the geometry and its click hit-area, so
@@ -180,6 +197,9 @@ off that — never re-derive "is this a track?" from density/timestamps.
       replace. No per-source legend/list — to change what's shown, re-import.
       Multiple *tracks* aren't auto-concatenated for stats; the "operate on a
       chosen track" item below covers picking which one the chart/info acts on.
+
+## Live tracking
+
 - [ ] **Convert-to-drawing for live tracking** (`src/features/tracking/`). The
       tracking feature has no "convert to drawing" yet; add one so a recorded
       live track can be turned into an editable drawing. Unlike the track viewer,

@@ -22,8 +22,14 @@ import classes from './ElevationChart.module.css';
 
 const ml = 50,
   mr = 30,
-  mt = 10,
   mb = 44;
+
+// Matches the SVG font-size set in the CSS module; used to estimate label size.
+const FONT_PX = 12;
+
+// Longest waypoint name (in characters) before it's truncated with an ellipsis,
+// so one long name can't blow up the chart's top margin.
+const WAYPOINT_LABEL_MAX = 16;
 
 const ticks = new Array(11)
   .fill(0)
@@ -39,6 +45,35 @@ export default function ElevationChart(): ReactElement | null {
   const elevationProfilePoints = useAppSelector(
     (state) => state.elevationChart.elevationProfilePoints ?? EMPTY_ARRAY,
   );
+
+  const waypoints = useAppSelector((state) => state.elevationChart.waypoints);
+
+  // Truncate long names so a single label can't blow up the top margin.
+  const labeledWaypoints = useMemo(
+    () =>
+      waypoints.map((wp) => ({
+        ...wp,
+        label:
+          wp.label && wp.label.length > WAYPOINT_LABEL_MAX
+            ? wp.label.slice(0, WAYPOINT_LABEL_MAX - 1) + '…'
+            : wp.label,
+      })),
+    [waypoints],
+  );
+
+  // Top margin: 10 px of headroom above the peak in every case, plus room for
+  // the tallest angled (-45°) waypoint label when there are waypoints.
+  const mt = useMemo(() => {
+    const maxChars = labeledWaypoints.reduce(
+      (max, wp) => Math.max(max, wp.label?.length ?? 0),
+      0,
+    );
+
+    return (
+      10 +
+      (maxChars === 0 ? 0 : Math.ceil(maxChars * FONT_PX * 0.6 * Math.SQRT1_2))
+    );
+  }, [labeledWaypoints]);
 
   const nf0 = useNumberFormat({
     minimumFractionDigits: 0,
@@ -115,7 +150,7 @@ export default function ElevationChart(): ReactElement | null {
     vLines.push(d);
 
     return [mapX, mapY, d, vLines, hLines];
-  }, [elevationProfilePoints, width, height]);
+  }, [elevationProfilePoints, width, height, mt]);
 
   const [pointerX, setPointerX] = useState<number | undefined>();
 
@@ -422,6 +457,41 @@ export default function ElevationChart(): ReactElement | null {
           stroke="var(--bs-body-color)"
           strokeWidth={1}
         />
+
+        {/* Waypoints pinned along the profile: a stem, a dot on the line, and
+            the name angled up into the top margin (sized to fit the tallest
+            label above). Same colour as the elevation line. */}
+        {labeledWaypoints.map((wp, i) => {
+          const x = mapX(wp.distance);
+
+          return (
+            <Fragment key={'wp' + i}>
+              <line
+                x1={x}
+                x2={x}
+                y1={mt}
+                y2={height - mb}
+                stroke="var(--bs-primary)"
+                strokeWidth={1}
+                opacity={0.6}
+              />
+
+              <circle cx={x} cy={mapY(wp.ele)} r={3} fill="var(--bs-primary)" />
+
+              {wp.label && (
+                <text
+                  x={x + 3}
+                  y={mt - 2}
+                  textAnchor="start"
+                  transform={`rotate(-45, ${x + 3}, ${mt - 2})`}
+                  fill="var(--bs-primary)"
+                >
+                  {wp.label}
+                </text>
+              )}
+            </Fragment>
+          );
+        })}
 
         <rect
           x={ml}
