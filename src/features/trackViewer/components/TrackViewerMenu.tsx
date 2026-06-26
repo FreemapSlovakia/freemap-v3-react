@@ -169,9 +169,9 @@ export function TrackViewerMenu(): ReactElement {
             several lines are loaded. */}
         {trackLines.length > 1 && (
           <SelectDropdown
+            asSelect
             className="ms-1"
             id="track_selector"
-            breakpoint="sm"
             toggleIcon={<FaRoute />}
             name={tvm?.trackLabel}
             value={String(activeTrackIndex ?? '')}
@@ -319,6 +319,11 @@ export function TrackViewerMenu(): ReactElement {
               </Button>
             )}
           </LongPressTooltip>
+        )}
+
+        {/* Separate the inspect actions from the share/export actions. */}
+        {enableElevationChart && canUpload && hasTrack && (
+          <div className=" ms-1 vr align-self-stretch" />
         )}
 
         {canUpload && hasTrack && (
