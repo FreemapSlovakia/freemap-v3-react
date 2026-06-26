@@ -95,6 +95,22 @@ write(
   gpxTrack('Elevation + time', [pts], { ele: true, time: true }),
 );
 
+// A track plus named waypoints sitting on it, to exercise waypoints on the
+// elevation chart (they snap to the nearest profile point and show their name).
+write(
+  'track-with-waypoints.gpx',
+  `${GPX_HEAD}\n${[12, 30, 48]
+    .map(
+      (i, k) =>
+        `  <wpt lat="${pts[i].lat.toFixed(7)}" lon="${pts[i].lon.toFixed(7)}"><ele>${pts[i].ele}</ele><time>${pts[i].time}</time><name>Waypoint ${k + 1}</name></wpt>`,
+    )
+    .join(
+      '\n',
+    )}\n  <trk>\n    <name>Track with waypoints</name>\n    <trkseg>\n${pts
+    .map((p) => trkpt(p, { ele: true, time: true }))
+    .join('\n')}\n    </trkseg>\n  </trk>\n${GPX_TAIL}`,
+);
+
 // No elevation at all (chart/colorize-by-elevation need server fill).
 write(
   'track-no-elevation.gpx',

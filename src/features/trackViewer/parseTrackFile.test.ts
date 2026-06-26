@@ -28,6 +28,12 @@ const GPX = `<?xml version="1.0"?>
  </trk>
 </gpx>`;
 
+const GPX_ROUTE_AND_WAYPOINT = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+ <wpt lat="48" lon="17"><name>WP</name></wpt>
+ <rte><name>R</name><rtept lat="48" lon="17"/><rtept lat="48.1" lon="17.1"/></rte>
+</gpx>`;
+
 describe('parseTrackFile', () => {
   it('converts GPX, enriching freemap:* and aliasing Garmin power', () => {
     const r = parseTrackFile(GPX, 'track.gpx');
@@ -38,6 +44,9 @@ describe('parseTrackFile', () => {
       const f = r.features[0]!;
 
       expect(f.properties?.['freemap:color']).toBe('#ff0000ff');
+
+      // A GPX <trk> is a recorded track.
+      expect(f.properties?.['fm:kind']).toBe('track');
 
       const cp = f.properties?.['coordinateProperties'] as Record<
         string,
@@ -126,5 +135,54 @@ describe('parseTrackFile', () => {
 
   it('reports an error for invalid GeoJSON', () => {
     expect(parseTrackFile('not json', 'x.geojson')).toBeNull();
+  });
+
+  it('keeps a gpx_style line width in pixels (not mm-scaled by togeojson)', () => {
+    const gpx = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+ <trk><name>T</name>
+  <extensions>
+   <line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+    <color>0000FF</color><opacity>0.7</opacity><width>6.0</width>
+   </line>
+  </extensions>
+  <trkseg><trkpt lat="48" lon="17"/><trkpt lat="48.1" lon="17.1"/></trkseg>
+ </trk>
+</gpx>`;
+
+    const f = parseTrackFile(gpx, 't.gpx')?.features[0];
+
+    // togeojson would scale 6 mm → ~22.7 px; we honor it as 6 px.
+    expect(f?.properties?.['stroke-width']).toBe(6);
+  });
+
+  it('stamps fm:kind from the source: route and waypoint for GPX rte/wpt', () => {
+    const r = parseTrackFile(GPX_ROUTE_AND_WAYPOINT, 'r.gpx');
+
+    const kinds = r?.features.map((f) => f.properties?.['fm:kind']);
+
+    expect(kinds).toContain('route');
+    expect(kinds).toContain('waypoint');
+  });
+
+  it('stamps fm:kind: TCX is a track, KML line is generic, GeoJSON point is a waypoint', () => {
+    expect(
+      parseTrackFile(TCX, 'ride.tcx')?.features[0]?.properties?.['fm:kind'],
+    ).toBe('track');
+
+    expect(
+      parseTrackFile(KML, 'path.kml')?.features[0]?.properties?.['fm:kind'],
+    ).toBe('feature');
+
+    expect(
+      parseTrackFile(
+        JSON.stringify({
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'Point', coordinates: [17, 48] },
+        }),
+        'p.geojson',
+      )?.features[0]?.properties?.['fm:kind'],
+    ).toBe('waypoint');
   });
 });

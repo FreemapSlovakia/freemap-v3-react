@@ -1,4 +1,4 @@
-import { smoothSeries } from '@shared/geoutils.js';
+import { smoothSeries, trackTimeSegments } from '@shared/geoutils.js';
 import type { Feature, LineString } from 'geojson';
 
 export type HotlinePalette = Array<{
@@ -209,13 +209,12 @@ export function readCoordTimes(
   feature: Feature<LineString>,
   expectedLength: number,
 ): number[] | null {
-  const cp = feature.properties?.['coordinateProperties'] as
-    | Record<string, unknown>
-    | undefined;
+  // A colorized line is a single `LineString`, so its times are one segment.
+  const segments = trackTimeSegments(feature);
 
-  const raw = cp?.['times'] ?? feature.properties?.['coordTimes'];
+  const raw = segments.length === 1 ? segments[0]! : segments.flat();
 
-  if (!Array.isArray(raw) || raw.length !== expectedLength) {
+  if (raw.length !== expectedLength) {
     return null;
   }
 

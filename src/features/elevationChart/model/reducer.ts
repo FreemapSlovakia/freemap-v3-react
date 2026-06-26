@@ -21,14 +21,24 @@ export interface ElevationProfilePoint extends LatLon {
   ele: number;
 }
 
+// A waypoint paired onto the profile: its position on the distance axis and the
+// elevation of the nearest track point, plus its name for the label.
+export interface ElevationProfileWaypoint {
+  distance: number;
+  ele: number;
+  label?: string;
+}
+
 export interface ElevationChartState {
   activePoint: ElevationProfilePoint | null;
   elevationProfilePoints: Array<ElevationProfilePoint> | null;
+  waypoints: ElevationProfileWaypoint[];
 }
 
 const initialState: ElevationChartState = {
   activePoint: null,
   elevationProfilePoints: null,
+  waypoints: [],
 };
 
 export const elevationChartReducer = createReducer(initialState, (builder) =>
@@ -38,7 +48,9 @@ export const elevationChartReducer = createReducer(initialState, (builder) =>
       state.activePoint = action.payload;
     })
     .addCase(elevationChartSetElevationProfile, (state, action) => {
-      state.elevationProfilePoints = action.payload;
+      state.elevationProfilePoints = action.payload.points;
+
+      state.waypoints = action.payload.waypoints;
     })
     // Clear the chart when its owning tool is closed (or all tools are), not on
     // every setTool — other tools now open alongside route-planner/track-viewer.

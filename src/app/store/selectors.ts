@@ -1,5 +1,6 @@
 import { PickMode } from '@features/routePlanner/model/actions.js';
 import { Track } from '@features/tracking/model/types.js';
+import { isTrackLine } from '@features/trackViewer/trackSelection.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import { createSelector } from 'reselect';
 import marker from '@/images/cursors/marker.svg';
@@ -190,12 +191,10 @@ export const drawingLinePolys = (state: RootState): boolean => {
 
 export const trackGeojsonIsSuitableForElevationChart = (
   state: RootState,
-): boolean => {
-  return (
-    state.trackViewer.trackGeojson?.features?.[0]?.geometry.type ===
-    'LineString'
-  );
-};
+): boolean =>
+  // Any line-like feature (the active track is chosen among them); a
+  // `MultiLineString` is a multi-segment recording (an interrupted track).
+  (state.trackViewer.trackGeojson?.features ?? []).some(isTrackLine);
 
 export const askingCookieConsentSelector = (state: RootState): boolean =>
   'cookieConsent' in state.toasts.toasts;

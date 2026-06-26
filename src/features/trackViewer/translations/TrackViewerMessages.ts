@@ -3,6 +3,9 @@ import type { JSX } from 'react';
 export type TrackViewerMessages = {
   info: () => JSX.Element;
   upload: string;
+  trackLabel: string;
+  unnamedTrack: (props: { n: number }) => string;
+  convertLossWarning: string;
   moreInfo: string;
   share: string;
   details: {
@@ -25,6 +28,10 @@ export type TrackViewerMessages = {
   uploadModal: {
     title: string;
     drop: string;
+    mergeTitle: string;
+    mergeMessage: string;
+    append: string;
+    replace: string;
   };
   elevationFill: {
     title: string;
@@ -49,5 +56,6 @@ export type TrackViewerMessages = {
   loadingError: string;
   onlyOne: string;
   invalidFormat: string;
+  someFilesFailed: (props: { names: string }) => string;
   tooBigError: string;
 };

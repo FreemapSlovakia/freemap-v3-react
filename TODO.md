@@ -90,13 +90,124 @@ limits; avoid third-party data (license risk — see Strava) and community conte
       (`gis.nlcsk.org`), ŠGÚDŠ geology WMS (`ags.geology.sk`), and ÚGKK ortho/DMR
       (LLS DMR). Own renders (Outdoor map, parametric hillshade SK/CZ) are fine.
 
-## Idea for later — multi-property track chart
+## Elevation / track chart
 
-Generalize the elevation chart into a multi-property chart: X axis = time **or**
-distance; Y axis selectable among elevation, speed, orientation/heading, GSM
-signal, battery level, distance, time, … Applies to trackViewer and tracking
-(and, where data exists, the planned route). The colorizer data adapters already
-expose most of these series, so the chart and the colorizers could share one
-per-track "series" extraction layer.
-</content>
-</invoke>
+- [ ] **Multi-property track chart.** Generalize the elevation chart into a
+      multi-property chart: X axis = time **or** distance; Y axis selectable among
+      elevation, speed, orientation/heading, GSM signal, battery level, distance,
+      time, … Applies to trackViewer and tracking (and, where data exists, the
+      planned route). The colorizer data adapters already expose most of these
+      series, so the chart and the colorizers could share one per-track "series"
+      extraction layer.
+- [ ] **Toggle waypoints in the chart.** An option to show/hide the waypoint
+      markers + labels on the chart.
+- [ ] **Waypoint distance ticks on the x axis.** Option to show each waypoint's
+      distance value along the x axis.
+- [ ] **Waypoint elevation readout.** Option to show a waypoint's elevation —
+      either on the y axis or appended to the waypoint label (design undecided).
+- [ ] **Save chart image.** A button to export the chart as an image (SVG).
+- [ ] **Further chart enrichments.** Axis units, and think about what else is
+      useful (grid/legend, hover crosshair readout, gradient/steepness shading,
+      min/max/avg markers, …).
+
+## Track viewer: generic geodata vs. recorded tracks
+
+The track viewer began as a GPX recording viewer and grew into a general geodata
+viewer (GPX/KML/KMZ/TCX/GeoJSON, later maybe GPKG). Affordances written for a
+single recorded GPS log now misfire on arbitrary imported geometry. The
+through-line of the fixes below is **provenance, not heuristics**: tag each
+feature at parse time with what it actually was in the source and key behavior
+off that — never re-derive "is this a track?" from density/timestamps.
+
+- [x] **Tag feature provenance at parse time.** `parseTrackFile` stamps
+      `fm:kind: 'track' | 'route' | 'waypoint' | 'feature'` (see `provenance.ts`)
+      from togeojson's `_gpxType` (`trk`/`rte`), Point waypoints, TCX (always
+      `track`), and KML/GeoJSON (`feature`); an already-stamped kind is respected
+      so an exported-then-reimported GeoJSON round-trips. Foundation for the
+      convert/selection items.
+- [~] **Start/finish markers + distance labels only for tracks/routes.**
+      `useStartFinishPoints` now emits a pair only for `fm:kind` track or route
+      (`isTrackOrRoute`), so a KML/GeoJSON full of generic lines/polygons gets no
+      flags — the original clutter complaint. (Route included too: GPX `<rte>` is
+      a deliberate line where start/finish + distance helps; only generic
+      `feature` geometry caused the clutter.) **Still TODO:** with several tracks
+      the permanent distance tooltips can still stack — show them on
+      hover/selection when there's more than one.
+- [x] **One track = one unit (single- or multi-segment).** `useStartFinishPoints`
+      treats a `MultiLineString` (interrupted recording) as one track: one start
+      (first vertex of first segment), one finish + total distance (turf length,
+      gaps excluded), endpoint times read from the nested
+      `coordinateProperties.times`. No more N marker pairs, and a multi-segment
+      track that previously showed none now shows one. (`TrackViewerResult` still
+      flattens only for rendering the polylines.) The "more info" toast stats
+      being multi-segment-aware is tracked under the stats item below.
+- [~] **Multi-segment stats & elevation profile.** Aggregate distance/time across
+      segments with the inter-segment gap excluded (no phantom straight-line
+      distance across a pause). Elevation profile lays segments end-to-end on the
+      cumulative-distance axis with a visible discontinuity at the boundary, not
+      a sloped bridge. **Done:** the elevation chart now charts a `MultiLineString`
+      track — `elevationChartSetTrackGeojson` accepts it, the chart handler is
+      segment-aware (gap break + climb-baseline reset between segments, no jump
+      distance), `containsElevations`/`elevationCoverage`/`enrichElevations` are
+      multi-segment-aware, and the suitability selector + toggle/resolve
+      processors no longer drop `MultiLineString`. `densifyAlong` /
+      `ensureRenderGeojson` densify a `MultiLineString` per segment (no inserts
+      across the gap), so a server elevation override gets the same chart detail
+      as a single-segment track. A new `trackViewerSetElevation` processor
+      refreshes an already-open chart when elevation is refilled (it no longer
+      goes stale until re-opened). The "more info" stats are now multi-segment
+      aware (climb/descent measured per segment; see the selection item below).
+      **Still TODO:** start/finish markers' permanent distance tooltips can stack
+      when several tracks are shown (hover-only when >1).
+- [x] **Operate on a chosen track, not `features[0]`.** A `selectedTrackIndex`
+      in the slice picks the active line among the loaded line-like features
+      (`trackSelection.ts`); the chart, "more info" and the map highlight act on
+      it, defaulting to the first line. Two synced ways to choose it: a `Track`
+      dropdown in the toolbar (shown when ≥2 lines) and clicking a line on the
+      map; the active line gets a blue halo under it (a pane below the
+      foreground, RoutePlanner-style — the line's own style is untouched).
+      Switching the active track refreshes an open chart. Selection resets on
+      load. `trackGeojsonIsSuitableForElevationChart` now checks "any line
+      exists" instead of `features[0]` (fixing the waypoint/polygon-first bug).
+      No "All tracks" aggregate — separate activities aren't auto-concatenated.
+- [~] **Waypoints on the elevation profile.** Standalone points (GPX `<wpt>`)
+      are pinned onto the chart with a stem, a dot on the line, and the name as
+      a label. `elevationChartSetTrackGeojson` takes a `waypoints` arg (the
+      trackViewer passes its Point features via `trackWaypoints`, including each
+      `<wpt>`'s optional time). A waypoint is pinned only where the profile
+      passes within `WAYPOINT_SNAP_METERS` (100 m); among those candidates it
+      picks the one closest in **time** when both the waypoint and the track
+      carry timestamps (disambiguating a self-crossing track), else the nearest
+      in space. The local resolver carries each profile point's recorded time;
+      the API-sampled path has none and uses spatial pairing. **Refinement:** a
+      very sparse line could still miss a mid-segment waypoint — could project
+      onto the nearest segment rather than the nearest vertex.
+- [x] **Honest convert-to-drawing.** Drawing state lives in the URL hash, so
+      per-vertex HR/cadence/elevation can't be carried. Keeping the source track
+      visible (tried first) duplicated the geometry and its click hit-area, so
+      the convert still **replaces** the track — but only after an informed
+      single prompt. For a dense recording (`fm:kind === 'track'`, the only
+      convert source that deletes rich per-vertex data — routes/search/objects
+      have none, live tracking has no convert) one `window.prompt` both warns
+      that the recorded data is dropped and asks for a simplification factor
+      (Cancel aborts). Routes and generic geometry have nothing rich to lose and
+      aren't worth simplifying, so they convert straight away with no prompt.
+- [x] **Open/add multiple files into one view.** The import modal and the
+      app-wide file drop accept several files at once (`parseTrackFiles` merges
+      them in file order); when geodata is already shown the user is asked (via
+      the confirm dialog, extended with a third button) whether to append or
+      replace. No per-source legend/list — to change what's shown, re-import.
+      Multiple *tracks* aren't auto-concatenated for stats; the "operate on a
+      chosen track" item below covers picking which one the chart/info acts on.
+
+## Live tracking
+
+- [ ] **Convert-to-drawing for live tracking** (`src/features/tracking/`). The
+      tracking feature has no "convert to drawing" yet; add one so a recorded
+      live track can be turned into an editable drawing. Unlike the track viewer,
+      tracking should **keep** the original (the live feed continues), so it's a
+      lossy *copy* not a replace — no rich-data warning needed, just the
+      simplify prompt for the dense recording. Likely a new `convertToDrawing`
+      payload variant (e.g. `{ type: 'tracking'; id }`) handled in
+      `convertToDrawingProcessor`, plus a menu action in the tracking UI.
+

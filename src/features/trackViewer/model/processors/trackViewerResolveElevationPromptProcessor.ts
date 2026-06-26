@@ -11,7 +11,11 @@ import {
 import { trackInfoToast } from '@features/trackViewer/model/trackInfoToast.js';
 import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 import { enrichElevations } from '@shared/elevation.js';
-import { Feature, LineString } from 'geojson';
+import {
+  isTrackLine,
+  resolveActiveTrack,
+  trackWaypoints,
+} from '../../trackSelection.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 export const trackViewerResolveElevationPromptProcessor: Processor<
@@ -25,9 +29,7 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       return;
     }
 
-    const lineFeatures = trackGeojson.features.filter(
-      (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-    );
+    const lineFeatures = trackGeojson.features.filter(isTrackLine);
 
     const { mode, consumer } = action.payload;
 
@@ -42,7 +44,7 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       let i = 0;
 
       const features = trackGeojson.features.map((f) =>
-        f.geometry.type === 'LineString' ? lines[i++]! : f,
+        isTrackLine(f) ? lines[i++]! : f,
       );
 
       dispatch(trackViewerSetElevation({ ...trackGeojson, features }));
@@ -82,21 +84,36 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       return;
     }
 
-    // Open the chart on the first line, rendering its elevation as-is: 'keep'
+    // Open the chart on the active track, rendering its elevation as-is: 'keep'
     // shows the recorded values with their gaps, while a fill/override has
     // already written the server values into these same coordinates. An
     // override may also densify a sparse line so the profile isn't coarse.
     await ensureRenderGeojson(getState, dispatch);
 
+    const after = getState().trackViewer;
+
+    const active = resolveActiveTrack(
+      after.trackGeojson,
+      after.selectedTrackIndex,
+    );
+
+    const rendered = active && after.renderTrackGeojson?.features[active.index];
+
     const first =
-      getState().trackViewer.renderTrackGeojson?.features.find(
-        (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-      ) ?? lines[0];
+      rendered && isTrackLine(rendered)
+        ? rendered
+        : (active?.feature ?? lines[0]);
 
     if (first) {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
-      dispatch(elevationChartSetTrackGeojson(first, true));
+      dispatch(
+        elevationChartSetTrackGeojson(
+          first,
+          true,
+          trackWaypoints(after.trackGeojson),
+        ),
+      );
     }
   },
 };

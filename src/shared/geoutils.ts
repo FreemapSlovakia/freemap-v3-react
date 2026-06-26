@@ -6,6 +6,7 @@ import type {
   GeoJsonProperties,
   Geometry,
   LineString,
+  MultiLineString,
   Position,
 } from 'geojson';
 import type { LatLngLiteral } from 'leaflet';
@@ -89,37 +90,86 @@ export function getCurrentPosition(): Promise<LatLon> {
 }
 
 /**
- * True only when every coordinate of a `LineString` carries elevation. Any gap
- * (an all-2D OSRM track, or a GraphHopper route with no-data points) yields
- * `false` so the consumer fills elevation from the server rather than rendering
- * a profile with holes.
+ * The coordinate segments of a line-like geometry as a uniform list: a single
+ * segment for a `LineString`, one per part for a multi-segment recording
+ * (`MultiLineString`). Lets callers treat both alike.
+ */
+export function lineSegments(
+  geometry: LineString | MultiLineString,
+): Position[][] {
+  return geometry.type === 'LineString'
+    ? [geometry.coordinates]
+    : geometry.coordinates;
+}
+
+/**
+ * A track's recorded per-point times as raw per-segment arrays (each entry is
+ * usually an ISO string). togeojson stores them under
+ * `coordinateProperties.times` — a flat array for a single `LineString`, nested
+ * per segment for a `MultiLineString`; live tracking writes a flat top-level
+ * `coordTimes`. A flat source is returned as one segment; empty when there are
+ * none. Callers interpret each value (epoch vs `Date`) themselves.
+ */
+export function trackTimeSegments(feature: Feature): unknown[][] {
+  const cp = feature.properties?.['coordinateProperties'] as
+    | { times?: unknown }
+    | undefined;
+
+  const raw = cp?.times ?? feature.properties?.['coordTimes'];
+
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+
+  return Array.isArray(raw[0])
+    ? raw.map((segment) => (Array.isArray(segment) ? segment : []))
+    : [raw];
+}
+
+/**
+ * True only when every coordinate of a line-like geometry (`LineString` or
+ * multi-segment `MultiLineString`) carries elevation. Any gap (an all-2D OSRM
+ * track, or a GraphHopper route with no-data points) yields `false` so the
+ * consumer fills elevation from the server rather than rendering a profile with
+ * holes.
  */
 export function containsElevations(geojson: Feature): boolean {
+  if (
+    geojson.geometry.type !== 'LineString' &&
+    geojson.geometry.type !== 'MultiLineString'
+  ) {
+    return false;
+  }
+
+  const segments = lineSegments(geojson.geometry);
+
   return (
-    geojson.geometry.type === 'LineString' &&
-    geojson.geometry.coordinates.length > 0 &&
-    geojson.geometry.coordinates.every((c) => c.length === 3)
+    segments.some((segment) => segment.length > 0) &&
+    segments.every((segment) => segment.every((c) => c.length === 3))
   );
 }
 
 /**
- * Elevation coverage across the coordinates of the given `LineString` features:
- * `'none'` when no point carries elevation, `'full'` when every point does,
- * `'partial'` otherwise (and when there are no coordinates at all → `'none'`).
+ * Elevation coverage across the coordinates of the given line-like features
+ * (`LineString` or multi-segment `MultiLineString`): `'none'` when no point
+ * carries elevation, `'full'` when every point does, `'partial'` otherwise (and
+ * when there are no coordinates at all → `'none'`).
  */
 export function elevationCoverage(
-  features: Feature<LineString>[],
+  features: Feature<LineString | MultiLineString>[],
 ): 'none' | 'partial' | 'full' {
   let withEle = 0;
 
   let total = 0;
 
   for (const feature of features) {
-    for (const coord of feature.geometry.coordinates) {
-      total++;
+    for (const segment of lineSegments(feature.geometry)) {
+      for (const coord of segment) {
+        total++;
 
-      if (coord.length >= 3 && Number.isFinite(coord[2])) {
-        withEle++;
+        if (coord.length >= 3 && Number.isFinite(coord[2])) {
+          withEle++;
+        }
       }
     }
   }
@@ -259,19 +309,13 @@ export function smoothValues(
 
         count++;
 
-        while (
-          maxDq.length > maxHead &&
-          values[maxDq[maxDq.length - 1]!]! <= v
-        ) {
+        while (maxDq.length > maxHead && values[maxDq.at(-1)!]! <= v) {
           maxDq.pop();
         }
 
         maxDq.push(hi);
 
-        while (
-          minDq.length > minHead &&
-          values[minDq[minDq.length - 1]!]! >= v
-        ) {
+        while (minDq.length > minHead && values[minDq.at(-1)!]! >= v) {
           minDq.pop();
         }
 

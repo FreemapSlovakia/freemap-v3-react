@@ -8,7 +8,11 @@ import {
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
 import { elevationCoverage } from '@shared/geoutils.js';
-import { Feature, LineString } from 'geojson';
+import {
+  isTrackLine,
+  resolveActiveTrack,
+  trackWaypoints,
+} from '../../trackSelection.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
@@ -20,16 +24,12 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
       return;
     }
 
-    const { trackGeojson, elevationDecision } = getState().trackViewer;
+    const { trackGeojson, elevationDecision, selectedTrackIndex } =
+      getState().trackViewer;
 
-    const lineFeatures =
-      trackGeojson?.features.filter(
-        (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-      ) ?? [];
+    const active = resolveActiveTrack(trackGeojson, selectedTrackIndex);
 
-    const first = lineFeatures[0];
-
-    if (!first) {
+    if (!active) {
       return;
     }
 
@@ -41,7 +41,7 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
     // server profile.
     if (
       elevationDecision !== 'undecided' ||
-      elevationCoverage(lineFeatures) === 'full'
+      elevationCoverage([active.feature]) === 'full'
     ) {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
@@ -50,12 +50,18 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
       // needs subdividing.
       await ensureRenderGeojson(getState, dispatch);
 
-      const renderFirst =
-        getState().trackViewer.renderTrackGeojson?.features.find(
-          (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-        ) ?? first;
+      // The densified copy keeps feature order, so the active track is at the
+      // same index; fall back to the recorded feature when it wasn't densified.
+      const rendered =
+        getState().trackViewer.renderTrackGeojson?.features[active.index];
 
-      dispatch(elevationChartSetTrackGeojson(renderFirst, true));
+      dispatch(
+        elevationChartSetTrackGeojson(
+          rendered && isTrackLine(rendered) ? rendered : active.feature,
+          true,
+          trackWaypoints(trackGeojson),
+        ),
+      );
 
       return;
     }

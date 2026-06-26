@@ -33,6 +33,15 @@ export const trackViewerColorizeTrackBy = createAction<ColorizingMode | null>(
   'TRACK_VIEWER_COLORIZE_TRACK_BY',
 );
 
+/**
+ * Index (into `trackGeojson.features`) of the track the elevation chart, "more
+ * info" and the map highlight act on when several are loaded; `null` falls back
+ * to the first line. Reset whenever the loaded data changes.
+ */
+export const trackViewerSetSelectedTrack = createAction<number | null>(
+  'TRACK_VIEWER_SET_SELECTED_TRACK',
+);
+
 export const trackViewerToggleElevationChart = createAction(
   'TRACK_VIEWER_TOGGLE_ELEVATION_CHART',
 );

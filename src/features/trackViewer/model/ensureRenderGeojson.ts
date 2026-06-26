@@ -2,16 +2,13 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
 import { densifyAlong } from '@shared/elevation.js';
-import type { Feature, LineString } from 'geojson';
 import type { Dispatch } from 'redux';
+import { isTrackLine } from '../trackSelection.js';
 import {
   trackViewerDelete,
   trackViewerSetData,
   trackViewerSetRenderGeojson,
 } from './actions.js';
-
-const isLine = (f: Feature): f is Feature<LineString> =>
-  f.geometry.type === 'LineString';
 
 /**
  * Lazily builds the densified render copy of the loaded track and caches it via
@@ -35,7 +32,7 @@ export async function ensureRenderGeojson(
     return;
   }
 
-  const lines = trackGeojson.features.filter(isLine);
+  const lines = trackGeojson.features.filter(isTrackLine);
 
   if (lines.length === 0) {
     return;
@@ -67,7 +64,7 @@ export async function ensureRenderGeojson(
   let i = 0;
 
   const features = trackGeojson.features.map((f) =>
-    isLine(f) ? densified[i++]! : f,
+    isTrackLine(f) ? densified[i++]! : f,
   );
 
   dispatch(trackViewerSetRenderGeojson({ ...trackGeojson, features }));

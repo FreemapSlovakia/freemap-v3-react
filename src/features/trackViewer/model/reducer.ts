@@ -4,7 +4,8 @@ import { osmClear } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { colorizerNeedsElevation } from '@shared/colorizers/index.js';
 import { elevationCoverage } from '@shared/geoutils.js';
-import { Feature, FeatureCollection, LineString } from 'geojson';
+import { FeatureCollection } from 'geojson';
+import { isTrackLine } from '../trackSelection.js';
 import {
   type ColorizingMode,
   type ElevationConsumer,
@@ -18,6 +19,7 @@ import {
   trackViewerSetElevation,
   trackViewerSetElevationPrompt,
   trackViewerSetRenderGeojson,
+  trackViewerSetSelectedTrack,
   trackViewerSetTrackUID,
 } from './actions.js';
 
@@ -39,6 +41,9 @@ export interface TrackViewerState extends TrackViewerStateBase {
   // source), then the chosen fill mode. 'all' means every point now comes from
   // the terrain model, so another server overwrite would be pointless.
   elevationDecision: ElevationDecision;
+  // Which line the chart / "more info" / highlight act on, by index into
+  // `trackGeojson.features`; `null` falls back to the first line. Reset on load.
+  selectedTrackIndex: number | null;
 }
 
 export type ElevationDecision = 'undecided' | ElevationFillMode;
@@ -54,6 +59,7 @@ export const trackViewerInitialState: TrackViewerState = {
   colorizeTrackBy: null,
   elevationPrompt: null,
   elevationDecision: 'undecided',
+  selectedTrackIndex: null,
   ...cleanState,
 };
 
@@ -76,6 +82,9 @@ export const trackViewerReducer = createReducer(
 
           state.elevationDecision = 'undecided';
 
+          // The feature indices changed; fall back to the first line.
+          state.selectedTrackIndex = null;
+
           // A persisted elevation-derived colorize mode would render as a flat
           // mid-palette on a track that lacks full elevation; drop it so the
           // new track starts uncolorized rather than in a misleading state.
@@ -83,10 +92,7 @@ export const trackViewerReducer = createReducer(
             state.colorizeTrackBy &&
             colorizerNeedsElevation(state.colorizeTrackBy) &&
             elevationCoverage(
-              action.payload.trackGeojson.features.filter(
-                (f): f is Feature<LineString> =>
-                  f.geometry.type === 'LineString',
-              ),
+              action.payload.trackGeojson.features.filter(isTrackLine),
             ) !== 'full'
           ) {
             state.colorizeTrackBy = null;
@@ -110,6 +116,9 @@ export const trackViewerReducer = createReducer(
       })
       .addCase(trackViewerColorizeTrackBy, (state, action) => {
         state.colorizeTrackBy = action.payload;
+      })
+      .addCase(trackViewerSetSelectedTrack, (state, action) => {
+        state.selectedTrackIndex = action.payload;
       })
       .addCase(trackViewerSetElevationPrompt, (state, action) => {
         state.elevationPrompt = action.payload;
