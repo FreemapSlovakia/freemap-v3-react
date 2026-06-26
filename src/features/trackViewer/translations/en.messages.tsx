@@ -6,6 +6,8 @@ import { TrackViewerMessages } from './TrackViewerMessages.js';
 const en: TrackViewerMessages = {
   info: () => <TrackViewerDetails />,
   upload: 'Upload',
+  trackLabel: 'Track',
+  unnamedTrack: ({ n }) => `Track ${n}`,
   moreInfo: 'More info',
   share: 'Save on server',
   details: {

@@ -34,6 +34,8 @@ import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
+import { trackViewerSetSelectedTrack } from '../model/actions.js';
+import { isTrackLine, resolveActiveTrack } from '../trackSelection.js';
 
 interface GetFeatures {
   (type: 'LineString'): Feature<LineString>[];
@@ -102,10 +104,33 @@ export default function TrackViewerResult({
 
   const interactive = useAppSelector(selectingModeSelector);
 
+  const selectedTrackIndex = useAppSelector(
+    (state) => state.trackViewer.selectedTrackIndex,
+  );
+
+  // The active track only matters (and is only selectable/highlighted) when
+  // several lines are loaded; otherwise the single line is implicitly active.
+  const multipleTracks = trackGeojson.features.filter(isTrackLine).length > 1;
+
+  const activeTrackIndex = resolveActiveTrack(
+    trackGeojson,
+    selectedTrackIndex,
+  )?.index;
+
   const dispatch = useDispatch();
 
   const setThisTool = () => {
     dispatch(setTool({ tool: 'import-file', mode: 'open' }));
+  };
+
+  // Clicking a line focuses the import tool and, when several tracks are
+  // loaded, makes the clicked one active for the chart / "more info".
+  const selectTrack = (featureIndex: number) => {
+    if (multipleTracks) {
+      dispatch(trackViewerSetSelectedTrack(featureIndex));
+    }
+
+    setThisTool();
   };
 
   // TODO rather compute some hash or better - detect real change
@@ -119,39 +144,53 @@ export default function TrackViewerResult({
   // own 0.2 default, which renders the fill fully opaque.
   const defaultFillOpacity = 0.2;
 
-  const features = getFeatures('LineString').map((feature) => {
-    const coords = feature.geometry.coordinates;
+  // Flatten line-like features into per-segment render entries, keeping each
+  // segment's source feature index so a click can select that whole track and
+  // the active one can be highlighted (a `MultiLineString` is one track over
+  // several segments).
+  const features = trackGeojson.features.flatMap((feature, featureIndex) => {
+    const geom = feature.geometry;
 
-    const closed =
-      coords.length > 2 &&
-      coords[0]![0] === coords.at(-1)![0] &&
-      coords[0]![1] === coords.at(-1)![1];
+    if (geom.type !== 'LineString' && geom.type !== 'MultiLineString') {
+      return [];
+    }
 
-    const style = lineStyleFromProperties(feature.properties, closed);
+    const segments =
+      geom.type === 'LineString' ? [geom.coordinates] : geom.coordinates;
 
-    const stroke = splitColorAlpha(style.color ?? drawingColor);
+    return segments.map((coords) => {
+      const closed =
+        coords.length > 2 &&
+        coords[0]![0] === coords.at(-1)![0] &&
+        coords[0]![1] === coords.at(-1)![1];
 
-    // Same default-fill treatment as native polygons below (ignored for lines,
-    // which render as unfilled Polylines).
-    const fillSpec = style.fillColor ?? drawingFillColor;
+      const style = lineStyleFromProperties(feature.properties, closed);
 
-    const fill = splitColorAlpha(fillSpec ?? style.color ?? drawingColor);
+      const stroke = splitColorAlpha(style.color ?? drawingColor);
 
-    return {
-      name: feature.properties?.['name'] as string | undefined,
-      lineData: coords.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
-      style: {
-        type: style.type === 'polygon' ? 'polygon' : 'line',
-        strokeColor: stroke.color,
-        strokeOpacity: stroke.opacity,
-        fillColor: fill.color,
-        fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
-        width: style.width ?? drawingWidth,
-        dashArray: style.dashArray,
-        lineCap: style.lineCap,
-        lineJoin: style.lineJoin,
-      },
-    };
+      // Same default-fill treatment as native polygons below (ignored for
+      // lines, which render as unfilled Polylines).
+      const fillSpec = style.fillColor ?? drawingFillColor;
+
+      const fill = splitColorAlpha(fillSpec ?? style.color ?? drawingColor);
+
+      return {
+        name: feature.properties?.['name'] as string | undefined,
+        featureIndex,
+        lineData: coords.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
+        style: {
+          type: style.type === 'polygon' ? 'polygon' : 'line',
+          strokeColor: stroke.color,
+          strokeOpacity: stroke.opacity,
+          fillColor: fill.color,
+          fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
+          width: style.width ?? drawingWidth,
+          dashArray: style.dashArray,
+          lineCap: style.lineCap,
+          lineJoin: style.lineJoin,
+        },
+      };
+    });
   });
 
   // Native GeoJSON Polygon geometry (e.g. an imported .geojson; MultiPolygon
@@ -196,6 +235,11 @@ export default function TrackViewerResult({
 
   return (
     <Fragment key={keyToAssureProperRefresh}>
+      {/* Below the line foreground (overlayPane, zIndex 400) so the active
+          track's wider blue halo shows as an outline around it without changing
+          the line's own style. */}
+      <Pane name="fm-trackviewer-highlight" style={{ zIndex: 398 }} />
+
       <Pane name="fm-trackviewer-polygons" style={{ zIndex: 399 }} />
 
       {/* Above the hotline canvas (default overlayPane, zIndex 400) so the
@@ -203,7 +247,26 @@ export default function TrackViewerResult({
           colorized; below markerPane (600) so waypoints stay clickable. */}
       <Pane name="fm-trackviewer-hit" style={{ zIndex: 450 }} />
 
-      {features.map(({ lineData, name, style }, i) => (
+      {multipleTracks &&
+        features
+          .filter(({ featureIndex }) => featureIndex === activeTrackIndex)
+          .map(({ lineData, style }, i) => (
+            <Polyline
+              key={`highlight-${i}`}
+              pane="fm-trackviewer-highlight"
+              weight={style.width + 6}
+              positions={lineData}
+              pathOptions={{
+                color: '#156efd',
+                opacity: 1,
+                lineCap: 'round',
+                lineJoin: 'round',
+              }}
+              interactive={false}
+            />
+          ))}
+
+      {features.map(({ lineData, name, style, featureIndex }, i) => (
         <Polyline
           key={`outline-${i}-${interactive ? 'a' : 'b'}`}
           pane="fm-trackviewer-hit"
@@ -213,7 +276,7 @@ export default function TrackViewerResult({
           opacity={0}
           bubblingMouseEvents={false}
           eventHandlers={{
-            click: setThisTool,
+            click: () => selectTrack(featureIndex),
           }}
         >
           {name && (
@@ -252,7 +315,7 @@ export default function TrackViewerResult({
         ])}
 
       {colorizeTrackBy === null &&
-        features.map(({ lineData, style }, i) => {
+        features.map(({ lineData, style, featureIndex }, i) => {
           const pathOptions = {
             color: style.strokeColor,
             opacity: style.strokeOpacity,
@@ -273,7 +336,7 @@ export default function TrackViewerResult({
               interactive={interactive}
               bubblingMouseEvents={false}
               eventHandlers={{
-                click: setThisTool,
+                click: () => selectTrack(featureIndex),
               }}
             />
           ) : (
@@ -285,7 +348,7 @@ export default function TrackViewerResult({
               interactive={interactive}
               bubblingMouseEvents={false}
               eventHandlers={{
-                click: setThisTool,
+                click: () => selectTrack(featureIndex),
               }}
             />
           );

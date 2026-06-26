@@ -1,26 +1,30 @@
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { elevationChartSetTrackGeojson } from '@features/elevationChart/model/actions.js';
-import { Feature, LineString, MultiLineString } from 'geojson';
+import { isTrackLine, resolveActiveTrack } from '../../trackSelection.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
-
-// A multi-segment recording arrives as a single `MultiLineString` feature.
-const isLineLike = (f: Feature): f is Feature<LineString | MultiLineString> =>
-  f.geometry.type === 'LineString' || f.geometry.type === 'MultiLineString';
 
 const handle: ProcessorHandler = async ({ dispatch, getState }) => {
   // Re-densify against the freshly overridden elevation (the cache was just
   // invalidated by the elevation change) so the chart stays high-resolution.
   await ensureRenderGeojson(getState, dispatch);
 
-  const { renderTrackGeojson, trackGeojson } = getState().trackViewer;
+  const { trackGeojson, renderTrackGeojson, selectedTrackIndex } =
+    getState().trackViewer;
 
-  const first =
-    renderTrackGeojson?.features.find(isLineLike) ??
-    trackGeojson?.features.find(isLineLike);
+  const active = resolveActiveTrack(trackGeojson, selectedTrackIndex);
 
-  if (first) {
-    dispatch(elevationChartSetTrackGeojson(first, true));
+  if (!active) {
+    return;
   }
+
+  const rendered = renderTrackGeojson?.features[active.index];
+
+  dispatch(
+    elevationChartSetTrackGeojson(
+      rendered && isTrackLine(rendered) ? rendered : active.feature,
+      true,
+    ),
+  );
 };
 
 export default handle;

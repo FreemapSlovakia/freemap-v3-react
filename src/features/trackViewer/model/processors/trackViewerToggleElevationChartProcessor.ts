@@ -8,13 +8,8 @@ import {
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
 import { elevationCoverage } from '@shared/geoutils.js';
-import { Feature, LineString, MultiLineString } from 'geojson';
+import { isTrackLine, resolveActiveTrack } from '../../trackSelection.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
-
-// A multi-segment recording arrives as a single `MultiLineString` feature; it's
-// one track, charted as one unit (segments laid end-to-end).
-const isLineLike = (f: Feature): f is Feature<LineString | MultiLineString> =>
-  f.geometry.type === 'LineString' || f.geometry.type === 'MultiLineString';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,
@@ -25,13 +20,12 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
       return;
     }
 
-    const { trackGeojson, elevationDecision } = getState().trackViewer;
+    const { trackGeojson, elevationDecision, selectedTrackIndex } =
+      getState().trackViewer;
 
-    const lineFeatures = trackGeojson?.features.filter(isLineLike) ?? [];
+    const active = resolveActiveTrack(trackGeojson, selectedTrackIndex);
 
-    const first = lineFeatures[0];
-
-    if (!first) {
+    if (!active) {
       return;
     }
 
@@ -43,7 +37,7 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
     // server profile.
     if (
       elevationDecision !== 'undecided' ||
-      elevationCoverage(lineFeatures) === 'full'
+      elevationCoverage([active.feature]) === 'full'
     ) {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
@@ -52,11 +46,17 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
       // needs subdividing.
       await ensureRenderGeojson(getState, dispatch);
 
-      const renderFirst =
-        getState().trackViewer.renderTrackGeojson?.features.find(isLineLike) ??
-        first;
+      // The densified copy keeps feature order, so the active track is at the
+      // same index; fall back to the recorded feature when it wasn't densified.
+      const rendered =
+        getState().trackViewer.renderTrackGeojson?.features[active.index];
 
-      dispatch(elevationChartSetTrackGeojson(renderFirst, true));
+      dispatch(
+        elevationChartSetTrackGeojson(
+          rendered && isTrackLine(rendered) ? rendered : active.feature,
+          true,
+        ),
+      );
 
       return;
     }

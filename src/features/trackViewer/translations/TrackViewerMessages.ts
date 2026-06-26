@@ -3,6 +3,8 @@ import type { JSX } from 'react';
 export type TrackViewerMessages = {
   info: () => JSX.Element;
   upload: string;
+  trackLabel: string;
+  unnamedTrack: (props: { n: number }) => string;
   moreInfo: string;
   share: string;
   details: {

@@ -26,6 +26,7 @@ import {
   FaMountain,
   FaPaintBrush,
   FaPencilAlt,
+  FaRoute,
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -34,10 +35,12 @@ import {
   trackViewerColorizeTrackBy,
   trackViewerResolveElevationPrompt,
   trackViewerSetElevationPrompt,
+  trackViewerSetSelectedTrack,
   trackViewerToggleElevationChart,
   trackViewerUploadTrack,
 } from '../model/actions.js';
 import { trackInfoToast } from '../model/trackInfoToast.js';
+import { resolveActiveTrack, trackLineFeatures } from '../trackSelection.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 import TrackViewerElevationPromptModal from './TrackViewerElevationPromptModal.js';
 
@@ -85,6 +88,23 @@ export function TrackViewerMenu(): ReactElement {
         ) as Feature<LineString>[])
       : [];
   });
+
+  // The line-like features (each track/route as one entry, multi-segment
+  // included) the user picks among when several are loaded.
+  const trackGeojson = useAppSelector(
+    (state) => state.trackViewer.trackGeojson,
+  );
+
+  const selectedTrackIndex = useAppSelector(
+    (state) => state.trackViewer.selectedTrackIndex,
+  );
+
+  const trackLines = trackLineFeatures(trackGeojson);
+
+  const activeTrackIndex = resolveActiveTrack(
+    trackGeojson,
+    selectedTrackIndex,
+  )?.index;
 
   const isModeAvailable = (mode: (typeof colorizingModes)[number]) => {
     const { isAvailable } = colorizers[mode];
@@ -143,6 +163,28 @@ export function TrackViewerMenu(): ReactElement {
         {/* Separate the import action from the loaded-track actions. */}
         {canUpload && hasTrack && (
           <div className=" ms-1 vr align-self-stretch" />
+        )}
+
+        {/* Pick which track the chart / "more info" act on, shown only when
+            several lines are loaded. */}
+        {trackLines.length > 1 && (
+          <SelectDropdown
+            className="ms-1"
+            id="track_selector"
+            breakpoint="sm"
+            toggleIcon={<FaRoute />}
+            name={tvm?.trackLabel}
+            value={String(activeTrackIndex ?? '')}
+            onSelect={(value) => {
+              dispatch(trackViewerSetSelectedTrack(Number(value)));
+            }}
+            options={trackLines.map(({ feature, index }, i) => ({
+              value: String(index),
+              label:
+                (feature.properties?.['name'] as string | undefined) ||
+                tvm?.unnamedTrack({ n: i + 1 }),
+            }))}
+          />
         )}
 
         {enableElevationChart && (

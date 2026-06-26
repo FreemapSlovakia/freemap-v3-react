@@ -144,15 +144,21 @@ off that — never re-derive "is this a track?" from density/timestamps.
       across the gap), so a server elevation override gets the same chart detail
       as a single-segment track. A new `trackViewerSetElevation` processor
       refreshes an already-open chart when elevation is refilled (it no longer
-      goes stale until re-opened). **Still TODO:** the "more info" toast stats and
-      start/finish markers treating a multi-segment recording as one unit
-      (overlaps the marker item above).
-- [ ] **Operate on a chosen track, not `features[0]`.** Elevation chart / "more
-      info" / colorize currently silently pick the first line; `trackGeojsonIs
-      SuitableForElevationChart` even checks `features[0]` (wrongly disables the
-      chart when the first feature is a waypoint/polygon). With multiple tracks,
-      clicking a line selects it and the actions operate on the selection (or an
-      explicit "All"); single track behaves as today.
+      goes stale until re-opened). The "more info" stats are now multi-segment
+      aware (climb/descent measured per segment; see the selection item below).
+      **Still TODO:** start/finish markers' permanent distance tooltips can stack
+      when several tracks are shown (hover-only when >1).
+- [x] **Operate on a chosen track, not `features[0]`.** A `selectedTrackIndex`
+      in the slice picks the active line among the loaded line-like features
+      (`trackSelection.ts`); the chart, "more info" and the map highlight act on
+      it, defaulting to the first line. Two synced ways to choose it: a `Track`
+      dropdown in the toolbar (shown when ≥2 lines) and clicking a line on the
+      map; the active line gets a blue halo under it (a pane below the
+      foreground, RoutePlanner-style — the line's own style is untouched).
+      Switching the active track refreshes an open chart. Selection resets on
+      load. `trackGeojsonIsSuitableForElevationChart` now checks "any line
+      exists" instead of `features[0]` (fixing the waypoint/polygon-first bug).
+      No "All tracks" aggregate — separate activities aren't auto-concatenated.
 - [ ] **Waypoints on the elevation profile.** Pair `<wpt>` points onto the
       profile by time when both the waypoint and track have timestamps (handles
       self-crossing tracks); else by spatial projection onto the polyline within a

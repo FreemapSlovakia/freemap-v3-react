@@ -12,6 +12,7 @@ import { trackInfoToast } from '@features/trackViewer/model/trackInfoToast.js';
 import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 import { enrichElevations } from '@shared/elevation.js';
 import { Feature, LineString, MultiLineString } from 'geojson';
+import { resolveActiveTrack } from '../../trackSelection.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 // A multi-segment recording arrives as a single `MultiLineString` feature.
@@ -84,15 +85,25 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       return;
     }
 
-    // Open the chart on the first line, rendering its elevation as-is: 'keep'
+    // Open the chart on the active track, rendering its elevation as-is: 'keep'
     // shows the recorded values with their gaps, while a fill/override has
     // already written the server values into these same coordinates. An
     // override may also densify a sparse line so the profile isn't coarse.
     await ensureRenderGeojson(getState, dispatch);
 
+    const after = getState().trackViewer;
+
+    const active = resolveActiveTrack(
+      after.trackGeojson,
+      after.selectedTrackIndex,
+    );
+
+    const rendered = active && after.renderTrackGeojson?.features[active.index];
+
     const first =
-      getState().trackViewer.renderTrackGeojson?.features.find(isLineLike) ??
-      lines[0];
+      rendered && isLineLike(rendered)
+        ? rendered
+        : (active?.feature ?? lines[0]);
 
     if (first) {
       window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);

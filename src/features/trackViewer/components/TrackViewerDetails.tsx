@@ -1,53 +1,75 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
-import { elevationCoverage, smoothElevations } from '@shared/geoutils.js';
+import {
+  elevationCoverage,
+  lineSegments,
+  smoothElevations,
+} from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { distance } from '@turf/distance';
-import { Feature, Geometry, LineString } from 'geojson';
 import type { ReactElement } from 'react';
-import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
+import { trackEndpoints } from '../trackEndpoints.js';
+import {
+  isTrackLine,
+  resolveActiveTrack,
+  type TrackLine,
+} from '../trackSelection.js';
 import { TrackViewerMessages } from '../translations/TrackViewerMessages.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 export function TrackViewerDetails(): ReactElement | null {
-  // Stats read the densified render copy when present (a sparse line's
-  // straight-segment climb/descent is coarse); otherwise the recorded track.
-  const trackGeojson = useAppSelector(
-    (state) =>
-      state.trackViewer.renderTrackGeojson ?? state.trackViewer.trackGeojson,
+  // Resolve the active track over the recorded source (its endpoint times live
+  // there), then read its stats from the densified render copy when present (a
+  // sparse line's straight-segment climb/descent is coarse).
+  const source = useAppSelector((state) => state.trackViewer.trackGeojson);
+
+  const render = useAppSelector(
+    (state) => state.trackViewer.renderTrackGeojson,
   );
 
-  const feature = trackGeojson?.features[0];
+  const selectedTrackIndex = useAppSelector(
+    (state) => state.trackViewer.selectedTrackIndex,
+  );
 
-  return feature ? <TrackViewerDetailsInt geometry={feature.geometry} /> : null;
+  const active = resolveActiveTrack(source, selectedTrackIndex);
+
+  if (!active) {
+    return null;
+  }
+
+  const rendered = render?.features[active.index];
+
+  const statsFeature =
+    rendered && isTrackLine(rendered) ? rendered : active.feature;
+
+  return (
+    <TrackViewerDetailsInt
+      feature={active.feature}
+      statsFeature={statsFeature}
+    />
+  );
 }
 
-export function TrackViewerDetailsInt({
-  geometry,
+function TrackViewerDetailsInt({
+  feature,
+  statsFeature,
 }: {
-  geometry: Geometry;
+  feature: TrackLine;
+  statsFeature: TrackLine;
 }): ReactElement | null {
   const m = useMessages();
 
   const tvm = useTrackViewerMessages();
 
-  const [startPoints, finishPoints] = useStartFinishPoints();
-
   const elevationDecision = useAppSelector(
     (state) => state.trackViewer.elevationDecision,
   );
 
-  // Coverage of the recorded source track (not the densified render copy) to
+  // Coverage of the recorded active track (not the densified render copy) to
   // distinguish complete from partial recorded elevation in the source row.
-  const elevationCov = useAppSelector((state) =>
-    elevationCoverage(
-      (state.trackViewer.trackGeojson?.features ?? []).filter(
-        (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-      ),
-    ),
-  );
+  const elevationCov = elevationCoverage([feature]);
 
   // Only count elevation change between points at least this far apart, so a
   // dense, jittery profile doesn't inflate the climb/descent totals.
@@ -72,24 +94,18 @@ export function TrackViewerDetailsInt({
 
   const tableData: [keyof TrackViewerMessages['details'], string][] = [];
 
-  let startTime: Date | undefined;
+  const endpoints = trackEndpoints(feature);
 
-  let finishTime: Date | undefined;
+  const startTime = endpoints?.startTime;
 
-  if (startPoints.length) {
-    startTime = startPoints[0]!.startTime;
+  const finishTime = endpoints?.finishTime;
 
-    if (startTime) {
-      tableData.push(['startTime', timeFormat.format(startTime)]);
-    }
+  if (startTime) {
+    tableData.push(['startTime', timeFormat.format(startTime)]);
   }
 
-  if (finishPoints.length) {
-    finishTime = finishPoints[0]!.finishTime;
-
-    if (finishTime) {
-      tableData.push(['finishTime', timeFormat.format(finishTime)]);
-    }
+  if (finishTime) {
+    tableData.push(['finishTime', timeFormat.format(finishTime)]);
   }
 
   let duration = 0;
@@ -107,8 +123,8 @@ export function TrackViewerDetailsInt({
     ]);
   }
 
-  if (finishPoints.length) {
-    const { length } = finishPoints[0]!;
+  if (endpoints) {
+    const { length } = endpoints;
 
     tableData.push(['distance', formatDistance(length, language)]);
 
@@ -122,10 +138,6 @@ export function TrackViewerDetailsInt({
     }
   }
 
-  if (geometry.type !== 'LineString') {
-    return null; // TODO log error?
-  }
-
   let minEle = Infinity;
 
   let maxEle = -Infinity;
@@ -134,36 +146,40 @@ export function TrackViewerDetailsInt({
 
   let downhillEleSum = 0;
 
-  const smoothed = smoothElevations(geometry.coordinates);
+  // Each segment of a multi-segment recording is measured on its own — no
+  // climb/descent is counted across the gap between segments.
+  for (const segment of lineSegments(statsFeature.geometry)) {
+    const smoothed = smoothElevations(segment);
 
-  let prevCoord = smoothed[0];
+    let prevCoord = smoothed[0];
 
-  for (const coord of smoothed) {
-    const distanceFromPrevPointInMeters = distance(coord, prevCoord!, {
-      units: 'meters',
-    });
+    for (const coord of smoothed) {
+      const distanceFromPrevPointInMeters = distance(coord, prevCoord!, {
+        units: 'meters',
+      });
 
-    if (gainStepMeters < distanceFromPrevPointInMeters) {
-      // otherwise the ele sums are very high
-      const ele = coord[2]!;
+      if (gainStepMeters < distanceFromPrevPointInMeters) {
+        // otherwise the ele sums are very high
+        const ele = coord[2]!;
 
-      if (ele < minEle) {
-        minEle = ele;
+        if (ele < minEle) {
+          minEle = ele;
+        }
+
+        if (maxEle < ele) {
+          maxEle = ele;
+        }
+
+        const eleDiff = ele - prevCoord![2]!;
+
+        if (eleDiff < 0) {
+          downhillEleSum += eleDiff * -1;
+        } else if (eleDiff > 0) {
+          uphillEleSum += eleDiff;
+        }
+
+        prevCoord = coord;
       }
-
-      if (maxEle < ele) {
-        maxEle = ele;
-      }
-
-      const eleDiff = ele - prevCoord![2]!;
-
-      if (eleDiff < 0) {
-        downhillEleSum += eleDiff * -1;
-      } else if (eleDiff > 0) {
-        uphillEleSum += eleDiff;
-      }
-
-      prevCoord = coord;
     }
   }
 

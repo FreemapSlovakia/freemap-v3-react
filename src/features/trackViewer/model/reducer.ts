@@ -18,6 +18,7 @@ import {
   trackViewerSetElevation,
   trackViewerSetElevationPrompt,
   trackViewerSetRenderGeojson,
+  trackViewerSetSelectedTrack,
   trackViewerSetTrackUID,
 } from './actions.js';
 
@@ -39,6 +40,9 @@ export interface TrackViewerState extends TrackViewerStateBase {
   // source), then the chosen fill mode. 'all' means every point now comes from
   // the terrain model, so another server overwrite would be pointless.
   elevationDecision: ElevationDecision;
+  // Which line the chart / "more info" / highlight act on, by index into
+  // `trackGeojson.features`; `null` falls back to the first line. Reset on load.
+  selectedTrackIndex: number | null;
 }
 
 export type ElevationDecision = 'undecided' | ElevationFillMode;
@@ -54,6 +58,7 @@ export const trackViewerInitialState: TrackViewerState = {
   colorizeTrackBy: null,
   elevationPrompt: null,
   elevationDecision: 'undecided',
+  selectedTrackIndex: null,
   ...cleanState,
 };
 
@@ -75,6 +80,9 @@ export const trackViewerReducer = createReducer(
           state.renderTrackGeojson = null;
 
           state.elevationDecision = 'undecided';
+
+          // The feature indices changed; fall back to the first line.
+          state.selectedTrackIndex = null;
 
           // A persisted elevation-derived colorize mode would render as a flat
           // mid-palette on a track that lacks full elevation; drop it so the
@@ -110,6 +118,9 @@ export const trackViewerReducer = createReducer(
       })
       .addCase(trackViewerColorizeTrackBy, (state, action) => {
         state.colorizeTrackBy = action.payload;
+      })
+      .addCase(trackViewerSetSelectedTrack, (state, action) => {
+        state.selectedTrackIndex = action.payload;
       })
       .addCase(trackViewerSetElevationPrompt, (state, action) => {
         state.elevationPrompt = action.payload;
