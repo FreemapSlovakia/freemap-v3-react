@@ -108,23 +108,28 @@ through-line of the fixes below is **provenance, not heuristics**: tag each
 feature at parse time with what it actually was in the source and key behavior
 off that — never re-derive "is this a track?" from density/timestamps.
 
-- [ ] **Tag feature provenance at parse time.** In `parseTrackFile`, normalize a
-      stable own property (e.g. `fm:kind: 'track' | 'route' | 'waypoint' |
-      'feature'`) from togeojson's `_gpxType` (`trk`/`rte`), Point waypoints, TCX
-      (always `track`), and KML/GeoJSON (`feature`). Also stamp `fm:source`
-      (originating filename) for multi-file views. This is the foundation for
-      everything below.
-- [ ] **Start/finish markers + distance labels only for `fm:kind === 'track'`.**
-      A KML/GeoJSON full of lines/polygons gets no flags (kills the clutter).
-      With a single track keep the permanent distance tooltip; with several show
-      it on hover/selection only.
-- [ ] **One track = one unit (single- or multi-segment).** A `<trk>` with
-      multiple `<trkseg>` is one interrupted recording → togeojson emits a single
-      `MultiLineString` (coordTimes nested per segment). Today `flatten()` in
-      `TrackViewerResult` / `useStartFinishPoints` explodes it into N lines → N
-      start/finish marker pairs. Treat the MultiLineString as one track: one
-      start flag, one finish flag + total distance. Flatten only for rendering
-      the polylines, not for markers/stats.
+- [x] **Tag feature provenance at parse time.** `parseTrackFile` stamps
+      `fm:kind: 'track' | 'route' | 'waypoint' | 'feature'` (see `provenance.ts`)
+      from togeojson's `_gpxType` (`trk`/`rte`), Point waypoints, TCX (always
+      `track`), and KML/GeoJSON (`feature`); an already-stamped kind is respected
+      so an exported-then-reimported GeoJSON round-trips. Foundation for the
+      convert/selection items.
+- [~] **Start/finish markers + distance labels only for tracks/routes.**
+      `useStartFinishPoints` now emits a pair only for `fm:kind` track or route
+      (`isTrackOrRoute`), so a KML/GeoJSON full of generic lines/polygons gets no
+      flags — the original clutter complaint. (Route included too: GPX `<rte>` is
+      a deliberate line where start/finish + distance helps; only generic
+      `feature` geometry caused the clutter.) **Still TODO:** with several tracks
+      the permanent distance tooltips can still stack — show them on
+      hover/selection when there's more than one.
+- [x] **One track = one unit (single- or multi-segment).** `useStartFinishPoints`
+      treats a `MultiLineString` (interrupted recording) as one track: one start
+      (first vertex of first segment), one finish + total distance (turf length,
+      gaps excluded), endpoint times read from the nested
+      `coordinateProperties.times`. No more N marker pairs, and a multi-segment
+      track that previously showed none now shows one. (`TrackViewerResult` still
+      flattens only for rendering the polylines.) The "more info" toast stats
+      being multi-segment-aware is tracked under the stats item below.
 - [~] **Multi-segment stats & elevation profile.** Aggregate distance/time across
       segments with the inter-segment gap excluded (no phantom straight-line
       distance across a pause). Elevation profile lays segments end-to-end on the
@@ -160,13 +165,11 @@ off that — never re-derive "is this a track?" from density/timestamps.
       there's data to lose (`fm:kind === 'track'` with sensor/elevation series).
       (c) Offer the simplify prompt only for `fm:kind === 'track'`; routes and
       generic geometry convert at full fidelity with no prompt.
-- [~] **Open/add multiple files into one view.** **Done:** the import modal and
-      the app-wide file drop accept several files at once (`parseTrackFiles`
-      merges them in file order); when geodata is already shown the user is asked
-      (via the confirm dialog, extended with a third button) whether to append or
-      replace. **Still TODO:** stamp `fm:kind` / `fm:source` on the merged
-      features so a legend/list can offer per-source show/hide/remove, and the
-      selection model below (multiple *tracks* aren't auto-concatenated for
-      stats — default to the selected track, optionally an "All tracks"
-      aggregate).
+- [x] **Open/add multiple files into one view.** The import modal and the
+      app-wide file drop accept several files at once (`parseTrackFiles` merges
+      them in file order); when geodata is already shown the user is asked (via
+      the confirm dialog, extended with a third button) whether to append or
+      replace. No per-source legend/list — to change what's shown, re-import.
+      Multiple *tracks* aren't auto-concatenated for stats; the "operate on a
+      chosen track" item below covers picking which one the chart/info acts on.
 

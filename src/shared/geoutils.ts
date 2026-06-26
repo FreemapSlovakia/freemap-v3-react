@@ -285,19 +285,13 @@ export function smoothValues(
 
         count++;
 
-        while (
-          maxDq.length > maxHead &&
-          values[maxDq[maxDq.length - 1]!]! <= v
-        ) {
+        while (maxDq.length > maxHead && values[maxDq.at(-1)!]! <= v) {
           maxDq.pop();
         }
 
         maxDq.push(hi);
 
-        while (
-          minDq.length > minHead &&
-          values[minDq[minDq.length - 1]!]! >= v
-        ) {
+        while (minDq.length > minHead && values[minDq.at(-1)!]! >= v) {
           minDq.pop();
         }
 

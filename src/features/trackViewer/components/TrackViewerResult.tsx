@@ -124,8 +124,8 @@ export default function TrackViewerResult({
 
     const closed =
       coords.length > 2 &&
-      coords[0]![0] === coords[coords.length - 1]![0] &&
-      coords[0]![1] === coords[coords.length - 1]![1];
+      coords[0]![0] === coords.at(-1)![0] &&
+      coords[0]![1] === coords.at(-1)![1];
 
     const style = lineStyleFromProperties(feature.properties, closed);
 
