@@ -32,6 +32,7 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   convertWithGeometry: 'S celou geometrií',
   showAsLookup: 'Zobrazit jako Nález',
   convertAll: 'Zkonvertovat všechny viditelné objekty na kreslení',
+  markerShape: 'Tvar značky',
 };
 
 export default cs;

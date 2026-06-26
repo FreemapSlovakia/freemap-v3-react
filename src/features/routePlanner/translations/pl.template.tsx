@@ -83,6 +83,8 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   default: 'Domyślna',
   leg: 'Odcinek trasy',
   stop: 'Postój',
+  transportTypeLabel: 'Środek transportu',
+  modeLabel: 'Tryb trasowania',
 };
 
 export default pl;

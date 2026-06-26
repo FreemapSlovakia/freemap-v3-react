@@ -2,6 +2,8 @@ import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { ColorizerMessages } from './ColorizerMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
+  colorizeBy: 'Színezés szerint',
+  premiumDuringLaunch: 'Prémium — a bevezetés alatt ingyenes',
   mode: {
     none: 'Inaktív',
     elevation: 'Magasság',

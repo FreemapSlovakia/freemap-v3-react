@@ -14,6 +14,7 @@ const cs: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   notFound: 'Nebyly nalezeny žádné změny.',
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při získávání změn', err),
+  timeWindow: 'Časové okno',
   details: {
     author: 'Autor:',
     description: 'Popis:',

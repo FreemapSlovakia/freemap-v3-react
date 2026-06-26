@@ -84,6 +84,8 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   default: 'Standard',
   leg: 'Routenabschnitt',
   stop: 'Halt',
+  transportTypeLabel: 'Verkehrsmittel',
+  modeLabel: 'Routing-Modus',
 };
 
 export default de;

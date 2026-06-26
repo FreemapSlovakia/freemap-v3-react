@@ -83,6 +83,8 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   default: 'Alapértelmezett',
   leg: 'Útvonal szakasz',
   stop: 'Megálló',
+  transportTypeLabel: 'Közlekedési mód',
+  modeLabel: 'Útvonaltervezési mód',
 };
 
 export default hu;

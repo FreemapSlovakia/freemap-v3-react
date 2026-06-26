@@ -14,6 +14,7 @@ const it: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   notFound: 'Nessun changeset trovato.',
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Errore nel recupero dei changeset:', err),
+  timeWindow: 'Intervallo di tempo',
   details: {
     author: 'Autore:',
     description: 'Descrizione:',

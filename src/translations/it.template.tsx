@@ -37,6 +37,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     delete: 'Elimina',
     remove: 'Rimuovi',
     close: 'Chiudi',
+    collapse: 'Comprimi',
+    expand: 'Espandi',
     apply: 'Applica',
     exitFullscreen: 'Esci dalla modalità a tutto schermo',
     fullscreen: 'Modalità a tutto schermo',
@@ -82,6 +84,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleted: 'Eliminato.',
     saved: 'Salvato.',
     visual: 'Visualizza',
+    drawingTool: 'Strumento di disegno',
     copyOk: 'Copiato negli appunti.',
     noCookies: () => (
       <>
@@ -154,6 +157,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapDetails: 'Dettagli mappa',
     tracking: 'Tracciamento in tempo reale',
     myMaps: 'Le mie mappe',
+    myMap: 'La mia mappa',
   },
 
   mainMenu: {
@@ -307,6 +311,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     customMaps: 'Mappe personalizzate',
     addCustomMap: 'Aggiungi mappa personalizzata',
+    activate: 'Attiva',
     customMapsEmptyMessage:
       'Nessuna mappa personalizzata definita. Aggiungine una per visualizzare la tua sorgente mappa.',
     base: 'Livelli di base',

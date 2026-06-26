@@ -7,6 +7,10 @@ import { TrackViewerMessages } from './TrackViewerMessages.js';
 const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   info: () => <TrackViewerDetails />,
   upload: 'Nahrát',
+  trackLabel: 'Trasa',
+  unnamedTrack: ({ n }) => `Trasa ${n}`,
+  convertLossWarning:
+    'Převod na kresbu nahradí trasu a zahodí její zaznamenaná data (nadmořská výška, tep, rychlost, čas).',
   moreInfo: 'Více info',
   saveAsMap: 'Uložit do mých map',
   loginToSaveMap: 'Pro uložení trasy do vašich map se nejprve přihlaste.',
@@ -30,6 +34,11 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   uploadModal: {
     title: 'Importovat soubor',
     drop: 'Přetáhněte sem soubor GPX, KML, KMZ, TCX nebo GeoJSON, nebo sem klikněte pro jeho výběr.',
+    mergeTitle: 'Data jsou již načtena',
+    mergeMessage:
+      'Některá geodata jsou již zobrazena. Připojit k nim importovaná data, nebo je nahradit?',
+    append: 'Připojit',
+    replace: 'Nahradit',
   },
   elevationFill: {
     title: 'Nadmořská výška',
@@ -61,6 +70,8 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   loadingError: 'Soubor se nepodařilo načíst.',
   onlyOne: 'Očekává se pouze jeden soubor.',
   invalidFormat: 'Soubor není v podporovaném formátu nebo je neplatný.',
+  someFilesFailed: ({ names }) =>
+    `Některé soubory se nepodařilo načíst: ${names}.`,
 };
 
 export default cs;

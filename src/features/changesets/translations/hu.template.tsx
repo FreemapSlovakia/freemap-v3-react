@@ -18,6 +18,7 @@ const hu: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
       'Hiba történt a módosításkészletek beolvasásánál',
       err,
     ),
+  timeWindow: 'Időablak',
   details: {
     author: 'Szerző:',
     description: 'Leírás:',

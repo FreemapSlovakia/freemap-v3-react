@@ -10,6 +10,7 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveSuccess: 'Změny byly uloženy.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při ukládání nastavení', err),
+  customMapSaved: 'Vlastní mapa byla uložena.',
 };
 
 export default cs;

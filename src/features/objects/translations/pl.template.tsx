@@ -33,6 +33,7 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   convertWithGeometry: 'Z pełną geometrią',
   showAsLookup: 'Pokaż jako Wynik',
   convertAll: 'Przekształć wszystkie widoczne obiekty na rysunek',
+  markerShape: 'Kształt znacznika',
 };
 
 export default pl;

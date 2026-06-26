@@ -33,6 +33,7 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     `Das Ergebnis wurde auf ${limit} Objekte begrenzt.`,
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Objekte (POIs)', err),
+  markerShape: 'Markerform',
 };
 
 export default de;

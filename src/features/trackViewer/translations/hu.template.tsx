@@ -7,6 +7,10 @@ import { TrackViewerMessages } from './TrackViewerMessages.js';
 const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   info: () => <TrackViewerDetails />,
   upload: 'Feltöltés',
+  trackLabel: 'Nyomvonal',
+  unnamedTrack: ({ n }) => `${n}. nyomvonal`,
+  convertLossWarning:
+    'A rajzzá alakítás lecseréli a nyomvonalat, és eldobja a rögzített adatait (magasság, pulzusszám, sebesség, idő).',
   moreInfo: 'További információ',
   saveAsMap: 'Mentés a térképeim közé',
   loginToSaveMap:
@@ -31,6 +35,11 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   uploadModal: {
     title: 'Fájl importálása',
     drop: 'Húzza ide a GPX-, KML-, KMZ-, TCX- vagy GeoJSON-fájlt, vagy kattintson ide a kijelöléséhez.',
+    mergeTitle: 'Az adatok már be vannak töltve',
+    mergeMessage:
+      'Már láthatók geoadatok. Hozzáfűzi az importált adatokat, vagy lecseréli őket?',
+    append: 'Hozzáfűzés',
+    replace: 'Csere',
   },
   elevationFill: {
     title: 'Magassági adatok',
@@ -67,6 +76,8 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   loadingError: 'Hiba történt a fájl betöltésekor.',
   onlyOne: 'Csak egyetlen fájl tölthető be.',
   invalidFormat: 'A fájl formátuma nem támogatott, vagy a fájl érvénytelen.',
+  someFilesFailed: ({ names }) =>
+    `Néhány fájlt nem sikerült betölteni: ${names}.`,
 };
 
 export default hu;

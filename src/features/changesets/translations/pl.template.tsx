@@ -25,6 +25,7 @@ const pl: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   notFound: 'Nie znaleziono żadnych changesetów.',
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas pobierania changesetów', err),
+  timeWindow: 'Okno czasowe',
 };
 
 export default pl;

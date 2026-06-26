@@ -84,6 +84,8 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   default: 'Výchozí',
   leg: 'Úsek trasy',
   stop: 'Zastávka',
+  transportTypeLabel: 'Druh dopravy',
+  modeLabel: 'Režim trasování',
 };
 
 export default cs;

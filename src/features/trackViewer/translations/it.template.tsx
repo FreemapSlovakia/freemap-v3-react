@@ -7,6 +7,10 @@ import { TrackViewerMessages } from './TrackViewerMessages.js';
 const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   info: () => <TrackViewerDetails />,
   upload: 'Carica',
+  trackLabel: 'Traccia',
+  unnamedTrack: ({ n }) => `Traccia ${n}`,
+  convertLossWarning:
+    'La conversione in disegno sostituisce la traccia e ne scarta i dati registrati (quota, frequenza cardiaca, velocità, tempo).',
   moreInfo: 'Maggiori info',
   saveAsMap: 'Salva nelle mie mappe',
   loginToSaveMap: 'Accedi prima per salvare la traccia nelle tue mappe.',
@@ -30,6 +34,11 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   uploadModal: {
     title: 'Importa file',
     drop: 'Trascina qui un file GPX, KML, KMZ, TCX o GeoJSON oppure clicca per selezionarlo.',
+    mergeTitle: 'Dati già caricati',
+    mergeMessage:
+      'Alcuni geodati sono già visualizzati. Aggiungere i dati importati o sostituirli?',
+    append: 'Aggiungi',
+    replace: 'Sostituisci',
   },
   elevationFill: {
     title: 'Dati di quota',
@@ -67,6 +76,7 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   loadingError: 'Errore nel caricamento del file.',
   onlyOne: "E' atteso un singolo file.",
   invalidFormat: 'Il file non è in un formato supportato o non è valido.',
+  someFilesFailed: ({ names }) => `Impossibile caricare alcuni file: ${names}.`,
 };
 
 export default it;

@@ -2,6 +2,8 @@ import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { ColorizerMessages } from './ColorizerMessages.js';
 
 const de: DeepPartialWithRequiredObjects<ColorizerMessages> = {
+  colorizeBy: 'Einfärben nach',
+  premiumDuringLaunch: 'Premium — kostenlos während der Einführung',
   mode: {
     none: 'Inaktiv',
     elevation: 'Höhe',

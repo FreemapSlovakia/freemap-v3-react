@@ -38,6 +38,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     delete: 'Löschen',
     remove: 'Entfernen',
     close: 'Schließen',
+    collapse: 'Einklappen',
+    expand: 'Ausklappen',
     apply: 'Anwenden',
     exitFullscreen: 'Vollbildmodus beenden',
     fullscreen: 'Vollbild',
@@ -75,6 +77,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleted: 'Gelöscht.',
     saved: 'Gespeichert.',
     visual: 'Anzeige',
+    drawingTool: 'Zeichenwerkzeug',
     copyOk: 'In Zwischenablage kopiert.',
     noCookies: () => (
       <>
@@ -149,6 +152,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapDetails: 'Kartendetails',
     tracking: 'Live-Tracking',
     myMaps: 'Meine Karten',
+    myMap: 'Meine Karte',
   },
 
   mainMenu: {
@@ -304,6 +308,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customBase: 'Benutzerdefinierte Karte',
     customMaps: 'Benutzerdefinierte Karten',
     addCustomMap: 'Benutzerdefinierte Karte hinzufügen',
+    activate: 'Aktivieren',
     customMapsEmptyMessage:
       'Noch keine benutzerdefinierten Karten definiert. Fügen Sie eine hinzu, um Ihre eigene Kartenquelle anzuzeigen.',
     base: 'Grundlegende Ebenen',

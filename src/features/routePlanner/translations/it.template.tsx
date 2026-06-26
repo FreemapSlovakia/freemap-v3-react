@@ -84,6 +84,8 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   default: 'Predefinito',
   leg: 'Tratto del percorso',
   stop: 'Fermata',
+  transportTypeLabel: 'Tipo di trasporto',
+  modeLabel: 'Modalità di instradamento',
 };
 
 export default it;

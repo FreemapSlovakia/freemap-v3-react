@@ -37,6 +37,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     delete: 'Törlés',
     remove: 'Eltávolítás',
     close: 'Bezárás',
+    collapse: 'Összecsukás',
+    expand: 'Kibontás',
     apply: 'Alkalmaz',
     exitFullscreen: 'Kilépés a teljes képernyős módból',
     fullscreen: 'Teljes képernyő',
@@ -72,6 +74,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleted: 'Törölve.',
     saved: 'Elmentve.',
     visual: 'Megjelenítés',
+    drawingTool: 'Rajzeszköz',
     enablePopup:
       'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
     broadcastChannelUnsupported:
@@ -149,6 +152,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapDetails: 'Térképadatok',
     tracking: 'Élő követés',
     myMaps: 'Saját térképeim',
+    myMap: 'Térképem',
   },
 
   mainMenu: {
@@ -309,6 +313,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customBase: 'Egyéni térkép',
     customMaps: 'Egyéni térképek',
     addCustomMap: 'Egyéni térkép hozzáadása',
+    activate: 'Aktiválás',
     customMapsEmptyMessage:
       'Még nincsenek egyéni térképek megadva. Adjon hozzá egyet a saját térképforrás megjelenítéséhez.',
     base: 'Alaprétegek',

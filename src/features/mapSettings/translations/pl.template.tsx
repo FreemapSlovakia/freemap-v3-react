@@ -10,6 +10,7 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveSuccess: 'Ustawienia zostały zapisane.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Błąd zapisu ustawień', err),
+  customMapSaved: 'Mapa niestandardowa została zapisana.',
 };
 
 export default pl;

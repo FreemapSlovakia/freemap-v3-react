@@ -10,6 +10,7 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveSuccess: 'Einstellungen wurden gespeichert.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Speichern der Einstellungen', err),
+  customMapSaved: 'Die benutzerdefinierte Karte wurde gespeichert.',
 };
 
 export default de;

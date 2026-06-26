@@ -39,6 +39,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     delete: 'Usuń',
     remove: 'Usuń',
     close: 'Zamknij',
+    collapse: 'Zwiń',
+    expand: 'Rozwiń',
     apply: 'Zastosuj',
     exitFullscreen: 'Zamknij tryb pełnoekranowy',
     fullscreen: 'Pełny ekran',
@@ -75,6 +77,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleted: 'Usunięto.',
     saved: 'Zapisano.',
     visual: 'Widok',
+    drawingTool: 'Narzędzie rysowania',
     copyOk: 'Skopiowano do schowka.',
     noCookies: () => (
       <>
@@ -143,6 +146,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapDetails: 'Szczegóły mapy',
     tracking: 'Śledzenie na żywo',
     myMaps: 'Moje mapy',
+    myMap: 'Moja mapa',
   },
   mainMenu: {
     title: 'Menu główne',
@@ -293,6 +297,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customBase: 'Własna mapa',
     customMaps: 'Mapy własne',
     addCustomMap: 'Dodaj własną mapę',
+    activate: 'Aktywuj',
     customMapsEmptyMessage:
       'Nie zdefiniowano jeszcze żadnych własnych map. Dodaj jedną, aby wyświetlić własne źródło mapy.',
     base: 'Warstwy podstawowe',

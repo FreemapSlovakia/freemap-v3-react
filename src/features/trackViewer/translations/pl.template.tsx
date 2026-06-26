@@ -26,6 +26,11 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   uploadModal: {
     title: 'Importuj plik',
     drop: 'Upuść plik GPX, KML, KMZ, TCX lub GeoJSON tutaj lub kliknij, aby go wybrać.',
+    mergeTitle: 'Dane są już wczytane',
+    mergeMessage:
+      'Niektóre geodane są już wyświetlane. Dołączyć do nich zaimportowane dane, czy je zastąpić?',
+    append: 'Dołącz',
+    replace: 'Zastąp',
   },
   elevationFill: {
     title: 'Dane wysokości',
@@ -52,6 +57,10 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
         : 'Wysokość została nadpisana.',
   },
   upload: 'Prześlij',
+  trackLabel: 'Ślad',
+  unnamedTrack: ({ n }) => `Ślad ${n}`,
+  convertLossWarning:
+    'Konwersja na rysunek zastępuje ślad i odrzuca jego zarejestrowane dane (wysokość, tętno, prędkość, czas).',
   moreInfo: 'Więcej informacji',
   saveAsMap: 'Zapisz w moich mapach',
   loginToSaveMap: 'Zaloguj się, aby zapisać trasę w swoich mapach.',
@@ -65,6 +74,8 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   onlyOne: 'Oczekiwany jest tylko jeden plik.',
   invalidFormat:
     'Plik nie jest w obsługiwanym formacie lub jest nieprawidłowy.',
+  someFilesFailed: ({ names }) =>
+    `Nie udało się wczytać niektórych plików: ${names}.`,
 };
 
 export default pl;

@@ -38,6 +38,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     delete: 'Zmazať',
     remove: 'Odstrániť',
     close: 'Zavrieť',
+    collapse: 'Zbaliť',
+    expand: 'Rozbaliť',
     apply: 'Použiť',
     exitFullscreen: 'Zrušiť zobrazenie na celú obrazovku',
     fullscreen: 'Na celú obrazovku',
@@ -149,6 +151,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapDetails: 'Detaily v mape',
     tracking: 'Sledovanie',
     myMaps: 'Moje mapy',
+    myMap: 'Moja mapa',
   },
 
   mainMenu: {

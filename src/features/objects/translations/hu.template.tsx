@@ -37,6 +37,7 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   convertAll: 'Minden látható objektum átalakítása rajzzá',
   tooManyPoints: ({ limit }) =>
     `Az eredmény ${limit} objektumra lett korlátozva.`,
+  markerShape: 'Jelölő alakja',
 };
 
 export default hu;

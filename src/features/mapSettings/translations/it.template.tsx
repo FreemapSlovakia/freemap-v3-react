@@ -10,6 +10,7 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveSuccess: 'Impostazioni salvate.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Errore nel salvataggio delle impostazioni:', err),
+  customMapSaved: 'La mappa personalizzata è stata salvata.',
 };
 
 export default it;

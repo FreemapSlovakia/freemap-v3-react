@@ -39,6 +39,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     delete: 'Smazat',
     remove: 'Odstranit',
     close: 'Zavřít',
+    collapse: 'Sbalit',
+    expand: 'Rozbalit',
     apply: 'Použiť',
     exitFullscreen: 'Zrušit zobrazení na celou obrazovku',
     fullscreen: 'Na celou obrazovku',
@@ -75,6 +77,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleted: 'Smazané.',
     saved: 'Uložené.',
     visual: 'Zobrazení',
+    drawingTool: 'Kreslicí nástroj',
     copyOk: 'Zkopírováno do schránky.',
     noCookies: () => (
       <>
@@ -148,6 +151,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapDetails: 'Detaily v mapě',
     tracking: 'Sledování',
     myMaps: 'Moje mapy',
+    myMap: 'Moje mapa',
   },
 
   mainMenu: {
@@ -309,6 +313,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     configureLayers: 'Nastavení mapových vrstev',
     customMaps: 'Vlastní mapy',
     addCustomMap: 'Přidat vlastní mapu',
+    activate: 'Aktivovat',
     customMapsEmptyMessage:
       'Zatím nejsou definovány žádné vlastní mapy. Přidejte jednu pro zobrazení vlastního zdroje map.',
     base: 'Základní vrstvy',

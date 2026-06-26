@@ -10,6 +10,7 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveSuccess: 'A beállítások el lettek mentve.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a beállítások mentésénél', err),
+  customMapSaved: 'Az egyéni térkép mentve.',
 };
 
 export default hu;
