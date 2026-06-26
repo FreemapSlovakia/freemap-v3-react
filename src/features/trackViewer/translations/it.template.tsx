@@ -28,8 +28,8 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     source: 'Origine quota',
     sourceOriginal: 'registrata',
     sourcePartial: 'registrata, incompleta',
-    sourceFilledGaps: 'registrata, lacune riempite (NASA SRTM)',
-    sourceFilled: 'modello del terreno NASA SRTM',
+    sourceFilledGaps: 'registrata, lacune riempite (modello del terreno)',
+    sourceFilled: 'modello del terreno',
   },
   uploadModal: {
     title: 'Importa file',
@@ -45,13 +45,20 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     introNone: 'Questa traccia non ha dati di quota.',
     introPartial: 'In alcuni punti di questa traccia manca la quota.',
     introFull:
-      'Questa traccia ha già la quota, ma il modello NASA SRTM (~30 m) è ' +
-      'spesso più preciso.',
+      'Questa traccia ha già la quota, ma un modello del terreno è spesso ' +
+      'più preciso.',
+    premiumHiRes: (premiumLink) => (
+      <>
+        Con l’{premiumLink('accesso premium')}, nei paesi supportati la quota è
+        campionata da un modello nazionale ad alta risoluzione — per ora
+        Slovacchia (DMR 5.0: ÚGKK SR), altri in arrivo.
+      </>
+    ),
     question: 'Cosa vuoi fare?',
     overrideAll: 'Sovrascrivi tutto',
     overrideAllDesc:
-      'sostituisci ogni punto con il modello SRTM — un profilo uniforme e ' +
-      'coerente',
+      'sostituisci ogni punto con il modello del terreno — un profilo ' +
+      'uniforme e coerente',
     fillMissing: 'Riempi mancanti',
     fillMissingDesc:
       'mantieni i valori registrati e riempi solo le lacune (potrebbero ' +
@@ -61,7 +68,7 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     add: 'Aggiungi quota',
     update: 'Aggiorna quota',
     updateConfirm:
-      'Sostituire la quota della traccia con il modello NASA SRTM (~30 m)?',
+      'Sostituire la quota della traccia con il modello del terreno?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'La quota mancante è stata riempita.'

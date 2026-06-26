@@ -3,9 +3,8 @@ import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SubmenuHeader } from '@features/mainMenu/components/SubmenuHeader.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
-import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
-import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
@@ -22,7 +21,6 @@ import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { removeAccents } from '@shared/stringUtils.js';
 import { Shortcut } from '@shared/types/common.js';
-import clsx from 'clsx';
 import {
   ChangeEvent,
   Fragment,
@@ -41,7 +39,6 @@ import {
   FaEllipsisV,
   FaEyeSlash,
   FaFilter,
-  FaGem,
   FaHistory,
   FaLayerGroup,
   FaRegCheckCircle,
@@ -60,8 +57,6 @@ function getKbdShortcut(shortcut?: Shortcut | null) {
 
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
-
-  const prm = usePremiumMessages();
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
@@ -84,8 +79,6 @@ export function MapSwitchButton(): ReactElement {
   );
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
-
-  const becomePremium = useBecomePremium();
 
   const dispatch = useDispatch();
 
@@ -238,11 +231,7 @@ export function MapSwitchButton(): ReactElement {
         !def.custom &&
         def.premiumFromZoom !== undefined &&
         zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
-          <FaGem
-            className="ms-1 text-warning"
-            title={premium ? undefined : prm?.premiumOnly}
-            onClick={premium ? undefined : becomePremium}
-          />
+          <PremiumGem className="ms-1" nested />
         ) : null}
 
         {place !== 'toolbar' &&
@@ -265,11 +254,7 @@ export function MapSwitchButton(): ReactElement {
         !def.custom &&
         def.premiumFromZoom !== undefined &&
         zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
-          <FaGem
-            className={clsx('ms-1', premium ? 'text-success' : 'text-warning')}
-            title={premium ? undefined : prm?.premiumOnly}
-            onClickCapture={premium ? undefined : becomePremium}
-          />
+          <PremiumGem className="ms-1" capture nested />
         ) : null}
 
         {place !== 'toolbar' && !def.custom && def.superseededBy && (

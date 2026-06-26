@@ -23,6 +23,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>zdjęcia premium</li>
         <li>multimodalne wyznaczanie trasy</li>
+        <li>dane o wysokości w wysokiej rozdzielczości (na razie Słowacja)</li>
       </ul>
       <p className="mb-0">Freemap pozostaje bezpłatny i otwarty.</p>
     </>
@@ -50,6 +51,10 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
   premiumOnly: 'Dostępne tylko z dostępem premium.',
+  noPremium: 'Nie masz dostępu premium.',
+  clickToActivate: 'Kliknij, aby aktywować.',
+  higherPrecisionElevation:
+    'Dokładniejsze dane wysokości dostępne z dostępem premium.',
   alreadyPremium: 'Masz już dostęp premium.',
   premiumUser: 'Użytkownik z dostępem premium',
   payOnce: 'Zapłać jednorazowo za jeden rok',

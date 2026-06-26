@@ -1,6 +1,7 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
+import { isPremium } from '@features/premium/premium.js';
 import { densifyAlong, enrichElevations } from '@shared/elevation.js';
 import { lineString } from '@turf/helpers';
 import type { Dispatch } from 'redux';
@@ -20,12 +21,18 @@ const cancelActions = [
 
 /**
  * Lazily builds the render-only elevation line for the active alternative and
- * caches it via {@link routePlannerSetRenderGeojson}. The router's own
- * elevation (a different DEM, sampled only at shape-point density) is ignored:
- * every vertex is overridden from our terrain model, then long segments are
- * densified at DEM resolution so the profile isn't a coarse straight line. Only
- * the elevation chart and elevation/steepness colorize read it; the source
- * `alternatives` stay GraphHopper's, so export and the drawn route are
+ * caches it via {@link routePlannerSetRenderGeojson}.
+ *
+ * For premium users every vertex is overridden from our terrain model — which
+ * serves a high-resolution DEM where available — and long segments are then
+ * densified at DEM resolution, so the profile is smooth and consistent
+ * regardless of the router. For everyone else the router's own elevation is
+ * kept (GraphHopper supplies it) and only coordinates that lack it (e.g. OSRM)
+ * are sampled from the terrain model; the line isn't densified, so free routing
+ * doesn't load the elevation service.
+ *
+ * Only the elevation chart and elevation/steepness colorize read it; the source
+ * `alternatives` stay the router's, so export and the drawn route are
  * untouched. A planned route has no recorded measurement to preserve, so
  * overriding is safe.
  */
@@ -60,14 +67,24 @@ export async function ensureRouteRenderGeojson(
     return;
   }
 
-  const [overridden] = await enrichElevations(
-    [lineString(coordinates)],
-    'all',
+  const line = lineString(coordinates);
+
+  const premium = isPremium(getState().auth.user);
+
+  // Premium overrides every vertex from the terrain model; everyone else keeps
+  // the router's own elevation and only fills coordinates that lack it.
+  const [enriched] = await enrichElevations(
+    [line],
+    premium ? 'all' : 'missing',
     getState,
     cancelActions,
   );
 
-  const densified = await densifyAlong(overridden!, getState, cancelActions);
+  // Densify only for premium, so a GraphHopper route on the free tier doesn't
+  // hit the elevation service at all.
+  const render = premium
+    ? await densifyAlong(enriched!, getState, cancelActions)
+    : enriched!;
 
   // The route may have changed (or a concurrent call won) while sampling.
   const after = getState().routePlanner;
@@ -79,5 +96,5 @@ export async function ensureRouteRenderGeojson(
     return;
   }
 
-  dispatch(routePlannerSetRenderGeojson(densified));
+  dispatch(routePlannerSetRenderGeojson(render));
 }

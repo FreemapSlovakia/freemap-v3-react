@@ -27,8 +27,8 @@ const en: TrackViewerMessages = {
     source: 'Elevation source',
     sourceOriginal: 'recorded',
     sourcePartial: 'recorded, incomplete',
-    sourceFilledGaps: 'recorded, gaps filled (NASA SRTM)',
-    sourceFilled: 'NASA SRTM terrain model',
+    sourceFilledGaps: 'recorded, gaps filled (terrain model)',
+    sourceFilled: 'terrain model',
   },
   uploadModal: {
     title: 'Import file',
@@ -44,13 +44,20 @@ const en: TrackViewerMessages = {
     introNone: 'This track has no elevation data.',
     introPartial: 'This track is missing elevation for some points.',
     introFull:
-      'This track already has elevation, but the NASA SRTM model (~30 m) is ' +
-      'often more precise.',
+      'This track already has elevation, but a terrain model is often more ' +
+      'precise.',
+    premiumHiRes: (premiumLink) => (
+      <>
+        With {premiumLink('premium access')}, elevation in supported countries
+        is sampled from a high-resolution national model — currently Slovakia
+        (DMR 5.0: ÚGKK SR), with more to follow.
+      </>
+    ),
     question: 'What would you like to do?',
     overrideAll: 'Override all',
     overrideAllDesc:
-      'replace every point from the SRTM terrain model — a smooth, ' +
-      'consistent profile',
+      'replace every point from the terrain model — a smooth, consistent ' +
+      'profile',
     fillMissing: 'Fill missing',
     fillMissingDesc:
       'keep the recorded values and fill only the gaps (may step where the ' +
@@ -59,8 +66,7 @@ const en: TrackViewerMessages = {
     keepDesc: 'use the elevation stored in the track',
     add: 'Add elevation',
     update: 'Update elevation',
-    updateConfirm:
-      "Replace the track's elevation with the NASA SRTM terrain model (~30 m)?",
+    updateConfirm: "Replace the track's elevation with the terrain model?",
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Missing elevation has been filled.'

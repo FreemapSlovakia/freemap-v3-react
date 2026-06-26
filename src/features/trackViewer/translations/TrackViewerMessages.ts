@@ -1,4 +1,4 @@
-import type { JSX } from 'react';
+import type { JSX, ReactNode } from 'react';
 
 export type TrackViewerMessages = {
   info: () => JSX.Element;
@@ -39,6 +39,7 @@ export type TrackViewerMessages = {
     introNone: string;
     introPartial: string;
     introFull: string;
+    premiumHiRes: (premiumLink: (label: ReactNode) => ReactNode) => ReactNode;
     question: string;
     overrideAll: string;
     overrideAllDesc: string;

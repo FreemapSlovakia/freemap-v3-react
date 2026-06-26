@@ -20,8 +20,8 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     source: 'Źródło wysokości',
     sourceOriginal: 'zarejestrowana',
     sourcePartial: 'zarejestrowana, niepełna',
-    sourceFilledGaps: 'zarejestrowana, luki uzupełnione (NASA SRTM)',
-    sourceFilled: 'model terenu NASA SRTM',
+    sourceFilledGaps: 'zarejestrowana, luki uzupełnione (model terenu)',
+    sourceFilled: 'model terenu',
   },
   uploadModal: {
     title: 'Importuj plik',
@@ -37,11 +37,19 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     introNone: 'Ten ślad nie zawiera danych o wysokości.',
     introPartial: 'W niektórych punktach tego śladu brakuje wysokości.',
     introFull:
-      'Ten ślad ma już dane wysokości, ale model NASA SRTM (~30 m) jest ' +
-      'często dokładniejszy.',
+      'Ten ślad ma już dane wysokości, ale model terenu jest często ' +
+      'dokładniejszy.',
+    premiumHiRes: (premiumLink) => (
+      <>
+        Z {premiumLink('dostępem premium')} wysokość w obsługiwanych krajach
+        jest próbkowana z krajowego modelu w wysokiej rozdzielczości — na razie
+        Słowacja (DMR 5.0: ÚGKK SR), kolejne wkrótce.
+      </>
+    ),
     question: 'Co chcesz zrobić?',
     overrideAll: 'Zastąp wszystkie',
-    overrideAllDesc: 'zastąp każdy punkt modelem SRTM — gładki, spójny profil',
+    overrideAllDesc:
+      'zastąp każdy punkt modelem terenu — gładki, spójny profil',
     fillMissing: 'Uzupełnij brakujące',
     fillMissingDesc:
       'zachowaj zarejestrowane wartości i uzupełnij tylko luki (na styku obu ' +
@@ -50,7 +58,7 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     keepDesc: 'użyj wysokości zapisanej w śladzie',
     add: 'Dodaj wysokość',
     update: 'Zaktualizuj wysokość',
-    updateConfirm: 'Zastąpić wysokość śladu modelem NASA SRTM (~30 m)?',
+    updateConfirm: 'Zastąpić wysokość śladu modelem terenu?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Brakująca wysokość została uzupełniona.'

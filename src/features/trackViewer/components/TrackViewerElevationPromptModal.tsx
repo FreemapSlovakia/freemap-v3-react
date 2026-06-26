@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
@@ -64,7 +65,7 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
           <>
             <p className="mb-1">{ef.question}</p>
 
-            <ul className="mb-0">
+            <ul>
               <li>
                 <strong>{ef.overrideAll}</strong> — {ef.overrideAllDesc}
               </li>
@@ -83,6 +84,12 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
             </ul>
           </>
         )}
+
+        <p className="text-body-secondary small mb-0">
+          {ef.premiumHiRes((label) => (
+            <PremiumGem label={label} onBeforeNavigate={close} />
+          ))}
+        </p>
       </Modal.Body>
 
       <Modal.Footer>

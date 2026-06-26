@@ -8,6 +8,9 @@ export type PremiumMessages = {
   becomePremium: string;
   youArePremium: (date: string) => JSX.Element;
   premiumOnly: string;
+  noPremium: string;
+  clickToActivate: string;
+  higherPrecisionElevation: string;
   alreadyPremium: string;
   premiumUser: string;
   payOnce: string;

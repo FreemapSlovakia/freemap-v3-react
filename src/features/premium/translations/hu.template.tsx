@@ -23,6 +23,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>prémium fényképek</li>
         <li>multimodális útvonaltervezés</li>
+        <li>nagy felbontású magassági adatok (egyelőre Szlovákia)</li>
       </ul>
       <p className="mb-0">A Freemap ingyenes és nyílt marad.</p>
     </>
@@ -50,6 +51,10 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
   premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
+  noPremium: 'Nincs prémium hozzáférésed.',
+  clickToActivate: 'Kattintson az aktiváláshoz.',
+  higherPrecisionElevation:
+    'Nagyobb pontosságú magassági adatok prémium hozzáféréssel érhetők el.',
   alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
   premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
   payOnce: 'Egyszeri fizetés egy évre',

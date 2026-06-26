@@ -20,8 +20,8 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     source: 'Höhenquelle',
     sourceOriginal: 'aufgezeichnet',
     sourcePartial: 'aufgezeichnet, unvollständig',
-    sourceFilledGaps: 'aufgezeichnet, Lücken ergänzt (NASA SRTM)',
-    sourceFilled: 'NASA-SRTM-Geländemodell',
+    sourceFilledGaps: 'aufgezeichnet, Lücken ergänzt (Geländemodell)',
+    sourceFilled: 'Geländemodell',
   },
   uploadModal: {
     title: 'Datei importieren',
@@ -37,12 +37,19 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     introNone: 'Diese Spur enthält keine Höhendaten.',
     introPartial: 'Bei einigen Punkten dieser Spur fehlt die Höhe.',
     introFull:
-      'Diese Spur hat bereits Höhendaten, aber das NASA-SRTM-Modell (~30 m) ' +
-      'ist oft genauer.',
+      'Diese Spur hat bereits Höhendaten, aber ein Geländemodell ist oft ' +
+      'genauer.',
+    premiumHiRes: (premiumLink) => (
+      <>
+        Mit {premiumLink('Premium-Zugang')} werden die Höhendaten in
+        unterstützten Ländern aus einem hochauflösenden nationalen Modell
+        abgetastet — derzeit Slowakei (DMR 5.0: ÚGKK SR), weitere folgen.
+      </>
+    ),
     question: 'Was möchten Sie tun?',
     overrideAll: 'Alle überschreiben',
     overrideAllDesc:
-      'jeden Punkt aus dem SRTM-Geländemodell ersetzen — ein glattes, ' +
+      'jeden Punkt aus dem Geländemodell ersetzen — ein glattes, ' +
       'einheitliches Profil',
     fillMissing: 'Fehlende ergänzen',
     fillMissingDesc:
@@ -52,8 +59,7 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     keepDesc: 'die in der Spur gespeicherte Höhe verwenden',
     add: 'Höhe ergänzen',
     update: 'Höhe aktualisieren',
-    updateConfirm:
-      'Die Höhe der Spur durch das NASA-SRTM-Geländemodell (~30 m) ersetzen?',
+    updateConfirm: 'Die Höhe der Spur durch das Geländemodell ersetzen?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Fehlende Höhe wurde ergänzt.'

@@ -50,6 +50,7 @@ The Account modal has three collapsible sections (below); from the buttons at th
   - Removal of the ad banner
   - Access to premium photos (users can mark uploaded photos as premium-only)
   - Access to higher map zoom levels for specific map layers (see below)
+  - High-resolution elevation data in supported countries (used by the elevation API for the chart, colorizing, and elevation fill); currently Slovakia (DMR 5.0: ÚGKK SR), with more countries being added
 
 #### Personal information
 
@@ -184,7 +185,7 @@ Routing modes:
 
 Once a route is found the toolbar also offers:
 
-- **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Heading (only modes the route has data for are shown); missing elevations are filled from the terrain model on demand
+- **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Heading (only modes the route has data for are shown); for the elevation profile and elevation/steepness colorize, premium users get every point sampled from the terrain model (high-resolution where available), while others keep the router's own elevation and only have missing values filled on demand
 - **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing, and kilometre/percent milestone toggles
 
 ### Objects (POIs)

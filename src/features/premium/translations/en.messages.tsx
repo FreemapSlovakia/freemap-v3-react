@@ -22,6 +22,7 @@ const en: PremiumMessages = {
         </li>
         <li>premium photos</li>
         <li>multimodal routing</li>
+        <li>high-resolution elevation data (currently Slovakia)</li>
       </ul>
       <p className="mb-0">Freemap stays free and open.</p>
     </>
@@ -49,6 +50,10 @@ const en: PremiumMessages = {
     </>
   ),
   premiumOnly: 'Only available with premium access.',
+  noPremium: 'You have no premium access.',
+  clickToActivate: 'Click to activate.',
+  higherPrecisionElevation:
+    'Higher-precision elevation data available with premium access.',
   alreadyPremium: 'You already have premium access.',
   premiumUser: 'User with premium access',
   payOnce: 'Pay once for one year',

@@ -29,8 +29,8 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     source: 'Magasság forrása',
     sourceOriginal: 'rögzített',
     sourcePartial: 'rögzített, hiányos',
-    sourceFilledGaps: 'rögzített, hézagok kitöltve (NASA SRTM)',
-    sourceFilled: 'NASA SRTM domborzatmodell',
+    sourceFilledGaps: 'rögzített, hézagok kitöltve (domborzatmodell)',
+    sourceFilled: 'domborzatmodell',
   },
   uploadModal: {
     title: 'Fájl importálása',
@@ -46,12 +46,19 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     introNone: 'Ennek a nyomvonalnak nincsenek magassági adatai.',
     introPartial: 'A nyomvonal néhány pontjáról hiányzik a magasság.',
     introFull:
-      'A nyomvonalnak már vannak magassági adatai, de a NASA SRTM modell ' +
-      '(~30 m) gyakran pontosabb.',
+      'A nyomvonalnak már vannak magassági adatai, de egy domborzatmodell ' +
+      'gyakran pontosabb.',
+    premiumHiRes: (premiumLink) => (
+      <>
+        {premiumLink('Prémium hozzáféréssel')} a magassági adatokat a támogatott
+        országokban nagy felbontású nemzeti modellből mintavételezzük — egyelőre
+        Szlovákia (DMR 5.0: ÚGKK SR), továbbiak hamarosan.
+      </>
+    ),
     question: 'Mit szeretne tenni?',
     overrideAll: 'Összes felülírása',
     overrideAllDesc:
-      'minden pont cseréje az SRTM modellből — sima, egységes profil',
+      'minden pont cseréje a domborzatmodellből — sima, egységes profil',
     fillMissing: 'Hiányzók pótlása',
     fillMissingDesc:
       'a rögzített értékek megtartása és csak a hézagok kitöltése (a két ' +
@@ -60,8 +67,7 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     keepDesc: 'a nyomvonalban tárolt magasság használata',
     add: 'Magasság hozzáadása',
     update: 'Magasság frissítése',
-    updateConfirm:
-      'Lecseréli a nyomvonal magasságát a NASA SRTM modellre (~30 m)?',
+    updateConfirm: 'Lecseréli a nyomvonal magasságát a domborzatmodellre?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'A hiányzó magasság ki lett töltve.'

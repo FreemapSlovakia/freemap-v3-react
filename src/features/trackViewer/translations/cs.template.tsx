@@ -28,8 +28,8 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     source: 'Zdroj výšky',
     sourceOriginal: 'zaznamenaná',
     sourcePartial: 'zaznamenaná, neúplná',
-    sourceFilledGaps: 'zaznamenaná, mezery doplněné (NASA SRTM)',
-    sourceFilled: 'model terénu NASA SRTM',
+    sourceFilledGaps: 'zaznamenaná, mezery doplněné (model terénu)',
+    sourceFilled: 'model terénu',
   },
   uploadModal: {
     title: 'Importovat soubor',
@@ -45,12 +45,19 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     introNone: 'Tato trasa nemá údaje o nadmořské výšce.',
     introPartial: 'Této trase chybí nadmořská výška u některých bodů.',
     introFull:
-      'Tato trasa už má nadmořskou výšku, ale model NASA SRTM (~30 m) bývá ' +
-      'často přesnější.',
+      'Tato trasa už má nadmořskou výšku, ale model terénu bývá často ' +
+      'přesnější.',
+    premiumHiRes: (premiumLink) => (
+      <>
+        S {premiumLink('prémiovým přístupem')} se nadmořská výška v
+        podporovaných zemích získává z národního modelu ve vysokém rozlišení —
+        zatím Slovensko (DMR 5.0: ÚGKK SR), další přibudou.
+      </>
+    ),
     question: 'Co chcete udělat?',
     overrideAll: 'Přepsat vše',
     overrideAllDesc:
-      'nahradit každý bod z modelu SRTM — plynulý a konzistentní profil',
+      'nahradit každý bod z modelu terénu — plynulý a konzistentní profil',
     fillMissing: 'Doplnit chybějící',
     fillMissingDesc:
       'zachovat zaznamenané hodnoty a doplnit jen mezery (na rozhraní obou ' +
@@ -59,7 +66,7 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     keepDesc: 'použít nadmořskou výšku uloženou v trase',
     add: 'Doplnit výšku',
     update: 'Aktualizovat výšku',
-    updateConfirm: 'Nahradit nadmořskou výšku trasy modelem NASA SRTM (~30 m)?',
+    updateConfirm: 'Nahradit nadmořskou výšku trasy modelem terénu?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Chybějící nadmořská výška byla doplněna.'

@@ -24,6 +24,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>Premium-Fotos</li>
         <li>multimodale Routenplanung</li>
+        <li>hochauflösende Höhendaten (derzeit Slowakei)</li>
       </ul>
       <p className="mb-0">Freemap bleibt kostenlos und offen.</p>
     </>
@@ -52,6 +53,10 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
   premiumOnly: 'Nur mit Premium-Zugang verfügbar.',
+  noPremium: 'Du hast keinen Premium-Zugang.',
+  clickToActivate: 'Zum Aktivieren klicken.',
+  higherPrecisionElevation:
+    'Höhendaten mit höherer Genauigkeit mit Premium-Zugang verfügbar.',
   alreadyPremium: 'Du hast bereits Premium-Zugang.',
   premiumUser: 'Nutzer mit Premium-Zugang',
   payOnce: 'Einmalig für ein Jahr zahlen',

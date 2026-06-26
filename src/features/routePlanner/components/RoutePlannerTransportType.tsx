@@ -1,12 +1,12 @@
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
-import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaEquals, FaGem, FaMoneyBill } from 'react-icons/fa';
+import { FaEquals, FaMoneyBill } from 'react-icons/fa';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 
 type Props = {
@@ -20,8 +20,6 @@ export function RoutePlannerTransportType({
   value,
   withDefault = false,
 }: Props): ReactElement {
-  const prm = usePremiumMessages();
-
   const rpm = useRoutePlannerMessages();
 
   const activeTTDef = value && transportTypeDefs[value];
@@ -115,15 +113,7 @@ export function RoutePlannerTransportType({
                     {withDefault && (
                       <>
                         {' '}
-                        <FaGem
-                          style={{ pointerEvents: 'initial' }}
-                          className={
-                            'ms-1 text-' +
-                            (becomePremium ? 'warning' : 'success')
-                          }
-                          title={becomePremium ? prm?.premiumOnly : undefined}
-                          onClick={becomePremium}
-                        />
+                        <PremiumGem className="ms-1" nested />
                       </>
                     )}
                   </Dropdown.Item>

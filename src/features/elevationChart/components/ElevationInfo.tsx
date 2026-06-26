@@ -1,4 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { pointToTile } from '@mapbox/tilebelt';
 import { latLonToString } from '@shared/geoutils.js';
@@ -76,6 +78,8 @@ export function ElevationInfo({
 
   const m = useMessages();
 
+  const prm = usePremiumMessages();
+
   const layers = useAppSelector((state) => state.map.layers);
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
@@ -120,6 +124,7 @@ export function ElevationInfo({
       {elevation != null && (
         <div>
           {maslMessage}: <b>{nf01.format(elevation)}</b>&nbsp;{m?.general.masl}
+          <PremiumGem className="ms-1" hint={prm?.higherPrecisionElevation} />
         </div>
       )}
 

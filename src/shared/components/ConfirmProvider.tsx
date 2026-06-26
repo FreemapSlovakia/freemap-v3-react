@@ -112,6 +112,16 @@ export function useConfirm(): ConfirmFn {
   );
 }
 
+/**
+ * Returns a function that cancels the currently open confirm dialog (resolving
+ * its pending promise to `'cancel'`, which {@link useConfirm} reports as
+ * `false`). Useful when an in-dialog control needs to dismiss the dialog itself
+ * — e.g. a link that opens another modal which would otherwise sit beneath it.
+ */
+export function useConfirmCancel(): () => void {
+  return useContext(ConfirmContext).cancel;
+}
+
 export function ConfirmProvider({
   children,
 }: {

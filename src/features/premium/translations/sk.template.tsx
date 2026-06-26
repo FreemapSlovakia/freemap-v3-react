@@ -23,6 +23,7 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>prémiové fotky</li>
         <li>multimodálne plánovanie trasy</li>
+        <li>výškové dáta vo vysokom rozlíšení (zatiaľ Slovensko)</li>
       </ul>
       <p className="mb-0">Freemap zostáva bezplatný a otvorený.</p>
     </>
@@ -50,6 +51,10 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
   premiumOnly: 'Dostupné len s prémiovým prístupom.',
+  noPremium: 'Nemáte prémiový prístup.',
+  clickToActivate: 'Kliknutím aktivujete.',
+  higherPrecisionElevation:
+    'Presnejšie výškové dáta dostupné s prémiovým prístupom.',
   alreadyPremium: 'Už máte prémiový prístup.',
   premiumUser: 'Používateľ s prémiovým prístupom',
   payOnce: 'Zaplatiť jednorazovo na jeden rok',

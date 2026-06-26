@@ -1,6 +1,7 @@
 import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   colorizerNeedsElevation,
@@ -8,7 +9,10 @@ import {
   colorizingModes,
 } from '@shared/colorizers/index.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import {
+  useConfirm,
+  useConfirmCancel,
+} from '@shared/components/ConfirmProvider.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
@@ -58,6 +62,8 @@ export function TrackViewerMenu(): ReactElement {
   const dispatch = useDispatch();
 
   const confirm = useConfirm();
+
+  const cancelConfirm = useConfirmCancel();
 
   const hasTrack = useAppSelector((state) =>
     Boolean(state.trackViewer.trackGeojson),
@@ -277,7 +283,22 @@ export function TrackViewerMenu(): ReactElement {
                   if (
                     await confirm({
                       title: tvm?.elevationFill.title,
-                      message: tvm?.elevationFill.updateConfirm,
+                      message: (
+                        <>
+                          <p className="mb-0">
+                            {tvm?.elevationFill.updateConfirm}
+                          </p>
+
+                          <p className="text-body-secondary small mb-0 mt-2">
+                            {tvm?.elevationFill.premiumHiRes((label) => (
+                              <PremiumGem
+                                label={label}
+                                onBeforeNavigate={cancelConfirm}
+                              />
+                            ))}
+                          </p>
+                        </>
+                      ),
                       confirmLabel: tvm?.elevationFill.update,
                     })
                   ) {
