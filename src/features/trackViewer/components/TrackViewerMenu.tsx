@@ -1,6 +1,7 @@
 import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   colorizerNeedsElevation,
   colorizers,
@@ -20,13 +21,13 @@ import { type ReactElement, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
 import {
   FaChartArea,
-  FaCloudUploadAlt,
   FaGem,
   FaInfoCircle,
   FaMountain,
   FaPaintBrush,
   FaPencilAlt,
   FaRoute,
+  FaSave,
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -37,11 +38,11 @@ import {
   trackViewerSetElevationPrompt,
   trackViewerSetSelectedTrack,
   trackViewerToggleElevationChart,
-  trackViewerUploadTrack,
 } from '../model/actions.js';
 import { trackInfoToast } from '../model/trackInfoToast.js';
 import { featureKind } from '../provenance.js';
 import { resolveActiveTrack, trackLineFeatures } from '../trackSelection.js';
+import { loadTrackViewerMessages } from '../translations/loadTrackViewerMessages.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 import TrackViewerElevationPromptModal from './TrackViewerElevationPromptModal.js';
 
@@ -63,6 +64,36 @@ export function TrackViewerMenu(): ReactElement {
   );
 
   const canUpload = useAppSelector((state) => !state.trackViewer.trackUID);
+
+  const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
+
+  // With a map active, the active-map toolbar already offers "Save" (which
+  // persists the track as part of the map), so don't also offer a new map here.
+  const hasActiveMap = useAppSelector((state) =>
+    Boolean(state.myMaps.activeMap),
+  );
+
+  const handleSaveAsMap = useCallback(() => {
+    if (loggedIn) {
+      dispatch(setActiveModal({ type: 'my-maps', add: true }));
+    } else {
+      dispatch(
+        toastsAdd({
+          id: 'trackViewer.loginToSaveMap',
+          messageKey: 'loginToSaveMap',
+          messageLoader: loadTrackViewerMessages,
+          style: 'warning',
+          actions: [
+            {
+              action: setActiveModal({ type: 'login' }),
+              nameKey: 'mainMenu.logIn',
+              variant: 'primary',
+            },
+          ],
+        }),
+      );
+    }
+  }, [dispatch, loggedIn]);
 
   const elevationChartActive = useAppSelector((state) =>
     Boolean(state.elevationChart.elevationProfilePoints),
@@ -339,21 +370,21 @@ export function TrackViewerMenu(): ReactElement {
           </LongPressTooltip>
         )}
 
-        {/* Separate the inspect actions from the share/export actions. */}
-        {enableElevationChart && canUpload && hasTrack && (
+        {/* Separate the inspect actions from the save/export actions. */}
+        {enableElevationChart && hasTrack && (
           <div className=" ms-1 vr align-self-stretch" />
         )}
 
-        {canUpload && hasTrack && (
-          <LongPressTooltip breakpoint="sm" label={tvm?.share}>
+        {hasTrack && !hasActiveMap && (
+          <LongPressTooltip breakpoint="sm" label={tvm?.saveAsMap}>
             {({ label, labelClassName, props }) => (
               <Button
                 className="ms-1"
                 variant="secondary"
-                onClick={() => dispatch(trackViewerUploadTrack())}
+                onClick={handleSaveAsMap}
                 {...props}
               >
-                <FaCloudUploadAlt />
+                <FaSave />
                 <span className={labelClassName}> {label}</span>
               </Button>
             )}

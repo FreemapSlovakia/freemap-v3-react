@@ -302,7 +302,6 @@ const config: Configuration = {
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
-      MAX_GPX_TRACK_SIZE_IN_MB: '15',
       BASE_URL:
         {
           www: 'https://www.freemap.sk',

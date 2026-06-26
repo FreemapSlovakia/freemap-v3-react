@@ -8,7 +8,8 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   info: () => <TrackViewerDetails />,
   upload: 'Carica',
   moreInfo: 'Maggiori info',
-  share: 'Salva sul Server',
+  saveAsMap: 'Salva nelle mie mappe',
+  loginToSaveMap: 'Accedi prima per salvare la traccia nelle tue mappe.',
   details: {
     startTime: 'Ora inizio',
     finishTime: 'Ora fine',
@@ -57,20 +58,15 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
         ? 'La quota mancante è stata riempita.'
         : 'La quota è stata sovrascritta.',
   },
-  shareToast:
-    "La traccia è stata salvata sul server e può essere condivisa copiando l'URL della pagina.",
   fetchingError: ({ err }) =>
     addError(
       getMessages()!,
       'Errore durante il recupero dei dati della traccia:',
       err,
     ),
-  savingError: ({ err }) =>
-    addError(getMessages()!, 'Errore nel salvataggio della traccia:', err),
   loadingError: 'Errore nel caricamento del file.',
   onlyOne: "E' atteso un singolo file.",
   invalidFormat: 'Il file non è in un formato supportato o non è valido.',
-  tooBigError: 'Il file è troppo grande.',
 };
 
 export default it;

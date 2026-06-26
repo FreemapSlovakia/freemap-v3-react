@@ -209,7 +209,7 @@ Toggles the file import toolbar. **Upload** opens the file import modal (URL pat
 - **Elevation profile** — chart of elevation along the active track (with total climb/descent); recorded waypoints are marked along it with labels
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled)
 - **More info** — a popup with the track's distance, min/max elevation, total climb and total descent
-- **Save on server** — store the track to get a shareable link
+- **Save to my maps** — save the loaded track into a new personal map (requires login; prompts to log in first otherwise). Hidden when a map is already active, since the active-map toolbar's own **Save** persists the track with the map. Older `#track-uid=…` share links still load
 - **Convert to drawing** — turn the imported track into editable drawing features (a recorded track is replaced and warns that its per-point data — elevation, heart rate, speed, time — will be dropped)
 - delete and close buttons
 

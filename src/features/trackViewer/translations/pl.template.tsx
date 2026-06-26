@@ -53,22 +53,18 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   },
   upload: 'Prześlij',
   moreInfo: 'Więcej informacji',
-  share: 'Zapisz na serwerze',
-  shareToast:
-    'Trasa została zapisana na serwerze i można ją udostępnić, kopiując adres URL strony.',
+  saveAsMap: 'Zapisz w moich mapach',
+  loginToSaveMap: 'Zaloguj się, aby zapisać trasę w swoich mapach.',
   fetchingError: ({ err }) =>
     addError(
       getMessages()!,
       'Wystąpił błąd podczas pobierania danych trasy',
       err,
     ),
-  savingError: ({ err }) =>
-    addError(getMessages()!, 'Wystąpił błąd podczas zapisywania trasy', err),
   loadingError: 'Błąd podczas ładowania pliku.',
   onlyOne: 'Oczekiwany jest tylko jeden plik.',
   invalidFormat:
     'Plik nie jest w obsługiwanym formacie lub jest nieprawidłowy.',
-  tooBigError: 'Plik jest zbyt duży.',
 };
 
 export default pl;

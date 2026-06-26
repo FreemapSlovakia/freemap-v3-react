@@ -56,17 +56,14 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   },
   upload: 'Hochladen',
   moreInfo: 'Mehr Infos',
-  share: 'Auf Server speichern',
-  shareToast:
-    'Die Strecke wurde auf dem Server gespeichert und kann über die URL der Seite geteilt werden.',
+  saveAsMap: 'In meinen Karten speichern',
+  loginToSaveMap:
+    'Melde dich zuerst an, um die Strecke in deinen Karten zu speichern.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Streckendaten', err),
-  savingError: ({ err }) =>
-    addError(getMessages()!, 'Fehler beim Speichern der Strecke', err),
   loadingError: 'Fehler beim Laden der Datei.',
   onlyOne: 'Es wird nur eine einzelne Datei erwartet.',
   invalidFormat: 'Die Datei hat kein unterstütztes Format oder ist ungültig.',
-  tooBigError: 'Die Datei ist zu groß.',
 };
 
 export default de;

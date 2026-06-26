@@ -2,7 +2,6 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { handleTrackUpload } from '@features/trackViewer/model/processors/trackViewerUploadTrackProcessor.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
   type MapData,
@@ -16,20 +15,6 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
   async handle({ getState, dispatch, action, toastError }) {
     try {
-      if (
-        getState().trackViewer.trackGeojson &&
-        !getState().trackViewer.trackUID
-      ) {
-        await handleTrackUpload({
-          dispatch,
-          getState,
-        });
-
-        dispatch(action);
-
-        return;
-      }
-
       const { activeMap } = getState().myMaps;
 
       const asNew = action.payload?.asCopy;

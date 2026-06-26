@@ -27,8 +27,6 @@ export const trackViewerDownloadTrack = createAction<string>(
   'TRACK_VIEWER_DOWNLOAD_TRACK',
 );
 
-export const trackViewerUploadTrack = createAction('TRACK_VIEWER_UPLOAD_TRACK');
-
 export const trackViewerColorizeTrackBy = createAction<ColorizingMode | null>(
   'TRACK_VIEWER_COLORIZE_TRACK_BY',
 );

@@ -11,7 +11,8 @@ const en: TrackViewerMessages = {
   convertLossWarning:
     'Converting to a drawing replaces the track and discards its recorded data (elevation, heart rate, speed, time).',
   moreInfo: 'More info',
-  share: 'Save on server',
+  saveAsMap: 'Save to my maps',
+  loginToSaveMap: 'Log in first to save the track to your maps.',
   details: {
     startTime: 'Start time',
     finishTime: 'Finish time',
@@ -65,17 +66,12 @@ const en: TrackViewerMessages = {
         ? 'Missing elevation has been filled.'
         : 'Elevation has been overwritten.',
   },
-  shareToast:
-    'The track has been saved to the server and can be shared by copying page URL.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Error fetching track data', err),
-  savingError: ({ err }) =>
-    addError(getMessages()!, 'Error saving the track', err),
   loadingError: 'Error loading file.',
   onlyOne: 'Only a single file is expected.',
   invalidFormat: 'The file is not in a supported format or is invalid.',
   someFilesFailed: ({ names }) => `Some files could not be loaded: ${names}.`,
-  tooBigError: 'The file is too big.',
 };
 
 export default en;

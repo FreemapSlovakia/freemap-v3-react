@@ -1,7 +1,8 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { type ReactElement, useCallback, useState } from 'react';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { FaRegMap } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -20,7 +21,24 @@ export default function MyMapsModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
-  const [editTarget, setEditTarget] = useState<MapMeta | 'new' | null>(null);
+  // Opened with `add` (e.g. "Save to my maps" on a track) jumps straight to the
+  // new-map form instead of the list.
+  const startInAddForm = useAppSelector(
+    (state) =>
+      state.main.activeModal?.type === 'my-maps' && state.main.activeModal.add,
+  );
+
+  const [editTarget, setEditTarget] = useState<MapMeta | 'new' | null>(
+    startInAddForm ? 'new' : null,
+  );
+
+  // The modal instance can outlive a close (fade-out), so reset the view on each
+  // open to match how it was opened rather than a stale earlier session.
+  useEffect(() => {
+    if (show) {
+      setEditTarget(startInAddForm ? 'new' : null);
+    }
+  }, [show, startInAddForm]);
 
   useDocumentTitle(show ? m?.tools.myMaps : undefined);
 

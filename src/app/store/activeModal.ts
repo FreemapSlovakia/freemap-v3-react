@@ -61,7 +61,8 @@ export type ModalId = z.infer<typeof ModalIdSchema>;
  * at a time. `null` means no modal.
  */
 export type ActiveModal =
-  | { type: Exclude<ModalId, 'tracking-watched'> }
+  | { type: Exclude<ModalId, 'tracking-watched' | 'my-maps'> }
+  | { type: 'my-maps'; add?: boolean }
   | { type: 'tracking-watched'; token?: string }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }

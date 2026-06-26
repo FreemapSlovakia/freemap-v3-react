@@ -8,7 +8,9 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   info: () => <TrackViewerDetails />,
   upload: 'Feltöltés',
   moreInfo: 'További információ',
-  share: 'Mentés a kiszolgálóra',
+  saveAsMap: 'Mentés a térképeim közé',
+  loginToSaveMap:
+    'A nyomvonal a térképeid közé mentéséhez először jelentkezz be.',
   details: {
     startTime: 'Indulási idő',
     finishTime: 'Érkezési idő',
@@ -56,20 +58,15 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
         ? 'A hiányzó magasság ki lett töltve.'
         : 'A magasság felül lett írva.',
   },
-  shareToast:
-    'Az útvonal el lett mentve a kiszolgálóra, és az oldal URL-jének másolásával megosztható.',
   fetchingError: ({ err }) =>
     addError(
       getMessages()!,
       'Hiba történt a nyomvonal adatainak beolvasásakor',
       err,
     ),
-  savingError: ({ err }) =>
-    addError(getMessages()!, 'Hiba történt a nyomvonal mentésekor', err),
   loadingError: 'Hiba történt a fájl betöltésekor.',
   onlyOne: 'Csak egyetlen fájl tölthető be.',
   invalidFormat: 'A fájl formátuma nem támogatott, vagy a fájl érvénytelen.',
-  tooBigError: 'Túl nagy a fájl.',
 };
 
 export default hu;

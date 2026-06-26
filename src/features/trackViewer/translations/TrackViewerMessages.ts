@@ -7,7 +7,8 @@ export type TrackViewerMessages = {
   unnamedTrack: (props: { n: number }) => string;
   convertLossWarning: string;
   moreInfo: string;
-  share: string;
+  saveAsMap: string;
+  loginToSaveMap: string;
   details: {
     startTime: string;
     finishTime: string;
@@ -50,12 +51,9 @@ export type TrackViewerMessages = {
     updateConfirm: string;
     updatedToast: (props: { mode: 'missing' | 'all' }) => string;
   };
-  shareToast: string;
   fetchingError: (props: { err: unknown }) => string;
-  savingError: (props: { err: unknown }) => string;
   loadingError: string;
   onlyOne: string;
   invalidFormat: string;
   someFilesFailed: (props: { names: string }) => string;
-  tooBigError: string;
 };

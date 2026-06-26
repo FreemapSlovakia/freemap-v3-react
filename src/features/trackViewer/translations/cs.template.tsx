@@ -8,7 +8,8 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   info: () => <TrackViewerDetails />,
   upload: 'Nahrát',
   moreInfo: 'Více info',
-  share: 'Uložit na server',
+  saveAsMap: 'Uložit do mých map',
+  loginToSaveMap: 'Pro uložení trasy do vašich map se nejprve přihlaste.',
   details: {
     startTime: 'Čas startu',
     finishTime: 'Čas v cíli',
@@ -55,16 +56,11 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
         ? 'Chybějící nadmořská výška byla doplněna.'
         : 'Nadmořská výška byla přepsána.',
   },
-  shareToast:
-    'Trasa byla uložena na server a můžete ji sdílet zkopírovaním URL stránky.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při získávání záznamu trasy', err),
-  savingError: ({ err }) =>
-    addError(getMessages()!, 'Nepodařilo se uložit trasu', err),
   loadingError: 'Soubor se nepodařilo načíst.',
   onlyOne: 'Očekává se pouze jeden soubor.',
   invalidFormat: 'Soubor není v podporovaném formátu nebo je neplatný.',
-  tooBigError: 'Nahraný soubor je příliš velký.',
 };
 
 export default cs;

@@ -83,7 +83,6 @@ import { trackViewerRefreshElevationChartProcessor } from '@features/trackViewer
 import { trackViewerResolveElevationPromptProcessor } from '@features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.js';
 import { trackViewerSetTrackDataProcessor } from '@features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.js';
 import { trackViewerToggleElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.js';
-import { trackViewerUploadTrackProcessor } from '@features/trackViewer/model/processors/trackViewerUploadTrackProcessor.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { wikimediaCommonsLayerProcessor } from '@features/wikimediaCommons/model/processors/wikimediaCommonsLayerProcessor.js';
@@ -139,7 +138,6 @@ export const processors = [
   trackViewerSetTrackDataProcessor,
   trackViewerDownloadTrackProcessor,
   trackViewerGpxLoadProcessor,
-  trackViewerUploadTrackProcessor,
   trackViewerToggleElevationChartProcessor,
   trackViewerResolveElevationPromptProcessor,
   trackViewerRefreshElevationChartProcessor,
