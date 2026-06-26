@@ -8,6 +8,8 @@ const en: TrackViewerMessages = {
   upload: 'Upload',
   trackLabel: 'Track',
   unnamedTrack: ({ n }) => `Track ${n}`,
+  convertLossWarning:
+    'Converting to a drawing replaces the track and discards its recorded data (elevation, heart rate, speed, time).',
   moreInfo: 'More info',
   share: 'Save on server',
   details: {

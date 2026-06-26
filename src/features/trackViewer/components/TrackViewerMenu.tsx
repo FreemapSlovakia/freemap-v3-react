@@ -40,6 +40,7 @@ import {
   trackViewerUploadTrack,
 } from '../model/actions.js';
 import { trackInfoToast } from '../model/trackInfoToast.js';
+import { featureKind } from '../provenance.js';
 import { resolveActiveTrack, trackLineFeatures } from '../trackSelection.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 import TrackViewerElevationPromptModal from './TrackViewerElevationPromptModal.js';
@@ -124,18 +125,35 @@ export function TrackViewerMenu(): ReactElement {
   const needsElevationDecision =
     coverage !== 'full' && elevationDecision === 'undecided';
 
-  const handleConvertToDrawing = useCallback(() => {
-    const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
+  // Only a dense GPS recording (`fm:kind === 'track'`) is worth simplifying —
+  // otherwise the drawing carries thousands of editable vertices. Routes and
+  // generic imported geometry convert at full fidelity with no prompt.
+  const hasDenseTrack = (trackGeojson?.features ?? []).some(
+    (f) => featureKind(f) === 'track',
+  );
 
-    if (tolerance !== null) {
-      dispatch(
-        convertToDrawing({
-          type: 'track',
-          tolerance: Number(tolerance || '0') / 100000,
-        }),
+  const handleConvertToDrawing = useCallback(() => {
+    let tolerance = 0;
+
+    // A single prompt for a dense recording: it both warns that the recorded
+    // data is dropped (the track is replaced) and asks for a simplification
+    // factor; Cancel aborts. Routes and generic geometry have nothing rich to
+    // lose and aren't worth simplifying, so they convert straight away.
+    if (hasDenseTrack) {
+      const answer = window.prompt(
+        `${tvm?.convertLossWarning}\n\n${m?.general.simplifyPrompt}`,
+        '50',
       );
+
+      if (answer === null) {
+        return;
+      }
+
+      tolerance = Number(answer || '0') / 100000;
     }
-  }, [dispatch, m]);
+
+    dispatch(convertToDrawing({ type: 'track', tolerance }));
+  }, [dispatch, m, tvm, hasDenseTrack]);
 
   return (
     <>

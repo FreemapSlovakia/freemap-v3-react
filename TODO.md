@@ -163,14 +163,16 @@ off that — never re-derive "is this a track?" from density/timestamps.
       profile by time when both the waypoint and track have timestamps (handles
       self-crossing tracks); else by spatial projection onto the polyline within a
       max-snap-distance; else omit.
-- [ ] **Honest, non-destructive convert-to-drawing.** Drawing state lives in the
-      URL hash, so per-vertex HR/cadence/elevation genuinely can't be carried —
-      accept the loss instead of fighting it. (a) Keep the source track loaded
-      after converting (or convert into a new drawing rather than consuming the
-      track) so the rich data isn't gone. (b) Warn before converting only when
-      there's data to lose (`fm:kind === 'track'` with sensor/elevation series).
-      (c) Offer the simplify prompt only for `fm:kind === 'track'`; routes and
-      generic geometry convert at full fidelity with no prompt.
+- [x] **Honest convert-to-drawing.** Drawing state lives in the URL hash, so
+      per-vertex HR/cadence/elevation can't be carried. Keeping the source track
+      visible (tried first) duplicated the geometry and its click hit-area, so
+      the convert still **replaces** the track — but only after an informed
+      single prompt. For a dense recording (`fm:kind === 'track'`, the only
+      convert source that deletes rich per-vertex data — routes/search/objects
+      have none, live tracking has no convert) one `window.prompt` both warns
+      that the recorded data is dropped and asks for a simplification factor
+      (Cancel aborts). Routes and generic geometry have nothing rich to lose and
+      aren't worth simplifying, so they convert straight away with no prompt.
 - [x] **Open/add multiple files into one view.** The import modal and the
       app-wide file drop accept several files at once (`parseTrackFiles` merges
       them in file order); when geodata is already shown the user is asked (via
@@ -178,4 +180,12 @@ off that — never re-derive "is this a track?" from density/timestamps.
       replace. No per-source legend/list — to change what's shown, re-import.
       Multiple *tracks* aren't auto-concatenated for stats; the "operate on a
       chosen track" item below covers picking which one the chart/info acts on.
+- [ ] **Convert-to-drawing for live tracking** (`src/features/tracking/`). The
+      tracking feature has no "convert to drawing" yet; add one so a recorded
+      live track can be turned into an editable drawing. Unlike the track viewer,
+      tracking should **keep** the original (the live feed continues), so it's a
+      lossy *copy* not a replace — no rich-data warning needed, just the
+      simplify prompt for the dense recording. Likely a new `convertToDrawing`
+      payload variant (e.g. `{ type: 'tracking'; id }`) handled in
+      `convertToDrawingProcessor`, plus a menu action in the tracking UI.
 

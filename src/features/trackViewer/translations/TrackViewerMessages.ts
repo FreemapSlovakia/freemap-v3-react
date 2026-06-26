@@ -5,6 +5,7 @@ export type TrackViewerMessages = {
   upload: string;
   trackLabel: string;
   unnamedTrack: (props: { n: number }) => string;
+  convertLossWarning: string;
   moreInfo: string;
   share: string;
   details: {

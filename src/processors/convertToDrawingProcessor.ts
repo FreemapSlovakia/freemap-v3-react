@@ -330,6 +330,11 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         }
       }
 
+      // The drawing is a lossy editable copy (per-vertex elevation/heart-rate/
+      // time can't live in the URL-hashed drawing state). Replace the source
+      // rather than leave both: a static duplicate over the original would
+      // double the geometry and its click hit-area. The menu warns first when
+      // there's recorded data to lose.
       dispatch(trackViewerDelete());
 
       selectAfterConvert(dispatch, getState, lineCount, pointCount);
