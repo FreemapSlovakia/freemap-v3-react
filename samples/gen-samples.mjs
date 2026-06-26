@@ -104,7 +104,9 @@ write(
       (i, k) =>
         `  <wpt lat="${pts[i].lat.toFixed(7)}" lon="${pts[i].lon.toFixed(7)}"><ele>${pts[i].ele}</ele><time>${pts[i].time}</time><name>Waypoint ${k + 1}</name></wpt>`,
     )
-    .join('\n')}\n  <trk>\n    <name>Track with waypoints</name>\n    <trkseg>\n${pts
+    .join(
+      '\n',
+    )}\n  <trk>\n    <name>Track with waypoints</name>\n    <trkseg>\n${pts
     .map((p) => trkpt(p, { ele: true, time: true }))
     .join('\n')}\n    </trkseg>\n  </trk>\n${GPX_TAIL}`,
 );
