@@ -5,7 +5,7 @@ import type { ColorizeOptions } from './colorize.js';
 // when zoomed out, detail finer than a few pixels can't be seen and only reads
 // as color noise, so it's averaged away. At high zoom the colorizer's own
 // baseline span is larger and dominates, keeping full detail.
-const SMOOTH_PX = 4;
+const SMOOTH_PX = 32;
 
 /**
  * Effective smoothing span (metres): the larger of a colorizer's intrinsic

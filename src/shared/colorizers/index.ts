@@ -28,15 +28,15 @@ export const colorizers = {
 
 // Defines menu order and the source of truth for valid modes.
 export const colorizingModes = [
+  'time',
   'elevation',
   'steepness',
   'speed',
+  'heading',
   'heartRate',
   'cadence',
   'power',
   'temperature',
-  'time',
-  'heading',
   'battery',
   'gsmSignal',
 ] as const satisfies ReadonlyArray<keyof typeof colorizers>;

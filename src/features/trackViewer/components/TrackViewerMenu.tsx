@@ -256,7 +256,7 @@ export function TrackViewerMenu(): ReactElement {
         )}
 
         {enableElevationChart && canUpdateElevation && (
-          <LongPressTooltip breakpoint="sm" label={tvm?.elevationFill.update}>
+          <LongPressTooltip breakpoint="lg" label={tvm?.elevationFill.update}>
             {({ label, labelClassName, props }) => (
               <Button
                 className="ms-1"
@@ -347,7 +347,7 @@ export function TrackViewerMenu(): ReactElement {
         )}
 
         {enableElevationChart && (
-          <LongPressTooltip breakpoint="sm" label={tvm?.moreInfo}>
+          <LongPressTooltip breakpoint="md" label={tvm?.moreInfo}>
             {({ label, labelClassName, props }) => (
               <Button
                 className="ms-1"
@@ -376,7 +376,7 @@ export function TrackViewerMenu(): ReactElement {
         )}
 
         {hasTrack && !hasActiveMap && (
-          <LongPressTooltip breakpoint="sm" label={tvm?.saveAsMap}>
+          <LongPressTooltip breakpoint="xl" label={tvm?.saveAsMap}>
             {({ label, labelClassName, props }) => (
               <Button
                 className="ms-1"
@@ -392,7 +392,7 @@ export function TrackViewerMenu(): ReactElement {
         )}
 
         {hasTrack && (
-          <LongPressTooltip breakpoint="sm" label={m?.general.convertToDrawing}>
+          <LongPressTooltip breakpoint="xl" label={m?.general.convertToDrawing}>
             {({ label, labelClassName, props }) => (
               <Button
                 className="ms-1"
