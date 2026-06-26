@@ -1,7 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { Feature, LineString } from 'geojson';
 import type { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaMountain, FaTimes } from 'react-icons/fa';
@@ -10,6 +9,7 @@ import {
   trackViewerResolveElevationPrompt,
   trackViewerSetElevationPrompt,
 } from '../model/actions.js';
+import { isTrackLine } from '../trackSelection.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 export default function TrackViewerElevationPromptModal(): ReactElement | null {
@@ -23,9 +23,7 @@ export default function TrackViewerElevationPromptModal(): ReactElement | null {
 
   const coverage = useAppSelector((state) =>
     elevationCoverage(
-      (state.trackViewer.trackGeojson?.features ?? []).filter(
-        (f): f is Feature<LineString> => f.geometry.type === 'LineString',
-      ),
+      (state.trackViewer.trackGeojson?.features ?? []).filter(isTrackLine),
     ),
   );
 

@@ -147,51 +147,56 @@ export default function TrackViewerResult({
   // Flatten line-like features into per-segment render entries, keeping each
   // segment's source feature index so a click can select that whole track and
   // the active one can be highlighted (a `MultiLineString` is one track over
-  // several segments).
-  const features = trackGeojson.features.flatMap((feature, featureIndex) => {
-    const geom = feature.geometry;
+  // several segments). Memoized so it doesn't re-traverse every coordinate on
+  // unrelated re-renders (zoom, selection, …).
+  const features = useMemo(
+    () =>
+      trackGeojson.features.flatMap((feature, featureIndex) => {
+        const geom = feature.geometry;
 
-    if (geom.type !== 'LineString' && geom.type !== 'MultiLineString') {
-      return [];
-    }
+        if (geom.type !== 'LineString' && geom.type !== 'MultiLineString') {
+          return [];
+        }
 
-    const segments =
-      geom.type === 'LineString' ? [geom.coordinates] : geom.coordinates;
+        const segments =
+          geom.type === 'LineString' ? [geom.coordinates] : geom.coordinates;
 
-    return segments.map((coords) => {
-      const closed =
-        coords.length > 2 &&
-        coords[0]![0] === coords.at(-1)![0] &&
-        coords[0]![1] === coords.at(-1)![1];
+        return segments.map((coords) => {
+          const closed =
+            coords.length > 2 &&
+            coords[0]![0] === coords.at(-1)![0] &&
+            coords[0]![1] === coords.at(-1)![1];
 
-      const style = lineStyleFromProperties(feature.properties, closed);
+          const style = lineStyleFromProperties(feature.properties, closed);
 
-      const stroke = splitColorAlpha(style.color ?? drawingColor);
+          const stroke = splitColorAlpha(style.color ?? drawingColor);
 
-      // Same default-fill treatment as native polygons below (ignored for
-      // lines, which render as unfilled Polylines).
-      const fillSpec = style.fillColor ?? drawingFillColor;
+          // Same default-fill treatment as native polygons below (ignored for
+          // lines, which render as unfilled Polylines).
+          const fillSpec = style.fillColor ?? drawingFillColor;
 
-      const fill = splitColorAlpha(fillSpec ?? style.color ?? drawingColor);
+          const fill = splitColorAlpha(fillSpec ?? style.color ?? drawingColor);
 
-      return {
-        name: feature.properties?.['name'] as string | undefined,
-        featureIndex,
-        lineData: coords.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
-        style: {
-          type: style.type === 'polygon' ? 'polygon' : 'line',
-          strokeColor: stroke.color,
-          strokeOpacity: stroke.opacity,
-          fillColor: fill.color,
-          fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
-          width: style.width ?? drawingWidth,
-          dashArray: style.dashArray,
-          lineCap: style.lineCap,
-          lineJoin: style.lineJoin,
-        },
-      };
-    });
-  });
+          return {
+            name: feature.properties?.['name'] as string | undefined,
+            featureIndex,
+            lineData: coords.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
+            style: {
+              type: style.type === 'polygon' ? 'polygon' : 'line',
+              strokeColor: stroke.color,
+              strokeOpacity: stroke.opacity,
+              fillColor: fill.color,
+              fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
+              width: style.width ?? drawingWidth,
+              dashArray: style.dashArray,
+              lineCap: style.lineCap,
+              lineJoin: style.lineJoin,
+            },
+          };
+        });
+      }),
+    [trackGeojson, drawingColor, drawingWidth, drawingFillColor],
+  );
 
   // Native GeoJSON Polygon geometry (e.g. an imported .geojson; MultiPolygon
   // is split into Polygon features by `flatten`). GPX never produces these —

@@ -203,13 +203,14 @@ The marker icon can be globally changed (pin/ring/square).
 - Keyboard shortcut: <kbd>g</kbd> <kbd>g</kbd>
 - URL path: `/#tools=import-file` (legacy `/#tool=import-file` and the old `track-viewer` alias still work)
 
-Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=file-import`; legacy `/#show=upload-track` still works), which accepts GPX, KML, KMZ, TCX and GeoJSON files. An external track can also be loaded directly by URL via `/#import-url=<URL>` (legacy `gpx-url=` and `load=` still work), supporting the same GPX, KML, KMZ, TCX and GeoJSON formats. Once a track is loaded, the toolbar offers:
+Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=file-import`; legacy `/#show=upload-track` still works), which accepts GPX, KML, KMZ, TCX and GeoJSON files; several files can be picked or dropped at once and are merged into one view. Files can also be dropped anywhere on the map. When geodata is already shown, importing asks whether to **append** the new data or **replace** what's loaded. An external track can also be loaded directly by URL via `/#import-url=<URL>` (legacy `gpx-url=` and `load=` still work), supporting the same GPX, KML, KMZ, TCX and GeoJSON formats. Once a track is loaded, the toolbar offers:
 
-- **Elevation profile** — chart of elevation along the track (with total climb/descent)
+- **Track** (dropdown) — shown only when several lines are loaded; picks which one the elevation profile and "More info" describe (a line can also be picked by clicking it on the map; the active one is highlighted)
+- **Elevation profile** — chart of elevation along the active track (with total climb/descent); recorded waypoints are marked along it with labels
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled)
 - **More info** — a popup with the track's distance, min/max elevation, total climb and total descent
 - **Save on server** — store the track to get a shareable link
-- **Convert to drawing** — turn the imported track into editable drawing features
+- **Convert to drawing** — turn the imported track into editable drawing features (a recorded track is replaced and warns that its per-point data — elevation, heart rate, speed, time — will be dropped)
 - delete and close buttons
 
 ### Map details

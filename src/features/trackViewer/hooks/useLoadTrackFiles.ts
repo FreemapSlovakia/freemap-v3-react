@@ -86,7 +86,7 @@ export function useLoadTrackFiles(): (files: File[]) => Promise<void> {
 
       dispatch(elevationChartClose());
 
-      // The merged data is no longer the shared (uploaded) track.
+      // A fresh local import has no server-shared track id.
       dispatch(trackViewerSetTrackUID(null));
 
       dispatch(trackViewerSetData({ trackGeojson, focus: true }));

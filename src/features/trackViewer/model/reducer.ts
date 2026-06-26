@@ -4,7 +4,8 @@ import { osmClear } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { colorizerNeedsElevation } from '@shared/colorizers/index.js';
 import { elevationCoverage } from '@shared/geoutils.js';
-import { Feature, FeatureCollection, LineString } from 'geojson';
+import { FeatureCollection } from 'geojson';
+import { isTrackLine } from '../trackSelection.js';
 import {
   type ColorizingMode,
   type ElevationConsumer,
@@ -91,10 +92,7 @@ export const trackViewerReducer = createReducer(
             state.colorizeTrackBy &&
             colorizerNeedsElevation(state.colorizeTrackBy) &&
             elevationCoverage(
-              action.payload.trackGeojson.features.filter(
-                (f): f is Feature<LineString> =>
-                  f.geometry.type === 'LineString',
-              ),
+              action.payload.trackGeojson.features.filter(isTrackLine),
             ) !== 'full'
           ) {
             state.colorizeTrackBy = null;

@@ -8,6 +8,12 @@ import {
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 const handle: ProcessorHandler = async ({ dispatch, getState }) => {
+  // Only refresh a chart that's actually open (the trigger fires on any track
+  // change, chart or not).
+  if (!getState().elevationChart.elevationProfilePoints) {
+    return;
+  }
+
   // Re-densify against the freshly overridden elevation (the cache was just
   // invalidated by the elevation change) so the chart stays high-resolution.
   await ensureRenderGeojson(getState, dispatch);
