@@ -160,11 +160,13 @@ off that — never re-derive "is this a track?" from density/timestamps.
       there's data to lose (`fm:kind === 'track'` with sensor/elevation series).
       (c) Offer the simplify prompt only for `fm:kind === 'track'`; routes and
       generic geometry convert at full fidelity with no prompt.
-- [ ] **Open/add multiple files into one view.** Append parsed features into the
-      existing `trackGeojson` (instead of replacing), each carrying `fm:kind` /
-      `fm:source`. Needs an "Add file(s)…" path (or multi-select) and the
-      selection model above. Provenance tags drive a small legend/list with
-      per-source show/hide/remove. Unlike multi-*segment* (one activity), multiple
-      *tracks* are not auto-concatenated for stats — default to the selected
-      track, optionally offer an "All tracks" aggregate.
+- [~] **Open/add multiple files into one view.** **Done:** the import modal and
+      the app-wide file drop accept several files at once (`parseTrackFiles`
+      merges them in file order); when geodata is already shown the user is asked
+      (via the confirm dialog, extended with a third button) whether to append or
+      replace. **Still TODO:** stamp `fm:kind` / `fm:source` on the merged
+      features so a legend/list can offer per-source show/hide/remove, and the
+      selection model below (multiple *tracks* aren't auto-concatenated for
+      stats — default to the selected track, optionally an "All tracks"
+      aggregate).
 

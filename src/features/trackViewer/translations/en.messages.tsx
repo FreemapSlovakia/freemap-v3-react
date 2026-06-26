@@ -27,7 +27,12 @@ const en: TrackViewerMessages = {
   },
   uploadModal: {
     title: 'Import file',
-    drop: 'Drop a GPX, KML, KMZ, TCX or GeoJSON file here, or click here to select it.',
+    drop: 'Drop GPX, KML, KMZ, TCX or GeoJSON files here, or click here to select them. You can pick several at once.',
+    mergeTitle: 'Data already loaded',
+    mergeMessage:
+      'Some geodata is already shown. Append the imported data to it, or replace it?',
+    append: 'Append',
+    replace: 'Replace',
   },
   elevationFill: {
     title: 'Elevation data',
@@ -65,6 +70,7 @@ const en: TrackViewerMessages = {
   loadingError: 'Error loading file.',
   onlyOne: 'Only a single file is expected.',
   invalidFormat: 'The file is not in a supported format or is invalid.',
+  someFilesFailed: ({ names }) => `Some files could not be loaded: ${names}.`,
   tooBigError: 'The file is too big.',
 };
 

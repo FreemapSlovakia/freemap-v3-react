@@ -1,24 +1,13 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
-import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import clsx from 'clsx';
 import { type ReactElement, useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import {
-  type TrackFileDropError,
-  useTrackFileDropHandler,
-} from '../hooks/useTrackFileDropHandler.js';
-import {
-  trackViewerSetData,
-  trackViewerSetTrackUID,
-} from '../model/actions.js';
-import { parseTrackFile } from '../parseTrackFile.js';
-import { loadTrackViewerMessages } from '../translations/loadTrackViewerMessages.js';
+import { useLoadTrackFiles } from '../hooks/useLoadTrackFiles.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 // Picker filter shown to the user; the actual validation lives in the dropzone
@@ -40,46 +29,10 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const handleLoadError = useCallback(
-    (messageKey: TrackFileDropError) => {
-      dispatch(
-        toastsAdd({
-          id: 'trackViewer.loadError',
-          messageKey,
-          messageLoader: loadTrackViewerMessages,
-          style: 'danger',
-          timeout: 5000,
-        }),
-      );
-    },
-    [dispatch],
-  );
-
-  const handleUpload = useCallback(
-    (text: string, file: File) => {
-      const trackGeojson = parseTrackFile(text, file.name);
-
-      if (!trackGeojson) {
-        handleLoadError('invalidFormat');
-
-        return;
-      }
-
-      dispatch(trackViewerSetTrackUID(null));
-
-      dispatch(trackViewerSetData({ trackGeojson, focus: true }));
-
-      dispatch(setActiveModal(null));
-
-      dispatch(elevationChartClose());
-    },
-    [dispatch, handleLoadError],
-  );
-
-  const handleDrop = useTrackFileDropHandler(handleUpload, handleLoadError);
+  const loadTrackFiles = useLoadTrackFiles();
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: handleDrop,
+    onDrop: loadTrackFiles,
     // Validates dropped/picked files (matched by the extensions below). The
     // file-picker's type labels come from the input's `accept` *attribute*,
     // which we override to extensions only (see the <input>) — browsers render
@@ -93,10 +46,8 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
       'application/geo+json': ['.geojson'],
       'application/json': ['.json'],
     },
-    multiple: false,
   });
 
-  // {activeModal === 'file-import' && // TODO move to separate component
   return (
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>

@@ -1,4 +1,3 @@
-import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
 import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
 import { GalleryResult } from '@features/gallery/components/GalleryResult.js';
@@ -24,19 +23,9 @@ import { routePlannerToggleElevationChart } from '@features/routePlanner/model/a
 import { SearchMenu } from '@features/search/components/SearchMenu.js';
 import { SearchSelection } from '@features/search/components/SearchSelection.js';
 import { Toasts } from '@features/toasts/components/Toasts.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { TrackingSelection } from '@features/tracking/components/TrackingSelection.js';
-import {
-  type TrackFileDropError,
-  useTrackFileDropHandler,
-} from '@features/trackViewer/hooks/useTrackFileDropHandler.js';
-import {
-  trackViewerSetData,
-  trackViewerSetTrackUID,
-  trackViewerToggleElevationChart,
-} from '@features/trackViewer/model/actions.js';
-import { parseTrackFile } from '@features/trackViewer/parseTrackFile.js';
-import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
+import { useLoadTrackFiles } from '@features/trackViewer/hooks/useLoadTrackFiles.js';
+import { trackViewerToggleElevationChart } from '@features/trackViewer/model/actions.js';
 import { WikiLayer } from '@features/wiki/components/WikiLayer.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -54,7 +43,7 @@ import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useMouseCursor } from '../hooks/useMouseCursor.js';
-import { setActiveModal, setTool } from '../store/actions.js';
+import { setActiveModal } from '../store/actions.js';
 import {
   askingCookieConsentSelector,
   showGalleryPickerSelector,
@@ -438,48 +427,7 @@ export function Main(): ReactElement {
     onPictureUpdated,
   );
 
-  const onTrackLoadError = useCallback(
-    (messageKey: TrackFileDropError) => {
-      dispatch(
-        toastsAdd({
-          id: 'trackViewer.loadError',
-          messageKey,
-          messageLoader: loadTrackViewerMessages,
-          style: 'danger',
-          timeout: 5000,
-        }),
-      );
-    },
-    [dispatch],
-  );
-
-  const onTrackDrop = useCallback(
-    (text: string, file: File) => {
-      const trackGeojson = parseTrackFile(text, file.name);
-
-      if (!trackGeojson) {
-        onTrackLoadError('invalidFormat');
-
-        return;
-      }
-
-      dispatch(trackViewerSetTrackUID(null));
-
-      dispatch(trackViewerSetData({ trackGeojson, focus: true }));
-
-      dispatch(setActiveModal(null));
-
-      dispatch(setTool({ tool: 'import-file', mode: 'open' }));
-
-      dispatch(elevationChartClose());
-    },
-    [dispatch, onTrackLoadError],
-  );
-
-  const handleTrackDrop = useTrackFileDropHandler(
-    onTrackDrop,
-    onTrackLoadError,
-  );
+  const loadTrackFiles = useLoadTrackFiles();
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -500,10 +448,10 @@ export function Main(): ReactElement {
       );
 
       if (trackFiles.length) {
-        handleTrackDrop(trackFiles);
+        loadTrackFiles(trackFiles);
       }
     },
-    [handlePicturesDrop, handleTrackDrop, dispatch, authenticated],
+    [handlePicturesDrop, loadTrackFiles, dispatch, authenticated],
   );
 
   useShareFile(onDrop);

@@ -14,6 +14,9 @@ import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaExclamationTriangle, FaTimes } from 'react-icons/fa';
 import classes from './ConfirmProvider.module.css';
 
+/** Which button the user pressed (or `'cancel'` for Escape/backdrop/dismiss). */
+export type ConfirmResult = 'confirm' | 'extra' | 'cancel';
+
 export type ConfirmOptions = {
   /** Dialog title; defaults to the localized "Confirmation". */
   title?: ReactNode;
@@ -26,6 +29,14 @@ export type ConfirmOptions = {
   /** Bootstrap variant for the confirm button; defaults to `primary`. */
   confirmStyle?: string;
   /**
+   * Optional third button shown between confirm and cancel. When set, the
+   * dialog can resolve to `'extra'` (see {@link useConfirmChoice}); plain
+   * {@link useConfirm} treats it the same as cancel.
+   */
+  extraLabel?: ReactNode;
+  /** Bootstrap variant for the extra button; defaults to `secondary`. */
+  extraStyle?: string;
+  /**
    * Icon shown before the title. Defaults to a warning triangle when
    * `confirmStyle` is `danger`, and to nothing otherwise.
    */
@@ -34,30 +45,36 @@ export type ConfirmOptions = {
 
 export type ConfirmFn = (options?: ConfirmOptions) => Promise<boolean>;
 
+/** Like {@link ConfirmFn} but resolves to which button was pressed. */
+export type ConfirmChoiceFn = (
+  options?: ConfirmOptions,
+) => Promise<ConfirmResult>;
+
 type ConfirmContextValue = {
   /** Opens the dialog and resolves to the user's choice. */
-  open: ConfirmFn;
-  /** Resolves the in-flight call to `false` and hides the dialog. */
+  open: ConfirmChoiceFn;
+  /** Resolves the in-flight call to `'cancel'` and hides the dialog. */
   cancel: () => void;
 };
 
 const ConfirmContext = createContext<ConfirmContextValue>({
-  open: () => Promise.resolve(false),
+  open: () => Promise.resolve('cancel'),
   cancel: () => {},
 });
 
 /**
- * Returns an imperative `confirm()` that opens a styled, i18n-aware
- * confirmation modal and resolves to `true`/`false`. Because the dialog blocks
- * interaction while open, no global (redux) state is needed.
+ * Returns an imperative dialog opener that resolves to which button was pressed
+ * (`'confirm'`, `'extra'`, or `'cancel'`). Set the `extraLabel` option to show
+ * the third button. Because the dialog blocks interaction while open, no global
+ * (redux) state is needed.
  *
  * If the calling component unmounts while its dialog is still open, the dialog
- * is closed and the pending promise resolves to `false`.
+ * is closed and the pending promise resolves to `'cancel'`.
  */
-export function useConfirm(): ConfirmFn {
+export function useConfirmChoice(): ConfirmChoiceFn {
   const { open, cancel } = useContext(ConfirmContext);
 
-  // true while this component's own confirm is still awaiting an answer
+  // true while this component's own dialog is still awaiting an answer
   const pendingRef = useRef(false);
 
   useEffect(
@@ -69,7 +86,7 @@ export function useConfirm(): ConfirmFn {
     [cancel],
   );
 
-  return useCallback<ConfirmFn>(
+  return useCallback<ConfirmChoiceFn>(
     (options) => {
       pendingRef.current = true;
 
@@ -78,6 +95,20 @@ export function useConfirm(): ConfirmFn {
       });
     },
     [open],
+  );
+}
+
+/**
+ * Returns an imperative `confirm()` that opens a styled, i18n-aware
+ * confirmation modal and resolves to `true`/`false` (anything but the confirm
+ * button is `false`).
+ */
+export function useConfirm(): ConfirmFn {
+  const choose = useConfirmChoice();
+
+  return useCallback<ConfirmFn>(
+    (options) => choose(options).then((result) => result === 'confirm'),
+    [choose],
   );
 }
 
@@ -94,9 +125,9 @@ export function ConfirmProvider({
   const [show, setShow] = useState(false);
 
   // resolver of the in-flight promise, outside render so updaters stay pure
-  const resolveRef = useRef<((result: boolean) => void) | null>(null);
+  const resolveRef = useRef<((result: ConfirmResult) => void) | null>(null);
 
-  const close = useCallback((result: boolean) => {
+  const close = useCallback((result: ConfirmResult) => {
     resolveRef.current?.(result);
 
     resolveRef.current = null;
@@ -104,10 +135,10 @@ export function ConfirmProvider({
     setShow(false);
   }, []);
 
-  const open = useCallback<ConfirmFn>(
+  const open = useCallback<ConfirmChoiceFn>(
     (options = {}) =>
-      new Promise<boolean>((resolve) => {
-        resolveRef.current?.(false); // resolve any previous (defensive)
+      new Promise<ConfirmResult>((resolve) => {
+        resolveRef.current?.('cancel'); // resolve any previous (defensive)
 
         resolveRef.current = resolve;
 
@@ -118,7 +149,7 @@ export function ConfirmProvider({
     [],
   );
 
-  const cancel = useCallback(() => close(false), [close]);
+  const cancel = useCallback(() => close('cancel'), [close]);
 
   const value = useMemo<ConfirmContextValue>(
     () => ({ open, cancel }),
@@ -148,7 +179,7 @@ export function ConfirmProvider({
       if (e.key === 'Escape') {
         e.preventDefault();
 
-        close(false);
+        close('cancel');
       }
     };
 
@@ -171,7 +202,7 @@ export function ConfirmProvider({
 
       <Modal
         show={show}
-        onHide={() => close(false)}
+        onHide={() => close('cancel')}
         className={classes.modal}
         backdropClassName={classes.backdrop}
         size="sm"
@@ -193,12 +224,21 @@ export function ConfirmProvider({
         <Modal.Footer>
           <Button
             variant={options.confirmStyle ?? 'primary'}
-            onClick={() => close(true)}
+            onClick={() => close('confirm')}
           >
             <FaCheck /> {options.confirmLabel ?? m?.general.ok}
           </Button>
 
-          <Button variant="secondary" onClick={() => close(false)}>
+          {options.extraLabel !== undefined && (
+            <Button
+              variant={options.extraStyle ?? 'secondary'}
+              onClick={() => close('extra')}
+            >
+              {options.extraLabel}
+            </Button>
+          )}
+
+          <Button variant="dark" onClick={() => close('cancel')}>
             <FaTimes /> {options.cancelLabel ?? m?.general.cancel}{' '}
             <kbd>Esc</kbd>
           </Button>

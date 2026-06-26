@@ -25,6 +25,10 @@ export type TrackViewerMessages = {
   uploadModal: {
     title: string;
     drop: string;
+    mergeTitle: string;
+    mergeMessage: string;
+    append: string;
+    replace: string;
   };
   elevationFill: {
     title: string;
@@ -49,5 +53,6 @@ export type TrackViewerMessages = {
   loadingError: string;
   onlyOne: string;
   invalidFormat: string;
+  someFilesFailed: (props: { names: string }) => string;
   tooBigError: string;
 };
