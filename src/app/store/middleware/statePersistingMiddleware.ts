@@ -18,6 +18,8 @@ export const statePersistingMiddleware: Middleware<{}, RootState> =
     return result;
   };
 
+let persistFailureReported = false;
+
 function persistSelectedState(state: RootState) {
   if (window.fmEmbedded) {
     return;
@@ -25,5 +27,20 @@ function persistSelectedState(state: RootState) {
 
   // The selected subset + per-slice serialization lives in the `PERSIST` table
   // (persistence.ts), shared with `getInitialState`'s rehydration.
-  storage.setItem('store', JSON.stringify(selectPersistedState(state)));
+  try {
+    storage.setItem('store', JSON.stringify(selectPersistedState(state)));
+  } catch (error) {
+    // This write runs after `next(action)`, so a throw here propagates into
+    // errorHandlingMiddleware, which dispatches an action that re-enters this
+    // middleware and throws again — an infinite reducer-error loop that freezes
+    // the app. A failing persist (storage blocked, quota exceeded) must degrade
+    // silently instead. Report it once, out-of-band, so it never re-dispatches.
+    if (!persistFailureReported) {
+      persistFailureReported = true;
+
+      console.error('Failed to persist state', error);
+
+      window.Sentry?.captureException(error);
+    }
+  }
 }
