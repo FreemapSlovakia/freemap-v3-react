@@ -2,7 +2,11 @@ import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { fetchElevations } from '@shared/elevation.js';
-import { containsElevations, lineSegments } from '@shared/geoutils.js';
+import {
+  containsElevations,
+  lineSegments,
+  trackTimeSegments,
+} from '@shared/geoutils.js';
 import { along } from '@turf/along';
 import { distance } from '@turf/distance';
 import { getCoord } from '@turf/invariant';
@@ -39,35 +43,6 @@ function toEpoch(value: unknown): number | undefined {
   const t = Date.parse(value);
 
   return Number.isFinite(t) ? t : undefined;
-}
-
-// Per-segment access to a track's recorded times. togeojson stores them under
-// `coordinateProperties.times` — a flat array for a single LineString, nested
-// per segment for a MultiLineString; live tracking writes a flat `coordTimes`.
-function segmentTimesOf(
-  feature: Feature<LineString | MultiLineString>,
-): (segment: number) => unknown[] {
-  const cp = feature.properties?.['coordinateProperties'] as
-    | { times?: unknown }
-    | undefined;
-
-  const raw = cp?.times ?? feature.properties?.['coordTimes'];
-
-  if (!Array.isArray(raw)) {
-    return () => [];
-  }
-
-  const nested = Array.isArray(raw[0]);
-
-  return (segment) => {
-    if (nested) {
-      const seg = raw[segment];
-
-      return Array.isArray(seg) ? seg : [];
-    }
-
-    return segment === 0 ? raw : [];
-  };
 }
 
 const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
@@ -195,7 +170,7 @@ function resolveElevationProfilePointsLocally(
 
   const segments = lineSegments(trackGeojson.geometry);
 
-  const coordTimes = segmentTimesOf(trackGeojson);
+  const coordTimes = trackTimeSegments(trackGeojson);
 
   for (let s = 0; s < segments.length; s++) {
     // An interruption between recording segments: break the chart line, reset
@@ -212,7 +187,7 @@ function resolveElevationProfilePointsLocally(
 
     const segment = segments[s]!;
 
-    const segTimes = coordTimes(s);
+    const segTimes = coordTimes[s] ?? [];
 
     for (let j = 0; j < segment.length; j++) {
       const pt = segment[j]!;

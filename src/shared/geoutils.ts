@@ -103,6 +103,30 @@ export function lineSegments(
 }
 
 /**
+ * A track's recorded per-point times as raw per-segment arrays (each entry is
+ * usually an ISO string). togeojson stores them under
+ * `coordinateProperties.times` — a flat array for a single `LineString`, nested
+ * per segment for a `MultiLineString`; live tracking writes a flat top-level
+ * `coordTimes`. A flat source is returned as one segment; empty when there are
+ * none. Callers interpret each value (epoch vs `Date`) themselves.
+ */
+export function trackTimeSegments(feature: Feature): unknown[][] {
+  const cp = feature.properties?.['coordinateProperties'] as
+    | { times?: unknown }
+    | undefined;
+
+  const raw = cp?.times ?? feature.properties?.['coordTimes'];
+
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+
+  return Array.isArray(raw[0])
+    ? raw.map((segment) => (Array.isArray(segment) ? segment : []))
+    : [raw];
+}
+
+/**
  * True only when every coordinate of a line-like geometry (`LineString` or
  * multi-segment `MultiLineString`) carries elevation. Any gap (an all-2D OSRM
  * track, or a GraphHopper route with no-data points) yields `false` so the

@@ -1,4 +1,4 @@
-import { lineSegments } from '@shared/geoutils.js';
+import { lineSegments, trackTimeSegments } from '@shared/geoutils.js';
 import { length as turfLength } from '@turf/length';
 import type { Feature, Position } from 'geojson';
 import type { TrackLine } from './trackSelection.js';
@@ -12,27 +12,9 @@ export interface TrackEndpoints {
   length: number;
 }
 
-// togeojson stores per-point times under `coordinateProperties.times` (nested
-// per segment for a multi-segment track); live tracking writes a flat
-// top-level `coordTimes`. Returns the very first and very last timestamp.
+// The very first and very last recorded timestamps of a track.
 function endpointTimes(feature: Feature): [Date | undefined, Date | undefined] {
-  const cp = feature.properties?.['coordinateProperties'] as
-    | { times?: unknown }
-    | undefined;
-
-  const raw = cp?.times ?? feature.properties?.['coordTimes'];
-
-  if (!Array.isArray(raw) || raw.length === 0) {
-    return [undefined, undefined];
-  }
-
-  const head = raw[0];
-
-  const tail = raw.at(-1);
-
-  const first = Array.isArray(head) ? head[0] : head;
-
-  const last = Array.isArray(tail) ? tail.at(-1) : tail;
+  const segments = trackTimeSegments(feature);
 
   const toDate = (v: unknown) => {
     if (typeof v !== 'string') {
@@ -44,7 +26,7 @@ function endpointTimes(feature: Feature): [Date | undefined, Date | undefined] {
     return Number.isNaN(d.getTime()) ? undefined : d;
   };
 
-  return [toDate(first), toDate(last)];
+  return [toDate(segments[0]?.[0]), toDate(segments.at(-1)?.at(-1))];
 }
 
 /**

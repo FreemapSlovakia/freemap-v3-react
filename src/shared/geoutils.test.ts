@@ -4,6 +4,7 @@ import {
   containsElevations,
   elevationCoverage,
   lineSegments,
+  trackTimeSegments,
 } from './geoutils.js';
 
 const line = (coords: number[][]): Feature<LineString> => ({
@@ -176,5 +177,44 @@ describe('elevationCoverage', () => {
         ]),
       ]),
     ).toBe('partial');
+  });
+});
+
+describe('trackTimeSegments', () => {
+  const withTimes = (times: unknown): Feature => ({
+    type: 'Feature',
+    properties: { coordinateProperties: { times } },
+    geometry: { type: 'Point', coordinates: [0, 0] },
+  });
+
+  it('wraps a flat (single-LineString) times array as one segment', () => {
+    expect(trackTimeSegments(withTimes(['t0', 't1']))).toEqual([['t0', 't1']]);
+  });
+
+  it('returns a nested (multi-segment) times array as-is', () => {
+    expect(trackTimeSegments(withTimes([['a', 'b'], ['c']]))).toEqual([
+      ['a', 'b'],
+      ['c'],
+    ]);
+  });
+
+  it('reads a top-level coordTimes (live tracking)', () => {
+    expect(
+      trackTimeSegments({
+        type: 'Feature',
+        properties: { coordTimes: ['t0', 't1'] },
+        geometry: { type: 'Point', coordinates: [0, 0] },
+      }),
+    ).toEqual([['t0', 't1']]);
+  });
+
+  it('is empty when there are no times', () => {
+    expect(
+      trackTimeSegments({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'Point', coordinates: [0, 0] },
+      }),
+    ).toEqual([]);
   });
 });
