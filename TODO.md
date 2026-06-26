@@ -199,6 +199,23 @@ off that — never re-derive "is this a track?" from density/timestamps.
       replace. No per-source legend/list — to change what's shown, re-import.
       Multiple *tracks* aren't auto-concatenated for stats; the "operate on a
       chosen track" item below covers picking which one the chart/info acts on.
+- [ ] **Rename the feature away from "track viewer".** It's now a general geodata
+      viewer (GPX/KML/KMZ/TCX/GeoJSON, points/lines/polygons, multi-file), so the
+      `trackViewer` name is misleading. Rename the directory
+      (`src/features/trackViewer/`) and all its symbols — components
+      (`TrackViewer*`), the redux slice + state/actions/processors
+      (`trackViewer*`, `trackGeojson`, `TRACK_VIEWER_*`), hooks/utils
+      (`useStartFinishPoints`, `trackSelection`, `trackEndpoints`,
+      `parseTrackFile(s)`, `trackWaypoints`, …), the per-feature `translations/`
+      bundle and its message keys, and the doc references (`doc/architecture.md`,
+      `doc/elevation-and-colorizers.md`, `CLAUDE.md`, `llms.txt`). Candidate
+      names: `geodataViewer` / `fileViewer` / `mapDataViewer` (decide first).
+      **Keep serialized identifiers stable for back-compat** — the persisted
+      slice key (`trackViewer` in the saved state / `Persisted*Schema`) and the
+      URL tokens (`tools=import-file`, the legacy `track-viewer` /
+      `#show=upload-track` / `gpx-url=` / `load=` aliases) must keep working, so
+      either keep those literal strings or add migrations/aliases. Mostly a
+      mechanical symbol rename; do it in its own PR to keep the diff reviewable.
 
 ## Live tracking
 
