@@ -23,6 +23,53 @@ import type {
 // the profile; farther ones (a POI off to the side) are omitted.
 const WAYPOINT_SNAP_METERS = 100;
 
+// The profile points plus, index-aligned, each point's recorded time (epoch ms)
+// when available — empty/undefined when the source has no per-point time (the
+// API-sampled path), in which case waypoints fall back to spatial pairing.
+interface ResolvedProfile {
+  points: ElevationProfilePoint[];
+  times: (number | undefined)[];
+}
+
+function toEpoch(value: unknown): number | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const t = Date.parse(value);
+
+  return Number.isFinite(t) ? t : undefined;
+}
+
+// Per-segment access to a track's recorded times. togeojson stores them under
+// `coordinateProperties.times` — a flat array for a single LineString, nested
+// per segment for a MultiLineString; live tracking writes a flat `coordTimes`.
+function segmentTimesOf(
+  feature: Feature<LineString | MultiLineString>,
+): (segment: number) => unknown[] {
+  const cp = feature.properties?.['coordinateProperties'] as
+    | { times?: unknown }
+    | undefined;
+
+  const raw = cp?.times ?? feature.properties?.['coordTimes'];
+
+  if (!Array.isArray(raw)) {
+    return () => [];
+  }
+
+  const nested = Array.isArray(raw[0]);
+
+  return (segment) => {
+    if (nested) {
+      const seg = raw[segment];
+
+      return Array.isArray(seg) ? seg : [];
+    }
+
+    return segment === 0 ? raw : [];
+  };
+}
+
 const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
   dispatch,
   getState,
@@ -32,8 +79,9 @@ const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
 
   // `keepRecorded` shows the recorded elevation verbatim (gaps included); a
   // fully-elevated track is read locally regardless. Everything else samples a
-  // complete profile from the server.
-  const points =
+  // complete profile from the server. The local path also carries each point's
+  // recorded time (for time-based waypoint pairing); the API path has none.
+  const { points, times } =
     keepRecorded || containsElevations(trackGeojson)
       ? resolveElevationProfilePointsLocally(trackGeojson)
       : await resolveElevationProfilePointsViaApi(getState, trackGeojson);
@@ -41,45 +89,71 @@ const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
   dispatch(
     elevationChartSetElevationProfile({
       points,
-      waypoints: pairWaypoints(points, waypoints),
+      waypoints: pairWaypoints(points, times, waypoints),
     }),
   );
 };
 
 export default handle;
 
-// Pins each waypoint to the profile at its nearest track point (matching the
-// profile's own distance axis), dropping any farther than the snap threshold.
-// Self-crossing tracks can mis-snap; good enough until time-based pairing.
+// Pins each waypoint onto the profile. A waypoint counts as "on" the track only
+// where the profile passes within the snap threshold; among those candidates it
+// picks the one closest in time when both the waypoint and the track carry
+// timestamps (this disambiguates a self-crossing track), otherwise the nearest
+// in space. Waypoints with no nearby pass are dropped.
 function pairWaypoints(
   points: ElevationProfilePoint[],
+  times: (number | undefined)[],
   waypoints: ElevationWaypoint[],
 ): ElevationProfileWaypoint[] {
   // Only points with a real elevation can carry a marker (and a y-position).
-  const elevated = points.filter((p) => Number.isFinite(p.ele));
+  const elevated = points.flatMap((point, i) =>
+    Number.isFinite(point.ele) ? [{ point, time: times[i] }] : [],
+  );
 
   if (elevated.length === 0) {
     return [];
   }
 
   return waypoints.flatMap((wp) => {
-    let nearest = elevated[0]!;
+    const candidates = elevated
+      .map(({ point, time }) => ({
+        point,
+        time,
+        meters: distance([wp.lon, wp.lat], [point.lon, point.lat], {
+          units: 'meters',
+        }),
+      }))
+      .filter((c) => c.meters <= WAYPOINT_SNAP_METERS);
 
-    let nearestMeters = Infinity;
-
-    for (const p of elevated) {
-      const d = distance([wp.lon, wp.lat], [p.lon, p.lat], { units: 'meters' });
-
-      if (d < nearestMeters) {
-        nearestMeters = d;
-
-        nearest = p;
-      }
+    if (candidates.length === 0) {
+      return [];
     }
 
-    return nearestMeters <= WAYPOINT_SNAP_METERS
-      ? [{ distance: nearest.distance, ele: nearest.ele, label: wp.label }]
-      : [];
+    const wpTime = wp.time != null ? Date.parse(wp.time) : Number.NaN;
+
+    const timed =
+      Number.isFinite(wpTime) && candidates.some((c) => c.time !== undefined)
+        ? candidates.filter((c) => c.time !== undefined)
+        : null;
+
+    // Among on-track candidates, rank by time-distance when timestamps are
+    // available (picks the right pass on a self-crossing track), else by space.
+    const score = timed
+      ? (c: (typeof candidates)[number]) => Math.abs(c.time! - wpTime)
+      : (c: (typeof candidates)[number]) => c.meters;
+
+    const chosen = (timed ?? candidates).reduce((best, c) =>
+      score(c) < score(best) ? c : best,
+    );
+
+    return [
+      {
+        distance: chosen.point.distance,
+        ele: chosen.point.ele,
+        label: wp.label,
+      },
+    ];
   });
 }
 
@@ -104,7 +178,7 @@ function gapPoint(
 
 function resolveElevationProfilePointsLocally(
   trackGeojson: Feature<LineString | MultiLineString>,
-): ElevationProfilePoint[] {
+): ResolvedProfile {
   let dist = 0;
 
   let prevPt: Position | undefined;
@@ -117,7 +191,11 @@ function resolveElevationProfilePointsLocally(
 
   const elevationProfilePoints: ElevationProfilePoint[] = [];
 
+  const times: (number | undefined)[] = [];
+
   const segments = lineSegments(trackGeojson.geometry);
+
+  const coordTimes = segmentTimesOf(trackGeojson);
 
   for (let s = 0; s < segments.length; s++) {
     // An interruption between recording segments: break the chart line, reset
@@ -125,12 +203,20 @@ function resolveElevationProfilePointsLocally(
     if (s > 0 && prevPt) {
       elevationProfilePoints.push(gapPoint(prevPt, dist, climbUp, climbDown));
 
+      times.push(undefined);
+
       prevPt = undefined;
 
       prevEle = undefined;
     }
 
-    for (const pt of segments[s]!) {
+    const segment = segments[s]!;
+
+    const segTimes = coordTimes(s);
+
+    for (let j = 0; j < segment.length; j++) {
+      const pt = segment[j]!;
+
       const [lon, lat, ele] = pt;
 
       if (prevPt) {
@@ -166,17 +252,19 @@ function resolveElevationProfilePointsLocally(
         climbDown,
       });
 
+      times.push(toEpoch(segTimes[j]));
+
       prevPt = pt;
     }
   }
 
-  return elevationProfilePoints;
+  return { points: elevationProfilePoints, times };
 }
 
 async function resolveElevationProfilePointsViaApi(
   getState: () => RootState,
   trackGeojson: Feature<LineString | MultiLineString>,
-): Promise<ElevationProfilePoint[]> {
+): Promise<ResolvedProfile> {
   // Sample each segment at ~screen resolution onto a shared distance axis, with
   // a gap entry between segments. `gap` entries keep their non-finite `ele`
   // (no server lookup, no climb across the pause).
@@ -292,5 +380,7 @@ async function resolveElevationProfilePointsViaApi(
     prevEle = ele ?? undefined;
   }
 
-  return entries.map(({ gap: _gap, ...point }) => point);
+  // The API path resamples the track, so there are no per-point recorded times;
+  // waypoints fall back to spatial pairing.
+  return { points: entries.map(({ gap: _gap, ...point }) => point), times: [] };
 }

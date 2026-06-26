@@ -52,7 +52,7 @@ export function resolveActiveTrack(
 /** Standalone points (GPX `<wpt>`) to mark along the elevation profile. */
 export function trackWaypoints(
   fc: FeatureCollection | null | undefined,
-): { lat: number; lon: number; label?: string }[] {
+): { lat: number; lon: number; label?: string; time?: string }[] {
   return (fc?.features ?? []).flatMap((feature) => {
     if (feature.geometry.type !== 'Point') {
       return [];
@@ -62,11 +62,14 @@ export function trackWaypoints(
 
     const name = feature.properties?.['name'];
 
+    const time = feature.properties?.['time'];
+
     return [
       {
         lat: lat!,
         lon: lon!,
         label: typeof name === 'string' ? name : undefined,
+        time: typeof time === 'string' ? time : undefined,
       },
     ];
   });

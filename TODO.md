@@ -173,13 +173,15 @@ off that — never re-derive "is this a track?" from density/timestamps.
 - [~] **Waypoints on the elevation profile.** Standalone points (GPX `<wpt>`)
       are pinned onto the chart with a stem, a dot on the line, and the name as
       a label. `elevationChartSetTrackGeojson` takes a `waypoints` arg (the
-      trackViewer passes its Point features via `trackWaypoints`); the chart
-      handler pins each to the nearest profile point on the same distance axis,
-      dropping any farther than `WAYPOINT_SNAP_METERS` (100 m). **Refinement:**
-      pairing is spatial nearest-*profile-point* (good for dense recordings; a
-      self-crossing track can mis-snap, and a very sparse line could miss a
-      mid-segment waypoint) — could upgrade to time-based when both sides have
-      timestamps, and to nearest-point-on-segment for sparse lines.
+      trackViewer passes its Point features via `trackWaypoints`, including each
+      `<wpt>`'s optional time). A waypoint is pinned only where the profile
+      passes within `WAYPOINT_SNAP_METERS` (100 m); among those candidates it
+      picks the one closest in **time** when both the waypoint and the track
+      carry timestamps (disambiguating a self-crossing track), else the nearest
+      in space. The local resolver carries each profile point's recorded time;
+      the API-sampled path has none and uses spatial pairing. **Refinement:** a
+      very sparse line could still miss a mid-segment waypoint — could project
+      onto the nearest segment rather than the nearest vertex.
 - [x] **Honest convert-to-drawing.** Drawing state lives in the URL hash, so
       per-vertex HR/cadence/elevation can't be carried. Keeping the source track
       visible (tried first) duplicated the geometry and its click hit-area, so

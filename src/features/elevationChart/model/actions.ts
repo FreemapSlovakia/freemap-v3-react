@@ -5,11 +5,13 @@ import {
 import { createAction } from '@reduxjs/toolkit';
 import { Feature, LineString, MultiLineString } from 'geojson';
 
-/** A waypoint to pair onto the profile (by nearest track point). */
+/** A waypoint to pair onto the profile (by time, else nearest track point). */
 export interface ElevationWaypoint {
   lat: number;
   lon: number;
   label?: string;
+  /** ISO timestamp, when the source carries one (GPX `<wpt><time>`). */
+  time?: string;
 }
 
 export const elevationChartSetTrackGeojson = createAction(
