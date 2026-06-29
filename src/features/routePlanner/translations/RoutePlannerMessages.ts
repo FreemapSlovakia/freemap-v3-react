@@ -28,6 +28,8 @@ export type RoutePlannerMessages = {
     pick: string;
     current: string;
     home: string;
+    fromStart: string;
+    fromFinish: string;
   };
   transportType: Record<TransportTypeMsgKey, string>;
   transportTypeLabel: string;

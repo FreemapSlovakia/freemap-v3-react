@@ -405,11 +405,11 @@ export const routePlannerReducer = createReducer(
       ),
 );
 
-function getStart(state: RoutePlannerState) {
+export function getStart(state: RoutePlannerState) {
   return state.finishOnly ? null : state.points[0];
 }
 
-function getFinish(state: RoutePlannerState) {
+export function getFinish(state: RoutePlannerState) {
   return !state.finishOnly && state.points.length < 2
     ? undefined
     : state.points.at(-1);

@@ -26,6 +26,8 @@ const en: RoutePlannerMessages = {
     pick: 'Select on the map',
     current: 'Your position',
     home: 'Home position',
+    fromStart: 'Start position',
+    fromFinish: 'Finish position',
   },
   transportType: {
     car: 'Car',

@@ -27,6 +27,8 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     pick: 'Vybrať na mape',
     current: 'Tvoja poloha',
     home: 'Domov',
+    fromStart: 'Poloha štartu',
+    fromFinish: 'Poloha cieľa',
   },
   transportType: {
     car: 'Auto',

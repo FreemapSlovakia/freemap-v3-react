@@ -82,6 +82,7 @@ import {
   routePlannerToggleElevationChart,
   routePlannerToggleMilestones,
 } from '../model/actions.js';
+import { getFinish, getStart } from '../model/reducer.js';
 import { loadRoutePlannerMessages } from '../translations/loadRoutePlannerMessages.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
@@ -479,6 +480,14 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.points.length > 1,
   );
 
+  const startPoint = useAppSelector(
+    (state) => getStart(state.routePlanner) ?? null,
+  );
+
+  const finishPoint = useAppSelector(
+    (state) => getFinish(state.routePlanner) ?? null,
+  );
+
   const handleMoreSelect = (eventKey: string | null) => {
     switch (eventKey) {
       case 'toggle-elevation-chart':
@@ -647,6 +656,13 @@ export default function RoutePlannerMenu(): ReactElement {
                 dispatch(routePlannerSetFromCurrentPosition('start'));
               } else if (eventKey === 'home') {
                 setFromHomeLocation('start', e);
+              } else if (eventKey === 'from-finish' && finishPoint) {
+                dispatch(
+                  routePlannerSetStart({
+                    lat: finishPoint.lat,
+                    lon: finishPoint.lon,
+                  }),
+                );
               }
             }}
           >
@@ -679,8 +695,10 @@ export default function RoutePlannerMenu(): ReactElement {
                 className="d-flex align-items-center justify-content-between"
                 eventKey="home"
               >
-                <FaHome />
-                &nbsp;{rpm?.point.home ?? '…'}
+                <span>
+                  <FaHome />
+                  &nbsp;{rpm?.point.home ?? '…'}
+                </span>
                 <Button
                   size="sm"
                   variant="secondary"
@@ -690,6 +708,15 @@ export default function RoutePlannerMenu(): ReactElement {
                   <FaCrosshairs className="pe-none" />
                 </Button>
               </Dropdown.Item>
+
+              {finishPoint &&
+                activeMode !== 'roundtrip' &&
+                activeMode !== 'isochrone' && (
+                  <Dropdown.Item eventKey="from-finish">
+                    <FaStop color="#d9534f" />
+                    &nbsp;{rpm?.point.fromFinish ?? '…'}
+                  </Dropdown.Item>
+                )}
             </Dropdown.Menu>
           </Dropdown>
 
@@ -722,6 +749,13 @@ export default function RoutePlannerMenu(): ReactElement {
                     dispatch(routePlannerSetFromCurrentPosition('finish'));
                   } else if (eventKey === 'home') {
                     setFromHomeLocation('finish', e);
+                  } else if (eventKey === 'from-start' && startPoint) {
+                    dispatch(
+                      routePlannerSetFinish({
+                        lat: startPoint.lat,
+                        lon: startPoint.lon,
+                      }),
+                    );
                   }
                 }}
               >
@@ -756,8 +790,10 @@ export default function RoutePlannerMenu(): ReactElement {
                     className="d-flex align-items-center justify-content-between"
                     eventKey="home"
                   >
-                    <FaHome />
-                    &nbsp;{rpm?.point.home ?? '…'}
+                    <span>
+                      <FaHome />
+                      &nbsp;{rpm?.point.home ?? '…'}
+                    </span>
                     <Button
                       size="sm"
                       variant="secondary"
@@ -767,6 +803,13 @@ export default function RoutePlannerMenu(): ReactElement {
                       <FaCrosshairs className="pe-none" />
                     </Button>
                   </Dropdown.Item>
+
+                  {startPoint && (
+                    <Dropdown.Item eventKey="from-start">
+                      <FaPlay color="#409a40" />
+                      &nbsp;{rpm?.point.fromStart ?? '…'}
+                    </Dropdown.Item>
+                  )}
                 </Dropdown.Menu>
               </Dropdown>
             </>
