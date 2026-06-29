@@ -15,6 +15,7 @@ import {
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
   trackViewerResolveElevationPrompt,
+  trackViewerSetColorizeLegend,
   trackViewerSetData,
   trackViewerSetElevation,
   trackViewerSetElevationPrompt,
@@ -35,6 +36,8 @@ export interface TrackViewerStateBase {
 
 export interface TrackViewerState extends TrackViewerStateBase {
   colorizeTrackBy: ColorizingMode | null;
+  // Whether the colorize legend is shown; independent of the other tools.
+  colorizeLegend: boolean;
   elevationPrompt: ElevationConsumer | null;
   // The user's elevation decision for the loaded track: 'undecided' until they
   // answer the prompt (so we don't ask again, and the info panel can report the
@@ -57,6 +60,7 @@ export const cleanState: TrackViewerStateBase = {
 
 export const trackViewerInitialState: TrackViewerState = {
   colorizeTrackBy: null,
+  colorizeLegend: true,
   elevationPrompt: null,
   elevationDecision: 'undecided',
   selectedTrackIndex: null,
@@ -71,6 +75,7 @@ export const trackViewerReducer = createReducer(
       .addCase(trackViewerDelete, (state) => ({
         ...trackViewerInitialState,
         colorizeTrackBy: state.colorizeTrackBy,
+        colorizeLegend: state.colorizeLegend,
       }))
       .addCase(trackViewerSetData, (state, action) => {
         // A new track is a fresh elevation decision.
@@ -116,6 +121,9 @@ export const trackViewerReducer = createReducer(
       })
       .addCase(trackViewerColorizeTrackBy, (state, action) => {
         state.colorizeTrackBy = action.payload;
+      })
+      .addCase(trackViewerSetColorizeLegend, (state, action) => {
+        state.colorizeLegend = action.payload ?? !state.colorizeLegend;
       })
       .addCase(trackViewerSetSelectedTrack, (state, action) => {
         state.selectedTrackIndex = action.payload;

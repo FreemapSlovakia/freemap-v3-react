@@ -6,7 +6,7 @@ import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { FaCheck, FaFill, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaFill, FaPaintBrush, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { applySettings, setActiveModal } from '../store/actions.js';
 
@@ -108,7 +108,9 @@ export default function PredefinedDrawingPropertiesModal({
     >
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
-          <Modal.Title>{dm?.defProps.title}</Modal.Title>
+          <Modal.Title>
+            <FaPaintBrush /> {dm?.defProps.title}
+          </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>

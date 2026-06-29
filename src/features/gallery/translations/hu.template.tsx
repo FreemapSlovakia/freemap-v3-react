@@ -170,7 +170,6 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
   noPicturesFound: 'Ezen a helyen nem találhatók fotók.',
   linkToWww: 'fotó a www.freemap.sk oldalon',
   linkToImage: 'fotófájl',
-  showLegend: 'Színezési jelmagyarázat megjelenítése',
 };
 
 export default hu;

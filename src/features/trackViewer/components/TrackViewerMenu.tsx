@@ -3,6 +3,11 @@ import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
+import {
+  LEGEND_ITEM,
+  legendToggleOption,
+} from '@shared/colorizers/components/legendToggleOption.js';
 import {
   colorizerNeedsElevation,
   colorizers,
@@ -17,18 +22,21 @@ import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { flatten } from '@turf/flatten';
 import type { Feature, LineString } from 'geojson';
-import { type ReactElement, useCallback } from 'react';
-import { Button } from 'react-bootstrap';
+import { type ReactElement, useCallback, useMemo } from 'react';
+import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
+  FaEllipsisV,
+  FaFileImport,
   FaGem,
   FaInfoCircle,
   FaMountain,
-  FaPaintBrush,
+  FaPalette,
   FaPencilAlt,
   FaRoute,
   FaSave,
@@ -39,6 +47,7 @@ import {
   ColorizingModeSchema,
   trackViewerColorizeTrackBy,
   trackViewerResolveElevationPrompt,
+  trackViewerSetColorizeLegend,
   trackViewerSetElevationPrompt,
   trackViewerSetSelectedTrack,
   trackViewerToggleElevationChart,
@@ -109,6 +118,10 @@ export function TrackViewerMenu(): ReactElement {
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
+  const colorizeLegend = useAppSelector(
+    (state) => state.trackViewer.colorizeLegend,
+  );
+
   const elevationDecision = useAppSelector(
     (state) => state.trackViewer.elevationDecision,
   );
@@ -117,20 +130,23 @@ export function TrackViewerMenu(): ReactElement {
     trackGeojsonIsSuitableForElevationChart,
   );
 
-  const lineFeatures = useAppSelector((state) => {
-    const gj = state.trackViewer.trackGeojson;
-
-    return gj
-      ? (flatten(gj).features.filter(
-          (f) => f.geometry?.type === 'LineString',
-        ) as Feature<LineString>[])
-      : [];
-  });
-
   // The line-like features (each track/route as one entry, multi-segment
   // included) the user picks among when several are loaded.
   const trackGeojson = useAppSelector(
     (state) => state.trackViewer.trackGeojson,
+  );
+
+  // Derived from the stable trackGeojson reference rather than a fresh array per
+  // render, so consumers — mode availability, elevation coverage, the colorize
+  // legend's memo — don't recompute on every unrelated store dispatch.
+  const lineFeatures = useMemo<Feature<LineString>[]>(
+    () =>
+      trackGeojson
+        ? (flatten(trackGeojson).features.filter(
+            (f) => f.geometry?.type === 'LineString',
+          ) as Feature<LineString>[])
+        : [],
+    [trackGeojson],
   );
 
   const selectedTrackIndex = useAppSelector(
@@ -191,6 +207,63 @@ export function TrackViewerMenu(): ReactElement {
 
     dispatch(convertToDrawing({ type: 'track', tolerance }));
   }, [dispatch, m, tvm, hasDenseTrack]);
+
+  const handleUpdateElevation = useCallback(async () => {
+    // With only some points missing, defer to the adaptive modal so the user
+    // can fill just the gaps instead of overwriting the recorded values.
+    if (coverage === 'partial') {
+      dispatch(trackViewerSetElevationPrompt({ type: 'update' }));
+
+      return;
+    }
+
+    // A fully-elevated track has no gaps to fill, so overwriting from the
+    // server is the only update — a plain confirm is enough. A success toast
+    // reports the outcome afterwards.
+    if (
+      await confirm({
+        title: tvm?.elevationFill.title,
+        message: (
+          <>
+            <p className="mb-0">{tvm?.elevationFill.updateConfirm}</p>
+
+            <p className="text-body-secondary small mb-0 mt-2">
+              {tvm?.elevationFill.premiumHiRes((label) => (
+                <PremiumGem label={label} onBeforeNavigate={cancelConfirm} />
+              ))}
+            </p>
+          </>
+        ),
+        confirmLabel: tvm?.elevationFill.update,
+      })
+    ) {
+      dispatch(
+        trackViewerResolveElevationPrompt({
+          mode: 'all',
+          consumer: { type: 'update' },
+        }),
+      );
+    }
+  }, [coverage, dispatch, confirm, cancelConfirm, tvm]);
+
+  const handleMoreSelect = (eventKey: string | null) => {
+    switch (eventKey) {
+      case 'update-elevation':
+        void handleUpdateElevation();
+
+        break;
+
+      case 'save-as-map':
+        handleSaveAsMap();
+
+        break;
+
+      case 'convert-to-drawing':
+        handleConvertToDrawing();
+
+        break;
+    }
+  };
 
   return (
     <>
@@ -261,73 +334,21 @@ export function TrackViewerMenu(): ReactElement {
           </LongPressTooltip>
         )}
 
-        {enableElevationChart && canUpdateElevation && (
-          <LongPressTooltip breakpoint="lg" label={tvm?.elevationFill.update}>
-            {({ label, labelClassName, props }) => (
-              <Button
-                className="ms-1"
-                variant="secondary"
-                onClick={async () => {
-                  // With only some points missing, defer to the adaptive modal
-                  // so the user can fill just the gaps instead of overwriting
-                  // the recorded values.
-                  if (coverage === 'partial') {
-                    dispatch(trackViewerSetElevationPrompt({ type: 'update' }));
-
-                    return;
-                  }
-
-                  // A fully-elevated track has no gaps to fill, so overwriting
-                  // from the server is the only update — a plain confirm is
-                  // enough. A success toast reports the outcome afterwards.
-                  if (
-                    await confirm({
-                      title: tvm?.elevationFill.title,
-                      message: (
-                        <>
-                          <p className="mb-0">
-                            {tvm?.elevationFill.updateConfirm}
-                          </p>
-
-                          <p className="text-body-secondary small mb-0 mt-2">
-                            {tvm?.elevationFill.premiumHiRes((label) => (
-                              <PremiumGem
-                                label={label}
-                                onBeforeNavigate={cancelConfirm}
-                              />
-                            ))}
-                          </p>
-                        </>
-                      ),
-                      confirmLabel: tvm?.elevationFill.update,
-                    })
-                  ) {
-                    dispatch(
-                      trackViewerResolveElevationPrompt({
-                        mode: 'all',
-                        consumer: { type: 'update' },
-                      }),
-                    );
-                  }
-                }}
-                {...props}
-              >
-                <FaMountain />
-                <span className={labelClassName}> {label}</span>
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
-
         {enableElevationChart && (
           <SelectDropdown
             className="ms-1"
             id="colorizing_mode"
             breakpoint="sm"
-            toggleIcon={<FaPaintBrush />}
+            toggleIcon={<FaPalette />}
             name={cm?.colorizeBy}
             value={colorizeTrackBy ?? 'none'}
             onSelect={(approach) => {
+              if (approach === LEGEND_ITEM) {
+                dispatch(trackViewerSetColorizeLegend());
+
+                return;
+              }
+
               const mode = ColorizingModeSchema.nullable().parse(
                 approach === 'none' ? null : approach,
               );
@@ -347,23 +368,30 @@ export function TrackViewerMenu(): ReactElement {
                 dispatch(trackViewerColorizeTrackBy(mode));
               }
             }}
-            options={[undefined, ...colorizingModes].map((mode) => ({
-              value: mode ?? 'none',
-              label: cm?.mode[mode ?? 'none'],
-              disabled: mode !== undefined && !isModeAvailable(mode),
-              // Launch badge: every mode except the free trio is premium, shown
-              // free for now. Tracked by hand — drop when the launch ends.
-              extra:
-                mode &&
-                mode !== 'elevation' &&
-                mode !== 'speed' &&
-                mode !== 'time' ? (
-                  <FaGem
-                    className="ms-1 text-info"
-                    title={cm?.premiumDuringLaunch}
-                  />
-                ) : undefined,
-            }))}
+            options={[
+              ...legendToggleOption(
+                colorizeTrackBy,
+                colorizeLegend,
+                cm?.legend,
+              ),
+              ...[undefined, ...colorizingModes].map((mode) => ({
+                value: mode ?? 'none',
+                label: cm?.mode[mode ?? 'none'],
+                disabled: mode !== undefined && !isModeAvailable(mode),
+                // Launch badge: every mode except the free trio is premium,
+                // shown free for now. Tracked by hand — drop when launch ends.
+                extra:
+                  mode &&
+                  mode !== 'elevation' &&
+                  mode !== 'speed' &&
+                  mode !== 'time' ? (
+                    <FaGem
+                      className="ms-1 text-info"
+                      title={cm?.premiumDuringLaunch}
+                    />
+                  ) : undefined,
+              })),
+            ]}
           />
         )}
 
@@ -391,45 +419,46 @@ export function TrackViewerMenu(): ReactElement {
           </LongPressTooltip>
         )}
 
-        {/* Separate the inspect actions from the save/export actions. */}
-        {enableElevationChart && hasTrack && (
-          <div className=" ms-1 vr align-self-stretch" />
-        )}
-
-        {hasTrack && !hasActiveMap && (
-          <LongPressTooltip breakpoint="xl" label={tvm?.saveAsMap}>
-            {({ label, labelClassName, props }) => (
-              <Button
-                className="ms-1"
-                variant="secondary"
-                onClick={handleSaveAsMap}
-                {...props}
-              >
-                <FaSave />
-                <span className={labelClassName}> {label}</span>
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
-
         {hasTrack && (
-          <LongPressTooltip breakpoint="xl" label={m?.general.convertToDrawing}>
-            {({ label, labelClassName, props }) => (
-              <Button
-                className="ms-1"
-                variant="secondary"
-                onClick={handleConvertToDrawing}
-                {...props}
-              >
-                <FaPencilAlt />
-                <span className={labelClassName}> {label}</span>
-              </Button>
-            )}
-          </LongPressTooltip>
+          <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
+            <Dropdown.Toggle variant="secondary">
+              <FaEllipsisV />
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu popperConfig={fixedPopperConfig}>
+              {enableElevationChart && canUpdateElevation && (
+                <>
+                  <Dropdown.Item eventKey="update-elevation">
+                    <FaMountain /> &nbsp;{tvm?.elevationFill.update ?? '…'}
+                  </Dropdown.Item>
+
+                  <Dropdown.Divider />
+                </>
+              )}
+
+              {!hasActiveMap && (
+                <Dropdown.Item eventKey="save-as-map">
+                  <FaSave /> &nbsp;{tvm?.saveAsMap ?? '…'}
+                </Dropdown.Item>
+              )}
+
+              <Dropdown.Item eventKey="convert-to-drawing">
+                <FaPencilAlt /> &nbsp;{m?.general.convertToDrawing ?? '…'}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         )}
 
         {hasTrack && <DeleteButton />}
       </ToolMenu>
+
+      {enableElevationChart && colorizeLegend && colorizeTrackBy && (
+        <ColorizeLegend
+          mode={colorizeTrackBy}
+          icon={<FaFileImport />}
+          features={lineFeatures}
+        />
+      )}
     </>
   );
 }

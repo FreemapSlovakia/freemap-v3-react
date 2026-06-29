@@ -150,7 +150,6 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'Zařadit všechny vaše fotky do prémiového obsahu? Uvidí je pouze uživatelé s prémiovým přístupem.',
     confirmFree: 'Zpřístupnit všechny vaše fotky každému?',
   },
-  showLegend: 'Zobrazit legendu zabarvení',
 };
 
 export default cs;

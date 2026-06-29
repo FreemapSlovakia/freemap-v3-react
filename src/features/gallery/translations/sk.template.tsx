@@ -149,7 +149,6 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'Zaradiť všetky vaše fotky do prémiového obsahu? Uvidia ich iba používatelia s prémiovým prístupom.',
     confirmFree: 'Sprístupniť všetky vaše fotky každému?',
   },
-  showLegend: 'Zobraziť legendu vyfarbenia',
 };
 
 export default sk;

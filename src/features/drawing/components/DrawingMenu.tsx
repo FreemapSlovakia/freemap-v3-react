@@ -7,7 +7,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
-import { FaPalette } from 'react-icons/fa';
+import { FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { openDrawToolSelector } from '@/app/store/selectors.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
@@ -62,7 +62,7 @@ export default function DrawingMenu(): ReactElement | undefined {
               }
               {...props}
             >
-              <FaPalette /> <span className={labelClassName}>{label}</span>
+              <FaPaintBrush /> <span className={labelClassName}>{label}</span>
             </Button>
           )}
         </LongPressTooltip>

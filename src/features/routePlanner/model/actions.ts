@@ -210,6 +210,10 @@ export const routePlannerColorizeBy = createAction<ColorizingMode | null>(
   'ROUTE_PLANNER_COLORIZE_BY',
 );
 
+export const routePlannerSetColorizeLegend = createAction<boolean | undefined>(
+  'ROUTE_PLANNER_SET_COLORIZE_LEGEND',
+);
+
 /**
  * Caches a render-only line for the active alternative: every elevation comes
  * from our terrain model (the router's own elevation is ignored) and long

@@ -17,11 +17,11 @@ const BASELINE_METERS = DEM_RESOLUTION_METERS;
 export const steepnessColorizer: Colorizer = {
   needsElevation: true,
   palette: [
-    { r: 128, g: 255, b: 128, t: 0.0 },
+    { r: 0, g: 255, b: 255, t: 0.0 },
     { r: 0, g: 255, b: 0, t: 0.25 },
     { r: 0, g: 0, b: 0, t: 0.5 },
     { r: 255, g: 0, b: 0, t: 0.75 },
-    { r: 128, g: 255, b: 128, t: 1.0 },
+    { r: 255, g: 0, b: 255, t: 1.0 },
   ],
   compute: (features, options) =>
     features.map((feature) => {

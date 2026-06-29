@@ -5,6 +5,11 @@ import {
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
+import {
+  LEGEND_ITEM,
+  legendToggleOption,
+} from '@shared/colorizers/components/legendToggleOption.js';
 import {
   ColorizingModeSchema,
   colorizers,
@@ -49,11 +54,12 @@ import {
   FaGem,
   FaHome,
   FaMapMarkerAlt,
-  FaPaintBrush,
+  FaPalette,
   FaPencilAlt,
   FaPlay,
   FaRegCheckSquare,
   FaRegSquare,
+  FaRoute,
   FaStop,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
@@ -63,6 +69,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import {
   RoutingMode,
   routePlannerColorizeBy,
+  routePlannerSetColorizeLegend,
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
   routePlannerSetIsochroneParams,
@@ -413,6 +420,15 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const colorizeBy = useAppSelector((state) => state.routePlanner.colorizeBy);
 
+  const colorizeLegend = useAppSelector(
+    (state) => state.routePlanner.colorizeLegend,
+  );
+
+  // Carries DEM elevation; used to label the elevation legend with real values.
+  const renderGeojson = useAppSelector(
+    (state) => state.routePlanner.renderGeojson,
+  );
+
   const alternatives = useAppSelector(
     (state) => state.routePlanner.alternatives,
   );
@@ -441,6 +457,13 @@ export default function RoutePlannerMenu(): ReactElement {
           },
         ];
   }, [alternatives, activeAlternativeIndex]);
+
+  // The elevation-bearing line for the legend's real labels; kept referentially
+  // stable so the legend's per-coordinate scan stays memoized.
+  const colorizeFeatures = useMemo<Feature<LineString>[]>(
+    () => (renderGeojson ? [renderGeojson] : lineFeatures),
+    [renderGeojson, lineFeatures],
+  );
 
   const isModeAvailable = (mode: (typeof colorizingModes)[number]) => {
     const { isAvailable } = colorizers[mode];
@@ -529,50 +552,52 @@ export default function RoutePlannerMenu(): ReactElement {
     useState(false);
 
   return (
-    <ToolMenu tool="route-planner">
-      <RoutePlannerTransportType
-        onChange={(transportType) =>
-          dispatch(routePlannerSetTransportType(transportType!))
-        }
-        value={activeTransportType}
-      />
+    <>
+      <ToolMenu tool="route-planner">
+        <RoutePlannerTransportType
+          onChange={(transportType) =>
+            dispatch(routePlannerSetTransportType(transportType!))
+          }
+          value={activeTransportType}
+        />
 
-      {activeTTDef?.api === 'gh' && (
-        <Dropdown
-          className="ms-1"
-          onSelect={(mode) => {
-            dispatch(routePlannerSetMode(mode as RoutingMode));
-          }}
-          show={routePlannerDropdownOpen}
-          onToggle={(nextShow, { source }) => {
-            if (source !== 'select') {
-              setRoutePlannerDropdownOpen(nextShow);
-            }
-          }}
-        >
-          <LongPressTooltip
-            label={
-              rpm?.mode[
-                activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
-              ]
-            }
-            name={rpm?.modeLabel}
-            breakpoint="sm"
+        {activeTTDef?.api === 'gh' && (
+          <Dropdown
+            className="ms-1"
+            onSelect={(mode) => {
+              dispatch(routePlannerSetMode(mode as RoutingMode));
+            }}
+            show={routePlannerDropdownOpen}
+            onToggle={(nextShow, { source }) => {
+              if (source !== 'select') {
+                setRoutePlannerDropdownOpen(nextShow);
+              }
+            }}
           >
-            {({ props, label, labelClassName }) => (
-              <Dropdown.Toggle id="mode" variant="secondary" {...props}>
-                {modeIcons[activeMode]}{' '}
-                <span className={labelClassName}>{label}</span>
-              </Dropdown.Toggle>
-            )}
-          </LongPressTooltip>
+            <LongPressTooltip
+              label={
+                rpm?.mode[
+                  activeMode === 'roundtrip' ? 'routndtrip-gh' : activeMode
+                ]
+              }
+              name={rpm?.modeLabel}
+              breakpoint="sm"
+            >
+              {({ props, label, labelClassName }) => (
+                <Dropdown.Toggle id="mode" variant="secondary" {...props}>
+                  {modeIcons[activeMode]}{' '}
+                  <span className={labelClassName}>{label}</span>
+                </Dropdown.Toggle>
+              )}
+            </LongPressTooltip>
 
-          <Dropdown.Menu
-            popperConfig={fixedPopperConfig}
-            as={GraphopperModeMenu}
-          >
-            {(['route', 'roundtrip', 'isochrone'] satisfies RoutingMode[]).map(
-              (mode) => (
+            <Dropdown.Menu
+              popperConfig={fixedPopperConfig}
+              as={GraphopperModeMenu}
+            >
+              {(
+                ['route', 'roundtrip', 'isochrone'] satisfies RoutingMode[]
+              ).map((mode) => (
                 <Dropdown.Item
                   eventKey={mode}
                   key={mode}
@@ -583,247 +608,264 @@ export default function RoutePlannerMenu(): ReactElement {
                   {rpm?.mode[mode === 'roundtrip' ? 'routndtrip-gh' : mode] ??
                     '…'}
                 </Dropdown.Item>
-              ),
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
 
-      {activeTTDef?.api === 'osrm' && (
-        <SelectDropdown
-          className="ms-1"
-          id="mode"
-          breakpoint="sm"
-          name={rpm?.modeLabel}
-          value={activeMode}
-          onSelect={(mode) => {
-            dispatch(routePlannerSetMode(mode as RoutingMode));
-          }}
-          options={(['route', 'trip', 'roundtrip'] satisfies RoutingMode[]).map(
-            (mode) => ({
+        {activeTTDef?.api === 'osrm' && (
+          <SelectDropdown
+            className="ms-1"
+            id="mode"
+            breakpoint="sm"
+            name={rpm?.modeLabel}
+            value={activeMode}
+            onSelect={(mode) => {
+              dispatch(routePlannerSetMode(mode as RoutingMode));
+            }}
+            options={(
+              ['route', 'trip', 'roundtrip'] satisfies RoutingMode[]
+            ).map((mode) => ({
               value: mode,
               label: rpm?.mode[mode] ?? '…',
               icon: modeIcons[mode],
               title: rpm?.mode[mode],
-            }),
-          )}
-        />
-      )}
+            }))}
+          />
+        )}
 
-      <ButtonGroup className="ms-1">
-        <Dropdown
-          className="btn-group"
-          id="set-start-dropdown"
-          onSelect={(eventKey, e) => {
-            if (eventKey === 'pick') {
-              // Picking on the map needs route-planner to own clicks.
-              dispatch(setTool({ tool: 'route-planner', mode: 'activate' }));
-              dispatch(routePlannerSetPickMode('start'));
-            } else if (eventKey === 'current') {
-              dispatch(routePlannerSetFromCurrentPosition('start'));
-            } else if (eventKey === 'home') {
-              setFromHomeLocation('start', e);
-            }
-          }}
-        >
-          <LongPressTooltip breakpoint="md" label={rpm?.start}>
-            {({ label, labelClassName, props }) => (
-              <Dropdown.Toggle
-                variant="secondary"
-                active={pickPointMode === 'start'}
-                {...props}
-              >
-                <FaPlay color="#409a40" />
-
-                <span className={labelClassName}> {label}</span>
-              </Dropdown.Toggle>
-            )}
-          </LongPressTooltip>
-
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            <Dropdown.Item eventKey="pick">
-              <FaMapMarkerAlt />
-              &nbsp;{rpm?.point.pick ?? '…'}
-            </Dropdown.Item>
-
-            <Dropdown.Item eventKey="current">
-              <FaBullseye />
-              &nbsp;{rpm?.point.current ?? '…'}
-            </Dropdown.Item>
-
-            <Dropdown.Item
-              className="d-flex align-items-center justify-content-between"
-              eventKey="home"
-            >
-              <FaHome />
-              &nbsp;{rpm?.point.home ?? '…'}
-              <Button
-                size="sm"
-                variant="secondary"
-                className="my-n1 ms-2"
-                title={rpm?.selectHomeLocation}
-              >
-                <FaCrosshairs className="pe-none" />
-              </Button>
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-
-        {activeMode !== 'roundtrip' && activeMode !== 'isochrone' && (
-          <>
-            <LongPressTooltip label={rpm?.swap}>
+        <ButtonGroup className="ms-1">
+          <Dropdown
+            className="btn-group"
+            id="set-start-dropdown"
+            onSelect={(eventKey, e) => {
+              if (eventKey === 'pick') {
+                // Picking on the map needs route-planner to own clicks.
+                dispatch(setTool({ tool: 'route-planner', mode: 'activate' }));
+                dispatch(routePlannerSetPickMode('start'));
+              } else if (eventKey === 'current') {
+                dispatch(routePlannerSetFromCurrentPosition('start'));
+              } else if (eventKey === 'home') {
+                setFromHomeLocation('start', e);
+              }
+            }}
+          >
+            <LongPressTooltip breakpoint="md" label={rpm?.start}>
               {({ label, labelClassName, props }) => (
-                <Button
+                <Dropdown.Toggle
                   variant="secondary"
-                  onClick={() => dispatch(routePlannerSwapEnds())}
-                  disabled={!canSwap}
+                  active={pickPointMode === 'start'}
                   {...props}
                 >
-                  ⇆<span className={labelClassName}> {label}</span>
-                </Button>
+                  <FaPlay color="#409a40" />
+
+                  <span className={labelClassName}> {label}</span>
+                </Dropdown.Toggle>
               )}
             </LongPressTooltip>
 
-            <Dropdown
-              id="set-finish-dropdown"
-              className="btn-group"
-              onSelect={(eventKey, e) => {
-                if (eventKey === 'pick') {
-                  // Picking on the map needs route-planner to own clicks.
-                  dispatch(
-                    setTool({ tool: 'route-planner', mode: 'activate' }),
-                  );
-                  dispatch(routePlannerSetPickMode('finish'));
-                } else if (eventKey === 'current') {
-                  dispatch(routePlannerSetFromCurrentPosition('finish'));
-                } else if (eventKey === 'home') {
-                  setFromHomeLocation('finish', e);
-                }
-              }}
-            >
-              <LongPressTooltip breakpoint="md" label={rpm?.finish}>
+            <Dropdown.Menu popperConfig={fixedPopperConfig}>
+              <Dropdown.Item eventKey="pick">
+                <FaMapMarkerAlt />
+                &nbsp;{rpm?.point.pick ?? '…'}
+              </Dropdown.Item>
+
+              <Dropdown.Item eventKey="current">
+                <FaBullseye />
+                &nbsp;{rpm?.point.current ?? '…'}
+              </Dropdown.Item>
+
+              <Dropdown.Item
+                className="d-flex align-items-center justify-content-between"
+                eventKey="home"
+              >
+                <FaHome />
+                &nbsp;{rpm?.point.home ?? '…'}
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="my-n1 ms-2"
+                  title={rpm?.selectHomeLocation}
+                >
+                  <FaCrosshairs className="pe-none" />
+                </Button>
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+
+          {activeMode !== 'roundtrip' && activeMode !== 'isochrone' && (
+            <>
+              <LongPressTooltip label={rpm?.swap}>
                 {({ label, labelClassName, props }) => (
-                  <Dropdown.Toggle
+                  <Button
                     variant="secondary"
-                    active={pickPointMode === 'finish'}
+                    onClick={() => dispatch(routePlannerSwapEnds())}
+                    disabled={!canSwap}
                     {...props}
                   >
-                    <FaStop color="#d9534f" />
-
-                    <span className={labelClassName}> {label}</span>
-                  </Dropdown.Toggle>
+                    ⇆<span className={labelClassName}> {label}</span>
+                  </Button>
                 )}
               </LongPressTooltip>
 
-              <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                <Dropdown.Item eventKey="pick">
-                  <FaMapMarkerAlt />
-                  &nbsp;
-                  {rpm?.point.pick ?? '…'}
-                </Dropdown.Item>
+              <Dropdown
+                id="set-finish-dropdown"
+                className="btn-group"
+                onSelect={(eventKey, e) => {
+                  if (eventKey === 'pick') {
+                    // Picking on the map needs route-planner to own clicks.
+                    dispatch(
+                      setTool({ tool: 'route-planner', mode: 'activate' }),
+                    );
+                    dispatch(routePlannerSetPickMode('finish'));
+                  } else if (eventKey === 'current') {
+                    dispatch(routePlannerSetFromCurrentPosition('finish'));
+                  } else if (eventKey === 'home') {
+                    setFromHomeLocation('finish', e);
+                  }
+                }}
+              >
+                <LongPressTooltip breakpoint="md" label={rpm?.finish}>
+                  {({ label, labelClassName, props }) => (
+                    <Dropdown.Toggle
+                      variant="secondary"
+                      active={pickPointMode === 'finish'}
+                      {...props}
+                    >
+                      <FaStop color="#d9534f" />
 
-                <Dropdown.Item eventKey="current">
-                  <FaBullseye />
-                  &nbsp;
-                  {rpm?.point.current ?? '…'}
-                </Dropdown.Item>
+                      <span className={labelClassName}> {label}</span>
+                    </Dropdown.Toggle>
+                  )}
+                </LongPressTooltip>
 
-                <Dropdown.Item
-                  className="d-flex align-items-center justify-content-between"
-                  eventKey="home"
-                >
-                  <FaHome />
-                  &nbsp;{rpm?.point.home ?? '…'}
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="my-n1 ms-2"
-                    title={rpm?.selectHomeLocation}
+                <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                  <Dropdown.Item eventKey="pick">
+                    <FaMapMarkerAlt />
+                    &nbsp;
+                    {rpm?.point.pick ?? '…'}
+                  </Dropdown.Item>
+
+                  <Dropdown.Item eventKey="current">
+                    <FaBullseye />
+                    &nbsp;
+                    {rpm?.point.current ?? '…'}
+                  </Dropdown.Item>
+
+                  <Dropdown.Item
+                    className="d-flex align-items-center justify-content-between"
+                    eventKey="home"
                   >
-                    <FaCrosshairs className="pe-none" />
-                  </Button>
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </>
-        )}
-      </ButtonGroup>
-
-      {routeFound && (
-        <SelectDropdown
-          className="ms-1"
-          id="route-colorizing-mode"
-          breakpoint="sm"
-          toggleIcon={<FaPaintBrush />}
-          name={cm?.colorizeBy}
-          value={colorizeBy ?? 'none'}
-          onSelect={(mode) => {
-            dispatch(
-              routePlannerColorizeBy(
-                ColorizingModeSchema.nullable().parse(
-                  mode === 'none' ? null : mode,
-                ),
-              ),
-            );
-          }}
-          // Unlike imported tracks, a planned route can never carry recorded
-          // sensor data (heart rate, cadence, …), so those modes are hidden
-          // rather than shown disabled.
-          options={[undefined, ...colorizingModes.filter(isModeAvailable)].map(
-            (mode) => ({
-              value: mode ?? 'none',
-              label: cm?.mode[mode ?? 'none'],
-              // Launch badge: every mode except the free trio is premium, shown
-              // free for now. Tracked by hand — drop when the launch ends.
-              extra:
-                mode &&
-                mode !== 'elevation' &&
-                mode !== 'speed' &&
-                mode !== 'time' ? (
-                  <FaGem
-                    className="ms-1 text-info"
-                    title={cm?.premiumDuringLaunch}
-                  />
-                ) : undefined,
-            }),
+                    <FaHome />
+                    &nbsp;{rpm?.point.home ?? '…'}
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="my-n1 ms-2"
+                      title={rpm?.selectHomeLocation}
+                    >
+                      <FaCrosshairs className="pe-none" />
+                    </Button>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </>
           )}
+        </ButtonGroup>
+
+        {routeFound && (
+          <SelectDropdown
+            className="ms-1"
+            id="route-colorizing-mode"
+            breakpoint="sm"
+            toggleIcon={<FaPalette />}
+            name={cm?.colorizeBy}
+            value={colorizeBy ?? 'none'}
+            onSelect={(mode) => {
+              if (mode === LEGEND_ITEM) {
+                dispatch(routePlannerSetColorizeLegend());
+
+                return;
+              }
+
+              dispatch(
+                routePlannerColorizeBy(
+                  ColorizingModeSchema.nullable().parse(
+                    mode === 'none' ? null : mode,
+                  ),
+                ),
+              );
+            }}
+            // Unlike imported tracks, a planned route can never carry recorded
+            // sensor data (heart rate, cadence, …), so those modes are hidden
+            // rather than shown disabled.
+            options={[
+              ...legendToggleOption(colorizeBy, colorizeLegend, cm?.legend),
+              ...[undefined, ...colorizingModes.filter(isModeAvailable)].map(
+                (mode) => ({
+                  value: mode ?? 'none',
+                  label: cm?.mode[mode ?? 'none'],
+                  // Launch badge: every mode except the free trio is premium,
+                  // shown free for now. Tracked by hand — drop when launch ends.
+                  extra:
+                    mode &&
+                    mode !== 'elevation' &&
+                    mode !== 'speed' &&
+                    mode !== 'time' ? (
+                      <FaGem
+                        className="ms-1 text-info"
+                        title={cm?.premiumDuringLaunch}
+                      />
+                    ) : undefined,
+                }),
+              ),
+            ]}
+          />
+        )}
+
+        {routeFound && (
+          <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
+            <Dropdown.Toggle variant="secondary">
+              <FaEllipsisV />
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu popperConfig={fixedPopperConfig}>
+              <Dropdown.Item
+                active={elevationProfileIsVisible}
+                eventKey="toggle-elevation-chart"
+              >
+                <FaChartArea />
+                &nbsp;{m?.general.elevationProfile ?? '…'}
+              </Dropdown.Item>
+
+              <Dropdown.Item eventKey="convert-to-drawing">
+                <FaPencilAlt />
+                &nbsp;{m?.general.convertToDrawing ?? '…'}
+              </Dropdown.Item>
+
+              <Dropdown.Divider />
+
+              <Dropdown.Item eventKey="toggle-milestones-km">
+                {milestones === 'abs' ? <FaRegCheckSquare /> : <FaRegSquare />}
+                &nbsp;{rpm?.milestones ?? '…'} (km)
+              </Dropdown.Item>
+
+              <Dropdown.Item eventKey="toggle-milestones-%">
+                {milestones === 'rel' ? <FaRegCheckSquare /> : <FaRegSquare />}
+                &nbsp;{rpm?.milestones ?? '…'} (%)
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
+      </ToolMenu>
+
+      {routeFound && colorizeLegend && colorizeBy && (
+        <ColorizeLegend
+          mode={colorizeBy}
+          icon={<FaRoute />}
+          features={colorizeFeatures}
         />
       )}
-
-      {routeFound && (
-        <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
-          <Dropdown.Toggle variant="secondary">
-            <FaEllipsisV />
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            <Dropdown.Item
-              active={elevationProfileIsVisible}
-              eventKey="toggle-elevation-chart"
-            >
-              <FaChartArea />
-              &nbsp;{m?.general.elevationProfile ?? '…'}
-            </Dropdown.Item>
-
-            <Dropdown.Item eventKey="convert-to-drawing">
-              <FaPencilAlt />
-              &nbsp;{m?.general.convertToDrawing ?? '…'}
-            </Dropdown.Item>
-
-            <Dropdown.Divider />
-
-            <Dropdown.Item eventKey="toggle-milestones-km">
-              {milestones === 'abs' ? <FaRegCheckSquare /> : <FaRegSquare />}
-              &nbsp;{rpm?.milestones ?? '…'} (km)
-            </Dropdown.Item>
-
-            <Dropdown.Item eventKey="toggle-milestones-%">
-              {milestones === 'rel' ? <FaRegCheckSquare /> : <FaRegSquare />}
-              &nbsp;{rpm?.milestones ?? '…'} (%)
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
-    </ToolMenu>
+    </>
   );
 }

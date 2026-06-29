@@ -4,6 +4,13 @@ import { ColorizerMessages } from './ColorizerMessages.js';
 const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Színezés szerint',
   premiumDuringLaunch: 'Prémium — a bevezetés alatt ingyenes',
+  legend: 'Jelmagyarázat',
+  compass: {
+    n: 'É',
+    e: 'K',
+    s: 'D',
+    w: 'Ny',
+  },
   mode: {
     none: 'Inaktív',
     elevation: 'Magasság',

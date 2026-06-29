@@ -4,6 +4,13 @@ import { ColorizerMessages } from './ColorizerMessages.js';
 const pl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Koloruj według',
   premiumDuringLaunch: 'Premium — bezpłatnie w okresie wprowadzenia',
+  legend: 'Legenda',
+  compass: {
+    n: 'N',
+    e: 'E',
+    s: 'S',
+    w: 'W',
+  },
   mode: {
     none: 'Nieaktywne',
     elevation: 'Wysokość',

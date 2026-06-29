@@ -4,6 +4,13 @@ import { ColorizerMessages } from './ColorizerMessages.js';
 const cs: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Obarvit podle',
   premiumDuringLaunch: 'Prémiové — během uvedení zdarma',
+  legend: 'Legenda',
+  compass: {
+    n: 'S',
+    e: 'V',
+    s: 'J',
+    w: 'Z',
+  },
   mode: {
     none: 'Neaktivní',
     elevation: 'Nadmořská výška',

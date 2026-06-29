@@ -158,7 +158,6 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
   noPicturesFound: 'Non è stata trovata nessuna foto in questo posto.',
   linkToWww: 'foto su www.freemap.sk',
   linkToImage: 'file immagine',
-  showLegend: 'Mostra la legenda della colorazione',
 
   allMyPhotos: {
     title: 'Modifica accesso',

@@ -22,6 +22,7 @@ import {
   routePlannerPreventHint,
   routePlannerRemovePoint,
   routePlannerSetActiveAlternativeIndex,
+  routePlannerSetColorizeLegend,
   routePlannerSetFinish,
   routePlannerSetIsochroneParams,
   routePlannerSetIsochrones,
@@ -58,6 +59,8 @@ export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
   // Survives a re-route: the chosen mode stays applied, and a new result just
   // refills elevations and recolorizes.
   colorizeBy: ColorizingMode | null;
+  // Whether the colorize legend is shown; independent of the other tools.
+  colorizeLegend: boolean;
   points: RoutePoint[];
   finishOnly: boolean;
   pickMode: PickMode | null;
@@ -78,6 +81,7 @@ const clearResult: RoutePlannerCleanResultState = {
 
 export const cleanState: RoutePlannerCleanState = {
   colorizeBy: null,
+  colorizeLegend: true,
   points: [],
   finishOnly: false,
   pickMode: null,
@@ -356,6 +360,9 @@ export const routePlannerReducer = createReducer(
       }))
       .addCase(routePlannerColorizeBy, (state, action) => {
         state.colorizeBy = action.payload;
+      })
+      .addCase(routePlannerSetColorizeLegend, (state, action) => {
+        state.colorizeLegend = action.payload ?? !state.colorizeLegend;
       })
       .addCase(routePlannerSetRenderGeojson, (state, action) => {
         state.renderGeojson = action.payload;

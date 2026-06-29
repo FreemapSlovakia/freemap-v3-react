@@ -1,6 +1,7 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
+import { LEGEND_ITEM } from '@shared/colorizers/components/legendToggleOption.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -21,9 +22,10 @@ import {
   FaEnvelope,
   FaFilter,
   FaGem,
-  FaInfo,
   FaLocationArrow,
   FaPalette,
+  FaRegCheckSquare,
+  FaRegSquare,
   FaTimes,
   FaTrophy,
   FaUpload,
@@ -39,7 +41,7 @@ import {
   galleryToggleLegend,
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
-import { PictureLegend } from './PictureLegend.js';
+import { PictureLegend, pictureLegendApplies } from './PictureLegend.js';
 
 export default function GalleryMenu() {
   const sc = useScrollClasses('horizontal');
@@ -101,8 +103,6 @@ export default function GalleryMenu() {
         );
       } else if (eventKey === 'direction') {
         dispatch(galleryToggleDirection());
-      } else if (eventKey === 'legend') {
-        dispatch(galleryToggleLegend());
       }
     },
     [dispatch, sendGalleryEmails, confirm, m, gm],
@@ -162,15 +162,21 @@ export default function GalleryMenu() {
 
                 <Dropdown
                   className="ms-1"
-                  onSelect={(colorizeBy) =>
+                  onSelect={(colorizeBy) => {
+                    if (colorizeBy === LEGEND_ITEM) {
+                      dispatch(galleryToggleLegend());
+
+                      return;
+                    }
+
                     dispatch(
                       galleryColorizeBy(
                         colorizeBy === 'disable'
                           ? null
                           : (colorizeBy as GalleryColorizeBy),
                       ),
-                    )
-                  }
+                    );
+                  }}
                 >
                   <LongPressTooltip
                     label={gm?.c[colorizeBy ?? 'disable']}
@@ -186,6 +192,22 @@ export default function GalleryMenu() {
                   </LongPressTooltip>
 
                   <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                    {pictureLegendApplies(
+                      colorizeBy === 'disable' ? null : colorizeBy,
+                    ) && (
+                      <>
+                        <Dropdown.Item
+                          eventKey={LEGEND_ITEM}
+                          active={showLegend}
+                        >
+                          {showLegend ? <FaRegCheckSquare /> : <FaRegSquare />}{' '}
+                          {gm?.legend ?? '…'}
+                        </Dropdown.Item>
+
+                        <Dropdown.Divider />
+                      </>
+                    )}
+
                     {(
                       Object.keys(gm?.c ?? {}) as (
                         | GalleryColorizeBy
@@ -268,11 +290,6 @@ export default function GalleryMenu() {
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                    <Dropdown.Item as="button" eventKey="legend">
-                      <Checkbox value={showLegend} /> <FaInfo />{' '}
-                      {gm?.showLegend}
-                    </Dropdown.Item>
-
                     <Dropdown.Item as="button" eventKey="direction">
                       <Checkbox value={showDirection} /> <FaLocationArrow />{' '}
                       {gm?.showDirection}

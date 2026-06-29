@@ -23,6 +23,8 @@ export type SelectDropdownOption = {
   group?: ReactNode;
   /** Extra content after the label inside the menu item (e.g. a premium badge). */
   extra?: ReactNode;
+  /** Render a divider after this option (e.g. to set off a leading action). */
+  divider?: boolean;
 };
 
 type Props = {
@@ -116,6 +118,10 @@ export function SelectDropdown({
         {opt.extra}
       </Dropdown.Item>,
     );
+
+    if (opt.divider) {
+      items.push(<Dropdown.Divider key={`d${i}`} />);
+    }
   });
 
   return (

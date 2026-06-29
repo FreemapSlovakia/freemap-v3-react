@@ -33,7 +33,6 @@ const en: GalleryMessages = {
   },
   colorizeBy: 'Colorize by',
   showDirection: 'Show shooting direction',
-  showLegend: 'Show colorizing legend',
   c: {
     disable: "Don't colorize",
     mine: 'Differ mine',

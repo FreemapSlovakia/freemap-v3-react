@@ -4,6 +4,11 @@ import {
   elevationChartSetTrackGeojson,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
+import {
+  LEGEND_ITEM,
+  legendToggleOption,
+} from '@shared/colorizers/components/legendToggleOption.js';
 import {
   ColorizingModeSchema,
   colorizers,
@@ -18,10 +23,11 @@ import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useMemo } from 'react';
 import { Button } from 'react-bootstrap';
 import {
+  FaBullseye,
   FaChartArea,
   FaGem,
   FaMobileAlt,
-  FaPaintBrush,
+  FaPalette,
   FaRegEye,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -46,6 +52,10 @@ export function TrackingMenu(): ReactElement {
   const showLine = useAppSelector((state) => state.tracking.showLine);
 
   const colorizeBy = useAppSelector((state) => state.tracking.colorizeBy);
+
+  const colorizeLegend = useAppSelector(
+    (state) => state.tracking.colorizeLegend,
+  );
 
   const tracks = useAppSelector((state) => state.tracking.tracks);
 
@@ -83,129 +93,148 @@ export function TrackingMenu(): ReactElement {
   }, [tracks, selectedToken]);
 
   return (
-    <ToolMenu tool="tracking">
-      <LongPressTooltip
-        breakpoint="sm"
-        label={tm?.trackedDevices.button}
-        kbd="g w"
-      >
-        {({ label, labelClassName, props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() =>
-              dispatch(setActiveModal({ type: 'tracking-watched' }))
-            }
-            {...props}
-          >
-            <FaRegEye />
-            <span className={labelClassName}> {label}</span>
-          </Button>
-        )}
-      </LongPressTooltip>
-
-      <LongPressTooltip breakpoint="sm" label={tm?.devices.button} kbd="g d">
-        {({ label, labelClassName, props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() => dispatch(setActiveModal({ type: 'tracking-my' }))}
-            {...props}
-          >
-            <FaMobileAlt />
-            <span className={labelClassName}> {label}</span>
-          </Button>
-        )}
-      </LongPressTooltip>
-
-      <SelectDropdown
-        className="ms-1"
-        id="tracking_visual"
-        breakpoint="sm"
-        toggleIcon={<FaRegEye />}
-        name={m?.general.visual}
-        value={display}
-        onSelect={(key) => {
-          const [points, line] = (key ?? '11')
-            .split('')
-            .map((n) => n === '1') as [boolean, boolean];
-
-          dispatch(trackingActions.setShowPoints(points));
-
-          dispatch(trackingActions.setShowLine(line));
-        }}
-        options={[
-          { value: '10', label: tm?.visual.points },
-          { value: '01', label: tm?.visual.line },
-          { value: '11', label: tm?.visual['line+points'] },
-        ]}
-      />
-
-      <SelectDropdown
-        className="ms-1"
-        id="tracking_colorize"
-        breakpoint="sm"
-        toggleIcon={<FaPaintBrush />}
-        name={cm?.colorizeBy}
-        value={colorizeBy ?? 'none'}
-        onSelect={(mode) => {
-          dispatch(
-            trackingActions.setColorizeBy(
-              ColorizingModeSchema.nullable().parse(
-                mode === 'none' ? null : mode,
-              ),
-            ),
-          );
-        }}
-        options={[undefined, ...colorizingModes].map((mode) => ({
-          value: mode ?? 'none',
-          label: cm?.mode[mode ?? 'none'],
-          disabled: mode !== undefined && !isModeAvailable(mode),
-          // Launch badge: every mode except the free trio is premium, shown
-          // free for now. Tracked by hand — drop when the launch ends.
-          extra:
-            mode &&
-            mode !== 'elevation' &&
-            mode !== 'speed' &&
-            mode !== 'time' ? (
-              <FaGem
-                className="ms-1 text-info"
-                title={cm?.premiumDuringLaunch}
-              />
-            ) : undefined,
-        }))}
-      />
-
-      {chartTrack && (
-        <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
+    <>
+      <ToolMenu tool="tracking">
+        <LongPressTooltip
+          breakpoint="sm"
+          label={tm?.trackedDevices.button}
+          kbd="g w"
+        >
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"
               variant="secondary"
-              active={elevationChartActive}
-              onClick={() => {
-                if (elevationChartActive) {
-                  dispatch(elevationChartClose());
-                } else {
-                  // Recorded altitude is used as-is (keepRecorded); live points
-                  // stream in, so nothing is fetched or cached.
-                  dispatch(
-                    elevationChartSetTrackGeojson(
-                      trackPointsToFeature(chartTrack.trackPoints),
-                      true,
-                    ),
-                  );
-                }
-              }}
+              onClick={() =>
+                dispatch(setActiveModal({ type: 'tracking-watched' }))
+              }
               {...props}
             >
-              <FaChartArea />
+              <FaRegEye />
               <span className={labelClassName}> {label}</span>
             </Button>
           )}
         </LongPressTooltip>
+
+        <LongPressTooltip breakpoint="sm" label={tm?.devices.button} kbd="g d">
+          {({ label, labelClassName, props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => dispatch(setActiveModal({ type: 'tracking-my' }))}
+              {...props}
+            >
+              <FaMobileAlt />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+
+        <SelectDropdown
+          className="ms-1"
+          id="tracking_visual"
+          breakpoint="sm"
+          toggleIcon={<FaRegEye />}
+          name={m?.general.visual}
+          value={display}
+          onSelect={(key) => {
+            const [points, line] = (key ?? '11')
+              .split('')
+              .map((n) => n === '1') as [boolean, boolean];
+
+            dispatch(trackingActions.setShowPoints(points));
+
+            dispatch(trackingActions.setShowLine(line));
+          }}
+          options={[
+            { value: '10', label: tm?.visual.points },
+            { value: '01', label: tm?.visual.line },
+            { value: '11', label: tm?.visual['line+points'] },
+          ]}
+        />
+
+        <SelectDropdown
+          className="ms-1"
+          id="tracking_colorize"
+          breakpoint="sm"
+          toggleIcon={<FaPalette />}
+          name={cm?.colorizeBy}
+          value={colorizeBy ?? 'none'}
+          onSelect={(mode) => {
+            if (mode === LEGEND_ITEM) {
+              dispatch(trackingActions.setColorizeLegend());
+
+              return;
+            }
+
+            dispatch(
+              trackingActions.setColorizeBy(
+                ColorizingModeSchema.nullable().parse(
+                  mode === 'none' ? null : mode,
+                ),
+              ),
+            );
+          }}
+          options={[
+            ...legendToggleOption(colorizeBy, colorizeLegend, cm?.legend),
+            ...[undefined, ...colorizingModes].map((mode) => ({
+              value: mode ?? 'none',
+              label: cm?.mode[mode ?? 'none'],
+              disabled: mode !== undefined && !isModeAvailable(mode),
+              // Launch badge: every mode except the free trio is premium, shown
+              // free for now. Tracked by hand — drop when the launch ends.
+              extra:
+                mode &&
+                mode !== 'elevation' &&
+                mode !== 'speed' &&
+                mode !== 'time' ? (
+                  <FaGem
+                    className="ms-1 text-info"
+                    title={cm?.premiumDuringLaunch}
+                  />
+                ) : undefined,
+            })),
+          ]}
+        />
+
+        {chartTrack && (
+          <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                active={elevationChartActive}
+                onClick={() => {
+                  if (elevationChartActive) {
+                    dispatch(elevationChartClose());
+                  } else {
+                    // Recorded altitude is used as-is (keepRecorded); live points
+                    // stream in, so nothing is fetched or cached.
+                    dispatch(
+                      elevationChartSetTrackGeojson(
+                        trackPointsToFeature(chartTrack.trackPoints),
+                        true,
+                      ),
+                    );
+                  }
+                }}
+                {...props}
+              >
+                <FaChartArea />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
+      </ToolMenu>
+
+      {colorizeLegend && colorizeBy && (
+        <ColorizeLegend
+          mode={colorizeBy}
+          icon={<FaBullseye />}
+          features={lineFeatures}
+        />
       )}
-    </ToolMenu>
+    </>
   );
 }
 

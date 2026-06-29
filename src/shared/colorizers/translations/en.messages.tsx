@@ -3,6 +3,13 @@ import { ColorizerMessages } from './ColorizerMessages.js';
 const en: ColorizerMessages = {
   colorizeBy: 'Colorize by',
   premiumDuringLaunch: 'Premium — free during launch',
+  legend: 'Legend',
+  compass: {
+    n: 'N',
+    e: 'E',
+    s: 'S',
+    w: 'W',
+  },
   mode: {
     none: 'Inactive',
     elevation: 'Elevation',

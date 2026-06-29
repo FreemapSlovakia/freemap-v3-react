@@ -105,18 +105,21 @@ export const PersistedRoutePlannerSchema = z
     transportType: TransportTypeCompatSchema,
     milestones: z.union([z.literal('abs'), z.literal('rel'), z.literal(false)]),
     colorizeBy: ColorizingModeSchema.nullable(),
+    colorizeLegend: z.boolean(),
   })
   .partial();
 
 export const PersistedTrackViewerSchema = z
   .object({
     colorizeTrackBy: ColorizingModeSchema.nullable(),
+    colorizeLegend: z.boolean(),
   })
   .partial();
 
 export const PersistedTrackingSchema = z
   .object({
     colorizeBy: ColorizingModeSchema.nullable(),
+    colorizeLegend: z.boolean(),
   })
   .partial();
 
@@ -264,19 +267,26 @@ const PERSIST: PersistEntry[] = [
       transportType: r.transportType,
       milestones: r.milestones,
       colorizeBy: r.colorizeBy,
+      colorizeLegend: r.colorizeLegend,
     }),
   }),
   defineEntry({
     key: 'trackViewer',
     schema: PersistedTrackViewerSchema,
     initial: trackViewerInitialState,
-    persist: (t) => ({ colorizeTrackBy: t.colorizeTrackBy }),
+    persist: (t) => ({
+      colorizeTrackBy: t.colorizeTrackBy,
+      colorizeLegend: t.colorizeLegend,
+    }),
   }),
   defineEntry({
     key: 'tracking',
     schema: PersistedTrackingSchema,
     initial: trackingInitialState,
-    persist: (t) => ({ colorizeBy: t.colorizeBy }),
+    persist: (t) => ({
+      colorizeBy: t.colorizeBy,
+      colorizeLegend: t.colorizeLegend,
+    }),
   }),
   defineEntry({
     key: 'mapDetails',

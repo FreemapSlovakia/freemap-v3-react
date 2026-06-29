@@ -29,7 +29,6 @@ export type GalleryMessages = {
   f: Record<GalleryListOrder, string>;
   colorizeBy: string;
   showDirection: string;
-  showLegend: string;
   c: Record<GalleryColorizeBy | 'disable', string>;
   viewer: {
     title: string;

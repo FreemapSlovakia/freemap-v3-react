@@ -57,5 +57,9 @@ export const trackingActions = {
     'TRACKING_SET_COLORIZE_BY',
   ),
 
+  setColorizeLegend: createAction<boolean | undefined>(
+    'TRACKING_SET_COLORIZE_LEGEND',
+  ),
+
   delete: createAction<{ token: string | number }>('TRACKING_DELETE'),
 };

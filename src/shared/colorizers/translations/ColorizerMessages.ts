@@ -1,6 +1,13 @@
 export type ColorizerMessages = {
   colorizeBy: string;
   premiumDuringLaunch: string;
+  legend: string;
+  compass: {
+    n: string;
+    e: string;
+    s: string;
+    w: string;
+  };
   mode: {
     none: string;
     elevation: string;

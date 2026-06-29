@@ -102,6 +102,30 @@ export interface Colorizer {
   // Derived from the elevation coordinate, so it benefits from the same
   // fill/override prompt the elevation chart uses.
   needsElevation?: boolean;
+  // Describes the legend for a per-feature-normalized scalar mode: its unit and
+  // the smoothed per-point series the colorizer maps to color, so the legend can
+  // label real min/max from the same numbers (not raw). Co-located with the
+  // colorizer that owns the unit and source field. Absent for fixed-scale
+  // (steepness, battery, GSM), categorical (heading), and time modes.
+  legend?: {
+    unit: string;
+    values: (
+      feature: Feature<LineString>,
+      options?: ColorizeOptions,
+    ) => number[];
+  };
+}
+
+/**
+ * The smoothed per-point series {@link colorizeByValues} normalizes against. The
+ * legend reads these (not the raw samples) so its labels match the colored line.
+ */
+export function smoothedValues(spec: {
+  coords: number[][];
+  values: number[];
+  smoothSpan?: number;
+}): number[] {
+  return smoothSeries(spec.coords, spec.values, spec.smoothSpan ?? 0);
 }
 
 /**

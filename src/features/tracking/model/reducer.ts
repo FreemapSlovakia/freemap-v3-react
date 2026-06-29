@@ -32,6 +32,8 @@ export interface TrackingState {
   showLine: boolean;
   showPoints: boolean;
   colorizeBy: ColorizingMode | null;
+  // Whether the colorize legend is shown; independent of the other tools.
+  colorizeLegend: boolean;
 }
 
 export const trackingInitialState: TrackingState = {
@@ -45,6 +47,7 @@ export const trackingInitialState: TrackingState = {
   showLine: true,
   showPoints: true,
   colorizeBy: null,
+  colorizeLegend: true,
 };
 
 export const trackingReducer = createReducer(trackingInitialState, (builder) =>
@@ -116,6 +119,10 @@ export const trackingReducer = createReducer(trackingInitialState, (builder) =>
     .addCase(trackingActions.setColorizeBy, (state, { payload }) => ({
       ...state,
       colorizeBy: payload,
+    }))
+    .addCase(trackingActions.setColorizeLegend, (state, { payload }) => ({
+      ...state,
+      colorizeLegend: payload ?? !state.colorizeLegend,
     }))
     .addCase(wsStateChanged, (state, { payload }) =>
       payload.state === 1 ? state : { ...state, tracks: [] },

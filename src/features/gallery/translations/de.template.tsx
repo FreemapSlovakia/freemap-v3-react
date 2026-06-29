@@ -167,7 +167,6 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
   noPicturesFound: 'An diesem Ort wurden keine Fotos gefunden.',
   linkToWww: 'Foto auf www.freemap.sk',
   linkToImage: 'Bilddatei des Fotos',
-  showLegend: 'Farblegende anzeigen',
 };
 
 export default de;

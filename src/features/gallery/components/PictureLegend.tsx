@@ -2,7 +2,43 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { FaCamera, FaPalette } from 'react-icons/fa';
+import type { GalleryColorizeBy } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
+
+/**
+ * The CSS gradient for a colorize mode's legend, or undefined for categorical
+ * modes (mine/author/premium) that have no gradient scale. The single source of
+ * truth for which modes draw a legend — see {@link pictureLegendApplies}.
+ */
+export function pictureGradient(
+  colorizeBy: GalleryColorizeBy | null | undefined,
+): string | undefined {
+  switch (colorizeBy) {
+    case 'rating':
+      return 'linear-gradient(to right in hsl, hsl(60 100% 1%), hsl(60 100% 99%))';
+    case 'takenAt':
+    case 'createdAt':
+      return 'linear-gradient(to right in hsl, hsl(60 100% 99%), hsl(60 100% 1%))';
+    case 'season':
+      return `linear-gradient(
+              to right in lab,
+              lab(70 -5 -52) 0%,  /* winter */
+              lab(70 -62 42) 25%, /* spring */
+              lab(90 -4 74) 50%,  /* summer */
+              lab(70 48 43) 75%,  /* fall */
+              lab(70 -5 -52) 100% /* wrap back to winter */
+            )`;
+    default:
+      return undefined;
+  }
+}
+
+/** Whether a colorize mode draws a gradient legend (vs. a categorical color). */
+export function pictureLegendApplies(
+  colorizeBy: GalleryColorizeBy | null | undefined,
+): boolean {
+  return pictureGradient(colorizeBy) !== undefined;
+}
 
 export function PictureLegend() {
   const colorizeBy = useAppSelector(
@@ -13,21 +49,7 @@ export function PictureLegend() {
 
   const byDate = colorizeBy === 'takenAt' || colorizeBy === 'createdAt';
 
-  const background =
-    colorizeBy === 'rating'
-      ? 'linear-gradient(to right in hsl, hsl(60 100% 1%), hsl(60 100% 99%))'
-      : byDate
-        ? 'linear-gradient(to right in hsl, hsl(60 100% 99%), hsl(60 100% 1%))'
-        : colorizeBy === 'season'
-          ? `linear-gradient(
-              to right in lab,
-              lab(70 -5 -52) 0%,  /* winter */
-              lab(70 -62 42) 25%, /* spring */
-              lab(90 -4 74) 50%,  /* summer */
-              lab(70 48 43) 75%,  /* fall */
-              lab(70 -5 -52) 100% /* wrap back to winter */
-            )`
-          : undefined;
+  const background = pictureGradient(colorizeBy || undefined);
 
   if (!background) {
     return null;
