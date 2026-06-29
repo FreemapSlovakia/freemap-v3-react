@@ -15,6 +15,13 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Limite distanza',
   },
   milestones: 'Marcatori',
+  optimize: {
+    label: "Ottimizza l'ordine",
+    fixedStart: 'Mantieni la partenza',
+    fixedStartEnd: 'Mantieni partenza e arrivo',
+    roundtrip: 'Anello (ritorno alla partenza)',
+    free: 'Libero (riordina tutto)',
+  },
   start: 'Inizio',
   finish: 'Fine',
   swap: 'Inverti inizio e fine',

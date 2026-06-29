@@ -15,6 +15,13 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Limit vzdálenosti',
   },
   milestones: 'Kilometrovník',
+  optimize: {
+    label: 'Optimalizovat pořadí',
+    fixedStart: 'Ponechat start',
+    fixedStartEnd: 'Ponechat start a cíl',
+    roundtrip: 'Okruh (návrat na start)',
+    free: 'Volně (přeuspořádat vše)',
+  },
   start: 'Start',
   finish: 'Cíl',
   swap: 'Prohodit start a cíl',

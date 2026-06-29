@@ -30,6 +30,7 @@ import {
   routePlannerSetParams,
   routePlannerSetPickMode,
   routePlannerSetPoint,
+  routePlannerSetPoints,
   routePlannerSetRenderGeojson,
   routePlannerSetResult,
   routePlannerSetRoundtripParams,
@@ -291,6 +292,9 @@ export const routePlannerReducer = createReducer(
       .addCase(routePlannerSetPoint, (state, action) => {
         state.points[action.payload.position] = action.payload.point;
       })
+      .addCase(routePlannerSetPoints, (state, { payload }) => {
+        state.points = payload;
+      })
       .addCase(routePlannerRemovePoint, (state, action) => {
         state.points.splice(action.payload, 1);
       })
@@ -404,6 +408,32 @@ export const routePlannerReducer = createReducer(
         }),
       ),
 );
+
+/**
+ * Whether waypoint-order optimization is offered: GraphHopper point-to-point
+ * routing with at least one movable midpoint. Shared by the menu (to show the
+ * section) and the processor (to guard direct dispatches).
+ */
+export function routePlannerOptimizeApplicable(
+  state: RoutePlannerState,
+): boolean {
+  return (
+    transportTypeDefs[state.transportType].api === 'gh' &&
+    state.mode === 'route' &&
+    state.points.length >= 3
+  );
+}
+
+/**
+ * Whether any waypoint overrides the transport (a multimodal route). Reordering
+ * under a single profile would scramble per-leg transports, so optimization is
+ * blocked for these.
+ */
+export function routePlannerHasTransportOverride(
+  state: RoutePlannerState,
+): boolean {
+  return state.points.some((point) => point.transport != null);
+}
 
 export function getStart(state: RoutePlannerState) {
   return state.finishOnly ? null : state.points[0];

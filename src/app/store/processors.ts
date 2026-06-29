@@ -59,6 +59,7 @@ import { osmLoadWayProcessor } from '@features/osm/model/processors/osmLoadWayPr
 import { purchaseProcessor } from '@features/purchases/model/processors/purchaseProcessor.js';
 import { routePlannerColorizeProcessor } from '@features/routePlanner/model/processors/colorizeProcessor.js';
 import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/processors/findRouteProcessor.js';
+import { routePlannerOptimizeOrderProcessor } from '@features/routePlanner/model/processors/optimizeOrderProcessor.js';
 import { routePlannerRefocusMapProcessor } from '@features/routePlanner/model/processors/refocusMapProcessor.js';
 import { routePlannerSetFromCurrentPositionProcessor } from '@features/routePlanner/model/processors/setFromCurrentPositionProcessor.js';
 import { routePlannerToggleElevationChartProcessor } from '@features/routePlanner/model/processors/toggleElevationChartProcessor.js';
@@ -143,6 +144,7 @@ export const processors = [
   trackViewerRefreshElevationChartProcessor,
   trackViewerDensifyProcessor,
   routePlannerFindRouteProcessor,
+  routePlannerOptimizeOrderProcessor,
   galleryDeletePictureProcessor,
   galleryFetchUsersProcessor,
   galleryRequestImageProcessor,

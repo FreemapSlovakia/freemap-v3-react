@@ -15,6 +15,13 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Távolságkorlát',
   },
   milestones: 'Távolságszelvények',
+  optimize: {
+    label: 'Sorrend optimalizálása',
+    fixedStart: 'Kiindulás rögzítése',
+    fixedStartEnd: 'Kiindulás és cél rögzítése',
+    roundtrip: 'Körút (vissza a kiinduláshoz)',
+    free: 'Szabad (teljes átrendezés)',
+  },
   start: 'Kiindulás',
   finish: 'Úti cél',
   swap: 'Kiindulási pont és cél felcserélése',

@@ -33,6 +33,11 @@ import {
   StepMode,
   Waypoint,
 } from '../actions.js';
+import {
+  GraphhopperPathCostSchema,
+  ghSnapPreventions,
+  graphhopperRouteUrl,
+} from '../graphhopperRoute.js';
 import { updateRouteTypes } from './findRouteProcessor.js';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures];
@@ -84,8 +89,7 @@ const GraphhopperDetailSegmentSchema = z.tuple([
 ]);
 
 const GraphhopperPathSchema = z.object({
-  distance: z.number(),
-  time: z.number(),
+  ...GraphhopperPathCostSchema.shape,
   points: GeoJSONLineStringSchema,
   instructions: z.array(GraphhopperInstructionSchema),
   details: z.record(z.string(), z.array(GraphhopperDetailSegmentSchema)),
@@ -488,9 +492,9 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
       const response = await httpRequest({
         getState,
         method: 'POST',
-        url: process.env['GRAPHHOPPER_URL'] + '/route',
+        url: graphhopperRouteUrl(),
         data: {
-          snap_preventions: ['trunk', 'motorway', 'tunnel', 'ferry'],
+          snap_preventions: ghSnapPreventions,
           elevation: true,
           algorithm:
             mode === 'roundtrip'

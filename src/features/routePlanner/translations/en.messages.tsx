@@ -17,6 +17,13 @@ const en: RoutePlannerMessages = {
     distanceLimit: 'Distance limit',
   },
   milestones: 'Milestones',
+  optimize: {
+    label: 'Optimize order',
+    fixedStart: 'Keep start fixed',
+    fixedStartEnd: 'Keep start and finish fixed',
+    roundtrip: 'Round trip (return to start)',
+    free: 'Free (reorder all)',
+  },
   start: 'Start',
   finish: 'Finish',
   stop: 'Stop',

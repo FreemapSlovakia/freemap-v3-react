@@ -4,6 +4,8 @@ import {
   setTool,
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
 import {
@@ -57,6 +59,7 @@ import {
   FaPalette,
   FaPencilAlt,
   FaPlay,
+  FaRandom,
   FaRegCheckSquare,
   FaRegSquare,
   FaRoute,
@@ -69,6 +72,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import {
   RoutingMode,
   routePlannerColorizeBy,
+  routePlannerOptimizeOrder,
   routePlannerSetColorizeLegend,
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
@@ -82,7 +86,12 @@ import {
   routePlannerToggleElevationChart,
   routePlannerToggleMilestones,
 } from '../model/actions.js';
-import { getFinish, getStart } from '../model/reducer.js';
+import {
+  getFinish,
+  getStart,
+  routePlannerHasTransportOverride,
+  routePlannerOptimizeApplicable,
+} from '../model/reducer.js';
 import { loadRoutePlannerMessages } from '../translations/loadRoutePlannerMessages.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
@@ -480,6 +489,21 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.points.length > 1,
   );
 
+  // Truthy (a purchase callback) only for non-premium users; optimization is a
+  // premium feature, so its menu items stay disabled for them while the gem
+  // remains clickable to start the purchase flow.
+  const becomePremium = useBecomePremium();
+
+  // Optimization eligibility, shared with the processor (see reducer.ts).
+  const optimizeApplicable = useAppSelector((state) =>
+    routePlannerOptimizeApplicable(state.routePlanner),
+  );
+
+  // Multimodal routes can't be reordered under a single profile.
+  const optimizeBlocked = useAppSelector((state) =>
+    routePlannerHasTransportOverride(state.routePlanner),
+  );
+
   const startPoint = useAppSelector(
     (state) => getStart(state.routePlanner) ?? null,
   );
@@ -517,6 +541,26 @@ export default function RoutePlannerMenu(): ReactElement {
 
       case 'toggle-milestones-%':
         dispatch(routePlannerToggleMilestones({ type: 'rel', toggle: true }));
+
+        break;
+
+      case 'optimize-fixed-start':
+        dispatch(routePlannerOptimizeOrder('fixed-start'));
+
+        break;
+
+      case 'optimize-fixed-start-end':
+        dispatch(routePlannerOptimizeOrder('fixed-start-end'));
+
+        break;
+
+      case 'optimize-roundtrip':
+        dispatch(routePlannerOptimizeOrder('roundtrip'));
+
+        break;
+
+      case 'optimize-free':
+        dispatch(routePlannerOptimizeOrder('free'));
 
         break;
     }
@@ -897,6 +941,36 @@ export default function RoutePlannerMenu(): ReactElement {
                 {milestones === 'rel' ? <FaRegCheckSquare /> : <FaRegSquare />}
                 &nbsp;{rpm?.milestones ?? '…'} (%)
               </Dropdown.Item>
+
+              {optimizeApplicable && (
+                <>
+                  <Dropdown.Divider />
+
+                  <Dropdown.Header>
+                    <FaRandom />
+                    &nbsp;{rpm?.optimize.label ?? '…'}
+                    &nbsp;
+                    <PremiumGem nested />
+                  </Dropdown.Header>
+
+                  {(
+                    [
+                      ['optimize-fixed-start', rpm?.optimize.fixedStart],
+                      ['optimize-fixed-start-end', rpm?.optimize.fixedStartEnd],
+                      ['optimize-roundtrip', rpm?.optimize.roundtrip],
+                      ['optimize-free', rpm?.optimize.free],
+                    ] as const
+                  ).map(([eventKey, label]) => (
+                    <Dropdown.Item
+                      key={eventKey}
+                      eventKey={eventKey}
+                      disabled={optimizeBlocked || Boolean(becomePremium)}
+                    >
+                      {label ?? '…'}
+                    </Dropdown.Item>
+                  ))}
+                </>
+              )}
             </Dropdown.Menu>
           </Dropdown>
         )}

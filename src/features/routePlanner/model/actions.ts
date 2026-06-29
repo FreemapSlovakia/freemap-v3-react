@@ -242,3 +242,26 @@ export const routePlannerSetIsochroneParams = createAction<
 >('ROUTE_PLANNER_SET_ISOCHRONE_PARAMS');
 
 export const routePlannerDelete = createAction('ROUTE_PLANNER_DELETE');
+
+export const OptimizeVariantSchema = z.enum([
+  'fixed-start',
+  'fixed-start-end',
+  'roundtrip',
+  'free',
+]);
+
+export type OptimizeVariant = z.infer<typeof OptimizeVariantSchema>;
+
+/**
+ * Reorders the waypoints to minimize total travel cost (client-side TSP over a
+ * GraphHopper cost matrix) and re-routes through the new order. The `variant`
+ * picks which endpoints stay locked. GraphHopper `route` mode only.
+ */
+export const routePlannerOptimizeOrder = createAction<OptimizeVariant>(
+  'ROUTE_PLANNER_OPTIMIZE_ORDER',
+);
+
+/** Replaces the whole waypoint list; used to apply an optimized order. */
+export const routePlannerSetPoints = createAction<RoutePoint[]>(
+  'ROUTE_PLANNER_SET_POINTS',
+);

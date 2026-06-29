@@ -39,6 +39,13 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     isochrone: 'Isochronen',
   },
   milestones: 'Kilometermarkierungen',
+  optimize: {
+    label: 'Reihenfolge optimieren',
+    fixedStart: 'Start beibehalten',
+    fixedStartEnd: 'Start und Ziel beibehalten',
+    roundtrip: 'Rundreise (zurück zum Start)',
+    free: 'Frei (alles neu ordnen)',
+  },
   start: 'Start',
   finish: 'Ziel',
   swap: 'Start und Ziel tauschen',

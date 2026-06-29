@@ -18,6 +18,13 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Limit vzdialenosti',
   },
   milestones: 'Kilometrovník',
+  optimize: {
+    label: 'Optimalizovať poradie',
+    fixedStart: 'Ponechať štart',
+    fixedStartEnd: 'Ponechať štart a cieľ',
+    roundtrip: 'Okruh (návrat na štart)',
+    free: 'Voľne (preusporiadať všetko)',
+  },
   start: 'Štart',
   finish: 'Cieľ',
   stop: 'Zasávka',

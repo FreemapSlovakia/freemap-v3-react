@@ -43,6 +43,13 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     setHome: 'Ustaw',
   },
   milestones: 'Słupki kilometrowe',
+  optimize: {
+    label: 'Optymalizuj kolejność',
+    fixedStart: 'Zachowaj start',
+    fixedStartEnd: 'Zachowaj start i metę',
+    roundtrip: 'Pętla (powrót do startu)',
+    free: 'Dowolnie (zmień całą kolejność)',
+  },
   start: 'Start',
   finish: 'Meta',
   swap: 'Zamień start i metę',
