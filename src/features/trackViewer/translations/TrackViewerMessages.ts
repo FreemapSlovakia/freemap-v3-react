@@ -9,6 +9,9 @@ export type TrackViewerMessages = {
   moreInfo: string;
   saveAsMap: string;
   loginToSaveMap: string;
+  style: {
+    title: string;
+  };
   details: {
     startTime: string;
     finishTime: string;

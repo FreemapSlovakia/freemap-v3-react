@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
 import type { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
@@ -199,10 +200,11 @@ async function bakeMarkerProps(
 // <sym> styling in its properties) into export features: points become baked
 // markers, lines/polygons become simplestyle. Mirrors how `TrackViewerResult`
 // renders the same features in-app, so the export matches the on-screen
-// preview. Unstyled features fall back to the supplied drawing defaults.
+// preview. Unstyled features fall back to the supplied default style (the
+// track-viewer or search result style, matching the on-map rendering).
 async function convertForeignFeatures(
   features: Feature[],
-  defaults: { color: string; width: number; fillColor?: string },
+  defaults: DrawingStyle,
   mode: PointRenderMode,
   caches: Caches,
 ): Promise<Feature[]> {
@@ -224,7 +226,7 @@ async function convertForeignFeatures(
 
       const markerProps = await bakeMarkerProps(
         {
-          markerType: style.markerType,
+          markerType: style.markerType ?? defaults.markerType,
           color: style.color ?? defaults.color,
           icon: style.icon,
           label: name,
@@ -279,9 +281,9 @@ async function convertForeignFeatures(
         fill: fill?.color,
         'fill-opacity': fill && fill.opacity < 1 ? fill.opacity : undefined,
         'stroke-width': style.width ?? defaults.width,
-        'stroke-linejoin': style.lineJoin,
-        'stroke-linecap': style.lineCap,
-        'stroke-dasharray': style.dashArray,
+        'stroke-linejoin': style.lineJoin ?? defaults.lineJoin,
+        'stroke-linecap': style.lineCap ?? defaults.lineCap,
+        'stroke-dasharray': style.dashArray ?? defaults.dashArray,
       },
       geometry: geom,
     });
@@ -476,11 +478,13 @@ export async function buildExportFeatureCollection({
     drawingLines,
     drawingPoints,
     objects,
+    objectsSettings,
     routePlanner,
     tracking,
     trackViewer,
+    trackViewerSettings,
     search,
-    drawingSettings,
+    searchSettings,
   } = getState();
 
   const caches: Caches = {
@@ -489,12 +493,6 @@ export async function buildExportFeatureCollection({
   };
 
   const markerMode = Boolean(pointMode.svgMarker || pointMode.pngMarker);
-
-  const foreignDefaults = {
-    color: drawingSettings.style.color,
-    width: drawingSettings.style.width,
-    fillColor: drawingSettings.style.fillColor,
-  };
 
   const features: Feature[] = [];
 
@@ -587,8 +585,8 @@ export async function buildExportFeatureCollection({
         props,
         await bakeMarkerProps(
           {
-            markerType: objects.selectedIcon,
-            color: COLORS.normal,
+            markerType: objectsSettings.selectedIcon,
+            color: objectsSettings.color,
             iconUrl: osmTagIconUrl(tags),
           },
           pointMode,
@@ -621,7 +619,7 @@ export async function buildExportFeatureCollection({
       features.push(
         ...(await convertForeignFeatures(
           imported,
-          foreignDefaults,
+          trackViewerSettings.style,
           pointMode,
           caches,
         )),
@@ -645,7 +643,7 @@ export async function buildExportFeatureCollection({
       features.push(
         ...(await convertForeignFeatures(
           searchFeatures,
-          foreignDefaults,
+          searchSettings.resultStyle,
           pointMode,
           caches,
         )),

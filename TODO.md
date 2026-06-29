@@ -22,6 +22,25 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
 
 ## Softer / design opinions
 
+- [ ] **Move persisted prefs out of transient slices into `*Settings` slices.**
+      Several persisted user prefs still live in feature slices that reset on
+      `clearMapFeatures`, so the reset clobbers them and `statePersistingMiddleware`
+      then writes the default back — the saved pref is **silently lost on "clear
+      map features"**. Confirmed cases: `routePlanner.colorizeBy`/`colorizeLegend`,
+      `trackViewer.colorizeTrackBy`/`colorizeLegend`,
+      `tracking.colorizeBy`/`colorizeLegend`, and `gallery.recentTags` are all
+      reset on clear. The others (`routePlanner.transportType`/`milestones`/
+      `preventHint`, `gallery.showDirection`/`showLegend`/`premium`) survive only
+      via hand-maintained `{ ...initialState, pref: state.pref }` preserve-lists
+      repeated across ~4 routePlanner handlers and the gallery handler — the
+      fragile pattern that breaks the moment a new reset path forgets one. Fix:
+      follow the dedicated-settings-slice pattern (see AGENTS.md → "Settings
+      slices") already used by
+      `drawingSettings`/`objectsSettings`/`searchSettings`/`trackViewerSettings` —
+      move these prefs into per-feature `*Settings` slices (fold trackViewer's
+      colorize into the existing `trackViewerSettings`), then delete every
+      preserve-list. `mapDetails.excludeSources` is already safe (no reset
+      handler).
 - [ ] **Derive `Messages` from `en.tsx`.** `src/translations/messagesInterface.ts`
       is hand-maintained against the master and can drift. Explore deriving the
       type from `typeof en` (or a codegen step) so `en.tsx` is the single source.

@@ -196,7 +196,7 @@ Once a route is found the toolbar also offers:
 
 Toggles the objects toolbar.
 The toolbar contains a combo box to search for various POIs by type. Multiple types can be activated and will be visible interactively as markers with icons on the map.
-The marker icon can be globally changed (pin/ring/square).
+A **Marker style** button opens a modal to set the marker shape (pin/ring/square) and color, applied to all displayed objects. These can also be preset via the read-only `/#objects-style=` URL param (see `doc/url-params.md`).
 
 ### File import
 
@@ -213,6 +213,7 @@ Toggles the file import toolbar. **Upload** opens the file import modal (URL pat
 - **More** (⋮ menu) — gathers the remaining actions:
   - **Update elevation** — refill/override elevation from the terrain model (shown only while the track still has recorded elevation to replace); premium users get the high-resolution DEM where available
   - **Save to my maps** — save the loaded track into a new personal map (requires login; prompts to log in first otherwise). Hidden when a map is already active, since the active-map toolbar's own **Save** persists the track with the map. Older `#track-uid=…` share links still load
+  - **Default style** — opens a modal to set the color, width, fill, dash, line cap/join and waypoint shape applied to imported features that carry no style of their own (independent of the drawing tool's defaults). Can also be preset via the read-only `/#track-style=` URL param (see `doc/url-params.md`)
   - **Convert to drawing** — turn the imported track into editable drawing features (a recorded track is replaced and warns that its per-point data — elevation, heart rate, speed, time — will be dropped)
 - delete and close buttons
 
@@ -229,6 +230,8 @@ Toggles the map details toolbar. Clicking a location queries information about i
 - **Containing features** — administrative and geographic areas containing the point (cadastral community, district, region, mountain range, country, etc.)
 
 Selecting a feature opens a detail popup with its OSM tags, a link to open it at OpenStreetMap.org (and its history), an "Edit in JOSM" button, and the data source.
+
+The geometry displayed for search and map-details results shares one style (color, fill, width, dash, line cap/join, marker shape — the same set as the track-viewer default style), editable in a collapsible panel of the **Map preferences** modal (Main menu > Map layers/settings > Preferences). It can also be preset via the read-only `/#search-style=` URL param, and `window.fmHeadless.searchResultStyle` overrides it in headless image rendering (see `doc/url-params.md`).
 
 ### Map changes
 

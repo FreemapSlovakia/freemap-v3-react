@@ -5,6 +5,10 @@ import { ObjectDetails } from '../components/ObjectDetails.js';
 import { ObjectsMessages } from './ObjectsMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
+  style: {
+    button: 'Styl značky',
+    title: 'Styl značky objektu',
+  },
   source: 'Zdroj',
   detail: ({ result }) => (
     <ObjectDetails

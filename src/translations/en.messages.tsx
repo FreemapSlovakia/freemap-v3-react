@@ -333,6 +333,7 @@ const messages: Messages = {
     featureScale: 'Feature size',
     featureScaleHelp:
       'Enlarges rendered labels and lines. Has no effect on satellite, shading, WMS, or vector (MapLibre) layers.',
+    searchResultStyle: 'Search result style',
     loadWmsLayers: 'Load layers',
     offlineMaps: 'Offline maps',
     legacy: 'legacy',

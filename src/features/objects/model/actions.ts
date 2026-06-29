@@ -19,3 +19,5 @@ export const objectsSetResult =
   createAction<ObjectsResult[]>('OBJECTS_SET_RESULT');
 
 export const setSelectedIcon = createAction<MarkerType>('SET_SELECTED_ICON');
+
+export const setSelectedColor = createAction<string>('SET_SELECTED_COLOR');

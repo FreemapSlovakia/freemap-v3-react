@@ -24,6 +24,22 @@ export const DrawingStyleSchema = z.object({
 
 export type DrawingStyle = z.infer<typeof DrawingStyleSchema>;
 
+/**
+ * A default `DrawingStyle` from a base stroke color and width. The fill is the
+ * same color at ~20% alpha. Shared by every default-style initial state.
+ */
+export function makeDrawingStyle(color: string, width: number): DrawingStyle {
+  return {
+    color,
+    fillColor: color + '33',
+    width,
+    markerType: 'pin',
+    dashArray: [],
+    lineCap: 'round',
+    lineJoin: 'round',
+  };
+}
+
 export const DrawingSettingsSchema = z.object({
   style: DrawingStyleSchema,
   recentColors: z.array(z.string()),
@@ -82,15 +98,7 @@ export const DrawingSettingsCompatSchema = z.preprocess(
 );
 
 export const drawingSettingsInitialState: DrawingSettings = {
-  style: {
-    color: '#0000ff',
-    fillColor: '#0000ff33',
-    width: 4,
-    markerType: 'pin',
-    dashArray: [],
-    lineCap: 'round',
-    lineJoin: 'round',
-  },
+  style: makeDrawingStyle('#0000ff', 4),
   recentColors: [],
 };
 

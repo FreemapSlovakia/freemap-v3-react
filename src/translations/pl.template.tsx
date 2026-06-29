@@ -239,6 +239,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapLayers: {
+    searchResultStyle: 'Styl wyniku wyszukiwania',
     letters: {
       S: 'Lotnicza',
       Z: 'Lotnicza',

@@ -314,6 +314,18 @@ const predefinedDrawingPropertiesModalFactory = () =>
     './PredefinedDrawingPropertiesModal.js'
   );
 
+const trackViewerStyleModalFactory = () =>
+  import(
+    /* webpackChunkName: "track-viewer-style-modal" */
+    '@features/trackViewer/components/TrackViewerStyleModal.js'
+  );
+
+const objectsStyleModalFactory = () =>
+  import(
+    /* webpackChunkName: "objects-style-modal" */
+    '@features/objects/components/ObjectsStyleModal.js'
+  );
+
 export function Main(): ReactElement {
   const m = useMessages();
 
@@ -885,6 +897,16 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'drawing-properties'}
         factory={predefinedDrawingPropertiesModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'track-viewer-style'}
+        factory={trackViewerStyleModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'objects-style'}
+        factory={objectsStyleModalFactory}
       />
 
       <GalleryModals />

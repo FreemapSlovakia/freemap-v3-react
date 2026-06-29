@@ -1,7 +1,9 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import { useDrawingStyleEditor } from '@features/drawing/components/useDrawingStyleEditor.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
+import { searchSetResultStyle } from '@features/search/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
@@ -12,6 +14,7 @@ import {
   useState,
 } from 'react';
 import {
+  Accordion,
   Button,
   Form,
   Modal,
@@ -46,6 +49,14 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
   const [featureScale, setFeatureScale] = useState(initialFeatureScale);
 
+  const initialSearchStyle = useAppSelector(
+    (state) => state.searchSettings.resultStyle,
+  );
+
+  const searchEditor = useDrawingStyleEditor(initialSearchStyle, {
+    widthStep: 0.1,
+  });
+
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
   useDocumentTitle(show ? m?.mapLayers.preferences : undefined);
@@ -54,50 +65,44 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const handleSubmit = useCallback(
-    (e: SubmitEvent) => {
-      e.preventDefault();
+  // Not memoized: `searchEditor` produces a fresh `style`/`dirty` each render,
+  // so a useCallback here would rebuild every render anyway.
+  const handleSubmit = (e: SubmitEvent) => {
+    e.preventDefault();
 
-      const settings: Parameters<typeof saveSettings>[0]['settings'] = {};
+    if (searchEditor.dirty) {
+      dispatch(searchSetResultStyle(searchEditor.style));
+    }
 
-      if (maxZoom !== initialMaxZoom) {
-        const maxZoomValue = parseInt(maxZoom, 10);
+    const settings: Parameters<typeof saveSettings>[0]['settings'] = {};
 
-        settings.maxZoom = isNaN(maxZoomValue) ? 20 : maxZoomValue;
-      }
+    if (maxZoom !== initialMaxZoom) {
+      const maxZoomValue = parseInt(maxZoom, 10);
 
-      if (
-        resolutionScale !== initialResolutionScale ||
-        featureScale !== initialFeatureScale
-      ) {
-        dispatch(
-          mapSetLocalPrefs({
-            resolutionScale:
-              resolutionScale === '' ? null : Number(resolutionScale),
-            featureScale: Number(featureScale),
-          }),
-        );
-      }
+      settings.maxZoom = isNaN(maxZoomValue) ? 20 : maxZoomValue;
+    }
 
-      if (Object.keys(settings).length > 0) {
-        // saveSettingsProcessor closes the modal on success;
-        // dispatching setActiveModal(null) here would cancel its PATCH.
-        dispatch(saveSettings({ settings }));
-      } else {
-        close();
-      }
-    },
-    [
-      close,
-      dispatch,
-      featureScale,
-      initialFeatureScale,
-      initialMaxZoom,
-      initialResolutionScale,
-      maxZoom,
-      resolutionScale,
-    ],
-  );
+    if (
+      resolutionScale !== initialResolutionScale ||
+      featureScale !== initialFeatureScale
+    ) {
+      dispatch(
+        mapSetLocalPrefs({
+          resolutionScale:
+            resolutionScale === '' ? null : Number(resolutionScale),
+          featureScale: Number(featureScale),
+        }),
+      );
+    }
+
+    if (Object.keys(settings).length > 0) {
+      // saveSettingsProcessor closes the modal on success;
+      // dispatching setActiveModal(null) here would cancel its PATCH.
+      dispatch(saveSettings({ settings }));
+    } else {
+      close();
+    }
+  };
 
   const handleMaxZoomChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +114,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   const dirty =
     maxZoom !== initialMaxZoom ||
     resolutionScale !== initialResolutionScale ||
-    featureScale !== initialFeatureScale;
+    featureScale !== initialFeatureScale ||
+    searchEditor.dirty;
 
   return (
     <Modal
@@ -117,6 +123,9 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
+      // The color picker's popover is portalled to <body>; disable enforceFocus
+      // so its inputs stay editable (see PredefinedDrawingPropertiesModal).
+      enforceFocus={false}
     >
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
@@ -198,13 +207,23 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               {m?.mapLayers.featureScaleHelp}
             </Form.Text>
           </Form.Group>
+
+          <Accordion className="mt-3">
+            <Accordion.Item eventKey="searchResultStyle">
+              <Accordion.Header>
+                {m?.mapLayers.searchResultStyle}
+              </Accordion.Header>
+
+              <Accordion.Body>{searchEditor.element}</Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
         </Modal.Body>
 
         <Modal.Footer>
           <Button
             variant="primary"
             type="submit"
-            disabled={!dirty || invalidMaxZoom}
+            disabled={!dirty || invalidMaxZoom || searchEditor.invalid}
           >
             <FaCheck /> {m?.general.save}
           </Button>

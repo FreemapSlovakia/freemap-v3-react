@@ -35,7 +35,7 @@ function makeState(): RootState {
       },
       recentColors: ['#ff0000'],
     },
-    objects: { selectedIcon: 'pin' },
+    objectsSettings: { selectedIcon: 'pin', color: '#d00000' },
     routePlanner: {
       preventHint: true,
       transportType: 'hiking',
@@ -77,7 +77,29 @@ function makeState(): RootState {
       premium: true,
     },
     mapDetails: { excludeSources: [] },
+    searchSettings: {
+      resultStyle: {
+        color: '#3388ff',
+        fillColor: '#3388ff33',
+        width: 5,
+        markerType: 'pin',
+        dashArray: [],
+        lineCap: 'round',
+        lineJoin: 'round',
+      },
+    },
     trackViewer: { colorizeTrackBy: 'heartRate' },
+    trackViewerSettings: {
+      style: {
+        color: '#0000ff',
+        fillColor: '#0000ff33',
+        width: 4,
+        markerType: 'pin',
+        dashArray: [],
+        lineCap: 'round',
+        lineJoin: 'round',
+      },
+    },
     tracking: { colorizeBy: 'speed' },
   } as unknown as RootState;
 }
@@ -130,7 +152,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         },
         recentColors: ['#ff0000'],
       },
-      objects: { selectedIcon: 'pin' },
+      objectsSettings: { selectedIcon: 'pin', color: '#d00000' },
       routePlanner: {
         preventHint: true,
         transportType: 'hiking',
@@ -173,7 +195,29 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         premium: true,
       },
       mapDetails: { excludeSources: [] },
+      searchSettings: {
+        resultStyle: {
+          color: '#3388ff',
+          fillColor: '#3388ff33',
+          width: 5,
+          markerType: 'pin',
+          dashArray: [],
+          lineCap: 'round',
+          lineJoin: 'round',
+        },
+      },
       trackViewer: { colorizeTrackBy: 'heartRate' },
+      trackViewerSettings: {
+        style: {
+          color: '#0000ff',
+          fillColor: '#0000ff33',
+          width: 4,
+          markerType: 'pin',
+          dashArray: [],
+          lineCap: 'round',
+          lineJoin: 'round',
+        },
+      },
       tracking: { colorizeBy: 'speed' },
     });
   });
@@ -197,9 +241,11 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         'main',
         'map',
         'mapDetails',
-        'objects',
+        'objectsSettings',
         'routePlanner',
+        'searchSettings',
         'trackViewer',
+        'trackViewerSettings',
         'tracking',
       ].sort(),
     );
@@ -258,7 +304,8 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.main?.hiddenInfoBars).toEqual({ foo: 1 });
     expect(initial.homeLocation?.homeLocation).toEqual({ lat: 1, lon: 2 });
     expect(initial.cookieConsent?.cookieConsentResult).toBe(true);
-    expect(initial.objects?.selectedIcon).toBe('pin');
+    expect(initial.objectsSettings?.selectedIcon).toBe('pin');
+    expect(initial.objectsSettings?.color).toBe('#d00000');
     expect(initial.routePlanner?.transportType).toBe('hiking');
     expect(initial.map?.layers).toEqual(['X']);
     expect(initial.map?.zoom).toBe(8);

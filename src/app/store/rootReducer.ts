@@ -16,12 +16,15 @@ import { mapAreaReducer } from '@features/mapArea/model/reducer.js';
 import { mapDetailsReducer } from '@features/mapDetails/model/reducer.js';
 import { mapsReducer } from '@features/myMaps/model/reducer.js';
 import { objectsReducer } from '@features/objects/model/reducer.js';
+import { objectsSettingsReducer } from '@features/objects/model/settingsReducer.js';
 import { progressReducer } from '@features/progress/model/reducer.js';
 import { routePlannerReducer } from '@features/routePlanner/model/reducer.js';
 import { searchReducer } from '@features/search/model/reducer.js';
+import { searchSettingsReducer } from '@features/search/model/settingsReducer.js';
 import { toastsReducer } from '@features/toasts/model/reducer.js';
 import { trackingReducer } from '@features/tracking/model/reducer.js';
 import { trackViewerReducer } from '@features/trackViewer/model/reducer.js';
+import { trackViewerSettingsReducer } from '@features/trackViewer/model/settingsReducer.js';
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
 import { wikimediaCommonsReducer } from '@features/wikimediaCommons/model/reducer.js';
@@ -48,12 +51,15 @@ export const reducers = {
   mapArea: mapAreaReducer,
   map: mapReducer,
   objects: objectsReducer,
+  objectsSettings: objectsSettingsReducer,
   progress: progressReducer,
   routePlanner: routePlannerReducer,
   search: searchReducer,
+  searchSettings: searchSettingsReducer,
   toasts: toastsReducer,
   tracking: trackingReducer,
   trackViewer: trackViewerReducer,
+  trackViewerSettings: trackViewerSettingsReducer,
   websocket: websocketReducer,
   myMaps: mapsReducer,
   wiki: wikiReducer,

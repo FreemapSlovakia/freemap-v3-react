@@ -250,6 +250,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapLayers: {
+    searchResultStyle: 'Keresési találat stílusa',
     layers: 'Térképrétegek',
     photoFilterWarning: 'A fényképszűrés aktív',
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,

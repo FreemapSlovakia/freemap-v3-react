@@ -60,18 +60,11 @@ export default function TrackViewerResult({
     (state) => state.trackViewer.colorizeTrackBy,
   );
 
-  // Style unstyled features with the current drawing defaults so the preview
-  // matches what "convert to drawing" will produce.
-  const drawingColor = useAppSelector(
-    (state) => state.drawingSettings.style.color,
-  );
-
-  const drawingWidth = useAppSelector(
-    (state) => state.drawingSettings.style.width,
-  );
-
-  const drawingFillColor = useAppSelector(
-    (state) => state.drawingSettings.style.fillColor,
+  // Style applied to imported features that carry no style of their own. Its own
+  // independent setting (not the drawing tool defaults), editable from the
+  // track-viewer toolbar.
+  const defaultStyle = useAppSelector(
+    (state) => state.trackViewerSettings.style,
   );
 
   const getFeatures: GetFeatures = (type: 'LineString' | 'Point' | 'Polygon') =>
@@ -169,13 +162,15 @@ export default function TrackViewerResult({
 
           const style = lineStyleFromProperties(feature.properties, closed);
 
-          const stroke = splitColorAlpha(style.color ?? drawingColor);
+          const stroke = splitColorAlpha(style.color ?? defaultStyle.color);
 
           // Same default-fill treatment as native polygons below (ignored for
           // lines, which render as unfilled Polylines).
-          const fillSpec = style.fillColor ?? drawingFillColor;
+          const fillSpec = style.fillColor ?? defaultStyle.fillColor;
 
-          const fill = splitColorAlpha(fillSpec ?? style.color ?? drawingColor);
+          const fill = splitColorAlpha(
+            fillSpec ?? style.color ?? defaultStyle.color,
+          );
 
           return {
             name: feature.properties?.['name'] as string | undefined,
@@ -187,15 +182,15 @@ export default function TrackViewerResult({
               strokeOpacity: stroke.opacity,
               fillColor: fill.color,
               fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
-              width: style.width ?? drawingWidth,
-              dashArray: style.dashArray,
-              lineCap: style.lineCap,
-              lineJoin: style.lineJoin,
+              width: style.width ?? defaultStyle.width,
+              dashArray: style.dashArray ?? defaultStyle.dashArray,
+              lineCap: style.lineCap ?? defaultStyle.lineCap,
+              lineJoin: style.lineJoin ?? defaultStyle.lineJoin,
             },
           };
         });
       }),
-    [trackGeojson, drawingColor, drawingWidth, drawingFillColor],
+    [trackGeojson, defaultStyle],
   );
 
   // Native GeoJSON Polygon geometry (e.g. an imported .geojson; MultiPolygon
@@ -206,14 +201,13 @@ export default function TrackViewerResult({
   const polygons = getFeatures('Polygon').map((feature) => {
     const style = lineStyleFromProperties(feature.properties, true);
 
-    const stroke = splitColorAlpha(style.color ?? drawingColor);
+    const stroke = splitColorAlpha(style.color ?? defaultStyle.color);
 
-    // With no explicit fill, fall back to the drawing default fill so an
-    // unstyled imported polygon looks like a freshly drawn one (semitransparent)
-    // rather than a solid blob.
-    const fillSpec = style.fillColor ?? drawingFillColor;
+    // With no explicit fill, fall back to the default fill so an unstyled
+    // imported polygon looks semitransparent rather than a solid blob.
+    const fillSpec = style.fillColor ?? defaultStyle.fillColor;
 
-    const fill = splitColorAlpha(fillSpec ?? style.color ?? drawingColor);
+    const fill = splitColorAlpha(fillSpec ?? style.color ?? defaultStyle.color);
 
     return {
       name: feature.properties?.['name'],
@@ -225,10 +219,10 @@ export default function TrackViewerResult({
         strokeOpacity: stroke.opacity,
         fillColor: fill.color,
         fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
-        width: style.width ?? drawingWidth,
-        dashArray: style.dashArray,
-        lineCap: style.lineCap,
-        lineJoin: style.lineJoin,
+        width: style.width ?? defaultStyle.width,
+        dashArray: style.dashArray ?? defaultStyle.dashArray,
+        lineCap: style.lineCap ?? defaultStyle.lineCap,
+        lineJoin: style.lineJoin ?? defaultStyle.lineJoin,
       },
     };
   });
@@ -480,10 +474,12 @@ function WaypointMarker({
 
   const contentProps = useIconContentProps(style.icon);
 
-  // Match the drawing default point color for unstyled waypoints.
-  const drawingColor = useAppSelector(
-    (state) => state.drawingSettings.style.color,
+  // The track-viewer default style colors and shapes unstyled waypoints.
+  const defaultStyle = useAppSelector(
+    (state) => state.trackViewerSettings.style,
   );
+
+  const color = style.color ?? defaultStyle.color;
 
   // No icon spec resolved → fall back to the legacy flag glyph.
   const hasIconContent =
@@ -492,13 +488,13 @@ function WaypointMarker({
   return (
     <RichMarker
       position={{ lat, lng: lon }}
-      color={style.color ?? drawingColor}
-      markerType={style.markerType}
+      color={color}
+      markerType={style.markerType ?? defaultStyle.markerType}
       interactive={interactive}
       eventHandlers={{ click: onClick }}
       {...(hasIconContent
         ? contentProps
-        : { faIcon: <FaFlag color={style.color ?? drawingColor} /> })}
+        : { faIcon: <FaFlag color={color} /> })}
     >
       {name && (
         <Tooltip

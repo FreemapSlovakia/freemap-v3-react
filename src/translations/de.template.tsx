@@ -247,6 +247,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapLayers: {
+    searchResultStyle: 'Stil der Suchergebnisse',
     letters: {
       S: 'Luftbild',
       Z: 'Luftbild',

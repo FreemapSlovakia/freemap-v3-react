@@ -36,6 +36,7 @@ import {
   FaGem,
   FaInfoCircle,
   FaMountain,
+  FaPaintBrush,
   FaPalette,
   FaPencilAlt,
   FaRoute,
@@ -262,6 +263,11 @@ export function TrackViewerMenu(): ReactElement {
         handleConvertToDrawing();
 
         break;
+
+      case 'edit-style':
+        dispatch(setActiveModal({ type: 'track-viewer-style' }));
+
+        break;
     }
   };
 
@@ -426,14 +432,14 @@ export function TrackViewerMenu(): ReactElement {
             </Dropdown.Toggle>
 
             <Dropdown.Menu popperConfig={fixedPopperConfig}>
-              {enableElevationChart && canUpdateElevation && (
-                <>
-                  <Dropdown.Item eventKey="update-elevation">
-                    <FaMountain /> &nbsp;{tvm?.elevationFill.update ?? '…'}
-                  </Dropdown.Item>
+              <Dropdown.Item eventKey="edit-style">
+                <FaPaintBrush /> &nbsp;{tvm?.style.title ?? '…'}
+              </Dropdown.Item>
 
-                  <Dropdown.Divider />
-                </>
+              {enableElevationChart && canUpdateElevation && (
+                <Dropdown.Item eventKey="update-elevation">
+                  <FaMountain /> &nbsp;{tvm?.elevationFill.update ?? '…'}
+                </Dropdown.Item>
               )}
 
               {!hasActiveMap && (

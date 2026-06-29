@@ -254,6 +254,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapLayers: {
+    searchResultStyle: 'Styl výsledku hledání',
     showAll: 'Zobrazit všechny mapy',
     filterMaps: 'Filtrovat mapy',
     noMapsFound: 'Žádné mapy nenalezeny',

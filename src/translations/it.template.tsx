@@ -251,6 +251,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapLayers: {
+    searchResultStyle: 'Stile del risultato di ricerca',
     showAll: 'Mostra tutti i livelli',
     filterMaps: 'Filtra mappe',
     noMapsFound: 'Nessuna mappa trovata',

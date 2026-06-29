@@ -5,6 +5,10 @@ import { ObjectDetails } from '../components/ObjectDetails.js';
 import { ObjectsMessages } from './ObjectsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
+  style: {
+    button: 'Jelölő stílusa',
+    title: 'Objektum jelölőjének stílusa',
+  },
   source: 'Forrás',
   detail: ({ result }) => (
     <ObjectDetails
