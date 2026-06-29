@@ -15,7 +15,7 @@ const en: CreditsMessages = {
   payWithChrons: 'Pay with Chrons',
   chronsHint: (
     <>
-      If you want to get premium access for volunteer work reported in{' '}
+      If you want to get credits for volunteer work reported in{' '}
       <RovasLink>Rovas</RovasLink>, choose to pay with Chrons.
     </>
   ),

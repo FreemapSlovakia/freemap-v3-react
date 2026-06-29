@@ -16,7 +16,7 @@ const pl: DeepPartialWithRequiredObjects<CreditsMessages> = {
   payWithChrons: 'Zapłać chronami',
   chronsHint: (
     <>
-      Jeśli chcesz uzyskać dostęp premium za pracę wolontariacką zgłoszoną w{' '}
+      Jeśli chcesz uzyskać kredyty za pracę wolontariacką zgłoszoną w{' '}
       <RovasLink>Rovas</RovasLink>, wybierz płatność chronami.
     </>
   ),

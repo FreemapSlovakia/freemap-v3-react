@@ -16,8 +16,8 @@ const it: DeepPartialWithRequiredObjects<CreditsMessages> = {
   payWithChrons: 'Paga con i Chron',
   chronsHint: (
     <>
-      Se desideri ottenere l&apos;accesso premium per il lavoro di volontariato
-      segnalato in <RovasLink>Rovas</RovasLink>, scegli di pagare con i Chron.
+      Se desideri ottenere crediti per il lavoro di volontariato segnalato in{' '}
+      <RovasLink>Rovas</RovasLink>, scegli di pagare con i Chron.
     </>
   ),
   purchase: {

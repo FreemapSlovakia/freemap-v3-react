@@ -16,7 +16,7 @@ const cs: DeepPartialWithRequiredObjects<CreditsMessages> = {
   payWithChrons: 'Zaplatit chrony',
   chronsHint: (
     <>
-      Pokud chcete získat prémiový přístup za dobrovolnickou práci nahlášenou v{' '}
+      Pokud chcete získat kredity za dobrovolnickou práci nahlášenou v{' '}
       <RovasLink>Rováši</RovasLink>, zvolte platbu chrony.
     </>
   ),

@@ -16,7 +16,7 @@ const hu: DeepPartialWithRequiredObjects<CreditsMessages> = {
   payWithChrons: 'Fizetés chronnal',
   chronsHint: (
     <>
-      Ha prémium hozzáférést szeretnél önkéntes munkáért, amelyet a{' '}
+      Ha kreditet szeretnél önkéntes munkáért, amelyet a{' '}
       <RovasLink>Rovasban</RovasLink> jelentettél be, válaszd a chronokkal
       történő fizetést.
     </>
