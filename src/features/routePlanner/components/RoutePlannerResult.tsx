@@ -692,13 +692,14 @@ export function RoutePlannerResult(): ReactElement {
                   // line on top, so the halo shows through as its edges.
                   <Polyline
                     key={`slice-${i}-${interactive}`}
-                    interactive={interactive}
+                    interactive={interactive && !routeSlice.connector}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}
                     weight={10}
                     color={
                       selectedSegment === routeSlice.legIndex &&
-                      alt === activeAlternativeIndex
+                      alt === activeAlternativeIndex &&
+                      !routeSlice.connector
                         ? '#156efd'
                         : '#fff'
                     }
