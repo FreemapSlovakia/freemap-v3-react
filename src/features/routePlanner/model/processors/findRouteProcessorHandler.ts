@@ -5,6 +5,7 @@ import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import { ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
+import { positionsEqual } from '@shared/geoutils.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import distance from '@turf/distance';
@@ -419,11 +420,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
         const curStart = firstAlt.legs[0]?.steps[0]?.geometry.coordinates[0];
 
-        if (
-          prevEnd &&
-          curStart &&
-          (prevEnd[0] !== curStart[0] || prevEnd[1] !== curStart[1])
-        ) {
+        if (prevEnd && curStart && !positionsEqual(prevEnd, curStart)) {
           const connector: Step = {
             ...straightStep(
               [prevEnd[0], prevEnd[1]],
