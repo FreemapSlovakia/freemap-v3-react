@@ -215,7 +215,7 @@ export default function DrawingLineSelection(): ReactElement | null {
               </Dropdown.Item>
             )}
 
-            {isLine && line.points.length > 0 && (
+            {line.points.length > 0 && (
               <Dropdown.Item eventKey="project-point">
                 <TbAngle />
                 &nbsp;{dm?.projection.projectPoint ?? '…'}
