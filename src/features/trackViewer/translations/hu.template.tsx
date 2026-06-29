@@ -5,6 +5,9 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
+  style: {
+    title: 'Alapértelmezett stílus',
+  },
   info: () => <TrackViewerDetails />,
   upload: 'Feltöltés',
   trackLabel: 'Nyomvonal',

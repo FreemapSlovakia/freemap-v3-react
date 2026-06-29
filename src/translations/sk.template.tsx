@@ -370,6 +370,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Veľkosť prvkov',
     featureScaleHelp:
       'Zväčšuje vykreslené popisy a čiary. Nemá vplyv na satelitné, tieňované, WMS ani vektorové (MapLibre) vrstvy.',
+    searchResultStyle: 'Štýl výsledku vyhľadávania',
     layer: {
       layer: 'Vrstva',
       base: 'Základná',

@@ -14,6 +14,9 @@ const sk: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   moreInfo: 'Viac info',
   saveAsMap: 'Uložiť do mojich máp',
   loginToSaveMap: 'Pre uloženie trasy do vašich máp sa najprv prihláste.',
+  style: {
+    title: 'Predvolený štýl',
+  },
   details: {
     startTime: 'Čas štartu',
     finishTime: 'Čas v cieli',

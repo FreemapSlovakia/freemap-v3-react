@@ -165,6 +165,12 @@ final state. `hashchange` is handled by `locationChangeHandler`. When you add
 state that should be shareable/bookmarkable, wire it through here **and** update
 the hash-param docs in `src/static/llms.txt`.
 
+The full list of supported URL params (read/write vs. read-only, formats, and
+the shared `\x1e`-field **style codec** used by the drawing geometry params and
+the per-feature default-style params `track-style` / `objects-style` /
+`search-style`) lives in [`url-params.md`](./url-params.md). Keep it in sync when
+changing any param.
+
 ## Internationalization
 
 Two layers — global and per-feature:

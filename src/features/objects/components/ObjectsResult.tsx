@@ -42,7 +42,7 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
   const dispatch = useDispatch();
 
   const selectedIconValue = useAppSelector(
-    (state) => state.objects.selectedIcon,
+    (state) => state.objectsSettings.selectedIcon,
   );
 
   const interactive = useAppSelector(selectingModeSelector);
@@ -68,7 +68,11 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
     maximumFractionDigits: 1,
   });
 
-  const markerType = useAppSelector((state) => state.objects.selectedIcon);
+  const markerType = useAppSelector(
+    (state) => state.objectsSettings.selectedIcon,
+  );
+
+  const color = useAppSelector((state) => state.objectsSettings.color);
 
   return !osmMapping
     ? null
@@ -102,7 +106,7 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
             color={
               activeId && featureIdsEqual(activeId, id)
                 ? COLORS.selected
-                : undefined
+                : color
             }
             markerType={markerType}
             eventHandlers={{

@@ -32,6 +32,10 @@ const en: ObjectsMessages = {
   convertWithGeometry: 'With full geometry',
   showAsLookup: 'Show as Lookup',
   convertAll: 'Convert all visible objects to drawing',
+  style: {
+    button: 'Marker style',
+    title: 'Object marker style',
+  },
 };
 
 export default en;

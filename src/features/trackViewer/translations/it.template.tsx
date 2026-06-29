@@ -5,6 +5,9 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
+  style: {
+    title: 'Stile predefinito',
+  },
   info: () => <TrackViewerDetails />,
   upload: 'Carica',
   trackLabel: 'Traccia',

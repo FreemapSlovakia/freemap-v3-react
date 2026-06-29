@@ -33,6 +33,10 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   convertWithGeometry: 'S celou geometriou',
   showAsLookup: 'Zobraziť ako Nález',
   convertAll: 'Skonvertovať všetky viditeľné objekty na kreslenie',
+  style: {
+    button: 'Štýl značky',
+    title: 'Štýl značky objektu',
+  },
 };
 
 export default sk;

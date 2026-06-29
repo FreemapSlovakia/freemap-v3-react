@@ -1,11 +1,10 @@
-import { convertToDrawing } from '@app/store/actions.js';
+import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HideArrow } from '@features/search/components/SearchMenu.js';
 import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import type { Node, OsmMapping } from '@osm/types.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -23,13 +22,9 @@ import {
   useState,
 } from 'react';
 import { Button, Dropdown, type DropdownProps, Form } from 'react-bootstrap';
-import { FaPencilAlt, FaTrash } from 'react-icons/fa';
+import { FaPaintBrush, FaPencilAlt, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import {
-  MarkerType,
-  objectsSetFilter,
-  setSelectedIcon,
-} from '../model/actions.js';
+import { objectsSetFilter } from '../model/actions.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
 export default function ObjectsMenu(): ReactElement {
@@ -209,14 +204,6 @@ export default function ObjectsMenu(): ReactElement {
 
   const activeItems = makeItems(true);
 
-  const selectedIconValue = useAppSelector(
-    (state) => state.objects.selectedIcon,
-  );
-
-  const handleIconChange = (selectedIconValue: MarkerType) => {
-    dispatch(setSelectedIcon(selectedIconValue));
-  };
-
   const hasObjects = useAppSelector(
     (state) => state.objects.objects.length > 0,
   );
@@ -262,12 +249,20 @@ export default function ObjectsMenu(): ReactElement {
         </Dropdown.Menu>
       </Dropdown>
 
-      <MarkerTypeSelect
-        className="ms-1"
-        breakpoint="lg"
-        value={selectedIconValue}
-        onChange={handleIconChange}
-      />
+      <LongPressTooltip label={om?.style.button}>
+        {({ props }) => (
+          <Button
+            className="ms-1"
+            variant="secondary"
+            onClick={() => {
+              dispatch(setActiveModal({ type: 'objects-style' }));
+            }}
+            {...props}
+          >
+            <FaPaintBrush />
+          </Button>
+        )}
+      </LongPressTooltip>
 
       {hasObjects && (
         <LongPressTooltip label={om?.convertAll}>

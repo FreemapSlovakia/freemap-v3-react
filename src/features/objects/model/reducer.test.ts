@@ -1,11 +1,7 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { describe, expect, it } from 'vitest';
-import {
-  objectsSetFilter,
-  objectsSetResult,
-  setSelectedIcon,
-} from './actions.js';
+import { objectsSetFilter, objectsSetResult } from './actions.js';
 import { objectInitialState, objectsReducer } from './reducer.js';
 
 /** Pure reducer tests for the objects (POI) slice. */
@@ -32,12 +28,6 @@ describe('objectsReducer', () => {
     );
 
     expect(next.objects).toEqual([{ id: 1 }]);
-  });
-
-  it('setSelectedIcon stores the marker type', () => {
-    const next = objectsReducer(objectInitialState, setSelectedIcon('square'));
-
-    expect(next.selectedIcon).toBe('square');
   });
 
   it('clearMapFeatures resets to initial', () => {

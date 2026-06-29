@@ -1,55 +1,41 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
+import { setActiveModal } from '@app/store/actions.js';
 import { useDrawingStyleEditor } from '@features/drawing/components/useDrawingStyleEditor.js';
-import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { FaCheck, FaFill, FaPaintBrush, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { applySettings, setActiveModal } from '../store/actions.js';
+import { trackViewerSetStyle } from '../model/actions.js';
+import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 type Props = { show: boolean };
 
-export default function PredefinedDrawingPropertiesModal({
-  show,
-}: Props): ReactElement {
+export default function TrackViewerStyleModal({ show }: Props): ReactElement {
   const m = useMessages();
 
-  const dm = useDrawingMessages();
+  const tvm = useTrackViewerMessages();
 
-  const style = useAppSelector((state) => state.drawingSettings.style);
+  const style = useAppSelector((state) => state.trackViewerSettings.style);
 
   const editor = useDrawingStyleEditor(style, { widthStep: 0.1 });
 
   const dispatch = useDispatch();
 
-  function save(applyToAll = false) {
-    dispatch(
-      applySettings({
-        drawing: editor.style,
-        drawingApplyAll: applyToAll,
-      }),
-    );
-
-    dispatch(setActiveModal(null));
-  }
-
-  const handleSubmit = (e: SubmitEvent) => {
-    e.preventDefault();
-
-    save(false);
-  };
-
-  const handleApplyToAllClick = () => {
-    save(true);
-  };
-
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  useDocumentTitle(show ? dm?.defProps.menuItem : undefined);
+  const handleSubmit = (e: SubmitEvent) => {
+    e.preventDefault();
+
+    dispatch(trackViewerSetStyle(editor.style));
+
+    close();
+  };
+
+  useDocumentTitle(show ? tvm?.style.title : undefined);
 
   return (
     <Modal
@@ -57,16 +43,14 @@ export default function PredefinedDrawingPropertiesModal({
       onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
-      // The color picker's popover is portalled to <body> (outside this
-      // modal's DOM), so the modal's focus trap would steal focus from its
-      // inputs the moment they're focused. Disable enforceFocus so R/G/B/A/HEX
-      // (and the sliders) stay editable.
+      // The color picker's popover is portalled to <body>; disable enforceFocus
+      // so its R/G/B/A/HEX inputs stay editable (see PredefinedDrawingPropertiesModal).
       enforceFocus={false}
     >
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaPaintBrush /> {dm?.defProps.title}
+            <FaPaintBrush /> {tvm?.style.title}
           </Modal.Title>
         </Modal.Header>
 
@@ -75,14 +59,6 @@ export default function PredefinedDrawingPropertiesModal({
         <Modal.Footer>
           <Button type="submit" disabled={editor.invalid}>
             <FaCheck /> {m?.general.save}
-          </Button>
-
-          <Button
-            variant="secondary"
-            disabled={editor.invalid}
-            onClick={handleApplyToAllClick}
-          >
-            <FaFill /> {dm?.defProps.applyToAll}
           </Button>
 
           <Button variant="dark" onClick={close}>

@@ -13,6 +13,9 @@ const en: TrackViewerMessages = {
   moreInfo: 'More info',
   saveAsMap: 'Save to my maps',
   loginToSaveMap: 'Log in first to save the track to your maps.',
+  style: {
+    title: 'Default style',
+  },
   details: {
     startTime: 'Start time',
     finishTime: 'Finish time',

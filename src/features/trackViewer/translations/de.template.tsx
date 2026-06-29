@@ -5,6 +5,9 @@ import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
 import { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
+  style: {
+    title: 'Standardstil',
+  },
   info: () => <TrackViewerDetails />,
   details: {
     startTime: 'Startzeit',

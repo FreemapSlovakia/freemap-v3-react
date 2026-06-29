@@ -5,6 +5,10 @@ import { ObjectDetails } from '../components/ObjectDetails.js';
 import { ObjectsMessages } from './ObjectsMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
+  style: {
+    button: 'Styl znacznika',
+    title: 'Styl znacznika obiektu',
+  },
   source: 'Źródło',
   detail: ({ result }) => (
     <ObjectDetails

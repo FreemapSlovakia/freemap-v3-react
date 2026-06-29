@@ -228,7 +228,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             coords: object.coords,
             label: object.tags?.['name'], // TODO put object type and some other tags to name
             color: state.drawingSettings.style.color,
-            markerType: state.objects.selectedIcon,
+            markerType: state.objectsSettings.selectedIcon,
             icon: tagsToPoiIconSpec(object.tags),
             id: getState().drawingPoints.points.length,
           }),
@@ -274,7 +274,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
               ...state.drawingSettings.style,
               ...style,
               label: feature.properties?.['name'],
-              markerType: style.markerType ?? state.objects.selectedIcon,
+              markerType:
+                style.markerType ?? state.objectsSettings.selectedIcon,
               coords: {
                 lat: geometry.coordinates[1],
                 lon: geometry.coordinates[0],

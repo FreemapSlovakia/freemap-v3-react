@@ -1,3 +1,4 @@
+import { drawingStyleToPathOptions } from '@features/drawing/drawingStyleToPathOptions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   getGenericNameFromOsmElement,
@@ -20,6 +21,7 @@ import {
   LeafletEventHandlerFnMap,
   marker,
   Path,
+  PathOptions,
   Polygon,
 } from 'leaflet';
 import { Fragment, ReactElement, useCallback } from 'react';
@@ -34,18 +36,35 @@ export function SearchResults(): ReactElement | null {
 
   const language = useAppSelector((state) => state.l10n.language);
 
+  // The user-overridable result style. `window.fmHeadless.searchResultStyle`
+  // (set by the headless renderer) still wins over it.
+  const resultStyle = useAppSelector(
+    (state) => state.searchSettings.resultStyle,
+  );
+
+  const markerColor =
+    window.fmHeadless?.searchResultStyle?.color ?? resultStyle.color;
+
   const pointToLayer = useCallback(
     (feature: Feature, latLng: LatLng) => {
       const img = isOsm
         ? resolveGenericName(osmTagToIconMapping, feature.properties ?? {})
         : [];
 
+      // Ring/square markers are centered glyphs, so they anchor at their middle
+      // rather than the pin's tip (matches RichMarker).
+      const compact =
+        resultStyle.markerType === 'ring' ||
+        resultStyle.markerType === 'square';
+
       return marker(latLng, {
         icon: new MarkerLeafletIcon({
           ...markerIconOptions,
+          iconAnchor: compact ? [12, 12] : markerIconOptions.iconAnchor,
           icon: (
             <MarkerIcon
-              color={window.fmHeadless?.searchResultStyle?.color ?? '#3388ff'}
+              color={markerColor}
+              markerType={resultStyle.markerType}
               imageOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
               image={img[0]}
             />
@@ -53,7 +72,7 @@ export function SearchResults(): ReactElement | null {
         }),
       });
     },
-    [isOsm],
+    [isOsm, markerColor, resultStyle.markerType],
   );
 
   const annotateFeature = useCallback(
@@ -130,6 +149,11 @@ export function SearchResults(): ReactElement | null {
     return null;
   }
 
+  // Derived from the RGBA style, unless the headless renderer supplies its own.
+  const pathStyle: PathOptions =
+    window.fmHeadless?.searchResultStyle ??
+    drawingStyleToPathOptions(resultStyle);
+
   const eventHandlers: LeafletEventHandlerFnMap = {
     click(e) {
       DomEvent.stopPropagation(e);
@@ -161,11 +185,21 @@ export function SearchResults(): ReactElement | null {
       : selectedResult.geojson;
 
   return (
-    <Fragment key={language + selectedResultSeq}>
+    // Remount on style change too: react-leaflet keeps `pointToLayer` markers
+    // from their initial render, so a style edit wouldn't reach them otherwise.
+    <Fragment
+      key={
+        language +
+        selectedResultSeq +
+        markerColor +
+        resultStyle.markerType +
+        JSON.stringify(pathStyle)
+      }
+    >
       <GeoJSON
         interactive={false}
         data={geojson}
-        style={{ weight: 5 }}
+        style={pathStyle}
         filter={(feature) => feature.geometry?.type === 'LineString'}
       />
 
@@ -181,7 +215,7 @@ export function SearchResults(): ReactElement | null {
       <GeoJSON
         interactive
         data={geojson}
-        style={window.fmHeadless?.searchResultStyle ?? { weight: 5 }}
+        style={pathStyle}
         pointToLayer={pointToLayer}
         onEachFeature={cachedAnnotateFeature}
         filter={(feature) => feature.geometry?.type !== 'LineString'}

@@ -219,6 +219,7 @@ export type Messages = {
     resolutionScaleHelp: string;
     featureScale: string;
     featureScaleHelp: string;
+    searchResultStyle: string;
     loadWmsLayers: string;
     offlineMaps: string;
     legacy: string;

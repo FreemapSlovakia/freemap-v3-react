@@ -3,6 +3,7 @@ import { UserSchema, UserSettingsSchema } from '@features/auth/model/types.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
 import {
   DrawingSettingsCompatSchema,
+  DrawingStyleSchema,
   drawingSettingsInitialState,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
@@ -13,11 +14,14 @@ import { LayerSettingsSchema } from '@features/map/model/actions.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
-import { objectInitialState } from '@features/objects/model/reducer.js';
+import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
+import { SearchResultStyleSchema } from '@features/search/model/actions.js';
+import { searchSettingsInitialState } from '@features/search/model/settingsReducer.js';
 import { trackingInitialState } from '@features/tracking/model/reducer.js';
 import { trackViewerInitialState } from '@features/trackViewer/model/reducer.js';
+import { trackViewerSettingsInitialState } from '@features/trackViewer/model/settingsReducer.js';
 import { ColorizingModeSchema } from '@shared/colorizers/index.js';
 import { LanguageSchema } from '@shared/langUtils.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
@@ -93,9 +97,10 @@ export const PersistedMainSchema = z
   })
   .partial();
 
-export const PersistedObjectsSchema = z
+export const PersistedObjectsSettingsSchema = z
   .object({
     selectedIcon: MarkerTypeSchema,
+    color: z.string(),
   })
   .partial();
 
@@ -109,10 +114,22 @@ export const PersistedRoutePlannerSchema = z
   })
   .partial();
 
+export const PersistedSearchSettingsSchema = z
+  .object({
+    resultStyle: SearchResultStyleSchema.partial(),
+  })
+  .partial();
+
 export const PersistedTrackViewerSchema = z
   .object({
     colorizeTrackBy: ColorizingModeSchema.nullable(),
     colorizeLegend: z.boolean(),
+  })
+  .partial();
+
+export const PersistedTrackViewerSettingsSchema = z
+  .object({
+    style: DrawingStyleSchema.partial(),
   })
   .partial();
 
@@ -253,10 +270,10 @@ const PERSIST: PersistEntry[] = [
     persist: (s) => ({ hiddenInfoBars: s.hiddenInfoBars }),
   }),
   defineEntry({
-    key: 'objects',
-    schema: PersistedObjectsSchema,
-    initial: objectInitialState,
-    persist: (o) => ({ selectedIcon: o.selectedIcon }),
+    key: 'objectsSettings',
+    schema: PersistedObjectsSettingsSchema,
+    initial: objectsSettingsInitialState,
+    persist: (o) => ({ selectedIcon: o.selectedIcon, color: o.color }),
   }),
   defineEntry({
     key: 'routePlanner',
@@ -271,6 +288,16 @@ const PERSIST: PersistEntry[] = [
     }),
   }),
   defineEntry({
+    key: 'searchSettings',
+    schema: PersistedSearchSettingsSchema,
+    initial: searchSettingsInitialState,
+    rehydrate: (initial, data) => ({
+      ...initial,
+      resultStyle: { ...initial.resultStyle, ...data.resultStyle },
+    }),
+    persist: (s) => ({ resultStyle: s.resultStyle }),
+  }),
+  defineEntry({
     key: 'trackViewer',
     schema: PersistedTrackViewerSchema,
     initial: trackViewerInitialState,
@@ -278,6 +305,16 @@ const PERSIST: PersistEntry[] = [
       colorizeTrackBy: t.colorizeTrackBy,
       colorizeLegend: t.colorizeLegend,
     }),
+  }),
+  defineEntry({
+    key: 'trackViewerSettings',
+    schema: PersistedTrackViewerSettingsSchema,
+    initial: trackViewerSettingsInitialState,
+    rehydrate: (initial, data) => ({
+      ...initial,
+      style: { ...initial.style, ...data.style },
+    }),
+    persist: (t) => ({ style: t.style }),
   }),
   defineEntry({
     key: 'tracking',

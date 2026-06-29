@@ -21,4 +21,8 @@ export type ObjectsMessages = {
   convertWithGeometry: string;
   showAsLookup: string;
   convertAll: string;
+  style: {
+    button: string;
+    title: string;
+  };
 };

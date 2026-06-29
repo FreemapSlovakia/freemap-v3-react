@@ -1,3 +1,4 @@
+import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { createAction } from '@reduxjs/toolkit';
 import {
   type ColorizingMode,
@@ -7,6 +8,14 @@ import type { LatLon } from '@shared/types/common.js';
 import { FeatureCollection } from 'geojson';
 
 export { type ColorizingMode, ColorizingModeSchema };
+
+/**
+ * The style applied to imported track/line/polygon/point features that carry no
+ * style of their own. Independent of the drawing tool's defaults.
+ */
+export const trackViewerSetStyle = createAction<DrawingStyle>(
+  'TRACK_VIEWER_SET_STYLE',
+);
 
 export interface TrackPoint extends LatLon {
   startTime?: Date;

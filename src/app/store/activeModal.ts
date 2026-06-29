@@ -51,6 +51,8 @@ const MODAL_RENAMES: Record<string, string> = {
 export const ModalIdSchema = z.enum([
   ...URL_MODAL_IDS,
   'current-drawing-properties',
+  'track-viewer-style',
+  'objects-style',
 ]);
 
 export type ModalId = z.infer<typeof ModalIdSchema>;

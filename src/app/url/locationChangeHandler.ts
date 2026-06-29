@@ -25,7 +25,11 @@ import {
   mapSetShading,
 } from '@features/map/model/actions.js';
 import { mapsLoad } from '@features/myMaps/model/actions.js';
-import { objectsSetFilter } from '@features/objects/model/actions.js';
+import {
+  objectsSetFilter,
+  setSelectedColor,
+  setSelectedIcon,
+} from '@features/objects/model/actions.js';
 import {
   osmClear,
   osmLoadNode,
@@ -42,7 +46,10 @@ import {
   RoutePoint,
   routePlannerSetParams,
 } from '@features/routePlanner/model/actions.js';
-import { searchSetQuery } from '@features/search/model/actions.js';
+import {
+  searchSetQuery,
+  searchSetResultStyle,
+} from '@features/search/model/actions.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
 import type { TrackedDevice } from '@features/tracking/model/types.js';
 import {
@@ -50,6 +57,7 @@ import {
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
+  trackViewerSetStyle,
 } from '@features/trackViewer/model/actions.js';
 import {
   wikiLoadPreview,
@@ -335,6 +343,8 @@ export function handleLocationChange(store: MyStore): void {
   }
 
   handleInfoPoint(getState, dispatch, query);
+
+  handleFeatureStyles(getState, dispatch, query);
 
   const changesetsDays = query['changesets-days'];
 
@@ -997,74 +1007,150 @@ function handleGallery(
   }
 }
 
-function parseColorAndLabel(m: string) {
-  let label: string | undefined;
-
-  let color: string | undefined;
-
-  let fillColor: string | undefined;
-
-  let width: number | undefined;
-
-  let dashArray: number[] | undefined;
-
-  let lineCap: LineCap | undefined;
-
-  let lineJoin: LineJoin | undefined;
-
-  let markerType: 'pin' | 'square' | 'ring' | undefined;
-
-  let icon: string | undefined;
-
+function parseColorAndLabel(m: string): ReturnType<typeof parseStyleFields> {
   // compatibility
   if (m.startsWith(',') || m.startsWith(';')) {
-    if (m[1] === '#') {
-      color = m.slice(1, 8);
+    return m[1] === '#'
+      ? { color: m.slice(1, 8), label: m.slice(9) }
+      : { label: m.replace(/^[,;]*/, '') };
+  }
 
-      label = m.slice(9);
-    } else {
-      label = m.replace(/^[,;]*/, '');
+  if (m.startsWith('\x1e')) {
+    return parseStyleFields(m);
+  }
+
+  return {};
+}
+
+/**
+ * Parses the `\x1e`-separated style field string shared by the drawing
+ * geometry params and the per-feature default-style params (`track-style`,
+ * `objects-style`, `search-style`). Field codes: `L`abel, `C`olor,
+ * `F`illColor, `W`idth, `D`ashArray, line`K`ap, line`J`oin, `S`hape
+ * (markerType), `I`con. A leading separator is tolerated. Only present fields
+ * are returned.
+ */
+export function parseStyleFields(s: string): {
+  label?: string;
+  color?: string;
+  fillColor?: string;
+  width?: number;
+  dashArray?: number[];
+  lineCap?: LineCap;
+  lineJoin?: LineJoin;
+  markerType?: 'pin' | 'square' | 'ring';
+  icon?: string;
+} {
+  const out: ReturnType<typeof parseStyleFields> = {};
+
+  for (const field of s.split('\x1e')) {
+    if (!field) {
+      continue;
     }
-  } else if (m.startsWith('\x1e')) {
-    for (const field of m.slice(1).split('\x1e')) {
-      if (field[0] === 'L') {
-        label = field.slice(1);
-      } else if (field[0] === 'C') {
-        color = field.slice(1);
-      } else if (field[0] === 'F') {
-        fillColor = field.slice(1);
-      } else if (field[0] === 'W') {
-        width = Number(field.slice(1)) || undefined;
-      } else if (field[0] === 'D') {
-        dashArray = field.slice(1)
-          ? field.slice(1).split(',').map(Number)
-          : undefined;
-      } else if (field[0] === 'K') {
-        lineCap =
-          field[1] === 'b' ? 'butt' : field[1] === 's' ? 'square' : undefined;
-      } else if (field[0] === 'J') {
-        lineJoin =
-          field[1] === 'm' ? 'miter' : field[1] === 'b' ? 'bevel' : undefined;
-      } else if (field[0] === 'S') {
-        markerType =
-          field[1] === 's' ? 'square' : field[1] === 'r' ? 'ring' : undefined;
-      } else if (field[0] === 'I') {
-        icon = field.slice(1) || undefined;
-      }
+
+    if (field[0] === 'L') {
+      out.label = field.slice(1);
+    } else if (field[0] === 'C') {
+      out.color = field.slice(1);
+    } else if (field[0] === 'F') {
+      out.fillColor = field.slice(1);
+    } else if (field[0] === 'W') {
+      out.width = Number(field.slice(1)) || undefined;
+    } else if (field[0] === 'D') {
+      out.dashArray = field.slice(1)
+        ? field.slice(1).split(',').map(Number)
+        : undefined;
+    } else if (field[0] === 'K') {
+      out.lineCap =
+        field[1] === 'b' ? 'butt' : field[1] === 's' ? 'square' : undefined;
+    } else if (field[0] === 'J') {
+      out.lineJoin =
+        field[1] === 'm' ? 'miter' : field[1] === 'b' ? 'bevel' : undefined;
+    } else if (field[0] === 'S') {
+      out.markerType =
+        field[1] === 's' ? 'square' : field[1] === 'r' ? 'ring' : undefined;
+    } else if (field[0] === 'I') {
+      out.icon = field.slice(1) || undefined;
     }
   }
 
-  return {
-    label,
-    color,
-    fillColor,
-    width,
-    dashArray,
-    lineCap,
-    lineJoin,
-    markerType,
-    icon,
-  };
+  return out;
+}
+
+/**
+ * Read-only, load-time style overrides (useful for map embedding). Each param
+ * value is a `\x1e`-separated style field string (same codec as the drawing
+ * geometry params; see {@link parseStyleFields}). Not written back to the URL.
+ *
+ * - `track-style` — default style for unstyled imported track-viewer features
+ * - `objects-style` — POI marker color (`C`) and shape (`S`)
+ * - `search-style` — search / map-details result `C`olor, `F`illColor, `W`idth
+ */
+function handleFeatureStyles(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  query: Record<string, string | string[]>,
+) {
+  const trackStyle = query['track-style'];
+
+  if (typeof trackStyle === 'string') {
+    const f = parseStyleFields(trackStyle);
+
+    const cur = getState().trackViewerSettings.style;
+
+    const next = {
+      color: f.color ?? cur.color,
+      fillColor: f.fillColor ?? cur.fillColor,
+      width: f.width ?? cur.width,
+      dashArray: f.dashArray ?? cur.dashArray,
+      lineCap: f.lineCap ?? cur.lineCap,
+      lineJoin: f.lineJoin ?? cur.lineJoin,
+      markerType: f.markerType ?? cur.markerType,
+    };
+
+    if (JSON.stringify(next) !== JSON.stringify(cur)) {
+      dispatch(trackViewerSetStyle(next));
+    }
+  }
+
+  const objectsStyle = query['objects-style'];
+
+  if (typeof objectsStyle === 'string') {
+    const f = parseStyleFields(objectsStyle);
+
+    if (f.color && f.color !== getState().objectsSettings.color) {
+      dispatch(setSelectedColor(f.color));
+    }
+
+    if (
+      f.markerType &&
+      f.markerType !== getState().objectsSettings.selectedIcon
+    ) {
+      dispatch(setSelectedIcon(f.markerType));
+    }
+  }
+
+  const searchStyle = query['search-style'];
+
+  if (typeof searchStyle === 'string') {
+    const f = parseStyleFields(searchStyle);
+
+    const cur = getState().searchSettings.resultStyle;
+
+    const next = {
+      color: f.color ?? cur.color,
+      fillColor: f.fillColor ?? cur.fillColor,
+      width: f.width ?? cur.width,
+      dashArray: f.dashArray ?? cur.dashArray,
+      lineCap: f.lineCap ?? cur.lineCap,
+      lineJoin: f.lineJoin ?? cur.lineJoin,
+      markerType: f.markerType ?? cur.markerType,
+    };
+
+    if (JSON.stringify(next) !== JSON.stringify(cur)) {
+      dispatch(searchSetResultStyle(next));
+    }
+  }
 }
 
 function handleInfoPoint(
