@@ -1,15 +1,8 @@
-import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import {
-  type ReactElement,
-  SubmitEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { type ReactElement, SubmitEvent, useEffect, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { TbAngle } from 'react-icons/tb';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 type Props = {
@@ -43,12 +36,6 @@ export function ProjectPointModal({
 
   const dm = useDrawingMessages();
 
-  const dispatch = useDispatch();
-
-  const close = useCallback(() => {
-    dispatch(setActiveModal(null));
-  }, [dispatch]);
-
   function isValid() {
     return parseFloat(distance) > 0 && !isNaN(parseFloat(azimuth));
   }
@@ -62,7 +49,9 @@ export function ProjectPointModal({
     >
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
-          <Modal.Title>{dm?.projection.projectPoint}</Modal.Title>
+          <Modal.Title>
+            <TbAngle /> {dm?.projection.projectPoint}
+          </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
@@ -101,7 +90,7 @@ export function ProjectPointModal({
             Add
           </Button>
 
-          <Button variant="dark" onClick={close}>
+          <Button variant="dark" onClick={onClose}>
             <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>

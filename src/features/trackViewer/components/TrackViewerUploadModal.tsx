@@ -5,7 +5,8 @@ import clsx from 'clsx';
 import { type ReactElement, useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaUpload } from 'react-icons/fa';
+import { FaFileImport } from 'react-icons/fa6';
 import { useDispatch } from 'react-redux';
 import { useLoadTrackFiles } from '../hooks/useLoadTrackFiles.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
@@ -51,7 +52,9 @@ export default function TrackViewerUploadModal({ show }: Props): ReactElement {
   return (
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
-        <Modal.Title>{tvm?.uploadModal.title}</Modal.Title>
+        <Modal.Title>
+          <FaFileImport /> <FaUpload /> {tvm?.uploadModal.title}
+        </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
