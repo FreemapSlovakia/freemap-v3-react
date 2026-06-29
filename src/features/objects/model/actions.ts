@@ -18,6 +18,10 @@ export const objectsSetFilter = createAction<string[]>('OBJECTS_SET_FILTER');
 export const objectsSetResult =
   createAction<ObjectsResult[]>('OBJECTS_SET_RESULT');
 
-export const setSelectedIcon = createAction<MarkerType>('SET_SELECTED_ICON');
+export const setSelectedIcon = createAction<MarkerType>(
+  'OBJECTS_SET_SELECTED_ICON',
+);
 
-export const setSelectedColor = createAction<string>('SET_SELECTED_COLOR');
+export const setSelectedColor = createAction<string>(
+  'OBJECTS_SET_SELECTED_COLOR',
+);
