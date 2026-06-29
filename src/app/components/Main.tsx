@@ -34,6 +34,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import { isDrawTool } from '@shared/toolDefinitions.js';
 import fmLogo from '@/images/freemap-logo-print.png';
 import 'leaflet/dist/leaflet.css';
 import clsx from 'clsx';
@@ -462,10 +463,14 @@ export function Main(): ReactElement {
     disabled: activeModal !== null,
   });
 
-  // A selection toolbar shows only when the selection is the active thing
-  // (no tool focused). While a tool is active — e.g. drawing, where the line
-  // being drawn is selected internally — its own toolbar is the active one.
-  const selectionMenu = showMenu && activeTool === null ? selectionType : null;
+  // A selection toolbar shows when the selection is the active thing (no tool
+  // focused), or while a drawing tool is active — the point/line/polygon being
+  // drawn is selected internally, so its selection toolbar stays available
+  // alongside the drawing toolbar.
+  const selectionMenu =
+    showMenu && (activeTool === null || isDrawTool(activeTool))
+      ? selectionType
+      : null;
 
   const scLogo = useScrollClasses('horizontal');
 
