@@ -371,11 +371,83 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
     const legs: Leg[] = [];
 
+    // A straight step between two points, accruing distance and (via `tpd`)
+    // duration like a manual route.
+    function straightStep(
+      from: [number, number],
+      to: [number, number],
+      mode: 'manual' | 'error',
+    ): Step {
+      const dist = distance(from, to, { units: 'meters' });
+
+      return {
+        distance: dist,
+        duration: tpd * dist,
+        maneuver: { type: 'continue', modifier: 'straight' },
+        mode,
+        name: '',
+        geometry: { coordinates: [from, to] },
+      };
+    }
+
+    // Draws straight `manual`/`error` legs between consecutive coordinates.
+    function pushStraightLegs(
+      coordinates: [number, number][],
+      mode: 'manual' | 'error',
+    ) {
+      for (let j = 0; j < coordinates.length - 1; j++) {
+        const step = straightStep(coordinates[j]!, coordinates[j + 1]!, mode);
+
+        legs.push({
+          distance: step.distance,
+          duration: step.duration,
+          steps: [step],
+        });
+      }
+    }
+
     for (const [i, segment] of segments.entries()) {
       const firstAlt = alternativeSets[i]?.[0];
 
       if (firstAlt && firstAlt.legs.length > 0) {
-        legs.push(...firstAlt.legs);
+        // Independently routed segments snap their shared waypoint to different
+        // networks, so a routed segment may start where the previous one ended
+        // with a gap. Bridge it with a straight `manual` connector, merged into
+        // the segment's first leg so it stays part of a real, selectable leg
+        // and doesn't shift the leg→point indexing that selection relies on.
+        const prevEnd = legs.at(-1)?.steps.at(-1)?.geometry.coordinates.at(-1);
+
+        const curStart = firstAlt.legs[0]?.steps[0]?.geometry.coordinates[0];
+
+        if (
+          prevEnd &&
+          curStart &&
+          (prevEnd[0] !== curStart[0] || prevEnd[1] !== curStart[1])
+        ) {
+          const connector: Step = {
+            ...straightStep(
+              [prevEnd[0], prevEnd[1]],
+              [curStart[0], curStart[1]],
+              'manual',
+            ),
+            connector: true,
+          };
+
+          const [first, ...rest] = firstAlt.legs;
+
+          legs.push(
+            {
+              ...first!,
+              distance: first!.distance + connector.distance,
+              duration: first!.duration + connector.duration,
+              steps: [connector, ...first!.steps],
+            },
+            ...rest,
+          );
+        } else {
+          legs.push(...firstAlt.legs);
+        }
+
         continue;
       }
 
@@ -404,31 +476,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
         }
       }
 
-      for (let j = 0; j < coordinates.length - 1; j++) {
-        const dist = distance(coordinates[j]!, coordinates[j + 1]!, {
-          units: 'meters',
-        });
-
-        const duration = tpd * dist;
-
-        legs.push({
-          distance: dist,
-          duration,
-
-          steps: [
-            {
-              distance: dist,
-              duration,
-              maneuver: { type: 'continue', modifier: 'straight' },
-              mode: errored[i] ? 'error' : 'manual',
-              name: '',
-              geometry: {
-                coordinates: coordinates.slice(j, j + 2),
-              },
-            },
-          ],
-        });
-      }
+      pushStraightLegs(coordinates, errored[i] ? 'error' : 'manual');
     }
 
     alternatives = [

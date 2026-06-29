@@ -97,6 +97,11 @@ export interface Step {
     coordinates: StepCoordinate[];
   };
   extra?: RouteStepExtra;
+  /**
+   * Marks a synthetic straight bridge between two independently-routed
+   * segments. Rendered like a `manual` step but not selectable or draggable.
+   */
+  connector?: true;
 }
 
 export interface Alternative {
