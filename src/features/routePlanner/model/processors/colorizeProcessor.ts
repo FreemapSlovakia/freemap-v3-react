@@ -18,7 +18,7 @@ export const routePlannerColorizeProcessor: Processor<
     routePlannerSetActiveAlternativeIndex,
   ],
   handle: async ({ dispatch, getState }) => {
-    const { colorizeBy } = getState().routePlanner;
+    const { colorizeBy } = getState().routePlannerSettings;
 
     // Elevation-derived modes need the densified DEM render line; it's cached
     // so switching between them refetches nothing. A new result or a different

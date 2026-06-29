@@ -31,6 +31,7 @@ export const urlProcessor: Processor = {
       map,
       routePlanner,
       trackViewer,
+      trackViewerSettings,
       gallery,
       drawingPoints,
       changesets,
@@ -80,7 +81,7 @@ export const urlProcessor: Processor = {
       routePlanner.transportType,
       routePlanner.roundtripParams,
       tracking.trackedDevices,
-      trackViewer.colorizeTrackBy,
+      trackViewerSettings.colorizeTrackBy,
       trackViewer.gpxUrl,
       search.osmNodeId,
       search.osmRelationId,
@@ -250,8 +251,11 @@ export const urlProcessor: Processor = {
       historyParts.push(['osm-relation', search.osmRelationId]);
     }
 
-    if (trackViewer.colorizeTrackBy) {
-      historyParts.push(['track-colorize-by', trackViewer.colorizeTrackBy]);
+    if (trackViewerSettings.colorizeTrackBy) {
+      historyParts.push([
+        'track-colorize-by',
+        trackViewerSettings.colorizeTrackBy,
+      ]);
     }
 
     if (changesets.days) {

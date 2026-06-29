@@ -3,7 +3,6 @@ import { osmClear } from '@features/osm/model/osmActions.js';
 import type { FeatureCollection } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import {
-  trackViewerColorizeTrackBy,
   trackViewerDelete,
   trackViewerGpxLoad,
   trackViewerSetData,
@@ -52,31 +51,20 @@ describe('trackViewerReducer — simple setters', () => {
 
     expect(next.gpxUrl).toBe('https://x/y.gpx');
   });
-
-  it('colorizeTrackBy stores the mode', () => {
-    const next = trackViewerReducer(
-      trackViewerInitialState,
-      trackViewerColorizeTrackBy('elevation'),
-    );
-
-    expect(next.colorizeTrackBy).toBe('elevation');
-  });
 });
 
 describe('trackViewerReducer — reset actions', () => {
-  it('delete clears the track but preserves the colorize mode', () => {
+  it('delete clears the track', () => {
     const state = {
       ...trackViewerInitialState,
       trackGeojson: fc,
       trackUID: 'u',
-      colorizeTrackBy: 'elevation' as const,
     };
 
     const next = trackViewerReducer(state, trackViewerDelete());
 
     expect(next.trackGeojson).toBeNull();
     expect(next.trackUID).toBeNull();
-    expect(next.colorizeTrackBy).toBe('elevation');
   });
 
   it('clearMapFeatures resets everything to initial', () => {
@@ -87,11 +75,10 @@ describe('trackViewerReducer — reset actions', () => {
     );
   });
 
-  it('osmClear resets everything to initial (including colorize mode)', () => {
+  it('osmClear resets everything to initial', () => {
     const state = {
       ...trackViewerInitialState,
       trackGeojson: fc,
-      colorizeTrackBy: 'elevation' as const,
     };
 
     expect(trackViewerReducer(state, osmClear())).toEqual(

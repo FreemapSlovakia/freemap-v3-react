@@ -22,25 +22,31 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
 
 ## Softer / design opinions
 
-- [ ] **Move persisted prefs out of transient slices into `*Settings` slices.**
-      Several persisted user prefs still live in feature slices that reset on
-      `clearMapFeatures`, so the reset clobbers them and `statePersistingMiddleware`
-      then writes the default back — the saved pref is **silently lost on "clear
-      map features"**. Confirmed cases: `routePlanner.colorizeBy`/`colorizeLegend`,
-      `trackViewer.colorizeTrackBy`/`colorizeLegend`,
-      `tracking.colorizeBy`/`colorizeLegend`, and `gallery.recentTags` are all
-      reset on clear. The others (`routePlanner.transportType`/`milestones`/
-      `preventHint`, `gallery.showDirection`/`showLegend`/`premium`) survive only
-      via hand-maintained `{ ...initialState, pref: state.pref }` preserve-lists
-      repeated across ~4 routePlanner handlers and the gallery handler — the
-      fragile pattern that breaks the moment a new reset path forgets one. Fix:
-      follow the dedicated-settings-slice pattern (see AGENTS.md → "Settings
-      slices") already used by
-      `drawingSettings`/`objectsSettings`/`searchSettings`/`trackViewerSettings` —
-      move these prefs into per-feature `*Settings` slices (fold trackViewer's
-      colorize into the existing `trackViewerSettings`), then delete every
-      preserve-list. `mapDetails.excludeSources` is already safe (no reset
-      handler).
+- [x] **Move persisted prefs out of transient slices into `*Settings` slices.**
+      Done for the display prefs: `routePlanner.colorizeBy`/`colorizeLegend`/
+      `preventHint` → new `routePlannerSettings`; `trackViewer.colorizeTrackBy`/
+      `colorizeLegend` → folded into `trackViewerSettings` (with the new-track
+      elevation-coverage guard); `tracking.colorizeBy`/`colorizeLegend` → new
+      `trackingSettings`; `gallery.colorizeBy`/`recentTags`/`showDirection`/
+      `showLegend`/`premium` → new `gallerySettings`. Each `*Settings` PERSIST
+      entry uses a
+      `fallbackKey` to migrate the value one-time from its former slice.
+      Deliberately left in their transient slices (not pure prefs):
+      `routePlanner.transportType`/`milestones` are route-document state the
+      reducer routes on and that is also URL-synced and saved per map; `gallery`
+      keeps `dirtySeq` (a render counter) across a clear. `gallery.premium` also
+      moved to `gallerySettings` (the upload modal now derives its checkbox from
+      the items).
+- [ ] **Remove the `*Settings` localStorage migration code (after ~2026-09).**
+      The one-time migration from the old transient-slice keys can be dropped
+      once active users have re-saved under the new keys (a couple of months
+      from 2026-06; users who haven't opened the app by then aren't worth keeping
+      it for). Delete `fallbackKey` (and `mergeFallback`) from the
+      `routePlannerSettings`/`trackingSettings`/`gallerySettings`/
+      `trackViewerSettings` PERSIST entries in `persistence.ts`; once nothing
+      sets `mergeFallback`, simplify `parseWithFallback` back to primary-wins.
+      The `fallbackKey: 'main'` migrations
+      (`drawingSettings`/`homeLocation`/`cookieConsent`) are unrelated and stay.
 - [ ] **Derive `Messages` from `en.tsx`.** `src/translations/messagesInterface.ts`
       is hand-maintained against the master and can drift. Explore deriving the
       type from `typeof en` (or a codegen step) so `en.tsx` is the single source.

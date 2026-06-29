@@ -428,10 +428,12 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.alternatives.length > 0,
   );
 
-  const colorizeBy = useAppSelector((state) => state.routePlanner.colorizeBy);
+  const colorizeBy = useAppSelector(
+    (state) => state.routePlannerSettings.colorizeBy,
+  );
 
   const colorizeLegend = useAppSelector(
-    (state) => state.routePlanner.colorizeLegend,
+    (state) => state.routePlannerSettings.colorizeLegend,
   );
 
   // Carries DEM elevation; used to label the elevation legend with real values.

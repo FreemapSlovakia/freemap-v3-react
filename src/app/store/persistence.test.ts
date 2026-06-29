@@ -6,7 +6,8 @@ import { l10nInitialState } from '@features/l10n/model/reducer.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
-import { trackViewerInitialState } from '@features/trackViewer/model/reducer.js';
+import { routePlannerSettingsInitialState } from '@features/routePlanner/model/settingsReducer.js';
+import { trackViewerSettingsInitialState } from '@features/trackViewer/model/settingsReducer.js';
 import storage from 'local-storage-fallback';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
@@ -208,7 +209,6 @@ describe('getInitialState — merge over initialState', () => {
       routePlanner: {
         transportType: 'car',
         milestones: 'abs',
-        preventHint: true,
       },
     });
 
@@ -216,17 +216,52 @@ describe('getInitialState — merge over initialState', () => {
       ...routePlannerInitialState,
       transportType: 'car',
       milestones: 'abs',
+    });
+  });
+
+  it('migrates colorize/preventHint prefs from a legacy routePlanner blob', () => {
+    seed({
+      routePlanner: {
+        transportType: 'car',
+        colorizeBy: 'elevation',
+        colorizeLegend: false,
+        preventHint: true,
+      },
+    });
+
+    expect(getInitialState().routePlannerSettings).toEqual({
+      ...routePlannerSettingsInitialState,
+      colorizeBy: 'elevation',
+      colorizeLegend: false,
       preventHint: true,
     });
   });
 
-  it('merges a partial trackViewer blob over its initial state', () => {
-    seed({ trackViewer: { colorizeTrackBy: 'heartRate' } });
+  it('merges a partial trackViewerSettings blob over its initial state', () => {
+    seed({ trackViewerSettings: { colorizeTrackBy: 'heartRate' } });
 
-    expect(getInitialState().trackViewer).toEqual({
-      ...trackViewerInitialState,
+    expect(getInitialState().trackViewerSettings).toEqual({
+      ...trackViewerSettingsInitialState,
       colorizeTrackBy: 'heartRate',
     });
+  });
+
+  it('migrates legacy trackViewer colorize even when a style-only trackViewerSettings blob already exists', () => {
+    // The settings key pre-dates the colorize move (it persisted `style`), so
+    // the merge must fill colorize from the legacy `trackViewer` key rather than
+    // letting the present primary shadow it.
+    seed({
+      trackViewerSettings: {
+        style: { ...trackViewerSettingsInitialState.style, color: '#abcdef' },
+      },
+      trackViewer: { colorizeTrackBy: 'heartRate', colorizeLegend: false },
+    });
+
+    const settings = getInitialState().trackViewerSettings;
+
+    expect(settings?.style.color).toBe('#abcdef');
+    expect(settings?.colorizeTrackBy).toBe('heartRate');
+    expect(settings?.colorizeLegend).toBe(false);
   });
 
   it('merges a partial mapDetails blob over its initial state', () => {

@@ -335,10 +335,10 @@ export function handleLocationChange(store: MyStore): void {
   const colorizeTrackBy = query['track-colorize-by'];
 
   if (typeof colorizeTrackBy === 'string') {
-    if (getState().trackViewer.colorizeTrackBy !== colorizeTrackBy) {
+    if (getState().trackViewerSettings.colorizeTrackBy !== colorizeTrackBy) {
       dispatch(trackViewerColorizeTrackBy(colorizeTrackBy as ColorizingMode));
     }
-  } else if (getState().trackViewer.colorizeTrackBy) {
+  } else if (getState().trackViewerSettings.colorizeTrackBy) {
     dispatch(trackViewerColorizeTrackBy(null));
   }
 

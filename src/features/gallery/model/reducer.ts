@@ -2,14 +2,13 @@ import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { l10nSetLanguage } from '@features/l10n/model/actions.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { createReducer } from '@reduxjs/toolkit';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { latLonToString } from '@shared/geoutils.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { PictureModel } from '../components/GalleryEditForm.js';
 import {
-  type GalleryColorizeBy,
   type GalleryFilter,
   type GalleryItem,
   type GalleryItemError,
@@ -17,14 +16,11 @@ import {
   type GalleryUser,
   type GalleryValidationError,
   galleryAddItem,
-  galleryAddTag,
   galleryCancelShowOnTheMap,
   galleryClear,
-  galleryColorizeBy,
   galleryConfirmPickedPosition,
   galleryEditPicture,
   galleryMergeItem,
-  galleryQuickAddTag,
   galleryRemoveItem,
   galleryRequestImage,
   gallerySavePicture,
@@ -40,8 +36,6 @@ import {
   gallerySetTags,
   gallerySetUsers,
   galleryShowOnTheMap,
-  galleryToggleDirection,
-  galleryToggleLegend,
   galleryTogglePremium,
   galleryToggleShowPreview,
   galleryUpload,
@@ -56,7 +50,6 @@ export interface GalleryState {
   pickingPositionForId: number | null;
   pickingPosition: LatLon | null;
   showPreview: boolean;
-  premium: boolean;
   uploadingId: number | null;
   tags: GalleryTag[];
   users: GalleryUser[];
@@ -67,10 +60,6 @@ export interface GalleryState {
   showPosition: boolean;
   language: string;
   saveErrors: GalleryItemError[];
-  colorizeBy: GalleryColorizeBy | null;
-  recentTags: string[];
-  showDirection: boolean;
-  showLegend: boolean;
 }
 
 export const galleryInitialState: GalleryState = {
@@ -82,7 +71,6 @@ export const galleryInitialState: GalleryState = {
   pickingPositionForId: null,
   pickingPosition: null,
   showPreview: false,
-  premium: true,
 
   uploadingId: null,
 
@@ -106,10 +94,6 @@ export const galleryInitialState: GalleryState = {
   saveErrors: [],
   showPosition: false,
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
-  colorizeBy: null,
-  recentTags: [],
-  showDirection: true,
-  showLegend: true,
 };
 
 export const galleryReducer = createReducer(galleryInitialState, (builder) =>
@@ -121,11 +105,8 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     })
     .addCase(clearMapFeatures, (state) => ({
       ...galleryInitialState,
-      showDirection: state.showDirection,
-      showLegend: state.showLegend,
-      premium: state.premium,
+      // `dirtySeq` is a render counter, not a pref; carry it across a clear.
       dirtySeq: state.dirtySeq,
-      colorizeBy: state.colorizeBy,
     }))
     .addCase(gallerySetImageIds, (state, action) => ({
       ...state,
@@ -186,13 +167,6 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       state.items = state.items.map((item) =>
         item.id === action.payload.id ? { ...item, ...action.payload } : item,
       );
-
-      if (state.items) {
-        const len = state.items.filter((item) => item.premium).length;
-
-        state.premium =
-          len === 0 ? false : len === state.items.length ? true : state.premium;
-      }
     })
     .addCase(gallerySetItemError, (state, action) => {
       const item = state.items.find((item) => item.id === action.payload.id);
@@ -320,11 +294,9 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     .addCase(galleryToggleShowPreview, (state) => {
       state.showPreview = !state.showPreview;
     })
-    .addCase(galleryTogglePremium, (state) => {
-      state.premium = !state.premium;
-
+    .addCase(galleryTogglePremium, (state, action) => {
       for (const item of state.items) {
-        item.premium = state.premium;
+        item.premium = action.payload;
       }
     })
     .addCase(l10nSetLanguage, (state, action) => {
@@ -333,33 +305,10 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     .addCase(gallerySavePicture, (state) => {
       state.saveErrors = state.editModel ? getErrors(state.editModel) : [];
     })
-    .addCase(galleryColorizeBy, (state, action) => {
-      state.colorizeBy = action.payload;
-    })
     .addCase(mapsLoaded, (state, action) => {
       state.filter =
         action.payload.data.galleryFilter ?? galleryInitialState.filter;
-    })
-    .addCase(galleryToggleDirection, (state, action) => {
-      state.showDirection = action.payload ?? !state.showDirection;
-    })
-    .addCase(galleryToggleLegend, (state, action) => {
-      state.showLegend = action.payload ?? !state.showLegend;
-    })
-    .addMatcher(
-      isAnyOf(galleryAddTag, galleryQuickAddTag),
-      (state, { payload }) => {
-        const i = state.recentTags.indexOf(payload);
-
-        if (i > -1) {
-          state.recentTags.splice(i, 1);
-        }
-
-        state.recentTags.unshift(payload);
-
-        state.recentTags.splice(8);
-      },
-    ),
+    }),
 );
 
 function getErrors(item: GalleryItem | PictureModel) {

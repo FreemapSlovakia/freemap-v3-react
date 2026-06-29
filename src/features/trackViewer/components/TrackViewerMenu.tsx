@@ -116,11 +116,11 @@ export function TrackViewerMenu(): ReactElement {
   );
 
   const colorizeTrackBy = useAppSelector(
-    (state) => state.trackViewer.colorizeTrackBy,
+    (state) => state.trackViewerSettings.colorizeTrackBy,
   );
 
   const colorizeLegend = useAppSelector(
-    (state) => state.trackViewer.colorizeLegend,
+    (state) => state.trackViewerSettings.colorizeLegend,
   );
 
   const elevationDecision = useAppSelector(

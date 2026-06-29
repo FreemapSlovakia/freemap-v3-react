@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   routePlannerAddPoint,
   routePlannerDelete,
-  routePlannerPreventHint,
   routePlannerRemovePoint,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetMode,
@@ -193,13 +192,12 @@ describe('routePlannerReducer — mode & transport type', () => {
 });
 
 describe('routePlannerReducer — reset & misc', () => {
-  it('delete resets to initial but preserves transport/mode/milestones/hint', () => {
+  it('delete resets to initial but preserves transport/mode/milestones', () => {
     const state = {
       ...routePlannerInitialState,
       transportType: 'car' as const,
       mode: 'trip' as const,
       milestones: 'rel' as const,
-      preventHint: true,
       points: [pt(0, 0), pt(1, 1)],
     };
 
@@ -210,16 +208,6 @@ describe('routePlannerReducer — reset & misc', () => {
     expect(next.transportType).toBe('car');
     expect(next.mode).toBe('trip');
     expect(next.milestones).toBe('rel');
-    expect(next.preventHint).toBe(true);
-  });
-
-  it('preventHint sets the flag', () => {
-    const next = routePlannerReducer(
-      routePlannerInitialState,
-      routePlannerPreventHint(),
-    );
-
-    expect(next.preventHint).toBe(true);
   });
 
   it('toggleItineraryVisibility flips the flag', () => {

@@ -198,7 +198,10 @@ export const galleryToggleShowPreview = createAction(
   'GALLERY_TOGGLE_SHOW_PREVIEW',
 );
 
-export const galleryTogglePremium = createAction('GALLERY_TOGGLE_PREMIUM');
+/** Sets the premium flag on every current upload item, and the persisted default. */
+export const galleryTogglePremium = createAction<boolean>(
+  'GALLERY_TOGGLE_PREMIUM',
+);
 
 export const galleryQuickAddTag = createAction<string>('GALLERY_QUICK_ADD_TAG');
 

@@ -12,7 +12,6 @@ import {
   RoutingModeSchema,
 } from '@features/routePlanner/model/actions.js';
 import { TrackedDeviceSchema } from '@features/tracking/model/types.js';
-import { ColorizingModeSchema } from '@features/trackViewer/model/actions.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import z from 'zod';
@@ -86,11 +85,13 @@ const MapMapDataCompatSchema = z.preprocess(
   }),
 );
 
+// Colorize is a global display preference (`trackViewerSettings`), not part of
+// the saved map document, so it is intentionally absent here; an old map's
+// `colorizeTrackBy` is simply ignored on load.
 const TrackViewerMapDataSchema = z.object({
   trackGeojson: GeoJSONFeatureCollectionSchema.nullable().optional(),
   trackUID: z.string().nullable().optional(),
   gpxUrl: z.string().nullable().optional(),
-  colorizeTrackBy: ColorizingModeSchema.nullable().optional(),
 });
 
 const MapsLoadResponseSchema = z.object({

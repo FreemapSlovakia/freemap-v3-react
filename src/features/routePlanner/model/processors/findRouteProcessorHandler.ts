@@ -501,7 +501,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
   if (
     !(ttDef.api === 'gh' && mode !== 'route') &&
-    !getState().routePlanner.preventHint &&
+    !getState().routePlannerSettings.preventHint &&
     points.length < 3 &&
     isStartOrFinishAction(action)
   ) {

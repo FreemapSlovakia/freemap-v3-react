@@ -55,12 +55,16 @@ export default function GalleryMenu() {
   const confirm = useConfirm();
 
   const colorizeBy = useAppSelector(
-    (state) => state.gallery.colorizeBy ?? 'disable',
+    (state) => state.gallerySettings.colorizeBy ?? 'disable',
   );
 
-  const showDirection = useAppSelector((state) => state.gallery.showDirection);
+  const showDirection = useAppSelector(
+    (state) => state.gallerySettings.showDirection,
+  );
 
-  const showLegend = useAppSelector((state) => state.gallery.showLegend);
+  const showLegend = useAppSelector(
+    (state) => state.gallerySettings.showLegend,
+  );
 
   const sendGalleryEmails = useAppSelector(
     (state) => state.auth.user?.sendGalleryEmails,

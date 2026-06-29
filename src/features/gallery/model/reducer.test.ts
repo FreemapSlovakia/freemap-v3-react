@@ -4,14 +4,10 @@ import { describe, expect, it } from 'vitest';
 import {
   type GalleryItem,
   galleryAddItem,
-  galleryAddTag,
-  galleryColorizeBy,
   galleryMergeItem,
   galleryRemoveItem,
   galleryRequestImage,
   gallerySetItemError,
-  galleryToggleDirection,
-  galleryToggleLegend,
   galleryTogglePremium,
   galleryUpload,
 } from './actions.js';
@@ -19,8 +15,8 @@ import { galleryInitialState, galleryReducer } from './reducer.js';
 
 /**
  * Pure reducer tests for the gallery slice — focused on the branchy logic:
- * image navigation, premium recomputation on merge, upload error gating, and
- * the recent-tags MRU list.
+ * image navigation, item merge, premium propagation to items, and upload error
+ * gating.
  */
 
 // GalleryItem requires a `File`; tests only touch id/premium/errors/position,
@@ -117,43 +113,7 @@ describe('galleryReducer — items CRUD', () => {
   });
 });
 
-describe('galleryReducer — mergeItem premium recomputation', () => {
-  it('sets premium false when no item is premium', () => {
-    const state = {
-      ...galleryInitialState,
-      premium: true,
-      items: [item({ id: 1, premium: false }), item({ id: 2, premium: false })],
-    };
-
-    const next = galleryReducer(state, galleryMergeItem({ id: 1 }));
-
-    expect(next.premium).toBe(false);
-  });
-
-  it('sets premium true when every item is premium', () => {
-    const state = {
-      ...galleryInitialState,
-      premium: false,
-      items: [item({ id: 1, premium: true }), item({ id: 2, premium: true })],
-    };
-
-    const next = galleryReducer(state, galleryMergeItem({ id: 1 }));
-
-    expect(next.premium).toBe(true);
-  });
-
-  it('keeps the current premium flag on a mixed set', () => {
-    const state = {
-      ...galleryInitialState,
-      premium: true,
-      items: [item({ id: 1, premium: true }), item({ id: 2, premium: false })],
-    };
-
-    const next = galleryReducer(state, galleryMergeItem({ id: 1 }));
-
-    expect(next.premium).toBe(true);
-  });
-
+describe('galleryReducer — mergeItem', () => {
   it('merges the payload into the matching item', () => {
     const state = {
       ...galleryInitialState,
@@ -197,82 +157,19 @@ describe('galleryReducer — upload error gating', () => {
 });
 
 describe('galleryReducer — togglePremium propagates to items', () => {
-  it('flips premium and applies it to every item', () => {
+  it('applies the target premium value to every item', () => {
     const state = {
       ...galleryInitialState,
-      premium: false,
       items: [item({ id: 1, premium: false }), item({ id: 2, premium: false })],
     };
 
-    const next = galleryReducer(state, galleryTogglePremium());
+    const next = galleryReducer(state, galleryTogglePremium(true));
 
-    expect(next.premium).toBe(true);
     expect(next.items.every((i) => i.premium)).toBe(true);
   });
 });
 
-describe('galleryReducer — recent tags (MRU, capped at 8)', () => {
-  it('unshifts a new tag to the front', () => {
-    const next = galleryReducer(galleryInitialState, galleryAddTag('forest'));
-
-    expect(next.recentTags).toEqual(['forest']);
-  });
-
-  it('moves an existing tag back to the front without duplicating', () => {
-    const state = { ...galleryInitialState, recentTags: ['a', 'b', 'c'] };
-
-    const next = galleryReducer(state, galleryAddTag('c'));
-
-    expect(next.recentTags).toEqual(['c', 'a', 'b']);
-  });
-
-  it('caps the list at 8 entries', () => {
-    const state = {
-      ...galleryInitialState,
-      recentTags: ['1', '2', '3', '4', '5', '6', '7', '8'],
-    };
-
-    const next = galleryReducer(state, galleryAddTag('9'));
-
-    expect(next.recentTags).toHaveLength(8);
-    expect(next.recentTags[0]).toBe('9');
-    expect(next.recentTags).not.toContain('8');
-  });
-});
-
-describe('galleryReducer — toggles & resets', () => {
-  it('toggleDirection flips with no payload, honors an explicit value', () => {
-    const flipped = galleryReducer(
-      galleryInitialState,
-      galleryToggleDirection(undefined),
-    );
-    expect(flipped.showDirection).toBe(!galleryInitialState.showDirection);
-
-    const explicit = galleryReducer(
-      galleryInitialState,
-      galleryToggleDirection(false),
-    );
-    expect(explicit.showDirection).toBe(false);
-  });
-
-  it('toggleLegend honors an explicit value', () => {
-    const next = galleryReducer(
-      galleryInitialState,
-      galleryToggleLegend(false),
-    );
-
-    expect(next.showLegend).toBe(false);
-  });
-
-  it('colorizeBy stores the mode', () => {
-    const next = galleryReducer(
-      galleryInitialState,
-      galleryColorizeBy('rating'),
-    );
-
-    expect(next.colorizeBy).toBe('rating');
-  });
-
+describe('galleryReducer — resets', () => {
   it('mapRefocus to layers without the gallery overlay resets the filter', () => {
     const state = {
       ...galleryInitialState,
@@ -295,25 +192,17 @@ describe('galleryReducer — toggles & resets', () => {
     expect(next.filter.tag).toBe('x');
   });
 
-  it('clearMapFeatures resets items but preserves display prefs', () => {
+  it('clearMapFeatures resets items but preserves dirtySeq', () => {
     const state = {
       ...galleryInitialState,
       items: [item({ id: 1 })],
-      showDirection: false,
-      showLegend: false,
-      premium: false,
       dirtySeq: 7,
-      colorizeBy: 'rating' as const,
     };
 
     const next = galleryReducer(state, clearMapFeatures());
 
     expect(next.items).toEqual([]);
-    expect(next.showDirection).toBe(false);
-    expect(next.showLegend).toBe(false);
-    expect(next.premium).toBe(false);
     expect(next.dirtySeq).toBe(7);
-    expect(next.colorizeBy).toBe('rating');
   });
 
   it('setActiveModal(null) clears items and the picking target', () => {

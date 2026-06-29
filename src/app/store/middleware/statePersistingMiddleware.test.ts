@@ -37,9 +37,13 @@ function makeState(): RootState {
     },
     objectsSettings: { selectedIcon: 'pin', color: '#d00000' },
     routePlanner: {
-      preventHint: true,
       transportType: 'hiking',
       milestones: false,
+    },
+    routePlannerSettings: {
+      colorizeBy: null,
+      colorizeLegend: true,
+      preventHint: true,
     },
     auth: {
       user: {
@@ -69,11 +73,11 @@ function makeState(): RootState {
       resolutionScale: null,
       featureScale: 1,
     },
-    gallery: {
+    gallerySettings: {
       colorizeBy: null,
+      recentTags: ['x'],
       showDirection: true,
       showLegend: true,
-      recentTags: ['x'],
       premium: true,
     },
     mapDetails: { excludeSources: [] },
@@ -88,7 +92,6 @@ function makeState(): RootState {
         lineJoin: 'round',
       },
     },
-    trackViewer: { colorizeTrackBy: 'heartRate' },
     trackViewerSettings: {
       style: {
         color: '#0000ff',
@@ -99,8 +102,10 @@ function makeState(): RootState {
         lineCap: 'round',
         lineJoin: 'round',
       },
+      colorizeTrackBy: 'heartRate',
+      colorizeLegend: true,
     },
-    tracking: { colorizeBy: 'speed' },
+    trackingSettings: { colorizeBy: 'speed', colorizeLegend: true },
   } as unknown as RootState;
 }
 
@@ -154,9 +159,13 @@ describe('statePersistingMiddleware — what gets persisted', () => {
       },
       objectsSettings: { selectedIcon: 'pin', color: '#d00000' },
       routePlanner: {
-        preventHint: true,
         transportType: 'hiking',
         milestones: false,
+      },
+      routePlannerSettings: {
+        colorizeBy: null,
+        colorizeLegend: true,
+        preventHint: true,
       },
       auth: {
         user: {
@@ -187,11 +196,11 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         resolutionScale: null,
         featureScale: 1,
       },
-      gallery: {
+      gallerySettings: {
         colorizeBy: null,
+        recentTags: ['x'],
         showDirection: true,
         showLegend: true,
-        recentTags: ['x'],
         premium: true,
       },
       mapDetails: { excludeSources: [] },
@@ -206,7 +215,6 @@ describe('statePersistingMiddleware — what gets persisted', () => {
           lineJoin: 'round',
         },
       },
-      trackViewer: { colorizeTrackBy: 'heartRate' },
       trackViewerSettings: {
         style: {
           color: '#0000ff',
@@ -217,8 +225,10 @@ describe('statePersistingMiddleware — what gets persisted', () => {
           lineCap: 'round',
           lineJoin: 'round',
         },
+        colorizeTrackBy: 'heartRate',
+        colorizeLegend: true,
       },
-      tracking: { colorizeBy: 'speed' },
+      trackingSettings: { colorizeBy: 'speed', colorizeLegend: true },
     });
   });
 
@@ -235,18 +245,18 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         'auth',
         'cookieConsent',
         'drawingSettings',
-        'gallery',
         'homeLocation',
         'l10n',
         'main',
         'map',
         'mapDetails',
+        'gallerySettings',
         'objectsSettings',
         'routePlanner',
+        'routePlannerSettings',
         'searchSettings',
-        'trackViewer',
         'trackViewerSettings',
-        'tracking',
+        'trackingSettings',
       ].sort(),
     );
   });
@@ -309,11 +319,11 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.routePlanner?.transportType).toBe('hiking');
     expect(initial.map?.layers).toEqual(['X']);
     expect(initial.map?.zoom).toBe(8);
-    expect(initial.gallery?.recentTags).toEqual(['x']);
-    // trackViewer.colorizeTrackBy round-trips through save → rehydrate.
-    expect(initial.trackViewer?.colorizeTrackBy).toBe('heartRate');
-    // tracking.colorizeBy round-trips through save → rehydrate.
-    expect(initial.tracking?.colorizeBy).toBe('speed');
+    expect(initial.gallerySettings?.recentTags).toEqual(['x']);
+    // trackViewerSettings.colorizeTrackBy round-trips through save → rehydrate.
+    expect(initial.trackViewerSettings?.colorizeTrackBy).toBe('heartRate');
+    // trackingSettings.colorizeBy round-trips through save → rehydrate.
+    expect(initial.trackingSettings?.colorizeBy).toBe('speed');
 
     // premiumExpiration round-trips Date → ISO string → Date.
     expect(initial.auth?.user?.premiumExpiration).toBeInstanceOf(Date);

@@ -11,6 +11,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -57,7 +58,16 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const premium = useAppSelector((state) => state.gallery.premium);
+  const defaultPremium = useAppSelector(
+    (state) => state.gallerySettings.premium,
+  );
+
+  // Checkbox reflects the current batch: all-premium when items exist (the
+  // `indeterminate` ref handles the mixed case), else the persisted default.
+  const premium = useMemo(
+    () => (items.length ? items.every((item) => item.premium) : defaultPremium),
+    [items, defaultPremium],
+  );
 
   const handleItemMerge = useCallback(
     (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {
@@ -279,7 +289,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
             <Form.Check
               id="chk-premium"
               type="checkbox"
-              onChange={() => dispatch(galleryTogglePremium())}
+              onChange={() => dispatch(galleryTogglePremium(!premium))}
               checked={premium}
               label={gm?.uploadModal.premium}
               ref={premiumCheck}

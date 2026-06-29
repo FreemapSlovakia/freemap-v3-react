@@ -57,7 +57,7 @@ export default function TrackViewerResult({
   );
 
   const colorizeTrackBy = useAppSelector(
-    (state) => state.trackViewer.colorizeTrackBy,
+    (state) => state.trackViewerSettings.colorizeTrackBy,
   );
 
   // Style applied to imported features that carry no style of their own. Its own

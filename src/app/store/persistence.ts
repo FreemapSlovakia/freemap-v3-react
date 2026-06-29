@@ -7,7 +7,7 @@ import {
   drawingSettingsInitialState,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
-import { galleryInitialState } from '@features/gallery/model/reducer.js';
+import { gallerySettingsInitialState } from '@features/gallery/model/settingsReducer.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
 import { LayerSettingsSchema } from '@features/map/model/actions.js';
@@ -17,11 +17,12 @@ import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
+import { routePlannerSettingsInitialState } from '@features/routePlanner/model/settingsReducer.js';
 import { SearchResultStyleSchema } from '@features/search/model/actions.js';
 import { searchSettingsInitialState } from '@features/search/model/settingsReducer.js';
-import { trackingInitialState } from '@features/tracking/model/reducer.js';
-import { trackViewerInitialState } from '@features/trackViewer/model/reducer.js';
+import { trackingSettingsInitialState } from '@features/tracking/model/settingsReducer.js';
 import { trackViewerSettingsInitialState } from '@features/trackViewer/model/settingsReducer.js';
+import { ColorizeSettingsShape } from '@shared/colorizers/colorizeSettings.js';
 import { ColorizingModeSchema } from '@shared/colorizers/index.js';
 import { LanguageSchema } from '@shared/langUtils.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
@@ -104,13 +105,20 @@ export const PersistedObjectsSettingsSchema = z
   })
   .partial();
 
+// `transportType`/`milestones` stay in the transient route slice (the route
+// document state the reducer routes on, also URL-synced and saved per map);
+// they are persisted only as last-used defaults that survive a map clear.
 export const PersistedRoutePlannerSchema = z
   .object({
-    preventHint: z.boolean(),
     transportType: TransportTypeCompatSchema,
     milestones: z.union([z.literal('abs'), z.literal('rel'), z.literal(false)]),
-    colorizeBy: ColorizingModeSchema.nullable(),
-    colorizeLegend: z.boolean(),
+  })
+  .partial();
+
+export const PersistedRoutePlannerSettingsSchema = z
+  .object({
+    ...ColorizeSettingsShape,
+    preventHint: z.boolean(),
   })
   .partial();
 
@@ -120,24 +128,16 @@ export const PersistedSearchSettingsSchema = z
   })
   .partial();
 
-export const PersistedTrackViewerSchema = z
+export const PersistedTrackViewerSettingsSchema = z
   .object({
+    style: DrawingStyleSchema.partial(),
     colorizeTrackBy: ColorizingModeSchema.nullable(),
     colorizeLegend: z.boolean(),
   })
   .partial();
 
-export const PersistedTrackViewerSettingsSchema = z
-  .object({
-    style: DrawingStyleSchema.partial(),
-  })
-  .partial();
-
-export const PersistedTrackingSchema = z
-  .object({
-    colorizeBy: ColorizingModeSchema.nullable(),
-    colorizeLegend: z.boolean(),
-  })
+export const PersistedTrackingSettingsSchema = z
+  .object(ColorizeSettingsShape)
   .partial();
 
 const MapDetailsSourceSchema = z.union([
@@ -155,12 +155,12 @@ export const PersistedMapDetailsSchema = z
   })
   .partial();
 
-export const PersistedGallerySchema = z
+export const PersistedGallerySettingsSchema = z
   .object({
     colorizeBy: GalleryColorizeBySchema.nullable(),
+    recentTags: z.array(z.string()),
     showDirection: z.boolean(),
     showLegend: z.boolean(),
-    recentTags: z.array(z.string()),
     premium: z.boolean(),
   })
   .partial();
@@ -179,6 +179,8 @@ type PersistEntry<K extends keyof RootState = keyof RootState> = {
   initial: RootState[K];
   /** Another slice this data may also live under (e.g. `main`); read if the primary is absent/empty. */
   fallbackKey?: keyof RootState;
+  /** Merge the `fallbackKey` data under the primary (fill gaps) instead of letting a non-empty primary win — needed only when the primary key predates a migrated field (currently just `trackViewerSettings`, whose key already held `style`). */
+  mergeFallback?: boolean;
   /** Merge parsed data over `initial`. Default: `{ ...initial, ...data }`. */
   rehydrate?: (initial: RootState[K], data: any) => RootState[K];
   /** What to write to localStorage on save; omit to make the slice rehydrate-only. */
@@ -280,11 +282,20 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedRoutePlannerSchema,
     initial: routePlannerInitialState,
     persist: (r) => ({
-      preventHint: r.preventHint,
       transportType: r.transportType,
       milestones: r.milestones,
-      colorizeBy: r.colorizeBy,
-      colorizeLegend: r.colorizeLegend,
+    }),
+  }),
+  defineEntry({
+    key: 'routePlannerSettings',
+    schema: PersistedRoutePlannerSettingsSchema,
+    initial: routePlannerSettingsInitialState,
+    // Also read these prefs from the `routePlanner` blob, which can carry them.
+    fallbackKey: 'routePlanner',
+    persist: (s) => ({
+      colorizeBy: s.colorizeBy,
+      colorizeLegend: s.colorizeLegend,
+      preventHint: s.preventHint,
     }),
   }),
   defineEntry({
@@ -298,28 +309,32 @@ const PERSIST: PersistEntry[] = [
     persist: (s) => ({ resultStyle: s.resultStyle }),
   }),
   defineEntry({
-    key: 'trackViewer',
-    schema: PersistedTrackViewerSchema,
-    initial: trackViewerInitialState,
+    key: 'trackViewerSettings',
+    schema: PersistedTrackViewerSettingsSchema,
+    initial: trackViewerSettingsInitialState,
+    // Also read the colorize prefs from the legacy `trackViewer` blob. This
+    // slice's key predates the colorize move (it persisted `style`), so the
+    // fallback must fill colorize per key rather than be shadowed by the
+    // already-present primary.
+    fallbackKey: 'trackViewer',
+    mergeFallback: true,
+    rehydrate: (initial, data) => ({
+      ...initial,
+      ...data,
+      style: { ...initial.style, ...data.style },
+    }),
     persist: (t) => ({
+      style: t.style,
       colorizeTrackBy: t.colorizeTrackBy,
       colorizeLegend: t.colorizeLegend,
     }),
   }),
   defineEntry({
-    key: 'trackViewerSettings',
-    schema: PersistedTrackViewerSettingsSchema,
-    initial: trackViewerSettingsInitialState,
-    rehydrate: (initial, data) => ({
-      ...initial,
-      style: { ...initial.style, ...data.style },
-    }),
-    persist: (t) => ({ style: t.style }),
-  }),
-  defineEntry({
-    key: 'tracking',
-    schema: PersistedTrackingSchema,
-    initial: trackingInitialState,
+    key: 'trackingSettings',
+    schema: PersistedTrackingSettingsSchema,
+    initial: trackingSettingsInitialState,
+    // Also read these prefs from the `tracking` blob, which can carry them.
+    fallbackKey: 'tracking',
     persist: (t) => ({
       colorizeBy: t.colorizeBy,
       colorizeLegend: t.colorizeLegend,
@@ -332,14 +347,16 @@ const PERSIST: PersistEntry[] = [
     persist: (m) => ({ excludeSources: m.excludeSources }),
   }),
   defineEntry({
-    key: 'gallery',
-    schema: PersistedGallerySchema,
-    initial: galleryInitialState,
+    key: 'gallerySettings',
+    schema: PersistedGallerySettingsSchema,
+    initial: gallerySettingsInitialState,
+    // Also read these prefs from the `gallery` blob, which can carry them.
+    fallbackKey: 'gallery',
     persist: (g) => ({
       colorizeBy: g.colorizeBy,
+      recentTags: g.recentTags,
       showDirection: g.showDirection,
       showLegend: g.showLegend,
-      recentTags: g.recentTags,
       premium: g.premium,
     }),
   }),
@@ -362,7 +379,12 @@ export function getInitialState(): Partial<RootState> {
     let data: unknown;
 
     if (entry.fallbackKey) {
-      data = parseWithFallback(entry.schema, raw, persisted[entry.fallbackKey]);
+      data = parseWithFallback(
+        entry.schema,
+        raw,
+        persisted[entry.fallbackKey],
+        entry.mergeFallback,
+      );
     } else {
       const result = entry.schema.safeParse(raw);
 
@@ -397,16 +419,31 @@ function parseWithFallback<T>(
   schema: z.ZodType<T>,
   primary: unknown,
   fallback: unknown,
+  merge = false,
 ): T | undefined {
   const a = schema.safeParse(primary);
 
-  if (a.success && Object.keys(a.data as object).length > 0) {
-    return a.data;
+  const primaryData =
+    a.success && Object.keys(a.data as object).length > 0 ? a.data : undefined;
+
+  if (primaryData && !merge) {
+    return primaryData;
   }
 
   const b = schema.safeParse(fallback);
 
-  return b.success && Object.keys(b.data as object).length > 0
-    ? b.data
-    : undefined;
+  const fallbackData =
+    b.success && Object.keys(b.data as object).length > 0 ? b.data : undefined;
+
+  // With `merge`, the fallback supplies the base and the primary overrides per
+  // key, so a value left behind in the legacy slice fills a key the primary
+  // lacks (needed when the primary key predates the migrated field). Otherwise
+  // a non-empty primary wins outright.
+  if (merge) {
+    return primaryData || fallbackData
+      ? ({ ...(fallbackData as object), ...(primaryData as object) } as T)
+      : undefined;
+  }
+
+  return fallbackData;
 }

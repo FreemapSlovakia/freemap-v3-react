@@ -42,7 +42,8 @@ export function pictureLegendApplies(
 
 export function PictureLegend() {
   const colorizeBy = useAppSelector(
-    (state) => state.map.layers.includes('I') && state.gallery.colorizeBy,
+    (state) =>
+      state.map.layers.includes('I') && state.gallerySettings.colorizeBy,
   );
 
   const gm = useGalleryMessages();

@@ -87,7 +87,9 @@ export function RoutePlannerResult(): ReactElement {
 
   const mode = useAppSelector((state) => state.routePlanner.mode);
 
-  const colorizeBy = useAppSelector((state) => state.routePlanner.colorizeBy);
+  const colorizeBy = useAppSelector(
+    (state) => state.routePlannerSettings.colorizeBy,
+  );
 
   const renderGeojson = useAppSelector(
     (state) => state.routePlanner.renderGeojson,

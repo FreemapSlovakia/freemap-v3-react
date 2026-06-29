@@ -35,8 +35,6 @@ const withTracks = (tracks: Track[]) => ({
   tracks,
   showLine: true,
   showPoints: true,
-  colorizeBy: null,
-  colorizeLegend: true,
 });
 
 describe('trackingReducer — tracked devices', () => {

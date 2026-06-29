@@ -51,10 +51,12 @@ export function TrackingMenu(): ReactElement {
 
   const showLine = useAppSelector((state) => state.tracking.showLine);
 
-  const colorizeBy = useAppSelector((state) => state.tracking.colorizeBy);
+  const colorizeBy = useAppSelector(
+    (state) => state.trackingSettings.colorizeBy,
+  );
 
   const colorizeLegend = useAppSelector(
-    (state) => state.tracking.colorizeLegend,
+    (state) => state.trackingSettings.colorizeLegend,
   );
 
   const tracks = useAppSelector((state) => state.tracking.tracks);

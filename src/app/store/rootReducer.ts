@@ -7,6 +7,7 @@ import { drawingPointsReducer } from '@features/drawing/model/reducers/drawingPo
 import { drawingSettingsReducer } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { elevationChartReducer } from '@features/elevationChart/model/reducer.js';
 import { galleryReducer } from '@features/gallery/model/reducer.js';
+import { gallerySettingsReducer } from '@features/gallery/model/settingsReducer.js';
 import { geoIpReducer } from '@features/geoip/model/reducer.js';
 import { homeLocationReducer } from '@features/homeLocation/model/reducer.js';
 import { l10nReducer } from '@features/l10n/model/reducer.js';
@@ -19,10 +20,12 @@ import { objectsReducer } from '@features/objects/model/reducer.js';
 import { objectsSettingsReducer } from '@features/objects/model/settingsReducer.js';
 import { progressReducer } from '@features/progress/model/reducer.js';
 import { routePlannerReducer } from '@features/routePlanner/model/reducer.js';
+import { routePlannerSettingsReducer } from '@features/routePlanner/model/settingsReducer.js';
 import { searchReducer } from '@features/search/model/reducer.js';
 import { searchSettingsReducer } from '@features/search/model/settingsReducer.js';
 import { toastsReducer } from '@features/toasts/model/reducer.js';
 import { trackingReducer } from '@features/tracking/model/reducer.js';
+import { trackingSettingsReducer } from '@features/tracking/model/settingsReducer.js';
 import { trackViewerReducer } from '@features/trackViewer/model/reducer.js';
 import { trackViewerSettingsReducer } from '@features/trackViewer/model/settingsReducer.js';
 import { websocketReducer } from '@features/websocket/model/reducer.js';
@@ -43,6 +46,7 @@ export const reducers = {
   elevationChart: elevationChartReducer,
   geoip: geoIpReducer,
   gallery: galleryReducer,
+  gallerySettings: gallerySettingsReducer,
   homeLocation: homeLocationReducer,
   l10n: l10nReducer,
   location: locationReducer,
@@ -54,10 +58,12 @@ export const reducers = {
   objectsSettings: objectsSettingsReducer,
   progress: progressReducer,
   routePlanner: routePlannerReducer,
+  routePlannerSettings: routePlannerSettingsReducer,
   search: searchReducer,
   searchSettings: searchSettingsReducer,
   toasts: toastsReducer,
   tracking: trackingReducer,
+  trackingSettings: trackingSettingsReducer,
   trackViewer: trackViewerReducer,
   trackViewerSettings: trackViewerSettingsReducer,
   websocket: websocketReducer,

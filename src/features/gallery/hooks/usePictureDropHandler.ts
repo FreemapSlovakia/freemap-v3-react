@@ -14,7 +14,7 @@ export function usePictureDropHandler(
   onItemAdd: (item: GalleryItem) => void,
   onItemChange: (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => void,
 ): (files: File[]) => void {
-  const premium = useAppSelector((state) => state.gallery.premium);
+  const premium = useAppSelector((state) => state.gallerySettings.premium);
 
   const processFile = useCallback(
     (file: File, cb: (err?: unknown) => void) => {

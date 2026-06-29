@@ -6,7 +6,6 @@ import {
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import type { ColorizingMode } from '@shared/colorizers/index.js';
 import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Feature, LineString, Polygon } from 'geojson';
 import {
@@ -17,12 +16,9 @@ import {
   RoutePoint,
   RoutingMode,
   routePlannerAddPoint,
-  routePlannerColorizeBy,
   routePlannerDelete,
-  routePlannerPreventHint,
   routePlannerRemovePoint,
   routePlannerSetActiveAlternativeIndex,
-  routePlannerSetColorizeLegend,
   routePlannerSetFinish,
   routePlannerSetIsochroneParams,
   routePlannerSetIsochrones,
@@ -57,11 +53,6 @@ export interface RoutePlannerCleanResultState {
 }
 
 export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
-  // Survives a re-route: the chosen mode stays applied, and a new result just
-  // refills elevations and recolorizes.
-  colorizeBy: ColorizingMode | null;
-  // Whether the colorize legend is shown; independent of the other tools.
-  colorizeLegend: boolean;
   points: RoutePoint[];
   finishOnly: boolean;
   pickMode: PickMode | null;
@@ -81,8 +72,6 @@ const clearResult: RoutePlannerCleanResultState = {
 };
 
 export const cleanState: RoutePlannerCleanState = {
-  colorizeBy: null,
-  colorizeLegend: true,
   points: [],
   finishOnly: false,
   pickMode: null,
@@ -103,14 +92,12 @@ export interface RoutePlannerState extends RoutePlannerCleanState {
   transportType: TransportType;
   mode: RoutingMode;
   milestones: 'abs' | 'rel' | false;
-  preventHint: boolean;
 }
 
 export const routePlannerInitialState: RoutePlannerState = {
   transportType: 'hiking',
   mode: 'route',
   milestones: false,
-  preventHint: false,
   ...cleanState,
 };
 
@@ -124,14 +111,7 @@ export const routePlannerReducer = createReducer(
         mode: state.mode,
         milestones: state.milestones,
         pickMode: 'start',
-        preventHint: state.preventHint,
       }))
-      .addCase(routePlannerPreventHint, (state) => {
-        return {
-          ...state,
-          preventHint: true,
-        };
-      })
       .addCase(routePlannerToggleMilestones, (state, action) => {
         return {
           ...state,
@@ -176,7 +156,6 @@ export const routePlannerReducer = createReducer(
       )
       .addCase(clearMapFeatures, (state) => ({
         ...routePlannerInitialState,
-        preventHint: state.preventHint,
         transportType: state.transportType,
         mode: state.mode,
         milestones: state.milestones,
@@ -187,7 +166,6 @@ export const routePlannerReducer = createReducer(
         ...(payload.points.length === 0
           ? {
               ...routePlannerInitialState,
-              preventHint: state.preventHint,
               transportType: state.transportType,
               mode: state.mode,
             }
@@ -362,12 +340,6 @@ export const routePlannerReducer = createReducer(
         // A different alternative needs its own render line.
         renderGeojson: null,
       }))
-      .addCase(routePlannerColorizeBy, (state, action) => {
-        state.colorizeBy = action.payload;
-      })
-      .addCase(routePlannerSetColorizeLegend, (state, action) => {
-        state.colorizeLegend = action.payload ?? !state.colorizeLegend;
-      })
       .addCase(routePlannerSetRenderGeojson, (state, action) => {
         state.renderGeojson = action.payload;
       })
@@ -388,7 +360,7 @@ export const routePlannerReducer = createReducer(
       .addCase(
         mapsLoaded,
         (
-          state,
+          _state,
           {
             payload: {
               data: { routePlanner },
@@ -396,7 +368,6 @@ export const routePlannerReducer = createReducer(
           },
         ) => ({
           ...routePlannerInitialState,
-          preventHint: state.preventHint,
           transportType:
             routePlanner?.transportType ??
             routePlannerInitialState.transportType,

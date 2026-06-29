@@ -88,7 +88,9 @@ export function TrackingResult(): ReactElement {
 
   const tracks = useAppSelector((state) => state.tracking.tracks);
 
-  const colorizeBy = useAppSelector((state) => state.tracking.colorizeBy);
+  const colorizeBy = useAppSelector(
+    (state) => state.trackingSettings.colorizeBy,
+  );
 
   const zoom = useAppSelector((state) => state.map.zoom);
 

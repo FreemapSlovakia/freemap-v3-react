@@ -40,10 +40,12 @@ export function Layers(): ReactElement | null {
 
   const galleryFilter = useAppSelector((state) => state.gallery.filter);
 
-  const galleryColorizeBy = useAppSelector((state) => state.gallery.colorizeBy);
+  const galleryColorizeBy = useAppSelector(
+    (state) => state.gallerySettings.colorizeBy,
+  );
 
   const galleryShowDirection = useAppSelector(
-    (state) => state.gallery.showDirection,
+    (state) => state.gallerySettings.showDirection,
   );
 
   const galleryDirtySeq = useAppSelector((state) => state.gallery.dirtySeq);

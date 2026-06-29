@@ -25,7 +25,9 @@ export function RecentTags({
   className,
   prefix,
 }: Props): ReactElement | null {
-  const recentTags = useAppSelector((state) => state.gallery.recentTags);
+  const recentTags = useAppSelector(
+    (state) => state.gallerySettings.recentTags,
+  );
 
   const gm = useGalleryMessages();
 

@@ -3,7 +3,6 @@ import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { rpcEvent, rpcResponse } from '@features/rpc/model/actions.js';
 import { wsStateChanged } from '@features/websocket/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import type { ColorizingMode } from '@shared/colorizers/index.js';
 import z from 'zod';
 import { trackingActions } from './actions.js';
 import {
@@ -31,9 +30,6 @@ export interface TrackingState {
   tracks: Track[];
   showLine: boolean;
   showPoints: boolean;
-  colorizeBy: ColorizingMode | null;
-  // Whether the colorize legend is shown; independent of the other tools.
-  colorizeLegend: boolean;
 }
 
 export const trackingInitialState: TrackingState = {
@@ -46,8 +42,6 @@ export const trackingInitialState: TrackingState = {
   tracks: [],
   showLine: true,
   showPoints: true,
-  colorizeBy: null,
-  colorizeLegend: true,
 };
 
 export const trackingReducer = createReducer(trackingInitialState, (builder) =>
@@ -115,14 +109,6 @@ export const trackingReducer = createReducer(trackingInitialState, (builder) =>
     .addCase(trackingActions.setShowLine, (state, { payload }) => ({
       ...state,
       showLine: payload,
-    }))
-    .addCase(trackingActions.setColorizeBy, (state, { payload }) => ({
-      ...state,
-      colorizeBy: payload,
-    }))
-    .addCase(trackingActions.setColorizeLegend, (state, { payload }) => ({
-      ...state,
-      colorizeLegend: payload ?? !state.colorizeLegend,
     }))
     .addCase(wsStateChanged, (state, { payload }) =>
       payload.state === 1 ? state : { ...state, tracks: [] },
