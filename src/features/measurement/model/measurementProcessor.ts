@@ -41,7 +41,12 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
 
       window._paq.push(['trackEvent', 'Drawing', 'measure', selection?.type]);
 
-      async function measurePoint(point: LatLon) {
+      // The context-menu path measures a free position with no drawing tool
+      // open, so the drawingClosed predicate must not apply there — otherwise it
+      // dismisses the readout (and cancels the fetch) immediately.
+      async function measurePoint(point: LatLon, tiedToDrawing: boolean) {
+        const statePredicate = tiedToDrawing ? drawingClosed : undefined;
+
         let elevation;
 
         const toastParams: ElevationInfoBaseProps = {
@@ -58,7 +63,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               messageParams: toastParams,
               id: 'measurementInfo',
               cancelType,
-              statePredicate: drawingClosed,
+              statePredicate,
             }),
           );
 
@@ -66,7 +71,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             getState,
             url: `/geotools/elevation?coordinates=${point.lat},${point.lon}`,
             cancelActions: [drawingMeasure, clearMapFeatures],
-            statePredicate: drawingClosed,
+            statePredicate,
           });
 
           elevation = z
@@ -86,13 +91,13 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               elevation,
             },
             cancelType,
-            statePredicate: drawingClosed,
+            statePredicate,
           }),
         );
       }
 
       if (action.payload.position) {
-        await measurePoint(action.payload.position);
+        await measurePoint(action.payload.position, false);
 
         return;
       }
@@ -170,6 +175,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
       } else if (selection?.type === 'draw-points' || action.payload.position) {
         await measurePoint(
           getState().drawingPoints.points[selection.id].coords,
+          true,
         );
       }
     } catch (err) {
