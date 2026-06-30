@@ -10,8 +10,9 @@ type Props = {
 };
 
 /**
- * Warning-styled "Reset to default" footer button shared by the settings/style
- * modals. `type="button"` so it never submits the surrounding form.
+ * "Reset to default" footer button shared by the settings/style modals. Neutral
+ * (`secondary`) because it only refills the form — nothing is saved until the
+ * user submits. `type="button"` so it never submits the surrounding form.
  */
 export function ResetToDefaultsButton({
   onClick,
@@ -21,7 +22,7 @@ export function ResetToDefaultsButton({
 
   return (
     <Button
-      variant="warning"
+      variant="secondary"
       type="button"
       className={className}
       onClick={onClick}

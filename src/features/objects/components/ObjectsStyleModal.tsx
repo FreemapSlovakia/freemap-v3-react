@@ -10,7 +10,10 @@ import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { objectsSetSettings } from '../model/actions.js';
+import {
+  objectsSetSelectedColor,
+  objectsSetSelectedIcon,
+} from '../model/actions.js';
 import { objectsSettingsInitialState } from '../model/settingsReducer.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
@@ -42,12 +45,9 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    dispatch(
-      objectsSetSettings({
-        selectedIcon: editedMarkerType,
-        color: editedColor,
-      }),
-    );
+    dispatch(objectsSetSelectedIcon(editedMarkerType));
+
+    dispatch(objectsSetSelectedColor(editedColor));
 
     close();
   };

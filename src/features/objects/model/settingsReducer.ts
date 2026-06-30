@@ -4,7 +4,6 @@ import {
   MarkerType,
   objectsSetSelectedColor,
   objectsSetSelectedIcon,
-  objectsSetSettings,
 } from './actions.js';
 
 // Marker shape + color applied to displayed objects. A dedicated, persisted
@@ -29,9 +28,5 @@ export const objectsSettingsReducer = createReducer(
       })
       .addCase(objectsSetSelectedColor, (state, action) => {
         state.color = action.payload;
-      })
-      .addCase(objectsSetSettings, (state, action) => {
-        state.selectedIcon = action.payload.selectedIcon;
-        state.color = action.payload.color;
       }),
 );

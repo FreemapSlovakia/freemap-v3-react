@@ -25,9 +25,3 @@ export const objectsSetSelectedIcon = createAction<MarkerType>(
 export const objectsSetSelectedColor = createAction<string>(
   'OBJECTS_SET_SELECTED_COLOR',
 );
-
-/** Sets the marker shape and color together in a single dispatch. */
-export const objectsSetSettings = createAction<{
-  selectedIcon: MarkerType;
-  color: string;
-}>('OBJECTS_SET_SETTINGS');
