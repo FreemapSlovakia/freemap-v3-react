@@ -32,6 +32,16 @@ export default function DrawingLinePointSelection(): ReactElement | null {
       : undefined,
   );
 
+  const point = useAppSelector((state) => {
+    const sel = state.main.selection;
+
+    return sel?.type === 'line-point'
+      ? state.drawingLines.lines[sel.lineIndex]?.points.find(
+          (p) => p.id === sel.pointId,
+        )
+      : undefined;
+  });
+
   const joining = useAppSelector(
     (state) => state.drawingLines.joinWith !== undefined,
   );
@@ -61,6 +71,12 @@ export default function DrawingLinePointSelection(): ReactElement | null {
         </LongPressTooltip>
       </Toolbar>
     );
+  }
+
+  // The point may have been deleted while its selection lingers; drop the
+  // toolbar rather than showing actions for a vertex that no longer exists.
+  if (!point) {
+    return null;
   }
 
   const pt = {

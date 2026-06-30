@@ -146,8 +146,19 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
   const { points } = line;
 
+  // The marker being dragged is exempt from culling/density gating and keeps
+  // handles shown even if the selection is cleared mid-drag, so it can never
+  // unmount before dragend fires — which would strand the point and leave the
+  // dragstart's URL-suspend and click-guard flags stuck on.
+  const [draggingPointId, setDraggingPointId] = useState<number | undefined>(
+    undefined,
+  );
+
   const showHandles =
-    selected || selectedPointId !== undefined || joinWith !== undefined;
+    selected ||
+    selectedPointId !== undefined ||
+    joinWith !== undefined ||
+    draggingPointId !== undefined;
 
   const [coords, setCoords] = useState<LatLon | undefined>();
 
@@ -314,12 +325,32 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   // hands back a fresh LatLngBounds each call, so the snapshot updates by value.
   const [handleBounds, setHandleBounds] = useState<LatLngBounds | null>(null);
 
-  // The marker being dragged is exempt from culling/density gating, so it can
-  // never unmount mid-gesture — that would strand the point and leave the
-  // dragstart's URL-suspend and click-guard flags stuck on (dragend never fires).
-  const [draggingPointId, setDraggingPointId] = useState<number | undefined>(
-    undefined,
-  );
+  // If the dragged point is deleted mid-drag (the line survives), dragend never
+  // fires; end the drag so the cleanup below restores its flags. draggingPointId
+  // is stable during a drag, so this only reacts to the point actually vanishing.
+  useEffect(() => {
+    if (
+      draggingPointId !== undefined &&
+      !points.some((p) => p.id === draggingPointId)
+    ) {
+      setDraggingPointId(undefined);
+    }
+  }, [draggingPointId, points]);
+
+  // Restore dragstart's flags when a live drag is torn down without dragend —
+  // the point cleared above, or the whole line (this component) unmounted.
+  // Keyed on draggingPointId only, so it doesn't fire on every drag move.
+  useEffect(() => {
+    if (draggingPointId === undefined) {
+      return;
+    }
+
+    return () => {
+      setUrlUpdatingEnabled(true);
+
+      handleDragEnd();
+    };
+  }, [draggingPointId]);
 
   useMapEvents({
     moveend() {
@@ -416,7 +447,11 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
       const p = ps[i]!;
 
+      // Only vertices are ever selected or dragged (a dragged midpoint is
+      // promoted to a vertex). Excluding midpoints also avoids a stale
+      // selectedPointId colliding with a newly formed midpoint's averaged id.
       const exempt =
+        !isMidpoint &&
         joinWith === undefined &&
         (p.id === selectedPointId || p.id === draggingPointId);
 
@@ -466,8 +501,12 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   ]);
 
   useEffect(() => {
-    tierRef.current = handleTier;
-  }, [handleTier]);
+    // Only remember a real tier; the hidden path returns a placeholder 'all'
+    // that would otherwise reset the hysteresis baseline between selections.
+    if (showHandles) {
+      tierRef.current = handleTier;
+    }
+  }, [showHandles, handleTier]);
 
   let x;
 
