@@ -3,11 +3,12 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
+import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { FaCheck, FaPaintBrush, FaTimes, FaUndo } from 'react-icons/fa';
+import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { objectsSetSettings } from '../model/actions.js';
 import { objectsSettingsInitialState } from '../model/settingsReducer.js';
@@ -99,9 +100,7 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
             <FaCheck /> {m?.general.save}
           </Button>
 
-          <Button variant="warning" onClick={handleReset}>
-            <FaUndo /> {m?.general.resetToDefaults}
-          </Button>
+          <ResetToDefaultsButton onClick={handleReset} />
 
           <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel}

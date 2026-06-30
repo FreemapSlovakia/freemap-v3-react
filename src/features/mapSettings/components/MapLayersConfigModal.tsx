@@ -2,10 +2,11 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
+import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { FaCheck, FaLayerGroup, FaTimes, FaUndo } from 'react-icons/fa';
+import { FaCheck, FaLayerGroup, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { MapLayersSettings } from './MapLayersSettings.js';
 
@@ -72,9 +73,7 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
             <FaCheck /> {m?.general.save}
           </Button>
 
-          <Button variant="warning" onClick={handleReset}>
-            <FaUndo /> {m?.general.resetToDefaults}
-          </Button>
+          <ResetToDefaultsButton onClick={handleReset} />
 
           <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
