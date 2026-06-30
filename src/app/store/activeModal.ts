@@ -150,18 +150,22 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
 
 /**
  * Wraps an arg-less modal named by a `ModalId` into an `ActiveModal`, for the
- * few call sites that open a modal chosen at runtime. The `tracking-watched`
- * and `my-maps` branches peel off the two members that carry an argument, so
- * the default branch's type matches the catch-all union member exactly —
- * TypeScript can't otherwise distribute a `ModalId`-typed discriminant across
- * the union members.
+ * few call sites that open a modal chosen at runtime.
+ *
+ * Each branch returns a literal that TypeScript checks against `ActiveModal`,
+ * so the value is always a valid member (no cast). The `my-maps` and
+ * `tracking-watched` branches narrow those two ids off — their members carry an
+ * optional field — leaving the default's `modalId` matching the catch-all
+ * member exactly. A `ModalId` that gained a *required* field would then fail to
+ * type-check here, forcing it to be handled rather than silently producing an
+ * incomplete modal.
  */
 export function modalOf(modalId: ModalId): ActiveModal {
   switch (modalId) {
-    case 'tracking-watched':
-      return { type: 'tracking-watched' };
     case 'my-maps':
-      return { type: 'my-maps' };
+      return { type: modalId };
+    case 'tracking-watched':
+      return { type: modalId };
     default:
       return { type: modalId };
   }
