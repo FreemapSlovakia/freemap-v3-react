@@ -55,6 +55,9 @@ export { setLocation };
 
 export const clearMapFeatures = createAction('CLEAR_MAP_FEATURES');
 
+/** Drops the persisted local settings and reloads the app from defaults. */
+export const resetApp = createAction('RESET_APP');
+
 export { saveHomeLocation, setSelectingHomeLocation, toggleLocate };
 
 type Settings = {

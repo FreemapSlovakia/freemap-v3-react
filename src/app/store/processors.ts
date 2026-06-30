@@ -95,6 +95,7 @@ import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcesso
 import { deleteProcessor } from '@/processors/deleteProcessor.js';
 import { errorProcessor } from '@/processors/errorProcessor.js';
 import { legacyMapWarningProcessor } from '@/processors/legacyMapWarningProcessor.js';
+import { resetAppProcessor } from '@/processors/resetAppProcessor.js';
 import { saveSettingsProcessor } from '@/processors/saveSettingsProcessor.js';
 import { setActiveModalTransformer } from '@/processors/setActiveModalProcessor.js';
 import { setToolProcessor } from '@/processors/setToolProcessor.js';
@@ -119,6 +120,7 @@ export const processors = [
   searchHighlightProcessor,
   locateProcessor,
   saveSettingsProcessor,
+  resetAppProcessor,
   measurementProcessor,
   changesetsProcessor,
   changesetsTrackProcessor,

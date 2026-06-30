@@ -2,6 +2,7 @@ import {
   clearMapFeatures,
   ExternalTarget,
   openInExternalApp,
+  resetApp,
   saveSettings,
   setActiveModal,
   setTool,
@@ -10,8 +11,6 @@ import {
   ToolSchema,
 } from '@app/store/actions.js';
 import { ModalId, modalOf } from '@app/store/activeModal.js';
-import { suspendStatePersistence } from '@app/store/middleware/statePersistingMiddleware.js';
-import { STORAGE_KEY } from '@app/store/persistence.js';
 import { Document, documentShow } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
@@ -231,15 +230,8 @@ export function useMenuHandler({
           confirmStyle: 'danger',
         }).then((ok) => {
           if (ok) {
-            // Stop persisting first, so an action dispatched in the gap before
-            // the page unloads can't re-write the store we're about to drop.
-            suspendStatePersistence();
-
-            // Drop the persisted Redux store; the app re-bootstraps from
-            // defaults on reload.
-            storage.removeItem(STORAGE_KEY);
-
-            window.location.reload();
+            // resetAppProcessor owns the side effect (drop the store, reload).
+            dispatch(resetApp());
           }
         });
 
