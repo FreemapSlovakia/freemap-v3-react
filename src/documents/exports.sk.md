@@ -14,6 +14,8 @@ Priame stiahnutie mapy Slovenska a Freemap štýlu pre program niektoré program
 
 ### Locus Map
 
+<a href="https://play.google.com/store/apps/details?id=menion.android.locus" target="_blank" rel="noopener noreferrer"><img alt="Stiahnuť z Google Play" src="https://play.google.com/intl/sk_sk/badges/static/images/badges/sk_badge_web_generic.png" height="56"></a>
+
 - [štýl pre mapu V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-theme-v5.xml)
 - [mapa Slovensko V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-sk-v5.xml)
 - [mapa Česká republika V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-cz-v5.xml)
@@ -35,6 +37,10 @@ Dodatočné mapy pre Locus
 
 ### OruxMaps
 
+<a href="https://play.google.com/store/apps/details?id=com.orux.oruxmapsDonate" target="_blank" rel="noopener noreferrer"><img alt="Stiahnuť z Google Play" src="https://play.google.com/intl/sk_sk/badges/static/images/badges/sk_badge_web_generic.png" height="56" style="vertical-align:middle"></a> <a href="https://apps.apple.com/app/id6746377543" target="_blank" rel="noopener noreferrer"><img alt="Stiahnuť z App Store" src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/sk-sk?size=250x83" height="40" style="vertical-align:middle"></a>
+
+V Androide je bezplatná verzia dostupná aj na [oruxmaps.com](https://www.oruxmaps.com/cs/en/more/downloads).
+
 - [štýl pre mapu V5](orux-mf-theme://download.freemap.sk/LocusMap/freemapV5.zip)
 - [mapa Slovensko V5](orux-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
 - [mapa Česká republika V5](orux-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
@@ -49,6 +55,8 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 
 ### BackCountry Navigator
 
+<a href="https://play.google.com/store/apps/details?id=com.crittermap.backcountrynavigator.license" target="_blank" rel="noopener noreferrer"><img alt="Stiahnuť z Google Play" src="https://play.google.com/intl/sk_sk/badges/static/images/badges/sk_badge_web_generic.png" height="56"></a>
+
 - [štýl pre mapu V5](backcountrynav-action://download.freemap.sk/LocusMap/locus/freemapV5.zip)
 - [mapa Slovensko V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
 - [mapa Česká republika V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
@@ -58,6 +66,8 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 
 ### BikeComputer
 
+<a href="https://play.google.com/store/apps/details?id=de.rooehler.bikecomputer.pro" target="_blank" rel="noopener noreferrer"><img alt="Stiahnuť z Google Play" src="https://play.google.com/intl/sk_sk/badges/static/images/badges/sk_badge_web_generic.png" height="56" style="vertical-align:middle"></a> <a href="https://apps.apple.com/app/id628012873" target="_blank" rel="noopener noreferrer"><img alt="Stiahnuť z App Store" src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/sk-sk?size=250x83" height="40" style="vertical-align:middle"></a>
+
 - [štýl pre mapu V5](bikecomputer-mf-theme://download.freemap.sk/LocusMap/freemapV5.zip)
 - [mapa Slovensko V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
 - [mapa Česká republika V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
@@ -66,6 +76,8 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 - [mapa Rakúsko - juh V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-austria_south.zip)
 
 ### Iné aplikácie (napr. XCTrack, …)
+
+<a href="https://play.google.com/store/apps/details?id=org.xcontest.XCTrack" target="_blank" rel="noopener noreferrer"><img alt="Stiahnuť z Google Play" src="https://play.google.com/intl/sk_sk/badges/static/images/badges/sk_badge_web_generic.png" height="56"></a>
 
 - [štýl pre mapu V5](mf-theme://download.freemap.sk/LocusMap/freemapV5.zip)
 - [mapa Slovensko V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
@@ -87,7 +99,7 @@ Pokiaľ používate aplikáciu, ktorá vie zobraziť mapy vo formáte mapsforge,
 
 Uvedené mapy vo formáte mapsforge sa aktualizujú každý utorok a piatok.
 
-## Garmin mapa ![Garmin logo](https://dev.freemap.sk/img/wiki/garmin_logo16.png)
+## Garmin mapa <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 
 Táto turisticko-cyklistická mapa je vytvorená z dát projektu OpenStreetMap. Mapu môžete používať buď v programe Garmin BaseCamp ako podkladovú mapu, alebo si ju nainštalovať do Garmin GPS prístroja. Vrstevnice sú vygenerované z [SRTM](http://www2.jpl.nasa.gov/srtm/).
 

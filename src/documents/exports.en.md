@@ -16,6 +16,8 @@ Direct downloads of Slovakia map and Freemap style for certain apps:
 
 ### Locus Map
 
+<a href="https://play.google.com/store/apps/details?id=menion.android.locus" target="_blank" rel="noopener noreferrer"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="56"></a>
+
 - [Map style V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-theme-v5.xml)
 - [Slovakia map V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-sk-v5.xml)
 - [Czech Republic map V5](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-map-cz-v5.xml)
@@ -37,6 +39,10 @@ Additional maps for Locus:
 
 ### OruxMaps
 
+<a href="https://play.google.com/store/apps/details?id=com.orux.oruxmapsDonate" target="_blank" rel="noopener noreferrer"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="56" style="vertical-align:middle"></a> <a href="https://apps.apple.com/app/id6746377543" target="_blank" rel="noopener noreferrer"><img alt="Download on the App Store" src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" height="40" style="vertical-align:middle"></a>
+
+On Android the free version is also available from [oruxmaps.com](https://www.oruxmaps.com/cs/en/more/downloads).
+
 - [Map style V5](orux-mf-theme://download.freemap.sk/LocusMap/freemapV5.zip)
 - [Slovakia map V5](orux-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
 - [Czech Republic map V5](orux-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
@@ -51,6 +57,8 @@ Older version (map updated, style not):
 
 ### BackCountry Navigator
 
+<a href="https://play.google.com/store/apps/details?id=com.crittermap.backcountrynavigator.license" target="_blank" rel="noopener noreferrer"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="56"></a>
+
 - [Map style V5](backcountrynav-action://download.freemap.sk/LocusMap/locus/freemapV5.zip)
 - [Slovakia map V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
 - [Czech Republic map V5](backcountrynav-action-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
@@ -60,6 +68,8 @@ Older version (map updated, style not):
 
 ### BikeComputer
 
+<a href="https://play.google.com/store/apps/details?id=de.rooehler.bikecomputer.pro" target="_blank" rel="noopener noreferrer"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="56" style="vertical-align:middle"></a> <a href="https://apps.apple.com/app/id628012873" target="_blank" rel="noopener noreferrer"><img alt="Download on the App Store" src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" height="40" style="vertical-align:middle"></a>
+
 - [Map style V5](bikecomputer-mf-theme://download.freemap.sk/LocusMap/freemapV5.zip)
 - [Slovakia map V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
 - [Czech Republic map V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-czech.zip)
@@ -68,6 +78,8 @@ Older version (map updated, style not):
 - [Austria – South map V5](bikecomputer-map://download.freemap.sk/LocusMap/freemapV5-austria_south.zip)
 
 ### Other Apps (e.g., XCTrack)
+
+<a href="https://play.google.com/store/apps/details?id=org.xcontest.XCTrack" target="_blank" rel="noopener noreferrer"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="56"></a>
 
 - [Map style V5](mf-theme://download.freemap.sk/LocusMap/freemapV5.zip)
 - [Slovakia map V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
@@ -89,7 +101,7 @@ If you're using an app that supports Mapsforge format but doesn't support automa
 
 Maps in Mapsforge format are updated every Tuesday and Friday.
 
-## Garmin Map ![Garmin logo](https://dev.freemap.sk/img/wiki/garmin_logo16.png)
+## Garmin Map <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 
 This hiking and cycling map is based on OpenStreetMap data. You can use it in Garmin BaseCamp as a background map or install it directly on your Garmin GPS device. Contours are generated from [SRTM](http://www2.jpl.nasa.gov/srtm/).
 
