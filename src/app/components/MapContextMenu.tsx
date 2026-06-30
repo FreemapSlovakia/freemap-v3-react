@@ -14,12 +14,15 @@ import {
   routePlannerSetStart,
 } from '@features/routePlanner/model/actions.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
+import type { Modifier, Obj } from '@popperjs/core';
+import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { LeafletMouseEvent } from 'leaflet';
 import {
   type ReactElement,
+  type RefObject,
   useCallback,
   useEffect,
   useRef,
@@ -41,6 +44,7 @@ import {
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { setTool } from '../store/actions.js';
+import classes from './MapContextMenu.module.css';
 
 const initialState = {
   x: 0,
@@ -50,6 +54,66 @@ const initialState = {
   maxHeight: 100000,
 };
 
+// this modifier somehow fixes menu
+const fixFlashingModifier: Partial<Modifier<'fixFlashing', Obj>> = {
+  name: 'fixFlashing',
+  phase: 'afterMain',
+  enabled: true,
+  effect() {},
+};
+
+// center the menu on the clicked point and leave an 8px gap for the arrow "ear"
+const offsetModifier: Partial<Modifier<'offset', Obj>> = {
+  name: 'offset',
+  options: {
+    offset: ({ popper }: { popper: { width: number } }) => [
+      -popper.width / 2,
+      8,
+    ],
+  },
+};
+
+// keep the menu start-aligned so the centering offset stays predictable near
+// screen edges (no start<->end flip that would shove the menu off the point)
+const flipModifier: Partial<Modifier<'flip', Obj>> = {
+  name: 'flip',
+  options: { flipVariations: false },
+};
+
+// place the ear horizontally so it points at the clicked point; react-bootstrap
+// doesn't apply popper's own arrow styles, so we compute the offset from
+// popper's rects and write it onto our element ourselves
+function createArrowModifier(
+  arrowRef: RefObject<HTMLSpanElement | null>,
+): Modifier<'fmArrow', Obj> {
+  return {
+    name: 'fmArrow',
+    enabled: true,
+    phase: 'write',
+    fn({ state }) {
+      const arrow = arrowRef.current;
+
+      const offsets = state.modifiersData['popperOffsets'] as
+        | { x: number }
+        | undefined;
+
+      if (!arrow || !offsets) {
+        return;
+      }
+
+      const { reference, popper } = state.rects;
+
+      const cx = reference.x + reference.width / 2;
+      const size = 16; // ear base length
+      const pad = 12; // keep the ear off the rounded corners
+
+      const x = Math.max(pad, Math.min(cx - offsets.x, popper.width - pad));
+
+      arrow.style.left = `${x - size / 2}px`;
+    },
+  };
+}
+
 export function MapContextMenu(): ReactElement {
   const m = useMessages();
 
@@ -58,6 +122,21 @@ export function MapContextMenu(): ReactElement {
   const dispatch = useDispatch();
 
   const [contextMenu, setContextMenu] = useState(initialState);
+
+  const arrowRef = useRef<HTMLSpanElement>(null);
+
+  // Rebuilt every render so its identity changes: right-clicking elsewhere while
+  // the menu stays open fires no show-transition, so popper only re-reads the
+  // moved toggle when the config (a fresh arrow-modifier closure) changes,
+  // busting react-bootstrap's deep-equal modifier memo.
+  const popperConfig: UseDropdownMenuOptions['popperConfig'] = {
+    modifiers: [
+      fixFlashingModifier,
+      offsetModifier,
+      flipModifier,
+      createArrowModifier(arrowRef),
+    ],
+  };
 
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
@@ -301,18 +380,10 @@ export function MapContextMenu(): ReactElement {
 
       <Dropdown.Menu
         className="fm-dropdown-with-scroller"
-        // this modifier somehow fixes menu
-        popperConfig={{
-          modifiers: [
-            {
-              name: 'fixFlashing',
-              phase: 'afterMain',
-              enabled: true,
-              effect() {},
-            },
-          ],
-        }}
+        popperConfig={popperConfig}
       >
+        <span ref={arrowRef} className={classes.arrow} />
+
         <div
           className="fm-menu-scroller"
           ref={sc}

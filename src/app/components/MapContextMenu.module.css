@@ -1,0 +1,55 @@
+/* Popover-style "ear" pointing at the clicked map point. The fmArrow modifier
+   sets its horizontal offset; here we place it on the top or bottom edge and
+   draw a bordered triangle (outline ::before + fill ::after) so it joins the
+   menu seamlessly, flipping it depending on whether the menu opens down or up. */
+.arrow {
+  position: absolute;
+  width: 16px;
+  height: 8px;
+  pointer-events: none;
+}
+
+.arrow::before,
+.arrow::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+/* menu opens downward → ear on the top edge, pointing up */
+:global([data-popper-placement^="bottom"]) .arrow {
+  top: -8px;
+}
+
+:global([data-popper-placement^="bottom"]) .arrow::before {
+  top: 0;
+  border-width: 0 8px 8px 8px;
+  border-color: transparent transparent
+    var(--bs-dropdown-border-color, var(--bs-border-color)) transparent;
+}
+
+:global([data-popper-placement^="bottom"]) .arrow::after {
+  top: 1px;
+  border-width: 0 8px 8px 8px;
+  border-color: transparent transparent var(--bs-body-bg) transparent;
+}
+
+/* menu opens upward → ear on the bottom edge, pointing down */
+:global([data-popper-placement^="top"]) .arrow {
+  bottom: -8px;
+}
+
+:global([data-popper-placement^="top"]) .arrow::before {
+  bottom: 0;
+  border-width: 8px 8px 0 8px;
+  border-color: var(--bs-dropdown-border-color, var(--bs-border-color))
+    transparent transparent transparent;
+}
+
+:global([data-popper-placement^="top"]) .arrow::after {
+  bottom: 1px;
+  border-width: 8px 8px 0 8px;
+  border-color: var(--bs-body-bg) transparent transparent transparent;
+}
