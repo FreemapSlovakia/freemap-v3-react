@@ -170,9 +170,16 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         return;
       }
 
-      const coords = alt.legs.flatMap((leg) =>
-        leg.steps.flatMap((step) => step.geometry.coordinates),
-      );
+      // Each leg/step shares its endpoint with the next one's start, so drop
+      // consecutive duplicate coordinates to avoid stacked nodes at the joints.
+      const coords = alt.legs
+        .flatMap((leg) =>
+          leg.steps.flatMap((step) => step.geometry.coordinates),
+        )
+        .filter(
+          (coord, i, all) =>
+            i === 0 || coord[0] !== all[i - 1][0] || coord[1] !== all[i - 1][1],
+        );
 
       const ls = lineString(coords.map(([lat, lon]) => [lon, lat]));
 
