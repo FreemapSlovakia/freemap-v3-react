@@ -6,6 +6,8 @@ import { FaUndo } from 'react-icons/fa';
 type Props = {
   /** Resets the surrounding form to its defaults. */
   onClick: () => void;
+  /** Disable when the form already matches its defaults (nothing to reset). */
+  disabled?: boolean;
   className?: string;
 };
 
@@ -16,6 +18,7 @@ type Props = {
  */
 export function ResetToDefaultsButton({
   onClick,
+  disabled,
   className,
 }: Props): ReactElement {
   const m = useMessages();
@@ -25,6 +28,7 @@ export function ResetToDefaultsButton({
       variant="secondary"
       type="button"
       className={className}
+      disabled={disabled}
       onClick={onClick}
     >
       <FaUndo /> {m?.general.resetToDefaults}

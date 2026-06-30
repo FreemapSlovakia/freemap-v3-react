@@ -254,6 +254,18 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     5,
   );
 
+  const filterEmpty =
+    tag === '' &&
+    userId === '' &&
+    takenAtFrom === '' &&
+    takenAtTo === '' &&
+    createdAtFrom === '' &&
+    createdAtTo === '' &&
+    ratingFrom === '' &&
+    ratingTo === '' &&
+    pano === undefined &&
+    premium === undefined;
+
   useDocumentTitle(show ? gm?.filterModal.title : undefined);
 
   return (
@@ -408,7 +420,11 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
             <FaCheck /> {m?.general.apply}
           </Button>
 
-          <Button variant="secondary" onClick={handleEraseClick}>
+          <Button
+            variant="secondary"
+            onClick={handleEraseClick}
+            disabled={filterEmpty}
+          >
             <FaEraser /> {m?.general.clear}
           </Button>
 

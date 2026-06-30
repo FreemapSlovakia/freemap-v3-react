@@ -40,6 +40,26 @@ export function makeDrawingStyle(color: string, width: number): DrawingStyle {
   };
 }
 
+const STYLE_KEYS = Object.keys(
+  DrawingStyleSchema.shape,
+) as (keyof DrawingStyle)[];
+
+/**
+ * Structural equality for two `DrawingStyle` values. Keys come from the schema
+ * (so a new style field is covered automatically); the one array field
+ * (`dashArray`) is compared element-wise, the rest are primitives.
+ */
+export function drawingStyleEquals(a: DrawingStyle, b: DrawingStyle): boolean {
+  return STYLE_KEYS.every((key) => {
+    const av = a[key];
+    const bv = b[key];
+
+    return Array.isArray(av) && Array.isArray(bv)
+      ? av.length === bv.length && av.every((v, i) => v === bv[i])
+      : av === bv;
+  });
+}
+
 export const DrawingSettingsSchema = z.object({
   style: DrawingStyleSchema,
   recentColors: z.array(z.string()),

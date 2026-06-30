@@ -115,6 +115,14 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     resolutionScale !== initialResolutionScale ||
     featureScale !== initialFeatureScale;
 
+  const atDefault =
+    maxZoom === String(mapInitialState.maxZoom) &&
+    resolutionScale ===
+      (mapInitialState.resolutionScale === null
+        ? ''
+        : String(mapInitialState.resolutionScale)) &&
+    featureScale === String(mapInitialState.featureScale);
+
   return (
     <Modal
       show={show}
@@ -213,7 +221,10 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
             <FaCheck /> {m?.general.save}
           </Button>
 
-          <ResetToDefaultsButton onClick={handleResetDefaults} />
+          <ResetToDefaultsButton
+            onClick={handleResetDefaults}
+            disabled={atDefault}
+          />
 
           <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>

@@ -55,6 +55,8 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
     setEditedColor(objectsSettingsInitialState.color);
   }, []);
 
+  const dirty = editedMarkerType !== markerType || editedColor !== color;
+
   useDocumentTitle(show ? om?.style.title : undefined);
 
   return (
@@ -93,11 +95,17 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit">
+          <Button type="submit" disabled={!dirty}>
             <FaCheck /> {m?.general.save}
           </Button>
 
-          <ResetToDefaultsButton onClick={handleReset} />
+          <ResetToDefaultsButton
+            onClick={handleReset}
+            disabled={
+              editedMarkerType === objectsSettingsInitialState.selectedIcon &&
+              editedColor === objectsSettingsInitialState.color
+            }
+          />
 
           <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel}

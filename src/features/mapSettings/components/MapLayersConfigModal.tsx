@@ -73,7 +73,10 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
             <FaCheck /> {m?.general.save}
           </Button>
 
-          <ResetToDefaultsButton onClick={handleReset} />
+          <ResetToDefaultsButton
+            onClick={handleReset}
+            disabled={Object.keys(layersSettings).length === 0}
+          />
 
           <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>

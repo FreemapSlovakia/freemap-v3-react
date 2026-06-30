@@ -6,7 +6,10 @@ import { ReactElement, ReactNode, SubmitEvent, useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import type { DrawingStyle } from '../model/reducers/drawingSettingsReducer.js';
+import {
+  type DrawingStyle,
+  drawingStyleEquals,
+} from '../model/reducers/drawingSettingsReducer.js';
 import { useDrawingStyleEditor } from './useDrawingStyleEditor.js';
 
 /** An extra footer action (between Save and Reset), e.g. drawing's "Apply to all". */
@@ -99,7 +102,7 @@ export function DrawingStyleSettingsModal({
         <Modal.Body>{editor.element}</Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit" disabled={editor.invalid}>
+          <Button type="submit" disabled={editor.invalid || !editor.dirty}>
             <FaCheck /> {m?.general.save}
           </Button>
 
@@ -118,7 +121,13 @@ export function DrawingStyleSettingsModal({
             </Button>
           ))}
 
-          <ResetToDefaultsButton onClick={() => editor.reset(defaults)} />
+          <ResetToDefaultsButton
+            onClick={() => editor.reset(defaults)}
+            // Enabled while invalid so reset can recover a broken field.
+            disabled={
+              !editor.invalid && drawingStyleEquals(editor.style, defaults)
+            }
+          />
 
           <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel}
