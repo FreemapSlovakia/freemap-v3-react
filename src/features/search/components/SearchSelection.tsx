@@ -94,26 +94,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
             className="ms-1"
             variant="secondary"
             onClick={() => {
-              const ask =
-                (selectedResult.geojson?.type === 'FeatureCollection' &&
-                  selectedResult.geojson.features.some(
-                    (feature) => !feature.geometry.type.endsWith('Point'),
-                  )) ||
-                (selectedResult.geojson?.type === 'Feature' &&
-                  !selectedResult.geojson.geometry.type.endsWith('Point'));
-
-              const tolerance = ask
-                ? window.prompt(m?.general.simplifyPrompt, '50')
-                : '50';
-
-              if (tolerance !== null) {
-                dispatch(
-                  convertToDrawing({
-                    type: 'search-result',
-                    tolerance: Number(tolerance || '0') / 100_000,
-                  }),
-                );
-              }
+              dispatch(convertToDrawing({ type: 'search-result' }));
             }}
             {...props}
           >

@@ -160,20 +160,12 @@ export default function ObjectSelection(): ReactElement | null {
           {hasGeometry && (
             <Dropdown.Item
               onClick={() => {
-                const tolerance = window.prompt(
-                  m?.general.simplifyPrompt,
-                  '50',
+                dispatch(
+                  convertToDrawing({
+                    type: 'objects-geometry',
+                    id: object.id,
+                  }),
                 );
-
-                if (tolerance !== null) {
-                  dispatch(
-                    convertToDrawing({
-                      type: 'objects-geometry',
-                      id: object.id,
-                      tolerance: Number(tolerance || '0') / 100_000,
-                    }),
-                  );
-                }
               }}
             >
               <FaPencilAlt /> {om?.convertWithGeometry}

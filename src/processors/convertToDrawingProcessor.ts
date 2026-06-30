@@ -41,15 +41,10 @@ function ringToPoints(ring: Position[], dropClosing: boolean): Point[] {
 // Shared between the `search-result` and `objects-geometry` branches.
 function geojsonToDrawing(
   geojson: Feature | FeatureCollection,
-  tolerance: number | undefined,
   getState: () => RootState,
   dispatch: Dispatch,
 ): { lineCount: number; pointCount: number } {
-  const { features } = turfFlatten(
-    tolerance
-      ? simplify(geojson, { mutate: false, highQuality: true, tolerance })
-      : geojson,
-  );
+  const { features } = turfFlatten(geojson);
 
   mergeLines(features);
 
@@ -180,14 +175,6 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       );
 
       const ls = lineString(coords.map(([lat, lon]) => [lon, lat]));
-
-      if (payload.tolerance) {
-        simplify(ls, {
-          mutate: true,
-          highQuality: true,
-          tolerance: payload.tolerance,
-        });
-      }
 
       dispatch(
         drawingLineAdd({
@@ -374,7 +361,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
       const { lineCount, pointCount } = geojsonToDrawing(
         state.search.selectedResult.geojson,
-        payload.tolerance,
+
         getState,
         dispatch,
       );
@@ -389,7 +376,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       return;
     }
 
-    const { id, tolerance } = action.payload;
+    const { id } = action.payload;
 
     try {
       const geojson = await fetchOsmFullGeojson(id, getState);
@@ -400,7 +387,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
       const { lineCount, pointCount } = geojsonToDrawing(
         geojson,
-        tolerance,
+
         getState,
         dispatch,
       );

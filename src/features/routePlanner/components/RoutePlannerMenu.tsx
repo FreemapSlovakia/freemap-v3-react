@@ -522,16 +522,7 @@ export default function RoutePlannerMenu(): ReactElement {
         break;
 
       case 'convert-to-drawing': {
-        const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
-
-        if (tolerance !== null) {
-          dispatch(
-            convertToDrawing({
-              type: 'planned-route',
-              tolerance: Number(tolerance || '0') / 100000,
-            }),
-          );
-        }
+        dispatch(convertToDrawing({ type: 'planned-route' }));
 
         break;
       }
