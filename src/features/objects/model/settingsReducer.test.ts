@@ -11,7 +11,7 @@ import {
 
 /** Pure reducer tests for the persisted objects marker-style slice. */
 describe('objectsSettingsReducer', () => {
-  it('setSelectedIcon stores the marker shape', () => {
+  it('objectsSetSelectedIcon stores the marker shape', () => {
     const next = objectsSettingsReducer(
       objectsSettingsInitialState,
       objectsSetSelectedIcon('square'),
@@ -20,7 +20,7 @@ describe('objectsSettingsReducer', () => {
     expect(next.selectedIcon).toBe('square');
   });
 
-  it('setSelectedColor stores the marker color', () => {
+  it('objectsSetSelectedColor stores the marker color', () => {
     const next = objectsSettingsReducer(
       objectsSettingsInitialState,
       objectsSetSelectedColor('#00ff00'),

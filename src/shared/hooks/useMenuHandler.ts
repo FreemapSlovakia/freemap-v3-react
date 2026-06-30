@@ -11,6 +11,7 @@ import {
 } from '@app/store/actions.js';
 import { ModalId, modalOf } from '@app/store/activeModal.js';
 import { suspendStatePersistence } from '@app/store/middleware/statePersistingMiddleware.js';
+import { STORAGE_KEY } from '@app/store/persistence.js';
 import { Document, documentShow } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
@@ -236,7 +237,7 @@ export function useMenuHandler({
 
             // Drop the persisted Redux store; the app re-bootstraps from
             // defaults on reload.
-            storage.removeItem('store');
+            storage.removeItem(STORAGE_KEY);
 
             window.location.reload();
           }

@@ -1,6 +1,6 @@
 import { Middleware } from '@reduxjs/toolkit';
 import storage from 'local-storage-fallback';
-import { selectPersistedState } from '../persistence.js';
+import { STORAGE_KEY, selectPersistedState } from '../persistence.js';
 import type { RootState } from '../store.js';
 
 // Latched on once a full app reset + reload is initiated. The reset clears the
@@ -39,7 +39,7 @@ function persistSelectedState(state: RootState) {
   // The selected subset + per-slice serialization lives in the `PERSIST` table
   // (persistence.ts), shared with `getInitialState`'s rehydration.
   try {
-    storage.setItem('store', JSON.stringify(selectPersistedState(state)));
+    storage.setItem(STORAGE_KEY, JSON.stringify(selectPersistedState(state)));
   } catch (error) {
     // This write runs after `next(action)`, so a throw here propagates into
     // errorHandlingMiddleware, which dispatches an action that re-enters this

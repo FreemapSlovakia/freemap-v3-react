@@ -33,6 +33,9 @@ import z from 'zod';
 import { mainInitialState } from './reducer.js';
 import type { RootState } from './store.js';
 
+/** localStorage key holding the serialized persisted Redux state. */
+export const STORAGE_KEY = 'store';
+
 export const PersistedAuthSchema = z.object({
   user: z
     .object({
@@ -366,7 +369,7 @@ export function getInitialState(): Partial<RootState> {
   let persisted: Partial<Record<keyof RootState, unknown>>;
 
   try {
-    persisted = JSON.parse(storage.getItem('store') ?? '{}');
+    persisted = JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}');
   } catch {
     persisted = {};
   }
