@@ -1,10 +1,10 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
 import { enumerateTilesInBbox } from '@shared/tileEnumeration.js';
 import type { Dispatch } from 'redux';
 import {
-  cacheStaticAssets,
   deleteCachedTileMap,
   getCachedTileMaps,
   saveCachedTileMap,

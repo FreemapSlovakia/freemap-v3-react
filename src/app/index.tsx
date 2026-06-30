@@ -2,15 +2,21 @@ import { attachAuthSync } from '@features/auth/authSync.js';
 import { attachGarminLoginMessageHandler } from '@features/auth/garminLoginMessageHandler.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { attachOAuthLoginMessageHandler } from '@features/auth/oauthLoginMessageHandler.js';
-import {
-  getCachedTileMaps,
-  syncStaticCache,
-} from '@features/cachedMaps/cache.js';
+import { getCachedTileMaps } from '@features/cachedMaps/cache.js';
 import { cachedMapsLoaded } from '@features/cachedMaps/model/actions.js';
 import { invokeGeoip } from '@features/geoip/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { attachMapStateHandler } from '@features/map/mapStateHandler.js';
+import { mapsOfflineIdsLoaded } from '@features/myMaps/model/actions.js';
+import {
+  getOfflineMapCount,
+  getOfflineMapIds,
+} from '@features/myMaps/offlineStore.js';
 import { ConfirmProvider } from '@shared/components/ConfirmProvider.js';
+import {
+  registerOfflineContentProvider,
+  syncStaticCache,
+} from '@shared/offlineStaticCache.js';
 import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
@@ -81,6 +87,24 @@ getCachedTileMaps()
     // IndexedDB can be unavailable or blocked (private mode / insecure
     // context); offline maps are simply unavailable then.
     console.warn('Reading cached tile maps failed:', err);
+  });
+
+// The static app shell is kept alive as long as any offline content exists.
+// Register every content provider before syncing the static cache.
+registerOfflineContentProvider(() =>
+  getCachedTileMaps().then((maps) => maps.length > 0),
+);
+
+registerOfflineContentProvider(() => getOfflineMapCount().then((c) => c > 0));
+
+getOfflineMapIds()
+  .then((ids) => {
+    if (ids.length > 0) {
+      store.dispatch(mapsOfflineIdsLoaded(ids));
+    }
+  })
+  .catch((err) => {
+    console.warn('Reading offline My Maps failed:', err);
   });
 
 syncStaticCache().catch((err) => {

@@ -47,6 +47,11 @@ import { measurementProcessor } from '@features/measurement/model/measurementPro
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
 import { mapsLoadProcessor } from '@features/myMaps/model/processors/mapsLoadProcessor.js';
+import {
+  mapsOfflinePurgeProcessor,
+  mapsSetAllOfflineProcessor,
+  mapsSetMapOfflineProcessor,
+} from '@features/myMaps/model/processors/mapsOfflineProcessor.js';
 import { mapsSaveProcessor } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
 import {
   objectsChangePredicateProcessor,
@@ -174,6 +179,9 @@ export const processors = [
   mapsLoadProcessor,
   mapsDeleteProcessor,
   mapsSaveProcessor,
+  mapsSetMapOfflineProcessor,
+  mapsSetAllOfflineProcessor,
+  mapsOfflinePurgeProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
   wikimediaCommonsLayerProcessor,

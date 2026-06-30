@@ -33,6 +33,7 @@ body {
 }
 
 button#freemap-logo {
+  position: relative;
   border: none;
   outline: none;
   background-color: rgba(255, 255, 255, 0);
@@ -49,6 +50,17 @@ button#freemap-logo {
 
   &.in-progress {
     animation: pulse 1s infinite;
+  }
+
+  &.offline::after {
+    content: "";
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: var(--bs-danger);
   }
 
   &:hover {

@@ -3,14 +3,19 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import '@shared/styles/react-tags.scss';
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaSave, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, Tag } from 'react-tag-autocomplete';
 import 'react-tag-autocomplete/example/src/styles.css';
 import z from 'zod';
-import { type MapMeta, mapsLoadList, mapsSave } from '../model/actions.js';
+import {
+  type MapMeta,
+  mapsLoadList,
+  mapsSave,
+  mapsSetMapOffline,
+} from '../model/actions.js';
 import { loadMyMapsMessages } from '../translations/loadMyMapsMessages.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 
@@ -50,6 +55,25 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
   useEffect(() => {
     setWriters(target?.writers ?? []);
   }, [target]);
+
+  const wasOffline = useAppSelector((state) =>
+    target ? state.myMaps.offlineIds.includes(target.id) : false,
+  );
+
+  const [offline, setOffline] = useState(wasOffline);
+
+  // Re-seed the checkbox only when a different map is edited — not whenever
+  // `offlineIds` changes — so an offlineIds update mid-edit can't resurrect the
+  // initial value over the user's pending toggle.
+  const lastTargetId = useRef(target?.id);
+
+  useEffect(() => {
+    if (lastTargetId.current !== target?.id) {
+      lastTargetId.current = target?.id;
+
+      setOffline(wasOffline);
+    }
+  }, [target?.id, wasOffline]);
 
   const m = useMessages();
 
@@ -101,6 +125,22 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
   };
 
   const save = () => {
+    const offlineChanged = target && offline !== wasOffline;
+
+    // Turning offline OFF needs no server data, so apply it immediately.
+    if (offlineChanged && !offline) {
+      dispatch(mapsSetMapOffline({ id: target.id, offline: false }));
+    }
+
+    // Turning offline ON fetches and caches a copy; defer it until after the
+    // rename/writers change is persisted so the cached copy reflects the saved
+    // name rather than the pre-edit one.
+    const flagOfflineOn = () => {
+      if (target && offlineChanged && offline) {
+        dispatch(mapsSetMapOffline({ id: target.id, offline: true }));
+      }
+    };
+
     const isEditingActive = target && target.id === activeMap?.id;
 
     if (!target) {
@@ -111,6 +151,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
 
     if (isEditingActive) {
       dispatch(mapsSave({ name, writers }));
+      flagOfflineOn();
       onDone();
       return;
     }
@@ -155,6 +196,8 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
         );
 
         dispatch(mapsLoadList());
+
+        flagOfflineOn();
 
         onDone();
       })
@@ -213,6 +256,19 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
                 onDelete={handleWriterDelete}
                 collapseOnSelect
               />
+            </Form.Group>
+          )}
+
+          {target && (
+            <Form.Group controlId="offline" className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label={mm?.availableOffline}
+                checked={offline}
+                onChange={(e) => setOffline(e.currentTarget.checked)}
+              />
+
+              <Form.Text muted>{mm?.availableOfflineHint}</Form.Text>
             </Form.Group>
           )}
         </Form>

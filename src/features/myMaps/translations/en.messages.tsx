@@ -24,6 +24,17 @@ const en: MyMapsMessages = {
   writers: 'Editors',
   addWriter: 'Add an editor',
   conflictError: 'The map has been modified in the meantime.',
+  availableOffline: 'Available offline',
+  availableOfflineHint:
+    'Keep a copy of this map in the browser so it can be opened without a connection. Background map tiles are cached separately via Offline maps.',
+  offline: 'Offline',
+  makeAllOffline: 'Make all available offline',
+  removeAllOffline: 'Remove all from offline',
+  offlineError: ({ err }) =>
+    addError(getMessages()!, 'Error caching map offline', err),
+  offlineCachedAll: ({ count }) => `${count} map(s) are now available offline.`,
+  offlineCachedPartial: ({ count, failed }) =>
+    `${count} map(s) cached offline, ${failed} failed.`,
 };
 
 export default en;
