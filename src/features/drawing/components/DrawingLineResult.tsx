@@ -20,6 +20,7 @@ import {
   Direction,
   DomEvent,
   divIcon,
+  LatLngBounds,
   LeafletMouseEvent,
   PointExpression,
 } from 'leaflet';
@@ -29,6 +30,7 @@ import {
   ReactNode,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -38,6 +40,7 @@ import {
   Tooltip,
   useMap,
   useMapEvent,
+  useMapEvents,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
@@ -62,6 +65,36 @@ const selectedCircularIcon = divIcon({
   tooltipAnchor: [10, 0],
   html: `<div class="${classes.circularMarkerIcon}" style="background-color: var(--color-selected, ${COLORS.selected})"></div>`,
 });
+
+// Each vertex/midpoint handle is a DOM marker, so a many-vertex line would
+// mount thousands of them and choke the browser. We only ever render handles
+// that fall within the viewport (padded so handles just off-screen stay put
+// during small pans), and we gate by how many vertices are actually in view.
+const HANDLE_BOUNDS_PADDING = 0.5;
+
+// While at most this many vertices are in view, show the midpoint "insert a
+// point" handles too. Above it, those are dropped first (they double the
+// handle count and matter less than moving existing vertices).
+const MIDPOINT_VIEWPORT_LIMIT = 60;
+
+// While at most this many vertices are in view, show vertex handles. Above it
+// they'd be too dense to grab anyway, so we show none — zoom in to edit.
+const VERTEX_VIEWPORT_LIMIT = 250;
+
+// Widen the limits while handles are already shown so a small pan across the
+// threshold doesn't flicker them on and off.
+const HANDLE_HYSTERESIS = 1.3;
+
+type HandleTier = 'all' | 'vertices' | 'none';
+
+type VisibleHandle = {
+  i: number;
+  p: Point;
+  isMidpoint: boolean;
+  segDist: number;
+  cumDist: number;
+  azimuth: number;
+};
 
 type Props = {
   lineIndex: number;
@@ -112,6 +145,9 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   const interactiveLine = interactive && joinWith === undefined;
 
   const { points } = line;
+
+  const showHandles =
+    selected || selectedPointId !== undefined || joinWith !== undefined;
 
   const [coords, setCoords] = useState<LatLon | undefined>();
 
@@ -197,10 +233,6 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     dispatch(drawingMeasure({}));
   }
 
-  let prev: Point | null = null;
-
-  let sumDist = 0;
-
   const azimuthNumberFormat = useNumberFormat({
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -217,11 +249,42 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     dispatch(drawingMeasure({}));
   }
 
-  const ps = useMemo(() => {
+  // `ps` interleaves vertices (even indices) with midpoint handles (odd
+  // indices). `handleMeta` is aligned with it and, for each vertex, carries the
+  // segment length to the previous vertex, the running total, and the bearing —
+  // precomputed here so the render path doesn't recompute turf maths per handle.
+  const { ps, handleMeta } = useMemo(() => {
     const ps: Point[] = [];
 
+    const handleMeta: { segDist: number; cumDist: number; azimuth: number }[] =
+      [];
+
+    let prev: Point | null = null;
+
+    let cumDist = 0;
+
     for (const [i, point] of points.entries()) {
+      let segDist = 0;
+
+      let azimuth = 0;
+
+      if (prev) {
+        segDist = distance([prev.lon, prev.lat], [point.lon, point.lat], {
+          units: 'meters',
+        });
+
+        cumDist += segDist;
+
+        azimuth = bearingToAzimuth(
+          bearing([prev.lon, prev.lat], [point.lon, point.lat]),
+        );
+      }
+
       ps.push(point);
+
+      handleMeta.push({ segDist, cumDist, azimuth });
+
+      prev = point;
 
       if (i < points.length - 1 || line.type === 'polygon') {
         const next = points[(i + 1) % points.length]!;
@@ -238,11 +301,173 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
               ? points.length * 2
               : (point.id + next.id) / 2,
         });
+
+        handleMeta.push({ segDist: 0, cumDist: 0, azimuth: 0 });
       }
     }
 
-    return ps;
+    return { ps, handleMeta };
   }, [points, line.type]);
+
+  // Snapshot the live viewport so handle culling reacts to it. Only shown-handle
+  // lines snapshot, so unrelated lines don't re-render on every pan. The map
+  // hands back a fresh LatLngBounds each call, so the snapshot updates by value.
+  const [handleBounds, setHandleBounds] = useState<LatLngBounds | null>(null);
+
+  // The marker being dragged is exempt from culling/density gating, so it can
+  // never unmount mid-gesture — that would strand the point and leave the
+  // dragstart's URL-suspend and click-guard flags stuck on (dragend never fires).
+  const [draggingPointId, setDraggingPointId] = useState<number | undefined>(
+    undefined,
+  );
+
+  useMapEvents({
+    moveend() {
+      if (showHandles) {
+        setHandleBounds(map.getBounds());
+      }
+    },
+    zoomend() {
+      if (showHandles) {
+        setHandleBounds(map.getBounds());
+      }
+    },
+    // A container resize (e.g. opening/closing a side panel) changes the
+    // viewport without a pan or zoom, so refresh the snapshot here too.
+    resize() {
+      if (showHandles) {
+        setHandleBounds(map.getBounds());
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (showHandles) {
+      setHandleBounds(map.getBounds());
+    }
+  }, [showHandles, map]);
+
+  // Last committed tier, read to widen the density limits via hysteresis so a
+  // small pan across the threshold doesn't flicker handles on and off. Written
+  // from an effect (never during render) so a discarded or double-invoked render
+  // can't advance it past the tier actually shown.
+  const tierRef = useRef<HandleTier>('all');
+
+  const { handles: visibleHandles, tier: handleTier } = useMemo(() => {
+    if (!showHandles) {
+      return { handles: [] as VisibleHandle[], tier: 'all' as HandleTier };
+    }
+
+    const bounds = handleBounds ?? map.getBounds();
+
+    const padded = bounds.pad(HANDLE_BOUNDS_PADDING);
+
+    // Count over the padded region so the limits match the handles actually
+    // mounted (emission below culls against the same `padded` bounds).
+    let inView = 0;
+
+    for (let i = 0; i < ps.length; i += 2) {
+      if (padded.contains([ps[i]!.lat, ps[i]!.lon])) {
+        inView++;
+      }
+    }
+
+    let tier: HandleTier;
+
+    if (joinWith !== undefined) {
+      // Joining shows at most the two endpoints of each other line — never
+      // dense enough to gate.
+      tier = 'all';
+    } else {
+      const prev = tierRef.current;
+
+      const vertexLimit =
+        prev === 'none'
+          ? VERTEX_VIEWPORT_LIMIT
+          : VERTEX_VIEWPORT_LIMIT * HANDLE_HYSTERESIS;
+
+      const midpointLimit =
+        prev === 'all'
+          ? MIDPOINT_VIEWPORT_LIMIT * HANDLE_HYSTERESIS
+          : MIDPOINT_VIEWPORT_LIMIT;
+
+      tier =
+        inView > vertexLimit
+          ? 'none'
+          : inView > midpointLimit
+            ? 'vertices'
+            : 'all';
+    }
+
+    // The selected and dragged points are always shown; outside that, a 'none'
+    // tier emits nothing.
+    const hasExempt =
+      joinWith === undefined &&
+      (selectedPointId !== undefined || draggingPointId !== undefined);
+
+    if (tier === 'none' && !hasExempt) {
+      return { handles: [] as VisibleHandle[], tier };
+    }
+
+    const out: VisibleHandle[] = [];
+
+    for (let i = 0; i < ps.length; i++) {
+      const isMidpoint = i % 2 === 1;
+
+      const p = ps[i]!;
+
+      const exempt =
+        joinWith === undefined &&
+        (p.id === selectedPointId || p.id === draggingPointId);
+
+      if (!exempt) {
+        if (tier === 'none' || (isMidpoint && tier !== 'all')) {
+          continue;
+        }
+
+        if (!padded.contains([p.lat, p.lon])) {
+          continue;
+        }
+
+        if (
+          joinWith !== undefined &&
+          (line.type !== 'line' ||
+            (i !== 0 && i !== ps.length - 1) ||
+            joinWith.lineIndex === lineIndex)
+        ) {
+          continue;
+        }
+      }
+
+      const m = handleMeta[i]!;
+
+      out.push({
+        i,
+        p,
+        isMidpoint,
+        segDist: m.segDist,
+        cumDist: m.cumDist,
+        azimuth: m.azimuth,
+      });
+    }
+
+    return { handles: out, tier };
+  }, [
+    showHandles,
+    handleBounds,
+    map,
+    ps,
+    handleMeta,
+    joinWith,
+    line.type,
+    lineIndex,
+    selectedPointId,
+    draggingPointId,
+  ]);
+
+  useEffect(() => {
+    tierRef.current = handleTier;
+  }, [handleTier]);
 
   let x;
 
@@ -461,166 +686,138 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
         </Polyline>
       )}
 
-      {(selected || selectedPointId !== undefined || joinWith !== undefined) &&
-        ps.map((p, i) => {
-          let dist = 0;
+      {visibleHandles.map(({ i, p, isMidpoint, segDist, cumDist, azimuth }) =>
+        isMidpoint ? (
+          <Marker
+            key={p.id}
+            draggable
+            position={{ lat: p.lat, lng: p.lon }}
+            icon={circularIcon}
+            opacity={0.33}
+            eventHandlers={{
+              dragstart(e) {
+                setUrlUpdatingEnabled(false);
 
-          if (prev && i % 2 === 0) {
-            dist = distance([p.lon, p.lat], [prev.lon, prev.lat], {
-              units: 'meters',
-            });
+                // addPoint promotes this midpoint into a real vertex keyed by
+                // the same id; keep it exempt from culling for the rest of the
+                // drag so the now-vertex marker isn't unmounted mid-gesture.
+                setDraggingPointId(p.id);
 
-            sumDist += dist;
-          }
+                const { lat, lng } = e.target.getLatLng();
 
-          if (
-            joinWith !== undefined &&
-            (line.type !== 'line' ||
-              (i !== 0 && i !== ps.length - 1) ||
-              joinWith.lineIndex === lineIndex)
-          ) {
-            return null;
-          }
+                addPoint(lat, lng, i, p.id);
+              },
+              click(e) {
+                const { lat, lng } = e.target.getLatLng();
 
-          const marker =
-            i % 2 === 0 ? (
-              <Marker
-                key={p.id}
-                draggable
-                position={{ lat: p.lat, lng: p.lon }}
-                // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-                icon={
-                  selectedPointId === p.id ? selectedCircularIcon : circularIcon
+                addPoint(lat, lng, i, p.id);
+              },
+            }}
+          />
+        ) : (
+          <Marker
+            key={p.id}
+            draggable
+            position={{ lat: p.lat, lng: p.lon }}
+            // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+            icon={
+              selectedPointId === p.id ? selectedCircularIcon : circularIcon
+            }
+            opacity={1}
+            eventHandlers={{
+              drag(e) {
+                const coord = e.target.getLatLng();
+
+                dispatch(
+                  drawingLineUpdatePoint({
+                    index: lineIndex,
+                    point: { lat: coord.lat, lon: coord.lng, id: p.id },
+                  }),
+                );
+
+                dispatch(drawingMeasure({}));
+              },
+              click() {
+                if (joinWith) {
+                  dispatch(
+                    drawingLineJoinFinish({
+                      lineIndex,
+                      pointId: p.id,
+                      selection: {
+                        type: 'draw-line-poly',
+                        id:
+                          joinWith.lineIndex -
+                          (lineIndex > joinWith.lineIndex ? 0 : 1),
+                      },
+                    }),
+                  );
+
+                  dispatch(drawingMeasure({}));
+                } else {
+                  dispatch(
+                    selectFeature({
+                      type: 'line-point',
+                      lineIndex,
+                      pointId: p.id,
+                    }),
+                  );
                 }
-                opacity={1}
-                eventHandlers={{
-                  drag(e) {
-                    const coord = e.target.getLatLng();
+              },
+              dragstart() {
+                // Suspend history writes for the whole drag gesture so
+                // intermediate vertex positions don't pile up in browser
+                // history. Re-enabled on dragend.
+                setUrlUpdatingEnabled(false);
 
-                    dispatch(
-                      drawingLineUpdatePoint({
-                        index: lineIndex,
-                        point: { lat: coord.lat, lon: coord.lng, id: p.id },
-                      }),
-                    );
+                // Exempt from culling so the marker can't unmount mid-drag.
+                setDraggingPointId(p.id);
 
-                    dispatch(drawingMeasure({}));
-                  },
-                  click() {
-                    if (joinWith) {
-                      dispatch(
-                        drawingLineJoinFinish({
-                          lineIndex,
-                          pointId: p.id,
-                          selection: {
-                            type: 'draw-line-poly',
-                            id:
-                              joinWith.lineIndex -
-                              (lineIndex > joinWith.lineIndex ? 0 : 1),
-                          },
-                        }),
-                      );
+                handleDragStart();
+              },
+              dragend(e) {
+                // Re-enable first so the final-position dispatch below runs
+                // through the URL processor and commits the whole drag as a
+                // single history entry.
+                setUrlUpdatingEnabled(true);
 
-                      dispatch(drawingMeasure({}));
-                    } else {
-                      dispatch(
-                        selectFeature({
-                          type: 'line-point',
-                          lineIndex,
-                          pointId: p.id,
-                        }),
-                      );
-                    }
-                  },
-                  dragstart() {
-                    // Suspend history writes for the whole drag gesture so
-                    // intermediate vertex positions don't pile up in browser
-                    // history. Re-enabled on dragend.
-                    setUrlUpdatingEnabled(false);
+                setDraggingPointId(undefined);
 
-                    handleDragStart();
-                  },
-                  dragend(e) {
-                    // Re-enable first so the final-position dispatch below runs
-                    // through the URL processor and commits the whole drag as a
-                    // single history entry.
-                    setUrlUpdatingEnabled(true);
+                const coord = e.target.getLatLng();
 
-                    const coord = e.target.getLatLng();
+                dispatch(
+                  drawingLineUpdatePoint({
+                    index: lineIndex,
+                    point: { lat: coord.lat, lon: coord.lng, id: p.id },
+                  }),
+                );
 
-                    dispatch(
-                      drawingLineUpdatePoint({
-                        index: lineIndex,
-                        point: { lat: coord.lat, lon: coord.lng, id: p.id },
-                      }),
-                    );
+                dispatch(drawingMeasure({}));
 
-                    dispatch(drawingMeasure({}));
-
-                    handleDragEnd();
-                  },
-                }}
-              >
-                {line.type === 'line' && !joinWith && (
-                  <Tooltip
-                    className="compact"
-                    offset={[-4, 0]}
-                    direction="right"
-                  >
-                    <span>
-                      {i < 3 ? null : (
-                        <>
-                          ∑ {formatDistance(sumDist, language)}
-                          <br />
-                        </>
-                      )}
-                      ↔ {formatDistance(dist, language)}
-                      {i < 2 ? null : (
-                        <>
-                          <br />∡{' '}
-                          {prev &&
-                            azimuthNumberFormat.format(
-                              bearingToAzimuth(
-                                bearing([prev.lon, prev.lat], [p.lon, p.lat]),
-                              ),
-                            )}
-                          °
-                        </>
-                      )}
-                    </span>
-                  </Tooltip>
-                )}
-              </Marker>
-            ) : (
-              <Marker
-                key={p.id}
-                draggable
-                position={{ lat: p.lat, lng: p.lon }}
-                icon={circularIcon}
-                opacity={0.33}
-                eventHandlers={{
-                  dragstart(e) {
-                    setUrlUpdatingEnabled(false);
-
-                    const { lat, lng } = e.target.getLatLng();
-
-                    addPoint(lat, lng, i, p.id);
-                  },
-                  click(e) {
-                    const { lat, lng } = e.target.getLatLng();
-
-                    addPoint(lat, lng, i, p.id);
-                  },
-                }}
-              />
-            );
-
-          if (i % 2 === 0) {
-            prev = p;
-          }
-
-          return marker;
-        })}
+                handleDragEnd();
+              },
+            }}
+          >
+            {line.type === 'line' && !joinWith && (
+              <Tooltip className="compact" offset={[-4, 0]} direction="right">
+                <span>
+                  {i < 3 ? null : (
+                    <>
+                      ∑ {formatDistance(cumDist, language)}
+                      <br />
+                    </>
+                  )}
+                  ↔ {formatDistance(segDist, language)}
+                  {i < 2 ? null : (
+                    <>
+                      <br />∡ {azimuthNumberFormat.format(azimuth)}°
+                    </>
+                  )}
+                </span>
+              </Tooltip>
+            )}
+          </Marker>
+        ),
+      )}
 
       <ElevationChartActivePoint />
     </Fragment>
