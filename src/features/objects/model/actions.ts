@@ -18,10 +18,13 @@ export const objectsSetFilter = createAction<string[]>('OBJECTS_SET_FILTER');
 export const objectsSetResult =
   createAction<ObjectsResult[]>('OBJECTS_SET_RESULT');
 
-export const objectsSetSelectedIcon = createAction<MarkerType>(
-  'OBJECTS_SET_SELECTED_ICON',
-);
-
-export const objectsSetSelectedColor = createAction<string>(
-  'OBJECTS_SET_SELECTED_COLOR',
-);
+/**
+ * Replaces the whole marker style (shape + color) applied to displayed objects.
+ * A single whole-replace setter mirrors the other style settings
+ * (`searchSetResultStyle`, `trackViewerSetStyle`); partial updates (e.g. from the
+ * `#objects-style=` URL param) merge against the current value before dispatch.
+ */
+export const objectsSetStyle = createAction<{
+  selectedIcon: MarkerType;
+  color: string;
+}>('OBJECTS_SET_STYLE');

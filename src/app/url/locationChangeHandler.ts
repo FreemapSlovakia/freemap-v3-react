@@ -27,8 +27,7 @@ import {
 import { mapsLoad } from '@features/myMaps/model/actions.js';
 import {
   objectsSetFilter,
-  objectsSetSelectedColor,
-  objectsSetSelectedIcon,
+  objectsSetStyle,
 } from '@features/objects/model/actions.js';
 import {
   osmClear,
@@ -1118,15 +1117,15 @@ function handleFeatureStyles(
   if (typeof objectsStyle === 'string') {
     const f = parseStyleFields(objectsStyle);
 
-    if (f.color && f.color !== getState().objectsSettings.color) {
-      dispatch(objectsSetSelectedColor(f.color));
-    }
+    const cur = getState().objectsSettings;
 
-    if (
-      f.markerType &&
-      f.markerType !== getState().objectsSettings.selectedIcon
-    ) {
-      dispatch(objectsSetSelectedIcon(f.markerType));
+    const next = {
+      selectedIcon: f.markerType ?? cur.selectedIcon,
+      color: f.color ?? cur.color,
+    };
+
+    if (next.selectedIcon !== cur.selectedIcon || next.color !== cur.color) {
+      dispatch(objectsSetStyle(next));
     }
   }
 

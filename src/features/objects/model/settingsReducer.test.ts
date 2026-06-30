@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { objectsSetSelectedColor, objectsSetSelectedIcon } from './actions.js';
+import { objectsSetStyle } from './actions.js';
 import {
   objectsSettingsInitialState,
   objectsSettingsReducer,
@@ -7,21 +7,13 @@ import {
 
 /** Pure reducer tests for the persisted objects marker-style slice. */
 describe('objectsSettingsReducer', () => {
-  it('objectsSetSelectedIcon stores the marker shape', () => {
+  it('objectsSetStyle stores the marker shape and color', () => {
     const next = objectsSettingsReducer(
       objectsSettingsInitialState,
-      objectsSetSelectedIcon('square'),
+      objectsSetStyle({ selectedIcon: 'square', color: '#00ff00' }),
     );
 
     expect(next.selectedIcon).toBe('square');
-  });
-
-  it('objectsSetSelectedColor stores the marker color', () => {
-    const next = objectsSettingsReducer(
-      objectsSettingsInitialState,
-      objectsSetSelectedColor('#00ff00'),
-    );
-
     expect(next.color).toBe('#00ff00');
   });
 });
