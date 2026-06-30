@@ -412,7 +412,50 @@ export default function CurrentDrawingPropertiesModal({
             <Form.Text muted>{dm?.edit.hint}</Form.Text>
           </Form.Group>
 
-          {drawType !== 'draw-line-poly' && (
+          {drawType === 'draw-line-poly' ? (
+            <>
+              <DrawingLineStyleFields
+                color={editedColor || COLORS.normal}
+                onColorChange={setEditedColor}
+                fillColor={
+                  editedType === 'polygon' ? editedFillColor : undefined
+                }
+                onFillColorChange={
+                  editedType === 'polygon' ? setEditedFillColor : undefined
+                }
+                width={editedWidth}
+                onWidthChange={setEditedWidth}
+                invalidWidth={invalidWidth}
+                lineCap={editedLineCap}
+                onLineCapChange={setEditedLineCap}
+                lineJoin={editedLineJoin}
+                onLineJoinChange={setEditedLineJoin}
+                dashArray={editedDash}
+                onDashArrayChange={setEditedDash}
+              />
+
+              <Form.Group controlId="type" className="mt-3">
+                <Form.Label>{dm?.edit.type}</Form.Label>
+
+                <Form.Select
+                  value={editedType}
+                  onChange={(e) => {
+                    const newType = e.currentTarget.value as DrawingLineType;
+
+                    setEditedType(newType);
+
+                    if (newType === 'polygon' && !editedFillColor) {
+                      setEditedFillColor(editedColor);
+                    }
+                  }}
+                  disabled={!polyPoints || polyPoints.length < 3}
+                >
+                  <option value="line">{m?.selections.drawLines}</option>
+                  <option value="polygon">{m?.selections.drawPolygons}</option>
+                </Form.Select>
+              </Form.Group>
+            </>
+          ) : (
             <>
               <Form.Group controlId="color" className="mt-3">
                 <Form.Label>{dm?.edit.color}</Form.Label>
@@ -468,51 +511,6 @@ export default function CurrentDrawingPropertiesModal({
                 </div>
 
                 <Form.Text muted>{dm?.edit.textHint}</Form.Text>
-              </Form.Group>
-            </>
-          )}
-
-          {drawType === 'draw-line-poly' && (
-            <>
-              <DrawingLineStyleFields
-                color={editedColor || COLORS.normal}
-                onColorChange={setEditedColor}
-                fillColor={
-                  editedType === 'polygon' ? editedFillColor : undefined
-                }
-                onFillColorChange={
-                  editedType === 'polygon' ? setEditedFillColor : undefined
-                }
-                width={editedWidth}
-                onWidthChange={setEditedWidth}
-                invalidWidth={invalidWidth}
-                lineCap={editedLineCap}
-                onLineCapChange={setEditedLineCap}
-                lineJoin={editedLineJoin}
-                onLineJoinChange={setEditedLineJoin}
-                dashArray={editedDash}
-                onDashArrayChange={setEditedDash}
-              />
-
-              <Form.Group controlId="type" className="mt-3">
-                <Form.Label>{dm?.edit.type}</Form.Label>
-
-                <Form.Select
-                  value={editedType}
-                  onChange={(e) => {
-                    const newType = e.currentTarget.value as DrawingLineType;
-
-                    setEditedType(newType);
-
-                    if (newType === 'polygon' && !editedFillColor) {
-                      setEditedFillColor(editedColor);
-                    }
-                  }}
-                  disabled={!polyPoints || polyPoints.length < 3}
-                >
-                  <option value="line">{m?.selections.drawLines}</option>
-                  <option value="polygon">{m?.selections.drawPolygons}</option>
-                </Form.Select>
               </Form.Group>
             </>
           )}
