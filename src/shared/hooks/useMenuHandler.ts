@@ -10,10 +10,13 @@ import {
   ToolSchema,
 } from '@app/store/actions.js';
 import { ModalId, modalOf } from '@app/store/activeModal.js';
+import { suspendStatePersistence } from '@app/store/middleware/statePersistingMiddleware.js';
 import { Document, documentShow } from '@features/documents/model/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { Submenu } from '@features/mainMenu/components/submenu.js';
 import { mapRefocus } from '@features/map/model/actions.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Language } from '@shared/langUtils.js';
 import storage from 'local-storage-fallback';
@@ -25,6 +28,7 @@ export type EventKey =
   | 'url'
   | 'drawing'
   | 'clear-map-features'
+  | 'reset-app'
   | 'close'
   | 'gallery'
   | 'galEmails'
@@ -57,6 +61,10 @@ export function useMenuHandler({
   pointDescription?: string;
 } = {}) {
   const dispatch = useDispatch();
+
+  const m = useMessages();
+
+  const confirm = useConfirm();
 
   const lat = useAppSelector((state) => state.map.lat);
 
@@ -213,6 +221,30 @@ export function useMenuHandler({
         return;
       }
 
+      if (key === 'reset-app') {
+        setShow(false);
+
+        confirm({
+          message: m?.mapLayers.resetAppConfirm,
+          confirmLabel: m?.mapLayers.resetApp,
+          confirmStyle: 'danger',
+        }).then((ok) => {
+          if (ok) {
+            // Stop persisting first, so an action dispatched in the gap before
+            // the page unloads can't re-write the store we're about to drop.
+            suspendStatePersistence();
+
+            // Drop the persisted Redux store; the app re-bootstraps from
+            // defaults on reload.
+            storage.removeItem('store');
+
+            window.location.reload();
+          }
+        });
+
+        return;
+      }
+
       const lang = afterPrefix(key, 'lang-');
 
       if (lang !== undefined) {
@@ -278,6 +310,8 @@ export function useMenuHandler({
     },
     [
       dispatch,
+      m,
+      confirm,
       lat,
       lon,
       pointDescription,

@@ -1,6 +1,6 @@
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
-import { ReactElement, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import { DrawingLineStyleFields } from './DrawingLineStyleFields.js';
@@ -10,7 +10,8 @@ import { DrawingLineStyleFields } from './DrawingLineStyleFields.js';
  * cap/join, marker shape), shared by every modal that edits a default style.
  * Seeds from `initial` once (modals remount on open). Returns the rendered
  * fields, the assembled style (width falls back to `initial.width` while the
- * input is empty/invalid), an `invalid` flag for the width, and a `dirty` flag.
+ * input is empty/invalid), an `invalid` flag for the width, a `dirty` flag, and
+ * a `reset` that refills the fields from a given style (e.g. the defaults).
  */
 export function useDrawingStyleEditor(
   initial: DrawingStyle,
@@ -20,6 +21,7 @@ export function useDrawingStyleEditor(
   style: DrawingStyle;
   invalid: boolean;
   dirty: boolean;
+  reset: (to: DrawingStyle) => void;
 } {
   const dm = useDrawingMessages();
 
@@ -58,6 +60,16 @@ export function useDrawingStyleEditor(
     lineJoin !== initial.lineJoin ||
     markerType !== initial.markerType;
 
+  const reset = useCallback((to: DrawingStyle) => {
+    setColor(to.color);
+    setFillColor(to.fillColor);
+    setWidth(String(to.width));
+    setDashArray(to.dashArray);
+    setLineCap(to.lineCap);
+    setLineJoin(to.lineJoin);
+    setMarkerType(to.markerType);
+  }, []);
+
   const element = (
     <>
       <DrawingLineStyleFields
@@ -89,5 +101,5 @@ export function useDrawingStyleEditor(
     </>
   );
 
-  return { element, style, invalid, dirty };
+  return { element, style, invalid, dirty, reset };
 }

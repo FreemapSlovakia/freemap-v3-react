@@ -7,9 +7,10 @@ import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaPaintBrush, FaTimes, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { setSelectedColor, setSelectedIcon } from '../model/actions.js';
+import { objectsSetSettings } from '../model/actions.js';
+import { objectsSettingsInitialState } from '../model/settingsReducer.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
 type Props = { show: boolean };
@@ -40,12 +41,21 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    dispatch(setSelectedIcon(editedMarkerType));
-
-    dispatch(setSelectedColor(editedColor));
+    dispatch(
+      objectsSetSettings({
+        selectedIcon: editedMarkerType,
+        color: editedColor,
+      }),
+    );
 
     close();
   };
+
+  const handleReset = useCallback(() => {
+    setEditedMarkerType(objectsSettingsInitialState.selectedIcon);
+
+    setEditedColor(objectsSettingsInitialState.color);
+  }, []);
 
   useDocumentTitle(show ? om?.style.title : undefined);
 
@@ -87,6 +97,10 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
         <Modal.Footer>
           <Button type="submit">
             <FaCheck /> {m?.general.save}
+          </Button>
+
+          <Button variant="warning" onClick={handleReset}>
+            <FaUndo /> {m?.general.resetToDefaults}
           </Button>
 
           <Button variant="dark" onClick={close}>

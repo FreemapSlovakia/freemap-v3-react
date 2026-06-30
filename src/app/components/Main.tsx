@@ -326,6 +326,12 @@ const objectsStyleModalFactory = () =>
     '@features/objects/components/ObjectsStyleModal.js'
   );
 
+const searchResultStyleModalFactory = () =>
+  import(
+    /* webpackChunkName: "search-result-style-modal" */
+    '@features/search/components/SearchResultStyleModal.js'
+  );
+
 export function Main(): ReactElement {
   const m = useMessages();
 
@@ -907,6 +913,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'objects-style'}
         factory={objectsStyleModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'search-result-style'}
+        factory={searchResultStyleModalFactory}
       />
 
       <GalleryModals />

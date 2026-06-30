@@ -18,10 +18,16 @@ export const objectsSetFilter = createAction<string[]>('OBJECTS_SET_FILTER');
 export const objectsSetResult =
   createAction<ObjectsResult[]>('OBJECTS_SET_RESULT');
 
-export const setSelectedIcon = createAction<MarkerType>(
+export const objectsSetSelectedIcon = createAction<MarkerType>(
   'OBJECTS_SET_SELECTED_ICON',
 );
 
-export const setSelectedColor = createAction<string>(
+export const objectsSetSelectedColor = createAction<string>(
   'OBJECTS_SET_SELECTED_COLOR',
 );
+
+/** Sets the marker shape and color together in a single dispatch. */
+export const objectsSetSettings = createAction<{
+  selectedIcon: MarkerType;
+  color: string;
+}>('OBJECTS_SET_SETTINGS');

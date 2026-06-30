@@ -1,10 +1,11 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { mapInitialState } from '@features/map/model/reducer.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { FaCheck, FaLayerGroup, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaLayerGroup, FaTimes, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { MapLayersSettings } from './MapLayersSettings.js';
 
@@ -24,6 +25,10 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
+
+  const handleReset = useCallback(() => {
+    setLayersSettings(mapInitialState.layersSettings);
+  }, []);
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
@@ -65,6 +70,10 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
             disabled={layersSettings === initLayersSettings}
           >
             <FaCheck /> {m?.general.save}
+          </Button>
+
+          <Button variant="warning" onClick={handleReset}>
+            <FaUndo /> {m?.general.resetToDefaults}
           </Button>
 
           <Button variant="dark" onClick={close}>

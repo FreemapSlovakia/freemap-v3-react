@@ -1,6 +1,11 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { COLORS } from '@shared/colors.js';
-import { MarkerType, setSelectedColor, setSelectedIcon } from './actions.js';
+import {
+  MarkerType,
+  objectsSetSelectedColor,
+  objectsSetSelectedIcon,
+  objectsSetSettings,
+} from './actions.js';
 
 // Marker shape + color applied to displayed objects. A dedicated, persisted
 // settings slice (not the transient objects/active list), so the user's choices
@@ -19,10 +24,14 @@ export const objectsSettingsReducer = createReducer(
   objectsSettingsInitialState,
   (builder) =>
     builder
-      .addCase(setSelectedIcon, (state, action) => {
+      .addCase(objectsSetSelectedIcon, (state, action) => {
         state.selectedIcon = action.payload;
       })
-      .addCase(setSelectedColor, (state, action) => {
+      .addCase(objectsSetSelectedColor, (state, action) => {
         state.color = action.payload;
+      })
+      .addCase(objectsSetSettings, (state, action) => {
+        state.selectedIcon = action.payload.selectedIcon;
+        state.color = action.payload.color;
       }),
 );

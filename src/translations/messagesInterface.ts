@@ -28,6 +28,7 @@ export type Messages = {
     ok: string;
     preventShowingAgain: string;
     closeWithoutSaving: string;
+    resetToDefaults: string;
     back: string;
     internalError: ({ ticketId }: { ticketId?: string }) => JSX.Element;
     processorError: (props: Err) => string;
@@ -220,6 +221,8 @@ export type Messages = {
     featureScale: string;
     featureScaleHelp: string;
     searchResultStyle: string;
+    resetApp: string;
+    resetAppConfirm: string;
     loadWmsLayers: string;
     offlineMaps: string;
     legacy: string;

@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { setSelectedColor, setSelectedIcon } from './actions.js';
+import {
+  objectsSetSelectedColor,
+  objectsSetSelectedIcon,
+  objectsSetSettings,
+} from './actions.js';
 import {
   objectsSettingsInitialState,
   objectsSettingsReducer,
@@ -10,7 +14,7 @@ describe('objectsSettingsReducer', () => {
   it('setSelectedIcon stores the marker shape', () => {
     const next = objectsSettingsReducer(
       objectsSettingsInitialState,
-      setSelectedIcon('square'),
+      objectsSetSelectedIcon('square'),
     );
 
     expect(next.selectedIcon).toBe('square');
@@ -19,9 +23,19 @@ describe('objectsSettingsReducer', () => {
   it('setSelectedColor stores the marker color', () => {
     const next = objectsSettingsReducer(
       objectsSettingsInitialState,
-      setSelectedColor('#00ff00'),
+      objectsSetSelectedColor('#00ff00'),
     );
 
     expect(next.color).toBe('#00ff00');
+  });
+
+  it('objectsSetSettings stores the marker shape and color together', () => {
+    const next = objectsSettingsReducer(
+      objectsSettingsInitialState,
+      objectsSetSettings({ selectedIcon: 'ring', color: '#0000ff' }),
+    );
+
+    expect(next.selectedIcon).toBe('ring');
+    expect(next.color).toBe('#0000ff');
   });
 });

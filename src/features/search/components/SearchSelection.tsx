@@ -1,4 +1,8 @@
-import { convertToDrawing, setTool } from '@app/store/actions.js';
+import {
+  convertToDrawing,
+  setActiveModal,
+  setTool,
+} from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   routePlannerSetFinish,
@@ -10,7 +14,13 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { center } from '@turf/center';
 import { ReactElement } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
-import { FaPencilAlt, FaPlay, FaSearch, FaStop } from 'react-icons/fa';
+import {
+  FaPaintBrush,
+  FaPencilAlt,
+  FaPlay,
+  FaSearch,
+  FaStop,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 type Props = {
@@ -108,6 +118,21 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
             {...props}
           >
             <FaPencilAlt />
+          </Button>
+        )}
+      </LongPressTooltip>
+
+      <LongPressTooltip label={m?.mapLayers.searchResultStyle}>
+        {({ props }) => (
+          <Button
+            className="ms-1"
+            variant="secondary"
+            onClick={() => {
+              dispatch(setActiveModal({ type: 'search-result-style' }));
+            }}
+            {...props}
+          >
+            <FaPaintBrush />
           </Button>
         )}
       </LongPressTooltip>

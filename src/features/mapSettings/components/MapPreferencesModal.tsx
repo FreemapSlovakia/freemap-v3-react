@@ -1,9 +1,8 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
-import { useDrawingStyleEditor } from '@features/drawing/components/useDrawingStyleEditor.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
-import { searchSetResultStyle } from '@features/search/model/actions.js';
+import { mapInitialState } from '@features/map/model/reducer.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
@@ -14,14 +13,13 @@ import {
   useState,
 } from 'react';
 import {
-  Accordion,
   Button,
   Form,
   Modal,
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';
-import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaCog, FaTimes, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
@@ -49,14 +47,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
   const [featureScale, setFeatureScale] = useState(initialFeatureScale);
 
-  const initialSearchStyle = useAppSelector(
-    (state) => state.searchSettings.resultStyle,
-  );
-
-  const searchEditor = useDrawingStyleEditor(initialSearchStyle, {
-    widthStep: 0.1,
-  });
-
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
   useDocumentTitle(show ? m?.mapLayers.preferences : undefined);
@@ -65,14 +55,22 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  // Not memoized: `searchEditor` produces a fresh `style`/`dirty` each render,
-  // so a useCallback here would rebuild every render anyway.
+  // Fills the form fields with defaults; the user then applies them with Save
+  // (or closes without saving).
+  const handleResetDefaults = useCallback(() => {
+    setMaxZoom(String(mapInitialState.maxZoom));
+
+    setResolutionScale(
+      mapInitialState.resolutionScale === null
+        ? ''
+        : String(mapInitialState.resolutionScale),
+    );
+
+    setFeatureScale(String(mapInitialState.featureScale));
+  }, []);
+
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
-
-    if (searchEditor.dirty) {
-      dispatch(searchSetResultStyle(searchEditor.style));
-    }
 
     const settings: Parameters<typeof saveSettings>[0]['settings'] = {};
 
@@ -114,8 +112,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   const dirty =
     maxZoom !== initialMaxZoom ||
     resolutionScale !== initialResolutionScale ||
-    featureScale !== initialFeatureScale ||
-    searchEditor.dirty;
+    featureScale !== initialFeatureScale;
 
   return (
     <Modal
@@ -123,9 +120,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
-      // The color picker's popover is portalled to <body>; disable enforceFocus
-      // so its inputs stay editable (see PredefinedDrawingPropertiesModal).
-      enforceFocus={false}
     >
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
@@ -207,25 +201,19 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               {m?.mapLayers.featureScaleHelp}
             </Form.Text>
           </Form.Group>
-
-          <Accordion className="mt-3">
-            <Accordion.Item eventKey="searchResultStyle">
-              <Accordion.Header>
-                {m?.mapLayers.searchResultStyle}
-              </Accordion.Header>
-
-              <Accordion.Body>{searchEditor.element}</Accordion.Body>
-            </Accordion.Item>
-          </Accordion>
         </Modal.Body>
 
         <Modal.Footer>
           <Button
             variant="primary"
             type="submit"
-            disabled={!dirty || invalidMaxZoom || searchEditor.invalid}
+            disabled={!dirty || invalidMaxZoom}
           >
             <FaCheck /> {m?.general.save}
+          </Button>
+
+          <Button variant="warning" type="button" onClick={handleResetDefaults}>
+            <FaUndo /> {m?.general.resetToDefaults}
           </Button>
 
           <Button variant="dark" onClick={close}>

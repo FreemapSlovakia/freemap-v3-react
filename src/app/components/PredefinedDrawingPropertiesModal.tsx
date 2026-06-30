@@ -1,11 +1,12 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { useDrawingStyleEditor } from '@features/drawing/components/useDrawingStyleEditor.js';
+import { drawingSettingsInitialState } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { ReactElement, SubmitEvent, useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { FaCheck, FaFill, FaPaintBrush, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaFill, FaPaintBrush, FaTimes, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { applySettings, setActiveModal } from '../store/actions.js';
 
@@ -83,6 +84,13 @@ export default function PredefinedDrawingPropertiesModal({
             onClick={handleApplyToAllClick}
           >
             <FaFill /> {dm?.defProps.applyToAll}
+          </Button>
+
+          <Button
+            variant="warning"
+            onClick={() => editor.reset(drawingSettingsInitialState.style)}
+          >
+            <FaUndo /> {m?.general.resetToDefaults}
           </Button>
 
           <Button variant="dark" onClick={close}>

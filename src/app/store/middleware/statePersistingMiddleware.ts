@@ -3,6 +3,17 @@ import storage from 'local-storage-fallback';
 import { selectPersistedState } from '../persistence.js';
 import type { RootState } from '../store.js';
 
+// Latched on once a full app reset + reload is initiated. The reset clears the
+// persisted `store` key and reloads; without this, a background action (tracking
+// message, geolocation update) dispatched in the gap before the page unloads
+// would re-persist the state and silently defeat the reset.
+let suspended = false;
+
+/** Permanently stops state persistence for the rest of this page's lifetime. */
+export function suspendStatePersistence(): void {
+  suspended = true;
+}
+
 export const statePersistingMiddleware: Middleware<{}, RootState> =
   ({ getState }) =>
   (next) =>
@@ -11,7 +22,7 @@ export const statePersistingMiddleware: Middleware<{}, RootState> =
 
     const state = getState();
 
-    if (state.cookieConsent.cookieConsentResult !== null) {
+    if (!suspended && state.cookieConsent.cookieConsentResult !== null) {
       persistSelectedState(state);
     }
 

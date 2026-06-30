@@ -53,6 +53,7 @@ export const ModalIdSchema = z.enum([
   'current-drawing-properties',
   'track-viewer-style',
   'objects-style',
+  'search-result-style',
 ]);
 
 export type ModalId = z.infer<typeof ModalIdSchema>;
@@ -149,12 +150,19 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
 
 /**
  * Wraps an arg-less modal named by a `ModalId` into an `ActiveModal`, for the
- * few call sites that open a modal chosen at runtime. The branch on
- * `tracking-watched` is what lets the result narrow into the union — TypeScript
- * can't distribute a `ModalId`-typed discriminant across the union members.
+ * few call sites that open a modal chosen at runtime. The `tracking-watched`
+ * and `my-maps` branches peel off the two members that carry an argument, so
+ * the default branch's type matches the catch-all union member exactly —
+ * TypeScript can't otherwise distribute a `ModalId`-typed discriminant across
+ * the union members.
  */
 export function modalOf(modalId: ModalId): ActiveModal {
-  return modalId === 'tracking-watched'
-    ? { type: 'tracking-watched' }
-    : { type: modalId };
+  switch (modalId) {
+    case 'tracking-watched':
+      return { type: 'tracking-watched' };
+    case 'my-maps':
+      return { type: 'my-maps' };
+    default:
+      return { type: modalId };
+  }
 }

@@ -7,18 +7,15 @@ import { ReactElement, SubmitEvent, useCallback } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush, FaTimes, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { trackViewerSetStyle } from '../model/actions.js';
-import { trackViewerSettingsInitialState } from '../model/settingsReducer.js';
-import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
+import { searchSetResultStyle } from '../model/actions.js';
+import { searchSettingsInitialState } from '../model/settingsReducer.js';
 
 type Props = { show: boolean };
 
-export default function TrackViewerStyleModal({ show }: Props): ReactElement {
+export default function SearchResultStyleModal({ show }: Props): ReactElement {
   const m = useMessages();
 
-  const tvm = useTrackViewerMessages();
-
-  const style = useAppSelector((state) => state.trackViewerSettings.style);
+  const style = useAppSelector((state) => state.searchSettings.resultStyle);
 
   const editor = useDrawingStyleEditor(style, { widthStep: 0.1 });
 
@@ -31,12 +28,12 @@ export default function TrackViewerStyleModal({ show }: Props): ReactElement {
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    dispatch(trackViewerSetStyle(editor.style));
+    dispatch(searchSetResultStyle(editor.style));
 
     close();
   };
 
-  useDocumentTitle(show ? tvm?.style.title : undefined);
+  useDocumentTitle(show ? m?.mapLayers.searchResultStyle : undefined);
 
   return (
     <Modal
@@ -51,7 +48,7 @@ export default function TrackViewerStyleModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaPaintBrush /> {tvm?.style.title}
+            <FaPaintBrush /> {m?.mapLayers.searchResultStyle}
           </Modal.Title>
         </Modal.Header>
 
@@ -64,7 +61,7 @@ export default function TrackViewerStyleModal({ show }: Props): ReactElement {
 
           <Button
             variant="warning"
-            onClick={() => editor.reset(trackViewerSettingsInitialState.style)}
+            onClick={() => editor.reset(searchSettingsInitialState.resultStyle)}
           >
             <FaUndo /> {m?.general.resetToDefaults}
           </Button>

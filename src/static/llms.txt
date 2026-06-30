@@ -231,7 +231,7 @@ Toggles the map details toolbar. Clicking a location queries information about i
 
 Selecting a feature opens a detail popup with its OSM tags, a link to open it at OpenStreetMap.org (and its history), an "Edit in JOSM" button, and the data source.
 
-The geometry displayed for search and map-details results shares one style (color, fill, width, dash, line cap/join, marker shape — the same set as the track-viewer default style), editable in a collapsible panel of the **Map preferences** modal (Main menu > Map layers/settings > Preferences). It can also be preset via the read-only `/#search-style=` URL param, and `window.fmHeadless.searchResultStyle` overrides it in headless image rendering (see `doc/url-params.md`).
+The geometry displayed for search and map-details results shares one style (color, fill, width, dash, line cap/join, marker shape — the same set as the track-viewer default style), editable in a dedicated **Search result style** modal opened by a paintbrush button on the search-result selection toolbar (it carries a **Reset to default** button). It can also be preset via the read-only `/#search-style=` URL param, and `window.fmHeadless.searchResultStyle` overrides it in headless image rendering (see `doc/url-params.md`).
 
 ### Map changes
 
@@ -420,8 +420,9 @@ Opens a submenu:
 - Keyboard Shortcuts
 - Garmin
 - Freemap.sk for Geocaching Extension
+- **Reset application** — clears all locally stored settings (signing you out) and reloads the page; confirmed first
 
-Each item opens a modal with the selected topic.
+Most items open a modal with the selected topic; **Reset application** instead wipes the persisted state and reloads.
 
 The **Map legend** modal is specific to the currently active map and explains its symbols, grouped into collapsible categories (e.g. Accommodation, Food & Drink, Institutions, Sports, Natural features, Other points of interest, Land cover, Water, Roads and paths, Railways, Terrain, Borders, Other). The legend content differs per map type and is also available for WMS and custom WMS maps. It can also be opened from the map's **?** help button (<kbd>m</kbd> <kbd>l</kbd>).
 
@@ -509,6 +510,9 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 - **Max zoom** — global maximum zoom level
 - **Resolution scale** — simulates display pixel density and affects which tile variant is fetched (Auto by default)
 - **Feature size** — enlarges rendered labels and lines (no effect on satellite, shading, WMS, or vector (MapLibre) layers)
+- **Reset to default** — fills this modal's fields (max zoom, resolution scale, feature size) with their defaults; apply with Save or close without saving
+
+Modals that edit a persisted default style or settings (Map preferences, Configure map layers, drawing **Default properties**, objects **Marker style**, track-viewer **Default style**, **Search result style**) also carry a **Reset to default** button that refills the form with default values (applied with Save, not immediately).
 
 ### Maps
 

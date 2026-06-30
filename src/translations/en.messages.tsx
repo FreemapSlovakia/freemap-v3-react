@@ -49,6 +49,7 @@ const messages: Messages = {
     ok: 'OK',
     preventShowingAgain: "Don't show next time",
     closeWithoutSaving: 'Close the window with unsaved changes?',
+    resetToDefaults: 'Reset to default',
     back: 'Back',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
@@ -334,6 +335,9 @@ const messages: Messages = {
     featureScaleHelp:
       'Enlarges rendered labels and lines. Has no effect on satellite, shading, WMS, or vector (MapLibre) layers.',
     searchResultStyle: 'Search result style',
+    resetApp: 'Reset application',
+    resetAppConfirm:
+      'Reset all application settings to their defaults and reload the page? You will be signed out.',
     loadWmsLayers: 'Load layers',
     offlineMaps: 'Offline maps',
     legacy: 'legacy',
