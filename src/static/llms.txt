@@ -573,7 +573,7 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 | Wikipedia                  | w   | wikipedia         |    8 |            |              |                 |              | ⇧w       |           | Wikipedia                                                  |
 | Wikimedia Commons photos   | M   | wikimediaCommons  |   13 |            |              |                 |              | ⇧m       |           | Wikimedia Commons                                          |
 | Forest tracks NLC (2017)   | l1  | tile              |   11 |         15 |              |            1000 | l2           |          | sk        | © NLC Zvolen (legacy)                                      |
-| Forest tracks NLC          | l2  | maplibre          |    8 |            |              |                 |              | ⇧n       | sk        | © NLC Zvolen                                               |
+| Forest tracks NLC          | l2  | maplibre          |    9 |            |              |                 |              | ⇧n       | sk        | © NLC Zvolen                                               |
 | Parametric shading         | h   | parametricShading |      |         13 |              |                 |              | ⇧h       |           | Experimental; © Freemap, GEDTM30 (Europe)                  |
 | Parametric shading         | y   | parametricShading |      |         19 |           13 |                 |              | ⇧y       | sk        | Experimental; © Freemap; LLS DMR © ÚGKK SR                 |
 | Parametric shading         | z   | parametricShading |      |         18 |           13 |                 |              |          | cz        | Experimental; © Freemap, © ČÚZK                            |

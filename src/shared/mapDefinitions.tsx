@@ -1041,7 +1041,9 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     icon: <FaTractor />,
     url: 'https://nlc-v2.tiles.freemap.sk/styles/lesne/style.json',
     attribution: [NLC_ATTR],
-    minZoom: 8,
+    // leaflet minZoom; the source data starts at zoom 8 and maplibre-gl-leaflet
+    // runs one zoom level behind (see MaplibreLayer), so it appears at leaflet 9
+    minZoom: 9,
     shortcut: { code: 'KeyN', shift: true },
     countries: ['sk'],
   },

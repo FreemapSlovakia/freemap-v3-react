@@ -56,6 +56,8 @@ export function Layers(): ReactElement | null {
 
   const maxZoom = useAppSelector((state) => state.map.maxZoom);
 
+  const zoom = useAppSelector((state) => state.map.zoom);
+
   const resolutionScale = useAppSelector((state) => state.map.resolutionScale);
 
   const featureScale = useAppSelector((state) => state.map.featureScale);
@@ -182,6 +184,13 @@ export function Layers(): ReactElement | null {
     }
 
     if (layerDef.technology === 'maplibre') {
+      // maplibre-gl-leaflet keeps painting the GL canvas below minZoom (clamped
+      // to a fixed zoom → misaligned) instead of hiding it, so don't mount the
+      // layer at all until its minZoom is reached.
+      if (minZoom !== undefined && zoom < minZoom) {
+        return null;
+      }
+
       return (
         <AsyncComponent
           factory={maplibreLayerFactory}
