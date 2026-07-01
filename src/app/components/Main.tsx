@@ -1,3 +1,4 @@
+import { EventsLayer } from '@features/events/components/EventsLayer.js';
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
 import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
 import { GalleryResult } from '@features/gallery/components/GalleryResult.js';
@@ -778,6 +779,8 @@ export function Main(): ReactElement {
             {showResults && <Results />}
 
             <WikiLayer />
+
+            <EventsLayer />
 
             {showWikimediaCommonsLayer && (
               <AsyncComponent factory={wikimediaCommonsLayerFactory} />

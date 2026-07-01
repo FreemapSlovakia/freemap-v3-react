@@ -261,6 +261,7 @@ const messages: Messages = {
       X: outdoorMap,
       i: 'Data layer',
       I: 'Photos',
+      A: 'Events',
       l1: 'Forest tracks NLC (2017)',
       l2: 'Forest tracks NLC',
       w: 'Wikipedia',

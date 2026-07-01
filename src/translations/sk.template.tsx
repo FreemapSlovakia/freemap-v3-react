@@ -303,6 +303,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       X: outdoorMap,
       i: 'Dátová vrstva',
       I: 'Fotografie',
+      A: 'Akcie',
       l1: 'Lesné cesty NLC (2017)',
       l2: 'Lesné cesty NLC',
       w: 'Wikipedia',

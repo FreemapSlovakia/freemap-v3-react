@@ -127,6 +127,8 @@ The list is filtered by a time window (**From** / **To**), an **Only in the curr
 
 **Create new event** opens a form that either references an existing saved map or publishes the current map state as a new saved map, then sets the title, description, start/end time, start point (with a **Take from route start** button), and visibility. The same form is reachable from a **Publish as event** action on each map in **My maps**.
 
+There is also an **Events** overlay layer (id `A`) that plots one marker per matching event at its start point (falling back to its filter location), driven by the same filter as the panel and independent of whether the panel is open. Clicking a marker shows the event's details with an **Open** button that loads its underlying saved map (the My maps Load path).
+
 ### Drawing and measurement
 
 - Access: Main menu > Drawing and measurement
@@ -581,6 +583,7 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 | -------------------------- | --- | ----------------- | ---: | ---------: | -----------: | --------------: | ------------ | -------- | --------- | ---------------------------------------------------------- |
 | Data layer                 | i   | interactive       |      |            |              |                 |              | ⇧d       |           | Interactive items of all tools (drawing, route, search, …) |
 | Photos                     | I   | gallery           |    0 |            |              |                 |              | ⇧f       |           | CC BY-SA 4.0 (user photos); premium-only photos option     |
+| Events                     | A   | events            |    0 |            |              |                 |              | 🚫       |           | Shared-trip event markers; same filter as the Events panel |
 | Wikipedia                  | w   | wikipedia         |    8 |            |              |                 |              | ⇧w       |           | Wikipedia                                                  |
 | Wikimedia Commons photos   | M   | wikimediaCommons  |   13 |            |              |                 |              | ⇧m       |           | Wikimedia Commons                                          |
 | Forest tracks NLC (2017)   | l1  | tile              |   11 |         15 |              |            1000 | l2           |          | sk        | © NLC Zvolen (legacy)                                      |

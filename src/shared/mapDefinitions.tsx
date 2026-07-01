@@ -2,6 +2,7 @@ import { Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
   FaBus,
+  FaCalendarAlt,
   FaCamera,
   FaMap,
   FaPencilAlt,
@@ -135,6 +136,10 @@ type IsGalleryLayerDef = HasZIndex & {
   technology: 'gallery';
 };
 
+type IsEventsLayerDef = HasZIndex & {
+  technology: 'events';
+};
+
 type IsWikipediaLayerDef = HasZIndex & {
   technology: 'wikipedia';
 };
@@ -247,6 +252,7 @@ export type IsAllTechnologiesLayerDef =
   | IsMapLibreLayerDef
   | IsParametricShadingLayerDef
   | IsGalleryLayerDef
+  | IsEventsLayerDef
   | IsInteractiveLayerDef
   | IsWikipediaLayerDef
   | IsWikimediaCommonsLayerDef;
@@ -925,6 +931,17 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         name: 'CC BY-SA 4.0',
       },
     ],
+  },
+  {
+    layer: 'overlay',
+    type: 'A',
+    defaultInMenu: true,
+    defaultInToolbar: true,
+    technology: 'events',
+    icon: <FaCalendarAlt />,
+    minZoom: 0,
+    zIndex: 4,
+    attribution: [],
   },
   {
     layer: 'overlay',

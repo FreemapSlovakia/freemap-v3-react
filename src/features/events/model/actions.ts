@@ -2,6 +2,9 @@ import { createAction } from '@reduxjs/toolkit';
 import { IsoDateSchema } from '@shared/types/common.js';
 import z from 'zod';
 
+/** Map overlay-layer code for the events markers layer. */
+export const EVENTS_LAYER = 'A';
+
 export const EventPointSchema = z.object({
   lat: z.number(),
   lon: z.number(),
