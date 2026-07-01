@@ -31,7 +31,7 @@ export async function startPopupOAuth(
     dispatch(
       toastsAdd({
         id: 'broadcastChannelUnsupported',
-        style: 'danger',
+        style: 'warning',
         messageKey: 'general.broadcastChannelUnsupported',
         timeout: 5000,
       }),

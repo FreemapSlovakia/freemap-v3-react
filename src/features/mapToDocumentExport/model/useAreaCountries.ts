@@ -37,8 +37,14 @@ export function useAreaCountries(
         }
       })
       .catch((err) => {
+        if (cancelled) {
+          return;
+        }
+
         dispatch(
           toastsAdd({
+            // Coalesce repeats while the export bbox is being adjusted.
+            id: 'mapAreaCountries',
             style: 'danger',
             messageKey: 'general.loadError',
             messageParams: { err },

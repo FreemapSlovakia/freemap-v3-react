@@ -197,6 +197,9 @@ export function createProcessorMiddleware() {
                   messageKey,
                   messageParams: { err },
                   messageLoader: loadMessages,
+                  // Errors persist by default (they're important). A repeatedly
+                  // firing source can pass `toastId` to coalesce its own storm
+                  // of identical errors into one toast instead of stacking.
                   ...(toastId === undefined ? {} : { id: toastId }),
                 }),
               );

@@ -47,7 +47,6 @@ export function useLoadTrackFiles(): (files: File[]) => Promise<void> {
             messageParams: { names: failed.join(', ') },
             messageLoader: loadTrackViewerMessages,
             style: 'danger',
-            timeout: 5000,
           }),
         );
       }

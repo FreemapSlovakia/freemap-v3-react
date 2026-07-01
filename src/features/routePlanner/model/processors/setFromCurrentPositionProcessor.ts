@@ -20,10 +20,11 @@ export const routePlannerSetFromCurrentPositionProcessor: Processor<
     } catch {
       dispatch(
         toastsAdd({
+          // Transient/user-controllable geolocation failure, not an app error.
           id: 'routePlanner.gpsError',
           messageKey: 'gpsError',
           messageLoader: loadRoutePlannerMessages,
-          style: 'danger',
+          style: 'warning',
           timeout: 5000,
         }),
       );

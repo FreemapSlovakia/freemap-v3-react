@@ -58,7 +58,7 @@ export async function upload(
           toastsAdd({
             id: 'enablePopup',
             messageKey: 'general.enablePopup',
-            style: 'danger',
+            style: 'warning',
             timeout: 5000,
           }),
         );

@@ -324,12 +324,12 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     if (data.status === 'rejected') {
       dispatch(
         toastsAdd({
+          // Dedupe repeats, but persist (errors are important, don't auto-hide).
           id: 'routePlanner',
           messageKey: 'fetchingError',
           messageParams: { err: data.reason },
           messageLoader: loadRoutePlannerMessages,
           style: 'danger',
-          timeout: 5000,
         }),
       );
 
@@ -590,7 +590,6 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
               messageKey: 'general.operationError',
               messageParams: { err },
               style: 'danger',
-              timeout: 5000,
             }),
           );
         }
