@@ -1,4 +1,5 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
+import { useEventsMessages } from '@features/events/translations/useEventsMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import {
@@ -21,6 +22,7 @@ import {
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
+  FaCalendarAlt,
   FaCloudDownloadAlt,
   FaCog,
   FaEdit,
@@ -89,6 +91,8 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
   const m = useMessages();
 
   const mm = useMyMapsMessages();
+
+  const em = useEventsMessages();
 
   const confirm = useConfirm();
 
@@ -262,6 +266,23 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                           label={m?.general.modify}
                           disabled={!online}
                           onClick={() => onEdit(map)}
+                          showFrom="lg"
+                        />
+                      )}
+
+                      {isOwn && (
+                        <Action
+                          icon={<FaCalendarAlt />}
+                          label={em?.publishAsEvent}
+                          disabled={!online}
+                          onClick={() =>
+                            dispatch(
+                              setActiveModal({
+                                type: 'events',
+                                create: { mapId: map.id },
+                              }),
+                            )
+                          }
                           showFrom="lg"
                         />
                       )}

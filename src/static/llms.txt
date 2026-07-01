@@ -116,6 +116,17 @@ Maps flagged **Available offline** keep a copy of the saved map document in the 
 
 While a saved map is loaded ("connected"), a toolbar shows the map name with **Save** and a **Disconnect** button (whose dropdown also offers **Disconnect and clear**, to disconnect and clear the current map contents).
 
+### Events
+
+- Access: Main menu > Events
+- URL path: `/#show=events`
+
+Opens the shared-trips ("events") browser in a modal. An event is a social announcement layered on top of a live saved map (from **My maps**): it references that map, so editing the map changes what participants see. An event carries its own title, description, start/end time, an optional meetup start point, and a visibility (**Public** or **Unlisted** — unlisted events are reachable by link but not shown in listings).
+
+The list is filtered by a time window (**From** / **To**), an **Only in the current map area** toggle (restricts to the current map viewport), and an activity-type placeholder (not yet functional). The filter is reflected in the URL via `events-from`, `events-to`, `events-in-map-area` and `events-activity`. Each listed event offers **Open** (loads its underlying saved map, like My maps' Load) and, for the owner, **Edit** and **Delete**.
+
+**Create new event** opens a form that either references an existing saved map or publishes the current map state as a new saved map, then sets the title, description, start/end time, start point (with a **Take from route start** button), and visibility. The same form is reachable from a **Publish as event** action on each map in **My maps**.
+
 ### Drawing and measurement
 
 - Access: Main menu > Drawing and measurement

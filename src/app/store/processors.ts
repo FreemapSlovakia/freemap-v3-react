@@ -21,6 +21,9 @@ import {
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
+import { eventsDeleteProcessor } from '@features/events/model/processors/eventsDeleteProcessor.js';
+import { eventsLoadListProcessor } from '@features/events/model/processors/eventsLoadListProcessor.js';
+import { eventsSaveProcessor } from '@features/events/model/processors/eventsSaveProcessor.js';
 import { galleryDeletePictureProcessor } from '@features/gallery/model/processors/galleryDeletePictureProcessor.js';
 import { galleryFetchUsersProcessor } from '@features/gallery/model/processors/galleryFetchUsersProcessor.js';
 import { galleryItemUploadProcessor } from '@features/gallery/model/processors/galleryItemUploadProcessor.js';
@@ -184,6 +187,9 @@ export const processors = [
   mapsSetMapOfflineProcessor,
   mapsSetAllOfflineProcessor,
   mapsOfflinePurgeProcessor,
+  eventsLoadListProcessor,
+  eventsSaveProcessor,
+  eventsDeleteProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
   wikimediaCommonsLayerProcessor,

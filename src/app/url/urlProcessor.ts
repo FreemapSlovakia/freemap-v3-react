@@ -37,6 +37,7 @@ export const urlProcessor: Processor = {
       changesets,
       drawingLines,
       gallery: { filter: galleryFilter },
+      events: { filter: eventsFilter },
       main,
       tracking,
       myMaps,
@@ -66,6 +67,7 @@ export const urlProcessor: Processor = {
       drawingLines.lines,
       gallery.activeImageId,
       gallery.filter,
+      eventsFilter,
       drawingPoints.points,
       main.activeModal,
       main.embedFeatures,
@@ -358,6 +360,22 @@ export const urlProcessor: Processor = {
 
     if (galleryFilter.premium !== undefined) {
       historyParts.push(['gallery-premium', galleryFilter.premium]);
+    }
+
+    if (eventsFilter.from) {
+      historyParts.push(['events-from', dateToString(eventsFilter.from)]);
+    }
+
+    if (eventsFilter.to) {
+      historyParts.push(['events-to', dateToString(eventsFilter.to)]);
+    }
+
+    if (eventsFilter.inMapArea) {
+      historyParts.push(['events-in-map-area', '1']);
+    }
+
+    if (eventsFilter.activityType) {
+      historyParts.push(['events-activity', eventsFilter.activityType]);
     }
 
     if (objects.active.length) {

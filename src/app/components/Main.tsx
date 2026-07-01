@@ -291,6 +291,12 @@ const mapsModalFactory = () =>
     '@features/myMaps/components/MyMapsModal.js'
   );
 
+const eventsModalFactory = () =>
+  import(
+    /* webpackChunkName: "events-modal" */
+    '@features/events/components/EventsModal.js'
+  );
+
 const premiumActivationModalFactory = () =>
   import(
     /* webpackChunkName: "premium-activation-modal" */
@@ -889,6 +895,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'my-maps'}
         factory={mapsModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'events'}
+        factory={eventsModalFactory}
       />
 
       <AsyncModal

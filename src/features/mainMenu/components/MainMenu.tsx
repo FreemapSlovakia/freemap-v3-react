@@ -6,6 +6,7 @@ import { type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,
+  FaCalendarAlt,
   FaCamera,
   FaChevronRight,
   FaCode,
@@ -81,6 +82,10 @@ export function MainMenu(): ReactElement {
 
       <Dropdown.Item {...modalMenuItemProps('my-maps')}>
         <FaRegMap /> {m?.tools.myMaps} <kbd>g</kbd> <kbd>m</kbd>
+      </Dropdown.Item>
+
+      <Dropdown.Item {...modalMenuItemProps('events')}>
+        <FaCalendarAlt /> {m?.tools.events}
       </Dropdown.Item>
 
       <Dropdown.Item

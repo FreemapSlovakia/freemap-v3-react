@@ -137,6 +137,7 @@ const messages: Messages = {
     routePlanner: 'Route finder',
     objects: 'Objects (POIs)',
     photos: 'Photos',
+    events: 'Events',
     measurement: 'Drawing and measurement',
     drawPoints: 'Point drawing',
     drawLines: 'Line drawing',

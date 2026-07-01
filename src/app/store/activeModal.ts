@@ -11,6 +11,7 @@ const URL_MODAL_IDS = [
   'custom-maps',
   'drawing-properties',
   'embed',
+  'events',
   'file-import',
   'gallery-filter',
   'gallery-leaderboard',
@@ -64,8 +65,9 @@ export type ModalId = z.infer<typeof ModalIdSchema>;
  * at a time. `null` means no modal.
  */
 export type ActiveModal =
-  | { type: Exclude<ModalId, 'tracking-watched' | 'my-maps'> }
+  | { type: Exclude<ModalId, 'tracking-watched' | 'my-maps' | 'events'> }
   | { type: 'my-maps'; add?: boolean }
+  | { type: 'events'; create?: { mapId?: string } }
   | { type: 'tracking-watched'; token?: string }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
@@ -163,6 +165,8 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
 export function modalOf(modalId: ModalId): ActiveModal {
   switch (modalId) {
     case 'my-maps':
+      return { type: modalId };
+    case 'events':
       return { type: modalId };
     case 'tracking-watched':
       return { type: modalId };

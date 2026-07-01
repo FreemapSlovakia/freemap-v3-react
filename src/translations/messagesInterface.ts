@@ -102,6 +102,7 @@ export type Messages = {
     routePlanner: string;
     objects: string;
     photos: string;
+    events: string;
     measurement: string;
     drawPoints: string;
     drawLines: string;

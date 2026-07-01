@@ -19,7 +19,11 @@ import { refreshStaleOfflineMaps } from './mapsOfflineProcessor.js';
 export const mapsLoadListProcessor: Processor = {
   actionCreator: [mapsLoadList, authSetUser, authLogout, setActiveModal],
   handle: async ({ getState, dispatch, toastError }) => {
-    if (getState().main.activeModal?.type !== 'my-maps') {
+    // The events create/edit form reuses this list for its source-map picker,
+    // so load it whenever either modal is open.
+    const modalType = getState().main.activeModal?.type;
+
+    if (modalType !== 'my-maps' && modalType !== 'events') {
       if (getState().myMaps.maps.length) {
         dispatch(mapsSetList([]));
       }

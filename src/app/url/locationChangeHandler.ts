@@ -11,6 +11,10 @@ import {
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
+  type EventsFilter,
+  eventsSetFilter,
+} from '@features/events/model/actions.js';
+import {
   GalleryColorizeBySchema,
   GalleryFilter,
   galleryClear,
@@ -480,6 +484,8 @@ export function handleLocationChange(store: MyStore): void {
   }
 
   handleGallery(getState, dispatch, query);
+
+  handleEvents(getState, dispatch, query);
 
   const mapStateFromUrl = getMapStateFromUrl();
 
@@ -1003,6 +1009,60 @@ function handleGallery(
 
   if (cb.success) {
     dispatch(galleryColorizeBy(cb.data));
+  }
+}
+
+function handleEvents(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  query: Record<string, string | string[]>,
+) {
+  let a = query['events-from'];
+
+  const qFrom = typeof a === 'string' ? new Date(a) : undefined;
+
+  a = query['events-to'];
+
+  const qTo = typeof a === 'string' ? new Date(a) : undefined;
+
+  const qInMapArea = query['events-in-map-area'] === '1';
+
+  a = query['events-activity'];
+
+  const qActivity = typeof a === 'string' ? a : undefined;
+
+  const { filter } = getState().events;
+
+  const next: EventsFilter = {};
+
+  if (qFrom) {
+    next.from = qFrom;
+  }
+
+  if (qTo) {
+    next.to = qTo;
+  }
+
+  if (qInMapArea) {
+    next.inMapArea = true;
+  }
+
+  if (qActivity !== undefined) {
+    next.activityType = qActivity;
+  }
+
+  // Only dispatch when the URL-derived filter differs, to avoid a redundant
+  // refetch loop on every hash change.
+  const same =
+    (filter.from ? filter.from.getTime() : undefined) ===
+      (next.from ? next.from.getTime() : undefined) &&
+    (filter.to ? filter.to.getTime() : undefined) ===
+      (next.to ? next.to.getTime() : undefined) &&
+    Boolean(filter.inMapArea) === Boolean(next.inMapArea) &&
+    filter.activityType === next.activityType;
+
+  if (!same) {
+    dispatch(eventsSetFilter(next));
   }
 }
 

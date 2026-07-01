@@ -143,6 +143,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routePlanner: 'Vyhľadávač trás',
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
+    events: 'Akcie',
     measurement: 'Kreslenie a meranie',
     drawPoints: 'Kreslenie bodov',
     drawLines: 'Kreslenie čiar',

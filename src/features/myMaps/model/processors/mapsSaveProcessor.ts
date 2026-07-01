@@ -75,7 +75,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   },
 };
 
-function getMapDataFromState(state: RootState): MapData {
+export function getMapDataFromState(state: RootState): MapData {
   const {
     tracking,
     drawingLines,
