@@ -4,7 +4,7 @@ import {
   selectFeature,
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import {
   osmLoadNode,
@@ -108,20 +108,14 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       if (bounds) {
         const { layers } = getState().map;
 
-        (await mapPromise).fitBounds(
-          [
-            [bounds[1], bounds[0]],
-            [bounds[3], bounds[2]],
-          ],
-          {
-            maxZoom: Math.min(
-              action.payload.result.zoom ?? 18,
-              integratedLayerDefs
-                .filter(isBaseLayerDef)
-                .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
-            ),
-          },
-        );
+        await fitMapToBbox([bounds[0], bounds[1], bounds[2], bounds[3]], {
+          maxZoom: Math.min(
+            action.payload.result.zoom ?? 18,
+            integratedLayerDefs
+              .filter(isBaseLayerDef)
+              .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
+          ),
+        });
       }
     }
 

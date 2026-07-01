@@ -27,8 +27,9 @@ export const getCountriesProcessor: Processor = {
 
         console.error(err);
 
-        if (getState().map.countries) {
-          dispatch(mapSetCountries(undefined));
+        // null = error state (attribution shows all providers, no focus-warning)
+        if (getState().map.countries !== null) {
+          dispatch(mapSetCountries(null));
         }
 
         // TODO toast

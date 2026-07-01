@@ -6,6 +6,7 @@ import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
+  toAttributionCountries,
   useResolvedAttribution,
   useResolvedAttributionText,
 } from '@shared/components/Attribution.js';
@@ -191,7 +192,8 @@ export default function MapToDocumentExportModal({
       : { type: 'visible' },
   );
 
-  const attributionCountries = area === 'area' ? areaCountries : countries;
+  const attributionCountries =
+    area === 'area' ? areaCountries : toAttributionCountries(countries);
 
   const attribution = useResolvedAttribution(MAP_LAYERS, attributionCountries);
 

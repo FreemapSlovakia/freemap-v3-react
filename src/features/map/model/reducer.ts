@@ -75,7 +75,9 @@ export const mapInitialState: MapState = {
       },
     ],
   },
-  countries: [],
+  // undefined = not yet fetched (unknown coverage); [] would wrongly mean
+  // "covers no country" and flash out-of-coverage warnings during initial load
+  countries: undefined,
 };
 
 export const mapReducer = createReducer(mapInitialState, (builder) =>

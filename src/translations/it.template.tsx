@@ -339,8 +339,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Sovrapposto',
     },
     showMore: 'Mostra più mappe',
-    countryWarning: (countries) =>
-      `Copre solo i seguenti paesi: ${countries.join(', ')}`,
     configureLayers: 'Configura livelli mappa',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',

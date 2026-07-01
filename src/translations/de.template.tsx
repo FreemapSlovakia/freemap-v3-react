@@ -336,8 +336,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Overlay',
     },
     showMore: 'Mehr Karten anzeigen',
-    countryWarning: (countries) =>
-      `Deckt nur folgende Länder ab: ${countries.join(', ')}`,
     configureLayers: 'Kartenebenen konfigurieren',
     technologies: {
       tile: 'Bildkacheln (TMS, XYZ)',

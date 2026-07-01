@@ -23,6 +23,7 @@ const sk: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   startCaching: 'Spustiť sťahovanie',
   cachedSuccess: ({ name }) => `Mapa „${name}“ bola úspešne stiahnutá.`,
   activate: 'Aktivovať',
+  focus: 'Priblížiť na oblasť',
   namePrefix: 'Offline',
 };
 

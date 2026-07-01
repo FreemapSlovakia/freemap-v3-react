@@ -12,12 +12,31 @@ type Props = { unknown: string };
 
 const PREFIX = '?document=';
 
+/**
+ * Maps the `state.map.countries` tri-state to the country filter that
+ * {@link useResolvedAttribution} expects: not yet loaded (`undefined`) → `[]`
+ * to hide country-specific providers until coverage is known, error (`null`) →
+ * `undefined` to show all providers, loaded → the country list itself.
+ */
+export function toAttributionCountries(
+  countriesState: string[] | null | undefined,
+): string[] | undefined {
+  return countriesState === undefined
+    ? []
+    : countriesState === null
+      ? undefined
+      : countriesState;
+}
+
 export function Attribution({ unknown }: Props): ReactElement {
   const layers = useAppSelector((state) => state.map.layers);
 
-  const countries = useAppSelector((state) => state.map.countries);
+  const countriesState = useAppSelector((state) => state.map.countries);
 
-  const attribution = useResolvedAttribution(layers, countries);
+  const attribution = useResolvedAttribution(
+    layers,
+    toAttributionCountries(countriesState),
+  );
 
   return attribution === null ? (
     <div>{unknown}</div>

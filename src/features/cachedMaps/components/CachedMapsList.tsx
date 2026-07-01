@@ -1,6 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { mapToggleLayer } from '@features/map/model/actions.js';
+import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
 import {
   Action,
   ActionDivider,
@@ -13,6 +13,7 @@ import type { ReactElement } from 'react';
 import { Button, ListGroup, Modal, ProgressBar } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
+  FaCrosshairs,
   FaEye,
   FaPause,
   FaPencilAlt,
@@ -138,6 +139,20 @@ export function CachedMapsList(): ReactElement {
                         align="end"
                         toggleLabel={m?.general.actions}
                       >
+                        <Action
+                          icon={<FaCrosshairs />}
+                          label={cmm?.focus}
+                          onClick={() =>
+                            dispatch(
+                              mapFitBbox({
+                                bbox: cm.bounds,
+                                maxZoom: cm.maxNativeZoom,
+                              }),
+                            )
+                          }
+                          showFrom="sm"
+                        />
+
                         {!dl && isComplete && (
                           <Action
                             icon={<FaEye />}

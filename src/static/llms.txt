@@ -290,7 +290,7 @@ Each watched device is added with a **Watch Device** form: Watch Token (required
 
 Caches selected map areas (tiles) in the browser for offline use. (This is different from "Offline maps export", which produces a downloadable MBTiles/SQLiteDB file.)
 
-The manager modal lists already-cached offline maps with their zoom range, tile count, size and status (Ready, or incomplete with pause/resume), and has buttons to view, edit, delete, and **Add offline map**.
+The manager modal lists already-cached offline maps with their zoom range, tile count, size and status (Ready, or incomplete with pause/resume), and has buttons to zoom to the map's area, view, edit, delete, and **Add offline map**.
 
 The "Cache map for offline use" form lets the user choose:
 

@@ -17,5 +17,6 @@ export type CachedMapsMessages = {
   startCaching: string;
   cachedSuccess: (props: { name: string }) => string;
   activate: string;
+  focus: string;
   namePrefix: string;
 };

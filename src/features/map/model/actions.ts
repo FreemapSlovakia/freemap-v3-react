@@ -11,7 +11,9 @@ export interface MapViewState {
   zoom: number;
   layers: string[];
   bounds?: [number, number, number, number];
-  countries?: string[];
+  // undefined = coverage not yet fetched, null = fetch failed, [] = fetched
+  // (covers no known country), string[] = fetched country codes
+  countries?: string[] | null;
 }
 
 export const LayerSettingsSchema = z.object({
@@ -37,6 +39,12 @@ export interface MapStateBase extends MapViewState {
 export const mapRefocus = createAction<
   Partial<MapViewState> & { gpsTracked?: boolean }
 >('MAP_REFOCUS');
+
+/** Fit the map to a [west, south, east, north] bbox, clamped to maxZoom. */
+export const mapFitBbox = createAction<{
+  bbox: [number, number, number, number];
+  maxZoom?: number;
+}>('MAP_FIT_BBOX');
 
 export const mapReplaceLayer = createAction<{ from: string; to: string }>(
   'MAP_REPLACE_LAYER',
@@ -69,6 +77,6 @@ export const mapSetLocalPrefs = createAction<{
 export const mapSetBounds =
   createAction<[number, number, number, number]>('MAP_SET_BOUNDS');
 
-export const mapSetCountries = createAction<string[] | undefined>(
+export const mapSetCountries = createAction<string[] | null | undefined>(
   'MAP_SET_COUNTRIES',
 );

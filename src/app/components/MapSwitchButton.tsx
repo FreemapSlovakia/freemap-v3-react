@@ -2,9 +2,15 @@ import { hasRole } from '@features/auth/model/types.js';
 import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SubmenuHeader } from '@features/mainMenu/components/SubmenuHeader.js';
-import { mapToggleLayer } from '@features/map/model/actions.js';
+import {
+  mapFitBbox,
+  mapRefocus,
+  mapToggleLayer,
+} from '@features/map/model/actions.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
@@ -18,14 +24,20 @@ import {
   useMenuHandler,
 } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import {
+  getCountriesBbox,
+  getLayerBbox,
+  integratedLayerDefs,
+} from '@shared/mapDefinitions.js';
 import { removeAccents } from '@shared/stringUtils.js';
 import { Shortcut } from '@shared/types/common.js';
+import clsx from 'clsx';
 import {
   ChangeEvent,
   Fragment,
   MouseEvent,
   ReactElement,
+  ReactNode,
   SyntheticEvent,
   useCallback,
   useEffect,
@@ -39,6 +51,7 @@ import {
   FaEllipsisV,
   FaEyeSlash,
   FaFilter,
+  FaGem,
   FaHistory,
   FaLayerGroup,
   FaRegCheckCircle,
@@ -60,6 +73,10 @@ export function MapSwitchButton(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
+  const lat = useAppSelector((state) => state.map.lat);
+
+  const lon = useAppSelector((state) => state.map.lon);
+
   const activeLayers = useAppSelector((state) => state.map.layers);
 
   const pictureFilterIsActive = useAppSelector((state) =>
@@ -79,6 +96,11 @@ export function MapSwitchButton(): ReactElement {
   );
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
+
+  // undefined when the user is already premium
+  const becomePremium = useBecomePremium();
+
+  const prm = usePremiumMessages();
 
   const dispatch = useDispatch();
 
@@ -226,14 +248,6 @@ export function MapSwitchButton(): ReactElement {
   ) {
     return (
       <>
-        {place === 'toolbar' &&
-        !premium &&
-        !def.custom &&
-        def.premiumFromZoom !== undefined &&
-        zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
-          <PremiumGem className="ms-1" nested />
-        ) : null}
-
         {place !== 'toolbar' &&
           def.type !== 'X' &&
           !def.custom &&
@@ -268,16 +282,16 @@ export function MapSwitchButton(): ReactElement {
           <ExperimentalFunction data-interactive="1" className="ms-1" />
         )}
 
-        {place !== 'tooltip' && !def.zoomOk && (
+        {place === 'menu' && !def.zoomOk && (
           <FaSearchPlus
             title={m?.mapLayers.minZoomWarning(def.minZoom!)}
             className="text-warning ms-1"
           />
         )}
 
-        {place !== 'tooltip' && !def.countryOk && !def.custom && (
+        {place === 'menu' && !def.countryOk && !def.custom && (
           <BiWorld
-            title={m?.mapLayers.countryWarning(def.countries!)}
+            title={m?.mapLayers.outsideViewWarning}
             className="text-warning ms-1"
           />
         )}
@@ -340,7 +354,6 @@ export function MapSwitchButton(): ReactElement {
           expand !== 'all' &&
           !activeLayers.includes(type) &&
           (!(expand === false && !isWide ? showInToolbar : showInMenu) ||
-            !def.countryOk ||
             !def.zoomOk)
         ) {
           return null;
@@ -374,14 +387,7 @@ export function MapSwitchButton(): ReactElement {
                 {def.custom ? <MdDashboardCustomize /> : def.icon}
               </span>
 
-              <span
-                className={
-                  !def.zoomOk || !def.countryOk
-                    ? // was: 'text-decoration-line-through'
-                      'text-secondary'
-                    : ''
-                }
-              >
+              <span>
                 {def.custom
                   ? def.name || m?.mapLayers.customBase + ' ' + type
                   : (m?.mapLayers.letters[type] ?? '…')}
@@ -410,8 +416,7 @@ export function MapSwitchButton(): ReactElement {
 
           if (
             !activeLayers.includes(def.type) &&
-            (!def.countryOk ||
-              !def.zoomOk ||
+            (!def.zoomOk ||
               !showInToolbar ||
               (type === 'S' &&
                 showsOfm &&
@@ -426,34 +431,138 @@ export function MapSwitchButton(): ReactElement {
             showsOfm = true;
           }
 
-          return (
-            <LongPressTooltip
-              key={type}
-              label={
+          const active = (type === 'i') !== activeLayers.includes(type);
+
+          // Accessories are buttons joined to the layer button, each with its
+          // own fix-up action, so clicking the layer button itself only toggles
+          // the layer.
+          const accessories: {
+            key: string;
+            icon: ReactElement;
+            tooltip: ReactNode;
+            onClick: (e: MouseEvent<HTMLButtonElement>) => void;
+          }[] = [];
+
+          if (!def.zoomOk) {
+            accessories.push({
+              key: 'zoom',
+              icon: <FaSearchPlus className="text-warning" />,
+              tooltip: m?.mapLayers.minZoomWarning(def.minZoom!),
+              onClick: () => dispatch(mapRefocus({ zoom: def.minZoom })),
+            });
+          }
+
+          // A layer whose tiles aren't in view gets a button that zooms to its
+          // coverage. Country-limited integrated layers detect this with the
+          // border-accurate `countryOk` (target: their bbox or country boxes);
+          // layers with an explicit rectangular extent (cached maps' `bounds`,
+          // or a declared `bbox`) detect it from whether the map centre sits
+          // outside that extent.
+          let outOfCoverageBbox: [number, number, number, number] | undefined;
+
+          if (!def.custom) {
+            if (!def.countryOk) {
+              outOfCoverageBbox = def.bbox ?? getCountriesBbox(def.countries);
+            }
+          } else {
+            const box = getLayerBbox(def);
+
+            if (
+              box &&
+              (lon < box[0] || lon > box[2] || lat < box[1] || lat > box[3])
+            ) {
+              outOfCoverageBbox = box;
+            }
+          }
+
+          if (outOfCoverageBbox) {
+            accessories.push({
+              key: 'coverage',
+              icon: <BiWorld className="text-warning" />,
+              tooltip: m?.mapLayers.outsideViewWarning,
+              onClick: () =>
+                dispatch(
+                  mapFitBbox({
+                    bbox: outOfCoverageBbox,
+                    maxZoom:
+                      'maxNativeZoom' in def ? def.maxNativeZoom : undefined,
+                  }),
+                ),
+            });
+          }
+
+          if (
+            becomePremium &&
+            !def.custom &&
+            def.premiumFromZoom !== undefined &&
+            zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0)
+          ) {
+            accessories.push({
+              key: 'premium',
+              icon: <FaGem className="text-warning" />,
+              tooltip: (
                 <>
-                  {def.custom
-                    ? def.name || m?.mapLayers.customBase + ' ' + type
-                    : (m?.mapLayers.letters[type] ?? '…')}
-
-                  {commonBadges(def, 'tooltip')}
+                  {prm?.premiumOnly} {prm?.clickToActivate}
                 </>
-              }
-            >
-              {({ props }) => (
-                <Button
-                  variant="secondary"
-                  key={type}
-                  data-type={type}
-                  active={(type === 'i') !== activeLayers.includes(type)}
-                  onClick={handleLayerButtonClick}
-                  {...props}
-                >
-                  {def.custom ? <MdDashboardCustomize /> : def.icon}
+              ),
+              onClick: (e) => becomePremium(e),
+            });
+          }
 
-                  {commonBadges(def, 'toolbar')}
-                </Button>
-              )}
-            </LongPressTooltip>
+          const joined = accessories.length > 0;
+
+          return (
+            <Fragment key={type}>
+              <LongPressTooltip
+                label={
+                  <>
+                    {def.custom
+                      ? def.name || m?.mapLayers.customBase + ' ' + type
+                      : (m?.mapLayers.letters[type] ?? '…')}
+
+                    {commonBadges(def, 'tooltip')}
+                  </>
+                }
+              >
+                {({ props }) => (
+                  <Button
+                    variant="secondary"
+                    data-type={type}
+                    active={active}
+                    onClick={handleLayerButtonClick}
+                    {...props}
+                    className={
+                      joined ? 'pe-1 border-end-0 fm-btn-joined' : undefined
+                    }
+                  >
+                    {def.custom ? <MdDashboardCustomize /> : def.icon}
+
+                    {commonBadges(def, 'toolbar')}
+                  </Button>
+                )}
+              </LongPressTooltip>
+
+              {accessories.map((acc, i) => (
+                <LongPressTooltip key={acc.key} label={acc.tooltip}>
+                  {({ props }) => (
+                    <Button
+                      variant="secondary"
+                      active={active}
+                      onClick={acc.onClick}
+                      {...props}
+                      className={clsx(
+                        'fm-btn-joined border-start-0',
+                        i === accessories.length - 1
+                          ? 'ps-1'
+                          : 'px-1 border-end-0',
+                      )}
+                    >
+                      {acc.icon}
+                    </Button>
+                  )}
+                </LongPressTooltip>
+              ))}
+            </Fragment>
           );
         })}
 

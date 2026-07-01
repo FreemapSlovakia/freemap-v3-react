@@ -9,3 +9,18 @@
 .min-w-0 {
   min-width: 0;
 }
+
+// Join the out-of-coverage layer + zoom-to-coverage button pair into one block.
+// The facing borders are removed via border-end-0/border-start-0; here we also
+// drop the (pressed) inset box-shadow that $enable-shadows would otherwise draw
+// on the inner edges, which shows up as a subtle seam between the two halves.
+// The gradient is kept so the pair still matches the other toolbar buttons.
+.fm-btn-joined {
+  &,
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    box-shadow: none;
+  }
+}

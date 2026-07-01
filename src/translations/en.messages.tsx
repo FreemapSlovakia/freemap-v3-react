@@ -249,8 +249,7 @@ const messages: Messages = {
     photoFilterWarning: 'Photo filtering is active',
     interactiveLayerWarning: 'Map items layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
-    countryWarning: (countries) =>
-      `Covers only following countries: ${countries.join(', ')}`,
+    outsideViewWarning: 'The current view is outside this map',
     letters: {
       S: 'Aerial',
       Z: 'Aerial',

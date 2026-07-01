@@ -341,8 +341,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Átfedő',
     },
     showMore: 'További térképek megjelenítése',
-    countryWarning: (countries) =>
-      `Csak a következő országokat fedi le: ${countries.join(', ')}`,
     configureLayers: 'Térképrétegek beállítása',
     technologies: {
       tile: 'Képcsempék (TMS, XYZ)',

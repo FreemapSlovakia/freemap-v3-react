@@ -178,7 +178,7 @@ export type Messages = {
     photoFilterWarning: string;
     interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
-    countryWarning: (countries: string[]) => string;
+    outsideViewWarning: string;
     letters: Record<string, string>;
     customBase: string;
     type: {

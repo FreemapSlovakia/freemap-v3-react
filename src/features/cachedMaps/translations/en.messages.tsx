@@ -22,6 +22,7 @@ const en: CachedMapsMessages = {
   startCaching: 'Start caching',
   cachedSuccess: ({ name }) => `Map "${name}" cached successfully.`,
   activate: 'Activate',
+  focus: 'Zoom to area',
   namePrefix: 'Offline',
 };
 

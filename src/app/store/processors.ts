@@ -41,6 +41,7 @@ import { l10nSetLanguageProcessor } from '@features/l10n/model/processor.js';
 import { legendProcessor } from '@features/legend/model/legendProcessor.js';
 import { locateProcessor } from '@features/location/model/locateProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
+import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxProcessor.js';
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
 import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProcessor.js';
 import { measurementProcessor } from '@features/measurement/model/measurementProcessor.js';
@@ -119,6 +120,7 @@ export const processors = [
   authDisconnectProcessor,
   authDeleteAccountProcessor,
   mapRefocusProcessor,
+  mapFitBboxProcessor,
   getCountriesProcessor,
   searchProcessor,
   searchHighlightTrafo,

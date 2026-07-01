@@ -115,6 +115,13 @@ export type IsCommonLayerDef = {
   type: string;
   minZoom?: number;
   shortcut?: Shortcut;
+  /**
+   * Extent the layer covers, as [west, south, east, north]. Used only as the
+   * "zoom to coverage" target for a layer whose coverage isn't captured by the
+   * per-country boxes (e.g. a multi-country layer). Country-limited national
+   * layers derive their target from `countries` instead.
+   */
+  bbox?: [number, number, number, number];
 };
 
 type IsParametricShadingLayerDef = HasUrl &
@@ -172,6 +179,50 @@ export type IsOverlayLayerDef = HasZIndex & {
   layer: 'overlay';
 };
 
+// The [west, south, east, north] extent a layer covers, or undefined. Cached
+// maps store it under `bounds`; declarative layers use `bbox`.
+export const getLayerBbox = (
+  def: object,
+): [number, number, number, number] | undefined => {
+  const box =
+    'bbox' in def ? def.bbox : 'bounds' in def ? def.bounds : undefined;
+
+  return Array.isArray(box) && box.length === 4
+    ? (box as [number, number, number, number])
+    : undefined;
+};
+
+// Rough [west, south, east, north] extents used only as a "zoom to" target for
+// country-limited layers; actual coverage is tested against real borders via
+// the covered-countries service, not these rectangles.
+const COUNTRY_BBOXES: Record<string, [number, number, number, number]> = {
+  sk: [16.83, 47.73, 22.57, 49.61],
+  cz: [12.09, 48.55, 18.86, 51.06],
+};
+
+/** Union bbox of the known country extents, or undefined if none are known. */
+export const getCountriesBbox = (
+  countries?: string[],
+): [number, number, number, number] | undefined => {
+  let west = Infinity;
+  let south = Infinity;
+  let east = -Infinity;
+  let north = -Infinity;
+
+  for (const country of countries ?? []) {
+    const box = COUNTRY_BBOXES[country];
+
+    if (box) {
+      west = Math.min(west, box[0]);
+      south = Math.min(south, box[1]);
+      east = Math.max(east, box[2]);
+      north = Math.max(north, box[3]);
+    }
+  }
+
+  return Number.isFinite(west) ? [west, south, east, north] : undefined;
+};
+
 export const isTileLayerDef = <T extends { technology: string }>(
   def: T,
 ): def is T & IsTileLayerDef => def.technology === 'tile';
@@ -225,6 +276,7 @@ const IsCommonLayerDefSchema = z.object({
   type: z.string(),
   minZoom: z.number().optional(),
   shortcut: ShortcutSchema.optional(),
+  bbox: z.tuple([z.number(), z.number(), z.number(), z.number()]).optional(),
 });
 
 const IsCustomLayerSchema = z.object({
@@ -377,6 +429,9 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'X',
     defaultInMenu: true,
     defaultInToolbar: true,
+    // bbox of freemap-outdoor-map/limit-europe-buffered.geojson (the renderer's
+    // coverage polygon), rounded — the "zoom to coverage" target
+    bbox: [-33.22, 28.97, 47.16, 81.17],
     technology: 'tile',
     icon: <GiTreasureMap />,
     url: `${process.env['FM_MAPSERVER_URL']}/{z}/{x}/{y}`,

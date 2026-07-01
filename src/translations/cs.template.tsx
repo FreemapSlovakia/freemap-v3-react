@@ -341,8 +341,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Překryvná',
     },
     showMore: 'Ukázat více map',
-    countryWarning: (countries) =>
-      `Pokrývá pouze tyto země: ${countries.join(', ')}`,
     technology: 'Typ',
     technologies: {
       tile: 'Obrázkové dlaždice (TMS, XYZ)',
