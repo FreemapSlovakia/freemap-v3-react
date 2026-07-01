@@ -10,6 +10,12 @@ export const geoipProcessor: Processor = {
   errorKey: 'general.connectionError',
   actionCreator: invokeGeoip,
   async handle({ getState, dispatch }) {
+    // Best-effort startup geolocation; offline it can't work and would only
+    // raise a spurious connection-error toast, so skip it.
+    if (!navigator.onLine) {
+      return;
+    }
+
     const res = await httpRequest({
       getState,
       url: '/geoip',
