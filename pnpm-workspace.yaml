@@ -188,3 +188,4 @@ minimumReleaseAgeExclude:
   - '@typescript/native-preview-win32-x64@7.0.0-dev.20260630.1'
   - '@typescript/native-preview@7.0.0-dev.20260630.1'
   - ts-proto@2.11.10
+  - react-icons@5.7.0
