@@ -295,31 +295,10 @@ export function MarkerIcon({
           xmlns="http://www.w3.org/2000/svg"
           opacity={opacity}
         >
-          <ellipse
-            cx={155}
-            cy={155}
-            rx={135}
-            ry={135}
-            style={{
-              strokeWidth: 10,
-              fill: fillColor,
-              strokeOpacity: 0.5,
-              stroke: fillColor,
-            }}
-          />
+          <ellipse cx={155} cy={155} rx={135} ry={135} fill={fillColor} />
 
           {hasContent && (
-            <ellipse
-              cx={155}
-              cy={155}
-              rx={110}
-              ry={110}
-              style={{
-                strokeWidth: 10,
-                strokeOpacity: 0.6,
-                fill: `white`,
-              }}
-            />
+            <ellipse cx={155} cy={155} rx={110} ry={110} fill="white" />
           )}
 
           {renderGlyph(155, 155)}
@@ -339,12 +318,7 @@ export function MarkerIcon({
             height={240}
             rx={20}
             ry={20}
-            style={{
-              strokeWidth: 10,
-              strokeOpacity: 0.6,
-              fill: fillColor,
-              stroke: fillColor,
-            }}
+            fill={fillColor}
           />
 
           {hasContent && (
@@ -355,11 +329,7 @@ export function MarkerIcon({
               height={200}
               rx={20}
               ry={20}
-              style={{
-                strokeWidth: 10,
-                strokeOpacity: 0.6,
-                fill: `white`,
-              }}
+              fill="white"
             />
           )}
 
@@ -375,12 +345,7 @@ export function MarkerIcon({
         >
           <path
             d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z"
-            style={{
-              strokeWidth: 10,
-              fill: fillColor,
-              strokeOpacity: 0.5,
-              stroke: 'white',
-            }}
+            fill={fillColor}
           />
 
           {hasContent && (
@@ -389,11 +354,7 @@ export function MarkerIcon({
               cy={163.702}
               rx={119.462}
               ry={119.462}
-              style={{
-                strokeWidth: 10,
-                strokeOpacity: 0.6,
-                fill: `white`,
-              }}
+              fill="white"
             />
           )}
 
