@@ -130,7 +130,10 @@ export function MapSwitchButton(): ReactElement {
 
   const normalizedFilter = removeAccents(filter.trim().toLowerCase());
 
-  const handlePossibleFilterClick = useCallback(
+  // A click on an interactive badge inside a layer button / menu item acts on
+  // the badge (open the photo filter, zoom to the layer's coverage) instead of
+  // toggling the layer; returns true when such a badge was hit.
+  const handlePossibleBadgeClick = useCallback(
     (e: SyntheticEvent<unknown, unknown>) => {
       let x: unknown = e.target;
 
@@ -141,6 +144,32 @@ export function MapSwitchButton(): ReactElement {
 
         if (x instanceof SVGElement && x.dataset['filter']) {
           dispatch(setActiveModal({ type: 'gallery-filter' }));
+
+          return true;
+        }
+
+        if (x instanceof SVGElement && x.dataset['focusBbox']) {
+          const bbox = x.dataset['focusBbox'].split(',').map(Number) as [
+            number,
+            number,
+            number,
+            number,
+          ];
+
+          const maxZoom = x.dataset['focusMaxZoom'];
+
+          dispatch(
+            mapFitBbox({
+              bbox,
+              maxZoom: maxZoom ? Number(maxZoom) : undefined,
+            }),
+          );
+
+          return true;
+        }
+
+        if (x instanceof SVGElement && x.dataset['refocusZoom']) {
+          dispatch(mapRefocus({ zoom: Number(x.dataset['refocusZoom']) }));
 
           return true;
         }
@@ -178,7 +207,7 @@ export function MapSwitchButton(): ReactElement {
 
   const handleSelect = useCallback(
     (selection: string | null, e: SyntheticEvent<unknown>) => {
-      if (selection === null || handlePossibleFilterClick(e)) {
+      if (selection === null || handlePossibleBadgeClick(e)) {
         e.preventDefault();
 
         closeMenu();
@@ -188,12 +217,12 @@ export function MapSwitchButton(): ReactElement {
 
       baseHandleSelect(selection, e);
     },
-    [baseHandleSelect, closeMenu, handlePossibleFilterClick],
+    [baseHandleSelect, closeMenu, handlePossibleBadgeClick],
   );
 
   const handleLayerButtonClick = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
-      if (handlePossibleFilterClick(e)) {
+      if (handlePossibleBadgeClick(e)) {
         return;
       }
 
@@ -203,7 +232,7 @@ export function MapSwitchButton(): ReactElement {
         dispatch(mapToggleLayer({ type }));
       }
     },
-    [dispatch, handlePossibleFilterClick],
+    [dispatch, handlePossibleBadgeClick],
   );
 
   const isWide = useMediaQuery({ query: '(min-width: 576px)' });
@@ -241,6 +270,27 @@ export function MapSwitchButton(): ReactElement {
       def.countries.some((c) => countriesSet.has(c)),
     zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
   }));
+
+  // The extent to zoom to when a layer's tiles aren't in the current view, or
+  // undefined when they are. Country-limited integrated layers use the
+  // border-accurate `countryOk` (target: their bbox or per-country boxes);
+  // layers with an explicit rectangular extent (cached maps' `bounds`, or a
+  // declared `bbox`) test whether the map centre sits outside that extent.
+  const getOutOfCoverageBbox = (
+    def: (typeof layerDefs)[number],
+  ): [number, number, number, number] | undefined => {
+    if (!def.custom) {
+      return def.countryOk
+        ? undefined
+        : (def.bbox ?? getCountriesBbox(def.countries));
+    }
+
+    const box = getLayerBbox(def);
+
+    return box && (lon < box[0] || lon > box[2] || lat < box[1] || lat > box[3])
+      ? box
+      : undefined;
+  };
 
   function commonBadges(
     def: (typeof layerDefs)[number],
@@ -284,17 +334,29 @@ export function MapSwitchButton(): ReactElement {
 
         {place === 'menu' && !def.zoomOk && (
           <FaSearchPlus
+            data-refocus-zoom={def.minZoom}
             title={m?.mapLayers.minZoomWarning(def.minZoom!)}
             className="text-warning ms-1"
+            style={{ cursor: 'pointer' }}
           />
         )}
 
-        {place === 'menu' && !def.countryOk && !def.custom && (
-          <BiWorld
-            title={m?.mapLayers.outsideViewWarning}
-            className="text-warning ms-1"
-          />
-        )}
+        {place === 'menu' &&
+          (() => {
+            const box = getOutOfCoverageBbox(def);
+
+            return box ? (
+              <BiWorld
+                data-focus-bbox={box.join(',')}
+                data-focus-max-zoom={
+                  'maxNativeZoom' in def ? def.maxNativeZoom : undefined
+                }
+                title={m?.mapLayers.outsideViewWarning}
+                className="text-warning ms-1"
+                style={{ cursor: 'pointer' }}
+              />
+            ) : null;
+          })()}
 
         {place !== 'tooltip' && def.type === 'I' && pictureFilterIsActive && (
           <FaFilter
@@ -452,28 +514,9 @@ export function MapSwitchButton(): ReactElement {
             });
           }
 
-          // A layer whose tiles aren't in view gets a button that zooms to its
-          // coverage. Country-limited integrated layers detect this with the
-          // border-accurate `countryOk` (target: their bbox or country boxes);
-          // layers with an explicit rectangular extent (cached maps' `bounds`,
-          // or a declared `bbox`) detect it from whether the map centre sits
-          // outside that extent.
-          let outOfCoverageBbox: [number, number, number, number] | undefined;
-
-          if (!def.custom) {
-            if (!def.countryOk) {
-              outOfCoverageBbox = def.bbox ?? getCountriesBbox(def.countries);
-            }
-          } else {
-            const box = getLayerBbox(def);
-
-            if (
-              box &&
-              (lon < box[0] || lon > box[2] || lat < box[1] || lat > box[3])
-            ) {
-              outOfCoverageBbox = box;
-            }
-          }
+          // a layer whose tiles aren't in view gets a button that zooms to its
+          // coverage
+          const outOfCoverageBbox = getOutOfCoverageBbox(def);
 
           if (outOfCoverageBbox) {
             accessories.push({

@@ -180,7 +180,9 @@ export function CacheTilesForm(): ReactElement {
 
       const type = Math.random().toString(36).slice(2);
 
-      // strip integrated-only / non-serializable fields (icon, shortcut, etc.)
+      // strip integrated-only / non-serializable fields (icon, shortcut, etc.);
+      // `bbox` is the source layer's declared coverage — a cached map's real
+      // extent is its `bounds`, set below
       const {
         icon: _icon,
         shortcut: _shortcut,
@@ -191,6 +193,7 @@ export function CacheTilesForm(): ReactElement {
         experimental: _e,
         layerPreview: _lp,
         premiumFromZoom: _p,
+        bbox: _bbox,
         ...rest
       } = mapDef as Record<string, unknown> & typeof mapDef;
 

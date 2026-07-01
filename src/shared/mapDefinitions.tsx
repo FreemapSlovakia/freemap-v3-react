@@ -180,12 +180,13 @@ export type IsOverlayLayerDef = HasZIndex & {
 };
 
 // The [west, south, east, north] extent a layer covers, or undefined. Cached
-// maps store it under `bounds`; declarative layers use `bbox`.
+// maps store their actual downloaded extent under `bounds`, which wins over any
+// `bbox` inherited from the source layer; declarative layers use `bbox`.
 export const getLayerBbox = (
   def: object,
 ): [number, number, number, number] | undefined => {
   const box =
-    'bbox' in def ? def.bbox : 'bounds' in def ? def.bounds : undefined;
+    'bounds' in def ? def.bounds : 'bbox' in def ? def.bbox : undefined;
 
   return Array.isArray(box) && box.length === 4
     ? (box as [number, number, number, number])
