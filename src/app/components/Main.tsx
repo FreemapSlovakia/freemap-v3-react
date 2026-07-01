@@ -31,6 +31,7 @@ import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
@@ -494,6 +495,8 @@ export function Main(): ReactElement {
 
   const scMapControls = useScrollClasses('horizontal');
 
+  const online = useOnline();
+
   const elevationChartActive = useAppSelector((state) =>
     Boolean(state.elevationChart.elevationProfilePoints),
   );
@@ -568,7 +571,10 @@ export function Main(): ReactElement {
                 <Toolbar className="mt-2">
                   <button
                     id="freemap-logo"
-                    className={progress ? 'in-progress' : 'idle'}
+                    className={`${progress ? 'in-progress' : 'idle'}${
+                      online ? '' : ' offline'
+                    }`}
+                    title={online ? undefined : m?.general.offline}
                     onClick={handleLogoClick}
                   />
 

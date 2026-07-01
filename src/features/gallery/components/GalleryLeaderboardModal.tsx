@@ -154,7 +154,7 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
             case 'error':
               return (
                 <Alert variant="danger">
-                  {m?.general.loadError({ err: state.error?.toString() ?? '' })}
+                  {m?.general.loadError({ err: state.error })}
                 </Alert>
               );
             case 'success':

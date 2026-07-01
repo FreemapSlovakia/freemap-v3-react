@@ -38,6 +38,23 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
 - [ ] **Minor processor-middleware cleanups.** Internal `any` casts;
       `Math.random()` for fallback toast IDs; duplicated transform/handle predicate
       logic. Low priority.
+- [ ] **Toast auto-dismiss policy — do NOT centralize on `style`.** The
+      convention is "errors (`danger`) persist + dedupe by `id`; transient
+      notices auto-hide via `timeout`", enforced per call site. It's tempting to
+      move this into `toastsAdd`'s `prepare` (`src/features/toasts/model/actions.ts`)
+      as a style-keyed default (danger → no timeout, else 5000), but an audit of
+      all ~100 `toastsAdd` calls shows `style` does **not** map to timeout policy:
+      `info` is used for *persistent panels* (measurement results in
+      `measurementProcessor`, feature/POI detail in `searchHighlightProcessor` /
+      `ChangesetsResult` / `ObjectsResult`, `trackInfoToast`), and some
+      `warning`/`info` intentionally stick (`awaitingBankPayment`, `moreResults`,
+      `tooManyPoints`). Today an undefined `timeout` means "persist", so a
+      non-danger default would silently auto-dismiss ~10 of those. Keep the
+      per-site timeouts — they encode real intent, not boilerplate. The only
+      style where the mapping holds is `success` (always transient); if any
+      centralization is wanted, limit it to defaulting `success`-with-no-`actions`
+      to 5000 (would also tidy a few success toasts that currently persist by
+      omission: `copyOk`, `disconnectSuccess`, download success).
 - [ ] **Adopt React 19 hooks codebase-wide** (own session — it's a cross-cutting
       decision, not a local cleanup). The app uses zero Suspense today; all async
       loading goes through `useLazy` (`src/app/hooks/useLazy.ts`) + effects

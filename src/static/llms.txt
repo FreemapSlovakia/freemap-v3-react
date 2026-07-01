@@ -108,8 +108,11 @@ The modal lists saved maps with their created/modified dates and a filter box. A
 
 - **To empty map** — clear the current map before loading
 - **Include saved background map and position** — also restore the saved base/overlay layers and viewport
+- **Make all available offline** / **Remove all from offline** — flag every listed map for offline use, or clear the flag
 
-Each map has a per-item menu with **Load**, **Modify**, and **Delete**. Modify edits the map **Name** and its **Editors** — other users can be added as editors to collaborate on the same saved map. There is also an option to add a new (empty) saved map.
+Each map has a per-item menu with **Load**, **Modify**, and **Delete**. Modify edits the map **Name** and its **Editors** — other users can be added as editors to collaborate on the same saved map, and has an **Available offline** checkbox. There is also an option to add a new (empty) saved map.
+
+Maps flagged **Available offline** keep a copy of the saved map document in the browser (IndexedDB), so they appear in the list and can be **Load**ed even with no connection; an "Offline" badge marks them and they refresh automatically when their server copy is newer. This caches only the map document — the background tiles are cached separately via **Offline maps**. The app logo shows a small red dot while the app is offline.
 
 While a saved map is loaded ("connected"), a toolbar shows the map name with **Save** and a **Disconnect** button (whose dropdown also offers **Disconnect and clear**, to disconnect and clear the current map contents).
 

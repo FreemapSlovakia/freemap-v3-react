@@ -164,7 +164,8 @@ export const objectsFetchProcessor: Processor = {
 
       dispatch(objectsSetResult(result));
     } catch (err) {
-      await toastError(err, loadObjectsMessages, 'fetchingError');
+      // Coalesce the storm of identical failures while panning into one toast.
+      await toastError(err, loadObjectsMessages, 'fetchingError', 'objects');
     }
   },
 };

@@ -80,3 +80,17 @@ export const mapsLoaded = createAction<{
 }>('MAPS_LOADED');
 
 export const mapsSetMeta = createAction<MapMeta>('MAPS_SET_META');
+
+/** Ids of maps available offline, synced from IndexedDB. */
+export const mapsOfflineIdsLoaded = createAction<string[]>(
+  'MAPS_OFFLINE_IDS_LOADED',
+);
+
+/** Flag/unflag a single map for offline use. */
+export const mapsSetMapOffline = createAction<{
+  id: string;
+  offline: boolean;
+}>('MAPS_SET_MAP_OFFLINE');
+
+/** Flag/unflag every listed map for offline use. */
+export const mapsSetAllOffline = createAction<boolean>('MAPS_SET_ALL_OFFLINE');

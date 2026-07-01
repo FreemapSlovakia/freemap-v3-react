@@ -36,7 +36,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       dispatch(
         toastsAdd({
           id: 'broadcastChannelUnsupported',
-          style: 'danger',
+          style: 'warning',
           messageKey: 'general.broadcastChannelUnsupported',
           timeout: 5000,
         }),

@@ -53,7 +53,7 @@ export function MyMapsMenu(): ReactElement {
           </LongPressTooltip>
 
           <span className="align-self-center mx-1">
-            {m?.tools.myMap}: {activeMap?.name ?? '???'}
+            {m?.tools.myMap}: <b>{activeMap?.name ?? '???'}</b>
           </span>
 
           {!hidden && activeMap?.canWrite && (

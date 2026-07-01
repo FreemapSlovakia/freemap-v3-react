@@ -61,6 +61,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
       toastsAdd({
         style: 'success',
         id: 'mapFeaturesExport',
+        timeout: 5000,
         messageKey: 'general.success',
       }),
     );
@@ -78,7 +79,6 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     dispatch(
       toastsAdd({
         id: 'mapFeaturesExport',
-        timeout: 5000,
         style: 'danger',
         messageKey: 'garmin.revoked',
         messageLoader: loadMapFeaturesExportMessages,

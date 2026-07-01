@@ -17,4 +17,12 @@ export type MyMapsMessages = {
   writers: string;
   addWriter: string;
   conflictError: string;
+  availableOffline: string;
+  availableOfflineHint: string;
+  offline: string;
+  makeAllOffline: string;
+  removeAllOffline: string;
+  offlineError: (props: { err: unknown }) => string;
+  offlineCachedAll: (props: { count: number; failed: number }) => string;
+  offlineCachedPartial: (props: { count: number; failed: number }) => string;
 };

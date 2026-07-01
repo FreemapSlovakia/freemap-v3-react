@@ -19,6 +19,30 @@ export class HttpError extends Error {
   }
 }
 
+/**
+ * Thrown by `httpRequest` when the request never reached the server — a
+ * `fetch()` transport failure (offline, DNS, refused, CORS). A dedicated type
+ * lets callers detect this precisely, since a bare `TypeError` can come from
+ * unrelated code.
+ */
+export class NetworkError extends Error {
+  constructor(cause: unknown) {
+    super('Network request failed', { cause });
+
+    this.name = 'NetworkError';
+  }
+}
+
+/**
+ * True when an `httpRequest` failed because the request never reached the
+ * server, as opposed to a server response (`HttpError`), a parse error, or a
+ * deliberate abort. Gates offline fallbacks, so it must be precise — hence a
+ * dedicated `NetworkError` rather than an over-broad `TypeError` check.
+ */
+export function isNetworkError(err: unknown): boolean {
+  return err instanceof NetworkError;
+}
+
 interface HttpRequestParams
   extends Omit<RequestInit, 'signal'>,
     CancelTriggers {
@@ -120,17 +144,23 @@ export async function httpRequest({
   }
 
   try {
-    let response;
+    // Build the Request first: a malformed URL/header/method throws a
+    // `TypeError` here (a programmer error), keeping those out of the fetch
+    // catch below so only genuine transport failures become `NetworkError`.
+    const request = new Request(
+      urlIsRelative ? process.env['API_URL'] + url : url,
+      init,
+    );
+
+    let response: Response;
 
     try {
-      response = await fetch(
-        urlIsRelative ? process.env['API_URL'] + url : url,
-        init,
-      );
+      response = await fetch(request);
     } catch (err) {
-      (err as { _fm_fetchError: boolean })._fm_fetchError = true;
-
-      throw err;
+      // A valid request only rejects with a `TypeError` on a transport failure
+      // (offline, DNS, refused, CORS); surface it as a typed `NetworkError`.
+      // Anything else (e.g. an `AbortError`) propagates as-is.
+      throw err instanceof TypeError ? new NetworkError(err) : err;
     }
 
     const { status } = response;

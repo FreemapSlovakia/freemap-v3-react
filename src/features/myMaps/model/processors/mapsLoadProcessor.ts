@@ -1,118 +1,16 @@
-import { httpRequest } from '@app/httpRequest.js';
+import { isNetworkError } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
-import { LineCompatSchema } from '@features/drawing/model/actions/drawingLineActions.js';
-import { DrawingPointCompatSchema } from '@features/drawing/model/actions/drawingPointActions.js';
-import { GalleryFilterSchema } from '@features/gallery/model/actions.js';
-import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
-import {
-  PickModeSchema,
-  RoutePointSchema,
-  RoutingModeSchema,
-} from '@features/routePlanner/model/actions.js';
-import { TrackedDeviceSchema } from '@features/tracking/model/types.js';
-import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
-import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
-import z from 'zod';
-import { GeoJSONFeatureCollectionSchema } from 'zod-geojson';
+import { getOfflineMap, putOfflineMap } from '../../offlineStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
-import { MapMetaSchema, mapsLoad, mapsLoaded } from '../actions.js';
-
-const RoutePlannerMapDataCompatSchema = z.preprocess(
-  (v) => {
-    if (
-      typeof v !== 'object' ||
-      v === null ||
-      'points' in v ||
-      !('start' in v || 'midpoints' in v || 'finish' in v)
-    ) {
-      return v;
-    }
-
-    const { start, midpoints, finish, ...rest } = v as {
-      start?: unknown;
-      midpoints?: unknown[];
-      finish?: unknown;
-      [k: string]: unknown;
-    };
-
-    return {
-      ...rest,
-      points: [start, ...(midpoints ?? []), finish].filter(Boolean),
-      finishOnly: Boolean(finish) && !start,
-    };
-  },
-  z.object({
-    transportType: TransportTypeCompatSchema.optional(),
-    points: z.array(RoutePointSchema).optional(),
-    finishOnly: z.boolean().optional(),
-    pickMode: PickModeSchema.nullable().optional(),
-    mode: RoutingModeSchema.optional(),
-    milestones: z
-      .union([z.literal('abs'), z.literal('rel'), z.literal(false)])
-      .optional(),
-  }),
-);
-
-const MapMapDataCompatSchema = z.preprocess(
-  (v) => {
-    if (
-      typeof v === 'object' &&
-      v !== null &&
-      'mapType' in v &&
-      'overlays' in v &&
-      Array.isArray(v.overlays)
-    ) {
-      const { mapType, overlays, ...rest } = v as {
-        mapType: string;
-        overlays: string[];
-        [k: string]: unknown;
-      };
-
-      return { ...rest, layers: [mapType, ...overlays] };
-    }
-
-    return v;
-  },
-  z.object({
-    lat: z.number().optional(),
-    lon: z.number().optional(),
-    zoom: z.number().optional(),
-    layers: z.array(z.string()).optional(),
-    customLayers: CustomLayerDefArrayCompatSchema.optional(),
-    shading: ShadingSchema.optional(),
-  }),
-);
-
-// Colorize is a global display preference (`trackViewerSettings`), not part of
-// the saved map document, so it is intentionally absent here; an old map's
-// `colorizeTrackBy` is simply ignored on load.
-const TrackViewerMapDataSchema = z.object({
-  trackGeojson: GeoJSONFeatureCollectionSchema.nullable().optional(),
-  trackUID: z.string().nullable().optional(),
-  gpxUrl: z.string().nullable().optional(),
-});
-
-const MapsLoadResponseSchema = z.object({
-  meta: MapMetaSchema,
-  data: z.object({
-    lines: z.array(LineCompatSchema).optional(),
-    points: z.array(DrawingPointCompatSchema).optional(),
-    tracking: z
-      .object({
-        trackedDevices: z.array(TrackedDeviceSchema).optional(),
-        showLine: z.boolean().optional(),
-        showPoints: z.boolean().optional(),
-      })
-      .optional(),
-    routePlanner: RoutePlannerMapDataCompatSchema.optional(),
-    galleryFilter: GalleryFilterSchema.optional(),
-    trackViewer: TrackViewerMapDataSchema.optional(),
-    map: MapMapDataCompatSchema.optional(),
-    objectsV2: z.object({ active: z.array(z.string()) }).optional(),
-  }),
-});
+import {
+  type MapData,
+  type MapMeta,
+  mapsLoad,
+  mapsLoaded,
+} from '../actions.js';
+import { loadMapDocument } from '../loadMapDocument.js';
 
 export const mapsLoadProcessor: Processor = {
   actionCreator: [mapsLoad, authSetUser, authLogout],
@@ -136,14 +34,46 @@ export const mapsLoadProcessor: Processor = {
     }
 
     try {
-      const res = await httpRequest({
-        getState,
-        url: `/maps/${loadMeta.id}`,
-        expectedStatus: 200,
-        cancelActions: [mapsLoad, authSetUser, authLogout],
-      });
+      let meta: MapMeta;
+      let data: MapData;
+      let fromNetwork = false;
 
-      const { meta, data } = MapsLoadResponseSchema.parse(await res.json());
+      try {
+        if (!navigator.onLine) {
+          throw new Error('offline');
+        }
+
+        ({ meta, data } = await loadMapDocument(loadMeta.id, getState, [
+          mapsLoad,
+          authSetUser,
+          authLogout,
+        ]));
+
+        fromNetwork = true;
+      } catch (err) {
+        // Offline, or a genuine network failure while we believed we were
+        // online: resolve from the offline copy if the map was flagged for
+        // offline use. A server or parse error surfaces instead of silently
+        // serving a stale copy.
+        const offline =
+          !navigator.onLine || isNetworkError(err)
+            ? await getOfflineMap(loadMeta.id)
+            : undefined;
+
+        if (!offline) {
+          throw err;
+        }
+
+        ({ meta, data } = offline);
+      }
+
+      // Write a fresh network copy through to the offline cache *before* the
+      // load-time stripping below mutates `data.map`, so the cached document
+      // keeps its saved viewport/layers. Only network loads refresh the cache —
+      // an offline load would otherwise re-store the copy it just read.
+      if (fromNetwork && getState().myMaps.offlineIds.includes(meta.id)) {
+        await putOfflineMap({ meta, data });
+      }
 
       if (data.map) {
         if (loadMeta.ignoreMap) {

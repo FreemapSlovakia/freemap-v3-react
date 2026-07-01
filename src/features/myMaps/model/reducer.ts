@@ -6,6 +6,7 @@ import {
   mapsDisconnect,
   mapsLoad,
   mapsLoaded,
+  mapsOfflineIdsLoaded,
   mapsSetList,
   mapsSetMeta,
 } from './actions.js';
@@ -14,12 +15,14 @@ export interface MapsState {
   loadMeta: MapLoadMeta | undefined;
   maps: MapMeta[];
   activeMap: MapMeta | undefined;
+  offlineIds: string[];
 }
 
 const initialState: MapsState = {
   loadMeta: undefined,
   maps: [],
   activeMap: undefined,
+  offlineIds: [],
 };
 
 export const mapsReducer = createReducer(initialState, (builder) =>
@@ -40,6 +43,9 @@ export const mapsReducer = createReducer(initialState, (builder) =>
     })
     .addCase(mapsSetMeta, (state, { payload }) => {
       state.activeMap = { ...(state.activeMap ?? {}), ...payload };
+    })
+    .addCase(mapsOfflineIdsLoaded, (state, { payload }) => {
+      state.offlineIds = payload;
     })
     .addCase(authLogout, (state) => ({
       ...initialState,

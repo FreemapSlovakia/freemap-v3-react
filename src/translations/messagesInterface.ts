@@ -1,9 +1,9 @@
-import { HttpError } from '@app/httpRequest.js';
+import { HttpError, NetworkError } from '@app/httpRequest.js';
 import { SearchSource } from '@features/search/model/actions.js';
 import { DeepPartial } from '@shared/types/deepPartial.js';
 import { JSX, ReactNode } from 'react';
 
-type Err = { err: string };
+type Err = { err: unknown };
 
 export type Messages = {
   general: {
@@ -271,7 +271,12 @@ export function addError(
         (err.body ? ': ' + err.body : '')
       : !(err instanceof Error)
         ? String(err)
-        : (err as Error & { _fm_fetchError: boolean })._fm_fetchError
+        : // `NetworkError` is our httpRequest transport failure; a raw `fetch()`
+          // failure instead throws a bare `TypeError`. Both mean the request
+          // never reached the server, so show a friendly connection message
+          // rather than the raw browser text. (Display only — an unrelated
+          // `TypeError` mislabeled here is cosmetic, never a logic error.)
+          err instanceof NetworkError || err instanceof TypeError
           ? ((window.navigator.onLine === false
               ? messages.general.offline
               : messages.general.connectionError) ?? err.message)

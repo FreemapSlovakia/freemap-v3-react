@@ -84,8 +84,10 @@ export const locateProcessor: Processor = {
               toastsAdd({
                 id: 'main.locationError',
                 messageKey: 'main.locationError',
-                style: 'danger',
-                timeout: 5_000,
+                // A denied permission is a user-controlled, self-explanatory
+                // condition, not an app error — warn briefly, don't stick.
+                style: 'warning',
+                timeout: 5000,
               }),
             );
           }

@@ -11,6 +11,7 @@ import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import {
+  Badge,
   Button,
   Dropdown,
   Form,
@@ -18,6 +19,7 @@ import {
   ListGroup,
   Modal,
 } from 'react-bootstrap';
+import { BiWifiOff } from 'react-icons/bi';
 import {
   FaCloudDownloadAlt,
   FaCog,
@@ -40,6 +42,7 @@ import {
   mapsDisconnect,
   mapsLoad,
   mapsSave,
+  mapsSetAllOffline,
 } from '../model/actions.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 
@@ -55,7 +58,9 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const { maps, activeMap } = useAppSelector((state) => state.myMaps);
+  const { maps, activeMap, offlineIds } = useAppSelector(
+    (state) => state.myMaps,
+  );
 
   const myUserId = useAppSelector((state) => state.auth.user?.id);
 
@@ -129,6 +134,26 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 {inclPosition ? <FaRegCheckSquare /> : <FaRegSquare />}{' '}
                 {mm?.loadInclMapAndPosition}
               </Dropdown.Item>
+
+              <Dropdown.Divider />
+
+              <Dropdown.Header>{mm?.offline}</Dropdown.Header>
+
+              <Dropdown.Item
+                as="button"
+                disabled={!online || maps.length === 0}
+                onClick={() => dispatch(mapsSetAllOffline(true))}
+              >
+                <BiWifiOff /> {mm?.makeAllOffline}
+              </Dropdown.Item>
+
+              <Dropdown.Item
+                as="button"
+                disabled={offlineIds.length === 0}
+                onClick={() => dispatch(mapsSetAllOffline(false))}
+              >
+                <FaTimes /> {mm?.removeAllOffline}
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>
@@ -142,6 +167,8 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
               const isOwn = map.userId === myUserId;
 
+              const isOffline = offlineIds.includes(map.id);
+
               return (
                 <ListGroup.Item
                   key={map.id}
@@ -149,7 +176,14 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                   className="d-flex align-items-center gap-2"
                 >
                   <div className="flex-grow-1 me-2 min-w-0">
-                    <div>{map.name}</div>
+                    <div>
+                      {map.name}{' '}
+                      {isOffline && (
+                        <Badge bg="secondary">
+                          <BiWifiOff /> {mm?.offline}
+                        </Badge>
+                      )}
+                    </div>
 
                     <small className="text-muted">
                       <span className="text-nowrap">
@@ -173,7 +207,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                         icon={<FaCloudDownloadAlt />}
                         variant="primary"
                         label={m?.general.load}
-                        disabled={!online}
+                        disabled={!online && !isOffline}
                         onClick={() =>
                           dispatch(
                             mapsLoad({
