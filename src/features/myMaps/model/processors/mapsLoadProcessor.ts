@@ -1,3 +1,4 @@
+import { isNetworkError } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
@@ -50,9 +51,14 @@ export const mapsLoadProcessor: Processor = {
 
         fromNetwork = true;
       } catch (err) {
-        // Offline, or a network failure while we believed we were online:
-        // resolve from the offline copy if the map was flagged for offline use.
-        const offline = await getOfflineMap(loadMeta.id);
+        // Offline, or a genuine network failure while we believed we were
+        // online: resolve from the offline copy if the map was flagged for
+        // offline use. A server or parse error surfaces instead of silently
+        // serving a stale copy.
+        const offline =
+          !navigator.onLine || isNetworkError(err)
+            ? await getOfflineMap(loadMeta.id)
+            : undefined;
 
         if (!offline) {
           throw err;

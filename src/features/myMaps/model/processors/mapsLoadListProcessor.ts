@@ -1,4 +1,4 @@
-import { httpRequest } from '@app/httpRequest.js';
+import { httpRequest, isNetworkError } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
@@ -51,9 +51,12 @@ export const mapsLoadListProcessor: Processor = {
 
       list = z.array(MapMetaSchema).parse(await res.json());
     } catch (err) {
-      // A network failure while we believed we were online still shows the
-      // cached list if we have one.
-      const snapshot = await getOfflineMapListSnapshot();
+      // Only a genuine network failure (we believed we were online) falls back
+      // to the cached list; a server or parse error should surface rather than
+      // silently showing a stale snapshot.
+      const snapshot = isNetworkError(err)
+        ? await getOfflineMapListSnapshot()
+        : undefined;
 
       if (snapshot?.length) {
         dispatch(mapsSetList(snapshot));

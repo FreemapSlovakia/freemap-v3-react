@@ -19,6 +19,20 @@ export class HttpError extends Error {
   }
 }
 
+/**
+ * True when a request failed because the network was unreachable — as opposed to
+ * a server response (`HttpError`), a parse error, or a deliberate abort. Only
+ * these should trigger offline fallbacks; other errors must surface.
+ */
+export function isNetworkError(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    (err as { _fm_fetchError?: boolean })._fm_fetchError === true &&
+    !(err instanceof DOMException && err.name === 'AbortError')
+  );
+}
+
 interface HttpRequestParams
   extends Omit<RequestInit, 'signal'>,
     CancelTriggers {
