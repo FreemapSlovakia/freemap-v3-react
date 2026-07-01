@@ -9,8 +9,12 @@ export const LatLonSchema = z.object({
 });
 
 // Wire format: ISO 8601 datetime string like "2026-05-17T12:00:48.000Z".
-// z.input → string, z.output → Date. No coercion.
-export const IsoDateSchema = z.iso.datetime().transform((s) => new Date(s));
+// z.output → Date. Also accepts a `Date` so values that were parsed once and
+// then round-tripped through structured clone (e.g. read back from IndexedDB)
+// re-validate instead of failing on the already-transformed representation.
+export const IsoDateSchema = z
+  .union([z.iso.datetime(), z.date()])
+  .transform((v) => new Date(v));
 
 export type LatLon = z.infer<typeof LatLonSchema>;
 

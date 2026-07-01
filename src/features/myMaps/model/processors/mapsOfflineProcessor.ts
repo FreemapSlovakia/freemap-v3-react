@@ -10,8 +10,8 @@ import type { Dispatch } from 'redux';
 import {
   clearOfflineMaps,
   deleteOfflineMap,
-  getOfflineMap,
   getOfflineMapIds,
+  getOfflineMapMeta,
   putOfflineMap,
 } from '../../offlineStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
@@ -154,16 +154,20 @@ export async function refreshStaleOfflineMaps(
 
   const flagged = list.filter((meta) => offlineIds.has(meta.id));
 
-  // Read cached copies in parallel to compare modifiedAt.
-  const cached = await Promise.all(
-    flagged.map((meta) => getOfflineMap(meta.id)),
+  // Read only the cached meta (not the full document) in parallel to compare
+  // modifiedAt.
+  const cachedMetas = await Promise.all(
+    flagged.map((meta) => getOfflineMapMeta(meta.id)),
   );
 
   const stale = flagged
     .filter((meta, i) => {
-      const c = cached[i];
+      const cachedMeta = cachedMetas[i];
 
-      return !c || meta.modifiedAt.getTime() > c.meta.modifiedAt.getTime();
+      return (
+        !cachedMeta ||
+        meta.modifiedAt.getTime() > cachedMeta.modifiedAt.getTime()
+      );
     })
     .map((meta) => meta.id);
 
