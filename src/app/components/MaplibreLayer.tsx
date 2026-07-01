@@ -43,7 +43,13 @@ type MaplibreLayerProps = LayerProps &
 
 export default createTileLayerComponent<MaplibreWithLang, MaplibreLayerProps>(
   (props, context) => ({
-    instance: new MaplibreWithLang(props),
+    // maplibre-gl-leaflet drives the inner GL map at leafletZoom - 1, so its
+    // minZoom must be offset by the same -1 or the map clamps and misaligns at
+    // low zoom.
+    instance: new MaplibreWithLang({
+      ...props,
+      minZoom: props.minZoom == null ? props.minZoom : props.minZoom - 1,
+    }),
     context,
   }),
 
