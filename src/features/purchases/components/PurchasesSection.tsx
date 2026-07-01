@@ -187,9 +187,7 @@ export function PurchasesSection(): ReactElement | null {
           case 'error':
             return (
               <Alert variant="danger">
-                {m?.general.loadError({
-                  err: state.error?.toString() ?? '',
-                })}
+                {m?.general.loadError({ err: state.error })}
               </Alert>
             );
           case 'success':
