@@ -1,4 +1,4 @@
-import { httpRequest } from '@app/httpRequest.js';
+import { httpRequest, isNetworkError } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
 import { authInit, authSetUser } from '../actions.js';
@@ -70,15 +70,13 @@ export const authInitProcessor: Processor = {
 
           dispatch(authSetUser(user));
         } catch (err) {
-          if (typeof err !== 'object' || !err || 'status' in err) {
+          // A network failure (offline, or the server unreachable) can't
+          // disprove the cached session, so keep the user signed in silently;
+          // only a real server/parse error surfaces.
+          if (!isNetworkError(err)) {
             throw err;
           }
 
-          if (navigator.onLine) {
-            throw err;
-          }
-
-          // offline — keep the cached user
           dispatch(authSetUser(user));
         }
       }
