@@ -23,6 +23,12 @@ const tickActionTypes = new Map<string, number>();
 const TICK_MS = 1000;
 const STALL_MS = 3000;
 
+// A drift beyond this isn't a main-thread stall the page recovers from — it's a
+// wall-clock jump from OS sleep/suspend or extreme timer throttling, neither of
+// which fires visibilitychange. Report the plausible-stall band and drop the
+// rest so those minutes-to-hours phantom stalls stay out of Sentry.
+const STALL_MAX_MS = 60000;
+
 // More dispatches than this within a single tick implies a runaway loop.
 const STORM_THRESHOLD = 800;
 
@@ -147,7 +153,7 @@ export function startPerfWatchdog(): void {
     const actions = tickActionCount;
     const wasForeground = !document.hidden && !hiddenSinceTick;
 
-    if (wasForeground && drift > STALL_MS) {
+    if (wasForeground && drift > STALL_MS && drift < STALL_MAX_MS) {
       report('stall', `Main thread stalled for ~${drift} ms`, {
         stallMs: drift,
         actionsDuringStall: actions,
