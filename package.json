@@ -26,7 +26,7 @@
     "typecheck": "tsgo --noEmit -p .",
     "lint": "biome check",
     "lint:fix": "biome check --write",
-    "build": "pnpm build:proto && pnpm sync-language-files && tsgo --noEmit && rspack build --config rspack.config.ts",
+    "build": "pnpm build:proto && pnpm sync-language-files && rspack build --config rspack.config.ts && tsgo --noEmit",
     "build:local": "DEPLOYMENT=local pnpm build",
     "serve:dist": "pnpm dlx http-server dist -S -C ssl/freemap.sk.pem -K ssl/freemap.sk.key -a local.freemap.sk -p 9000 -c-1",
     "start:prod": "pnpm build:local && pnpm serve:dist",

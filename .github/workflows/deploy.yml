@@ -32,17 +32,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # `pnpm build` runs `tsgo --noEmit` before rspack, but the per-file CSS
-      # module typings (*.module.d.css.ts) are emitted by cssModulesDtsLoader
-      # *during* rspack, and the prod build has no TsCheckerRspackPlugin. On a
-      # clean checkout the typings don't exist yet, so run rspack first to emit
-      # them, then typecheck against them.
       - name: Build
-        run: |
-          pnpm build:proto
-          pnpm sync-language-files
-          DEPLOYMENT=www pnpm exec rspack build --config rspack.config.ts
-          pnpm exec tsgo --noEmit -p .
+        run: DEPLOYMENT=www pnpm build
 
       - name: Upload sourcemaps to Sentry
         if: env.SENTRY_AUTH_TOKEN != ''
