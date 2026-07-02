@@ -960,7 +960,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     layer: 'overlay',
     type: 'h',
     technology: 'parametricShading',
-    url: 'https://parametric-shading-europe.tiles.freemap.sk/europe/{z}/{x}/{y}',
+    url: 'https://parametric-shading.tiles.freemap.sk/europe/{z}/{x}/{y}',
     icon: <GiHills />,
     shortcut: { code: 'KeyH', shift: true },
     scaleWithDpi: true,
