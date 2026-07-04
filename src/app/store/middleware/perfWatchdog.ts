@@ -117,7 +117,10 @@ function report(
     extra: fullExtra,
   });
 
-  window._paq?.push(['trackEvent', 'Perf', kind, message]);
+  // The full free-text message (with timing numbers) stays in Sentry; Matomo
+  // only gets the low-cardinality visibility bucket so the report doesn't
+  // fragment into one row per drift value.
+  window._paq?.push(['trackEvent', 'Perf', kind, visibility]);
 }
 
 /** Starts the timer watchdog and (where supported) the longtask observer. */

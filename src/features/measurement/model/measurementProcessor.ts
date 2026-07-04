@@ -29,6 +29,10 @@ const cancelType = [
 // merely when some other tool opens (the draw tool stays open then).
 const drawingClosed = (state: RootState) => !state.main.tools.some(isDrawTool);
 
+// `drawingMeasure` re-fires on every vertex add/drag of the same geometry, so
+// tracking each one floods Matomo. Only report when the measured target changes.
+let lastMeasureKey: string | undefined;
+
 export const measurementProcessor: Processor<typeof drawingMeasure> = {
   actionCreator: drawingMeasure,
   handle: async ({ getState, dispatch, action, toastError }) => {
@@ -39,7 +43,20 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
 
       let id;
 
-      window._paq.push(['trackEvent', 'Drawing', 'measure', selection?.type]);
+      const measureKey = action.payload.position
+        ? 'position'
+        : selection?.type === 'draw-line-poly' ||
+            selection?.type === 'draw-points'
+          ? `${selection.type}:${selection.id}`
+          : selection?.type === 'line-point'
+            ? `line-point:${selection.lineIndex}`
+            : (selection?.type ?? 'none');
+
+      if (measureKey !== lastMeasureKey) {
+        lastMeasureKey = measureKey;
+
+        window._paq.push(['trackEvent', 'Drawing', 'measure', selection?.type]);
+      }
 
       // The context-menu path measures a free position with no drawing tool
       // open, so the drawingClosed predicate must not apply there — otherwise it
