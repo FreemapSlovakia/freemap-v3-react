@@ -77,6 +77,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         const toastParams: ElevationInfoBaseProps = {
           point,
           elevation: null,
+          loading: false,
         };
 
         if (action.payload.elevation !== false) {
@@ -85,7 +86,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               style: 'info',
               messageKey: 'elevationInfo',
               messageLoader: loadMeasurementMessages,
-              messageParams: toastParams,
+              messageParams: { ...toastParams, loading: true },
               id: 'measurementInfo',
               cancelType: pointCancelType,
               statePredicate,

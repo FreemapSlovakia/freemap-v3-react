@@ -15,13 +15,14 @@ import {
 } from '@shared/mapDefinitions.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Fragment, useCallback, useMemo } from 'react';
-import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
+import { Alert, Button, Form, InputGroup, Spinner } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 
 export type ElevationInfoBaseProps = {
-  elevation: number | null;
+  elevation: number | null | undefined;
   point: LatLon;
+  loading: boolean;
 };
 
 export type ElevationInfoProps = ElevationInfoBaseProps & {
@@ -38,6 +39,7 @@ const toFormat = (value: string | null) =>
 export function ElevationInfo({
   lang,
   elevation,
+  loading,
   point,
   tileMessage,
   maslMessage,
@@ -121,7 +123,15 @@ export function ElevationInfo({
 
   return (
     <>
-      {elevation != null && (
+      {loading ? (
+        <div>
+          {maslMessage}: <Spinner animation="border" size="sm" />
+        </div>
+      ) : elevation === undefined ? null : elevation === null ? (
+        <div>
+          {maslMessage}: <span className="text-muted">—</span>
+        </div>
+      ) : (
         <div>
           {maslMessage}: <b>{nf01.format(elevation)}</b>&nbsp;{m?.general.masl}
           <PremiumGem className="ms-1" hint={prm?.higherPrecisionElevation} />
