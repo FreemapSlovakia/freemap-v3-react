@@ -23,7 +23,9 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>zdjęcia premium</li>
         <li>multimodalne wyznaczanie trasy</li>
-        <li>dane o wysokości w wysokiej rozdzielczości (na razie Słowacja)</li>
+        <li>
+          dane o wysokości w wysokiej rozdzielczości (wiele krajów europejskich)
+        </li>
       </ul>
       <p className="mb-0">Freemap pozostaje bezpłatny i otwarty.</p>
     </>

@@ -23,7 +23,7 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>prémiové fotky</li>
         <li>multimodální plánování trasy</li>
-        <li>výšková data ve vysokém rozlišení (zatím Slovensko)</li>
+        <li>výšková data ve vysokém rozlišení (řada evropských zemí)</li>
       </ul>
       <p className="mb-0">Freemap zůstává bezplatný a otevřený.</p>
     </>

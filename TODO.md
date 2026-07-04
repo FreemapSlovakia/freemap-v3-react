@@ -136,6 +136,16 @@ limits; avoid third-party data (license risk — see Strava) and community conte
 - [ ] **Further chart enrichments.** Axis units, and think about what else is
       useful (grid/legend, hover crosshair readout, gradient/steepness shading,
       min/max/avg markers, …).
+- [ ] **Attribute the elevation data source where it's used.** The elevation API
+      now serves per-country high-res DTMs (SK/CZ/AT/CH/IT/SI/ES/SE) with a global
+      GEDTM30 fallback, but the only place we credit them is the hand-maintained
+      `llms.txt` and the outdoor-map layer attribution in `mapDefinitions.tsx`.
+      Show the source next to where the value is consumed: the elevation chart,
+      the point readout (`ElevationInfo.tsx`), and probably track colorization.
+      Prefer having the **backend return the source** per point/response (which
+      DTM answered) so we don't hand-sync the country→provider table on both
+      sides — the mapping is currently inferred from `ELEVATION_SOURCES` and
+      duplicated by hand.
 
 ## Track viewer: generic geodata vs. recorded tracks
 

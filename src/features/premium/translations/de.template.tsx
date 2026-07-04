@@ -24,7 +24,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>Premium-Fotos</li>
         <li>multimodale Routenplanung</li>
-        <li>hochauflösende Höhendaten (derzeit Slowakei)</li>
+        <li>hochauflösende Höhendaten (viele europäische Länder)</li>
       </ul>
       <p className="mb-0">Freemap bleibt kostenlos und offen.</p>
     </>

@@ -23,7 +23,7 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>foto premium</li>
         <li>routing multimodale</li>
-        <li>dati di elevazione ad alta risoluzione (per ora Slovacchia)</li>
+        <li>dati di elevazione ad alta risoluzione (molti paesi europei)</li>
       </ul>
       <p className="mb-0">Freemap resta gratuita e aperta.</p>
     </>

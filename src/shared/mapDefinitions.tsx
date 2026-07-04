@@ -506,12 +506,12 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         name: 'Korkeusmalli 2 m: Maanmittauslaitos',
         url: 'https://www.maanmittauslaitos.fi/en/maps-and-spatial-data/datasets-and-interfaces/product-descriptions/elevation-model-2-m',
       },
-      // {
-      //   type: 'data',
-      //   country: 'es',
-      //   name: 'MDT05: IGN (CNIG)',
-      //   url: 'https://centrodedescargas.cnig.es/CentroDescargas/modelos-digitales-elevaciones',
-      // },
+      {
+        type: 'data',
+        country: 'es',
+        name: 'MDT05: IGN (CNIG)',
+        url: 'https://centrodedescargas.cnig.es/CentroDescargas/modelos-digitales-elevaciones',
+      },
     ],
     minZoom: 5,
     maxNativeZoom: 20,

@@ -50,7 +50,7 @@ The Account modal has three collapsible sections (below); from the buttons at th
   - Removal of the ad banner
   - Access to premium photos (users can mark uploaded photos as premium-only)
   - Access to higher map zoom levels for specific map layers (see below)
-  - High-resolution elevation data in supported countries (used by the elevation API for the chart, colorizing, and elevation fill); currently Slovakia (DMR 5.0: ÚGKK SR), with more countries being added
+  - High-resolution elevation data in supported countries (used by the elevation API for the chart, colorizing, and elevation fill); currently Slovakia (DMR 5.0: ÚGKK SR), Czechia (DMR 5G: ČÚZK), Austria (ALS DTM: Geoland.at), Switzerland (swissALTI3D: © swisstopo), Italy (Tinitaly DEM: INGV), Slovenia (DMR: Ministrstvo za okolje in prostor), Spain (MDT05: IGN/CNIG), and Sweden (Markhöjdmodell: Lantmäteriet), with more countries being added; elsewhere the elevation API falls back to a global 30 m model (GEDTM30)
 
 #### Personal information
 
