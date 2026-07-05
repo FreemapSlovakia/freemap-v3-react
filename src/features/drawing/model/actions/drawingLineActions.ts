@@ -68,6 +68,8 @@ export const drawingLineAddPoint = createAction<
     point: Point;
     position?: number;
     indexOfLineToSelect: number;
+    /** The point comes from interactive map drawing; enter/stay in drawing mode. */
+    drawing?: boolean;
   } & (
     | {
         lineIndex: number;

@@ -1,8 +1,5 @@
 import { selectFeature } from '@app/store/actions.js';
-import {
-  drawingLinePolys,
-  selectingModeSelector,
-} from '@app/store/selectors.js';
+import { selectingModeSelector } from '@app/store/selectors.js';
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
@@ -103,7 +100,9 @@ type Props = {
 export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const drawing = useAppSelector(drawingLinePolys);
+  // The rubber-band preview from the last point to the cursor shows only while a
+  // drawing is actually in progress — not merely because the tool is open.
+  const drawing = useAppSelector((state) => state.drawingLines.drawing);
 
   const line = useAppSelector((state) => state.drawingLines.lines[lineIndex]);
 

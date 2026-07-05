@@ -182,11 +182,19 @@ export const selectingModeSelector = (state: RootState): boolean => {
 };
 
 export const drawingLinePolys = (state: RootState): boolean => {
-  // Only the active drawing tool captures clicks / edits lines — being merely
-  // open (visible toolbar) must not.
+  // The active drawing tool captures clicks (to start a line) — being merely
+  // open (visible toolbar) must not. An in-progress drawing also captures
+  // clicks (to append points) even after its tool was deactivated or closed,
+  // and during a "continue" that never activated a tool.
   const tool = activeMapToolSelector(state);
 
-  return tool === 'draw-lines' || tool === 'draw-polygons';
+  return (
+    tool === 'draw-lines' ||
+    tool === 'draw-polygons' ||
+    // A picking mode owns the map, so an in-progress drawing must go inert there
+    // too — mirror the masking `activeMapToolSelector` already applies.
+    (state.drawingLines.drawing && !pickingModeSelector(state))
+  );
 };
 
 export const trackGeojsonIsSuitableForElevationChart = (

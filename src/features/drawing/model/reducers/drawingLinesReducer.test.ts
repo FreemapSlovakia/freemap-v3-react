@@ -6,6 +6,7 @@ import {
 import { describe, expect, it } from 'vitest';
 import {
   drawingLineAdd,
+  drawingLineAddPoint,
   drawingLineContinue,
   drawingLineDelete,
   drawingLineDeletePoint,
@@ -259,7 +260,7 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
     expect(next.lines[0].points.map((pt) => pt.lat)).toEqual([0, 1]);
   });
 
-  it('stopDrawing / setTool clear the drawing + join state', () => {
+  it('stopDrawing / activating a tool clear the drawing + join state', () => {
     const state: DrawingLinesState = {
       drawing: true,
       joinWith: { lineIndex: 0, pointId: 1 },
@@ -268,11 +269,60 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
 
     for (const action of [
       drawingLineStopDrawing(),
-      setTool({ tool: 'draw-lines', mode: 'close' }),
+      setTool({ tool: 'draw-lines', mode: 'activate' }),
     ]) {
       const next = drawingLinesReducer(state, action);
 
       expect(next.drawing).toBe(false);
+      expect(next.joinWith).toBeUndefined();
+    }
+  });
+
+  it('addPoint with drawing:true enters drawing mode (interactive map click)', () => {
+    const next = drawingLinesReducer(
+      initialState,
+      drawingLineAddPoint({
+        lineProps: { type: 'line' },
+        point: p(0),
+        indexOfLineToSelect: 0,
+        drawing: true,
+      }),
+    );
+
+    expect(next.drawing).toBe(true);
+    expect(next.lines[0].points.map((pt) => pt.id)).toEqual([0]);
+  });
+
+  it('addPoint without drawing leaves the flag untouched (projection / midpoint / context-menu)', () => {
+    const state = withLines([line('line', [p(0), p(1)])]);
+
+    const next = drawingLinesReducer(
+      state,
+      drawingLineAddPoint({
+        lineIndex: 0,
+        point: p(2),
+        indexOfLineToSelect: 0,
+      }),
+    );
+
+    expect(next.drawing).toBe(false);
+  });
+
+  it('deactivating or closing the draw tool keeps the in-progress drawing', () => {
+    const state: DrawingLinesState = {
+      drawing: true,
+      joinWith: { lineIndex: 0, pointId: 1 },
+      lines: [],
+    };
+
+    for (const mode of ['open', 'close'] as const) {
+      const next = drawingLinesReducer(
+        state,
+        setTool({ tool: 'draw-lines', mode }),
+      );
+
+      // Drawing survives; only the transient join cursor is dropped.
+      expect(next.drawing).toBe(true);
       expect(next.joinWith).toBeUndefined();
     }
   });

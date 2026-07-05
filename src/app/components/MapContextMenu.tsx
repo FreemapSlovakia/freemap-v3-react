@@ -301,6 +301,7 @@ export function MapContextMenu(): ReactElement {
                 lon: contextMenu.lon,
               },
               indexOfLineToSelect: linesLength,
+              drawing: true,
             }),
           );
 

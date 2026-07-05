@@ -11,7 +11,6 @@ import {
   drawingLineContinue,
   drawingLineJoinFinish,
   drawingLineSetLines,
-  drawingLineStopDrawing,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
@@ -110,13 +109,6 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       state.tools = tools;
 
       state.activeTool = tools.filter(isMapClickTool).at(-1) ?? null;
-    })
-    .addCase(drawingLineStopDrawing, (state) => {
-      state.tools = state.tools.filter((t) => !isDrawTool(t));
-
-      if (state.activeTool && isDrawTool(state.activeTool)) {
-        state.activeTool = null;
-      }
     })
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;

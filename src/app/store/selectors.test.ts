@@ -298,9 +298,33 @@ describe('drawingLinePolys', () => {
     ).toBe(false);
   });
 
+  it('is true while a drawing is in progress even with no active tool', () => {
+    // Continuing an existing line, or a line whose tool was deactivated/closed,
+    // keeps capturing clicks so points can still be appended.
+    expect(
+      drawingLinePolys(
+        makeState({
+          main: { tools: [], activeTool: null },
+          drawingLines: { drawing: true },
+        }),
+      ),
+    ).toBe(true);
+  });
+
   it('is false while a picking mode owns the map', () => {
     const state = makeState({
       main: { tool: 'draw-lines' },
+      homeLocation: { selectingHomeLocation: true },
+    });
+
+    expect(drawingLinePolys(state)).toBe(false);
+  });
+
+  it('is false while a drawing is in progress but a picking mode owns the map', () => {
+    // The in-progress drawing must go inert while picking, otherwise the pick
+    // click would also append a point to the line.
+    const state = makeState({
+      drawingLines: { drawing: true },
       homeLocation: { selectingHomeLocation: true },
     });
 
