@@ -545,7 +545,10 @@ export function mergeLines<T extends Geometry>(
       g.type === 'LineString' &&
       positionsEqual(g.coordinates[0], g.coordinates.at(-1))
     ) {
-      Object.assign(g, { type: 'Polygon', coordinates: [g.coordinates] });
+      // Build a fresh geometry rather than mutating `g` in place: the geometry
+      // can be a frozen object carried over from the source feature, and
+      // redefining its `type` throws on strict engines (Firefox).
+      f.geometry = { type: 'Polygon', coordinates: [g.coordinates] } as T;
     }
   }
 
