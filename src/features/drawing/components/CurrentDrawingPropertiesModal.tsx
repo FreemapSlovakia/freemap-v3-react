@@ -235,7 +235,7 @@ export default function CurrentDrawingPropertiesModal({
         if (inJosm) {
           fetch(
             'http://localhost:8111/import?new_layer=true&url=' +
-              encodeURIComponent('http://fm3.freemap.sk:8080?' + q.toString()),
+              encodeURIComponent('https://streamfinder.freemap.sk?' + q.toString()),
           )
             .then((res) => {
               if (!res.ok) {
@@ -256,7 +256,7 @@ export default function CurrentDrawingPropertiesModal({
         } else {
           const aElem = document.createElement('a');
 
-          aElem.href = 'http://fm3.freemap.sk:8080?' + q.toString();
+          aElem.href = 'https://streamfinder.freemap.sk?' + q.toString();
 
           aElem.target = '_blank';
 
@@ -291,7 +291,7 @@ export default function CurrentDrawingPropertiesModal({
         if (inJosm) {
           fetch(
             'http://localhost:8111/import?new_layer=true&url=' +
-              encodeURIComponent('http://fm3.freemap.sk:8085?' + q.toString()),
+              encodeURIComponent('https://forester.freemap.sk?' + q.toString()),
           )
             .then((res) => {
               if (!res.ok) {
@@ -312,7 +312,7 @@ export default function CurrentDrawingPropertiesModal({
         } else {
           const aElem = document.createElement('a');
 
-          aElem.href = 'http://fm3.freemap.sk:8085?' + q.toString();
+          aElem.href = 'https://forester.freemap.sk?' + q.toString();
 
           aElem.target = '_blank';
 
