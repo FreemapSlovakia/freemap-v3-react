@@ -34,6 +34,22 @@ class MaplibreWithLang extends L.MaplibreGL {
 
     return this;
   }
+
+  onRemove(map: L.Map) {
+    const self = this as unknown as { _glMap?: { remove(): void } | null };
+
+    // When GL initialization failed (e.g. no WebGL context on a low-end
+    // device), `_glMap` is never assigned and the upstream onRemove throws
+    // dereferencing it. Stub it so the rest of teardown (detaching the pane
+    // container) still runs.
+    if (!self._glMap) {
+      self._glMap = { remove() {} };
+    }
+
+    L.MaplibreGL.prototype.onRemove.call(this, map);
+
+    return this;
+  }
 }
 
 type MaplibreLayerProps = LayerProps &
