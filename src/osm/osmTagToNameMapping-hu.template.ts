@@ -1550,11 +1550,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   intermittent: {
     yes: {
+      '*': 'Időszakos',
+
       natural: {
         water: 'Időszakos vízfelület',
       },
 
-      waterway: 'Időszakos vízfolyás',
+      waterway: {
+        stream: 'Időszakos patak',
+        ditch: 'Időszakos árok',
+        drain: 'Időszakos vízelvezető árok',
+        waterfall: 'Időszakos vízesés',
+      },
     },
   },
 
@@ -1597,11 +1604,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   seasonal: {
     yes: {
+      '*': 'Szezonális',
+
       natural: {
         water: 'Szezonális vízfelület',
       },
 
-      waterway: 'Szezonális vízfolyás',
+      waterway: {
+        stream: 'Szezonális patak',
+        ditch: 'Szezonális árok',
+        drain: 'Szezonális vízelvezető árok',
+        waterfall: 'Szezonális vízesés',
+      },
     },
   },
 

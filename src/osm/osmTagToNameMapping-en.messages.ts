@@ -1480,7 +1480,13 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   seasonal: {
     yes: {
-      waterway: 'Seasonal waterway',
+      '*': 'Seasonal',
+      waterway: {
+        stream: 'Seasonal stream',
+        ditch: 'Seasonal ditch',
+        drain: 'Seasonal drain',
+        waterfall: 'Seasonal waterfall',
+      },
       natural: {
         water: 'Seasonal water area',
       },
@@ -1488,7 +1494,13 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   intermittent: {
     yes: {
-      waterway: 'Intermittent waterway',
+      '*': 'Intermittent',
+      waterway: {
+        stream: 'Intermittent stream',
+        ditch: 'Intermittent ditch',
+        drain: 'Intermittent drain',
+        waterfall: 'Intermittent waterfall',
+      },
       natural: {
         water: 'Intermittent water area',
       },

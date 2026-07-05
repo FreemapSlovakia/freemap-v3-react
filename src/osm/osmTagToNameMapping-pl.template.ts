@@ -1546,11 +1546,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   intermittent: {
     yes: {
+      '*': 'Okresowy',
+
       natural: {
         water: 'Okresowy obszar wodny',
       },
 
-      waterway: 'Okresowy ciek wodny',
+      waterway: {
+        stream: 'Okresowy strumień',
+        ditch: 'Okresowy rów',
+        drain: 'Okresowy odpływ',
+        waterfall: 'Okresowy wodospad',
+      },
     },
   },
 
@@ -1593,11 +1600,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   seasonal: {
     yes: {
+      '*': 'Sezonowy',
+
       natural: {
         water: 'Sezonowy obszar wodny',
       },
 
-      waterway: 'Sezonowy ciek wodny',
+      waterway: {
+        stream: 'Sezonowy strumień',
+        ditch: 'Sezonowy rów',
+        drain: 'Sezonowy odpływ',
+        waterfall: 'Sezonowy wodospad',
+      },
     },
   },
 
