@@ -44,6 +44,20 @@ if (
   storage.clear();
 }
 
+// Self-heal a stray double slash in the path (e.g. arriving via an external
+// `https://host//#…` link). Left as-is, `location.pathname` is `//`, and the
+// URL processor's `pathname + '#hash'` writes would parse as protocol-relative
+// URLs and make pushState throw a SecurityError.
+if (/\/{2,}/.test(window.location.pathname)) {
+  window.history.replaceState(
+    window.history.state,
+    '',
+    window.location.pathname.replace(/\/{2,}/g, '/') +
+      window.location.search +
+      window.location.hash,
+  );
+}
+
 // workaround to fix blurring menus on hidpi desktop chrome
 if (
   window.devicePixelRatio > 1 &&

@@ -472,11 +472,15 @@ export const urlProcessor: Processor = {
           ? 'replaceState'
           : 'pushState';
 
-      history[method](
-        { sq },
-        '',
-        window.location.pathname + (urlSearch ? '#' + urlSearch : ''),
-      );
+      // Collapse repeated slashes so the pushed URL never begins with `//`.
+      // If the document was opened at a path like `https://host//` (from an
+      // external link with a stray double slash), `location.pathname` is `//`,
+      // and `//#hash` parses as a protocol-relative URL with an empty host —
+      // whose origin differs from the document, making pushState throw a
+      // SecurityError. Normalizing also self-heals the address bar.
+      const path = window.location.pathname.replace(/\/{2,}/g, '/');
+
+      history[method]({ sq }, '', path + (urlSearch ? '#' + urlSearch : ''));
 
       if (window.fmEmbedded) {
         window.parent.postMessage(
