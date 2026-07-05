@@ -1,13 +1,13 @@
 
 server {
 	server_name www.freemap.sk;
-	
+
 	if ($blocked_country) {
 	    return 444;
 	}
 
 	root /home/freemap/www;
-	
+
 	location = /manifest.webmanifest {
 		default_type application/manifest+json;
     	}
@@ -27,7 +27,7 @@ server {
 	location = /admin {
 		root /var/www;
 
-		try_files /admin.html =404;	
+		try_files /admin.html =404;
 	}
 
 	location = / {
@@ -115,20 +115,6 @@ server {
 		alias /fm/storage/backend.freemap.sk-data/user-mbtiles;
 	}
 
-
-	location /tiles/parametric-shading {
-		proxy_set_header Host $host;
-	        proxy_set_header X-Real-IP $remote_addr;
-        	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-	        proxy_set_header X-Forwarded-Proto $scheme;
-
-		expires 30d;
-		add_header Cache-Control "public, no-transform";
-
-		rewrite ^/tiles/parametric-shading/(.*)$ /$1 break;
-        	proxy_pass http://localhost:3033/;
-	}
-
 	http2 on;
 
 	listen 443 quic reuseport;
@@ -154,4 +140,3 @@ server {
 
 	return 404; # managed by Certbot
 }
-
