@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { PurchasesMessages } from './PurchasesMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { PurchasesMessages } from './PurchasesMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   purchases: 'Nákupy',

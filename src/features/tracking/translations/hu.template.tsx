@@ -1,7 +1,7 @@
 import { DocumentLink } from '@features/documents/components/DocumentLink.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
-import { TrackingMessages } from './TrackingMessages.js';
+import type { TrackingMessages } from './TrackingMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
   subscribeNotFound: ({ id }) => (

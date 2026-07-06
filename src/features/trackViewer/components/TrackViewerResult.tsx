@@ -20,7 +20,7 @@ import {
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
 import { flatten } from '@turf/flatten';
-import {
+import type {
   Feature,
   FeatureCollection,
   LineString,
@@ -28,7 +28,7 @@ import {
   Polygon as PolygonGeometry,
 } from 'geojson';
 import { Point as LPoint } from 'leaflet';
-import { Fragment, ReactElement, useMemo } from 'react';
+import { Fragment, type ReactElement, useMemo } from 'react';
 import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';

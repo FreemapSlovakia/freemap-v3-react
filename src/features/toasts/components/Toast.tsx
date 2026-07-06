@@ -1,13 +1,13 @@
 import type { RootAction } from '@app/store/rootAction.js';
 import {
   type ReactElement,
-  ReactNode,
+  type ReactNode,
   useCallback,
   useEffect,
   useState,
 } from 'react';
 import { Alert, Button, ButtonToolbar, CloseButton } from 'react-bootstrap';
-import { ResolvedToast, ToastAction } from '../model/actions.js';
+import type { ResolvedToast, ToastAction } from '../model/actions.js';
 import classes from './Toast.module.css';
 
 interface Props extends Pick<ResolvedToast, 'id' | 'style' | 'noClose'> {

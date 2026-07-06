@@ -14,17 +14,17 @@ import { distance } from '@turf/distance';
 import { bearingToAzimuth } from '@turf/helpers';
 import Color from 'color';
 import {
-  Direction,
+  type Direction,
   DomEvent,
   divIcon,
-  LatLngBounds,
-  LeafletMouseEvent,
-  PointExpression,
+  type LatLngBounds,
+  type LeafletMouseEvent,
+  type PointExpression,
 } from 'leaflet';
 import {
   Fragment,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useEffect,
   useMemo,
   useRef,
@@ -44,7 +44,7 @@ import {
   drawingLineAddPoint,
   drawingLineJoinFinish,
   drawingLineUpdatePoint,
-  Point,
+  type Point,
 } from '../model/actions/drawingLineActions.js';
 import { drawingMeasure } from '../model/actions/drawingPointActions.js';
 import classes from './DrawingLineResult.module.css';

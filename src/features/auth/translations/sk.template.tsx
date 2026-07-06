@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { AuthMessages } from './AuthMessages.js';
+import type { AuthMessages } from './AuthMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
   account: {

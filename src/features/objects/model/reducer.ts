@@ -2,7 +2,7 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  ObjectsResult,
+  type ObjectsResult,
   objectsSetFilter,
   objectsSetResult,
 } from './actions.js';

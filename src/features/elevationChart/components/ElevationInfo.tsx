@@ -9,7 +9,7 @@ import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import {
-  IsTileLayerDef,
+  type IsTileLayerDef,
   integratedLayerDefs,
   isTileLayerDef,
 } from '@shared/mapDefinitions.js';

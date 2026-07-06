@@ -1,6 +1,11 @@
 import { createTileLayerComponent } from '@react-leaflet/core';
-import { Coords, DoneCallback, TileLayer, WMSOptions } from 'leaflet';
-import { WMSTileLayerProps } from 'react-leaflet';
+import {
+  type Coords,
+  type DoneCallback,
+  TileLayer,
+  type WMSOptions,
+} from 'leaflet';
+import type { WMSTileLayerProps } from 'react-leaflet';
 
 type Props = WMSTileLayerProps & {
   onPremiumClick?: () => void;

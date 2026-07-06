@@ -1,6 +1,6 @@
 import { RovasAd } from '@features/ad/components/RovasAd.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { AdMessages } from './AdMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { AdMessages } from './AdMessages.js';
 
 const de: DeepPartialWithRequiredObjects<AdMessages> = {
   self: (email) => (

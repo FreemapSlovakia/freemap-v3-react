@@ -4,9 +4,9 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
-  ChangeEvent,
-  ReactElement,
-  SubmitEvent,
+  type ChangeEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useEffect,
   useState,

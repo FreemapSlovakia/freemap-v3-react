@@ -1,24 +1,27 @@
 import {
   clearMapFeatures,
-  ExternalTarget,
+  type ExternalTarget,
   openInExternalApp,
   resetApp,
   saveSettings,
   setActiveModal,
   setTool,
   setTools,
-  Tool,
+  type Tool,
   ToolSchema,
 } from '@app/store/actions.js';
-import { ModalId, modalOf } from '@app/store/activeModal.js';
-import { Document, documentShow } from '@features/documents/model/actions.js';
+import { type ModalId, modalOf } from '@app/store/activeModal.js';
+import {
+  type Document,
+  documentShow,
+} from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
-import { Submenu } from '@features/mainMenu/components/submenu.js';
+import type { Submenu } from '@features/mainMenu/components/submenu.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { Language } from '@shared/langUtils.js';
+import type { Language } from '@shared/langUtils.js';
 import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';

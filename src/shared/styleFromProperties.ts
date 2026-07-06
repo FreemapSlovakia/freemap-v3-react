@@ -7,7 +7,7 @@ import {
   type LineJoin,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import {
-  MarkerType,
+  type MarkerType,
   MarkerTypeSchema,
 } from '@features/objects/model/actions.js';
 import { joinColorAlpha } from '@shared/colorAlpha.js';

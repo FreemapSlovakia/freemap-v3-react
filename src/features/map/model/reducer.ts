@@ -12,11 +12,11 @@ import {
 import { gallerySetFilter } from '@features/gallery/model/actions.js';
 import { processGeoipResult } from '@features/geoip/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import { Shading } from '@features/parameterizedShading/model/Shading.js';
+import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import {
-  MapStateBase,
+  type MapStateBase,
   mapRefocus,
   mapReplaceLayer,
   mapSetBounds,

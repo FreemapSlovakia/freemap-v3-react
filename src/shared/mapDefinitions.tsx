@@ -1,4 +1,4 @@
-import { Shortcut, ShortcutSchema } from '@shared/types/common.js';
+import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
   FaBus,

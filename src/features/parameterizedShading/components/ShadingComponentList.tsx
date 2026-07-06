@@ -1,7 +1,7 @@
 import Color from 'color';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { ListGroup } from 'react-bootstrap';
-import { Shading } from '../model/Shading.js';
+import type { Shading } from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 import classes from './ShadingControl.module.css';
 

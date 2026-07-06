@@ -1,8 +1,8 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { ObjectDetails } from '../components/ObjectDetails.js';
-import { ObjectsMessages } from './ObjectsMessages.js';
+import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   style: {

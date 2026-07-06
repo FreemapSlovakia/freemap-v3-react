@@ -6,7 +6,12 @@ import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
+import {
+  type ReactElement,
+  type SubmitEvent,
+  useCallback,
+  useState,
+} from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

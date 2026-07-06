@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { MapDetailsMessages } from './MapDetailsMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { MapDetailsMessages } from './MapDetailsMessages.js';
 
 const it: DeepPartialWithRequiredObjects<MapDetailsMessages> = {
   sources: 'Fonti',

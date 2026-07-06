@@ -2,9 +2,9 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import Color from 'color';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { type Color as ColorType, ShadingComponent } from '../model/Shading.js';
+import type { Color as ColorType, ShadingComponent } from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 
 export type ParameterizedKind = 'contour' | 'fog';

@@ -1,18 +1,18 @@
 import {
-  ChangesetParams,
+  type ChangesetParams,
   changesetsSet,
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
 import {
   drawingLineSetLines,
-  Line,
+  type Line,
   type LineCap,
   type LineJoin,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
   GalleryColorizeBySchema,
-  GalleryFilter,
+  type GalleryFilter,
   galleryClear,
   galleryColorizeBy,
   galleryRequestImage,
@@ -38,11 +38,11 @@ import {
 import {
   type ColorStop,
   type Color as ColorType,
-  ShadingComponent,
+  type ShadingComponent,
   serializeShading,
 } from '@features/parameterizedShading/model/Shading.js';
 import {
-  RoutePoint,
+  type RoutePoint,
   routePlannerSetParams,
 } from '@features/routePlanner/model/actions.js';
 import {
@@ -86,7 +86,7 @@ import {
   setActiveModal,
   setEmbedFeatures,
   setTools,
-  Tool,
+  type Tool,
   ToolSchema,
 } from '../store/actions.js';
 import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';

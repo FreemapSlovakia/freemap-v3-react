@@ -28,7 +28,7 @@ import {
   setTools,
 } from './store/actions.js';
 import { showGalleryViewerSelector } from './store/selectors.js';
-import { MyStore, RootState } from './store/store.js';
+import type { MyStore, RootState } from './store/store.js';
 
 let keyTimer: number | null = null;
 

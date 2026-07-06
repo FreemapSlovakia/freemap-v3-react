@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import styles from './LanguageLabel.module.css';
 
 const LANGUAGES = ['Language', 'Lingua', 'Jazyk', 'Język', 'Sprache', 'Nyelv'];

@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { ContactsMessages } from './ContactsMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { ContactsMessages } from './ContactsMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<ContactsMessages> = {
   ngo: 'Spolek',

@@ -1,5 +1,5 @@
 import { RovasLink } from '@shared/components/RovasLink.js';
-import { PremiumMessages } from './PremiumMessages.js';
+import type { PremiumMessages } from './PremiumMessages.js';
 
 const en: PremiumMessages = {
   title: 'Get premium access',

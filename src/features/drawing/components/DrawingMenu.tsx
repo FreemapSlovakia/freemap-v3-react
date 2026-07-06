@@ -5,7 +5,7 @@ import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

@@ -1,11 +1,11 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { ColorizingMode } from '@shared/colorizers/index.js';
 import {
-  TransportType,
+  type TransportType,
   TransportTypeSchema,
 } from '@shared/transportTypeDefs.js';
 import { type LatLon, LatLonSchema } from '@shared/types/common.js';
-import { Feature, LineString, Polygon } from 'geojson';
+import type { Feature, LineString, Polygon } from 'geojson';
 import z from 'zod';
 
 export const RoutePointSchema = z.object({

@@ -1,4 +1,4 @@
-import { ColorizerMessages } from './ColorizerMessages.js';
+import type { ColorizerMessages } from './ColorizerMessages.js';
 
 const en: ColorizerMessages = {
   colorizeBy: 'Colorize by',

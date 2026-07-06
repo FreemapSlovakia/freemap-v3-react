@@ -1,4 +1,4 @@
-import { DrawingMessages } from './DrawingMessages.js';
+import type { DrawingMessages } from './DrawingMessages.js';
 
 const en: DrawingMessages = {
   modify: 'Properties',

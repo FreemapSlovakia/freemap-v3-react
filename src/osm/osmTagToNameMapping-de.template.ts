@@ -1,5 +1,5 @@
-import { DeepPartial } from '@shared/types/deepPartial.js';
-import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
+import type { DeepPartial } from '@shared/types/deepPartial.js';
+import type { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   aeroway: {

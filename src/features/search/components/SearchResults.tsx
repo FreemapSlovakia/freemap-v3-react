@@ -13,21 +13,21 @@ import {
 } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { escapeHtml } from '@shared/stringUtils.js';
-import { Feature } from 'geojson';
+import type { Feature } from 'geojson';
 import {
   DomEvent,
-  LatLng,
-  Layer,
-  LeafletEventHandlerFnMap,
+  type LatLng,
+  type Layer,
+  type LeafletEventHandlerFnMap,
   marker,
   Path,
-  PathOptions,
+  type PathOptions,
   Polygon,
 } from 'leaflet';
-import { Fragment, ReactElement, useCallback } from 'react';
+import { Fragment, type ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { SearchSource, searchSelectResult } from '../model/actions.js';
+import { type SearchSource, searchSelectResult } from '../model/actions.js';
 
 export function SearchResults(): ReactElement | null {
   const selectedResult = useAppSelector((state) => state.search.selectedResult);

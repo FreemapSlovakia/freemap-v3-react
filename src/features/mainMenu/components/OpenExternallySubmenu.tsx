@@ -1,7 +1,7 @@
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { Fragment, ReactElement } from 'react';
+import { Fragment, type ReactElement } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import { SubmenuHeader } from './SubmenuHeader.js';
 

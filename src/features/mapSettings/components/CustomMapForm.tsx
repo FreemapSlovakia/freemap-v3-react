@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-handler-names */
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
-import { type CustomLayerDef } from '@shared/mapDefinitions.js';
+import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Layer, wms } from '@shared/wms.js';
 import clsx from 'clsx';
 import {
   Fragment,
-  ReactElement,
+  type ReactElement,
   useCallback,
   useEffect,
   useRef,

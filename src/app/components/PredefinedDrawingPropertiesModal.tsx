@@ -2,7 +2,7 @@ import { DrawingStyleSettingsModal } from '@features/drawing/components/DrawingS
 import { drawingSettingsInitialState } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { FaFill } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { applySettings } from '../store/actions.js';

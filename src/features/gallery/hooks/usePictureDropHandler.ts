@@ -1,10 +1,10 @@
 import { latLonToString } from '@shared/geoutils.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import ExifReader, { Tags } from 'exifreader';
+import ExifReader, { type Tags } from 'exifreader';
 import { useCallback } from 'react';
 import { loadPreview } from '../imagePreview.js';
-import { GalleryItem } from '../model/actions.js';
+import type { GalleryItem } from '../model/actions.js';
 
 let nextId = 1;
 

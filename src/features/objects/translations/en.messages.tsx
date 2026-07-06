@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { ObjectDetails } from '../components/ObjectDetails.js';
-import { ObjectsMessages } from './ObjectsMessages.js';
+import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const en: ObjectsMessages = {
   source: 'Source',

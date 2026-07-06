@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { RoutePlannerMessages } from './RoutePlannerMessages.js';
+import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   selectHomeLocation: 'Auf der Karte auswählen',

@@ -1,6 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { JSX, useMemo } from 'react';
+import { type JSX, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,

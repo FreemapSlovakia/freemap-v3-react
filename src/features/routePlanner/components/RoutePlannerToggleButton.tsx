@@ -1,6 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaRoute } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

@@ -11,7 +11,7 @@ import { Dropdown } from 'react-bootstrap';
 import { FaDatabase } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
-  MapDetailsSource,
+  type MapDetailsSource,
   mapDetailsExcludeSources,
 } from '../model/actions.js';
 import { useMapDetailsMessages } from '../translations/useMapDetailsMessages.js';

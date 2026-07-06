@@ -1,4 +1,4 @@
-import { Middleware } from '@reduxjs/toolkit';
+import type { Middleware } from '@reduxjs/toolkit';
 import storage from 'local-storage-fallback';
 import { STORAGE_KEY, selectPersistedState } from '../persistence.js';
 import type { RootState } from '../store.js';

@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { COLORS } from '@shared/colors.js';
-import { MarkerType, objectsSetStyle } from './actions.js';
+import { type MarkerType, objectsSetStyle } from './actions.js';
 
 // Marker shape + color applied to displayed objects. A dedicated, persisted
 // settings slice (not the transient objects/active list), so the user's choices

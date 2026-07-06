@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { LegendMessages } from './LegendMessages.js';
+import type { LegendMessages } from './LegendMessages.js';
 
 const factory = (language: string) =>
   import(

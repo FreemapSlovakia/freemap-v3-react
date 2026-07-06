@@ -5,7 +5,7 @@ import { Emoji } from '@shared/components/Emoji.js';
 import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './en-shared.js';
-import { addError, Messages } from './messagesInterface.js';
+import { addError, type Messages } from './messagesInterface.js';
 
 const masl = 'm\xa0a.s.l.';
 

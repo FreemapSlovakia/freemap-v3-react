@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { DocumentsMessages } from './DocumentsMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DocumentsMessages } from './DocumentsMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<DocumentsMessages> = {
   errorLoading: 'Dokument se nepodařilo načíst.',

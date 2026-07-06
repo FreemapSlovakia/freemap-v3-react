@@ -7,7 +7,11 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
-import { DragEndEvent, LeafletEvent, LeafletEventHandlerFnMap } from 'leaflet';
+import type {
+  DragEndEvent,
+  LeafletEvent,
+  LeafletEventHandlerFnMap,
+} from 'leaflet';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';

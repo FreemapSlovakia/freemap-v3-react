@@ -1,7 +1,7 @@
 import { clearMapFeatures, setTool, setTools } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  Changeset,
+  type Changeset,
   changesetsSet,
   changesetsSetLastFetchedBBox,
   changesetsSetParams,

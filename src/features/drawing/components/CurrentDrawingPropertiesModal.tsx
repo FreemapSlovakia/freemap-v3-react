@@ -16,9 +16,9 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import { polygon } from '@turf/helpers';
 import {
-  ChangeEvent,
-  ReactElement,
-  SubmitEvent,
+  type ChangeEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useState,
 } from 'react';
@@ -235,7 +235,9 @@ export default function CurrentDrawingPropertiesModal({
         if (inJosm) {
           fetch(
             'http://localhost:8111/import?new_layer=true&url=' +
-              encodeURIComponent('https://streamfinder.freemap.sk?' + q.toString()),
+              encodeURIComponent(
+                'https://streamfinder.freemap.sk?' + q.toString(),
+              ),
           )
             .then((res) => {
               if (!res.ok) {

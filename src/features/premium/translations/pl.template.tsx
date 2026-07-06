@@ -1,6 +1,6 @@
 import { RovasLink } from '@shared/components/RovasLink.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { PremiumMessages } from './PremiumMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { PremiumMessages } from './PremiumMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Uzyskaj dostęp premium',

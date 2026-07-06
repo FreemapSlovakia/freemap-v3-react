@@ -10,8 +10,8 @@ import {
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { CustomLayerDef } from '@shared/mapDefinitions.js';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, ListGroup, Modal } from 'react-bootstrap';
 import {
   FaCheck,

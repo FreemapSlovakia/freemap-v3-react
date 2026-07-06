@@ -1,4 +1,4 @@
-import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
+import type { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: OsmTagToNameMapping = {
   access: {

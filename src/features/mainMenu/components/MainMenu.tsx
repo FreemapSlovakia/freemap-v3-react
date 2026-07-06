@@ -2,7 +2,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isDrawTool, toolDefinitions } from '@shared/toolDefinitions.js';
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,

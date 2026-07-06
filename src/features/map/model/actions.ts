@@ -1,8 +1,8 @@
 import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
-import { Shading } from '@features/parameterizedShading/model/Shading.js';
+import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createAction } from '@reduxjs/toolkit';
-import { CustomLayerDef } from '@shared/mapDefinitions.js';
-import { Shortcut, ShortcutSchema } from '@shared/types/common.js';
+import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import z from 'zod';
 
 export interface MapViewState {

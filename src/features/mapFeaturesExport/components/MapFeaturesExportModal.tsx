@@ -6,10 +6,10 @@ import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import { Position } from 'geojson';
+import type { Position } from 'geojson';
 import {
-  ReactElement,
-  SubmitEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useEffect,
   useState,
@@ -33,12 +33,12 @@ import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import {
   EXPORT_FORMAT_LABELS,
-  Exportable,
-  ExportElevation,
+  type Exportable,
+  type ExportElevation,
   ExportElevationSchema,
-  ExportTarget,
+  type ExportTarget,
   ExportTargetSchema,
-  ExportType,
+  type ExportType,
   ExportTypeSchema,
   exportMapFeatures,
 } from '../model/actions.js';

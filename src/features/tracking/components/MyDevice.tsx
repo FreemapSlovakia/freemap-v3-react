@@ -21,7 +21,7 @@ import { SiTraccar } from 'react-icons/si';
 import QRCode from 'react-qr-code';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
-import { Device as DeviceType } from '../model/types.js';
+import type { Device as DeviceType } from '../model/types.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 type Props = {

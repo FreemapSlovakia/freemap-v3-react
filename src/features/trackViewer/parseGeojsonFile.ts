@@ -1,4 +1,4 @@
-import { Feature, FeatureCollection, Geometry } from 'geojson';
+import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { GeoJSONSchema } from 'zod-geojson';
 
 // Parses a dropped GeoJSON file's text and shapes it into a FeatureCollection

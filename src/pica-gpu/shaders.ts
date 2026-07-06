@@ -1,4 +1,4 @@
-import { ResizeOptions } from './resize.js';
+import type { ResizeOptions } from './resize.js';
 
 export const vsSource = `#version 300 es
  precision highp float;

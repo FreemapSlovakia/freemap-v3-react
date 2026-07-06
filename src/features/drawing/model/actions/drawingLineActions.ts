@@ -1,4 +1,4 @@
-import { Selection } from '@app/store/actions.js';
+import type { Selection } from '@app/store/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import z from 'zod';
 

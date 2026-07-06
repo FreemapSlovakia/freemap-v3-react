@@ -9,7 +9,7 @@ import {
   FaShareAlt,
   FaWindowMaximize,
 } from 'react-icons/fa';
-import { ExternalTarget } from '@/app/store/actions.js';
+import type { ExternalTarget } from '@/app/store/actions.js';
 import {
   getF4mapUrl,
   getGeocachingUrl,

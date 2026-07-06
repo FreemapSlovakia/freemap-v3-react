@@ -13,16 +13,16 @@ import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLang
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import {
   featureIdsEqual,
-  OsmFeatureId,
+  type OsmFeatureId,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
 import clsx from 'clsx';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   Fragment,
   forwardRef,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -41,8 +41,8 @@ import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
-  SearchResult,
-  SearchSource,
+  type SearchResult,
+  type SearchSource,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,

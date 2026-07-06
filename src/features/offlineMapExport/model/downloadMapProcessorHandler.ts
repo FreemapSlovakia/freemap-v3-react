@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { downloadMap } from './actions.js';
+import type { downloadMap } from './actions.js';
 
 const handle: ProcessorHandler<typeof downloadMap> = async ({
   dispatch,

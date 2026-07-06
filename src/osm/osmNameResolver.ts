@@ -1,4 +1,4 @@
-import { Node, OsmMapping } from './types.js';
+import type { Node, OsmMapping } from './types.js';
 
 type Part = { text: string; tags: Record<string, string>; case: string };
 

@@ -4,7 +4,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import type { LatLon } from '@shared/types/common.js';
-import { JSX, ReactElement } from 'react';
+import type { JSX, ReactElement } from 'react';
 import type { OverlayProps } from 'react-bootstrap';
 import { Dropdown } from 'react-bootstrap';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems.js';

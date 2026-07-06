@@ -7,9 +7,9 @@ import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
-  ChangeEvent,
-  ReactElement,
-  SubmitEvent,
+  type ChangeEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useState,
 } from 'react';

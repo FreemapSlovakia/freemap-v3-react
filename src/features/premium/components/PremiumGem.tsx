@@ -2,7 +2,7 @@ import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import clsx from 'clsx';
-import { type MouseEvent, type ReactElement, type ReactNode } from 'react';
+import type { MouseEvent, ReactElement, ReactNode } from 'react';
 import { FaGem } from 'react-icons/fa';
 
 type PremiumGemProps = {

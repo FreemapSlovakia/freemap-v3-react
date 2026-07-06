@@ -14,9 +14,9 @@ import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   Fragment,
-  ReactElement,
+  type ReactElement,
   useCallback,
   useEffect,
   useRef,
@@ -41,9 +41,9 @@ import {
 import type { Exportable } from '@/features/mapFeaturesExport/model/actions.js';
 import { exportMapToDocument } from '../model/exportMapToDocument.js';
 import {
-  CustomLayerOrder,
-  ExportableLayer,
-  Format,
+  type CustomLayerOrder,
+  type ExportableLayer,
+  type Format,
   FormatSchema,
 } from '../model/types.js';
 import { useAreaCountries } from '../model/useAreaCountries.js';

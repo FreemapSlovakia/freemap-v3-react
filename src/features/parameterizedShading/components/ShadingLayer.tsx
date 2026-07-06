@@ -1,16 +1,20 @@
 import { init } from '@bokuweb/zstd-wasm';
 import { createTileLayerComponent } from '@react-leaflet/core';
-import { createWorkerPool, WorkerPool } from '@shared/workerPool.js';
+import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
 import {
-  Coords,
-  DoneCallback,
-  GridLayerOptions,
-  Map as LeafletMap,
+  type Coords,
+  type DoneCallback,
+  type GridLayerOptions,
+  type Map as LeafletMap,
   GridLayer as LGridLayer,
   Util,
 } from 'leaflet';
-import { Messages } from '@/translations/messagesInterface.js';
-import { Color, SHADING_COMPONENT_TYPES, Shading } from '../model/Shading.js';
+import type { Messages } from '@/translations/messagesInterface.js';
+import {
+  type Color,
+  SHADING_COMPONENT_TYPES,
+  type Shading,
+} from '../model/Shading.js';
 import { DataWriter } from './DataWriter.js';
 import classes from './ShadingLayer.module.css';
 import shadingWgslResource from './shading.wgsl';

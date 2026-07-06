@@ -4,8 +4,8 @@ import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import clsx from 'clsx';
 import {
   Fragment,
-  ReactElement,
-  PointerEvent as ReactPointerEvent,
+  type ReactElement,
+  type PointerEvent as ReactPointerEvent,
   useEffect,
   useMemo,
   useRef,
@@ -17,7 +17,7 @@ import {
   elevationChartClose,
   elevationChartSetActivePoint,
 } from '../model/actions.js';
-import { ElevationProfilePoint } from '../model/reducer.js';
+import type { ElevationProfilePoint } from '../model/reducer.js';
 import classes from './ElevationChart.module.css';
 
 const ml = 50,

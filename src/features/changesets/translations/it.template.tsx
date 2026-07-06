@@ -1,8 +1,8 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { ChangesetDetails } from '../components/ChangesetDetails.js';
-import { ChangesetsMessages } from './ChangesetsMessages.js';
+import type { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const it: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,

@@ -3,8 +3,11 @@ import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
-import { Fragment, ReactElement } from 'react';
+import {
+  type TransportType,
+  transportTypeDefs,
+} from '@shared/transportTypeDefs.js';
+import { Fragment, type ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaEquals, FaMoneyBill } from 'react-icons/fa';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';

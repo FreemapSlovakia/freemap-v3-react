@@ -3,8 +3,8 @@ import {
   DrawingStyleSchema,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { createAction } from '@reduxjs/toolkit';
-import { FeatureId } from '@shared/types/featureId.js';
-import { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
+import type { FeatureId } from '@shared/types/featureId.js';
+import type { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
 
 /**
  * User-overridable style for displayed search / map-details geometry. Shares

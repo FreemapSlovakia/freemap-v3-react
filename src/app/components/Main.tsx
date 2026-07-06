@@ -3,7 +3,7 @@ import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
 import { GalleryResult } from '@features/gallery/components/GalleryResult.js';
 import { usePictureDropHandler } from '@features/gallery/hooks/usePictureDropHandler.js';
 import {
-  GalleryItem,
+  type GalleryItem,
   galleryAddItem,
   galleryMergeItem,
 } from '@features/gallery/model/actions.js';
@@ -39,7 +39,7 @@ import { isDrawTool } from '@shared/toolDefinitions.js';
 import fmLogo from '@/images/freemap-logo-print.png';
 import 'leaflet/dist/leaflet.css';
 import clsx from 'clsx';
-import { MouseEvent, ReactElement, useCallback } from 'react';
+import { type MouseEvent, type ReactElement, useCallback } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';

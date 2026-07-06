@@ -1,4 +1,4 @@
-import { SearchResult } from '@features/search/model/actions.js';
+import type { SearchResult } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   categoryKeys,
@@ -9,7 +9,7 @@ import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
-import { Fragment, ReactElement } from 'react';
+import { Fragment, type ReactElement } from 'react';
 import { Button, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';

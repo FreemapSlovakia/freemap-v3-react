@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
-import { authWithFacebook } from '../actions.js';
+import type { authWithFacebook } from '../actions.js';
 import { loadFb } from './fbLoader.js';
 import { handleLoginResponse } from './loginResponseHandler.js';
 

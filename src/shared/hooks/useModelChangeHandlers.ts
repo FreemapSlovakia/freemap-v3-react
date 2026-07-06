@@ -1,4 +1,4 @@
-import { ChangeEvent, useMemo, useRef } from 'react';
+import { type ChangeEvent, useMemo, useRef } from 'react';
 
 type ControlChangeEvent = ChangeEvent<
   HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement

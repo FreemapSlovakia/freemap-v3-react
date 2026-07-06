@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { CreditsMessages } from './CreditsMessages.js';
+import type { CreditsMessages } from './CreditsMessages.js';
 
 const factory = (language: string) =>
   import(

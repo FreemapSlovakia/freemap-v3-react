@@ -13,8 +13,8 @@ import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import classes from '@shared/poiIcon.module.css';
 import { removeAccents } from '@shared/stringUtils.js';
 import {
-  ChangeEvent,
-  ReactElement,
+  type ChangeEvent,
+  type ReactElement,
   useCallback,
   useEffect,
   useMemo,

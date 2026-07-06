@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { CachedMapsMessages } from './CachedMapsMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   cacheOfflineMap: 'Térkép mentése offline használatra',

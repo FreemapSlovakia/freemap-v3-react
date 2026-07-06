@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { OpenInExternalAppMessages } from './OpenInExternalAppMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { OpenInExternalAppMessages } from './OpenInExternalAppMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   openInExternal: 'Zdieľať / otvoriť v ext. aplikácii',

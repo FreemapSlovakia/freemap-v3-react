@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { ColorizingMode } from '@shared/colorizers/index.js';
-import {
+import type {
   AccessToken,
   AccessTokenBase,
   Device,

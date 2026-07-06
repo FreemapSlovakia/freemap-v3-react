@@ -1,6 +1,11 @@
 import { createTileLayerComponent } from '@react-leaflet/core';
-import { Coords, DoneCallback, TileLayer, TileLayerOptions } from 'leaflet';
-import { TileLayerProps } from 'react-leaflet';
+import {
+  type Coords,
+  type DoneCallback,
+  TileLayer,
+  type TileLayerOptions,
+} from 'leaflet';
+import type { TileLayerProps } from 'react-leaflet';
 
 type Props = TileLayerProps & {
   extraScales?: number[];

@@ -1,12 +1,18 @@
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Button, Spinner } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
-import { Messages } from '@/translations/messagesInterface.js';
+import type { Messages } from '@/translations/messagesInterface.js';
 import { getPreview, loadPreview } from '../imagePreview.js';
-import { GalleryItemError, GalleryTag } from '../model/actions.js';
+import type { GalleryItemError, GalleryTag } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
-import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
+import { GalleryEditForm, type PictureModel } from './GalleryEditForm.js';
 
 interface Props {
   id: number;

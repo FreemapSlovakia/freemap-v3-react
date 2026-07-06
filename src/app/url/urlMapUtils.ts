@@ -1,4 +1,4 @@
-import { MapViewState } from '@features/map/model/actions.js';
+import type { MapViewState } from '@features/map/model/actions.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 
 const LAYERS_RE = new RegExp(

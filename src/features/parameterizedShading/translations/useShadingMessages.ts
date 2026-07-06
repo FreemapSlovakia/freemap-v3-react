@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { ShadingMessages } from './ShadingMessages.js';
+import type { ShadingMessages } from './ShadingMessages.js';
 
 const factory = (language: string) =>
   import(

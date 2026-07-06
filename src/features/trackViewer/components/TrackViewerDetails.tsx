@@ -16,7 +16,7 @@ import {
   resolveActiveTrack,
   type TrackLine,
 } from '../trackSelection.js';
-import { TrackViewerMessages } from '../translations/TrackViewerMessages.js';
+import type { TrackViewerMessages } from '../translations/TrackViewerMessages.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 export function TrackViewerDetails(): ReactElement | null {

@@ -19,7 +19,7 @@ import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { LeafletMouseEvent } from 'leaflet';
+import type { LeafletMouseEvent } from 'leaflet';
 import {
   type ReactElement,
   type RefObject,

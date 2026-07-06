@@ -32,8 +32,8 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
-  GalleryColorizeBy,
-  GalleryListOrder,
+  type GalleryColorizeBy,
+  type GalleryListOrder,
   galleryAllPremiumOrFree,
   galleryColorizeBy,
   galleryList,

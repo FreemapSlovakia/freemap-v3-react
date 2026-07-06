@@ -1,5 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { type ReactElement, SubmitEvent, useEffect, useState } from 'react';
+import {
+  type ReactElement,
+  type SubmitEvent,
+  useEffect,
+  useState,
+} from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { TbAngle } from 'react-icons/tb';

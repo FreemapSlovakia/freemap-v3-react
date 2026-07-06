@@ -1,6 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
+import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const en: MapFeaturesExportMessages = {
   download: 'Download',

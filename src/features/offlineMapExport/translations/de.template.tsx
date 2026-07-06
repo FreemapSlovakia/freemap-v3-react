@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { OfflineMapExportMessages } from './OfflineMapExportMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { OfflineMapExportMessages } from './OfflineMapExportMessages.js';
 
 const de: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   format: 'Format',

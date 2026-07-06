@@ -1,8 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { Language, languages } from '@shared/langUtils.js';
-import { JSX } from 'react';
+import { type Language, languages } from '@shared/langUtils.js';
+import type { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { IoLanguage } from 'react-icons/io5';
 import { LanguageLabel } from './LanguageLabel.js';

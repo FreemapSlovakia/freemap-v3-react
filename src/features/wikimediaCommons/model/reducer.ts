@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  WikimediaCommonsPhoto,
-  WikimediaCommonsPreview,
+  type WikimediaCommonsPhoto,
+  type WikimediaCommonsPreview,
   wikimediaCommonsLoadPreview,
   wikimediaCommonsSetPhotos,
   wikimediaCommonsSetPreview,

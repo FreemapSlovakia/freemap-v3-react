@@ -2,10 +2,10 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
 import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
-import { addError, Messages } from './messagesInterface.js';
+import { addError, type Messages } from './messagesInterface.js';
 import shared from './pl-shared.js';
 
 const masl = 'm\xa0n.p.m.'; // metry nad poziomem morza

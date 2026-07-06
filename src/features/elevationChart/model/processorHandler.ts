@@ -11,7 +11,7 @@ import { along } from '@turf/along';
 import { distance } from '@turf/distance';
 import { getCoord } from '@turf/invariant';
 import { length } from '@turf/length';
-import { Feature, LineString, MultiLineString, Position } from 'geojson';
+import type { Feature, LineString, MultiLineString, Position } from 'geojson';
 import {
   type ElevationWaypoint,
   elevationChartClose,

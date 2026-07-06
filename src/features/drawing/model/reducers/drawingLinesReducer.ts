@@ -25,8 +25,8 @@ import {
   drawingLineSplit,
   drawingLineStopDrawing,
   drawingLineUpdatePoint,
-  Line,
-  Point,
+  type Line,
+  type Point,
 } from '../actions/drawingLineActions.js';
 
 export interface DrawingLinesState {

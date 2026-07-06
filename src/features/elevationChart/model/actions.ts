@@ -1,9 +1,9 @@
-import {
+import type {
   ElevationProfilePoint,
   ElevationProfileWaypoint,
 } from '@features/elevationChart/model/reducer.js';
 import { createAction } from '@reduxjs/toolkit';
-import { Feature, LineString, MultiLineString } from 'geojson';
+import type { Feature, LineString, MultiLineString } from 'geojson';
 
 /** A waypoint to pair onto the profile (by time, else nearest track point). */
 export interface ElevationWaypoint {

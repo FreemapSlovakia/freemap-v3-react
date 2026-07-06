@@ -1,7 +1,7 @@
 import { HttpError, NetworkError } from '@app/httpRequest.js';
-import { SearchSource } from '@features/search/model/actions.js';
-import { DeepPartial } from '@shared/types/deepPartial.js';
-import { JSX, ReactNode } from 'react';
+import type { SearchSource } from '@features/search/model/actions.js';
+import type { DeepPartial } from '@shared/types/deepPartial.js';
+import type { JSX, ReactNode } from 'react';
 
 type Err = { err: unknown };
 

@@ -2,8 +2,8 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DateTime } from '@shared/components/DateTime.js';
 import '@shared/styles/react-tags.scss';
 import {
-  ChangeEvent,
-  ReactElement,
+  type ChangeEvent,
+  type ReactElement,
   useCallback,
   useLayoutEffect,
   useState,
@@ -11,11 +11,11 @@ import {
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { ReactTags, Tag } from 'react-tag-autocomplete';
+import { ReactTags, type Tag } from 'react-tag-autocomplete';
 import {
-  GalleryItemError,
-  GalleryTag,
-  GalleryValidationError,
+  type GalleryItemError,
+  type GalleryTag,
+  type GalleryValidationError,
   galleryAddTag,
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';

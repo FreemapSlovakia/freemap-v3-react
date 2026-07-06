@@ -1,5 +1,5 @@
 import { AsyncModal } from '@shared/components/AsyncModal.js';
-import { ShowProps } from '@shared/hooks/useShow.js';
+import type { ShowProps } from '@shared/hooks/useShow.js';
 import type { ReactElement } from 'react';
 
 const supportUsModalFactory = () =>

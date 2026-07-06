@@ -1,4 +1,4 @@
-import { setTool, Tool } from '@app/store/actions.js';
+import { setTool, type Tool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
@@ -7,7 +7,7 @@ import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { isMapClickTool } from '@shared/toolDefinitions.js';
 import clsx from 'clsx';
-import { type ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Button, ButtonGroup, ButtonToolbar } from 'react-bootstrap';
 import {
   FaAngleLeft,

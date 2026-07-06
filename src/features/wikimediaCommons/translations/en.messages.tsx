@@ -1,4 +1,4 @@
-import { WikimediaCommonsMessages } from './WikimediaCommonsMessages.js';
+import type { WikimediaCommonsMessages } from './WikimediaCommonsMessages.js';
 
 const en: WikimediaCommonsMessages = {
   artist: 'Author',

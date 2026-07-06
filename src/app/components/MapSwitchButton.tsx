@@ -30,15 +30,15 @@ import {
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { removeAccents } from '@shared/stringUtils.js';
-import { Shortcut } from '@shared/types/common.js';
+import type { Shortcut } from '@shared/types/common.js';
 import clsx from 'clsx';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   Fragment,
-  MouseEvent,
-  ReactElement,
-  ReactNode,
-  SyntheticEvent,
+  type MouseEvent,
+  type ReactElement,
+  type ReactNode,
+  type SyntheticEvent,
   useCallback,
   useEffect,
   useState,

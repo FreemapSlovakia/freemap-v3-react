@@ -1,6 +1,6 @@
 import { RovasLink } from '@shared/components/RovasLink.js';
 import { CreditsText } from '../components/CreditsText.js';
-import { CreditsMessages } from './CreditsMessages.js';
+import type { CreditsMessages } from './CreditsMessages.js';
 
 const nf00 = new Intl.NumberFormat('en', {
   minimumFractionDigits: 0,

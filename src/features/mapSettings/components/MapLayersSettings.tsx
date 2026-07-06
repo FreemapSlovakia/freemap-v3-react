@@ -1,15 +1,15 @@
 import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LayerSettings } from '@features/map/model/actions.js';
+import type { LayerSettings } from '@features/map/model/actions.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import {
-  CustomLayerDef,
+  type CustomLayerDef,
   integratedLayerDefMap,
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
-import { ReactElement, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {

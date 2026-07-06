@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { AlertLink } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { askingCookieConsentSelector } from '@/app/store/selectors.js';

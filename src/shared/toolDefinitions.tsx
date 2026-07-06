@@ -1,4 +1,4 @@
-import { Tool } from '@app/store/actions.js';
+import type { Tool } from '@app/store/actions.js';
 import type { ReactElement } from 'react';
 import {
   FaBullseye,

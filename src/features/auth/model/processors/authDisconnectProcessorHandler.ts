@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
-import { authDisconnect, authSetUser } from '../actions.js';
+import { type authDisconnect, authSetUser } from '../actions.js';
 
 const handle: ProcessorHandler<typeof authDisconnect> = async ({
   action,

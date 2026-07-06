@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { GalleryMessages } from './GalleryMessages.js';
+import type { GalleryMessages } from './GalleryMessages.js';
 
 const factory = (language: string) =>
   import(

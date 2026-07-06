@@ -4,16 +4,16 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Leaves } from '@shared/types/common.js';
 import {
   type ReactElement,
-  ReactNode,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import { Messages } from '@/translations/messagesInterface.js';
+import type { Messages } from '@/translations/messagesInterface.js';
 import {
-  ToastAction,
+  type ToastAction,
   toastsRemove,
   toastsRestartTimeout,
   toastsStopTimeout,

@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { CachedMapsMessages } from './CachedMapsMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   cacheOfflineMap: 'Uložit mapu pro offline použití',

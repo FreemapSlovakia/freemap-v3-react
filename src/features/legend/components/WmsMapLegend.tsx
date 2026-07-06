@@ -1,7 +1,7 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { IsWmsLayerDef, LayerDef } from '@shared/mapDefinitions.js';
-import { Layer, wms } from '@shared/wms.js';
-import { Fragment, ReactElement, useEffect, useState } from 'react';
+import type { IsWmsLayerDef, LayerDef } from '@shared/mapDefinitions.js';
+import { type Layer, wms } from '@shared/wms.js';
+import { Fragment, type ReactElement, useEffect, useState } from 'react';
 import { Alert, Spinner } from 'react-bootstrap';
 
 type Props = {

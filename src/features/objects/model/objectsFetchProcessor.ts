@@ -10,7 +10,7 @@ import {
 } from '@shared/types/overpass.js';
 import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 import {
-  ObjectsResult,
+  type ObjectsResult,
   objectsSetFilter,
   objectsSetResult,
 } from './actions.js';

@@ -12,17 +12,17 @@ import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
-  IntegratedLayerDef,
-  IsTileLayerDef,
+  type IntegratedLayerDef,
+  type IsTileLayerDef,
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { countTilesInBbox } from '@shared/tileEnumeration.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
-import { BBox } from 'geojson';
+import type { BBox } from 'geojson';
 import {
-  ReactElement,
-  SubmitEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useEffect,
   useMemo,

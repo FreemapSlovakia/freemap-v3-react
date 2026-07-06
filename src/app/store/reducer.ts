@@ -29,14 +29,14 @@ import {
   convertToDrawing,
   deleteFeature,
   hideInfoBar,
-  Selection,
+  type Selection,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
   setErrorTicketId,
   setTool,
   setTools,
-  Tool,
+  type Tool,
 } from './actions.js';
 import type { ActiveModal } from './activeModal.js';
 

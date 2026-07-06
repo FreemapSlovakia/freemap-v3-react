@@ -5,7 +5,7 @@ import {
   mapSuppressLegacyMapWarning,
 } from '@features/map/model/actions.js';
 import {
-  ToastAction,
+  type ToastAction,
   toastsAdd,
   toastsRemove,
 } from '@features/toasts/model/actions.js';

@@ -21,7 +21,7 @@ import { FaCamera, FaTimes, FaUpload } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/usePictureDropHandler.js';
 import {
-  GalleryItem,
+  type GalleryItem,
   galleryAddItem,
   galleryMergeItem,
   galleryRemoveItem,
@@ -31,7 +31,7 @@ import {
   galleryUpload,
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
-import { PictureModel } from './GalleryEditForm.js';
+import type { PictureModel } from './GalleryEditForm.js';
 import { GalleryUploadItem } from './GalleryUploadItem.js';
 import classes from './GalleryUploadModal.module.css';
 

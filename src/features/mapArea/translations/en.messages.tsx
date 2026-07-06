@@ -1,4 +1,4 @@
-import { MapAreaMessages } from './MapAreaMessages.js';
+import type { MapAreaMessages } from './MapAreaMessages.js';
 
 const en: MapAreaMessages = {
   visible: 'Visible area',

@@ -4,7 +4,7 @@ import {
   deleteFeature,
   selectFeature,
 } from '@app/store/actions.js';
-import { RootState } from '@app/store/store.js';
+import type { RootState } from '@app/store/store.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import {
@@ -14,13 +14,13 @@ import {
 } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
-  IsWmsLayerDef,
+  type IsWmsLayerDef,
   integratedLayerDefs,
   isWmsLayerDef,
-  LayerDef,
+  type LayerDef,
 } from '@shared/mapDefinitions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
-import { FeatureId } from '@shared/types/featureId.js';
+import type { FeatureId } from '@shared/types/featureId.js';
 import { NominatimResultSchema } from '@shared/types/nominatimResult.js';
 import {
   type OverpassBounds,
@@ -30,9 +30,9 @@ import {
 import { distance } from '@turf/distance';
 import { feature, point } from '@turf/helpers';
 import { toWgs84 } from '@turf/projection';
-import { FeatureCollection } from 'geojson';
+import type { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
-import { Dispatch } from 'redux';
+import type { Dispatch } from 'redux';
 import { loadMapDetailsMessages } from '../translations/loadMapDetailsMessages.js';
 
 const OverpassResultBoundsSchema = overpassResultSchema(

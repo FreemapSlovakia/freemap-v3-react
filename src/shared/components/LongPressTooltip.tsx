@@ -4,9 +4,9 @@ import {
 } from '@shared/breakpoints.js';
 import {
   Fragment,
-  MouseEvent,
-  PointerEvent,
-  ReactNode,
+  type MouseEvent,
+  type PointerEvent,
+  type ReactNode,
   useCallback,
   useEffect,
   useRef,

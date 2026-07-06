@@ -1,7 +1,7 @@
 import { useLazy } from '@app/hooks/useLazy.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMemo, useSyncExternalStore } from 'react';
-import { Messages } from '@/translations/messagesInterface.js';
+import type { Messages } from '@/translations/messagesInterface.js';
 import { getMessages, subscribeMessages } from './messagesStore.js';
 
 export function useLocalMessages<T>(

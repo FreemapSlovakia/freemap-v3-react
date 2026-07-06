@@ -8,7 +8,7 @@ import { RoutePlannerResult } from '@features/routePlanner/components/RoutePlann
 import { SearchResults } from '@features/search/components/SearchResults.js';
 import { TrackingResult } from '@features/tracking/components/TrackingResult.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { AsyncComponent } from './AsyncComponent.js';
 import { LocationResult } from './LocationResult.js';
 

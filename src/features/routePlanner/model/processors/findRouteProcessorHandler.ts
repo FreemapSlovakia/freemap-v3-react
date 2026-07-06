@@ -3,11 +3,14 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
-import { ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
+import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
 import { positionsEqual } from '@shared/geoutils.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
-import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
+import {
+  type TransportType,
+  transportTypeDefs,
+} from '@shared/transportTypeDefs.js';
 import distance from '@turf/distance';
 import { hash } from 'ohash';
 import z from 'zod';
@@ -20,19 +23,19 @@ import {
 } from 'zod-geojson';
 import { loadRoutePlannerMessages } from '../../translations/loadRoutePlannerMessages.js';
 import {
-  Alternative,
-  Leg,
-  RoutePoint,
+  type Alternative,
+  type Leg,
+  type RoutePoint,
   routePlannerAddPoint,
   routePlannerPreventHint,
   routePlannerSetFinish,
   routePlannerSetIsochrones,
   routePlannerSetResult,
   routePlannerSetStart,
-  Step,
-  StepCoordinate,
-  StepMode,
-  Waypoint,
+  type Step,
+  type StepCoordinate,
+  type StepMode,
+  type Waypoint,
 } from '../actions.js';
 import {
   GraphhopperPathCostSchema,

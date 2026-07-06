@@ -1,6 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { GalleryMessages } from './GalleryMessages.js';
+import type { GalleryMessages } from './GalleryMessages.js';
 
 const en: GalleryMessages = {
   sendGalleryEmails: 'Notify photos comments via email',

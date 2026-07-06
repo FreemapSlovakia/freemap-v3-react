@@ -1,4 +1,4 @@
-import { CachedMapsMessages } from './CachedMapsMessages.js';
+import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const en: CachedMapsMessages = {
   cacheOfflineMap: 'Cache map for offline use',

@@ -1,7 +1,7 @@
 import { produce } from 'immer';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
-import { Shading, ShadingComponent } from '../model/Shading.js';
+import type { Shading, ShadingComponent } from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 
 type Props = {

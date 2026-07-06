@@ -1,4 +1,4 @@
-import { MyStore } from '@app/store/store.js';
+import type { MyStore } from '@app/store/store.js';
 import { authWithOAuthCode } from './model/actions.js';
 import {
   pendingOAuthLogins,

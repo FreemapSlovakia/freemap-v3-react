@@ -8,7 +8,7 @@ import { FaExternalLinkAlt, FaTimes, FaWikipediaW } from 'react-icons/fa';
 import { Marker, Pane, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
-  WikiPreview,
+  type WikiPreview,
   wikiLoadPreview,
   wikiSetPreview,
 } from '../model/actions.js';

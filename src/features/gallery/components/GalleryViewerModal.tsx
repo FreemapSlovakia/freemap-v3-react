@@ -12,10 +12,10 @@ import 'pannellum';
 import 'pannellum/build/pannellum.css';
 import { hasRole } from '@features/auth/model/types.js';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   Fragment,
-  ReactElement,
-  SubmitEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useEffect,
   useRef,
@@ -52,7 +52,7 @@ import {
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { Azimuth } from './Azimuth.js';
-import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
+import { GalleryEditForm, type PictureModel } from './GalleryEditForm.js';
 import { RecentTags } from './RecentTags.js';
 import './gallery.css';
 import clsx from 'clsx';

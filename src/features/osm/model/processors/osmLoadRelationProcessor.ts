@@ -3,7 +3,7 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { mergeLines } from '@shared/geoutils.js';
-import { FeatureId } from '@shared/types/featureId.js';
+import type { FeatureId } from '@shared/types/featureId.js';
 import { featureCollection, lineString, point } from '@turf/helpers';
 import type { Feature, LineString, Point, Polygon } from 'geojson';
 import { loadOsmMessages } from '../../translations/loadOsmMessages.js';

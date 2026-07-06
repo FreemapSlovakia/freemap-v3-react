@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 import { Form, InputGroup } from 'react-bootstrap';
 import { FaCalendar, FaClock } from 'react-icons/fa';
 

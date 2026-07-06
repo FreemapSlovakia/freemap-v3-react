@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { GalleryMessages } from './GalleryMessages.js';
+import type { GalleryMessages } from './GalleryMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
   sendGalleryEmails: 'Upozornit emailem na komentáře k fotkám',

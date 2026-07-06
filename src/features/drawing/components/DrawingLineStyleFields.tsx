@@ -1,5 +1,5 @@
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import type { LineCap, LineJoin } from '../model/actions/drawingLineActions.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';

@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import tShirt from '@/images/fm-t-shirt.jpg';
-import { AdItem, useAd } from '../hooks/useAd.js';
+import { type AdItem, useAd } from '../hooks/useAd.js';
 import { useAdMessages } from '../translations/useAdMessages.js';
 
 const ads: AdItem[] = [

@@ -1,4 +1,4 @@
-import { MyStore } from '@app/store/store.js';
+import type { MyStore } from '@app/store/store.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus, mapSetBounds } from './model/actions.js';
 

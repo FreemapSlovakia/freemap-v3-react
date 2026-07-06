@@ -20,8 +20,8 @@ import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
-import { Feature, LineString, Point } from 'geojson';
-import {
+import type { Feature, LineString, Point } from 'geojson';
+import type {
   DragEndEvent,
   LatLng,
   LeafletMouseEvent,
@@ -29,7 +29,7 @@ import {
 } from 'leaflet';
 import {
   Fragment,
-  ReactElement,
+  type ReactElement,
   useCallback,
   useEffect,
   useMemo,
@@ -52,8 +52,8 @@ import {
   routePlannerSetFinish,
   routePlannerSetPoint,
   routePlannerSetStart,
-  StepCoordinate,
-  StepMode,
+  type StepCoordinate,
+  type StepMode,
 } from '../model/actions.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import classes from './RoutePlannerResult.module.css';

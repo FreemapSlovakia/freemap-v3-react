@@ -13,7 +13,7 @@ import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { loadChangesetsMessages } from '../translations/loadChangesetsMessages.js';
 import {
-  Changeset,
+  type Changeset,
   changesetsRefresh,
   changesetsSet,
   changesetsSetLastFetchedBBox,

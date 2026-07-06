@@ -7,9 +7,9 @@ import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import area from '@turf/area';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { CRS, Point } from 'leaflet';
-import RBush, { BBox } from 'rbush';
+import RBush, { type BBox } from 'rbush';
 import z from 'zod';
-import { WikiPoint, wikiSetPoints } from '../actions.js';
+import { type WikiPoint, wikiSetPoints } from '../actions.js';
 
 const WikiResponseSchema = z.object({
   entities: z

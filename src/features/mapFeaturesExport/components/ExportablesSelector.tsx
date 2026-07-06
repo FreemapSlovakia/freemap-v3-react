@@ -1,5 +1,5 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import {
   FaBullseye,

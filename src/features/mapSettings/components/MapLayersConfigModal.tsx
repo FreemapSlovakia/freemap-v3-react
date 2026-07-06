@@ -4,7 +4,12 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
+import {
+  type ReactElement,
+  type SubmitEvent,
+  useCallback,
+  useState,
+} from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaLayerGroup, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

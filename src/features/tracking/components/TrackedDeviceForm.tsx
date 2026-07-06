@@ -5,12 +5,12 @@ import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
-import { ReactElement, SubmitEvent, useState } from 'react';
+import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
-import { TrackedDevice } from '../model/types.js';
+import type { TrackedDevice } from '../model/types.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 export function TrackedDeviceForm(): ReactElement {

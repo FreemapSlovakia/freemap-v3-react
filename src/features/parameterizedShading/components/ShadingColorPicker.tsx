@@ -2,10 +2,10 @@ import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import ColorPicker from '@zdila/react-gradient-color-picker';
 import Color from 'color';
 import { produce } from 'immer';
-import { ReactElement, useRef, useState } from 'react';
-import {
+import { type ReactElement, useRef, useState } from 'react';
+import type {
   ColorStop,
-  type Color as ColorType,
+  Color as ColorType,
   Shading,
   ShadingComponent,
 } from '../model/Shading.js';

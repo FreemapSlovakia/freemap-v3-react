@@ -1,13 +1,13 @@
 import {
-  ElementType,
+  type ElementType,
   type MouseEvent,
   type ReactElement,
   type RefCallback,
   useRef,
   useState,
 } from 'react';
-import { Button, ButtonProps, Overlay, Tooltip } from 'react-bootstrap';
-import { BsPrefixRefForwardingComponent } from 'react-bootstrap/helpers';
+import { Button, type ButtonProps, Overlay, Tooltip } from 'react-bootstrap';
+import type { BsPrefixRefForwardingComponent } from 'react-bootstrap/helpers';
 
 export function withContextTooltip<
   P extends {

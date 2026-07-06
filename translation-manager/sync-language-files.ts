@@ -17,7 +17,7 @@ import {
   isVariableDeclaration,
   type Node,
   type ObjectExpression,
-  ObjectProperty,
+  type ObjectProperty,
   objectProperty,
 } from '@babel/types';
 import { parse, print, types } from 'recast';

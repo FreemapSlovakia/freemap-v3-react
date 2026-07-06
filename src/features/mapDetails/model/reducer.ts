@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { MapDetailsSource, mapDetailsExcludeSources } from './actions.js';
+import { type MapDetailsSource, mapDetailsExcludeSources } from './actions.js';
 
 export interface MapDetailsState {
   excludeSources: MapDetailsSource[];

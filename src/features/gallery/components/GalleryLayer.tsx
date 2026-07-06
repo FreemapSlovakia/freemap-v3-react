@@ -1,5 +1,5 @@
 import { createTileLayerComponent } from '@react-leaflet/core';
-import { createWorkerPool, WorkerPool } from '@shared/workerPool.js';
+import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
 import {
   type Coords,
   type DoneCallback,
@@ -8,10 +8,7 @@ import {
   GridLayer as LGridLayer,
 } from 'leaflet';
 import { createFilter } from '../galleryUtils.js';
-import {
-  type GalleryColorizeBy,
-  type GalleryFilter,
-} from '../model/actions.js';
+import type { GalleryColorizeBy, GalleryFilter } from '../model/actions.js';
 import { PicturesResponse } from '../model/pictures.js';
 import { renderGalleryTile } from './galleryTileRenderrer.js';
 

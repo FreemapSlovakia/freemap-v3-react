@@ -2,16 +2,16 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import type { DrawingLineType } from '@features/drawing/model/actions/drawingLineActions.js';
-import { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
-import { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
-import { GalleryMessages } from '@features/gallery/translations/GalleryMessages.js';
+import type { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
+import type { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
+import type { GalleryMessages } from '@features/gallery/translations/GalleryMessages.js';
 import { loadGalleryMessages } from '@features/gallery/translations/loadGalleryMessages.js';
-import { ObjectsState } from '@features/objects/model/reducer.js';
-import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import type { ObjectsState } from '@features/objects/model/reducer.js';
+import type { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
-import { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
-import { TrackingState } from '@features/tracking/model/reducer.js';
-import { TrackViewerState } from '@features/trackViewer/model/reducer.js';
+import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
+import type { TrackingState } from '@features/tracking/model/reducer.js';
+import type { TrackViewerState } from '@features/trackViewer/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
@@ -29,8 +29,8 @@ import {
   iconSpecToOsmAndIcon,
   markerTypeToOsmAndBackground,
 } from '../../osmandIconMapping.js';
-import { exportMapFeatures } from '../actions.js';
-import { fetchPictures, Picture } from './fetchPictures.js';
+import type { exportMapFeatures } from '../actions.js';
+import { fetchPictures, type Picture } from './fetchPictures.js';
 import { exportElevationCancelActions } from './fillElevations.js';
 import {
   addAttribute,

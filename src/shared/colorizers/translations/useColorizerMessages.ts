@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { ColorizerMessages } from './ColorizerMessages.js';
+import type { ColorizerMessages } from './ColorizerMessages.js';
 
 const factory = (language: string) =>
   import(

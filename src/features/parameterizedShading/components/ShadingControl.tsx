@@ -7,9 +7,12 @@ import { Card, Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { colorReliefMaxElevation } from '../model/colorReliefMaxElevation.js';
 import { createDefaultShadingComponent } from '../model/createShadingComponent.js';
-import { ShadingComponent, ShadingComponentType } from '../model/Shading.js';
+import type {
+  ShadingComponent,
+  ShadingComponentType,
+} from '../model/Shading.js';
 import {
-  ParameterizedKind,
+  type ParameterizedKind,
   ParameterizedShadingModal,
 } from './ParameterizedShadingModal.js';
 import { ShadingColorPicker } from './ShadingColorPicker.js';

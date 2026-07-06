@@ -2,7 +2,7 @@ import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
 import { createAction, type UnknownAction } from '@reduxjs/toolkit';
 import type { Leaves, MessagePaths } from '@shared/types/common.js';
-import { ButtonVariant } from 'react-bootstrap/esm/types.js';
+import type { ButtonVariant } from 'react-bootstrap/esm/types.js';
 import type { Messages } from '@/translations/messagesInterface.js';
 
 export type ToastAction = {

@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { DrawingMessages } from './DrawingMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DrawingMessages } from './DrawingMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<DrawingMessages> = {
   modify: 'Vlastnosti',

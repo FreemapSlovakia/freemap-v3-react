@@ -9,11 +9,11 @@ import type { LatLon } from '@shared/types/common.js';
 import { NominatimResultSchema } from '@shared/types/nominatimResult.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { feature, point } from '@turf/helpers';
-import { BBox } from 'geojson';
+import type { BBox } from 'geojson';
 import { CRS, Point } from 'leaflet';
 import z from 'zod';
 import {
-  SearchResult,
+  type SearchResult,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,

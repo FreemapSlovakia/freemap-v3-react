@@ -7,7 +7,7 @@ import { type ReactElement, useCallback } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { Changeset, changesetsSetParams } from '../model/actions.js';
+import { type Changeset, changesetsSetParams } from '../model/actions.js';
 import { loadChangesetsMessages } from '../translations/loadChangesetsMessages.js';
 import classes from './ChangesetsResult.module.css';
 

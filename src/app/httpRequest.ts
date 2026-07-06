@@ -1,6 +1,6 @@
 import {
-  CancelItem,
-  CancelTriggers,
+  type CancelItem,
+  type CancelTriggers,
   cancelRegister,
 } from '@shared/cancelRegister.js';
 import { clearMapFeatures } from './store/actions.js';

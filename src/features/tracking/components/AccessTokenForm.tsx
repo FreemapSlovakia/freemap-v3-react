@@ -3,7 +3,7 @@ import { DateTime } from '@shared/components/DateTime.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
-import { ReactElement, SubmitEvent, useState } from 'react';
+import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

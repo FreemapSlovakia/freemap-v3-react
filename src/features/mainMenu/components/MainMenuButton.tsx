@@ -3,7 +3,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaBars } from 'react-icons/fa';
 import { HelpSubmenu } from './HelpSubmenu.js';

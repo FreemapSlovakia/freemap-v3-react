@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { OpenInExternalAppMessages } from './OpenInExternalAppMessages.js';
+import type { OpenInExternalAppMessages } from './OpenInExternalAppMessages.js';
 
 const factory = (language: string) =>
   import(

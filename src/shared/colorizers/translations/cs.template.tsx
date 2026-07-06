@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { ColorizerMessages } from './ColorizerMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { ColorizerMessages } from './ColorizerMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Obarvit podle',

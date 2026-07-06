@@ -1,5 +1,5 @@
 import { RovasAd } from '@features/ad/components/RovasAd.js';
-import { AdMessages } from './AdMessages.js';
+import type { AdMessages } from './AdMessages.js';
 
 const en: AdMessages = {
   self: (email) => (
