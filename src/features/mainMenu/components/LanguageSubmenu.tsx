@@ -16,11 +16,16 @@ const languageNames: Record<Language, string> = {
   en: 'English',
   de: 'Deutsch',
   it: 'Italiano',
+  sl: 'Slovenščina',
 };
 
 // The flag's country code matches the language code for most languages; only
 // these differ.
-const flagCountries: Partial<Record<Language, string>> = { cs: 'cz', en: 'gb' };
+const flagCountries: Partial<Record<Language, string>> = {
+  cs: 'cz',
+  en: 'gb',
+  sl: 'si',
+};
 
 function toFlag(language: Language): string {
   const country = flagCountries[language] ?? language;

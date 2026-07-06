@@ -1,5 +1,5 @@
 {
-  "langs": ["cs", "hu", "it", "sk", "de", "pl"],
+  "langs": ["cs", "hu", "it", "sk", "de", "pl", "sl"],
   "templates": [
     "src/osm/osmTagToNameMapping-{LANG}.ts",
     "src/translations/{LANG}.tsx",

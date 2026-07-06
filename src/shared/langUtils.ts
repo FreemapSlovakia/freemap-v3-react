@@ -1,6 +1,15 @@
 import z from 'zod';
 
-export const languages = ['sk', 'cs', 'pl', 'hu', 'en', 'de', 'it'] as const;
+export const languages = [
+  'sk',
+  'cs',
+  'pl',
+  'hu',
+  'en',
+  'de',
+  'it',
+  'sl',
+] as const;
 
 export type Language = (typeof languages)[number];
 

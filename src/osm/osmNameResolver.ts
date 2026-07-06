@@ -136,7 +136,9 @@ export function resolveGenericName(
 }
 
 export async function getOsmMapping(lang: string): Promise<OsmMapping> {
-  const lc = ['sk', 'cs', 'it', 'hu', 'de', 'pl'].includes(lang) ? lang : 'en';
+  const lc = ['sk', 'cs', 'it', 'hu', 'de', 'pl', 'sl'].includes(lang)
+    ? lang
+    : 'en';
 
   return import(
     /* webpackChunkName: "osm-tag-to-name-mapping-[request]" */
