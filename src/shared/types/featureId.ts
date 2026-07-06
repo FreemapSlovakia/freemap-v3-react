@@ -27,7 +27,10 @@ export type FeatureId =
       map: string;
       // TODO also layer?
       seq: number;
-    } & ({ property: string; id: number | string } | {}))
+    } & (
+      | { property: string; id: number | string }
+      | { property?: undefined; id?: undefined }
+    ))
   | GenericFeatureId;
 
 export function stringifyFeatureId(id: FeatureId): string {

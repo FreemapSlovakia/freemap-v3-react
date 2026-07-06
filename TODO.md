@@ -28,20 +28,17 @@ rules the curated config never ran; the safely-autofixable ones were applied,
 and the rest were switched `"off"` to keep the tree green. Re-enable and fix
 these one at a time (counts are from first adoption):
 
-- [ ] `suspicious/noImplicitAnyLet` (24) — annotate bare `let x;` with a real type.
+- [ ] `suspicious/noImplicitAnyLet` (~23) — annotate bare `let x;` with a real type.
 - [ ] `correctness/useJsxKeyInIterable` (20) — add `key` props (stable id preferred).
-- [ ] `complexity/noBannedTypes` (13) — replace `{}` / `Function` types.
-- [ ] `suspicious/noAssignInExpressions` (10) — hoist assignment out of the expression.
 - [ ] `a11y/useAltText` (9) — `alt` on `<img>` (empty for decorative).
-- [ ] `complexity/useOptionalChain` (8) — `a && a.b` → `a?.b` (unsafe autofix
-      available, but it strips intentional `!` and changed types last time — verify `tsgo`).
 - [ ] `a11y/noSvgWithoutTitle` (8) — `<title>`/`aria-label` for meaningful, `aria-hidden` for decorative.
 - [ ] `a11y/useHtmlLang` (3) — `lang` on `<html>` in `src/static/*.html`.
-- [ ] `suspicious/noConfusingVoidType` (2) — `Promise<T | void>` → `Promise<T | undefined>` + `resolve(undefined)`.
-- [ ] `style/noDescendingSpecificity` (2) — reorder CSS selectors.
 - [ ] `a11y/useButtonType`, `a11y/useValidAnchor`, `a11y/noStaticElementInteractions`,
-      `complexity/noCommaOperator`, `suspicious/noConfusingLabels`,
-      `performance/noAccumulatingSpread` (1 each).
+      `suspicious/noConfusingLabels`, `performance/noAccumulatingSpread` (1 each).
+
+Re-enabled and fixed: `complexity/noBannedTypes`, `complexity/useOptionalChain`,
+`complexity/noCommaOperator`, `suspicious/noAssignInExpressions`,
+`suspicious/noConfusingVoidType`, `style/noDescendingSpecificity`.
 
 Permanently off by decision (convention / tsconfig clash, **not** backlog):
 `style/noNonNullAssertion`, `suspicious/noArrayIndexKey`, `suspicious/noGlobalIsNan`,

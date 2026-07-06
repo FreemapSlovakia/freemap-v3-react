@@ -28,11 +28,8 @@
         "useValidAnchor": "off"
       },
       "complexity": {
-        "noBannedTypes": "off",
-        "noCommaOperator": "off",
         "noImportantStyles": "off",
-        "useLiteralKeys": "off",
-        "useOptionalChain": "off"
+        "useLiteralKeys": "off"
       },
       "correctness": {
         "noUndeclaredVariables": "error",
@@ -47,16 +44,13 @@
       },
       "style": {
         "noCommonJs": "error",
-        "noDescendingSpecificity": "off",
         "noNamespace": "error",
         "noNonNullAssertion": "off",
         "useAsConstAssertion": "error"
       },
       "suspicious": {
         "noArrayIndexKey": "off",
-        "noAssignInExpressions": "off",
         "noConfusingLabels": "off",
-        "noConfusingVoidType": "off",
         "noConstantBinaryExpressions": "error",
         "noGlobalIsNan": "off",
         "noImplicitAnyLet": "off"

@@ -27,7 +27,7 @@ function speedSpec(feature: Feature<LineString>, options?: ColorizeOptions) {
   // per-point series, so it's low-passed over the same span.
   const recorded = readNumericArray(feature, 'speeds', coords.length);
 
-  if (recorded && recorded.some((v) => Number.isFinite(v))) {
+  if (recorded?.some((v) => Number.isFinite(v))) {
     return { coords, values: recorded, smoothSpan: span };
   }
 

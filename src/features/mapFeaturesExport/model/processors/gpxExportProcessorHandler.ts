@@ -197,9 +197,13 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     trk: [],
   };
 
-  let curr: Node | null;
+  while (true) {
+    const curr = r.iterateNext();
 
-  while ((curr = r.iterateNext())) {
+    if (!curr) {
+      break;
+    }
+
     q[curr.nodeName].push(curr);
   }
 

@@ -246,7 +246,7 @@ class LShadingLayer extends LGridLayer {
   async createTileAsync(
     coords: Coords,
     canvas: HTMLCanvasElement,
-  ): Promise<boolean | void> {
+  ): Promise<boolean | undefined> {
     const [device, pipeline, sampler] = await this.gpuObjectsPromise;
 
     const context = canvas.getContext('webgpu');

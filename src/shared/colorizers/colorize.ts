@@ -219,7 +219,7 @@ export function hasNumericArray(
   return features.some((f) => {
     const arr = readNumericArray(f, key, f.geometry.coordinates.length);
 
-    return arr !== null && arr.some((v) => Number.isFinite(v));
+    return arr?.some((v) => Number.isFinite(v));
   });
 }
 

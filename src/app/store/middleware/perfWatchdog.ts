@@ -45,7 +45,7 @@ const WARMUP_MS = 8000;
 let startedAt = 0;
 
 /** Records every dispatched action for stall/storm correlation. */
-export const perfWatchdogMiddleware: Middleware<{}, RootState> =
+export const perfWatchdogMiddleware: Middleware<object, RootState> =
   () => (next) => (action) => {
     const { type } = action as UnknownAction;
 

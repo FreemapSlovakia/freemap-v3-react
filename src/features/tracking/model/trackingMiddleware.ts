@@ -13,7 +13,7 @@ const TrackingParamsSchema = z.union([
 ]);
 
 export function createTrackingMiddleware(): Middleware<
-  {},
+  object,
   RootState,
   Dispatch
 > {

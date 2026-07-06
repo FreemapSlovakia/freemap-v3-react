@@ -227,11 +227,7 @@ export function CachedMapsList(): ReactElement {
                                 cm.name,
                               );
 
-                              if (
-                                next != null &&
-                                next.trim() &&
-                                next !== cm.name
-                              ) {
+                              if (next?.trim() && next !== cm.name) {
                                 dispatch(
                                   cachedMapRenamed({
                                     id: cm.type,

@@ -275,9 +275,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     ? imageIds.findIndex((id) => id === activeImageId)
     : -1;
 
-  const nextImageId = imageIds && imageIds[index + 1];
+  const nextImageId = imageIds?.[index + 1];
 
-  const prevImageId = index > 0 ? imageIds && imageIds[index - 1] : null;
+  const prevImageId = index > 0 ? imageIds?.[index - 1] : null;
 
   // TODO const loadingMeta = !image || image.id !== activeImageId;
 
@@ -535,13 +535,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               {tags && tags.length > 0 && ' ｜ '}
 
-              {tags &&
-                tags.map((tag) => (
-                  <Fragment key={tag}>
-                    {' '}
-                    <Badge bg="secondary">{tag}</Badge>
-                  </Fragment>
-                ))}
+              {tags?.map((tag) => (
+                <Fragment key={tag}>
+                  {' '}
+                  <Badge bg="secondary">{tag}</Badge>
+                </Fragment>
+              ))}
 
               {!isFullscreen && editModel && (
                 <Form onSubmit={handleSave}>

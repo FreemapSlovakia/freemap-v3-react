@@ -206,7 +206,10 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     .addCase(gallerySetItemForPositionPicking, (state, action) => {
       state.pickingPositionForId = action.payload;
 
-      let x;
+      const item =
+        typeof action.payload === 'number' && action.payload !== -1
+          ? state.items.find(({ id }) => id === action.payload)
+          : undefined;
 
       state.pickingPosition =
         action.payload === -1
@@ -214,9 +217,8 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
             ? safeParseCoordinates(state.editModel.dirtyPosition)
             : null
           : typeof action.payload === 'number'
-            ? // eslint-disable-next-line no-cond-assign
-              (x = state.items.find(({ id }) => id === action.payload))
-              ? safeParseCoordinates(x.dirtyPosition)
+            ? item
+              ? safeParseCoordinates(item.dirtyPosition)
               : null
             : null;
     })

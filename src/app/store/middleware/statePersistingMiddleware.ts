@@ -14,7 +14,7 @@ export function suspendStatePersistence(): void {
   suspended = true;
 }
 
-export const statePersistingMiddleware: Middleware<{}, RootState> =
+export const statePersistingMiddleware: Middleware<object, RootState> =
   ({ getState }) =>
   (next) =>
   (action) => {

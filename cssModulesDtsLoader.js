@@ -39,11 +39,7 @@ function extractKeys(source) {
 
   const keys = [];
 
-  KEY.lastIndex = 0;
-
-  let m;
-
-  while ((m = KEY.exec(block[1])) !== null) {
+  for (const m of block[1].matchAll(KEY)) {
     keys.push(m[1] ?? m[2] ?? m[3]);
   }
 

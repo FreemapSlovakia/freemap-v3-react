@@ -40,7 +40,9 @@ function enrichWaypointsWithExtensions(
 
     const wpt = wpts[wptIndex++];
 
-    const props = (feature.properties ??= {});
+    feature.properties ??= {};
+
+    const props = feature.properties;
 
     for (const tag of ['markerType', 'icon', 'color'] as const) {
       const value = wpt
@@ -92,7 +94,9 @@ function enrichTracksWithExtensions(
 
     const trk = trks[trkIndex++];
 
-    const props = (feature.properties ??= {});
+    feature.properties ??= {};
+
+    const props = feature.properties;
 
     for (const tag of [
       'type',

@@ -23,7 +23,7 @@ export const timeColorizer: Colorizer = {
         feature.geometry.coordinates.length,
       );
 
-      return times !== null && times.some((t) => Number.isFinite(t));
+      return times?.some((t) => Number.isFinite(t));
     }),
   compute: (features) =>
     colorizeByValues(features, (feature) => {

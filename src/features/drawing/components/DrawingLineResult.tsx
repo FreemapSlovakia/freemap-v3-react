@@ -507,7 +507,10 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     }
   }, [showHandles, handleTier]);
 
-  let x;
+  const joinPoint =
+    joinWith?.lineIndex === lineIndex
+      ? points.find((pt) => pt.id === joinWith.pointId)
+      : undefined;
 
   const futureLinePositions =
     (drawing || joinWith) &&
@@ -516,11 +519,10 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     !window.preventMapClick
       ? [
           joinWith?.lineIndex === lineIndex
-            ? ((x = points.find((pt) => pt.id === joinWith.pointId)),
-              {
-                lat: x?.lat ?? -1,
-                lng: x?.lon ?? -1,
-              })
+            ? {
+                lat: joinPoint?.lat ?? -1,
+                lng: joinPoint?.lon ?? -1,
+              }
             : {
                 lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
                 lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,

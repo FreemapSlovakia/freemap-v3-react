@@ -9,7 +9,7 @@ import {
   wsStateChanged,
 } from './actions.js';
 
-export function createWebsocketMiddleware(): Middleware<{}, RootState> {
+export function createWebsocketMiddleware(): Middleware<object, RootState> {
   let ws: WebSocket | null = null;
 
   let restarter: number | null = null;

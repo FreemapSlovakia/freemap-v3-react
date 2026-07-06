@@ -66,7 +66,7 @@ export async function upload(
         return false;
       }
 
-      const p = new Promise<string | void>((resolve, reject) => {
+      const p = new Promise<string | undefined>((resolve, reject) => {
         const msgListener = (e: MessageEvent) => {
           if (
             e.origin === window.location.origin &&
@@ -96,7 +96,7 @@ export async function upload(
 
             window.removeEventListener('message', msgListener);
 
-            resolve();
+            resolve(undefined);
           }
         }, 500);
 

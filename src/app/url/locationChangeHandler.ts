@@ -500,9 +500,9 @@ export function handleLocationChange(store: MyStore): void {
         JSON.parse(customLayerDefsStr),
       );
 
-      (mapStateFromUrl.layers ??= []).push(
-        ...customLayerDefs.map((def) => def.type),
-      );
+      mapStateFromUrl.layers ??= [];
+
+      mapStateFromUrl.layers.push(...customLayerDefs.map((def) => def.type));
 
       const newCustomLayerDefs = customLayerDefs.filter(
         (cl) => !existingCustomLayersDefStrings.includes(JSON.stringify(cl)),

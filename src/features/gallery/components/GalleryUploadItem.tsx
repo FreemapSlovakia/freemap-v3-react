@@ -17,7 +17,7 @@ import { GalleryEditForm, type PictureModel } from './GalleryEditForm.js';
 interface Props {
   id: number;
   file: File;
-  previewKey?: {};
+  previewKey?: object;
   model: PictureModel;
   allTags: GalleryTag[];
   errors: GalleryItemError[] | null | undefined;
@@ -27,7 +27,7 @@ interface Props {
   disabled: boolean;
   m?: Messages;
   showPreview: boolean;
-  onPreview: (data: { id: number; previewKey: {} }) => void;
+  onPreview: (data: { id: number; previewKey: object }) => void;
 }
 
 export function GalleryUploadItem({

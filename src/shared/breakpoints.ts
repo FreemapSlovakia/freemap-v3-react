@@ -100,7 +100,9 @@ const SERVER_SNAPSHOT: BreakpointMatches = {
 };
 
 function getSnapshot(): BreakpointMatches {
-  return (snapshot ??= compute());
+  snapshot ??= compute();
+
+  return snapshot;
 }
 
 function getServerSnapshot(): BreakpointMatches {
