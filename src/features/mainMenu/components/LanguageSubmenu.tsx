@@ -9,8 +9,8 @@ import { LanguageLabel } from './LanguageLabel.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 const languageNames: Record<Language, string> = {
-  sk: 'Slovensky',
-  cs: 'Česky',
+  sk: 'Slovenčina',
+  cs: 'Čeština',
   pl: 'Polski',
   hu: 'Magyar',
   en: 'English',
