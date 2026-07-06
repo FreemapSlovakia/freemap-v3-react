@@ -28,7 +28,7 @@ Searches the map by place name, category, or coordinates. Results may come from 
 ### UI Language switcher
 
 - Access: Main menu > Language
-- Available languages: Slovak, Czech, Hungarian, English, Polish, German, Italian
+- Available languages: Slovak, Czech, Hungarian, English, Polish, German, Italian, Slovenian, French
 
 ### Account
 

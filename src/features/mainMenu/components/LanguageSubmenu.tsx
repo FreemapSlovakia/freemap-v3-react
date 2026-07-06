@@ -17,6 +17,7 @@ const languageNames: Record<Language, string> = {
   de: 'Deutsch',
   it: 'Italiano',
   sl: 'Slovenščina',
+  fr: 'Français',
 };
 
 // The flag's country code matches the language code for most languages; only
