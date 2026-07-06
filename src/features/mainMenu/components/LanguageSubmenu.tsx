@@ -36,6 +36,22 @@ function toFlag(language: Language): string {
   );
 }
 
+// Menu order depends on the domain: freemap.sk leads with Slovak (home site)
+// then English; other domains (freemap.eu, …) lead with English. The remaining
+// languages follow alphabetically by endonym. Deriving the tail by sorting
+// `languages` keeps any newly added language in the menu automatically.
+function getOrderedLanguages(): Language[] {
+  const pinned: Language[] = window.location.hostname.endsWith('freemap.sk')
+    ? ['sk', 'en']
+    : ['en'];
+
+  const rest = languages
+    .filter((code) => !pinned.includes(code))
+    .sort((a, b) => languageNames[a].localeCompare(languageNames[b]));
+
+  return [...pinned, ...rest];
+}
+
 export function LanguageSubmenu(): JSX.Element {
   const m = useMessages();
 
@@ -56,7 +72,7 @@ export function LanguageSubmenu(): JSX.Element {
         {m?.mainMenu.automaticLanguage}
       </Dropdown.Item>
 
-      {languages.map((code) => (
+      {getOrderedLanguages().map((code) => (
         <Dropdown.Item
           key={code}
           as="button"

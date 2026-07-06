@@ -1,15 +1,17 @@
 import z from 'zod';
 
+// Canonical language list; drives the `Language` type and validation. The menu
+// display order is domain-specific and computed in LanguageSubmenu.
 export const languages = [
   'sk',
-  'cs',
-  'pl',
-  'hu',
   'en',
+  'cs',
   'de',
-  'it',
-  'sl',
   'fr',
+  'it',
+  'hu',
+  'pl',
+  'sl',
 ] as const;
 
 export type Language = (typeof languages)[number];
