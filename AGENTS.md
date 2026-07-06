@@ -43,8 +43,10 @@ For locale changes in `src/translations/`, edit the `*.template.tsx` files (e.g.
 
 `translation-manager/scaffold-language.mjs <lang>` scaffolds every `<lang>.template.*` (all feature folders + the global `src/translations/` + the osm mapping) from the English masters: string leaves are dropped so `sync` emits them as `TODO translate` blocks with sibling-language hints, while non-string leaves (functions/JSX) are copied verbatim as English placeholders to translate by hand. Then wire the code up:
 
+Source-language note: Slovak (native quality) and Czech are the best sibling hints, so Slavic targets (e.g. `sl`) translate fast and review easily. Distant targets have no close sibling in the set — French's nearest is Italian (Romance but not close, and only partly human-translated) — so they're a heavier from-scratch pass and warrant closer review.
+
 - **`src/shared/langUtils.ts`** — add the code to the `languages` tuple (drives the `Language` type, so most `Record<Language, …>` sites become `tsgo` errors until updated — those are the safe ones).
-- **`src/features/mainMenu/components/LanguageSubmenu.tsx`** — add the endonym to `languageNames`, and a `flagCountries` entry if the flag's country code differs from the language code (e.g. `sl` → `si`).
+- **`src/features/mainMenu/components/LanguageSubmenu.tsx`** — add the endonym to `languageNames`, and a `flagCountries` entry ONLY if the flag's country code differs from the language code (e.g. `sl` → `si`; `fr` → 🇫🇷 matches, so no entry).
 - **`translation-manager/templates.json`** — add the code to `langs` so `sync` generates its files.
 - **`src/translations/<lang>-shared.ts`** — hand-written SEO title/description (NOT sync-managed).
 - **`src/osm/osmTagToNameMapping-<lang>.template.ts`** — the `colorNames` export is NOT sync-managed; translate it by hand.
