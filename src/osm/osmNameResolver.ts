@@ -88,8 +88,6 @@ export function resolveGenericNameWithMeta(
               case: item.case + 'f',
             })),
           );
-
-          continue;
         }
       }
     }

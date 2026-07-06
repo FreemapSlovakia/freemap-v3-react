@@ -207,7 +207,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
-  let prevSource: SearchSource | undefined = undefined;
+  let prevSource: SearchSource | undefined;
 
   return (
     <Form

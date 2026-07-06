@@ -20,6 +20,37 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   but the array/coordinate-heavy hotspots are now cleaned up against it (error
   count 348 → ~180).
 
+## Lint: re-enable Biome rules disabled during `recommended` adoption
+
+`biome.json` now uses `"preset": "recommended"` with `--error-on-warnings`
+(`lint`, `lint:fix`, lint-staged). Adopting the full recommended set lit up
+rules the curated config never ran; the safely-autofixable ones were applied,
+and the rest were switched `"off"` to keep the tree green. Re-enable and fix
+these one at a time (counts are from first adoption):
+
+- [ ] `suspicious/noImplicitAnyLet` (24) — annotate bare `let x;` with a real type.
+- [ ] `correctness/useJsxKeyInIterable` (20) — add `key` props (stable id preferred).
+- [ ] `complexity/noBannedTypes` (13) — replace `{}` / `Function` types.
+- [ ] `suspicious/noAssignInExpressions` (10) — hoist assignment out of the expression.
+- [ ] `a11y/useAltText` (9) — `alt` on `<img>` (empty for decorative).
+- [ ] `complexity/useOptionalChain` (8) — `a && a.b` → `a?.b` (unsafe autofix
+      available, but it strips intentional `!` and changed types last time — verify `tsgo`).
+- [ ] `a11y/noSvgWithoutTitle` (8) — `<title>`/`aria-label` for meaningful, `aria-hidden` for decorative.
+- [ ] `a11y/useHtmlLang` (3) — `lang` on `<html>` in `src/static/*.html`.
+- [ ] `suspicious/noConfusingVoidType` (2) — `Promise<T | void>` → `Promise<T | undefined>` + `resolve(undefined)`.
+- [ ] `style/noDescendingSpecificity` (2) — reorder CSS selectors.
+- [ ] `a11y/useButtonType`, `a11y/useValidAnchor`, `a11y/noStaticElementInteractions`,
+      `complexity/noCommaOperator`, `suspicious/noConfusingLabels`,
+      `performance/noAccumulatingSpread` (1 each).
+
+Permanently off by decision (convention / tsconfig clash, **not** backlog):
+`style/noNonNullAssertion`, `suspicious/noArrayIndexKey`, `suspicious/noGlobalIsNan`,
+`complexity/noImportantStyles`, `security/noDangerouslySetInnerHtml`,
+`complexity/useLiteralKeys` (fights `noPropertyAccessFromIndexSignature`).
+
+Still emitting at info level (non-blocking, optional cleanup):
+`style/useTemplate` (145), `complexity/useIndexOf` (4), `correctness/useParseIntRadix` (1).
+
 ## Softer / design opinions
 
 - [ ] **Remove the `*Settings` localStorage migration code (after ~2026-09).**

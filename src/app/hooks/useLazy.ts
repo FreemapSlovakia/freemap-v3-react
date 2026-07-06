@@ -19,7 +19,7 @@ export function useLazy<T>(
       return;
     }
 
-    let pid: number | undefined = undefined;
+    let pid: number | undefined;
 
     let loaded = false;
 

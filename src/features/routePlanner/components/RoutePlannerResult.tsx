@@ -246,7 +246,7 @@ export function RoutePlannerResult(): ReactElement {
         milestones.push(milestone);
       }
     } else {
-      const pxLen = (len * Math.pow(2, zoom)) / 1000;
+      const pxLen = (len * 2 ** zoom) / 1000;
 
       const q = 50;
 

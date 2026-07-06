@@ -17,15 +17,15 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "lint-staged": {
-    "*.{js,ts}": ["biome check", "git add"]
+    "*.{js,ts}": ["biome check --error-on-warnings", "git add"]
   },
   "scripts": {
     "start": "pnpm build:proto && pnpm sync-language-files && rspack serve --config rspack.config.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsgo --noEmit -p .",
-    "lint": "biome check",
-    "lint:fix": "biome check --write",
+    "lint": "biome check --error-on-warnings",
+    "lint:fix": "biome check --write --error-on-warnings",
     "build": "pnpm build:proto && pnpm sync-language-files && rspack build --config rspack.config.ts && tsgo --noEmit",
     "build:local": "DEPLOYMENT=local pnpm build",
     "serve:dist": "pnpm dlx http-server dist -S -C ssl/freemap.sk.pem -K ssl/freemap.sk.key -a local.freemap.sk -p 9000 -c-1",

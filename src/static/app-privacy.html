@@ -627,13 +627,13 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             const btnSk = document.getElementById('btn-sk');
             const btnEn = document.getElementById('btn-en');
             const contentSk = document.getElementById('content-sk');
             const contentEn = document.getElementById('content-en');
 
-            btnSk.addEventListener('click', function(e) {
+            btnSk.addEventListener('click', (e) => {
                 e.preventDefault();
                 btnSk.classList.add('active');
                 btnEn.classList.remove('active');
@@ -641,7 +641,7 @@
                 contentEn.style.display = 'none';
             });
 
-            btnEn.addEventListener('click', function(e) {
+            btnEn.addEventListener('click', (e) => {
                 e.preventDefault();
                 btnEn.classList.add('active');
                 btnSk.classList.remove('active');

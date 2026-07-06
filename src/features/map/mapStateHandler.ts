@@ -15,7 +15,7 @@ export function attachMapStateHandler(store: MyStore) {
 
       const newZoom = map.getZoom();
 
-      const delta = 5 / Math.pow(2, zoom);
+      const delta = 5 / 2 ** zoom;
 
       if (
         zoom !== newZoom ||
