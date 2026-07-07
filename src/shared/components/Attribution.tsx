@@ -60,7 +60,7 @@ function useCategorizedAttribution(layers: string[], countries?: string[]) {
     [
       ...integratedLayerDefs
         .filter(({ type }) => layers.includes(type))
-        .reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
+        .flatMap((def) => def.attribution),
       ...cachedAttrs,
     ].filter(
       (def) => !countries || !def.country || countries.includes(def.country),

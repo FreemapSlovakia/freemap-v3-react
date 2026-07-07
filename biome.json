@@ -34,9 +34,6 @@
         "noUndeclaredVariables": "error",
         "useExhaustiveDependencies": "warn"
       },
-      "performance": {
-        "noAccumulatingSpread": "off"
-      },
       "security": {
         "noDangerouslySetInnerHtml": "off"
       },
