@@ -3,6 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { modalMenuItemProps } from '@shared/hooks/useMenuHandler.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { type ReactElement, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
@@ -15,7 +16,6 @@ import {
   FaRegCopyright,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { modalMenuItemProps } from '@/shared/hooks/useMenuHandler.js';
 import { setActiveModal } from '../store/actions.js';
 import { useAttributionInfo } from './useAttributionInfo.js';
 

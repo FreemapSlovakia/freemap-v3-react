@@ -44,6 +44,7 @@ import { getCountriesProcessor } from '@features/map/model/processors/getCountri
 import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxProcessor.js';
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
 import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProcessor.js';
+import { exportMapFeaturesProcessor } from '@features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.js';
 import { measurementProcessor } from '@features/measurement/model/measurementProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
@@ -58,6 +59,7 @@ import {
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
 } from '@features/objects/model/objectsFetchProcessor.js';
+import { downloadMapProcessor } from '@features/offlineMapExport/model/downloadMapProcessor.js';
 import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
 import { osmLoadNodeProcessor } from '@features/osm/model/processors/osmLoadNodeProcessor.js';
 import { osmLoadRelationProcessor } from '@features/osm/model/processors/osmLoadRelationProcessor.js';
@@ -94,8 +96,6 @@ import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerPro
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { wikimediaCommonsLayerProcessor } from '@features/wikimediaCommons/model/processors/wikimediaCommonsLayerProcessor.js';
 import { wikimediaCommonsLoadPreviewProcessor } from '@features/wikimediaCommons/model/processors/wikimediaCommonsLoadPreviewProcessor.js';
-import { exportMapFeaturesProcessor } from '@/features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.js';
-import { downloadMapProcessor } from '@/features/offlineMapExport/model/downloadMapProcessor.js';
 import { cancelProcessor } from '@/processors/cancelProcessor.js';
 import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
 import { deleteProcessor } from '@/processors/deleteProcessor.js';

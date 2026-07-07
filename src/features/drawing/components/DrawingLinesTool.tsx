@@ -1,10 +1,10 @@
+import { activeModeSelector } from '@app/store/selectors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { activeModeSelector } from '@/app/store/selectors.js';
 import {
   drawingLineAddPoint,
   type Point,

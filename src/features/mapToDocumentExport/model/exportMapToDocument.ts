@@ -1,8 +1,8 @@
 import type { RootState } from '@app/store/store.js';
+import type { Exportable } from '@features/mapFeaturesExport/model/actions.js';
 import { buildExportFeatureCollection } from '@features/mapFeaturesExport/model/buildExportFeatureCollection.js';
 import { COLORS } from '@shared/colors.js';
 import z from 'zod';
-import type { Exportable } from '@/features/mapFeaturesExport/model/actions.js';
 import type { CustomLayerOrder, ExportableLayer, Format } from './types.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];

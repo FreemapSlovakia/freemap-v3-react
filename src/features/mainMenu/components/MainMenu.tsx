@@ -1,6 +1,12 @@
+import { toolsSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
+import { Emoji } from '@shared/components/Emoji.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import {
+  documentMenuItemProps,
+  modalMenuItemProps,
+} from '@shared/hooks/useMenuHandler.js';
 import { isDrawTool, toolDefinitions } from '@shared/toolDefinitions.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
@@ -22,12 +28,6 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import { IoLanguage } from 'react-icons/io5';
-import { toolsSelector } from '@/app/store/selectors.js';
-import { Emoji } from '@/shared/components/Emoji.js';
-import {
-  documentMenuItemProps,
-  modalMenuItemProps,
-} from '@/shared/hooks/useMenuHandler.js';
 import { languageItems } from './languageItems.js';
 
 export function MainMenu(): ReactElement {

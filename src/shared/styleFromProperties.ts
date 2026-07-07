@@ -6,16 +6,16 @@ import {
   type LineCap,
   type LineJoin,
 } from '@features/drawing/model/actions/drawingLineActions.js';
+import { garminSymToIconSpec } from '@features/mapFeaturesExport/garminSymMapping.js';
+import {
+  osmAndBackgroundToMarkerType,
+  osmAndIconToIconSpec,
+} from '@features/mapFeaturesExport/osmandIconMapping.js';
 import {
   type MarkerType,
   MarkerTypeSchema,
 } from '@features/objects/model/actions.js';
 import { joinColorAlpha } from '@shared/colorAlpha.js';
-import { garminSymToIconSpec } from '@/features/mapFeaturesExport/garminSymMapping.js';
-import {
-  osmAndBackgroundToMarkerType,
-  osmAndIconToIconSpec,
-} from '@/features/mapFeaturesExport/osmandIconMapping.js';
 
 // Simplestyle splits a colour into a base hex plus a separate `*-opacity`
 // number (e.g. `fill` + `fill-opacity`). Foreign imports (KML, third-party

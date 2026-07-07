@@ -3,8 +3,8 @@ import {
   CustomLayerDefArrayCompatSchema,
   CustomLayerDefSchema,
 } from '@shared/mapDefinitions.js';
+import { IsoDateSchema, LatLonSchema } from '@shared/types/common.js';
 import z from 'zod';
-import { IsoDateSchema, LatLonSchema } from '@/shared/types/common.js';
 
 export const AuthProviderSchema = z.enum([
   'facebook',

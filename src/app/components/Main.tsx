@@ -192,7 +192,7 @@ const accountModalFactory = () =>
 const downloadMapModalFactory = () =>
   import(
     /* webpackChunkName: "offline-map-export-modal" */
-    '@/features/offlineMapExport/components/OfflineMapExportModal.js'
+    '@features/offlineMapExport/components/OfflineMapExportModal.js'
   );
 
 const cachedMapsModalFactory = () =>
@@ -228,13 +228,13 @@ const embedMapModalFactory = () =>
 const exportGpxModalFactory = () =>
   import(
     /* webpackChunkName: "map-features-export-modal" */
-    '@/features/mapFeaturesExport/components/MapFeaturesExportModal.js'
+    '@features/mapFeaturesExport/components/MapFeaturesExportModal.js'
   );
 
 const exportMapModalFactory = () =>
   import(
     /* webpackChunkName: "map-to-document-export-modal" */
-    '@/features/mapToDocumentExport/components/MapToDocumentExportModal.js'
+    '@features/mapToDocumentExport/components/MapToDocumentExportModal.js'
   );
 
 const documentModalFactory = () =>

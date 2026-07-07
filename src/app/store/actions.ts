@@ -3,6 +3,7 @@ import {
   applyCookieConsent,
   setAnalyticCookiesAllowed,
 } from '@features/cookieConsent/model/actions.js';
+import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import {
   saveHomeLocation,
   setSelectingHomeLocation,
@@ -13,7 +14,6 @@ import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
-import type { DrawingStyle } from '@/features/drawing/model/reducers/drawingSettingsReducer.js';
 import type { ActiveModal } from './activeModal.js';
 
 export const ToolSchema = z.enum([

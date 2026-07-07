@@ -1,3 +1,4 @@
+import type { ExternalTarget } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -9,7 +10,6 @@ import {
   FaShareAlt,
   FaWindowMaximize,
 } from 'react-icons/fa';
-import type { ExternalTarget } from '@/app/store/actions.js';
 import {
   getF4mapUrl,
   getGeocachingUrl,

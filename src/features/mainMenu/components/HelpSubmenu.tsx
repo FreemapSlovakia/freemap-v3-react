@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { modalMenuItemProps } from '@shared/hooks/useMenuHandler.js';
 import { type JSX, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -10,7 +11,6 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 import { getDocuments } from '@/documents/index.js';
-import { modalMenuItemProps } from '@/shared/hooks/useMenuHandler.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function HelpSubmenu(): JSX.Element {

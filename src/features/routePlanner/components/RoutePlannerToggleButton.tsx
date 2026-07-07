@@ -1,11 +1,11 @@
+import { setTool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaRoute } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { setTool } from '@/app/store/actions.js';
-import { LongPressTooltip } from '@/shared/components/LongPressTooltip.js';
 
 export function RoutePlannerToggleButton(): ReactElement | undefined | false {
   const routePlannerOpen = useAppSelector((state) =>
