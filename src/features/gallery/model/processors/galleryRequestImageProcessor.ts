@@ -11,17 +11,17 @@ import {
 export const galleryRequestImageProcessor: Processor = {
   actionCreator: galleryRequestImage,
   async handle({ getState, dispatch, toastError }) {
-    let res;
-
-    try {
-      res = await httpRequest({
-        getState,
-        url: `/gallery/pictures/${getState().gallery.activeImageId}`,
-        expectedStatus: 200,
-      });
-    } catch (err) {
+    const res = await httpRequest({
+      getState,
+      url: `/gallery/pictures/${getState().gallery.activeImageId}`,
+      expectedStatus: 200,
+    }).catch(async (err) => {
       await toastError(err, loadGalleryMessages, 'pictureFetchingError');
 
+      return null;
+    });
+
+    if (!res) {
       return;
     }
 

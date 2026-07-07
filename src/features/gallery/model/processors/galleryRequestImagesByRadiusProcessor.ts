@@ -18,23 +18,19 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
   async handle({ getState, dispatch, action, toastError }) {
     const { lat, lon } = action.payload;
 
-    let res;
-
-    try {
-      res = await httpRequest({
-        getState,
-        url:
-          '/gallery/pictures?' +
-          objectToURLSearchParams({
-            by: 'radius',
-            lat,
-            lon,
-            distance: 5000 / 2 ** getState().map.zoom,
-            ...createFilter(getState().gallery.filter),
-          }),
-        expectedStatus: 200,
-      });
-    } catch (err) {
+    const res = await httpRequest({
+      getState,
+      url:
+        '/gallery/pictures?' +
+        objectToURLSearchParams({
+          by: 'radius',
+          lat,
+          lon,
+          distance: 5000 / 2 ** getState().map.zoom,
+          ...createFilter(getState().gallery.filter),
+        }),
+      expectedStatus: 200,
+    }).catch(async (err) => {
       await toastError(
         err,
         loadGalleryMessages,
@@ -42,6 +38,10 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
         'gallery.picturesFetchingError',
       );
 
+      return null;
+    });
+
+    if (!res) {
       return;
     }
 

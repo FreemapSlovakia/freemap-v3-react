@@ -15,22 +15,18 @@ export const galleryRequestImagesByOrderProcessor: Processor<
 > = {
   actionCreator: galleryList,
   async handle({ getState, dispatch, action, toastError }) {
-    let res;
-
-    try {
-      res = await httpRequest({
-        getState,
-        url:
-          '/gallery/pictures?' +
-          objectToURLSearchParams({
-            by: 'order',
-            orderBy: action.payload.substring(1),
-            direction: action.payload[0] === '+' ? 'asc' : 'desc',
-            ...createFilter(getState().gallery.filter),
-          }),
-        expectedStatus: 200,
-      });
-    } catch (err) {
+    const res = await httpRequest({
+      getState,
+      url:
+        '/gallery/pictures?' +
+        objectToURLSearchParams({
+          by: 'order',
+          orderBy: action.payload.substring(1),
+          direction: action.payload[0] === '+' ? 'asc' : 'desc',
+          ...createFilter(getState().gallery.filter),
+        }),
+      expectedStatus: 200,
+    }).catch(async (err) => {
       await toastError(
         err,
         loadGalleryMessages,
@@ -38,6 +34,10 @@ export const galleryRequestImagesByOrderProcessor: Processor<
         'gallery.picturesFetchingError',
       );
 
+      return null;
+    });
+
+    if (!res) {
       return;
     }
 
