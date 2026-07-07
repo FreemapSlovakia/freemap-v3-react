@@ -34,7 +34,7 @@ function isInvalidNumber(
   const value = toNumber(val);
 
   return (
-    isNaN(value) ||
+    Number.isNaN(value) ||
     (min !== undefined && value < min) ||
     (max !== undefined && value > max)
   );

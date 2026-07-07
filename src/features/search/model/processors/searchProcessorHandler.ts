@@ -58,7 +58,7 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
 
   const parts = query.split(/\s*,\s*|\s+/).map((n) => parseFloat(n));
 
-  if (parts.length === 4 && parts.every((part) => !isNaN(part))) {
+  if (parts.length === 4 && parts.every((part) => !Number.isNaN(part))) {
     const reproj = () => {
       const p1 = CRS.EPSG3857.unproject(new Point(parts[0], parts[1]));
 

@@ -78,7 +78,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     if (maxZoom !== initialMaxZoom) {
       const maxZoomValue = parseInt(maxZoom, 10);
 
-      settings.maxZoom = isNaN(maxZoomValue) ? 20 : maxZoomValue;
+      settings.maxZoom = Number.isNaN(maxZoomValue) ? 20 : maxZoomValue;
     }
 
     if (

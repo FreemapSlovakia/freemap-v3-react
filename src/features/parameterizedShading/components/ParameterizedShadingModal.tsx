@@ -83,7 +83,7 @@ export function ParameterizedShadingModal({
 
     const w = Number(width);
 
-    if (isNaN(ele) || isNaN(w)) {
+    if (Number.isNaN(ele) || Number.isNaN(w)) {
       return;
     }
 

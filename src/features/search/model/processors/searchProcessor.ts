@@ -23,7 +23,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
 
       if (
         latlng.length === 2 &&
-        latlng.every((coord) => !isNaN(coord)) &&
+        latlng.every((coord) => !Number.isNaN(coord)) &&
         latlng[0] <= 90 &&
         latlng[0] >= -90 &&
         latlng[1] <= 180 &&

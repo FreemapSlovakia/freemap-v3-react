@@ -145,7 +145,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       if (imageIds) {
         const idx = parseInt(e.currentTarget.value, 10);
 
-        if (isNaN(idx)) {
+        if (Number.isNaN(idx)) {
           throw new Error();
         }
 

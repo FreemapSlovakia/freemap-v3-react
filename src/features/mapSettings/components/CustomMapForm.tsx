@@ -122,7 +122,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   useEffect(() => {
     const minZoom = model.minZoom ? parseInt(model.minZoom, 10) : undefined;
 
-    if (minZoom !== undefined && isNaN(minZoom)) {
+    if (minZoom !== undefined && Number.isNaN(minZoom)) {
       return;
     }
 
@@ -130,13 +130,13 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       ? parseInt(model.maxNativeZoom, 10)
       : undefined;
 
-    if (maxNativeZoom !== undefined && isNaN(maxNativeZoom)) {
+    if (maxNativeZoom !== undefined && Number.isNaN(maxNativeZoom)) {
       return;
     }
 
     const zIndex = model.zIndex ? parseInt(model.zIndex, 10) : undefined;
 
-    if (zIndex !== undefined && isNaN(zIndex)) {
+    if (zIndex !== undefined && Number.isNaN(zIndex)) {
       return;
     }
 
@@ -164,7 +164,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           scaleWithDpi: model.scaleWithDpi,
           extraScales: model.extraScales
             .map((a) => parseInt(a, 10))
-            .filter((a) => !isNaN(a)),
+            .filter((a) => !Number.isNaN(a)),
         });
 
         break;

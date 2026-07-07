@@ -46,8 +46,6 @@
       "suspicious": {
         "noArrayIndexKey": "off",
         "noConfusingLabels": "off",
-        "noConstantBinaryExpressions": "error",
-        "noGlobalIsNan": "off",
         "noImplicitAnyLet": "off"
       }
     }

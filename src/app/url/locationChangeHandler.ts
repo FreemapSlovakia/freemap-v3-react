@@ -406,7 +406,7 @@ export function handleLocationChange(store: MyStore): void {
           point
             .split('/')
             .map((coord) => parseFloat(coord))
-            .filter((x) => !isNaN(x)),
+            .filter((x) => !Number.isNaN(x)),
         )
         .filter((pair): pair is [number, number] => pair.length === 2)
         .map(([lat, lon], id) => ({ lat, lon, id }));

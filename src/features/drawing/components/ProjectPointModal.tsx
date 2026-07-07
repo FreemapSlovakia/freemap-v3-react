@@ -42,7 +42,7 @@ export function ProjectPointModal({
   const dm = useDrawingMessages();
 
   function isValid() {
-    return parseFloat(distance) > 0 && !isNaN(parseFloat(azimuth));
+    return parseFloat(distance) > 0 && !Number.isNaN(parseFloat(azimuth));
   }
 
   return (

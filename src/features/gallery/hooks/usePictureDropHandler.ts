@@ -79,7 +79,7 @@ export function usePictureDropHandler(
           azimuth = parseFloat(rawAzimuth);
         }
 
-        if (isNaN(azimuth ?? NaN)) {
+        if (Number.isNaN(azimuth ?? NaN)) {
           azimuth = null;
         }
         const [rawLat, latRef] = adaptGpsCoordinate(

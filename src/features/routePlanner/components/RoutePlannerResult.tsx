@@ -185,13 +185,13 @@ export function RoutePlannerResult(): ReactElement {
                   : formatDistance(distanceDiff, language),
             })}
           </div>
-          {!isNaN(durationSum) && (
+          {!Number.isNaN(durationSum) && (
             <div>
               {rpm?.duration({
                 h: Math.floor(Math.round(durationSum / 60) / 60),
                 m: Math.round(durationSum / 60) % 60,
                 diff:
-                  durationDiff === undefined || isNaN(durationDiff)
+                  durationDiff === undefined || Number.isNaN(durationDiff)
                     ? undefined
                     : {
                         h: Math.floor(Math.round(durationDiff / 60) / 60),
