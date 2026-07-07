@@ -124,53 +124,23 @@ Optional deeper cleanup (not required; `show=` is already the single param):
 
 ## Premium / monetization
 
-Context: payment provider (Polar) acceptable-use rules and content licensing
-constrain what can be gated. Safe premium = our own compute/infra or power-user
-limits; avoid third-party data (license risk — see Strava) and community content
-(CC-BY-SA can't be made exclusive + optics). Keep the free/open core intact.
-
-- [ ] **Remove the "premium photos" perk.** Decision: drop it. Photos are
-      CC-BY-SA 4.0 (can't be exclusive — any premium user may redistribute), and
-      contributors have no intent to flag their own photos premium-only.
-      Action: remove the "premium photos" bullet from the premium modal copy in
-      all 7 locales (`en.messages.tsx` + `sk/cs/de/pl/hu/it.template.tsx`),
-      regenerate locale files.
-- [ ] **Premium feature — Map → image/document export** (Tier 1). Gate high
-      resolution, large format, PDF/vector output, and no-watermark behind
-      premium (or credits). Print-quality rendering is our own compute, clearly
-      worth paying for, and rights-clean.
-- [ ] **Premium feature — Live tracking limits** (Tier 2). Gate number of
-      tracked devices, history retention, and update frequency. Convenience
-      limit, rights-clean.
-- [ ] **Premium feature — My Maps limits** (Tier 2). Free tier gets a limited
-      number of saved maps; premium unlimited + sharing. Convenience limit.
-- [ ] **Audit existing premium third-party layers** (same risk class as Strava):
-      confirm licenses permit gating/charging for NLC forestry WMS
-      (`gis.nlcsk.org`), ŠGÚDŠ geology WMS (`ags.geology.sk`), and ÚGKK ortho/DMR
-      (LLS DMR). Own renders (Outdoor map, parametric hillshade SK/CZ) are fine.
+User-facing premium features are tracked as GitHub issues (label
+`area: premium`): map/document export gating (#929), live-tracking limits (#930),
+My Maps limits (#931), and removing the premium-photos perk (#932). The framing
+constraints still hold and gate what's acceptable there: payment provider (Polar)
+acceptable-use rules and content licensing mean safe premium = our own
+compute/infra or power-user limits; avoid third-party data (license risk — see
+Strava) and community content (CC-BY-SA can't be made exclusive + optics). Keep
+the free/open core intact.
 
 ## Elevation / track chart
 
-- [ ] **Multi-property track chart.** Generalize the elevation chart into a
-      multi-property chart: X axis = time **or** distance; Y axis selectable among
-      elevation, speed, orientation/heading, GSM signal, battery level, distance,
-      time, … Applies to trackViewer and tracking (and, where data exists, the
-      planned route). The colorizer data adapters already expose most of these
-      series, so the chart and the colorizers could share one per-track "series"
-      extraction layer.
-- [ ] **Toggle waypoints in the chart.** An option to show/hide the waypoint
-      markers + labels on the chart.
-- [ ] **Label route midpoints.** The route-planner midpoints now show as
-      unlabeled markers on the elevation chart; let the user assign a name to
-      each midpoint so it renders as a waypoint label.
-- [ ] **Waypoint distance ticks on the x axis.** Option to show each waypoint's
-      distance value along the x axis.
-- [ ] **Waypoint elevation readout.** Option to show a waypoint's elevation —
-      either on the y axis or appended to the waypoint label (design undecided).
-- [ ] **Save chart image.** A button to export the chart as an image (SVG).
-- [ ] **Further chart enrichments.** Axis units, and think about what else is
-      useful (grid/legend, hover crosshair readout, gradient/steepness shading,
-      min/max/avg markers, …).
+Feature requests are tracked as GitHub issues (label `area: elevation-chart`):
+multi-property chart (#933), toggle waypoints (#934), label route midpoints
+(#935), waypoint distance ticks (#936), waypoint elevation readout (#937), export
+chart as SVG (#938), and further enrichments (#939). The remaining item here is an
+engineering task, not a user-facing feature:
+
 - [ ] **Attribute the elevation data source where it's used.** The elevation API
       now serves per-country high-res DTMs (SK/CZ/AT/CH/IT/SI/ES/SE) with a global
       GEDTM30 fallback, but the only place we credit them is the hand-maintained
