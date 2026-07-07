@@ -34,10 +34,13 @@ Hooks 2–4 are also the premium hooks — users drawn by them convert best.
 
 ## Phase 1 — Localization expansion
 
-- [ ] **Slovenian** UI (highest fit-per-effort: Alpine, hi-res DEM exists, 378s
-      engagement, no UI yet). Add lang, run `translate-missing` skill, QA.
-      Announce to Slovenian OSM + outdoor community as the news hook.
-- [ ] **French** UI (aggregates FR + Belgium + CH-Romandy + LU; Alps/Pyrenees).
+- [x] **Slovenian** UI added (highest fit-per-effort: Alpine, hi-res DEM exists, 378s
+      engagement) and announced (2026-07-07) to the Slovenian OSM community and the
+      hribi.net outdoor community (the latter auto-translates across the hike.uno network,
+      so it also reaches IT/DE — see Outreach log).
+- [x] **French** UI added (aggregates FR + Belgium + CH-Romandy + LU; Alps/Pyrenees)
+      and announced to the French community. Follow-up: broaden to French-speaking
+      outdoor communities (Belgium, CH-Romandy, Pyrenees).
 - [ ] (Optional) Ukrainian — Carpathians + diaspora.
 - [ ] Deferred: Spanish (Spain/LatAm only, peripheral — NOT a pan-Europe lever),
       Dutch (speakers use English UI).
@@ -66,10 +69,11 @@ amicodelpopolo.it), plus a LiDAR/archaeology niche (lidarandaerialarchaeology.co
 
 ## Phase 4 — Complete the OSM-community intro-post matrix
 
-The existing Google Doc covers FR/FI/NO/DE/SK OSM community posts. Add the markets
-that actually convert:
+The Outreach log below tracks the OSM-community posts (FR/FI/NO/DE/SK done). Add the
+markets that actually convert:
 
-- [ ] Italy, Poland, Hungary, Austria, Czechia, Slovenia OSM community intro posts.
+- [ ] Italy, Poland, Hungary, Austria, Czechia OSM community intro posts.
+- [x] Slovenia — posted 2026-07-07 (see Outreach log).
 - Note: OSM forums reach mappers, not end-users — treat as supplementary to Phase 2/3.
 
 ## Phase 5 — Measure & iterate
@@ -83,8 +87,24 @@ that actually convert:
 ---
 
 ## Current UI languages
-Slovak, Czech, Hungarian, English, Polish, German, Italian.
-Missing but relevant: **Slovenian, French** (then Ukrainian).
+Slovak, Czech, Hungarian, English, Polish, German, Italian, French, Slovenian.
+Missing but relevant: **Ukrainian**.
 
 ## Existing promotion channels
 groups.google.com/g/osm_sk · en.osm.town/@FreemapSlovakia (Mastodon) · facebook.com/FreemapSlovakia
+
+## Outreach log
+
+Version-controlled record of intro/announcement posts (replaces the old Google Doc).
+Add a row per post; keep `—` where the date is unknown rather than guessing.
+
+| Date | Market | Channel | Lang | Status | Link |
+|------|--------|---------|------|--------|------|
+| 2026-01 | 🇩🇪 Germany | talk-de mailing list | EN | posted | https://lists.openstreetmap.org/pipermail/talk-de/2026-January/118507.html |
+| — | 🇫🇷 France | forum.openstreetmap.fr (template source) | FR | posted | https://forum.openstreetmap.fr/t/freemap-eu-carte-outdoor-et-outils-bases-sur-osm-open-source-par-la-communaute-osm-slovaque/40396 |
+| — | 🇫🇮 Finland | community.openstreetmap.org | EN | posted | https://community.openstreetmap.org/t/freemap-eu-open-source-osm-based-outdoor-map-tools-by-the-slovak-osm-community-introduction/139943 |
+| — | 🇳🇴 Norway | community.openstreetmap.org | EN | posted | https://community.openstreetmap.org/t/freemap-eu-open-source-osm-based-outdoor-map-tools-by-the-slovak-osm-community/139942 |
+| — | 🇸🇰 Slovakia | mtbiker.sk forum | SK | posted | https://www.mtbiker.sk/forum/cyklotrasy-navigacia/freemap-sk-openstreetmap-org--35970 |
+| 2026-07-07 | 🇸🇮 Slovenia | community.openstreetmap.org (Slovenija) | SL | posted | https://community.openstreetmap.org/t/freemap-eu-odprtokodna-zunanja-karta-in-orodja-na-osnovah-osm-ki-jih-razvija-slovaska-skupnost-osm/145198 |
+| 2026-07-07 | 🇸🇮🇮🇹🇩🇪 SI+IT+DE | hribi.net / hike.uno network (auto-translated) | SL | posted | https://www.hribi.net/trenutne_razmere/slo/freemapeu_-_brezplacna_pohodniska_karta_z_lidar_reliefom_zdaj_v_slovenscini/10001/10088 |
+| — | 🇸🇮🇫🇷 SL + FR | Mastodon new-languages announcement (@FreemapSlovakia) | EN | posted | https://en.osm.town/@FreemapSlovakia |
