@@ -23,11 +23,12 @@ import {
 } from 'react-icons/fa';
 import { IoLanguage } from 'react-icons/io5';
 import { toolsSelector } from '@/app/store/selectors.js';
+import { Emoji } from '@/shared/components/Emoji.js';
 import {
   documentMenuItemProps,
   modalMenuItemProps,
 } from '@/shared/hooks/useMenuHandler.js';
-import { LanguageLabel } from './LanguageLabel.js';
+import { languageItems } from './languageItems.js';
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
@@ -45,13 +46,13 @@ export function MainMenu(): ReactElement {
   return (
     <>
       <Dropdown.Item as="button" eventKey="submenu-language">
-        <LanguageLabel>
-          {(language) => (
-            <>
-              <IoLanguage /> {language} <FaChevronRight />
-            </>
-          )}
-        </LanguageLabel>
+        <IoLanguage /> {m?.mainMenu.language}{' '}
+        {languageItems.map(({ code, name, flag }) => (
+          <span key={code} title={name}>
+            <Emoji>{flag}</Emoji>{' '}
+          </span>
+        ))}
+        <FaChevronRight />
       </Dropdown.Item>
 
       {user ? (
