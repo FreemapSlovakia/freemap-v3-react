@@ -180,6 +180,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     osmWiki: 'Dokumentacija OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Stanje storitev',
+    language: 'Jezik',
   },
 
   main: {

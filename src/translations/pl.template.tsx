@@ -52,6 +52,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ok: 'OK',
     preventShowingAgain: 'Nie pokazuj ponownie',
     closeWithoutSaving: 'Zamknąć okno bez zapisywania zmian?',
+    resetToDefaults: 'Przywróć domyślne',
     back: 'Wstecz',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
@@ -174,6 +175,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     osmWiki: 'Dokumentacja OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Pl:Main_Page',
     status: 'Stan usług',
+    language: 'Język',
   },
   main: {
     infoBars: {
@@ -240,6 +242,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     searchResultStyle: 'Styl wyniku wyszukiwania',
+    resetApp: 'Zresetuj aplikację',
+    resetAppConfirm:
+      'Przywrócić wszystkie ustawienia aplikacji do wartości domyślnych i ponownie załadować stronę? Nastąpi wylogowanie.',
     letters: {
       S: 'Lotnicza',
       Z: 'Lotnicza',
@@ -295,6 +300,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'Filtr zdjęć jest aktywny',
     interactiveLayerWarning: 'Warstwa danych jest ukryta',
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
+    outsideViewWarning: 'Bieżący widok znajduje się poza tą mapą',
     customBase: 'Własna mapa',
     customMaps: 'Mapy własne',
     addCustomMap: 'Dodaj własną mapę',

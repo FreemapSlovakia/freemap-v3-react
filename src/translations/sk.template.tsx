@@ -181,6 +181,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     osmWiki: 'Dokumentačný projekt OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko',
     status: 'Stav služieb',
+    language: 'Jazyk',
   },
   main: {
     title: shared.title,
