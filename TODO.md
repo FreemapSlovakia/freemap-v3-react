@@ -32,15 +32,10 @@ these one at a time (counts are from first adoption):
 - [ ] `a11y/noSvgWithoutTitle` (8) — `<title>`/`aria-label` for meaningful, `aria-hidden` for decorative.
 - [ ] `a11y/useHtmlLang` (3) — `lang` on `<html>` in `src/static/*.html`.
 - [ ] `a11y/useButtonType`, `a11y/useValidAnchor`, `a11y/noStaticElementInteractions`,
-      `suspicious/noConfusingLabels`, `performance/noAccumulatingSpread` (1 each).
-
-Re-enabled and fixed: `complexity/noBannedTypes`, `complexity/useOptionalChain`,
-`complexity/noCommaOperator`, `suspicious/noAssignInExpressions`,
-`suspicious/noConfusingVoidType`, `style/noDescendingSpecificity`,
-`correctness/useJsxKeyInIterable`, `a11y/useAltText`.
+      `suspicious/noConfusingLabels` (1 each).
 
 Permanently off by decision (convention / tsconfig clash, **not** backlog):
-`style/noNonNullAssertion`, `suspicious/noArrayIndexKey`, `suspicious/noGlobalIsNan`,
+`style/noNonNullAssertion`, `suspicious/noArrayIndexKey`,
 `complexity/noImportantStyles`, `security/noDangerouslySetInnerHtml`,
 `complexity/useLiteralKeys` (fights `noPropertyAccessFromIndexSignature`).
 
