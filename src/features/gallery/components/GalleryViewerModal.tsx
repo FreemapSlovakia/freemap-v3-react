@@ -271,7 +271,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     [dispatch],
   );
 
-  const index = imageIds ? imageIds.indexOf(activeImageId) : -1;
+  const index =
+    imageIds && activeImageId !== null ? imageIds.indexOf(activeImageId) : -1;
 
   const nextImageId = imageIds?.[index + 1];
 
