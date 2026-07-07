@@ -1,4 +1,7 @@
-import { toolsSelector } from '@app/store/selectors.js';
+import {
+  hasClearableMapFeaturesSelector,
+  toolsSelector,
+} from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { Emoji } from '@shared/components/Emoji.js';
@@ -39,6 +42,10 @@ export function MainMenu(): ReactElement {
 
   const tools = useAppSelector(toolsSelector);
 
+  const hasClearableMapFeatures = useAppSelector(
+    hasClearableMapFeaturesSelector,
+  );
+
   const m = useMessages();
 
   const oeam = useOpenInExternalAppMessages();
@@ -67,7 +74,11 @@ export function MainMenu(): ReactElement {
 
       <Dropdown.Divider />
 
-      <Dropdown.Item as="button" eventKey="clear-map-features">
+      <Dropdown.Item
+        as="button"
+        eventKey="clear-map-features"
+        disabled={!hasClearableMapFeatures}
+      >
         <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
       </Dropdown.Item>
 

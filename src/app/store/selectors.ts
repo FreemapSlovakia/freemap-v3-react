@@ -206,3 +206,18 @@ export const trackGeojsonIsSuitableForElevationChart = (
 
 export const askingCookieConsentSelector = (state: RootState): boolean =>
   'cookieConsent' in state.toasts.toasts;
+
+// Whether `clearMapFeatures` would actually remove anything from the map —
+// drives showing the "Clear map" command. Mirrors the slices that reset on
+// `clearMapFeatures` (see their reducers), limited to the ones that put
+// user-visible features on the map.
+export const hasClearableMapFeaturesSelector = (state: RootState): boolean =>
+  state.main.selection !== null ||
+  state.drawingPoints.points.length > 0 ||
+  state.drawingLines.lines.length > 0 ||
+  state.routePlanner.points.length > 0 ||
+  state.objects.objects.length > 0 ||
+  state.changesets.changesets.length > 0 ||
+  state.search.selectedResult !== null ||
+  state.trackViewer.trackGeojson !== null ||
+  state.tracking.trackedDevices.length > 0;

@@ -107,6 +107,10 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       ...galleryInitialState,
       // `dirtySeq` is a render counter, not a pref; carry it across a clear.
       dirtySeq: state.dirtySeq,
+      // The filter is a lens over the still-present photos layer, not a map
+      // feature — a clear must not silently drop it. It resets on its own when
+      // the layer is turned off (see `mapRefocus`).
+      filter: state.filter,
     }))
     .addCase(gallerySetImageIds, (state, action) => ({
       ...state,
