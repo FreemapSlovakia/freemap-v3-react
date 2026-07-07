@@ -60,6 +60,16 @@ Still emitting at info level (non-blocking, optional cleanup):
 - [ ] **Minor processor-middleware cleanups.** Internal `any` casts;
       `Math.random()` for fallback toast IDs; duplicated transform/handle predicate
       logic. Low priority.
+- [ ] **Reconcile toolbar Delete/Close buttons with their `kbd` shortcut.** A
+      dedicated toolbar button can dispatch a feature-specific action while its
+      `kbd` hint advertises a global key that resolves differently. The trackViewer
+      trash button dispatches `trackViewerDelete()` but shows `kbd="Del"`, and the
+      `Del` key (`keyboardHandler` → `deleteFeature()` → `deleteProcessor`) is
+      selection-aware — so with a track loaded *and* a drawing selected, the button
+      deletes the track while `Del` deletes the drawing. The same mismatch applies
+      to Close buttons (`kbd="Esc"`) vs. the global `Esc` handling. A deeper fix
+      would teach `deleteProcessor` / the Esc handler to prefer the active tool's
+      own feature over an unrelated selection, so button and key always agree.
 - [ ] **Toast auto-dismiss policy — do NOT centralize on `style`.** The
       convention is "errors (`danger`) persist + dedupe by `id`; transient
       notices auto-hide via `timeout`", enforced per call site. It's tempting to

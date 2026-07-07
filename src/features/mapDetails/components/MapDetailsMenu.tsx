@@ -1,6 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
-import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
@@ -17,11 +16,6 @@ import {
 import { useMapDetailsMessages } from '../translations/useMapDetailsMessages.js';
 
 export function MapDetailsMenu(): ReactElement | null {
-  // TODO what is this?
-  const canDelete = useAppSelector((state) =>
-    Boolean(state.trackViewer.trackGeojson),
-  );
-
   const [sourcesOpen, setSourcesOpen] = useState(false);
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
@@ -120,8 +114,6 @@ export function MapDetailsMenu(): ReactElement | null {
           ))}
         </Dropdown.Menu>
       </Dropdown>
-
-      {canDelete ? <DeleteButton /> : null}
     </ToolMenu>
   );
 }
