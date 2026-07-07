@@ -29,8 +29,6 @@ and the rest were switched `"off"` to keep the tree green. Re-enable and fix
 these one at a time (counts are from first adoption):
 
 - [ ] `suspicious/noImplicitAnyLet` (~23) — annotate bare `let x;` with a real type.
-- [ ] `correctness/useJsxKeyInIterable` (20) — add `key` props (stable id preferred).
-- [ ] `a11y/useAltText` (9) — `alt` on `<img>` (empty for decorative).
 - [ ] `a11y/noSvgWithoutTitle` (8) — `<title>`/`aria-label` for meaningful, `aria-hidden` for decorative.
 - [ ] `a11y/useHtmlLang` (3) — `lang` on `<html>` in `src/static/*.html`.
 - [ ] `a11y/useButtonType`, `a11y/useValidAnchor`, `a11y/noStaticElementInteractions`,
@@ -38,7 +36,8 @@ these one at a time (counts are from first adoption):
 
 Re-enabled and fixed: `complexity/noBannedTypes`, `complexity/useOptionalChain`,
 `complexity/noCommaOperator`, `suspicious/noAssignInExpressions`,
-`suspicious/noConfusingVoidType`, `style/noDescendingSpecificity`.
+`suspicious/noConfusingVoidType`, `style/noDescendingSpecificity`,
+`correctness/useJsxKeyInIterable`, `a11y/useAltText`.
 
 Permanently off by decision (convention / tsconfig clash, **not** backlog):
 `style/noNonNullAssertion`, `suspicious/noArrayIndexKey`, `suspicious/noGlobalIsNan`,

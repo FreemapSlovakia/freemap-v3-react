@@ -153,7 +153,7 @@ export function ObjectDetails({
       <p className="lead">
         {imgs.map((img) => (
           <Fragment key={img}>
-            <img src={img} style={{ width: '1em', height: '1em' }} />
+            <img src={img} style={{ width: '1em', height: '1em' }} alt="" />
             &ensp;
           </Fragment>
         ))}

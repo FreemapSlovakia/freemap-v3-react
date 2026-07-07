@@ -78,6 +78,7 @@ export default function Ad(): ReactElement | null {
               className="border rounded w-100"
               src={tShirt}
               style={{ maxWidth: '360px' }}
+              alt="Freemap T-Shirt"
             />
           </a>
         ) : null}

@@ -248,7 +248,7 @@ export default function GalleryMenu() {
                   <Dropdown.Menu popperConfig={fixedPopperConfig}>
                     {(Object.keys(gm?.f ?? {}) as GalleryListOrder[]).map(
                       (key) => (
-                        <Dropdown.Item as="button" eventKey={key}>
+                        <Dropdown.Item key={key} as="button" eventKey={key}>
                           {gm?.f[key]}{' '}
                           {key === '-createdAt' && (
                             <>

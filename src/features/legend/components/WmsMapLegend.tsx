@@ -55,7 +55,11 @@ export function WmsMapLegend({ def }: Props) {
         (layer.minScale == null || layer.minScale <= scale) ? (
           <>
             <div>
-              <img className="d-block mx-auto" src={layer.legendUrl} />
+              <img
+                className="d-block mx-auto"
+                src={layer.legendUrl}
+                alt={layer.title ?? layer.name}
+              />
             </div>
 
             <div>{layer.title}</div>

@@ -109,6 +109,7 @@ export function Toasts(): ReactElement {
           ({ id, actions, style, noClose, timeout, timeoutSince, ...rest }) => {
             const msg = rest.messageLoader ? (
               <LazyToastMessage
+                key={id}
                 loader={rest.messageLoader}
                 messageKey={rest.messageKey}
                 messageParams={rest.messageParams}

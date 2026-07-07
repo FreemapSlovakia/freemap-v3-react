@@ -422,7 +422,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 <div className="d-flex flex-wrap gap-2">
                   {exportableDefinitions
                     .filter(([, , garmin]) => garmin)
-                    .map(([type, icon]) => {
+                    .map(([type, Icon]) => {
                       const value = garminExportables?.[type];
 
                       const error =
@@ -449,7 +449,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                           disabled={!value}
                           onChange={() => handleCheckboxChange(type)}
                         >
-                          {icon} {em?.what[type]}
+                          <Icon /> {em?.what[type]}
                         </ToggleButton>
                       );
                     })}
@@ -462,9 +462,9 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                       exportables.includes(`|${type}|`) &&
                       typeof garminExportables?.[type] === 'string',
                   )
-                  .map(([type, icon]) => (
+                  .map(([type, Icon]) => (
                     <Form.Text key={type} className="d-block text-danger mt-2">
-                      {icon} {em?.what[type]}{' '}
+                      <Icon /> {em?.what[type]}{' '}
                       {garminExportables?.[type] as string}
                     </Form.Text>
                   ))}

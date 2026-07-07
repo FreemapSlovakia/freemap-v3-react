@@ -125,6 +125,7 @@ export function WikiLayer(): ReactElement {
                   src={effPreview.thumbnail.source}
                   width={effPreview.thumbnail.width}
                   height={effPreview.thumbnail.height}
+                  alt={effPreview.title}
                 />
               )}
               <div dangerouslySetInnerHTML={{ __html: effPreview.extract }} />

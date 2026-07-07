@@ -1,6 +1,7 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
+import type { IconType } from 'react-icons';
 import {
   FaBullseye,
   FaCamera,
@@ -20,18 +21,18 @@ import { useMapFeaturesExportMessages } from '../translations/useMapFeaturesExpo
 // whether Garmin Connect can receive them.
 export const exportableDefinitions: readonly [
   type: Exportable,
-  icon: ReactNode,
+  Icon: IconType,
   garmin: boolean,
 ][] = [
-  ['plannedRoute', <FaRoute />, true],
-  ['objects', <TbMapPins />, false],
-  ['pictures', <FaCamera />, false],
-  ['drawingLines', <MdTimeline />, true],
-  ['drawingAreas', <FaDrawPolygon />, false],
-  ['drawingPoints', <FaMapMarkerAlt />, false],
-  ['tracking', <FaBullseye />, true],
-  ['import', <FaFileImport />, true],
-  ['search', <FaSearch />, true],
+  ['plannedRoute', FaRoute, true],
+  ['objects', TbMapPins, false],
+  ['pictures', FaCamera, false],
+  ['drawingLines', MdTimeline, true],
+  ['drawingAreas', FaDrawPolygon, false],
+  ['drawingPoints', FaMapMarkerAlt, false],
+  ['tracking', FaBullseye, true],
+  ['import', FaFileImport, true],
+  ['search', FaSearch, true],
 ];
 
 // Which feature sources currently have data to export, encoded as the
@@ -117,7 +118,7 @@ export function ExportablesSelector({
 
   return (
     <div className="d-flex flex-wrap gap-2">
-      {exportableDefinitions.map(([type, icon]) =>
+      {exportableDefinitions.map(([type, Icon]) =>
         type === 'plannedRoute' ? (
           // "found route" and its "include stops" modifier stay a connected
           // segmented pair among the detached pills
@@ -131,7 +132,7 @@ export function ExportablesSelector({
               disabled={!available.includes(`|${type}|`)}
               onChange={() => toggle(type)}
             >
-              {icon} {em?.what[type]}
+              <Icon /> {em?.what[type]}
             </ToggleButton>
 
             <ToggleButton
@@ -157,7 +158,7 @@ export function ExportablesSelector({
             disabled={!available.includes(`|${type}|`)}
             onChange={() => toggle(type)}
           >
-            {icon} {em?.what[type]}
+            <Icon /> {em?.what[type]}
           </ToggleButton>
         ),
       )}

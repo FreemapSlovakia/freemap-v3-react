@@ -145,6 +145,7 @@ export default function OutdoorMapLegend(): ReactElement {
               <Fragment key={id}>
                 <div>
                   <img
+                    alt={name_w_tags.map(({ name }) => name).join(', ')}
                     src={`${fmMapserverUrl}/legend/${id}`}
                     srcSet={[1, 2, 3]
                       .map(
@@ -189,7 +190,7 @@ export default function OutdoorMapLegend(): ReactElement {
                           >
                             <tbody>
                               {Object.entries(tags).map(([key, value]) => (
-                                <tr>
+                                <tr key={key}>
                                   <th>{key}</th>
                                   <td>{value}</td>
                                 </tr>

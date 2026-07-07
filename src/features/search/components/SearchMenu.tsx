@@ -329,7 +329,7 @@ function Result({ value }: { value: SearchResult }) {
     <div className="d-flex flex-column mx-n2">
       <div className="d-flex f-gap-2 align-items-center">
         {img.length > 0 ? (
-          <img src={img[0]} style={{ width: '1em', height: '1em' }} />
+          <img src={img[0]} style={{ width: '1em', height: '1em' }} alt="" />
         ) : (
           <span
             style={{
