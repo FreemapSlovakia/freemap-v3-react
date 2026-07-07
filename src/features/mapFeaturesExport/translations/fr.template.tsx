@@ -27,6 +27,7 @@ const fr: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     import: 'fichier importé',
     search: 'résultat',
   },
+  onlySelected: "Seulement l'élément sélectionné",
   disabledAlert:
     'Seules les options dont les objets sont présents sur la carte sont actives.',
   licenseAlert:

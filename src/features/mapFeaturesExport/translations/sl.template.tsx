@@ -26,6 +26,7 @@ const sl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     import: 'uvožena datoteka',
     search: 'najdba',
   },
+  onlySelected: 'Samo izbrani element',
   disabledAlert:
     'Aktivne so samo možnosti, katerih objekti se nahajajo na zemljevidu.',
   licenseAlert:

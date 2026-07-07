@@ -50,6 +50,7 @@ const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     all: 'Nadpisz wszystkie',
   },
   exportError: ({ err }) => addError(getMessages()!, 'Błąd eksportu', err),
+  onlySelected: 'Tylko wybrany element',
   disabledAlert:
     'Tylko opcje, których obiekty są widoczne na mapie, są aktywne.',
   licenseAlert:

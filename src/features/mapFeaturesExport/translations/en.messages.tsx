@@ -25,6 +25,7 @@ const en: MapFeaturesExportMessages = {
     import: 'imported file',
     search: 'lookup',
   },
+  onlySelected: 'Only the selected item',
   disabledAlert:
     'Only items that have something on the map to export are enabled.',
   licenseAlert:

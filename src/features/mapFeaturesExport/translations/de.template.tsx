@@ -54,6 +54,7 @@ const de: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   },
   exportError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Exportieren', err),
+  onlySelected: 'Nur das ausgewählte Element',
   disabledAlert:
     'Nur Optionen mit exportierbaren Elementen auf der Karte sind aktiviert.',
   licenseAlert:

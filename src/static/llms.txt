@@ -363,6 +363,8 @@ Opens a modal to export the user's own map data as a GPX, GeoJSON or KML file. T
 - imported file
 - highlighted map feature
 
+When a single map feature is selected (a drawing point/line/polygon, an object, a track, the planned route, or a lookup result), an **Only the selected item** toggle appears (on by default) that narrows the export to just that one feature instead of its whole source.
+
 For the file/Google Drive/Dropbox targets an **Elevation** control chooses whether to fill elevation from the elevation API into exported points, lines and the planned route: *Keep recorded* (leave as-is), *Fill missing* (only coordinates lacking elevation), or *Override all* (replace every elevation). Polygons are always skipped.
 
 The target can be a downloaded file, Google Drive, Dropbox, or Garmin Connect. Exporting a planned route to Garmin Connect as a course (experimental) requires a connected Garmin account and lets the user choose a course name and activity type (running, hiking, mountain biking, trail running, road/gravel cycling, other).

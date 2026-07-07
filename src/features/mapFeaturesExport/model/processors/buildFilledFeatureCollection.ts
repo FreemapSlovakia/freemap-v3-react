@@ -28,6 +28,7 @@ export async function buildFilledFeatureCollection(
 
   const fc = await buildExportFeatureCollection({
     getState,
+    options: { ...options, only: action.payload.only },
     include: {
       pictures: set.has('pictures'),
       drawingLines: set.has('drawingLines'),
@@ -41,7 +42,6 @@ export async function buildFilledFeatureCollection(
       search: set.has('search'),
     },
     pointMode,
-    options,
   });
 
   const { elevation } = action.payload;

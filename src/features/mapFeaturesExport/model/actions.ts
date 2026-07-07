@@ -1,3 +1,4 @@
+import type { Selection } from '@app/store/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import z from 'zod';
 
@@ -56,4 +57,11 @@ export const exportMapFeatures = createAction<{
    * (elevation has no meaning for an area outline).
    */
   elevation?: ExportElevation;
+  /**
+   * Restrict the export to the single currently-selected map feature. When set,
+   * every source contributes only the item this selection targets (a drawing
+   * point/line/polygon, an object, a track, the planned route, or the lookup
+   * result); sources the selection doesn't target contribute nothing.
+   */
+  only?: Selection;
 }>('EXPORT_MAP_FEATURES');

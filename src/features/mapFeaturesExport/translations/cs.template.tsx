@@ -26,6 +26,7 @@ const cs: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     import: 'importovaný soubor',
     search: 'nález',
   },
+  onlySelected: 'Pouze vybraný prvek',
   disabledAlert:
     'Aktivní jsou pouze volby jejichž objekty se nacházejí na mapě.',
   licenseAlert:

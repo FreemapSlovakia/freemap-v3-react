@@ -19,6 +19,7 @@ const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     import: 'file importato',
     search: 'risultato',
   },
+  onlySelected: "Solo l'elemento selezionato",
   disabledAlert:
     'Sono abilitate solo le opzioni che hanno qualcosa da esportare nella mappa.',
   licenseAlert:

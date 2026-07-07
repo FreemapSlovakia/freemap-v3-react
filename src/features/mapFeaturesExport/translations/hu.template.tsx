@@ -19,6 +19,7 @@ const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     import: 'importált fájl',
     search: 'találat',
   },
+  onlySelected: 'Csak a kijelölt elem',
   disabledAlert:
     'Csak azok az elemek aktívak, amelyekhez a térképen exportálható tartalom tartozik.',
   licenseAlert:

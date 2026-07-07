@@ -1,4 +1,5 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { featureIdsEqual } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import type { IconType } from 'react-icons';
@@ -79,6 +80,69 @@ export function useAvailableExportables(): string {
     }
 
     return `|${exportables.map((e) => `${e}|`).join('')}`;
+  });
+}
+
+// Maps the currently-selected map feature to the single exportable that can
+// export just it, or null when nothing is selected (or the selection has no
+// data to export). Drives the modal's "only selected item" toggle.
+export function useSelectedExportable(): Exportable | null {
+  return useAppSelector((state): Exportable | null => {
+    const selection = state.main.selection;
+
+    if (!selection) {
+      return null;
+    }
+
+    switch (selection.type) {
+      case 'draw-points':
+        return state.drawingPoints.points[selection.id]
+          ? 'drawingPoints'
+          : null;
+
+      case 'draw-line-poly':
+      case 'line-point': {
+        const index =
+          selection.type === 'draw-line-poly'
+            ? selection.id
+            : selection.lineIndex;
+
+        const line = state.drawingLines.lines[index];
+
+        return line
+          ? line.type === 'polygon'
+            ? 'drawingAreas'
+            : 'drawingLines'
+          : null;
+      }
+
+      case 'objects':
+        return state.objects.objects.some((o) =>
+          featureIdsEqual(o.id, selection.id),
+        )
+          ? 'objects'
+          : null;
+
+      case 'tracking':
+        // Only offer the toggle when the selected token actually resolves to a
+        // track; a device picked in the settings form (a numeric device id, not
+        // a track token) wouldn't narrow to anything.
+        return state.tracking.tracks.some(
+          (t) => String(t.token) === String(selection.id),
+        )
+          ? 'tracking'
+          : null;
+
+      case 'route-point':
+      case 'route-leg':
+        return state.routePlanner.alternatives.length ? 'plannedRoute' : null;
+
+      case 'search':
+        return state.search.selectedResult ? 'search' : null;
+
+      default:
+        return null;
+    }
   });
 }
 
