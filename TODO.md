@@ -150,6 +150,9 @@ limits; avoid third-party data (license risk — see Strava) and community conte
       extraction layer.
 - [ ] **Toggle waypoints in the chart.** An option to show/hide the waypoint
       markers + labels on the chart.
+- [ ] **Label route midpoints.** The route-planner midpoints now show as
+      unlabeled markers on the elevation chart; let the user assign a name to
+      each midpoint so it renders as a waypoint label.
 - [ ] **Waypoint distance ticks on the x axis.** Option to show each waypoint's
       distance value along the x axis.
 - [ ] **Waypoint elevation readout.** Option to show a waypoint's elevation —
