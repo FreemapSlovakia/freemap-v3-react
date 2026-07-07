@@ -292,7 +292,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                     onClick={preventDefault}
                     href={
                       result.id.type === 'osm'
-                        ? '#osm-' + result.id.elementType + '=' + result.id.id
+                        ? `#osm-${result.id.elementType}=${result.id.id}`
                         : undefined
                     }
                     active={

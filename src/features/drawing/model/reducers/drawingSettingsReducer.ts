@@ -31,7 +31,7 @@ export type DrawingStyle = z.infer<typeof DrawingStyleSchema>;
 export function makeDrawingStyle(color: string, width: number): DrawingStyle {
   return {
     color,
-    fillColor: color + '33',
+    fillColor: `${color}33`,
     width,
     markerType: 'pin',
     dashArray: [],

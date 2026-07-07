@@ -104,7 +104,7 @@ export function SearchResults(): ReactElement | null {
       if (displayName || genericName) {
         layer.bindTooltip(
           escapeHtml(genericName) +
-            (displayName ? ' <i>' + escapeHtml(displayName) + '</i>' : ''),
+            (displayName ? ` <i>${escapeHtml(displayName)}</i>` : ''),
           {
             direction: layer instanceof Polygon ? 'center' : 'top',
             offset: isPoi ? [0, -36] : [0, 0],

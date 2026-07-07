@@ -90,12 +90,12 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
 
     (async () => {
       const res = await fetch(
-        process.env['API_URL'] + '/gallery/stats?period=' + period,
+        `${process.env['API_URL']}/gallery/stats?period=${period}`,
         {
           signal: ac.signal,
           headers: {
             accept: 'application/json',
-            ...(authToken ? { authorization: 'Bearer ' + authToken } : {}),
+            ...(authToken ? { authorization: `Bearer ${authToken}` } : {}),
           },
         },
       );

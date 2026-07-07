@@ -19,7 +19,7 @@ const handle: ProcessorHandler<typeof authWithOAuthCode> = async ({
       code,
       language: getState().l10n.chosenLanguage,
       connect,
-      redirectUri: location.origin + '/authCallback.html',
+      redirectUri: `${location.origin}/authCallback.html`,
     },
     expectedStatus: 200,
   });

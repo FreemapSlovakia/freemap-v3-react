@@ -50,7 +50,7 @@ export function resolveGenericNameWithMeta(
             ...res.map((item) => ({
               text: item.text.replace('{}', v),
               tags: { ...item.tags, [k]: v },
-              case: item.case + 'c',
+              case: `${item.case}c`,
             })),
           );
 
@@ -85,7 +85,7 @@ export function resolveGenericNameWithMeta(
             ...res.map((item) => ({
               text: item.text.replace('{}', v),
               tags: { ...item.tags, [k]: v },
-              case: item.case + 'f',
+              case: `${item.case}f`,
             })),
           );
         }
@@ -177,7 +177,7 @@ export function getGenericNameFromOsmElementSync(
         (tags['osmc:symbol'] ?? '').replace(/:.*/, '') || (tags['colour'] ?? '')
       ] ?? '';
 
-    gn = color + ' ' + gn;
+    gn = `${color} ${gn}`;
   }
 
   return gn ?? '';
@@ -187,12 +187,12 @@ export function getNameFromOsmElement(
   tags: Record<string, string>,
   lang: string,
 ): string {
-  const langName = tags['name:' + lang];
+  const langName = tags[`name:${lang}`];
 
   const name = tags['name'];
 
   const effName =
-    name && langName && langName !== name ? langName + ` (${name})` : name;
+    name && langName && langName !== name ? `${langName} (${name})` : name;
 
   // TODO alt_name, loc_name, ...
 
@@ -201,7 +201,7 @@ export function getNameFromOsmElement(
       ' ' +
       (tags['addr:housename'] ??
         (tags['addr:streetnumber'] && tags['addr:conscriptionnumber']
-          ? tags['addr:conscriptionnumber'] + '/' + tags['addr:streetnumber']
+          ? `${tags['addr:conscriptionnumber']}/${tags['addr:streetnumber']}`
           : undefined) ??
         tags['addr:housenumber'] ??
         tags['addr:streetnumber'] ??

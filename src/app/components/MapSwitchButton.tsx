@@ -403,7 +403,7 @@ export function MapSwitchButton(): ReactElement {
           (!def.custom && Boolean(def.defaultInToolbar));
 
         const layerName = def.custom
-          ? def.name || (m?.mapLayers.customBase ?? '') + ' ' + type
+          ? def.name || `${m?.mapLayers.customBase ?? ''} ${type}`
           : (m?.mapLayers.letters[type] ?? '');
 
         if (normalizedFilter) {
@@ -433,7 +433,7 @@ export function MapSwitchButton(): ReactElement {
 
             <Dropdown.Item
               href={`?layers=${type}`}
-              eventKey={'layer-' + type}
+              eventKey={`layer-${type}`}
               active={active}
               // className={clsx(showInMenu || 'text-secondary')}
             >
@@ -451,7 +451,7 @@ export function MapSwitchButton(): ReactElement {
 
               <span>
                 {def.custom
-                  ? def.name || m?.mapLayers.customBase + ' ' + type
+                  ? def.name || `${m?.mapLayers.customBase} ${type}`
                   : (m?.mapLayers.letters[type] ?? '…')}
               </span>
 
@@ -560,7 +560,7 @@ export function MapSwitchButton(): ReactElement {
                 label={
                   <>
                     {def.custom
-                      ? def.name || m?.mapLayers.customBase + ' ' + type
+                      ? def.name || `${m?.mapLayers.customBase} ${type}`
                       : (m?.mapLayers.letters[type] ?? '…')}
 
                     {commonBadges(def, 'tooltip')}

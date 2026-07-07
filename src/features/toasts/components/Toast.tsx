@@ -116,7 +116,7 @@ export function Toast({
           <div
             className="bg-primary"
             style={{
-              width: ((timeout - elapsed) / timeout) * 100 + '%',
+              width: `${((timeout - elapsed) / timeout) * 100}%`,
               height: '2px',
             }}
           />

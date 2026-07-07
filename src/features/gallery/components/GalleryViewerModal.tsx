@@ -271,9 +271,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     [dispatch],
   );
 
-  const index = imageIds
-    ? imageIds.findIndex((id) => id === activeImageId)
-    : -1;
+  const index = imageIds ? imageIds.indexOf(activeImageId) : -1;
 
   const nextImageId = imageIds?.[index + 1];
 
@@ -303,7 +301,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
     return (
       `${process.env['API_URL']}/gallery/pictures/${id}/image?width=${width}` +
-      (user ? '&authToken=' + encodeURIComponent(user.authToken) : '')
+      (user ? `&authToken=${encodeURIComponent(user.authToken)}` : '')
     );
   };
 
@@ -340,7 +338,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   let url = `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`;
 
   if (activeImageId === image?.id && image.hmac) {
-    url += '?hmac=' + encodeURIComponent(image.hmac);
+    url += `?hmac=${encodeURIComponent(image.hmac)}`;
   }
 
   return (
@@ -389,21 +387,21 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 {activeImageId === null ? null : pano ? (
                   <div
                     ref={panoRef}
-                    key={'pano-' + activeImageId}
+                    key={`pano-${activeImageId}`}
                     id={String(activeImageId)}
                     style={
                       isFullscreen
                         ? { width: '100dvw', height: '100dvh' }
                         : {
-                            height:
-                              Math.max(window.innerHeight - 400, 300) + 'px',
-                            width:
-                              (window.matchMedia('(min-width: 1200px)').matches
+                            height: `${Math.max(window.innerHeight - 400, 300)}px`,
+                            width: `${
+                              window.matchMedia('(min-width: 1200px)').matches
                                 ? 1110
                                 : window.matchMedia('(min-width: 992px)')
                                       .matches
                                   ? 770
-                                  : 470) + 'px',
+                                  : 470
+                            }px`,
                           }
                     }
                   />

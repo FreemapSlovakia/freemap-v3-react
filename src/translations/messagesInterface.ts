@@ -139,6 +139,7 @@ export type Messages = {
     osmWiki: string;
     wikiLink: string;
     status: string;
+    language: string;
   };
   main: {
     title: string;
@@ -268,7 +269,7 @@ export function addError(
     ': ' +
     (err instanceof HttpError
       ? (messages.errorStatus[err.status] ?? err.status) +
-        (err.body ? ': ' + err.body : '')
+        (err.body ? `: ${err.body}` : '')
       : !(err instanceof Error)
         ? String(err)
         : // `NetworkError` is our httpRequest transport failure; a raw `fetch()`

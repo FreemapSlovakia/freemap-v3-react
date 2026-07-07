@@ -44,7 +44,7 @@ export function createWebsocketMiddleware(): Middleware<object, RootState> {
           ? `&authToken=${encodeURIComponent(user.authToken)}`
           : '';
 
-        ws = new WebSocket(url + '/ws?pingInterval=30000' + authTokenQ);
+        ws = new WebSocket(`${url}/ws?pingInterval=30000${authTokenQ}`);
 
         dispatch(
           wsStateChanged({ timestamp: Date.now(), state: ws.readyState }),

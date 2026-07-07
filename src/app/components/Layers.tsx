@@ -194,7 +194,7 @@ export function Layers(): ReactElement | null {
       return (
         <AsyncComponent
           factory={maplibreLayerFactory}
-          key={type + '-' + effectiveDpr}
+          key={`${type}-${effectiveDpr}`}
           style={layerDef.url}
           maxZoom={maxZoom}
           minZoom={minZoom}
@@ -264,7 +264,7 @@ export function Layers(): ReactElement | null {
           onPremiumClick={
             effPremiumFromZoom === undefined ? undefined : handlePremiumClick
           }
-          className={'fm-' + layerDef.layer}
+          className={`fm-${layerDef.layer}`}
         />
       );
     }

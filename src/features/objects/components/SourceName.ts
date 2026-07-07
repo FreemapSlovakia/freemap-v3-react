@@ -36,6 +36,6 @@ export function SourceName({ result }: Props) {
 
   return (
     (m?.search.sources[isWms ? 'wms:' : result.source] ?? '') +
-    (wmsMapName ? ' ' + wmsMapName : '')
+    (wmsMapName ? ` ${wmsMapName}` : '')
   );
 }

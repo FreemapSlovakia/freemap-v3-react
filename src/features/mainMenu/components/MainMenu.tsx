@@ -99,7 +99,7 @@ export function MainMenu(): ReactElement {
               <Dropdown.Item
                 href={`?tools=${newTool}`}
                 key={newTool}
-                eventKey={'tool-' + newTool}
+                eventKey={`tool-${newTool}`}
                 active={tools.includes(newTool)}
               >
                 {icon} {m?.tools[msgKey]}{' '}

@@ -372,9 +372,7 @@ function lineFeature(usePts, { ele = true, props = {} } = {}) {
 }
 
 function fc(features) {
-  return (
-    JSON.stringify({ type: 'FeatureCollection', features }, null, 2) + '\n'
-  );
+  return `${JSON.stringify({ type: 'FeatureCollection', features }, null, 2)}\n`;
 }
 
 // Full LineString with elevation + all coordinateProperties.

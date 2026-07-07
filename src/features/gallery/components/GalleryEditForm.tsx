@@ -245,7 +245,7 @@ export function GalleryEditForm({
       </Form.Group>
 
       <Form.Check
-        id={'chk-premium-' + (id ?? 'x')}
+        id={`chk-premium-${id ?? 'x'}`}
         className="mb-3"
         type="checkbox"
         onChange={handlePremiumChange}

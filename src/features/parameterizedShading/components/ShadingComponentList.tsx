@@ -20,13 +20,13 @@ export function ShadingComponentList({
 
   return (
     <ListGroup
-      className={'my-2 ' + classes.list}
+      className={`my-2 ${classes.list}`}
       activeKey={selectedId ?? ''}
       onSelect={(e) => onSelect(e ? Number(e) : undefined)}
     >
       <ListGroup.Item action eventKey="">
         <span
-          className={'rounded border ' + classes.shadingColor}
+          className={`rounded border ${classes.shadingColor}`}
           style={{ backgroundColor: Color(shading.backgroundColor).hexa() }}
         />
         <span>{sm?.background}</span>
@@ -36,14 +36,14 @@ export function ShadingComponentList({
         <ListGroup.Item action key={component.id} eventKey={component.id}>
           {/^hillshade-|^slope-/.test(component.type) ? (
             <span
-              className={'rounded border ' + classes.shadingColor}
+              className={`rounded border ${classes.shadingColor}`}
               style={{
                 backgroundColor: Color(component.colorStops[0].color).hexa(),
               }}
             />
           ) : (
             <span
-              className={'rounded border ' + classes.shadingColor}
+              className={`rounded border ${classes.shadingColor}`}
               style={{ visibility: 'hidden' }}
             />
           )}
@@ -51,10 +51,10 @@ export function ShadingComponentList({
           <small>
             {(component.type === 'hillshade-classic' ||
               component.type === 'hillshade-igor') &&
-              '∠ ' + (component.azimuth * (180 / Math.PI)).toFixed(1)}
+              `∠ ${(component.azimuth * (180 / Math.PI)).toFixed(1)}`}
             {(component.type === 'hillshade-classic' ||
               component.type === 'slope-classic') &&
-              ' ↥ ' + (component.elevation * (180 / Math.PI)).toFixed(1)}
+              ` ↥ ${(component.elevation * (180 / Math.PI)).toFixed(1)}`}
           </small>
         </ListGroup.Item>
       ))}

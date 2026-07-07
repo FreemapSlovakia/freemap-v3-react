@@ -355,7 +355,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           {(['tile', 'maplibre', 'wms'] as const).map((technology) => (
             <ToggleButton
               key={technology}
-              id={'tech-' + technology}
+              id={`tech-${technology}`}
               type="radio"
               name="technology"
               variant="outline-primary"
@@ -487,7 +487,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           {(['base', 'overlay'] as const).map((layer) => (
             <ToggleButton
               key={layer}
-              id={'layer-' + layer}
+              id={`layer-${layer}`}
               type="radio"
               name="layer"
               variant="outline-primary"

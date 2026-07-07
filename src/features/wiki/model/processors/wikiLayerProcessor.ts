@@ -176,15 +176,14 @@ export const wikiLayerProcessor: Processor = {
         continue;
       }
 
-      const title = (sitelinks[language + 'wiki'] || sitelinks['enwiki'])
+      const title = (sitelinks[`${language}wiki`] || sitelinks['enwiki'])
         ?.title;
 
       if (title == null) {
         continue;
       }
 
-      const wikipedia =
-        (language + 'wiki' in sitelinks ? language : 'en') + ':' + title;
+      const wikipedia = `${`${language}wiki` in sitelinks ? language : 'en'}:${title}`;
 
       if (!wikipedia2item.has(wikipedia)) {
         item[0] = wikipedia;

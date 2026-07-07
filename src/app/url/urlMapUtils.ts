@@ -2,7 +2,7 @@ import type { MapViewState } from '@features/map/model/actions.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 
 const LAYERS_RE = new RegExp(
-  '^(' + Object.keys(integratedLayerDefMap).join('|') + ')|[.:]\\d',
+  `^(${Object.keys(integratedLayerDefMap).join('|')})|[.:]\\d`,
 );
 
 export function getMapStateFromUrl(): Partial<MapViewState> {

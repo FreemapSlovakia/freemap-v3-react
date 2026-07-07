@@ -128,7 +128,7 @@ export function ShadingComponentControl({
 
       e.preventDefault();
 
-      const id = Number(e.target.dataset['sc_' + gid.current]);
+      const id = Number(e.target.dataset[`sc_${gid.current}`]);
 
       const mouse = getCoordinates(e);
 

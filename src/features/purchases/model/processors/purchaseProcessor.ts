@@ -65,13 +65,13 @@ export const purchaseProcessor: Processor<typeof purchase> = {
           ? {
               type: 'premium' as const,
               recurring: Boolean(action.payload.recurring),
-              successUrl: location.origin + '/',
+              successUrl: `${location.origin}/`,
               lang,
             }
           : {
               type: 'credits' as const,
               credits: action.payload.amount,
-              successUrl: location.origin + '/',
+              successUrl: `${location.origin}/`,
               lang,
             };
 
@@ -199,7 +199,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       expectedStatus: 200,
       cancelActions: [],
       data: {
-        callbackUrl: location.origin + '/purchaseCallback.html',
+        callbackUrl: `${location.origin}/purchaseCallback.html`,
         ...rovasPayload,
       },
     });

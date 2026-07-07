@@ -381,7 +381,7 @@ const GraphopperModeMenu = forwardRef<HTMLDivElement, Props>(
           )
           .map((item) => {
             return (
-              <Fragment key={'m-' + item.props.eventKey}>
+              <Fragment key={`m-${item.props.eventKey}`}>
                 {item.props.eventKey === 'roundtrip' ? (
                   <TripSettings />
                 ) : item.props.eventKey === 'isochrone' ? (

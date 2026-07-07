@@ -23,7 +23,7 @@ export function useHtmlMeta(): void {
 
     const titleElement = head.querySelector('title');
 
-    const fullTitle = (subTitle ? subTitle + ' | ' : '') + title;
+    const fullTitle = (subTitle ? `${subTitle} | ` : '') + title;
 
     if (titleElement) {
       titleElement.innerText = fullTitle;

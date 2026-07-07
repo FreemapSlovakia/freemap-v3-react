@@ -137,7 +137,7 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
         const { imageIds, activeImageId } = state;
 
         if (imageIds) {
-          const index = imageIds.findIndex((id) => id === activeImageId);
+          const index = imageIds.indexOf(activeImageId);
 
           if (index + 1 < imageIds.length) {
             set(imageIds[index + 1]);
@@ -147,7 +147,7 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
         const { imageIds, activeImageId } = state;
 
         if (imageIds) {
-          const index = imageIds.findIndex((id) => id === activeImageId);
+          const index = imageIds.indexOf(activeImageId);
 
           if (index > 0) {
             set(imageIds[index - 1]);

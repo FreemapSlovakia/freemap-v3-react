@@ -77,7 +77,7 @@ export function useAvailableExportables(): string {
       exportables.push('import');
     }
 
-    return '|' + exportables.map((e) => e + '|').join('');
+    return `|${exportables.map((e) => `${e}|`).join('')}`;
   });
 }
 
@@ -102,14 +102,14 @@ export function ExportablesSelector({
   const toggle = (type: Exportable) => {
     let next = value;
 
-    if (value.includes('|' + type + '|')) {
-      next = value.replace(type + '|', '');
+    if (value.includes(`|${type}|`)) {
+      next = value.replace(`${type}|`, '');
 
       if (type === 'plannedRoute') {
         next = next.replace('|plannedRouteWithStops', '');
       }
     } else {
-      next += type + '|';
+      next += `${type}|`;
     }
 
     onChange(next);
@@ -123,12 +123,12 @@ export function ExportablesSelector({
           // segmented pair among the detached pills
           <ButtonGroup key={type}>
             <ToggleButton
-              id={'chk-' + type}
+              id={`chk-${type}`}
               type="checkbox"
               variant="outline-primary"
               value={type}
-              checked={value.includes('|' + type + '|')}
-              disabled={!available.includes('|' + type + '|')}
+              checked={value.includes(`|${type}|`)}
+              disabled={!available.includes(`|${type}|`)}
               onChange={() => toggle(type)}
             >
               {icon} {em?.what[type]}
@@ -140,7 +140,7 @@ export function ExportablesSelector({
               variant="outline-primary"
               value="plannedRouteWithStops"
               checked={value.includes('|plannedRouteWithStops|')}
-              disabled={!value.includes('|' + type + '|')}
+              disabled={!value.includes(`|${type}|`)}
               onChange={() => toggle('plannedRouteWithStops')}
             >
               <FaMapSigns /> {em?.what['plannedRouteWithStops']}
@@ -149,12 +149,12 @@ export function ExportablesSelector({
         ) : (
           <ToggleButton
             key={type}
-            id={'chk-' + type}
+            id={`chk-${type}`}
             type="checkbox"
             variant="outline-primary"
             value={type}
-            checked={value.includes('|' + type + '|')}
-            disabled={!available.includes('|' + type + '|')}
+            checked={value.includes(`|${type}|`)}
+            disabled={!available.includes(`|${type}|`)}
             onChange={() => toggle(type)}
           >
             {icon} {em?.what[type]}

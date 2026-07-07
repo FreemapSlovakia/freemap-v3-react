@@ -14,7 +14,7 @@ const handle: ProcessorHandler<typeof authDisconnect> = async ({
   await httpRequest({
     getState,
     method: 'DELETE',
-    url: '/auth/providers/' + provider,
+    url: `/auth/providers/${provider}`,
     expectedStatus: 204,
   });
 

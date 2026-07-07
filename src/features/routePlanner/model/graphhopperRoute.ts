@@ -2,7 +2,7 @@ import z from 'zod';
 
 /** The self-hosted GraphHopper point-to-point routing endpoint. */
 export const graphhopperRouteUrl = (): string =>
-  process.env['GRAPHHOPPER_URL'] + '/route';
+  `${process.env['GRAPHHOPPER_URL']}/route`;
 
 /** Edge types kept off the route (shared by the router and the cost-matrix builder). */
 export const ghSnapPreventions = ['trunk', 'motorway', 'tunnel', 'ferry'];

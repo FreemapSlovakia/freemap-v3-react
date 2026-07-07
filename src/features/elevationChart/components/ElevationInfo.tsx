@@ -156,7 +156,7 @@ export function ElevationInfo({
               e.preventDefault();
               dispatch(searchSetQuery({ query: `${zoom}/${x}/${y}` }));
             }}
-            href={'#q=' + encodeURIComponent(`${zoom}/${x}/${y}`)}
+            href={`#q=${encodeURIComponent(`${zoom}/${x}/${y}`)}`}
             target="_blank"
           >
             {zoom}/{x}/{y}

@@ -44,7 +44,7 @@ export function MapLayersSettings({
     const { type } = def;
 
     return def.custom
-      ? def.name || m?.mapLayers.customBase + ' ' + type
+      ? def.name || `${m?.mapLayers.customBase} ${type}`
       : (m?.mapLayers.letters[type] ?? '…');
   }
 
@@ -203,8 +203,7 @@ export function MapLayersSettings({
                         <button
                           type="button"
                           style={{
-                            opacity:
-                              (layersSettings[type]?.opacity ?? 1) * 100 + '%',
+                            opacity: `${(layersSettings[type]?.opacity ?? 1) * 100}%`,
                           }}
                           onClick={() => setActiveType(type)}
                         />

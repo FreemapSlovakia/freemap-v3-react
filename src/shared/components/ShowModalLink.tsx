@@ -22,7 +22,7 @@ export function ShowModalLink({ modal, children }: Props) {
   );
 
   return (
-    <Anchor href={'#show=' + modal} onClick={handleClick}>
+    <Anchor href={`#show=${modal}`} onClick={handleClick}>
       {children}
     </Anchor>
   );

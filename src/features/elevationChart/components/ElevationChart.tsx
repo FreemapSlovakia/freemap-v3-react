@@ -55,7 +55,7 @@ export default function ElevationChart(): ReactElement | null {
         ...wp,
         label:
           wp.label && wp.label.length > WAYPOINT_LABEL_MAX
-            ? wp.label.slice(0, WAYPOINT_LABEL_MAX - 1) + '…'
+            ? `${wp.label.slice(0, WAYPOINT_LABEL_MAX - 1)}…`
             : wp.label,
       })),
     [waypoints],
@@ -191,17 +191,15 @@ export default function ElevationChart(): ReactElement | null {
       setHeight(e.contentRect.height - (ref2 ? ref2.offsetHeight : 0));
     });
 
-    ref.style.width =
-      Math.min(
-        Math.max(window.innerWidth / 2, 400),
-        Math.max(window.innerWidth - 14, 40),
-      ) + 'px';
+    ref.style.width = `${Math.min(
+      Math.max(window.innerWidth / 2, 400),
+      Math.max(window.innerWidth - 14, 40),
+    )}px`;
 
-    ref.style.height =
-      Math.min(
-        Math.max(window.innerHeight / 2, 300),
-        Math.max(window.innerHeight - 130, 40),
-      ) + 'px';
+    ref.style.height = `${Math.min(
+      Math.max(window.innerHeight / 2, 300),
+      Math.max(window.innerHeight - 130, 40),
+    )}px`;
 
     ro.observe(ref);
 
@@ -312,13 +310,13 @@ export default function ElevationChart(): ReactElement | null {
 
           return segments.map((seg, i) => {
             const line = seg
-              .map((pt) => mapX(pt.distance) + ',' + mapY(pt.ele))
+              .map((pt) => `${mapX(pt.distance)},${mapY(pt.ele)}`)
               .join(' ');
 
             const baseY = height - mb;
 
             return (
-              <Fragment key={'seg' + i}>
+              <Fragment key={`seg${i}`}>
                 <polygon
                   points={
                     `${mapX(seg[0]!.distance)},${baseY} ` +
@@ -355,7 +353,7 @@ export default function ElevationChart(): ReactElement | null {
           const limit = hLines.length - i < 3;
 
           return (
-            <Fragment key={'y' + i}>
+            <Fragment key={`y${i}`}>
               <line
                 x1={ml}
                 x2={width - mr}
@@ -399,7 +397,7 @@ export default function ElevationChart(): ReactElement | null {
           const limit = i === vLines.length - 1;
 
           return (
-            <Fragment key={'x' + i}>
+            <Fragment key={`x${i}`}>
               <line
                 x1={mapX(x)}
                 x2={mapX(x)}
@@ -465,7 +463,7 @@ export default function ElevationChart(): ReactElement | null {
           const x = mapX(wp.distance);
 
           return (
-            <Fragment key={'wp' + i}>
+            <Fragment key={`wp${i}`}>
               <line
                 x1={x}
                 x2={x}

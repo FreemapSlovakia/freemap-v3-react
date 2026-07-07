@@ -308,7 +308,7 @@ function addPictures(features: Feature[], pictures: Picture[]) {
     let imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
 
     if (hmac) {
-      imageUrl += '&hmac=' + encodeURIComponent(hmac);
+      imageUrl += `&hmac=${encodeURIComponent(hmac)}`;
     }
 
     features.push(
@@ -347,7 +347,7 @@ function addPlannedRoute(
               ? rpm.start
               : i === points.length - 1
                 ? rpm.finish
-                : rpm.stop + ' ' + (i + 1),
+                : `${rpm.stop} ${i + 1}`,
         }),
       );
     }
@@ -380,7 +380,7 @@ function addPlannedRoute(
           leg.steps.map((step) => step.geometry.coordinates),
         ),
         {
-          title: rpm.alternative + ' ' + (i + 1),
+          title: `${rpm.alternative} ${i + 1}`,
         },
       ),
     );

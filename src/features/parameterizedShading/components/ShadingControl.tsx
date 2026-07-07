@@ -54,8 +54,7 @@ export default function ShadingControl() {
     const { top } = card.getBoundingClientRect();
 
     window.requestAnimationFrame(() => {
-      card.style.maxHeight =
-        Math.max(window.innerHeight - top - 57, 100) + 'px';
+      card.style.maxHeight = `${Math.max(window.innerHeight - top - 57, 100)}px`;
     });
   }, [card]);
 

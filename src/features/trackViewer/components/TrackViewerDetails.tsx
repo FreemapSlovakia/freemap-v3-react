@@ -225,7 +225,7 @@ function TrackViewerDetailsInt({
   return (
     <dl className="m-0 dl-horizontal">
       {tableData.map(([key, value]) => [
-        <dt key={`${key}-dt`}>{(tvm?.details[key] ?? '') + ':'}</dt>,
+        <dt key={`${key}-dt`}>{`${tvm?.details[key] ?? ''}:`}</dt>,
 
         <dd key={`${key}-dd`} className="infoValue">
           {value}

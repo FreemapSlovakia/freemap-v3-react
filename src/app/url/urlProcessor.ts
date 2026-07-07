@@ -180,7 +180,7 @@ export const urlProcessor: Processor = {
           routePlanner.points
             .map(
               (point) =>
-                (point.transport ? point.transport + '/' : '') +
+                (point.transport ? `${point.transport}/` : '') +
                 serializePoint(point),
             )
             .join(','),
@@ -480,7 +480,7 @@ export const urlProcessor: Processor = {
       // SecurityError. Normalizing also self-heals the address bar.
       const path = window.location.pathname.replace(/\/{2,}/g, '/');
 
-      history[method]({ sq }, '', path + (urlSearch ? '#' + urlSearch : ''));
+      history[method]({ sq }, '', path + (urlSearch ? `#${urlSearch}` : ''));
 
       if (window.fmEmbedded) {
         window.parent.postMessage(

@@ -160,7 +160,7 @@ export default function OutdoorMapLegend(): ReactElement {
                 <div className="d-flex flex-wrap gap-2">
                   {name_w_tags.map(({ name, tags }, i) => {
                     const ts = Object.entries(tags).map(
-                      ([k, v]) => k + '=' + v,
+                      ([k, v]) => `${k}=${v}`,
                     );
 
                     const activeIndex = activeObjects.findIndex((ao) => {

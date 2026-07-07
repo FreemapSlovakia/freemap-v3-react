@@ -50,9 +50,9 @@ class GpuError extends Error {
       'GPU Error: ' +
         kind +
         (error instanceof Error
-          ? ': ' + error.message
+          ? `: ${error.message}`
           : error
-            ? ': ' + String(error)
+            ? `: ${String(error)}`
             : ''),
     );
 
@@ -299,7 +299,7 @@ class LShadingLayer extends LGridLayer {
     }
 
     if (res.status !== 200) {
-      throw new Error('unexpected status ' + res.status);
+      throw new Error(`unexpected status ${res.status}`);
     }
 
     canvas.style.display = '';
@@ -485,9 +485,9 @@ class LShadingLayer extends LGridLayer {
 
     canvas.height = size.y * (1 << (this._options.zoomOffset ?? 0));
 
-    canvas.style.width = size.x + 'px';
+    canvas.style.width = `${size.x}px`;
 
-    canvas.style.height = size.x + 'px';
+    canvas.style.height = `${size.x}px`;
 
     this.createTileAsync(coords, canvas).then(
       () => {

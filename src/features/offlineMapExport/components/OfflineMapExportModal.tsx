@@ -93,7 +93,7 @@ export default function OfflineMapExportModal({
         .map((layer) => ({
           ...layer,
           overlay: layer.layer === 'overlay', // TODO make server understand `layer` property
-          url: layer.url.startsWith('//') ? 'http:' + layer.url : layer.url,
+          url: layer.url.startsWith('//') ? `http:${layer.url}` : layer.url,
         })),
     [],
   );

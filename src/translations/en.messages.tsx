@@ -175,6 +175,7 @@ const messages: Messages = {
     osmWiki: 'OpenStreetMap documentation',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Services status',
+    language: 'Language',
   },
 
   main: {

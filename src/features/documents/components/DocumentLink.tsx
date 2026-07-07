@@ -21,7 +21,7 @@ export function DocumentLink({ doc, children }: Props) {
   );
 
   return (
-    <Anchor href={'#document=' + doc} onClick={handleClick}>
+    <Anchor href={`#document=${doc}`} onClick={handleClick}>
       {children}
     </Anchor>
   );

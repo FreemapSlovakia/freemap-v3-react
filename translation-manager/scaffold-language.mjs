@@ -75,7 +75,9 @@ function rootInnerTypeName(decl) {
 }
 
 function isMessagesTypeName(name) {
-  return !!name && (name.endsWith('Messages') || name === 'OsmTagToNameMapping');
+  return (
+    !!name && (name.endsWith('Messages') || name === 'OsmTagToNameMapping')
+  );
 }
 
 // Find the top-level object-expression declaration whose type annotation marks
@@ -133,7 +135,7 @@ function wrapperMeta(program) {
   }
 
   if (!wrapperSource) {
-    throw new Error('wrapper import source not found for ' + wrapper);
+    throw new Error(`wrapper import source not found for ${wrapper}`);
   }
 
   return { wrapper, wrapperSource };
@@ -176,7 +178,9 @@ function transformObject(objExpr, src, indent) {
     const val = prop.value;
 
     if (isObjectExpression(val)) {
-      lines.push(`${padInner}${key}: ${transformObject(val, src, indent + 1)},`);
+      lines.push(
+        `${padInner}${key}: ${transformObject(val, src, indent + 1)},`,
+      );
     } else if (isStringLiteral(val)) {
       // drop → becomes a TODO translate entry with sibling-language hints
     } else {
@@ -192,9 +196,21 @@ function transformObject(objExpr, src, indent) {
 }
 
 function scaffoldOne(template) {
-  const enPath = resolve(import.meta.dirname, '..', template.replace('{LANG}', 'en.messages'));
-  const skPath = resolve(import.meta.dirname, '..', template.replace('{LANG}', 'sk.template'));
-  const outPath = resolve(import.meta.dirname, '..', template.replace('{LANG}', lang + '.template'));
+  const enPath = resolve(
+    import.meta.dirname,
+    '..',
+    template.replace('{LANG}', 'en.messages'),
+  );
+  const skPath = resolve(
+    import.meta.dirname,
+    '..',
+    template.replace('{LANG}', 'sk.template'),
+  );
+  const outPath = resolve(
+    import.meta.dirname,
+    '..',
+    template.replace('{LANG}', `${lang}.template`),
+  );
 
   const enSource = readFileSync(enPath, 'utf-8');
   const enProgram = parseSource(enSource).program;
@@ -203,7 +219,7 @@ function scaffoldOne(template) {
   const enRoot = findRootInfo(enProgram);
 
   if (!enRoot) {
-    throw new Error('en root not found in ' + enPath);
+    throw new Error(`en root not found in ${enPath}`);
   }
 
   const { wrapper, wrapperSource } = wrapperMeta(skProgram);
@@ -236,7 +252,11 @@ function scaffoldOne(template) {
   edits.push([annNode.start, annNode.end, `${wrapper}<${annText}>`]);
 
   // replace the messages object with the transformed skeleton
-  edits.push([decl.init.start, decl.init.end, transformObject(decl.init, enSource, 0)]);
+  edits.push([
+    decl.init.start,
+    decl.init.end,
+    transformObject(decl.init, enSource, 0),
+  ]);
 
   edits.sort((a, b) => b[0] - a[0]);
 
@@ -249,11 +269,11 @@ function scaffoldOne(template) {
   // relocalize the sibling `<lang>-shared` import (only the global file has it)
   out = out.replace(/(['"]\.\/)en-shared(\.js['"])/g, `$1${lang}-shared$2`);
 
-  out = `import type { ${wrapper} } from '${wrapperSource}';\n` + out;
+  out = `import type { ${wrapper} } from '${wrapperSource}';\n${out}`;
 
   writeFileSync(outPath, out);
 
-  console.log('wrote', template.replace('{LANG}', lang + '.template'));
+  console.log('wrote', template.replace('{LANG}', `${lang}.template`));
 }
 
 for (const template of templatesConfig.templates) {

@@ -169,7 +169,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               {['1', '2', '3', '4'].map((scale) => (
                 <ToggleButton
                   key={scale}
-                  id={'rs-' + scale}
+                  id={`rs-${scale}`}
                   value={scale}
                   variant="outline-primary"
                 >
@@ -197,7 +197,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               {['0.5', '1', '2', '4'].map((scale) => (
                 <ToggleButton
                   key={scale}
-                  id={'fs-' + scale}
+                  id={`fs-${scale}`}
                   value={scale}
                   variant="outline-primary"
                 >

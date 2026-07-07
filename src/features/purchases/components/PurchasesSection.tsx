@@ -51,11 +51,11 @@ export function PurchasesSection(): ReactElement | null {
     const ac = new AbortController();
 
     (async () => {
-      const res = await fetch(process.env['API_URL'] + '/auth/purchases', {
+      const res = await fetch(`${process.env['API_URL']}/auth/purchases`, {
         signal: ac.signal,
         headers: {
           accept: 'application/json',
-          ...(authToken ? { authorization: 'Bearer ' + authToken } : {}),
+          ...(authToken ? { authorization: `Bearer ${authToken}` } : {}),
         },
       });
 

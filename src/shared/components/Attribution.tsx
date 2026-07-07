@@ -168,7 +168,7 @@ export function useResolvedAttribution(
                   </Fragment>
                 ),
               ])}
-              {esriAttribution?.map((a) => ', ' + a).join('') ?? ''}
+              {esriAttribution?.map((a) => `, ${a}`).join('') ?? ''}
             </>,
           ] as const,
       );

@@ -848,7 +848,7 @@ export function RoutePlannerResult(): ReactElement {
 
       {isochrones?.map((isochrone) => (
         <GeoJSON
-          key={'iso_' + timestamp + '_' + isochrone.properties?.['bucket']}
+          key={`iso_${timestamp}_${isochrone.properties?.['bucket']}`}
           interactive={false}
           style={(f) =>
             f?.properties['bucket'] === isochrones.length - 1

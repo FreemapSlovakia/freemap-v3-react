@@ -174,14 +174,14 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     (type: Exportable) => {
       let next = isGarmin ? '|' : exportables;
 
-      if (exportables.includes('|' + type + '|')) {
-        next = exportables.replace(type + '|', '');
+      if (exportables.includes(`|${type}|`)) {
+        next = exportables.replace(`${type}|`, '');
 
         if (type === 'plannedRoute') {
           next = next.replace('|plannedRouteWithStops', '');
         }
       } else {
-        next += type + '|';
+        next += `${type}|`;
       }
 
       setExportables(next);
@@ -234,7 +234,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     isGarmin &&
     exportableDefinitions.some(
       ([type]) =>
-        exportables.includes('|' + type + '|') &&
+        exportables.includes(`|${type}|`) &&
         typeof garminExportables?.[type] === 'string',
     );
 
@@ -242,7 +242,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     const e =
       garminSingleEnabled !== undefined
         ? garminSingleEnabled
-          ? '|' + garminSingleEnabled + '|'
+          ? `|${garminSingleEnabled}|`
           : '|'
         : initExportables
           ? initExportables
@@ -348,7 +348,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                     {garminActivityTypes.map(([value, labelKey]) => (
                       <ToggleButton
                         key={value}
-                        id={'at-' + value}
+                        id={`at-${value}`}
                         type="checkbox"
                         value={value}
                         variant="outline-primary"
@@ -397,7 +397,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 <ButtonGroup>
                   {ExportElevationSchema.options.map((option) => (
                     <ToggleButton
-                      id={'ele-' + option}
+                      id={`ele-${option}`}
                       key={option}
                       type="radio"
                       variant="outline-primary"
@@ -428,12 +428,12 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                       const error =
                         typeof value === 'string' ? value : undefined;
 
-                      const selected = exportables.includes('|' + type + '|');
+                      const selected = exportables.includes(`|${type}|`);
 
                       return (
                         <ToggleButton
                           key={type}
-                          id={'chk-' + type}
+                          id={`chk-${type}`}
                           name="exportable"
                           type="radio"
                           variant={
@@ -459,7 +459,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                   .filter(
                     ([type, , garmin]) =>
                       garmin &&
-                      exportables.includes('|' + type + '|') &&
+                      exportables.includes(`|${type}|`) &&
                       typeof garminExportables?.[type] === 'string',
                   )
                   .map(([type, icon]) => (

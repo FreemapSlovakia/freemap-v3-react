@@ -18,8 +18,7 @@ export function MapDetailsTool(): ReactElement | null {
       (e: LeafletMouseEvent) => {
         dispatch(
           searchSetQuery({
-            query:
-              '@' + e.latlng.lat.toFixed(6) + ',' + e.latlng.lng.toFixed(6),
+            query: `@${e.latlng.lat.toFixed(6)},${e.latlng.lng.toFixed(6)}`,
           }),
         );
       },

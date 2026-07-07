@@ -34,7 +34,7 @@ const styleOrExtractLoader = prod
       loader: rspack.CssExtractRspackPlugin.loader,
       options: {
         publicPath: (resourcePath: string, context: string) =>
-          path.relative(path.dirname(resourcePath), context) + '/',
+          `${path.relative(path.dirname(resourcePath), context)}/`,
       } satisfies CssExtractRspackLoaderOptions,
     }
   : 'style-loader';

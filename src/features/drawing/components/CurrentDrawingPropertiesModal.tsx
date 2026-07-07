@@ -236,13 +236,13 @@ export default function CurrentDrawingPropertiesModal({
           fetch(
             'http://localhost:8111/import?new_layer=true&url=' +
               encodeURIComponent(
-                'https://streamfinder.freemap.sk?' + q.toString(),
+                `https://streamfinder.freemap.sk?${q.toString()}`,
               ),
           )
             .then((res) => {
               if (!res.ok) {
                 throw new Error(
-                  'Error response from localhost:8111: ' + res.status,
+                  `Error response from localhost:8111: ${res.status}`,
                 );
               }
             })
@@ -258,7 +258,7 @@ export default function CurrentDrawingPropertiesModal({
         } else {
           const aElem = document.createElement('a');
 
-          aElem.href = 'https://streamfinder.freemap.sk?' + q.toString();
+          aElem.href = `https://streamfinder.freemap.sk?${q.toString()}`;
 
           aElem.target = '_blank';
 
@@ -293,12 +293,12 @@ export default function CurrentDrawingPropertiesModal({
         if (inJosm) {
           fetch(
             'http://localhost:8111/import?new_layer=true&url=' +
-              encodeURIComponent('https://forester.freemap.sk?' + q.toString()),
+              encodeURIComponent(`https://forester.freemap.sk?${q.toString()}`),
           )
             .then((res) => {
               if (!res.ok) {
                 throw new Error(
-                  'Error response from localhost:8111: ' + res.status,
+                  `Error response from localhost:8111: ${res.status}`,
                 );
               }
             })
@@ -314,7 +314,7 @@ export default function CurrentDrawingPropertiesModal({
         } else {
           const aElem = document.createElement('a');
 
-          aElem.href = 'https://forester.freemap.sk?' + q.toString();
+          aElem.href = `https://forester.freemap.sk?${q.toString()}`;
 
           aElem.target = '_blank';
 

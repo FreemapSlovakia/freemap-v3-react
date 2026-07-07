@@ -8,8 +8,8 @@ import { Map as LeafletMap } from 'maplibre-gl';
   const setLanguage = () => {
     const replacer = [
       'case',
-      ['has', 'name:' + language],
-      ['get', 'name:' + language],
+      ['has', `name:${language}`],
+      ['get', `name:${language}`],
       ['get', 'name'],
     ];
 

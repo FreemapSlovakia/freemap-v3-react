@@ -382,7 +382,7 @@ function addPictures(
     let imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
 
     if (hmac) {
-      imageUrl += '&hmac=' + encodeURIComponent(hmac);
+      imageUrl += `&hmac=${encodeURIComponent(hmac)}`;
     }
 
     createElement(wptEle, 'desc', {
@@ -390,7 +390,7 @@ function addPictures(
         `<img src="${escapeHtml(imageUrl)}" width="100%"><p>` +
         lines
           .map(
-            ([key, value]) => `<b>${escapeHtml(key)}</b>: ` + escapeHtml(value),
+            ([key, value]) => `<b>${escapeHtml(key)}</b>: ${escapeHtml(value)}`,
           )
           .join('｜') +
         '</p>',
@@ -490,7 +490,7 @@ function addDrawingLines(
     createElement(
       ext2Ele,
       [LOCUS_NS, 'locus:lsColorBase'],
-      '#' + toLocusAlpha(stroke.opacity) + rgb,
+      `#${toLocusAlpha(stroke.opacity)}${rgb}`,
     );
 
     createElement(
@@ -505,7 +505,7 @@ function addDrawingLines(
       createElement(
         ext2Ele,
         [LOCUS_NS, 'locus:lsColorFill'],
-        '#' + toLocusAlpha(fill.opacity) + fillRgb,
+        `#${toLocusAlpha(fill.opacity)}${fillRgb}`,
       );
     }
 
@@ -785,7 +785,7 @@ function addPlannedRoute(
           ? rpm.start
           : i === points.length - 1
             ? rpm.finish // TODO not for roundtrip?
-            : rpm.stop + ' ' + (i + 1),
+            : `${rpm.stop} ${i + 1}`,
       );
     }
   }
@@ -793,7 +793,7 @@ function addPlannedRoute(
   for (const [i, { legs }] of alternatives.entries()) {
     const trkEle = createElement(doc.documentElement, 'trk');
 
-    createElement(trkEle, 'name', rpm.alternative + ' ' + (i + 1));
+    createElement(trkEle, 'name', `${rpm.alternative} ${i + 1}`);
 
     const trksegEle = createElement(trkEle, 'trkseg');
 

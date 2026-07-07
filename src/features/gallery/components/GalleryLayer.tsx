@@ -134,13 +134,13 @@ class LGalleryLayer extends LGridLayer {
 
       try {
         response = await fetch(
-          process.env['API_URL'] + '/gallery/pictures?' + sp.toString(),
+          `${process.env['API_URL']}/gallery/pictures?${sp.toString()}`,
           {
             signal,
             headers: {
               Accept: 'application/x-protobuf',
               ...(this._options?.authToken
-                ? { Authorization: 'Bearer ' + this._options?.authToken }
+                ? { Authorization: `Bearer ${this._options?.authToken}` }
                 : {}),
             },
           },
@@ -156,7 +156,7 @@ class LGalleryLayer extends LGridLayer {
       }
 
       if (response.status !== 200) {
-        throw new Error('unexpected status ' + response.status);
+        throw new Error(`unexpected status ${response.status}`);
       }
 
       const message = PicturesResponse.decode(

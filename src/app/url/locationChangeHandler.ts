@@ -192,7 +192,7 @@ export function handleLocationChange(store: MyStore): void {
             const digit = point[1];
 
             if (point[0] === 'm' && digit && digit >= '0' && digit <= '9') {
-              point = 'manual/' + point.slice(1);
+              point = `manual/${point.slice(1)}`;
             }
 
             const parts = point.split('/');
@@ -543,7 +543,7 @@ export function handleLocationChange(store: MyStore): void {
   ) {
     function toColor(color = '00000000') {
       try {
-        const bands = Color('#' + color).array();
+        const bands = Color(`#${color}`).array();
 
         if (bands.length === 3) {
           bands.push(1);
@@ -551,7 +551,7 @@ export function handleLocationChange(store: MyStore): void {
 
         return bands as ColorType;
       } catch {
-        console.error('error parsing color: ' + color);
+        console.error(`error parsing color: ${color}`);
 
         return [0, 0, 0, 1] as ColorType;
       }
@@ -852,7 +852,7 @@ export function handleLocationChange(store: MyStore): void {
   const fq = query['follow'];
 
   if (typeof fq === 'string') {
-    const follow = /^\d+$/.test(fq) ? Number.parseInt(fq) : fq;
+    const follow = /^\d+$/.test(fq) ? Number.parseInt(fq, 10) : fq;
 
     const { selection } = getState().main;
 

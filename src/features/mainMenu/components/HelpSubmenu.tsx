@@ -65,7 +65,7 @@ export function HelpSubmenu(): JSX.Element {
           <Dropdown.Item
             key={key}
             href={`?document=${key}`}
-            eventKey={'document-' + key}
+            eventKey={`document-${key}`}
           >
             {icon} {title}
           </Dropdown.Item>
