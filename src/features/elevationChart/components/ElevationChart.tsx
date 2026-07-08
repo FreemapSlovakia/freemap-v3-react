@@ -1,5 +1,7 @@
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import clsx from 'clsx';
 import {
   type ReactElement,
@@ -10,7 +12,7 @@ import {
   useState,
 } from 'react';
 import { Button, CloseButton } from 'react-bootstrap';
-import { FaDownload } from 'react-icons/fa';
+import { FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { downloadChartSvg } from '../downloadChartSvg.js';
 import {
@@ -49,17 +51,25 @@ export default function ElevationChart(): ReactElement | null {
 
   const waypoints = useAppSelector((state) => state.elevationChart.waypoints);
 
+  const [showWaypoints, setShowWaypoints] = usePersistentBoolean(
+    'fm.elevationChart.showWaypoints',
+    true,
+  );
+
   // Truncate long names so a single label can't blow up the top margin.
+  // Empty when hidden, so the chart neither draws them nor reserves top margin.
   const labeledWaypoints = useMemo(
     () =>
-      waypoints.map((wp) => ({
-        ...wp,
-        label:
-          wp.label && wp.label.length > WAYPOINT_LABEL_MAX
-            ? `${wp.label.slice(0, WAYPOINT_LABEL_MAX - 1)}…`
-            : wp.label,
-      })),
-    [waypoints],
+      showWaypoints
+        ? waypoints.map((wp) => ({
+            ...wp,
+            label:
+              wp.label && wp.label.length > WAYPOINT_LABEL_MAX
+                ? `${wp.label.slice(0, WAYPOINT_LABEL_MAX - 1)}…`
+                : wp.label,
+          }))
+        : [],
+    [waypoints, showWaypoints],
   );
 
   // Top margin: a line for the axis unit label above the plot, plus room for
@@ -610,15 +620,36 @@ export default function ElevationChart(): ReactElement | null {
           </p>
         )}
 
-        <Button
-          variant="secondary"
-          size="sm"
-          className="ms-auto"
-          onClick={handleDownload}
-          title={m?.downloadAsSvg}
-        >
-          <FaDownload />
-        </Button>
+        <div className="ms-auto d-flex align-items-center gap-1">
+          {waypoints.length > 0 && (
+            <LongPressTooltip label={m?.showWaypoints}>
+              {({ props }) => (
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  active={showWaypoints}
+                  onClick={() => setShowWaypoints((v) => !v)}
+                  {...props}
+                >
+                  <FaMapMarkerAlt />
+                </Button>
+              )}
+            </LongPressTooltip>
+          )}
+
+          <LongPressTooltip label={m?.downloadAsSvg}>
+            {({ props }) => (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleDownload}
+                {...props}
+              >
+                <FaDownload />
+              </Button>
+            )}
+          </LongPressTooltip>
+        </div>
       </div>
     </div>
   );

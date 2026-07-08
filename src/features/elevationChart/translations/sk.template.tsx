@@ -5,6 +5,7 @@ const sk: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   uphill: 'Celkové stúpanie',
   downhill: 'Celkové klesanie',
   downloadAsSvg: 'Stiahnuť ako SVG',
+  showWaypoints: 'Zobraziť trasové body',
 };
 
 export default sk;
