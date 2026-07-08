@@ -16,7 +16,7 @@
     margin-right: 0.5rem;
   }
 
-  & svg {
+  & > svg {
     cursor: move;
     user-select: none;
     font-size: 12px;

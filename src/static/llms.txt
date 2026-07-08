@@ -144,7 +144,7 @@ While drawing, individual nodes can be edited: a line point can **Join** another
 
 **Simplify** prompts for a simplification factor (0 = no simplification).
 
-**Elevation profile** opens a chart of elevation along a line, with total climb and total descent. A toolbar below the chart can download it as SVG and, when the line carries waypoints, toggle their markers and labels.
+**Elevation profile** opens a chart of elevation along a line, with total climb and total descent. Waypoints are marked with their name and elevation, and their distance is ticked on the x-axis. A toolbar below the chart can download it as SVG and, when the line carries waypoints, toggle their markers and labels.
 
 ### Route finder
 
@@ -210,7 +210,7 @@ A **Marker style** button opens a modal to set the marker shape (pin/ring/square
 Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=file-import`; legacy `/#show=upload-track` still works), which accepts GPX, KML, KMZ, TCX and GeoJSON files; several files can be picked or dropped at once and are merged into one view. Files can also be dropped anywhere on the map. When geodata is already shown, importing asks whether to **append** the new data or **replace** what's loaded. An external track can also be loaded directly by URL via `/#import-url=<URL>` (legacy `gpx-url=` and `load=` still work), supporting the same GPX, KML, KMZ, TCX and GeoJSON formats. Once a track is loaded, the toolbar offers:
 
 - **Track** (dropdown) — shown only when several lines are loaded; picks which one the elevation profile and "More info" describe (a line can also be picked by clicking it on the map; the active one is highlighted)
-- **Elevation profile** — chart of elevation along the active track (with total climb/descent); recorded waypoints are marked along it with labels (toggleable), and a toolbar below the chart can download it as SVG
+- **Elevation profile** — chart of elevation along the active track (with total climb/descent); recorded waypoints are marked along it with their name and elevation and their distance ticked on the x-axis (toggleable), and a toolbar below the chart can download it as SVG
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled). While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
 - **More info** — a popup with the track's distance, min/max elevation, total climb and total descent
 - **More** (⋮ menu) — gathers the remaining actions:

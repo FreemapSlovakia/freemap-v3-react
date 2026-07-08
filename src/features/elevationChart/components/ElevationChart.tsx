@@ -30,9 +30,53 @@ const ml = 50,
 // Matches the SVG font-size set in the CSS module; used to estimate label size.
 const FONT_PX = 12;
 
+// Rough average glyph width as a fraction of the font size, for estimating a
+// label's rendered length (top-margin sizing and centering a shorter line).
+const CHAR_PX = FONT_PX * 0.6;
+
+// Baseline-to-baseline gap for stacked waypoint label lines (name / elevation).
+const LINE_HEIGHT = FONT_PX + 2;
+
+// Gap between the plot's top edge and the nearest (lowest) waypoint label line.
+const LABEL_GAP = 6;
+
+// x-axis distance tick length below the baseline, and the offset of its rotated
+// (45°) value label. Shared by the axis ticks and each waypoint's own distance
+// tick so the two stay aligned when re-tuned.
+const X_TICK_LEN = 4;
+const X_LABEL_DX = -5;
+const X_LABEL_DY = 15;
+
 // Longest waypoint name (in characters) before it's truncated with an ellipsis,
 // so one long name can't blow up the chart's top margin.
 const WAYPOINT_LABEL_MAX = 16;
+
+// Geometry of a waypoint's label: lines stacked top-to-bottom and centered on
+// each other, drawn as one block rotated -45° about the top line's start.
+// Because the block is tilted, a wider line's leading (left) end reaches lower
+// than a narrower line below it, so the nearest and farthest points can belong
+// to any line. `nearDrop`/`farRise` are those extremes' vertical distance from
+// the pivot (the top line's start), used to seat the block a fixed gap above
+// the plot and to reserve the top margin. `offsets` centers each line.
+function labelMetrics(lines: string[]) {
+  const widths = lines.map((line) => line.length * CHAR_PX);
+
+  const maxWidth = Math.max(...widths);
+
+  const offsets = widths.map((w) => (maxWidth - w) / 2);
+
+  const nearDrop =
+    Math.SQRT1_2 *
+    Math.max(...lines.map((_, i) => i * LINE_HEIGHT - offsets[i]!));
+
+  const farRise =
+    Math.SQRT1_2 *
+    Math.max(
+      ...lines.map((_, i) => offsets[i]! + widths[i]! - i * LINE_HEIGHT),
+    );
+
+  return { offsets, nearDrop, farRise };
+}
 
 const ticks = new Array(11)
   .fill(0)
@@ -56,37 +100,6 @@ export default function ElevationChart(): ReactElement | null {
     true,
   );
 
-  // Truncate long names so a single label can't blow up the top margin.
-  // Empty when hidden, so the chart neither draws them nor reserves top margin.
-  const labeledWaypoints = useMemo(
-    () =>
-      showWaypoints
-        ? waypoints.map((wp) => ({
-            ...wp,
-            label:
-              wp.label && wp.label.length > WAYPOINT_LABEL_MAX
-                ? `${wp.label.slice(0, WAYPOINT_LABEL_MAX - 1)}…`
-                : wp.label,
-          }))
-        : [],
-    [waypoints, showWaypoints],
-  );
-
-  // Top margin: a line for the axis unit label above the plot, plus room for
-  // the tallest angled (-45°) waypoint label when there are waypoints.
-  const mt = useMemo(() => {
-    const maxChars = labeledWaypoints.reduce(
-      (max, wp) => Math.max(max, wp.label?.length ?? 0),
-      0,
-    );
-
-    return (
-      FONT_PX +
-      4 +
-      (maxChars === 0 ? 0 : Math.ceil(maxChars * FONT_PX * 0.6 * Math.SQRT1_2))
-    );
-  }, [labeledWaypoints]);
-
   const nf0 = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -96,6 +109,54 @@ export default function ElevationChart(): ReactElement | null {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
+
+  // The label lines stacked above each waypoint, top to bottom: the name (when
+  // named) sits above the elevation readout (when known). Empty when hidden, so
+  // the chart neither draws waypoints nor reserves top margin for their labels.
+  const labeledWaypoints = useMemo(
+    () =>
+      showWaypoints
+        ? waypoints.map((wp) => {
+            const name =
+              wp.label && wp.label.length > WAYPOINT_LABEL_MAX
+                ? `${wp.label.slice(0, WAYPOINT_LABEL_MAX - 1)}…`
+                : wp.label;
+
+            const ele = Number.isFinite(wp.ele)
+              ? `${nf0.format(wp.ele)} m`
+              : undefined;
+
+            const lines = [name, ele].filter((l): l is string => Boolean(l));
+
+            return {
+              ...wp,
+              lines,
+              metrics: lines.length ? labelMetrics(lines) : null,
+            };
+          })
+        : [],
+    [waypoints, showWaypoints, nf0],
+  );
+
+  // Top margin: room for the y-axis unit label above the plot, and — when there
+  // are waypoints — the tallest label. A label spans from its gap above the
+  // plot up to the top line's far end, plus a glyph's ascent.
+  const mt = useMemo(() => {
+    let required = FONT_PX + 4;
+
+    for (const wp of labeledWaypoints) {
+      if (wp.metrics) {
+        required = Math.max(
+          required,
+          Math.ceil(
+            LABEL_GAP + wp.metrics.nearDrop + wp.metrics.farRise + FONT_PX,
+          ),
+        );
+      }
+    }
+
+    return required;
+  }, [labeledWaypoints]);
 
   const { climbUp, climbDown } = elevationProfilePoints.at(-1) ?? {};
 
@@ -218,6 +279,8 @@ export default function ElevationChart(): ReactElement | null {
     return () => ro.disconnect();
   }, [ref, ref2]);
 
+  const svgRef = useRef<SVGSVGElement>(null);
+
   const startPosRef = useRef<[number, number]>(undefined);
 
   const posRef = useRef([0, 0]);
@@ -226,12 +289,9 @@ export default function ElevationChart(): ReactElement | null {
 
   useEffect(() => {
     const handleWindowPointerDown = (e: PointerEvent) => {
-      if (
-        e.target instanceof Element &&
-        e.target.matches(
-          `.${classes.elevationChart} svg, .${classes.elevationChart} svg *`,
-        )
-      ) {
+      // Drag only from within the chart itself — not from the toolbar buttons,
+      // whose icons are their own <svg> elements.
+      if (e.target instanceof Node && svgRef.current?.contains(e.target)) {
         startPosRef.current = [e.clientX, e.clientY];
       }
     };
@@ -278,8 +338,6 @@ export default function ElevationChart(): ReactElement | null {
       window.removeEventListener('pointermove', handleWindowPointerMove);
     };
   }, []);
-
-  const svgRef = useRef<SVGSVGElement>(null);
 
   const handleDownload = () => {
     downloadChartSvg(svgRef.current, width, height);
@@ -510,7 +568,7 @@ export default function ElevationChart(): ReactElement | null {
                     x1={mapX(x)}
                     x2={mapX(x)}
                     y1={height - mb}
-                    y2={height - mb + 4}
+                    y2={height - mb + X_TICK_LEN}
                     stroke={limit ? 'var(--bs-danger)' : undefined}
                   />
                 );
@@ -525,16 +583,22 @@ export default function ElevationChart(): ReactElement | null {
               {vLines.map((x, i) => {
                 const limit = i === vLines.length - 1;
 
+                // Hide a regular label that would collide with the endpoint or
+                // a waypoint's own distance label (drawn in the waypoints layer).
                 const show =
-                  limit || Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20;
+                  limit ||
+                  (Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20 &&
+                    !labeledWaypoints.some(
+                      (wp) => Math.abs(mapX(wp.distance) - mapX(x)) < 20,
+                    ));
 
                 return show ? (
                   <text
                     key={`lx${i}`}
-                    x={mapX(x) - 5}
-                    y={height - mb + 15}
+                    x={mapX(x) + X_LABEL_DX}
+                    y={height - mb + X_LABEL_DY}
                     dominantBaseline="middle"
-                    transform={`rotate(45, ${mapX(x) - 5}, ${height - mb + 15})`}
+                    transform={`rotate(45, ${mapX(x) + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
                     fill={limit ? 'var(--bs-danger)' : undefined}
                   >
                     {nf1.format(x / 1000)}
@@ -557,12 +621,19 @@ export default function ElevationChart(): ReactElement | null {
           </g>
         </g>
 
-        {/* Waypoints pinned along the profile: a stem, a dot on the line, and
-            the name angled up into the top margin (sized to fit the tallest
-            label above). Same colour as the elevation line. */}
+        {/* Waypoints pinned along the profile: a stem, a dot on the line, the
+            name and elevation on two lines angled -45° up into the top margin
+            (sized to fit the tallest label above), and the distance value
+            ticked on the x-axis. Same colour as the elevation line. */}
         <g className="waypoints">
           {labeledWaypoints.map((wp, i) => {
             const x = mapX(wp.distance);
+
+            // Seat the block so its lowest point (a wide line's leading end,
+            // whichever line that is) sits a fixed gap above the plot.
+            const labelY = wp.metrics
+              ? mt - LABEL_GAP - wp.metrics.nearDrop
+              : mt;
 
             return (
               <g className="waypoint" key={`wp${i}`}>
@@ -583,17 +654,46 @@ export default function ElevationChart(): ReactElement | null {
                   fill="var(--bs-primary)"
                 />
 
-                {wp.label && (
+                {wp.metrics && (
                   <text
-                    x={x + 3}
-                    y={mt - 2}
                     textAnchor="start"
-                    transform={`rotate(-45, ${x + 3}, ${mt - 2})`}
+                    transform={`rotate(-45, ${x + 3}, ${labelY})`}
                     fill="var(--bs-primary)"
                   >
-                    {wp.label}
+                    {wp.lines.map((line, j) => (
+                      // Each line centered under the widest by an equal start
+                      // nudge along the (rotated) baseline; stacked by baseline.
+                      <tspan
+                        key={j}
+                        x={x + 3 + wp.metrics!.offsets[j]!}
+                        y={labelY + j * LINE_HEIGHT}
+                      >
+                        {line}
+                      </tspan>
+                    ))}
                   </text>
                 )}
+
+                {/* the waypoint's own distance, ticked on the x-axis */}
+                <line
+                  x1={x}
+                  x2={x}
+                  y1={height - mb}
+                  y2={height - mb + X_TICK_LEN}
+                  stroke="var(--bs-primary)"
+                  strokeWidth={1}
+                />
+
+                <text
+                  x={x + X_LABEL_DX}
+                  y={height - mb + X_LABEL_DY}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  transform={`rotate(45, ${x + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
+                  fill="var(--bs-primary)"
+                >
+                  {nf1.format(wp.distance / 1000)}
+                </text>
               </g>
             );
           })}
