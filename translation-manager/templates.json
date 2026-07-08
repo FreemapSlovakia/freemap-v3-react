@@ -18,6 +18,7 @@
     "src/features/objects/translations/{LANG}.tsx",
     "src/features/changesets/translations/{LANG}.tsx",
     "src/features/trackViewer/translations/{LANG}.tsx",
+    "src/features/elevationChart/translations/{LANG}.tsx",
     "src/shared/colorizers/translations/{LANG}.tsx",
     "src/features/openInExternalApp/translations/{LANG}.tsx",
     "src/features/credits/translations/{LANG}.tsx",

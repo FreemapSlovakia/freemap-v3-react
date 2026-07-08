@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadGapi, startGoogleAuth } from '@shared/gapiLoader.js';
+import { saveBlob } from '@shared/saveBlob.js';
 import { hasProperty } from '@shared/types/typeUtils.js';
 import type { Dispatch } from 'redux';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
@@ -260,40 +261,8 @@ export async function upload(
   return true;
 }
 
-async function saveFile(blob: Blob, type: ExportFileType) {
-  const suggestedName = `freemap-export-${new Date().toISOString()}.${type}`;
-
-  if ('showSaveFilePicker' in window) {
-    const handle = await showSaveFilePicker({
-      suggestedName,
-      types: [
-        {
-          description: blob.type || 'File',
-          accept: {
-            [blob.type]: FILE_META[type].exts,
-          } as any,
-        },
-      ],
-    });
-
-    const writable = await handle.createWritable();
-
-    await writable.write(blob);
-
-    await writable.close();
-
-    return;
-  }
-
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-
-  a.href = url;
-
-  a.download = suggestedName;
-
-  a.click();
-
-  URL.revokeObjectURL(url);
+function saveFile(blob: Blob, type: ExportFileType) {
+  return saveBlob(blob, `freemap-export-${new Date().toISOString()}.${type}`, {
+    [blob.type]: FILE_META[type].exts,
+  });
 }

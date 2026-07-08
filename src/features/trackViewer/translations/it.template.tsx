@@ -25,7 +25,7 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     avgSpeed: 'Velocità media',
     minEle: 'Elevazione min.',
     maxEle: 'Elevazione max',
-    uphill: 'Acesca totale',
+    uphill: 'Ascesa totale',
     downhill: 'Discesa totale',
     durationValue: ({ h, m }) => `${h} ore ${m} minuti`,
     source: 'Origine quota',
