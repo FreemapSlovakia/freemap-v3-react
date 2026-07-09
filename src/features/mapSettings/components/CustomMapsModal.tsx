@@ -232,11 +232,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
                         <Action
                           icon={<FaEye />}
                           label={m?.mapLayers.activate}
-                          variant={
-                            activeLayers.includes(def.type)
-                              ? 'primary'
-                              : 'outline-primary'
-                          }
+                          variant="outline-primary"
                           active={activeLayers.includes(def.type)}
                           onClick={() =>
                             dispatch(mapToggleLayer({ type: def.type }))

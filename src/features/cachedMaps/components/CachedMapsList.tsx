@@ -157,11 +157,7 @@ export function CachedMapsList(): ReactElement {
                           <Action
                             icon={<FaEye />}
                             label={cmm?.activate}
-                            variant={
-                              activeLayers.includes(cm.type)
-                                ? 'primary'
-                                : 'outline-primary'
-                            }
+                            variant="outline-primary"
                             active={activeLayers.includes(cm.type)}
                             onClick={() =>
                               dispatch(mapToggleLayer({ type: cm.type }))
