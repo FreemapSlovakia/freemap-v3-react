@@ -489,47 +489,37 @@ export function mergeLines<T extends Geometry>(
           continue;
         }
 
+        // Merge into a fresh geometry rather than mutating `g1.coordinates` in
+        // place: the geometry can be a frozen object carried over from the
+        // source feature, so mutating its coordinates array throws on strict
+        // engines.
+        let merged: Position[] | undefined;
+
         if (positionsEqual(g1.coordinates[0], g2.coordinates[0])) {
-          g1.coordinates.unshift(...g2.coordinates.slice(1).reverse());
-
-          features.splice(j, 1);
-
-          f1.properties = properties;
-
-          // f1.properties = Object.assign({}, f1.properties, f2.properties);
-          continue restart;
+          merged = [
+            ...[...g2.coordinates].reverse().slice(0, -1),
+            ...g1.coordinates,
+          ];
+        } else if (positionsEqual(g1.coordinates[0], g2.coordinates.at(-1))) {
+          merged = [...g2.coordinates, ...g1.coordinates.slice(1)];
+        } else if (positionsEqual(g1.coordinates.at(-1), g2.coordinates[0])) {
+          merged = [...g1.coordinates, ...g2.coordinates.slice(1)];
+        } else if (
+          positionsEqual(g1.coordinates.at(-1), g2.coordinates.at(-1))
+        ) {
+          merged = [
+            ...g1.coordinates,
+            ...[...g2.coordinates].reverse().slice(1),
+          ];
         }
 
-        if (positionsEqual(g1.coordinates[0], g2.coordinates.at(-1))) {
-          g1.coordinates.splice(0, 1, ...g2.coordinates);
+        if (merged) {
+          f1.geometry = { type: 'LineString', coordinates: merged } as T;
 
           features.splice(j, 1);
 
           f1.properties = properties;
 
-          // f1.properties = Object.assign({}, f1.properties, f2.properties);
-          continue restart;
-        }
-
-        if (positionsEqual(g1.coordinates.at(-1), g2.coordinates[0])) {
-          g1.coordinates.push(...g2.coordinates.slice(1));
-
-          features.splice(j, 1);
-
-          f1.properties = properties;
-
-          // f1.properties = Object.assign({}, f1.properties, f2.properties);
-          continue restart;
-        }
-
-        if (positionsEqual(g1.coordinates.at(-1), g2.coordinates.at(-1))) {
-          g1.coordinates.push(...g2.coordinates.reverse().slice(1));
-
-          features.splice(j, 1);
-
-          f1.properties = properties;
-
-          // f1.properties = Object.assign({}, f1.properties, f2.properties);
           continue restart;
         }
       }
