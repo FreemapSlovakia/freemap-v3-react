@@ -23,9 +23,10 @@ Hooks 2–4 are also the premium hooks — users drawn by them convert best.
 
 ---
 
-## Phase 0 — Poland activation (in progress: generating hi-res shading + contours)
+## Phase 0 — Poland activation (hi-res shading + contours deployed 2026-07-09)
 
-- [ ] Finish hi-res shading + contours coverage for Poland.
+- [x] Finish hi-res shading + contours coverage for Poland (deployed 2026-07-09;
+      announced on Mastodon — see Outreach log).
 - [ ] Verify Polish hi-res layers render + are premium-gated as intended.
 - [ ] Draft Polish-language launch post leading with the new terrain (Tatras, Karkonosze,
       Bieszczady). Polish UI already exists; engagement already high (11.6 actions, 209s).
@@ -35,7 +36,7 @@ Hooks 2–4 are also the premium hooks — users drawn by them convert best.
 ## Phase 1 — Localization expansion
 
 - [x] **Slovenian** UI added (highest fit-per-effort: Alpine, hi-res DEM exists, 378s
-      engagement) and announced (2026-07-07) to the Slovenian OSM community and the
+      engagement) and announced (2026-07-09) to the Slovenian OSM community and the
       hribi.net outdoor community (the latter auto-translates across the hike.uno network,
       so it also reaches IT/DE — see Outreach log).
 - [x] **French** UI added (aggregates FR + Belgium + CH-Romandy + LU; Alps/Pyrenees)
@@ -105,6 +106,7 @@ Add a row per post; keep `—` where the date is unknown rather than guessing.
 | — | 🇫🇮 Finland | community.openstreetmap.org | EN | posted | https://community.openstreetmap.org/t/freemap-eu-open-source-osm-based-outdoor-map-tools-by-the-slovak-osm-community-introduction/139943 |
 | — | 🇳🇴 Norway | community.openstreetmap.org | EN | posted | https://community.openstreetmap.org/t/freemap-eu-open-source-osm-based-outdoor-map-tools-by-the-slovak-osm-community/139942 |
 | — | 🇸🇰 Slovakia | mtbiker.sk forum | SK | posted | https://www.mtbiker.sk/forum/cyklotrasy-navigacia/freemap-sk-openstreetmap-org--35970 |
-| 2026-07-07 | 🇸🇮 Slovenia | community.openstreetmap.org (Slovenija) | SL | posted | https://community.openstreetmap.org/t/freemap-eu-odprtokodna-zunanja-karta-in-orodja-na-osnovah-osm-ki-jih-razvija-slovaska-skupnost-osm/145198 |
-| 2026-07-07 | 🇸🇮🇮🇹🇩🇪 SI+IT+DE | hribi.net / hike.uno network (auto-translated) | SL | posted | https://www.hribi.net/trenutne_razmere/slo/freemapeu_-_brezplacna_pohodniska_karta_z_lidar_reliefom_zdaj_v_slovenscini/10001/10088 |
+| 2026-07-09 | 🇸🇮 Slovenia | community.openstreetmap.org (Slovenija) | SL | posted | https://community.openstreetmap.org/t/freemap-eu-odprtokodna-zunanja-karta-in-orodja-na-osnovah-osm-ki-jih-razvija-slovaska-skupnost-osm/145198 |
+| 2026-07-09 | 🇸🇮🇮🇹🇩🇪 SI+IT+DE | hribi.net / hike.uno network (auto-translated) | SL | posted | https://www.hribi.net/trenutne_razmere/slo/freemapeu_-_brezplacna_pohodniska_karta_z_lidar_reliefom_zdaj_v_slovenscini/10001/10088 |
+| 2026-07-09 | 🇵🇱 Poland | Mastodon (@FreemapSlovakia) — hi-res shading + contours deployed | EN | posted | https://en.osm.town/@FreemapSlovakia/116889810164287525 |
 | — | 🇸🇮🇫🇷 SL + FR | Mastodon new-languages announcement (@FreemapSlovakia) | EN | posted | https://en.osm.town/@FreemapSlovakia |
