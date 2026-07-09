@@ -106,11 +106,6 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
 
   const targetRef = useRef<HTMLButtonElement>(null);
 
-  // Render the popover inside this wrapper (which lives inside the surrounding
-  // Modal) rather than portaling it to <body>; otherwise the Modal's focus trap
-  // steals focus from the search input.
-  const containerRef = useRef<HTMLDivElement>(null);
-
   const selectedSpec = parseIconSpec(selected);
 
   const selectedFa = useFaIcon(
@@ -159,7 +154,7 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
   }
 
   return (
-    <div className="d-flex gap-1 align-items-center" ref={containerRef}>
+    <div className="d-flex gap-1 align-items-center">
       <Button
         ref={targetRef}
         variant="outline-secondary"
@@ -186,9 +181,15 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
         </Button>
       )}
 
+      {/*
+        The popover portals to <body> (react-bootstrap's default with no
+        `container`) so it escapes the surrounding modal's `scrollable` body
+        overflow instead of being clipped by it. This requires the enclosing
+        modal to set `enforceFocus={false}` (both current consumers do), else
+        the modal's focus trap would steal focus from the search input.
+      */}
       <Overlay
         target={targetRef.current}
-        container={containerRef.current}
         show={open}
         placement="bottom-start"
         rootClose
@@ -222,7 +223,8 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
                     key={`${e.kind}:${e.name}`}
                     size="sm"
                     className="p-2 lh-1"
-                    variant={isSelected ? 'secondary' : 'outline-secondary'}
+                    variant="outline-secondary"
+                    active={isSelected}
                     onClick={() => {
                       onSelect(
                         e.kind === 'fa' ? faSpec(e.name) : poiSpec(e.name),
