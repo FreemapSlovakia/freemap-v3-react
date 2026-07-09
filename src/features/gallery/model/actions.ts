@@ -2,6 +2,11 @@ import { createAction } from '@reduxjs/toolkit';
 import { IsoDateSchema, type LatLon } from '@shared/types/common.js';
 import z from 'zod';
 import type { PictureModel } from '../components/GalleryEditForm.js';
+import {
+  DEFAULT_PHOTO_LICENSE,
+  type GalleryLicense,
+  GalleryLicenseSchema,
+} from '../licenses.js';
 
 // Keys of `GalleryMessages` used to label item/edit-form validation failures.
 export type GalleryValidationError =
@@ -22,6 +27,7 @@ export interface GalleryItem {
   azimuth: number | null;
   dirtyPosition: string | '';
   premium: boolean;
+  license: GalleryLicense;
   errors: GalleryItemError[];
   previewKey?: object;
   file: File;
@@ -41,6 +47,7 @@ export const GalleryColorizeBySchema = z.enum([
   'mine',
   'season',
   'premium',
+  'license',
 ]);
 
 export type GalleryColorizeBy = z.infer<typeof GalleryColorizeBySchema>;
@@ -93,6 +100,13 @@ export const PictureSchema = z.object({
   premium: z.boolean().optional(),
   azimuth: z.number().nullish(),
   hmac: z.string().optional(),
+  // `.catch` (not `.default`) so an unrecognized/absent license from the server
+  // falls back instead of throwing and breaking the whole viewer — matching the
+  // "unknown → default" rule in getPhotoLicense()/the tile renderer.
+  license: GalleryLicenseSchema.catch(DEFAULT_PHOTO_LICENSE),
+  // Timestamp the current license took effect (latest license-history entry);
+  // shown as "licensed under … since …" in the viewer.
+  licenseSince: IsoDateSchema.nullish(),
 });
 
 export type Picture = z.infer<typeof PictureSchema>;
@@ -108,6 +122,7 @@ export const GalleryFilterSchema = z.object({
   ratingTo: z.number().optional(),
   pano: z.boolean().optional(),
   premium: z.boolean().optional(),
+  license: z.array(GalleryLicenseSchema).optional(),
 });
 
 export type GalleryFilter = z.infer<typeof GalleryFilterSchema>;
@@ -211,6 +226,16 @@ export const galleryQuickChangePremium = createAction<boolean>(
 
 export const galleryAllPremiumOrFree = createAction<'premium' | 'free'>(
   'GALLERY_ALL_PREMIUM_OR_FREE',
+);
+
+/** Sets the license on every current upload item, and the persisted default. */
+export const gallerySetLicense = createAction<GalleryLicense>(
+  'GALLERY_SET_LICENSE',
+);
+
+/** Relicenses all of the current user's already-uploaded photos. */
+export const galleryAllOfLicense = createAction<GalleryLicense>(
+  'GALLERY_ALL_OF_LICENSE',
 );
 
 export const galleryToggleDirection = createAction<boolean | undefined>(

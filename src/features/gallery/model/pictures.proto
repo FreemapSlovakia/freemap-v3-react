@@ -16,6 +16,7 @@ message Picture {
   optional string title = 13;
   optional string description = 14;
   optional string user = 15;
+  optional string license = 17;
 }
 
 message PicturesResponse {

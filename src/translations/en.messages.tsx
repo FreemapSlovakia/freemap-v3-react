@@ -297,6 +297,7 @@ const messages: Messages = {
           hostedBy="hosted by"
         />
       ),
+      photosCc: 'various Creative Commons licenses',
     },
     configureLayers: 'Configure map layers',
     customMaps: 'Custom maps',

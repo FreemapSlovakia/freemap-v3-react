@@ -11,6 +11,10 @@ import {
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
+  type GalleryLicense,
+  GalleryLicenseSchema,
+} from '@features/gallery/licenses.js';
+import {
   GalleryColorizeBySchema,
   type GalleryFilter,
   galleryClear,
@@ -922,6 +926,16 @@ function handleGallery(
 
   const qPremium = typeof a !== 'string' ? undefined : a === 'true';
 
+  a = query['gallery-license'];
+
+  const qLicenseAll = (
+    a === undefined ? [] : Array.isArray(a) ? a : [a]
+  ).filter(
+    (x): x is GalleryLicense => GalleryLicenseSchema.safeParse(x).success,
+  );
+
+  const qLicense = qLicenseAll.length > 0 ? qLicenseAll : undefined;
+
   if (
     qUserId ||
     qGalleryTag != null ||
@@ -932,7 +946,8 @@ function handleGallery(
     qCreatedAtFrom ||
     qCreatedAtTo ||
     qPano !== undefined ||
-    qPremium !== undefined
+    qPremium !== undefined ||
+    qLicense
   ) {
     const { filter } = getState().gallery;
 
@@ -992,6 +1007,10 @@ function handleGallery(
 
     if (qPremium !== filter.premium) {
       newFilter.premium = qPremium;
+    }
+
+    if (qLicense && (filter.license ?? []).join(',') !== qLicense.join(',')) {
+      newFilter.license = qLicense;
     }
 
     if (Object.keys(newFilter).length !== 0) {

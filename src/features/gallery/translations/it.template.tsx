@@ -46,6 +46,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     createdAt: 'Data di caricamento',
     season: 'Stagione',
     premium: 'Premium',
+    license: 'Licenza',
   },
 
   viewer: {
@@ -102,7 +103,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
         <li>Carica soltanto foto di panorami o di documentazione. I ritratti e le macro non sono accettate e saranno eliminate senza preavviso.</li>
         <li>Carica soltanto foto scattate da te e di tua proprietà.</li>
         <li>Didascalie o commenti che non si riferiscono direttamente al contenuto delle foto caricate o che contraddicono i principi generalmente accettati di convivenza civile verranno rimossi. I trasgressori di questa regola saranno avvisati e, in caso di ripetute violazioni, il loro account nell'applicazione potrebbe essere cancellato.</li>
-        <li>Caricando le foto, accetti che esse saranno distribuite secondo i termini di licenza CC BY-SA 4.0.</li>
+        <li>Caricando le foto, accetti che esse saranno distribuite secondo i termini della licenza che scegli per ciascuna di esse (CC BY-SA 4.0 per impostazione predefinita).</li>
         <li>L'operatore (Freemap.sk) declina ogni responsabilità e non risponde per danni diretti o indiretti derivanti dalla pubblicazione di una foto in galleria. La persona che ha caricato l'immagine sul server è pienamente responsabile della foto.</li>
         <li>L'operatore si riserva il diritto di modificare la descrizione, il nome, la posizione e i tag della foto, o di eliminare la foto se il contenuto è inappropriato (in violazione di queste regole).</li>
         <li>L'operatore si riserva il diritto di eliminare l'account nel caso in cui l'utente violi ripetutamente la politica della galleria pubblicando contenuti inappropriati.</li>
@@ -113,6 +114,32 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
       "Mostra automaticamente l'anteprima (aumenta il consumo di CPU e memoria)",
     premium: 'Disponibile solo per gli utenti con accesso completo',
     loadPreview: 'Carica anteprima',
+  },
+  license: {
+    label: 'Licenza',
+    chooseForAll: 'Imposta la licenza di tutte le mie foto',
+    changeNote:
+      "Il cambio di licenza vale solo per l'uso futuro; le copie ottenute in precedenza mantengono la licenza con cui sono state concesse.",
+    since: 'Dal',
+    names: {
+      'CC0-1.0': 'CC0 1.0 (pubblico dominio)',
+      'CC-BY-4.0': 'CC BY 4.0',
+      'CC-BY-SA-4.0': 'CC BY-SA 4.0',
+      'CC-BY-NC-4.0': 'CC BY-NC 4.0',
+      'CC-BY-NC-SA-4.0': 'CC BY-NC-SA 4.0',
+    },
+    descriptions: {
+      'CC0-1.0':
+        'Rinunci a tutti i diritti e rilasci la foto nel pubblico dominio — chiunque può usarla per qualsiasi scopo senza attribuzione.',
+      'CC-BY-4.0':
+        "Altri possono condividere e modificare la foto, anche a fini commerciali, purché citino l'autore.",
+      'CC-BY-SA-4.0':
+        "Altri possono condividere e modificare la foto, anche a fini commerciali, purché citino l'autore e distribuiscano il proprio lavoro con la stessa licenza.",
+      'CC-BY-NC-4.0':
+        "Altri possono condividere e modificare la foto per scopi non commerciali, purché citino l'autore.",
+      'CC-BY-NC-SA-4.0':
+        "Altri possono condividere e modificare la foto per scopi non commerciali, purché citino l'autore e distribuiscano il proprio lavoro con la stessa licenza.",
+    },
   },
 
   locationPicking: {
@@ -166,6 +193,8 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     confirmPremium:
       'Includere tutte le tue foto nei contenuti premium? Solo gli utenti con accesso premium potranno vederle.',
     confirmFree: 'Rendere tutte le tue foto accessibili a tutti?',
+    confirmLicense: (license) =>
+      `Impostare la licenza di tutte le tue foto su ${license}? Le foto che usano già un'altra licenza saranno rilicenziate d'ora in poi.`,
   },
 
   recentTags: 'Tag recenti da assegnare:',

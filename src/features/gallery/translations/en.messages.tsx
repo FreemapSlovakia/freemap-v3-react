@@ -42,6 +42,7 @@ const en: GalleryMessages = {
     createdAt: 'Upload date',
     season: 'Season',
     premium: 'Premium',
+    license: 'License',
   },
   viewer: {
     title: 'Photo',
@@ -95,7 +96,7 @@ const en: GalleryMessages = {
         <li>Upload only photos of landscapes or documentation pictures. Portraits and macro photos are undesirable and will be deleted without warning.</li>
         <li>Please upload only your own photos.</li>
         <li>Captions or comments that do not directly relate to the content of the uploaded photos, or contradict generally accepted principles of civilized coexistence will be removed. Violators of this rule will be warned, and in case of repeated violations, their account in the application may be canceled.</li>
-        <li>By uploading the photos, you agree they will be distributed under the terms of CC BY-SA 4.0 license.</li>
+        <li>By uploading the photos, you agree they will be distributed under the terms of the license you choose for each of them (CC BY-SA 4.0 by default).</li>
         <li>The operator (Freemap.sk) hereby disclaims all liability and is not liable for direct or indirect damages resulting from publication of a photo in the gallery. The person who has uploaded the picture on the server is fully responsible for the photo.</li>
         <li>The operator reserves the right to edit the description, name, position and tags of photo, or to delete the photo if the content is inappropriate (violate these rules).</li>
         <li>The operator reserves the right to delete the account in case that the user repeatedly violates the gallery policy by publishing inappropriate content.</li>
@@ -105,6 +106,32 @@ const en: GalleryMessages = {
     showPreview: 'Automatically show previews (uses more CPU load and memory)',
     loadPreview: 'Load preview',
     premium: 'Make available only to users with premium access',
+  },
+  license: {
+    label: 'License',
+    chooseForAll: 'Set the license of all my photos',
+    changeNote:
+      'Changing the license applies only to future use; copies obtained earlier keep the license they were given under.',
+    since: 'Since',
+    names: {
+      'CC0-1.0': 'CC0 1.0 (Public Domain)',
+      'CC-BY-4.0': 'CC BY 4.0',
+      'CC-BY-SA-4.0': 'CC BY-SA 4.0',
+      'CC-BY-NC-4.0': 'CC BY-NC 4.0',
+      'CC-BY-NC-SA-4.0': 'CC BY-NC-SA 4.0',
+    },
+    descriptions: {
+      'CC0-1.0':
+        'You waive all rights and place the photo in the public domain — anyone may use it for anything without credit.',
+      'CC-BY-4.0':
+        'Others may share and adapt the photo, including commercially, as long as they give credit.',
+      'CC-BY-SA-4.0':
+        'Others may share and adapt the photo, including commercially, as long as they give credit and share their work under the same license.',
+      'CC-BY-NC-4.0':
+        'Others may share and adapt the photo for non-commercial purposes, as long as they give credit.',
+      'CC-BY-NC-SA-4.0':
+        'Others may share and adapt the photo for non-commercial purposes, as long as they give credit and share their work under the same license.',
+    },
   },
   locationPicking: {
     title: 'Select photo location',
@@ -145,6 +172,8 @@ const en: GalleryMessages = {
     confirmPremium:
       'Include all your photos in premium content? Only users with premium access will be able to see them.',
     confirmFree: 'Make all your photos accessible to everyone?',
+    confirmLicense: (license) =>
+      `Set the license of all your photos to ${license}? Photos that already use a different license will be relicensed from now on.`,
   },
 };
 

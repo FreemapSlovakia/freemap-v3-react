@@ -43,6 +43,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     createdAt: 'Datum nalaganja',
     season: 'Letni čas',
     premium: 'Premium',
+    license: 'Licenca',
   },
   viewer: {
     title: 'Fotografija',
@@ -96,7 +97,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
         <li>Nalagajte samo fotografije krajine ali dokumentacijske slike. Portreti in makro fotografije so nezaželeni in bodo izbrisani brez opozorila.</li>
         <li>Nalagajte samo lastne fotografije.</li>
         <li>Napisi ali komentarji, ki se ne nanašajo neposredno na vsebino naloženih fotografij ali nasprotujejo splošno sprejetim načelom civiliziranega sobivanja, bodo odstranjeni. Kršitelji tega pravila bodo opozorjeni, ob ponavljajočih se kršitvah pa je njihov račun v aplikaciji lahko ukinjen.</li>
-        <li>Z nalaganjem fotografij se strinjate, da bodo razširjane pod pogoji licence CC BY-SA 4.0.</li>
+        <li>Z nalaganjem fotografij se strinjate, da bodo razširjane pod pogoji licence, ki jo izberete za vsako od njih (privzeto CC BY-SA 4.0).</li>
         <li>Upravljavec (Freemap.sk) se s tem odreka vsakršni odgovornosti in ne odgovarja za neposredno ali posredno škodo, nastalo z objavo fotografije v galeriji. Za fotografijo je v celoti odgovorna oseba, ki je sliko naložila na strežnik.</li>
         <li>Upravljavec si pridržuje pravico do urejanja opisa, imena, položaja in oznak fotografije ali do izbrisa fotografije, če je vsebina neprimerna (krši ta pravila).</li>
         <li>Upravljavec si pridržuje pravico do izbrisa računa v primeru, da uporabnik ponavljajoče krši pravila galerije z objavljanjem neprimerne vsebine.</li>
@@ -107,6 +108,32 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'Samodejno prikaži predoglede (porabi več procesorske moči in pomnilnika)',
     loadPreview: 'Naloži predogled',
     premium: 'Daj na voljo samo uporabnikom s premium dostopom',
+  },
+  license: {
+    label: 'Licenca',
+    chooseForAll: 'Nastavi licenco vseh mojih fotografij',
+    changeNote:
+      'Sprememba licence velja le za prihodnjo uporabo; prej pridobljene kopije obdržijo licenco, pod katero so bile dane.',
+    since: 'Od',
+    names: {
+      'CC0-1.0': 'CC0 1.0 (javna domena)',
+      'CC-BY-4.0': 'CC BY 4.0',
+      'CC-BY-SA-4.0': 'CC BY-SA 4.0',
+      'CC-BY-NC-4.0': 'CC BY-NC 4.0',
+      'CC-BY-NC-SA-4.0': 'CC BY-NC-SA 4.0',
+    },
+    descriptions: {
+      'CC0-1.0':
+        'Odpoveste se vsem pravicam in fotografijo objavite kot javno domeno — vsakdo jo lahko uporabi za karkoli brez navedbe avtorja.',
+      'CC-BY-4.0':
+        'Drugi lahko fotografijo delijo in predelujejo, tudi komercialno, če navedejo avtorja.',
+      'CC-BY-SA-4.0':
+        'Drugi lahko fotografijo delijo in predelujejo, tudi komercialno, če navedejo avtorja in svoje delo delijo pod isto licenco.',
+      'CC-BY-NC-4.0':
+        'Drugi lahko fotografijo delijo in predelujejo za nekomercialne namene, če navedejo avtorja.',
+      'CC-BY-NC-SA-4.0':
+        'Drugi lahko fotografijo delijo in predelujejo za nekomercialne namene, če navedejo avtorja in svoje delo delijo pod isto licenco.',
+    },
   },
   locationPicking: {
     title: 'Izberite lokacijo fotografije',
@@ -149,6 +176,8 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     confirmPremium:
       'Vključim vse vaše fotografije v premium vsebino? Videli jih bodo lahko samo uporabniki s premium dostopom.',
     confirmFree: 'Dam vse vaše fotografije na voljo vsem?',
+    confirmLicense: (license) =>
+      `Nastavim licenco vseh vaših fotografij na ${license}? Fotografije, ki že uporabljajo drugo licenco, bodo odslej ponovno licencirane.`,
   },
 };
 

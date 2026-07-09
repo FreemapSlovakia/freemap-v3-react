@@ -45,6 +45,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     createdAt: 'Feltöltés dátuma',
     season: 'Évszak',
     premium: 'Prémium',
+    license: 'Licenc',
   },
 
   viewer: {
@@ -101,7 +102,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
         <li>Csak tájak fényképeit vagy dokumentációs jellegű képeket töltsön fel. A portrék és a makrofényképek nem kívánatosak, és figyelmeztetés nélkül töröltetnek.</li>
         <li>Kérjük, csak a saját fényképeit töltse fel.</li>
         <li>Azok a feliratok vagy megjegyzések, amelyek nem kapcsolódnak közvetlenül a feltöltött fotók tartalmához, vagy ellentmondanak a civilizált együttélés általánosan elfogadott elveinek, eltávolításra kerülnek. A szabály megsértőit figyelmeztetjük, ismételt megsértése esetén az alkalmazásban lévő fiókjukat törölhetjük.</li>
-        <li>A fényképek feltöltésével hozzájárul, hogy azokat a CC BY-SA 4.0 licenc alapján terjesszék.</li>
+        <li>A fényképek feltöltésével hozzájárul, hogy azokat az egyenként kiválasztott licenc alapján terjesszék (alapértelmezetten CC BY-SA 4.0).</li>
         <li>Az üzemeltető (Freemap.sk) minden kötelezettséget elhárít, és nem vállal felelősséget a fénykép galériában történő közzétételéből eredő közvetlen vagy közvetett károkért. A fényképért teljes mértékben az azt a kiszolgálóra feltöltő személy felel.</li>
         <li>Az üzemeltető fenntartja a jogot, hogy a fénykép leírását, nevét, pozíciójáőt és címkéit szerkesszt, illetve hogy a fényképet törölje, ha annak tartalma nem megfelelő (megszegi ezeket a szabályokat).</li>
         <li>Az üzemeltető fenntartja a jogot, hogy törölje azt a fiókot, amelynek felhasználója nem megfelelő tartalom közzétételével ismételten megsérti a galéria szabályzatát.</li>
@@ -113,6 +114,32 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium:
       'Csak teljes hozzáféréssel rendelkező felhasználók számára elérhető',
     loadPreview: 'Előnézet betöltése',
+  },
+  license: {
+    label: 'Licenc',
+    chooseForAll: 'Az összes fotóm licencének beállítása',
+    changeNote:
+      'A licenc módosítása csak a jövőbeli felhasználásra vonatkozik; a korábban megszerzett példányok megtartják azt a licencet, amellyel átadták őket.',
+    since: 'Ekkortól:',
+    names: {
+      'CC0-1.0': 'CC0 1.0 (közkincs)',
+      'CC-BY-4.0': 'CC BY 4.0',
+      'CC-BY-SA-4.0': 'CC BY-SA 4.0',
+      'CC-BY-NC-4.0': 'CC BY-NC 4.0',
+      'CC-BY-NC-SA-4.0': 'CC BY-NC-SA 4.0',
+    },
+    descriptions: {
+      'CC0-1.0':
+        'Lemond minden jogról, és a fotót közkinccsé teszi — bárki bármilyen célra felhasználhatja a szerző feltüntetése nélkül.',
+      'CC-BY-4.0':
+        'Mások megoszthatják és átdolgozhatják a fotót, akár kereskedelmi célra is, ha feltüntetik a szerzőt.',
+      'CC-BY-SA-4.0':
+        'Mások megoszthatják és átdolgozhatják a fotót, akár kereskedelmi célra is, ha feltüntetik a szerzőt, és a munkájukat azonos licenc alatt terjesztik.',
+      'CC-BY-NC-4.0':
+        'Mások megoszthatják és átdolgozhatják a fotót nem kereskedelmi célra, ha feltüntetik a szerzőt.',
+      'CC-BY-NC-SA-4.0':
+        'Mások megoszthatják és átdolgozhatják a fotót nem kereskedelmi célra, ha feltüntetik a szerzőt, és a munkájukat azonos licenc alatt terjesztik.',
+    },
   },
 
   locationPicking: {
@@ -163,6 +190,8 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     confirmPremium:
       'Felveszi minden fotóját a prémium tartalomba? Csak a prémium hozzáféréssel rendelkező felhasználók láthatják őket.',
     confirmFree: 'Elérhetővé teszi minden fotóját mindenki számára?',
+    confirmLicense: (license) =>
+      `Minden fotója licencét ${license} értékre állítja? A már más licencet használó fotók mostantól újralicencelésre kerülnek.`,
   },
 
   recentTags: 'Legutóbbi címkék hozzárendeléshez:',

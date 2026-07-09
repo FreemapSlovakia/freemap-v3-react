@@ -26,12 +26,14 @@ import {
   galleryMergeItem,
   galleryRemoveItem,
   gallerySetItemForPositionPicking,
+  gallerySetLicense,
   galleryTogglePremium,
   galleryToggleShowPreview,
   galleryUpload,
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import type { PictureModel } from './GalleryEditForm.js';
+import { GalleryLicenseSelect } from './GalleryLicenseSelect.js';
 import { GalleryUploadItem } from './GalleryUploadItem.js';
 import classes from './GalleryUploadModal.module.css';
 
@@ -68,6 +70,22 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     () => (items.length ? items.every((item) => item.premium) : defaultPremium),
     [items, defaultPremium],
   );
+
+  const defaultLicense = useAppSelector(
+    (state) => state.gallerySettings.license,
+  );
+
+  // The batch-wide license: the common one when all items agree, else the
+  // persisted default (undefined renders a "mixed" placeholder on the toggle).
+  const license = useMemo(() => {
+    if (!items.length) {
+      return defaultLicense;
+    }
+
+    const first = items[0].license;
+
+    return items.every((item) => item.license === first) ? first : undefined;
+  }, [items, defaultLicense]);
 
   const handleItemMerge = useCallback(
     (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {
@@ -243,6 +261,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
                 dirtyPosition,
                 azimuth,
                 premium,
+                license,
               }) => (
                 <GalleryUploadItem
                   key={id}
@@ -252,6 +271,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
                   previewKey={previewKey}
                   model={{
                     premium,
+                    license,
                     dirtyPosition,
                     azimuth: typeof azimuth === 'number' ? String(azimuth) : '',
                     title,
@@ -294,6 +314,16 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
               label={gm?.uploadModal.premium}
               ref={premiumCheck}
             />
+
+            <Form.Group controlId="upload-license" className="mt-2 mb-1">
+              <Form.Label>{gm?.license.label}</Form.Label>
+
+              <GalleryLicenseSelect
+                value={license}
+                placeholder="—"
+                onChange={(l) => dispatch(gallerySetLicense(l))}
+              />
+            </Form.Group>
 
             <div
               {...getRootProps({

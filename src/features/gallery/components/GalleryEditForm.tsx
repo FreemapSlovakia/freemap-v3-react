@@ -12,6 +12,7 @@ import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, type Tag } from 'react-tag-autocomplete';
+import type { GalleryLicense } from '../licenses.js';
 import {
   type GalleryItemError,
   type GalleryTag,
@@ -20,6 +21,7 @@ import {
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { Azimuth } from './Azimuth.js';
+import { GalleryLicenseSelect } from './GalleryLicenseSelect.js';
 import { RecentTags } from './RecentTags.js';
 
 export interface PictureModel {
@@ -30,6 +32,7 @@ export interface PictureModel {
   dirtyPosition: string;
   azimuth: string;
   premium: boolean;
+  license: GalleryLicense;
 }
 
 interface Props {
@@ -98,6 +101,13 @@ export function GalleryEditForm({
   const handlePremiumChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       changeModel('premium', e.currentTarget.checked);
+    },
+    [changeModel],
+  );
+
+  const handleLicenseChange = useCallback(
+    (license: GalleryLicense) => {
+      changeModel('license', license);
     },
     [changeModel],
   );
@@ -242,6 +252,22 @@ export function GalleryEditForm({
           existingTags={model.tags}
           onAdd={(tag) => handleTagAddition({ label: tag, value: tag })}
         />
+      </Form.Group>
+
+      <Form.Group controlId={`license-${id ?? 'x'}`} className="mb-3">
+        <Form.Label>{gm?.license.label}</Form.Label>
+
+        <GalleryLicenseSelect
+          value={model.license}
+          onChange={handleLicenseChange}
+        />
+
+        <Form.Text className="text-muted lh-sm d-block">
+          {gm?.license.descriptions[model.license]}
+          {id === undefined && gm?.license.changeNote
+            ? ` ${gm.license.changeNote}`
+            : ''}
+        </Form.Text>
       </Form.Group>
 
       <Form.Check

@@ -37,6 +37,7 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     createdAt: 'Data przesłania',
     season: 'Sezon',
     premium: 'Premium',
+    license: 'Licencja',
   },
 
   viewer: {
@@ -93,7 +94,7 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
         <li>Przesyłaj tylko zdjęcia krajobrazów lub zdjęcia dokumentacyjne. Portrety i zdjęcia makro są niepożądane i będą usuwane bez ostrzeżenia.</li>
         <li>Przesyłaj tylko własne zdjęcia lub takie, do których posiadasz zgodę na udostępnienie.</li>
         <li>Podpisy lub komentarze, które nie odnoszą się bezpośrednio do treści przesłanych zdjęć lub są sprzeczne z ogólnie przyjętymi zasadami współżycia społecznego, będą usuwane. Osoby naruszające te zasady będą ostrzegane, a w przypadku powtórzenia – ich konto może zostać usunięte.</li>
-        <li>Przesyłając zdjęcia, wyrażasz zgodę na ich rozpowszechnianie na licencji CC BY-SA 4.0.</li>
+        <li>Przesyłając zdjęcia, wyrażasz zgodę na ich rozpowszechnianie na licencji, którą wybierzesz dla każdego z nich (domyślnie CC BY-SA 4.0).</li>
         <li>Operator (Freemap.sk) zrzeka się wszelkiej odpowiedzialności i nie odpowiada za szkody bezpośrednie ani pośrednie wynikające z publikacji zdjęcia w galerii. Pełną odpowiedzialność ponosi osoba, która przesłała zdjęcie na serwer.</li>
         <li>Operator zastrzega sobie prawo do edycji opisu, nazwy, lokalizacji i tagów zdjęcia lub jego usunięcia, jeśli jego treść jest nieodpowiednia (narusza te zasady).</li>
         <li>Operator zastrzega sobie prawo do usunięcia konta użytkownika, który wielokrotnie narusza zasady galerii publikując nieodpowiednie treści.</li>
@@ -104,6 +105,32 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'Automatyczne wyświetlanie podglądu (zwiększone zużycie procesora i pamięci)',
     premium: 'Udostępnij tylko użytkownikom z dostępem premium',
     loadPreview: 'Wczytaj podgląd',
+  },
+  license: {
+    label: 'Licencja',
+    chooseForAll: 'Ustaw licencję wszystkich moich zdjęć',
+    changeNote:
+      'Zmiana licencji dotyczy tylko przyszłego użycia; kopie uzyskane wcześniej zachowują licencję, na jakiej zostały udostępnione.',
+    since: 'Od',
+    names: {
+      'CC0-1.0': 'CC0 1.0 (domena publiczna)',
+      'CC-BY-4.0': 'CC BY 4.0',
+      'CC-BY-SA-4.0': 'CC BY-SA 4.0',
+      'CC-BY-NC-4.0': 'CC BY-NC 4.0',
+      'CC-BY-NC-SA-4.0': 'CC BY-NC-SA 4.0',
+    },
+    descriptions: {
+      'CC0-1.0':
+        'Zrzekasz się wszelkich praw i przekazujesz zdjęcie do domeny publicznej — każdy może z niego korzystać w dowolnym celu bez podawania autora.',
+      'CC-BY-4.0':
+        'Inni mogą udostępniać i modyfikować zdjęcie, również komercyjnie, o ile podadzą autora.',
+      'CC-BY-SA-4.0':
+        'Inni mogą udostępniać i modyfikować zdjęcie, również komercyjnie, o ile podadzą autora i udostępnią swoje dzieło na tej samej licencji.',
+      'CC-BY-NC-4.0':
+        'Inni mogą udostępniać i modyfikować zdjęcie do celów niekomercyjnych, o ile podadzą autora.',
+      'CC-BY-NC-SA-4.0':
+        'Inni mogą udostępniać i modyfikować zdjęcie do celów niekomercyjnych, o ile podadzą autora i udostępnią swoje dzieło na tej samej licencji.',
+    },
   },
 
   locationPicking: {
@@ -129,6 +156,8 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     confirmPremium:
       'Uwzględnić wszystkie Twoje zdjęcia w treściach premium? Zobaczą je tylko użytkownicy z dostępem premium.',
     confirmFree: 'Udostępnić wszystkie Twoje zdjęcia dla wszystkich?',
+    confirmLicense: (license) =>
+      `Ustawić licencję wszystkich Twoich zdjęć na ${license}? Zdjęcia, które używają już innej licencji, zostaną odtąd przelicencjonowane.`,
   },
 
   legend: 'Legenda',

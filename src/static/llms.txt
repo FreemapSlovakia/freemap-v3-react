@@ -92,9 +92,9 @@ Toggles the photos toolbar and the community-photos map layer. Photos appear as 
 - **Leaderboard** (<kbd>p</kbd> <kbd>b</kbd>) — modal with a time-period selector (All time / last 3 months / last 30 days) and ranking tables: photos per author, and photos per author per country
 - **Settings** (gear dropdown) — Show shooting direction, Notify photo comments via e-mail, plus premium options: "Include all my photos in premium content" and "Make all my photos accessible to everyone"
 
-**Upload modal:** drag-and-drop or pick photos; per photo set name, description, capture date/time, location (with "Set the location" on the map), azimuth (shooting direction), tags, and an optional "make available only to premium users" flag. Shows the gallery rules (max 10 MB, landscapes/documentation only, own photos only, published under CC BY-SA 4.0, etc.).
+**Upload modal:** drag-and-drop or pick photos; per photo set name, description, capture date/time, location (with "Set the location" on the map), azimuth (shooting direction), tags, a license (Creative Commons: CC0, CC BY, CC BY-SA — the default, CC BY-NC, CC BY-NC-SA), and an optional "make available only to premium users" flag. Shows the gallery rules (max 10 MB, landscapes/documentation only, own photos only, published under the license you choose per photo, etc.).
 
-**Photo viewer:** shows the full image with CC BY-SA 4.0 attribution, uploader, capture date and rating; users can comment, rate, modify (own photos), delete, show on the map, open fullscreen, or open in an external app. Photos can be navigated sequentially (e.g. "1 / 51"). URL path (open photo): `/#show=gallery-viewer/<id>` (legacy `/#image=<id>` still works).
+**Photo viewer:** shows the full image with its Creative Commons license (badge + "licensed since" date), uploader, capture date and rating; users can comment, rate, modify (own photos), delete, show on the map, open fullscreen, or open in an external app. Photos can be navigated sequentially (e.g. "1 / 51"). URL path (open photo): `/#show=gallery-viewer/<id>` (legacy `/#image=<id>` still works).
 
 ### My maps
 
@@ -571,7 +571,7 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 | name                       | id  | technology        | minZ | maxNativeZ | premiumFromZ | creditsPerMTile | supersededBy | shortcut | countries | notes                                                      |
 | -------------------------- | --- | ----------------- | ---: | ---------: | -----------: | --------------: | ------------ | -------- | --------- | ---------------------------------------------------------- |
 | Data layer                 | i   | interactive       |      |            |              |                 |              | ⇧d       |           | Interactive items of all tools (drawing, route, search, …) |
-| Photos                     | I   | gallery           |    0 |            |              |                 |              | ⇧f       |           | CC BY-SA 4.0 (user photos); premium-only photos option     |
+| Photos                     | I   | gallery           |    0 |            |              |                 |              | ⇧f       |           | Creative Commons, chosen per photo (CC BY-SA 4.0 default); premium-only photos option |
 | Wikipedia                  | w   | wikipedia         |    8 |            |              |                 |              | ⇧w       |           | Wikipedia                                                  |
 | Wikimedia Commons photos   | M   | wikimediaCommons  |   13 |            |              |                 |              | ⇧m       |           | Wikimedia Commons                                          |
 | Forest tracks NLC (2017)   | l1  | tile              |   11 |         15 |              |            1000 | l2           |          | sk        | © NLC Zvolen (legacy)                                      |

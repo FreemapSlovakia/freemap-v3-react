@@ -8,6 +8,7 @@ import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { latLonToString } from '@shared/geoutils.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { PictureModel } from '../components/GalleryEditForm.js';
+import { DEFAULT_PHOTO_LICENSE } from '../licenses.js';
 import {
   type GalleryFilter,
   type GalleryItem,
@@ -32,6 +33,7 @@ import {
   gallerySetItemError,
   gallerySetItemForPositionPicking,
   gallerySetLayerDirty,
+  gallerySetLicense,
   gallerySetPickingPosition,
   gallerySetTags,
   gallerySetUsers,
@@ -286,6 +288,7 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
                 ? String(state.image.azimuth)
                 : '',
             premium: Boolean(state.image?.premium),
+            license: state.image?.license ?? DEFAULT_PHOTO_LICENSE,
           };
     })
     .addCase(gallerySetEditModel, (state, action) => {
@@ -303,6 +306,11 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     .addCase(galleryTogglePremium, (state, action) => {
       for (const item of state.items) {
         item.premium = action.payload;
+      }
+    })
+    .addCase(gallerySetLicense, (state, action) => {
+      for (const item of state.items) {
+        item.license = action.payload;
       }
     })
     .addCase(l10nSetLanguage, (state, action) => {

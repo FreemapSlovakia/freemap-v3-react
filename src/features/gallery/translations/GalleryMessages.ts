@@ -1,4 +1,5 @@
 import type { JSX, ReactNode } from 'react';
+import type { GalleryLicense } from '../licenses.js';
 import type { GalleryColorizeBy, GalleryListOrder } from '../model/actions.js';
 
 type Err = { err: unknown };
@@ -75,6 +76,14 @@ export type GalleryMessages = {
     loadPreview: string;
     premium: string;
   };
+  license: {
+    label: string;
+    chooseForAll: string;
+    changeNote: string;
+    since: string;
+    names: Record<GalleryLicense, string>;
+    descriptions: Record<GalleryLicense, string>;
+  };
   locationPicking: {
     title: string;
   };
@@ -108,5 +117,6 @@ export type GalleryMessages = {
     free: string;
     confirmPremium: string;
     confirmFree: string;
+    confirmLicense: (license: string) => string;
   };
 };

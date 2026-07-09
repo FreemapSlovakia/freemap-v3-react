@@ -360,6 +360,10 @@ export const urlProcessor: Processor = {
       historyParts.push(['gallery-premium', galleryFilter.premium]);
     }
 
+    for (const license of galleryFilter.license ?? []) {
+      historyParts.push(['gallery-license', license]);
+    }
+
     if (objects.active.length) {
       historyParts.push(['objects', objects.active.join(';')]);
     }

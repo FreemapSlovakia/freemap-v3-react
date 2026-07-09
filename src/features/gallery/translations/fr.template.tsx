@@ -34,6 +34,7 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     createdAt: 'Date d’import',
     season: 'Saison',
     premium: 'Premium',
+    license: 'Licence',
   },
   viewer: {
     uploaded: ({ username, createdAt }) => (
@@ -85,7 +86,7 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
         <li>N’importez que des photos de paysages ou des photos documentaires. Les portraits et les photos macro sont indésirables et seront supprimés sans avertissement.</li>
         <li>Veuillez n’importer que vos propres photos.</li>
         <li>Les légendes ou commentaires qui ne se rapportent pas directement au contenu des photos importées, ou qui contreviennent aux principes généralement admis d’une coexistence civilisée, seront supprimés. Les contrevenants à cette règle seront avertis et, en cas de récidive, leur compte dans l’application pourra être supprimé.</li>
-        <li>En important les photos, vous acceptez qu’elles soient diffusées selon les termes de la licence CC BY-SA 4.0.</li>
+        <li>En important les photos, vous acceptez qu’elles soient diffusées selon les termes de la licence que vous choisissez pour chacune d’elles (CC BY-SA 4.0 par défaut).</li>
         <li>L’exploitant (Freemap.sk) décline par la présente toute responsabilité et n’est pas responsable des dommages directs ou indirects résultant de la publication d’une photo dans la galerie. La personne qui a importé la photo sur le serveur est entièrement responsable de celle-ci.</li>
         <li>L’exploitant se réserve le droit de modifier la description, le nom, la position et les étiquettes d’une photo, ou de supprimer la photo si son contenu est inapproprié (en violation de ces règles).</li>
         <li>L’exploitant se réserve le droit de supprimer le compte au cas où l’utilisateur enfreindrait de manière répétée le règlement de la galerie en publiant du contenu inapproprié.</li>
@@ -98,6 +99,32 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'Afficher automatiquement les aperçus (consomme davantage de processeur et de mémoire)',
     loadPreview: 'Charger l’aperçu',
     premium: 'Rendre disponible uniquement aux utilisateurs avec accès premium',
+  },
+  license: {
+    label: 'Licence',
+    chooseForAll: 'Définir la licence de toutes mes photos',
+    changeNote:
+      'Le changement de licence ne s’applique qu’à l’utilisation future ; les copies obtenues auparavant conservent la licence sous laquelle elles ont été fournies.',
+    since: 'Depuis',
+    names: {
+      'CC0-1.0': 'CC0 1.0 (domaine public)',
+      'CC-BY-4.0': 'CC BY 4.0',
+      'CC-BY-SA-4.0': 'CC BY-SA 4.0',
+      'CC-BY-NC-4.0': 'CC BY-NC 4.0',
+      'CC-BY-NC-SA-4.0': 'CC BY-NC-SA 4.0',
+    },
+    descriptions: {
+      'CC0-1.0':
+        'Vous renoncez à tous vos droits et placez la photo dans le domaine public — chacun peut l’utiliser à toute fin sans attribution.',
+      'CC-BY-4.0':
+        'D’autres peuvent partager et adapter la photo, y compris à des fins commerciales, à condition de créditer l’auteur.',
+      'CC-BY-SA-4.0':
+        'D’autres peuvent partager et adapter la photo, y compris à des fins commerciales, à condition de créditer l’auteur et de partager leur travail sous la même licence.',
+      'CC-BY-NC-4.0':
+        'D’autres peuvent partager et adapter la photo à des fins non commerciales, à condition de créditer l’auteur.',
+      'CC-BY-NC-SA-4.0':
+        'D’autres peuvent partager et adapter la photo à des fins non commerciales, à condition de créditer l’auteur et de partager leur travail sous la même licence.',
+    },
   },
   locationPicking: {
     title: 'Sélectionnez l’emplacement de la photo',
@@ -138,6 +165,8 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     confirmPremium:
       'Inclure toutes vos photos dans le contenu premium ? Seuls les utilisateurs disposant d’un accès premium pourront les voir.',
     confirmFree: 'Rendre toutes vos photos accessibles à tous ?',
+    confirmLicense: (license) =>
+      `Définir la licence de toutes vos photos sur ${license} ? Les photos utilisant déjà une autre licence seront désormais relicenciées.`,
   },
   sendGalleryEmails: 'Notifier les commentaires sur les photos par e-mail',
   legend: 'Légende',

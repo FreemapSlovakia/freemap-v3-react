@@ -27,7 +27,8 @@ export interface AttributionDef {
     | 'freemap'
     | 'srtm'
     | 'maptiler'
-    | 'outdoorShadingAttribution';
+    | 'outdoorShadingAttribution'
+    | 'photosCc';
   url?: string;
   country?: string;
 }
@@ -922,7 +923,8 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     attribution: [
       {
         type: 'photos',
-        name: 'CC BY-SA 4.0',
+        nameKey: 'photosCc',
+        url: 'https://creativecommons.org/',
       },
     ],
   },

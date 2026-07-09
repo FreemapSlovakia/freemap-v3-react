@@ -38,6 +38,7 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     createdAt: 'Hochladedatum',
     season: 'Jahreszeit',
     premium: 'Premium',
+    license: 'Lizenz',
   },
 
   viewer: {
@@ -94,7 +95,7 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
         <li>Lade nur Landschafts- oder Dokumentationsfotos hoch. Porträts und Makroaufnahmen gelten als unangemessener Inhalt und werden ohne Vorwarnung gelöscht.</li>
         <li>Lade nur eigene Fotos hoch oder solche, für die du eine Freigabe zur Veröffentlichung hast.</li>
         <li>Beschreibungen oder Kommentare, die nicht direkt mit dem Inhalt der hochgeladenen Fotos zusammenhängen oder den allgemein anerkannten Regeln des zivilisierten Zusammenlebens widersprechen, werden entfernt. Verstöße gegen diese Regel führen zu einer Verwarnung, bei wiederholtem Verstoß kann dein Konto gelöscht werden.</li>
-        <li>Die Fotos werden unter der Lizenz CC BY-SA 4.0 weitergegeben.</li>
+        <li>Die Fotos werden unter der Lizenz weitergegeben, die Sie für jedes einzelne wählen (standardmäßig CC BY-SA 4.0).</li>
         <li>Der Betreiber (Freemap.sk) übernimmt keine Verantwortung und haftet nicht für direkte oder indirekte Schäden, die durch die Veröffentlichung eines Fotos in der Galerie entstehen. Die volle Verantwortung trägt die Person, die das Foto auf den Server hochgeladen hat.</li>
         <li>Der Betreiber behält sich das Recht vor, die Beschreibung, den Namen, die Position und die Tags eines Fotos zu ändern oder das Foto zu löschen, wenn dessen Inhalt unangemessen ist (diese Regeln verletzt).</li>
         <li>Der Betreiber behält sich das Recht vor, das Konto eines Nutzers zu löschen, wenn dieser wiederholt gegen die Galerie-Richtlinien durch das Hochladen unangemessener Inhalte verstößt.</li>
@@ -105,6 +106,32 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'Vorschauen automatisch anzeigen (erhöht CPU- und Speicherbedarf)',
     premium: 'Nur für Nutzer mit Premiumzugang verfügbar machen',
     loadPreview: 'Vorschau laden',
+  },
+  license: {
+    label: 'Lizenz',
+    chooseForAll: 'Lizenz aller meiner Fotos festlegen',
+    changeNote:
+      'Eine Lizenzänderung gilt nur für die künftige Nutzung; früher bezogene Kopien behalten die Lizenz, unter der sie bereitgestellt wurden.',
+    since: 'Seit',
+    names: {
+      'CC0-1.0': 'CC0 1.0 (Gemeinfrei)',
+      'CC-BY-4.0': 'CC BY 4.0',
+      'CC-BY-SA-4.0': 'CC BY-SA 4.0',
+      'CC-BY-NC-4.0': 'CC BY-NC 4.0',
+      'CC-BY-NC-SA-4.0': 'CC BY-NC-SA 4.0',
+    },
+    descriptions: {
+      'CC0-1.0':
+        'Sie verzichten auf alle Rechte und geben das Foto gemeinfrei frei — jeder darf es für alles ohne Namensnennung nutzen.',
+      'CC-BY-4.0':
+        'Andere dürfen das Foto teilen und bearbeiten, auch kommerziell, sofern sie den Urheber nennen.',
+      'CC-BY-SA-4.0':
+        'Andere dürfen das Foto teilen und bearbeiten, auch kommerziell, sofern sie den Urheber nennen und ihr Werk unter derselben Lizenz weitergeben.',
+      'CC-BY-NC-4.0':
+        'Andere dürfen das Foto zu nicht-kommerziellen Zwecken teilen und bearbeiten, sofern sie den Urheber nennen.',
+      'CC-BY-NC-SA-4.0':
+        'Andere dürfen das Foto zu nicht-kommerziellen Zwecken teilen und bearbeiten, sofern sie den Urheber nennen und ihr Werk unter derselben Lizenz weitergeben.',
+    },
   },
   locationPicking: {
     title: 'Fotoposition wählen',
@@ -129,6 +156,8 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     confirmPremium:
       'Alle Ihre Fotos in Premium-Inhalte aufnehmen? Nur Benutzer mit Premium-Zugang können sie sehen.',
     confirmFree: 'Alle Ihre Fotos für alle zugänglich machen?',
+    confirmLicense: (license) =>
+      `Die Lizenz aller Ihrer Fotos auf ${license} setzen? Fotos, die bereits eine andere Lizenz verwenden, werden ab jetzt neu lizenziert.`,
   },
 
   legend: 'Legende',

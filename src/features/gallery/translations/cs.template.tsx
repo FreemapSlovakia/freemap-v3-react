@@ -44,6 +44,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     createdAt: 'Datum nahrání',
     season: 'Roční období',
     premium: 'Prémiové',
+    license: 'Licence',
   },
   viewer: {
     title: 'Fotografie',
@@ -97,7 +98,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
         <li>Vkládejte pouze fotografie krajiny včetně dokumentačních fotografií. Portréty a makro-fotografie jsou považovány za nevhodný obsah a budou bez varování smazány.</li>
         <li>Nahrávejte pouze vlastní fotografie nebo fotografie, pro které máte udělen souhlas ke sdílení.</li>
         <li>Popisky nebo komentáře, které se přímo netýkají obsahu načtených fotografií nebo odporují obecně přijímaným zásadám civilizovaného soužití, budou odstraněny. Porušovatelé tohoto pravidla budou varováni a při opakovaném porušování může být jejich účet v aplikaci zrušen.</li>
-        <li>Fotografie jsou dále šířeny pod licencí CC BY-SA 4.0.</li>
+        <li>Fotografie jsou dále šířeny pod licencí, kterou si pro každou z nich zvolíte (výchozí je CC BY-SA 4.0).</li>
         <li>Provozovatel Freemap.sk se tímto zbavuje jakékoli odpovědnosti a neodpovídá za přímé ani nepřímé škody vzniklé zveřejněním fotografie v galerii. Za fotografii nese plnou odpovědnost osoba, která fotografii na server uložila.</li>
         <li>Provozovatel si vyhrazuje právo upravit popis, název, pozici a tagy fotografie nebo fotografii vymazat, pokud je její obsah nevhodný (porušuje tato pravidla).</li>
         <li>Provozovatel si vyhrazuje právo zrušit účet v případě, že uživatel opakovaně porušuje pravidla galerie zveřejňováním nevhodného obsahu.</li>
@@ -107,6 +108,32 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     showPreview: 'Automaticky zobrazit náhledy (náročnější na výkon a paměť)',
     loadPreview: 'Načíst náhled',
     premium: 'Zpřístupnit pouze uživatelům s prémiovým přístupem',
+  },
+  license: {
+    label: 'Licence',
+    chooseForAll: 'Nastavit licenci všech mých fotek',
+    changeNote:
+      'Změna licence platí pouze pro budoucí použití; kopie získané dříve si ponechávají licenci, pod kterou byly poskytnuty.',
+    since: 'Od',
+    names: {
+      'CC0-1.0': 'CC0 1.0 (volné dílo)',
+      'CC-BY-4.0': 'CC BY 4.0',
+      'CC-BY-SA-4.0': 'CC BY-SA 4.0',
+      'CC-BY-NC-4.0': 'CC BY-NC 4.0',
+      'CC-BY-NC-SA-4.0': 'CC BY-NC-SA 4.0',
+    },
+    descriptions: {
+      'CC0-1.0':
+        'Vzdáváte se všech práv a uvolňujete fotku jako volné dílo — kdokoli ji může použít k čemukoli bez uvedení autora.',
+      'CC-BY-4.0':
+        'Ostatní mohou fotku sdílet a upravovat, i komerčně, pokud uvedou autora.',
+      'CC-BY-SA-4.0':
+        'Ostatní mohou fotku sdílet a upravovat, i komerčně, pokud uvedou autora a své dílo šíří pod stejnou licencí.',
+      'CC-BY-NC-4.0':
+        'Ostatní mohou fotku sdílet a upravovat pro nekomerční účely, pokud uvedou autora.',
+      'CC-BY-NC-SA-4.0':
+        'Ostatní mohou fotku sdílet a upravovat pro nekomerční účely, pokud uvedou autora a své dílo šíří pod stejnou licencí.',
+    },
   },
   locationPicking: {
     title: 'Zvolte pozici fotografie',
@@ -149,6 +176,8 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     confirmPremium:
       'Zařadit všechny vaše fotky do prémiového obsahu? Uvidí je pouze uživatelé s prémiovým přístupem.',
     confirmFree: 'Zpřístupnit všechny vaše fotky každému?',
+    confirmLicense: (license) =>
+      `Nastavit licenci všech vašich fotek na ${license}? Fotky, které již používají jinou licenci, budou od nynějška přelicencovány.`,
   },
 };
 

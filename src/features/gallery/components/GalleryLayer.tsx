@@ -104,7 +104,11 @@ class LGalleryLayer extends LGridLayer {
 
     if (this._options) {
       for (const [k, v] of Object.entries(createFilter(this._options.filter))) {
-        if (v != null) {
+        if (Array.isArray(v)) {
+          for (const item of v) {
+            sp.append(k, String(item));
+          }
+        } else if (v != null) {
           sp.set(k, String(v));
         }
       }
@@ -182,6 +186,7 @@ class LGalleryLayer extends LGridLayer {
               pano: picture.pano,
               premium: picture.premium,
               azimuth: picture.azimuth,
+              license: picture.license,
             };
           }) ?? [],
         dpr,

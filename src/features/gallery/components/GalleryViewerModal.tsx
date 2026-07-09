@@ -35,6 +35,7 @@ import {
 import { RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { Rating } from 'react-simple-star-rating';
+import { getPhotoLicense, LicenseBadge } from '../licenses.js';
 import {
   galleryClear,
   galleryDeletePicture,
@@ -177,6 +178,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     lon,
     azimuth,
   } = image ?? {};
+
+  const photoLicense = getPhotoLicense(image?.license);
 
   const premium = Boolean(image?.premium);
 
@@ -428,13 +431,6 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       src={getImageUrl(activeImageId)}
                       alt={title ?? undefined}
                     />
-                    <a
-                      href="https://creativecommons.org/licenses/by-sa/4.0/"
-                      target="cc-by-sa"
-                      rel="noreferrer"
-                    >
-                      CC BY-SA 4.0
-                    </a>
                   </div>
                 )}
 
@@ -530,8 +526,6 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 readonly
               />
 
-              {description && ` ｜ ${description}`}
-
               {tags && tags.length > 0 && ' ｜ '}
 
               {tags?.map((tag) => (
@@ -540,6 +534,37 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   <Badge bg="secondary">{tag}</Badge>
                 </Fragment>
               ))}
+
+              {' ｜ '}
+              <LongPressTooltip
+                label={
+                  <>
+                    {gm?.license.descriptions[photoLicense.id]}
+                    {image.licenseSince && gm?.license.since && (
+                      <>
+                        <br />
+                        {gm.license.since}{' '}
+                        {dateFormat.format(image.licenseSince)}
+                      </>
+                    )}
+                  </>
+                }
+              >
+                {({ props }) => (
+                  <span {...props}>
+                    <LicenseBadge licenseId={photoLicense.id} />{' '}
+                    <a
+                      href={photoLicense.url}
+                      target="license"
+                      rel="noreferrer"
+                    >
+                      {gm?.license.names[photoLicense.id]}
+                    </a>
+                  </span>
+                )}
+              </LongPressTooltip>
+
+              {description && ` ｜ ${description}`}
 
               {!isFullscreen && editModel && (
                 <Form onSubmit={handleSave}>

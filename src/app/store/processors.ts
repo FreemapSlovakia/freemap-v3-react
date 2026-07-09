@@ -21,6 +21,7 @@ import {
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
+import { galleryAllOfLicenseProcessor } from '@features/gallery/model/processors/galleryAllOfLicenseProcessor.js';
 import { galleryDeletePictureProcessor } from '@features/gallery/model/processors/galleryDeletePictureProcessor.js';
 import { galleryFetchUsersProcessor } from '@features/gallery/model/processors/galleryFetchUsersProcessor.js';
 import { galleryItemUploadProcessor } from '@features/gallery/model/processors/galleryItemUploadProcessor.js';
@@ -169,6 +170,7 @@ export const processors = [
   galleryQuickAddTagProcessor,
   galleryItemUploadProcessor,
   galleryMakeAllPremiumOrFreeProcessor,
+  galleryAllOfLicenseProcessor,
   routePlannerRefocusMapProcessor,
   routePlannerToggleElevationChartProcessor,
   routePlannerColorizeProcessor,

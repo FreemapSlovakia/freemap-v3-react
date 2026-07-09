@@ -12,6 +12,7 @@ export function createFilter({
   createdAtTo,
   pano,
   premium,
+  license,
 }: GalleryFilter): z.input<typeof GalleryFilterSchema> {
   return {
     tag,
@@ -24,6 +25,7 @@ export function createFilter({
     createdAtTo: plusDay(createdAtTo)?.toISOString(),
     pano,
     premium,
+    license,
   };
 }
 

@@ -16,6 +16,8 @@ export function usePictureDropHandler(
 ): (files: File[]) => void {
   const premium = useAppSelector((state) => state.gallerySettings.premium);
 
+  const license = useAppSelector((state) => state.gallerySettings.license);
+
   const processFile = useCallback(
     (file: File, cb: (err?: unknown) => void) => {
       const reader = new FileReader();
@@ -134,6 +136,7 @@ export function usePictureDropHandler(
             (takenAtRaw && parseExifDateTime(takenAtRaw.description)) ?? null,
           tags: keywords,
           premium,
+          license,
           errors: [],
         });
 
@@ -172,7 +175,7 @@ export function usePictureDropHandler(
 
       reader.readAsArrayBuffer(isHeif ? file : file.slice(0, 128 * 1024));
     },
-    [showPreview, language, onItemAdd, onItemChange, premium],
+    [showPreview, language, onItemAdd, onItemChange, premium, license],
   );
 
   return useCallback(
