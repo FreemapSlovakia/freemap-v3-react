@@ -26,6 +26,7 @@ import {
   getWazeUrl,
   getZbgisUrl,
 } from '../externalUrlUtils.js';
+import { Emoji } from '@/shared/components/Emoji.js';
 
 interface Props extends LatLon {
   lat: number;
@@ -225,7 +226,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {oeam?.oma} (SK)
+        {oeam?.oma} <Emoji>🇸🇰</Emoji>
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -233,7 +234,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {oeam?.hiking_sk} (SK)
+        {oeam?.hiking_sk} <Emoji>🇸🇰</Emoji>
         {showKbdShortcut && (
           <>
             {' '}
@@ -247,7 +248,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {oeam?.zbgis} (SK)
+        {oeam?.zbgis} <Emoji>🇸🇰</Emoji>
         {showKbdShortcut && (
           <>
             {' '}
