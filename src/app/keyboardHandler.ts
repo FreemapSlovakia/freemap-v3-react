@@ -135,18 +135,19 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     return undefined;
   }
 
-  if (showGalleryViewerSelector(state)) {
+  if (showGalleryViewerSelector(state) && !state.gallery.editModel) {
     if (event.code === 'KeyS') {
       return galleryShowOnTheMap();
     }
 
-    if (!state.gallery.editModel && event.code === 'KeyM') {
+    if (event.code === 'KeyM') {
       return galleryEditPicture();
     }
   }
 
   if (
     showGalleryViewerSelector(state) &&
+    !state.gallery.editModel &&
     state.gallery.imageIds &&
     state.gallery.imageIds.length > 1
   ) {
