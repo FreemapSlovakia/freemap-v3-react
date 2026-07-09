@@ -14,7 +14,7 @@ What it generates:
 - **Document pages** — `layers=X&document=<name>&lang=sk` rendered from `src/documents/*.md`.
 - **Sitemaps** — `sitemap-feat-*.txt` URL shards (chunked at 45 000 URLs — the per-file limit is 50 000) and the `sitemap-index.xml` that references them.
 
-The generator imports name resolvers (`getGenericNameFromOsmElementSync`, `getNameFromOsmElement`) and tag→name maps from `src/osm/`. **It is not in the project `tsgo` scope**, so type errors there are silent — it broke once when `getNameFromOsmElementSync` was split apart. Verify changes by running it.
+The generator imports name resolvers (`getGenericNameFromOsmElementSync`, `getNameFromOsmElement`) and tag→name maps from `src/osm/`. **It is not in the project `tsc` scope**, so type errors there are silent — it broke once when `getNameFromOsmElementSync` was split apart. Verify changes by running it.
 
 ## 2. nginx — routes bots to the prerenders
 
@@ -41,7 +41,7 @@ So a bot hitting `/?show=route-planner&lang=en` is served `sitemap/show=route-pl
 - **All artifacts live under `/sitemap/`** so a normal app deploy (which only writes the compiled assets) never wipes them. The root copies were lost once exactly because they sat at `/`.
 - **`robots.txt` (`src/static/`), `index.ejs`'s sitemap `<link>`, and the generator's `<loc>` must all point to `/sitemap/sitemap-index.xml`.**
 - **Regenerate with `pnpm gen-sitemap`.** It first wipes the local `sitemap/` dir, so the output is always exactly the current set — pages for POIs deleted from OSM since the last run do not linger. The generator exits non-zero on a failed Overpass crawl, so chain any deploy step with `&&` to avoid shipping a partial crawl.
-- **Deployment is manual** (rsync to a staging area, then ssh to the server and move the files into `/home/freemap/www/sitemap/`). The only requirement: the live `sitemap/` dir must end up *replaced*, not merged — otherwise stale pages from a previous generation survive on the server even though the local dir is clean. If your move replaces the directory wholesale, no `rsync --delete` is needed.
+- **Deployment is manual** (rsync to a staging area, then ssh to the server and move the files into `/home/freemap/www/sitemap/`). The only requirement: the live `sitemap/` dir must end up _replaced_, not merged — otherwise stale pages from a previous generation survive on the server even though the local dir is clean. If your move replaces the directory wholesale, no `rsync --delete` is needed.
 - `nginx -t` before reloading after editing the vhost.
 
 ## Keeping it in sync

@@ -13,7 +13,7 @@ This repository is the **frontend** — a React single-page application. It talk
 
 - **React 19** + **Redux Toolkit** (application state is reflected in the URL hash)
 - **Leaflet** / **react-leaflet** with **MapLibre GL** for vector layers
-- **TypeScript**, type-checked with [`tsgo`](https://www.npmjs.com/package/@typescript/native-preview)
+- **TypeScript**, type-checked with `tsc`
 - **rspack** bundler, **Biome** for linting/formatting, **pnpm** as the package manager
 - **Zod** schemas for validation (see [CLAUDE.md](./CLAUDE.md) for conventions)
 
