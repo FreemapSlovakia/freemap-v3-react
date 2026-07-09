@@ -422,7 +422,7 @@ export default function GalleryMenu() {
               >
                 {({ props }) => (
                   <Button
-                    variant={hidden ? 'primary' : 'dark'}
+                    variant="dark"
                     onClick={() => setHidden((hidden) => !hidden)}
                     {...props}
                   >
