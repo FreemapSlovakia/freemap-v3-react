@@ -26,12 +26,17 @@ Hooks 2–4 are also the premium hooks — users drawn by them convert best.
 ## Phase 0 — Poland activation (hi-res shading + contours deployed 2026-07-09)
 
 - [x] Finish hi-res shading + contours coverage for Poland (deployed 2026-07-09;
-      announced on Mastodon — see Outreach log).
-- [ ] Verify Polish hi-res layers render + are premium-gated as intended.
-- [ ] Draft Polish-language launch post leading with the new terrain (Tatras, Karkonosze,
-      Bieszczady). Polish UI already exists; engagement already high (11.6 actions, 209s).
-- [ ] Seed: Polish hiking/MTB forums, big regional FB hiking groups, r/Polska outdoor
-      threads, Polish OSM community, Fediverse (pl hiking/OSM hashtags).
+      announced on Mastodon — see Outreach log). The shading + contours are part of the
+      Outdoor map for everyone; premium only unlocks the higher zoom levels (19–20), the
+      same as everywhere else — nothing Poland-specific is gated.
+- [x] Polish-language launch post drafted and posted to the Polish OSM community
+      (2026-07-09, see Outreach log). The hook is the terrain, not the UI — Polish UI has
+      existed for years; engagement already high (11.6 actions, 209s).
+- [x] Seed end-user channels — posted the terrain-led post to a Polish FB hiking group
+      (2026-07-09, see Outreach log).
+- [ ] Optional: more Polish FB hiking/MTB groups (Tatry/Beskidy/Sudety) and Fediverse
+      (pl hiking/OSM hashtags). Reddit is weak for PL outdoor; skip the dormant classic
+      hiking forums (szlaki.net.pl etc.).
 
 ## Phase 1 — Localization expansion
 
@@ -74,7 +79,7 @@ The Outreach log below tracks the OSM-community posts (FR/FI/NO/DE/SK done). Add
 markets that actually convert:
 
 - [ ] Italy, Poland, Hungary, Austria, Czechia OSM community intro posts.
-- [x] Slovenia — posted 2026-07-07 (see Outreach log).
+- [x] Slovenia — posted 2026-07-09 (see Outreach log).
 - Note: OSM forums reach mappers, not end-users — treat as supplementary to Phase 2/3.
 
 ## Phase 5 — Measure & iterate
@@ -109,4 +114,6 @@ Add a row per post; keep `—` where the date is unknown rather than guessing.
 | 2026-07-09 | 🇸🇮 Slovenia | community.openstreetmap.org (Slovenija) | SL | posted | https://community.openstreetmap.org/t/freemap-eu-odprtokodna-zunanja-karta-in-orodja-na-osnovah-osm-ki-jih-razvija-slovaska-skupnost-osm/145198 |
 | 2026-07-09 | 🇸🇮🇮🇹🇩🇪 SI+IT+DE | hribi.net / hike.uno network (auto-translated) | SL | posted | https://www.hribi.net/trenutne_razmere/slo/freemapeu_-_brezplacna_pohodniska_karta_z_lidar_reliefom_zdaj_v_slovenscini/10001/10088 |
 | 2026-07-09 | 🇵🇱 Poland | Mastodon (@FreemapSlovakia) — hi-res shading + contours deployed | EN | posted | https://en.osm.town/@FreemapSlovakia/116889810164287525 |
+| 2026-07-09 | 🇵🇱 Poland | community.openstreetmap.org (Polska) | PL | posted | https://community.openstreetmap.org/t/freemap-eu-otwartozrodlowa-mapa-i-narzedzia-outdoor-oparte-na-osm-tworzone-przez-slowacka-spolecznosc-osm/145278 |
+| 2026-07-09 | 🇵🇱 Poland | Facebook (Polish hiking group) | PL | posted | https://www.facebook.com/groups/478222752225355/posts/27531908469763417 |
 | — | 🇸🇮🇫🇷 SL + FR | Mastodon new-languages announcement (@FreemapSlovakia) | EN | posted | https://en.osm.town/@FreemapSlovakia |
