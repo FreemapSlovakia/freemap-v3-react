@@ -189,3 +189,17 @@ minimumReleaseAgeExclude:
   - '@typescript/native-preview@7.0.0-dev.20260630.1'
   - ts-proto@2.11.10
   - react-icons@5.7.0
+  - '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260705.1'
+  - '@typescript/native-preview-darwin-x64@7.0.0-dev.20260705.1'
+  - '@typescript/native-preview-linux-arm64@7.0.0-dev.20260705.1'
+  - '@typescript/native-preview-linux-arm@7.0.0-dev.20260705.1'
+  - '@typescript/native-preview-linux-x64@7.0.0-dev.20260705.1'
+  - '@typescript/native-preview-win32-arm64@7.0.0-dev.20260705.1'
+  - '@typescript/native-preview-win32-x64@7.0.0-dev.20260705.1'
+  - '@typescript/native-preview@7.0.0-dev.20260705.1'
+  - '@babel/helper-validator-identifier@8.0.4'
+  - '@babel/parser@8.0.4'
+  - '@babel/types@8.0.4'
+  - '@types/pannellum@2.5.1'
+  - marked@18.0.6
+  - ts-checker-rspack-plugin@1.5.2

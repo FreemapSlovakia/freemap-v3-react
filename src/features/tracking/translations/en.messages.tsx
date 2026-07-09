@@ -1,6 +1,6 @@
 import { DocumentLink } from '@features/documents/components/DocumentLink.js';
 import { FaKey } from 'react-icons/fa';
-import { TrackingMessages } from './TrackingMessages.js';
+import type { TrackingMessages } from './TrackingMessages.js';
 
 const en: TrackingMessages = {
   subscribeNotFound: ({ id }) => (

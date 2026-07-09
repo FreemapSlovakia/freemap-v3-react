@@ -1,8 +1,8 @@
 import { authLogout } from '@features/auth/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  MapLoadMeta,
-  MapMeta,
+  type MapLoadMeta,
+  type MapMeta,
   mapsDisconnect,
   mapsLoad,
   mapsLoaded,

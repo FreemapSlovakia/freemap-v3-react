@@ -20,8 +20,11 @@ The tracker is bootstrapped inline in [`src/index.ejs`](../src/index.ejs):
   - `enableLinkTracking`.
   - `setCustomDimension(1, 'Embedded' | 'Top')` — **custom dimension 1**
     distinguishes the embedded widget (`window.fmEmbedded`) from the top-level app.
+    Configured in Matomo as *Embed Type* (verified live).
   - `setCustomDimension(2, location.hostname)` — **custom dimension 2** records
-    the serving domain (✅ new, see [Domain distinction](#domain-distinction)).
+    the serving domain (see [Domain distinction](#domain-distinction)).
+    ⚠️ **Not yet configured in Matomo** — see the warning below; the value is
+    currently sent by the client but dropped server-side.
 
 ## Domain distinction
 
@@ -31,15 +34,18 @@ site** (`setSiteId` comes from one `MATOMO_SITE_ID`; the tracker is hardcoded to
 `//matomo.freemap.sk/`). There is no `setDomains` call.
 
 To tell the domains apart in reports, the serving host is sent as **custom
-dimension 2** (`location.hostname`) — ✅ added in the 2026-06 pass. Note that
-`setCustomUrl('/')` flattens the
+dimension 2** (`location.hostname`) — client push added in the 2026-06 pass. Note
+that `setCustomUrl('/')` flattens the
 reported page URL to a bare `/`, so the hostname is *not* otherwise reliably
 available — events in particular carry no URL of their own — which is why the
 explicit dimension is needed.
 
-> **Matomo-side requirement:** custom dimension 2 must be created in the Matomo
-> admin (Visit scope) with index `2`, or the value is silently dropped. Dimension
-> 1 (Embedded/Top) is already configured there.
+> **⚠️ Matomo-side requirement — currently unmet.** Custom dimension 2 must be
+> created in the Matomo admin (Visit scope) with index `2`, or the value is
+> silently dropped. As of 2026-07-04 only dimension 1 (*Embed Type*, Embedded/Top)
+> exists in Matomo — the report list exposes `idDimension=1` but no
+> `idDimension=2`, so the hostname the client sends is being **discarded**.
+> Domain distinction will not work until the dimension is created there.
 
 ### Cookie consent
 
@@ -74,7 +80,8 @@ from both the old and new identities.
 
 | Category | Action | Name (low-cardinality) / value | Previous (historical) | Source |
 |----------|--------|--------------------------------|-----------------------|--------|
-| `App` | `error` | — | `Main`/`error` — *dropped Sentry event id (high cardinality)* | [`globalErrorHandler.ts`](../src/app/store/middleware/globalErrorHandler.ts) |
+| `App` | `error` | `error.name` (e.g. `TypeError`); deduped + capped per page load | `Main`/`error` — *dropped Sentry event id (high cardinality)* | [`globalErrorHandler.ts`](../src/app/store/middleware/globalErrorHandler.ts) |
+| `Perf` | `stall` / `storm` / `longtask` | `document.visibilityState` (`visible`/`hidden`/…) | *(added 2026-06)* | [`perfWatchdog.ts`](../src/app/store/middleware/perfWatchdog.ts) |
 | `Auth` | `login` | `login` or `connect` (linking an extra provider) | *(added 2026-06)* | [`loginResponseHandler.ts`](../src/features/auth/model/processors/loginResponseHandler.ts) |
 | `Auth` | `logout` | — | *(added 2026-06)* | [`authLogoutProcessor.ts`](../src/features/auth/model/processors/authLogoutProcessor.ts) |
 | `Auth` | `disconnect` | provider | *(added 2026-06)* | [`authDisconnectProcessor.ts`](../src/features/auth/model/processors/authDisconnectProcessor.ts) |
@@ -82,7 +89,7 @@ from both the old and new identities.
 | `Language` | `set` | language code, or `auto` | *(added 2026-06)* | [`l10n/model/processor.ts`](../src/features/l10n/model/processor.ts) |
 | `Location` | `locate` | — *(GPS follow enabled)* | *(added 2026-06)* | [`locateProcessor.ts`](../src/features/location/model/locateProcessor.ts) |
 | `Modal` | `open` | modal id (incl. `embed`, `account`, `legend`, `support-us`, `map-preferences`, …) | *(added 2026-06)* | [`setActiveModalProcessor.ts`](../src/processors/setActiveModalProcessor.ts) |
-| `MapShading` | `add` | shading component type (`hillshade-*`/`slope-*`/`color-relief`/`aspect`/`contour`) | *(added 2026-06)* | [`ShadingControl.tsx`](../src/features/parameterizedShading/ShadingControl.tsx) |
+| `MapShading` | `add` | shading component type (`hillshade-*`/`slope-*`/`color-relief`/`aspect`/`contour`) | *(added 2026-06)* | [`ShadingControl.tsx`](../src/features/parameterizedShading/components/ShadingControl.tsx) |
 | `HomeLocation` | `save` | — | *(added 2026-06)* | [`HomeLocationPickingMenu.tsx`](../src/features/homeLocation/components/HomeLocationPickingMenu.tsx) |
 | `Osm` | `view` | `node` / `way` / `relation` | *(added 2026-06)* | [`osmLoadNodeProcessor.ts`](../src/features/osm/model/processors/osmLoadNodeProcessor.ts), [`…WayProcessor.ts`](../src/features/osm/model/processors/osmLoadWayProcessor.ts), [`…RelationProcessor.ts`](../src/features/osm/model/processors/osmLoadRelationProcessor.ts) |
 | `Tool` | `set` | tool id | `Main`/`setTool` | [`setToolProcessor.ts`](../src/processors/setToolProcessor.ts) |
@@ -95,9 +102,8 @@ from both the old and new identities.
 | `Changesets` | `search` | `days` + `byAuthor` (bool) query string | `Changesets`/`set` — *dropped `authorName` (PII)* | [`changesets/model/processor.ts`](../src/features/changesets/model/processor.ts) |
 | `RoutePlanner` | `search` | `transportType` + `mode` query string | *(unchanged)* | [`findRouteProcessorHandler.ts`](../src/features/routePlanner/model/processors/findRouteProcessorHandler.ts) |
 | `RoutePlanner` | `toggleElevationChart` | — | *(unchanged)* | [`toggleElevationChartProcessor.ts`](../src/features/routePlanner/model/processors/toggleElevationChartProcessor.ts) |
-| `TrackViewer` | `upload` | — | *(unchanged)* | [`trackViewerUploadTrackProcessor.ts`](../src/features/trackViewer/model/processors/trackViewerUploadTrackProcessor.ts) |
-| `TrackViewer` | `toggleElevationChart` | — | `TrackViewer`/`showElevationProfile` | [`trackViewerToggleElevationChartProcessor.ts`](../src/features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.ts) |
-| `Drawing` | `measure` | geometry type | *(unchanged)* | [`measurementProcessor.ts`](../src/features/drawing/model/measurementProcessor.ts) |
+| `TrackViewer` | `toggleElevationChart` | — | `TrackViewer`/`showElevationProfile` | [`trackViewerToggleElevationChartProcessor.ts`](../src/features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.ts), [`trackViewerResolveElevationPromptProcessor.ts`](../src/features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.ts) |
+| `Drawing` | `measure` | geometry type — deduped per measured target (not per vertex edit) | *(unchanged)* | [`measurementProcessor.ts`](../src/features/measurement/model/measurementProcessor.ts) |
 | `Drawing` | `convertToDrawing` | source (`track`/`planned-route`/`objects`/`search-result`/`changesets`/…) | *(added 2026-06)* | [`convertToDrawingProcessor.ts`](../src/processors/convertToDrawingProcessor.ts) |
 | `Gallery` | `showPhoto` | — | `Gallery`/`showPhoto` — *dropped image id* | [`galleryShowImageGaProcessor.ts`](../src/features/gallery/model/processors/galleryShowImageGaProcessor.ts) |
 | `Gallery` | `submitComment` | — | `Gallery`/`submitComment` — *dropped image id* | [`gallerySubmitCommentProcessor.ts`](../src/features/gallery/model/processors/gallerySubmitCommentProcessor.ts) |
@@ -114,7 +120,44 @@ from both the old and new identities.
 | `MyMaps` | `load` | `replace` or `merge` (only user-initiated, not auth re-validation reloads) | *(added 2026-06)* | [`mapsLoadProcessor.ts`](../src/features/myMaps/model/processors/mapsLoadProcessor.ts) |
 | `MyMaps` | `delete` | — | *(added 2026-06)* | [`mapsDeleteProcessor.ts`](../src/features/myMaps/model/processors/mapsDeleteProcessor.ts) |
 | `MapSettings` | `create` / `update` / `delete` | `customMap` | `CustomMap`/`create`,`edit`,`delete` *(added 2026-06)* | [`CustomMapsModal.tsx`](../src/features/mapSettings/components/CustomMapsModal.tsx) |
-| `Purchase` | `start` / `success` | name = `premium` or `credits`; **value** = credit amount | `Purchase`/`purchaseStart`, `purchaseSuccess` — *was JSON payload* | [`purchaseProcessor.ts`](../src/features/auth/model/processors/purchaseProcessor.ts) |
+| `Purchase` | `start` / `success` | name = `premium` or `credits`; **value** = credit amount | `Purchase`/`purchaseStart`, `purchaseSuccess` — *was JSON payload* | [`purchaseProcessor.ts`](../src/features/purchases/model/processors/purchaseProcessor.ts) |
+
+## Data quality / known issues
+
+Observed in the live Matomo data (30-day window, verified 2026-07-04):
+
+- **`Drawing`/`measure` no longer floods the dataset** *(fixed 2026-07-04)*.
+  `drawingMeasure` re-fires on every vertex add/drag, which previously made it the
+  single largest event source (~275k events from ~2.3k visits, ~120/visit, ≈26%
+  of *all* events). [`measurementProcessor.ts`](../src/features/measurement/model/measurementProcessor.ts)
+  now dedupes consecutive measurements of the same target (`lastMeasureKey`), so
+  it fires ≈once per geometry — Goal *Drawing tool* still converts.
+- **`App`/`error` is now named and rate-capped** *(fixed 2026-07-04)*. A page in
+  an error loop used to emit thousands of nameless events per visit (~29k from
+  ~340 visits). [`globalErrorHandler.ts`](../src/app/store/middleware/globalErrorHandler.ts)
+  now sends `error.name` (low cardinality, e.g. `TypeError`) as the event name,
+  dedupes by name+message, and caps at 25 distinct errors per page load. Sentry
+  remains the high-fidelity channel.
+- **`Perf` no longer uses a high-cardinality name** *(fixed 2026-07-04)*. It sent
+  the free-text `message` (with timing numbers) as the event name, fragmenting the
+  report. [`perfWatchdog.ts`](../src/app/store/middleware/perfWatchdog.ts) now
+  sends the `document.visibilityState` bucket instead; the full message stays in
+  Sentry.
+- **Custom dimension 2 (hostname) is now configured** *(fixed 2026-07-04)* — the
+  *Hostname* Visit-scope dimension exists at index 2, so the value the client
+  sends is recorded (accumulates going forward, not backfilled).
+- **Stale clients still emit the pre-cutover `Main` category.** The 2026-06
+  rename is not retroactive and old cached SPA bundles (service-worker–served)
+  keep sending `Main`/* — ~18k visits in the window, including ~53k `Main`/`measure`.
+  This decays as clients update; sum old+new identities for cutover-spanning
+  metrics.
+
+Page-level reports (Behaviour → Pages, Entry/Exit, flow, bounce) are effectively
+empty by design: `setCustomUrl('/')` collapses every view to a single `/index`
+URL and there is one `trackPageView` per visit. In-app navigation is instead
+modelled through `Tool`/`set` and `Modal`/`open` events. If page-flow/funnel
+features are ever wanted, a coarse **virtual** `setCustomUrl` per tool/modal
+(e.g. `/tool/route-planner`, no hash/coords → no PII) would light them up.
 
 ## Naming convention
 

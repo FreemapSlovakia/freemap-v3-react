@@ -4,7 +4,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { integratedLayerDefs, LayerDef } from '@shared/mapDefinitions.js';
+import { integratedLayerDefs, type LayerDef } from '@shared/mapDefinitions.js';
 import { type ReactElement, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import missingTile from '@/images/missing-tile-256x256.png';
@@ -194,7 +194,7 @@ export function Layers(): ReactElement | null {
       return (
         <AsyncComponent
           factory={maplibreLayerFactory}
-          key={type + '-' + effectiveDpr}
+          key={`${type}-${effectiveDpr}`}
           style={layerDef.url}
           maxZoom={maxZoom}
           minZoom={minZoom}
@@ -264,7 +264,7 @@ export function Layers(): ReactElement | null {
           onPremiumClick={
             effPremiumFromZoom === undefined ? undefined : handlePremiumClick
           }
-          className={'fm-' + layerDef.layer}
+          className={`fm-${layerDef.layer}`}
         />
       );
     }

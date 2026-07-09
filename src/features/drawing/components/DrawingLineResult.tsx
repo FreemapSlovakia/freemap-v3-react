@@ -1,8 +1,5 @@
 import { selectFeature } from '@app/store/actions.js';
-import {
-  drawingLinePolys,
-  selectingModeSelector,
-} from '@app/store/selectors.js';
+import { selectingModeSelector } from '@app/store/selectors.js';
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
@@ -17,17 +14,17 @@ import { distance } from '@turf/distance';
 import { bearingToAzimuth } from '@turf/helpers';
 import Color from 'color';
 import {
-  Direction,
+  type Direction,
   DomEvent,
   divIcon,
-  LatLngBounds,
-  LeafletMouseEvent,
-  PointExpression,
+  type LatLngBounds,
+  type LeafletMouseEvent,
+  type PointExpression,
 } from 'leaflet';
 import {
   Fragment,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useEffect,
   useMemo,
   useRef,
@@ -47,7 +44,7 @@ import {
   drawingLineAddPoint,
   drawingLineJoinFinish,
   drawingLineUpdatePoint,
-  Point,
+  type Point,
 } from '../model/actions/drawingLineActions.js';
 import { drawingMeasure } from '../model/actions/drawingPointActions.js';
 import classes from './DrawingLineResult.module.css';
@@ -103,7 +100,9 @@ type Props = {
 export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const drawing = useAppSelector(drawingLinePolys);
+  // The rubber-band preview from the last point to the cursor shows only while a
+  // drawing is actually in progress — not merely because the tool is open.
+  const drawing = useAppSelector((state) => state.drawingLines.drawing);
 
   const line = useAppSelector((state) => state.drawingLines.lines[lineIndex]);
 
@@ -508,7 +507,10 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     }
   }, [showHandles, handleTier]);
 
-  let x;
+  const joinPoint =
+    joinWith?.lineIndex === lineIndex
+      ? points.find((pt) => pt.id === joinWith.pointId)
+      : undefined;
 
   const futureLinePositions =
     (drawing || joinWith) &&
@@ -517,11 +519,10 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     !window.preventMapClick
       ? [
           joinWith?.lineIndex === lineIndex
-            ? ((x = points.find((pt) => pt.id === joinWith.pointId)),
-              {
-                lat: x?.lat ?? -1,
-                lng: x?.lon ?? -1,
-              })
+            ? {
+                lat: joinPoint?.lat ?? -1,
+                lng: joinPoint?.lon ?? -1,
+              }
             : {
                 lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
                 lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,

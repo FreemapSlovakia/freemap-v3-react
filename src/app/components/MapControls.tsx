@@ -1,6 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMap } from '@features/map/hooks/useMap.js';
-import { MapViewState, mapRefocus } from '@features/map/model/actions.js';
+import { type MapViewState, mapRefocus } from '@features/map/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';

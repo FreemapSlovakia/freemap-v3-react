@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { EmbedMessages } from './EmbedMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { EmbedMessages } from './EmbedMessages.js';
 
 const it: DeepPartialWithRequiredObjects<EmbedMessages> = {
   code: 'Inserisci il codice seguente nella tua pagina HTML:',

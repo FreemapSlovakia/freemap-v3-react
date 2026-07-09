@@ -17,7 +17,7 @@ import {
   isVariableDeclaration,
   type Node,
   type ObjectExpression,
-  ObjectProperty,
+  type ObjectProperty,
   objectProperty,
 } from '@babel/types';
 import { parse, print, types } from 'recast';
@@ -257,7 +257,7 @@ function mergeIntoLocale(
 
         path.node.comments.push({
           type: 'CommentBlock',
-          value: commentLines.join('\n').replace(/\n/g, '\n * ') + '\n ',
+          value: `${commentLines.join('\n').replace(/\n/g, '\n * ')}\n `,
           leading: true,
         });
 
@@ -292,12 +292,12 @@ function process(template: string) {
   }
 
   const roots = templatesConfig.langs.map((lang) => {
-    const file = parseFile(lang + '.template', template);
+    const file = parseFile(`${lang}.template`, template);
 
     const root = findRoot(file);
 
     if (!root) {
-      throw new Error('root not found for ' + lang + ' ' + template);
+      throw new Error(`root not found for ${lang} ${template}`);
     }
 
     return [lang, file, root] as const;
@@ -311,7 +311,7 @@ function process(template: string) {
     mergeIntoLocale(enRoot, root, otherLocales);
 
     writeFileSync(
-      template.replace('{LANG}', lang + '.messages'),
+      template.replace('{LANG}', `${lang}.messages`),
 
       print(file, { quote: 'single', trailingComma: true }).code,
     );

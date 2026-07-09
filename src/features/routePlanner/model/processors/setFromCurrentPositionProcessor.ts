@@ -13,11 +13,7 @@ export const routePlannerSetFromCurrentPositionProcessor: Processor<
 > = {
   actionCreator: routePlannerSetFromCurrentPosition,
   handle: async ({ dispatch, action }) => {
-    let position;
-
-    try {
-      position = await getCurrentPosition();
-    } catch {
+    const position = await getCurrentPosition().catch(() => {
       dispatch(
         toastsAdd({
           // Transient/user-controllable geolocation failure, not an app error.
@@ -28,7 +24,9 @@ export const routePlannerSetFromCurrentPositionProcessor: Processor<
           timeout: 5000,
         }),
       );
+    });
 
+    if (!position) {
       return;
     }
 

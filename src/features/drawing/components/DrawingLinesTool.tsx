@@ -1,10 +1,10 @@
+import { activeModeSelector } from '@app/store/selectors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { activeModeSelector } from '@/app/store/selectors.js';
 import {
   drawingLineAddPoint,
   type Point,
@@ -23,6 +23,8 @@ export default function DrawingLinesTool(): null {
       ? state.drawingLines.lines[state.main.selection.id].points
       : EMPTY,
   );
+
+  const drawing = useAppSelector((state) => state.drawingLines.drawing);
 
   const dispatch = useDispatch();
 
@@ -60,20 +62,27 @@ export default function DrawingLinesTool(): null {
         return;
       }
 
-      const pos = linePoints.length;
+      // Append to the current line only while a drawing is in progress; a click
+      // on a merely-selected (stopped) line starts a fresh line instead.
+      const appending = drawing && selection?.type === 'draw-line-poly';
 
-      let id;
+      const lineIndex = appending ? selection.id : undefined;
 
-      if (pos === 0) {
-        id = linePoints.length ? linePoints[pos].id - 1 : 0;
-      } else if (pos === linePoints.length) {
-        id = linePoints[pos - 1].id + 1;
-      } else {
-        id = (linePoints[pos - 1].id + linePoints[pos].id) / 2;
+      // Starting a new line needs an active draw tool; appending does not (the
+      // tool may have been deactivated, or a "continue" never activated one).
+      if (
+        lineIndex === undefined &&
+        tool !== 'draw-lines' &&
+        tool !== 'draw-polygons'
+      ) {
+        return;
       }
 
-      const lineIndex =
-        selection?.type === 'draw-line-poly' ? selection.id : undefined;
+      const points = appending ? linePoints : EMPTY;
+
+      const pos = points.length;
+
+      const id = pos === 0 ? 0 : points[pos - 1].id + 1;
 
       dispatch(
         lineIndex === undefined
@@ -90,12 +99,14 @@ export default function DrawingLinesTool(): null {
               point: { lat: latlng.lat, lon: latlng.lng, id },
               position: pos,
               indexOfLineToSelect: linesLength,
+              drawing: true,
             })
           : drawingLineAddPoint({
               lineIndex,
               point: { lat: latlng.lat, lon: latlng.lng, id },
               position: pos,
               indexOfLineToSelect: lineIndex,
+              drawing: true,
             }),
       );
 
@@ -103,6 +114,7 @@ export default function DrawingLinesTool(): null {
     },
     [
       linePoints,
+      drawing,
       dispatch,
       selection,
       tool,

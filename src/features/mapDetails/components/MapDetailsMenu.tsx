@@ -1,6 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
-import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
@@ -11,17 +10,12 @@ import { Dropdown } from 'react-bootstrap';
 import { FaDatabase } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
-  MapDetailsSource,
+  type MapDetailsSource,
   mapDetailsExcludeSources,
 } from '../model/actions.js';
 import { useMapDetailsMessages } from '../translations/useMapDetailsMessages.js';
 
 export function MapDetailsMenu(): ReactElement | null {
-  // TODO what is this?
-  const canDelete = useAppSelector((state) =>
-    Boolean(state.trackViewer.trackGeojson),
-  );
-
   const [sourcesOpen, setSourcesOpen] = useState(false);
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
@@ -120,8 +114,6 @@ export function MapDetailsMenu(): ReactElement | null {
           ))}
         </Dropdown.Menu>
       </Dropdown>
-
-      {canDelete ? <DeleteButton /> : null}
     </ToolMenu>
   );
 }

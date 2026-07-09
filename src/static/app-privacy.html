@@ -61,6 +61,12 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
         .lang-switch a {
             padding: 0.5rem 1.25rem;
             text-decoration: none;
@@ -126,12 +132,6 @@
 
         li {
             margin-bottom: 0.5rem;
-        }
-
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
         }
 
         a:hover {
@@ -627,13 +627,13 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             const btnSk = document.getElementById('btn-sk');
             const btnEn = document.getElementById('btn-en');
             const contentSk = document.getElementById('content-sk');
             const contentEn = document.getElementById('content-en');
 
-            btnSk.addEventListener('click', function(e) {
+            btnSk.addEventListener('click', (e) => {
                 e.preventDefault();
                 btnSk.classList.add('active');
                 btnEn.classList.remove('active');
@@ -641,7 +641,7 @@
                 contentEn.style.display = 'none';
             });
 
-            btnEn.addEventListener('click', function(e) {
+            btnEn.addEventListener('click', (e) => {
                 e.preventDefault();
                 btnEn.classList.add('active');
                 btnSk.classList.remove('active');

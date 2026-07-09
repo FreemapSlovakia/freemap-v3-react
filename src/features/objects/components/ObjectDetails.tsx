@@ -1,4 +1,4 @@
-import { SearchResult } from '@features/search/model/actions.js';
+import type { SearchResult } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   categoryKeys,
@@ -9,7 +9,7 @@ import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
-import { Fragment, ReactElement } from 'react';
+import { Fragment, type ReactElement } from 'react';
 import { Button, Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
@@ -58,12 +58,12 @@ export function ObjectDetails({
         parsedId.data.id +
         '&layer_name=' +
         encodeURIComponent(
-          `${genericName}${displayName ? ' "' + displayName + '"' : ''}`,
+          `${genericName}${displayName ? ` "${displayName}"` : ''}`,
         ),
     )
       .then((res) => {
         if (!res.ok) {
-          throw new Error('Error response from localhost:8111: ' + res.status);
+          throw new Error(`Error response from localhost:8111: ${res.status}`);
         }
       })
       .catch((err) => {
@@ -84,9 +84,7 @@ export function ObjectDetails({
       <a
         target="_blank"
         rel="noreferrer"
-        href={
-          'https://wiki.openstreetmap.org/wiki/Key:' + encodeURIComponent(k)
-        }
+        href={`https://wiki.openstreetmap.org/wiki/Key:${encodeURIComponent(k)}`}
       >
         {k}
       </a>
@@ -128,9 +126,9 @@ export function ObjectDetails({
         {v}
       </a>
     ) : ['contact:email', 'email'].includes(k) ? (
-      <a href={'mailto:' + v}>{v}</a>
+      <a href={`mailto:${v}`}>{v}</a>
     ) : ['phone', 'contact:phone', 'contact:mobile'].includes(k) ? (
-      <a target="_blank" rel="noreferrer" href={'tel:' + v.replace(/ /g, '')}>
+      <a target="_blank" rel="noreferrer" href={`tel:${v.replace(/ /g, '')}`}>
         {v}
       </a>
     ) : categoryKeys.has(k) ? (
@@ -155,7 +153,7 @@ export function ObjectDetails({
       <p className="lead">
         {imgs.map((img) => (
           <Fragment key={img}>
-            <img src={img} style={{ width: '1em', height: '1em' }} />
+            <img src={img} style={{ width: '1em', height: '1em' }} alt="" />
             &ensp;
           </Fragment>
         ))}

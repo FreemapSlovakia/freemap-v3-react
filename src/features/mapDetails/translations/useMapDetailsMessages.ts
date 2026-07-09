@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { MapDetailsMessages } from './MapDetailsMessages.js';
+import type { MapDetailsMessages } from './MapDetailsMessages.js';
 
 const factory = (language: string) =>
   import(

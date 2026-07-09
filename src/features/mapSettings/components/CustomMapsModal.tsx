@@ -10,8 +10,8 @@ import {
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { CustomLayerDef } from '@shared/mapDefinitions.js';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, ListGroup, Modal } from 'react-bootstrap';
 import {
   FaCheck,
@@ -232,11 +232,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
                         <Action
                           icon={<FaEye />}
                           label={m?.mapLayers.activate}
-                          variant={
-                            activeLayers.includes(def.type)
-                              ? 'primary'
-                              : 'outline-primary'
-                          }
+                          variant="outline-primary"
                           active={activeLayers.includes(def.type)}
                           onClick={() =>
                             dispatch(mapToggleLayer({ type: def.type }))

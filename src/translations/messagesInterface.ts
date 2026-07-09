@@ -1,7 +1,7 @@
 import { HttpError, NetworkError } from '@app/httpRequest.js';
-import { SearchSource } from '@features/search/model/actions.js';
-import { DeepPartial } from '@shared/types/deepPartial.js';
-import { JSX, ReactNode } from 'react';
+import type { SearchSource } from '@features/search/model/actions.js';
+import type { DeepPartial } from '@shared/types/deepPartial.js';
+import type { JSX, ReactNode } from 'react';
 
 type Err = { err: unknown };
 
@@ -140,6 +140,7 @@ export type Messages = {
     osmWiki: string;
     wikiLink: string;
     status: string;
+    language: string;
   };
   main: {
     title: string;
@@ -269,7 +270,7 @@ export function addError(
     ': ' +
     (err instanceof HttpError
       ? (messages.errorStatus[err.status] ?? err.status) +
-        (err.body ? ': ' + err.body : '')
+        (err.body ? `: ${err.body}` : '')
       : !(err instanceof Error)
         ? String(err)
         : // `NetworkError` is our httpRequest transport failure; a raw `fetch()`

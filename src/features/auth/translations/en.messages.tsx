@@ -1,6 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { AuthMessages } from './AuthMessages.js';
+import type { AuthMessages } from './AuthMessages.js';
 
 const en: AuthMessages = {
   account: {

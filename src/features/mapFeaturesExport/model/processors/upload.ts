@@ -2,10 +2,11 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadGapi, startGoogleAuth } from '@shared/gapiLoader.js';
+import { saveBlob } from '@shared/saveBlob.js';
 import { hasProperty } from '@shared/types/typeUtils.js';
-import { Dispatch } from 'redux';
+import type { Dispatch } from 'redux';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
-import { ExportTarget } from '../actions.js';
+import type { ExportTarget } from '../actions.js';
 
 export const licenseNotice =
   'Various licenses may apply - like OpenStreetMap (https://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';
@@ -66,7 +67,7 @@ export async function upload(
         return false;
       }
 
-      const p = new Promise<string | void>((resolve, reject) => {
+      const p = new Promise<string | undefined>((resolve, reject) => {
         const msgListener = (e: MessageEvent) => {
           if (
             e.origin === window.location.origin &&
@@ -96,7 +97,7 @@ export async function upload(
 
             window.removeEventListener('message', msgListener);
 
-            resolve();
+            resolve(undefined);
           }
         }, 500);
 
@@ -260,40 +261,8 @@ export async function upload(
   return true;
 }
 
-async function saveFile(blob: Blob, type: ExportFileType) {
-  const suggestedName = `freemap-export-${new Date().toISOString()}.${type}`;
-
-  if ('showSaveFilePicker' in window) {
-    const handle = await showSaveFilePicker({
-      suggestedName,
-      types: [
-        {
-          description: blob.type || 'File',
-          accept: {
-            [blob.type]: FILE_META[type].exts,
-          } as any,
-        },
-      ],
-    });
-
-    const writable = await handle.createWritable();
-
-    await writable.write(blob);
-
-    await writable.close();
-
-    return;
-  }
-
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-
-  a.href = url;
-
-  a.download = suggestedName;
-
-  a.click();
-
-  URL.revokeObjectURL(url);
+function saveFile(blob: Blob, type: ExportFileType) {
+  return saveBlob(blob, `freemap-export-${new Date().toISOString()}.${type}`, {
+    [blob.type]: FILE_META[type].exts,
+  });
 }

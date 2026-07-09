@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MyMapsMessages } from './MyMapsMessages.js';
+import type { MyMapsMessages } from './MyMapsMessages.js';
 
 const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   addNew: 'Neue Karte hinzufügen',

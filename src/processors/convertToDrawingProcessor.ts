@@ -4,7 +4,7 @@ import type { RootState } from '@app/store/store.js';
 import { changesetsSet } from '@features/changesets/model/actions.js';
 import {
   drawingLineAdd,
-  Point,
+  type Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';

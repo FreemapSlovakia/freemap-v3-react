@@ -1,8 +1,8 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
-import { TrackViewerMessages } from './TrackViewerMessages.js';
+import type { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   style: {
@@ -25,7 +25,7 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     avgSpeed: 'Velocità media',
     minEle: 'Elevazione min.',
     maxEle: 'Elevazione max',
-    uphill: 'Acesca totale',
+    uphill: 'Ascesa totale',
     downhill: 'Discesa totale',
     durationValue: ({ h, m }) => `${h} ore ${m} minuti`,
     source: 'Origine quota',

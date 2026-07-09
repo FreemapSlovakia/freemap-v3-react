@@ -1,14 +1,14 @@
+import { setActiveModal, setTool } from '@app/store/actions.js';
+import { trackingActiveTrackIdSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaBullseye, FaEye } from 'react-icons/fa';
 import { FaPencil } from 'react-icons/fa6';
 import { useDispatch } from 'react-redux';
-import { setActiveModal, setTool } from '@/app/store/actions.js';
-import { trackingActiveTrackIdSelector } from '@/app/store/selectors.js';
-import { LongPressTooltip } from '@/shared/components/LongPressTooltip.js';
-import { useAppSelector } from '@/shared/hooks/useAppSelector.js';
 
 export function TrackingSelection(): ReactElement {
   const m = useMessages();

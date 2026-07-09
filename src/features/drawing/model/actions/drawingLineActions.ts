@@ -1,4 +1,4 @@
-import { Selection } from '@app/store/actions.js';
+import type { Selection } from '@app/store/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import z from 'zod';
 
@@ -68,6 +68,8 @@ export const drawingLineAddPoint = createAction<
     point: Point;
     position?: number;
     indexOfLineToSelect: number;
+    /** The point comes from interactive map drawing; enter/stay in drawing mode. */
+    drawing?: boolean;
   } & (
     | {
         lineIndex: number;

@@ -1,4 +1,4 @@
-import { ShadingMessages } from './ShadingMessages.js';
+import type { ShadingMessages } from './ShadingMessages.js';
 
 const en: ShadingMessages = {
   add: 'Add',

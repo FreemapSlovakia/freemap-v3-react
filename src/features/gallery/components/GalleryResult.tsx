@@ -1,6 +1,6 @@
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { DragEndEvent, LeafletMouseEvent } from 'leaflet';
+import type { DragEndEvent, LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';

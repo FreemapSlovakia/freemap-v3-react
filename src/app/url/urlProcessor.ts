@@ -182,7 +182,7 @@ export const urlProcessor: Processor = {
           routePlanner.points
             .map(
               (point) =>
-                (point.transport ? point.transport + '/' : '') +
+                (point.transport ? `${point.transport}/` : '') +
                 serializePoint(point),
             )
             .join(','),
@@ -378,6 +378,10 @@ export const urlProcessor: Processor = {
       historyParts.push(['events-activity', eventsFilter.activityType]);
     }
 
+    for (const license of galleryFilter.license ?? []) {
+      historyParts.push(['gallery-license', license]);
+    }
+
     if (objects.active.length) {
       historyParts.push(['objects', objects.active.join(';')]);
     }
@@ -490,11 +494,15 @@ export const urlProcessor: Processor = {
           ? 'replaceState'
           : 'pushState';
 
-      history[method](
-        { sq },
-        '',
-        window.location.pathname + (urlSearch ? '#' + urlSearch : ''),
-      );
+      // Collapse repeated slashes so the pushed URL never begins with `//`.
+      // If the document was opened at a path like `https://host//` (from an
+      // external link with a stray double slash), `location.pathname` is `//`,
+      // and `//#hash` parses as a protocol-relative URL with an empty host —
+      // whose origin differs from the document, making pushState throw a
+      // SecurityError. Normalizing also self-heals the address bar.
+      const path = window.location.pathname.replace(/\/{2,}/g, '/');
+
+      history[method]({ sq }, '', path + (urlSearch ? `#${urlSearch}` : ''));
 
       if (window.fmEmbedded) {
         window.parent.postMessage(

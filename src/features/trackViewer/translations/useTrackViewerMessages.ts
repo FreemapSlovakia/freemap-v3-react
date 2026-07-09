@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { TrackViewerMessages } from './TrackViewerMessages.js';
+import type { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const factory = (language: string) =>
   import(

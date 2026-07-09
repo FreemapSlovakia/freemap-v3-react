@@ -16,6 +16,7 @@ import {
   drawingLineSplit,
 } from '../model/actions/drawingLineActions.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
+import { DrawingToggleButton } from './DrawingToggleButton.js';
 
 export default function DrawingLinePointSelection(): ReactElement | null {
   const dispatch = useDispatch();
@@ -90,13 +91,21 @@ export default function DrawingLinePointSelection(): ReactElement | null {
 
   return (
     <Selection
-      icon={line.type === 'line' ? <MdTimeline /> : <FaDrawPolygon />}
+      icon={
+        <>
+          <DrawingToggleButton
+            tool={line.type === 'line' ? 'draw-lines' : 'draw-polygons'}
+          />{' '}
+          {line.type === 'line' ? <MdTimeline /> : <FaDrawPolygon />}
+        </>
+      }
       label={
         line.type === 'line'
           ? m?.selections.linePoint
           : m?.selections.polygonPoint
       }
       deletable={line.points.length > (line.type === 'line' ? 2 : 3)}
+      noLeftMargin
     >
       {line.type === 'line' && !end && (
         <LongPressTooltip breakpoint="sm" label={dm?.split}>

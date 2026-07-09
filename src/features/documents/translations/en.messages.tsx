@@ -1,4 +1,4 @@
-import { DocumentsMessages } from './DocumentsMessages.js';
+import type { DocumentsMessages } from './DocumentsMessages.js';
 
 const en: DocumentsMessages = {
   errorLoading: 'Error loading document.',

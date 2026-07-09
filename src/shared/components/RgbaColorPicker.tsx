@@ -2,7 +2,7 @@ import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { rgbaStringToHexa, toRgbaString } from '@shared/colorAlpha.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import ColorPicker from '@zdila/react-gradient-color-picker';
-import { CSSProperties, ReactElement, useRef, useState } from 'react';
+import { type CSSProperties, type ReactElement, useRef, useState } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 type Props = {

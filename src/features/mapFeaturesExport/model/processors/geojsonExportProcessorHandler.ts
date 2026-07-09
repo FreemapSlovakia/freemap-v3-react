@@ -1,6 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
-import { exportMapFeatures } from '../actions.js';
+import type { exportMapFeatures } from '../actions.js';
 import { buildFilledFeatureCollection } from './buildFilledFeatureCollection.js';
 import { exportBlob, licenseNotice, upload } from './upload.js';
 

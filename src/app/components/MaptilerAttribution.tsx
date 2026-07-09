@@ -6,11 +6,11 @@ type Props = {
 export function MaptilerAttribution({ tilesFrom, hostedBy }: Props) {
   return (
     <>
-      {tilesFrom + ' '}
+      {`${tilesFrom} `}
       <a href="https://openmaptiles.org" target="_blank" rel="noreferrer">
         OpenMapTiles
       </a>{' '}
-      {hostedBy + ' '}
+      {`${hostedBy} `}
       <a href="https://www.maptiler.com" target="_blank" rel="noreferrer">
         MapTiler
       </a>

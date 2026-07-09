@@ -1,7 +1,10 @@
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { produce } from 'immer';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ShadingComponent, ShadingComponentType } from '../model/Shading.js';
+import type {
+  ShadingComponent,
+  ShadingComponentType,
+} from '../model/Shading.js';
 
 export type Props = {
   diameter?: number;
@@ -125,7 +128,7 @@ export function ShadingComponentControl({
 
       e.preventDefault();
 
-      const id = Number(e.target.dataset['sc_' + gid.current]);
+      const id = Number(e.target.dataset[`sc_${gid.current}`]);
 
       const mouse = getCoordinates(e);
 

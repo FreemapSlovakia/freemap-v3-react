@@ -1,5 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaUndo } from 'react-icons/fa';
 

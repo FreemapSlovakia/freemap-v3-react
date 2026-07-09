@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
+import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Stáhnout',
@@ -26,6 +26,7 @@ const cs: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     import: 'importovaný soubor',
     search: 'nález',
   },
+  onlySelected: 'Pouze vybraný prvek',
   disabledAlert:
     'Aktivní jsou pouze volby jejichž objekty se nacházejí na mapě.',
   licenseAlert:

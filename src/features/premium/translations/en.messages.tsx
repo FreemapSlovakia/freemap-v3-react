@@ -1,5 +1,5 @@
 import { RovasLink } from '@shared/components/RovasLink.js';
-import { PremiumMessages } from './PremiumMessages.js';
+import type { PremiumMessages } from './PremiumMessages.js';
 
 const en: PremiumMessages = {
   title: 'Get premium access',
@@ -22,7 +22,7 @@ const en: PremiumMessages = {
         </li>
         <li>premium photos</li>
         <li>multimodal routing</li>
-        <li>high-resolution elevation data (currently Slovakia)</li>
+        <li>high-resolution elevation data (many European countries)</li>
       </ul>
       <p className="mb-0">Freemap stays free and open.</p>
     </>

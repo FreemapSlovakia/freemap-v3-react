@@ -1,5 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { SearchResult, SearchSource } from '@features/search/model/actions.js';
+import type {
+  SearchResult,
+  SearchSource,
+} from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';

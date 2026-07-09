@@ -7,9 +7,9 @@ import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
-  ChangeEvent,
-  ReactElement,
-  SubmitEvent,
+  type ChangeEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useState,
 } from 'react';
@@ -78,7 +78,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     if (maxZoom !== initialMaxZoom) {
       const maxZoomValue = parseInt(maxZoom, 10);
 
-      settings.maxZoom = isNaN(maxZoomValue) ? 20 : maxZoomValue;
+      settings.maxZoom = Number.isNaN(maxZoomValue) ? 20 : maxZoomValue;
     }
 
     if (
@@ -169,7 +169,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               {['1', '2', '3', '4'].map((scale) => (
                 <ToggleButton
                   key={scale}
-                  id={'rs-' + scale}
+                  id={`rs-${scale}`}
                   value={scale}
                   variant="outline-primary"
                 >
@@ -197,7 +197,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               {['0.5', '1', '2', '4'].map((scale) => (
                 <ToggleButton
                   key={scale}
-                  id={'fs-' + scale}
+                  id={`fs-${scale}`}
                   value={scale}
                   variant="outline-primary"
                 >

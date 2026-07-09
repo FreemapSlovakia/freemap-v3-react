@@ -34,11 +34,11 @@ export default function HomeLocationPickingMenu(): ReactElement | null {
     setSaving(true);
 
     try {
-      const res = await fetch(process.env['API_URL'] + '/auth/settings', {
+      const res = await fetch(`${process.env['API_URL']}/auth/settings`, {
         method: 'PATCH',
         headers: {
           'content-type': 'application/json',
-          ...(authToken ? { authorization: 'Bearer ' + authToken } : {}),
+          ...(authToken ? { authorization: `Bearer ${authToken}` } : {}),
         },
         body: JSON.stringify(selectingHomeLocation),
       });

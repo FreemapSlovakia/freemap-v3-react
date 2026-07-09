@@ -1,5 +1,6 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { SubmenuHeader } from '@features/mainMenu/components/SubmenuHeader.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { LEGEND_ITEM } from '@shared/colorizers/components/legendToggleOption.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
@@ -10,7 +11,7 @@ import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import {
   FaAngleLeft,
@@ -18,6 +19,7 @@ import {
   FaBook,
   FaCamera,
   FaCog,
+  FaCreativeCommons,
   FaDove,
   FaEnvelope,
   FaFilter,
@@ -32,8 +34,14 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
-  GalleryColorizeBy,
-  GalleryListOrder,
+  type GalleryLicense,
+  LicenseBadge,
+  PHOTO_LICENSES,
+} from '../licenses.js';
+import {
+  type GalleryColorizeBy,
+  type GalleryListOrder,
+  galleryAllOfLicense,
   galleryAllPremiumOrFree,
   galleryColorizeBy,
   galleryList,
@@ -76,11 +84,50 @@ export default function GalleryMenu() {
         .length > 0,
   );
 
+  // Controlled "more" (cog) dropdown, so the license chooser can swap the menu
+  // content in place with a back header — the same pattern as the main menu.
+  // One tri-state models the whole view; `licenseSubmenu` is only meaningful
+  // while the menu is open, so a single value avoids re-coupling two booleans.
+  const [moreView, setMoreView] = useState<'closed' | 'root' | 'license'>(
+    'closed',
+  );
+
+  useEffect(() => {
+    function handle(e: KeyboardEvent) {
+      if (e.code === 'Escape' && moreView !== 'closed') {
+        setMoreView(moreView === 'license' ? 'root' : 'closed');
+
+        e.preventDefault();
+      }
+    }
+
+    window.addEventListener('keydown', handle);
+
+    return () => window.removeEventListener('keydown', handle);
+  }, [moreView]);
+
   const handleMoreSelect = useCallback(
     async (eventKey: string | null) => {
       if (!eventKey) {
-        // nothing
-      } else if (eventKey.startsWith('all-')) {
+        return;
+      }
+
+      if (eventKey === 'submenu-license') {
+        setMoreView('license');
+
+        return;
+      }
+
+      if (eventKey === 'submenu-') {
+        setMoreView('root');
+
+        return;
+      }
+
+      // Every remaining branch is a terminal action that closes the menu.
+      setMoreView('closed');
+
+      if (eventKey.startsWith('all-')) {
         if (
           await confirm({
             title: gm?.allMyPhotos.title,
@@ -96,6 +143,22 @@ export default function GalleryMenu() {
           dispatch(
             galleryAllPremiumOrFree(eventKey.slice(4) as 'premium' | 'free'),
           );
+        }
+      } else if (eventKey.startsWith('lic:')) {
+        const license = eventKey.slice('lic:'.length) as GalleryLicense;
+
+        if (
+          await confirm({
+            title: gm?.license.chooseForAll,
+            message: gm?.allMyPhotos.confirmLicense(
+              gm?.license.names[license] ?? license,
+            ),
+            icon: <FaCreativeCommons />,
+            confirmLabel: m?.general.yes,
+            cancelLabel: m?.general.no,
+          })
+        ) {
+          dispatch(galleryAllOfLicense(license));
         }
       } else if (eventKey === 'emails') {
         dispatch(
@@ -248,7 +311,7 @@ export default function GalleryMenu() {
                   <Dropdown.Menu popperConfig={fixedPopperConfig}>
                     {(Object.keys(gm?.f ?? {}) as GalleryListOrder[]).map(
                       (key) => (
-                        <Dropdown.Item as="button" eventKey={key}>
+                        <Dropdown.Item key={key} as="button" eventKey={key}>
                           {gm?.f[key]}{' '}
                           {key === '-createdAt' && (
                             <>
@@ -275,7 +338,6 @@ export default function GalleryMenu() {
                           setActiveModal({ type: 'gallery-leaderboard' }),
                         )
                       }
-                      active={filterIsActive}
                       {...props}
                     >
                       <FaTrophy />{' '}
@@ -288,33 +350,65 @@ export default function GalleryMenu() {
                   className="ms-1"
                   id="more"
                   onSelect={handleMoreSelect}
+                  autoClose="outside"
+                  show={moreView !== 'closed'}
+                  onToggle={(next) => setMoreView(next ? 'root' : 'closed')}
                 >
                   <Dropdown.Toggle variant="secondary">
                     <FaCog />
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                    <Dropdown.Item as="button" eventKey="direction">
-                      <Checkbox value={showDirection} /> <FaLocationArrow />{' '}
-                      {gm?.showDirection}
-                    </Dropdown.Item>
-
-                    {sendGalleryEmails !== undefined && (
+                    {moreView === 'license' ? (
                       <>
-                        <Dropdown.Item as="button" eventKey="emails">
-                          <Checkbox value={sendGalleryEmails} /> <FaEnvelope />{' '}
-                          {gm?.sendGalleryEmails}
+                        <SubmenuHeader
+                          icon={<FaCreativeCommons />}
+                          title={gm?.license.chooseForAll}
+                        />
+
+                        {PHOTO_LICENSES.map(({ id }) => (
+                          <Dropdown.Item
+                            as="button"
+                            eventKey={`lic:${id}`}
+                            key={id}
+                          >
+                            <LicenseBadge licenseId={id} />{' '}
+                            {gm?.license.names[id] ?? id}
+                          </Dropdown.Item>
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        <Dropdown.Item as="button" eventKey="direction">
+                          <Checkbox value={showDirection} /> <FaLocationArrow />{' '}
+                          {gm?.showDirection}
                         </Dropdown.Item>
 
-                        <Dropdown.Divider />
+                        {sendGalleryEmails !== undefined && (
+                          <>
+                            <Dropdown.Item as="button" eventKey="emails">
+                              <Checkbox value={sendGalleryEmails} />{' '}
+                              <FaEnvelope /> {gm?.sendGalleryEmails}
+                            </Dropdown.Item>
 
-                        <Dropdown.Item as="button" eventKey="all-premium">
-                          <FaGem /> {gm?.allMyPhotos.premium}
-                        </Dropdown.Item>
+                            <Dropdown.Divider />
 
-                        <Dropdown.Item as="button" eventKey="all-free">
-                          <FaDove /> {gm?.allMyPhotos.free}
-                        </Dropdown.Item>
+                            <Dropdown.Item as="button" eventKey="all-premium">
+                              <FaGem /> {gm?.allMyPhotos.premium}
+                            </Dropdown.Item>
+
+                            <Dropdown.Item as="button" eventKey="all-free">
+                              <FaDove /> {gm?.allMyPhotos.free}
+                            </Dropdown.Item>
+
+                            <Dropdown.Item
+                              as="button"
+                              eventKey="submenu-license"
+                            >
+                              <FaCreativeCommons /> {gm?.license.chooseForAll}
+                            </Dropdown.Item>
+                          </>
+                        )}
                       </>
                     )}
                   </Dropdown.Menu>
@@ -328,7 +422,7 @@ export default function GalleryMenu() {
               >
                 {({ props }) => (
                   <Button
-                    variant={hidden ? 'primary' : 'dark'}
+                    variant="dark"
                     onClick={() => setHidden((hidden) => !hidden)}
                     {...props}
                   >

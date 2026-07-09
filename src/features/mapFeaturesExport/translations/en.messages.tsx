@@ -1,6 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
+import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const en: MapFeaturesExportMessages = {
   download: 'Download',
@@ -25,6 +25,7 @@ const en: MapFeaturesExportMessages = {
     import: 'imported file',
     search: 'lookup',
   },
+  onlySelected: 'Only the selected item',
   disabledAlert:
     'Only items that have something on the map to export are enabled.',
   licenseAlert:

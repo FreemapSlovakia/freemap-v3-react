@@ -23,6 +23,12 @@ const tickActionTypes = new Map<string, number>();
 const TICK_MS = 1000;
 const STALL_MS = 3000;
 
+// A drift beyond this isn't a main-thread stall the page recovers from — it's a
+// wall-clock jump from OS sleep/suspend or extreme timer throttling, neither of
+// which fires visibilitychange. Report the plausible-stall band and drop the
+// rest so those minutes-to-hours phantom stalls stay out of Sentry.
+const STALL_MAX_MS = 60000;
+
 // More dispatches than this within a single tick implies a runaway loop.
 const STORM_THRESHOLD = 800;
 
@@ -39,7 +45,7 @@ const WARMUP_MS = 8000;
 let startedAt = 0;
 
 /** Records every dispatched action for stall/storm correlation. */
-export const perfWatchdogMiddleware: Middleware<{}, RootState> =
+export const perfWatchdogMiddleware: Middleware<object, RootState> =
   () => (next) => (action) => {
     const { type } = action as UnknownAction;
 
@@ -111,7 +117,10 @@ function report(
     extra: fullExtra,
   });
 
-  window._paq?.push(['trackEvent', 'Perf', kind, message]);
+  // The full free-text message (with timing numbers) stays in Sentry; Matomo
+  // only gets the low-cardinality visibility bucket so the report doesn't
+  // fragment into one row per drift value.
+  window._paq?.push(['trackEvent', 'Perf', kind, visibility]);
 }
 
 /** Starts the timer watchdog and (where supported) the longtask observer. */
@@ -147,7 +156,7 @@ export function startPerfWatchdog(): void {
     const actions = tickActionCount;
     const wasForeground = !document.hidden && !hiddenSinceTick;
 
-    if (wasForeground && drift > STALL_MS) {
+    if (wasForeground && drift > STALL_MS && drift < STALL_MAX_MS) {
       report('stall', `Main thread stalled for ~${drift} ms`, {
         stallMs: drift,
         actionsDuringStall: actions,

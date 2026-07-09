@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { WikimediaCommonsMessages } from './WikimediaCommonsMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { WikimediaCommonsMessages } from './WikimediaCommonsMessages.js';
 
 const it: DeepPartialWithRequiredObjects<WikimediaCommonsMessages> = {
   artist: 'Autore',

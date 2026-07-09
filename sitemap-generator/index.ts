@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, rm, writeFile } from 'fs/promises';
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import matter from 'gray-matter';
 import htm from 'htm';
 import { marked } from 'marked';
@@ -128,7 +128,7 @@ async function gen() {
 
   sitemapNames.push(name);
 
-  await writeFile('../sitemap/' + name, out.join('\n'));
+  await writeFile(`../sitemap/${name}`, out.join('\n'));
 
   await objects(sitemapNames);
 

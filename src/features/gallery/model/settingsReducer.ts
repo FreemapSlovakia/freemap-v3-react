@@ -1,9 +1,11 @@
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { DEFAULT_PHOTO_LICENSE, type GalleryLicense } from '../licenses.js';
 import {
   type GalleryColorizeBy,
   galleryAddTag,
   galleryColorizeBy,
   galleryQuickAddTag,
+  gallerySetLicense,
   galleryToggleDirection,
   galleryToggleLegend,
   galleryTogglePremium,
@@ -21,6 +23,9 @@ export interface GallerySettingsState {
   // Default premium flag for newly added upload items; mirrors the user's last
   // premium toggle in the upload modal.
   premium: boolean;
+  // Default license for newly added upload items; mirrors the user's last
+  // license choice in the upload modal.
+  license: GalleryLicense;
 }
 
 export const gallerySettingsInitialState: GallerySettingsState = {
@@ -29,6 +34,7 @@ export const gallerySettingsInitialState: GallerySettingsState = {
   showDirection: true,
   showLegend: true,
   premium: true,
+  license: DEFAULT_PHOTO_LICENSE,
 };
 
 export const gallerySettingsReducer = createReducer(
@@ -46,6 +52,9 @@ export const gallerySettingsReducer = createReducer(
       })
       .addCase(galleryTogglePremium, (state, action) => {
         state.premium = action.payload;
+      })
+      .addCase(gallerySetLicense, (state, action) => {
+        state.license = action.payload;
       })
       .addMatcher(
         isAnyOf(galleryAddTag, galleryQuickAddTag),

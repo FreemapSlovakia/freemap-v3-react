@@ -28,7 +28,7 @@ Searches the map by place name, category, or coordinates. Results may come from 
 ### UI Language switcher
 
 - Access: Main menu > Language
-- Available languages: Slovak, Czech, Hungarian, English, Polish, German, Italian
+- Available languages: Slovak, Czech, Hungarian, English, Polish, German, Italian, Slovenian, French
 
 ### Account
 
@@ -50,7 +50,7 @@ The Account modal has three collapsible sections (below); from the buttons at th
   - Removal of the ad banner
   - Access to premium photos (users can mark uploaded photos as premium-only)
   - Access to higher map zoom levels for specific map layers (see below)
-  - High-resolution elevation data in supported countries (used by the elevation API for the chart, colorizing, and elevation fill); currently Slovakia (DMR 5.0: ÚGKK SR), with more countries being added
+  - High-resolution elevation data in supported countries (used by the elevation API for the chart, colorizing, and elevation fill); currently Slovakia (DMR 5.0: ÚGKK SR), Czechia (DMR 5G: ČÚZK), Austria (ALS DTM: Geoland.at), Switzerland (swissALTI3D: © swisstopo), Italy (Tinitaly DEM: INGV), Slovenia (DMR: Ministrstvo za okolje in prostor), Spain (MDT05: IGN/CNIG), and Sweden (Markhöjdmodell: Lantmäteriet), with more countries being added; elsewhere the elevation API falls back to a global 30 m model (GEDTM30)
 
 #### Personal information
 
@@ -92,9 +92,9 @@ Toggles the photos toolbar and the community-photos map layer. Photos appear as 
 - **Leaderboard** (<kbd>p</kbd> <kbd>b</kbd>) — modal with a time-period selector (All time / last 3 months / last 30 days) and ranking tables: photos per author, and photos per author per country
 - **Settings** (gear dropdown) — Show shooting direction, Notify photo comments via e-mail, plus premium options: "Include all my photos in premium content" and "Make all my photos accessible to everyone"
 
-**Upload modal:** drag-and-drop or pick photos; per photo set name, description, capture date/time, location (with "Set the location" on the map), azimuth (shooting direction), tags, and an optional "make available only to premium users" flag. Shows the gallery rules (max 10 MB, landscapes/documentation only, own photos only, published under CC BY-SA 4.0, etc.).
+**Upload modal:** drag-and-drop or pick photos; per photo set name, description, capture date/time, location (with "Set the location" on the map), azimuth (shooting direction), tags, a license (Creative Commons: CC0, CC BY, CC BY-SA — the default, CC BY-NC, CC BY-NC-SA), and an optional "make available only to premium users" flag. Shows the gallery rules (max 10 MB, landscapes/documentation only, own photos only, published under the license you choose per photo, etc.).
 
-**Photo viewer:** shows the full image with CC BY-SA 4.0 attribution, uploader, capture date and rating; users can comment, rate, modify (own photos), delete, show on the map, open fullscreen, or open in an external app. Photos can be navigated sequentially (e.g. "1 / 51"). URL path (open photo): `/#show=gallery-viewer/<id>` (legacy `/#image=<id>` still works).
+**Photo viewer:** shows the full image with its Creative Commons license (badge + "licensed since" date), uploader, capture date and rating; users can comment, rate, modify (own photos), delete, show on the map, open fullscreen, or open in an external app. Photos can be navigated sequentially (e.g. "1 / 51"). URL path (open photo): `/#show=gallery-viewer/<id>` (legacy `/#image=<id>` still works).
 
 ### My maps
 
@@ -157,7 +157,7 @@ While drawing, individual nodes can be edited: a line point can **Join** another
 
 **Simplify** prompts for a simplification factor (0 = no simplification).
 
-**Elevation profile** opens a chart of elevation along a line, with total climb and total descent.
+**Elevation profile** opens a chart of elevation along a line, with total climb and total descent. Waypoints are marked with their name and elevation, and their distance is ticked on the x-axis. A toolbar below the chart can download it as SVG and, when the line carries waypoints, toggle their markers and labels.
 
 ### Route finder
 
@@ -223,7 +223,7 @@ A **Marker style** button opens a modal to set the marker shape (pin/ring/square
 Toggles the file import toolbar. **Upload** opens the file import modal (URL path: `/#show=file-import`; legacy `/#show=upload-track` still works), which accepts GPX, KML, KMZ, TCX and GeoJSON files; several files can be picked or dropped at once and are merged into one view. Files can also be dropped anywhere on the map. When geodata is already shown, importing asks whether to **append** the new data or **replace** what's loaded. An external track can also be loaded directly by URL via `/#import-url=<URL>` (legacy `gpx-url=` and `load=` still work), supporting the same GPX, KML, KMZ, TCX and GeoJSON formats. Once a track is loaded, the toolbar offers:
 
 - **Track** (dropdown) — shown only when several lines are loaded; picks which one the elevation profile and "More info" describe (a line can also be picked by clicking it on the map; the active one is highlighted)
-- **Elevation profile** — chart of elevation along the active track (with total climb/descent); recorded waypoints are marked along it with labels
+- **Elevation profile** — chart of elevation along the active track (with total climb/descent); recorded waypoints are marked along it with their name and elevation and their distance ticked on the x-axis (toggleable), and a toolbar below the chart can download it as SVG
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled). While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
 - **More info** — a popup with the track's distance, min/max elevation, total climb and total descent
 - **More** (⋮ menu) — gathers the remaining actions:
@@ -375,6 +375,8 @@ Opens a modal to export the user's own map data as a GPX, GeoJSON or KML file. T
 - live tracking
 - imported file
 - highlighted map feature
+
+When a single map feature is selected (a drawing point/line/polygon, an object, a track, the planned route, or a lookup result), an **Only the selected item** toggle appears (on by default) that narrows the export to just that one feature instead of its whole source.
 
 For the file/Google Drive/Dropbox targets an **Elevation** control chooses whether to fill elevation from the elevation API into exported points, lines and the planned route: *Keep recorded* (leave as-is), *Fill missing* (only coordinates lacking elevation), or *Override all* (replace every elevation). Polygons are always skipped.
 
@@ -582,7 +584,7 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 | name                       | id  | technology        | minZ | maxNativeZ | premiumFromZ | creditsPerMTile | supersededBy | shortcut | countries | notes                                                      |
 | -------------------------- | --- | ----------------- | ---: | ---------: | -----------: | --------------: | ------------ | -------- | --------- | ---------------------------------------------------------- |
 | Data layer                 | i   | interactive       |      |            |              |                 |              | ⇧d       |           | Interactive items of all tools (drawing, route, search, …) |
-| Photos                     | I   | gallery           |    0 |            |              |                 |              | ⇧f       |           | CC BY-SA 4.0 (user photos); premium-only photos option     |
+| Photos                     | I   | gallery           |    0 |            |              |                 |              | ⇧f       |           | Creative Commons, chosen per photo (CC BY-SA 4.0 default); premium-only photos option |
 | Events                     | A   | events            |    0 |            |              |                 |              | 🚫       |           | Shared-trip event markers; same filter as the Events panel |
 | Wikipedia                  | w   | wikipedia         |    8 |            |              |                 |              | ⇧w       |           | Wikipedia                                                  |
 | Wikimedia Commons photos   | M   | wikimediaCommons  |   13 |            |              |                 |              | ⇧m       |           | Wikimedia Commons                                          |

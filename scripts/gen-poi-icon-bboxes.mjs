@@ -56,7 +56,7 @@ const failed = [];
 for (const abs of walk(ICON_DIR).sort()) {
   const src = readFileSync(abs, 'utf8');
   const vp = viewport(src.match(/<svg\b[^>]*>/)?.[0] ?? '');
-  if (!vp || !vp.w || !vp.h) {
+  if (!vp?.w || !vp?.h) {
     failed.push({ abs, error: 'no viewport (viewBox/width/height)' });
     continue;
   }

@@ -4,16 +4,28 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
-  ChangeEvent,
-  ReactElement,
-  SubmitEvent,
+  type ChangeEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useEffect,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import {
+  Button,
+  Form,
+  InputGroup,
+  Modal,
+  ToggleButton,
+  ToggleButtonGroup,
+} from 'react-bootstrap';
 import { FaCamera, FaCheck, FaEraser, FaFilter, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import {
+  type GalleryLicense,
+  LicenseBadge,
+  PHOTO_LICENSES,
+} from '../licenses.js';
 import { gallerySetFilter } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
@@ -53,6 +65,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
   const [pano, setPano] = useState<boolean>();
 
   const [premium, setPremium] = useState<boolean>();
+
+  const [license, setLicense] = useState<GalleryLicense[]>([]);
 
   useEffect(() => {
     setTag(filter.tag === '' ? '⌘' : (filter.tag ?? ''));
@@ -96,6 +110,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     setPano(filter.pano);
 
     setPremium(filter.premium);
+
+    setLicense(filter.license ?? []);
   }, [filter]);
 
   const handleTagChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
@@ -177,6 +193,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
           ratingTo: nn(ratingTo ? parseFloat(ratingTo) : undefined),
           pano,
           premium,
+          license: license.length ? license : undefined,
         }),
       );
 
@@ -194,6 +211,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
       ratingTo,
       pano,
       premium,
+      license,
     ],
   );
 
@@ -217,6 +235,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     setPano(undefined);
 
     setPremium(undefined);
+
+    setLicense([]);
   };
 
   const close = useCallback(() => {
@@ -264,7 +284,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     ratingFrom === '' &&
     ratingTo === '' &&
     pano === undefined &&
-    premium === undefined;
+    premium === undefined &&
+    license.length === 0;
 
   useDocumentTitle(show ? gm?.filterModal.title : undefined);
 
@@ -413,6 +434,30 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
             label={gm?.filterModal.pano}
             ref={setPanoCheck}
           />
+
+          <Form.Group controlId="filt-license" className="mb-3">
+            <Form.Label className="d-block">{gm?.license.label}</Form.Label>
+
+            <ToggleButtonGroup
+              type="checkbox"
+              value={license}
+              onChange={(value: GalleryLicense[]) => setLicense(value)}
+              className="d-flex flex-wrap gap-2"
+            >
+              {PHOTO_LICENSES.map(({ id }) => (
+                <ToggleButton
+                  key={id}
+                  id={`filt-lic-${id}`}
+                  value={id}
+                  variant="outline-primary"
+                  className="rounded flex-grow-0"
+                  title={gm?.license.descriptions[id]}
+                >
+                  <LicenseBadge licenseId={id} /> {gm?.license.names[id] ?? id}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Form.Group>
         </Modal.Body>
 
         <Modal.Footer>

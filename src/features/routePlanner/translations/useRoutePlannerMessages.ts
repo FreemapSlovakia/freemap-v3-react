@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { RoutePlannerMessages } from './RoutePlannerMessages.js';
+import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const factory = (language: string) =>
   import(

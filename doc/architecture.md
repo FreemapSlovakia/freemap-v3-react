@@ -178,7 +178,7 @@ Two layers — global and per-feature:
 - **Global** (`src/translations/`): `en.messages.tsx` is the master; `messagesInterface.ts`
   is the **hand-maintained** `Messages` type that all locales are checked against;
   `*.template.tsx` hold per-language overrides; plain `*.messages.tsx` are **generated** by
-  `pnpm sync-language-files` (gitignored, but required for `tsgo`). The loaded
+  `pnpm sync-language-files` (gitignored, but required for `tsc`). The loaded
   bundle lives in a small subscribable module store (`features/l10n/messagesStore.ts`);
   components read it via `useMessages()` (backed by `useSyncExternalStore`), and
   non-React callers use `getMessages()`. See the root agent file for the full
@@ -216,7 +216,7 @@ factory in `Main.tsx` rather than grepping for a static import.
 - **rspack** (`rspack.config.ts`) builds; prod build is selected by the
   `DEPLOYMENT` env var, **not** `--mode` — see `doc/build-and-deploy.md`.
 - `pnpm start` / `pnpm build` first run `build:proto` (protobuf → TS for the
-  gallery) and `sync-language-files`, then type-check with **`tsgo`** (the native
+  gallery) and `sync-language-files`, then type-check with **`tsc`** (the native
   TS preview, not `tsc`) and bundle.
 - **Biome** is the linter/formatter and enforces import order — never hand-sort
   imports; run `npx biome check --write <files>` after edits.

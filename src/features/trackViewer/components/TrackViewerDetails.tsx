@@ -16,7 +16,7 @@ import {
   resolveActiveTrack,
   type TrackLine,
 } from '../trackSelection.js';
-import { TrackViewerMessages } from '../translations/TrackViewerMessages.js';
+import type { TrackViewerMessages } from '../translations/TrackViewerMessages.js';
 import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
 
 export function TrackViewerDetails(): ReactElement | null {
@@ -225,7 +225,7 @@ function TrackViewerDetailsInt({
   return (
     <dl className="m-0 dl-horizontal">
       {tableData.map(([key, value]) => [
-        <dt key={`${key}-dt`}>{(tvm?.details[key] ?? '') + ':'}</dt>,
+        <dt key={`${key}-dt`}>{`${tvm?.details[key] ?? ''}:`}</dt>,
 
         <dd key={`${key}-dd`} className="infoValue">
           {value}

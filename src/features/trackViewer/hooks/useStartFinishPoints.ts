@@ -1,6 +1,6 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMemo } from 'react';
-import { TrackPoint } from '../model/actions.js';
+import type { TrackPoint } from '../model/actions.js';
 import { isTrackOrRoute } from '../provenance.js';
 import { trackEndpoints } from '../trackEndpoints.js';
 import { isTrackLine } from '../trackSelection.js';

@@ -7,7 +7,7 @@ export const cancelProcessor: Processor = {
 
     for (const item of cancelRegister) {
       if (cancelTriggered(item, action, prevState, state)) {
-        item.cancel('Canceled by ' + action.type + ' action');
+        item.cancel(`Canceled by ${action.type} action`);
       }
     }
   },

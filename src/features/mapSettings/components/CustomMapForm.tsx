@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-handler-names */
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
-import { type CustomLayerDef } from '@shared/mapDefinitions.js';
+import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Layer, wms } from '@shared/wms.js';
 import clsx from 'clsx';
 import {
   Fragment,
-  ReactElement,
+  type ReactElement,
   useCallback,
   useEffect,
   useRef,
@@ -122,7 +122,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   useEffect(() => {
     const minZoom = model.minZoom ? parseInt(model.minZoom, 10) : undefined;
 
-    if (minZoom !== undefined && isNaN(minZoom)) {
+    if (minZoom !== undefined && Number.isNaN(minZoom)) {
       return;
     }
 
@@ -130,13 +130,13 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       ? parseInt(model.maxNativeZoom, 10)
       : undefined;
 
-    if (maxNativeZoom !== undefined && isNaN(maxNativeZoom)) {
+    if (maxNativeZoom !== undefined && Number.isNaN(maxNativeZoom)) {
       return;
     }
 
     const zIndex = model.zIndex ? parseInt(model.zIndex, 10) : undefined;
 
-    if (zIndex !== undefined && isNaN(zIndex)) {
+    if (zIndex !== undefined && Number.isNaN(zIndex)) {
       return;
     }
 
@@ -164,7 +164,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           scaleWithDpi: model.scaleWithDpi,
           extraScales: model.extraScales
             .map((a) => parseInt(a, 10))
-            .filter((a) => !isNaN(a)),
+            .filter((a) => !Number.isNaN(a)),
         });
 
         break;
@@ -355,7 +355,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           {(['tile', 'maplibre', 'wms'] as const).map((technology) => (
             <ToggleButton
               key={technology}
-              id={'tech-' + technology}
+              id={`tech-${technology}`}
               type="radio"
               name="technology"
               variant="outline-primary"
@@ -487,7 +487,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           {(['base', 'overlay'] as const).map((layer) => (
             <ToggleButton
               key={layer}
-              id={'layer-' + layer}
+              id={`layer-${layer}`}
               type="radio"
               name="layer"
               variant="outline-primary"

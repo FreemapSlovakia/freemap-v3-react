@@ -21,6 +21,7 @@ export type MapFeaturesExportMessages = {
     import: string;
     search: string;
   };
+  onlySelected: string;
   disabledAlert: string;
   licenseAlert: string;
   exportedToDropbox: string;

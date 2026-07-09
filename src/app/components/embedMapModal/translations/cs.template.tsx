@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { EmbedMessages } from './EmbedMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { EmbedMessages } from './EmbedMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<EmbedMessages> = {
   code: 'Vložte na vaši stránku tento html kód:',

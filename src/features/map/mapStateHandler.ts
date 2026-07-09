@@ -1,4 +1,4 @@
-import { MyStore } from '@app/store/store.js';
+import type { MyStore } from '@app/store/store.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus, mapSetBounds } from './model/actions.js';
 
@@ -15,7 +15,7 @@ export function attachMapStateHandler(store: MyStore) {
 
       const newZoom = map.getZoom();
 
-      const delta = 5 / Math.pow(2, zoom);
+      const delta = 5 / 2 ** zoom;
 
       if (
         zoom !== newZoom ||

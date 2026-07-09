@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
+import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
 const outdoorMap = 'Turistika, Cyklo, Bežky, Jazdenie';
 

@@ -1,4 +1,4 @@
-import { OfflineMapExportMessages } from './OfflineMapExportMessages.js';
+import type { OfflineMapExportMessages } from './OfflineMapExportMessages.js';
 
 const en: OfflineMapExportMessages = {
   format: 'Format',

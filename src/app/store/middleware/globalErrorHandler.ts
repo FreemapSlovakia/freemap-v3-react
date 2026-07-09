@@ -41,6 +41,13 @@ interface ErrorDetails {
   colno?: number;
 }
 
+// Matomo only needs a rate, not every occurrence (Sentry captures those). Dedupe
+// identical errors and cap the total so a tight error loop can't emit thousands
+// of events in a single visit.
+const trackedErrorSignatures = new Set<string>();
+let trackedErrorCount = 0;
+const MAX_TRACKED_ERRORS = 25;
+
 export function sendError(errDetails: ErrorDetails): void {
   // filter out old browsers
   if (!Array.prototype.flatMap) {
@@ -53,7 +60,22 @@ export function sendError(errDetails: ErrorDetails): void {
 
   const eventId = window.Sentry?.captureException(error);
 
-  window._paq.push(['trackEvent', 'App', 'error']);
+  // Low-cardinality name (e.g. `TypeError`) makes the report diagnostic; the
+  // full message is only used locally to dedupe, never sent.
+  const name =
+    error instanceof Error && error.name ? error.name : errDetails.kind;
+
+  const signature = `${name}|${errDetails.message ?? (error instanceof Error ? error.message : '')}`;
+
+  if (
+    trackedErrorCount < MAX_TRACKED_ERRORS &&
+    !trackedErrorSignatures.has(signature)
+  ) {
+    trackedErrorSignatures.add(signature);
+    trackedErrorCount++;
+
+    window._paq.push(['trackEvent', 'App', 'error', name]);
+  }
 
   if (errDetails.message === 'Script error.' || errDetails.filename === '') {
     // don't show to user

@@ -1,4 +1,4 @@
-import {
+import type {
   Attributes,
   ComponentClass,
   ComponentType,

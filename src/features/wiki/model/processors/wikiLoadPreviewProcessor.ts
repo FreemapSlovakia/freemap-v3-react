@@ -3,7 +3,11 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import z from 'zod';
-import { WikiPreview, wikiLoadPreview, wikiSetPreview } from '../actions.js';
+import {
+  type WikiPreview,
+  wikiLoadPreview,
+  wikiSetPreview,
+} from '../actions.js';
 
 const WikiResponse1Schema = z.object({
   query: z.object({

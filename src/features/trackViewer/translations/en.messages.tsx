@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { TrackViewerDetails } from '../components/TrackViewerDetails.js';
-import { TrackViewerMessages } from './TrackViewerMessages.js';
+import type { TrackViewerMessages } from './TrackViewerMessages.js';
 
 const en: TrackViewerMessages = {
   info: () => <TrackViewerDetails />,

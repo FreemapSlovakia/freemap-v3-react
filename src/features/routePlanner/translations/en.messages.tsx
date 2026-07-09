@@ -1,6 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { RoutePlannerMessages } from './RoutePlannerMessages.js';
+import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const en: RoutePlannerMessages = {
   selectHomeLocation: 'Select on the map',

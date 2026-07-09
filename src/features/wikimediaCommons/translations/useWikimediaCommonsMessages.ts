@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { WikimediaCommonsMessages } from './WikimediaCommonsMessages.js';
+import type { WikimediaCommonsMessages } from './WikimediaCommonsMessages.js';
 
 const factory = (language: string) =>
   import(

@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  ResolvedToast,
+  type ResolvedToast,
   toastsAdd,
   toastsRemove,
   toastsRestartTimeout,

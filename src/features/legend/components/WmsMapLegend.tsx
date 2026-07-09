@@ -1,7 +1,7 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { IsWmsLayerDef, LayerDef } from '@shared/mapDefinitions.js';
-import { Layer, wms } from '@shared/wms.js';
-import { Fragment, ReactElement, useEffect, useState } from 'react';
+import type { IsWmsLayerDef, LayerDef } from '@shared/mapDefinitions.js';
+import { type Layer, wms } from '@shared/wms.js';
+import { Fragment, type ReactElement, useEffect, useState } from 'react';
 import { Alert, Spinner } from 'react-bootstrap';
 
 type Props = {
@@ -55,7 +55,11 @@ export function WmsMapLegend({ def }: Props) {
         (layer.minScale == null || layer.minScale <= scale) ? (
           <>
             <div>
-              <img className="d-block mx-auto" src={layer.legendUrl} />
+              <img
+                className="d-block mx-auto"
+                src={layer.legendUrl}
+                alt={layer.title ?? layer.name}
+              />
             </div>
 
             <div>{layer.title}</div>

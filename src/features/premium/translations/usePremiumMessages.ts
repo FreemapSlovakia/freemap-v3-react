@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { PremiumMessages } from './PremiumMessages.js';
+import type { PremiumMessages } from './PremiumMessages.js';
 
 const factory = (language: string) =>
   import(

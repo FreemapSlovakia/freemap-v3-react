@@ -13,6 +13,7 @@ import { TbAngle } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { drawingPointAdd } from '../model/actions/drawingPointActions.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
+import { DrawingToggleButton } from './DrawingToggleButton.js';
 import { ProjectPointModal } from './ProjectPointModal.js';
 
 export default function DrawingPointSelection(): ReactElement | null {
@@ -82,9 +83,14 @@ export default function DrawingPointSelection(): ReactElement | null {
       />
 
       <Selection
-        icon={<FaMapMarkerAlt />}
+        icon={
+          <>
+            <DrawingToggleButton tool="draw-points" /> <FaMapMarkerAlt />
+          </>
+        }
         label={m?.selections.drawPoints}
         deletable
+        noLeftMargin
       >
         <LongPressTooltip breakpoint="sm" label={dm?.modify}>
           {({ label, labelClassName, props }) => (

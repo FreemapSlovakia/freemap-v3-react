@@ -102,7 +102,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         function assertOk(res: Response) {
           if (!res.ok) {
             throw new Error(
-              'Error response from localhost:8111: ' + res.status,
+              `Error response from localhost:8111: ${res.status}`,
             );
           }
         }

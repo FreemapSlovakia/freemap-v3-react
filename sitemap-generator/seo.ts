@@ -306,7 +306,7 @@ export function renderHub(hub: Hub, lang: HubLang): string {
     '<!doctype html>\n' +
     html`<html lang=${lang}>
       <head>
-        <title>${title + ' – Freemap.sk'}</title>
+        <title>${`${title} – Freemap.sk`}</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -449,7 +449,7 @@ export function renderDocument(opts: {
     '<!doctype html>\n' +
     html`<html lang=${lang}>
       <head>
-        <title>${title + ' – Freemap.sk'}</title>
+        <title>${`${title} – Freemap.sk`}</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 

@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import z from 'zod';
-import { authWithGarmin } from '../actions.js';
+import type { authWithGarmin } from '../actions.js';
 
 const handle: ProcessorHandler<typeof authWithGarmin> = async ({
   action: {
@@ -17,7 +17,7 @@ const handle: ProcessorHandler<typeof authWithGarmin> = async ({
     url: '/auth/login-garmin',
     data: {
       connect,
-      callbackUrl: location.origin + '/garminAuthCallback.html',
+      callbackUrl: `${location.origin}/garminAuthCallback.html`,
       clientData: {
         successAction,
       },

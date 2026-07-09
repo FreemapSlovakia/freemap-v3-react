@@ -1,4 +1,4 @@
-import { ShadingComponent, ShadingComponentType } from './Shading.js';
+import type { ShadingComponent, ShadingComponentType } from './Shading.js';
 
 /** Builds a freshly-added shading component of `type` with sensible defaults. */
 export function createDefaultShadingComponent(

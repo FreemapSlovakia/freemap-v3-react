@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { ShadingMessages } from './ShadingMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { ShadingMessages } from './ShadingMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<ShadingMessages> = {
   add: 'Hozzáadás',

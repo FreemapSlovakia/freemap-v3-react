@@ -76,7 +76,7 @@ export interface Processor<T extends BaseActionCreator = BaseActionCreator> {
 export function createProcessorMiddleware() {
   const processors: Processor[] = [];
 
-  const processorMiddleware: Middleware<{}, RootState> & {
+  const processorMiddleware: Middleware<object, RootState> & {
     processors: Processor[];
   } =
     ({ getState, dispatch }) =>
@@ -157,10 +157,7 @@ export function createProcessorMiddleware() {
           ) {
             const handleError = (err: unknown) => {
               if (err instanceof DOMException && err.name === 'AbortError') {
-                console.log(
-                  'Canceled: ' + errorKey + '; Reason: ',
-                  err.message,
-                );
+                console.log(`Canceled: ${errorKey}; Reason: `, err.message);
               } else {
                 console.log('Error key: ', errorKey);
 

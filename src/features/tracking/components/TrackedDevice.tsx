@@ -17,7 +17,7 @@ import { ListGroup } from 'react-bootstrap';
 import { FaEdit, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
-import { TrackedDevice as TrackedDeviceType } from '../model/types.js';
+import type { TrackedDevice as TrackedDeviceType } from '../model/types.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 type Props = {

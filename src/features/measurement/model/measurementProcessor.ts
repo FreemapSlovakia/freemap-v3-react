@@ -25,9 +25,21 @@ const cancelType = [
   mapRefocus.type,
 ];
 
+// A point measurement pins a fixed geographic location, so panning/zooming the
+// map (mapRefocus) must not dismiss its readout — only a selection change does.
+const pointCancelType = [
+  clearMapFeatures.type,
+  selectFeature.type,
+  deleteFeature.type,
+];
+
 // Dismiss the measurement readouts when no drawing tool is open anymore — not
 // merely when some other tool opens (the draw tool stays open then).
 const drawingClosed = (state: RootState) => !state.main.tools.some(isDrawTool);
+
+// `drawingMeasure` re-fires on every vertex add/drag of the same geometry, so
+// tracking each one floods Matomo. Only report when the measured target changes.
+let lastMeasureKey: string | undefined;
 
 export const measurementProcessor: Processor<typeof drawingMeasure> = {
   actionCreator: drawingMeasure,
@@ -39,7 +51,20 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
 
       let id;
 
-      window._paq.push(['trackEvent', 'Drawing', 'measure', selection?.type]);
+      const measureKey = action.payload.position
+        ? 'position'
+        : selection?.type === 'draw-line-poly' ||
+            selection?.type === 'draw-points'
+          ? `${selection.type}:${selection.id}`
+          : selection?.type === 'line-point'
+            ? `line-point:${selection.lineIndex}`
+            : (selection?.type ?? 'none');
+
+      if (measureKey !== lastMeasureKey) {
+        lastMeasureKey = measureKey;
+
+        window._paq.push(['trackEvent', 'Drawing', 'measure', selection?.type]);
+      }
 
       // The context-menu path measures a free position with no drawing tool
       // open, so the drawingClosed predicate must not apply there — otherwise it
@@ -52,6 +77,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         const toastParams: ElevationInfoBaseProps = {
           point,
           elevation: null,
+          loading: false,
         };
 
         if (action.payload.elevation !== false) {
@@ -60,9 +86,9 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               style: 'info',
               messageKey: 'elevationInfo',
               messageLoader: loadMeasurementMessages,
-              messageParams: toastParams,
+              messageParams: { ...toastParams, loading: true },
               id: 'measurementInfo',
-              cancelType,
+              cancelType: pointCancelType,
               statePredicate,
             }),
           );
@@ -90,7 +116,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               ...toastParams,
               elevation,
             },
-            cancelType,
+            cancelType: pointCancelType,
             statePredicate,
           }),
         );
@@ -173,9 +199,12 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
           );
         }
       } else if (selection?.type === 'draw-points' || action.payload.position) {
+        // A selected point's elevation readout is tied to the selection, not to
+        // any drawing tool — it stays visible in plain selecting mode too, and
+        // is dismissed via cancelType when the selection changes or clears.
         await measurePoint(
           getState().drawingPoints.points[selection.id].coords,
-          true,
+          false,
         );
       }
     } catch (err) {

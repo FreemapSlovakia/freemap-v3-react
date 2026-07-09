@@ -33,7 +33,7 @@ export const routePlannerToggleElevationChartProcessor: Processor<
       // route's own coordinates.
       await ensureRouteRenderGeojson(getState, dispatch).catch(() => undefined);
 
-      const { alternatives, activeAlternativeIndex, renderGeojson } =
+      const { alternatives, activeAlternativeIndex, renderGeojson, points } =
         getState().routePlanner;
 
       const alternative = alternatives[activeAlternativeIndex];
@@ -52,9 +52,15 @@ export const routePlannerToggleElevationChartProcessor: Processor<
         return;
       }
 
+      // Mark the intermediate route points (midpoints) along the profile; the
+      // start and finish are the chart's own endpoints, so they're omitted.
+      const midpoints = points
+        .slice(1, -1)
+        .map(({ lat, lon }) => ({ lat, lon }));
+
       // Render the line's coordinates as-is rather than resampling a fresh
       // server profile.
-      dispatch(elevationChartSetTrackGeojson(feature, true));
+      dispatch(elevationChartSetTrackGeojson(feature, true, midpoints));
     }
   },
 };

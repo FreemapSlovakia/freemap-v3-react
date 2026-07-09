@@ -2,7 +2,7 @@ import type { MarkerType } from '@features/objects/model/actions.js';
 import { useObjectsMessages } from '@features/objects/translations/useObjectsMessages.js';
 import type { Breakpoint } from '@shared/breakpoints.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { FaCircle, FaMapMarker, FaSquare } from 'react-icons/fa';
 
 const markerTypes: MarkerType[] = ['pin', 'ring', 'square'];

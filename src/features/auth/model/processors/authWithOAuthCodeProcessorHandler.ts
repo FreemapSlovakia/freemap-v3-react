@@ -1,7 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { popupOAuthProviders } from '../../popupOAuthProviders.js';
-import { authWithOAuthCode } from '../actions.js';
+import type { authWithOAuthCode } from '../actions.js';
 import { handleLoginResponse } from './loginResponseHandler.js';
 
 const handle: ProcessorHandler<typeof authWithOAuthCode> = async ({
@@ -19,7 +19,7 @@ const handle: ProcessorHandler<typeof authWithOAuthCode> = async ({
       code,
       language: getState().l10n.chosenLanguage,
       connect,
-      redirectUri: location.origin + '/authCallback.html',
+      redirectUri: `${location.origin}/authCallback.html`,
     },
     expectedStatus: 200,
   });

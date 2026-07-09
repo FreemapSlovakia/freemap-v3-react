@@ -3,7 +3,7 @@ import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
 import { AreaInfo } from '../components/AreaInfo.js';
 import { DistanceInfo } from '../components/DistanceInfo.js';
-import { MeasurementMessages } from './MeasurementMessages.js';
+import type { MeasurementMessages } from './MeasurementMessages.js';
 
 const en: MeasurementMessages = {
   elevationFetchError: ({ err }) =>

@@ -7,7 +7,7 @@ import {
 import { createReducer } from '@reduxjs/toolkit';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import {
-  SearchResult,
+  type SearchResult,
   searchClear,
   searchSelectResult,
   searchSetQuery,

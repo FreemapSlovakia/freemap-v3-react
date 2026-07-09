@@ -3,14 +3,14 @@ import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import { loadPremiumMessages } from '@features/premium/translations/loadPremiumMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { Dispatch } from 'redux';
+import type { Dispatch } from 'redux';
 import z from 'zod';
 import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
 import { authSetUser } from '../actions.js';
 import {
   LoginResponseSchema,
   RawUserSchema,
-  UserSettings,
+  type UserSettings,
   UserSettingsCompatSchema,
 } from '../types.js';
 

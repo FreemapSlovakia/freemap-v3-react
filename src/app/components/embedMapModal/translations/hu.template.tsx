@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { EmbedMessages } from './EmbedMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { EmbedMessages } from './EmbedMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<EmbedMessages> = {
   code: 'A következő kódot írja be HTML-oldalába:',

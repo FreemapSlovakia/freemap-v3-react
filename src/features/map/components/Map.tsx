@@ -4,7 +4,7 @@ import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.j
 import { useMap } from '@features/map/hooks/useMap.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import 'leaflet/dist/leaflet.css';
-import { ReactElement, ReactNode, useEffect } from 'react';
+import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { MapContainer, Pane, ScaleControl } from 'react-leaflet';
 import './leaflet.css';
 

@@ -1,4 +1,4 @@
-import { SupportUsMessages } from './SupportUsMessages.js';
+import type { SupportUsMessages } from './SupportUsMessages.js';
 
 const en: SupportUsMessages = {
   explanation:

@@ -22,17 +22,17 @@ export const galleryUploadModalProcessor: Processor = {
       return;
     }
 
-    let res;
-
-    try {
-      res = await httpRequest({
-        getState,
-        url: '/gallery/picture-tags',
-        expectedStatus: 200,
-      });
-    } catch (err) {
+    const res = await httpRequest({
+      getState,
+      url: '/gallery/picture-tags',
+      expectedStatus: 200,
+    }).catch(async (err) => {
       await toastError(err, loadGalleryMessages, 'tagsFetchingError');
 
+      return null;
+    });
+
+    if (!res) {
       return;
     }
 

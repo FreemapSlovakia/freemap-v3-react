@@ -1,4 +1,5 @@
 import { type Breakpoint, useBreakpointMatches } from '@shared/breakpoints.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import clsx from 'clsx';
 import {
   Children,
@@ -9,7 +10,6 @@ import {
 } from 'react';
 import { Button, type ButtonProps, Dropdown } from 'react-bootstrap';
 import { FaEllipsisV } from 'react-icons/fa';
-import { fixedPopperConfig } from '@/shared/fixedPopperConfig.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 
 export type ActionProps = {

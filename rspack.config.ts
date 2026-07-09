@@ -1,6 +1,5 @@
 import path from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
 import type {
   Configuration,
   CssExtractRspackLoaderOptions,
@@ -9,7 +8,7 @@ import { rspack } from '@rspack/core';
 import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
 import HtmlRspackPlugin from 'html-rspack-plugin';
 import { RspackManifestPlugin } from 'rspack-manifest-plugin';
-import { LoaderOptions as SassLoaderOptions } from 'sass-loader';
+import type { LoaderOptions as SassLoaderOptions } from 'sass-loader';
 import TerserPlugin from 'terser-webpack-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import { RspackMarkdownDictPlugin } from './RspackMarkdownDictPlugin.js';
@@ -35,7 +34,7 @@ const styleOrExtractLoader = prod
       loader: rspack.CssExtractRspackPlugin.loader,
       options: {
         publicPath: (resourcePath: string, context: string) =>
-          path.relative(path.dirname(resourcePath), context) + '/',
+          `${path.relative(path.dirname(resourcePath), context)}/`,
       } satisfies CssExtractRspackLoaderOptions,
     }
   : 'style-loader';

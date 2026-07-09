@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
-import { FeatureId } from '@shared/types/featureId.js';
+import type { FeatureId } from '@shared/types/featureId.js';
 import { point } from '@turf/helpers';
 import { loadOsmMessages } from '../../translations/loadOsmMessages.js';
 import { osmLoadNode } from '../osmActions.js';

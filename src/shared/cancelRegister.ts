@@ -1,5 +1,5 @@
 import type { RootState } from '@app/store/store.js';
-import { UnknownAction } from '@reduxjs/toolkit';
+import type { UnknownAction } from '@reduxjs/toolkit';
 
 export type ActionCreatorMatchable = {
   match: (action: UnknownAction) => boolean;

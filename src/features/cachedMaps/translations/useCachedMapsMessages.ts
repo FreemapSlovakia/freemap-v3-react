@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { CachedMapsMessages } from './CachedMapsMessages.js';
+import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const factory = (language: string) =>
   import(

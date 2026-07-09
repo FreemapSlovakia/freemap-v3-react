@@ -1,4 +1,4 @@
-import { LegendMessages } from './LegendMessages.js';
+import type { LegendMessages } from './LegendMessages.js';
 
 const en: LegendMessages = {
   body: ({ name }) => (

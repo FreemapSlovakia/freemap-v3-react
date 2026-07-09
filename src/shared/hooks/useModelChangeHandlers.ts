@@ -1,4 +1,4 @@
-import { ChangeEvent, useMemo, useRef } from 'react';
+import { type ChangeEvent, useMemo, useRef } from 'react';
 
 type ControlChangeEvent = ChangeEvent<
   HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -18,7 +18,7 @@ export function useModelChangeHandlers<T extends object>(
         get: (_, key) => {
           const k = key as keyof T;
 
-          return (cache.current[k] ??= (e) => {
+          cache.current[k] ??= (e) => {
             const { type, value, checked } =
               e.currentTarget as HTMLInputElement;
 
@@ -26,7 +26,9 @@ export function useModelChangeHandlers<T extends object>(
               ...model,
               [k]: type === 'checkbox' ? checked : value,
             }));
-          });
+          };
+
+          return cache.current[k];
         },
       },
     );

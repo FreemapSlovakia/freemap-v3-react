@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { startGoogleAuth } from '@shared/gapiLoader.js';
 import { hasProperty } from '@shared/types/typeUtils.js';
-import { authWithGoogle } from '../actions.js';
+import type { authWithGoogle } from '../actions.js';
 import { handleLoginResponse } from './loginResponseHandler.js';
 
 const handle: ProcessorHandler<typeof authWithGoogle> = async ({

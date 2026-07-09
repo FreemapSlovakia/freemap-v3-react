@@ -1,9 +1,9 @@
 import {
-  MarkerType,
+  type MarkerType,
   MarkerTypeSchema,
 } from '@features/objects/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
-import { LatLon, LatLonSchema } from '@shared/types/common.js';
+import { type LatLon, LatLonSchema } from '@shared/types/common.js';
 import z from 'zod';
 
 export const DrawingPointSchema = z.object({

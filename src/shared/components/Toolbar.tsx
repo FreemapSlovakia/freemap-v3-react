@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Card } from 'react-bootstrap';
 import { useLeftMarginAdjuster } from '../hooks/useLeftMarginAdjuster.js';
 

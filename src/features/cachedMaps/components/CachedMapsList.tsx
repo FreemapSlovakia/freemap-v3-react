@@ -157,11 +157,7 @@ export function CachedMapsList(): ReactElement {
                           <Action
                             icon={<FaEye />}
                             label={cmm?.activate}
-                            variant={
-                              activeLayers.includes(cm.type)
-                                ? 'primary'
-                                : 'outline-primary'
-                            }
+                            variant="outline-primary"
                             active={activeLayers.includes(cm.type)}
                             onClick={() =>
                               dispatch(mapToggleLayer({ type: cm.type }))
@@ -227,11 +223,7 @@ export function CachedMapsList(): ReactElement {
                                 cm.name,
                               );
 
-                              if (
-                                next != null &&
-                                next.trim() &&
-                                next !== cm.name
-                              ) {
+                              if (next?.trim() && next !== cm.name) {
                                 dispatch(
                                   cachedMapRenamed({
                                     id: cm.type,

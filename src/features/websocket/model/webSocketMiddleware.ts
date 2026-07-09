@@ -1,5 +1,5 @@
 import type { RootState } from '@app/store/store.js';
-import { Middleware } from '@reduxjs/toolkit';
+import type { Middleware } from '@reduxjs/toolkit';
 import {
   wsClose,
   wsInvalidState,
@@ -9,7 +9,7 @@ import {
   wsStateChanged,
 } from './actions.js';
 
-export function createWebsocketMiddleware(): Middleware<{}, RootState> {
+export function createWebsocketMiddleware(): Middleware<object, RootState> {
   let ws: WebSocket | null = null;
 
   let restarter: number | null = null;
@@ -44,7 +44,7 @@ export function createWebsocketMiddleware(): Middleware<{}, RootState> {
           ? `&authToken=${encodeURIComponent(user.authToken)}`
           : '';
 
-        ws = new WebSocket(url + '/ws?pingInterval=30000' + authTokenQ);
+        ws = new WebSocket(`${url}/ws?pingInterval=30000${authTokenQ}`);
 
         dispatch(
           wsStateChanged({ timestamp: Date.now(), state: ws.readyState }),

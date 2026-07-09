@@ -1,7 +1,7 @@
 import '@maplibre/maplibre-gl-leaflet';
-import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
+import { createTileLayerComponent, type LayerProps } from '@react-leaflet/core';
 import * as L from 'leaflet';
-import { Map as MaplibreMap } from 'maplibre-gl';
+import type { Map as MaplibreMap } from 'maplibre-gl';
 import '../maplibreLanguage.js';
 
 class MaplibreWithLang extends L.MaplibreGL {
@@ -31,6 +31,22 @@ class MaplibreWithLang extends L.MaplibreGL {
     if (this._language) {
       this.setLanguage(this._language);
     }
+
+    return this;
+  }
+
+  onRemove(map: L.Map) {
+    const self = this as unknown as { _glMap?: { remove(): void } | null };
+
+    // When GL initialization failed (e.g. no WebGL context on a low-end
+    // device), `_glMap` is never assigned and the upstream onRemove throws
+    // dereferencing it. Stub it so the rest of teardown (detaching the pane
+    // container) still runs.
+    if (!self._glMap) {
+      self._glMap = { remove() {} };
+    }
+
+    L.MaplibreGL.prototype.onRemove.call(this, map);
 
     return this;
   }

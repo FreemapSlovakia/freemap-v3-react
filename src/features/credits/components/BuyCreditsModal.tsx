@@ -2,7 +2,12 @@ import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import { ReactElement, SubmitEvent, useCallback, useState } from 'react';
+import {
+  type ReactElement,
+  type SubmitEvent,
+  useCallback,
+  useState,
+} from 'react';
 import {
   Button,
   ButtonGroup,

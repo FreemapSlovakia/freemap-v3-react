@@ -65,7 +65,7 @@ export function CacheTilesForm(): ReactElement {
       )
       .map((layer) => {
         const url = layer.url.startsWith('//')
-          ? 'https:' + layer.url
+          ? `https:${layer.url}`
           : layer.url;
 
         return { ...layer, url };

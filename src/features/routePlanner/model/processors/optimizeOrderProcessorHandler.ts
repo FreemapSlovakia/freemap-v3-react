@@ -6,7 +6,7 @@ import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import { loadRoutePlannerMessages } from '../../translations/loadRoutePlannerMessages.js';
 import {
-  routePlannerOptimizeOrder,
+  type routePlannerOptimizeOrder,
   routePlannerSetPoints,
 } from '../actions.js';
 import { buildCostMatrix } from '../optimize/buildCostMatrix.js';

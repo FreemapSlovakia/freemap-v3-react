@@ -13,16 +13,16 @@ import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLang
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import {
   featureIdsEqual,
-  OsmFeatureId,
+  type OsmFeatureId,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
 import clsx from 'clsx';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   Fragment,
   forwardRef,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -41,8 +41,8 @@ import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
-  SearchResult,
-  SearchSource,
+  type SearchResult,
+  type SearchSource,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
@@ -207,7 +207,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const sc = useScrollClasses('vertical');
 
-  let prevSource: SearchSource | undefined = undefined;
+  let prevSource: SearchSource | undefined;
 
   return (
     <Form
@@ -292,7 +292,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                     onClick={preventDefault}
                     href={
                       result.id.type === 'osm'
-                        ? '#osm-' + result.id.elementType + '=' + result.id.id
+                        ? `#osm-${result.id.elementType}=${result.id.id}`
                         : undefined
                     }
                     active={
@@ -329,7 +329,7 @@ function Result({ value }: { value: SearchResult }) {
     <div className="d-flex flex-column mx-n2">
       <div className="d-flex f-gap-2 align-items-center">
         {img.length > 0 ? (
-          <img src={img[0]} style={{ width: '1em', height: '1em' }} />
+          <img src={img[0]} style={{ width: '1em', height: '1em' }} alt="" />
         ) : (
           <span
             style={{

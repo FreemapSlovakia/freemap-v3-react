@@ -1,5 +1,5 @@
 {
-  "langs": ["cs", "hu", "it", "sk", "de", "pl"],
+  "langs": ["cs", "hu", "it", "sk", "de", "pl", "sl", "fr"],
   "templates": [
     "src/osm/osmTagToNameMapping-{LANG}.ts",
     "src/translations/{LANG}.tsx",
@@ -19,6 +19,7 @@
     "src/features/objects/translations/{LANG}.tsx",
     "src/features/changesets/translations/{LANG}.tsx",
     "src/features/trackViewer/translations/{LANG}.tsx",
+    "src/features/elevationChart/translations/{LANG}.tsx",
     "src/shared/colorizers/translations/{LANG}.tsx",
     "src/features/openInExternalApp/translations/{LANG}.tsx",
     "src/features/credits/translations/{LANG}.tsx",

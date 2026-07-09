@@ -3,9 +3,9 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
-  IsWmsLayerDef,
+  type IsWmsLayerDef,
   integratedLayerDefs,
-  LayerDef,
+  type LayerDef,
 } from '@shared/mapDefinitions.js';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';

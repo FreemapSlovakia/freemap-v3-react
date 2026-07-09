@@ -6,7 +6,7 @@ import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import clsx from 'clsx';
-import { type ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

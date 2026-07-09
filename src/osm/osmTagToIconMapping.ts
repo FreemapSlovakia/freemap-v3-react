@@ -314,7 +314,7 @@ import wetland from '../images/poiIcons/wetland.svg';
 import wilderness_hut from '../images/poiIcons/wilderness_hut.svg';
 import windmill from '../images/poiIcons/windmill.svg';
 import zoo from '../images/poiIcons/zoo.svg';
-import { Node } from './types.js';
+import type { Node } from './types.js';
 
 // hack to have only single icon for churches...
 const buildingMapping = {

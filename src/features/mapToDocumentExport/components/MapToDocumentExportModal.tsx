@@ -4,6 +4,11 @@ import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
+import {
+  ExportablesSelector,
+  useAvailableExportables,
+} from '@features/mapFeaturesExport/components/ExportablesSelector.js';
+import type { Exportable } from '@features/mapFeaturesExport/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   toAttributionCountries,
@@ -14,9 +19,9 @@ import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   Fragment,
-  ReactElement,
+  type ReactElement,
   useCallback,
   useEffect,
   useRef,
@@ -34,16 +39,11 @@ import {
 } from 'react-bootstrap';
 import { FaDownload, FaPrint, FaTimes } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
-import {
-  ExportablesSelector,
-  useAvailableExportables,
-} from '@/features/mapFeaturesExport/components/ExportablesSelector.js';
-import type { Exportable } from '@/features/mapFeaturesExport/model/actions.js';
 import { exportMapToDocument } from '../model/exportMapToDocument.js';
 import {
-  CustomLayerOrder,
-  ExportableLayer,
-  Format,
+  type CustomLayerOrder,
+  type ExportableLayer,
+  type Format,
   FormatSchema,
 } from '../model/types.js';
 import { useAreaCountries } from '../model/useAreaCountries.js';

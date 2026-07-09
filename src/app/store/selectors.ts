@@ -1,11 +1,11 @@
-import { PickMode } from '@features/routePlanner/model/actions.js';
-import { Track } from '@features/tracking/model/types.js';
+import type { PickMode } from '@features/routePlanner/model/actions.js';
+import type { Track } from '@features/tracking/model/types.js';
 import { isTrackLine } from '@features/trackViewer/trackSelection.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import { createSelector } from 'reselect';
 import marker from '@/images/cursors/marker.svg';
 import pencil from '@/images/cursors/pencil.svg';
-import { Tool } from '../store/actions.js';
+import type { Tool } from '../store/actions.js';
 import type { RootState } from '../store/store.js';
 
 export const toolsSelector = (state: RootState): Tool[] => state.main.tools;
@@ -182,11 +182,19 @@ export const selectingModeSelector = (state: RootState): boolean => {
 };
 
 export const drawingLinePolys = (state: RootState): boolean => {
-  // Only the active drawing tool captures clicks / edits lines — being merely
-  // open (visible toolbar) must not.
+  // The active drawing tool captures clicks (to start a line) — being merely
+  // open (visible toolbar) must not. An in-progress drawing also captures
+  // clicks (to append points) even after its tool was deactivated or closed,
+  // and during a "continue" that never activated a tool.
   const tool = activeMapToolSelector(state);
 
-  return tool === 'draw-lines' || tool === 'draw-polygons';
+  return (
+    tool === 'draw-lines' ||
+    tool === 'draw-polygons' ||
+    // A picking mode owns the map, so an in-progress drawing must go inert there
+    // too — mirror the masking `activeMapToolSelector` already applies.
+    (state.drawingLines.drawing && !pickingModeSelector(state))
+  );
 };
 
 export const trackGeojsonIsSuitableForElevationChart = (
@@ -198,3 +206,18 @@ export const trackGeojsonIsSuitableForElevationChart = (
 
 export const askingCookieConsentSelector = (state: RootState): boolean =>
   'cookieConsent' in state.toasts.toasts;
+
+// Whether `clearMapFeatures` would actually remove anything from the map —
+// drives showing the "Clear map" command. Mirrors the slices that reset on
+// `clearMapFeatures` (see their reducers), limited to the ones that put
+// user-visible features on the map.
+export const hasClearableMapFeaturesSelector = (state: RootState): boolean =>
+  state.main.selection !== null ||
+  state.drawingPoints.points.length > 0 ||
+  state.drawingLines.lines.length > 0 ||
+  state.routePlanner.points.length > 0 ||
+  state.objects.objects.length > 0 ||
+  state.changesets.changesets.length > 0 ||
+  state.search.selectedResult !== null ||
+  state.trackViewer.trackGeojson !== null ||
+  state.tracking.trackedDevices.length > 0;

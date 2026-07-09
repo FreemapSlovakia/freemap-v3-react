@@ -26,15 +26,15 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { Feature, LineString } from 'geojson';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   Children,
-  CSSProperties,
+  type CSSProperties,
   Fragment,
   forwardRef,
-  ReactElement,
-  ReactNode,
-  SubmitEvent,
-  SyntheticEvent,
+  type ReactElement,
+  type ReactNode,
+  type SubmitEvent,
+  type SyntheticEvent,
   useCallback,
   useMemo,
   useState,
@@ -70,7 +70,7 @@ import { PiGraph } from 'react-icons/pi';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import {
-  RoutingMode,
+  type RoutingMode,
   routePlannerColorizeBy,
   routePlannerOptimizeOrder,
   routePlannerSetColorizeLegend,
@@ -381,7 +381,7 @@ const GraphopperModeMenu = forwardRef<HTMLDivElement, Props>(
           )
           .map((item) => {
             return (
-              <Fragment key={'m-' + item.props.eventKey}>
+              <Fragment key={`m-${item.props.eventKey}`}>
                 {item.props.eventKey === 'roundtrip' ? (
                   <TripSettings />
                 ) : item.props.eventKey === 'isochrone' ? (

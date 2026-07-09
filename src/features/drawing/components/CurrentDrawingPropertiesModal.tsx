@@ -16,9 +16,9 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import { polygon } from '@turf/helpers';
 import {
-  ChangeEvent,
-  ReactElement,
-  SubmitEvent,
+  type ChangeEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useState,
 } from 'react';
@@ -235,12 +235,14 @@ export default function CurrentDrawingPropertiesModal({
         if (inJosm) {
           fetch(
             'http://localhost:8111/import?new_layer=true&url=' +
-              encodeURIComponent('http://fm3.freemap.sk:8080?' + q.toString()),
+              encodeURIComponent(
+                `https://streamfinder.freemap.sk?${q.toString()}`,
+              ),
           )
             .then((res) => {
               if (!res.ok) {
                 throw new Error(
-                  'Error response from localhost:8111: ' + res.status,
+                  `Error response from localhost:8111: ${res.status}`,
                 );
               }
             })
@@ -256,7 +258,7 @@ export default function CurrentDrawingPropertiesModal({
         } else {
           const aElem = document.createElement('a');
 
-          aElem.href = 'http://fm3.freemap.sk:8080?' + q.toString();
+          aElem.href = `https://streamfinder.freemap.sk?${q.toString()}`;
 
           aElem.target = '_blank';
 
@@ -291,12 +293,12 @@ export default function CurrentDrawingPropertiesModal({
         if (inJosm) {
           fetch(
             'http://localhost:8111/import?new_layer=true&url=' +
-              encodeURIComponent('http://fm3.freemap.sk:8085?' + q.toString()),
+              encodeURIComponent(`https://forester.freemap.sk?${q.toString()}`),
           )
             .then((res) => {
               if (!res.ok) {
                 throw new Error(
-                  'Error response from localhost:8111: ' + res.status,
+                  `Error response from localhost:8111: ${res.status}`,
                 );
               }
             })
@@ -312,7 +314,7 @@ export default function CurrentDrawingPropertiesModal({
         } else {
           const aElem = document.createElement('a');
 
-          aElem.href = 'http://fm3.freemap.sk:8085?' + q.toString();
+          aElem.href = `https://forester.freemap.sk?${q.toString()}`;
 
           aElem.target = '_blank';
 

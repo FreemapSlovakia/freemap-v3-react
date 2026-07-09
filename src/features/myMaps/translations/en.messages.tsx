@@ -1,6 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MyMapsMessages } from './MyMapsMessages.js';
+import type { MyMapsMessages } from './MyMapsMessages.js';
 
 const en: MyMapsMessages = {
   addNew: 'Add new map',

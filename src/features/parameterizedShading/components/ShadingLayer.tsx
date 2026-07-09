@@ -1,16 +1,20 @@
 import { init } from '@bokuweb/zstd-wasm';
 import { createTileLayerComponent } from '@react-leaflet/core';
-import { createWorkerPool, WorkerPool } from '@shared/workerPool.js';
+import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
 import {
-  Coords,
-  DoneCallback,
-  GridLayerOptions,
-  Map as LeafletMap,
+  type Coords,
+  type DoneCallback,
+  type GridLayerOptions,
+  type Map as LeafletMap,
   GridLayer as LGridLayer,
   Util,
 } from 'leaflet';
-import { Messages } from '@/translations/messagesInterface.js';
-import { Color, SHADING_COMPONENT_TYPES, Shading } from '../model/Shading.js';
+import type { Messages } from '@/translations/messagesInterface.js';
+import {
+  type Color,
+  SHADING_COMPONENT_TYPES,
+  type Shading,
+} from '../model/Shading.js';
 import { DataWriter } from './DataWriter.js';
 import classes from './ShadingLayer.module.css';
 import shadingWgslResource from './shading.wgsl';
@@ -46,9 +50,9 @@ class GpuError extends Error {
       'GPU Error: ' +
         kind +
         (error instanceof Error
-          ? ': ' + error.message
+          ? `: ${error.message}`
           : error
-            ? ': ' + String(error)
+            ? `: ${String(error)}`
             : ''),
     );
 
@@ -242,7 +246,7 @@ class LShadingLayer extends LGridLayer {
   async createTileAsync(
     coords: Coords,
     canvas: HTMLCanvasElement,
-  ): Promise<boolean | void> {
+  ): Promise<boolean | undefined> {
     const [device, pipeline, sampler] = await this.gpuObjectsPromise;
 
     const context = canvas.getContext('webgpu');
@@ -295,7 +299,7 @@ class LShadingLayer extends LGridLayer {
     }
 
     if (res.status !== 200) {
-      throw new Error('unexpected status ' + res.status);
+      throw new Error(`unexpected status ${res.status}`);
     }
 
     canvas.style.display = '';
@@ -481,9 +485,9 @@ class LShadingLayer extends LGridLayer {
 
     canvas.height = size.y * (1 << (this._options.zoomOffset ?? 0));
 
-    canvas.style.width = size.x + 'px';
+    canvas.style.width = `${size.x}px`;
 
-    canvas.style.height = size.x + 'px';
+    canvas.style.height = `${size.x}px`;
 
     this.createTileAsync(coords, canvas).then(
       () => {

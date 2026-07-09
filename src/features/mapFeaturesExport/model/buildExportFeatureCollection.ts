@@ -1,3 +1,4 @@
+import type { Selection } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
@@ -31,6 +32,12 @@ import {
 import type { Feature, FeatureCollection, Position } from 'geojson';
 import { iconSpecToGarminSym } from '../garminSymMapping.js';
 import { fetchPictures, type Picture } from './processors/fetchPictures.js';
+import {
+  keepDrawingLine,
+  keepDrawingPoint,
+  keepObject,
+  selectedTrackToken,
+} from './selectionFilter.js';
 
 // Which point representations to emit. Combinable: a data export wants
 // `props`; the raster map server wants `svgMarker`; `pngMarker` rasterizes the
@@ -60,6 +67,12 @@ export interface ExportInclude {
 }
 
 export interface BuildExportOptions {
+  /**
+   * Restrict the output to the single selected map feature. When set, each
+   * source emits only the item this selection targets; sources the selection
+   * doesn't target emit nothing. Undefined exports every included source.
+   */
+  only?: Selection;
   /**
    * Planned-route geometry: `all` emits every alternative as a MultiLineString
    * (data export); `active` emits only the active alternative as a single
@@ -308,7 +321,7 @@ function addPictures(features: Feature[], pictures: Picture[]) {
     let imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
 
     if (hmac) {
-      imageUrl += '&hmac=' + encodeURIComponent(hmac);
+      imageUrl += `&hmac=${encodeURIComponent(hmac)}`;
     }
 
     features.push(
@@ -347,7 +360,7 @@ function addPlannedRoute(
               ? rpm.start
               : i === points.length - 1
                 ? rpm.finish
-                : rpm.stop + ' ' + (i + 1),
+                : `${rpm.stop} ${i + 1}`,
         }),
       );
     }
@@ -380,7 +393,7 @@ function addPlannedRoute(
           leg.steps.map((step) => step.geometry.coordinates),
         ),
         {
-          title: rpm.alternative + ' ' + (i + 1),
+          title: `${rpm.alternative} ${i + 1}`,
         },
       ),
     );
@@ -391,6 +404,7 @@ function addTracking(
   features: Feature[],
   { tracks, trackedDevices }: TrackingState,
   trackingPoints: boolean,
+  onlyToken: string | null,
 ) {
   const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));
 
@@ -400,6 +414,10 @@ function addTracking(
   }));
 
   for (const track of tracks1) {
+    if (onlyToken !== null && String(track.token) !== onlyToken) {
+      continue;
+    }
+
     const stroke = track.color ? splitColorAlpha(track.color) : undefined;
 
     // A line needs ≥2 points; a device that has produced 0 or 1 fix would make
@@ -494,14 +512,20 @@ export async function buildExportFeatureCollection({
 
   const markerMode = Boolean(pointMode.svgMarker || pointMode.pngMarker);
 
+  const { only } = options;
+
   const features: Feature[] = [];
 
   if (include.pictures) {
     addPictures(features, await fetchPictures(getState));
   }
 
-  for (const line of drawingLines.lines) {
+  for (const [lineIndex, line] of drawingLines.lines.entries()) {
     if (line.type === 'line' ? !include.drawingLines : !include.drawingAreas) {
+      continue;
+    }
+
+    if (!keepDrawingLine(only, lineIndex)) {
       continue;
     }
 
@@ -541,7 +565,11 @@ export async function buildExportFeatureCollection({
   }
 
   if (include.drawingPoints) {
-    for (const p of drawingPoints.points) {
+    for (const [index, p] of drawingPoints.points.entries()) {
+      if (!keepDrawingPoint(only, index)) {
+        continue;
+      }
+
       const props: Record<string, unknown> = { title: p.label };
 
       if (pointMode.props) {
@@ -574,7 +602,11 @@ export async function buildExportFeatureCollection({
   }
 
   if (include.objects) {
-    for (const { coords, tags } of objects.objects) {
+    for (const { id, coords, tags } of objects.objects) {
+      if (!keepObject(only, id)) {
+        continue;
+      }
+
       // Data export keeps the raw OSM tags; a marker export resolves the icon
       // from the tags (same mapping the in-app POI markers use).
       const props: Record<string, unknown> = pointMode.props
@@ -609,7 +641,12 @@ export async function buildExportFeatureCollection({
   }
 
   if (include.tracking) {
-    addTracking(features, tracking, options.trackingPoints ?? true);
+    addTracking(
+      features,
+      tracking,
+      options.trackingPoints ?? true,
+      selectedTrackToken(only),
+    );
   }
 
   if (include.import && trackViewer.trackGeojson) {

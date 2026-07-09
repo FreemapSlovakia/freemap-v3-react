@@ -1,7 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { OverlayTrigger, Tooltip, TooltipProps } from 'react-bootstrap';
+import { modalMenuItemProps } from '@shared/hooks/useMenuHandler.js';
+import { OverlayTrigger, Tooltip, type TooltipProps } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { modalMenuItemProps } from '@/shared/hooks/useMenuHandler.js';
 
 type Props = { help: string; credits: string };
 

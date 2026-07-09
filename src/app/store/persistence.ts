@@ -6,6 +6,7 @@ import {
   DrawingStyleSchema,
   drawingSettingsInitialState,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
+import { GalleryLicenseSchema } from '@features/gallery/licenses.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
 import { gallerySettingsInitialState } from '@features/gallery/model/settingsReducer.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
@@ -165,6 +166,7 @@ export const PersistedGallerySettingsSchema = z
     showDirection: z.boolean(),
     showLegend: z.boolean(),
     premium: z.boolean(),
+    license: GalleryLicenseSchema,
   })
   .partial();
 

@@ -1,6 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
+import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
 const outdoorMap = 'Hiking, Bicycle, Ski, Riding';
 

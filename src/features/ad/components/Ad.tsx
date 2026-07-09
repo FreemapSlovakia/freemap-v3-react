@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import tShirt from '@/images/fm-t-shirt.jpg';
-import { AdItem, useAd } from '../hooks/useAd.js';
+import { type AdItem, useAd } from '../hooks/useAd.js';
 import { useAdMessages } from '../translations/useAdMessages.js';
 
 const ads: AdItem[] = [
@@ -78,6 +78,7 @@ export default function Ad(): ReactElement | null {
               className="border rounded w-100"
               src={tShirt}
               style={{ maxWidth: '360px' }}
+              alt="Freemap T-Shirt"
             />
           </a>
         ) : null}

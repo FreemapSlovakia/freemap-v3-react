@@ -12,10 +12,10 @@ import 'pannellum';
 import 'pannellum/build/pannellum.css';
 import { hasRole } from '@features/auth/model/types.js';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   Fragment,
-  ReactElement,
-  SubmitEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useEffect,
   useRef,
@@ -35,6 +35,7 @@ import {
 import { RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { Rating } from 'react-simple-star-rating';
+import { getPhotoLicense, LicenseBadge } from '../licenses.js';
 import {
   galleryClear,
   galleryDeletePicture,
@@ -52,7 +53,7 @@ import {
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { Azimuth } from './Azimuth.js';
-import { GalleryEditForm, PictureModel } from './GalleryEditForm.js';
+import { GalleryEditForm, type PictureModel } from './GalleryEditForm.js';
 import { RecentTags } from './RecentTags.js';
 import './gallery.css';
 import clsx from 'clsx';
@@ -145,7 +146,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       if (imageIds) {
         const idx = parseInt(e.currentTarget.value, 10);
 
-        if (isNaN(idx)) {
+        if (Number.isNaN(idx)) {
           throw new Error();
         }
 
@@ -177,6 +178,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     lon,
     azimuth,
   } = image ?? {};
+
+  const photoLicense = getPhotoLicense(image?.license);
 
   const premium = Boolean(image?.premium);
 
@@ -236,7 +239,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   useEffect(() => {
     function handler(e: KeyboardEvent) {
       if (
-        e.target instanceof HTMLInputElement ||
+        (e.target instanceof HTMLElement &&
+          ['input', 'select', 'textarea'].includes(
+            e.target.tagName.toLowerCase(),
+          )) ||
         e.shiftKey ||
         e.ctrlKey ||
         e.altKey ||
@@ -271,13 +277,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     [dispatch],
   );
 
-  const index = imageIds
-    ? imageIds.findIndex((id) => id === activeImageId)
-    : -1;
+  const index =
+    imageIds && activeImageId !== null ? imageIds.indexOf(activeImageId) : -1;
 
-  const nextImageId = imageIds && imageIds[index + 1];
+  const nextImageId = imageIds?.[index + 1];
 
-  const prevImageId = index > 0 ? imageIds && imageIds[index - 1] : null;
+  const prevImageId = index > 0 ? imageIds?.[index - 1] : null;
 
   // TODO const loadingMeta = !image || image.id !== activeImageId;
 
@@ -303,7 +308,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
     return (
       `${process.env['API_URL']}/gallery/pictures/${id}/image?width=${width}` +
-      (user ? '&authToken=' + encodeURIComponent(user.authToken) : '')
+      (user ? `&authToken=${encodeURIComponent(user.authToken)}` : '')
     );
   };
 
@@ -340,7 +345,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   let url = `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`;
 
   if (activeImageId === image?.id && image.hmac) {
-    url += '?hmac=' + encodeURIComponent(image.hmac);
+    url += `?hmac=${encodeURIComponent(image.hmac)}`;
   }
 
   return (
@@ -359,6 +364,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               value={index}
               onChange={handleIndexChange}
               className="w-auto d-inline-block"
+              disabled={Boolean(editModel)}
             >
               {imageIds.map((_, i) => (
                 <option key={i} value={i}>
@@ -389,21 +395,21 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 {activeImageId === null ? null : pano ? (
                   <div
                     ref={panoRef}
-                    key={'pano-' + activeImageId}
+                    key={`pano-${activeImageId}`}
                     id={String(activeImageId)}
                     style={
                       isFullscreen
                         ? { width: '100dvw', height: '100dvh' }
                         : {
-                            height:
-                              Math.max(window.innerHeight - 400, 300) + 'px',
-                            width:
-                              (window.matchMedia('(min-width: 1200px)').matches
+                            height: `${Math.max(window.innerHeight - 400, 300)}px`,
+                            width: `${
+                              window.matchMedia('(min-width: 1200px)').matches
                                 ? 1110
                                 : window.matchMedia('(min-width: 992px)')
                                       .matches
                                   ? 770
-                                  : 470) + 'px',
+                                  : 470
+                            }px`,
                           }
                     }
                   />
@@ -429,13 +435,6 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       src={getImageUrl(activeImageId)}
                       alt={title ?? undefined}
                     />
-                    <a
-                      href="https://creativecommons.org/licenses/by-sa/4.0/"
-                      target="cc-by-sa"
-                      rel="noreferrer"
-                    >
-                      CC BY-SA 4.0
-                    </a>
                   </div>
                 )}
 
@@ -462,9 +461,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
             {imageIds && (
               <button
                 type="button"
+                disabled={Boolean(editModel)}
                 className={clsx(
                   'carousel-control-prev',
-                  index < 1 && 'carousel-control-disabled',
+                  (editModel || index < 1) && 'carousel-control-disabled',
                   pano && 'carousel-control-short',
                 )}
                 onClick={() => dispatch(galleryRequestImage('prev'))}
@@ -476,9 +476,11 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
             {imageIds && (
               <button
                 type="button"
+                disabled={Boolean(editModel)}
                 className={clsx(
                   'carousel-control-next',
-                  index >= imageIds.length - 1 && 'carousel-control-disabled',
+                  (editModel || index >= imageIds.length - 1) &&
+                    'carousel-control-disabled',
                 )}
                 onClick={() => dispatch(galleryRequestImage('next'))}
               >
@@ -531,20 +533,48 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 readonly
               />
 
-              {description && ` ｜ ${description}`}
-
               {tags && tags.length > 0 && ' ｜ '}
 
-              {tags &&
-                tags.map((tag) => (
-                  <Fragment key={tag}>
-                    {' '}
-                    <Badge bg="secondary">{tag}</Badge>
-                  </Fragment>
-                ))}
+              {tags?.map((tag) => (
+                <Fragment key={tag}>
+                  {' '}
+                  <Badge bg="secondary">{tag}</Badge>
+                </Fragment>
+              ))}
+
+              {' ｜ '}
+              <LongPressTooltip
+                label={
+                  <>
+                    {gm?.license.descriptions[photoLicense.id]}
+                    {image.licenseSince && gm?.license.since && (
+                      <>
+                        <br />
+                        {gm.license.since}{' '}
+                        {dateFormat.format(image.licenseSince)}
+                      </>
+                    )}
+                  </>
+                }
+              >
+                {({ props }) => (
+                  <span {...props}>
+                    <LicenseBadge licenseId={photoLicense.id} />{' '}
+                    <a
+                      href={photoLicense.url}
+                      target="license"
+                      rel="noreferrer"
+                    >
+                      {gm?.license.names[photoLicense.id]}
+                    </a>
+                  </span>
+                )}
+              </LongPressTooltip>
+
+              {description && ` ｜ ${description}`}
 
               {!isFullscreen && editModel && (
-                <Form onSubmit={handleSave}>
+                <Form id="gallery-edit-form" onSubmit={handleSave}>
                   <hr />
 
                   <h5>{gm?.viewer.modify}</h5>
@@ -556,14 +586,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     onPositionPick={handlePositionPick}
                     onModelChange={handleEditModelChange}
                   />
-
-                  <Button variant="primary" type="submit">
-                    <FaSave /> {m?.general.save}
-                  </Button>
                 </Form>
               )}
 
-              {!isFullscreen && (
+              {!isFullscreen && !editModel && (
                 <>
                   <hr />
 
@@ -660,8 +686,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        {canEdit && (
-          <>
+        {canEdit &&
+          (editModel ? (
+            <Button variant="primary" type="submit" form="gallery-edit-form">
+              <FaSave /> {m?.general.save}
+            </Button>
+          ) : (
             <LongPressTooltip breakpoint="sm" label={m?.general.modify} kbd="m">
               {({ label, labelClassName, props }) => (
                 <Button
@@ -669,7 +699,6 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   onClick={() => {
                     dispatch(galleryEditPicture());
                   }}
-                  active={Boolean(editModel)}
                   {...props}
                 >
                   <FaPencilAlt />
@@ -678,88 +707,105 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 </Button>
               )}
             </LongPressTooltip>
+          ))}
 
-            <LongPressTooltip breakpoint="sm" label={m?.general.delete}>
-              {({ label, labelClassName, props }) => (
-                <Button onClick={handleDelete} variant="danger" {...props}>
-                  <FaTrash />
-                  <span className={labelClassName}> {label}</span>{' '}
-                  <kbd>Del</kbd>
-                </Button>
-              )}
-            </LongPressTooltip>
-          </>
-        )}
-
-        <LongPressTooltip
-          breakpoint="md"
-          label={gm?.viewer.showOnTheMap}
-          kbd="s"
-        >
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                dispatch(galleryShowOnTheMap());
-              }}
-              {...props}
-            >
-              <FaRegDotCircle />
-
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-
-        {'exitFullscreen' in document && (
-          <LongPressTooltip
-            breakpoint="md"
-            label={m?.general.fullscreen}
-            kbd="f"
-          >
+        {canEdit && (
+          <LongPressTooltip breakpoint="sm" label={m?.general.delete}>
             {({ label, labelClassName, props }) => (
-              <Button variant="secondary" onClick={handleFullscreen} {...props}>
-                <RiFullscreenLine />
-
-                <span className={labelClassName}> {label}</span>
+              <Button onClick={handleDelete} variant="danger" {...props}>
+                <FaTrash />
+                <span className={labelClassName}> {label}</span> <kbd>Del</kbd>
               </Button>
             )}
           </LongPressTooltip>
         )}
 
-        {lat !== undefined && lon !== undefined && (
-          <LongPressTooltip breakpoint="md" label={gm?.viewer.openInNewWindow}>
-            {({ label, labelClassName, props }) => (
-              <OpenInExternalAppMenuButton
-                lat={lat}
-                lon={lon}
-                placement="top"
-                includePoint
-                pointTitle={title ?? undefined}
-                pointDescription={description ?? undefined}
-                url={url}
-                {...props}
+        {!editModel && (
+          <>
+            <LongPressTooltip
+              breakpoint="md"
+              label={gm?.viewer.showOnTheMap}
+              kbd="s"
+            >
+              {({ label, labelClassName, props }) => (
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    dispatch(galleryShowOnTheMap());
+                  }}
+                  {...props}
+                >
+                  <FaRegDotCircle />
+
+                  <span className={labelClassName}> {label}</span>
+                </Button>
+              )}
+            </LongPressTooltip>
+
+            {'exitFullscreen' in document && (
+              <LongPressTooltip
+                breakpoint="md"
+                label={m?.general.fullscreen}
+                kbd="f"
               >
-                <FaExternalLinkAlt />
+                {({ label, labelClassName, props }) => (
+                  <Button
+                    variant="secondary"
+                    onClick={handleFullscreen}
+                    {...props}
+                  >
+                    <RiFullscreenLine />
+
+                    <span className={labelClassName}> {label}</span>
+                  </Button>
+                )}
+              </LongPressTooltip>
+            )}
+
+            {lat !== undefined && lon !== undefined && (
+              <LongPressTooltip
+                breakpoint="md"
+                label={gm?.viewer.openInNewWindow}
+              >
+                {({ label, labelClassName, props }) => (
+                  <OpenInExternalAppMenuButton
+                    lat={lat}
+                    lon={lon}
+                    placement="top"
+                    includePoint
+                    pointTitle={title ?? undefined}
+                    pointDescription={description ?? undefined}
+                    url={url}
+                    {...props}
+                  >
+                    <FaExternalLinkAlt />
+                    <span className={labelClassName}> {label}</span>
+                  </OpenInExternalAppMenuButton>
+                )}
+              </LongPressTooltip>
+            )}
+          </>
+        )}
+
+        {editModel ? (
+          <Button
+            variant="dark"
+            onClick={() => {
+              dispatch(galleryEditPicture());
+            }}
+          >
+            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+          </Button>
+        ) : (
+          <LongPressTooltip label={m?.general.close} breakpoint="md" kbd="Esc">
+            {({ label, labelClassName, props }) => (
+              <Button variant="dark" onClick={close} {...props}>
+                <FaTimes />
                 <span className={labelClassName}> {label}</span>
-              </OpenInExternalAppMenuButton>
+              </Button>
             )}
           </LongPressTooltip>
         )}
-
-        <LongPressTooltip
-          label={m?.general.close}
-          breakpoint="md"
-          kbd={editModel ? undefined : 'Esc'}
-        >
-          {({ label, labelClassName, props }) => (
-            <Button variant="dark" onClick={close} {...props}>
-              <FaTimes />
-
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
       </Modal.Footer>
     </Modal>
   );

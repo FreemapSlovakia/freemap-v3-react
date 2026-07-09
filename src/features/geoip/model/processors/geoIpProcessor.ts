@@ -1,5 +1,5 @@
 import { httpRequest } from '@app/httpRequest.js';
-import { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   GeoIpResultSchema,
   invokeGeoip,

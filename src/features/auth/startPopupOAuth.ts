@@ -67,7 +67,7 @@ export async function startPopupOAuth(
       new URLSearchParams({
         response_type: 'code',
         client_id: clientId,
-        redirect_uri: location.origin + '/authCallback.html',
+        redirect_uri: `${location.origin}/authCallback.html`,
         scope: cfg.scope,
         state: `${provider}:${connect}:${nonce}`,
         ...cfg.extraParams,

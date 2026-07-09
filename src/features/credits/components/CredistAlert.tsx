@@ -1,7 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Alert, Button } from 'react-bootstrap';
 import { FaCoins } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

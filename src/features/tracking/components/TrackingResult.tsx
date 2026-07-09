@@ -15,12 +15,12 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { distance } from '@turf/distance';
-import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
+import { Fragment, type ReactElement, useMemo, useRef, useState } from 'react';
 import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
-import { TrackPoint } from '../model/types.js';
+import type { TrackPoint } from '../model/types.js';
 import { trackPointsToFeature } from '../trackGeojson.js';
 import { TrackingPoint, tooltipText } from './TrackingPoint.js';
 

@@ -12,7 +12,7 @@ import { point } from '@turf/helpers';
 import z from 'zod';
 import { loadWikimediaCommonsMessages } from '../../translations/loadWikimediaCommonsMessages.js';
 import {
-  WikimediaCommonsPhoto,
+  type WikimediaCommonsPhoto,
   wikimediaCommonsSetPhotos,
 } from '../actions.js';
 import { ExtMetaValueSchema, pickLang, stripHtml } from './extMetaUtils.js';

@@ -12,7 +12,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { center } from '@turf/center';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import {
   FaPaintBrush,

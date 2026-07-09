@@ -4,16 +4,16 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Leaves } from '@shared/types/common.js';
 import {
   type ReactElement,
-  ReactNode,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import { Messages } from '@/translations/messagesInterface.js';
+import type { Messages } from '@/translations/messagesInterface.js';
 import {
-  ToastAction,
+  type ToastAction,
   toastsRemove,
   toastsRestartTimeout,
   toastsStopTimeout,
@@ -109,6 +109,7 @@ export function Toasts(): ReactElement {
           ({ id, actions, style, noClose, timeout, timeoutSince, ...rest }) => {
             const msg = rest.messageLoader ? (
               <LazyToastMessage
+                key={id}
                 loader={rest.messageLoader}
                 messageKey={rest.messageKey}
                 messageParams={rest.messageParams}

@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import type { CSSProperties, ReactElement } from 'react';
 import { AlertLink } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { Changeset, changesetsSetParams } from '../model/actions.js';
+import { type Changeset, changesetsSetParams } from '../model/actions.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 import classes from './ChangesetDetails.module.css';
 

@@ -6,15 +6,18 @@ import {
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { TransportType, transportTypeDefs } from '@shared/transportTypeDefs.js';
-import { Feature, LineString, Polygon } from 'geojson';
 import {
-  Alternative,
-  IsochroneParams,
-  PickMode,
-  RoundtripParams,
-  RoutePoint,
-  RoutingMode,
+  type TransportType,
+  transportTypeDefs,
+} from '@shared/transportTypeDefs.js';
+import type { Feature, LineString, Polygon } from 'geojson';
+import {
+  type Alternative,
+  type IsochroneParams,
+  type PickMode,
+  type RoundtripParams,
+  type RoutePoint,
+  type RoutingMode,
   routePlannerAddPoint,
   routePlannerDelete,
   routePlannerRemovePoint,
@@ -35,7 +38,7 @@ import {
   routePlannerSwapEnds,
   routePlannerToggleItineraryVisibility,
   routePlannerToggleMilestones,
-  Waypoint,
+  type Waypoint,
 } from './actions.js';
 
 export interface RoutePlannerCleanResultState {

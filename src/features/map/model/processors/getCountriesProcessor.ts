@@ -1,4 +1,4 @@
-import { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapSetBounds, mapSetCountries } from '../actions.js';
 import { fetchCoveredCountries } from '../fetchCoveredCountries.js';
 

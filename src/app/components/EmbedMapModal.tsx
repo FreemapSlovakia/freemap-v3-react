@@ -5,7 +5,7 @@ import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import storage from 'local-storage-fallback';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   type ReactElement,
   useCallback,
   useEffect,

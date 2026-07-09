@@ -1,4 +1,4 @@
-import { Middleware } from '@reduxjs/toolkit';
+import type { Middleware } from '@reduxjs/toolkit';
 import storage from 'local-storage-fallback';
 import { STORAGE_KEY, selectPersistedState } from '../persistence.js';
 import type { RootState } from '../store.js';
@@ -14,7 +14,7 @@ export function suspendStatePersistence(): void {
   suspended = true;
 }
 
-export const statePersistingMiddleware: Middleware<{}, RootState> =
+export const statePersistingMiddleware: Middleware<object, RootState> =
   ({ getState }) =>
   (next) =>
   (action) => {

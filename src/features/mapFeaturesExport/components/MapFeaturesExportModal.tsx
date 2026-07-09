@@ -6,10 +6,10 @@ import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import { Position } from 'geojson';
+import type { Position } from 'geojson';
 import {
-  ReactElement,
-  SubmitEvent,
+  type ReactElement,
+  type SubmitEvent,
   useCallback,
   useEffect,
   useState,
@@ -33,12 +33,12 @@ import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import {
   EXPORT_FORMAT_LABELS,
-  Exportable,
-  ExportElevation,
+  type Exportable,
+  type ExportElevation,
   ExportElevationSchema,
-  ExportTarget,
+  type ExportTarget,
   ExportTargetSchema,
-  ExportType,
+  type ExportType,
   ExportTypeSchema,
   exportMapFeatures,
 } from '../model/actions.js';
@@ -47,6 +47,7 @@ import {
   ExportablesSelector,
   exportableDefinitions,
   useAvailableExportables,
+  useSelectedExportable,
 } from './ExportablesSelector.js';
 
 const garminActivityTypes = [
@@ -83,11 +84,17 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
   const initExportables = useAvailableExportables();
 
+  const selectedExportable = useSelectedExportable();
+
+  const selection = useAppSelector((state) => state.main.selection);
+
   const userHasGarmin = useAppSelector((state) =>
     state.auth.user?.authProviders.includes('garmin'),
   );
 
   const [exportables, setExportables] = useState<string>('|');
+
+  const [onlySelected, setOnlySelected] = useState(false);
 
   const [type, , setType] = usePersistentState<ExportType>(
     'fm.exportFeatures.format',
@@ -130,6 +137,12 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
         activity: activity || undefined,
         // Garmin course export has its own elevation handling.
         elevation: target === 'garmin' ? undefined : elevation,
+        // Mirrors `effectiveOnlySelected` (declared after this callback);
+        // Garmin is gated by target here since it has its own selection.
+        only:
+          onlySelected && target !== 'garmin' && selectedExportable && selection
+            ? selection
+            : undefined,
       });
 
       if (target === 'garmin' && !userHasGarmin) {
@@ -158,6 +171,9 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
       description,
       activity,
       elevation,
+      onlySelected,
+      selectedExportable,
+      selection,
       userHasGarmin,
       em,
       confirm,
@@ -174,14 +190,14 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     (type: Exportable) => {
       let next = isGarmin ? '|' : exportables;
 
-      if (exportables.includes('|' + type + '|')) {
-        next = exportables.replace(type + '|', '');
+      if (exportables.includes(`|${type}|`)) {
+        next = exportables.replace(`${type}|`, '');
 
         if (type === 'plannedRoute') {
           next = next.replace('|plannedRouteWithStops', '');
         }
       } else {
-        next += type + '|';
+        next += `${type}|`;
       }
 
       setExportables(next);
@@ -234,22 +250,42 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     isGarmin &&
     exportableDefinitions.some(
       ([type]) =>
-        exportables.includes('|' + type + '|') &&
+        exportables.includes(`|${type}|`) &&
         typeof garminExportables?.[type] === 'string',
     );
+
+  // Seed the "only selected item" toggle when the selected feature changes: a
+  // selectable feature defaults it on, so selecting something then exporting
+  // exports just it. Keyed on the selection alone (not the target), so
+  // switching targets doesn't clobber the user's manual toggle.
+  useEffect(() => {
+    setOnlySelected(selectedExportable !== null);
+  }, [selectedExportable]);
+
+  // Garmin drives its own single-item selection, so the toggle has no effect
+  // there — gate it out of the effective value rather than mutating the toggle.
+  const effectiveOnlySelected =
+    onlySelected && !isGarmin && selectedExportable !== null;
 
   useEffect(() => {
     const e =
       garminSingleEnabled !== undefined
         ? garminSingleEnabled
-          ? '|' + garminSingleEnabled + '|'
+          ? `|${garminSingleEnabled}|`
           : '|'
-        : initExportables
-          ? initExportables
-          : '|';
+        : effectiveOnlySelected && selectedExportable
+          ? `|${selectedExportable}|`
+          : initExportables
+            ? initExportables
+            : '|';
 
     setExportables(e);
-  }, [initExportables, garminSingleEnabled]);
+  }, [
+    initExportables,
+    garminSingleEnabled,
+    effectiveOnlySelected,
+    selectedExportable,
+  ]);
 
   return (
     <Modal show={show} onHide={close} size="lg" scrollable>
@@ -348,7 +384,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                     {garminActivityTypes.map(([value, labelKey]) => (
                       <ToggleButton
                         key={value}
-                        id={'at-' + value}
+                        id={`at-${value}`}
                         type="checkbox"
                         value={value}
                         variant="outline-primary"
@@ -397,7 +433,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 <ButtonGroup>
                   {ExportElevationSchema.options.map((option) => (
                     <ToggleButton
-                      id={'ele-' + option}
+                      id={`ele-${option}`}
                       key={option}
                       type="radio"
                       variant="outline-primary"
@@ -422,18 +458,18 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 <div className="d-flex flex-wrap gap-2">
                   {exportableDefinitions
                     .filter(([, , garmin]) => garmin)
-                    .map(([type, icon]) => {
+                    .map(([type, Icon]) => {
                       const value = garminExportables?.[type];
 
                       const error =
                         typeof value === 'string' ? value : undefined;
 
-                      const selected = exportables.includes('|' + type + '|');
+                      const selected = exportables.includes(`|${type}|`);
 
                       return (
                         <ToggleButton
                           key={type}
-                          id={'chk-' + type}
+                          id={`chk-${type}`}
                           name="exportable"
                           type="radio"
                           variant={
@@ -449,7 +485,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                           disabled={!value}
                           onChange={() => handleCheckboxChange(type)}
                         >
-                          {icon} {em?.what[type]}
+                          <Icon /> {em?.what[type]}
                         </ToggleButton>
                       );
                     })}
@@ -459,27 +495,44 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                   .filter(
                     ([type, , garmin]) =>
                       garmin &&
-                      exportables.includes('|' + type + '|') &&
+                      exportables.includes(`|${type}|`) &&
                       typeof garminExportables?.[type] === 'string',
                   )
-                  .map(([type, icon]) => (
+                  .map(([type, Icon]) => (
                     <Form.Text key={type} className="d-block text-danger mt-2">
-                      {icon} {em?.what[type]}{' '}
+                      <Icon /> {em?.what[type]}{' '}
                       {garminExportables?.[type] as string}
                     </Form.Text>
                   ))}
               </>
             ) : (
-              <ExportablesSelector
-                value={exportables}
-                available={initExportables}
-                onChange={setExportables}
-              />
+              <>
+                {selectedExportable && (
+                  <Form.Check
+                    type="switch"
+                    id="onlySelected"
+                    className="mb-2"
+                    label={em?.onlySelected}
+                    checked={onlySelected}
+                    onChange={(e) => setOnlySelected(e.currentTarget.checked)}
+                  />
+                )}
+
+                {!effectiveOnlySelected && (
+                  <ExportablesSelector
+                    value={exportables}
+                    available={initExportables}
+                    onChange={setExportables}
+                  />
+                )}
+              </>
             )}
 
-            <Form.Text muted className="d-block mt-1">
-              {em?.disabledAlert}
-            </Form.Text>
+            {!effectiveOnlySelected && (
+              <Form.Text muted className="d-block mt-1">
+                {em?.disabledAlert}
+              </Form.Text>
+            )}
           </Form.Group>
         </Modal.Body>
 

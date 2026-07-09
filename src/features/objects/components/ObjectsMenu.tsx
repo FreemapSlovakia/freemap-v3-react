@@ -13,8 +13,8 @@ import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import classes from '@shared/poiIcon.module.css';
 import { removeAccents } from '@shared/stringUtils.js';
 import {
-  ChangeEvent,
-  ReactElement,
+  type ChangeEvent,
+  type ReactElement,
   useCallback,
   useEffect,
   useMemo,
@@ -185,7 +185,7 @@ export default function ObjectsMenu(): ReactElement {
         return (
           <Dropdown.Item key={key} eventKey={key} active={active.includes(key)}>
             {img.length > 0 ? (
-              <img src={img[0]} className={classes.icon} />
+              <img src={img[0]} className={classes.icon} alt="" />
             ) : (
               <span
                 style={{

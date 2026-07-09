@@ -40,7 +40,7 @@ export class RspackMarkdownDictPlugin {
       const match = /^(\w+)\.(\w\w)\.md$/.exec(file);
 
       if (!match) {
-        throw new Error('invalid filename ' + file);
+        throw new Error(`invalid filename ${file}`);
       }
 
       if ('icon' in data) {

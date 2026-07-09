@@ -2,7 +2,7 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { osmClear } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { FeatureCollection } from 'geojson';
+import type { FeatureCollection } from 'geojson';
 import {
   type ElevationConsumer,
   type ElevationFillMode,

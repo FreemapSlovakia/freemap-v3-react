@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { ChangesetsMessages } from './ChangesetsMessages.js';
+import type { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const factory = (language: string) =>
   import(

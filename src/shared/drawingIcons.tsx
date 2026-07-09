@@ -549,7 +549,7 @@ const pickerAllowlist: ReadonlySet<string> = new Set([
  * `useFaIcon`) but returns only the curated picker subset, sorted by name.
  */
 export function loadAllIcons(): Promise<IconDefinition[]> {
-  return (allIconsPromise ??= import('@fortawesome/free-solid-svg-icons').then(
+  allIconsPromise ??= import('@fortawesome/free-solid-svg-icons').then(
     ({ fas }) => {
       const byName = new Map<string, IconDefinition>();
 
@@ -563,7 +563,9 @@ export function loadAllIcons(): Promise<IconDefinition[]> {
         .filter((def) => pickerAllowlist.has(def.iconName))
         .sort((a, b) => a.iconName.localeCompare(b.iconName));
     },
-  ));
+  );
+
+  return allIconsPromise;
 }
 
 /**

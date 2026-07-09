@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
+import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Letöltés',
@@ -19,6 +19,7 @@ const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     import: 'importált fájl',
     search: 'találat',
   },
+  onlySelected: 'Csak a kijelölt elem',
   disabledAlert:
     'Csak azok az elemek aktívak, amelyekhez a térképen exportálható tartalom tartozik.',
   licenseAlert:

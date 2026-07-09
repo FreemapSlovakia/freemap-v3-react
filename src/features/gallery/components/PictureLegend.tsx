@@ -1,9 +1,43 @@
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import type { ReactNode } from 'react';
 import { FaCamera, FaPalette } from 'react-icons/fa';
+import { LICENSE_COLORS } from '../licenseColors.js';
+import { PHOTO_LICENSES } from '../licenses.js';
 import type { GalleryColorizeBy } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
+
+/** The gallery legend's outer shell + camera/palette header, shared by the
+ *  gradient and categorical (license) legend variants. */
+function LegendShell({
+  toolbarClassName,
+  children,
+}: {
+  toolbarClassName?: string;
+  children: ReactNode;
+}) {
+  const gm = useGalleryMessages();
+
+  return (
+    <div className="w-100" style={{ maxWidth: '400px' }}>
+      <Toolbar
+        className={`mt-2 d-flex${toolbarClassName ? ` ${toolbarClassName}` : ''}`}
+      >
+        <LongPressTooltip label={gm?.legend} breakpoint="sm">
+          {({ props, label, labelClassName }) => (
+            <span className="align-self-center ms-1 me-2" {...props}>
+              <FaCamera /> <FaPalette />{' '}
+              <span className={labelClassName}>{label}</span>
+            </span>
+          )}
+        </LongPressTooltip>
+
+        {children}
+      </Toolbar>
+    </div>
+  );
+}
 
 /**
  * The CSS gradient for a colorize mode's legend, or undefined for categorical
@@ -33,11 +67,11 @@ export function pictureGradient(
   }
 }
 
-/** Whether a colorize mode draws a gradient legend (vs. a categorical color). */
+/** Whether a colorize mode draws a legend (gradient or categorical swatches). */
 export function pictureLegendApplies(
   colorizeBy: GalleryColorizeBy | null | undefined,
 ): boolean {
-  return pictureGradient(colorizeBy) !== undefined;
+  return pictureGradient(colorizeBy) !== undefined || colorizeBy === 'license';
 }
 
 export function PictureLegend() {
@@ -52,98 +86,114 @@ export function PictureLegend() {
 
   const background = pictureGradient(colorizeBy || undefined);
 
+  if (colorizeBy === 'license') {
+    return (
+      <LegendShell toolbarClassName="flex-wrap align-items-center">
+        {PHOTO_LICENSES.map(({ id }) => (
+          <LongPressTooltip key={id} label={gm?.license.descriptions[id]}>
+            {({ props }) => (
+              <span
+                {...props}
+                className="d-inline-flex align-items-center me-2"
+              >
+                <span
+                  className="border rounded d-inline-block me-1"
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    background: LICENSE_COLORS[id],
+                  }}
+                />
+                <small>{gm?.license.names[id] ?? id}</small>
+              </span>
+            )}
+          </LongPressTooltip>
+        ))}
+      </LegendShell>
+    );
+  }
+
   if (!background) {
     return null;
   }
 
   return (
-    <div className="w-100" style={{ maxWidth: '400px' }}>
-      <Toolbar className="mt-2 d-flex">
-        <LongPressTooltip label={gm?.legend} breakpoint="sm">
-          {({ props, label, labelClassName }) => (
-            <span className="align-self-center ms-1" {...props}>
-              <FaCamera /> <FaPalette />{' '}
-              <span className={labelClassName}>{label}</span>
-            </span>
-          )}
-        </LongPressTooltip>
+    <LegendShell>
+      <div
+        className="mx-2"
+        style={{
+          flexGrow: '1',
+          position: 'relative',
+          height: '34px',
+        }}
+      >
+        <div
+          className="border rounded position-absolute"
+          style={{
+            inset: 0,
+            background,
+          }}
+        />
 
         <div
-          className="mx-2"
+          className="text-body position-absolute"
           style={{
-            flexGrow: '1',
-            position: 'relative',
-            height: '34px',
+            inset: 0,
+            paintOrder: 'stroke',
+            WebkitTextStrokeWidth: '2px',
+            WebkitTextStrokeColor: 'var(--bs-body-bg)',
           }}
         >
-          <div
-            className="border rounded position-absolute"
-            style={{
-              inset: 0,
-              background,
-            }}
-          />
-
-          <div
-            className="text-body position-absolute"
-            style={{
-              inset: 0,
-              paintOrder: 'stroke',
-              WebkitTextStrokeWidth: '2px',
-              WebkitTextStrokeColor: 'var(--bs-body-bg)',
-            }}
-          >
-            {colorizeBy === 'rating'
-              ? new Array(5).fill(0).map((_, i) => (
+          {colorizeBy === 'rating'
+            ? new Array(5).fill(0).map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    position: 'absolute',
+                    left: `calc(${(i * 100) / 4}% - 20px)`,
+                    top: '16%',
+                    width: '40px',
+                    textWrap: 'nowrap',
+                    textAlign: 'center',
+                  }}
+                >
+                  {i + 1}
+                </div>
+              ))
+            : byDate
+              ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 40].map((i, j) => (
                   <div
                     key={i}
                     style={{
+                      transform: 'rotate(90deg)',
+                      fontSize: '0.75em',
                       position: 'absolute',
-                      left: `calc(${(i * 100) / 4}% - 20px)`,
-                      top: '16%',
-                      width: '40px',
-                      textWrap: 'nowrap',
-                      textAlign: 'center',
+                      left: `calc(${(0.333 * i * 100) / (1 + 0.333 * i)}% - 4px)`,
+                      top: j % 2 ? '3px' : '13px',
                     }}
                   >
-                    {i + 1}
+                    {-i}
                   </div>
                 ))
-              : byDate
-                ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 40].map((i, j) => (
+              : colorizeBy === 'season'
+                ? new Array(13).fill(0).map((_, i) => (
                     <div
                       key={i}
                       style={{
-                        transform: 'rotate(90deg)',
-                        fontSize: '0.75em',
                         position: 'absolute',
-                        left: `calc(${(0.333 * i * 100) / (1 + 0.333 * i)}% - 4px)`,
-                        top: j % 2 ? '3px' : '13px',
+                        left: `calc(${(i * 100) / 12}% - 20px)`,
+                        top: '16%',
+                        width: '40px',
+                        textWrap: 'nowrap',
+                        textAlign: 'center',
                       }}
                     >
-                      {-i}
+                      {(i % 12) + 1}
                     </div>
                   ))
-                : colorizeBy === 'season'
-                  ? new Array(13).fill(0).map((_, i) => (
-                      <div
-                        key={i}
-                        style={{
-                          position: 'absolute',
-                          left: `calc(${(i * 100) / 12}% - 20px)`,
-                          top: '16%',
-                          width: '40px',
-                          textWrap: 'nowrap',
-                          textAlign: 'center',
-                        }}
-                      >
-                        {(i % 12) + 1}
-                      </div>
-                    ))
-                  : null}
-          </div>
+                : null}
         </div>
-      </Toolbar>
-    </div>
+      </div>
+    </LegendShell>
   );
 }

@@ -2,7 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { clsx } from 'clsx';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap';
 import { FaCamera, FaTimes, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -90,12 +90,12 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
 
     (async () => {
       const res = await fetch(
-        process.env['API_URL'] + '/gallery/stats?period=' + period,
+        `${process.env['API_URL']}/gallery/stats?period=${period}`,
         {
           signal: ac.signal,
           headers: {
             accept: 'application/json',
-            ...(authToken ? { authorization: 'Bearer ' + authToken } : {}),
+            ...(authToken ? { authorization: `Bearer ${authToken}` } : {}),
           },
         },
       );

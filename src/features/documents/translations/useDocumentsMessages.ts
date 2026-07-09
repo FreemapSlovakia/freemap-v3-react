@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { DocumentsMessages } from './DocumentsMessages.js';
+import type { DocumentsMessages } from './DocumentsMessages.js';
 
 const factory = (language: string) =>
   import(

@@ -5,7 +5,7 @@ import {
   ColorizingModeSchema,
 } from '@shared/colorizers/index.js';
 import type { LatLon } from '@shared/types/common.js';
-import { FeatureCollection } from 'geojson';
+import type { FeatureCollection } from 'geojson';
 
 export { type ColorizingMode, ColorizingModeSchema };
 

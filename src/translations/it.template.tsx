@@ -1,12 +1,12 @@
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
+import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
-import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './it-shared.js';
-import { addError, Messages } from './messagesInterface.js';
+import { addError, type Messages } from './messagesInterface.js';
 
 const masl = 'm\xa0a.s.l.';
 
@@ -50,6 +50,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ok: 'OK',
     preventShowingAgain: 'Non mostrare più',
     closeWithoutSaving: 'Chiudere la finestra senza salvare?',
+    resetToDefaults: 'Ripristina predefiniti',
     back: 'Indietro',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
@@ -186,6 +187,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     osmWiki: 'Documentazione su OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Stato dei servizi',
+    language: 'Lingua',
   },
 
   main: {
@@ -252,6 +254,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     searchResultStyle: 'Stile del risultato di ricerca',
+    resetApp: 'Reimposta applicazione',
+    resetAppConfirm:
+      'Ripristinare tutte le impostazioni dell’applicazione ai valori predefiniti e ricaricare la pagina? Verrai disconnesso.',
     showAll: 'Mostra tutti i livelli',
     filterMaps: 'Filtra mappe',
     noMapsFound: 'Nessuna mappa trovata',
@@ -261,6 +266,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'Il filtro foto è attivo',
     interactiveLayerWarning: 'Il livello dati è nascosto',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
+    outsideViewWarning: 'La vista corrente è al di fuori di questa mappa',
     letters: {
       S: 'Aereo',
       Z: 'Aereo',

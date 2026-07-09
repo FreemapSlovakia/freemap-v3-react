@@ -2,7 +2,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import { ReactElement, SubmitEvent, useCallback } from 'react';
+import { type ReactElement, type SubmitEvent, useCallback } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

@@ -1,4 +1,4 @@
-import { writeFile } from 'fs/promises';
+import { writeFile } from 'node:fs/promises';
 import htm from 'htm';
 import vhtml from 'vhtml';
 import {
@@ -256,7 +256,7 @@ export async function objects(sitemapNames: string[]) {
       sitemapNames.push(name);
 
       await writeFile(
-        '../sitemap/' + name,
+        `../sitemap/${name}`,
         urls
           .slice(i * MAX_URLS_PER_FILE, (i + 1) * MAX_URLS_PER_FILE)
           .join('\n'),
@@ -296,7 +296,7 @@ export async function objects(sitemapNames: string[]) {
 
       const appUrl = `https://www.freemap.sk/?layers=X&osm-${element.type}=${element.id}&lang=sk`;
 
-      const fullName = (genName + ' ' + (name ?? '')).trim();
+      const fullName = `${genName} ${name ?? ''}`.trim();
 
       const metaDescription = description.filter(Boolean).join(' ');
 
@@ -311,7 +311,7 @@ export async function objects(sitemapNames: string[]) {
         '<!doctype html>\n' +
         html`<html lang="sk">
           <head>
-            <title>${fullName + ' - freemap.sk'}</title>
+            <title>${`${fullName} - freemap.sk`}</title>
 
             <meta
               name="viewport"
@@ -330,10 +330,10 @@ export async function objects(sitemapNames: string[]) {
 
             <meta
               name="geo.position"
-              content=${center.lat + ';' + center.lon}
+              content=${`${center.lat};${center.lon}`}
             />
 
-            <meta name="ICBM" content=${center.lat + ', ' + center.lon} />
+            <meta name="ICBM" content=${`${center.lat}, ${center.lon}`} />
 
             <script
               type="application/ld+json"
@@ -413,13 +413,13 @@ export async function objects(sitemapNames: string[]) {
                             >${value}</a
                           >`
                           : ['contact:email', 'email'].includes(key)
-                            ? html`<a href=${'mailto:' + value}>${value}</a>`
+                            ? html`<a href=${`mailto:${value}`}>${value}</a>`
                             : [
                                   'contact:phone',
                                   'contact:mobile',
                                   'phone',
                                 ].includes(key)
-                              ? html`<a href=${'tel:' + value.replace(/ /g, '')}
+                              ? html`<a href=${`tel:${value.replace(/ /g, '')}`}
                                 >${value}</a
                               >`
                               : key === 'wikipedia'

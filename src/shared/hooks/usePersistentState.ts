@@ -1,6 +1,11 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import storage from 'local-storage-fallback';
-import { ChangeEvent, MouseEvent, useCallback, useState } from 'react';
+import {
+  type ChangeEvent,
+  type MouseEvent,
+  useCallback,
+  useState,
+} from 'react';
 
 export function usePersistentState<
   T,

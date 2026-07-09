@@ -1,5 +1,5 @@
-import { DeepPartial } from '@shared/types/deepPartial.js';
-import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
+import type { DeepPartial } from '@shared/types/deepPartial.js';
+import type { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   access: {
@@ -1486,7 +1486,13 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
   seasonal: {
     yes: {
-      waterway: 'Sezónny vodný tok',
+      '*': 'Sezónny',
+      waterway: {
+        stream: 'Sezónny potok',
+        ditch: 'Sezónna priekopa',
+        drain: 'Sezónny odtok',
+        waterfall: 'Sezónny vodopád',
+      },
       natural: {
         water: 'Sezónna vodná plocha',
       },
@@ -1494,7 +1500,13 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
   intermittent: {
     yes: {
-      waterway: 'Občasný vodný tok',
+      '*': 'Občasný',
+      waterway: {
+        stream: 'Občasný potok',
+        ditch: 'Občasná priekopa',
+        drain: 'Občasný odtok',
+        waterfall: 'Občasný vodopád',
+      },
       natural: {
         water: 'Občasná vodná plocha',
       },

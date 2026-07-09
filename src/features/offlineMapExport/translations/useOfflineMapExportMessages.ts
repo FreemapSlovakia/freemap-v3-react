@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { OfflineMapExportMessages } from './OfflineMapExportMessages.js';
+import type { OfflineMapExportMessages } from './OfflineMapExportMessages.js';
 
 const factory = (language: string) =>
   import(

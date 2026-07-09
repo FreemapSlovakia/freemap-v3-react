@@ -1,4 +1,4 @@
-import { Tool } from '@app/store/actions.js';
+import type { Tool } from '@app/store/actions.js';
 import type { ReactElement } from 'react';
 import {
   FaBullseye,
@@ -41,7 +41,7 @@ export function isMapClickTool(tool: Tool | null | undefined): boolean {
 
 /** The three draw-* tools share one menu, so at most one is ever open. */
 export function isDrawTool(tool: Tool | null | undefined): boolean {
-  return tool != null && tool.startsWith('draw-');
+  return tool?.startsWith('draw-') ?? false;
 }
 
 /** Drops duplicates and keeps at most one draw-* tool (they share one menu). */

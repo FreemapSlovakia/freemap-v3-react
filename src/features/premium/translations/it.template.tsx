@@ -1,6 +1,6 @@
 import { RovasLink } from '@shared/components/RovasLink.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { PremiumMessages } from './PremiumMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { PremiumMessages } from './PremiumMessages.js';
 
 const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Ottieni accesso premium',
@@ -23,7 +23,7 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>foto premium</li>
         <li>routing multimodale</li>
-        <li>dati di elevazione ad alta risoluzione (per ora Slovacchia)</li>
+        <li>dati di elevazione ad alta risoluzione (molti paesi europei)</li>
       </ul>
       <p className="mb-0">Freemap resta gratuita e aperta.</p>
     </>

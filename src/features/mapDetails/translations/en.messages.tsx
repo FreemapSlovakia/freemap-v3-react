@@ -1,4 +1,4 @@
-import { MapDetailsMessages } from './MapDetailsMessages.js';
+import type { MapDetailsMessages } from './MapDetailsMessages.js';
 
 const en: MapDetailsMessages = {
   sources: 'Sources',

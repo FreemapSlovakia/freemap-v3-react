@@ -3,6 +3,10 @@
     display: none;
   }
 
+  .less-btn {
+    display: none;
+  }
+
   .more {
     .hideable {
       display: table-row;
@@ -15,10 +19,6 @@
     .less-btn {
       display: block;
     }
-  }
-
-  .less-btn {
-    display: none;
   }
 
   .separ {

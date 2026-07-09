@@ -1,6 +1,6 @@
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';

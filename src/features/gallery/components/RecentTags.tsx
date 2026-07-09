@@ -1,6 +1,6 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import clsx from 'clsx';
-import { type ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 

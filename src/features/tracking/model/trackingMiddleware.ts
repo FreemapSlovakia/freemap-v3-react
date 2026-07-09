@@ -2,10 +2,10 @@ import type { RootState } from '@app/store/store.js';
 import { rpcCall, rpcResponse } from '@features/rpc/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { wsClose, wsOpen } from '@features/websocket/model/actions.js';
-import { Dispatch, Middleware } from 'redux';
+import type { Dispatch, Middleware } from 'redux';
 import z from 'zod';
 import { loadTrackingMessages } from '../translations/loadTrackingMessages.js';
-import { TrackedDevice } from './types.js';
+import type { TrackedDevice } from './types.js';
 
 const TrackingParamsSchema = z.union([
   z.object({ token: z.string() }),
@@ -13,7 +13,7 @@ const TrackingParamsSchema = z.union([
 ]);
 
 export function createTrackingMiddleware(): Middleware<
-  {},
+  object,
   RootState,
   Dispatch
 > {

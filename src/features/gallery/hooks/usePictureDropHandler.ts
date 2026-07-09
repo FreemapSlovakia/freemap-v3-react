@@ -1,10 +1,10 @@
 import { latLonToString } from '@shared/geoutils.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import ExifReader, { Tags } from 'exifreader';
+import ExifReader, { type Tags } from 'exifreader';
 import { useCallback } from 'react';
 import { loadPreview } from '../imagePreview.js';
-import { GalleryItem } from '../model/actions.js';
+import type { GalleryItem } from '../model/actions.js';
 
 let nextId = 1;
 
@@ -15,6 +15,8 @@ export function usePictureDropHandler(
   onItemChange: (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => void,
 ): (files: File[]) => void {
   const premium = useAppSelector((state) => state.gallerySettings.premium);
+
+  const license = useAppSelector((state) => state.gallerySettings.license);
 
   const processFile = useCallback(
     (file: File, cb: (err?: unknown) => void) => {
@@ -79,7 +81,7 @@ export function usePictureDropHandler(
           azimuth = parseFloat(rawAzimuth);
         }
 
-        if (isNaN(azimuth ?? NaN)) {
+        if (Number.isNaN(azimuth ?? NaN)) {
           azimuth = null;
         }
         const [rawLat, latRef] = adaptGpsCoordinate(
@@ -134,6 +136,7 @@ export function usePictureDropHandler(
             (takenAtRaw && parseExifDateTime(takenAtRaw.description)) ?? null,
           tags: keywords,
           premium,
+          license,
           errors: [],
         });
 
@@ -172,7 +175,7 @@ export function usePictureDropHandler(
 
       reader.readAsArrayBuffer(isHeif ? file : file.slice(0, 128 * 1024));
     },
-    [showPreview, language, onItemAdd, onItemChange, premium],
+    [showPreview, language, onItemAdd, onItemChange, premium, license],
   );
 
   return useCallback(

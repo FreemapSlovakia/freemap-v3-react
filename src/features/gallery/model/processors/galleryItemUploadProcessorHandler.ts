@@ -56,6 +56,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       takenAt: item.takenAt?.toISOString(),
       tags: item.tags,
       premium: item.premium,
+      license: item.license,
     }),
   );
 

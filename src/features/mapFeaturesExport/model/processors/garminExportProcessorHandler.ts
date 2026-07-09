@@ -7,7 +7,7 @@ import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
 import { getExportables } from '../../garminExport.js';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
-import { exportMapFeatures } from '../actions.js';
+import type { exportMapFeatures } from '../actions.js';
 
 const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   getState,

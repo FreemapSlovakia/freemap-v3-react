@@ -1,17 +1,18 @@
+import type { Selection } from '@app/store/actions.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import type { DrawingLineType } from '@features/drawing/model/actions/drawingLineActions.js';
-import { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
-import { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
-import { GalleryMessages } from '@features/gallery/translations/GalleryMessages.js';
+import type { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
+import type { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
+import type { GalleryMessages } from '@features/gallery/translations/GalleryMessages.js';
 import { loadGalleryMessages } from '@features/gallery/translations/loadGalleryMessages.js';
-import { ObjectsState } from '@features/objects/model/reducer.js';
-import { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import type { ObjectsState } from '@features/objects/model/reducer.js';
+import type { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
-import { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
-import { TrackingState } from '@features/tracking/model/reducer.js';
-import { TrackViewerState } from '@features/trackViewer/model/reducer.js';
+import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
+import type { TrackingState } from '@features/tracking/model/reducer.js';
+import type { TrackViewerState } from '@features/trackViewer/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
@@ -29,8 +30,14 @@ import {
   iconSpecToOsmAndIcon,
   markerTypeToOsmAndBackground,
 } from '../../osmandIconMapping.js';
-import { exportMapFeatures } from '../actions.js';
-import { fetchPictures, Picture } from './fetchPictures.js';
+import type { exportMapFeatures } from '../actions.js';
+import {
+  keepDrawingLine,
+  keepDrawingPoint,
+  keepObject,
+  selectedTrackToken,
+} from '../selectionFilter.js';
+import { fetchPictures, type Picture } from './fetchPictures.js';
 import { exportElevationCancelActions } from './fillElevations.js';
 import {
   addAttribute,
@@ -131,6 +138,8 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 
   const set = new Set(action.payload.exportables);
 
+  const { only } = action.payload;
+
   if (set.has('pictures')) {
     addPictures(
       doc,
@@ -141,19 +150,19 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('drawingLines')) {
-    addDrawingLines(doc, drawingLines, 'line');
+    addDrawingLines(doc, drawingLines, 'line', only);
   }
 
   if (set.has('drawingAreas')) {
-    addDrawingLines(doc, drawingLines, 'polygon');
+    addDrawingLines(doc, drawingLines, 'polygon', only);
   }
 
   if (set.has('drawingPoints')) {
-    await addDrawingPoints(doc, drawingPoints);
+    await addDrawingPoints(doc, drawingPoints, only);
   }
 
   if (set.has('objects')) {
-    addObjects(doc, objects);
+    addObjects(doc, objects, only);
   }
 
   if (set.has('plannedRoute') || set.has('plannedRouteWithStops')) {
@@ -166,7 +175,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('tracking')) {
-    addTracking(doc, tracking);
+    addTracking(doc, tracking, selectedTrackToken(only));
   }
 
   if (set.has('import')) {
@@ -197,9 +206,13 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     trk: [],
   };
 
-  let curr: Node | null;
+  while (true) {
+    const curr = r.iterateNext();
 
-  while ((curr = r.iterateNext())) {
+    if (!curr) {
+      break;
+    }
+
     q[curr.nodeName].push(curr);
   }
 
@@ -378,7 +391,7 @@ function addPictures(
     let imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
 
     if (hmac) {
-      imageUrl += '&hmac=' + encodeURIComponent(hmac);
+      imageUrl += `&hmac=${encodeURIComponent(hmac)}`;
     }
 
     createElement(wptEle, 'desc', {
@@ -386,7 +399,7 @@ function addPictures(
         `<img src="${escapeHtml(imageUrl)}" width="100%"><p>` +
         lines
           .map(
-            ([key, value]) => `<b>${escapeHtml(key)}</b>: ` + escapeHtml(value),
+            ([key, value]) => `<b>${escapeHtml(key)}</b>: ${escapeHtml(value)}`,
           )
           .join('｜') +
         '</p>',
@@ -416,8 +429,13 @@ function addDrawingLines(
   doc: Document,
   { lines }: DrawingLinesState,
   type: DrawingLineType,
+  only: Selection | undefined,
 ) {
-  for (const line of lines.filter((line) => line.type === type)) {
+  for (const [index, line] of lines.entries()) {
+    if (line.type !== type || !keepDrawingLine(only, index)) {
+      continue;
+    }
+
     const trkEle = createElement(doc.documentElement, 'trk');
 
     if (line.label) {
@@ -486,7 +504,7 @@ function addDrawingLines(
     createElement(
       ext2Ele,
       [LOCUS_NS, 'locus:lsColorBase'],
-      '#' + toLocusAlpha(stroke.opacity) + rgb,
+      `#${toLocusAlpha(stroke.opacity)}${rgb}`,
     );
 
     createElement(
@@ -501,7 +519,7 @@ function addDrawingLines(
       createElement(
         ext2Ele,
         [LOCUS_NS, 'locus:lsColorFill'],
-        '#' + toLocusAlpha(fill.opacity) + fillRgb,
+        `#${toLocusAlpha(fill.opacity)}${fillRgb}`,
       );
     }
 
@@ -563,7 +581,11 @@ function addDrawingLines(
   }
 }
 
-async function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
+async function addDrawingPoints(
+  doc: Document,
+  { points }: DrawingPointsState,
+  only: Selection | undefined,
+) {
   // Caches shared across all points in this export, so a thousand identical
   // poi/fa icons resolve once, and identical markers rasterize to PNG once.
   const faCache = new Map<string, IconDefinition | undefined>();
@@ -575,7 +597,14 @@ async function addDrawingPoints(doc: Document, { points }: DrawingPointsState) {
   const pending: { extEle: Element; locusIcon: Promise<string | undefined> }[] =
     [];
 
-  for (const { coords, label, color, markerType, icon } of points) {
+  for (const [
+    index,
+    { coords, label, color, markerType, icon },
+  ] of points.entries()) {
+    if (!keepDrawingPoint(only, index)) {
+      continue;
+    }
+
     const wptEle = createElement(
       doc.documentElement,
       'wpt',
@@ -737,8 +766,16 @@ async function buildLocusIconDataUrl({
   return (await svgToPngDataUrl(svgDataUrl, width, height)) ?? svgDataUrl;
 }
 
-function addObjects(doc: Document, { objects }: ObjectsState) {
-  for (const { coords, tags } of objects) {
+function addObjects(
+  doc: Document,
+  { objects }: ObjectsState,
+  only: Selection | undefined,
+) {
+  for (const { id, coords, tags } of objects) {
+    if (!keepObject(only, id)) {
+      continue;
+    }
+
     const wptEle = createElement(
       doc.documentElement,
       'wpt',
@@ -781,7 +818,7 @@ function addPlannedRoute(
           ? rpm.start
           : i === points.length - 1
             ? rpm.finish // TODO not for roundtrip?
-            : rpm.stop + ' ' + (i + 1),
+            : `${rpm.stop} ${i + 1}`,
       );
     }
   }
@@ -789,7 +826,7 @@ function addPlannedRoute(
   for (const [i, { legs }] of alternatives.entries()) {
     const trkEle = createElement(doc.documentElement, 'trk');
 
-    createElement(trkEle, 'name', rpm.alternative + ' ' + (i + 1));
+    createElement(trkEle, 'name', `${rpm.alternative} ${i + 1}`);
 
     const trksegEle = createElement(trkEle, 'trkseg');
 
@@ -818,7 +855,11 @@ function toLocusAlpha(opacity: number): string {
     .padStart(2, '0');
 }
 
-function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
+function addTracking(
+  doc: Document,
+  { tracks, trackedDevices }: TrackingState,
+  onlyToken: string | null,
+) {
   const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));
 
   const tracks1 = tracks.map((track) => ({
@@ -827,6 +868,10 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
   }));
 
   for (const track of tracks1) {
+    if (onlyToken !== null && String(track.token) !== onlyToken) {
+      continue;
+    }
+
     const trkEle = createElement(doc.documentElement, 'trk');
 
     if (track.label) {

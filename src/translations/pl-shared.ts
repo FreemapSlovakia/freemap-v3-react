@@ -1,4 +1,4 @@
-import { SharedMessages } from './sharedMessagesInterface.js';
+import type { SharedMessages } from './sharedMessagesInterface.js';
 
 export default {
   title: 'Freemap Slovakia, mapa cyfrowa',

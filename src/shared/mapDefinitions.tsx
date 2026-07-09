@@ -1,4 +1,4 @@
-import { Shortcut, ShortcutSchema } from '@shared/types/common.js';
+import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
   FaBus,
@@ -28,7 +28,8 @@ export interface AttributionDef {
     | 'freemap'
     | 'srtm'
     | 'maptiler'
-    | 'outdoorShadingAttribution';
+    | 'outdoorShadingAttribution'
+    | 'photosCc';
   url?: string;
   country?: string;
 }
@@ -512,12 +513,12 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         name: 'Korkeusmalli 2 m: Maanmittauslaitos',
         url: 'https://www.maanmittauslaitos.fi/en/maps-and-spatial-data/datasets-and-interfaces/product-descriptions/elevation-model-2-m',
       },
-      // {
-      //   type: 'data',
-      //   country: 'es',
-      //   name: 'MDT05: IGN (CNIG)',
-      //   url: 'https://centrodedescargas.cnig.es/CentroDescargas/modelos-digitales-elevaciones',
-      // },
+      {
+        type: 'data',
+        country: 'es',
+        name: 'MDT05: IGN (CNIG)',
+        url: 'https://centrodedescargas.cnig.es/CentroDescargas/modelos-digitales-elevaciones',
+      },
     ],
     minZoom: 5,
     maxNativeZoom: 20,
@@ -928,7 +929,8 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     attribution: [
       {
         type: 'photos',
-        name: 'CC BY-SA 4.0',
+        nameKey: 'photosCc',
+        url: 'https://creativecommons.org/',
       },
     ],
   },
@@ -977,10 +979,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     layer: 'overlay',
     type: 'h',
     technology: 'parametricShading',
-    // url: 'https://parametric-shading.tiles.freemap.sk/sk/{z}/{x}/{y}',
-    // url: 'https://www.freemap.sk/tiles/parametric-shading/sk/{z}/{x}/{y}',
-    // url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
-    url: 'https://parametric-shading-europe.tiles.freemap.sk/europe/{z}/{x}/{y}',
+    url: 'https://parametric-shading.tiles.freemap.sk/europe/{z}/{x}/{y}',
     icon: <GiHills />,
     shortcut: { code: 'KeyH', shift: true },
     scaleWithDpi: true,
@@ -1000,9 +999,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     layer: 'overlay',
     type: 'y',
     technology: 'parametricShading',
-    // url: 'https://parametric-shading.tiles.freemap.sk/{z}/{x}/{y}',
-    url: 'https://www.freemap.sk/tiles/parametric-shading/sk/{z}/{x}/{y}',
-    // url: 'http://localhost:3033/tiles/{z}/{x}/{y}',
+    url: 'https://parametric-shading.tiles.freemap.sk/sk/{z}/{x}/{y}',
     icon: <GiHills />,
     shortcut: { code: 'KeyY', shift: true },
     scaleWithDpi: true,
@@ -1024,7 +1021,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     layer: 'overlay',
     type: 'z',
     technology: 'parametricShading',
-    url: 'https://www.freemap.sk/tiles/parametric-shading/cz/{z}/{x}/{y}',
+    url: 'https://parametric-shading.tiles.freemap.sk/cz/{z}/{x}/{y}',
     icon: <GiHills />,
     scaleWithDpi: true,
     maxNativeZoom: 18,

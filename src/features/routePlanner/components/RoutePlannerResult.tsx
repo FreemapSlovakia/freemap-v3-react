@@ -20,8 +20,8 @@ import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
 import { length } from '@turf/length';
-import { Feature, LineString, Point } from 'geojson';
-import {
+import type { Feature, LineString, Point } from 'geojson';
+import type {
   DragEndEvent,
   LatLng,
   LeafletMouseEvent,
@@ -29,7 +29,7 @@ import {
 } from 'leaflet';
 import {
   Fragment,
-  ReactElement,
+  type ReactElement,
   useCallback,
   useEffect,
   useMemo,
@@ -52,8 +52,8 @@ import {
   routePlannerSetFinish,
   routePlannerSetPoint,
   routePlannerSetStart,
-  StepCoordinate,
-  StepMode,
+  type StepCoordinate,
+  type StepMode,
 } from '../model/actions.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import classes from './RoutePlannerResult.module.css';
@@ -185,13 +185,13 @@ export function RoutePlannerResult(): ReactElement {
                   : formatDistance(distanceDiff, language),
             })}
           </div>
-          {!isNaN(durationSum) && (
+          {!Number.isNaN(durationSum) && (
             <div>
               {rpm?.duration({
                 h: Math.floor(Math.round(durationSum / 60) / 60),
                 m: Math.round(durationSum / 60) % 60,
                 diff:
-                  durationDiff === undefined || isNaN(durationDiff)
+                  durationDiff === undefined || Number.isNaN(durationDiff)
                     ? undefined
                     : {
                         h: Math.floor(Math.round(durationDiff / 60) / 60),
@@ -246,7 +246,7 @@ export function RoutePlannerResult(): ReactElement {
         milestones.push(milestone);
       }
     } else {
-      const pxLen = (len * Math.pow(2, zoom)) / 1000;
+      const pxLen = (len * 2 ** zoom) / 1000;
 
       const q = 50;
 
@@ -848,7 +848,7 @@ export function RoutePlannerResult(): ReactElement {
 
       {isochrones?.map((isochrone) => (
         <GeoJSON
-          key={'iso_' + timestamp + '_' + isochrone.properties?.['bucket']}
+          key={`iso_${timestamp}_${isochrone.properties?.['bucket']}`}
           interactive={false}
           style={(f) =>
             f?.properties['bucket'] === isochrones.length - 1

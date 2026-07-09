@@ -1,4 +1,4 @@
-import { EmbedMessages } from './EmbedMessages.js';
+import type { EmbedMessages } from './EmbedMessages.js';
 
 const en: EmbedMessages = {
   code: 'Put the following code to your HTML page:',

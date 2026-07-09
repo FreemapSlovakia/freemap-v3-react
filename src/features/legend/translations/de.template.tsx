@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { LegendMessages } from './LegendMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { LegendMessages } from './LegendMessages.js';
 
 const de: DeepPartialWithRequiredObjects<LegendMessages> = {
   body: ({ name }) => (

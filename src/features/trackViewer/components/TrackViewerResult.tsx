@@ -20,7 +20,7 @@ import {
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
 import { flatten } from '@turf/flatten';
-import {
+import type {
   Feature,
   FeatureCollection,
   LineString,
@@ -28,7 +28,7 @@ import {
   Polygon as PolygonGeometry,
 } from 'geojson';
 import { Point as LPoint } from 'leaflet';
-import { Fragment, ReactElement, useMemo } from 'react';
+import { Fragment, type ReactElement, useMemo } from 'react';
 import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
@@ -405,7 +405,7 @@ export default function TrackViewerResult({
             click: setThisTool,
           }}
         >
-          {p.startTime && !isNaN(new Date(p.startTime).getTime()) && (
+          {p.startTime && !Number.isNaN(new Date(p.startTime).getTime()) && (
             <Tooltip
               className="compact"
               offset={new LPoint(10, 10)}
@@ -436,14 +436,15 @@ export default function TrackViewerResult({
             permanent
           >
             <span>
-              {p.finishTime && !isNaN(new Date(p.finishTime).getTime()) && (
-                <>
-                  {p.finishTime
-                    ? timeFormat.format(new Date(p.finishTime))
-                    : null}
-                  {p.finishTime ? ', ' : ''}
-                </>
-              )}
+              {p.finishTime &&
+                !Number.isNaN(new Date(p.finishTime).getTime()) && (
+                  <>
+                    {p.finishTime
+                      ? timeFormat.format(new Date(p.finishTime))
+                      : null}
+                    {p.finishTime ? ', ' : ''}
+                  </>
+                )}
               {formatDistance(p.length, language)}
             </span>
           </Tooltip>

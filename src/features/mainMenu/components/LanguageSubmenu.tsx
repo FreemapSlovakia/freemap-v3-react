@@ -1,34 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { Language, languages } from '@shared/langUtils.js';
-import { JSX } from 'react';
+import type { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { IoLanguage } from 'react-icons/io5';
-import { LanguageLabel } from './LanguageLabel.js';
+import { languageItems } from './languageItems.js';
 import { SubmenuHeader } from './SubmenuHeader.js';
-
-const languageNames: Record<Language, string> = {
-  sk: 'Slovensky',
-  cs: 'Česky',
-  pl: 'Polski',
-  hu: 'Magyar',
-  en: 'English',
-  de: 'Deutsch',
-  it: 'Italiano',
-};
-
-// The flag's country code matches the language code for most languages; only
-// these differ.
-const flagCountries: Partial<Record<Language, string>> = { cs: 'cz', en: 'gb' };
-
-function toFlag(language: Language): string {
-  const country = flagCountries[language] ?? language;
-
-  return String.fromCodePoint(
-    ...[...country.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 0x41),
-  );
-}
 
 export function LanguageSubmenu(): JSX.Element {
   const m = useMessages();
@@ -37,10 +14,7 @@ export function LanguageSubmenu(): JSX.Element {
 
   return (
     <>
-      <SubmenuHeader
-        icon={<IoLanguage />}
-        title={<LanguageLabel>{(language) => language}</LanguageLabel>}
-      />
+      <SubmenuHeader icon={<IoLanguage />} title={m?.mainMenu.language} />
 
       <Dropdown.Item
         as="button"
@@ -50,14 +24,14 @@ export function LanguageSubmenu(): JSX.Element {
         {m?.mainMenu.automaticLanguage}
       </Dropdown.Item>
 
-      {languages.map((code) => (
+      {languageItems.map(({ code, name, flag }) => (
         <Dropdown.Item
           key={code}
           as="button"
           eventKey={`lang-${code}`}
           active={chosenLanguage === code}
         >
-          <Emoji>{toFlag(code)}</Emoji>&ensp;{languageNames[code]}
+          <Emoji>{flag}</Emoji>&ensp;{name}
         </Dropdown.Item>
       ))}
     </>

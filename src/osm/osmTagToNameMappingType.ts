@@ -1485,7 +1485,13 @@ export type OsmTagToNameMapping = {
   };
   seasonal: {
     yes: {
-      waterway: string;
+      '*': string;
+      waterway: {
+        stream: string;
+        ditch: string;
+        drain: string;
+        waterfall: string;
+      };
       natural: {
         water: string;
       };
@@ -1493,7 +1499,13 @@ export type OsmTagToNameMapping = {
   };
   intermittent: {
     yes: {
-      waterway: string;
+      '*': string;
+      waterway: {
+        stream: string;
+        ditch: string;
+        drain: string;
+        waterfall: string;
+      };
       natural: {
         water: string;
       };

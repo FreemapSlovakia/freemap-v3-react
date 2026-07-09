@@ -1,11 +1,11 @@
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
+import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { AlertLink } from 'react-bootstrap';
-import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './en-shared.js';
-import { addError, Messages } from './messagesInterface.js';
+import { addError, type Messages } from './messagesInterface.js';
 
 const masl = 'm\xa0a.s.l.';
 
@@ -176,6 +176,7 @@ const messages: Messages = {
     osmWiki: 'OpenStreetMap documentation',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Services status',
+    language: 'Language',
   },
 
   main: {
@@ -298,6 +299,7 @@ const messages: Messages = {
           hostedBy="hosted by"
         />
       ),
+      photosCc: 'various Creative Commons licenses',
     },
     configureLayers: 'Configure map layers',
     customMaps: 'Custom maps',

@@ -1,5 +1,5 @@
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Image, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
 import { FaGem } from 'react-icons/fa';
 

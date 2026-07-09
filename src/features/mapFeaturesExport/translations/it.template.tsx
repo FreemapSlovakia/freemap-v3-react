@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
+import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Download',
@@ -19,6 +19,7 @@ const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     import: 'file importato',
     search: 'risultato',
   },
+  onlySelected: "Solo l'elemento selezionato",
   disabledAlert:
     'Sono abilitate solo le opzioni che hanno qualcosa da esportare nella mappa.',
   licenseAlert:

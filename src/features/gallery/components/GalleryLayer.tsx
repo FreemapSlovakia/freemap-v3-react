@@ -1,5 +1,5 @@
 import { createTileLayerComponent } from '@react-leaflet/core';
-import { createWorkerPool, WorkerPool } from '@shared/workerPool.js';
+import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
 import {
   type Coords,
   type DoneCallback,
@@ -8,10 +8,7 @@ import {
   GridLayer as LGridLayer,
 } from 'leaflet';
 import { createFilter } from '../galleryUtils.js';
-import {
-  type GalleryColorizeBy,
-  type GalleryFilter,
-} from '../model/actions.js';
+import type { GalleryColorizeBy, GalleryFilter } from '../model/actions.js';
 import { PicturesResponse } from '../model/pictures.js';
 import { renderGalleryTile } from './galleryTileRenderrer.js';
 
@@ -107,7 +104,11 @@ class LGalleryLayer extends LGridLayer {
 
     if (this._options) {
       for (const [k, v] of Object.entries(createFilter(this._options.filter))) {
-        if (v != null) {
+        if (Array.isArray(v)) {
+          for (const item of v) {
+            sp.append(k, String(item));
+          }
+        } else if (v != null) {
           sp.set(k, String(v));
         }
       }
@@ -137,13 +138,13 @@ class LGalleryLayer extends LGridLayer {
 
       try {
         response = await fetch(
-          process.env['API_URL'] + '/gallery/pictures?' + sp.toString(),
+          `${process.env['API_URL']}/gallery/pictures?${sp.toString()}`,
           {
             signal,
             headers: {
               Accept: 'application/x-protobuf',
               ...(this._options?.authToken
-                ? { Authorization: 'Bearer ' + this._options?.authToken }
+                ? { Authorization: `Bearer ${this._options?.authToken}` }
                 : {}),
             },
           },
@@ -159,7 +160,7 @@ class LGalleryLayer extends LGridLayer {
       }
 
       if (response.status !== 200) {
-        throw new Error('unexpected status ' + response.status);
+        throw new Error(`unexpected status ${response.status}`);
       }
 
       const message = PicturesResponse.decode(
@@ -185,6 +186,7 @@ class LGalleryLayer extends LGridLayer {
               pano: picture.pano,
               premium: picture.premium,
               azimuth: picture.azimuth,
+              license: picture.license,
             };
           }) ?? [],
         dpr,

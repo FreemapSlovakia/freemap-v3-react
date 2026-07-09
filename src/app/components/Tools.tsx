@@ -1,7 +1,7 @@
 import { DrawingPointsTool } from '@features/drawing/components/DrawingPointsTool.js';
 import { MapDetailsTool } from '@features/mapDetails/components/MapDetailsTool.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import {
   activeMapToolSelector,
   drawingLinePolys,

@@ -1,5 +1,5 @@
-import { DeepPartial } from '@shared/types/deepPartial.js';
-import { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
+import type { DeepPartial } from '@shared/types/deepPartial.js';
+import type { OsmTagToNameMapping } from './osmTagToNameMappingType.js';
 
 export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   aeroway: {
@@ -1554,11 +1554,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   intermittent: {
     yes: {
+      '*': 'Intermittente',
+
       natural: {
         water: 'Area d’acqua intermittente',
       },
 
-      waterway: 'Corso d’acqua intermittente',
+      waterway: {
+        stream: 'Ruscello intermittente',
+        ditch: 'Fossato intermittente',
+        drain: 'Fosso intermittente',
+        waterfall: 'Cascata intermittente',
+      },
     },
   },
 
@@ -1601,11 +1608,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   seasonal: {
     yes: {
+      '*': 'Stagionale',
+
       natural: {
         water: 'Area d’acqua stagionale',
       },
 
-      waterway: 'Corso d’acqua stagionale',
+      waterway: {
+        stream: 'Ruscello stagionale',
+        ditch: 'Fossato stagionale',
+        drain: 'Fosso stagionale',
+        waterfall: 'Cascata stagionale',
+      },
     },
   },
 

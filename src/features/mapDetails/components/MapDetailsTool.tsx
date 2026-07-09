@@ -2,7 +2,7 @@ import { searchSetQuery } from '@features/search/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LatLon } from '@shared/types/common.js';
-import { LeafletMouseEvent } from 'leaflet';
+import type { LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useCallback, useState } from 'react';
 import { Circle, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
@@ -18,8 +18,7 @@ export function MapDetailsTool(): ReactElement | null {
       (e: LeafletMouseEvent) => {
         dispatch(
           searchSetQuery({
-            query:
-              '@' + e.latlng.lat.toFixed(6) + ',' + e.latlng.lng.toFixed(6),
+            query: `@${e.latlng.lat.toFixed(6)},${e.latlng.lng.toFixed(6)}`,
           }),
         );
       },

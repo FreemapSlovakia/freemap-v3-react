@@ -1,12 +1,12 @@
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
+import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
-import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './cs-shared.js';
-import { addError, Messages } from './messagesInterface.js';
+import { addError, type Messages } from './messagesInterface.js';
 
 const masl = 'm\xa0n.\xa0m.';
 
@@ -52,6 +52,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ok: 'OK',
     preventShowingAgain: 'Už více nezobrazovat',
     closeWithoutSaving: 'Zavřít okno bez uložení změn?',
+    resetToDefaults: 'Obnovit výchozí',
     back: 'Zpět',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
@@ -180,6 +181,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     osmWiki: 'Dokumentační projekt OpenStreetMap ',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Cs:Main_Page',
     status: 'Stav služeb',
+    language: 'Jazyk',
   },
 
   main: {
@@ -255,6 +257,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     searchResultStyle: 'Styl výsledku hledání',
+    resetApp: 'Obnovit aplikaci',
+    resetAppConfirm:
+      'Obnovit všechna nastavení aplikace na výchozí a znovu načíst stránku? Budete odhlášeni.',
     showAll: 'Zobrazit všechny mapy',
     filterMaps: 'Filtrovat mapy',
     noMapsFound: 'Žádné mapy nenalezeny',
@@ -264,6 +269,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'Filtr fotografií je aktivní',
     interactiveLayerWarning: 'Datová vrstva je skryta',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
+    outsideViewWarning: 'Aktuální výřez je mimo tuto mapu',
     letters: {
       S: 'Letecká',
       Z: 'Letecká',

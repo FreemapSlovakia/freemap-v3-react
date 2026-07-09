@@ -1,7 +1,9 @@
 import type { LatLon } from '@shared/types/common.js';
 import color from 'color';
-import { LatLng } from 'leaflet';
-import { GalleryColorizeBy } from '../model/actions.js';
+import type { LatLng } from 'leaflet';
+import { FALLBACK_LICENSE_COLOR, LICENSE_COLORS } from '../licenseColors.js';
+import type { GalleryLicense } from '../licenseDefs.js';
+import type { GalleryColorizeBy } from '../model/actions.js';
 
 type Marble = LatLon & {
   rating: number;
@@ -11,6 +13,7 @@ type Marble = LatLon & {
   pano?: boolean;
   premium?: boolean;
   azimuth?: number;
+  license?: string | null;
 };
 
 type Props = {
@@ -159,6 +162,7 @@ export function renderGalleryTile({
     userId,
     pano,
     premium,
+    license,
   } of marbles) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
@@ -255,6 +259,13 @@ export function renderGalleryTile({
 
       case 'premium':
         ctx.fillStyle = premium ? '#ff0' : '#fa4';
+
+        break;
+
+      case 'license':
+        ctx.fillStyle =
+          (license && LICENSE_COLORS[license as GalleryLicense]) ||
+          FALLBACK_LICENSE_COLOR;
 
         break;
     }

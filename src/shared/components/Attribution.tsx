@@ -4,9 +4,9 @@ import {
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { Fragment, ReactElement } from 'react';
+import { Fragment, type ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
-import { AttributionDef, integratedLayerDefs } from '../mapDefinitions.js';
+import { type AttributionDef, integratedLayerDefs } from '../mapDefinitions.js';
 
 type Props = { unknown: string };
 
@@ -60,7 +60,7 @@ function useCategorizedAttribution(layers: string[], countries?: string[]) {
     [
       ...integratedLayerDefs
         .filter(({ type }) => layers.includes(type))
-        .reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
+        .flatMap((def) => def.attribution),
       ...cachedAttrs,
     ].filter(
       (def) => !countries || !def.country || countries.includes(def.country),
@@ -168,7 +168,7 @@ export function useResolvedAttribution(
                   </Fragment>
                 ),
               ])}
-              {esriAttribution?.map((a) => ', ' + a).join('') ?? ''}
+              {esriAttribution?.map((a) => `, ${a}`).join('') ?? ''}
             </>,
           ] as const,
       );

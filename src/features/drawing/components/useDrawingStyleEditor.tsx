@@ -3,7 +3,7 @@ import {
   drawingStyleEquals,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import { DrawingLineStyleFields } from './DrawingLineStyleFields.js';

@@ -1,6 +1,6 @@
 import {
-  CancelItem,
-  CancelTriggers,
+  type CancelItem,
+  type CancelTriggers,
   cancelRegister,
 } from '@shared/cancelRegister.js';
 import { clearMapFeatures } from './store/actions.js';
@@ -11,7 +11,7 @@ export class HttpError extends Error {
   body: string;
 
   constructor(status: number, body: string) {
-    super('Unexpected HTTP response ' + status + ': ' + body);
+    super(`Unexpected HTTP response ${status}: ${body}`);
 
     this.status = status;
 

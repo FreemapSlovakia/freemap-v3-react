@@ -1,4 +1,4 @@
-import { type ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 type Props = { name?: string; rovasDesc: string; children: ReactNode };
 

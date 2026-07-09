@@ -10,7 +10,13 @@ import { usePremiumMessages } from '@features/premium/translations/usePremiumMes
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import { JSX, type ReactElement, useEffect, useMemo, useState } from 'react';
+import {
+  type JSX,
+  type ReactElement,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Alert, Button, Spinner, Table } from 'react-bootstrap';
 import { FaExclamationTriangle, FaGem, FaShoppingBasket } from 'react-icons/fa';
 
@@ -45,11 +51,11 @@ export function PurchasesSection(): ReactElement | null {
     const ac = new AbortController();
 
     (async () => {
-      const res = await fetch(process.env['API_URL'] + '/auth/purchases', {
+      const res = await fetch(`${process.env['API_URL']}/auth/purchases`, {
         signal: ac.signal,
         headers: {
           accept: 'application/json',
-          ...(authToken ? { authorization: 'Bearer ' + authToken } : {}),
+          ...(authToken ? { authorization: `Bearer ${authToken}` } : {}),
         },
       });
 

@@ -1,4 +1,4 @@
-import { PurchasesMessages } from './PurchasesMessages.js';
+import type { PurchasesMessages } from './PurchasesMessages.js';
 
 const en: PurchasesMessages = {
   purchases: 'Purchases',

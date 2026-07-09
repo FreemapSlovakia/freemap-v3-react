@@ -1,4 +1,4 @@
-import { ContactsMessages } from './ContactsMessages.js';
+import type { ContactsMessages } from './ContactsMessages.js';
 
 const en: ContactsMessages = {
   ngo: 'Voluntary association',

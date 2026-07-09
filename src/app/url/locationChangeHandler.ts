@@ -1,11 +1,11 @@
 import {
-  ChangesetParams,
+  type ChangesetParams,
   changesetsSet,
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
 import {
   drawingLineSetLines,
-  Line,
+  type Line,
   type LineCap,
   type LineJoin,
 } from '@features/drawing/model/actions/drawingLineActions.js';
@@ -15,8 +15,12 @@ import {
   eventsSetFilter,
 } from '@features/events/model/actions.js';
 import {
+  type GalleryLicense,
+  GalleryLicenseSchema,
+} from '@features/gallery/licenses.js';
+import {
   GalleryColorizeBySchema,
-  GalleryFilter,
+  type GalleryFilter,
   galleryClear,
   galleryColorizeBy,
   galleryRequestImage,
@@ -42,11 +46,11 @@ import {
 import {
   type ColorStop,
   type Color as ColorType,
-  ShadingComponent,
+  type ShadingComponent,
   serializeShading,
 } from '@features/parameterizedShading/model/Shading.js';
 import {
-  RoutePoint,
+  type RoutePoint,
   routePlannerSetParams,
 } from '@features/routePlanner/model/actions.js';
 import {
@@ -90,7 +94,7 @@ import {
   setActiveModal,
   setEmbedFeatures,
   setTools,
-  Tool,
+  type Tool,
   ToolSchema,
 } from '../store/actions.js';
 import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
@@ -196,7 +200,7 @@ export function handleLocationChange(store: MyStore): void {
             const digit = point[1];
 
             if (point[0] === 'm' && digit && digit >= '0' && digit <= '9') {
-              point = 'manual/' + point.slice(1);
+              point = `manual/${point.slice(1)}`;
             }
 
             const parts = point.split('/');
@@ -410,7 +414,7 @@ export function handleLocationChange(store: MyStore): void {
           point
             .split('/')
             .map((coord) => parseFloat(coord))
-            .filter((x) => !isNaN(x)),
+            .filter((x) => !Number.isNaN(x)),
         )
         .filter((pair): pair is [number, number] => pair.length === 2)
         .map(([lat, lon], id) => ({ lat, lon, id }));
@@ -506,9 +510,9 @@ export function handleLocationChange(store: MyStore): void {
         JSON.parse(customLayerDefsStr),
       );
 
-      (mapStateFromUrl.layers ??= []).push(
-        ...customLayerDefs.map((def) => def.type),
-      );
+      mapStateFromUrl.layers ??= [];
+
+      mapStateFromUrl.layers.push(...customLayerDefs.map((def) => def.type));
 
       const newCustomLayerDefs = customLayerDefs.filter(
         (cl) => !existingCustomLayersDefStrings.includes(JSON.stringify(cl)),
@@ -549,7 +553,7 @@ export function handleLocationChange(store: MyStore): void {
   ) {
     function toColor(color = '00000000') {
       try {
-        const bands = Color('#' + color).array();
+        const bands = Color(`#${color}`).array();
 
         if (bands.length === 3) {
           bands.push(1);
@@ -557,7 +561,7 @@ export function handleLocationChange(store: MyStore): void {
 
         return bands as ColorType;
       } catch {
-        console.error('error parsing color: ' + color);
+        console.error(`error parsing color: ${color}`);
 
         return [0, 0, 0, 1] as ColorType;
       }
@@ -858,7 +862,7 @@ export function handleLocationChange(store: MyStore): void {
   const fq = query['follow'];
 
   if (typeof fq === 'string') {
-    const follow = /^\d+$/.test(fq) ? Number.parseInt(fq) : fq;
+    const follow = /^\d+$/.test(fq) ? Number.parseInt(fq, 10) : fq;
 
     const { selection } = getState().main;
 
@@ -928,6 +932,16 @@ function handleGallery(
 
   const qPremium = typeof a !== 'string' ? undefined : a === 'true';
 
+  a = query['gallery-license'];
+
+  const qLicenseAll = (
+    a === undefined ? [] : Array.isArray(a) ? a : [a]
+  ).filter(
+    (x): x is GalleryLicense => GalleryLicenseSchema.safeParse(x).success,
+  );
+
+  const qLicense = qLicenseAll.length > 0 ? qLicenseAll : undefined;
+
   if (
     qUserId ||
     qGalleryTag != null ||
@@ -938,7 +952,8 @@ function handleGallery(
     qCreatedAtFrom ||
     qCreatedAtTo ||
     qPano !== undefined ||
-    qPremium !== undefined
+    qPremium !== undefined ||
+    qLicense
   ) {
     const { filter } = getState().gallery;
 
@@ -998,6 +1013,10 @@ function handleGallery(
 
     if (qPremium !== filter.premium) {
       newFilter.premium = qPremium;
+    }
+
+    if (qLicense && (filter.license ?? []).join(',') !== qLicense.join(',')) {
+      newFilter.license = qLicense;
     }
 
     if (Object.keys(newFilter).length !== 0) {

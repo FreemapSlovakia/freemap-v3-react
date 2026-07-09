@@ -1,6 +1,6 @@
 import { DrawingStyleSettingsModal } from '@features/drawing/components/DrawingStyleSettingsModal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import { trackViewerSetStyle } from '../model/actions.js';
 import { trackViewerSettingsInitialState } from '../model/settingsReducer.js';

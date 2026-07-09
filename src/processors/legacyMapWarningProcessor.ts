@@ -1,3 +1,4 @@
+import { init } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   mapRefocus,
@@ -5,12 +6,11 @@ import {
   mapSuppressLegacyMapWarning,
 } from '@features/map/model/actions.js';
 import {
-  ToastAction,
+  type ToastAction,
   toastsAdd,
   toastsRemove,
 } from '@features/toasts/model/actions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
-import { init } from '@/app/store/actions.js';
 
 const TOAST_PREFIX = 'myMaps.legacyWarning.';
 

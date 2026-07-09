@@ -20,7 +20,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 // emit the `.d.css.ts` form. The only ways to avoid a custom loader are worse:
 // switch the whole repo to `moduleResolution: node` (huge blast radius), or
 // use an editor-only TS plugin (no build-time / CI type checking, since
-// `tsgo`/`tsc` don't load language-service plugins). So this ~20-line loader
+// `tsc` don't load language-service plugins). So this ~20-line loader
 // riding on css-loader's existing output is the cheapest way to get precise,
 // build-checked CSS-module types. See doc/build-and-deploy.md.
 
@@ -39,11 +39,7 @@ function extractKeys(source) {
 
   const keys = [];
 
-  KEY.lastIndex = 0;
-
-  let m;
-
-  while ((m = KEY.exec(block[1])) !== null) {
+  for (const m of block[1].matchAll(KEY)) {
     keys.push(m[1] ?? m[2] ?? m[3]);
   }
 

@@ -1,12 +1,12 @@
 import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
+import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
 import { Emoji } from '@shared/components/Emoji.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { AlertLink } from 'react-bootstrap';
-import { CookiesConsentText } from '@/features/auth/components/CookiesConsentText.js';
 import shared from './hu-shared.js';
-import { addError, Messages } from './messagesInterface.js';
+import { addError, type Messages } from './messagesInterface.js';
 
 const masl = 'm\xa0tszf.'; // méter a tengerszint fölött;
 
@@ -51,6 +51,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     preventShowingAgain: 'Következő alkalommal ne jelenjék meg',
     closeWithoutSaving:
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
+    resetToDefaults: 'Alapértékek visszaállítása',
     back: 'Vissza',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
@@ -179,6 +180,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapToDocumentExport: 'Térkép exportja képként/dokumentumként',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Hu:Main_Page',
     status: 'Szolgáltatások állapota',
+    language: 'Nyelv',
     title: 'Főmenü',
     osmWiki: 'OpenStreetMap dokumentáció',
   },
@@ -251,9 +253,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   mapLayers: {
     searchResultStyle: 'Keresési találat stílusa',
+    resetApp: 'Alkalmazás visszaállítása',
+    resetAppConfirm:
+      'Visszaállítja az alkalmazás összes beállítását az alapértékekre és újratölti az oldalt? Ki lesz jelentkeztetve.',
     layers: 'Térképrétegek',
     photoFilterWarning: 'A fényképszűrés aktív',
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
+    outsideViewWarning: 'A jelenlegi nézet ezen a térképen kívül esik',
 
     letters: {
       S: 'Légifelvétel',

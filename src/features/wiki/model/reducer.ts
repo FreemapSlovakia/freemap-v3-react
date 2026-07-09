@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  WikiPoint,
-  WikiPreview,
+  type WikiPoint,
+  type WikiPreview,
   wikiLoadPreview,
   wikiSetPoints,
   wikiSetPreview,

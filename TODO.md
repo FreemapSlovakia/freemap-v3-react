@@ -20,6 +20,28 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
   but the array/coordinate-heavy hotspots are now cleaned up against it (error
   count 348 → ~180).
 
+## Lint: re-enable Biome rules disabled during `recommended` adoption
+
+`biome.json` now uses `"preset": "recommended"` with `--error-on-warnings`
+(`lint`, `lint:fix`, lint-staged). Adopting the full recommended set lit up
+rules the curated config never ran; the safely-autofixable ones were applied,
+and the rest were switched `"off"` to keep the tree green. Re-enable and fix
+these one at a time (counts are from first adoption):
+
+- [ ] `suspicious/noImplicitAnyLet` (~23) — annotate bare `let x;` with a real type.
+- [ ] `a11y/noSvgWithoutTitle` (8) — `<title>`/`aria-label` for meaningful, `aria-hidden` for decorative.
+- [ ] `a11y/useHtmlLang` (3) — `lang` on `<html>` in `src/static/*.html`.
+- [ ] `a11y/useButtonType`, `a11y/useValidAnchor`, `a11y/noStaticElementInteractions`,
+      `suspicious/noConfusingLabels` (1 each).
+
+Permanently off by decision (convention / tsconfig clash, **not** backlog):
+`style/noNonNullAssertion`, `suspicious/noArrayIndexKey`,
+`complexity/noImportantStyles`, `security/noDangerouslySetInnerHtml`,
+`complexity/useLiteralKeys` (fights `noPropertyAccessFromIndexSignature`).
+
+Still emitting at info level (non-blocking, optional cleanup):
+`style/useTemplate` (145), `complexity/useIndexOf` (4), `correctness/useParseIntRadix` (1).
+
 ## Softer / design opinions
 
 - [ ] **Remove the `*Settings` localStorage migration code (after ~2026-09).**
@@ -38,6 +60,16 @@ Project-review findings (2026-06-08). Roughly ordered by payoff. See
 - [ ] **Minor processor-middleware cleanups.** Internal `any` casts;
       `Math.random()` for fallback toast IDs; duplicated transform/handle predicate
       logic. Low priority.
+- [ ] **Reconcile toolbar Delete/Close buttons with their `kbd` shortcut.** A
+      dedicated toolbar button can dispatch a feature-specific action while its
+      `kbd` hint advertises a global key that resolves differently. The trackViewer
+      trash button dispatches `trackViewerDelete()` but shows `kbd="Del"`, and the
+      `Del` key (`keyboardHandler` → `deleteFeature()` → `deleteProcessor`) is
+      selection-aware — so with a track loaded *and* a drawing selected, the button
+      deletes the track while `Del` deletes the drawing. The same mismatch applies
+      to Close buttons (`kbd="Esc"`) vs. the global `Esc` handling. A deeper fix
+      would teach `deleteProcessor` / the Esc handler to prefer the active tool's
+      own feature over an unrelated selection, so button and key always agree.
 - [ ] **Toast auto-dismiss policy — do NOT centralize on `style`.** The
       convention is "errors (`danger`) persist + dedupe by `id`; transient
       notices auto-hide via `timeout`", enforced per call site. It's tempting to
@@ -92,50 +124,33 @@ Optional deeper cleanup (not required; `show=` is already the single param):
 
 ## Premium / monetization
 
-Context: payment provider (Polar) acceptable-use rules and content licensing
-constrain what can be gated. Safe premium = our own compute/infra or power-user
-limits; avoid third-party data (license risk — see Strava) and community content
-(CC-BY-SA can't be made exclusive + optics). Keep the free/open core intact.
-
-- [ ] **Remove the "premium photos" perk.** Decision: drop it. Photos are
-      CC-BY-SA 4.0 (can't be exclusive — any premium user may redistribute), and
-      contributors have no intent to flag their own photos premium-only.
-      Action: remove the "premium photos" bullet from the premium modal copy in
-      all 7 locales (`en.messages.tsx` + `sk/cs/de/pl/hu/it.template.tsx`),
-      regenerate locale files.
-- [ ] **Premium feature — Map → image/document export** (Tier 1). Gate high
-      resolution, large format, PDF/vector output, and no-watermark behind
-      premium (or credits). Print-quality rendering is our own compute, clearly
-      worth paying for, and rights-clean.
-- [ ] **Premium feature — Live tracking limits** (Tier 2). Gate number of
-      tracked devices, history retention, and update frequency. Convenience
-      limit, rights-clean.
-- [ ] **Premium feature — My Maps limits** (Tier 2). Free tier gets a limited
-      number of saved maps; premium unlimited + sharing. Convenience limit.
-- [ ] **Audit existing premium third-party layers** (same risk class as Strava):
-      confirm licenses permit gating/charging for NLC forestry WMS
-      (`gis.nlcsk.org`), ŠGÚDŠ geology WMS (`ags.geology.sk`), and ÚGKK ortho/DMR
-      (LLS DMR). Own renders (Outdoor map, parametric hillshade SK/CZ) are fine.
+User-facing premium features are tracked as GitHub issues (label
+`area: premium`): map/document export gating (#929), live-tracking limits (#930),
+My Maps limits (#931), and removing the premium-photos perk (#932). The framing
+constraints still hold and gate what's acceptable there: payment provider (Polar)
+acceptable-use rules and content licensing mean safe premium = our own
+compute/infra or power-user limits; avoid third-party data (license risk — see
+Strava) and community content (CC-BY-SA can't be made exclusive + optics). Keep
+the free/open core intact.
 
 ## Elevation / track chart
 
-- [ ] **Multi-property track chart.** Generalize the elevation chart into a
-      multi-property chart: X axis = time **or** distance; Y axis selectable among
-      elevation, speed, orientation/heading, GSM signal, battery level, distance,
-      time, … Applies to trackViewer and tracking (and, where data exists, the
-      planned route). The colorizer data adapters already expose most of these
-      series, so the chart and the colorizers could share one per-track "series"
-      extraction layer.
-- [ ] **Toggle waypoints in the chart.** An option to show/hide the waypoint
-      markers + labels on the chart.
-- [ ] **Waypoint distance ticks on the x axis.** Option to show each waypoint's
-      distance value along the x axis.
-- [ ] **Waypoint elevation readout.** Option to show a waypoint's elevation —
-      either on the y axis or appended to the waypoint label (design undecided).
-- [ ] **Save chart image.** A button to export the chart as an image (SVG).
-- [ ] **Further chart enrichments.** Axis units, and think about what else is
-      useful (grid/legend, hover crosshair readout, gradient/steepness shading,
-      min/max/avg markers, …).
+Feature requests are tracked as GitHub issues (label `area: elevation-chart`):
+multi-property chart (#933), toggle waypoints (#934), label route midpoints
+(#935), waypoint distance ticks (#936), waypoint elevation readout (#937), export
+chart as SVG (#938), and further enrichments (#939). The remaining item here is an
+engineering task, not a user-facing feature:
+
+- [ ] **Attribute the elevation data source where it's used.** The elevation API
+      now serves per-country high-res DTMs (SK/CZ/AT/CH/IT/SI/ES/SE) with a global
+      GEDTM30 fallback, but the only place we credit them is the hand-maintained
+      `llms.txt` and the outdoor-map layer attribution in `mapDefinitions.tsx`.
+      Show the source next to where the value is consumed: the elevation chart,
+      the point readout (`ElevationInfo.tsx`), and probably track colorization.
+      Prefer having the **backend return the source** per point/response (which
+      DTM answered) so we don't hand-sync the country→provider table on both
+      sides — the mapping is currently inferred from `ELEVATION_SOURCES` and
+      duplicated by hand.
 
 ## Track viewer: generic geodata vs. recorded tracks
 

@@ -9,7 +9,9 @@ export function useCopyButton(text: string) {
   const tid = useRef<number | undefined>(undefined);
 
   const handleCopyClick = useCallback(() => {
-    navigator.clipboard.writeText(text);
+    // Clipboard access can be missing (insecure context) or rejected by a
+    // permissions policy (embedded/webview); swallow so it isn't error noise.
+    navigator.clipboard?.writeText(text).catch(() => undefined);
 
     setChecked(true);
 

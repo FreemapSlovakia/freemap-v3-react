@@ -19,7 +19,7 @@ import { Button, ListGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaClipboard, FaEdit, FaRegEye, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
-import { AccessToken as AccessTokenType } from '../model/types.js';
+import type { AccessToken as AccessTokenType } from '../model/types.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 type Props = {

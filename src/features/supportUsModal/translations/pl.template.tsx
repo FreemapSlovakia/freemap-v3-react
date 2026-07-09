@@ -1,5 +1,5 @@
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { SupportUsMessages } from './SupportUsMessages.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { SupportUsMessages } from './SupportUsMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<SupportUsMessages> = {
   alert: {

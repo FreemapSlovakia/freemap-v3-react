@@ -1,6 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MapSettingsMessages } from './MapSettingsMessages.js';
+import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const en: MapSettingsMessages = {
   overlayOpacity: 'Opacity',

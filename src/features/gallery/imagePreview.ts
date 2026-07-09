@@ -1,11 +1,11 @@
-export const cache = new WeakMap<{}, HTMLCanvasElement>();
+export const cache = new WeakMap<object, HTMLCanvasElement>();
 
 let nextDbg = 0;
 
 export function loadPreview(
   file: File,
   targetWidth: number,
-  cb: (err: Error | undefined, key?: {}) => void,
+  cb: (err: Error | undefined, key?: object) => void,
 ) {
   const img = new Image();
 
@@ -46,6 +46,6 @@ export function loadPreview(
   img.src = url;
 }
 
-export function getPreview(key: {}) {
+export function getPreview(key: object) {
   return cache.get(key);
 }

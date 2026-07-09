@@ -8,6 +8,7 @@ import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { latLonToString } from '@shared/geoutils.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { PictureModel } from '../components/GalleryEditForm.js';
+import { DEFAULT_PHOTO_LICENSE } from '../licenses.js';
 import {
   type GalleryFilter,
   type GalleryItem,
@@ -32,6 +33,7 @@ import {
   gallerySetItemError,
   gallerySetItemForPositionPicking,
   gallerySetLayerDirty,
+  gallerySetLicense,
   gallerySetPickingPosition,
   gallerySetTags,
   gallerySetUsers,
@@ -107,6 +109,10 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       ...galleryInitialState,
       // `dirtySeq` is a render counter, not a pref; carry it across a clear.
       dirtySeq: state.dirtySeq,
+      // The filter is a lens over the still-present photos layer, not a map
+      // feature — a clear must not silently drop it. It resets on its own when
+      // the layer is turned off (see `mapRefocus`).
+      filter: state.filter,
     }))
     .addCase(gallerySetImageIds, (state, action) => ({
       ...state,
@@ -136,8 +142,8 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       if (action.payload === 'next') {
         const { imageIds, activeImageId } = state;
 
-        if (imageIds) {
-          const index = imageIds.findIndex((id) => id === activeImageId);
+        if (imageIds && activeImageId !== null) {
+          const index = imageIds.indexOf(activeImageId);
 
           if (index + 1 < imageIds.length) {
             set(imageIds[index + 1]);
@@ -146,8 +152,8 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       } else if (action.payload === 'prev') {
         const { imageIds, activeImageId } = state;
 
-        if (imageIds) {
-          const index = imageIds.findIndex((id) => id === activeImageId);
+        if (imageIds && activeImageId !== null) {
+          const index = imageIds.indexOf(activeImageId);
 
           if (index > 0) {
             set(imageIds[index - 1]);
@@ -206,7 +212,10 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     .addCase(gallerySetItemForPositionPicking, (state, action) => {
       state.pickingPositionForId = action.payload;
 
-      let x;
+      const item =
+        typeof action.payload === 'number' && action.payload !== -1
+          ? state.items.find(({ id }) => id === action.payload)
+          : undefined;
 
       state.pickingPosition =
         action.payload === -1
@@ -214,9 +223,8 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
             ? safeParseCoordinates(state.editModel.dirtyPosition)
             : null
           : typeof action.payload === 'number'
-            ? // eslint-disable-next-line no-cond-assign
-              (x = state.items.find(({ id }) => id === action.payload))
-              ? safeParseCoordinates(x.dirtyPosition)
+            ? item
+              ? safeParseCoordinates(item.dirtyPosition)
               : null
             : null;
     })
@@ -280,6 +288,7 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
                 ? String(state.image.azimuth)
                 : '',
             premium: Boolean(state.image?.premium),
+            license: state.image?.license ?? DEFAULT_PHOTO_LICENSE,
           };
     })
     .addCase(gallerySetEditModel, (state, action) => {
@@ -297,6 +306,11 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     .addCase(galleryTogglePremium, (state, action) => {
       for (const item of state.items) {
         item.premium = action.payload;
+      }
+    })
+    .addCase(gallerySetLicense, (state, action) => {
+      for (const item of state.items) {
+        item.license = action.payload;
       }
     })
     .addCase(l10nSetLanguage, (state, action) => {

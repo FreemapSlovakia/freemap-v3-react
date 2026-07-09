@@ -2,7 +2,12 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
-import { ReactElement, ReactNode, SubmitEvent, useCallback } from 'react';
+import {
+  type ReactElement,
+  type ReactNode,
+  type SubmitEvent,
+  useCallback,
+} from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

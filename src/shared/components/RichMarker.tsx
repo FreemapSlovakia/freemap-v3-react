@@ -1,18 +1,19 @@
-import { MarkerType } from '@features/objects/model/actions.js';
+import type { MarkerType } from '@features/objects/model/actions.js';
 import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
 import { poiIconGlyphRect } from '@shared/poiIconGlyph.js';
-import Leaflet, { BaseIconOptions, Icon } from 'leaflet';
+import type Leaflet from 'leaflet';
+import { type BaseIconOptions, Icon } from 'leaflet';
 import {
-  CSSProperties,
+  type CSSProperties,
   cloneElement,
-  ReactElement,
-  SVGProps,
+  type ReactElement,
+  type SVGProps,
   useEffect,
   useMemo,
   useRef,
 } from 'react';
-import { createRoot, Root } from 'react-dom/client';
-import { Marker, MarkerProps } from 'react-leaflet';
+import { createRoot, type Root } from 'react-dom/client';
+import { Marker, type MarkerProps } from 'react-leaflet';
 import { splitColorAlpha } from '../colorAlpha.js';
 import { COLORS } from '../colors.js';
 

@@ -31,7 +31,7 @@ import { createReduxStore } from './store/store.js';
 import './styles/index.scss';
 import './styles/bootstrap-override.css';
 import './styles/index.css';
-import { createCookieConsentToastAction } from '@/features/cookieConsent/model/toastAction.js';
+import { createCookieConsentToastAction } from '@features/cookieConsent/model/toastAction.js';
 import { handleLocationChange } from './url/locationChangeHandler.js';
 import { setUrlUpdatingEnabled } from './url/urlUpdating.js';
 
@@ -42,6 +42,20 @@ if (
   window.location.hash === '#reset-local-storage'
 ) {
   storage.clear();
+}
+
+// Self-heal a stray double slash in the path (e.g. arriving via an external
+// `https://host//#…` link). Left as-is, `location.pathname` is `//`, and the
+// URL processor's `pathname + '#hash'` writes would parse as protocol-relative
+// URLs and make pushState throw a SecurityError.
+if (/\/{2,}/.test(window.location.pathname)) {
+  window.history.replaceState(
+    window.history.state,
+    '',
+    window.location.pathname.replace(/\/{2,}/g, '/') +
+      window.location.search +
+      window.location.hash,
+  );
 }
 
 // workaround to fix blurring menus on hidpi desktop chrome
@@ -164,7 +178,7 @@ createRoot(rootElement).render(
 if (process.env['NODE_ENV'] === 'production') {
   await window.navigator.serviceWorker
     ?.register('/sw.js')
-    .catch((err) => console.error('Error registering service worker: ' + err));
+    .catch((err) => console.error(`Error registering service worker: ${err}`));
 
   // share target SW
   window.navigator.serviceWorker

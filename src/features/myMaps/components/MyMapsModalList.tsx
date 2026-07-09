@@ -7,6 +7,7 @@ import {
   ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
+import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -37,7 +38,6 @@ import {
   FaUnlink,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { fixedPopperConfig } from '@/shared/fixedPopperConfig.js';
 import {
   type MapMeta,
   mapsDelete,

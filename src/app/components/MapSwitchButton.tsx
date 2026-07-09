@@ -30,15 +30,15 @@ import {
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { removeAccents } from '@shared/stringUtils.js';
-import { Shortcut } from '@shared/types/common.js';
+import type { Shortcut } from '@shared/types/common.js';
 import clsx from 'clsx';
 import {
-  ChangeEvent,
+  type ChangeEvent,
   Fragment,
-  MouseEvent,
-  ReactElement,
-  ReactNode,
-  SyntheticEvent,
+  type MouseEvent,
+  type ReactElement,
+  type ReactNode,
+  type SyntheticEvent,
   useCallback,
   useEffect,
   useState,
@@ -403,7 +403,7 @@ export function MapSwitchButton(): ReactElement {
           (!def.custom && Boolean(def.defaultInToolbar));
 
         const layerName = def.custom
-          ? def.name || (m?.mapLayers.customBase ?? '') + ' ' + type
+          ? def.name || `${m?.mapLayers.customBase ?? ''} ${type}`
           : (m?.mapLayers.letters[type] ?? '');
 
         if (normalizedFilter) {
@@ -433,7 +433,7 @@ export function MapSwitchButton(): ReactElement {
 
             <Dropdown.Item
               href={`?layers=${type}`}
-              eventKey={'layer-' + type}
+              eventKey={`layer-${type}`}
               active={active}
               // className={clsx(showInMenu || 'text-secondary')}
             >
@@ -451,7 +451,7 @@ export function MapSwitchButton(): ReactElement {
 
               <span>
                 {def.custom
-                  ? def.name || m?.mapLayers.customBase + ' ' + type
+                  ? def.name || `${m?.mapLayers.customBase} ${type}`
                   : (m?.mapLayers.letters[type] ?? '…')}
               </span>
 
@@ -560,7 +560,7 @@ export function MapSwitchButton(): ReactElement {
                 label={
                   <>
                     {def.custom
-                      ? def.name || m?.mapLayers.customBase + ' ' + type
+                      ? def.name || `${m?.mapLayers.customBase} ${type}`
                       : (m?.mapLayers.letters[type] ?? '…')}
 
                     {commonBadges(def, 'tooltip')}

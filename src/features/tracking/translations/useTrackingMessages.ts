@@ -1,5 +1,5 @@
 import { useLocalMessages } from '@features/l10n/l10nInjector.js';
-import { TrackingMessages } from './TrackingMessages.js';
+import type { TrackingMessages } from './TrackingMessages.js';
 
 const factory = (language: string) =>
   import(

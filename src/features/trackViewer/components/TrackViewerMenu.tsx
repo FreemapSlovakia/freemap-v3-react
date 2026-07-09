@@ -47,6 +47,7 @@ import { useDispatch } from 'react-redux';
 import {
   ColorizingModeSchema,
   trackViewerColorizeTrackBy,
+  trackViewerDelete,
   trackViewerResolveElevationPrompt,
   trackViewerSetColorizeLegend,
   trackViewerSetElevationPrompt,
@@ -455,7 +456,7 @@ export function TrackViewerMenu(): ReactElement {
           </Dropdown>
         )}
 
-        {hasTrack && <DeleteButton />}
+        {hasTrack && <DeleteButton action={trackViewerDelete()} />}
       </ToolMenu>
 
       {enableElevationChart && colorizeLegend && colorizeTrackBy && (

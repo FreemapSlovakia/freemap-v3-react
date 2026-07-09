@@ -1,3 +1,4 @@
+import type { ExternalTarget } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -9,7 +10,6 @@ import {
   FaShareAlt,
   FaWindowMaximize,
 } from 'react-icons/fa';
-import { ExternalTarget } from '@/app/store/actions.js';
 import {
   getF4mapUrl,
   getGeocachingUrl,
@@ -26,6 +26,7 @@ import {
   getWazeUrl,
   getZbgisUrl,
 } from '../externalUrlUtils.js';
+import { Emoji } from '@/shared/components/Emoji.js';
 
 interface Props extends LatLon {
   lat: number;
@@ -225,7 +226,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {oeam?.oma} (SK)
+        {oeam?.oma} <Emoji>🇸🇰</Emoji>
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -233,7 +234,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {oeam?.hiking_sk} (SK)
+        {oeam?.hiking_sk} <Emoji>🇸🇰</Emoji>
         {showKbdShortcut && (
           <>
             {' '}
@@ -247,7 +248,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {oeam?.zbgis} (SK)
+        {oeam?.zbgis} <Emoji>🇸🇰</Emoji>
         {showKbdShortcut && (
           <>
             {' '}

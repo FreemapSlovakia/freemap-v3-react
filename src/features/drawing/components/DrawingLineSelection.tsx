@@ -30,6 +30,7 @@ import {
   drawingLineStopDrawing,
 } from '../model/actions/drawingLineActions.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
+import { DrawingToggleButton } from './DrawingToggleButton.js';
 import { ProjectPointModal } from './ProjectPointModal.js';
 
 export default function DrawingLineSelection(): ReactElement | null {
@@ -163,9 +164,17 @@ export default function DrawingLineSelection(): ReactElement | null {
       />
 
       <Selection
-        icon={isLine ? <TbTimeline /> : <FaDrawPolygon />}
+        icon={
+          <>
+            <DrawingToggleButton
+              tool={isLine ? 'draw-lines' : 'draw-polygons'}
+            />{' '}
+            {isLine ? <TbTimeline /> : <FaDrawPolygon />}
+          </>
+        }
         label={isLine ? m?.selections.drawLines : m?.selections.drawPolygons}
         deletable
+        noLeftMargin
       >
         {drawing && (
           <LongPressTooltip breakpoint="sm" label={dm?.stopDrawing} kbd="Esc">

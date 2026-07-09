@@ -1,7 +1,7 @@
-import { MouseEvent, ReactNode, useCallback } from 'react';
+import { type MouseEvent, type ReactNode, useCallback } from 'react';
 import { Anchor } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { Document, documentShow } from '../model/actions.js';
+import { type Document, documentShow } from '../model/actions.js';
 
 type Props = {
   doc: Document;
@@ -21,7 +21,7 @@ export function DocumentLink({ doc, children }: Props) {
   );
 
   return (
-    <Anchor href={'#document=' + doc} onClick={handleClick}>
+    <Anchor href={`#document=${doc}`} onClick={handleClick}>
       {children}
     </Anchor>
   );

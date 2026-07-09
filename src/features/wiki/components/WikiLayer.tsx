@@ -8,7 +8,7 @@ import { FaExternalLinkAlt, FaTimes, FaWikipediaW } from 'react-icons/fa';
 import { Marker, Pane, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
-  WikiPreview,
+  type WikiPreview,
   wikiLoadPreview,
   wikiSetPreview,
 } from '../model/actions.js';
@@ -125,6 +125,7 @@ export function WikiLayer(): ReactElement {
                   src={effPreview.thumbnail.source}
                   width={effPreview.thumbnail.width}
                   height={effPreview.thumbnail.height}
+                  alt={effPreview.title}
                 />
               )}
               <div dangerouslySetInnerHTML={{ __html: effPreview.extract }} />

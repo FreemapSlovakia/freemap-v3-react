@@ -1,4 +1,4 @@
-import { LatLon, LatLonSchema } from '@shared/types/common.js';
+import { type LatLon, LatLonSchema } from '@shared/types/common.js';
 
 // TODO publish as npm package
 

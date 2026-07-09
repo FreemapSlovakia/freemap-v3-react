@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
+import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   what: {
@@ -50,6 +50,7 @@ const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     all: 'Nadpisz wszystkie',
   },
   exportError: ({ err }) => addError(getMessages()!, 'Błąd eksportu', err),
+  onlySelected: 'Tylko wybrany element',
   disabledAlert:
     'Tylko opcje, których obiekty są widoczne na mapie, są aktywne.',
   licenseAlert:

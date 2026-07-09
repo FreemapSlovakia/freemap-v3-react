@@ -1,8 +1,17 @@
+import {
+  hasClearableMapFeaturesSelector,
+  toolsSelector,
+} from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
+import { Emoji } from '@shared/components/Emoji.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import {
+  documentMenuItemProps,
+  modalMenuItemProps,
+} from '@shared/hooks/useMenuHandler.js';
 import { isDrawTool, toolDefinitions } from '@shared/toolDefinitions.js';
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,
@@ -23,12 +32,7 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import { IoLanguage } from 'react-icons/io5';
-import { toolsSelector } from '@/app/store/selectors.js';
-import {
-  documentMenuItemProps,
-  modalMenuItemProps,
-} from '@/shared/hooks/useMenuHandler.js';
-import { LanguageLabel } from './LanguageLabel.js';
+import { languageItems } from './languageItems.js';
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
@@ -39,6 +43,10 @@ export function MainMenu(): ReactElement {
 
   const tools = useAppSelector(toolsSelector);
 
+  const hasClearableMapFeatures = useAppSelector(
+    hasClearableMapFeaturesSelector,
+  );
+
   const m = useMessages();
 
   const oeam = useOpenInExternalAppMessages();
@@ -46,13 +54,13 @@ export function MainMenu(): ReactElement {
   return (
     <>
       <Dropdown.Item as="button" eventKey="submenu-language">
-        <LanguageLabel>
-          {(language) => (
-            <>
-              <IoLanguage /> {language} <FaChevronRight />
-            </>
-          )}
-        </LanguageLabel>
+        <IoLanguage /> {m?.mainMenu.language}{' '}
+        {languageItems.map(({ code, name, flag }) => (
+          <span key={code} title={name}>
+            <Emoji>{flag}</Emoji>{' '}
+          </span>
+        ))}
+        <FaChevronRight />
       </Dropdown.Item>
 
       {user ? (
@@ -67,7 +75,11 @@ export function MainMenu(): ReactElement {
 
       <Dropdown.Divider />
 
-      <Dropdown.Item as="button" eventKey="clear-map-features">
+      <Dropdown.Item
+        as="button"
+        eventKey="clear-map-features"
+        disabled={!hasClearableMapFeatures}
+      >
         <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
       </Dropdown.Item>
 
@@ -104,7 +116,7 @@ export function MainMenu(): ReactElement {
               <Dropdown.Item
                 href={`?tools=${newTool}`}
                 key={newTool}
-                eventKey={'tool-' + newTool}
+                eventKey={`tool-${newTool}`}
                 active={tools.includes(newTool)}
               >
                 {icon} {m?.tools[msgKey]}{' '}

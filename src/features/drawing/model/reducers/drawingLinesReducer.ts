@@ -25,8 +25,8 @@ import {
   drawingLineSplit,
   drawingLineStopDrawing,
   drawingLineUpdatePoint,
-  Line,
-  Point,
+  type Line,
+  type Point,
 } from '../actions/drawingLineActions.js';
 
 export interface DrawingLinesState {
@@ -97,6 +97,10 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
         state.lines.push(line);
       } else {
         line = state.lines[action.payload.lineIndex];
+      }
+
+      if (action.payload.drawing) {
+        state.drawing = true;
       }
 
       line.points.splice(
@@ -233,16 +237,21 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
 
       state.joinWith = undefined;
     })
-    // Any tool open/close/focus change or stopping aborts the in-progress draft
-    // (during active drawing only addPoint fires, never setTool).
-    .addMatcher(
-      isAnyOf(setTool, setTools, drawingLineStopDrawing),
-      (state) => ({
-        ...state,
-        drawing: false,
-        joinWith: undefined,
-      }),
-    ),
+    // Merely deactivating (unfocusing) or closing the draw tool must not abort an
+    // in-progress drawing — you can keep appending points. Only activating a tool
+    // does, since that clears the drawing line's selection.
+    .addCase(setTool, (state, { payload }) => {
+      state.joinWith = undefined;
+
+      if (payload.mode === 'activate') {
+        state.drawing = false;
+      }
+    })
+    .addMatcher(isAnyOf(setTools, drawingLineStopDrawing), (state) => ({
+      ...state,
+      drawing: false,
+      joinWith: undefined,
+    })),
 );
 
 function linefilter(line: Line) {
