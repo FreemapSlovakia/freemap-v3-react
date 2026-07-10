@@ -770,7 +770,16 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     wood: 'Természetes erdő',
     volcano: 'Vulkán',
   },
-
+  obstacle: {
+    '*': 'Akadály {}',
+    vegetation: 'Sűrű növényzet',
+    fallen_tree: 'Kidőlt fa / fák',
+    unevenness: 'Egyenetlenség',
+    precipice: 'Szakadék',
+    heap: 'Halom',
+    hole: 'Lyuk',
+    mud: 'Sár',
+  },
   place: {
     '*': 'Hely {}',
     city: 'Nagyváros',

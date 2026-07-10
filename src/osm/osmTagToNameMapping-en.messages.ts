@@ -839,6 +839,16 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     },
     wood: 'Forest',
   },
+  obstacle: {
+    '*': 'Obstacle {}',
+    vegetation: 'Dense vegetation',
+    fallen_tree: 'Fallen tree(s)',
+    unevenness: 'Unevenness',
+    precipice: 'Precipice',
+    heap: 'Heap',
+    hole: 'Hole',
+    mud: 'Mud',
+  },
   place: {
     '*': 'Place {}',
     city: 'City',
