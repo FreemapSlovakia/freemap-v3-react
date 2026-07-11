@@ -88,6 +88,7 @@ export function Layers(): ReactElement | null {
           colorizeBy={galleryColorizeBy}
           opacity={opacity}
           zIndex={layerDef.zIndex ?? 1}
+          minZoom={minZoom}
           myUserId={user?.id}
           authToken={user?.authToken}
           showDirection={galleryShowDirection}

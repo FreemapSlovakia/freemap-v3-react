@@ -13,9 +13,12 @@ import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
+import type { IconType } from 'react-icons';
 import {
   FaAngleLeft,
   FaAngleRight,
+  FaAsterisk,
+  FaBan,
   FaBook,
   FaCamera,
   FaCog,
@@ -24,15 +27,21 @@ import {
   FaEnvelope,
   FaFilter,
   FaGem,
+  FaLeaf,
   FaLocationArrow,
   FaPalette,
   FaRegCheckSquare,
+  FaRegComment,
   FaRegSquare,
+  FaStar,
   FaTimes,
   FaTrophy,
   FaUpload,
+  FaUser,
+  FaUserCheck,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { WIKIMEDIA_NO_DATA_MODES } from '../galleryUtils.js';
 import {
   type GalleryLicense,
   LicenseBadge,
@@ -40,6 +49,7 @@ import {
 } from '../licenses.js';
 import {
   type GalleryColorizeBy,
+  GalleryColorizeBySchema,
   type GalleryListOrder,
   galleryAllOfLicense,
   galleryAllPremiumOrFree,
@@ -50,6 +60,32 @@ import {
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { PictureLegend, pictureLegendApplies } from './PictureLegend.js';
+
+const COLORIZE_ICONS: Record<GalleryColorizeBy, IconType> = {
+  mine: FaUserCheck,
+  userId: FaUser,
+  rating: FaStar,
+  takenAt: FaCamera,
+  createdAt: FaUpload,
+  season: FaLeaf,
+  premium: FaGem,
+  license: FaCreativeCommons,
+};
+
+const LIST_ORDER_ICONS: Record<GalleryListOrder, IconType> = {
+  '-createdAt': FaUpload,
+  '-takenAt': FaAsterisk,
+  '-rating': FaStar,
+  '-lastCommentedAt': FaRegComment,
+};
+
+// Orderings that cover own photos only — Wikimedia has no upload/taken date in
+// our data. (Rating and last-comment can include Wikimedia — it's rated and
+// commented on our platform.)
+const WIKIMEDIA_EXCLUDED_ORDERS = new Set<GalleryListOrder>([
+  '-createdAt',
+  '-takenAt',
+]);
 
 export default function GalleryMenu() {
   const sc = useScrollClasses('horizontal');
@@ -63,7 +99,7 @@ export default function GalleryMenu() {
   const confirm = useConfirm();
 
   const colorizeBy = useAppSelector(
-    (state) => state.gallerySettings.colorizeBy ?? 'disable',
+    (state) => state.gallerySettings.colorizeBy,
   );
 
   const showDirection = useAppSelector(
@@ -238,7 +274,7 @@ export default function GalleryMenu() {
 
                     dispatch(
                       galleryColorizeBy(
-                        colorizeBy === 'disable'
+                        colorizeBy === 'none'
                           ? null
                           : (colorizeBy as GalleryColorizeBy),
                       ),
@@ -246,7 +282,7 @@ export default function GalleryMenu() {
                   }}
                 >
                   <LongPressTooltip
-                    label={gm?.c[colorizeBy ?? 'disable']}
+                    label={colorizeBy ? gm?.c[colorizeBy] : gm?.noColorize}
                     name={gm?.colorizeBy}
                     breakpoint="sm"
                   >
@@ -259,9 +295,7 @@ export default function GalleryMenu() {
                   </LongPressTooltip>
 
                   <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                    {pictureLegendApplies(
-                      colorizeBy === 'disable' ? null : colorizeBy,
-                    ) && (
+                    {pictureLegendApplies(colorizeBy) && (
                       <>
                         <Dropdown.Item
                           eventKey={LEGEND_ITEM}
@@ -275,21 +309,34 @@ export default function GalleryMenu() {
                       </>
                     )}
 
-                    {(
-                      Object.keys(gm?.c ?? {}) as (
-                        | GalleryColorizeBy
-                        | 'disable'
-                      )[]
-                    ).map((by) => (
-                      <Dropdown.Item
-                        eventKey={by}
-                        key={by}
-                        title={gm?.c[by]}
-                        active={colorizeBy === by}
-                      >
-                        {gm?.c[by] ?? '…'}
-                      </Dropdown.Item>
-                    ))}
+                    <Dropdown.Item eventKey="none" active={!colorizeBy}>
+                      <FaBan /> {gm?.noColorize ?? '…'}
+                    </Dropdown.Item>
+
+                    {GalleryColorizeBySchema.options.map((by) => {
+                      const Icon = COLORIZE_ICONS[by];
+
+                      return (
+                        <Dropdown.Item
+                          eventKey={by}
+                          key={by}
+                          title={gm?.c[by]}
+                          active={colorizeBy === by}
+                        >
+                          <Icon /> {gm?.c[by] ?? '…'}
+                          {WIKIMEDIA_NO_DATA_MODES.has(by) && (
+                            <sup className="text-danger">*</sup>
+                          )}
+                        </Dropdown.Item>
+                      );
+                    })}
+
+                    <Dropdown.Divider />
+
+                    <Dropdown.ItemText className="text-body-secondary small">
+                      <span className="text-danger">*</span>{' '}
+                      {gm?.noWikimediaData}
+                    </Dropdown.ItemText>
                   </Dropdown.Menu>
                 </Dropdown>
 
@@ -310,17 +357,31 @@ export default function GalleryMenu() {
 
                   <Dropdown.Menu popperConfig={fixedPopperConfig}>
                     {(Object.keys(gm?.f ?? {}) as GalleryListOrder[]).map(
-                      (key) => (
-                        <Dropdown.Item key={key} as="button" eventKey={key}>
-                          {gm?.f[key]}{' '}
-                          {key === '-createdAt' && (
-                            <>
-                              <kbd>p</kbd> <kbd>l</kbd>
-                            </>
-                          )}
-                        </Dropdown.Item>
-                      ),
+                      (key) => {
+                        const Icon = LIST_ORDER_ICONS[key];
+
+                        return (
+                          <Dropdown.Item key={key} as="button" eventKey={key}>
+                            <Icon /> {gm?.f[key]}
+                            {WIKIMEDIA_EXCLUDED_ORDERS.has(key) && (
+                              <sup className="text-danger">*</sup>
+                            )}{' '}
+                            {key === '-createdAt' && (
+                              <>
+                                <kbd>p</kbd> <kbd>l</kbd>
+                              </>
+                            )}
+                          </Dropdown.Item>
+                        );
+                      },
                     )}
+
+                    <Dropdown.Divider />
+
+                    <Dropdown.ItemText className="text-body-secondary small">
+                      <span className="text-danger">*</span>{' '}
+                      {gm?.excludesWikimedia}
+                    </Dropdown.ItemText>
                   </Dropdown.Menu>
                 </Dropdown>
 

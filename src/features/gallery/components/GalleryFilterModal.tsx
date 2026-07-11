@@ -20,7 +20,10 @@ import {
   ToggleButtonGroup,
 } from 'react-bootstrap';
 import { FaCamera, FaCheck, FaEraser, FaFilter, FaTimes } from 'react-icons/fa';
+import { IoFlower } from 'react-icons/io5';
+import { SiWikimediacommons } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
+import { GALLERY_SOURCES, type GallerySource } from '../galleryUtils.js';
 import {
   type GalleryLicense,
   LicenseBadge,
@@ -68,6 +71,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
   const [license, setLicense] = useState<GalleryLicense[]>([]);
 
+  const [sources, setSources] = useState<GallerySource[]>(GALLERY_SOURCES);
+
   useEffect(() => {
     setTag(filter.tag === '' ? '⌘' : (filter.tag ?? ''));
 
@@ -112,6 +117,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     setPremium(filter.premium);
 
     setLicense(filter.license ?? []);
+
+    setSources(filter.sources ?? GALLERY_SOURCES);
   }, [filter]);
 
   const handleTagChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
@@ -194,6 +201,9 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
           pano,
           premium,
           license: license.length ? license : undefined,
+          // Both selected = no restriction (undefined); otherwise the subset.
+          sources:
+            sources.length === GALLERY_SOURCES.length ? undefined : sources,
         }),
       );
 
@@ -212,6 +222,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
       pano,
       premium,
       license,
+      sources,
     ],
   );
 
@@ -237,6 +248,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     setPremium(undefined);
 
     setLicense([]);
+
+    setSources(GALLERY_SOURCES);
   };
 
   const close = useCallback(() => {
@@ -285,7 +298,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     ratingTo === '' &&
     pano === undefined &&
     premium === undefined &&
-    license.length === 0;
+    license.length === 0 &&
+    sources.length === GALLERY_SOURCES.length;
 
   useDocumentTitle(show ? gm?.filterModal.title : undefined);
 
@@ -456,6 +470,48 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
                   <LicenseBadge licenseId={id} /> {gm?.license.names[id] ?? id}
                 </ToggleButton>
               ))}
+            </ToggleButtonGroup>
+          </Form.Group>
+
+          <Form.Group controlId="filt-source" className="mb-3">
+            <Form.Label className="d-block">
+              {gm?.filterModal.source}
+            </Form.Label>
+
+            <ToggleButtonGroup
+              type="radio"
+              name="filt-source"
+              // Exactly one is always selected — 'all' means no restriction.
+              value={
+                sources.length < GALLERY_SOURCES.length ? sources[0] : 'all'
+              }
+              onChange={(value: GallerySource | 'all') =>
+                setSources(value === 'all' ? [...GALLERY_SOURCES] : [value])
+              }
+            >
+              <ToggleButton
+                id="filt-src-all"
+                value="all"
+                variant="outline-primary"
+              >
+                {gm?.filterModal.allSources}
+              </ToggleButton>
+
+              <ToggleButton
+                id="filt-src-gallery"
+                value="gallery"
+                variant="outline-primary"
+              >
+                <IoFlower /> Freemap
+              </ToggleButton>
+
+              <ToggleButton
+                id="filt-src-wikimedia"
+                value="wikimedia"
+                variant="outline-primary"
+              >
+                <SiWikimediacommons /> Wikimedia Commons
+              </ToggleButton>
             </ToggleButtonGroup>
           </Form.Group>
         </Modal.Body>

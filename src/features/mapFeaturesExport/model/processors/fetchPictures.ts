@@ -32,6 +32,9 @@ export async function fetchPictures(getState: () => RootState) {
         by: 'bbox',
         bbox: (await mapPromise).getBounds().toBBoxString(),
         ...createFilter(getState().gallery.filter),
+        // The export covers the user's own photos only — Wikimedia rows have no
+        // `user`/metadata to export and would fail PictureSchema.
+        sources: ['gallery'],
         fields: [
           'id',
           'title',

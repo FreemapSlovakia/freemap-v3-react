@@ -24,6 +24,8 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
   recentTags: 'Nedávne tagy na priradenie:',
   filter: 'Filter',
   showPhotosFrom: 'Prezerať fotky',
+  excludesWikimedia: 'Nezahŕňa fotky z Wikimedia',
+  noWikimediaData: 'Pre fotky z Wikimedia nie sú dáta',
   showLayer: 'Zobraziť vrstvu',
   upload: 'Nahrať',
   f: {
@@ -33,9 +35,16 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'od posledného komentára',
   },
   colorizeBy: 'Vyfarbiť podľa',
+  noColorize: 'Žiadne',
   showDirection: 'Zobraziť smer fotenia',
+  legendCategory: {
+    mine: 'Moje',
+    notMine: 'Ostatné',
+    premium: 'Prémiové',
+    free: 'Voľné',
+  },
+
   c: {
-    disable: 'Nevyfarbiť',
     mine: 'Odlíšiť moje',
     userId: 'Autor',
     rating: 'Hodnotenie',
@@ -47,6 +56,7 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
   viewer: {
     title: 'Fotografia',
+    imageUnavailable: 'Obrázok nie je dostupný',
     comments: 'Komentáre',
     newComment: 'Nový komentár',
     addComment: 'Pridať',
@@ -164,6 +174,8 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     noTags: 'bez tagov',
     pano: 'Panoráma',
     premium: 'Prémiové',
+    source: 'Zdroj',
+    allSources: 'Všetky',
   },
   noPicturesFound: 'Na tomto mieste neboli nájdené žiadne fotky.',
   linkToWww: 'fotografia na www.freemap.sk',

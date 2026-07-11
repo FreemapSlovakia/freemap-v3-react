@@ -7,7 +7,7 @@ import {
   type Map as LeafletMap,
   GridLayer as LGridLayer,
 } from 'leaflet';
-import { createFilter } from '../galleryUtils.js';
+import { createFilter, resolveSources } from '../galleryUtils.js';
 import type { GalleryColorizeBy, GalleryFilter } from '../model/actions.js';
 import { PicturesResponse } from '../model/pictures.js';
 import { renderGalleryTile } from './galleryTileRenderrer.js';
@@ -114,6 +114,7 @@ class LGalleryLayer extends LGridLayer {
       }
     }
 
+    // `source` is always present in the response, so it needs no server field.
     if (colorizeBy) {
       sp.append(
         'fields',
@@ -123,6 +124,23 @@ class LGalleryLayer extends LGridLayer {
             ? 'takenAt'
             : colorizeBy,
       );
+    }
+
+    const sources = resolveSources(this._options?.filter.sources);
+
+    for (const source of sources) {
+      sp.append('sources', source);
+    }
+
+    // With all sources filtered out there's nothing to request — leave the tile
+    // blank. Required because an empty `sources` param is read server-side as
+    // "all sources". (The zoom gate is the layer's minZoom in mapDefinitions.)
+    // Defer `done` so it runs after Leaflet has registered the tile (createTile
+    // must return first) — the fetch path defers via `processTile().then`.
+    if (sources.length === 0) {
+      queueMicrotask(() => done(undefined, tile));
+
+      return tile;
     }
 
     const processTile = async () => {
@@ -187,6 +205,7 @@ class LGalleryLayer extends LGridLayer {
               premium: picture.premium,
               azimuth: picture.azimuth,
               license: picture.license,
+              source: picture.source ?? 0,
             };
           }) ?? [],
         dpr,
@@ -206,9 +225,11 @@ class LGalleryLayer extends LGridLayer {
         ]);
 
         tile.getContext('2d')?.drawImage(imageBitmap, 0, 0);
+      } else {
+        // The worker already rendered the whole tile; only render on the main
+        // thread when there's no worker (else the markers draw twice).
+        renderGalleryTile({ ...ctx, tile });
       }
-
-      renderGalleryTile({ ...ctx, tile });
     };
 
     processTile().then(

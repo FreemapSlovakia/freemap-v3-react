@@ -30,7 +30,6 @@ import { trackViewerReducer } from '@features/trackViewer/model/reducer.js';
 import { trackViewerSettingsReducer } from '@features/trackViewer/model/settingsReducer.js';
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
-import { wikimediaCommonsReducer } from '@features/wikimediaCommons/model/reducer.js';
 import { mainReducer } from './reducer.js';
 
 export { getInitialState } from './persistence.js';
@@ -69,5 +68,4 @@ export const reducers = {
   websocket: websocketReducer,
   myMaps: mapsReducer,
   wiki: wikiReducer,
-  wikimediaCommons: wikimediaCommonsReducer,
 };

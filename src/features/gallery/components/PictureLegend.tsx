@@ -5,22 +5,33 @@ import type { ReactNode } from 'react';
 import { FaCamera, FaPalette } from 'react-icons/fa';
 import { LICENSE_COLORS } from '../licenseColors.js';
 import { PHOTO_LICENSES } from '../licenses.js';
+import { GALLERY_COLOR, MUTED_COLOR } from '../markerColors.js';
 import type { GalleryColorizeBy } from '../model/actions.js';
+import type { GalleryMessages } from '../translations/GalleryMessages.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
 /** The gallery legend's outer shell + camera/palette header, shared by the
  *  gradient and categorical (license) legend variants. */
 function LegendShell({
   toolbarClassName,
+  fit,
   children,
 }: {
   toolbarClassName?: string;
+  // Shrink to the content width (categorical swatches) instead of filling 400px
+  // (the gradient bar wants the full width, a couple of swatches don't).
+  fit?: boolean;
   children: ReactNode;
 }) {
   const gm = useGalleryMessages();
 
   return (
-    <div className="w-100" style={{ maxWidth: '400px' }}>
+    <div
+      className={fit ? undefined : 'w-100'}
+      style={
+        fit ? { maxWidth: '100%', width: 'fit-content' } : { maxWidth: '400px' }
+      }
+    >
       <Toolbar
         className={`mt-2 d-flex${toolbarClassName ? ` ${toolbarClassName}` : ''}`}
       >
@@ -67,11 +78,47 @@ export function pictureGradient(
   }
 }
 
+type Swatch = { color: string; label: string; title?: string };
+
+/**
+ * The swatch list for a categorical colorize mode (license/mine/premium), or
+ * null for gradient/uncolored modes. The single source of truth for which
+ * categorical modes draw a legend — see {@link pictureLegendApplies}.
+ */
+function categoricalSwatches(
+  colorizeBy: GalleryColorizeBy | null | undefined,
+  gm: GalleryMessages | undefined,
+): Swatch[] | null {
+  switch (colorizeBy) {
+    case 'license':
+      return PHOTO_LICENSES.map(({ id }) => ({
+        color: LICENSE_COLORS[id],
+        label: gm?.license.names[id] ?? id,
+        title: gm?.license.descriptions[id],
+      }));
+    case 'mine':
+      return [
+        { color: GALLERY_COLOR, label: gm?.legendCategory.mine ?? '' },
+        { color: MUTED_COLOR, label: gm?.legendCategory.notMine ?? '' },
+      ];
+    case 'premium':
+      return [
+        { color: GALLERY_COLOR, label: gm?.legendCategory.premium ?? '' },
+        { color: MUTED_COLOR, label: gm?.legendCategory.free ?? '' },
+      ];
+    default:
+      return null;
+  }
+}
+
 /** Whether a colorize mode draws a legend (gradient or categorical swatches). */
 export function pictureLegendApplies(
   colorizeBy: GalleryColorizeBy | null | undefined,
 ): boolean {
-  return pictureGradient(colorizeBy) !== undefined || colorizeBy === 'license';
+  return (
+    pictureGradient(colorizeBy) !== undefined ||
+    categoricalSwatches(colorizeBy, undefined) !== null
+  );
 }
 
 export function PictureLegend() {
@@ -86,11 +133,13 @@ export function PictureLegend() {
 
   const background = pictureGradient(colorizeBy || undefined);
 
-  if (colorizeBy === 'license') {
+  const swatches = categoricalSwatches(colorizeBy || undefined, gm);
+
+  if (swatches) {
     return (
-      <LegendShell toolbarClassName="flex-wrap align-items-center">
-        {PHOTO_LICENSES.map(({ id }) => (
-          <LongPressTooltip key={id} label={gm?.license.descriptions[id]}>
+      <LegendShell fit toolbarClassName="flex-wrap align-items-center">
+        {swatches.map(({ color, label, title }) => (
+          <LongPressTooltip key={color} label={title}>
             {({ props }) => (
               <span
                 {...props}
@@ -101,10 +150,10 @@ export function PictureLegend() {
                   style={{
                     width: '16px',
                     height: '16px',
-                    background: LICENSE_COLORS[id],
+                    background: color,
                   }}
                 />
-                <small>{gm?.license.names[id] ?? id}</small>
+                <small>{label}</small>
               </span>
             )}
           </LongPressTooltip>

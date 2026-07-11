@@ -46,9 +46,10 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
     }
 
     const ids = z
-      .array(z.object({ id: z.number() }))
+      .array(z.object({ id: z.number(), source: z.number().default(0) }))
       .parse(await res.json())
-      .map((item) => item.id);
+      // Wikimedia photos (source 1) ride the shared id space as `-pageId`.
+      .map((item) => (item.source === 1 ? -item.id : item.id));
 
     dispatch(gallerySetImageIds(ids));
 

@@ -21,11 +21,20 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Alert, Badge, Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import {
+  Alert,
+  Badge,
+  Button,
+  Form,
+  InputGroup,
+  Modal,
+  Spinner,
+} from 'react-bootstrap';
 import {
   FaCamera,
   FaExternalLinkAlt,
   FaGem,
+  FaImage,
   FaPencilAlt,
   FaRegDotCircle,
   FaSave,
@@ -33,6 +42,7 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { RiFullscreenLine } from 'react-icons/ri';
+import { SiWikimediacommons } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import { Rating } from 'react-simple-star-rating';
 import { getPhotoLicense, LicenseBadge } from '../licenses.js';
@@ -51,7 +61,9 @@ import {
   gallerySubmitComment,
   gallerySubmitStars,
 } from '../model/actions.js';
+import { pictureIdToPath } from '../pictureIdPath.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
+import { fetchWikimediaMeta, type WikimediaMeta } from '../wikimediaMeta.js';
 import { Azimuth } from './Azimuth.js';
 import { GalleryEditForm, type PictureModel } from './GalleryEditForm.js';
 import { RecentTags } from './RecentTags.js';
@@ -60,6 +72,30 @@ import clsx from 'clsx';
 import classes from './GalleryViewerModal.module.css';
 
 type Props = { show: boolean };
+
+/**
+ * Commons `DateTime` is free-form — usually ISO `YYYY-MM-DD`, sometimes raw EXIF
+ * `YYYY:MM:DD HH:MM:SS`. Parse the leading date (and optional time) by component
+ * into a local Date, so date-only and datetime values are consistent (no
+ * UTC-vs-local off-by-one) and independent of engine string-parsing quirks.
+ * Returns null when it isn't a recognizable date so the caller can show it
+ * verbatim.
+ */
+function parseCommonsDate(value: string | undefined): Date | null {
+  const m = value?.match(
+    /^(\d{4})[:-](\d{2})[:-](\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/,
+  );
+
+  if (!m) {
+    return null;
+  }
+
+  const [, y, mo, d, h, mi, s] = m;
+
+  const date = new Date(+y, +mo - 1, +d, +(h ?? 0), +(mi ?? 0), +(s ?? 0));
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
 
 export default function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
@@ -75,6 +111,19 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const imageIds = useAppSelector((state) => state.gallery.imageIds);
 
   const image = useAppSelector((state) => state.gallery.image);
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const [commonsMeta, setCommonsMeta] = useState<WikimediaMeta | null>(null);
+
+  // Whether the current Wikimedia photo's image/metadata failed to load — so we
+  // can show an error instead of an endless spinner.
+  const [commonsError, setCommonsError] = useState(false);
+
+  // Cache of Commons metadata keyed by `language/pageId`, so navigating to a
+  // prefetched neighbour is instant. `'error'` marks a failed fetch; keying by
+  // language means switching language just misses the stale entries.
+  const commonsCache = useRef(new Map<string, WikimediaMeta | 'error'>());
 
   const reduxActiveImageId = useAppSelector(
     (state) => state.gallery.activeImageId,
@@ -109,6 +158,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
     setActiveImageId(reduxActiveImageId);
   }
+
+  // Wikimedia photos have a negative id (internal `-pageId`). Deriving this from
+  // the id — not `image.source` — means we know it's a Commons photo before its
+  // picture record loads, so we never point <img> at our own server for it (a
+  // 404 that would flash a broken image instead of the spinner).
+  const isWikimedia = activeImageId !== null && activeImageId < 0;
 
   useEffect(() => {
     function handleFullscreenChange() {
@@ -179,12 +234,42 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     azimuth,
   } = image ?? {};
 
+  // Wikimedia photos carry no server-side title/description; they come from the
+  // Commons API fetch instead.
+  const displayTitle = isWikimedia ? commonsMeta?.title : title;
+
+  const displayDescription = isWikimedia
+    ? commonsMeta?.description
+    : description;
+
   const photoLicense = getPhotoLicense(image?.license);
+
+  // "Captured on": our photos carry a real Date; Commons gives a free-form
+  // string we parse when we can, else show verbatim.
+  const capturedDate = isWikimedia
+    ? parseCommonsDate(commonsMeta?.dateTime)
+    : (takenAt ?? null);
+
+  const capturedRaw =
+    isWikimedia && !capturedDate ? commonsMeta?.dateTime : undefined;
+
+  // License badge: our photos always map onto our set; Commons photos only when
+  // their license does (by CC components). The displayed name and link use the
+  // real (possibly older-version) Commons values.
+  const badgeLicense = isWikimedia
+    ? commonsMeta?.freemapLicense
+    : photoLicense.id;
+
+  const licenseName = isWikimedia
+    ? commonsMeta?.license
+    : gm?.license.names[photoLicense.id];
+
+  const licenseUrl = isWikimedia ? commonsMeta?.licenseUrl : photoLicense.url;
 
   const premium = Boolean(image?.premium);
 
   const disabledPremium =
-    premium && !isPremium(user) && user?.id !== image?.user.id;
+    premium && !isPremium(user) && user?.id !== image?.user?.id;
 
   const pano = Boolean(image?.pano);
 
@@ -268,6 +353,85 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     }
   }, []);
 
+  const loadCommons = useCallback(
+    async (
+      pageId: number,
+      signal?: AbortSignal,
+    ): Promise<WikimediaMeta | null> => {
+      const key = `${language}/${pageId}`;
+
+      const cached = commonsCache.current.get(key);
+
+      if (cached) {
+        return cached === 'error' ? null : cached;
+      }
+
+      const width = Math.min(
+        2560,
+        Math.round(window.innerWidth * (window.devicePixelRatio || 1)),
+      );
+
+      const meta = await fetchWikimediaMeta(
+        pageId,
+        language,
+        width,
+        signal,
+      ).catch(() => null);
+
+      if (!signal?.aborted) {
+        commonsCache.current.set(key, meta?.imageUrl ? meta : 'error');
+      }
+
+      return meta?.imageUrl ? meta : null;
+    },
+    [language],
+  );
+
+  // For Wikimedia photos, fetch the display image + attribution straight from
+  // the Commons API. `commonsMeta` is intentionally NOT cleared up-front, so the
+  // previous image stays shown (blurred) until the new one is ready — matching
+  // how gallery photos transition.
+  useEffect(() => {
+    if (image?.source !== 'wikimedia') {
+      setCommonsMeta(null);
+      setCommonsError(false);
+
+      return;
+    }
+
+    const pageId = -image.id; // internal negative id (-pageId)
+
+    const cached = commonsCache.current.get(`${language}/${pageId}`);
+
+    if (cached) {
+      setCommonsError(cached === 'error');
+
+      if (cached !== 'error') {
+        setCommonsMeta(cached);
+      }
+
+      return;
+    }
+
+    const controller = new AbortController();
+
+    setCommonsError(false);
+
+    loadCommons(pageId, controller.signal).then((meta) => {
+      if (controller.signal.aborted) {
+        return;
+      }
+
+      if (meta) {
+        setCommonsMeta(meta);
+      } else {
+        setCommonsError(true);
+      }
+    });
+
+    return () => controller.abort();
+  }, [image, language, loadCommons]);
+
   const handleSave = useCallback(
     (e: SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -284,7 +448,23 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const prevImageId = index > 0 ? imageIds?.[index - 1] : null;
 
-  // TODO const loadingMeta = !image || image.id !== activeImageId;
+  // Prefetch neighbouring Wikimedia photos (metadata + image) so next/prev is
+  // instant — mirroring the hidden-<img> prefetch used for gallery photos below.
+  useEffect(() => {
+    const controller = new AbortController();
+
+    for (const nid of [nextImageId, prevImageId]) {
+      if (nid != null && nid < 0) {
+        loadCommons(-nid, controller.signal).then((meta) => {
+          if (meta?.imageUrl && !controller.signal.aborted) {
+            new Image().src = meta.imageUrl;
+          }
+        });
+      }
+    }
+
+    return () => controller.abort();
+  }, [nextImageId, prevImageId, loadCommons]);
 
   const dateFormat = useDateTimeFormat({
     year: 'numeric',
@@ -307,10 +487,19 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     );
 
     return (
-      `${process.env['API_URL']}/gallery/pictures/${id}/image?width=${width}` +
+      `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(id)}/image?width=${width}` +
       (user ? `&authToken=${encodeURIComponent(user.authToken)}` : '')
     );
   };
+
+  // The displayed image: gallery photos stream from our server; Wikimedia photos
+  // come straight from Commons (once their metadata has loaded).
+  const mainImageSrc =
+    activeImageId === null
+      ? undefined
+      : isWikimedia
+        ? commonsMeta?.imageUrl
+        : getImageUrl(activeImageId);
 
   const handlePositionPick = useCallback(() => {
     dispatch(gallerySetItemForPositionPicking(-1));
@@ -334,19 +523,43 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     dispatch(galleryClear());
   }, [dispatch]);
 
+  // Wikimedia photos are read-only here (no local edit/delete/tags).
   const canEdit = Boolean(
-    image && (hasRole(user, 'galleryModerator') || user?.id === image.user.id),
+    image &&
+      !isWikimedia &&
+      (hasRole(user, 'galleryModerator') || user?.id === image.user?.id),
   );
 
   const handleTagAdd = (tag: string) => {
     dispatch(galleryQuickAddTag(tag));
   };
 
-  let url = `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`;
+  // Fallback Commons file-page link derived from the active pageId (id =
+  // -pageId), for when the metadata's descriptionUrl hasn't loaded yet (e.g.
+  // first open) — so the link is never empty.
+  const commonsPageUrl =
+    isWikimedia && activeImageId !== null
+      ? `https://commons.wikimedia.org/?curid=${-activeImageId}`
+      : undefined;
 
-  if (activeImageId === image?.id && image.hmac) {
+  // "Open in external app" points at the Commons file page for Wikimedia photos,
+  // and at the raw image for gallery photos.
+  let url = isWikimedia
+    ? (commonsMeta?.descriptionUrl ?? commonsPageUrl ?? '')
+    : `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(activeImageId ?? 0)}/image`;
+
+  if (!isWikimedia && activeImageId === image?.id && image.hmac) {
     url += `?hmac=${encodeURIComponent(image.hmac)}`;
   }
+
+  const statusOverlay = commonsError ? (
+    <div className="text-center text-body-secondary">
+      <FaImage size={48} className="opacity-50" />
+      <div>{gm?.viewer.imageUnavailable}</div>
+    </div>
+  ) : (
+    <Spinner animation="border" role="status" variant="primary" />
+  );
 
   return (
     <Modal
@@ -374,7 +587,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
             </Form.Select>
           )}
           {imageIds ? ` / ${imageIds.length} ` : ''}
-          {title && `- ${title}`}
+          {displayTitle && `- ${displayTitle}`}
           {premium && (
             <>
               {' '}
@@ -426,19 +639,41 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       </>
                     )}
                   </Alert>
-                ) : (
-                  <div className={classes.imageContainer}>
+                ) : mainImageSrc ? (
+                  <div
+                    className={clsx(
+                      classes.imageContainer,
+                      'position-relative',
+                    )}
+                  >
                     <img
                       key={imgKey}
                       ref={setImageElement}
                       className={clsx('gallery-image', loading && 'loading')}
-                      src={getImageUrl(activeImageId)}
-                      alt={title ?? undefined}
+                      src={mainImageSrc}
+                      alt={displayTitle ?? undefined}
+                      onError={() => {
+                        setLoading(false);
+
+                        if (isWikimedia) {
+                          setCommonsError(true);
+                        }
+                      }}
                     />
+
+                    {(loading || commonsError) && (
+                      <div className="position-absolute top-50 start-50 translate-middle">
+                        {statusOverlay}
+                      </div>
+                    )}
                   </div>
+                ) : (
+                  <div className={classes.placeholder}>{statusOverlay}</div>
                 )}
 
-                {nextImageId != null && !loading && (
+                {/* Preload neighbours (own-gallery only — a Wikimedia neighbour's
+                    URL isn't known until its Commons metadata is fetched). */}
+                {nextImageId != null && nextImageId >= 0 && !loading && (
                   <img
                     key={`next-${imgKey}`}
                     className="d-none"
@@ -447,7 +682,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   />
                 )}
 
-                {prevImageId != null && !loading && (
+                {prevImageId != null && prevImageId >= 0 && !loading && (
                   <img
                     key={`prev-${imgKey}`}
                     className="d-none"
@@ -495,24 +730,59 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <>{`${index + 1} / ${imageIds.length}`} ｜ </>
               )}
 
-              {isFullscreen && title && <>{title} ｜ </>}
+              {isFullscreen && displayTitle && <>{displayTitle} ｜ </>}
 
-              {gm?.viewer.uploaded({
-                username: <UserChip key={image.user.id} user={image.user} />,
-                createdAt: createdAt ? (
-                  <b key={createdAt.getTime()}>
-                    {dateFormat.format(createdAt)}
-                  </b>
-                ) : (
-                  '-'
-                ),
-              })}
+              {isWikimedia ? (
+                <>
+                  {commonsMeta?.artist && (
+                    <>
+                      {commonsMeta.artistUrl ? (
+                        <a
+                          href={commonsMeta.artistUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {commonsMeta.artist}
+                        </a>
+                      ) : (
+                        commonsMeta.artist
+                      )}
+                      {' ｜ '}
+                    </>
+                  )}
+                  <SiWikimediacommons />{' '}
+                  <a
+                    href={commonsMeta?.descriptionUrl ?? commonsPageUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Wikimedia Commons
+                  </a>
+                </>
+              ) : image.user ? (
+                gm?.viewer.uploaded({
+                  username: <UserChip key={image.user.id} user={image.user} />,
+                  createdAt: createdAt ? (
+                    <b key={createdAt.getTime()}>
+                      {dateFormat.format(createdAt)}
+                    </b>
+                  ) : (
+                    '-'
+                  ),
+                })
+              ) : null}
 
-              {takenAt && (
+              {(capturedDate || capturedRaw) && (
                 <>
                   {' ｜ '}
                   {gm?.viewer.captured(
-                    <b key={takenAt.getTime()}>{dateFormat.format(takenAt)}</b>,
+                    <b
+                      key={capturedDate ? capturedDate.getTime() : capturedRaw}
+                    >
+                      {capturedDate
+                        ? dateFormat.format(capturedDate)
+                        : capturedRaw}
+                    </b>,
                   )}
                 </>
               )}
@@ -542,36 +812,56 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 </Fragment>
               ))}
 
-              {' ｜ '}
-              <LongPressTooltip
-                label={
-                  <>
-                    {gm?.license.descriptions[photoLicense.id]}
-                    {image.licenseSince && gm?.license.since && (
+              {badgeLicense ? (
+                <>
+                  {' ｜ '}
+                  <LongPressTooltip
+                    label={
                       <>
-                        <br />
-                        {gm.license.since}{' '}
-                        {dateFormat.format(image.licenseSince)}
+                        {gm?.license.descriptions[badgeLicense]}
+                        {!isWikimedia &&
+                          image.licenseSince &&
+                          gm?.license.since && (
+                            <>
+                              <br />
+                              {gm.license.since}{' '}
+                              {dateFormat.format(image.licenseSince)}
+                            </>
+                          )}
                       </>
+                    }
+                  >
+                    {({ props }) => (
+                      <span {...props}>
+                        <LicenseBadge licenseId={badgeLicense} />{' '}
+                        <a href={licenseUrl} target="license" rel="noreferrer">
+                          {licenseName}
+                        </a>
+                      </span>
+                    )}
+                  </LongPressTooltip>
+                </>
+              ) : (
+                isWikimedia &&
+                commonsMeta?.license && (
+                  <>
+                    {' ｜ '}
+                    {commonsMeta.licenseUrl ? (
+                      <a
+                        href={commonsMeta.licenseUrl}
+                        target="license"
+                        rel="noreferrer"
+                      >
+                        {commonsMeta.license}
+                      </a>
+                    ) : (
+                      commonsMeta.license
                     )}
                   </>
-                }
-              >
-                {({ props }) => (
-                  <span {...props}>
-                    <LicenseBadge licenseId={photoLicense.id} />{' '}
-                    <a
-                      href={photoLicense.url}
-                      target="license"
-                      rel="noreferrer"
-                    >
-                      {gm?.license.names[photoLicense.id]}
-                    </a>
-                  </span>
-                )}
-              </LongPressTooltip>
+                )
+              )}
 
-              {description && ` ｜ ${description}`}
+              {displayDescription && ` ｜ ${displayDescription}`}
 
               {!isFullscreen && editModel && (
                 <Form id="gallery-edit-form" onSubmit={handleSave}>
@@ -773,8 +1063,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     lon={lon}
                     placement="top"
                     includePoint
-                    pointTitle={title ?? undefined}
-                    pointDescription={description ?? undefined}
+                    pointTitle={displayTitle ?? undefined}
+                    pointDescription={displayDescription ?? undefined}
                     url={url}
                     {...props}
                   >

@@ -39,12 +39,15 @@ export type GalleryListOrder =
   | '-rating'
   | '-lastCommentedAt';
 
+// Order matters: this is the order the colorize dropdown lists the modes (after
+// the "None" entry). Source isn't a mode — own vs. Wikimedia is shown by the
+// marker shape, independent of coloring.
 export const GalleryColorizeBySchema = z.enum([
+  'mine',
   'userId',
+  'rating',
   'takenAt',
   'createdAt',
-  'rating',
-  'mine',
   'season',
   'premium',
   'license',
@@ -85,17 +88,22 @@ export type PictureComment = z.infer<typeof PictureCommentSchema>;
 
 export const PictureSchema = z.object({
   id: z.number(),
+  // 'gallery' (own photo) or 'wikimedia' (Commons). Absent → gallery.
+  source: z.enum(['gallery', 'wikimedia']).default('gallery'),
   lat: z.number(),
   lon: z.number(),
-  title: z.string().nullable(),
-  description: z.string().nullable(),
+  title: z.string().nullish(),
+  // Absent for Wikimedia photos (fetched from the Commons API instead).
+  description: z.string().nullish(),
   tags: z.array(z.string()),
   comments: z.array(PictureCommentSchema),
   rating: z.number(),
   myStars: z.number().nullish(),
-  user: PictureUserSchema,
-  createdAt: IsoDateSchema,
-  takenAt: IsoDateSchema.nullable(),
+  // Absent for Wikimedia photos (no local uploader).
+  user: PictureUserSchema.nullish(),
+  // Absent for Wikimedia photos (upload date not imported).
+  createdAt: IsoDateSchema.nullish(),
+  takenAt: IsoDateSchema.nullish(),
   pano: z.boolean().optional(),
   premium: z.boolean().optional(),
   azimuth: z.number().nullish(),
@@ -123,6 +131,8 @@ export const GalleryFilterSchema = z.object({
   pano: z.boolean().optional(),
   premium: z.boolean().optional(),
   license: z.array(GalleryLicenseSchema).optional(),
+  // Which photo sources to show. Undefined = both (gallery + wikimedia).
+  sources: z.array(z.enum(['gallery', 'wikimedia'])).optional(),
 });
 
 export type GalleryFilter = z.infer<typeof GalleryFilterSchema>;
