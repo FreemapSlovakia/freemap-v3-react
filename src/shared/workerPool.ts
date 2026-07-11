@@ -29,8 +29,10 @@ export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
 
         const w = createWorker();
 
-        workerPool.push(w);
-
+        // Don't add the new worker to the idle list — it's used right away and
+        // is returned to the pool only once its job completes (see onmessage).
+        // Pushing it here made it "idle while busy", double-booking jobs onto
+        // it and starving the fan-out.
         job.started = true;
 
         job.run(w);
