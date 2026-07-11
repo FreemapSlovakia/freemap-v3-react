@@ -1,0 +1,14 @@
+# Schedules freemap-wikimedia-import.service. The 8th of the month is a safe slot
+# after the monthly Commons SQL dumps finish (they start on the 1st/20th and take
+# days); adjust to your mirror's timing. Reference copy of what is deployed.
+
+[Unit]
+Description=Monthly Wikimedia Commons photo import
+
+[Timer]
+OnCalendar=*-*-08 03:30:00
+Persistent=true
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target

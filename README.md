@@ -85,6 +85,25 @@ The configs also handle: HSTS / `Referrer-Policy` headers, HTTP→HTTPS redirect
 
 When changing build-output naming, the service worker, or the asset manifest, update these configs in the same change set.
 
+### Scheduled jobs (systemd)
+
+Server-side scheduled jobs are checked in under [`etc/systemd/system/`](./etc/systemd/system/) as a reference for what is actually deployed (like the nginx configs above).
+
+- [`freemap-wikimedia-import.service`](./etc/systemd/system/freemap-wikimedia-import.service) / [`freemap-wikimedia-import.timer`](./etc/systemd/system/freemap-wikimedia-import.timer) — the **monthly Wikimedia Commons photo import**. It runs on the API server (`fm6`) as the `freemap` user and executes the backend's built importer (`build/wikimedia/importWikimedia.js` in [`freemap-v3-nodejs-backend`](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend)), which streams the monthly Commons `geo_tags` + `page` SQL dumps into the `wikimediaPicture` table — filtered to real photographs (a photo-extension whitelist plus title filters that drop orthophoto/DOP survey grids and astronaut/space imagery) — and **atomically swaps** the fresh table in (zero downtime; the independent `wikimediaRating` / `wikimediaComment` tables are untouched).
+
+  Install / update on the server:
+
+  ```bash
+  sudo cp etc/systemd/system/freemap-wikimedia-import.{service,timer} /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now freemap-wikimedia-import.timer
+  systemctl list-timers freemap-wikimedia-import.timer   # next run
+  sudo systemctl start freemap-wikimedia-import.service   # run once now
+  journalctl -u freemap-wikimedia-import.service -f       # watch
+  ```
+
+  Notes: `TimeoutStartSec=0` is required (the import runs ~45 min, past the default oneshot timeout); it runs `node` directly with `EnvironmentFile=/etc/freemap.conf` (the same env the API service uses, supplying `MARIADB_*`) rather than the `dotenvx`-wrapped `pnpm run import:wikimedia`, so no decryptable `.env` is needed on the server; `Nice`/`IOSchedulingClass=idle` keep it from starving the live DB. It runs whatever `build/` is deployed, so the filters stay current with each backend deploy.
+
 ## Environment variables
 
 Most deployment-specific values are derived from `DEPLOYMENT` (see above). The remaining overrides:
