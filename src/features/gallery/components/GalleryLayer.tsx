@@ -225,11 +225,11 @@ class LGalleryLayer extends LGridLayer {
         ]);
 
         tile.getContext('2d')?.drawImage(imageBitmap, 0, 0);
-      } else {
-        // The worker already rendered the whole tile; only render on the main
-        // thread when there's no worker (else the markers draw twice).
-        renderGalleryTile({ ...ctx, tile });
       }
+
+      // Always render on the main thread: the worker path doesn't reliably fill
+      // every tile, so this is the safety net that keeps tiles from going blank.
+      renderGalleryTile({ ...ctx, tile });
     };
 
     processTile().then(
