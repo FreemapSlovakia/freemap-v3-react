@@ -79,14 +79,6 @@ const LIST_ORDER_ICONS: Record<GalleryListOrder, IconType> = {
   '-lastCommentedAt': FaRegComment,
 };
 
-// Orderings that cover own photos only — Wikimedia has no upload/taken date in
-// our data. (Rating and last-comment can include Wikimedia — it's rated and
-// commented on our platform.)
-const WIKIMEDIA_EXCLUDED_ORDERS = new Set<GalleryListOrder>([
-  '-createdAt',
-  '-takenAt',
-]);
-
 export default function GalleryMenu() {
   const sc = useScrollClasses('horizontal');
 
@@ -362,10 +354,7 @@ export default function GalleryMenu() {
 
                         return (
                           <Dropdown.Item key={key} as="button" eventKey={key}>
-                            <Icon /> {gm?.f[key]}
-                            {WIKIMEDIA_EXCLUDED_ORDERS.has(key) && (
-                              <sup className="text-danger">*</sup>
-                            )}{' '}
+                            <Icon /> {gm?.f[key]}{' '}
                             {key === '-createdAt' && (
                               <>
                                 <kbd>p</kbd> <kbd>l</kbd>
@@ -375,13 +364,6 @@ export default function GalleryMenu() {
                         );
                       },
                     )}
-
-                    <Dropdown.Divider />
-
-                    <Dropdown.ItemText className="text-body-secondary small">
-                      <span className="text-danger">*</span>{' '}
-                      {gm?.excludesWikimedia}
-                    </Dropdown.ItemText>
                   </Dropdown.Menu>
                 </Dropdown>
 

@@ -307,11 +307,10 @@ Deferred sub-items:
       Notes for the remaining work below: the actor *name* isn't in any public
       dump (`actor` dump is empty), and license isn't in the `image` dump at all
       (it lives in wikitext/SDC) — both stay API-only in the viewer.
-- [ ] **Include wikimedia in date-range *filtering* and list *ordering*.** Colorize
-      is done, but the bbox/radius `galleryOnlyFilter` still drops wikimedia when a
-      `takenAt`/`createdAt` range is set, and `byOrder` includes wikimedia only for
-      `rating`/`lastCommentedAt` (not `createdAt`/`takenAt`). Now that the columns
-      exist, extend the wikimedia arms to apply the date `WHERE` (when only date
-      filters are active) and add date arms to the `byOrder` `UNION ALL`; then drop
-      the `-createdAt`/`-takenAt` "excludes wikimedia" footnote in `GalleryMenu`.
+- [x] **Include wikimedia in list *ordering* and *filtering*.** All three handlers
+      (`byBbox`/`byRadius`/`byOrder`) now include wikimedia unless a filter it can't
+      satisfy is set (tag/author/license, or pano=true/premium=true). The wikimedia
+      arms apply the date-range (`capturedAt`/`uploadedAt`, indexed) and rating-range
+      (effective Bayesian rating) filters and every ordering; the Filter modal shows
+      an "excludes Wikimedia" note only under tag/author/license.
 

@@ -331,6 +331,10 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
                 </option>
               ))}
             </Form.Select>
+
+            <Form.Text className="text-body-secondary">
+              <SiWikimediacommons /> {gm?.excludesWikimedia}
+            </Form.Text>
           </Form.Group>
 
           <Form.Group controlId="author" className="mb-3">
@@ -361,6 +365,10 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
                   </option>
                 ))}
             </Form.Select>
+
+            <Form.Text className="text-body-secondary">
+              <SiWikimediacommons /> {gm?.excludesWikimedia}
+            </Form.Text>
           </Form.Group>
 
           <Form.Group controlId="createdAt" className="mb-3">
@@ -471,6 +479,10 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
+
+            <Form.Text className="text-body-secondary">
+              <SiWikimediacommons /> {gm?.excludesWikimedia}
+            </Form.Text>
           </Form.Group>
 
           <Form.Group controlId="filt-source" className="mb-3">
