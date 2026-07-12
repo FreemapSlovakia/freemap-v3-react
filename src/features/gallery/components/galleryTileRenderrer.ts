@@ -58,16 +58,12 @@ type Ctx = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 // Marker shape is an always-present channel, independent of the colorize fill,
 // mirroring the importance hierarchy: round vs. angular is the primary (always
 // clear) split, aspect ratio the secondary one.
-//   circle   = Wikimedia photo — by far the most common, so the calm default
-//   square   = our own photo
+//   square   = Wikimedia photo
+//   circle   = our own photo
 //   panorama = our own panorama — a wide, short rectangle (literally panoramic)
 // Wikimedia is never a panorama for us, so there are only these three states.
 function shapeOf(source?: number, pano?: boolean): MarkerShape {
-  if (source) {
-    return 'circle';
-  }
-
-  return pano ? 'panorama' : 'square';
+  return source ? 'square' : pano ? 'panorama' : 'circle';
 }
 
 // Panorama rectangle half-extents (× the circle radius): wider and shorter than
