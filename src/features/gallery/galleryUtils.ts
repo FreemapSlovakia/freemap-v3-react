@@ -10,13 +10,12 @@ export type GallerySource = 'gallery' | 'wikimedia';
 export const GALLERY_SOURCES: GallerySource[] = ['gallery', 'wikimedia'];
 
 // Colorize modes for which Wikimedia photos carry no datum at all, so the whole
-// source renders neutral. Only license qualifies: it isn't in any Commons dump
-// (see the backend importer), whereas capturedAt/uploadedAt/authorId are
-// imported, so date/season/author colorize per photo (a photo still missing its
-// EXIF date falls back to neutral individually, like an own photo would). The
-// single source of truth shared by the tile renderer (the neutral fill) and the
-// menu (the red "*" hint), so the two can't drift.
-export const WIKIMEDIA_NO_DATA_MODES = new Set<GalleryColorizeBy>(['license']);
+// source would render neutral. Now empty: date/author/license (via the image +
+// SDC dumps) are all imported, so every mode colorizes per photo — a photo
+// missing a given value falls back individually (neutral for date/season, the
+// fallback license color for license), exactly like an own photo. Kept as the
+// single source of truth shared by the tile renderer and the menu "*" hint.
+export const WIKIMEDIA_NO_DATA_MODES = new Set<GalleryColorizeBy>();
 
 // The min zoom at which photos appear is the layer's `minZoom` in
 // mapDefinitions (Leaflet prunes the tiles below it, like any other layer).

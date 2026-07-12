@@ -304,9 +304,20 @@ Deferred sub-items:
       `uploadedAt` (`img_timestamp`) and `authorId` (numeric `img_actor`) on
       `wikimediaPicture`. The bbox arm surfaces them under `takenAt`/`createdAt`/
       `userId`, so date/season/author **colorizing** works for wikimedia photos.
-      Notes for the remaining work below: the actor *name* isn't in any public
-      dump (`actor` dump is empty), and license isn't in the `image` dump at all
-      (it lives in wikitext/SDC) — both stay API-only in the viewer.
+      Notes: the actor *name* isn't in any public dump (`actor` dump is empty), so
+      it stays API-only in the viewer.
+- [x] **Add the SDC (mediainfo) dump for capturedAt + license.** The `image` dump
+      externalizes rich EXIF (`{"data":[],"blobs":{…}}`) out of reach, so
+      `capturedAt`/`azimuth` from it are sparse (~36% / ~8%) — exactly the dated,
+      directional photos. The importer now also streams the ~75 GB SDC
+      `latest-mediainfo.json.gz` (JSON-lines; pageId cheap-matched at line start,
+      only kept entities JSON-parsed) and stores `P571` (inception →
+      `COALESCE(EXIF, SDC)` capturedAt) and `P275` (license → our buckets via
+      `licenseQMap.ts`). `license` is a first-class column now, colorized like own
+      photos; `WIKIMEDIA_NO_DATA_MODES` is empty. Azimuth has no SDC source (stays
+      best-effort EXIF). License *filtering* for wikimedia is still gallery-only
+      (the `wikimediaExcludedByFilter` set) — could be enabled now that the column
+      exists.
 - [x] **Include wikimedia in list *ordering* and *filtering*.** All three handlers
       (`byBbox`/`byRadius`/`byOrder`) now include wikimedia unless a filter it can't
       satisfy is set (tag/author/license, or pano=true/premium=true). The wikimedia

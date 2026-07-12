@@ -1,10 +1,10 @@
 # Monthly import of geotagged Wikimedia Commons photos into the gallery.
 # Deployed on the API server (fm6) as the `freemap` user; triggered by the
 # accompanying freemap-wikimedia-import.timer. Runs the backend's built
-# importer, which streams the Commons geo_tags + page + image dumps into a fresh
-# wikimediaPicture table (coordinates plus capturedAt/uploadedAt/authorId
-# metadata) and atomically swaps it in (zero downtime; ratings/comments
-# untouched).
+# importer, which streams the Commons geo_tags + page + image + Structured-Data
+# (mediainfo) dumps into a fresh wikimediaPicture table (coordinates plus
+# capturedAt/uploadedAt/authorId/azimuth/license metadata) and atomically swaps
+# it in (zero downtime; ratings/comments untouched).
 #
 # Reference copy of what is deployed — see README "Scheduled jobs (systemd)".
 
@@ -22,8 +22,9 @@ WorkingDirectory=/home/freemap/freemap-v3-nodejs-backend
 EnvironmentFile=/etc/freemap.conf
 # Stable node via the fnm `default` alias (survives node upgrades).
 ExecStart=/home/freemap/.local/share/fnm/aliases/default/bin/node --enable-source-maps build/wikimedia/importWikimedia.js
-# The import runs ~1.5–2 h (it also streams the ~17 GB image dump) — a oneshot
-# would otherwise be killed at the default start timeout.
+# The import runs several hours (it also streams the ~17 GB image dump and the
+# ~75 GB Structured-Data mediainfo dump) — a oneshot would otherwise be killed
+# at the default start timeout.
 TimeoutStartSec=0
 # Keep the monthly build from starving the live API/DB.
 Nice=10

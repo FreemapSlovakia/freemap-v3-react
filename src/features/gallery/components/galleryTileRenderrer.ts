@@ -2,8 +2,7 @@ import type { LatLon } from '@shared/types/common.js';
 import color from 'color';
 import type { LatLng } from 'leaflet';
 import { WIKIMEDIA_NO_DATA_MODES } from '../galleryUtils.js';
-import { FALLBACK_LICENSE_COLOR, LICENSE_COLORS } from '../licenseColors.js';
-import type { GalleryLicense } from '../licenseDefs.js';
+import { licenseColor } from '../licenseColors.js';
 import { GALLERY_COLOR, MUTED_COLOR, NO_DATA_COLOR } from '../markerColors.js';
 import type { GalleryColorizeBy } from '../model/actions.js';
 
@@ -321,9 +320,7 @@ export function renderGalleryTile({
           break;
 
         case 'license':
-          ctx.fillStyle =
-            (license && LICENSE_COLORS[license as GalleryLicense]) ||
-            FALLBACK_LICENSE_COLOR;
+          ctx.fillStyle = licenseColor(license);
 
           break;
 
