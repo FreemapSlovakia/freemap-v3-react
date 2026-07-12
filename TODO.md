@@ -297,12 +297,21 @@ Deferred sub-items:
       wikimedia types) needs the wikimedia side of the bbox `UNION ALL` to match
       its single `gt_type` against the tag-filter set + `tagMode`, plus surfacing
       the fixed enum as selectable tags client-side. Not simple — defer.
-- [ ] **Ingest the Commons `image` table for date + stable author (likely the
-      immediate next step after v1).** The geo dump has no
-      timestamp/author/license, so v1 excludes wikimedia photos from date filters
-      and treats author/license as opaque API display strings. Then
-      parse-and-drop the ~19 GB `image` dump (keep only `img_timestamp`,
-      `img_actor`→username, `img_width/height`, and `DateTimeOriginal` from
-      `img_metadata` — never the raw blob) to unlock taken/upload-date
-      filtering/sorting and stable author grouping for wikimedia photos.
+- [x] **Ingest the Commons `image` table for date + stable author.** The importer
+      now streams the ~17 GB `image` dump (title-keyed, pre-filtered by a hashed
+      title bitset to the kept subset, joined back on title) and stores
+      `capturedAt` (EXIF `DateTimeOriginal` from the JSON `img_metadata`),
+      `uploadedAt` (`img_timestamp`) and `authorId` (numeric `img_actor`) on
+      `wikimediaPicture`. The bbox arm surfaces them under `takenAt`/`createdAt`/
+      `userId`, so date/season/author **colorizing** works for wikimedia photos.
+      Notes for the remaining work below: the actor *name* isn't in any public
+      dump (`actor` dump is empty), and license isn't in the `image` dump at all
+      (it lives in wikitext/SDC) — both stay API-only in the viewer.
+- [ ] **Include wikimedia in date-range *filtering* and list *ordering*.** Colorize
+      is done, but the bbox/radius `galleryOnlyFilter` still drops wikimedia when a
+      `takenAt`/`createdAt` range is set, and `byOrder` includes wikimedia only for
+      `rating`/`lastCommentedAt` (not `createdAt`/`takenAt`). Now that the columns
+      exist, extend the wikimedia arms to apply the date `WHERE` (when only date
+      filters are active) and add date arms to the `byOrder` `UNION ALL`; then drop
+      the `-createdAt`/`-takenAt` "excludes wikimedia" footnote in `GalleryMenu`.
 

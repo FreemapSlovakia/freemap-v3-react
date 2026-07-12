@@ -18,6 +18,7 @@ import {
   type SubmitEvent,
   useCallback,
   useEffect,
+  useReducer,
   useRef,
   useState,
 } from 'react';
@@ -114,16 +115,13 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const [commonsMeta, setCommonsMeta] = useState<WikimediaMeta | null>(null);
-
-  // Whether the current Wikimedia photo's image/metadata failed to load — so we
-  // can show an error instead of an endless spinner.
-  const [commonsError, setCommonsError] = useState(false);
-
   // Cache of Commons metadata keyed by `language/pageId`, so navigating to a
   // prefetched neighbour is instant. `'error'` marks a failed fetch; keying by
   // language means switching language just misses the stale entries.
   const commonsCache = useRef(new Map<string, WikimediaMeta | 'error'>());
+
+  // Bumped when a Commons fetch lands in the cache, to re-render off the ref.
+  const [, forceCommons] = useReducer((x: number) => x + 1, 0);
 
   const reduxActiveImageId = useAppSelector(
     (state) => state.gallery.activeImageId,
@@ -147,8 +145,6 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const [activeImageId, setActiveImageId] = useState<number | null>(null);
 
-  const imageElement = useRef<HTMLImageElement>(undefined);
-
   const fullscreenElement = useRef<HTMLDivElement | null>(null);
 
   const becomePremium = useBecomePremium();
@@ -165,6 +161,25 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   // 404 that would flash a broken image instead of the spinner).
   const isWikimedia = activeImageId !== null && activeImageId < 0;
 
+  // Commons pageId of the current Wikimedia photo (id = -pageId), or null.
+  const wmPageId = isWikimedia ? -activeImageId : null;
+
+  // Metadata is read from the cache during render, keyed on the id alone — so a
+  // prefetched neighbour is shown instantly, without waiting for the Redux
+  // picture record to load (that gating was what made Wikimedia navigation lag).
+  // The effect below fills the cache and re-renders for ids not yet cached.
+  const commonsEntry =
+    wmPageId === null
+      ? undefined
+      : commonsCache.current.get(`${language}/${wmPageId}`);
+
+  const commonsMeta =
+    commonsEntry && commonsEntry !== 'error' ? commonsEntry : null;
+
+  // Whether the current Wikimedia photo's image/metadata failed to load — so we
+  // can show an error instead of an endless spinner.
+  const commonsError = commonsEntry === 'error';
+
   useEffect(() => {
     function handleFullscreenChange() {
       setIsFullscreen(document.fullscreenElement === fullscreenElement.current);
@@ -178,16 +193,6 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
   }, []);
-
-  const setImageElement = (element: HTMLImageElement) => {
-    imageElement.current = element;
-
-    if (element) {
-      element.addEventListener('load', () => {
-        setLoading(false);
-      });
-    }
-  };
 
   const handleEditModelChange = useCallback(
     (editModel: PictureModel) => {
@@ -271,7 +276,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const disabledPremium =
     premium && !isPremium(user) && user?.id !== image?.user?.id;
 
-  const pano = Boolean(image?.pano);
+  // Wikimedia photos are never panoramas for us; guarding on `isWikimedia` also
+  // stops a stale previous panorama record from hijacking the render into the
+  // pannellum branch (blank canvas) while a Wikimedia photo's metadata loads.
+  const pano = !isWikimedia && Boolean(image?.pano);
 
   const p = activeImageId !== null && pano;
 
@@ -387,50 +395,28 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     [language],
   );
 
-  // For Wikimedia photos, fetch the display image + attribution straight from
-  // the Commons API. `commonsMeta` is intentionally NOT cleared up-front, so the
-  // previous image stays shown (blurred) until the new one is ready — matching
-  // how gallery photos transition.
+  // For a Wikimedia photo not yet cached, fetch its Commons image + attribution
+  // straight from the Commons API into the cache and re-render. Keyed on the id
+  // (not the loaded picture record), so it starts as soon as the photo is opened
+  // and a prefetched neighbour is already present (rendered instantly above).
   useEffect(() => {
-    if (image?.source !== 'wikimedia') {
-      setCommonsMeta(null);
-      setCommonsError(false);
-
-      return;
-    }
-
-    const pageId = -image.id; // internal negative id (-pageId)
-
-    const cached = commonsCache.current.get(`${language}/${pageId}`);
-
-    if (cached) {
-      setCommonsError(cached === 'error');
-
-      if (cached !== 'error') {
-        setCommonsMeta(cached);
-      }
-
+    if (
+      wmPageId === null ||
+      commonsCache.current.has(`${language}/${wmPageId}`)
+    ) {
       return;
     }
 
     const controller = new AbortController();
 
-    setCommonsError(false);
-
-    loadCommons(pageId, controller.signal).then((meta) => {
-      if (controller.signal.aborted) {
-        return;
-      }
-
-      if (meta) {
-        setCommonsMeta(meta);
-      } else {
-        setCommonsError(true);
+    loadCommons(wmPageId, controller.signal).then(() => {
+      if (!controller.signal.aborted) {
+        forceCommons();
       }
     });
 
     return () => controller.abort();
-  }, [image, language, loadCommons]);
+  }, [wmPageId, language, loadCommons]);
 
   const handleSave = useCallback(
     (e: SubmitEvent<HTMLFormElement>) => {
@@ -645,18 +631,33 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       classes.imageContainer,
                       'position-relative',
                     )}
+                    // While loading, the <img> has no intrinsic size yet, so the
+                    // fit-content container would collapse to 0 and hide the
+                    // centered spinner overlay (margin:auto still centers the
+                    // 0-width box, so a min-height is enough to reveal it).
+                    style={
+                      loading ? { minHeight: 'min(60vh, 400px)' } : undefined
+                    }
                   >
                     <img
                       key={imgKey}
-                      ref={setImageElement}
                       className={clsx('gallery-image', loading && 'loading')}
                       src={mainImageSrc}
                       alt={displayTitle ?? undefined}
+                      onLoad={() => setLoading(false)}
                       onError={() => {
                         setLoading(false);
 
-                        if (isWikimedia) {
-                          setCommonsError(true);
+                        if (wmPageId !== null) {
+                          // Mark this Commons photo failed so we show
+                          // "unavailable" instead of a perpetual spinner; the
+                          // derived commonsError picks it up.
+                          commonsCache.current.set(
+                            `${language}/${wmPageId}`,
+                            'error',
+                          );
+
+                          forceCommons();
                         }
                       }}
                     />
@@ -668,7 +669,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     )}
                   </div>
                 ) : (
-                  <div className={classes.placeholder}>{statusOverlay}</div>
+                  <div
+                    className="d-flex align-items-center justify-content-center"
+                    style={{ minHeight: 'min(60vh, 400px)' }}
+                  >
+                    {statusOverlay}
+                  </div>
                 )}
 
                 {/* Preload neighbours (own-gallery only — a Wikimedia neighbour's
