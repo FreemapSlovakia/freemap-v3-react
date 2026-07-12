@@ -218,16 +218,30 @@ class LGalleryLayer extends LGridLayer {
         size,
       };
 
+      let workerRendered = false;
+
       if (this.supportsOffscreen) {
         // Render off the main thread and blit the result.
-        const imageBitmap = await this._workerPool.addJob<ImageBitmap>(() => [
-          ctx,
-          [],
-        ]);
+        try {
+          const imageBitmap = await this._workerPool.addJob<ImageBitmap>(() => [
+            ctx,
+            [],
+          ]);
 
-        tile.getContext('2d')?.drawImage(imageBitmap, 0, 0);
-      } else {
-        // Browsers without OffscreenCanvas render on the main thread.
+          tile.getContext('2d')?.drawImage(imageBitmap, 0, 0);
+
+          workerRendered = true;
+        } catch (err) {
+          // Fall back to the main thread only when the worker actually failed,
+          // so a successful tile is never drawn twice.
+          console.warn(
+            'gallery worker render failed; main-thread fallback',
+            err,
+          );
+        }
+      }
+
+      if (!workerRendered) {
         renderGalleryTile({ ...ctx, tile });
       }
     };
