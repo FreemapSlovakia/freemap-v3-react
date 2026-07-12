@@ -232,7 +232,12 @@ export function renderGalleryTile({
     } else {
       switch (colorizeBy) {
         case 'userId':
-          ctx.fillStyle = color.lch(90, 70, -userId * 11313).hex();
+          // userId 0 is the `?? 0` sentinel for a photo with no author (a
+          // Wikimedia row whose authorId is null) — render it neutral, not as a
+          // real bucket color. Own photo ids always start at 1.
+          ctx.fillStyle = userId
+            ? color.lch(90, 70, -userId * 11313).hex()
+            : NO_DATA_COLOR;
 
           break;
 

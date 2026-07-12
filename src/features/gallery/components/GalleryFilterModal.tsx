@@ -303,6 +303,13 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? gm?.filterModal.title : undefined);
 
+  // Shown under the filters Wikimedia photos can't satisfy (tag/author/license).
+  const wikimediaExcludedHint = (
+    <Form.Text className="text-body-secondary">
+      <SiWikimediacommons /> {gm?.excludesWikimedia}
+    </Form.Text>
+  );
+
   return (
     <Modal
       show={show}
@@ -332,9 +339,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
               ))}
             </Form.Select>
 
-            <Form.Text className="text-body-secondary">
-              <SiWikimediacommons /> {gm?.excludesWikimedia}
-            </Form.Text>
+            {wikimediaExcludedHint}
           </Form.Group>
 
           <Form.Group controlId="author" className="mb-3">
@@ -366,9 +371,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
                 ))}
             </Form.Select>
 
-            <Form.Text className="text-body-secondary">
-              <SiWikimediacommons /> {gm?.excludesWikimedia}
-            </Form.Text>
+            {wikimediaExcludedHint}
           </Form.Group>
 
           <Form.Group controlId="createdAt" className="mb-3">
@@ -480,9 +483,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
               ))}
             </ToggleButtonGroup>
 
-            <Form.Text className="text-body-secondary">
-              <SiWikimediacommons /> {gm?.excludesWikimedia}
-            </Form.Text>
+            {wikimediaExcludedHint}
           </Form.Group>
 
           <Form.Group controlId="filt-source" className="mb-3">

@@ -98,6 +98,31 @@ function parseCommonsDate(value: string | undefined): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
+// Cap on cached Commons metadata entries — plenty for instant neighbour
+// navigation while bounding memory over a long browsing session.
+const COMMONS_CACHE_MAX = 300;
+
+/** Insert into the Commons metadata cache, evicting the oldest entries past the
+ *  cap (Map keeps insertion order, so the oldest key is always first). */
+function cachePut(
+  cache: Map<string, WikimediaMeta | 'error'>,
+  key: string,
+  value: WikimediaMeta | 'error',
+): void {
+  cache.delete(key); // re-insert to refresh recency
+  cache.set(key, value);
+
+  while (cache.size > COMMONS_CACHE_MAX) {
+    const oldest = cache.keys().next().value;
+
+    if (oldest === undefined) {
+      break;
+    }
+
+    cache.delete(oldest);
+  }
+}
+
 export default function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
 
@@ -166,8 +191,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   // Metadata is read from the cache during render, keyed on the id alone — so a
   // prefetched neighbour is shown instantly, without waiting for the Redux
-  // picture record to load (that gating was what made Wikimedia navigation lag).
-  // The effect below fills the cache and re-renders for ids not yet cached.
+  // picture record to load. The effect below fills the cache and re-renders for
+  // ids not yet cached.
   const commonsEntry =
     wmPageId === null
       ? undefined
@@ -387,7 +412,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       ).catch(() => null);
 
       if (!signal?.aborted) {
-        commonsCache.current.set(key, meta?.imageUrl ? meta : 'error');
+        cachePut(commonsCache.current, key, meta?.imageUrl ? meta : 'error');
       }
 
       return meta?.imageUrl ? meta : null;
@@ -652,7 +677,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                           // Mark this Commons photo failed so we show
                           // "unavailable" instead of a perpetual spinner; the
                           // derived commonsError picks it up.
-                          commonsCache.current.set(
+                          cachePut(
+                            commonsCache.current,
                             `${language}/${wmPageId}`,
                             'error',
                           );

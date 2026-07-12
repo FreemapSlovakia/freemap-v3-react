@@ -219,17 +219,17 @@ class LGalleryLayer extends LGridLayer {
       };
 
       if (this.supportsOffscreen) {
+        // Render off the main thread and blit the result.
         const imageBitmap = await this._workerPool.addJob<ImageBitmap>(() => [
           ctx,
           [],
         ]);
 
         tile.getContext('2d')?.drawImage(imageBitmap, 0, 0);
+      } else {
+        // Browsers without OffscreenCanvas render on the main thread.
+        renderGalleryTile({ ...ctx, tile });
       }
-
-      // Always render on the main thread: the worker path doesn't reliably fill
-      // every tile, so this is the safety net that keeps tiles from going blank.
-      renderGalleryTile({ ...ctx, tile });
     };
 
     processTile().then(
