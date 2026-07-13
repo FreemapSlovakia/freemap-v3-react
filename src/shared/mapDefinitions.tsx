@@ -912,8 +912,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     defaultInMenu: true,
     technology: 'gallery',
     icon: <FaCamera />,
-    // ~37M Wikimedia photos alone flood low zooms (a tile far exceeds the
-    // server's 5,000 cap), so gate the whole layer at town zoom.
     minZoom: 10,
     shortcut: { code: 'KeyF', shift: true },
     zIndex: 4,
