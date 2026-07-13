@@ -104,6 +104,17 @@ Server-side scheduled jobs are checked in under [`etc/systemd/system/`](./etc/sy
 
   Notes: `TimeoutStartSec=0` is required (the import runs several hours — it downloads and streams the ~17 GB `image` dump and the ~75 GB Structured-Data `mediainfo` dump on top of `geo_tags` + `page` — well past the default oneshot timeout); it runs `node` directly with `EnvironmentFile=/etc/freemap.conf` (the same env the API service uses, supplying `MARIADB_*`) rather than the `dotenvx`-wrapped `pnpm run import:wikimedia`, so no decryptable `.env` is needed on the server; `Nice`/`IOSchedulingClass=idle` keep it from starving the live DB. It runs whatever `build/` is deployed, so the filters stay current with each backend deploy.
 
+  Faster downloads (recommended): `dumps.wikimedia.org` throttles to ~4.5 MB/s **per connection** (per-connection, not per-IP), which makes the 75 GB `mediainfo` dump the multi-hour bottleneck. The [your.org mirror](https://dumps.wikimedia.your.org/) serves the same dumps at ~50 MB/s single-connection and carries the `other/wikibase/` (`mediainfo`) tree, so point the importer at it by setting these in `/etc/freemap.conf` (the dump URLs are `getEnv`-overridable — see the backend's `importWikimedia.ts`). This is a pure config change and stays fully streaming (no temp file, no parallel-segment code); it cuts the `mediainfo` phase from ~4.6 h to well under an hour:
+
+  ```
+  WIKIMEDIA_GEO_TAGS_DUMP_URL=https://dumps.wikimedia.your.org/commonswiki/latest/commonswiki-latest-geo_tags.sql.gz
+  WIKIMEDIA_PAGE_DUMP_URL=https://dumps.wikimedia.your.org/commonswiki/latest/commonswiki-latest-page.sql.gz
+  WIKIMEDIA_IMAGE_DUMP_URL=https://dumps.wikimedia.your.org/commonswiki/latest/commonswiki-latest-image.sql.gz
+  WIKIMEDIA_MEDIAINFO_DUMP_URL=https://dumps.wikimedia.your.org/other/wikibase/commonswiki/latest-mediainfo.json.gz
+  ```
+
+  A mirror's `latest` can lag the origin by a day or two (fine for the monthly import); the code defaults stay on `dumps.wikimedia.org` (canonical), so this is an opt-in override.
+
 ## Environment variables
 
 Most deployment-specific values are derived from `DEPLOYMENT` (see above). The remaining overrides:
