@@ -180,6 +180,7 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
   noPicturesFound: 'Na tomto mieste neboli nájdené žiadne fotky.',
   linkToWww: 'fotografia na www.freemap.sk',
   linkToImage: 'súbor fotografie',
+  linkToCommons: 'fotografia na Wikimedia Commons',
   allMyPhotos: {
     title: 'Zmena prístupu',
     premium: 'Zaradiť všetky moje fotky do prémiového obsahu',

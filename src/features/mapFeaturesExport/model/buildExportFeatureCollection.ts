@@ -31,7 +31,11 @@ import {
 } from '@turf/helpers';
 import type { Feature, FeatureCollection, Position } from 'geojson';
 import { iconSpecToGarminSym } from '../garminSymMapping.js';
-import { fetchPictures, type Picture } from './processors/fetchPictures.js';
+import {
+  fetchPictures,
+  type Picture,
+  pictureExportUrls,
+} from './processors/fetchPictures.js';
 import {
   keepDrawingLine,
   keepDrawingPoint,
@@ -306,23 +310,21 @@ async function convertForeignFeatures(
 }
 
 function addPictures(features: Feature[], pictures: Picture[]) {
-  for (const {
-    lat,
-    lon,
-    id,
-    takenAt,
-    title,
-    description,
-    createdAt,
-    user,
-    tags,
-    hmac,
-  } of pictures) {
-    let imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
+  for (const picture of pictures) {
+    const {
+      lat,
+      lon,
+      takenAt,
+      title,
+      description,
+      createdAt,
+      user,
+      tags,
+      license,
+      azimuth,
+    } = picture;
 
-    if (hmac) {
-      imageUrl += `&hmac=${encodeURIComponent(hmac)}`;
-    }
+    const { imageUrl, webUrl, commonsUrl } = pictureExportUrls(picture);
 
     features.push(
       point([lon, lat], {
@@ -331,8 +333,11 @@ function addPictures(features: Feature[], pictures: Picture[]) {
         title,
         description,
         imageUrl,
-        webUrl: `${location.origin}?image=${id}`,
-        author: user,
+        webUrl,
+        commonsUrl,
+        author: user ?? undefined,
+        license: license ?? undefined,
+        azimuth: azimuth ?? undefined,
         tags,
       }),
     );

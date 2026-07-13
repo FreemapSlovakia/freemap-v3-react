@@ -176,6 +176,7 @@ const en: GalleryMessages = {
   noPicturesFound: 'There were no photos found on this place.',
   linkToWww: 'photo at www.freemap.sk',
   linkToImage: 'photo image file',
+  linkToCommons: 'photo at Wikimedia Commons',
   allMyPhotos: {
     title: 'Access change',
     premium: 'Include all my photos in premium content',

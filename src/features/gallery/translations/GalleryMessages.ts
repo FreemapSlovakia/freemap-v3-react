@@ -126,6 +126,7 @@ export type GalleryMessages = {
   noPicturesFound: string;
   linkToWww: string;
   linkToImage: string;
+  linkToCommons: string;
   allMyPhotos: {
     title: string;
     premium: string;
