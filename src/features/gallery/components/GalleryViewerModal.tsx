@@ -64,7 +64,11 @@ import {
 } from '../model/actions.js';
 import { pictureIdToPath } from '../pictureIdPath.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
-import { fetchWikimediaMeta, type WikimediaMeta } from '../wikimediaMeta.js';
+import {
+  fetchWikimediaMeta,
+  type WikimediaMeta,
+  wikimediaImageUrl,
+} from '../wikimediaMeta.js';
 import { Azimuth } from './Azimuth.js';
 import { GalleryEditForm, type PictureModel } from './GalleryEditForm.js';
 import { RecentTags } from './RecentTags.js';
@@ -75,8 +79,9 @@ import classes from './GalleryViewerModal.module.css';
 type Props = { show: boolean };
 
 /**
- * Commons `DateTime` is free-form — usually ISO `YYYY-MM-DD`, sometimes raw EXIF
- * `YYYY:MM:DD HH:MM:SS`. Parse the leading date (and optional time) by component
+ * Commons `DateTimeOriginal` is free-form — usually ISO `YYYY-MM-DD`, sometimes
+ * raw EXIF `YYYY:MM:DD HH:MM:SS`, sometimes a range ("between 2024 and 2026")
+ * that won't match. Parse the leading date (and optional time) by component
  * into a local Date, so date-only and datetime values are consistent (no
  * UTC-vs-local off-by-one) and independent of engine string-parsing quirks.
  * Returns null when it isn't a recognizable date so the caller can show it
@@ -101,6 +106,11 @@ function parseCommonsDate(value: string | undefined): Date | null {
 // Cap on cached Commons metadata entries — plenty for instant neighbour
 // navigation while bounding memory over a long browsing session.
 const COMMONS_CACHE_MAX = 300;
+
+// Max width requested for the windowed (non-fullscreen) Commons image. Snapping
+// to the 1920 bucket keeps hi-dpi modals off the heavy, cold-render-prone 3840
+// one; fullscreen still rescales up to 3840.
+const WINDOWED_MAX_WIDTH = 1920;
 
 /** Insert into the Commons metadata cache, evicting the oldest entries past the
  *  cap (Map keeps insertion order, so the oldest key is always first). */
@@ -405,9 +415,21 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
         return cached === 'error' ? null : cached;
       }
 
+      // Fetch the base thumbnail at the windowed modal size (not the full
+      // window): it's what the modal shows by default and what gets prefetched,
+      // and the viewer rescales it up per render for fullscreen. Capped at 1920
+      // (a common, fast bucket) so hi-dpi windows don't pull the heavy 3840 one
+      // — fullscreen still rescales up to it. Commons rounds up to a bucket.
       const width = Math.min(
-        2560,
-        Math.round(window.innerWidth * (window.devicePixelRatio || 1)),
+        WINDOWED_MAX_WIDTH,
+        Math.round(
+          (window.devicePixelRatio || 1) *
+            (window.matchMedia('(min-width: 1200px)').matches
+              ? 1110
+              : window.matchMedia('(min-width: 992px)').matches
+                ? 770
+                : 470),
+        ),
       );
 
       const meta = await fetchWikimediaMeta(
@@ -491,8 +513,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     minute: '2-digit',
   });
 
-  const getImageUrl = (id: number) => {
-    const width = Math.round(
+  // Device-pixel width of the displayed image: the modal's CSS width by
+  // breakpoint (or the full window in fullscreen) times the pixel ratio.
+  // Recomputed per render, so toggling fullscreen (which also bumps `imgKey`)
+  // re-derives a larger size.
+  const displayPixelWidth = () =>
+    Math.round(
       window.devicePixelRatio *
         (isFullscreen
           ? window.innerWidth
@@ -503,11 +529,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               : 470),
     );
 
-    return (
-      `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(id)}/image?width=${width}` +
-      (user ? `&authToken=${encodeURIComponent(user.authToken)}` : '')
-    );
-  };
+  const getImageUrl = (id: number) =>
+    `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(id)}/image?width=${displayPixelWidth()}` +
+    (user ? `&authToken=${encodeURIComponent(user.authToken)}` : '');
 
   // The displayed image: gallery photos stream from our server; Wikimedia photos
   // come straight from Commons (once their metadata has loaded).
@@ -515,7 +539,14 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     activeImageId === null
       ? undefined
       : isWikimedia
-        ? commonsMeta?.imageUrl
+        ? commonsMeta
+          ? wikimediaImageUrl(
+              commonsMeta,
+              isFullscreen
+                ? displayPixelWidth()
+                : Math.min(displayPixelWidth(), WINDOWED_MAX_WIDTH),
+            )
+          : undefined
         : getImageUrl(activeImageId);
 
   const handlePositionPick = useCallback(() => {

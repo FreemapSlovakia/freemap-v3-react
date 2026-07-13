@@ -241,6 +241,47 @@ function panoThumbWidth(originalWidth: number): number {
 }
 
 /**
+ * Smallest standard bucket that covers `targetWidth` without upscaling past the
+ * original — for the viewer's display image. Commons rejects direct hotlinks to
+ * non-bucket widths, and cache hits are far likelier on a common bucket, so we
+ * snap rather than request an arbitrary size. Falls back to the largest bucket
+ * that fits when the target exceeds every bucket the original can supply.
+ */
+function displayThumbWidth(targetWidth: number, originalWidth: number): number {
+  const capped = Math.min(targetWidth, originalWidth);
+
+  for (let i = STANDARD_THUMB_WIDTHS.length - 1; i >= 0; i--) {
+    const w = STANDARD_THUMB_WIDTHS[i];
+
+    if (w >= capped && w <= originalWidth) {
+      return w;
+    }
+  }
+
+  return panoThumbWidth(originalWidth);
+}
+
+/**
+ * The Commons image URL to display at a given device-pixel width, snapped to a
+ * standard thumbnail bucket. Rescaling the fetched `imageUrl` (already a direct
+ * upload.wikimedia.org thumb) lets the viewer pick a bucket per render — small
+ * in the modal, larger in fullscreen — without re-querying the API.
+ */
+export function wikimediaImageUrl(
+  meta: WikimediaMeta,
+  targetWidth: number,
+): string | undefined {
+  if (!meta.imageUrl || !meta.width) {
+    return meta.imageUrl;
+  }
+
+  return scaleThumbUrl(
+    meta.imageUrl,
+    displayThumbWidth(targetWidth, meta.width),
+  );
+}
+
+/**
  * Fetches a Wikimedia Commons photo's display thumbnail and attribution
  * (author, license, description) straight from the Commons API — image bytes and
  * licensing always come from Wikimedia, never proxied through our server.
@@ -301,8 +342,10 @@ export async function fetchWikimediaMeta(
   return {
     title: fileName,
     imageUrl: ii.thumburl,
-    width: ii.thumbwidth,
-    height: ii.thumbheight,
+    // Original dimensions (from iiprop=size), used to cap display/pano
+    // thumbnails so we never request a bucket wider than the source.
+    width: ii.width,
+    height: ii.height,
     descriptionUrl: ii.descriptionurl,
     description: stripHtml(pickLang(meta?.ImageDescription?.value, language)),
     artist: artist.name,
