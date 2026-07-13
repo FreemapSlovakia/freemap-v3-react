@@ -85,7 +85,7 @@
     "marked": "^18.0.6",
     "ohash": "^2.0.11",
     "pannellum": "^2.5.7",
-    "protobufjs": "^8.7.1",
+    "protobufjs": "^8.7.0",
     "rbush": "^4.0.1",
     "react": "^19.2.7",
     "react-bootstrap": "^2.10.10",
