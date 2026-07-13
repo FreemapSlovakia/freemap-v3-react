@@ -78,11 +78,25 @@ function stripHtml(html: string | undefined): string | undefined {
     return undefined;
   }
 
-  const tmp = document.createElement('div');
+  // Parse into an inert document instead of assigning `innerHTML` on a live
+  // element. An inert `DOMParser` document has no browsing context, so it never
+  // runs scripts, loads resources, or fires event handlers — untrusted Commons
+  // markup like `<img src=x onerror=…>` can't execute. (`innerHTML` wouldn't run
+  // a `<script>`, but it WOULD fire `onerror`/`onload`, even on a detached node.)
+  const doc = new DOMParser().parseFromString(html, 'text/html');
 
-  tmp.innerHTML = html;
+  // Drop the chrome Commons wraps a caption in. `<style>`/`<script>` text would
+  // otherwise be spliced in by `textContent` (the raw-CSS leak); the template
+  // boilerplate (info/location/assessment tables, message banners) renders as
+  // `<table>` or `.mw-message-box`, whereas captions are plain/inline text — so
+  // drop those structural blocks rather than naming individual templates.
+  for (const el of doc.querySelectorAll(
+    'style, script, table, .mw-message-box',
+  )) {
+    el.remove();
+  }
 
-  return tmp.textContent?.trim() || undefined;
+  return doc.body.textContent?.trim() || undefined;
 }
 
 /**
@@ -98,18 +112,22 @@ function parseArtist(html: string | undefined): {
     return {};
   }
 
-  const tmp = document.createElement('div');
+  // Inert parse (see stripHtml) — never executes scripts/handlers from the
+  // untrusted Commons markup.
+  const doc = new DOMParser().parseFromString(html, 'text/html');
 
-  tmp.innerHTML = html;
+  const name = doc.body.textContent?.trim() || undefined;
 
-  const name = tmp.textContent?.trim() || undefined;
-
-  let url = tmp.querySelector('a')?.getAttribute('href') ?? undefined;
+  let url = doc.querySelector('a')?.getAttribute('href') ?? undefined;
 
   if (url?.startsWith('//')) {
     url = `https:${url}`;
   } else if (url?.startsWith('/')) {
     url = `https://commons.wikimedia.org${url}`;
+  } else if (url && !/^https?:\/\//i.test(url)) {
+    // The URL is rendered as a link, so reject any non-http(s) scheme (e.g.
+    // `javascript:`) that would be an XSS vector when clicked.
+    url = undefined;
   }
 
   return { name, url };
