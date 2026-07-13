@@ -8,7 +8,7 @@ const en: MapFeaturesExportMessages = {
   target: 'Target',
   elevation: {
     label: 'Elevation',
-    none: 'Keep recorded',
+    none: 'Keep as-is',
     missing: 'Fill missing',
     all: 'Override all',
   },

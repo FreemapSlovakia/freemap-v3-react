@@ -9,7 +9,7 @@ const fr: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   target: 'Destination',
   elevation: {
     label: 'Altitude',
-    none: 'Conserver l’enregistrée',
+    none: 'Conserver tel quel',
     missing: 'Compléter les manquantes',
     all: 'Tout remplacer',
   },

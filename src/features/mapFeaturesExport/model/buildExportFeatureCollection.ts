@@ -631,7 +631,19 @@ export async function buildExportFeatureCollection({
         ),
       );
 
-      features.push(point([coords.lon, coords.lat], props));
+      // Carry a recorded `ele` tag into the coordinate z so the elevation
+      // filler treats it as recorded (keep/fill-missing/override), matching the
+      // GPX handler. The tag stays in `props` for the data export too.
+      const ele = Number.parseFloat(tags['ele']);
+
+      features.push(
+        point(
+          Number.isNaN(ele)
+            ? [coords.lon, coords.lat]
+            : [coords.lon, coords.lat, ele],
+          props,
+        ),
+      );
     }
   }
 
