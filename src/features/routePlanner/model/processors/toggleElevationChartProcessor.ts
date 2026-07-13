@@ -38,15 +38,15 @@ export const routePlannerToggleElevationChartProcessor: Processor<
 
       const alternative = alternatives[activeAlternativeIndex];
 
+      const fallbackCoords = alternative
+        ? alternative.legs
+            .flatMap((leg) => leg.steps)
+            .flatMap((step) => step.geometry.coordinates)
+        : [];
+
       const feature =
         renderGeojson ??
-        (alternative
-          ? lineString(
-              alternative.legs
-                .flatMap((leg) => leg.steps)
-                .flatMap((step) => step.geometry.coordinates),
-            )
-          : null);
+        (fallbackCoords.length >= 2 ? lineString(fallbackCoords) : null);
 
       if (!feature) {
         return;
