@@ -301,35 +301,41 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const disabledPremium =
     premium && !isPremium(user) && user?.id !== image?.user?.id;
 
-  // Wikimedia photos are never panoramas for us; guarding on `isWikimedia` also
-  // stops a stale previous panorama record from hijacking the render into the
-  // pannellum branch (blank canvas) while a Wikimedia photo's metadata loads.
-  const pano = !isWikimedia && Boolean(image?.pano);
+  // Own photos carry the pano flag server-side; Commons 360s have no GPano/XMP,
+  // so they're detected from their exact 2:1 dimensions in the fetched metadata.
+  // Gating the Wikimedia case on `commonsMeta` also stops a stale previous
+  // record from hijacking the render into the pannellum branch (blank canvas)
+  // while a Commons photo's metadata loads.
+  const pano = isWikimedia ? Boolean(commonsMeta?.pano) : Boolean(image?.pano);
 
-  const p = activeImageId !== null && pano;
+  // The equirectangular image pannellum renders: our own image endpoint, or a
+  // width-capped Commons thumbnail (from wikimediaMeta) for a Wikimedia pano.
+  const panoUrl = isWikimedia
+    ? commonsMeta?.panoUrl
+    : `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`;
+
+  const p = activeImageId !== null && pano && Boolean(panoUrl);
 
   const panoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!p || !panoRef.current) {
+    if (!p || !panoRef.current || !panoUrl) {
       return;
     }
 
     const v = window.pannellum.viewer(panoRef.current, {
-      panorama: `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`,
+      panorama: panoUrl,
       type: 'equirectangular',
       autoLoad: true,
       showControls: false,
       autoRotate: 15,
       autoRotateInactivityDelay: 60000,
-      // compass: true,
-      // title: 'panorama',
     });
 
     return () => {
       v.destroy();
     };
-  }, [p, activeImageId]);
+  }, [p, panoUrl]);
 
   const handleFullscreen = useCallback(() => {
     if (!document.exitFullscreen || !fullscreenElement.current) {

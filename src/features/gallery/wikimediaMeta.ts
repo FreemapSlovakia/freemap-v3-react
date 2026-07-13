@@ -130,6 +130,10 @@ const ResponseSchema = z.object({
             imageinfo: z
               .array(
                 z.object({
+                  // Original dimensions (from iiprop=size), used to detect a
+                  // full equirectangular 360 panorama by its exact 2:1 ratio.
+                  width: z.number().optional(),
+                  height: z.number().optional(),
                   thumburl: z.string().optional(),
                   thumbwidth: z.number().optional(),
                   thumbheight: z.number().optional(),
@@ -174,6 +178,37 @@ export interface WikimediaMeta {
    */
   freemapLicense?: GalleryLicense;
   dateTime?: string;
+  /**
+   * True when the original image is exactly 2:1 — a full equirectangular 360
+   * panorama. Commons 360s (e.g. Mapillary uploads) carry no GPano/XMP, so the
+   * dimensions are the only signal; the strict 2:1 test avoids wrapping an
+   * ordinary wide crop into a distorted sphere.
+   */
+  pano?: boolean;
+  /** A width-capped 2:1 thumbnail URL to feed pannellum (only set when pano). */
+  panoUrl?: string;
+}
+
+/**
+ * Commons only renders (and only allows direct hotlinking to) thumbnails at
+ * these standard bucket widths; a non-standard width like 2560 is rejected with
+ * an error page. Descending so we can pick the largest that fits.
+ * See https://www.mediawiki.org/wiki/Common_thumbnail_sizes
+ */
+const STANDARD_THUMB_WIDTHS = [
+  3840, 1920, 1280, 960, 500, 330, 250, 120, 60, 40, 20,
+];
+
+/**
+ * Largest standard bucket width that doesn't upscale the original — big enough
+ * for a sharp 360, small enough to download quickly. 3840 (the top bucket) for
+ * any real panorama.
+ */
+function panoThumbWidth(originalWidth: number): number {
+  return (
+    STANDARD_THUMB_WIDTHS.find((w) => w <= originalWidth) ??
+    STANDARD_THUMB_WIDTHS.at(-1)!
+  );
 }
 
 /**
@@ -196,7 +231,7 @@ export async function fetchWikimediaMeta(
         formatversion: '2',
         pageids: String(pageId),
         prop: 'imageinfo',
-        iiprop: 'url|extmetadata',
+        iiprop: 'size|url|extmetadata',
         iiurlwidth: String(width),
         iiextmetadatafilter:
           'ImageDescription|Artist|License|LicenseShortName|LicenseUrl|DateTime',
@@ -224,10 +259,18 @@ export async function fetchWikimediaMeta(
 
   const licenseKey = pickLang(meta?.License?.value, language)?.toLowerCase();
 
+  // Commons file title (e.g. "Foo_castle.jpg") — strip the "File:" prefix.
+  const fileName = page.title.replace(/^File:/, '');
+
+  // A full equirectangular 360 panorama is exactly 2:1; nothing else on Commons
+  // marks these (no GPano/XMP), so the dimensions are the only signal.
+  const pano =
+    ii.width !== undefined &&
+    ii.height !== undefined &&
+    ii.width === ii.height * 2;
+
   return {
-    // Commons file title (e.g. "Foo_castle.jpg"), used as the photo's label —
-    // strip the "File:" namespace prefix the API returns.
-    title: page.title.replace(/^File:/, ''),
+    title: fileName,
     imageUrl: ii.thumburl,
     width: ii.thumbwidth,
     height: ii.thumbheight,
@@ -239,5 +282,24 @@ export async function fetchWikimediaMeta(
     licenseUrl: pickLang(meta?.LicenseUrl?.value, language),
     freemapLicense: toFreemapLicense(licenseKey),
     dateTime: stripHtml(pickLang(meta?.DateTime?.value, language)),
+    pano,
+    // Point pannellum at a width-capped 2:1 thumbnail rather than the multi-MB
+    // original (the display thumbnail is too low-res for immersive 360). Built
+    // by rescaling the API's `thumburl` — a direct upload.wikimedia.org URL that
+    // sends CORS headers, which pannellum's WebGL texture load requires. The
+    // Special:FilePath redirect would be simpler but its 302 carries no CORS.
+    panoUrl:
+      pano && ii.thumburl
+        ? scaleThumbUrl(ii.thumburl, panoThumbWidth(ii.width!))
+        : undefined,
   };
+}
+
+/**
+ * Rescales a Commons thumbnail URL to a new width. Upload thumb URLs end in
+ * `/<N>px-<filename>`; swap `<N>`. Falls back to the input if it doesn't match
+ * (e.g. an unexpected URL shape), so the caller still gets a usable image.
+ */
+function scaleThumbUrl(thumburl: string, width: number): string {
+  return thumburl.replace(/\/\d+px-([^/]*)$/, `/${width}px-$1`);
 }
