@@ -303,7 +303,9 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? gm?.filterModal.title : undefined);
 
-  // Shown under the filters Wikimedia photos can't satisfy (tag/author/license).
+  // Shown under the filters Wikimedia photos can't satisfy: tag/author, and the
+  // panorama toggle (no Wikimedia photo is a panorama for us). Date/rating/
+  // license just narrow them, so those carry no hint.
   const wikimediaExcludedHint = (
     <Form.Text className="text-body-secondary">
       <SiWikimediacommons /> {gm?.excludesWikimedia}
@@ -451,14 +453,17 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
             ref={setPremiumCheck}
           />
 
-          <Form.Check
-            className="mb-3"
-            id="filt-pano"
-            checked={Boolean(pano)}
-            onChange={handlePanoChange}
-            label={gm?.filterModal.pano}
-            ref={setPanoCheck}
-          />
+          <div className="mb-3">
+            <Form.Check
+              id="filt-pano"
+              checked={Boolean(pano)}
+              onChange={handlePanoChange}
+              label={gm?.filterModal.pano}
+              ref={setPanoCheck}
+            />
+
+            {wikimediaExcludedHint}
+          </div>
 
           <Form.Group controlId="filt-license" className="mb-3">
             <Form.Label className="d-block">{gm?.license.label}</Form.Label>
@@ -482,8 +487,6 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
-
-            {wikimediaExcludedHint}
           </Form.Group>
 
           <Form.Group controlId="filt-source" className="mb-3">
