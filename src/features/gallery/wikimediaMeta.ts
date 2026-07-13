@@ -96,6 +96,14 @@ function stripHtml(html: string | undefined): string | undefined {
     el.remove();
   }
 
+  // Drop hidden nodes so their text isn't spliced in — Commons date fields
+  // append a machine-readable microformat as `<div style="display:none">…</div>`.
+  for (const el of doc.querySelectorAll('[style]')) {
+    if (el instanceof HTMLElement && el.style.display === 'none') {
+      el.remove();
+    }
+  }
+
   return doc.body.textContent?.trim() || undefined;
 }
 
@@ -163,7 +171,10 @@ const ResponseSchema = z.object({
                       License: ExtMetaFieldSchema,
                       LicenseShortName: ExtMetaFieldSchema,
                       LicenseUrl: ExtMetaFieldSchema,
-                      DateTime: ExtMetaFieldSchema,
+                      // The capture/creation date ("Date" on Commons), same
+                      // field the map colorize keys on — not `DateTime`, which
+                      // is the file's modification/upload time.
+                      DateTimeOriginal: ExtMetaFieldSchema,
                     })
                     .optional(),
                 }),
@@ -252,7 +263,7 @@ export async function fetchWikimediaMeta(
         iiprop: 'size|url|extmetadata',
         iiurlwidth: String(width),
         iiextmetadatafilter:
-          'ImageDescription|Artist|License|LicenseShortName|LicenseUrl|DateTime',
+          'ImageDescription|Artist|License|LicenseShortName|LicenseUrl|DateTimeOriginal',
         iiextmetadatamultilang: '1',
         iiextmetadatalanguage: language,
       }),
@@ -299,7 +310,9 @@ export async function fetchWikimediaMeta(
     license: stripHtml(pickLang(meta?.LicenseShortName?.value, language)),
     licenseUrl: pickLang(meta?.LicenseUrl?.value, language),
     freemapLicense: toFreemapLicense(licenseKey),
-    dateTime: stripHtml(pickLang(meta?.DateTime?.value, language)),
+    // Capture/creation date, matching the map's colorize source. Same viewer
+    // handling as before: parsed when possible, else shown verbatim.
+    dateTime: stripHtml(pickLang(meta?.DateTimeOriginal?.value, language)),
     pano,
     // Point pannellum at a width-capped 2:1 thumbnail rather than the multi-MB
     // original (the display thumbnail is too low-res for immersive 360). Built
