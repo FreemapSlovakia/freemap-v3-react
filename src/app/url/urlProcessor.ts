@@ -42,7 +42,6 @@ export const urlProcessor: Processor = {
       myMaps,
       search,
       objects,
-      wikimediaCommons,
       wiki,
     } = getState();
 
@@ -90,8 +89,6 @@ export const urlProcessor: Processor = {
       myMaps.activeMap,
       main.tools.join(','),
       objects.active,
-      wikimediaCommons.preview?.pageId,
-      wikimediaCommons.loading,
       wiki.preview,
       wiki.loading,
     ];
@@ -364,16 +361,20 @@ export const urlProcessor: Processor = {
       historyParts.push(['gallery-license', license]);
     }
 
+    // Only a restricting subset is serialized; undefined (= both sources) stays
+    // out of the URL.
+    for (const source of galleryFilter.sources ?? []) {
+      historyParts.push(['gallery-source', source]);
+    }
+
     if (objects.active.length) {
       historyParts.push(['objects', objects.active.join(';')]);
     }
 
     {
-      // The gallery viewer and the Wikimedia Commons preview keep their own
-      // slice state but serialize through the same packed `show=` param.
-      const wmcPageId =
-        wikimediaCommons.preview?.pageId ?? wikimediaCommons.loading;
-
+      // The gallery viewer (own + Wikimedia Commons photos) and the Wikipedia
+      // preview keep their own slice state but serialize through the same packed
+      // `show=` param.
       const wikiKey =
         wiki.loading ?? (wiki.preview ? wikiPreviewKey(wiki.preview) : null);
 
@@ -382,11 +383,9 @@ export const urlProcessor: Processor = {
         encodeActiveModal(
           gallery.activeImageId
             ? { type: 'gallery-viewer', id: gallery.activeImageId }
-            : wmcPageId
-              ? { type: 'wmc', pageId: wmcPageId }
-              : wikiKey
-                ? { type: 'wiki', key: wikiKey }
-                : null,
+            : wikiKey
+              ? { type: 'wiki', key: wikiKey }
+              : null,
         );
 
       if (show !== null) {

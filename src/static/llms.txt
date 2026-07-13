@@ -87,14 +87,14 @@ Toggles the photos toolbar and the community-photos map layer. Photos appear as 
 
 - **Upload** (<kbd>p</kbd> <kbd>u</kbd>) — see upload modal below
 - **Filter** (<kbd>p</kbd> <kbd>f</kbd>) — "Photo filtering" modal: by tag, author, upload-date range, capture-date range, rating range, and premium / panorama (tri-state) toggles
-- **Colorize markers by** (dropdown) — Don't colorize, Differ mine, Author, Rating, Taken date, Upload date, Season, Premium. For the gradient modes (Rating, Taken date, Upload date, Season) the dropdown's first item is a **Legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
+- **Colorize markers by** (dropdown) — None (default), Differ mine, Author, Rating, Taken date, Upload date, Season, Premium, License. Own vs. Wikimedia is **not** a color mode — it's shown by marker **shape** (square = Wikimedia, circle = own photo, wide rectangle = own panorama), independent of the coloring. Wikimedia Commons photos carry Author (numeric Commons id), Taken date, Upload date, Season, Rating, Premium, Differ-mine and License data (imported from the Commons image + Structured-Data dumps), so they colorize in every mode; a photo missing a given value falls back individually (neutral grey for dates/season, the fallback license color for license), just like an own photo. For every mode except None and Author, the dropdown's first item is a **Legend** checkbox (set off by a divider) that toggles a legend below the toolbar — a color scale for the gradient modes (Rating/Taken date/Upload date/Season), labeled swatches for the categorical ones (Differ mine/Premium/License)
 - **View photos** (dropdown, ordering) — from last uploaded (<kbd>p</kbd> <kbd>l</kbd>), from newest, from most rated, from last comment
 - **Leaderboard** (<kbd>p</kbd> <kbd>b</kbd>) — modal with a time-period selector (All time / last 3 months / last 30 days) and ranking tables: photos per author, and photos per author per country
 - **Settings** (gear dropdown) — Show shooting direction, Notify photo comments via e-mail, plus premium options: "Include all my photos in premium content" and "Make all my photos accessible to everyone"
 
 **Upload modal:** drag-and-drop or pick photos; per photo set name, description, capture date/time, location (with "Set the location" on the map), azimuth (shooting direction), tags, a license (Creative Commons: CC0, CC BY, CC BY-SA — the default, CC BY-NC, CC BY-NC-SA), and an optional "make available only to premium users" flag. Shows the gallery rules (max 10 MB, landscapes/documentation only, own photos only, published under the license you choose per photo, etc.).
 
-**Photo viewer:** shows the full image with its Creative Commons license (badge + "licensed since" date), uploader, capture date and rating; users can comment, rate, modify (own photos), delete, show on the map, open fullscreen, or open in an external app. Photos can be navigated sequentially (e.g. "1 / 51"). URL path (open photo): `/#show=gallery-viewer/<id>` (legacy `/#image=<id>` still works).
+**Photo viewer:** shows the full image with its Creative Commons license (badge + "licensed since" date), uploader, capture date and rating; users can comment, rate, modify (own photos), delete, show on the map, open fullscreen, or open in an external app. Wikimedia Commons photos open in the same viewer, showing the Commons author, license and a link to the Commons file page (image and attribution fetched straight from Commons); they can be rated and commented but not edited/deleted. Full-360 equirectangular panoramas open in an interactive drag-to-look viewer (Pannellum): own photos flagged as panoramas on upload, and Wikimedia Commons photos detected by their exact 2:1 dimensions. Photos can be navigated sequentially (e.g. "1 / 51"). URL path (open photo): `/#show=gallery-viewer/<id>` (legacy `/#image=<id>` still works).
 
 ### My maps
 
@@ -528,7 +528,7 @@ Pre-defined map layers.
 - **name** (human-friendly; as shown in the UI)
 - **id** (internal type code; used in the `layers=` URL param)
 - **layer** (base | overlay) — overlays are drawn on top of a base layer
-- **technology** (tile | maplibre | wms | parametricShading | gallery | wikipedia | wikimediaCommons | interactive)
+- **technology** (tile | maplibre | wms | parametricShading | gallery | wikipedia | interactive)
 - **minZ / maxNativeZ** (minimum usable zoom / maximum native tile zoom; above maxNativeZ tiles are upscaled)
 - **premiumFromZ** (zoom level from which premium access is required, if any)
 - **creditsPerMTile** (offline-export price in credits per million tiles, if applicable)
@@ -571,9 +571,8 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 | name                       | id  | technology        | minZ | maxNativeZ | premiumFromZ | creditsPerMTile | supersededBy | shortcut | countries | notes                                                      |
 | -------------------------- | --- | ----------------- | ---: | ---------: | -----------: | --------------: | ------------ | -------- | --------- | ---------------------------------------------------------- |
 | Data layer                 | i   | interactive       |      |            |              |                 |              | ⇧d       |           | Interactive items of all tools (drawing, route, search, …) |
-| Photos                     | I   | gallery           |    0 |            |              |                 |              | ⇧f       |           | Creative Commons, chosen per photo (CC BY-SA 4.0 default); premium-only photos option |
+| Photos                     | I   | gallery           |   10 |            |              |                 |              | ⇧f       |           | Own Creative-Commons photos (CC BY-SA 4.0 default; premium-only option) **and** geotagged Wikimedia Commons photos, in one layer; both shown from zoom 10 |
 | Wikipedia                  | w   | wikipedia         |    8 |            |              |                 |              | ⇧w       |           | Wikipedia                                                  |
-| Wikimedia Commons photos   | M   | wikimediaCommons  |   13 |            |              |                 |              | ⇧m       |           | Wikimedia Commons                                          |
 | Forest tracks NLC (2017)   | l1  | tile              |   11 |         15 |              |            1000 | l2           |          | sk        | © NLC Zvolen (legacy)                                      |
 | Forest tracks NLC          | l2  | maplibre          |    9 |            |              |                 |              | ⇧n       | sk        | © NLC Zvolen                                               |
 | Parametric shading         | h   | parametricShading |      |         13 |              |                 |              | ⇧h       |           | Experimental; © Freemap, GEDTM30 (Europe)                  |
@@ -590,7 +589,7 @@ Notes:
 
 The id values above are used in deep links via the `layers=` URL param: one base-layer code, optionally followed by `~` and the concatenated overlay codes (e.g. `layers=X~I` = Outdoor base + Photos overlay). They are **advisory** for interpreting links and do **not** grant permission to scrape tiles or data; respect each layer's attribution and license.
 
-Clicking a marker on the Wikipedia or Wikimedia Commons overlay opens a preview modal, addressable via the unified `show=` param: `/#show=wiki/<lang>:<title>` for a Wikipedia article and `/#show=wmc/<pageId>` for a Wikimedia Commons photo (legacy `/#wmc=<pageId>` still works).
+Clicking a marker on the Wikipedia overlay opens a preview modal, addressable via the unified `show=` param: `/#show=wiki/<lang>:<title>`. Wikimedia Commons photos are part of the Photos layer and open in the gallery viewer like any other photo (legacy `/#show=wmc/<pageId>` and `/#wmc=<pageId>` links still resolve there).
 
 ## Links
 

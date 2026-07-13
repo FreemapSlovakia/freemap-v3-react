@@ -35,8 +35,9 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
   colorizeBy: 'Vybarvit podle',
   showDirection: 'Ukaž směr focení',
+  legendCategory: {},
+
   c: {
-    disable: 'Nevybarvit',
     mine: 'Odlišit moje',
     userId: 'Autor',
     rating: 'Hodnocení',
@@ -48,6 +49,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
   viewer: {
     title: 'Fotografie',
+    imageUnavailable: 'Obrázek není dostupný',
     comments: 'Komentáře',
     newComment: 'Nový komentář',
     addComment: 'Přidej',
@@ -165,6 +167,8 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     noTags: 'bez tagů',
     pano: 'Panoráma',
     premium: 'Prémiové',
+    source: 'Zdroj',
+    allSources: 'Vše',
   },
   noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
   linkToWww: 'fotografie na www.freemap.sk',

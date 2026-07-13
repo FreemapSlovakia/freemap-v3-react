@@ -4,7 +4,7 @@ import { UserChip } from '@shared/components/UserChip.js';
 import { clsx } from 'clsx';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap';
-import { FaCamera, FaTimes, FaTrophy } from 'react-icons/fa';
+import { FaCamera, FaInfoCircle, FaTimes, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { countryCodeToFlag, Emoji } from '../../../shared/components/Emoji.js';
@@ -133,6 +133,10 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className={clsx('d-flex', 'flex-column', classes.body)}>
+        <Alert variant="info" className="py-2">
+          <FaInfoCircle /> {gm?.excludesWikimedia}
+        </Alert>
+
         <Form.Group className="mb-2">
           <Form.Label>{gm?.stats.timePeriod}</Form.Label>
           <Form.Select
@@ -244,7 +248,7 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
 
                   <h5 className="mt-2 mb-3">{gm?.stats.perUserPerCountry}</h5>
 
-                  <Table striped bordered>
+                  <Table striped bordered className="mb-0">
                     <thead>
                       <tr>
                         <th className="text-center">

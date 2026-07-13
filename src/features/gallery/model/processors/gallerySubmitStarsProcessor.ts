@@ -1,5 +1,6 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { pictureIdToPath } from '../../pictureIdPath.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import { galleryRequestImage, gallerySubmitStars } from '../actions.js';
 
@@ -29,7 +30,7 @@ export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> =
         await httpRequest({
           getState,
           method: 'POST',
-          url: `/gallery/pictures/${id}/rating`,
+          url: `/gallery/pictures/${pictureIdToPath(id)}/rating`,
           data: { stars },
           expectedStatus: 204,
         });

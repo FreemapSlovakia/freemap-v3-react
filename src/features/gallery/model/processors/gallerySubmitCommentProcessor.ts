@@ -1,5 +1,6 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { pictureIdToPath } from '../../pictureIdPath.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import { galleryRequestImage, gallerySubmitComment } from '../actions.js';
 
@@ -20,7 +21,7 @@ export const gallerySubmitCommentProcessor: Processor = {
       await httpRequest({
         getState,
         method: 'POST',
-        url: `/gallery/pictures/${id}/comments`,
+        url: `/gallery/pictures/${pictureIdToPath(id)}/comments`,
         data: {
           comment: getState().gallery.comment,
           webBaseUrl: location.origin,

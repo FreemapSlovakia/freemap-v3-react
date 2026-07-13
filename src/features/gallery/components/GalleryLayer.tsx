@@ -7,7 +7,7 @@ import {
   type Map as LeafletMap,
   GridLayer as LGridLayer,
 } from 'leaflet';
-import { createFilter } from '../galleryUtils.js';
+import { createFilter, GALLERY_SOURCES } from '../galleryUtils.js';
 import type { GalleryColorizeBy, GalleryFilter } from '../model/actions.js';
 import { PicturesResponse } from '../model/pictures.js';
 import { renderGalleryTile } from './galleryTileRenderrer.js';
@@ -114,6 +114,7 @@ class LGalleryLayer extends LGridLayer {
       }
     }
 
+    // `source` is always present in the response, so it needs no server field.
     if (colorizeBy) {
       sp.append(
         'fields',
@@ -123,6 +124,23 @@ class LGalleryLayer extends LGridLayer {
             ? 'takenAt'
             : colorizeBy,
       );
+    }
+
+    const sources = this._options?.filter.sources ?? GALLERY_SOURCES;
+
+    for (const source of sources) {
+      sp.append('sources', source);
+    }
+
+    // With all sources filtered out there's nothing to request — leave the tile
+    // blank. Required because an empty `sources` param is read server-side as
+    // "all sources". (The zoom gate is the layer's minZoom in mapDefinitions.)
+    // Defer `done` so it runs after Leaflet has registered the tile (createTile
+    // must return first) — the fetch path defers via `processTile().then`.
+    if (sources.length === 0) {
+      queueMicrotask(() => done(undefined, tile));
+
+      return tile;
     }
 
     const processTile = async () => {
@@ -187,6 +205,7 @@ class LGalleryLayer extends LGridLayer {
               premium: picture.premium,
               azimuth: picture.azimuth,
               license: picture.license,
+              source: picture.source ?? 0,
             };
           }) ?? [],
         dpr,
@@ -199,16 +218,32 @@ class LGalleryLayer extends LGridLayer {
         size,
       };
 
-      if (this.supportsOffscreen) {
-        const imageBitmap = await this._workerPool.addJob<ImageBitmap>(() => [
-          ctx,
-          [],
-        ]);
+      let workerRendered = false;
 
-        tile.getContext('2d')?.drawImage(imageBitmap, 0, 0);
+      if (this.supportsOffscreen) {
+        // Render off the main thread and blit the result.
+        try {
+          const imageBitmap = await this._workerPool.addJob<ImageBitmap>(() => [
+            ctx,
+            [],
+          ]);
+
+          tile.getContext('2d')?.drawImage(imageBitmap, 0, 0);
+
+          workerRendered = true;
+        } catch (err) {
+          // Fall back to the main thread only when the worker actually failed,
+          // so a successful tile is never drawn twice.
+          console.warn(
+            'gallery worker render failed; main-thread fallback',
+            err,
+          );
+        }
       }
 
-      renderGalleryTile({ ...ctx, tile });
+      if (!workerRendered) {
+        renderGalleryTile({ ...ctx, tile });
+      }
     };
 
     processTile().then(

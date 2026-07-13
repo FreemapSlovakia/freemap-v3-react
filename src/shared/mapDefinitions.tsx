@@ -13,7 +13,7 @@ import {
 } from 'react-icons/fa';
 import { GiHills, GiStonePile, GiTreasureMap } from 'react-icons/gi';
 import { LuLandPlot } from 'react-icons/lu';
-import { SiOpenstreetmap, SiWikimediacommons } from 'react-icons/si';
+import { SiOpenstreetmap } from 'react-icons/si';
 import z from 'zod';
 import black1x1 from '@/images/1x1-black.png';
 import transparent1x1 from '@/images/1x1-transparent.png';
@@ -140,10 +140,6 @@ type IsWikipediaLayerDef = HasZIndex & {
   technology: 'wikipedia';
 };
 
-type IsWikimediaCommonsLayerDef = HasZIndex & {
-  technology: 'wikimediaCommons';
-};
-
 type IsInteractiveLayerDef = {
   technology: 'interactive';
 };
@@ -249,8 +245,7 @@ export type IsAllTechnologiesLayerDef =
   | IsParametricShadingLayerDef
   | IsGalleryLayerDef
   | IsInteractiveLayerDef
-  | IsWikipediaLayerDef
-  | IsWikimediaCommonsLayerDef;
+  | IsWikipediaLayerDef;
 
 export type IsCustomLayer = {
   name?: string;
@@ -917,7 +912,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     defaultInMenu: true,
     technology: 'gallery',
     icon: <FaCamera />,
-    minZoom: 0,
+    minZoom: 10,
     shortcut: { code: 'KeyF', shift: true },
     zIndex: 4,
     attribution: [
@@ -925,6 +920,11 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
         type: 'photos',
         nameKey: 'photosCc',
         url: 'https://creativecommons.org/',
+      },
+      {
+        type: 'photos',
+        name: 'Wikimedia Commons',
+        url: 'https://commons.wikimedia.org/',
       },
     ],
   },
@@ -939,24 +939,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     shortcut: { code: 'KeyW', shift: true },
     zIndex: 4,
     attribution: [],
-  },
-  {
-    layer: 'overlay',
-    type: 'M',
-    defaultInMenu: true,
-    defaultInToolbar: true,
-    technology: 'wikimediaCommons',
-    icon: <SiWikimediacommons />,
-    minZoom: 13,
-    shortcut: { code: 'KeyM', shift: true },
-    zIndex: 4,
-    attribution: [
-      {
-        type: 'photos',
-        name: 'Wikimedia Commons',
-        url: 'https://commons.wikimedia.org/',
-      },
-    ],
   },
   {
     layer: 'overlay',

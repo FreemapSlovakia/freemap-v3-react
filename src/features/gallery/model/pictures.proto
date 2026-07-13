@@ -17,6 +17,8 @@ message Picture {
   optional string description = 14;
   optional string user = 15;
   optional string license = 17;
+  // 0 = own gallery photo (default, omitted on the wire), 1 = Wikimedia Commons.
+  uint32 source = 18;
 }
 
 message PicturesResponse {

@@ -3,6 +3,7 @@ import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/compone
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { getMinWidthForBreakpoint } from '@shared/breakpoints.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { UserChip } from '@shared/components/UserChip.js';
@@ -18,21 +19,33 @@ import {
   type SubmitEvent,
   useCallback,
   useEffect,
+  useReducer,
   useRef,
   useState,
 } from 'react';
-import { Alert, Badge, Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import {
+  Alert,
+  Badge,
+  Button,
+  Form,
+  InputGroup,
+  Modal,
+  Spinner,
+} from 'react-bootstrap';
 import {
   FaCamera,
   FaExternalLinkAlt,
   FaGem,
+  FaImage,
   FaPencilAlt,
   FaRegDotCircle,
   FaSave,
   FaTimes,
   FaTrash,
+  FaUser,
 } from 'react-icons/fa';
 import { RiFullscreenLine } from 'react-icons/ri';
+import { SiWikimediacommons } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import { Rating } from 'react-simple-star-rating';
 import { getPhotoLicense, LicenseBadge } from '../licenses.js';
@@ -51,7 +64,13 @@ import {
   gallerySubmitComment,
   gallerySubmitStars,
 } from '../model/actions.js';
+import { pictureIdToPath } from '../pictureIdPath.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
+import {
+  fetchWikimediaMeta,
+  type WikimediaMeta,
+  wikimediaImageUrl,
+} from '../wikimediaMeta.js';
 import { Azimuth } from './Azimuth.js';
 import { GalleryEditForm, type PictureModel } from './GalleryEditForm.js';
 import { RecentTags } from './RecentTags.js';
@@ -60,6 +79,92 @@ import clsx from 'clsx';
 import classes from './GalleryViewerModal.module.css';
 
 type Props = { show: boolean };
+
+/**
+ * Commons `DateTimeOriginal` is free-form — usually ISO `YYYY-MM-DD`, sometimes
+ * raw EXIF `YYYY:MM:DD HH:MM:SS`, sometimes a range ("between 2024 and 2026")
+ * that won't match. Parse the leading date (and optional time) by component
+ * into a local Date, so date-only and datetime values are consistent (no
+ * UTC-vs-local off-by-one) and independent of engine string-parsing quirks.
+ * Returns null when it isn't a recognizable date so the caller can show it
+ * verbatim.
+ */
+function parseCommonsDate(value: string | undefined): Date | null {
+  const m = value?.match(
+    /^(\d{4})[:-](\d{2})[:-](\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/,
+  );
+
+  if (!m) {
+    return null;
+  }
+
+  const [, y, mo, d, h, mi, s] = m;
+
+  const year = Number(y);
+  const month = Number(mo);
+  const day = Number(d);
+
+  const date = new Date(
+    year,
+    month - 1,
+    day,
+    Number(h ?? 0),
+    Number(mi ?? 0),
+    Number(s ?? 0),
+  );
+
+  // Reject zero or out-of-range components that silently roll over into a real
+  // Date — e.g. the raw-EXIF null "0000:00:00 00:00:00" or a "2012:00:00" with
+  // a zero month/day would otherwise show as "30 Nov 1899". Require the built
+  // date's components to round-trip.
+  return date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+    ? date
+    : null;
+}
+
+// Cap on cached Commons metadata entries — plenty for instant neighbour
+// navigation while bounding memory over a long browsing session.
+const COMMONS_CACHE_MAX = 300;
+
+// Max width requested for the windowed (non-fullscreen) Commons image. Snapping
+// to the 1920 bucket keeps hi-dpi modals off the heavy, cold-render-prone 3840
+// one; fullscreen still rescales up to 3840.
+const WINDOWED_MAX_WIDTH = 1920;
+
+// The modal content's CSS width by Bootstrap breakpoint (xl / lg / smaller),
+// shared by the image-fetch width, the display rescale, and the pano canvas.
+function modalContentWidth(): number {
+  return window.matchMedia(`(min-width: ${getMinWidthForBreakpoint('xl')}px)`)
+    .matches
+    ? 1110
+    : window.matchMedia(`(min-width: ${getMinWidthForBreakpoint('lg')}px)`)
+          .matches
+      ? 770
+      : 470;
+}
+
+/** Insert into the Commons metadata cache, evicting the oldest entries past the
+ *  cap (Map keeps insertion order, so the oldest key is always first). */
+function cachePut(
+  cache: Map<string, WikimediaMeta | 'error'>,
+  key: string,
+  value: WikimediaMeta | 'error',
+): void {
+  cache.delete(key); // re-insert to refresh recency
+  cache.set(key, value);
+
+  while (cache.size > COMMONS_CACHE_MAX) {
+    const oldest = cache.keys().next().value;
+
+    if (oldest === undefined) {
+      break;
+    }
+
+    cache.delete(oldest);
+  }
+}
 
 export default function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
@@ -75,6 +180,16 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const imageIds = useAppSelector((state) => state.gallery.imageIds);
 
   const image = useAppSelector((state) => state.gallery.image);
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  // Cache of Commons metadata keyed by `language/pageId`, so navigating to a
+  // prefetched neighbour is instant. `'error'` marks a failed fetch; keying by
+  // language means switching language just misses the stale entries.
+  const commonsCache = useRef(new Map<string, WikimediaMeta | 'error'>());
+
+  // Bumped when a Commons fetch lands in the cache, to re-render off the ref.
+  const [, forceCommons] = useReducer((x: number) => x + 1, 0);
 
   const reduxActiveImageId = useAppSelector(
     (state) => state.gallery.activeImageId,
@@ -98,8 +213,6 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const [activeImageId, setActiveImageId] = useState<number | null>(null);
 
-  const imageElement = useRef<HTMLImageElement>(undefined);
-
   const fullscreenElement = useRef<HTMLDivElement | null>(null);
 
   const becomePremium = useBecomePremium();
@@ -109,6 +222,31 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
     setActiveImageId(reduxActiveImageId);
   }
+
+  // Wikimedia photos have a negative id (internal `-pageId`). Deriving this from
+  // the id — not `image.source` — means we know it's a Commons photo before its
+  // picture record loads, so we never point <img> at our own server for it (a
+  // 404 that would flash a broken image instead of the spinner).
+  const isWikimedia = activeImageId !== null && activeImageId < 0;
+
+  // Commons pageId of the current Wikimedia photo (id = -pageId), or null.
+  const wmPageId = isWikimedia ? -activeImageId : null;
+
+  // Metadata is read from the cache during render, keyed on the id alone — so a
+  // prefetched neighbour is shown instantly, without waiting for the Redux
+  // picture record to load. The effect below fills the cache and re-renders for
+  // ids not yet cached.
+  const commonsEntry =
+    wmPageId === null
+      ? undefined
+      : commonsCache.current.get(`${language}/${wmPageId}`);
+
+  const commonsMeta =
+    commonsEntry && commonsEntry !== 'error' ? commonsEntry : null;
+
+  // Whether the current Wikimedia photo's image/metadata failed to load — so we
+  // can show an error instead of an endless spinner.
+  const commonsError = commonsEntry === 'error';
 
   useEffect(() => {
     function handleFullscreenChange() {
@@ -123,16 +261,6 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
   }, []);
-
-  const setImageElement = (element: HTMLImageElement) => {
-    imageElement.current = element;
-
-    if (element) {
-      element.addEventListener('load', () => {
-        setLoading(false);
-      });
-    }
-  };
 
   const handleEditModelChange = useCallback(
     (editModel: PictureModel) => {
@@ -179,39 +307,78 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     azimuth,
   } = image ?? {};
 
+  // Wikimedia photos carry no server-side title/description; they come from the
+  // Commons API fetch instead.
+  const displayTitle = isWikimedia ? commonsMeta?.title : title;
+
+  const displayDescription = isWikimedia
+    ? commonsMeta?.description
+    : description;
+
   const photoLicense = getPhotoLicense(image?.license);
+
+  // "Captured on": our photos carry a real Date; Commons gives a free-form
+  // string we parse when we can, else show verbatim.
+  const capturedDate = isWikimedia
+    ? parseCommonsDate(commonsMeta?.dateTime)
+    : (takenAt ?? null);
+
+  const capturedRaw =
+    isWikimedia && !capturedDate ? commonsMeta?.dateTime : undefined;
+
+  // License badge: our photos always map onto our set; Commons photos only when
+  // their license does (by CC components). The displayed name and link use the
+  // real (possibly older-version) Commons values.
+  const badgeLicense = isWikimedia
+    ? commonsMeta?.freemapLicense
+    : photoLicense.id;
+
+  const licenseName = isWikimedia
+    ? commonsMeta?.license
+    : gm?.license.names[photoLicense.id];
+
+  const licenseUrl = isWikimedia ? commonsMeta?.licenseUrl : photoLicense.url;
 
   const premium = Boolean(image?.premium);
 
   const disabledPremium =
-    premium && !isPremium(user) && user?.id !== image?.user.id;
+    premium && !isPremium(user) && user?.id !== image?.user?.id;
 
-  const pano = Boolean(image?.pano);
+  // Own photos carry the pano flag server-side; Commons 360s have no GPano/XMP,
+  // so they're detected from their exact 2:1 dimensions in the fetched metadata.
+  // Gating the Wikimedia case on `commonsMeta` also stops a stale previous
+  // record from hijacking the render into the pannellum branch (blank canvas)
+  // while a Commons photo's metadata loads.
+  const pano = isWikimedia ? Boolean(commonsMeta?.pano) : Boolean(image?.pano);
 
-  const p = activeImageId !== null && pano;
+  // The equirectangular image pannellum renders: our own image endpoint, or a
+  // width-capped Commons thumbnail (from wikimediaMeta) for a Wikimedia pano.
+  const panoUrl = isWikimedia
+    ? commonsMeta?.panoUrl
+    : `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`;
+
+  const p = activeImageId !== null && pano && Boolean(panoUrl);
 
   const panoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!p || !panoRef.current) {
+    if (!p || !panoRef.current || !panoUrl) {
       return;
     }
 
     const v = window.pannellum.viewer(panoRef.current, {
-      panorama: `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`,
+      panorama: panoUrl,
       type: 'equirectangular',
       autoLoad: true,
       showControls: false,
       autoRotate: 15,
       autoRotateInactivityDelay: 60000,
-      // compass: true,
-      // title: 'panorama',
     });
 
     return () => {
       v.destroy();
     };
-  }, [p, activeImageId]);
+  }, [p, panoUrl]);
 
   const handleFullscreen = useCallback(() => {
     if (!document.exitFullscreen || !fullscreenElement.current) {
@@ -268,6 +435,68 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     }
   }, []);
 
+  const loadCommons = useCallback(
+    async (
+      pageId: number,
+      signal?: AbortSignal,
+    ): Promise<WikimediaMeta | null> => {
+      const key = `${language}/${pageId}`;
+
+      const cached = commonsCache.current.get(key);
+
+      if (cached) {
+        return cached === 'error' ? null : cached;
+      }
+
+      // Fetch the base thumbnail at the windowed modal size (not the full
+      // window): it's what the modal shows by default and what gets prefetched,
+      // and the viewer rescales it up per render for fullscreen. Capped at 1920
+      // (a common, fast bucket) so hi-dpi windows don't pull the heavy 3840 one
+      // — fullscreen still rescales up to it. Commons rounds up to a bucket.
+      const width = Math.min(
+        WINDOWED_MAX_WIDTH,
+        Math.round((window.devicePixelRatio || 1) * modalContentWidth()),
+      );
+
+      const meta = await fetchWikimediaMeta(
+        pageId,
+        language,
+        width,
+        signal,
+      ).catch(() => null);
+
+      if (!signal?.aborted) {
+        cachePut(commonsCache.current, key, meta?.imageUrl ? meta : 'error');
+      }
+
+      return meta?.imageUrl ? meta : null;
+    },
+    [language],
+  );
+
+  // For a Wikimedia photo not yet cached, fetch its Commons image + attribution
+  // straight from the Commons API into the cache and re-render. Keyed on the id
+  // (not the loaded picture record), so it starts as soon as the photo is opened
+  // and a prefetched neighbour is already present (rendered instantly above).
+  useEffect(() => {
+    if (
+      wmPageId === null ||
+      commonsCache.current.has(`${language}/${wmPageId}`)
+    ) {
+      return;
+    }
+
+    const controller = new AbortController();
+
+    loadCommons(wmPageId, controller.signal).then(() => {
+      if (!controller.signal.aborted) {
+        forceCommons();
+      }
+    });
+
+    return () => controller.abort();
+  }, [wmPageId, language, loadCommons]);
+
   const handleSave = useCallback(
     (e: SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -284,7 +513,23 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const prevImageId = index > 0 ? imageIds?.[index - 1] : null;
 
-  // TODO const loadingMeta = !image || image.id !== activeImageId;
+  // Prefetch neighbouring Wikimedia photos (metadata + image) so next/prev is
+  // instant — mirroring the hidden-<img> prefetch used for gallery photos below.
+  useEffect(() => {
+    const controller = new AbortController();
+
+    for (const nid of [nextImageId, prevImageId]) {
+      if (nid != null && nid < 0) {
+        loadCommons(-nid, controller.signal).then((meta) => {
+          if (meta?.imageUrl && !controller.signal.aborted) {
+            new Image().src = meta.imageUrl;
+          }
+        });
+      }
+    }
+
+    return () => controller.abort();
+  }, [nextImageId, prevImageId, loadCommons]);
 
   const dateFormat = useDateTimeFormat({
     year: 'numeric',
@@ -294,23 +539,35 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     minute: '2-digit',
   });
 
-  const getImageUrl = (id: number) => {
-    const width = Math.round(
+  // Device-pixel width of the displayed image: the modal's CSS width by
+  // breakpoint (or the full window in fullscreen) times the pixel ratio.
+  // Recomputed per render, so toggling fullscreen (which also bumps `imgKey`)
+  // re-derives a larger size.
+  const displayPixelWidth = () =>
+    Math.round(
       window.devicePixelRatio *
-        (isFullscreen
-          ? window.innerWidth
-          : window.matchMedia('(min-width: 1200px)').matches
-            ? 1110
-            : window.matchMedia('(min-width: 992px)').matches
-              ? 770
-              : 470),
+        (isFullscreen ? window.innerWidth : modalContentWidth()),
     );
 
-    return (
-      `${process.env['API_URL']}/gallery/pictures/${id}/image?width=${width}` +
-      (user ? `&authToken=${encodeURIComponent(user.authToken)}` : '')
-    );
-  };
+  const getImageUrl = (id: number) =>
+    `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(id)}/image?width=${displayPixelWidth()}` +
+    (user ? `&authToken=${encodeURIComponent(user.authToken)}` : '');
+
+  // The displayed image: gallery photos stream from our server; Wikimedia photos
+  // come straight from Commons (once their metadata has loaded).
+  const mainImageSrc =
+    activeImageId === null
+      ? undefined
+      : isWikimedia
+        ? commonsMeta
+          ? wikimediaImageUrl(
+              commonsMeta,
+              isFullscreen
+                ? displayPixelWidth()
+                : Math.min(displayPixelWidth(), WINDOWED_MAX_WIDTH),
+            )
+          : undefined
+        : getImageUrl(activeImageId);
 
   const handlePositionPick = useCallback(() => {
     dispatch(gallerySetItemForPositionPicking(-1));
@@ -334,19 +591,43 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     dispatch(galleryClear());
   }, [dispatch]);
 
+  // Wikimedia photos are read-only here (no local edit/delete/tags).
   const canEdit = Boolean(
-    image && (hasRole(user, 'galleryModerator') || user?.id === image.user.id),
+    image &&
+      !isWikimedia &&
+      (hasRole(user, 'galleryModerator') || user?.id === image.user?.id),
   );
 
   const handleTagAdd = (tag: string) => {
     dispatch(galleryQuickAddTag(tag));
   };
 
-  let url = `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`;
+  // Fallback Commons file-page link derived from the active pageId (id =
+  // -pageId), for when the metadata's descriptionUrl hasn't loaded yet (e.g.
+  // first open) — so the link is never empty.
+  const commonsPageUrl =
+    isWikimedia && activeImageId !== null
+      ? `https://commons.wikimedia.org/?curid=${-activeImageId}`
+      : undefined;
 
-  if (activeImageId === image?.id && image.hmac) {
+  // "Open in external app" points at the Commons file page for Wikimedia photos,
+  // and at the raw image for gallery photos.
+  let url = isWikimedia
+    ? (commonsMeta?.descriptionUrl ?? commonsPageUrl ?? '')
+    : `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(activeImageId ?? 0)}/image`;
+
+  if (!isWikimedia && activeImageId === image?.id && image.hmac) {
     url += `?hmac=${encodeURIComponent(image.hmac)}`;
   }
+
+  const statusOverlay = commonsError ? (
+    <div className="text-center text-body-secondary">
+      <FaImage size={48} className="opacity-50" />
+      <div>{gm?.viewer.imageUnavailable}</div>
+    </div>
+  ) : (
+    <Spinner animation="border" role="status" variant="primary" />
+  );
 
   return (
     <Modal
@@ -374,7 +655,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
             </Form.Select>
           )}
           {imageIds ? ` / ${imageIds.length} ` : ''}
-          {title && `- ${title}`}
+          {displayTitle && `- ${displayTitle}`}
           {premium && (
             <>
               {' '}
@@ -402,14 +683,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                         ? { width: '100dvw', height: '100dvh' }
                         : {
                             height: `${Math.max(window.innerHeight - 400, 300)}px`,
-                            width: `${
-                              window.matchMedia('(min-width: 1200px)').matches
-                                ? 1110
-                                : window.matchMedia('(min-width: 992px)')
-                                      .matches
-                                  ? 770
-                                  : 470
-                            }px`,
+                            width: `${modalContentWidth()}px`,
                           }
                     }
                   />
@@ -426,19 +700,62 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       </>
                     )}
                   </Alert>
-                ) : (
-                  <div className={classes.imageContainer}>
+                ) : mainImageSrc ? (
+                  <div
+                    className={clsx(
+                      classes.imageContainer,
+                      'position-relative',
+                    )}
+                    // While loading, the <img> has no intrinsic size yet, so the
+                    // fit-content container would collapse to 0 and hide the
+                    // centered spinner overlay (margin:auto still centers the
+                    // 0-width box, so a min-height is enough to reveal it).
+                    style={
+                      loading ? { minHeight: 'min(60vh, 400px)' } : undefined
+                    }
+                  >
                     <img
                       key={imgKey}
-                      ref={setImageElement}
                       className={clsx('gallery-image', loading && 'loading')}
-                      src={getImageUrl(activeImageId)}
-                      alt={title ?? undefined}
+                      src={mainImageSrc}
+                      alt={displayTitle ?? undefined}
+                      onLoad={() => setLoading(false)}
+                      onError={() => {
+                        setLoading(false);
+
+                        if (wmPageId !== null) {
+                          // Mark this Commons photo failed so we show
+                          // "unavailable" instead of a perpetual spinner; the
+                          // derived commonsError picks it up.
+                          cachePut(
+                            commonsCache.current,
+                            `${language}/${wmPageId}`,
+                            'error',
+                          );
+
+                          forceCommons();
+                        }
+                      }}
                     />
+
+                    {(loading || commonsError) && (
+                      <div className="position-absolute top-50 start-50 translate-middle">
+                        {statusOverlay}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    className="d-flex align-items-center justify-content-center"
+                    style={{ minHeight: 'min(60vh, 400px)' }}
+                  >
+                    {statusOverlay}
                   </div>
                 )}
 
-                {nextImageId != null && !loading && (
+                {/* Preload neighbours (own-gallery only — a Wikimedia neighbour's
+                    URL isn't known until its Commons metadata is fetched). */}
+                {nextImageId != null && nextImageId >= 0 && !loading && (
                   <img
                     key={`next-${imgKey}`}
                     className="d-none"
@@ -447,7 +764,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   />
                 )}
 
-                {prevImageId != null && !loading && (
+                {prevImageId != null && prevImageId >= 0 && !loading && (
                   <img
                     key={`prev-${imgKey}`}
                     className="d-none"
@@ -495,24 +812,75 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <>{`${index + 1} / ${imageIds.length}`} ｜ </>
               )}
 
-              {isFullscreen && title && <>{title} ｜ </>}
+              {isFullscreen && displayTitle && <>{displayTitle} ｜ </>}
 
-              {gm?.viewer.uploaded({
-                username: <UserChip key={image.user.id} user={image.user} />,
-                createdAt: createdAt ? (
-                  <b key={createdAt.getTime()}>
-                    {dateFormat.format(createdAt)}
-                  </b>
-                ) : (
-                  '-'
-                ),
-              })}
+              {isWikimedia ? (
+                <>
+                  {commonsMeta?.artist && (
+                    <>
+                      <FaUser />{' '}
+                      {commonsMeta.artistUrl ? (
+                        <a
+                          href={commonsMeta.artistUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {commonsMeta.artist}
+                        </a>
+                      ) : (
+                        commonsMeta.artist
+                      )}
+                      {' ｜ '}
+                    </>
+                  )}
+                  <SiWikimediacommons />{' '}
+                  <a
+                    href={commonsMeta?.descriptionUrl ?? commonsPageUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Wikimedia Commons
+                  </a>
+                </>
+              ) : image.user ? (
+                gm?.viewer.uploaded({
+                  username: <UserChip key={image.user.id} user={image.user} />,
+                  createdAt: createdAt ? (
+                    <b key={createdAt.getTime()}>
+                      {dateFormat.format(createdAt)}
+                    </b>
+                  ) : (
+                    '-'
+                  ),
+                })
+              ) : null}
 
-              {takenAt && (
+              {isWikimedia && createdAt && (
                 <>
                   {' ｜ '}
-                  {gm?.viewer.captured(
-                    <b key={takenAt.getTime()}>{dateFormat.format(takenAt)}</b>,
+                  {gm?.viewer.uploadedOn(
+                    <b key={createdAt.getTime()}>
+                      {dateFormat.format(createdAt)}
+                    </b>,
+                  )}
+                </>
+              )}
+
+              {(capturedDate || capturedRaw) && (
+                <>
+                  {' ｜ '}
+                  {capturedDate ? (
+                    gm?.viewer.captured(
+                      <b key={capturedDate.getTime()}>
+                        {dateFormat.format(capturedDate)}
+                      </b>,
+                    )
+                  ) : (
+                    // Commons gives an already-worded, localized phrase for
+                    // dates we can't parse ("Taken on 17 May 2012", "Fotené:
+                    // 17. mája 2012", "between 2024 and 2026"); show it verbatim
+                    // rather than doubling our "Captured on" label onto it.
+                    <b key={capturedRaw}>{capturedRaw}</b>
                   )}
                 </>
               )}
@@ -542,36 +910,56 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 </Fragment>
               ))}
 
-              {' ｜ '}
-              <LongPressTooltip
-                label={
-                  <>
-                    {gm?.license.descriptions[photoLicense.id]}
-                    {image.licenseSince && gm?.license.since && (
+              {badgeLicense ? (
+                <>
+                  {' ｜ '}
+                  <LongPressTooltip
+                    label={
                       <>
-                        <br />
-                        {gm.license.since}{' '}
-                        {dateFormat.format(image.licenseSince)}
+                        {gm?.license.descriptions[badgeLicense]}
+                        {!isWikimedia &&
+                          image.licenseSince &&
+                          gm?.license.since && (
+                            <>
+                              <br />
+                              {gm.license.since}{' '}
+                              {dateFormat.format(image.licenseSince)}
+                            </>
+                          )}
                       </>
+                    }
+                  >
+                    {({ props }) => (
+                      <span {...props}>
+                        <LicenseBadge licenseId={badgeLicense} />{' '}
+                        <a href={licenseUrl} target="license" rel="noreferrer">
+                          {licenseName}
+                        </a>
+                      </span>
+                    )}
+                  </LongPressTooltip>
+                </>
+              ) : (
+                isWikimedia &&
+                commonsMeta?.license && (
+                  <>
+                    {' ｜ '}
+                    {commonsMeta.licenseUrl ? (
+                      <a
+                        href={commonsMeta.licenseUrl}
+                        target="license"
+                        rel="noreferrer"
+                      >
+                        {commonsMeta.license}
+                      </a>
+                    ) : (
+                      commonsMeta.license
                     )}
                   </>
-                }
-              >
-                {({ props }) => (
-                  <span {...props}>
-                    <LicenseBadge licenseId={photoLicense.id} />{' '}
-                    <a
-                      href={photoLicense.url}
-                      target="license"
-                      rel="noreferrer"
-                    >
-                      {gm?.license.names[photoLicense.id]}
-                    </a>
-                  </span>
-                )}
-              </LongPressTooltip>
+                )
+              )}
 
-              {description && ` ｜ ${description}`}
+              {displayDescription && ` ｜ ${displayDescription}`}
 
               {!isFullscreen && editModel && (
                 <Form id="gallery-edit-form" onSubmit={handleSave}>
@@ -773,8 +1161,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     lon={lon}
                     placement="top"
                     includePoint
-                    pointTitle={title ?? undefined}
-                    pointDescription={description ?? undefined}
+                    pointTitle={displayTitle ?? undefined}
+                    pointDescription={displayDescription ?? undefined}
                     url={url}
                     {...props}
                   >

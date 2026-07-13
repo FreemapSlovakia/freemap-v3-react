@@ -1,6 +1,13 @@
 import type z from 'zod';
 import type { GalleryFilter, GalleryFilterSchema } from './model/actions.js';
 
+export type GallerySource = 'gallery' | 'wikimedia';
+
+export const GALLERY_SOURCES: GallerySource[] = ['gallery', 'wikimedia'];
+
+// The min zoom at which photos appear is the layer's `minZoom` in
+// mapDefinitions (Leaflet prunes the tiles below it, like any other layer).
+
 export function createFilter({
   tag,
   userId,
@@ -13,6 +20,7 @@ export function createFilter({
   pano,
   premium,
   license,
+  sources,
 }: GalleryFilter): z.input<typeof GalleryFilterSchema> {
   return {
     tag,
@@ -26,6 +34,7 @@ export function createFilter({
     pano,
     premium,
     license,
+    sources,
   };
 }
 

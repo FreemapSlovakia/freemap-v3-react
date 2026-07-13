@@ -25,14 +25,26 @@ export type GalleryMessages = {
   recentTags: string;
   filter: string;
   showPhotosFrom: string;
+  // Disclaimer: ordering/leaderboard cover own photos only, not Wikimedia ones.
+  excludesWikimedia: string;
   showLayer: string;
   upload: string;
   f: Record<GalleryListOrder, string>;
   colorizeBy: string;
+  // The "no colorize" dropdown entry (own vs. Wikimedia is shown by shape).
+  noColorize: string;
   showDirection: string;
-  c: Record<GalleryColorizeBy | 'disable', string>;
+  c: Record<GalleryColorizeBy, string>;
+  // Legend swatch labels for the categorical colorize modes.
+  legendCategory: {
+    mine: string;
+    notMine: string;
+    premium: string;
+    free: string;
+  };
   viewer: {
     title: string;
+    imageUnavailable: string;
     comments: string;
     newComment: string;
     addComment: string;
@@ -46,6 +58,7 @@ export type GalleryMessages = {
       username: ReactNode;
       createdAt: ReactNode;
     }) => JSX.Element;
+    uploadedOn: (createdAt: JSX.Element) => JSX.Element;
     captured: (takenAt: JSX.Element) => JSX.Element;
     deletePrompt: (title: string | null | undefined) => JSX.Element;
     deleteTitle: string;
@@ -107,10 +120,13 @@ export type GalleryMessages = {
     noTags: string;
     pano: string;
     premium: string;
+    source: string;
+    allSources: string;
   };
   noPicturesFound: string;
   linkToWww: string;
   linkToImage: string;
+  linkToCommons: string;
   allMyPhotos: {
     title: string;
     premium: string;

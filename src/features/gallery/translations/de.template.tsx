@@ -29,8 +29,9 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'vom letzten Kommentar',
   },
 
+  legendCategory: {},
+
   c: {
-    disable: 'Nicht einfärben',
     mine: 'Meine hervorheben',
     userId: 'Autor',
     rating: 'Bewertung',
@@ -43,6 +44,7 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
 
   viewer: {
     title: 'Foto',
+    imageUnavailable: 'Bild nicht verfügbar',
     comments: 'Kommentare',
     newComment: 'Neuer Kommentar',
     addComment: 'Hinzufügen',
@@ -147,6 +149,8 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     noTags: 'keine Tags',
     pano: 'Panorama',
     premium: 'Premium',
+    source: 'Quelle',
+    allSources: 'Alle',
   },
 
   allMyPhotos: {

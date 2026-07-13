@@ -37,7 +37,11 @@ import {
   keepObject,
   selectedTrackToken,
 } from '../selectionFilter.js';
-import { fetchPictures, type Picture } from './fetchPictures.js';
+import {
+  fetchPictures,
+  type Picture,
+  pictureExportUrls,
+} from './fetchPictures.js';
 import { exportElevationCancelActions } from './fillElevations.js';
 import {
   addAttribute,
@@ -328,19 +332,23 @@ function addPictures(
   lang: string,
   gm: GalleryMessages,
 ) {
-  for (const {
-    lat,
-    lon,
-    id,
-    takenAt,
-    createdAt,
-    title,
-    description,
-    tags,
-    rating,
-    user,
-    hmac,
-  } of pictures) {
+  for (const picture of pictures) {
+    const {
+      lat,
+      lon,
+      takenAt,
+      createdAt,
+      title,
+      description,
+      tags,
+      rating,
+      user,
+      license,
+      azimuth,
+    } = picture;
+
+    const links = pictureExportUrls(picture);
+
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
       lat: String(lat),
       lon: String(lon),
@@ -356,7 +364,9 @@ function addPictures(
 
     const lines: [string, string][] = [];
 
-    lines.push([gm?.filterModal.author ?? 'Author', user]);
+    if (user) {
+      lines.push([gm?.filterModal.author ?? 'Author', user]);
+    }
 
     if (description) {
       lines.push([gm?.filterModal.takenAt ?? 'Capture date', description]);
@@ -388,15 +398,20 @@ function addPictures(
         '☆'.repeat(4 - Math.floor(rating)),
     ]);
 
-    let imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
+    if (license) {
+      lines.push([gm?.license.label ?? 'License', license]);
+    }
 
-    if (hmac) {
-      imageUrl += `&hmac=${encodeURIComponent(hmac)}`;
+    if (azimuth != null) {
+      lines.push([gm?.editForm.azimuth ?? 'Azimuth', `${azimuth}°`]);
     }
 
     createElement(wptEle, 'desc', {
       cdata:
-        `<img src="${escapeHtml(imageUrl)}" width="100%"><p>` +
+        (links.imageUrl
+          ? `<img src="${escapeHtml(links.imageUrl)}" width="100%">`
+          : '') +
+        '<p>' +
         lines
           .map(
             ([key, value]) => `<b>${escapeHtml(key)}</b>: ${escapeHtml(value)}`,
@@ -406,20 +421,34 @@ function addPictures(
     });
 
     const link1 = createElement(wptEle, 'link', undefined, {
-      href: `${location.origin}?image=${id}`,
+      href: links.webUrl,
     });
 
     createElement(link1, 'text', gm?.linkToWww ?? 'photo at www.freemap.sk');
 
     createElement(link1, 'type', 'text/html');
 
-    const link2 = createElement(wptEle, 'link', undefined, {
-      href: imageUrl,
-    });
+    if (links.wikimedia) {
+      const link2 = createElement(wptEle, 'link', undefined, {
+        href: links.commonsUrl,
+      });
 
-    createElement(link2, 'text', gm?.linkToImage ?? 'photo image file');
+      createElement(
+        link2,
+        'text',
+        gm?.linkToCommons ?? 'photo at Wikimedia Commons',
+      );
 
-    createElement(link2, 'type', 'image/jpeg');
+      createElement(link2, 'type', 'text/html');
+    } else {
+      const link2 = createElement(wptEle, 'link', undefined, {
+        href: links.imageUrl,
+      });
+
+      createElement(link2, 'text', gm?.linkToImage ?? 'photo image file');
+
+      createElement(link2, 'type', 'image/jpeg');
+    }
 
     // TODO add comments to cmt?
   }
