@@ -41,7 +41,7 @@ export type GalleryListOrder =
 
 // Order matters: this is the order the colorize dropdown lists the modes (after
 // the "None" entry). Source isn't a mode — own vs. Wikimedia is shown by the
-// marker shape, independent of coloring.
+// marble shape, independent of coloring.
 export const GalleryColorizeBySchema = z.enum([
   'mine',
   'userId',

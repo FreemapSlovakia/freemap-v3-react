@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { FaCamera, FaPalette } from 'react-icons/fa';
 import { LICENSE_COLORS } from '../licenseColors.js';
 import { PHOTO_LICENSES } from '../licenses.js';
-import { GALLERY_COLOR, MUTED_COLOR } from '../markerColors.js';
+import { GALLERY_COLOR, MUTED_COLOR } from '../marbleColors.js';
 import type { GalleryColorizeBy } from '../model/actions.js';
 import type { GalleryMessages } from '../translations/GalleryMessages.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';

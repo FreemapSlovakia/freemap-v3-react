@@ -7,7 +7,7 @@ import {
   type Map as LeafletMap,
   GridLayer as LGridLayer,
 } from 'leaflet';
-import { createFilter, resolveSources } from '../galleryUtils.js';
+import { createFilter, GALLERY_SOURCES } from '../galleryUtils.js';
 import type { GalleryColorizeBy, GalleryFilter } from '../model/actions.js';
 import { PicturesResponse } from '../model/pictures.js';
 import { renderGalleryTile } from './galleryTileRenderrer.js';
@@ -126,7 +126,7 @@ class LGalleryLayer extends LGridLayer {
       );
     }
 
-    const sources = resolveSources(this._options?.filter.sources);
+    const sources = this._options?.filter.sources ?? GALLERY_SOURCES;
 
     for (const source of sources) {
       sp.append('sources', source);

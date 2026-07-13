@@ -8,13 +8,6 @@ export const GALLERY_SOURCES: GallerySource[] = ['gallery', 'wikimedia'];
 // The min zoom at which photos appear is the layer's `minZoom` in
 // mapDefinitions (Leaflet prunes the tiles below it, like any other layer).
 
-/** The sources to request, defaulting to all when the filter selects none. */
-export function resolveSources(
-  filterSources: GallerySource[] | undefined,
-): GallerySource[] {
-  return filterSources ?? GALLERY_SOURCES;
-}
-
 export function createFilter({
   tag,
   userId,

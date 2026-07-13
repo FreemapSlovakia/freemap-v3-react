@@ -2,7 +2,7 @@ import type { LatLon } from '@shared/types/common.js';
 import color from 'color';
 import type { LatLng } from 'leaflet';
 import { licenseColor } from '../licenseColors.js';
-import { GALLERY_COLOR, MUTED_COLOR, NO_DATA_COLOR } from '../markerColors.js';
+import { GALLERY_COLOR, MUTED_COLOR, NO_DATA_COLOR } from '../marbleColors.js';
 import type { GalleryColorizeBy } from '../model/actions.js';
 
 type Marble = LatLon & {
@@ -49,18 +49,18 @@ function sort(data: Marble[], toSort: (m: Marble) => number) {
     .map((a) => a.value);
 }
 
-type MarkerShape = 'circle' | 'square' | 'panorama';
+type MarbleShape = 'circle' | 'square' | 'panorama';
 
 type Ctx = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
-// Marker shape is an always-present channel, independent of the colorize fill,
+// Marble shape is an always-present channel, independent of the colorize fill,
 // mirroring the importance hierarchy: round vs. angular is the primary (always
 // clear) split, aspect ratio the secondary one.
 //   square   = Wikimedia photo
 //   circle   = our own photo
 //   panorama = our own panorama — a wide, short rectangle (literally panoramic)
 // Wikimedia is never a panorama for us, so there are only these three states.
-function shapeOf(source?: number, pano?: boolean): MarkerShape {
+function shapeOf(source?: number, pano?: boolean): MarbleShape {
   return source ? 'square' : pano ? 'panorama' : 'circle';
 }
 
@@ -71,13 +71,13 @@ const PANO_HALF_W = 1.45;
 const PANO_HALF_H = 0.95;
 const PANO_CURVED = true;
 
-/** Trace a marker of circle-radius `r`, centered on its visual center (x, y). */
-function traceMarker(
+/** Trace a marble of circle-radius `r`, centered on its visual center (x, y). */
+function traceMarble(
   ctx: Ctx,
   x: number,
   y: number,
   r: number,
-  shape: MarkerShape,
+  shape: MarbleShape,
 ): void {
   ctx.beginPath();
 
@@ -194,7 +194,7 @@ export function renderGalleryTile({
       ctx.fill();
     }
 
-    traceMarker(ctx, x, y, 4 * zk, shapeOf(source, pano));
+    traceMarble(ctx, x, y, 4 * zk, shapeOf(source, pano));
 
     ctx.stroke();
   }
@@ -222,7 +222,7 @@ export function renderGalleryTile({
 
     const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
 
-    traceMarker(ctx, x, y, 3.5 * zk, shapeOf(source, pano));
+    traceMarble(ctx, x, y, 3.5 * zk, shapeOf(source, pano));
 
     switch (colorizeBy) {
       case 'userId':
@@ -323,7 +323,7 @@ export function renderGalleryTile({
         break;
 
       default:
-        // No colorize: a single fill — the marker shape shows the source.
+        // No colorize: a single fill — the marble shape shows the source.
         ctx.fillStyle = GALLERY_COLOR;
 
         break;
