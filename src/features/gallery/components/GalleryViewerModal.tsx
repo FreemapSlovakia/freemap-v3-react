@@ -98,7 +98,14 @@ function parseCommonsDate(value: string | undefined): Date | null {
 
   const [, y, mo, d, h, mi, s] = m;
 
-  const date = new Date(+y, +mo - 1, +d, +(h ?? 0), +(mi ?? 0), +(s ?? 0));
+  const date = new Date(
+    Number(y),
+    Number(mo) - 1,
+    Number(d),
+    Number(h ?? 0),
+    Number(mi ?? 0),
+    Number(s ?? 0),
+  );
 
   return Number.isNaN(date.getTime()) ? null : date;
 }
