@@ -27,8 +27,6 @@ export type GalleryMessages = {
   showPhotosFrom: string;
   // Disclaimer: ordering/leaderboard cover own photos only, not Wikimedia ones.
   excludesWikimedia: string;
-  // Colorize: Wikimedia photos are shown neutral — we lack this per-photo datum.
-  noWikimediaData: string;
   showLayer: string;
   upload: string;
   f: Record<GalleryListOrder, string>;

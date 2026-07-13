@@ -1,7 +1,6 @@
 import type { LatLon } from '@shared/types/common.js';
 import color from 'color';
 import type { LatLng } from 'leaflet';
-import { WIKIMEDIA_NO_DATA_MODES } from '../galleryUtils.js';
 import { licenseColor } from '../licenseColors.js';
 import { GALLERY_COLOR, MUTED_COLOR, NO_DATA_COLOR } from '../markerColors.js';
 import type { GalleryColorizeBy } from '../model/actions.js';
@@ -225,111 +224,106 @@ export function renderGalleryTile({
 
     traceMarker(ctx, x, y, 3.5 * zk, shapeOf(source, pano));
 
-    if (source && colorizeBy && WIKIMEDIA_NO_DATA_MODES.has(colorizeBy)) {
-      // Wikimedia photos have no author/date/season/license data of ours.
-      ctx.fillStyle = NO_DATA_COLOR;
-    } else {
-      switch (colorizeBy) {
-        case 'userId':
-          // userId 0 is the `?? 0` sentinel for a photo with no author (a
-          // Wikimedia row whose authorId is null) — render it neutral, not as a
-          // real bucket color. Own photo ids always start at 1.
-          ctx.fillStyle = userId
-            ? color.lch(90, 70, -userId * 11313).hex()
-            : NO_DATA_COLOR;
+    switch (colorizeBy) {
+      case 'userId':
+        // userId 0 is the `?? 0` sentinel for a photo with no author (a
+        // Wikimedia row whose authorId is null) — render it neutral, not as a
+        // real bucket color. Own photo ids always start at 1.
+        ctx.fillStyle = userId
+          ? color.lch(90, 70, -userId * 11313).hex()
+          : NO_DATA_COLOR;
 
-          break;
+        break;
 
-        case 'rating':
-          ctx.fillStyle = color
-            .hsv(60, 100, (Math.tanh(rating - 2.5) + 1) * 50)
-            .hex();
+      case 'rating':
+        ctx.fillStyle = color
+          .hsv(60, 100, (Math.tanh(rating - 2.5) + 1) * 50)
+          .hex();
 
-          break;
+        break;
 
-        case 'createdAt':
-        case 'takenAt': {
-          const v = colorizeBy === 'createdAt' ? createdAt : takenAt;
+      case 'createdAt':
+      case 'takenAt': {
+        const v = colorizeBy === 'createdAt' ? createdAt : takenAt;
 
-          ctx.fillStyle = v
-            ? color
-                .hsl(
-                  60,
-                  100,
-                  (() => {
-                    const y = (now - v) / 60 / 60 / 24 / 365;
-                    return 100 - (0.333 * y * 100) / (1 + 0.333 * y);
-                  })(),
-                )
-                .hex()
-            : NO_DATA_COLOR;
+        ctx.fillStyle = v
+          ? color
+              .hsl(
+                60,
+                100,
+                (() => {
+                  const y = (now - v) / 60 / 60 / 24 / 365;
+                  return 100 - (0.333 * y * 100) / (1 + 0.333 * y);
+                })(),
+              )
+              .hex()
+          : NO_DATA_COLOR;
 
-          break;
-        }
+        break;
+      }
 
-        case 'season':
-          {
-            if (!takenAt) {
-              ctx.fillStyle = NO_DATA_COLOR;
+      case 'season':
+        {
+          if (!takenAt) {
+            ctx.fillStyle = NO_DATA_COLOR;
 
-              break;
-            }
-
-            const hs = 366 / 4;
-
-            type Color = [number, number, number];
-
-            const winter: Color = [70, -5, -52];
-
-            const spring: Color = [70, -62, 42];
-
-            const summer: Color = [90, -4, 74];
-
-            const fall: Color = [70, 48, 43];
-
-            // 2_847_600
-            const x = ((takenAt - 1_206_000) % 31_557_600) / 60 / 60 / 24;
-
-            const fill = (from: Color, to: Color, n: number) => {
-              ctx.fillStyle = color
-                .lab(...[0, 1, 2].map((i) => from[i] * (1 - n) + to[i] * n))
-                .hex();
-            };
-
-            if (x < hs) {
-              fill(winter, spring, x / hs);
-            } else if (x < 2 * hs) {
-              fill(spring, summer, (x - hs) / hs);
-            } else if (x < 3 * hs) {
-              fill(summer, fall, (x - 2 * hs) / hs);
-            } else {
-              fill(fall, winter, (x - 3 * hs) / hs);
-            }
+            break;
           }
 
-          break;
+          const hs = 366 / 4;
 
-        case 'mine':
-          ctx.fillStyle = userId === myUserId ? GALLERY_COLOR : MUTED_COLOR;
+          type Color = [number, number, number];
 
-          break;
+          const winter: Color = [70, -5, -52];
 
-        case 'premium':
-          ctx.fillStyle = premium ? GALLERY_COLOR : MUTED_COLOR;
+          const spring: Color = [70, -62, 42];
 
-          break;
+          const summer: Color = [90, -4, 74];
 
-        case 'license':
-          ctx.fillStyle = licenseColor(license);
+          const fall: Color = [70, 48, 43];
 
-          break;
+          // 2_847_600
+          const x = ((takenAt - 1_206_000) % 31_557_600) / 60 / 60 / 24;
 
-        default:
-          // No colorize: a single fill — the marker shape shows the source.
-          ctx.fillStyle = GALLERY_COLOR;
+          const fill = (from: Color, to: Color, n: number) => {
+            ctx.fillStyle = color
+              .lab(...[0, 1, 2].map((i) => from[i] * (1 - n) + to[i] * n))
+              .hex();
+          };
 
-          break;
-      }
+          if (x < hs) {
+            fill(winter, spring, x / hs);
+          } else if (x < 2 * hs) {
+            fill(spring, summer, (x - hs) / hs);
+          } else if (x < 3 * hs) {
+            fill(summer, fall, (x - 2 * hs) / hs);
+          } else {
+            fill(fall, winter, (x - 3 * hs) / hs);
+          }
+        }
+
+        break;
+
+      case 'mine':
+        ctx.fillStyle = userId === myUserId ? GALLERY_COLOR : MUTED_COLOR;
+
+        break;
+
+      case 'premium':
+        ctx.fillStyle = premium ? GALLERY_COLOR : MUTED_COLOR;
+
+        break;
+
+      case 'license':
+        ctx.fillStyle = licenseColor(license);
+
+        break;
+
+      default:
+        // No colorize: a single fill — the marker shape shows the source.
+        ctx.fillStyle = GALLERY_COLOR;
+
+        break;
     }
 
     ctx.fill();

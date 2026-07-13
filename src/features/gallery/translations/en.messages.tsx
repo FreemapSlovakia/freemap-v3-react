@@ -24,7 +24,6 @@ const en: GalleryMessages = {
   filter: 'Filter',
   showPhotosFrom: 'View photos',
   excludesWikimedia: "Doesn't include photos from Wikimedia",
-  noWikimediaData: 'No data for Wikimedia photos',
   showLayer: 'Show the layer',
   upload: 'Upload',
   f: {

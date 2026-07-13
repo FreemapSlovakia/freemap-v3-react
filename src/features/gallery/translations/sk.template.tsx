@@ -25,7 +25,6 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
   filter: 'Filter',
   showPhotosFrom: 'Prezerať fotky',
   excludesWikimedia: 'Nezahŕňa fotky z Wikimedia',
-  noWikimediaData: 'Pre fotky z Wikimedia nie sú dáta',
   showLayer: 'Zobraziť vrstvu',
   upload: 'Nahrať',
   f: {

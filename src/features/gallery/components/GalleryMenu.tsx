@@ -40,8 +40,8 @@ import {
   FaUser,
   FaUserCheck,
 } from 'react-icons/fa';
+import { FaChevronRight } from 'react-icons/fa6';
 import { useDispatch } from 'react-redux';
-import { WIKIMEDIA_NO_DATA_MODES } from '../galleryUtils.js';
 import {
   type GalleryLicense,
   LicenseBadge,
@@ -316,19 +316,9 @@ export default function GalleryMenu() {
                           active={colorizeBy === by}
                         >
                           <Icon /> {gm?.c[by] ?? '…'}
-                          {WIKIMEDIA_NO_DATA_MODES.has(by) && (
-                            <sup className="text-danger">*</sup>
-                          )}
                         </Dropdown.Item>
                       );
                     })}
-
-                    <Dropdown.Divider />
-
-                    <Dropdown.ItemText className="text-body-secondary small">
-                      <span className="text-danger">*</span>{' '}
-                      {gm?.noWikimediaData}
-                    </Dropdown.ItemText>
                   </Dropdown.Menu>
                 </Dropdown>
 
@@ -448,7 +438,8 @@ export default function GalleryMenu() {
                               as="button"
                               eventKey="submenu-license"
                             >
-                              <FaCreativeCommons /> {gm?.license.chooseForAll}
+                              <FaCreativeCommons /> {gm?.license.chooseForAll}{' '}
+                              <FaChevronRight />
                             </Dropdown.Item>
                           </>
                         )}
