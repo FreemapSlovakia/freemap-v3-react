@@ -864,14 +864,18 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               {(capturedDate || capturedRaw) && (
                 <>
                   {' ｜ '}
-                  {gm?.viewer.captured(
-                    <b
-                      key={capturedDate ? capturedDate.getTime() : capturedRaw}
-                    >
-                      {capturedDate
-                        ? dateFormat.format(capturedDate)
-                        : capturedRaw}
-                    </b>,
+                  {capturedDate ? (
+                    gm?.viewer.captured(
+                      <b key={capturedDate.getTime()}>
+                        {dateFormat.format(capturedDate)}
+                      </b>,
+                    )
+                  ) : (
+                    // Commons gives an already-worded, localized phrase for
+                    // dates we can't parse ("Taken on 17 May 2012", "Fotené:
+                    // 17. mája 2012", "between 2024 and 2026"); show it verbatim
+                    // rather than doubling our "Captured on" label onto it.
+                    <b key={capturedRaw}>{capturedRaw}</b>
                   )}
                 </>
               )}
