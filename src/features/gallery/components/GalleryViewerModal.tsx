@@ -41,6 +41,7 @@ import {
   FaSave,
   FaTimes,
   FaTrash,
+  FaUser,
 } from 'react-icons/fa';
 import { RiFullscreenLine } from 'react-icons/ri';
 import { SiWikimediacommons } from 'react-icons/si';
@@ -812,6 +813,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <>
                   {commonsMeta?.artist && (
                     <>
+                      <FaUser />{' '}
                       {commonsMeta.artistUrl ? (
                         <a
                           href={commonsMeta.artistUrl}
@@ -847,6 +849,17 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   ),
                 })
               ) : null}
+
+              {isWikimedia && createdAt && (
+                <>
+                  {' ｜ '}
+                  {gm?.viewer.uploadedOn(
+                    <b key={createdAt.getTime()}>
+                      {dateFormat.format(createdAt)}
+                    </b>,
+                  )}
+                </>
+              )}
 
               {(capturedDate || capturedRaw) && (
                 <>

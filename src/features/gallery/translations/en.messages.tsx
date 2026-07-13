@@ -65,6 +65,7 @@ const en: GalleryMessages = {
         Uploaded by {username} on {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Uploaded on {createdAt}</>,
     captured: (takenAt) => <>Captured on {takenAt}</>,
     deletePrompt: (title) =>
       title ? (

@@ -58,6 +58,7 @@ export type GalleryMessages = {
       username: ReactNode;
       createdAt: ReactNode;
     }) => JSX.Element;
+    uploadedOn: (createdAt: JSX.Element) => JSX.Element;
     captured: (takenAt: JSX.Element) => JSX.Element;
     deletePrompt: (title: string | null | undefined) => JSX.Element;
     deleteTitle: string;

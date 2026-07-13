@@ -67,6 +67,7 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
         Nahral {username} dňa {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Nahrané dňa {createdAt}</>,
     captured: (takenAt) => <>Odfotené dňa {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
