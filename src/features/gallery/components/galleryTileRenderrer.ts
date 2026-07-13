@@ -315,7 +315,10 @@ export function renderGalleryTile({
         break;
 
       case 'license':
-        ctx.fillStyle = licenseColor(license);
+        // A Wikimedia photo with no/unmapped license has no datum here, so keep
+        // it neutral like the other modes rather than asserting the fallback
+        // license color (own photos always carry a resolved license).
+        ctx.fillStyle = license ? licenseColor(license) : NO_DATA_COLOR;
 
         break;
 

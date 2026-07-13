@@ -353,8 +353,8 @@ export async function fetchWikimediaMeta(
     license: stripHtml(pickLang(meta?.LicenseShortName?.value, language)),
     licenseUrl: pickLang(meta?.LicenseUrl?.value, language),
     freemapLicense: toFreemapLicense(licenseKey),
-    // Capture/creation date, matching the map's colorize source. Same viewer
-    // handling as before: parsed when possible, else shown verbatim.
+    // Capture/creation date ("Date" on Commons), matching the map's colorize
+    // source; the viewer parses it when possible, else shows it verbatim.
     dateTime: stripHtml(pickLang(meta?.DateTimeOriginal?.value, language)),
     pano,
     // Point pannellum at a width-capped 2:1 thumbnail rather than the multi-MB
@@ -371,9 +371,12 @@ export async function fetchWikimediaMeta(
 
 /**
  * Rescales a Commons thumbnail URL to a new width. Upload thumb URLs end in
- * `/<N>px-<filename>`; swap `<N>`. Falls back to the input if it doesn't match
- * (e.g. an unexpected URL shape), so the caller still gets a usable image.
+ * `<prefix><N>px-<filename>`; swap `<N>`. The prefix is empty for plain images
+ * and e.g. `lossy-page1-` / `langNN-` for derived (TIFF/PDF/SVG) thumbnails, so
+ * the width segment is matched without requiring a leading slash. Falls back to
+ * the input if it doesn't match (an unexpected shape / a non-thumb URL), so the
+ * caller still gets a usable image.
  */
 function scaleThumbUrl(thumburl: string, width: number): string {
-  return thumburl.replace(/\/\d+px-([^/]*)$/, `/${width}px-$1`);
+  return thumburl.replace(/(\d+)px-([^/]*)$/, `${width}px-$2`);
 }

@@ -3,6 +3,7 @@ import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/compone
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { getMinWidthForBreakpoint } from '@shared/breakpoints.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { UserChip } from '@shared/components/UserChip.js';
@@ -99,16 +100,28 @@ function parseCommonsDate(value: string | undefined): Date | null {
 
   const [, y, mo, d, h, mi, s] = m;
 
+  const year = Number(y);
+  const month = Number(mo);
+  const day = Number(d);
+
   const date = new Date(
-    Number(y),
-    Number(mo) - 1,
-    Number(d),
+    year,
+    month - 1,
+    day,
     Number(h ?? 0),
     Number(mi ?? 0),
     Number(s ?? 0),
   );
 
-  return Number.isNaN(date.getTime()) ? null : date;
+  // Reject zero or out-of-range components that silently roll over into a real
+  // Date — e.g. the raw-EXIF null "0000:00:00 00:00:00" or a "2012:00:00" with
+  // a zero month/day would otherwise show as "30 Nov 1899". Require the built
+  // date's components to round-trip.
+  return date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+    ? date
+    : null;
 }
 
 // Cap on cached Commons metadata entries — plenty for instant neighbour
@@ -119,6 +132,18 @@ const COMMONS_CACHE_MAX = 300;
 // to the 1920 bucket keeps hi-dpi modals off the heavy, cold-render-prone 3840
 // one; fullscreen still rescales up to 3840.
 const WINDOWED_MAX_WIDTH = 1920;
+
+// The modal content's CSS width by Bootstrap breakpoint (xl / lg / smaller),
+// shared by the image-fetch width, the display rescale, and the pano canvas.
+function modalContentWidth(): number {
+  return window.matchMedia(`(min-width: ${getMinWidthForBreakpoint('xl')}px)`)
+    .matches
+    ? 1110
+    : window.matchMedia(`(min-width: ${getMinWidthForBreakpoint('lg')}px)`)
+          .matches
+      ? 770
+      : 470;
+}
 
 /** Insert into the Commons metadata cache, evicting the oldest entries past the
  *  cap (Map keeps insertion order, so the oldest key is always first). */
@@ -430,14 +455,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       // — fullscreen still rescales up to it. Commons rounds up to a bucket.
       const width = Math.min(
         WINDOWED_MAX_WIDTH,
-        Math.round(
-          (window.devicePixelRatio || 1) *
-            (window.matchMedia('(min-width: 1200px)').matches
-              ? 1110
-              : window.matchMedia('(min-width: 992px)').matches
-                ? 770
-                : 470),
-        ),
+        Math.round((window.devicePixelRatio || 1) * modalContentWidth()),
       );
 
       const meta = await fetchWikimediaMeta(
@@ -528,13 +546,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const displayPixelWidth = () =>
     Math.round(
       window.devicePixelRatio *
-        (isFullscreen
-          ? window.innerWidth
-          : window.matchMedia('(min-width: 1200px)').matches
-            ? 1110
-            : window.matchMedia('(min-width: 992px)').matches
-              ? 770
-              : 470),
+        (isFullscreen ? window.innerWidth : modalContentWidth()),
     );
 
   const getImageUrl = (id: number) =>
@@ -671,14 +683,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                         ? { width: '100dvw', height: '100dvh' }
                         : {
                             height: `${Math.max(window.innerHeight - 400, 300)}px`,
-                            width: `${
-                              window.matchMedia('(min-width: 1200px)').matches
-                                ? 1110
-                                : window.matchMedia('(min-width: 992px)')
-                                      .matches
-                                  ? 770
-                                  : 470
-                            }px`,
+                            width: `${modalContentWidth()}px`,
                           }
                     }
                   />
