@@ -2,6 +2,7 @@ import type { RootState } from '@app/store/store.js';
 import type { Exportable } from '@features/mapFeaturesExport/model/actions.js';
 import { buildExportFeatureCollection } from '@features/mapFeaturesExport/model/buildExportFeatureCollection.js';
 import { COLORS } from '@shared/colors.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import z from 'zod';
 import type { CustomLayerOrder, ExportableLayer, Format } from './types.js';
 
@@ -93,7 +94,7 @@ export async function exportMapToDocument({
     },
   });
 
-  window._paq.push(['trackEvent', 'DocumentExport', 'export', format]);
+  trackMatomo(['trackEvent', 'DocumentExport', 'export', format]);
 
   const res = await fetch(`${fmMapserverUrl}/export`, {
     method: 'POST',

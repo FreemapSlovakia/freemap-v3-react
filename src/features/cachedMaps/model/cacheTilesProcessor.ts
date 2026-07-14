@@ -3,6 +3,7 @@ import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
 import { enumerateTilesInBbox } from '@shared/tileEnumeration.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Dispatch } from 'redux';
 import {
   deleteCachedTileMap,
@@ -225,12 +226,7 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
   actionCreator: cacheTilesStart,
   errorKey: 'general.operationError',
   handle({ action, dispatch, getState }) {
-    window._paq.push([
-      'trackEvent',
-      'MapCache',
-      'start',
-      action.payload.sourceType,
-    ]);
+    trackMatomo(['trackEvent', 'MapCache', 'start', action.payload.sourceType]);
 
     // save initial metadata to IndexedDB, then download in the background;
     // surface a write failure (e.g. IndexedDB blocked) the same way as a

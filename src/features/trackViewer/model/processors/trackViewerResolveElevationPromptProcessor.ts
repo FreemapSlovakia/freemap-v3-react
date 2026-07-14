@@ -11,6 +11,7 @@ import {
 import { trackInfoToast } from '@features/trackViewer/model/trackInfoToast.js';
 import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 import { enrichElevations } from '@shared/elevation.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   isTrackLine,
   resolveActiveTrack,
@@ -105,7 +106,7 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
         : (active?.feature ?? lines[0]);
 
     if (first) {
-      window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
+      trackMatomo(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
       dispatch(
         elevationChartSetTrackGeojson(

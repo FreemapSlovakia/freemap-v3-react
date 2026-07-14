@@ -8,6 +8,7 @@ import {
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
 import { elevationCoverage } from '@shared/geoutils.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   isTrackLine,
   resolveActiveTrack,
@@ -43,7 +44,7 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
       elevationDecision !== 'undecided' ||
       elevationCoverage([active.feature]) === 'full'
     ) {
-      window._paq.push(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
+      trackMatomo(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
 
       // Densify a sparse line first so the chart isn't a coarse straight-segment
       // profile; a no-op (and so a fall back to the recorded line) when nothing

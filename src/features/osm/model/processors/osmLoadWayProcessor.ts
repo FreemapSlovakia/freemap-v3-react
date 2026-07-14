@@ -3,6 +3,7 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { positionsEqual, shouldBeArea } from '@shared/geoutils.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { FeatureId } from '@shared/types/featureId.js';
 import { lineString, polygon } from '@turf/helpers';
 import { loadOsmMessages } from '../../translations/loadOsmMessages.js';
@@ -16,7 +17,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
     try {
       const { id, focus, showToast } = action.payload;
 
-      window._paq.push(['trackEvent', 'Osm', 'view', 'way']);
+      trackMatomo(['trackEvent', 'Osm', 'view', 'way']);
 
       const res = await httpRequest({
         getState,

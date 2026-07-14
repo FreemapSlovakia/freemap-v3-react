@@ -3,6 +3,7 @@ import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
 } from '@features/elevationChart/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { lineString } from '@turf/helpers';
 import {
   routePlannerSetActiveAlternativeIndex,
@@ -26,7 +27,7 @@ export const routePlannerToggleElevationChartProcessor: Processor<
     if (toggling && shown) {
       dispatch(elevationChartClose());
     } else if ((!shown && toggling) || (shown && !toggling)) {
-      window._paq.push(['trackEvent', 'RoutePlanner', 'toggleElevationChart']);
+      trackMatomo(['trackEvent', 'RoutePlanner', 'toggleElevationChart']);
 
       // Build the densified DEM render line so the chart isn't a coarse
       // straight-segment profile; a failure (e.g. offline) falls back to the

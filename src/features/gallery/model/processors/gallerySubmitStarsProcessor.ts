@@ -1,5 +1,6 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { pictureIdToPath } from '../../pictureIdPath.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import { galleryRequestImage, gallerySubmitStars } from '../actions.js';
@@ -18,13 +19,7 @@ export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> =
 
       const { id } = image;
 
-      window._paq.push([
-        'trackEvent',
-        'Gallery',
-        'submitStars',
-        undefined,
-        stars,
-      ]);
+      trackMatomo(['trackEvent', 'Gallery', 'submitStars', undefined, stars]);
 
       try {
         await httpRequest({

@@ -3,6 +3,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import { loadMapSettingsMessages } from '@features/mapSettings/translations/loadMapSettingsMessages.js';
 import { getEffectiveChosenLanguage } from '@shared/langUtils.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { setMessages } from '../messagesStore.js';
 import { l10nSetChosenLanguage, l10nSetLanguage } from './actions.js';
 
@@ -13,7 +14,7 @@ export const l10nSetLanguageProcessor: Processor = {
       const { chosenLanguage } = getState().l10n;
 
       if (l10nSetChosenLanguage.match(action)) {
-        window._paq.push([
+        trackMatomo([
           'trackEvent',
           'Language',
           'set',

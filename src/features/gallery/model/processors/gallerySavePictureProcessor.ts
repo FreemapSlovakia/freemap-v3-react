@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryRequestImage,
@@ -18,7 +19,7 @@ export const gallerySavePictureProcessor: Processor = {
       return;
     }
 
-    window._paq.push(['trackEvent', 'Gallery', 'savePhoto']);
+    trackMatomo(['trackEvent', 'Gallery', 'savePhoto']);
 
     const { id } = image;
 

@@ -17,6 +17,7 @@ import {
   registerOfflineContentProvider,
   syncStaticCache,
 } from '@shared/offlineStaticCache.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
@@ -150,7 +151,7 @@ if (!window.fmEmbedded && !window.isRobot && cookieConsentResult === null) {
 }
 
 if (cookieConsentResult) {
-  window._paq.push(['setCookieConsentGiven']);
+  trackMatomo(['setCookieConsentGiven']);
 }
 
 const rootElement = document.getElementById('app');

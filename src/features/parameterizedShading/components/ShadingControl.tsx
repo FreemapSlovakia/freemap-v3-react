@@ -1,6 +1,7 @@
 import { mapSetShading } from '@features/map/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { produce } from 'immer';
 import { useCallback, useEffect, useState } from 'react';
 import { Card, Form } from 'react-bootstrap';
@@ -85,7 +86,7 @@ export default function ShadingControl() {
   }, [card, sc, rf]);
 
   function handleAdd(type0: string | null) {
-    window._paq.push(['trackEvent', 'MapShading', 'add', type0 ?? undefined]);
+    trackMatomo(['trackEvent', 'MapShading', 'add', type0 ?? undefined]);
 
     if (type0 === 'contour' || type0 === 'fog') {
       setModalKind(type0);

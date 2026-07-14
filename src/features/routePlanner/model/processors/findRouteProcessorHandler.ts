@@ -7,6 +7,7 @@ import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
 import { positionsEqual } from '@shared/geoutils.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   type TransportType,
   transportTypeDefs,
@@ -254,7 +255,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     return;
   }
 
-  window._paq.push([
+  trackMatomo([
     'trackEvent',
     'RoutePlanner',
     'search',

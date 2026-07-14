@@ -2,6 +2,7 @@ import type {
   Processor,
   ProcessorHandler,
 } from '@app/store/middleware/processorMiddleware.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
 import { type ExportType, exportMapFeatures } from '../actions.js';
 
@@ -36,7 +37,7 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
 
     const { type, target, exportables } = params[0].action.payload;
 
-    window._paq.push([
+    trackMatomo([
       'trackEvent',
       'FeaturesExport',
       'export',

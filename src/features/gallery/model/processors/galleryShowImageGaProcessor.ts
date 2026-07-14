@@ -1,4 +1,5 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { gallerySetImage } from '../actions.js';
 
 export const galleryShowImageGaProcessor: Processor = {
@@ -9,7 +10,7 @@ export const galleryShowImageGaProcessor: Processor = {
     } = getState();
 
     if (image) {
-      window._paq.push(['trackEvent', 'Gallery', 'showPhoto']);
+      trackMatomo(['trackEvent', 'Gallery', 'showPhoto']);
     }
   },
 };

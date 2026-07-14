@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import z from 'zod';
 import { trackingActions } from '../actions.js';
 import { DeviceSchema } from '../types.js';
@@ -12,7 +13,7 @@ export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =
     handle: async ({ dispatch, getState, action }) => {
       const { modifiedDeviceId } = getState().tracking;
 
-      window._paq.push([
+      trackMatomo([
         'trackEvent',
         'Tracking',
         modifiedDeviceId ? 'update' : 'create',

@@ -8,6 +8,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useCallback, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
@@ -47,7 +48,7 @@ export default function HomeLocationPickingMenu(): ReactElement | null {
         throw new Error();
       }
 
-      window._paq.push(['trackEvent', 'HomeLocation', 'save']);
+      trackMatomo(['trackEvent', 'HomeLocation', 'save']);
 
       dispatch(saveHomeLocation(selectingHomeLocation));
     } catch (error) {

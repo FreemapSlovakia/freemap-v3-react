@@ -3,6 +3,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { bbox } from '@turf/bbox';
 import { buffer } from '@turf/buffer';
 import { point } from '@turf/helpers';
@@ -35,7 +36,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       url,
     } = action.payload;
 
-    window._paq.push(['trackEvent', 'Share', 'openExternal', where]);
+    trackMatomo(['trackEvent', 'Share', 'openExternal', where]);
 
     switch (where) {
       case 'window':

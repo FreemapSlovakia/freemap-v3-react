@@ -4,6 +4,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   OverpassCenterExtraSchema,
   overpassResultSchema,
@@ -28,7 +29,7 @@ export const objectsChangePredicateProcessor: Processor = {
   actionCreator: objectsSetFilter,
   stateChangePredicate: (state) => state.objects.active.join('\n'),
   handle: ({ getState }) => {
-    window._paq.push([
+    trackMatomo([
       'trackEvent',
       'Objects',
       'search',

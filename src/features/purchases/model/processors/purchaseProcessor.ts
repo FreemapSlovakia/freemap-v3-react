@@ -9,6 +9,7 @@ import { loadPurchasesMessages } from '@features/purchases/translations/loadPurc
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { PolarEmbedCheckout } from '@polar-sh/checkout/embed';
 import { isBroadcastChannelSupported } from '@shared/broadcastChannelSupport.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import z from 'zod';
 
 type CallbackResult = {
@@ -45,7 +46,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       return;
     }
 
-    window._paq.push([
+    trackMatomo([
       'trackEvent',
       'Purchase',
       'start',
@@ -150,7 +151,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
         return; // closed without completing payment
       }
 
-      window._paq.push([
+      trackMatomo([
         'trackEvent',
         'Purchase',
         'success',
@@ -280,7 +281,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
         return;
       }
 
-      window._paq.push([
+      trackMatomo([
         'trackEvent',
         'Purchase',
         'success',

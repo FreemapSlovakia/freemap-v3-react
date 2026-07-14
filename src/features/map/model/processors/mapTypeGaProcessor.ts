@@ -1,5 +1,6 @@
 import { init } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { mapRefocus } from '../actions.js';
 
 let prevLayers: string[] = [];
@@ -14,7 +15,7 @@ export const mapTypeGaProcessor: Processor = {
     const joinedLayers = [...layers].sort().join(',');
 
     if ([...prevLayers].sort().join(',') !== joinedLayers) {
-      window._paq.push(['trackEvent', 'Map', 'setLayers', joinedLayers]);
+      trackMatomo(['trackEvent', 'Map', 'setLayers', joinedLayers]);
 
       prevLayers = layers;
     }

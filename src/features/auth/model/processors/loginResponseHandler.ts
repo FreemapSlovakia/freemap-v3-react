@@ -3,6 +3,7 @@ import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import { loadPremiumMessages } from '@features/premium/translations/loadPremiumMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Dispatch } from 'redux';
 import z from 'zod';
 import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
@@ -28,12 +29,7 @@ export async function handleLoginResponse(
     await res.json(),
   );
 
-  window._paq.push([
-    'trackEvent',
-    'Auth',
-    'login',
-    connect ? 'connect' : 'login',
-  ]);
+  trackMatomo(['trackEvent', 'Auth', 'login', connect ? 'connect' : 'login']);
 
   dispatch(
     toastsAdd({

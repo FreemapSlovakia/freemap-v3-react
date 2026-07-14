@@ -12,6 +12,7 @@ import { mapRefocus } from '@features/map/model/actions.js';
 import { loadMeasurementMessages } from '@features/measurement/translations/loadMeasurementMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import { area } from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
@@ -63,7 +64,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
       if (measureKey !== lastMeasureKey) {
         lastMeasureKey = measureKey;
 
-        window._paq.push(['trackEvent', 'Drawing', 'measure', selection?.type]);
+        trackMatomo(['trackEvent', 'Drawing', 'measure', selection?.type]);
       }
 
       // The context-menu path measures a free position with no drawing tool
