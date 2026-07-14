@@ -5,6 +5,7 @@ import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
@@ -87,7 +88,7 @@ export function TrackedDeviceForm(): ReactElement {
 
     const did = id.trim();
 
-    window._paq.push([
+    trackMatomo([
       'trackEvent',
       'Tracking',
       forceNew || !device ? 'create' : 'update',

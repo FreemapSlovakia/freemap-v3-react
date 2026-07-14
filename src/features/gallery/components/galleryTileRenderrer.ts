@@ -1,8 +1,8 @@
 import type { LatLon } from '@shared/types/common.js';
 import color from 'color';
 import type { LatLng } from 'leaflet';
-import { FALLBACK_LICENSE_COLOR, LICENSE_COLORS } from '../licenseColors.js';
-import type { GalleryLicense } from '../licenseDefs.js';
+import { licenseColor } from '../licenseColors.js';
+import { GALLERY_COLOR, MUTED_COLOR, NO_DATA_COLOR } from '../marbleColors.js';
 import type { GalleryColorizeBy } from '../model/actions.js';
 
 type Marble = LatLon & {
@@ -14,6 +14,8 @@ type Marble = LatLon & {
   premium?: boolean;
   azimuth?: number;
   license?: string | null;
+  // 0 = own gallery photo, 1 = Wikimedia Commons.
+  source?: number;
 };
 
 type Props = {
@@ -45,6 +47,60 @@ function sort(data: Marble[], toSort: (m: Marble) => number) {
     .map((a) => ({ sort: toSort(a), value: a }))
     .sort(compare)
     .map((a) => a.value);
+}
+
+type MarbleShape = 'circle' | 'square' | 'panorama';
+
+type Ctx = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+
+// Marble shape is an always-present channel, independent of the colorize fill,
+// mirroring the importance hierarchy: round vs. angular is the primary (always
+// clear) split, aspect ratio the secondary one.
+//   square   = Wikimedia photo
+//   circle   = our own photo
+//   panorama = our own panorama — a wide, short rectangle (literally panoramic)
+// Wikimedia is never a panorama for us, so there are only these three states.
+function shapeOf(source?: number, pano?: boolean): MarbleShape {
+  return source ? 'square' : pano ? 'panorama' : 'circle';
+}
+
+// Panorama rectangle half-extents (× the circle radius): wider and shorter than
+// the square. `PANO_CURVED` bows its top and bottom edges inward so it reads
+// even more like a panoramic frame — a prototype toggle to compare on the map.
+const PANO_HALF_W = 1.45;
+const PANO_HALF_H = 0.95;
+const PANO_CURVED = true;
+
+/** Trace a marble of circle-radius `r`, centered on its visual center (x, y). */
+function traceMarble(
+  ctx: Ctx,
+  x: number,
+  y: number,
+  r: number,
+  shape: MarbleShape,
+): void {
+  ctx.beginPath();
+
+  if (shape === 'square') {
+    ctx.rect(x - r, y - r, 2 * r, 2 * r);
+  } else if (shape === 'panorama') {
+    const hw = r * PANO_HALF_W;
+    const hh = r * PANO_HALF_H;
+
+    if (PANO_CURVED) {
+      const c = r * 0.5; // inward bow of the top and bottom edges
+
+      ctx.moveTo(x - hw, y - hh);
+      ctx.quadraticCurveTo(x, y - hh + c, x + hw, y - hh);
+      ctx.lineTo(x + hw, y + hh);
+      ctx.quadraticCurveTo(x, y + hh - c, x - hw, y + hh);
+      ctx.closePath();
+    } else {
+      ctx.rect(x - hw, y - hh, 2 * hw, 2 * hh);
+    }
+  } else {
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
+  }
 }
 
 export function renderGalleryTile({
@@ -88,7 +144,9 @@ export function renderGalleryTile({
           ? sort(data, (a) => (a.userId === myUserId ? 1 : 0))
           : colorizeBy === 'premium'
             ? sort(data, (a) => (a.premium ? 1 : 0))
-            : sort(data, () => 0);
+            : // No colorize (or a mode without its own order): own photos on top
+              // of (and winning the pixel dedup against) Wikimedia ones.
+              sort(data, (a) => (a.source ? 0 : 1));
 
   // remove "dense" pictures
   const marbles: Marble[] = items
@@ -118,7 +176,7 @@ export function renderGalleryTile({
     }))
     .reverse();
 
-  for (const { lat, lon, pano, azimuth } of marbles) {
+  for (const { lat, lon, pano, azimuth, source } of marbles) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
 
@@ -136,13 +194,7 @@ export function renderGalleryTile({
       ctx.fill();
     }
 
-    ctx.beginPath();
-
-    if (pano) {
-      ctx.rect(x - 4 * zk, y - 4 * zk, 8 * zk, 8 * zk);
-    } else {
-      ctx.arc(x, y, 4 * zk, 0, 2 * Math.PI);
-    }
+    traceMarble(ctx, x, y, 4 * zk, shapeOf(source, pano));
 
     ctx.stroke();
   }
@@ -163,23 +215,23 @@ export function renderGalleryTile({
     pano,
     premium,
     license,
+    source,
   } of marbles) {
     const y =
       size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
 
     const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
 
-    ctx.beginPath();
-
-    if (pano) {
-      ctx.rect(x - 3.5 * zk, y - 3.5 * zk, 7 * zk, 7 * zk);
-    } else {
-      ctx.arc(x, y, 3.5 * zk, 0, 2 * Math.PI);
-    }
+    traceMarble(ctx, x, y, 3.5 * zk, shapeOf(source, pano));
 
     switch (colorizeBy) {
       case 'userId':
-        ctx.fillStyle = color.lch(90, 70, -userId * 11313).hex();
+        // userId 0 is the `?? 0` sentinel for a photo with no author (a
+        // Wikimedia row whose authorId is null) — render it neutral, not as a
+        // real bucket color. Own photo ids always start at 1.
+        ctx.fillStyle = userId
+          ? color.lch(90, 70, -userId * 11313).hex()
+          : NO_DATA_COLOR;
 
         break;
 
@@ -205,7 +257,7 @@ export function renderGalleryTile({
                 })(),
               )
               .hex()
-          : '#a22';
+          : NO_DATA_COLOR;
 
         break;
       }
@@ -213,7 +265,7 @@ export function renderGalleryTile({
       case 'season':
         {
           if (!takenAt) {
-            ctx.fillStyle = '#800';
+            ctx.fillStyle = NO_DATA_COLOR;
 
             break;
           }
@@ -253,19 +305,26 @@ export function renderGalleryTile({
         break;
 
       case 'mine':
-        ctx.fillStyle = userId === myUserId ? '#ff0' : '#fa4';
+        ctx.fillStyle = userId === myUserId ? GALLERY_COLOR : MUTED_COLOR;
 
         break;
 
       case 'premium':
-        ctx.fillStyle = premium ? '#ff0' : '#fa4';
+        ctx.fillStyle = premium ? GALLERY_COLOR : MUTED_COLOR;
 
         break;
 
       case 'license':
-        ctx.fillStyle =
-          (license && LICENSE_COLORS[license as GalleryLicense]) ||
-          FALLBACK_LICENSE_COLOR;
+        // A Wikimedia photo with no/unmapped license has no datum here, so keep
+        // it neutral like the other modes rather than asserting the fallback
+        // license color (own photos always carry a resolved license).
+        ctx.fillStyle = license ? licenseColor(license) : NO_DATA_COLOR;
+
+        break;
+
+      default:
+        // No colorize: a single fill — the marble shape shows the source.
+        ctx.fillStyle = GALLERY_COLOR;
 
         break;
     }

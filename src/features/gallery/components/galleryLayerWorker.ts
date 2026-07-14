@@ -4,7 +4,12 @@ self.onmessage = (evt) => {
   const id = evt.data.id;
 
   try {
-    const tile = new OffscreenCanvas(256, 256);
+    const { size, dpr } = evt.data.payload;
+
+    // Match the on-screen tile's device-pixel dimensions (renderGalleryTile
+    // scales by dpr), so the bitmap fills the whole tile — a fixed 256×256 only
+    // covers the top-left quarter on a dpr=2 display.
+    const tile = new OffscreenCanvas(size.x * dpr, size.y * dpr);
 
     renderGalleryTile({
       ...evt.data.payload,

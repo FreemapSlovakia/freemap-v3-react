@@ -18,6 +18,13 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Limite de distance',
   },
   milestones: 'Bornes kilométriques',
+  style: {
+    menuItem: 'Style de l’itinéraire',
+    title: 'Style de l’itinéraire',
+    lineWidth: 'Épaisseur de la ligne',
+    lineOpacity: 'Opacité de la ligne',
+    markerOpacity: 'Opacité des marqueurs',
+  },
   optimize: {
     label: 'Optimiser l’ordre',
     fixedStart: 'Conserver le départ',

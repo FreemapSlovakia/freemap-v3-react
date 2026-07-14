@@ -23,6 +23,7 @@ const en: GalleryMessages = {
   recentTags: 'Recent tags to assign:',
   filter: 'Filter',
   showPhotosFrom: 'View photos',
+  excludesWikimedia: "Doesn't include photos from Wikimedia",
   showLayer: 'Show the layer',
   upload: 'Upload',
   f: {
@@ -32,9 +33,9 @@ const en: GalleryMessages = {
     '-lastCommentedAt': 'from last comment',
   },
   colorizeBy: 'Colorize by',
+  noColorize: 'None',
   showDirection: 'Show shooting direction',
   c: {
-    disable: "Don't colorize",
     mine: 'Differ mine',
     userId: 'Author',
     rating: 'Rating',
@@ -44,8 +45,15 @@ const en: GalleryMessages = {
     premium: 'Premium',
     license: 'License',
   },
+  legendCategory: {
+    mine: 'Mine',
+    notMine: 'Others',
+    premium: 'Premium',
+    free: 'Free',
+  },
   viewer: {
     title: 'Photo',
+    imageUnavailable: 'Image unavailable',
     comments: 'Comments',
     newComment: 'New comment',
     addComment: 'Add',
@@ -57,6 +65,7 @@ const en: GalleryMessages = {
         Uploaded by {username} on {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Uploaded on {createdAt}</>,
     captured: (takenAt) => <>Captured on {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -161,10 +170,13 @@ const en: GalleryMessages = {
     noTags: 'no tags',
     pano: 'Panorama',
     premium: 'Premium',
+    source: 'Source',
+    allSources: 'All',
   },
   noPicturesFound: 'There were no photos found on this place.',
   linkToWww: 'photo at www.freemap.sk',
   linkToImage: 'photo image file',
+  linkToCommons: 'photo at Wikimedia Commons',
   allMyPhotos: {
     title: 'Access change',
     premium: 'Include all my photos in premium content',

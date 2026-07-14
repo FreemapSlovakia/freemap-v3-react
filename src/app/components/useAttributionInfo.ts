@@ -135,18 +135,24 @@ export function useAttributionInfo() {
 
       ea.current = true;
 
-      const res = await fetch(
-        'https://static.arcgis.com/attribution/World_Imagery',
-      );
-
-      if (res.ok) {
-        setEsriAttributions(
-          EsriWorldImageryAttributionSchema.parse(await res.json()),
+      try {
+        const res = await fetch(
+          'https://static.arcgis.com/attribution/World_Imagery',
         );
+
+        if (res.ok) {
+          setEsriAttributions(
+            EsriWorldImageryAttributionSchema.parse(await res.json()),
+          );
+        }
+      } catch {
+        // A network failure or malformed response leaves attributions absent;
+        // reset the guard so a later render can retry the fetch.
+        ea.current = false;
       }
     }
 
-    fetchAttributions(); // TODO handle error
+    fetchAttributions();
   }, [layers]);
 
   useEffect(() => {

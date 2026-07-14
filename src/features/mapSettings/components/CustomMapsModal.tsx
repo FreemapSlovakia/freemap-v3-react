@@ -11,6 +11,7 @@ import {
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, ListGroup, Modal } from 'react-bootstrap';
 import {
@@ -101,7 +102,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
       const next = customLayers.filter((d) => d.type !== def.type);
 
-      window._paq.push(['trackEvent', 'MapSettings', 'delete', 'customMap']);
+      trackMatomo(['trackEvent', 'MapSettings', 'delete', 'customMap']);
 
       dispatch(
         saveSettings({ settings: { customLayers: next }, keepOpen: true }),
@@ -119,7 +120,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
     const next = [...customLayers.filter((d) => d.type !== draft.type), draft];
 
-    window._paq.push([
+    trackMatomo([
       'trackEvent',
       'MapSettings',
       isEdit ? 'update' : 'create',

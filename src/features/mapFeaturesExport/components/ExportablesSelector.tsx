@@ -36,6 +36,27 @@ export const exportableDefinitions: readonly [
   ['search', FaSearch, true],
 ];
 
+// What the elevation control can do with a source:
+// - `none`: geometry can't carry elevation (polygon outlines) — always skipped.
+// - `fillable`: can carry elevation but never arrives with a recorded value, so
+//   only "keep as-is" (no elevation) and "fill missing" (compute) differ.
+// - `recorded`: may arrive with a real elevation (ele tag, GPS altitude, routing
+//   or imported/searched coordinate z), so keep/fill/override are all distinct.
+export type ElevationCapability = 'none' | 'fillable' | 'recorded';
+
+export const elevationCapabilities: Record<Exportable, ElevationCapability> = {
+  plannedRoute: 'recorded',
+  plannedRouteWithStops: 'fillable',
+  objects: 'recorded',
+  pictures: 'fillable',
+  drawingLines: 'fillable',
+  drawingAreas: 'none',
+  drawingPoints: 'fillable',
+  tracking: 'recorded',
+  import: 'recorded',
+  search: 'recorded',
+};
+
 // Which feature sources currently have data to export, encoded as the
 // `|a|b|`-delimited string the export modals use for selection bookkeeping.
 // Shared so the data export and the raster map export agree on availability.

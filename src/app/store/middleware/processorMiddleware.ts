@@ -258,6 +258,16 @@ export function createProcessorMiddleware() {
           (error) => {
             dispatch(stopProgress(pid));
 
+            // A deliberately cancelled request (e.g. an errorKey-less processor
+            // whose in-flight fetch was aborted by a newer action) is benign —
+            // skip it here just as `handleError` and `toastError` do, so it
+            // doesn't surface as a spurious generic processor-error toast.
+            if (error instanceof DOMException && error.name === 'AbortError') {
+              console.log('Canceled processor; Reason: ', error.message);
+
+              return;
+            }
+
             sendError({ kind: 'processor', error, action });
 
             dispatch(

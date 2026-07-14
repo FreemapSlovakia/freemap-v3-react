@@ -40,7 +40,16 @@ export function attachMapStateHandler(store: MyStore) {
       debounceRef = window.setTimeout(() => {
         debounceRef = undefined;
 
-        const bounds = map.getBounds();
+        // The map can be torn down while a pending timer is still queued
+        // (notably the delayed `resize` one); `getBounds()` then throws on a
+        // missing map pane. A viewport update on a dead map is a no-op anyway.
+        let bounds: ReturnType<typeof map.getBounds>;
+
+        try {
+          bounds = map.getBounds();
+        } catch {
+          return;
+        }
 
         store.dispatch(
           mapSetBounds([

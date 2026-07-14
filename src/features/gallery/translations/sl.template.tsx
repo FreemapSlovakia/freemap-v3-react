@@ -34,8 +34,9 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
   colorizeBy: 'Obarvaj po',
   showDirection: 'Prikaži smer fotografiranja',
+  legendCategory: {},
+
   c: {
-    disable: 'Ne obarvaj',
     mine: 'Razlikuj moje',
     userId: 'Avtor',
     rating: 'Ocena',
@@ -47,6 +48,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
   viewer: {
     title: 'Fotografija',
+    imageUnavailable: 'Slika ni na voljo',
     comments: 'Komentarji',
     newComment: 'Nov komentar',
     addComment: 'Dodaj',
@@ -165,6 +167,8 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     noTags: 'brez oznak',
     pano: 'Panorama',
     premium: 'Premium',
+    source: 'Vir',
+    allSources: 'Vse',
   },
   noPicturesFound: 'Na tem mestu ni bilo najdenih nobenih fotografij.',
   linkToWww: 'fotografija na www.freemap.sk',

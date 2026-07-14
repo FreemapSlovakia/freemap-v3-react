@@ -45,6 +45,7 @@ import {
 import { useMapFeaturesExportMessages } from '../translations/useMapFeaturesExportMessages.js';
 import {
   ExportablesSelector,
+  elevationCapabilities,
   exportableDefinitions,
   useAvailableExportables,
   useSelectedExportable,
@@ -120,6 +121,32 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
   const [activity, setActivity] = useState('');
 
+  // Elevation-fill capability of the current selection drives the control's
+  // state: `canElevate` is false when nothing selected can carry elevation
+  // (empty or polygon-only), `hasRecorded` is true when a source may arrive
+  // with a real elevation (so "Override all" differs from "Fill missing").
+  const selectedExportables = exportables
+    .split('|')
+    .filter(Boolean) as Exportable[];
+
+  const canElevate = selectedExportables.some(
+    (e) => elevationCapabilities[e] !== 'none',
+  );
+
+  const hasRecorded = selectedExportables.some(
+    (e) => elevationCapabilities[e] === 'recorded',
+  );
+
+  // The effective mode, coerced to what the selection supports without
+  // clobbering the persisted preference: no elevation at all when nothing can
+  // carry it, and "Override all" collapses to "Fill missing" with nothing
+  // recorded to override.
+  const effectiveElevation: ExportElevation = !canElevate
+    ? 'none'
+    : !hasRecorded && elevation === 'all'
+      ? 'missing'
+      : elevation;
+
   const runExport = useCallback(
     async (e: SubmitEvent) => {
       e.preventDefault();
@@ -136,7 +163,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
         description: description || undefined,
         activity: activity || undefined,
         // Garmin course export has its own elevation handling.
-        elevation: target === 'garmin' ? undefined : elevation,
+        elevation: target === 'garmin' ? undefined : effectiveElevation,
         // Mirrors `effectiveOnlySelected` (declared after this callback);
         // Garmin is gated by target here since it has its own selection.
         only:
@@ -170,7 +197,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
       name,
       description,
       activity,
-      elevation,
+      effectiveElevation,
       onlySelected,
       selectedExportable,
       selection,
@@ -425,31 +452,6 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
             </Form.Group>
           )}
 
-          {!isGarmin && (
-            <Form.Group controlId="elevation" className="mb-3">
-              <Form.Label>{em?.elevation.label}</Form.Label>
-
-              <div>
-                <ButtonGroup>
-                  {ExportElevationSchema.options.map((option) => (
-                    <ToggleButton
-                      id={`ele-${option}`}
-                      key={option}
-                      type="radio"
-                      variant="outline-primary"
-                      value={option}
-                      checked={elevation === option}
-                      onChange={setElevation}
-                      disabled={!exportables.length}
-                    >
-                      {em?.elevation[option]}
-                    </ToggleButton>
-                  ))}
-                </ButtonGroup>
-              </div>
-            </Form.Group>
-          )}
-
           <Form.Group controlId="download" className="mb-3">
             <Form.Label>{m?.general.export}</Form.Label>
 
@@ -534,6 +536,36 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
               </Form.Text>
             )}
           </Form.Group>
+
+          {!isGarmin && (
+            <Form.Group controlId="elevation" className="mb-3">
+              <Form.Label>{em?.elevation.label}</Form.Label>
+
+              <div>
+                <ButtonGroup>
+                  {ExportElevationSchema.options.map((option) => (
+                    <ToggleButton
+                      id={`ele-${option}`}
+                      key={option}
+                      type="radio"
+                      variant="outline-primary"
+                      value={option}
+                      checked={effectiveElevation === option}
+                      onChange={setElevation}
+                      // The whole control is off when nothing selected can carry
+                      // elevation; "Override all" is off when nothing recorded
+                      // can be overridden (it would equal "Fill missing").
+                      disabled={
+                        !canElevate || (option === 'all' && !hasRecorded)
+                      }
+                    >
+                      {em?.elevation[option]}
+                    </ToggleButton>
+                  ))}
+                </ButtonGroup>
+              </div>
+            </Form.Group>
+          )}
         </Modal.Body>
 
         <Modal.Footer>

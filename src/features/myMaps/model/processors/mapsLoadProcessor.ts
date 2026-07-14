@@ -2,6 +2,7 @@ import { isNetworkError } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { getOfflineMap, putOfflineMap } from '../../offlineStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
@@ -25,7 +26,7 @@ export const mapsLoadProcessor: Processor = {
     }
 
     if (action.type === mapsLoad.type) {
-      window._paq.push([
+      trackMatomo([
         'trackEvent',
         'MyMaps',
         'load',

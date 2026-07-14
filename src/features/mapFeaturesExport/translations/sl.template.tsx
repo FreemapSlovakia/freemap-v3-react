@@ -9,7 +9,7 @@ const sl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   target: 'Cilj',
   elevation: {
     label: 'Nadmorska višina',
-    none: 'Ohrani posneto',
+    none: 'Ohrani nespremenjeno',
     missing: 'Dopolni manjkajočo',
     all: 'Prepiši vso',
   },

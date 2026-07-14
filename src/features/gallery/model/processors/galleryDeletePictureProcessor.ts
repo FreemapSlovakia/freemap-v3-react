@@ -1,5 +1,6 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryClear,
@@ -18,7 +19,7 @@ export const galleryDeletePictureProcessor: Processor = {
       return;
     }
 
-    window._paq.push(['trackEvent', 'Gallery', 'deletePhoto']);
+    trackMatomo(['trackEvent', 'Gallery', 'deletePhoto']);
 
     const { id } = image;
 

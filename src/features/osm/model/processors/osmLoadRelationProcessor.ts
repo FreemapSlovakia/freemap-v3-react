@@ -3,6 +3,7 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { mergeLines } from '@shared/geoutils.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { FeatureId } from '@shared/types/featureId.js';
 import { featureCollection, lineString, point } from '@turf/helpers';
 import type { Feature, LineString, Point, Polygon } from 'geojson';
@@ -22,7 +23,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
     try {
       const { id, focus, showToast } = action.payload;
 
-      window._paq.push(['trackEvent', 'Osm', 'view', 'relation']);
+      trackMatomo(['trackEvent', 'Osm', 'view', 'relation']);
 
       const res = await httpRequest({
         getState,

@@ -260,6 +260,7 @@ const messages: Messages = {
       O: 'OpenStreetMap',
       d: 'Public transport (ÖPNV)',
       X: outdoorMap,
+      XK: 'KST Hiking Trails',
       i: 'Data layer',
       I: 'Photos',
       A: 'Events',

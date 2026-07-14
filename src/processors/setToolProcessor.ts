@@ -1,6 +1,7 @@
 import { setTool } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import storage from 'local-storage-fallback';
 
 export const setToolProcessor: Processor<typeof setTool> = {
@@ -12,7 +13,7 @@ export const setToolProcessor: Processor<typeof setTool> = {
       return;
     }
 
-    window._paq.push(['trackEvent', 'Tool', 'set', tool]);
+    trackMatomo(['trackEvent', 'Tool', 'set', tool]);
 
     if (
       getState().cookieConsent.cookieConsentResult !== null &&

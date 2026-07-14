@@ -19,6 +19,13 @@ export type RoutePlannerMessages = {
     distanceLimit: string;
   };
   milestones: string;
+  style: {
+    menuItem: string;
+    title: string;
+    lineWidth: string;
+    lineOpacity: string;
+    markerOpacity: string;
+  };
   optimize: {
     label: string;
     fixedStart: string;

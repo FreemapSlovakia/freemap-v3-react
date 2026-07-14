@@ -105,14 +105,15 @@ Still emitting at info level (non-blocking, optional cleanup):
 `state.main.activeModal` is a `Selection`-like discriminated union
 `{ type; …args } | null` serialized through the packed `show=type/arg` codec
 (`encodeActiveModal`/`decodeShow` in `src/app/store/actions.ts`); the gallery
-viewer, Wikimedia Commons (`show=wmc/<pageId>`) and Wikipedia
-(`show=wiki/<lang>:<title>`) previews all route through the same `show=` param.
+viewer (own + Wikimedia Commons photos) and the Wikipedia
+(`show=wiki/<lang>:<title>`) preview both route through the same `show=` param.
+(Legacy `show=wmc/<pageId>` now decodes to the gallery viewer.)
 
 Optional deeper cleanup (not required; `show=` is already the single param):
 
-- [ ] **Fold `gallery-viewer`/`wmc`/`wiki` state into `activeModal`.** Replace
-      `gallery.activeImageId` / `wikimediaCommons.preview` / `wiki.preview` with
-      `activeModal.type === 'gallery-viewer' | 'wmc' | 'wiki'` as the source of
+- [ ] **Fold `gallery-viewer`/`wiki` state into `activeModal`.** Replace
+      `gallery.activeImageId` / `wiki.preview` with
+      `activeModal.type === 'gallery-viewer' | 'wiki'` as the source of
       truth. Needs moving the `next`/`prev` resolution out of the
       `galleryRequestImage` reducer into a processor, and updating
       `showGalleryViewerSelector`, `GalleryViewerModal`, and the gallery
@@ -227,4 +228,100 @@ off that — never re-derive "is this a track?" from density/timestamps.
       simplify prompt for the dense recording. Likely a new `convertToDrawing`
       payload variant (e.g. `{ type: 'tracking'; id }`) handled in
       `convertToDrawingProcessor`, plus a menu action in the tracking UI.
+
+## Photo layer: gallery + Wikimedia Commons merge
+
+Merge of the separate Wikimedia Commons layer (`M`) into the gallery photo layer
+(`I`): the API server imports the monthly Commons `geo_tags` dump (filtered to
+`gt_type='camera'`) into a `wikimediaPicture` table of just `(pageId, location)`,
+exposed through the same `/gallery/pictures` bbox + detail endpoints with a
+`source` discriminator. The client fetches everything else — title, image URL,
+author, license, description — lazily from the Commons API by pageId on viewer
+open (it must call the API for CC attribution anyway, and that response also
+carries the title and image URL, so the 6.7 GB `page` dump is *not* imported).
+The `M` layer is retired;
+`source` becomes a filter + colorize dimension. Ratings/comments for wikimedia
+photos live in standalone `wikimediaRating`/`wikimediaComment` tables (keyed on
+the stable `pageId`, untouched by the monthly reimport).
+
+**Client PR (freemap-v3-react) — DONE.** The gallery layer (`I`) now renders own
++ Wikimedia Commons photos in one canvas layer, tinted by source (and a `source`
+colorize mode); the `M` layer and the whole `src/features/wikimediaCommons/`
+feature are removed. Commons photos ride the shared id space as negative ids
+(`-pageId`) via `pictureIdToPath`, open in the gallery viewer (image +
+author/license/description fetched straight from Commons via `wikimediaMeta.ts`),
+and support rating/comments but not edit/delete. Legacy `#show=wmc/<pageId>` and
+`#wmc=<pageId>` links remap to the merged viewer. Filter gains `sources`
+(gallery/wikimedia; Commons gated to zoom ≥ 11).
+
+**Server PR (freemap-v3-api) — DONE.** `wikimediaPicture`/`wikimediaRating`/
+`wikimediaComment` schema in `initDatabase()`; streaming dump importer
+(`src/wikimedia/importWikimedia.ts` + `sqlDumpParser.ts`, tested; `pnpm
+import:wikimedia` — geo_tags-only stream into a heap staging table, then a
+sorted `INSERT IGNORE … SELECT` into the final table + spatial index, atomic
+swap); bbox/radius gain `source`; detail/rating/comment accept `w<pageId>`;
+comment mail extracted to `commentMail.ts`.
+
+Importer perf notes (learned running it live): the load is disk-bound, not
+network — insert via one connection with big transactions (commit every ~200k
+rows, `unique_checks` off) and keep the staging table a **heap** (no PK) so the
+tag-id-ordered rows don't thrash a random-order `pageId` clustered index; bump
+`innodb_buffer_pool_size` (was 128 MiB default) for the join/index tail. There
+are **>16.7M** camera pageIds, so an in-memory `Set` of ids overflows V8's Set
+cap — another reason the page-dump join was dropped.
+
+**Wire contract the client PR must match:**
+- protobuf `Picture.source` (field 18): `0` = gallery (omitted), `1` = wikimedia;
+  `id` carries the Commons `pageId` for wikimedia rows.
+- `GET /gallery/pictures?by=bbox&sources=gallery,wikimedia` (default both); any
+  gallery-only filter (`userId`/`tag`/rating/date/`pano`/`premium`/`license`)
+  drops the wikimedia arm.
+- `by=radius` now returns `[{ id, source }]` (was `[{ id }]`) — merged, sorted by
+  distance; `sources` param honored the same way.
+- Detail `GET /gallery/pictures/w<pageId>` returns `{ id:<pageId>, source:
+  'wikimedia', title:null, lat, lon, tags:[], comments, rating, myStars }`;
+  gallery detail now also carries `source:'gallery'`. Client fetches title, image
+  URL, author, license and description from the Commons API by pageId.
+- Rating/comment `POST /gallery/pictures/w<pageId>/{rating,comments}` supported
+  (no premium gating); `PUT`/`DELETE`/`/image`/upload are gallery-only.
+
+Remaining server niceties (not blocking the client PR): explicit
+`w<pageId>` rejection in the `PUT`/`DELETE`/`/image` handlers (they already 404
+via int coercion today), and mid-download resume in the importer.
+
+Deferred sub-items:
+
+- [ ] **Use `gt_type` as a filterable tag.** v1 only stores `gt_type` in a column
+      (filtered to `camera` at import). Wiring it into the shared `tag` filter
+      (so "mountain"/"church"/… filter uniformly across gallery user-tags and
+      wikimedia types) needs the wikimedia side of the bbox `UNION ALL` to match
+      its single `gt_type` against the tag-filter set + `tagMode`, plus surfacing
+      the fixed enum as selectable tags client-side. Not simple — defer.
+- [x] **Ingest the Commons `image` table for date + stable author.** The importer
+      now streams the ~17 GB `image` dump (title-keyed, pre-filtered by a hashed
+      title bitset to the kept subset, joined back on title) and stores
+      `capturedAt` (EXIF `DateTimeOriginal` from the JSON `img_metadata`),
+      `uploadedAt` (`img_timestamp`) and `authorId` (numeric `img_actor`) on
+      `wikimediaPicture`. The bbox arm surfaces them under `takenAt`/`createdAt`/
+      `userId`, so date/season/author **colorizing** works for wikimedia photos.
+      Notes: the actor *name* isn't in any public dump (`actor` dump is empty), so
+      it stays API-only in the viewer.
+- [x] **Add the SDC (mediainfo) dump for capturedAt + license.** The `image` dump
+      externalizes rich EXIF (`{"data":[],"blobs":{…}}`) out of reach, so
+      `capturedAt`/`azimuth` from it are sparse (~36% / ~8%) — exactly the dated,
+      directional photos. The importer now also streams the ~75 GB SDC
+      `latest-mediainfo.json.gz` (JSON-lines; pageId cheap-matched at line start,
+      only kept entities JSON-parsed) and stores `P571` (inception →
+      `COALESCE(EXIF, SDC)` capturedAt) and `P275` (license → our buckets via
+      `licenseQMap.ts`). `license` is a first-class column now, colorized like own
+      photos; `WIKIMEDIA_NO_DATA_MODES` is empty. Azimuth has no SDC source (stays
+      best-effort EXIF). License *filtering* for wikimedia is still gallery-only
+      (the `wikimediaExcludedByFilter` set) — could be enabled now that the column
+      exists.
+- [x] **Include wikimedia in list *ordering* and *filtering*.** All three handlers
+      (`byBbox`/`byRadius`/`byOrder`) now include wikimedia unless a filter it can't
+      satisfy is set (tag/author/license, or pano=true/premium=true). The wikimedia
+      arms apply the date-range (`capturedAt`/`uploadedAt`, indexed) and rating-range
+      (effective Bayesian rating) filters and every ordering; the Filter modal shows
+      an "excludes Wikimedia" note only under tag/author/license.
 

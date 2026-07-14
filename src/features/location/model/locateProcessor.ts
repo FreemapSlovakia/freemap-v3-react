@@ -2,6 +2,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { LatLng } from 'leaflet';
 import { setLocation, toggleLocate } from './actions.js';
 
@@ -15,7 +16,7 @@ export const locateProcessor: Processor = {
   actionCreator: toggleLocate,
   handle: async ({ getState, dispatch }) => {
     if (getState().location.locate) {
-      window._paq.push(['trackEvent', 'Location', 'locate']);
+      trackMatomo(['trackEvent', 'Location', 'locate']);
 
       dispatch(mapRefocus({ gpsTracked: true }));
 

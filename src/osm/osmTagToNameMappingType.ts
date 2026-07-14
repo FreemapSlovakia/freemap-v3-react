@@ -846,6 +846,16 @@ export type OsmTagToNameMapping = {
     };
     wood: string;
   };
+  obstacle: {
+    '*': string;
+    vegetation: string;
+    fallen_tree: string;
+    unevenness: string;
+    precipice: string;
+    heap: string;
+    hole: string;
+    mud: string;
+  };
   place: {
     '*': string;
     city: string;

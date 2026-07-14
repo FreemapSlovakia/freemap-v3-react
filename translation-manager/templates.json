@@ -6,7 +6,6 @@
     "src/features/supportUsModal/translations/{LANG}.tsx",
     "src/features/routePlanner/translations/{LANG}.tsx",
     "src/features/legend/translations/{LANG}.tsx",
-    "src/features/wikimediaCommons/translations/{LANG}.tsx",
     "src/features/gallery/translations/{LANG}.tsx",
     "src/features/offlineMapExport/translations/{LANG}.tsx",
     "src/features/mapArea/translations/{LANG}.tsx",

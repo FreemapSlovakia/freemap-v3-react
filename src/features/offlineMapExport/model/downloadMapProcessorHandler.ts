@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { downloadMap } from './actions.js';
 
 const handle: ProcessorHandler<typeof downloadMap> = async ({
@@ -14,7 +15,7 @@ const handle: ProcessorHandler<typeof downloadMap> = async ({
   sp.append('format', action.payload.format);
   sp.append('scale', String(action.payload.scale ?? 1));
 
-  window._paq.push(['trackEvent', 'OfflineExport', 'export', sp.toString()]);
+  trackMatomo(['trackEvent', 'OfflineExport', 'export', sp.toString()]);
 
   await httpRequest({
     getState,

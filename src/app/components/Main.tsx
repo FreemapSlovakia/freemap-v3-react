@@ -70,12 +70,6 @@ const objectsMenuFactory = () =>
     '@features/objects/components/ObjectsMenu.js'
   );
 
-const wikimediaCommonsLayerFactory = () =>
-  import(
-    /* webpackChunkName: "wikimedia-commons-layer" */
-    '@features/wikimediaCommons/components/WikimediaCommonsLayer.js'
-  );
-
 const routePlannerMenuFactory = () =>
   import(
     /* webpackChunkName: "route-planner-menu" */
@@ -340,6 +334,12 @@ const searchResultStyleModalFactory = () =>
     '@features/search/components/SearchResultStyleModal.js'
   );
 
+const routePlannerStyleModalFactory = () =>
+  import(
+    /* webpackChunkName: "route-planner-style-modal" */
+    '@features/routePlanner/components/RoutePlannerStyleModal.js'
+  );
+
 export function Main(): ReactElement {
   const m = useMessages();
 
@@ -389,13 +389,6 @@ export function Main(): ReactElement {
 
   const showResults = useAppSelector(
     (state) => !state.map.layers.includes('i'),
-  );
-
-  const showWikimediaCommonsLayer = useAppSelector(
-    (state) =>
-      state.map.layers.includes('M') ||
-      state.wikimediaCommons.preview !== null ||
-      state.wikimediaCommons.loading !== null,
   );
 
   const showPictures = useAppSelector((state) =>
@@ -782,10 +775,6 @@ export function Main(): ReactElement {
 
             <EventsLayer />
 
-            {showWikimediaCommonsLayer && (
-              <AsyncComponent factory={wikimediaCommonsLayerFactory} />
-            )}
-
             {showGalleryPicker && <GalleryPicker />}
 
             {selectingHomeLocation !== false && <HomeLocationPickingResult />}
@@ -938,6 +927,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'search-result-style'}
         factory={searchResultStyleModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'route-planner-style'}
+        factory={routePlannerStyleModalFactory}
       />
 
       <GalleryModals />

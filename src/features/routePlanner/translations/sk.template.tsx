@@ -18,6 +18,13 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Limit vzdialenosti',
   },
   milestones: 'Kilometrovník',
+  style: {
+    menuItem: 'Štýl trasy',
+    title: 'Štýl trasy',
+    lineWidth: 'Hrúbka čiary',
+    lineOpacity: 'Krytie čiary',
+    markerOpacity: 'Krytie značiek',
+  },
   optimize: {
     label: 'Optimalizovať poradie',
     fixedStart: 'Ponechať štart',

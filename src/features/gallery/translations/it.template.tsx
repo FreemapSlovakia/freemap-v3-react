@@ -37,8 +37,9 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
   colorizeBy: 'Colora in base',
   showDirection: 'Mostra la direzione dello scatto',
 
+  legendCategory: {},
+
   c: {
-    disable: 'Non colorare',
     mine: 'Diversi dai miei',
     userId: 'Autore',
     rating: 'Valutazioni',
@@ -51,6 +52,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
 
   viewer: {
     title: 'Foto',
+    imageUnavailable: 'Immagine non disponibile',
     comments: 'Commenti',
     newComment: 'Nuovo commento',
     addComment: 'Aggiungi',
@@ -180,6 +182,8 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     noTags: 'no tag',
     pano: 'Panorama',
     premium: 'Premium',
+    source: 'Fonte',
+    allSources: 'Tutte',
   },
 
   noPicturesFound: 'Non è stata trovata nessuna foto in questo posto.',

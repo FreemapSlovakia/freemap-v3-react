@@ -26,6 +26,7 @@ const URL_MODAL_IDS = [
   'offline-map-export',
   'offline-maps',
   'premium',
+  'route-planner-style',
   'support-us',
   'tracking-my',
   'tracking-watched',
@@ -71,7 +72,6 @@ export type ActiveModal =
   | { type: 'tracking-watched'; token?: string }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
-  | { type: 'wmc'; pageId: number }
   | { type: 'wiki'; key: string };
 
 /**
@@ -93,8 +93,6 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
       return `document/${modal.key}`;
     case 'gallery-viewer':
       return `gallery-viewer/${modal.id}`;
-    case 'wmc':
-      return `wmc/${modal.pageId}`;
     case 'wiki':
       return `wiki/${modal.key}`;
     default:
@@ -136,9 +134,13 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
       return arg && Number.isFinite(id) ? { type: 'gallery-viewer', id } : null;
     }
     case 'wmc': {
+      // Legacy Wikimedia Commons deep links now open in the merged gallery
+      // viewer, where Commons photos are addressed as negative ids (`-pageId`).
       const pageId = Number(arg);
 
-      return arg && Number.isFinite(pageId) ? { type: 'wmc', pageId } : null;
+      return arg && Number.isFinite(pageId)
+        ? { type: 'gallery-viewer', id: -pageId }
+        : null;
     }
     case 'wiki':
       return arg ? { type: 'wiki', key: arg } : null;

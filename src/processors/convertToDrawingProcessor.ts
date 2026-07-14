@@ -19,6 +19,7 @@ import {
   lineStyleFromProperties,
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { flatten as turfFlatten } from '@turf/flatten';
 import { lineString } from '@turf/helpers';
 import { simplify } from '@turf/simplify';
@@ -151,12 +152,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   transform: ({ getState, dispatch, action }) => {
     const { payload } = action;
 
-    window._paq.push([
-      'trackEvent',
-      'Drawing',
-      'convertToDrawing',
-      payload.type,
-    ]);
+    trackMatomo(['trackEvent', 'Drawing', 'convertToDrawing', payload.type]);
 
     const state = getState();
 

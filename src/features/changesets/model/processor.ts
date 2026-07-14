@@ -11,6 +11,7 @@ import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadChangesetsMessages } from '../translations/loadChangesetsMessages.js';
 import {
   type Changeset,
@@ -34,7 +35,7 @@ export const changesetsTrackProcessor: Processor = {
 
     sp.append('byAuthor', String(Boolean(changesets.authorName)));
 
-    window._paq.push(['trackEvent', 'Changesets', 'search', sp.toString()]);
+    trackMatomo(['trackEvent', 'Changesets', 'search', sp.toString()]);
   },
 };
 

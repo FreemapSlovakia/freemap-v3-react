@@ -3,6 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryRemoveItem,
@@ -18,7 +19,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     dispatch(gallerySetLayerDirty());
 
     if (getState().gallery.items.length === 0) {
-      window._paq.push(['trackEvent', 'Gallery', 'upload']);
+      trackMatomo(['trackEvent', 'Gallery', 'upload']);
 
       dispatch(
         toastsAdd({

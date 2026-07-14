@@ -839,6 +839,16 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     wood: 'Les',
     volcano: 'Sopka',
   },
+  obstacle: {
+    '*': 'Prekážka {}',
+    vegetation: 'Hustá vegetácia',
+    fallen_tree: 'Spadnutý strom / stromy',
+    unevenness: 'Nerovnosť',
+    precipice: 'Zráz',
+    heap: 'Kopa',
+    hole: 'Diera',
+    mud: 'Blato',
+  },
   place: {
     '*': 'Miesto {}',
     city: 'Veľkomesto',

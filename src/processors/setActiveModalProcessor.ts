@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 
 export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
   actionCreator: setActiveModal,
@@ -31,7 +32,7 @@ export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
 
     // track every modal that actually opens (payload null closes a modal)
     if (type) {
-      window._paq.push(['trackEvent', 'Modal', 'open', type]);
+      trackMatomo(['trackEvent', 'Modal', 'open', type]);
     }
 
     return action;

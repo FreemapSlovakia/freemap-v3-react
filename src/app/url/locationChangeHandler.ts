@@ -15,6 +15,10 @@ import {
   eventsSetFilter,
 } from '@features/events/model/actions.js';
 import {
+  GALLERY_SOURCES,
+  type GallerySource,
+} from '@features/gallery/galleryUtils.js';
+import {
   type GalleryLicense,
   GalleryLicenseSchema,
 } from '@features/gallery/licenses.js';
@@ -71,10 +75,6 @@ import {
   wikiSetPreview,
 } from '@features/wiki/model/actions.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
-import {
-  wikimediaCommonsLoadPreview,
-  wikimediaCommonsSetPreview,
-} from '@features/wikimediaCommons/model/actions.js';
 import { isLanguage } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
@@ -687,19 +687,6 @@ export function handleLocationChange(store: MyStore): void {
       dispatch(galleryClear());
     }
 
-    if (next?.type === 'wmc') {
-      const wmc = getState().wikimediaCommons;
-
-      if (wmc.preview?.pageId !== next.pageId && wmc.loading !== next.pageId) {
-        dispatch(wikimediaCommonsLoadPreview(next.pageId));
-      }
-    } else if (
-      getState().wikimediaCommons.preview ||
-      getState().wikimediaCommons.loading
-    ) {
-      dispatch(wikimediaCommonsSetPreview(null));
-    }
-
     if (next?.type === 'wiki') {
       const w = getState().wiki;
 
@@ -714,11 +701,7 @@ export function handleLocationChange(store: MyStore): void {
     }
 
     const mainNext =
-      next?.type === 'gallery-viewer' ||
-      next?.type === 'wmc' ||
-      next?.type === 'wiki'
-        ? null
-        : next;
+      next?.type === 'gallery-viewer' || next?.type === 'wiki' ? null : next;
 
     if (
       encodeActiveModal(getState().main.activeModal) !==
@@ -942,6 +925,19 @@ function handleGallery(
 
   const qLicense = qLicenseAll.length > 0 ? qLicenseAll : undefined;
 
+  a = query['gallery-source'];
+
+  const qSourcesAll = (
+    a === undefined ? [] : Array.isArray(a) ? a : [a]
+  ).filter((x): x is GallerySource =>
+    (GALLERY_SOURCES as string[]).includes(x),
+  );
+
+  const qSources =
+    qSourcesAll.length > 0 && qSourcesAll.length < GALLERY_SOURCES.length
+      ? qSourcesAll
+      : undefined;
+
   if (
     qUserId ||
     qGalleryTag != null ||
@@ -953,7 +949,8 @@ function handleGallery(
     qCreatedAtTo ||
     qPano !== undefined ||
     qPremium !== undefined ||
-    qLicense
+    qLicense ||
+    qSources
   ) {
     const { filter } = getState().gallery;
 
@@ -1017,6 +1014,10 @@ function handleGallery(
 
     if (qLicense && (filter.license ?? []).join(',') !== qLicense.join(',')) {
       newFilter.license = qLicense;
+    }
+
+    if (qSources && (filter.sources ?? []).join(',') !== qSources.join(',')) {
+      newFilter.sources = qSources;
     }
 
     if (Object.keys(newFilter).length !== 0) {

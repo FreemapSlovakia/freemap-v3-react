@@ -25,8 +25,9 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-rating': 'de la mieux notée',
     '-lastCommentedAt': 'du dernier commentaire',
   },
+  legendCategory: {},
+
   c: {
-    disable: 'Ne pas colorer',
     mine: 'Distinguer les miennes',
     userId: 'Auteur',
     rating: 'Note',
@@ -37,6 +38,7 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     license: 'Licence',
   },
   viewer: {
+    imageUnavailable: 'Image non disponible',
     uploaded: ({ username, createdAt }) => (
       <>
         Importée par {username} le {createdAt}
@@ -157,6 +159,8 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     noTags: 'sans étiquette',
     pano: 'Panorama',
     premium: 'Premium',
+    source: 'Source',
+    allSources: 'Toutes',
   },
   allMyPhotos: {
     title: 'Modification d’accès',

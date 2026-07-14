@@ -1,3 +1,4 @@
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { setErrorTicketId } from '../actions.js';
 import type { MyStore } from '../store.js';
 
@@ -74,7 +75,7 @@ export function sendError(errDetails: ErrorDetails): void {
     trackedErrorSignatures.add(signature);
     trackedErrorCount++;
 
-    window._paq.push(['trackEvent', 'App', 'error', name]);
+    trackMatomo(['trackEvent', 'App', 'error', name]);
   }
 
   if (errDetails.message === 'Script error.' || errDetails.filename === '') {

@@ -1,4 +1,5 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { searchSetQuery } from '../actions.js';
 
 export const searchProcessor: Processor<typeof searchSetQuery> = {
@@ -13,7 +14,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       return;
     }
 
-    window._paq.push(['trackEvent', 'Search', 'search']);
+    trackMatomo(['trackEvent', 'Search', 'search']);
 
     if (query.startsWith('@')) {
       const latlng = query

@@ -36,8 +36,9 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
 
   showDirection: 'Mutasd a fényképezés irányát',
 
+  legendCategory: {},
+
   c: {
-    disable: 'Ne színezd',
     mine: 'Különítsd el a sajátjaimat',
     userId: 'Szerző',
     rating: 'Értékelés',
@@ -50,6 +51,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
 
   viewer: {
     title: 'Fénykép',
+    imageUnavailable: 'A kép nem érhető el',
     comments: 'Hozzászólások',
     newComment: 'Új hozzászólás',
     addComment: 'Hozzáadás',
@@ -181,6 +183,8 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     noTags: 'nincs címke',
     pano: 'Panoráma',
     premium: 'Prémium',
+    source: 'Forrás',
+    allSources: 'Mind',
   },
 
   allMyPhotos: {

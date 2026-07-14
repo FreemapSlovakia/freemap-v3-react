@@ -1,4 +1,5 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { authDisconnect } from '../actions.js';
 
 export const authDisconnectProcessor: Processor<typeof authDisconnect> = {
@@ -6,7 +7,7 @@ export const authDisconnectProcessor: Processor<typeof authDisconnect> = {
   id: 'lcd',
   errorKey: 'general.operationError',
   handle: async (...params) => {
-    window._paq.push([
+    trackMatomo([
       'trackEvent',
       'Auth',
       'disconnect',

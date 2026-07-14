@@ -10,6 +10,7 @@ import {
   FaShareAlt,
   FaWindowMaximize,
 } from 'react-icons/fa';
+import { Emoji } from '@/shared/components/Emoji.js';
 import {
   getF4mapUrl,
   getGeocachingUrl,
@@ -26,7 +27,6 @@ import {
   getWazeUrl,
   getZbgisUrl,
 } from '../externalUrlUtils.js';
-import { Emoji } from '@/shared/components/Emoji.js';
 
 interface Props extends LatLon {
   lat: number;

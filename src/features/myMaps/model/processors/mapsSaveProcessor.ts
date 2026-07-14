@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
   type MapData,
@@ -21,7 +22,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
       const patchExisting = activeMap && !asNew;
 
-      window._paq.push([
+      trackMatomo([
         'trackEvent',
         'MyMaps',
         asNew ? 'copy' : patchExisting ? 'update' : 'create',

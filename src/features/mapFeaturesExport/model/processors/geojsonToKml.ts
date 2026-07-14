@@ -269,20 +269,46 @@ function coord(pos: Position): string {
     : `${pos[0]},${pos[1]}`;
 }
 
-// HTML balloon for picture/object features carrying gallery metadata.
+// HTML balloon for picture/object features carrying gallery metadata. Wikimedia
+// photos have no embeddable image, so render their attribution (author/license)
+// and the Commons/freemap links too — otherwise they'd be bare, unattributed
+// pins.
 function description(props: Record<string, unknown>): string | null {
   const imageUrl = str(props['imageUrl']);
-
   const text = str(props['description']);
+  const author = str(props['author']);
+  const license = str(props['license']);
+  const webUrl = str(props['webUrl']);
+  const commonsUrl = str(props['commonsUrl']);
 
-  if (!imageUrl && !text) {
-    return null;
+  const meta: string[] = [];
+
+  if (author) {
+    meta.push(`<b>Author</b>: ${escapeHtml(author)}`);
   }
 
-  return (
-    (imageUrl ? `<img src="${escapeHtml(imageUrl)}" width="100%">` : '') +
-    (text ? `<p>${escapeHtml(text)}</p>` : '')
-  );
+  if (license) {
+    meta.push(`<b>License</b>: ${escapeHtml(license)}`);
+  }
+
+  const links: string[] = [];
+
+  if (webUrl) {
+    links.push(`<a href="${escapeHtml(webUrl)}">freemap.sk</a>`);
+  }
+
+  if (commonsUrl) {
+    links.push(`<a href="${escapeHtml(commonsUrl)}">Wikimedia Commons</a>`);
+  }
+
+  const parts = [
+    imageUrl ? `<img src="${escapeHtml(imageUrl)}" width="100%">` : '',
+    text ? `<p>${escapeHtml(text)}</p>` : '',
+    meta.length ? `<p>${meta.join('<br>')}</p>` : '',
+    links.length ? `<p>${links.join(' ｜ ')}</p>` : '',
+  ].filter(Boolean);
+
+  return parts.length > 0 ? parts.join('') : null;
 }
 
 // `#rrggbb` (the only form the builder emits — colors are split into hex +

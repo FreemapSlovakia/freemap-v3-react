@@ -15,6 +15,13 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Limit vzdálenosti',
   },
   milestones: 'Kilometrovník',
+  style: {
+    menuItem: 'Styl trasy',
+    title: 'Styl trasy',
+    lineWidth: 'Tloušťka čáry',
+    lineOpacity: 'Krytí čáry',
+    markerOpacity: 'Krytí značek',
+  },
   optimize: {
     label: 'Optimalizovat pořadí',
     fixedStart: 'Ponechat start',

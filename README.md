@@ -85,6 +85,36 @@ The configs also handle: HSTS / `Referrer-Policy` headers, HTTP→HTTPS redirect
 
 When changing build-output naming, the service worker, or the asset manifest, update these configs in the same change set.
 
+### Scheduled jobs (systemd)
+
+Server-side scheduled jobs are checked in under [`etc/systemd/system/`](./etc/systemd/system/) as a reference for what is actually deployed (like the nginx configs above).
+
+- [`freemap-wikimedia-import.service`](./etc/systemd/system/freemap-wikimedia-import.service) / [`freemap-wikimedia-import.timer`](./etc/systemd/system/freemap-wikimedia-import.timer) — the **monthly Wikimedia Commons photo import**. It runs on the API server (`fm6`) as the `freemap` user and executes the backend's built importer (`build/wikimedia/importWikimedia.js` in [`freemap-v3-nodejs-backend`](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend)), which streams the monthly Commons `geo_tags` + `page` + `image` + Structured-Data (`mediainfo`) dumps into the `wikimediaPicture` table — filtered to real photographs (a photo-extension whitelist plus title filters that drop orthophoto/DOP survey grids and astronaut/space imagery) — and **atomically swaps** the fresh table in (zero downtime; the independent `wikimediaRating` / `wikimediaComment` tables are untouched). Alongside each photo's coordinates it imports the metadata the map colorizes by (and the direction markers): `capturedAt` (EXIF `DateTimeOriginal`, falling back to the SDC `P571` inception date, since the image dump externalizes rich EXIF out of reach), `uploadedAt`, `authorId` (numeric Commons actor id), `azimuth` (EXIF `GPSImgDirection`) and `license` (SDC `P275`). The uploader's *name* isn't in any public dump, so it stays client-side via the Commons API.
+
+  Install / update on the server:
+
+  ```bash
+  sudo cp etc/systemd/system/freemap-wikimedia-import.{service,timer} /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now freemap-wikimedia-import.timer
+  systemctl list-timers freemap-wikimedia-import.timer   # next run
+  sudo systemctl start freemap-wikimedia-import.service   # run once now
+  journalctl -u freemap-wikimedia-import.service -f       # watch
+  ```
+
+  Notes: `TimeoutStartSec=0` is required (the import runs several hours — it downloads and streams the ~17 GB `image` dump and the ~75 GB Structured-Data `mediainfo` dump on top of `geo_tags` + `page` — well past the default oneshot timeout); it runs `node` directly with `EnvironmentFile=/etc/freemap.conf` (the same env the API service uses, supplying `MARIADB_*`) rather than the `dotenvx`-wrapped `pnpm run import:wikimedia`, so no decryptable `.env` is needed on the server; `Nice`/`IOSchedulingClass=idle` keep it from starving the live DB. It runs whatever `build/` is deployed, so the filters stay current with each backend deploy.
+
+  Faster downloads (recommended): `dumps.wikimedia.org` throttles to ~4.5 MB/s **per connection** (per-connection, not per-IP), which makes the 75 GB `mediainfo` dump the multi-hour bottleneck. The [your.org mirror](https://dumps.wikimedia.your.org/) serves the same dumps at ~50 MB/s single-connection and carries the `other/wikibase/` (`mediainfo`) tree, so point the importer at it by setting these in `/etc/freemap.conf` (the dump URLs are `getEnv`-overridable — see the backend's `importWikimedia.ts`). This is a pure config change and stays fully streaming (no temp file, no parallel-segment code); it cuts the `mediainfo` phase from ~4.6 h to well under an hour:
+
+  ```
+  WIKIMEDIA_GEO_TAGS_DUMP_URL=https://dumps.wikimedia.your.org/commonswiki/latest/commonswiki-latest-geo_tags.sql.gz
+  WIKIMEDIA_PAGE_DUMP_URL=https://dumps.wikimedia.your.org/commonswiki/latest/commonswiki-latest-page.sql.gz
+  WIKIMEDIA_IMAGE_DUMP_URL=https://dumps.wikimedia.your.org/commonswiki/latest/commonswiki-latest-image.sql.gz
+  WIKIMEDIA_MEDIAINFO_DUMP_URL=https://dumps.wikimedia.your.org/other/wikibase/commonswiki/latest-mediainfo.json.gz
+  ```
+
+  A mirror's `latest` can lag the origin by a day or two (fine for the monthly import); the code defaults stay on `dumps.wikimedia.org` (canonical), so this is an opt-in override.
+
 ## Environment variables
 
 Most deployment-specific values are derived from `DEPLOYMENT` (see above). The remaining overrides:

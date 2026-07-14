@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import { mapsDelete, mapsDisconnect, mapsLoadList } from '../actions.js';
 
@@ -12,7 +13,7 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
     action: { payload: id },
     toastError,
   }) => {
-    window._paq.push(['trackEvent', 'MyMaps', 'delete']);
+    trackMatomo(['trackEvent', 'MyMaps', 'delete']);
 
     try {
       await httpRequest({

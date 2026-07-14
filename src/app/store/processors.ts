@@ -98,8 +98,6 @@ import { trackViewerSetTrackDataProcessor } from '@features/trackViewer/model/pr
 import { trackViewerToggleElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
-import { wikimediaCommonsLayerProcessor } from '@features/wikimediaCommons/model/processors/wikimediaCommonsLayerProcessor.js';
-import { wikimediaCommonsLoadPreviewProcessor } from '@features/wikimediaCommons/model/processors/wikimediaCommonsLoadPreviewProcessor.js';
 import { cancelProcessor } from '@/processors/cancelProcessor.js';
 import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
 import { deleteProcessor } from '@/processors/deleteProcessor.js';
@@ -194,8 +192,6 @@ export const processors = [
   eventsDeleteProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
-  wikimediaCommonsLayerProcessor,
-  wikimediaCommonsLoadPreviewProcessor,
   legendProcessor,
   legacyMapWarningProcessor,
   openInExternalAppProcessor,

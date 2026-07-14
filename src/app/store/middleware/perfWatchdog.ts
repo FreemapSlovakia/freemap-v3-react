@@ -1,4 +1,5 @@
 import type { Middleware, UnknownAction } from '@reduxjs/toolkit';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { RootState } from '../store.js';
 
 /**
@@ -120,7 +121,7 @@ function report(
   // The full free-text message (with timing numbers) stays in Sentry; Matomo
   // only gets the low-cardinality visibility bucket so the report doesn't
   // fragment into one row per drift value.
-  window._paq?.push(['trackEvent', 'Perf', kind, visibility]);
+  trackMatomo(['trackEvent', 'Perf', kind, visibility]);
 }
 
 /** Starts the timer watchdog and (where supported) the longtask observer. */

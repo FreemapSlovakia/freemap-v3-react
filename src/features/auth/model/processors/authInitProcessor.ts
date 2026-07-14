@@ -1,5 +1,6 @@
 import { httpRequest, isNetworkError } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
 import { authInit, authSetUser } from '../actions.js';
 import {
@@ -10,13 +11,11 @@ import {
 } from '../types.js';
 
 function track(id: number | undefined) {
-  window._paq.push(
-    id === undefined ? ['resetUserId'] : ['setUserId', String(id)],
-  );
+  trackMatomo(id === undefined ? ['resetUserId'] : ['setUserId', String(id)]);
 
-  window._paq.push(['trackPageView']);
+  trackMatomo(['trackPageView']);
 
-  window._paq.push(['appendToTrackingUrl', '']);
+  trackMatomo(['appendToTrackingUrl', '']);
 }
 
 export const authTrackProcessor: Processor = {

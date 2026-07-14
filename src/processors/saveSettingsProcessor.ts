@@ -11,6 +11,7 @@ import { getMessages } from '@features/l10n/messagesStore.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { loadMapSettingsMessages } from '@features/mapSettings/translations/loadMapSettingsMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 
 export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   actionCreator: saveSettings,
@@ -67,7 +68,7 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
         dispatch(applySettings(settings));
       }
 
-      window._paq.push(['trackEvent', 'Settings', 'save']);
+      trackMatomo(['trackEvent', 'Settings', 'save']);
 
       const offerActivate =
         activateLayerType !== undefined &&
