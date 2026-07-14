@@ -301,6 +301,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Verejná doprava (ÖPNV)',
       X: outdoorMap,
+      XK: 'Turistické trasy KST',
       i: 'Dátová vrstva',
       I: 'Fotografie',
       l1: 'Lesné cesty NLC (2017)',

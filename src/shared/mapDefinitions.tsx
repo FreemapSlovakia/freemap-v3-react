@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import {
   FaBus,
   FaCamera,
+  FaHiking,
   FaMap,
   FaPencilAlt,
   FaPlane,
@@ -84,6 +85,85 @@ const LLS_URL =
 
 const OFM_URL =
   'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#ortofoto';
+
+// Attribution shared by the outdoor map and its KST-routes variant: Freemap,
+// OSM data, and every national elevation/relief source the renderer blends in.
+const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
+  FM_ATTR,
+  OSM_DATA_ATTR,
+  {
+    type: 'data',
+    country: 'at',
+    name: 'ALS DTM: Digitales Geländemodell Österreich (Geoland.at open data)',
+    url: 'https://www.data.gv.at/katalog/dataset/d88a1246-9684-480b-a480-ff63286b35b7',
+  },
+  {
+    type: 'data',
+    country: 'cz',
+    name: 'DMR 5G: ČÚZK Geoportál',
+    url: 'https://geoportal.cuzk.cz/(S(a21rqp1jhcnkz4iqcen2w50l))/Default.aspx?head_tab=sekce-02-gp&lng=EN&menu=302&metadataID=CZ-CUZK-DMR5G-V&mode=TextMeta&side=vyskopis',
+  },
+  {
+    type: 'data',
+    country: 'fr',
+    name: 'RGE ALTI: IGN (Etalab Open Licence)',
+    url: 'https://geoservices.ign.fr/rgealti',
+  },
+  {
+    type: 'data',
+    country: 'it',
+    name: 'Tinitaly DEM: INGV',
+    url: 'https://tinitaly.pi.ingv.it/',
+  },
+  {
+    type: 'data',
+    country: 'pl',
+    name: 'NMT: GUGiK',
+    url: 'https://www.geoportal.gov.pl/',
+  },
+  {
+    type: 'data',
+    country: 'sk',
+    name: 'DMR 5.0: ÚGKK SR',
+    url: LLS_URL,
+  },
+  {
+    type: 'data',
+    country: 'si',
+    name: 'DMR: Ministrstvo za okolje in prostor',
+    url: 'https://gis.arso.gov.si/evode/profile.aspx?id=atlas_voda_Lidar@Arso',
+  },
+  {
+    type: 'data',
+    country: 'ch',
+    name: 'swissALTI3D: © swisstopo',
+    url: 'https://www.swisstopo.admin.ch/en/height-models/swissalti3d.html',
+  },
+  {
+    type: 'data',
+    country: 'no',
+    name: 'DTM: Kartverket (Høydedata)',
+    url: 'https://hoydedata.no/',
+  },
+  {
+    type: 'data',
+    country: 'se',
+    name: 'Markhöjdmodell Nedladdning: Lantmäteriet',
+    url: 'https://www.lantmateriet.se/en/geodata/our-products/product-list/elevation-model-download/',
+  },
+  {
+    type: 'data',
+    country: 'fi',
+    name: 'Korkeusmalli 2 m: Maanmittauslaitos',
+    url: 'https://www.maanmittauslaitos.fi/en/maps-and-spatial-data/datasets-and-interfaces/product-descriptions/elevation-model-2-m',
+  },
+  {
+    type: 'data',
+    country: 'es',
+    name: 'MDT05: IGN (CNIG)',
+    url: 'https://centrodedescargas.cnig.es/CentroDescargas/modelos-digitales-elevaciones',
+  },
+];
 
 export type HasUrl = {
   url: string;
@@ -433,82 +513,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     icon: <GiTreasureMap />,
     url: `${process.env['FM_MAPSERVER_URL']}/{z}/{x}/{y}`,
     extraScales: [2, 3, 4],
-    attribution: [
-      FM_ATTR,
-      OSM_DATA_ATTR,
-      {
-        type: 'data',
-        country: 'at',
-        name: 'ALS DTM: Digitales Geländemodell Österreich (Geoland.at open data)',
-        url: 'https://www.data.gv.at/katalog/dataset/d88a1246-9684-480b-a480-ff63286b35b7',
-      },
-      {
-        type: 'data',
-        country: 'cz',
-        name: 'DMR 5G: ČÚZK Geoportál',
-        url: 'https://geoportal.cuzk.cz/(S(a21rqp1jhcnkz4iqcen2w50l))/Default.aspx?head_tab=sekce-02-gp&lng=EN&menu=302&metadataID=CZ-CUZK-DMR5G-V&mode=TextMeta&side=vyskopis',
-      },
-      {
-        type: 'data',
-        country: 'fr',
-        name: 'RGE ALTI: IGN (Etalab Open Licence)',
-        url: 'https://geoservices.ign.fr/rgealti',
-      },
-      {
-        type: 'data',
-        country: 'it',
-        name: 'Tinitaly DEM: INGV',
-        url: 'https://tinitaly.pi.ingv.it/',
-      },
-      {
-        type: 'data',
-        country: 'pl',
-        name: 'NMT: GUGiK',
-        url: 'https://www.geoportal.gov.pl/',
-      },
-      {
-        type: 'data',
-        country: 'sk',
-        name: 'DMR 5.0: ÚGKK SR',
-        url: LLS_URL,
-      },
-      {
-        type: 'data',
-        country: 'si',
-        name: 'DMR: Ministrstvo za okolje in prostor',
-        url: 'https://gis.arso.gov.si/evode/profile.aspx?id=atlas_voda_Lidar@Arso',
-      },
-      {
-        type: 'data',
-        country: 'ch',
-        name: 'swissALTI3D: © swisstopo',
-        url: 'https://www.swisstopo.admin.ch/en/height-models/swissalti3d.html',
-      },
-      {
-        type: 'data',
-        country: 'no',
-        name: 'DTM: Kartverket (Høydedata)',
-        url: 'https://hoydedata.no/',
-      },
-      {
-        type: 'data',
-        country: 'se',
-        name: 'Markhöjdmodell Nedladdning: Lantmäteriet',
-        url: 'https://www.lantmateriet.se/en/geodata/our-products/product-list/elevation-model-download/',
-      },
-      {
-        type: 'data',
-        country: 'fi',
-        name: 'Korkeusmalli 2 m: Maanmittauslaitos',
-        url: 'https://www.maanmittauslaitos.fi/en/maps-and-spatial-data/datasets-and-interfaces/product-descriptions/elevation-model-2-m',
-      },
-      {
-        type: 'data',
-        country: 'es',
-        name: 'MDT05: IGN (CNIG)',
-        url: 'https://centrodedescargas.cnig.es/CentroDescargas/modelos-digitales-elevaciones',
-      },
-    ],
+    attribution: OUTDOOR_ATTRIBUTION,
     minZoom: 5,
     maxNativeZoom: 20,
     shortcut: { code: 'KeyX' },
@@ -562,6 +567,18 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       'va',
       'xk',
     ],
+  },
+  {
+    layer: 'base',
+    type: 'XK',
+    technology: 'tile',
+    icon: <FaHiking />,
+    url: `${process.env['FM_MAPSERVER_URL']}/kst/{z}/{x}/{y}`,
+    extraScales: [2, 3, 4],
+    attribution: OUTDOOR_ATTRIBUTION,
+    minZoom: 5,
+    maxNativeZoom: 20,
+    countries: ['sk'],
   },
   {
     layer: 'base',
