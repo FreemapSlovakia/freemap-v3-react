@@ -25,6 +25,7 @@ const URL_MODAL_IDS = [
   'offline-map-export',
   'offline-maps',
   'premium',
+  'route-planner-style',
   'support-us',
   'tracking-my',
   'tracking-watched',

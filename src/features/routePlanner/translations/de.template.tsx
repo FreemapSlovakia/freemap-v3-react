@@ -39,6 +39,13 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     isochrone: 'Isochronen',
   },
   milestones: 'Kilometermarkierungen',
+  style: {
+    menuItem: 'Routenstil',
+    title: 'Routenstil',
+    lineWidth: 'Linienbreite',
+    lineOpacity: 'Deckkraft der Linie',
+    markerOpacity: 'Deckkraft der Marker',
+  },
   optimize: {
     label: 'Reihenfolge optimieren',
     fixedStart: 'Start beibehalten',

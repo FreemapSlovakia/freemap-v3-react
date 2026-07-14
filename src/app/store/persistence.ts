@@ -123,6 +123,9 @@ export const PersistedRoutePlannerSettingsSchema = z
   .object({
     ...ColorizeSettingsShape,
     preventHint: z.boolean(),
+    lineWidth: z.number(),
+    lineOpacity: z.number(),
+    markerOpacity: z.number(),
   })
   .partial();
 
@@ -301,6 +304,9 @@ const PERSIST: PersistEntry[] = [
       colorizeBy: s.colorizeBy,
       colorizeLegend: s.colorizeLegend,
       preventHint: s.preventHint,
+      lineWidth: s.lineWidth,
+      lineOpacity: s.lineOpacity,
+      markerOpacity: s.markerOpacity,
     }),
   }),
   defineEntry({

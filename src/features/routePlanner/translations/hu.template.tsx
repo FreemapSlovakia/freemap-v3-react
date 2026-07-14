@@ -15,6 +15,13 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Távolságkorlát',
   },
   milestones: 'Távolságszelvények',
+  style: {
+    menuItem: 'Útvonal stílusa',
+    title: 'Útvonal stílusa',
+    lineWidth: 'Vonalvastagság',
+    lineOpacity: 'Vonal átlátszatlansága',
+    markerOpacity: 'Jelölők átlátszatlansága',
+  },
   optimize: {
     label: 'Sorrend optimalizálása',
     fixedStart: 'Kiindulás rögzítése',

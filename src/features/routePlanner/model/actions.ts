@@ -219,6 +219,20 @@ export const routePlannerSetColorizeLegend = createAction<boolean | undefined>(
   'ROUTE_PLANNER_SET_COLORIZE_LEGEND',
 );
 
+/** User-adjustable display prefs for the drawn route (persisted). */
+export type RouteStyle = {
+  /** Width of the route line in pixels. */
+  lineWidth: number;
+  /** Opacity of the route line (and its outline), 0–1. */
+  lineOpacity: number;
+  /** Opacity of the start/finish/midpoint markers, 0–1. */
+  markerOpacity: number;
+};
+
+export const routePlannerSetStyle = createAction<RouteStyle>(
+  'ROUTE_PLANNER_SET_STYLE',
+);
+
 /**
  * Caches a render-only line for the active alternative: every elevation comes
  * from our terrain model (the router's own elevation is ignored) and long

@@ -43,6 +43,13 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     setHome: 'Ustaw',
   },
   milestones: 'Słupki kilometrowe',
+  style: {
+    menuItem: 'Styl trasy',
+    title: 'Styl trasy',
+    lineWidth: 'Grubość linii',
+    lineOpacity: 'Krycie linii',
+    markerOpacity: 'Krycie znaczników',
+  },
   optimize: {
     label: 'Optymalizuj kolejność',
     fixedStart: 'Zachowaj start',

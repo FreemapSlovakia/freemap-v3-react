@@ -1,5 +1,6 @@
 import {
   convertToDrawing,
+  setActiveModal,
   setSelectingHomeLocation,
   setTool,
 } from '@app/store/actions.js';
@@ -56,6 +57,7 @@ import {
   FaGem,
   FaHome,
   FaMapMarkerAlt,
+  FaPaintBrush,
   FaPalette,
   FaPencilAlt,
   FaPlay,
@@ -527,6 +529,11 @@ export default function RoutePlannerMenu(): ReactElement {
         break;
       }
 
+      case 'route-style':
+        dispatch(setActiveModal({ type: 'route-planner-style' }));
+
+        break;
+
       case 'toggle-milestones-km':
         dispatch(routePlannerToggleMilestones({ type: 'abs', toggle: true }));
 
@@ -921,6 +928,11 @@ export default function RoutePlannerMenu(): ReactElement {
               <Dropdown.Item eventKey="convert-to-drawing">
                 <FaPencilAlt />
                 &nbsp;{m?.general.convertToDrawing ?? '…'}
+              </Dropdown.Item>
+
+              <Dropdown.Item eventKey="route-style">
+                <FaPaintBrush />
+                &nbsp;{rpm?.style.menuItem ?? '…'}
               </Dropdown.Item>
 
               <Dropdown.Divider />

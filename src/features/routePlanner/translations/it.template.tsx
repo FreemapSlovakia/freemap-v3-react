@@ -15,6 +15,13 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Limite distanza',
   },
   milestones: 'Marcatori',
+  style: {
+    menuItem: 'Stile del percorso',
+    title: 'Stile del percorso',
+    lineWidth: 'Spessore della linea',
+    lineOpacity: 'Opacità della linea',
+    markerOpacity: 'Opacità dei marcatori',
+  },
   optimize: {
     label: "Ottimizza l'ordine",
     fixedStart: 'Mantieni la partenza',

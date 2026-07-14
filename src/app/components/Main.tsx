@@ -327,6 +327,12 @@ const searchResultStyleModalFactory = () =>
     '@features/search/components/SearchResultStyleModal.js'
   );
 
+const routePlannerStyleModalFactory = () =>
+  import(
+    /* webpackChunkName: "route-planner-style-modal" */
+    '@features/routePlanner/components/RoutePlannerStyleModal.js'
+  );
+
 export function Main(): ReactElement {
   const m = useMessages();
 
@@ -907,6 +913,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'search-result-style'}
         factory={searchResultStyleModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'route-planner-style'}
+        factory={routePlannerStyleModalFactory}
       />
 
       <GalleryModals />

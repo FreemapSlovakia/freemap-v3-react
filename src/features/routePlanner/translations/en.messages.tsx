@@ -17,6 +17,13 @@ const en: RoutePlannerMessages = {
     distanceLimit: 'Distance limit',
   },
   milestones: 'Milestones',
+  style: {
+    menuItem: 'Route style',
+    title: 'Route style',
+    lineWidth: 'Line width',
+    lineOpacity: 'Line opacity',
+    markerOpacity: 'Marker opacity',
+  },
   optimize: {
     label: 'Optimize order',
     fixedStart: 'Keep start fixed',

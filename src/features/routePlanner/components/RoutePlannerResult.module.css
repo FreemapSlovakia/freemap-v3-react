@@ -1,3 +1,14 @@
 :global(.leaflet-container).dragging :global(.leaflet-tooltip) {
   display: none;
 }
+
+/*
+ * The colorize canvas renders above the interactive outline in the route pane
+ * (`routePaneName` in RoutePlannerResult.tsx → Leaflet class
+ * `leaflet-<name>-pane`). It needs no pointer events of its own (Hotline routes
+ * events through separate layers), so make it transparent to them; clicks then
+ * fall through to the outline beneath for segment selection and drag-to-add.
+ */
+:global(.leaflet-fmRoutePlannerRoute-pane canvas) {
+  pointer-events: none;
+}

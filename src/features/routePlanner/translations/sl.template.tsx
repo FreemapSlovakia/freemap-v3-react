@@ -18,6 +18,13 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Omejitev razdalje',
   },
   milestones: 'Kilometrski kažipoti',
+  style: {
+    menuItem: 'Slog poti',
+    title: 'Slog poti',
+    lineWidth: 'Debelina črte',
+    lineOpacity: 'Prekrivnost črte',
+    markerOpacity: 'Prekrivnost oznak',
+  },
   optimize: {
     label: 'Optimiziraj vrstni red',
     fixedStart: 'Ohrani začetek',

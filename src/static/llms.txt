@@ -189,7 +189,7 @@ Routing modes:
 Once a route is found the toolbar also offers:
 
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Heading (only modes the route has data for are shown); for the elevation profile and elevation/steepness colorize, premium users get every point sampled from the terrain model (high-resolution where available), while others keep the router's own elevation and only have missing values filled on demand. While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
-- **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing, kilometre/percent milestone toggles, and (premium; GraphHopper "Ordered" mode with 3+ points, single transport) **Optimize order** — reorders the waypoints to minimize total travel time, with variants: keep start fixed, keep start and finish fixed, round trip (return to start), or free (reorder all)
+- **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing, **Route style…** (opens a modal with sliders for line width, line opacity, and marker opacity; saved in local storage), kilometre/percent milestone toggles, and (premium; GraphHopper "Ordered" mode with 3+ points, single transport) **Optimize order** — reorders the waypoints to minimize total travel time, with variants: keep start fixed, keep start and finish fixed, round trip (return to start), or free (reorder all)
 
 ### Objects (POIs)
 

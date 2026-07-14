@@ -18,3 +18,19 @@ index 0000000..0000001 100644
      _update() {
          if (this._map === null)
              return;
+diff --git a/node_modules/react-leaflet-hotline/dist/esm/core/HotPolyline.js b/node_modules/react-leaflet-hotline/dist/esm/core/HotPolyline.js
+index 0000000..0000002 100644
+--- a/node_modules/react-leaflet-hotline/dist/esm/core/HotPolyline.js
++++ b/node_modules/react-leaflet-hotline/dist/esm/core/HotPolyline.js
+@@ -4,7 +4,10 @@ import Converter from '../converter';
+ import clipSegment from './clipSegment';
+ export default class HotPolyline extends L.Polyline {
+     constructor(renderer, coords, getLat, getLng, getVal) {
+-        const canvas = new HotlineCanvas(renderer);
++        // Forward the renderer's options (notably `pane`) to the L.Canvas so the
++        // colorize canvas can render into a caller-chosen pane instead of always
++        // landing in the default overlayPane.
++        const canvas = new HotlineCanvas(renderer, renderer._options);
+         const latlngs = Converter.toLatLngs(coords, getLat, getLng, getVal);
+         super(latlngs, { renderer: canvas, interactive: false });
+         this.projectMap = renderer.projectLatLngs;
