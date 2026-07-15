@@ -77,8 +77,7 @@ export async function handle(
       : httpRequest({
           getState,
           method: 'POST',
-          url: 'https://overpass.freemap.sk/api/interpreter',
-          // url: 'https://overpass-api.de/api/interpreter',
+          url: process.env['OVERPASS_URL']!,
           headers: { 'Content-Type': 'text/plain' },
           body:
             '[out:json];(' +
@@ -92,8 +91,7 @@ export async function handle(
       : httpRequest({
           getState,
           method: 'POST',
-          url: 'https://overpass.freemap.sk/api/interpreter', // was: fails with memory error
-          // url: 'https://overpass-api.de/api/interpreter',
+          url: process.env['OVERPASS_URL']!,
           headers: { 'Content-Type': 'text/plain' },
           body: `[out:json];
           is_in(${lat},${lon});

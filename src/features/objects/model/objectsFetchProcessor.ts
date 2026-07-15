@@ -117,8 +117,7 @@ export const objectsFetchProcessor: Processor = {
       const res = await httpRequest({
         getState,
         method: 'POST',
-        url: 'https://overpass.freemap.sk/api/interpreter',
-        // url: 'https://overpass-api.de/api/interpreter',
+        url: process.env['OVERPASS_URL']!,
         body: `data=${encodeURIComponent(query)}`,
         expectedStatus: 200,
         cancelActions: [

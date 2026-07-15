@@ -301,6 +301,14 @@ const config: Configuration = {
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
+      OVERPASS_URL:
+        process.env['OVERPASS_URL'] ||
+        'https://overpass.freemap.sk/api/interpreter',
+      OSM_API_URL:
+        process.env['OSM_API_URL'] || 'https://api.openstreetmap.org',
+      // Where single OSM element (node/way/relation) lookups are resolved:
+      // 'overpass' (default, internal instance) or 'osm-api' (public OSM API).
+      OSM_ELEMENT_SOURCE: process.env['OSM_ELEMENT_SOURCE'] || 'overpass',
       BASE_URL:
         {
           www: 'https://www.freemap.sk',

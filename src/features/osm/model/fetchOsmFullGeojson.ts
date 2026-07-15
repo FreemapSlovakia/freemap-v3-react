@@ -1,4 +1,3 @@
-import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
@@ -12,12 +11,8 @@ import type {
   Point,
   Polygon,
 } from 'geojson';
-import {
-  type OsmNode,
-  type OsmRelation,
-  OsmResultSchema,
-  type OsmWay,
-} from './types.js';
+import { fetchOsmElements } from './fetchOsmElements.js';
+import type { OsmNode, OsmRelation, OsmWay } from './types.js';
 
 // Fetches an OSM element with its dependencies via the .../full.json endpoint
 // (or .json for nodes) and assembles a GeoJSON Feature/FeatureCollection.
@@ -36,19 +31,10 @@ export async function fetchOsmFullGeojson(
     })
   | null
 > {
-  const url =
-    osmId.elementType === 'node'
-      ? `//api.openstreetmap.org/api/0.6/node/${osmId.id}.json`
-      : `//api.openstreetmap.org/api/0.6/${osmId.elementType}/${osmId.id}/full.json`;
-
-  const res = await httpRequest({
+  const data = await fetchOsmElements(osmId.elementType, osmId.id, {
     getState,
-    url,
-    expectedStatus: 200,
     cancelActions: [clearMapFeatures, searchSelectResult],
   });
-
-  const data = OsmResultSchema.parse(await res.json());
 
   if (osmId.elementType === 'node') {
     const node = data.elements.find((el): el is OsmNode => el.type === 'node');

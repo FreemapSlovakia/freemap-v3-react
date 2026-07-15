@@ -1,4 +1,3 @@
-import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
@@ -8,13 +7,9 @@ import type { FeatureId } from '@shared/types/featureId.js';
 import { featureCollection, lineString, point } from '@turf/helpers';
 import type { Feature, LineString, Point, Polygon } from 'geojson';
 import { loadOsmMessages } from '../../translations/loadOsmMessages.js';
+import { fetchOsmElements } from '../fetchOsmElements.js';
 import { osmLoadRelation } from '../osmActions.js';
-import {
-  type OsmNode,
-  type OsmRelation,
-  OsmResultSchema,
-  type OsmWay,
-} from '../types.js';
+import type { OsmNode, OsmRelation, OsmWay } from '../types.js';
 import { copyDisplayName } from './copyDisplayName.js';
 
 export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
@@ -25,14 +20,10 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
 
       trackMatomo(['trackEvent', 'Osm', 'view', 'relation']);
 
-      const res = await httpRequest({
+      const data = await fetchOsmElements('relation', id, {
         getState,
-        url: `//api.openstreetmap.org/api/0.6/relation/${id}/full.json`,
-        expectedStatus: 200,
         cancelActions: [clearMapFeatures, searchSelectResult],
       });
-
-      const data = OsmResultSchema.parse(await res.json());
 
       const nodes: Record<number, OsmNode> = {};
 

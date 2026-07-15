@@ -221,8 +221,8 @@ export async function objects(sitemapNames: string[]) {
     console.log(`[${c + 1}/${entries.length}] ${category}: querying Overpass…`);
 
     const res = await fetch(
-      'https://overpass.freemap.sk/api/interpreter', // is faster
-      // 'https://overpass-api.de/api/interpreter',
+      process.env['OVERPASS_URL'] ??
+        'https://overpass.freemap.sk/api/interpreter',
       {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },

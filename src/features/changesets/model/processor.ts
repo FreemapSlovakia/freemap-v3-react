@@ -122,7 +122,7 @@ export const changesetsProcessor: Processor = {
         const res = await httpRequest({
           getState,
           url:
-            '//api.openstreetmap.org/api/0.6/changesets?' +
+            `${process.env['OSM_API_URL']}/api/0.6/changesets?` +
             objectToURLSearchParams({
               bbox,
               time: fromTime + (toTime0 ? `,${toTime0}` : ''),
