@@ -80,6 +80,7 @@ from both the old and new identities.
 
 | Category | Action | Name (low-cardinality) / value | Previous (historical) | Source |
 |----------|--------|--------------------------------|-----------------------|--------|
+| `Ad` | `impression` / `click` | ad id (`tShirt`/`rovas`/`self`/`zdilaAuthorship`/`zdilaMapNative`) | *(added 2026-07)* | [`Ad.tsx`](../src/features/ad/components/Ad.tsx) |
 | `App` | `error` | `error.name` (e.g. `TypeError`); deduped + capped per page load | `Main`/`error` — *dropped Sentry event id (high cardinality)* | [`globalErrorHandler.ts`](../src/app/store/middleware/globalErrorHandler.ts) |
 | `Perf` | `stall` / `storm` / `longtask` | `document.visibilityState` (`visible`/`hidden`/…) | *(added 2026-06)* | [`perfWatchdog.ts`](../src/app/store/middleware/perfWatchdog.ts) |
 | `Auth` | `login` | `login` or `connect` (linking an extra provider) | *(added 2026-06)* | [`loginResponseHandler.ts`](../src/features/auth/model/processors/loginResponseHandler.ts) |
@@ -190,8 +191,10 @@ Standardize on this so the scheme doesn't drift again:
   already do. A few events are tracked in **components** instead, because the
   distinction or the user gesture only exists at the call site and isn't carried
   by a dedicated action: `MapSettings`/`customMap` (funnels through generic
-  `saveSettings`), `Tracking`/`watchedDevice`, `HomeLocation`/`save`, and
-  `MapShading`/`add`.
+  `saveSettings`), `Tracking`/`watchedDevice`, `HomeLocation`/`save`,
+  `MapShading`/`add`, and `Ad`/`impression`+`click` (the rendered ad id and the
+  outbound-link gesture only exist in `Ad.tsx`; the `click` is caught via
+  `onClickCapture` so it covers the translation-rendered ad variants too).
 - Because `_paq` is a typed queue, adding a new event only requires pushing a
   `['trackEvent', …]` tuple from a processor; no registration step.
 - Keep this table in sync when you add, remove, or rename a `_paq.push` call,

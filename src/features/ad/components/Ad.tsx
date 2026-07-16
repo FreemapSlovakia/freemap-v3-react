@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { useLeftMarginAdjuster } from '@shared/hooks/useLeftMarginAdjuster.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import clsx from 'clsx';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
@@ -47,6 +48,12 @@ export default function Ad(): ReactElement | null {
 
   const ad = useAd(ads);
 
+  useEffect(() => {
+    if (ad) {
+      trackMatomo(['trackEvent', 'Ad', 'impression', ad]);
+    }
+  }, [ad]);
+
   const ref = useLeftMarginAdjuster();
 
   return (
@@ -58,7 +65,15 @@ export default function Ad(): ReactElement | null {
         closed ? 'invisible' : 'visible',
       )}
     >
-      <div className="border rounded-top rounded-start fm-toolbar" ref={ref}>
+      <div
+        className="border rounded-top rounded-start fm-toolbar"
+        ref={ref}
+        onClickCapture={(e) => {
+          if (ad && (e.target as HTMLElement).closest('a')) {
+            trackMatomo(['trackEvent', 'Ad', 'click', ad]);
+          }
+        }}
+      >
         {ad === 'self' ? (
           <div
             className="border px-3 py-2 rounded bg-body text-body"
