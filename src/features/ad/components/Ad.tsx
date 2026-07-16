@@ -9,9 +9,11 @@ import { type AdItem, useAd } from '../hooks/useAd.js';
 import { useAdMessages } from '../translations/useAdMessages.js';
 
 const ads: AdItem[] = [
-  { id: 'tShirt', countries: ['SK'], chance: 4 }, // Freemap T-Shirt
+  { id: 'tShirt', countries: ['SK'], chance: 3 }, // Freemap T-Shirt
   { id: 'rovas', chance: 1 }, // Rovas
   { id: 'self', chance: 8 }, // self promo
+  { id: 'zdilaAuthorship', chance: 4 }, // zdila.sk — authorship banner
+  { id: 'zdilaMapNative', chance: 4 }, // zdila.sk — map-native banner
 ];
 
 export default function Ad(): ReactElement | null {
@@ -68,6 +70,10 @@ export default function Ad(): ReactElement | null {
           </div>
         ) : ad === 'rovas' ? (
           adm?.rovas()
+        ) : ad === 'zdilaAuthorship' ? (
+          adm?.zdilaAuthorship()
+        ) : ad === 'zdilaMapNative' ? (
+          adm?.zdilaMapNative()
         ) : ad === 'tShirt' ? (
           <a
             href="https://nabezky.sk/freemap_t-shirt"

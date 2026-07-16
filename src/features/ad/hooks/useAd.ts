@@ -1,7 +1,7 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffect, useRef, useState } from 'react';
 
-type AdId = 'tShirt' | 'rovas' | 'self';
+type AdId = 'tShirt' | 'rovas' | 'self' | 'zdilaAuthorship' | 'zdilaMapNative';
 
 export type AdItem = {
   id: AdId;

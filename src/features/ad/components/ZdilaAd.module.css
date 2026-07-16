@@ -1,0 +1,120 @@
+.root {
+  --bg: #17191f;
+  --fg: #f6f4ef;
+  --muted: #c3c1bb;
+  --kick: #d98a63;
+  --ring: #d98a63;
+  --tags: #7d8891;
+  --sig-bg: rgba(255, 255, 255, 0.06);
+  --sig-bd: rgba(246, 244, 239, 0.22);
+  --z: #e9e7e1;
+  --bd: #000;
+  --bin0: rgba(246, 244, 239, 0.08);
+  --bin1: rgba(246, 244, 239, 0.15);
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  max-width: min(500px, 100%);
+  box-sizing: border-box;
+  text-decoration: none;
+  border-radius: var(--bs-border-radius);
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--bd);
+  box-shadow: var(--shadow);
+  font-family:
+    "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  [data-bs-theme="light"] & {
+    --bg: #f6f4ef;
+    --fg: #17191f;
+    --muted: #5c5a54;
+    --kick: #c2643f;
+    --ring: #c2643f;
+    --tags: #8a8880;
+    --sig-bg: #17191f;
+    --sig-bd: #17191f;
+    --z: #f6f4ef;
+    --bd: #cbc7bd;
+    --bin0: rgba(23, 25, 31, 0.07);
+    --bin1: rgba(23, 25, 31, 0.14);
+    --shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 44px 10px 12px;
+}
+
+.kick {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--kick);
+}
+
+.head {
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+  line-height: 1.05;
+}
+
+.sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.meta {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--kick);
+  margin-top: 5px;
+}
+
+.sig {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--sig-bg);
+  border: 1px solid var(--sig-bd);
+}
+
+.bin {
+  position: absolute;
+  inset: -2px;
+  overflow: hidden;
+  z-index: 0;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 12px;
+  letter-spacing: 1px;
+  white-space: pre;
+  color: var(--bin0);
+  pointer-events: none;
+
+  b {
+    font-weight: 400;
+    color: var(--bin1);
+  }
+}
