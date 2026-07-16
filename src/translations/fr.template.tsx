@@ -2,9 +2,7 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
-import { Emoji } from '@shared/components/Emoji.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { AlertLink } from 'react-bootstrap';
 import shared from './fr-shared.js';
 import { addError, type Messages } from './messagesInterface.js';
 
@@ -197,17 +195,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         analytics="Cookies d’analyse"
       />
     ),
-    infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji> Nous soutenons l’Ukraine.{' '}
-          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
-            Soutenir l’Ukraine ›
-          </AlertLink>{' '}
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
-    },
+    infoBars: {},
     clearMap: 'Effacer les éléments de la carte',
     close: 'Fermer',
     closeTool: 'Fermer l’outil',

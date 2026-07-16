@@ -2,8 +2,6 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
-import { Emoji } from '@shared/components/Emoji.js';
-import { AlertLink } from 'react-bootstrap';
 import shared from './en-shared.js';
 import { addError, type Messages } from './messagesInterface.js';
 
@@ -202,17 +200,7 @@ const messages: Messages = {
         analytics="Analytics cookies"
       />
     ),
-    infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji> We stand with Ukraine.{' '}
-          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
-            Support Ukraine ›
-          </AlertLink>{' '}
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
-    },
+    infoBars: {},
   },
 
   search: {

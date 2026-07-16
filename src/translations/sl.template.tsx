@@ -2,9 +2,7 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
-import { Emoji } from '@shared/components/Emoji.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { AlertLink } from 'react-bootstrap';
 import { addError, type Messages } from './messagesInterface.js';
 import shared from './sl-shared.js';
 
@@ -207,17 +205,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         analytics="Analitični piškotki"
       />
     ),
-    infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji> Stojimo ob Ukrajini.{' '}
-          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
-            Podprite Ukrajino ›
-          </AlertLink>{' '}
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
-    },
+    infoBars: {},
   },
 
   search: {

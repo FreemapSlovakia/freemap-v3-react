@@ -2,9 +2,7 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
-import { Emoji } from '@shared/components/Emoji.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { AlertLink } from 'react-bootstrap';
 import { addError, type Messages } from './messagesInterface.js';
 import shared from './sk-shared.js';
 
@@ -233,22 +231,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       //     </>
       //   );
       // },
-      ua: () => {
-        return (
-          <>
-            <Emoji>🇺🇦</Emoji>&ensp;
-            <AlertLink
-              href="https://donio.sk/spolocne-pre-ukrajinu"
-              target="_blank"
-              rel="noopener"
-            >
-              Spoločne pre Ukrajinu ›
-            </AlertLink>
-            &ensp;
-            <Emoji>🇺🇦</Emoji>
-          </>
-        );
-      },
     },
   },
 
