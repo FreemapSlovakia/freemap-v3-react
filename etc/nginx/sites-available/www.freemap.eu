@@ -9,10 +9,6 @@ if ($blocked_country) {
 
 	root /home/freemap/www;
 
-    location = /manifest.webmanifest {
-      default_type application/manifest+json;
-    }
-
 	location ~ ^/~(.+?)(/.*)?$ {
 		charset UTF-8;
 		alias /home/$1/www$2;
@@ -59,33 +55,13 @@ if ($blocked_country) {
 		add_header Strict-Transport-Security 'max-age=31536000';
 	}
 
-	# Match all unhashed HTML, including the internal redirect "/" -> /index.html
-	# (served outside the "location = /" block, so its headers are lost) and the
-	# index-XX.html variants. Without this, the entry HTML is heuristically cached,
-	# pinning users to stale hashed asset names (broken layout after a deploy).
-	location ~ \.html$ {
+	location ~ /index-\w\w\.html {
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
 	}
 
-	# Service workers and the asset manifest are unhashed and must never go stale,
-	# otherwise the SW / precache list lags behind the deployed build.
-	location ~ ^/(sw|upload-sw)\.js$ {
-		add_header Cache-Control 'no-store, max-age=0';
-	}
-
-	location = /assets-manifest.json {
-		add_header Cache-Control 'no-store, max-age=0';
-	}
-
-	# Content-addressed assets (rspack emits 16-char [chunkhash]/[contenthash]).
-	# The old rule required 20 chars and never matched, so bundles were uncached.
-	location ~ "\.[a-z0-9]{16,}\.[a-z0-9]+$" {
-		add_header Cache-Control 'max-age=31536000, immutable';
-	}
-
-	location ~ "\.(png|jpg)$" {
+	location ~ ".+\.[a-z0-9]{20}\..+$|\.png$|\.jpg$" {
 		add_header Cache-Control 'max-age=31536000';
 	}
 
@@ -100,12 +76,14 @@ if ($blocked_country) {
 	location / {
 		if ($http_origin ~* (glitchtip\.freemap\.sk)) {
 			add_header "Access-Control-Allow-Origin" "$http_origin";
+			add_header Vary Origin always;
 			add_header "Access-Control-Allow-Methods" "GET, POST, OPTIONS";
 			add_header "Access-Control-Allow-Headers" "Authorization, Content-Type";
 		}
 
 		if ($request_method = 'OPTIONS') {
 			add_header "Access-Control-Allow-Origin" "glitchtip.freemap.sk";
+			add_header Vary Origin always;
 			add_header "Access-Control-Allow-Methods" "GET, POST, OPTIONS";
 			add_header "Access-Control-Allow-Headers" "Authorization, Content-Type";
 			add_header "Content-Length" 0;
@@ -114,10 +92,23 @@ if ($blocked_country) {
 		}
 	}
 
+	location /tiles/parametric-shading {
+		proxy_set_header Host $host;
+	        proxy_set_header X-Real-IP $remote_addr;
+        	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	        proxy_set_header X-Forwarded-Proto $scheme;
+
+		expires 30d;
+		add_header Cache-Control "public, no-transform";
+
+		rewrite ^/tiles/parametric-shading/(.*)$ /$1 break;
+        	proxy_pass http://localhost:3033/;
+	}
+
 	http2 on;
 
-    listen 443 quic;
-    listen [::]:443 quic;
+        listen 443 quic;
+        listen [::]:443 quic;
 
 	listen [::]:443 ssl; # managed by Certbot
 	listen 443 ssl; # managed by Certbot

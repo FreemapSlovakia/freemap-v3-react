@@ -1,16 +1,12 @@
 
 server {
 	server_name www.freemap.sk;
-
+	
 	if ($blocked_country) {
 	    return 444;
 	}
 
 	root /home/freemap/www;
-
-	location = /manifest.webmanifest {
-		default_type application/manifest+json;
-    	}
 
 	add_header Alt-Svc 'h3=":443"; ma=86400' always;
 
@@ -20,6 +16,11 @@ server {
 		autoindex on;
 	}
 
+	location /sitemap/layers=X&lang=sk {
+		add_header Link '<https://www.freemap.sk/?layers=X&lang=sk>; rel=\"canonical\"';
+		default_type 'text/html; charset=UTF-8';
+	}
+
 	location /sitemap {
 		default_type 'text/html; charset=UTF-8';
 	}
@@ -27,7 +28,7 @@ server {
 	location = /admin {
 		root /var/www;
 
-		try_files /admin.html =404;
+		try_files /admin.html =404;	
 	}
 
 	location = / {
@@ -38,72 +39,37 @@ server {
 			set $cond a;
 		}
 
-		# Allowlist of safe, non-empty prerender query strings. These chars cover
-		# layers= / show= / tool= / osm-…= / tip= / document= / lang= (incl. '~');
-		# none contain '/', '.' or '%', so no path traversal into try_files below.
-		if ($args ~ "^[A-Za-z0-9=&_~-]+$") {
+		if ($args ~ "layers=X&osm-(node|way|relation)=\d+&lang=sk") {
 			set $cond "${cond}b";
 		}
 
-		# Bot + recognised query string: serve the matching static prerender
-		# (homepage / hub / feature / document, any language), falling back to
-		# the Slovak homepage when no prerender exists for it.
-		if ($cond = ab) {
-			rewrite ^ /__prerender last;
+		if ($args ~ "layers=X&tip=\w+&lang=sk") {
+			set $cond "${cond}b";
 		}
 
-		# Bot + no / unsupported query string: serve the Slovak homepage prerender.
+		if ($cond = ab) {
+			rewrite ^ /sitemap/$args;
+		}
+
 		if ($cond = a) {
 			rewrite ^ /sitemap/layers=X&lang=sk;
 		}
 
+		#set $lang_sup "en,sk,cs,hu";
+		#	set_by_lua_file $lang_accept /etc/nginx/lang.lua $lang_sup;
+		#try_files $uri /index-$lang_accept.html;
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
 	}
 
-	# Internal-only: map a bot's query string to a prerendered HTML file under
-	# /sitemap, with the Slovak homepage as the fallback. Reached via the rewrite
-	# in "location = /"; never requested directly.
-	location = /__prerender {
-		internal;
-
-		default_type 'text/html; charset=UTF-8';
-
-		add_header Cache-Control 'no-store, max-age=0';
-		add_header Referrer-Policy 'no-referrer';
-		add_header Strict-Transport-Security 'max-age=31536000';
-
-		try_files "/sitemap/$args" "/sitemap/layers=X&lang=sk";
-	}
-
-	# Match all unhashed HTML, including the internal redirect "/" -> /index.html
-	# (served outside the "location = /" block, so its headers are lost) and the
-	# index-XX.html variants. Without this, the entry HTML is heuristically cached,
-	# pinning users to stale hashed asset names (broken layout after a deploy).
-	location ~ \.html$ {
+	location ~ /index-\w\w\.html {
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
 	}
 
-	# Service workers and the asset manifest are unhashed and must never go stale,
-	# otherwise the SW / precache list lags behind the deployed build.
-	location ~ ^/(sw|upload-sw)\.js$ {
-		add_header Cache-Control 'no-store, max-age=0';
-	}
-
-	location = /assets-manifest.json {
-		add_header Cache-Control 'no-store, max-age=0';
-	}
-
-	# Content-addressed assets (rspack emits 16-char [chunkhash]/[contenthash]).
-	# The old rule required 20 chars and never matched, so bundles were uncached.
-	location ~ "\.[a-z0-9]{16,}\.[a-z0-9]+$" {
-		add_header Cache-Control 'max-age=31536000, immutable';
-	}
-
-	location ~ "\.(png|jpg)$" {
+	location ~ ".+\.[a-z0-9]{20}\..+$|\.png$|\.jpg$" {
 		add_header Cache-Control 'max-age=31536000';
 	}
 
@@ -140,3 +106,4 @@ server {
 
 	return 404; # managed by Certbot
 }
+
