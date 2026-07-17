@@ -88,9 +88,11 @@ Params are read from `document.location.hash || document.location.search` (so `?
 
 ## Drawing geometry
 
+These place standalone map annotations — markers, lines, filled areas — not routing. To open a link showing a **map with markers/points**, use `point` (one per marker); it is the drawing-point param, distinct from the route planner's plural `points` (waypoints of a computed route). Each param is repeatable and accepts optional [style fields](#style-codec) after the coordinates (a leading `%1E` separates them from the last coordinate).
+
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `point` (repeatable), `info-point` | Drawing point(s) | r/w | `lat/lon[<style fields>]` |
+| `point` (repeatable), `info-point` | Drawing point(s) / markers | r/w | `lat/lon[<style fields>]` |
 | `line`, `polygon` (repeatable) | Drawing line / polygon | r/w | `lat/lon,lat/lon,…[<style fields>]` |
 | `distance-measurement-points`, `area-measurement-points`, `elevation-measurement-point` | Legacy measurement aliases | read-only | coords |
 
@@ -109,7 +111,7 @@ Fields are joined by the record-separator character `\x1e` (URL-encoded `%1E`). 
 | `K` | Line cap — `b`utt / `s`quare (default round) | `Kb` |
 | `J` | Line join — `m`iter / `b`evel (default round) | `Jm` |
 | `S` | Marker shape — `s`quare / `r`ing (default pin) | `Sr` |
-| `I` | Marker icon id | `Itourism-hotel` |
+| `I` | Marker icon spec — `poi:<name>` (bundled POI icon) or `fa:<name>` (Font Awesome) | `Ipoi%3Aanimal_shelter` → `poi:animal_shelter` (`%3A` = `:`) |
 | `L` | Label (drawing geometry only) | `LMy point` |
 
 Colors are RGBA hex; the alpha channel carries the opacity (e.g. `#3388ff33` ≈ 20 % opacity).
@@ -127,4 +129,10 @@ Each default-style param applies only the fields it supports (e.g. `objects-styl
 
 # Search result: orange 3px outline, faint orange fill
 #search-style=C%23ff8800%1EF%23ff880022%1EW3
+
+# A map with two markers, the second red and labelled "Košice"
+#map=8/48.43/19.18&layers=X&point=48.14816/17.10674&point=48.72083/21.25808%1EC%23ff0000%1ELKošice
+
+# A blue ring marker labelled "Ahoj!" with the animal-shelter icon (tools=draw-points is optional — it only opens the editing toolbar)
+#map=17/48.979457/21.169961&layers=X&tools=draw-points&point=48.979061/21.167738%1EC%230000ff%1ELAhoj!%1ESr%1EIpoi%3Aanimal_shelter
 ```

@@ -13,7 +13,37 @@ Key facts:
 - Users can generate embed code to place the map on their own websites.
 - The application is a single-page application (SPA) and reflects its state in the URL.
 
-The sections below describe the application's functions (the main-menu tools and modals), the available map layers, and external resources.
+The sections below describe how to build map URLs (deep links), the application's functions (the main-menu tools and modals), the available map layers, and external resources.
+
+## Deep links (building map URLs)
+
+The app keeps its state in the URL, so you can hand a user a link that opens Freemap in a specific state — a viewport, chosen layers, markers, drawn lines/areas, a planned route, or an opened modal — with no API and no login. This is the normal way to "create a map" programmatically: build the URL and give it to the user.
+
+Parameters live in the URL **hash** (`#name=value&name2=value2…`); a query string (`?name=…`) is accepted as a fallback. Base URL: `https://www.freemap.sk/`.
+
+The highest-value parameters for building links:
+
+- `map=zoom/lat/lon` — viewport, e.g. `map=13/48.7483/19.1480` (coordinates to 6 decimals).
+- `layers=codes` — base layer + overlays by their id code (see the Layer registry below), e.g. `layers=X` (Outdoor) or `layers=X~I` (Outdoor + Photos).
+- **`point=lat/lon` — put a marker on the map. This is the parameter for "a map with points / markers". It is repeatable: add one `point=` per marker.**
+- `line=lat/lon,lat/lon,…` and `polygon=lat/lon,lat/lon,…` — draw a line or a filled area (each repeatable).
+- `points=[transport/]lat/lon,…` together with `transport=…` — a **planned route** through waypoints. This is routing, not standalone markers — do not confuse the plural `points=` with the marker parameter `point=`.
+- `show=type[/arg]` — open a modal/viewer, e.g. `show=gallery-viewer/123`.
+- `lang=code` — force the UI language (`en`, `sk`, …).
+
+**Example — a map with two markers** (Bratislava and Košice) on the Outdoor layer:
+
+```
+https://www.freemap.sk/#map=8/48.43/19.18&layers=X&point=48.14816/17.10674&point=48.72083/21.25808
+```
+
+**Styling, labelling and opening the editor.** After the `lat/lon`, a `point` / `line` / `polygon` value may carry style fields, each a one-letter code, joined by the record-separator `%1E` (a leading `%1E` separates them from the coordinates). The useful codes are `L`abel, `C`olor (`%23` = `#`, RGBA hex), `S`hape (`s`quare / `r`ing, default pin), and `I`con spec — `poi:<name>` for a bundled POI icon or `fa:<name>` for a Font Awesome icon (`%3A` = `:`). The markers show on their own; `tools=draw-points` is optional and only additionally opens the drawing toolbar so the user can edit the points. E.g. a blue ring marker labelled "Ahoj!" with the animal-shelter icon:
+
+```
+https://www.freemap.sk/#map=17/48.979457/21.169961&layers=X&tools=draw-points&point=48.979061/21.167738%1EC%230000ff%1ELAhoj!%1ESr%1EIpoi%3Aanimal_shelter
+```
+
+For every URL parameter and the full style codec, see [`doc/url-params.md`](https://github.com/FreemapSlovakia/freemap-v3-react/blob/main/doc/url-params.md).
 
 ## Functions
 
@@ -353,7 +383,7 @@ While the export runs the modal stays open with its controls disabled and a spin
 - Keyboard shortcut: <kbd>e</kbd> <kbd>g</kbd>
 - URL path: `/#show=map-features-export`
 
-Opens a modal to export the user's own map data as a GPX, GeoJSON or KML file. The KML option emits a self-contained KMZ (zipped KML plus packaged PNG marker icons) when point icons are present, and a plain KML otherwise. Only the data types that actually have something on the map are selectable:
+Opens a modal to export the user's own map data as a GPX, GeoJSON or KML file. The KML option emits a self-contained KMZ (zipped KML plus packaged PNG marker icons) when point icons are present, and a plain KML otherwise. Exported drawing features round-trip losslessly back into Freemap — style, icon, label and the line/polygon distinction are preserved — and for other apps the marker icons and styles are additionally mapped to their nearest Garmin (BaseCamp), OsmAnd and Locus equivalents so they still render sensibly. Only the data types that actually have something on the map are selectable:
 
 - found (planned) route, optionally including stops
 - objects (POIs)
