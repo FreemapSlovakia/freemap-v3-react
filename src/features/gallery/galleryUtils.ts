@@ -34,7 +34,11 @@ export function createFilter({
     pano,
     premium,
     license,
-    sources,
+    // Expand the "both sources" default (undefined) to an explicit list: the
+    // server now treats a missing `sources` param as gallery-only (for mobile
+    // app backward compatibility), so every caller must send the sources it
+    // wants. An empty array stays empty (all sources deselected → no request).
+    sources: sources ?? GALLERY_SOURCES,
   };
 }
 

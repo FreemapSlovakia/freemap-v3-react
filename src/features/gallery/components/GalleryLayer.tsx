@@ -126,11 +126,9 @@ class LGalleryLayer extends LGridLayer {
       );
     }
 
+    // `createFilter` above already appended the (expanded) `sources` params;
+    // this is only to detect the "all deselected" case below.
     const sources = this._options?.filter.sources ?? GALLERY_SOURCES;
-
-    for (const source of sources) {
-      sp.append('sources', source);
-    }
 
     // With all sources filtered out there's nothing to request — leave the tile
     // blank. Required because an empty `sources` param is read server-side as
