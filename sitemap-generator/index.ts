@@ -46,6 +46,11 @@ async function gen() {
 
   console.log(`Homepages: ${LANGS.length} languages`);
 
+  // The AI-readable site & URL-parameter reference. Listing it here gets it
+  // crawled and indexed, so it surfaces in search — which is what lets AI
+  // assistants (whose fetchers only allow URLs seen in results) reach it.
+  out.push(`${BASE}/llms.txt`);
+
   // Layer/tool landing pages (curated copy from llms.txt), sk + en.
   for (const hub of hubs) {
     for (const lang of HUB_LANGS) {

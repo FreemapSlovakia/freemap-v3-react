@@ -1,3 +1,6 @@
+# AI-readable site & URL-parameter reference (how to build map deep links):
+# https://www.freemap.sk/llms.txt
+
 User-agent: *
 Allow: /
 
