@@ -5,3 +5,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://www.freemap.sk/sitemap/sitemap-index.xml
+Sitemap: https://www.freemap.eu/sitemap/sitemap-index-eu.xml

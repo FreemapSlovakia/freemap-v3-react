@@ -3,24 +3,51 @@ import vhtml from 'vhtml';
 import csShared from '../src/translations/cs-shared.js';
 import deShared from '../src/translations/de-shared.js';
 import enShared from '../src/translations/en-shared.js';
+import frShared from '../src/translations/fr-shared.js';
 import huShared from '../src/translations/hu-shared.js';
 import itShared from '../src/translations/it-shared.js';
 import plShared from '../src/translations/pl-shared.js';
 import skShared from '../src/translations/sk-shared.js';
+import slShared from '../src/translations/sl-shared.js';
 
 const html = htm.bind(vhtml);
 
-export const BASE = 'https://www.freemap.sk';
+/** The Slovak home domain — canonical for Slovak and Czech pages. */
+export const BASE_SK = 'https://www.freemap.sk';
 
-export type Lang = 'sk' | 'en' | 'cs' | 'hu' | 'it' | 'de' | 'pl';
+/** The international domain — canonical for every other language. */
+export const BASE_EU = 'https://www.freemap.eu';
+
+/** Default base (the Slovak home domain), used for freemap.sk-only artifacts. */
+export const BASE = BASE_SK;
+
+export type Lang = 'sk' | 'en' | 'cs' | 'hu' | 'it' | 'de' | 'pl' | 'sl' | 'fr';
 
 /** Languages for which curated hub-page copy exists. */
 export type HubLang = 'sk' | 'en';
 
 /** All UI languages the SPA accepts (see locationChangeHandler.ts). */
-export const LANGS: Lang[] = ['sk', 'en', 'cs', 'hu', 'it', 'de', 'pl'];
+export const LANGS: Lang[] = [
+  'sk',
+  'en',
+  'cs',
+  'hu',
+  'it',
+  'de',
+  'pl',
+  'sl',
+  'fr',
+];
 
 export const HUB_LANGS: HubLang[] = ['sk', 'en'];
+
+/** Languages canonical on {@link BASE_SK}; every other language on {@link BASE_EU}. */
+const SK_LANGS: Lang[] = ['sk', 'cs'];
+
+/** The home (canonical) domain hosting a language's pages. */
+export function langBase(lang: Lang): string {
+  return SK_LANGS.includes(lang) ? BASE_SK : BASE_EU;
+}
 
 /** Per-language <title>/<meta description>, reused from the SPA's SEO strings. */
 export const homeMeta: Record<Lang, { title: string; description: string }> = {
@@ -31,6 +58,8 @@ export const homeMeta: Record<Lang, { title: string; description: string }> = {
   it: itShared,
   de: deShared,
   pl: plShared,
+  sl: slShared,
+  fr: frShared,
 };
 
 /** "Open the map" call-to-action label per language. */
@@ -42,6 +71,8 @@ export const openMapLabel: Record<Lang, string> = {
   it: 'Apri la mappa',
   de: 'Karte öffnen',
   pl: 'Otwórz mapę',
+  sl: 'Odpri zemljevid',
+  fr: 'Ouvrir la carte',
 };
 
 /** Section heading ("Map features") per language for the homepage hub list. */
@@ -53,6 +84,8 @@ export const featuresLabel: Record<Lang, string> = {
   it: 'Funzioni e livelli della mappa',
   de: 'Kartenfunktionen und Ebenen',
   pl: 'Funkcje i warstwy mapy',
+  sl: 'Funkcije in sloji zemljevida',
+  fr: 'Fonctions et couches de la carte',
 };
 
 export interface Hub {
@@ -238,7 +271,7 @@ export const hubs: Hub[] = [
 
 /** Clean app URL (the canonical, bot-rewritten to a prerender) for a given query + language. */
 export function appUrl(param: string, lang: Lang): string {
-  return `${BASE}/?${param}&lang=${lang}`;
+  return `${langBase(lang)}/?${param}&lang=${lang}`;
 }
 
 /** Prerender file name under `sitemap/` for a given query + language. */
@@ -299,7 +332,7 @@ export function renderHub(hub: Hub, lang: HubLang): string {
     description,
     url,
     inLanguage: lang,
-    isPartOf: { '@type': 'WebSite', name: 'Freemap.sk', url: BASE },
+    isPartOf: { '@type': 'WebSite', name: 'Freemap.sk', url: langBase(lang) },
   });
 
   return (

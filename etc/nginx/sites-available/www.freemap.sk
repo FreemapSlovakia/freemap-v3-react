@@ -16,11 +16,6 @@ server {
 		autoindex on;
 	}
 
-	location /sitemap/layers=X&lang=sk {
-		add_header Link '<https://www.freemap.sk/?layers=X&lang=sk>; rel=\"canonical\"';
-		default_type 'text/html; charset=UTF-8';
-	}
-
 	location /sitemap {
 		default_type 'text/html; charset=UTF-8';
 	}
@@ -32,35 +27,34 @@ server {
 	}
 
 	location = / {
-		set $cond "";
+		# Serve the matching static prerender to crawlers; humans get the SPA.
+		# The `[/.%]` guard keeps $args from escaping /sitemap/ in the try_files
+		# below (no path separators / dots / percent-escapes → no traversal).
+		set $prerender "";
 
-		#if ($http_user_agent ~ "\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners|Lighthouse)\b") {
 		if ($http_user_agent ~ "\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners)\b") {
-			set $cond a;
+			set $prerender bot;
 		}
 
-		if ($args ~ "layers=X&osm-(node|way|relation)=\d+&lang=sk") {
-			set $cond "${cond}b";
+		if ($args ~ "[/.%]") {
+			set $prerender "${prerender}-unsafe";
 		}
 
-		if ($args ~ "layers=X&tip=\w+&lang=sk") {
-			set $cond "${cond}b";
+		if ($prerender = bot) {
+			rewrite ^ /__prerender last;
 		}
 
-		if ($cond = ab) {
-			rewrite ^ /sitemap/$args;
-		}
-
-		if ($cond = a) {
-			rewrite ^ /sitemap/layers=X&lang=sk;
-		}
-
-		#set $lang_sup "en,sk,cs,hu";
-		#	set_by_lua_file $lang_accept /etc/nginx/lang.lua $lang_sup;
-		#try_files $uri /index-$lang_accept.html;
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
+	}
+
+	# Crawler prerender: serve /sitemap/<full query string> if it exists, else the
+	# localized homepage. Canonical + hreflang live inside each prerender file.
+	location = /__prerender {
+		internal;
+		default_type 'text/html; charset=UTF-8';
+		try_files "/sitemap/$args" "/sitemap/layers=X&lang=sk";
 	}
 
 	location ~ /index-\w\w\.html {

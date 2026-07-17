@@ -325,3 +325,22 @@ Deferred sub-items:
       (effective Bayesian rating) filters and every ordering; the Filter modal shows
       an "excludes Wikimedia" note only under tag/author/license.
 
+## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
+
+- [ ] **Link `oz.freemap.sk` from the prerender footer.** The association site is
+      currently only reachable to crawlers via the GitHub README and the
+      `document=freemap` prerender; the in-app AboutModal link is SPA-only (bot
+      invisible). Add a small `<footer>` to `renderHome`/`renderHub` in `seo.ts`
+      linking `oz.freemap.sk` (and maybe GitHub) so every prerendered page carries
+      the inbound link.
+- [ ] **Hub landing pages in all 9 languages.** `HUB_LANGS` is still `sk + en`;
+      expanding to every UI language needs the `Hub.title`/`description` records in
+      `seo.ts` translated (~19 hubs × title+description per new language), phased by
+      market priority (IT → PL → HU → DE → SL → FR → CS).
+- [ ] **More countries for per-feature POI pages.** `objects.ts` `COUNTRIES` covers
+      SK (full) + CZ/HU/PL/IT (outdoor-only); add AT/DE/SI next (each = area id +
+      `COPY` entry), one at a time, watching GSC indexing before scaling.
+- [ ] **Native review of the generated foreign copy** — the CZ/HU/PL/IT `COPY`
+      strings in `objects.ts` and the `sl`/`fr` `openMapLabel`/`featuresLabel` in
+      `seo.ts` are machine-drafted.
+

@@ -5,15 +5,150 @@ import {
   categoryKeys,
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
+  getOsmMapping,
 } from '../src/osm/osmNameResolver.js';
-import {
-  colorNames,
-  osmTagToNameMapping,
-} from '../src/osm/osmTagToNameMapping-sk.messages.js';
+import { appUrl, BASE_EU, fileName, type Lang, langBase } from './seo.js';
 
 const html = htm.bind(vhtml);
 
 type Tags = Record<string, string>;
+
+/**
+ * A country whose OSM features get per-feature prerender pages, in that
+ * country's most-prominent language. Slovakia keeps the full category set;
+ * other countries get the outdoor-only subset (the map's core value) to keep
+ * page volume, Overpass load and crawl budget sane. The page's home domain
+ * follows the language via {@link langBase} (sk/cs → freemap.sk, else eu).
+ */
+interface Country {
+  name: string;
+  lang: Lang;
+  /** Overpass area id: 3600000000 + the country's OSM relation id. */
+  areaId: number;
+  full: boolean;
+}
+
+const COUNTRIES: Country[] = [
+  { name: 'Slovakia', lang: 'sk', areaId: 3600014296, full: true },
+  { name: 'Czechia', lang: 'cs', areaId: 3600051684, full: false },
+  { name: 'Hungary', lang: 'hu', areaId: 3600021335, full: false },
+  { name: 'Poland', lang: 'pl', areaId: 3600049715, full: false },
+  { name: 'Italy', lang: 'it', areaId: 3600365331, full: false },
+];
+
+function routeQueries(area: number): Record<string, string> {
+  return {
+    'hiking-routes': `relation["type"="route"]["route"="hiking"](area:${area}); relation["type"="route"]["route"="foot"](area:${area});`,
+    'bicycle-routes': `relation["type"="route"]["route"="bicycle"](area:${area});`,
+    'ski-routes': `relation["type"="route"]["route"="ski"](area:${area}); relation["type"="route"]["route"="piste"](area:${area});`,
+  };
+}
+
+/**
+ * Outdoor-only categories. `natural` is restricted to high-value point
+ * landmarks (peaks, saddles, springs, caves, glaciers, …): the unrestricted
+ * `natural=*` set runs to hundreds of thousands of named woods/water polygons
+ * per large country — thin content that also OOMs the generator.
+ */
+function outdoorQueries(area: number): Record<string, string> {
+  return {
+    ...routeQueries(area),
+    'natural-features': `nwr["natural"~"^(peak|volcano|saddle|ridge|arete|spring|hot_spring|geyser|cave_entrance|cliff|arch|glacier)$"]["name"](area:${area});`,
+    'protected-areas': `nwr["boundary"="protected_area"]["name"](area:${area});`,
+    huts: `nwr["tourism"~"^(alpine_hut|wilderness_hut)$"]["name"](area:${area});`,
+  };
+}
+
+/** The full Slovak set: routes plus all named settlement/amenity/natural data. */
+function fullQueries(area: number): Record<string, string> {
+  return {
+    ...routeQueries(area),
+    'admin-boundaies': `relation["boundary"="administrative"](area:${area});`,
+    amenities: `nwr["amenity"]["name"](area:${area});`,
+    buildings: `nwr["building"]["name"](area:${area});`,
+    'geomorfological-units': `relation["boundary"="geomorphological-unit"](area:${area});`,
+    landuses: `nwr["landuse"]["name"](area:${area});`,
+    leisures: `nwr["leisure"]["name"](area:${area});`,
+    naturals: `nwr["natural"]["name"](area:${area});`,
+    man_made: `nwr["man_made"]["name"](area:${area});`,
+    'protected-areas': `nwr["boundary"="protected_area"]["name"](area:${area});`,
+    shops: `nwr["shop"]["name"](area:${area});`,
+  };
+}
+
+/**
+ * Per-language page copy. Only the languages of the generated {@link COUNTRIES}
+ * need an entry. These are hand-translated; the Slavic and Italian wordings
+ * warrant a native review before leaning on them for ranking.
+ */
+interface Copy {
+  siteName: string;
+  showOnMap: string;
+  onMap: string;
+  contact: string;
+  openingHours: string;
+  intro: string;
+  openOsm: string;
+  history: string;
+}
+
+const COPY: Partial<Record<Lang, Copy>> = {
+  sk: {
+    siteName: 'Freemap Slovakia – mapa',
+    showOnMap: 'Zobraziť na mape',
+    onMap: 'na detailnej outdoorovej mape.',
+    contact: 'Kontakt.',
+    openingHours: 'Otváracie hodiny.',
+    intro:
+      'Turistika, cyklistika, bežky. Online detailná turistická mapa, cyklistická mapa, cyklomapa, jazdecká mapa, bežkárska/lyžiarska mapa, letecká mapa.',
+    openOsm: 'Otvoriť na OpenStreetMap.org',
+    history: 'história',
+  },
+  cs: {
+    siteName: 'Freemap Slovakia – mapa',
+    showOnMap: 'Zobrazit na mapě',
+    onMap: 'na podrobné outdoorové mapě.',
+    contact: 'Kontakt.',
+    openingHours: 'Otevírací doba.',
+    intro:
+      'Turistika, cyklistika, běžky. Online podrobná turistická mapa, cyklistická mapa, cyklomapa, jezdecká mapa, běžkařská/lyžařská mapa, letecká mapa.',
+    openOsm: 'Otevřít na OpenStreetMap.org',
+    history: 'historie',
+  },
+  hu: {
+    siteName: 'Freemap Slovakia – térkép',
+    showOnMap: 'Megjelenítés a térképen',
+    onMap: 'a részletes szabadtéri térképen.',
+    contact: 'Kapcsolat.',
+    openingHours: 'Nyitvatartás.',
+    intro:
+      'Túrázás, kerékpározás, sífutás. Online részletes turistatérkép, kerékpáros térkép, lovaglótérkép, sífutó/síterkép, légifelvétel-térkép.',
+    openOsm: 'Megnyitás az OpenStreetMap.org-on',
+    history: 'előzmények',
+  },
+  pl: {
+    siteName: 'Freemap Slovakia – mapa',
+    showOnMap: 'Pokaż na mapie',
+    onMap: 'na szczegółowej mapie outdoorowej.',
+    contact: 'Kontakt.',
+    openingHours: 'Godziny otwarcia.',
+    intro:
+      'Turystyka piesza, rowerowa, narciarstwo biegowe. Szczegółowa mapa turystyczna online, mapa rowerowa, mapa konna, mapa narciarska/biegowa, mapa lotnicza.',
+    openOsm: 'Otwórz na OpenStreetMap.org',
+    history: 'historia',
+  },
+  it: {
+    siteName: 'Freemap Slovakia – mappa',
+    showOnMap: 'Mostra sulla mappa',
+    onMap: 'sulla mappa outdoor dettagliata.',
+    contact: 'Contatti.',
+    openingHours: 'Orari di apertura.',
+    intro:
+      'Escursionismo, ciclismo, sci di fondo. Mappa escursionistica dettagliata online, mappa ciclabile, mappa per equitazione, mappa per sci di fondo/sci, mappa aerea.',
+    openOsm: 'Apri su OpenStreetMap.org',
+    history: 'cronologia',
+  },
+};
 
 /** Map OSM tags to the most specific applicable schema.org type (default `Place`). */
 function schemaType(t: Tags): string {
@@ -99,7 +234,7 @@ function buildJsonLd(
   element: { type: string; id: number; tags: Tags },
   center: { lat: number; lon: number },
   fullName: string,
-  appUrl: string,
+  url: string,
 ): string {
   const t = element.tags;
 
@@ -107,8 +242,8 @@ function buildJsonLd(
     '@context': 'https://schema.org',
     '@type': schemaType(t),
     name: fullName,
-    url: appUrl,
-    hasMap: appUrl,
+    url,
+    hasMap: url,
     geo: {
       '@type': 'GeoCoordinates',
       latitude: center.lat,
@@ -188,37 +323,36 @@ function buildJsonLd(
   return JSON.stringify(obj).replace(/</g, '\\u003c');
 }
 
-export async function objects(sitemapNames: string[]) {
-  const queries = {
-    'bicycle-routes':
-      'relation["type"="route"]["route"="bicycle"](area:3600014296);',
-    'ski-routes':
-      'relation["type"="route"]["route"="ski"](area:3600014296); relation["type"="route"]["route"="piste"](area:3600014296);',
-    'hiking-routes':
-      'relation["type"="route"]["route"="hiking"](area:3600014296); relation["type"="route"]["route"="foot"](area:3600014296);',
-    'admin-boundaies':
-      'relation["boundary"="administrative"](area:3600014296);',
-    amenities: 'nwr["amenity"]["name"](area:3600014296);',
-    buildings: 'nwr["building"]["name"](area:3600014296);',
-    'geomorfological-units':
-      'relation["boundary"="geomorphological-unit"](area:3600014296);',
-    landuses: 'nwr["landuse"]["name"](area:3600014296);',
-    leisures: 'nwr["leisure"]["name"](area:3600014296);',
-    naturals: 'nwr["natural"]["name"](area:3600014296);',
-    man_made: 'nwr["man_made"]["name"](area:3600014296);',
-    'protected-areas':
-      'nwr["boundary"="protected_area"]["name"](area:3600014296);',
-    shops: 'nwr["shop"]["name"](area:3600014296);',
-  };
+/** Generate per-feature prerender pages + sitemap shards for one country. */
+async function generateCountry(
+  country: Country,
+  skNames: string[],
+  euNames: string[],
+): Promise<number> {
+  const { lang, areaId, full } = country;
+
+  const copy = COPY[lang];
+
+  if (!copy) {
+    throw new Error(`Missing page copy for language "${lang}".`);
+  }
+
+  const { osmTagToNameMapping, colorNames } = await getOsmMapping(lang);
+
+  const shardNames = langBase(lang) === BASE_EU ? euNames : skNames;
+
+  const queries = full ? fullQueries(areaId) : outdoorQueries(areaId);
 
   const entries = Object.entries(queries);
 
-  let totalFeaturePages = 0;
+  let countryPages = 0;
 
   for (let c = 0; c < entries.length; c++) {
     const [category, query] = entries[c];
 
-    console.log(`[${c + 1}/${entries.length}] ${category}: querying Overpass…`);
+    console.log(
+      `[${country.name} ${c + 1}/${entries.length}] ${category}: querying Overpass…`,
+    );
 
     const res = await fetch(
       process.env['OVERPASS_URL'] ??
@@ -226,15 +360,14 @@ export async function objects(sitemapNames: string[]) {
       {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
-        body: `[out:json][timeout:120]; (${query}); out center tags;`,
+        body: `[out:json][timeout:300]; (${query}); out center tags;`,
       },
     );
 
     const data = await res.json();
 
-    const urls: string[] = data.elements.map(
-      (el) =>
-        `https://www.freemap.sk/?layers=X&osm-${el.type}=${el.id}&lang=sk`,
+    const urls: string[] = data.elements.map((el) =>
+      appUrl(`layers=X&osm-${el.type}=${el.id}`, lang),
     );
 
     // A single sitemap file may contain at most 50 000 URLs (sitemaps.org).
@@ -244,16 +377,16 @@ export async function objects(sitemapNames: string[]) {
     const shardCount = Math.max(1, Math.ceil(urls.length / MAX_URLS_PER_FILE));
 
     console.log(
-      `  ${category}: ${data.elements.length} elements → ${shardCount} sitemap shard(s)`,
+      `  ${country.name}/${category}: ${data.elements.length} elements → ${shardCount} sitemap shard(s)`,
     );
 
     for (let i = 0; i < shardCount; i++) {
       const name =
         shardCount === 1
-          ? `sitemap-feat-${category}.txt`
-          : `sitemap-feat-${category}-${i + 1}.txt`;
+          ? `sitemap-feat-${lang}-${category}.txt`
+          : `sitemap-feat-${lang}-${category}-${i + 1}.txt`;
 
-      sitemapNames.push(name);
+      shardNames.push(name);
 
       await writeFile(
         `../sitemap/${name}`,
@@ -271,14 +404,14 @@ export async function objects(sitemapNames: string[]) {
         colorNames,
       );
 
-      const name = getNameFromOsmElement(element.tags, 'sk');
+      const name = getNameFromOsmElement(element.tags, lang);
 
       const center = element.center ?? element;
 
       const description = [
         genName,
         name,
-        'na detailnej outdoorovej mape.',
+        copy.onMap,
         element.tags['description'],
       ];
 
@@ -287,14 +420,18 @@ export async function objects(sitemapNames: string[]) {
           /^contact:|^addr:|^email$|^phone$|^web$|^url$/.test(key),
         )
       ) {
-        description.push('Kontakt.');
+        description.push(copy.contact);
       }
 
       if (element.tags['opening_hours']) {
-        description.push('Otváracie hodiny.');
+        description.push(copy.openingHours);
       }
 
-      const appUrl = `https://www.freemap.sk/?layers=X&osm-${element.type}=${element.id}&lang=sk`;
+      const param = `layers=X&osm-${element.type}=${element.id}`;
+
+      const url = appUrl(param, lang);
+
+      const osmUrl = `https://www.openstreetmap.org/${element.type}/${element.id}`;
 
       const fullName = `${genName} ${name ?? ''}`.trim();
 
@@ -305,11 +442,11 @@ export async function objects(sitemapNames: string[]) {
           ? element.tags['image']
           : undefined;
 
-      const jsonLd = buildJsonLd(element, center, fullName, appUrl);
+      const jsonLd = buildJsonLd(element, center, fullName, url);
 
       const h =
         '<!doctype html>\n' +
-        html`<html lang="sk">
+        html`<html lang=${lang}>
           <head>
             <title>${`${fullName} - freemap.sk`}</title>
 
@@ -320,11 +457,11 @@ export async function objects(sitemapNames: string[]) {
 
             <meta name="description" content=${metaDescription} />
 
-            <link rel="canonical" href=${appUrl} />
+            <link rel="canonical" href=${url} />
 
             <meta property="og:title" content=${fullName} />
             <meta property="og:description" content=${metaDescription} />
-            <meta property="og:url" content=${appUrl} />
+            <meta property="og:url" content=${url} />
             <meta property="og:type" content="website" />
             ${ogImage && html`<meta property="og:image" content=${ogImage} />`}
 
@@ -350,27 +487,18 @@ export async function objects(sitemapNames: string[]) {
 
           <body>
             <nav>
-              <a href="/?layers=X&lang=sk">Freemap Slovakia – mapa</a> ›${' '}
-              <a href=${appUrl}>Zobraziť na mape</a>
+              <a href=${`/?layers=X&lang=${lang}`}>${copy.siteName}</a> ›${' '}
+              <a href=${url}>${copy.showOnMap}</a>
             </nav>
 
             <h1>${genName.trim()} <i>${name}</i></h1>
 
             <p>
-              <a
-                href=${`https://www.openstreetmap.org/${element.type}/${element.id}`}
-                >Otvoriť na OpenStreetMap.org</a
-              >
-              ${' '}(<a
-                href=${`https://www.openstreetmap.org/${element.type}/${element.id}/history`}
-                >história</a
-              >)
+              <a href=${osmUrl}>${copy.openOsm}</a>
+              ${' '}(<a href=${`${osmUrl}/history`}>${copy.history}</a>)
             </p>
-            <p>
-              Turistika, cyklistika, bežky. Online detailná turistická mapa,
-              cyklistická mapa, cyklomapa, jazdecká mapa, bežkárska/lyžiarska
-              mapa, letecká mapa.
-            </p>
+
+            <p>${copy.intro}</p>
 
             ${
               element.tags['description'] &&
@@ -452,18 +580,32 @@ export async function objects(sitemapNames: string[]) {
           </body>
         </html>`;
 
-      await writeFile(
-        `../sitemap/layers=X&osm-${element.type}=${element.id}&lang=sk`,
-        h,
-      );
+      await writeFile(`../sitemap/${fileName(param, lang)}`, h);
     }
 
-    totalFeaturePages += data.elements.length;
+    countryPages += data.elements.length;
 
-    console.log(`  ${category}: wrote ${data.elements.length} feature pages`);
+    console.log(
+      `  ${country.name}/${category}: wrote ${data.elements.length} feature pages`,
+    );
   }
 
-  console.log(
-    `Feature pages: ${totalFeaturePages} across ${entries.length} categories`,
-  );
+  console.log(`${country.name}: ${countryPages} feature pages (${lang}).`);
+
+  return countryPages;
+}
+
+/**
+ * Generate per-feature POI prerender pages for every configured country,
+ * pushing each country's sitemap-shard names into the freemap.sk or freemap.eu
+ * list per its language's home domain.
+ */
+export async function objects(skNames: string[], euNames: string[]) {
+  let total = 0;
+
+  for (const country of COUNTRIES) {
+    total += await generateCountry(country, skNames, euNames);
+  }
+
+  console.log(`Feature pages: ${total} across ${COUNTRIES.length} countries.`);
 }
