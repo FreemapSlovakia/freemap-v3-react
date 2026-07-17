@@ -85,6 +85,8 @@ import ferry from '../images/poiIcons/ferry.svg';
 import fire_station from '../images/poiIcons/fire_station.svg';
 import firepit from '../images/poiIcons/firepit.svg';
 import fishing from '../images/poiIcons/fishing.svg';
+import fitness_centre from '../images/poiIcons/fitness_centre.svg';
+import fitness_station from '../images/poiIcons/fitness_station.svg';
 import fixme from '../images/poiIcons/fixme.svg';
 import ford from '../images/poiIcons/ford.svg';
 import foresters_lodge from "../images/poiIcons/forester's_lodge.svg";
@@ -134,6 +136,9 @@ import museum from '../images/poiIcons/museum.svg';
 import nightclub from '../images/poiIcons/nightclub.svg';
 import not_drinking_spring from '../images/poiIcons/not_drinking_spring.svg';
 import obelisk from '../images/poiIcons/obelisk.svg';
+import obstacle from '../images/poiIcons/obstacle.svg';
+import obstacle_tree from '../images/poiIcons/obstacle_tree.svg';
+import obstacle_vegetation from '../images/poiIcons/obstacle_vegetation.svg';
 import office from '../images/poiIcons/office.svg';
 import outdoor_seating from '../images/poiIcons/outdoor_seating.svg';
 import palace from '../images/poiIcons/palace.svg';
@@ -525,6 +530,8 @@ export const osmTagToIconMapping: Node = {
     dog_park,
     firepit,
     fishing,
+    fitness_centre,
+    fitness_station,
     horse_riding,
     golf_course: golf,
     miniature_golf,
@@ -622,6 +629,19 @@ export const osmTagToIconMapping: Node = {
     },
     volcano,
     wetland,
+  },
+  obstacle: {
+    '*': obstacle,
+    vegetation: obstacle_vegetation,
+    dense_vegetation: obstacle_vegetation,
+    fallen_tree: obstacle_tree,
+    fallen_trees: obstacle_tree,
+    'fallen trees': obstacle_tree,
+    deadwood: obstacle_tree,
+    branches: obstacle_tree,
+    tree: obstacle_tree,
+    trees: obstacle_tree,
+    root: obstacle_tree,
   },
   place: {
     city,
