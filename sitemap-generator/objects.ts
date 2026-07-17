@@ -118,11 +118,11 @@ const COPY: Partial<Record<Lang, Copy>> = {
   hu: {
     siteName: 'Freemap Slovakia – térkép',
     showOnMap: 'Megjelenítés a térképen',
-    onMap: 'a részletes szabadtéri térképen.',
+    onMap: 'a részletes túratérképen.',
     contact: 'Kapcsolat.',
     openingHours: 'Nyitvatartás.',
     intro:
-      'Túrázás, kerékpározás, sífutás. Online részletes turistatérkép, kerékpáros térkép, lovaglótérkép, sífutó/síterkép, légifelvétel-térkép.',
+      'Túrázás, kerékpározás, sífutás. Online részletes turistatérkép, kerékpáros térkép, lovas térkép, sífutó- és síterkép, légifelvétel-térkép.',
     openOsm: 'Megnyitás az OpenStreetMap.org-on',
     history: 'előzmények',
   },
@@ -144,7 +144,7 @@ const COPY: Partial<Record<Lang, Copy>> = {
     contact: 'Contatti.',
     openingHours: 'Orari di apertura.',
     intro:
-      'Escursionismo, ciclismo, sci di fondo. Mappa escursionistica dettagliata online, mappa ciclabile, mappa per equitazione, mappa per sci di fondo/sci, mappa aerea.',
+      "Escursionismo, ciclismo, sci di fondo. Mappa escursionistica dettagliata online, mappa ciclabile, mappa per l'equitazione, mappa per sci di fondo e sci alpino, mappa aerea.",
     openOsm: 'Apri su OpenStreetMap.org',
     history: 'cronologia',
   },
