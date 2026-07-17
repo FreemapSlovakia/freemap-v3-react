@@ -1,5 +1,5 @@
 server {
-    server_name freemap.cz www.freemap.cz;
+    server_name www.freemap.cz;
 
     return 301 https://www.freemap.sk$request_uri;
 
