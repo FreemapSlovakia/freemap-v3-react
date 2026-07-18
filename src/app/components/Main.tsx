@@ -35,7 +35,6 @@ import { useOnline } from '@shared/hooks/useOnline.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
-import { isDrawTool } from '@shared/toolDefinitions.js';
 import fmLogo from '@/images/freemap-logo-print.png';
 import 'leaflet/dist/leaflet.css';
 import clsx from 'clsx';
@@ -344,8 +343,6 @@ export function Main(): ReactElement {
 
   const tools = useAppSelector(toolsSelector);
 
-  const activeTool = useAppSelector((state) => state.main.activeTool);
-
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
   const activeModal = useAppSelector((state) => state.main.activeModal);
@@ -475,14 +472,10 @@ export function Main(): ReactElement {
     disabled: activeModal !== null,
   });
 
-  // A selection toolbar shows when the selection is the active thing (no tool
-  // focused), or while a drawing tool is active — the point/line/polygon being
-  // drawn is selected internally, so its selection toolbar stays available
-  // alongside the drawing toolbar.
-  const selectionMenu =
-    showMenu && (activeTool === null || isDrawTool(activeTool))
-      ? selectionType
-      : null;
+  // The selection toolbar for whatever is currently selected. Map-click tools
+  // (drawing, route-planner, map-details) keep their feature selected while
+  // staying active, so the selection toolbar sits alongside the tool's toolbar.
+  const selectionMenu = showMenu ? selectionType : null;
 
   const scLogo = useScrollClasses('horizontal');
 

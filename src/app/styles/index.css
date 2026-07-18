@@ -126,7 +126,9 @@ button#freemap-logo {
   }
 }
 
-/* The focused tool toolbar (its title also renders as a filled/active pill). */
+/* The active-outline: a focused tool toolbar (its title also renders as a
+   filled/active pill), or a selection toolbar, which always carries it since it
+   only mounts for an actual selection. */
 .fm-toolbar-active {
   @media screen {
     outline: 2px solid rgba(13, 110, 253, 0.8);

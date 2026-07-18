@@ -6,6 +6,10 @@ import {
   type ToolMode,
 } from '@app/store/actions.js';
 import { drawingLineStopDrawing } from '@features/drawing/model/actions/drawingLineActions.js';
+import {
+  type SearchResult,
+  searchSelectResult,
+} from '@features/search/model/actions.js';
 import type { Action } from '@reduxjs/toolkit';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { type MainState, mainInitialState, mainReducer } from './reducer.js';
@@ -194,8 +198,27 @@ describe('tool / selection mutual exclusivity', () => {
   });
 });
 
+describe('selection alongside an active map-click tool', () => {
+  it('keeps the map-click tool active when a search result is selected', () => {
+    // map-details / route-planner stay active while their feature is selected,
+    // so the selection toolbar renders alongside the tool's own toolbar.
+    const open = run(tool('map-details', 'activate'));
+
+    const s = mainReducer(
+      open,
+      searchSelectResult({ result: {} as SearchResult }),
+    );
+
+    expect(s.selection).toEqual({ type: 'search' });
+    expect(s.activeTool).toBe('map-details');
+    expect(s.tools).toEqual(['map-details']);
+  });
+});
+
 describe('drawingLineStopDrawing', () => {
-  it('closes the drawing tool and clears its active state', () => {
+  it('keeps the draw tool open and active — stopping only clears the drawing flag in the drawingLines slice', () => {
+    // The main reducer ignores the action; the draw tool stays active so the
+    // next map click starts a fresh line.
     const open = run(
       tool('objects', 'activate'),
       tool('draw-lines', 'activate'),
@@ -203,7 +226,7 @@ describe('drawingLineStopDrawing', () => {
 
     const s = mainReducer(open, drawingLineStopDrawing());
 
-    expect(s.tools).toEqual(['objects']);
-    expect(s.activeTool).toBe(null);
+    expect(s.tools).toEqual(['objects', 'draw-lines']);
+    expect(s.activeTool).toBe('draw-lines');
   });
 });

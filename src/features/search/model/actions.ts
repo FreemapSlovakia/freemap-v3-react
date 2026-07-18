@@ -38,7 +38,6 @@ export interface SearchResult {
   geojson: Feature | (FeatureCollection & { properties: GeoJsonProperties });
   id: FeatureId;
   incomplete?: true;
-  showToast?: true;
   zoom?: number;
   displayName?: string;
   genericName?: string;

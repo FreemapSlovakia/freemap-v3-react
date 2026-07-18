@@ -250,7 +250,6 @@ export async function handle(
           genericName: (wms.info as unknown as { layerName: unknown })
             .layerName as string, // ArcGIS only?,
           source: `wms:${wms.type}`,
-          showToast: true,
         } satisfies SearchResult;
       }),
   );
