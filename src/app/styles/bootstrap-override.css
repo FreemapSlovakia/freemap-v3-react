@@ -58,7 +58,7 @@
   border-color: #343a40;
 
   &:hover,
-  &:focus {
+  &:focus-visible {
     background-color: #23272b;
     border-color: #1d2124;
   }
@@ -156,7 +156,44 @@ legend {
   margin-left: var(--bs-dropdown-item-padding-x);
 }
 
+/* An outline toggle must not look toggled just because the pointer is over it,
+   or because it kept focus after a tap. Bootstrap paints hover and
+   :focus-visible with the same solid fill it uses for `.active`, so the fill is
+   reserved for the toggled state and hover/focus get a subtle tint instead
+   (the focus ring itself is left untouched). `:active` stays solid — that is
+   press feedback, not state. */
 .btn-outline-primary,
 .btn-outline-secondary {
   background-color: var(--bs-body-bg);
+
+  &:not(.active, .show, :disabled, .disabled):is(:hover, :focus-visible) {
+    color: var(--bs-btn-color);
+    background-color: var(--fm-btn-subtle-bg);
+    border-color: var(--bs-btn-border-color);
+  }
+}
+
+.btn-outline-primary {
+  --fm-btn-subtle-bg: var(--bs-primary-bg-subtle);
+  --fm-btn-on-hover-bg: #0b5ed7;
+  --fm-btn-on-hover-border: #0a58ca;
+}
+
+.btn-outline-secondary {
+  --fm-btn-subtle-bg: var(--bs-secondary-bg-subtle);
+  --fm-btn-on-hover-bg: #5c636a;
+  --fm-btn-on-hover-border: #565e64;
+}
+
+/* A toggled outline button still has to react to the pointer, so it darkens on
+   hover the way a solid button of the same variant does. */
+.btn-outline-primary.active,
+.btn-outline-secondary.active,
+.btn-check:checked + .btn-outline-primary,
+.btn-check:checked + .btn-outline-secondary {
+  &:is(:hover, :focus-visible) {
+    color: var(--bs-btn-active-color);
+    background-color: var(--fm-btn-on-hover-bg);
+    border-color: var(--fm-btn-on-hover-border);
+  }
 }
