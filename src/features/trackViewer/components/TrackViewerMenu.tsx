@@ -28,7 +28,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { flatten } from '@turf/flatten';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useCallback, useMemo } from 'react';
-import { Button, Dropdown } from 'react-bootstrap';
+import { Badge, Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaEllipsisV,
@@ -89,6 +89,10 @@ export function TrackViewerMenu(): ReactElement {
   const hasActiveMap = useAppSelector((state) =>
     Boolean(state.myMaps.activeMap),
   );
+
+  // A loaded track that isn't part of a saved map is unsaved: unlike drawing it
+  // isn't reflected in the URL, so it is lost on reload until saved to a map.
+  const unsaved = hasTrack && !hasActiveMap;
 
   const handleSaveAsMap = useCallback(() => {
     if (loggedIn) {
@@ -277,6 +281,21 @@ export function TrackViewerMenu(): ReactElement {
       <TrackViewerElevationPromptModal />
 
       <ToolMenu tool="import-file">
+        {unsaved && (
+          <LongPressTooltip label={tvm?.unsavedTooltip}>
+            {({ props }) => (
+              <Badge
+                bg="warning"
+                text="dark"
+                className="ms-1 align-self-center"
+                {...props}
+              >
+                {tvm?.unsaved}
+              </Badge>
+            )}
+          </LongPressTooltip>
+        )}
+
         {canUpload && (
           <LongPressTooltip breakpoint="sm" label={tvm?.upload}>
             {({ label, labelClassName, props }) => (

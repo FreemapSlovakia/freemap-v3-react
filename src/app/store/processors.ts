@@ -48,6 +48,7 @@ import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProc
 import { exportMapFeaturesProcessor } from '@features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.js';
 import { measurementProcessor } from '@features/measurement/model/measurementProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
+import { mapsDirtyProcessor } from '@features/myMaps/model/processors/mapsDirtyProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
 import { mapsLoadProcessor } from '@features/myMaps/model/processors/mapsLoadProcessor.js';
 import {
@@ -181,6 +182,7 @@ export const processors = [
   mapsLoadProcessor,
   mapsDeleteProcessor,
   mapsSaveProcessor,
+  mapsDirtyProcessor,
   mapsSetMapOfflineProcessor,
   mapsSetAllOfflineProcessor,
   mapsOfflinePurgeProcessor,

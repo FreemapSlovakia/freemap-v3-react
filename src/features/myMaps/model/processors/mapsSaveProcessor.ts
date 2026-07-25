@@ -9,6 +9,7 @@ import {
   MapMetaSchema,
   mapsLoadList,
   mapsSave,
+  mapsSetDirty,
   mapsSetMeta,
 } from '../actions.js';
 
@@ -70,13 +71,15 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       dispatch(mapsLoadList());
 
       dispatch(mapsSetMeta(MapMetaSchema.parse(await res.json())));
+
+      dispatch(mapsSetDirty(false));
     } catch (err) {
       await toastError(err, loadMyMapsMessages, 'saveError');
     }
   },
 };
 
-function getMapDataFromState(state: RootState): MapData {
+export function getMapDataFromState(state: RootState): MapData {
   const {
     tracking,
     drawingLines,

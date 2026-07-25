@@ -7,6 +7,10 @@ const sk: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   addNew: 'Pridať novú mapu',
   noMapFound: 'Žiadna mapa nenájdená',
   save: 'Uložiť',
+  loginToSave: 'Pre uloženie mapy do vašich máp sa najprv prihláste.',
+  unsaved: 'Neuložené zmeny',
+  unsavedTooltip:
+    'Mapa má neuložené zmeny, ktoré sa neodrážajú v odkaze. Uložte mapu, aby ste ich zachovali.',
   disconnect: 'Odpojiť',
   disconnectAndClear: 'Odpojiť a vyčistiť',
   deleteConfirm: (name) => (

@@ -87,6 +87,7 @@ export const urlProcessor: Processor = {
       search.osmWayId,
       trackViewer.trackUID,
       myMaps.activeMap,
+      myMaps.dirty,
       main.tools.join(','),
       objects.active,
       wiki.preview,
@@ -456,22 +457,38 @@ export const urlProcessor: Processor = {
 
     const urlSearch = serializeQuery(queryParts);
 
-    if (
-      (mapId && sq !== (history.state as { sq: string })?.sq) ||
-      urlSearch !== window.location.hash.slice(1)
-    ) {
+    const prevHistoryState = history.state as {
+      sq?: string;
+      dirty?: boolean;
+    } | null;
+
+    const contentChanged =
+      (mapId && sq !== prevHistoryState?.sq) ||
+      urlSearch !== window.location.hash.slice(1);
+
+    // The active-map meta and dirty flag ride in `history.state` so a reload can
+    // restore them (and the sq-serialized content) without re-reading the map
+    // from the backend. When only the dirty flag flips — with no content or hash
+    // change — update the current entry in place instead of pushing a new one,
+    // so a single edit still costs one Back press.
+    const metaChanged =
+      Boolean(mapId) && prevHistoryState?.dirty !== myMaps.dirty;
+
+    if (contentChanged || metaChanged) {
       // A viewport-only change replaces the current entry when it continues a
       // recent panning session (last write was also viewport-only and within
       // the gap); otherwise it starts a fresh entry. Any non-viewport change
-      // (map type, drawing, modals, …) always pushes.
+      // (map type, drawing, modals, …) always pushes. A meta-only change never
+      // starts a new entry.
       const viewOnly = !restChanged;
 
       const now = Date.now();
 
-      const method =
-        viewOnly &&
-        lastWriteWasViewOnly &&
-        now - lastViewWriteTs < VIEW_COALESCE_GAP_MS
+      const method = !contentChanged
+        ? 'replaceState'
+        : viewOnly &&
+            lastWriteWasViewOnly &&
+            now - lastViewWriteTs < VIEW_COALESCE_GAP_MS
           ? 'replaceState'
           : 'pushState';
 
@@ -483,7 +500,13 @@ export const urlProcessor: Processor = {
       // SecurityError. Normalizing also self-heals the address bar.
       const path = window.location.pathname.replace(/\/{2,}/g, '/');
 
-      history[method]({ sq }, '', path + (urlSearch ? `#${urlSearch}` : ''));
+      history[method](
+        mapId
+          ? { sq, activeMap: myMaps.activeMap, dirty: myMaps.dirty }
+          : { sq },
+        '',
+        path + (urlSearch ? `#${urlSearch}` : ''),
+      );
 
       if (window.fmEmbedded) {
         window.parent.postMessage(

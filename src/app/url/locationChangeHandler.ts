@@ -32,7 +32,13 @@ import {
   mapSetCustomLayers,
   mapSetShading,
 } from '@features/map/model/actions.js';
-import { mapsLoad } from '@features/myMaps/model/actions.js';
+import {
+  type MapMeta,
+  MapMetaSchema,
+  mapsLoad,
+  mapsSetDirty,
+  mapsSetMeta,
+} from '@features/myMaps/model/actions.js';
 import {
   objectsSetFilter,
   objectsSetStyle,
@@ -124,9 +130,13 @@ export function handleLocationChange(store: MyStore): void {
 
   const search = (document.location.hash || document.location.search).slice(1);
 
-  const { sq } = (history.state as { sq: string }) ?? {
-    sq: undefined,
-  };
+  const historyState = history.state as {
+    sq?: string;
+    activeMap?: MapMeta;
+    dirty?: boolean;
+  } | null;
+
+  const { sq } = historyState ?? { sq: undefined };
 
   const parsedQuery = parseQuery(search);
 
@@ -134,21 +144,39 @@ export function handleLocationChange(store: MyStore): void {
     (typeof parsedQuery['id'] === 'string' ? parsedQuery['id'] : undefined) ||
     undefined;
 
-  if (
-    id !== undefined &&
-    id !== (getState().myMaps.loadMeta?.id ?? getState().myMaps.activeMap?.id)
-  ) {
-    dispatch(
-      mapsLoad({
-        id,
-        ignoreMap: 'map' in parsedQuery,
-        ignoreLayers: 'layers' in parsedQuery,
-      }),
-    );
+  if (id !== undefined) {
+    const { loadMeta, activeMap } = getState().myMaps;
+
+    const restoredMap = historyState?.activeMap;
+
+    if (id === (loadMeta?.id ?? activeMap?.id)) {
+      // In-session history navigation to the same map: content comes from `sq`
+      // and the meta is already set, so only sync the dirty flag to this entry.
+      dispatch(mapsSetDirty(Boolean(historyState?.dirty)));
+    } else if (restoredMap?.id === id && historyState?.dirty) {
+      // Reload with unsaved edits: restore the meta and dirty flag from
+      // history.state and keep the `sq`-restored content — don't re-read the map
+      // from the backend, which would clobber the edits.
+      dispatch(mapsSetMeta(MapMetaSchema.parse(restoredMap)));
+
+      dispatch(mapsSetDirty(true));
+    } else {
+      // Fresh/shared link, a different map, or a clean reload → read the map
+      // (with its server-stored content) from the backend.
+      dispatch(
+        mapsLoad({
+          id,
+          ignoreMap: 'map' in parsedQuery,
+          ignoreLayers: 'layers' in parsedQuery,
+        }),
+      );
+    }
   }
 
   const query =
-    id === undefined ? parsedQuery : { ...parsedQuery, ...parseQuery(sq) };
+    id === undefined
+      ? parsedQuery
+      : { ...parsedQuery, ...parseQuery(sq ?? '') };
 
   // Map legacy URL tool tokens to their current ids so older shared/bookmarked
   // links keep working.

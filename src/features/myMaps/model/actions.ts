@@ -81,6 +81,14 @@ export const mapsLoaded = createAction<{
 
 export const mapsSetMeta = createAction<MapMeta>('MAPS_SET_META');
 
+/**
+ * Marks the active map's saveable content as diverging from the last
+ * loaded/saved state (`true`) or in sync with it (`false`). Drives the unsaved
+ * indicator and the reload path that restores local edits instead of re-reading
+ * the map from the backend.
+ */
+export const mapsSetDirty = createAction<boolean>('MAPS_SET_DIRTY');
+
 /** Ids of maps available offline, synced from IndexedDB. */
 export const mapsOfflineIdsLoaded = createAction<string[]>(
   'MAPS_OFFLINE_IDS_LOADED',

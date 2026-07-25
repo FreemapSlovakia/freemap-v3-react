@@ -7,6 +7,7 @@ import {
   mapsLoad,
   mapsLoaded,
   mapsOfflineIdsLoaded,
+  mapsSetDirty,
   mapsSetList,
   mapsSetMeta,
 } from './actions.js';
@@ -16,6 +17,8 @@ export interface MapsState {
   maps: MapMeta[];
   activeMap: MapMeta | undefined;
   offlineIds: string[];
+  /** The active map has unsaved local changes. */
+  dirty: boolean;
 }
 
 const initialState: MapsState = {
@@ -23,6 +26,7 @@ const initialState: MapsState = {
   maps: [],
   activeMap: undefined,
   offlineIds: [],
+  dirty: false,
 };
 
 export const mapsReducer = createReducer(initialState, (builder) =>
@@ -34,15 +38,22 @@ export const mapsReducer = createReducer(initialState, (builder) =>
       state.activeMap = payload.meta;
 
       state.loadMeta = undefined;
+
+      state.dirty = false;
     })
     .addCase(mapsLoad, (state, { payload }) => {
       state.loadMeta = payload;
     })
     .addCase(mapsDisconnect, (state) => {
       state.activeMap = undefined;
+
+      state.dirty = false;
     })
     .addCase(mapsSetMeta, (state, { payload }) => {
       state.activeMap = { ...(state.activeMap ?? {}), ...payload };
+    })
+    .addCase(mapsSetDirty, (state, { payload }) => {
+      state.dirty = payload;
     })
     .addCase(mapsOfflineIdsLoaded, (state, { payload }) => {
       state.offlineIds = payload;

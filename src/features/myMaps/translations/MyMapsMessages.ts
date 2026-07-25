@@ -4,6 +4,9 @@ export type MyMapsMessages = {
   addNew: string;
   noMapFound: string;
   save: string;
+  loginToSave: string;
+  unsaved: string;
+  unsavedTooltip: string;
   disconnect: string;
   disconnectAndClear: string;
   deleteConfirm: (name: string) => JSX.Element;
