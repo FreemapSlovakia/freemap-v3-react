@@ -8,6 +8,8 @@ const sk: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   noMapFound: 'Žiadna mapa nenájdená',
   save: 'Uložiť',
   loginToSave: 'Pre uloženie mapy do vašich máp sa najprv prihláste.',
+  reload: 'Znovu načítať mapu',
+  reloadConfirm: 'Zahodiť neuložené zmeny a znovu načítať uloženú mapu?',
   unsaved: 'Neuložené zmeny',
   unsavedTooltip:
     'Mapa má neuložené zmeny, ktoré sa neodrážajú v odkaze. Uložte mapu, aby ste ich zachovali.',

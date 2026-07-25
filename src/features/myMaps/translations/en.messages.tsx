@@ -7,6 +7,8 @@ const en: MyMapsMessages = {
   noMapFound: 'No map found',
   save: 'Save',
   loginToSave: 'Log in first to save the map to your maps.',
+  reload: 'Reload map',
+  reloadConfirm: 'Discard your unsaved changes and reload the saved map?',
   unsaved: 'Unsaved changes',
   unsavedTooltip:
     'The map has unsaved changes that are not reflected in the link. Save the map to keep them.',

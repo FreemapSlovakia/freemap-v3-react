@@ -39,6 +39,7 @@ import {
   mapsSetDirty,
   mapsSetMeta,
 } from '@features/myMaps/model/actions.js';
+import { resetMapsDirtyBaseline } from '@features/myMaps/model/processors/mapsDirtyProcessor.js';
 import {
   objectsSetFilter,
   objectsSetStyle,
@@ -127,6 +128,11 @@ export function handleLocationChange(store: MyStore): void {
   const { getState, dispatch } = store;
 
   setUrlUpdatingEnabled(false);
+
+  // The content we're about to restore becomes the new clean baseline for the
+  // dirty tracker; invalidate the previous one so it doesn't misread the
+  // restored (sq-rounded) geometry as an edit.
+  resetMapsDirtyBaseline();
 
   const search = (document.location.hash || document.location.search).slice(1);
 

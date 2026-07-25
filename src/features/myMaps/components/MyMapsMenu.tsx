@@ -1,6 +1,7 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
@@ -8,23 +9,19 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { type ReactElement, useCallback } from 'react';
-import {
-  Badge,
-  Button,
-  ButtonGroup,
-  ButtonToolbar,
-  Dropdown,
-} from 'react-bootstrap';
+import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import {
   FaAngleLeft,
   FaAngleRight,
   FaEraser,
+  FaExclamationTriangle,
   FaRegMap,
   FaSave,
+  FaSync,
   FaUnlink,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { mapsDisconnect, mapsSave } from '../model/actions.js';
+import { mapsDisconnect, mapsLoad, mapsSave } from '../model/actions.js';
 import { loadMyMapsMessages } from '../translations/loadMyMapsMessages.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 
@@ -40,6 +37,22 @@ export function MyMapsMenu(): ReactElement {
   const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
 
   const dispatch = useDispatch();
+
+  const confirm = useConfirm();
+
+  const handleReload = useCallback(async () => {
+    if (
+      activeMap &&
+      (await confirm({
+        title: mm?.reload,
+        message: mm?.reloadConfirm,
+        confirmLabel: mm?.reload,
+      }))
+    ) {
+      // Re-read the saved map from the backend, discarding the local edits.
+      dispatch(mapsLoad({ id: activeMap.id }));
+    }
+  }, [activeMap, confirm, mm, dispatch]);
 
   const handleSave = useCallback(() => {
     if (activeMap?.canWrite) {
@@ -98,14 +111,14 @@ export function MyMapsMenu(): ReactElement {
           {dirty && (
             <LongPressTooltip label={mm?.unsavedTooltip}>
               {({ props }) => (
-                <Badge
-                  bg="warning"
-                  text="dark"
-                  className="align-self-center me-1"
+                <span
+                  role="img"
+                  className="align-self-center text-warning d-inline-flex"
+                  aria-label={mm?.unsaved}
                   {...props}
                 >
-                  {mm?.unsaved}
-                </Badge>
+                  <FaExclamationTriangle />
+                </span>
               )}
             </LongPressTooltip>
           )}
@@ -120,6 +133,22 @@ export function MyMapsMenu(): ReactElement {
                   {...props}
                 >
                   <FaSave />
+                  <span className={labelClassName}> {label}</span>
+                </Button>
+              )}
+            </LongPressTooltip>
+          )}
+
+          {!hidden && dirty && (
+            <LongPressTooltip breakpoint="xl" label={mm?.reload}>
+              {({ label, labelClassName, props }) => (
+                <Button
+                  className="ms-1"
+                  variant="secondary"
+                  onClick={handleReload}
+                  {...props}
+                >
+                  <FaSync />
                   <span className={labelClassName}> {label}</span>
                 </Button>
               )}

@@ -4,8 +4,9 @@ import { isUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { mapsSetDirty } from '../actions.js';
 
 // Snapshot of the fields serialized into the saved map document, minus the map
-// viewport and the route-planner pick mode (panning and switching pick mode
-// don't mark the map dirty). Kept as slice references so comparison is cheap.
+// viewport, base layers, and the route-planner pick mode (panning, switching the
+// background layer, and switching pick mode don't mark the map dirty). Kept as
+// slice references so comparison is cheap.
 type Snapshot = Record<string, unknown>;
 
 function snapshot(s: RootState): Snapshot {
@@ -25,7 +26,6 @@ function snapshot(s: RootState): Snapshot {
     trackGeojson: s.trackViewer.trackGeojson,
     trackUID: s.trackViewer.trackUID,
     gpxUrl: s.trackViewer.gpxUrl,
-    layers: s.map.layers,
     customLayers: s.map.customLayers,
     shading: s.map.shading,
   };
@@ -38,6 +38,19 @@ function snapshot(s: RootState): Snapshot {
 // at drag end differs from the baseline even though it matches the last move.
 let baselineMap: RootState['myMaps']['activeMap'];
 let baseline: Snapshot | null = null;
+
+/**
+ * Discards the captured baseline so the next dispatch re-establishes it from the
+ * current state. Called after a URL/history restore (`handleLocationChange`),
+ * where the restored content becomes the new clean reference — its `sq`-decoded
+ * coordinates are rounded and so wouldn't byte-match the pre-restore baseline,
+ * which would otherwise surface as a spurious edit on the next dispatch.
+ */
+export function resetMapsDirtyBaseline(): void {
+  baseline = null;
+
+  baselineMap = undefined;
+}
 
 /**
  * Flags the active map dirty once its saveable content diverges from the loaded

@@ -28,10 +28,11 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { flatten } from '@turf/flatten';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useCallback, useMemo } from 'react';
-import { Badge, Button, Dropdown } from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaEllipsisV,
+  FaExclamationTriangle,
   FaFileImport,
   FaGem,
   FaInfoCircle,
@@ -284,14 +285,14 @@ export function TrackViewerMenu(): ReactElement {
         {unsaved && (
           <LongPressTooltip label={tvm?.unsavedTooltip}>
             {({ props }) => (
-              <Badge
-                bg="warning"
-                text="dark"
-                className="ms-1 align-self-center"
+              <span
+                role="img"
+                className="ms-1 align-self-center text-warning d-inline-flex"
+                aria-label={tvm?.unsaved}
                 {...props}
               >
-                {tvm?.unsaved}
-              </Badge>
+                <FaExclamationTriangle />
+              </span>
             )}
           </LongPressTooltip>
         )}
