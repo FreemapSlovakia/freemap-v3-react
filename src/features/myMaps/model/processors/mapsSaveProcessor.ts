@@ -3,7 +3,6 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { clearTrackDraft } from '../../draftStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
   type MapData,
@@ -15,6 +14,7 @@ import {
 } from '../actions.js';
 import {
   captureMapsDirtyBaseline,
+  discardTrackDraft,
   isDirtySinceBaseline,
 } from './mapsDirtyProcessor.js';
 
@@ -88,7 +88,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
       if (!stillDirty) {
         // Stored copy and screen agree — the stash has nothing left to rescue.
-        await clearTrackDraft();
+        discardTrackDraft();
       }
     } catch (err) {
       await toastError(err, loadMyMapsMessages, 'saveError');

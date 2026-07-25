@@ -45,13 +45,21 @@ const NON_URL_FIELDS = ['trackGeojson'] as const;
 let baselineMapId: string | undefined;
 let baseline: Snapshot | null = null;
 
-// Set when the URL declares a track (`track-uid` / `import-url`) whose fetch is
-// still in flight, so the arriving geometry is absorbed as baseline content
-// rather than mistaken for a user edit.
-let awaitingTrackHydration = false;
+// The track source (`track-uid` / `import-url`) the URL declared and whose fetch
+// is still in flight, so the arriving geometry is absorbed as baseline content
+// rather than mistaken for a user edit. Holding the source rather than a bare
+// flag keeps a failed fetch from absorbing a later hand-imported track: an import
+// clears `trackUID`, so it no longer matches what's awaited.
+let awaitedTrackSource: string | null = null;
 
 // The track last written to the draft store, so an unchanged one isn't rewritten.
-let draftedTrack: unknown;
+// `null` means "nothing stashed", matching an absent `trackGeojson`.
+let draftedTrack: unknown = null;
+
+// Set while a draft restore is reading IndexedDB. The track is momentarily
+// absent from the state then, which must not be taken as "no track to stash" —
+// that would delete the very draft being restored.
+let restoringDraft = false;
 
 /**
  * Stashes the imported track so a reload can put it back (see `draftStore`).
@@ -64,7 +72,7 @@ function writeTrackDraft(state: RootState): void {
 
   const mapId = state.myMaps.activeMap?.id;
 
-  if (!mapId || trackGeojson === draftedTrack) {
+  if (!mapId || restoringDraft || trackGeojson === draftedTrack) {
     return;
   }
 
@@ -79,13 +87,21 @@ function writeTrackDraft(state: RootState): void {
   });
 }
 
-/** Drops the stash — the map is in sync again. */
-function discardDraft(): void {
-  draftedTrack = undefined;
+/**
+ * Drops the stash — the map is in sync again. Also resets the memo, so a later
+ * edit re-stashes the track instead of assuming it's still stored.
+ */
+export function discardTrackDraft(): void {
+  draftedTrack = null;
 
   clearTrackDraft().catch((err) => {
     console.warn('Error clearing track draft:', err);
   });
+}
+
+/** Guards the stash while a draft restore reads it (see `restoringDraft`). */
+export function setRestoringTrackDraft(value: boolean): void {
+  restoringDraft = value;
 }
 
 /** Whether a baseline for `mapId` is already established in this session. */
@@ -94,20 +110,38 @@ export function hasMapsDirtyBaseline(mapId: string): boolean {
 }
 
 /**
- * Marks the current content as the clean reference point. Called on load, at
- * save time, and after a URL/history restore — where the restored content
- * becomes the baseline so the `sq`-rounded coordinates it decodes to aren't
- * later read as an edit.
+ * Marks the current content as the clean reference point. Called on load and at
+ * save time.
+ *
+ * `keepNonUrl` is for a URL/history restore: the restored content becomes the
+ * baseline so the `sq`-rounded coordinates it decodes to aren't later read as an
+ * edit, but the fields the URL can't carry keep their previous baseline. Folding
+ * those in would quietly bless an unsaved imported track as saved content.
  */
-export function captureMapsDirtyBaseline(state: RootState): void {
+export function captureMapsDirtyBaseline(
+  state: RootState,
+  { keepNonUrl = false } = {},
+): void {
+  const previous = baseline;
+
   baselineMapId = state.myMaps.activeMap?.id;
 
   baseline = snapshot(state);
+
+  if (keepNonUrl && previous) {
+    for (const key of NON_URL_FIELDS) {
+      baseline[key] = previous[key];
+    }
+  }
 }
 
-/** Announces a pending URL-driven track fetch (see `awaitingTrackHydration`). */
-export function expectMapsDirtyTrackHydration(): void {
-  awaitingTrackHydration = true;
+/**
+ * Announces a pending URL-driven track fetch for `source` (a `track-uid` or an
+ * `import-url`), and `null` to drop any stale expectation — called at the start
+ * of every location change so a fetch that never lands can't outlive it.
+ */
+export function expectMapsDirtyTrackHydration(source: string | null): void {
+  awaitedTrackSource = source;
 }
 
 /**
@@ -154,9 +188,16 @@ export function isDirtySinceBaseline(state: RootState): boolean {
       continue;
     }
 
-    // The track the URL asked for, arriving late — part of the loaded map.
-    if (key === 'trackGeojson' && awaitingTrackHydration) {
-      awaitingTrackHydration = false;
+    // The track the URL asked for, arriving late — part of the loaded map, not
+    // an edit. A hand-imported track clears `trackUID`, so it no longer matches
+    // what's awaited and is correctly treated as a change.
+    if (
+      key === 'trackGeojson' &&
+      awaitedTrackSource !== null &&
+      (state.trackViewer.trackUID === awaitedTrackSource ||
+        state.trackViewer.gpxUrl === awaitedTrackSource)
+    ) {
+      awaitedTrackSource = null;
 
       baseline[key] = after;
 
@@ -182,7 +223,7 @@ export const mapsDirtyProcessor: Processor = {
     if (!activeMap) {
       if (baselineMapId !== undefined) {
         // Disconnected — nothing left to restore into.
-        discardDraft();
+        discardTrackDraft();
       }
 
       baseline = null;
@@ -201,7 +242,7 @@ export const mapsDirtyProcessor: Processor = {
 
       // The stored copy is now on screen, so any older draft is obsolete. A
       // merging load diverges immediately and re-stashes on the next dispatch.
-      discardDraft();
+      discardTrackDraft();
 
       return;
     }

@@ -14,7 +14,7 @@ const en: TrackViewerMessages = {
   saveAsMap: 'Save to my maps',
   unsaved: 'Unsaved',
   unsavedTooltip:
-    'The loaded track is not reflected in the link and will be lost on reload. Save it to your maps to keep it.',
+    'The loaded track is not part of any saved map, so it is not included in the shareable link. Save it to your maps to keep it.',
   loginToSaveMap: 'Log in first to save the track to your maps.',
   style: {
     title: 'Default style',

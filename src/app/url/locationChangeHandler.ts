@@ -135,6 +135,10 @@ export function handleLocationChange(store: MyStore): void {
 
   setUrlUpdatingEnabled(false);
 
+  // Drop any expectation left by a previous navigation whose track fetch never
+  // landed, so it can't later absorb a hand-imported track.
+  expectMapsDirtyTrackHydration(null);
+
   const search = (document.location.hash || document.location.search).slice(1);
 
   const historyState = history.state as {
@@ -380,7 +384,7 @@ export function handleLocationChange(store: MyStore): void {
     typeof trackUID === 'string' &&
     getState().trackViewer.trackUID !== trackUID
   ) {
-    expectMapsDirtyTrackHydration();
+    expectMapsDirtyTrackHydration(trackUID);
 
     dispatch(trackViewerDownloadTrack(trackUID));
   }
@@ -491,7 +495,7 @@ export function handleLocationChange(store: MyStore): void {
     query['load']; /* `gpx-url` and `load` kept for backward compatibility */
 
   if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
-    expectMapsDirtyTrackHydration();
+    expectMapsDirtyTrackHydration(gpxUrl);
 
     dispatch(trackViewerGpxLoad(gpxUrl));
   }
@@ -919,7 +923,9 @@ export function handleLocationChange(store: MyStore): void {
         dispatch(mapsSetDirty(entryDirty || nonUrlContentDiverged(state)));
       }
 
-      captureMapsDirtyBaseline(state);
+      // Only the URL-carried fields re-baseline: an unsaved imported track must
+      // keep diverging, or a Back/Forward/Back run would quietly bless it.
+      captureMapsDirtyBaseline(state, { keepNonUrl: true });
     }
   }
 

@@ -459,6 +459,7 @@ export const urlProcessor: Processor = {
 
     const prevHistoryState = history.state as {
       sq?: string;
+      activeMap?: { id?: string; modifiedAt?: Date | string };
       dirty?: boolean;
     } | null;
 
@@ -471,8 +472,15 @@ export const urlProcessor: Processor = {
     // from the backend. When only the dirty flag flips — with no content or hash
     // change — update the current entry in place instead of pushing a new one,
     // so a single edit still costs one Back press.
+    // `modifiedAt` too, not just the flag: it is the concurrency token a save
+    // sends as `If-Unmodified-Since`, so an entry left holding the pre-save value
+    // would make the next save after a reload fail with 412.
     const metaChanged =
-      Boolean(mapId) && prevHistoryState?.dirty !== myMaps.dirty;
+      Boolean(mapId) &&
+      (prevHistoryState?.dirty !== myMaps.dirty ||
+        prevHistoryState?.activeMap?.id !== myMaps.activeMap?.id ||
+        String(prevHistoryState?.activeMap?.modifiedAt) !==
+          String(myMaps.activeMap?.modifiedAt));
 
     if (contentChanged || metaChanged) {
       // A viewport-only change replaces the current entry when it continues a
