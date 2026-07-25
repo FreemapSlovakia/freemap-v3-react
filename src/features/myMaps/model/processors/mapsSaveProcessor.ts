@@ -16,6 +16,8 @@ import {
   captureMapsDirtyBaseline,
   discardTrackDraft,
   isDirtySinceBaseline,
+  rekeyMapsDirtyBaseline,
+  setMapsSaveInFlight,
 } from './mapsDirtyProcessor.js';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
@@ -37,6 +39,10 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       // The content about to be sent becomes the new clean reference point, so
       // edits made while the request is in flight still register as dirty.
       captureMapsDirtyBaseline(getState());
+
+      // A map being created has no id yet; keep its baseline alive until the
+      // response assigns one, so edits made meanwhile still register.
+      setMapsSaveInFlight(true);
 
       const res = await httpRequest({
         getState,
@@ -79,7 +85,14 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
       dispatch(mapsLoadList());
 
-      dispatch(mapsSetMeta(MapMetaSchema.parse(await res.json())));
+      const meta = MapMetaSchema.parse(await res.json());
+
+      // Before the meta lands: the dispatch below makes the map active, which
+      // would otherwise recapture the baseline from the current state and bless
+      // any in-flight edits as saved.
+      rekeyMapsDirtyBaseline(meta.id);
+
+      dispatch(mapsSetMeta(meta));
 
       // Clean only if nothing changed while the request was in flight.
       const stillDirty = isDirtySinceBaseline(getState());
@@ -92,6 +105,8 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       }
     } catch (err) {
       await toastError(err, loadMyMapsMessages, 'saveError');
+    } finally {
+      setMapsSaveInFlight(false);
     }
   },
 };

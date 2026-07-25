@@ -61,6 +61,10 @@ let draftedTrack: unknown = null;
 // that would delete the very draft being restored.
 let restoringDraft = false;
 
+// Set while a save request is in flight. A map being created has no `activeMap`
+// yet, and its baseline must not be dropped before the response comes back.
+let saveInFlight = false;
+
 /**
  * Stashes the imported track so a reload can put it back (see `draftStore`).
  * Written straight through rather than debounced: the track only changes on
@@ -78,13 +82,31 @@ function writeTrackDraft(state: RootState): void {
 
   draftedTrack = trackGeojson;
 
-  const write = trackGeojson
-    ? putTrackDraft({ mapId, trackGeojson })
-    : clearTrackDraft();
-
-  write.catch((err) => {
+  putTrackDraft({ mapId, trackGeojson }).catch((err) => {
     console.warn('Error writing track draft:', err);
   });
+}
+
+/** The map a baseline is currently held for, if the session has one. */
+export function getMapsDirtyBaselineMapId(): string | undefined {
+  return baseline === null ? undefined : baselineMapId;
+}
+
+/**
+ * Re-points the captured baseline at `mapId` without recapturing it. Used when a
+ * save creates the map: the content sent is the reference for edits made while
+ * the request was in flight, and must survive the map gaining an id.
+ */
+export function rekeyMapsDirtyBaseline(mapId: string): void {
+  baselineMapId = mapId;
+}
+
+/**
+ * Marks a save as in flight, so a not-yet-created map's baseline isn't dropped by
+ * the no-active-map branch before the response assigns it an id.
+ */
+export function setMapsSaveInFlight(value: boolean): void {
+  saveInFlight = value;
 }
 
 /**
@@ -221,14 +243,16 @@ export const mapsDirtyProcessor: Processor = {
     const { activeMap, dirty } = state.myMaps;
 
     if (!activeMap) {
-      if (baselineMapId !== undefined) {
-        // Disconnected — nothing left to restore into.
+      // Disconnected — nothing left to restore into. Skipped while a save is in
+      // flight: a map being created has no id yet, but its baseline is still the
+      // reference for edits made meanwhile.
+      if (!saveInFlight && baseline) {
         discardTrackDraft();
+
+        baseline = null;
+
+        baselineMapId = undefined;
       }
-
-      baseline = null;
-
-      baselineMapId = undefined;
 
       return;
     }

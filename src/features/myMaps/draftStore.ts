@@ -13,7 +13,9 @@ const KEY = 'track';
 
 const StoredTrackSchema = z.object({
   mapId: z.string(),
-  trackGeojson: GeoJSONFeatureCollectionSchema,
+  // `null` records that the dirty map genuinely has no track, so an entry that is
+  // missing altogether means the stash was lost rather than never needed.
+  trackGeojson: GeoJSONFeatureCollectionSchema.nullable(),
 });
 
 export type StoredTrack = z.infer<typeof StoredTrackSchema>;

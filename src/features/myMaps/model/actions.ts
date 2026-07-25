@@ -91,7 +91,13 @@ export const mapsSetDirty = createAction<boolean>('MAPS_SET_DIRTY');
  * Restores the parts of an unsaved-changes draft that the URL can't carry (see
  * `draftStore`), after a reload of a map with unsaved edits.
  */
-export const mapsDraftRestore = createAction<string>('MAPS_DRAFT_RESTORE');
+export const mapsDraftRestore = createAction<{
+  mapId: string;
+  /** `track-uid=` from the URL, deferred so it can't race the stash. */
+  trackUID?: string;
+  /** `import-url=` from the URL, deferred for the same reason. */
+  gpxUrl?: string;
+}>('MAPS_DRAFT_RESTORE');
 
 /** Ids of maps available offline, synced from IndexedDB. */
 export const mapsOfflineIdsLoaded = createAction<string[]>(

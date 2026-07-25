@@ -43,6 +43,7 @@ import {
 import {
   captureMapsDirtyBaseline,
   expectMapsDirtyTrackHydration,
+  getMapsDirtyBaselineMapId,
   hasMapsDirtyBaseline,
   nonUrlContentDiverged,
 } from '@features/myMaps/model/processors/mapsDirtyProcessor.js';
@@ -157,6 +158,15 @@ export function handleLocationChange(store: MyStore): void {
 
   const entryDirty = Boolean(historyState?.dirty);
 
+  // Set when this is a reload of a map with unsaved changes. The restore is
+  // dispatched at the end, once any `track-uid=` / `import-url=` is known, so it
+  // can own the track instead of racing a fetch started here.
+  let draftRestore: {
+    mapId: string;
+    trackUID?: string;
+    gpxUrl?: string;
+  } | null = null;
+
   if (id !== undefined) {
     const { loadMeta, activeMap } = getState().myMaps;
 
@@ -173,7 +183,14 @@ export function handleLocationChange(store: MyStore): void {
       // In-session history navigation to the same map: content comes from `sq`
       // and the meta is already set. The dirty flag is settled at the end, once
       // the restored content is in place.
-    } else if (restoredMeta && entryDirty) {
+    } else if (
+      restoredMeta &&
+      entryDirty &&
+      // Only on a fresh page load. Navigating to a *different* map in-session
+      // must read it: adopting its meta would leave the previous map's content —
+      // and the stash holding the previous map's track — attributed to it.
+      getMapsDirtyBaselineMapId() === undefined
+    ) {
       // Reload with unsaved edits: restore the meta and dirty flag from
       // history.state and keep the `sq`-restored content — don't re-read the map
       // from the backend, which would clobber the edits. The draft then fills in
@@ -183,7 +200,7 @@ export function handleLocationChange(store: MyStore): void {
 
       dispatch(mapsSetDirty(true));
 
-      dispatch(mapsDraftRestore(id));
+      draftRestore = { mapId: id };
     } else {
       // Fresh/shared link, a different map, or a clean reload → read the map
       // (with its server-stored content) from the backend.
@@ -386,7 +403,11 @@ export function handleLocationChange(store: MyStore): void {
   ) {
     expectMapsDirtyTrackHydration(trackUID);
 
-    dispatch(trackViewerDownloadTrack(trackUID));
+    if (draftRestore) {
+      draftRestore.trackUID = trackUID;
+    } else {
+      dispatch(trackViewerDownloadTrack(trackUID));
+    }
   }
 
   const colorizeTrackBy = query['track-colorize-by'];
@@ -497,7 +518,11 @@ export function handleLocationChange(store: MyStore): void {
   if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
     expectMapsDirtyTrackHydration(gpxUrl);
 
-    dispatch(trackViewerGpxLoad(gpxUrl));
+    if (draftRestore) {
+      draftRestore.gpxUrl = gpxUrl;
+    } else {
+      dispatch(trackViewerGpxLoad(gpxUrl));
+    }
   }
 
   const focus = !parsedQuery['map'];
@@ -918,15 +943,28 @@ export function handleLocationChange(store: MyStore): void {
 
     if (map) {
       if (hasMapsDirtyBaseline(map.id)) {
-        // The entry's flag only describes what `sq` carries, so content it can't
+        // An entry recorded before this map was connected says nothing about it,
+        // so its (absent) flag must not clear the map's unsaved state. Otherwise
+        // the entry's flag only describes what `sq` carries, so content it can't
         // represent (an imported track) keeps the map dirty on its own.
-        dispatch(mapsSetDirty(entryDirty || nonUrlContentDiverged(state)));
+        const entryDescribesMap = historyState?.activeMap?.id === map.id;
+
+        dispatch(
+          mapsSetDirty(
+            (entryDescribesMap ? entryDirty : state.myMaps.dirty) ||
+              nonUrlContentDiverged(state),
+          ),
+        );
       }
 
       // Only the URL-carried fields re-baseline: an unsaved imported track must
       // keep diverging, or a Back/Forward/Back run would quietly bless it.
       captureMapsDirtyBaseline(state, { keepNonUrl: true });
     }
+  }
+
+  if (draftRestore) {
+    dispatch(mapsDraftRestore(draftRestore));
   }
 
   setUrlUpdatingEnabled(true);
