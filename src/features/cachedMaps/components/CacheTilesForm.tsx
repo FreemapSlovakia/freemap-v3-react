@@ -12,7 +12,6 @@ import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import {
   type IntegratedLayerDef,
   type IsTileLayerDef,
-  type IsWmsLayerDef,
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -40,7 +39,7 @@ import type { CachedTileMapDef } from '../cachedTileMaps.js';
 import { cachedMapsSetView, cacheTilesStart } from '../model/actions.js';
 import { useCachedMapsMessages } from '../translations/useCachedMapsMessages.js';
 
-type CacheableLayerDef = IntegratedLayerDef<IsTileLayerDef | IsWmsLayerDef> & {
+type CacheableLayerDef = IntegratedLayerDef<IsTileLayerDef> & {
   url: string;
 };
 
@@ -59,10 +58,7 @@ export function CacheTilesForm(): ReactElement {
 
   const mapDefs = useMemo(() => {
     const integrated = integratedLayerDefs
-      .filter(
-        (def): def is CacheableLayerDef =>
-          def.technology === 'tile' || def.technology === 'wms',
-      )
+      .filter((def): def is CacheableLayerDef => def.technology === 'tile')
       .map((layer) => {
         const url = layer.url.startsWith('//')
           ? `https:${layer.url}`
@@ -71,8 +67,11 @@ export function CacheTilesForm(): ReactElement {
         return { ...layer, url };
       });
 
+    // WMS is not offered: `buildTileUrl` substitutes only {x}/{y}/{z}, so every
+    // WMS tile would collapse to one cache entry, while the rendered layer asks
+    // for per-tile `?…&BBOX=…` URLs that are not in the cache. See TODO.md.
     const custom = customLayers
-      .filter((def) => def.technology === 'tile' || def.technology === 'wms')
+      .filter((def) => def.technology === 'tile')
       .map((def) => ({
         ...def,
         icon: undefined as ReactElement | undefined,

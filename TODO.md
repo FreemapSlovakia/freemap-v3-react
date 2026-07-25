@@ -229,6 +229,18 @@ off that — never re-derive "is this a track?" from density/timestamps.
       payload variant (e.g. `{ type: 'tracking'; id }`) handled in
       `convertToDrawingProcessor`, plus a menu action in the tracking UI.
 
+## Offline maps (`src/features/cachedMaps/`)
+
+- [ ] **Support caching WMS layers.** The "Cache map for offline use" form offers
+      tile layers only. WMS needs a per-tile cache key both when downloading and
+      when rendering: `buildTileUrl` in `cacheTilesProcessor.ts` substitutes only
+      `{x}/{y}/{z}`, so a WMS layer collapses to a single cache entry, while
+      `WmsTileLayer` requests `?…&BBOX=…` URLs that the service worker's exact-URL
+      `cache.match` never finds. Requires computing each tile's `BBOX` GetMap URL
+      at download time and deriving the identical key at render time (or normalizing
+      the query in `serveCachedTile`). Re-enable the two `technology === 'tile'`
+      filters in `CacheTilesForm.tsx` once done.
+
 ## Photo layer: gallery + Wikimedia Commons merge
 
 Merge of the separate Wikimedia Commons layer (`M`) into the gallery photo layer

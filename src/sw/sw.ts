@@ -94,7 +94,10 @@ async function serveCachedTile(event: FetchEvent): Promise<Response> {
 
   const cache = await caches.open(`${TILE_CACHE_PREFIX}${mapId}`);
 
-  const cached = await cache.match(event.request);
+  // ignoreVary: the entries are keyed by a bare URL Request with no headers, so
+  // any `Vary` on the stored response can never match the real tile <img>
+  // request's headers.
+  const cached = await cache.match(event.request, { ignoreVary: true });
 
   return cached ?? new Response(null, { status: 404 });
 }

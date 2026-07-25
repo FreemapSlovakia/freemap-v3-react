@@ -150,18 +150,25 @@ async function downloadTiles(
         });
 
         if (response.ok) {
-          const contentLength = response.headers.get('content-length');
+          const blob = await response.blob();
 
-          if (contentLength) {
-            sizeBytes += parseInt(contentLength, 10);
-          } else {
-            const clone = response.clone();
-            const blob = await clone.blob();
+          sizeBytes += blob.size;
 
-            sizeBytes += blob.size;
-          }
-
-          await cache.put(cacheKey, response);
+          // Store a plain same-origin response instead of the cross-origin one:
+          // a CORS response carries the tile server's `Vary` (typically
+          // `Accept-Encoding, Origin`) and its CORS headers, which are
+          // meaningless under the `/__cached__/` origin and only make
+          // `cache.match` browser-dependent.
+          await cache.put(
+            cacheKey,
+            new Response(blob, {
+              headers: {
+                'Content-Type':
+                  response.headers.get('content-type') ??
+                  'application/octet-stream',
+              },
+            }),
+          );
         }
       }),
     );
