@@ -60,16 +60,12 @@ self.addEventListener('fetch', (event) => {
 });
 
 async function serveStaticAsset(event: FetchEvent): Promise<Response> {
+  // Online: pass through to the network. The offline-static cache is owned
+  // entirely by the app's offlineStaticCache (populated only when offline
+  // content exists, refreshed on redeploy), so the SW never writes it — it's a
+  // pure reader when the network is gone.
   try {
-    const response = await fetch(event.request);
-
-    if (response.ok) {
-      const cache = await caches.open(STATIC_CACHE_NAME);
-
-      cache.put(event.request, response.clone());
-    }
-
-    return response;
+    return await fetch(event.request);
   } catch {
     const cached = await caches
       .open(STATIC_CACHE_NAME)
