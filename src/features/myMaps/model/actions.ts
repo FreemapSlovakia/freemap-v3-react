@@ -25,9 +25,7 @@ export type MapMeta = z.infer<typeof MapMetaSchema>;
 export interface MapData<LT = Line, PT = DrawingPoint> {
   lines?: LT[];
   points?: PT[];
-  tracking?: Partial<
-    Pick<TrackingState, 'trackedDevices' | 'showLine' | 'showPoints'>
-  >;
+  tracking?: Partial<Pick<TrackingState, 'trackedDevices'>>;
   routePlanner?: Partial<
     Pick<
       RoutePlannerState,
@@ -88,6 +86,12 @@ export const mapsSetMeta = createAction<MapMeta>('MAPS_SET_META');
  * the map from the backend.
  */
 export const mapsSetDirty = createAction<boolean>('MAPS_SET_DIRTY');
+
+/**
+ * Restores the parts of an unsaved-changes draft that the URL can't carry (see
+ * `draftStore`), after a reload of a map with unsaved edits.
+ */
+export const mapsDraftRestore = createAction<string>('MAPS_DRAFT_RESTORE');
 
 /** Ids of maps available offline, synced from IndexedDB. */
 export const mapsOfflineIdsLoaded = createAction<string[]>(

@@ -39,7 +39,9 @@ export const mapsReducer = createReducer(initialState, (builder) =>
 
       state.loadMeta = undefined;
 
-      state.dirty = false;
+      // A merging load keeps the previously shown content alongside the loaded
+      // document, so the result diverges from what's stored for this map.
+      state.dirty = Boolean(payload.merge);
     })
     .addCase(mapsLoad, (state, { payload }) => {
       state.loadMeta = payload;
@@ -67,5 +69,8 @@ export const mapsReducer = createReducer(initialState, (builder) =>
             writers: undefined,
           }
         : undefined,
+      // Logging out doesn't save anything: while the map and its edited content
+      // stay on screen, so does the unsaved warning.
+      dirty: state.activeMap?.public ? state.dirty : false,
     })),
 );

@@ -3,6 +3,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { clearTrackDraft } from '../../draftStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
   type MapData,
@@ -12,6 +13,10 @@ import {
   mapsSetDirty,
   mapsSetMeta,
 } from '../actions.js';
+import {
+  captureMapsDirtyBaseline,
+  isDirtySinceBaseline,
+} from './mapsDirtyProcessor.js';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
@@ -28,6 +33,10 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
         'MyMaps',
         asNew ? 'copy' : patchExisting ? 'update' : 'create',
       ]);
+
+      // The content about to be sent becomes the new clean reference point, so
+      // edits made while the request is in flight still register as dirty.
+      captureMapsDirtyBaseline(getState());
 
       const res = await httpRequest({
         getState,
@@ -72,14 +81,22 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
 
       dispatch(mapsSetMeta(MapMetaSchema.parse(await res.json())));
 
-      dispatch(mapsSetDirty(false));
+      // Clean only if nothing changed while the request was in flight.
+      const stillDirty = isDirtySinceBaseline(getState());
+
+      dispatch(mapsSetDirty(stillDirty));
+
+      if (!stillDirty) {
+        // Stored copy and screen agree — the stash has nothing left to rescue.
+        await clearTrackDraft();
+      }
     } catch (err) {
       await toastError(err, loadMyMapsMessages, 'saveError');
     }
   },
 };
 
-export function getMapDataFromState(state: RootState): MapData {
+function getMapDataFromState(state: RootState): MapData {
   const {
     tracking,
     drawingLines,
@@ -96,8 +113,6 @@ export function getMapDataFromState(state: RootState): MapData {
     points: drawingPoints.points,
     tracking: {
       trackedDevices: tracking.trackedDevices,
-      showLine: tracking.showLine,
-      showPoints: tracking.showPoints,
     },
     routePlanner: {
       transportType: routePlanner.transportType,
@@ -111,7 +126,13 @@ export function getMapDataFromState(state: RootState): MapData {
       active: objects.active,
     },
     galleryFilter: gallery.filter,
-    trackViewer,
+    // Only the fields the loader reads back; the rest of the slice is transient
+    // view state (selected track, elevation decision, render cache).
+    trackViewer: {
+      trackGeojson: trackViewer.trackGeojson,
+      trackUID: trackViewer.trackUID,
+      gpxUrl: trackViewer.gpxUrl,
+    },
     map: {
       lat: map.lat,
       lon: map.lon,

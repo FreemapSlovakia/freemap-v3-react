@@ -144,7 +144,11 @@ export const PersistedTrackViewerSettingsSchema = z
   .partial();
 
 export const PersistedTrackingSettingsSchema = z
-  .object(ColorizeSettingsShape)
+  .object({
+    ...ColorizeSettingsShape,
+    showLine: z.boolean(),
+    showPoints: z.boolean(),
+  })
   .partial();
 
 const MapDetailsSourceSchema = z.union([
@@ -349,6 +353,8 @@ const PERSIST: PersistEntry[] = [
     persist: (t) => ({
       colorizeBy: t.colorizeBy,
       colorizeLegend: t.colorizeLegend,
+      showLine: t.showLine,
+      showPoints: t.showPoints,
     }),
   }),
   defineEntry({

@@ -100,8 +100,6 @@ export const MapsLoadResponseSchema = z.object({
     tracking: z
       .object({
         trackedDevices: z.array(TrackedDeviceSchema).optional(),
-        showLine: z.boolean().optional(),
-        showPoints: z.boolean().optional(),
       })
       .optional(),
     routePlanner: RoutePlannerMapDataCompatSchema.optional(),

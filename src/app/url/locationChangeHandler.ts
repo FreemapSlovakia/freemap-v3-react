@@ -35,11 +35,17 @@ import {
 import {
   type MapMeta,
   MapMetaSchema,
+  mapsDraftRestore,
   mapsLoad,
   mapsSetDirty,
   mapsSetMeta,
 } from '@features/myMaps/model/actions.js';
-import { resetMapsDirtyBaseline } from '@features/myMaps/model/processors/mapsDirtyProcessor.js';
+import {
+  captureMapsDirtyBaseline,
+  expectMapsDirtyTrackHydration,
+  hasMapsDirtyBaseline,
+  nonUrlContentDiverged,
+} from '@features/myMaps/model/processors/mapsDirtyProcessor.js';
 import {
   objectsSetFilter,
   objectsSetStyle,
@@ -129,11 +135,6 @@ export function handleLocationChange(store: MyStore): void {
 
   setUrlUpdatingEnabled(false);
 
-  // The content we're about to restore becomes the new clean baseline for the
-  // dirty tracker; invalidate the previous one so it doesn't misread the
-  // restored (sq-rounded) geometry as an edit.
-  resetMapsDirtyBaseline();
-
   const search = (document.location.hash || document.location.search).slice(1);
 
   const historyState = history.state as {
@@ -150,22 +151,35 @@ export function handleLocationChange(store: MyStore): void {
     (typeof parsedQuery['id'] === 'string' ? parsedQuery['id'] : undefined) ||
     undefined;
 
+  const entryDirty = Boolean(historyState?.dirty);
+
   if (id !== undefined) {
     const { loadMeta, activeMap } = getState().myMaps;
 
     const restoredMap = historyState?.activeMap;
 
+    // `history.state` outlives a deploy, so an entry written by an older build
+    // may no longer satisfy the schema. Falling back to a plain load beats
+    // throwing out of the bootstrap call in `app/index.tsx`, which would leave
+    // URL updating suspended for the whole session.
+    const restoredMeta =
+      restoredMap?.id === id ? MapMetaSchema.safeParse(restoredMap).data : null;
+
     if (id === (loadMeta?.id ?? activeMap?.id)) {
       // In-session history navigation to the same map: content comes from `sq`
-      // and the meta is already set, so only sync the dirty flag to this entry.
-      dispatch(mapsSetDirty(Boolean(historyState?.dirty)));
-    } else if (restoredMap?.id === id && historyState?.dirty) {
+      // and the meta is already set. The dirty flag is settled at the end, once
+      // the restored content is in place.
+    } else if (restoredMeta && entryDirty) {
       // Reload with unsaved edits: restore the meta and dirty flag from
       // history.state and keep the `sq`-restored content — don't re-read the map
-      // from the backend, which would clobber the edits.
-      dispatch(mapsSetMeta(MapMetaSchema.parse(restoredMap)));
+      // from the backend, which would clobber the edits. The draft then fills in
+      // the saved content the URL can't express (most importantly the track),
+      // which would otherwise be dropped here and erased by the next save.
+      dispatch(mapsSetMeta(restoredMeta));
 
       dispatch(mapsSetDirty(true));
+
+      dispatch(mapsDraftRestore(id));
     } else {
       // Fresh/shared link, a different map, or a clean reload → read the map
       // (with its server-stored content) from the backend.
@@ -366,6 +380,8 @@ export function handleLocationChange(store: MyStore): void {
     typeof trackUID === 'string' &&
     getState().trackViewer.trackUID !== trackUID
   ) {
+    expectMapsDirtyTrackHydration();
+
     dispatch(trackViewerDownloadTrack(trackUID));
   }
 
@@ -475,6 +491,8 @@ export function handleLocationChange(store: MyStore): void {
     query['load']; /* `gpx-url` and `load` kept for backward compatibility */
 
   if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
+    expectMapsDirtyTrackHydration();
+
     dispatch(trackViewerGpxLoad(gpxUrl));
   }
 
@@ -881,6 +899,27 @@ export function handleLocationChange(store: MyStore): void {
       (selection?.type === 'tracking' ? selection?.id : undefined) !== follow
     ) {
       dispatch(selectFeature({ type: 'tracking', id: follow }));
+    }
+  }
+
+  {
+    // Settle the dirty tracker against the content this restore just put in
+    // place. Capturing the baseline here rather than lazily on the next dispatch
+    // both absorbs the `sq`-rounded geometry (which wouldn't byte-match the
+    // pre-restore baseline) and closes the window where the next dispatch — the
+    // user's own edit — would otherwise be swallowed into a fresh baseline.
+    const state = getState();
+
+    const map = state.myMaps.activeMap;
+
+    if (map) {
+      if (hasMapsDirtyBaseline(map.id)) {
+        // The entry's flag only describes what `sq` carries, so content it can't
+        // represent (an imported track) keeps the map dirty on its own.
+        dispatch(mapsSetDirty(entryDirty || nonUrlContentDiverged(state)));
+      }
+
+      captureMapsDirtyBaseline(state);
     }
   }
 
