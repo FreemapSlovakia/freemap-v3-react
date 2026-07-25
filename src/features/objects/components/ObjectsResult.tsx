@@ -98,7 +98,7 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
 
         return (
           <RichMarker
-            key={`poi-${stringifyFeatureId(id)}-${interactive ? 'a' : 'b'}`}
+            key={`poi-${stringifyFeatureId(id)}`}
             interactive={interactive}
             position={{ lat: coords.lat, lng: coords.lon }}
             image={img[0]}

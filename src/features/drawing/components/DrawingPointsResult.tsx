@@ -113,7 +113,7 @@ export function DrawingPointsResult(): ReactElement {
 
         return (
           <DrawingPointMarker
-            key={`${change}-${i}-${interactive ? 'a' : 'b'}`}
+            key={`${change}-${i}`}
             point={point}
             renderColor={renderColor}
             interactive={interactive}
