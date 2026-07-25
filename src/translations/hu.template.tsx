@@ -301,7 +301,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showAll: 'Összes térkép megjelenítése',
     filterMaps: 'Térképek szűrése',
     noMapsFound: 'Nem található térkép',
-    settings: 'Térkép beállítások',
+    settings: 'Térképek kezelése',
     switch: 'Térképek',
     interactiveLayerWarning: 'Az adatréteg rejtve van',
     customBase: 'Egyéni térkép',
@@ -334,7 +334,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Átfedő',
     },
     showMore: 'További térképek megjelenítése',
-    configureLayers: 'Térképrétegek beállítása',
+    configureLayers: 'Rétegek beállítása',
     technologies: {
       tile: 'Képcsempék (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',

@@ -61,6 +61,9 @@ export function ToolMenu({ tool, children }: Props): ReactElement {
                   <Button
                     variant="outline-primary"
                     active={isActive}
+                    // react-bootstrap only adds the `active` class, so the
+                    // pressed state would otherwise be conveyed by color alone
+                    aria-pressed={isActive}
                     onClick={() =>
                       dispatch(
                         setTool({ tool, mode: isActive ? 'open' : 'activate' }),

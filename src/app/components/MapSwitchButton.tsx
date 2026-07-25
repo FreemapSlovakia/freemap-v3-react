@@ -643,9 +643,20 @@ export function MapSwitchButton(): ReactElement {
                   </Dropdown.Item>
 
                   <Dropdown.Item {...modalMenuItemProps('custom-maps')}>
-                    <MdDashboardCustomize /> {m?.mapLayers.customMaps}{' '}
+                    <MdDashboardCustomize /> {m?.mapLayers.customMaps}
+                    {customLayerDefs.length > 0 &&
+                      ` · ${customLayerDefs.length}`}{' '}
                     <kbd>m</kbd> <kbd>c</kbd>
                   </Dropdown.Item>
+
+                  <Dropdown.Item as="button" eventKey="offlineMaps">
+                    <BiWifiOff /> {m?.mapLayers.offlineMaps}
+                    {cachedMapsTotalSize > 0 &&
+                      ` · ${formatSize(cachedMapsTotalSize)}`}{' '}
+                    <kbd>m</kbd> <kbd>o</kbd>
+                  </Dropdown.Item>
+
+                  <Dropdown.Divider />
 
                   <Dropdown.Item
                     as="button"
@@ -658,27 +669,14 @@ export function MapSwitchButton(): ReactElement {
               ) : (
                 <>
                   {!normalizedFilter && !restrictToMapSwitching && (
-                    <>
-                      <Dropdown.Item
-                        key="offlineMaps"
-                        as="button"
-                        eventKey="offlineMaps"
-                      >
-                        <BiWifiOff /> {m?.mapLayers.offlineMaps}
-                        {cachedMapsTotalSize > 0 &&
-                          ` · ${formatSize(cachedMapsTotalSize)}`}{' '}
-                        <kbd>m</kbd> <kbd>o</kbd>
-                      </Dropdown.Item>
-
-                      <Dropdown.Item
-                        key="mapSettings"
-                        as="button"
-                        eventKey="submenu-mapSettings"
-                      >
-                        <FaCog /> {m?.mapLayers.settings}
-                        <FaChevronRight />
-                      </Dropdown.Item>
-                    </>
+                    <Dropdown.Item
+                      key="mapSettings"
+                      as="button"
+                      eventKey="submenu-mapSettings"
+                    >
+                      <FaCog /> {m?.mapLayers.settings}
+                      <FaChevronRight />
+                    </Dropdown.Item>
                   )}
 
                   {(() => {

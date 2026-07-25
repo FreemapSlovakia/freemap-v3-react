@@ -542,7 +542,7 @@ export function RoutePlannerResult(): ReactElement {
 
         return (
           <RichMarker
-            key={`pt-${i}-${routePlannerToolActive}-${interactive}`}
+            key={`pt-${i}`}
             position={{ lat: point.lat, lng: point.lon }}
             opacity={markerOpacity}
             interactive={
@@ -790,6 +790,13 @@ export function RoutePlannerResult(): ReactElement {
                 (showColorized && alt === activeAlternativeIndex) ? null : (
                   // foreground
                   <Polyline
+                    // `interactive` is in the key even though the layer is never
+                    // interactive: the halo above still remounts when it changes,
+                    // and `bringToFront` is plain DOM order, so a re-added halo
+                    // lands on top of this line. Remounting in lockstep puts the
+                    // foreground back above its outline. Both keys lose the
+                    // `interactive` entry once path interactivity is applied
+                    // in place (see TODO.md).
                     key={`slice-${timestamp}-${alt}-${i}-${interactive}`}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}

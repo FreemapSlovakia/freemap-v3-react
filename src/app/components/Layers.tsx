@@ -290,9 +290,18 @@ export function Layers(): ReactElement | null {
         .map((cm) => getLayer(cm))}
       {cachedMaps
         .filter(({ type }) => layers.includes(type))
-        .map((cm) =>
-          getLayer({ ...cm, url: toCachedLayerUrl(cm.url, cm.type) }),
-        )}
+        .map((cm) => {
+          const url = toCachedLayerUrl(cm.url, cm.type);
+
+          // cors: false — cached tiles are served same-origin by the service
+          // worker, so `crossOrigin` buys nothing, and the CORS-mode request it
+          // produces makes Chrome's `cache.match` miss the stored entry.
+          return getLayer(
+            cm.technology === 'tile'
+              ? { ...cm, url, cors: false }
+              : { ...cm, url },
+          );
+        })}
     </>
   );
 }

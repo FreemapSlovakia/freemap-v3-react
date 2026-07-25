@@ -292,7 +292,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showAll: 'Alle Karten anzeigen',
     filterMaps: 'Karten filtern',
     noMapsFound: 'Keine Karten gefunden',
-    settings: 'Karteneinstellungen',
+    settings: 'Karten verwalten',
     layers: 'Karten',
     switch: 'Karten',
     photoFilterWarning: 'Fotofilter ist aktiv',
@@ -330,7 +330,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Overlay',
     },
     showMore: 'Mehr Karten anzeigen',
-    configureLayers: 'Kartenebenen konfigurieren',
+    configureLayers: 'Ebenen konfigurieren',
     technologies: {
       tile: 'Bildkacheln (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',

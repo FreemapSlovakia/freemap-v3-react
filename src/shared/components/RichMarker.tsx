@@ -2,7 +2,7 @@ import type { MarkerType } from '@features/objects/model/actions.js';
 import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
 import { poiIconGlyphRect } from '@shared/poiIconGlyph.js';
 import type Leaflet from 'leaflet';
-import { type BaseIconOptions, Icon } from 'leaflet';
+import { type BaseIconOptions, DomUtil, Icon } from 'leaflet';
 import {
   type CSSProperties,
   cloneElement,
@@ -106,6 +106,64 @@ export const markerIconOptions = {
   popupAnchor: [0, -34] as [number, number],
 };
 
+/**
+ * Applies `interactive` to a marker that is already on the map.
+ *
+ * Leaflet wires up interactivity (the `leaflet-interactive` class, the map's
+ * hit-test target and the drag handler) while building the icon, and
+ * react-leaflet doesn't diff the option, so the declarative way to change it is
+ * remounting the marker — which throws the icon element away and re-renders its
+ * content through a fresh async React root, leaving the marker blank for a frame
+ * (a visible blink whenever e.g. `state.main.activeTool` changes). Mutating the
+ * live marker avoids that.
+ *
+ * `draggable` is re-applied here because Leaflet only creates the drag handler
+ * for an interactive marker, and on re-creation restores the handler's previous
+ * enabled state instead of the current option.
+ *
+ * react-leaflet won't diff `interactive` itself — see
+ * https://github.com/PaulLeCam/react-leaflet/issues/843, closed with the stance
+ * that it only mirrors props Leaflet has a setter for, and that apps wanting
+ * more should wrap the layer in a custom component
+ * (`createLayerComponent`/`createPathComponent`, as the tile layers here do).
+ */
+function setMarkerInteractive(
+  marker: Leaflet.Marker,
+  interactive: boolean,
+  draggable: boolean,
+): void {
+  const internal = marker as Leaflet.Marker & {
+    _icon?: HTMLElement;
+    _initInteraction(): void;
+  };
+
+  const icon = internal._icon;
+
+  if (!icon) {
+    return;
+  }
+
+  if (Boolean(marker.options.interactive) !== interactive) {
+    marker.options.interactive = interactive;
+
+    if (interactive) {
+      internal._initInteraction();
+    } else {
+      DomUtil.removeClass(icon, 'leaflet-interactive');
+
+      marker.removeInteractiveTarget(icon);
+    }
+  }
+
+  if (marker.dragging) {
+    if (interactive && draggable) {
+      marker.dragging.enable();
+    } else {
+      marker.dragging.disable();
+    }
+  }
+}
+
 export function RichMarker({
   autoOpenPopup,
   markerType = 'pin',
@@ -124,6 +182,21 @@ export function RichMarker({
       markerRef.current.openPopup();
     }
   }, [autoOpenPopup]);
+
+  // Normalized once and handed to `<Marker>` below as well, so the options the
+  // marker is built with and the ones the effect asserts can't disagree: an
+  // explicit `interactive={undefined}` would otherwise reach Leaflet's
+  // `setOptions` and shadow its `interactive: true` default, making the marker
+  // start out non-interactive while the effect believes it is interactive.
+  const interactive = restProps.interactive ?? true;
+
+  const draggable = restProps.draggable ?? false;
+
+  useEffect(() => {
+    if (markerRef.current) {
+      setMarkerInteractive(markerRef.current, interactive, draggable);
+    }
+  }, [interactive, draggable]);
 
   const icon = useMemo(
     () =>
@@ -152,7 +225,16 @@ export function RichMarker({
     [color, faIcon, iconSvg, image, imageOpacity, label, markerType],
   );
 
-  return <Marker {...restProps} icon={icon} key={markerType} ref={markerRef} />;
+  return (
+    <Marker
+      {...restProps}
+      interactive={interactive}
+      draggable={draggable}
+      icon={icon}
+      key={markerType}
+      ref={markerRef}
+    />
+  );
 }
 
 export class MarkerLeafletIcon extends Icon<

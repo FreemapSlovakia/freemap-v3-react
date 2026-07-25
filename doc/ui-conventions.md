@@ -19,6 +19,28 @@ a floating toolbar over the map.
 | **Upsell / notice** | `warning` | Premium prompts, support/donate CTAs, attention notices. Keep rare — it's an attention color. |
 | **Inline text link** | `link` | A button that should read as a hyperlink inside prose or a dense row. |
 
+### Toggle state vs. pointer state
+
+Toggling is signalled by the fill: `outline-primary` toggles fill solid primary
+when on, `secondary` toggles go near-black (`.btn-secondary.active` in
+`bootstrap-override.css`). For that to read at all, hover and focus must never
+reach for the same fill — stock Bootstrap paints `:hover` and `:focus-visible`
+with exactly the `.active` colors, which makes an off-but-hovered button
+indistinguishable from an on one (and leaves a tapped button looking on until
+the touch device drops its emulated hover). `bootstrap-override.css` therefore
+splits the two channels:
+
+- **off + hover/focus** → a subtle tint (`--bs-*-bg-subtle`), never the fill.
+- **on + hover** → the fill, darkened one step, so a toggled button still reacts.
+- Focus rings and `:active` press feedback are left to Bootstrap.
+
+Use `:focus-visible`, not `:focus`, in any button-state CSS: `:focus` sticks
+after a click or tap and repaints the button long after the pointer has left.
+
+Since color is the only cue, a lone `active`-driven toggle also gets
+`aria-pressed` (react-bootstrap's `active` prop only adds the class) — see the
+tool pill in `ToolMenu`.
+
 ### Notes & accepted exceptions
 
 - **`dark` means dismiss, not "on the map".** Action buttons that happen to sit

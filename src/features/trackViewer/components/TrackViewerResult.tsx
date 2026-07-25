@@ -384,7 +384,7 @@ export default function TrackViewerResult({
 
       {getFeatures('Point').map(({ geometry, properties }, i) => (
         <WaypointMarker
-          key={`point-${i}-${interactive ? 'a' : 'b'}`}
+          key={`point-${i}`}
           lat={geometry.coordinates[1]!}
           lon={geometry.coordinates[0]!}
           name={properties?.['name']}
@@ -397,7 +397,7 @@ export default function TrackViewerResult({
       {startPoints.map((p, i) => (
         <RichMarker
           faIcon={<FaPlay color="#409a40" />}
-          key={`sp-${i}-${interactive ? 'a' : 'b'}`}
+          key={`sp-${i}`}
           color="#409a40"
           interactive={interactive}
           position={{ lat: p.lat, lng: p.lon }}
@@ -421,7 +421,7 @@ export default function TrackViewerResult({
       {finishPoints.map((p, i) => (
         <RichMarker
           faIcon={<FaStop color="#d9534f" />}
-          key={`fp-${i}-${interactive ? 'a' : 'b'}`}
+          key={`fp-${i}`}
           color="#d9534f"
           interactive={interactive}
           position={{ lat: p.lat, lng: p.lon }}

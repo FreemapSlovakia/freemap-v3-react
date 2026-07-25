@@ -51,13 +51,24 @@ if ($blocked_country) {
 		try_files "/sitemap/$args" "/sitemap/layers=X&lang=en";
 	}
 
-	location ~ /index-\w\w\.html {
+	# Entry documents and the build manifest change on every deploy and point at
+	# the current hashed assets, so they must never be cached — not even
+	# heuristically, which nginx does for responses that lack Cache-Control.
+	location ~ ^/(index(-\w\w)?\.html|assets-manifest\.json)$ {
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
 	}
 
-	location ~ ".+\.[a-z0-9]{20}\..+$|\.png$|\.jpg$" {
+	# Content-hashed assets (16-hex-char [chunk|content]hash — keep in sync with
+	# rspack's hashDigestLength) are immutable: the URL changes when the content
+	# does, so cache them forever without revalidation.
+	location ~ ".+\.[a-z0-9]{16}\..+$" {
+		add_header Cache-Control 'public, max-age=31536000, immutable';
+	}
+
+	# Possibly-unhashed images: cache long, but allow revalidation on change.
+	location ~ "\.png$|\.jpg$" {
 		add_header Cache-Control 'max-age=31536000';
 	}
 

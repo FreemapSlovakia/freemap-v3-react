@@ -309,9 +309,7 @@ export function TrackingResult(): ReactElement {
             ).map((tp, i) =>
               !showPoints || i === track.trackPoints.length - 1 ? (
                 <RichMarker
-                  key={`rm-${tp.id}-${activeTrackId === track.token}-${
-                    interactive ? 'a' : 'b'
-                  }`}
+                  key={`rm-${tp.id}-${activeTrackId === track.token}`}
                   interactive={interactive}
                   position={toLatLon(track.trackPoints.at(-1)!)}
                   color={color}

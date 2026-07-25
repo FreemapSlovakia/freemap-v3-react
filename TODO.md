@@ -87,6 +87,32 @@ Still emitting at info level (non-blocking, optional cleanup):
       centralization is wanted, limit it to defaulting `success`-with-no-`actions`
       to 5000 (would also tidy a few success toasts that currently persist by
       omission: `copyOk`, `disconnectSuccess`, download success).
+- [ ] **Stop remounting path layers to change `interactive`.** react-leaflet
+      doesn't diff the `interactive` option, so every `<Polyline>`/`<Polygon>`/
+      `<CircleMarker>` whose interactivity is derived from `selectingModeSelector`
+      carries it in its `key` (`trackViewer`, `tracking`, `routePlanner`'s route
+      halo, `drawing` lines) and is destroyed + rebuilt whenever
+      `state.main.activeTool` changes. Unlike markers — fixed by
+      `setMarkerInteractive` in `RichMarker.tsx`, whose async icon root made the
+      remount a visible blink — paths swap within one commit so there's no flash,
+      just wasted work on big tracks. Toggling a path's interactivity only means
+      toggling the `leaflet-interactive` class (the SVG renderer registers the
+      hit-test target unconditionally; the canvas renderer hit-tests straight off
+      `options.interactive`) — the work is in getting at the layer instance.
+      Rather than per-layer refs, do it the way react-leaflet itself recommends
+      (PaulLeCam/react-leaflet#843) and this repo already does for tile layers:
+      `createPathComponent(create, update)` wrappers whose `update` diffs
+      `interactive`. Note `createPathComponent` replaces the built-in update
+      rather than composing with it, so each wrapper must also re-implement the
+      upstream diffs (e.g. `setLatLngs` for a polyline) — copy them from
+      `@react-leaflet/core`'s `Polyline`/`Polygon` and re-check them on bumps.
+      The same wrapper would let `RichMarker` drop `setMarkerInteractive`.
+      Watch the route planner while doing this: its halo and foreground lines
+      stack by DOM order via `ref={bringToFront}`, so the foreground carries
+      `interactive` in its key purely to remount in lockstep with the halo.
+      Removing that entry alone leaves the halo covering the line (only the
+      white outline renders until a click reshuffles the pane); both keys have to
+      lose it together, or the stacking has to stop depending on mount order.
 - [ ] **Adopt React 19 hooks codebase-wide** (own session — it's a cross-cutting
       decision, not a local cleanup). The app uses zero Suspense today; all async
       loading goes through `useLazy` (`src/app/hooks/useLazy.ts`) + effects
@@ -228,6 +254,18 @@ off that — never re-derive "is this a track?" from density/timestamps.
       simplify prompt for the dense recording. Likely a new `convertToDrawing`
       payload variant (e.g. `{ type: 'tracking'; id }`) handled in
       `convertToDrawingProcessor`, plus a menu action in the tracking UI.
+
+## Offline maps (`src/features/cachedMaps/`)
+
+- [ ] **Support caching WMS layers.** The "Cache map for offline use" form offers
+      tile layers only. WMS needs a per-tile cache key both when downloading and
+      when rendering: `buildTileUrl` in `cacheTilesProcessor.ts` substitutes only
+      `{x}/{y}/{z}`, so a WMS layer collapses to a single cache entry, while
+      `WmsTileLayer` requests `?…&BBOX=…` URLs that the service worker's exact-URL
+      `cache.match` never finds. Requires computing each tile's `BBOX` GetMap URL
+      at download time and deriving the identical key at render time (or normalizing
+      the query in `serveCachedTile`). Re-enable the two `technology === 'tile'`
+      filters in `CacheTilesForm.tsx` once done.
 
 ## Photo layer: gallery + Wikimedia Commons merge
 
