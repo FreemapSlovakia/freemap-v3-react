@@ -315,16 +315,16 @@ Each watched device is added with a **Watch Device** form: Watch Token (required
 
 ### Offline maps
 
-- Access: Maps button menu > Offline maps
+- Access: Maps button menu > Manage maps > Offline maps
 - Keyboard shortcut: <kbd>m</kbd> <kbd>o</kbd>
 
 Caches selected map areas (tiles) in the browser for offline use. (This is different from "Offline maps export", which produces a downloadable MBTiles/SQLiteDB file.)
 
-The manager modal lists already-cached offline maps with their zoom range, tile count, size and status (Ready, or incomplete with pause/resume), and has buttons to zoom to the map's area, view, edit, delete, and **Add offline map**.
+The manager modal lists already-cached offline maps with their zoom range, tile count, size and status (Ready, or incomplete with pause/resume), and has buttons to edit, delete, and **Add offline map**. A ready map has an **Activate** button that switches the map layer on and zooms to its area; a map that is still downloading offers **Zoom to area** instead.
 
 The "Cache map for offline use" form lets the user choose:
 
-- the map (layer) to cache
+- the map (layer) to cache — tile layers only; WMS layers cannot be cached
 - the area: current visible area, or a rectangle drawn on the map
 - a name
 - the zoom range
@@ -510,15 +510,15 @@ The toolbar also contains the following buttons:
 - find me (locate me by the browser's geolocation API)
 - toggle fullscreen
 
-There is also a button with three vertical dots that opens a menu listing additional maps, a "Filter maps" box, and a "Show all maps" item. The same menu includes "Offline maps" and "Map settings" items (described below).
+There is also a button with three vertical dots that opens a menu listing additional maps, a "Filter maps" box, and a "Show all maps" item. The same menu includes a "Manage maps" item (described below).
 
-### Map settings
+### Manage maps
 
-- Access: Maps button menu > Map settings
+- Access: Maps button menu > Manage maps
 
-Expands a submenu with three items, each opening its own modal:
+Expands a submenu with four items, each opening its own modal: **Configure layers**, **Custom maps** (suffixed with the number of custom maps), **Offline maps** (suffixed with the total cache size), and — below a divider — **Preferences**.
 
-#### Configure map layers
+#### Configure layers
 
 - Keyboard shortcut: <kbd>m</kbd> <kbd>y</kbd>
 
@@ -547,7 +547,7 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 - **Feature size** — enlarges rendered labels and lines (no effect on satellite, shading, WMS, or vector (MapLibre) layers)
 - **Reset to default** — fills this modal's fields (max zoom, resolution scale, feature size) with their defaults; apply with Save or close without saving
 
-Modals that edit a persisted default style or settings (Map preferences, Configure map layers, drawing **Default properties**, objects **Marker style**, track-viewer **Default style**, **Search result style**) also carry a **Reset to default** button that refills the form with default values (applied with Save, not immediately).
+Modals that edit a persisted default style or settings (Map preferences, Configure layers, drawing **Default properties**, objects **Marker style**, track-viewer **Default style**, **Search result style**) also carry a **Reset to default** button that refills the form with default values (applied with Save, not immediately).
 
 ### Maps
 

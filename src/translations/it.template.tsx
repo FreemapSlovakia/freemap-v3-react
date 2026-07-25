@@ -247,7 +247,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showAll: 'Mostra tutti i livelli',
     filterMaps: 'Filtra mappe',
     noMapsFound: 'Nessuna mappa trovata',
-    settings: 'Impostazioni livelli mappa',
+    settings: 'Gestisci mappe',
     layers: 'Livelli mappa',
     switch: 'Livelli mappa',
     photoFilterWarning: 'Il filtro foto è attivo',
@@ -332,7 +332,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Sovrapposto',
     },
     showMore: 'Mostra più mappe',
-    configureLayers: 'Configura livelli mappa',
+    configureLayers: 'Configura livelli',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',
       maplibre: 'Vettore (MapLibre)',

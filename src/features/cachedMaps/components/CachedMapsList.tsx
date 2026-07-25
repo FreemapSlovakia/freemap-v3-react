@@ -84,6 +84,9 @@ export function CachedMapsList(): ReactElement {
                 return (
                   <ListGroup.Item
                     key={cm.type}
+                    variant={
+                      activeLayers.includes(cm.type) ? 'primary' : undefined
+                    }
                     className="d-flex align-items-center gap-2"
                   >
                     <div className="flex-grow-1 me-2 min-w-0">
@@ -139,28 +142,36 @@ export function CachedMapsList(): ReactElement {
                         align="end"
                         toggleLabel={m?.general.actions}
                       >
-                        <Action
-                          icon={<FaCrosshairs />}
-                          label={cmm?.focus}
-                          onClick={() =>
-                            dispatch(
-                              mapFitBbox({
-                                bbox: cm.bounds,
-                                maxZoom: cm.maxNativeZoom,
-                              }),
-                            )
-                          }
-                          showFrom="sm"
-                        />
-
-                        {!dl && isComplete && (
+                        {!dl && isComplete ? (
                           <Action
                             icon={<FaEye />}
                             label={cmm?.activate}
-                            variant="outline-primary"
-                            active={activeLayers.includes(cm.type)}
+                            variant="primary"
+                            onClick={() => {
+                              dispatch(
+                                mapToggleLayer({ type: cm.type, enable: true }),
+                              );
+
+                              dispatch(
+                                mapFitBbox({
+                                  bbox: cm.bounds,
+                                  maxZoom: cm.maxNativeZoom,
+                                }),
+                              );
+                            }}
+                            showFrom="sm"
+                          />
+                        ) : (
+                          <Action
+                            icon={<FaCrosshairs />}
+                            label={cmm?.focus}
                             onClick={() =>
-                              dispatch(mapToggleLayer({ type: cm.type }))
+                              dispatch(
+                                mapFitBbox({
+                                  bbox: cm.bounds,
+                                  maxZoom: cm.maxNativeZoom,
+                                }),
+                              )
                             }
                             showFrom="sm"
                           />

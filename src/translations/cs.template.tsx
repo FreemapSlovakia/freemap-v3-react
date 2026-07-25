@@ -246,7 +246,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showAll: 'Zobrazit všechny mapy',
     filterMaps: 'Filtrovat mapy',
     noMapsFound: 'Žádné mapy nenalezeny',
-    settings: 'Nastavení map',
+    settings: 'Správa map',
     layers: 'Mapy',
     switch: 'Mapy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
@@ -300,7 +300,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
-    configureLayers: 'Nastavení mapových vrstev',
+    configureLayers: 'Nastavení vrstev',
     customMaps: 'Vlastní mapy',
     addCustomMap: 'Přidat vlastní mapu',
     activate: 'Aktivovat',

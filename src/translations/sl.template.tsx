@@ -237,7 +237,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showAll: 'Pokaži vse zemljevide',
     filterMaps: 'Filtriraj zemljevide',
     noMapsFound: 'Ni najdenih zemljevidov',
-    settings: 'Nastavitve zemljevidov',
+    settings: 'Upravljanje zemljevidov',
     layers: 'Zemljevidi',
     switch: 'Zemljevidi',
     photoFilterWarning: 'Filter fotografij je aktiven',
@@ -291,7 +291,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
     },
-    configureLayers: 'Nastavitev slojev zemljevida',
+    configureLayers: 'Nastavitev slojev',
     customMaps: 'Zemljevidi po meri',
     addCustomMap: 'Dodaj zemljevid po meri',
     activate: 'Aktiviraj',

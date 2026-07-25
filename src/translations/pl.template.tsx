@@ -281,7 +281,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showAll: 'Pokaż wszystkie mapy',
     filterMaps: 'Filtruj mapy',
     noMapsFound: 'Nie znaleziono żadnych map',
-    settings: 'Ustawienia mapy',
+    settings: 'Zarządzaj mapami',
     layers: 'Mapy',
     switch: 'Mapy',
     photoFilterWarning: 'Filtr zdjęć jest aktywny',
@@ -318,7 +318,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Nakładka',
     },
     showMore: 'Pokaż więcej map',
-    configureLayers: 'Konfiguruj warstwy mapy',
+    configureLayers: 'Konfiguruj warstwy',
     technologies: {
       tile: 'Płytki obrazów (TMS, XYZ)',
       maplibre: 'Wektor (MapLibre)',
