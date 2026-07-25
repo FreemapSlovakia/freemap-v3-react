@@ -18,20 +18,82 @@
   margin: 0 auto 10px;
 }
 
-button.carousel-control-prev,
+/* `:is(.carousel-control-prev, .carousel-control-next)` = both nav arrows. */
+button:is(.carousel-control-prev, .carousel-control-next) {
+  /* Drop Bootstrap's edge gradient (enabled globally via $enable-gradients) so
+     the arrows don't darken the image. */
+  background-image: none !important;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+/* Widen each arrow to cover its half of the image so the whole left/right side
+   navigates; panorama arrows stay narrow so the panorama can still be dragged. */
+button:is(.carousel-control-prev, .carousel-control-next):not(
+  .carousel-control-short
+) {
+  width: 50%;
+}
+
+/* Push each arrow out to its edge (needs `button` to outrank Bootstrap's
+   `justify-content: center` on the controls). */
+button.carousel-control-prev {
+  justify-content: flex-start;
+  padding-left: 8px;
+}
+
 button.carousel-control-next {
-  opacity: 0.5 !important;
+  justify-content: flex-end;
+  padding-right: 8px;
 }
 
-button.carousel-control-prev:hover,
-button.carousel-control-next:hover {
-  opacity: 1 !important;
+/* Class-disabled arrows (not natively disabled) are dimmed with a plain cursor;
+   needs to outrank Bootstrap reboot's `button:not(:disabled)` pointer rule. */
+.carousel button.carousel-control-disabled {
+  cursor: default;
+  opacity: 0.2;
 }
 
-button.carousel-control-disabled,
-button.carousel-control-disabled:hover {
-  cursor: not-allowed;
-  opacity: 0.2 !important;
+/* Bigger, more prominent arrow icons than the app-wide default. */
+.carousel :is(.carousel-control-prev-icon, .carousel-control-next-icon) {
+  width: 44px;
+  height: 44px;
+  padding: 9px;
+  background-color: hsla(0, 0%, 0%, 0.45);
+}
+
+/* On hover-capable pointers, reveal the arrows only over the image; touch
+   devices (hover: none) keep them always visible. */
+@media (hover: hover) {
+  .carousel button:is(.carousel-control-prev, .carousel-control-next) {
+    opacity: 0;
+  }
+
+  /* Both dim while pointing anywhere at the image... */
+  .carousel:hover button:is(.carousel-control-prev, .carousel-control-next) {
+    opacity: 0.6;
+  }
+
+  /* ...but a disabled arrow stays fully dimmed and never highlights. */
+  .carousel:hover button.carousel-control-disabled {
+    opacity: 0.2;
+  }
+
+  /* Highlight the enabled arrow under the cursor or keyboard focus. */
+  .carousel
+  button:is(.carousel-control-prev, .carousel-control-next):not(
+    .carousel-control-disabled
+  ):is(:hover, :focus-visible) {
+    opacity: 1;
+  }
+
+  .carousel
+    button:is(.carousel-control-prev, .carousel-control-next):not(
+      .carousel-control-disabled
+    ):is(:hover, :focus-visible)
+    :is(.carousel-control-prev-icon, .carousel-control-next-icon) {
+    background-color: hsla(0, 0%, 0%, 0.7);
+  }
 }
 
 .react-tags__suggestions {
