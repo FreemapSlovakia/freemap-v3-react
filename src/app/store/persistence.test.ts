@@ -280,7 +280,7 @@ describe('getInitialState — merge over initialState', () => {
 
     expect(user?.name).toBe('Tester');
     expect(user?.premiumExpiration).toBeInstanceOf(Date);
-    expect((user?.premiumExpiration as Date).toISOString()).toBe(
+    expect((user?.premiumExpiration as Date)?.toISOString()).toBe(
       '2026-05-17T12:00:48.000Z',
     );
   });

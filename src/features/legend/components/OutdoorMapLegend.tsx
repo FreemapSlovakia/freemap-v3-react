@@ -133,7 +133,7 @@ export default function OutdoorMapLegend(): ReactElement {
       {orderedLegend.map((c: Item, i: number) => (
         <Accordion.Item key={c.category} eventKey={String(i)}>
           <Accordion.Header>
-            {(lm?.outdoorMap as Record<string, string>)[c.category] ??
+            {(lm?.outdoorMap as Record<string, string>)?.[c.category] ??
               c.category}
           </Accordion.Header>
 
