@@ -1,3 +1,4 @@
+import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
 import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
@@ -44,7 +45,6 @@ export const urlProcessor: Processor = {
       drawingLines,
       main,
       tracking,
-      myMaps,
       search,
       objects,
       wiki,
@@ -63,6 +63,10 @@ export const urlProcessor: Processor = {
     // Map viewport (pan/zoom) is tracked separately from everything else so a
     // run of viewport-only changes can be coalesced into one history entry.
     const view: [number, number, number] = [map.lat, map.lon, map.zoom];
+
+    // The map the URL names, and with it whether the content goes into the
+    // history entry instead of the address bar.
+    const mapId = urlMapIdSelector(state);
 
     const rest = [
       changesets.authorName,
@@ -91,8 +95,10 @@ export const urlProcessor: Processor = {
       search.osmRelationId,
       search.osmWayId,
       trackViewer.trackUID,
-      myMaps.activeMap,
-      myMaps.restoring,
+      // The derived id itself, not the fields behind it: the URL follows every
+      // way a map can claim or release it — a load that starts, opens, or is
+      // given up on — without this list having to name them.
+      mapId,
       main.tools.join(','),
       objects.active,
       wiki.preview,
@@ -142,9 +148,6 @@ export const urlProcessor: Processor = {
       // In the order the tools were opened — matches the rendered toolbar order.
       queryParts.push(['tools', main.tools.join(',')]);
     }
-
-    const mapId =
-      myMaps.loadMeta?.id || myMaps.restoring?.mapId || myMaps.activeMap?.id;
 
     if (mapId) {
       queryParts.push(['id', mapId]);

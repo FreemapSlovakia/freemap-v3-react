@@ -23,6 +23,8 @@ export const mapsWorkingCopyProcessor: Processor = {
     if (authLogout.match(action)) {
       written = null;
 
+      dropped = null;
+
       // The copies hold map names and tracks of the account that just left; a
       // shared browser must not serve them to the next one. A public map stays
       // connected, so its copy is kept — otherwise the processor writes it
@@ -64,11 +66,18 @@ let written: {
   gpxUrl: string | null;
 } | null = null;
 
+// The map whose copy was last dropped. This processor sees every dispatch, so
+// without it a baseline that stays unestablished would queue a fresh delete on
+// each one — at frame rate while the map is panned.
+let dropped: string | null = null;
+
 function persist(state: RootState): void {
   const { activeMap, savedFingerprint, loadMeta, restoring } = state.myMaps;
 
   if (!activeMap || savedFingerprint === null) {
     written = null;
+
+    dropped = null;
 
     return;
   }
@@ -81,9 +90,16 @@ function persist(state: RootState): void {
   if (savedFingerprint === UNKNOWN_FINGERPRINT) {
     written = null;
 
-    deleteMapRecord(activeMap.id).catch((err) => {
-      console.warn('Error clearing map working copy:', err);
-    });
+    if (dropped !== activeMap.id) {
+      dropped = activeMap.id;
+
+      deleteMapRecord(activeMap.id).catch((err) => {
+        console.warn('Error clearing map working copy:', err);
+
+        // Left to be retried on the next dispatch rather than assumed gone.
+        dropped = null;
+      });
+    }
 
     return;
   }
@@ -115,6 +131,9 @@ function persist(state: RootState): void {
   const record = { meta: activeMap, savedFingerprint, track, trackUID, gpxUrl };
 
   written = record;
+
+  // A record exists again, so a later unestablished baseline has one to drop.
+  dropped = null;
 
   // `Date.now()` only orders records for pruning.
   putMapRecord(record, Date.now()).catch((err) => {

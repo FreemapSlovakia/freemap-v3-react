@@ -177,6 +177,14 @@ export const mapsRestoreProcessor: Processor = {
         authLogout,
       ]);
     } catch (err) {
+      // An abort is something else taking over — a newer restore or load, or the
+      // auth check this processor re-runs on, which a second tab can trigger at
+      // any moment. That is not a map that failed to open, so nothing below may
+      // treat it as one and disconnect; the run it belongs to decides.
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
       await toastError(err, loadMyMapsMessages, 'fetchError');
     }
 

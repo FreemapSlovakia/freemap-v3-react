@@ -1,3 +1,4 @@
+import type { RootState } from '@app/store/store.js';
 import { describe, expect, it } from 'vitest';
 import {
   type MapMeta,
@@ -8,13 +9,17 @@ import {
   mapsRestore,
   mapsSetMeta,
 } from './actions.js';
-import { mapsReducer } from './reducer.js';
+import { type MapsState, mapsReducer } from './reducer.js';
+import { urlMapIdSelector } from './selectors.js';
 
 /** Pure reducer tests for the my-maps slice. */
 
 const meta = (id: string) => ({ id, name: id, public: true }) as MapMeta;
 
 const initial = mapsReducer(undefined, { type: '@@INIT' });
+
+/** The selectors read only this slice, so the rest of the state can stay away. */
+const asState = (myMaps: MapsState) => ({ myMaps }) as RootState;
 
 // `loadMeta` and `restoring` say a map is on its way in. Everything that reads
 // them — the URL's `id=`, the check that a navigation isn't already in flight,
@@ -73,6 +78,46 @@ describe('mapsReducer — what is pending', () => {
     expect(next.restoring).toBeUndefined();
 
     expect(next.activeMap).toEqual(meta('C'));
+  });
+
+  // The `id=` the URL carries is derived from exactly these fields, so a pending
+  // marker that outlives its load leaves the address bar naming a map that is
+  // not open. Driven through the selector `urlProcessor` itself uses.
+  describe('the map the URL names', () => {
+    it('follows a load from start to failure and back to the open map', () => {
+      expect(urlMapIdSelector(asState(loadingB))).toBe('B');
+
+      expect(
+        urlMapIdSelector(asState(mapsReducer(loadingB, mapsLoadFailed()))),
+      ).toBe('A');
+    });
+
+    it('is the map a load opened', () => {
+      expect(
+        urlMapIdSelector(
+          asState(
+            mapsReducer(loadingB, mapsLoaded({ meta: meta('B'), data: {} })),
+          ),
+        ),
+      ).toBe('B');
+    });
+
+    it('is claimed by a restore before the map is read', () => {
+      expect(
+        urlMapIdSelector(
+          asState(
+            mapsReducer(
+              initial,
+              mapsRestore({ mapId: 'C', hasRestoredContent: true }),
+            ),
+          ),
+        ),
+      ).toBe('C');
+    });
+
+    it('is nothing once no map is connected', () => {
+      expect(urlMapIdSelector(asState(initial))).toBeUndefined();
+    });
   });
 
   it('releases a restore on disconnect', () => {
