@@ -69,14 +69,17 @@ export const authInitProcessor: Processor = {
 
           dispatch(authSetUser(user));
         } catch (err) {
-          // A network failure (offline, or the server unreachable) can't
-          // disprove the cached session, so keep the user signed in silently;
-          // only a real server/parse error surfaces.
-          if (!isNetworkError(err)) {
-            throw err;
-          }
-
+          // Neither a network failure (offline, or the server unreachable) nor a
+          // server/parse error can disprove the cached session, so it stands
+          // either way; only the latter is worth reporting. Resolving the check
+          // is what matters: everything that waits for `auth.validated` — loading
+          // and restoring a map — resumes only once it is set, and a failure that
+          // left it unset would hold the map open forever.
           dispatch(authSetUser(user));
+
+          if (!isNetworkError(err)) {
+            await toastError(err, loadAuthMessages, 'verifyError', 'lcd');
+          }
         }
       }
     } catch (err) {

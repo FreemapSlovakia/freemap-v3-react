@@ -106,9 +106,13 @@ export const mapsRestoreProcessor: Processor = {
 
       const sourceUrl = url ?? gpxUrl;
 
+      // Both, when the URL names both — as the two independent `track-uid=` /
+      // `import-url=` fetches `handleLocationChange` deferred would have done.
       if (sourceUid) {
         dispatch(trackViewerDownloadTrack(sourceUid));
-      } else if (sourceUrl) {
+      }
+
+      if (sourceUrl) {
         dispatch(trackViewerGpxLoad(sourceUrl));
       }
     };
@@ -122,7 +126,9 @@ export const mapsRestoreProcessor: Processor = {
       // processor, so it has to be started here or it never loads at all.
       if (trackUID !== undefined) {
         dispatch(trackViewerDownloadTrack(trackUID));
-      } else if (gpxUrl !== undefined) {
+      }
+
+      if (gpxUrl !== undefined) {
         dispatch(trackViewerGpxLoad(gpxUrl));
       }
 

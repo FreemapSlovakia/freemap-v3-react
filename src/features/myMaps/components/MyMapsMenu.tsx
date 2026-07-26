@@ -4,6 +4,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
+import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
@@ -14,7 +15,6 @@ import {
   FaAngleLeft,
   FaAngleRight,
   FaEraser,
-  FaExclamationTriangle,
   FaRegMap,
   FaSave,
   FaSync,
@@ -114,18 +114,10 @@ export function MyMapsMenu(): ReactElement {
           </span>
 
           {dirty && (
-            <LongPressTooltip label={mm?.unsavedTooltip}>
-              {({ props }) => (
-                <span
-                  role="img"
-                  className="align-self-center text-warning d-inline-flex"
-                  aria-label={mm?.unsaved}
-                  {...props}
-                >
-                  <FaExclamationTriangle />
-                </span>
-              )}
-            </LongPressTooltip>
+            <UnsavedWarningIcon
+              label={mm?.unsaved}
+              tooltip={mm?.unsavedTooltip}
+            />
           )}
 
           {!hidden && (

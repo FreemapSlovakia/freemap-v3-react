@@ -1,13 +1,19 @@
 import type { RootState } from '@app/store/store.js';
+import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
 import { describe, expect, it } from 'vitest';
-import { mapContentString } from './mapDocument.js';
+import {
+  fingerprintDocument,
+  fingerprintState,
+  getMapDataFromState,
+  mapContentString,
+} from './mapDocument.js';
 
 const line = (
   points: { lat: number; lon: number; id: number }[],
   rest: Record<string, unknown> = {},
 ) => ({ type: 'line', points, ...rest });
 
-/** A state holding only what the map-content serialization reads. */
+/** A state holding only what the map document and its serialization read. */
 function state(over: Record<string, unknown> = {}): RootState {
   return {
     drawingLines: { lines: [] },
@@ -17,6 +23,9 @@ function state(over: Record<string, unknown> = {}): RootState {
     objects: { active: [] },
     gallery: { filter: {} },
     trackViewer: { trackGeojson: null, trackUID: null, gpxUrl: null },
+    // Saved with the document but deliberately outside the comparison, so the
+    // values only have to exist.
+    map: { lat: 48, lon: 17, zoom: 12, layers: ['X'] },
     ...over,
   } as unknown as RootState;
 }
@@ -143,5 +152,90 @@ describe('mapContentString — what counts as a change', () => {
         }),
       ),
     ).not.toBe(mapContentString(state()));
+  });
+});
+
+/** A route as the slice actually holds it, with the result fields the URL ignores. */
+function routePlanner(over: Record<string, unknown> = {}) {
+  return { ...routePlannerInitialState, ...over };
+}
+
+// A map that has just been saved must read as saved when it is later compared
+// against its own document. That only holds while every field the content
+// serialization emits survives the round trip through `MapData`, so these pin
+// the fields most easily left out of it.
+describe('fingerprintDocument — a saved map matches its own document', () => {
+  const matchesItsDocument = (over: Record<string, unknown>) => {
+    const current = state(over);
+
+    expect(fingerprintDocument(getMapDataFromState(current), current)).toBe(
+      fingerprintState(current),
+    );
+  };
+
+  it('matches for a plain route', () => {
+    matchesItsDocument({
+      routePlanner: routePlanner({
+        points: [{ lat: 48, lon: 17 }],
+        transportType: 'car',
+      }),
+    });
+  });
+
+  it('matches for a route started from its finish', () => {
+    matchesItsDocument({
+      routePlanner: routePlanner({
+        points: [{ lat: 48, lon: 17 }],
+        finishOnly: true,
+      }),
+    });
+  });
+
+  // `trip-distance` / `trip-seed` are in the URL, so they have to be in the
+  // document too — otherwise every roundtrip map reads as changed forever.
+  it('matches for a roundtrip with non-default parameters', () => {
+    matchesItsDocument({
+      routePlanner: routePlanner({
+        points: [{ lat: 48, lon: 17 }],
+        transportType: 'car',
+        mode: 'roundtrip',
+        roundtripParams: { distance: 8000, seed: 3 },
+      }),
+    });
+  });
+
+  it('matches for an isochrone with non-default parameters', () => {
+    matchesItsDocument({
+      routePlanner: routePlanner({
+        points: [{ lat: 48, lon: 17 }],
+        transportType: 'car',
+        mode: 'isochrone',
+        isochroneParams: { buckets: 4, distanceLimit: 0, timeLimit: 1800 },
+      }),
+    });
+  });
+
+  it('notices a roundtrip parameter that really did change', () => {
+    const saved = state({
+      routePlanner: routePlanner({
+        points: [{ lat: 48, lon: 17 }],
+        transportType: 'car',
+        mode: 'roundtrip',
+        roundtripParams: { distance: 8000, seed: 3 },
+      }),
+    });
+
+    const edited = state({
+      routePlanner: routePlanner({
+        points: [{ lat: 48, lon: 17 }],
+        transportType: 'car',
+        mode: 'roundtrip',
+        roundtripParams: { distance: 12000, seed: 3 },
+      }),
+    });
+
+    expect(fingerprintDocument(getMapDataFromState(saved), edited)).not.toBe(
+      fingerprintState(edited),
+    );
   });
 });

@@ -27,9 +27,11 @@ export const mapsWorkingCopyProcessor: Processor = {
       // shared browser must not serve them to the next one. A public map stays
       // connected, so its copy is kept — otherwise the processor writes it
       // straight back, and its track would be lost on the next reload anyway.
-      clearMapRecords(getState().myMaps.activeMap?.id).catch((err) => {
-        console.warn('Error clearing map working copies:', err);
-      });
+      clearMapRecords(getState().myMaps.activeMap?.id, Date.now()).catch(
+        (err) => {
+          console.warn('Error clearing map working copies:', err);
+        },
+      );
 
       return;
     }
@@ -65,7 +67,7 @@ let written: {
 } | null = null;
 
 function persist(state: RootState): void {
-  const { activeMap, savedFingerprint } = state.myMaps;
+  const { activeMap, savedFingerprint, loadMeta, restoring } = state.myMaps;
 
   if (!activeMap || savedFingerprint === null) {
     written = null;
@@ -76,7 +78,8 @@ function persist(state: RootState): void {
   // `UNKNOWN_FINGERPRINT` means the baseline couldn't be established. Storing it
   // would make the map read as unsaved on every future reload, and leaving an
   // older record in place would let a stale track and digest be replayed — so
-  // drop it and let the next load establish a real one.
+  // drop it and let the next load establish a real one. Dropping is keyed by
+  // `activeMap` alone, so it stays right even mid-switch.
   if (savedFingerprint === UNKNOWN_FINGERPRINT) {
     written = null;
 
@@ -84,6 +87,17 @@ function persist(state: RootState): void {
       console.warn('Error clearing map working copy:', err);
     });
 
+    return;
+  }
+
+  // A load or restore of another map is in flight, so what's on screen is
+  // already turning into that map's content while `activeMap` still names the
+  // one being left. Writing now would file the incoming map's track under the
+  // outgoing map's id. The cache is left alone: once the switch completes, the
+  // new map no longer matches it and is written normally.
+  const incoming = loadMeta?.id ?? restoring?.mapId;
+
+  if (incoming !== undefined && incoming !== activeMap.id) {
     return;
   }
 
@@ -100,13 +114,12 @@ function persist(state: RootState): void {
     return;
   }
 
-  written = { meta: activeMap, savedFingerprint, track, trackUID, gpxUrl };
+  const record = { meta: activeMap, savedFingerprint, track, trackUID, gpxUrl };
+
+  written = record;
 
   // `Date.now()` only orders records for pruning.
-  putMapRecord(
-    { meta: activeMap, savedFingerprint, track, trackUID, gpxUrl },
-    Date.now(),
-  ).catch((err) => {
+  putMapRecord(record, Date.now()).catch((err) => {
     // Best effort: the comparison that drives the unsaved marker reads live
     // state, so a failed write costs a reload's worth of restore, not accuracy.
     console.warn('Error writing map working copy:', err);

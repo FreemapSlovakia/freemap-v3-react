@@ -77,15 +77,19 @@ export function putMapRecord(
   const mapId = record.meta.id;
 
   return enqueue(async () => {
+    // Indexed before it is written, so a failure in between leaves an index
+    // entry naming no record — which reads as absent and prunes normally. The
+    // other order leaves a record the index never mentions, and since pruning
+    // only ever walks the index, its megabytes would never be reclaimed.
+    await withIndex((index) => {
+      index[mapId] = now;
+    });
+
     await set(
       keyOf(mapId),
       { ...record, updatedAt: now } satisfies MapRecord,
       store,
     );
-
-    await withIndex((index) => {
-      index[mapId] = now;
-    });
   });
 }
 
@@ -111,7 +115,10 @@ export function deleteMapRecord(mapId: string): Promise<void> {
  * processor doesn't simply write it back: its name and track are on screen
  * either way, and dropping it would lose the track on the next reload.
  */
-export function clearMapRecords(keepMapId?: string): Promise<void> {
+export function clearMapRecords(
+  keepMapId: string | undefined,
+  now: number,
+): Promise<void> {
   return enqueue(async () => {
     const keep = keepMapId === undefined ? undefined : keyOf(keepMapId);
 
@@ -126,9 +133,10 @@ export function clearMapRecords(keepMapId?: string): Promise<void> {
 
     await set(
       INDEX_KEY,
-      keepMapId !== undefined && index[keepMapId] !== undefined
-        ? { [keepMapId]: index[keepMapId] }
-        : {},
+      // The kept record stays indexed — pruning only ever walks the index, so an
+      // unindexed record would never be reclaimed. `now` stands in when the
+      // index had already lost track of it.
+      keepMapId === undefined ? {} : { [keepMapId]: index[keepMapId] ?? now },
       store,
     );
   });

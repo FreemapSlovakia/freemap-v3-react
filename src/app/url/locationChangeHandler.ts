@@ -32,7 +32,10 @@ import {
   mapSetCustomLayers,
   mapSetShading,
 } from '@features/map/model/actions.js';
-import { mapsRestore } from '@features/myMaps/model/actions.js';
+import {
+  type MapRestore,
+  mapsRestore,
+} from '@features/myMaps/model/actions.js';
 import {
   objectsSetFilter,
   objectsSetStyle,
@@ -136,14 +139,7 @@ export function handleLocationChange(store: MyStore): void {
   // `track-uid=` / `import-url=` is known, so the restore owns the track instead
   // of racing a fetch started here. Whether the map continues from the browser's
   // working copy or is re-read from the backend is decided there.
-  let restore: {
-    mapId: string;
-    ignoreMap?: boolean;
-    ignoreLayers?: boolean;
-    hasRestoredContent: boolean;
-    trackUID?: string;
-    gpxUrl?: string;
-  } | null = null;
+  let restore: MapRestore | null = null;
 
   if (
     id !== undefined &&

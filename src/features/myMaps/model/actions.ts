@@ -2,7 +2,7 @@ import type { Line } from '@features/drawing/model/actions/drawingLineActions.js
 import type { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { GalleryFilter } from '@features/gallery/model/actions.js';
 import type { MapState } from '@features/map/model/reducer.js';
-import type { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import type { RoutePlannerMapData } from '@features/routePlanner/model/reducer.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
 import type { TrackViewerState } from '@features/trackViewer/model/reducer.js';
 import { createAction } from '@reduxjs/toolkit';
@@ -26,17 +26,7 @@ export interface MapData<LT = Line, PT = DrawingPoint> {
   lines?: LT[];
   points?: PT[];
   tracking?: Partial<Pick<TrackingState, 'trackedDevices'>>;
-  routePlanner?: Partial<
-    Pick<
-      RoutePlannerState,
-      | 'transportType'
-      | 'points'
-      | 'finishOnly'
-      | 'pickMode'
-      | 'mode'
-      | 'milestones'
-    >
-  >;
+  routePlanner?: RoutePlannerMapData;
   galleryFilter?: GalleryFilter;
   trackViewer?: Partial<TrackViewerState>;
   map?: Partial<

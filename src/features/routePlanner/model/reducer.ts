@@ -104,6 +104,48 @@ export const routePlannerInitialState: RoutePlannerState = {
   ...cleanState,
 };
 
+/** The route as a saved map document stores it; the rest of the slice is result state. */
+export type RoutePlannerMapData = Partial<
+  Pick<
+    RoutePlannerState,
+    | 'transportType'
+    | 'points'
+    | 'finishOnly'
+    | 'pickMode'
+    | 'mode'
+    | 'milestones'
+    | 'roundtripParams'
+    | 'isochroneParams'
+  >
+>;
+
+/**
+ * A map document's route on top of the slice defaults, with the results cleared.
+ *
+ * Shared by the load and by the my-maps unsaved-changes comparison, which needs
+ * to know what a document *would* put on screen: if the two disagreed on a
+ * single field, every saved map using it would read as changed the moment it was
+ * compared against its own document.
+ */
+export function routePlannerFromMapData(
+  data: RoutePlannerMapData | undefined,
+): RoutePlannerState {
+  return {
+    ...routePlannerInitialState,
+    transportType:
+      data?.transportType ?? routePlannerInitialState.transportType,
+    points: data?.points ?? routePlannerInitialState.points,
+    finishOnly: data?.finishOnly ?? routePlannerInitialState.finishOnly,
+    pickMode: data?.pickMode ?? routePlannerInitialState.pickMode,
+    mode: data?.mode ?? routePlannerInitialState.mode,
+    milestones: data?.milestones ?? routePlannerInitialState.milestones,
+    roundtripParams:
+      data?.roundtripParams ?? routePlannerInitialState.roundtripParams,
+    isochroneParams:
+      data?.isochroneParams ?? routePlannerInitialState.isochroneParams,
+  };
+}
+
 export const routePlannerReducer = createReducer(
   routePlannerInitialState,
   (builder) =>
@@ -369,17 +411,7 @@ export const routePlannerReducer = createReducer(
               data: { routePlanner },
             },
           },
-        ) => ({
-          ...routePlannerInitialState,
-          transportType:
-            routePlanner?.transportType ??
-            routePlannerInitialState.transportType,
-          points: routePlanner?.points ?? routePlannerInitialState.points,
-          pickMode: routePlanner?.pickMode ?? routePlannerInitialState.pickMode,
-          mode: routePlanner?.mode ?? routePlannerInitialState.mode,
-          milestones:
-            routePlanner?.milestones ?? routePlannerInitialState.milestones,
-        }),
+        ) => routePlannerFromMapData(routePlanner),
       ),
 );
 

@@ -3,7 +3,7 @@ import {
   getMapContentParts,
   serializeQuery,
 } from '@app/url/mapContentParts.js';
-import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
+import { routePlannerFromMapData } from '@features/routePlanner/model/reducer.js';
 import { hash } from 'ohash';
 import type { MapData } from './actions.js';
 
@@ -37,6 +37,8 @@ export function getMapDataFromState(state: RootState): MapData {
       pickMode: routePlanner.pickMode,
       mode: routePlanner.mode,
       milestones: routePlanner.milestones,
+      roundtripParams: routePlanner.roundtripParams,
+      isochroneParams: routePlanner.isochroneParams,
     },
     objectsV2: {
       active: objects.active,
@@ -134,14 +136,12 @@ export function fingerprintDocument(data: MapData, base: RootState): string {
     ...base,
     drawingLines: { ...base.drawingLines, lines: data.lines ?? [] },
     drawingPoints: { ...base.drawingPoints, points: data.points ?? [] },
-    // Slice defaults, not live state, stand in for fields the document omits
-    // (e.g. a legacy document without `finishOnly`) — falling back to the screen
-    // would make a genuinely changed map read as saved.
-    routePlanner: {
-      ...routePlannerInitialState,
-      ...data.routePlanner,
-      points: data.routePlanner?.points ?? [],
-    },
+    // Built by the same function the load uses, so the two can't disagree about
+    // what a document puts on screen. Slice defaults, not live state, stand in
+    // for fields the document omits (e.g. a legacy document without
+    // `finishOnly`) — falling back to the screen would make a genuinely changed
+    // map read as saved.
+    routePlanner: routePlannerFromMapData(data.routePlanner),
     objects: { ...base.objects, active: data.objectsV2?.active ?? [] },
     gallery: { ...base.gallery, filter: data.galleryFilter ?? {} },
     tracking: {

@@ -51,6 +51,19 @@ const RoutePlannerMapDataCompatSchema = z.preprocess(
     milestones: z
       .union([z.literal('abs'), z.literal('rel'), z.literal(false)])
       .optional(),
+    // Part of what the URL carries for a roundtrip/isochrone route, so the
+    // document has to carry it too — otherwise a saved map of either kind reads
+    // as changed the moment it is compared against its own document.
+    roundtripParams: z
+      .object({ distance: z.number(), seed: z.number() })
+      .optional(),
+    isochroneParams: z
+      .object({
+        buckets: z.number(),
+        distanceLimit: z.number(),
+        timeLimit: z.number(),
+      })
+      .optional(),
   }),
 );
 

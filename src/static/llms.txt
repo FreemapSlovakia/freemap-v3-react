@@ -132,7 +132,7 @@ Toggles the photos toolbar and the community-photos map layer. Photos appear as 
 - Keyboard shortcut: <kbd>g</kbd> <kbd>m</kbd>
 - URL path: `/#show=my-maps` (legacy `/#show=maps` still works)
 
-Opens the user-saved maps manager in a modal. Each saved map stores the current state: active map layers, drawing, planned route, watched live-tracked devices, and GPX track.
+Opens the user-saved maps manager in a modal. Each saved map stores the current state: active map layers, drawing, planned route (including its routing mode and that mode's parameters, such as the roundtrip distance/seed or the isochrone buckets and limit), watched live-tracked devices, and GPX track.
 
 The modal lists saved maps with their created/modified dates and a filter box. A gear menu sets load options:
 

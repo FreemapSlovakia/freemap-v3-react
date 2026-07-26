@@ -22,6 +22,7 @@ import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
+import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -32,7 +33,6 @@ import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaEllipsisV,
-  FaExclamationTriangle,
   FaFileImport,
   FaGem,
   FaInfoCircle,
@@ -287,18 +287,11 @@ export function TrackViewerMenu(): ReactElement {
 
       <ToolMenu tool="import-file">
         {unsaved && (
-          <LongPressTooltip label={tvm?.unsavedTooltip}>
-            {({ props }) => (
-              <span
-                role="img"
-                className="ms-1 align-self-center text-warning d-inline-flex"
-                aria-label={tvm?.unsaved}
-                {...props}
-              >
-                <FaExclamationTriangle />
-              </span>
-            )}
-          </LongPressTooltip>
+          <UnsavedWarningIcon
+            className="ms-1"
+            label={tvm?.unsaved}
+            tooltip={tvm?.unsavedTooltip}
+          />
         )}
 
         {canUpload && (
