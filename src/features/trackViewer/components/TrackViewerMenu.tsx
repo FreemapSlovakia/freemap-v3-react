@@ -91,9 +91,13 @@ export function TrackViewerMenu(): ReactElement {
     Boolean(state.myMaps.activeMap),
   );
 
-  // A loaded track that isn't part of a saved map is unsaved: unlike drawing it
-  // isn't reflected in the URL, so it is lost on reload until saved to a map.
-  const unsaved = hasTrack && !hasActiveMap;
+  const gpxUrl = useAppSelector((state) => state.trackViewer.gpxUrl);
+
+  // A track that is in no saved map and that the URL doesn't name — neither a
+  // `track-uid=` nor an `import-url=` — has nowhere to come back from, so a
+  // reload loses it. The other two are re-fetched from the link and need no
+  // warning.
+  const unsaved = hasTrack && !hasActiveMap && canUpload && !gpxUrl;
 
   const handleSaveAsMap = useCallback(() => {
     if (loggedIn) {

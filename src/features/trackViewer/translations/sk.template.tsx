@@ -15,7 +15,7 @@ const sk: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   saveAsMap: 'Uložiť do mojich máp',
   unsaved: 'Neuložené',
   unsavedTooltip:
-    'Načítaná trasa nie je súčasťou žiadnej uloženej mapy, takže nie je zahrnutá v zdieľanom odkaze. Uložte ju do svojich máp, aby ste ju zachovali.',
+    'Táto trasa nie je v žiadnej uloženej mape ani v odkaze, takže sa pri obnovení stránky stratí. Uložte ju do svojich máp, aby ste ju zachovali.',
   loginToSaveMap: 'Pre uloženie trasy do vašich máp sa najprv prihláste.',
   style: {
     title: 'Predvolený štýl',

@@ -13,6 +13,7 @@ import {
   trackViewerSetData,
   trackViewerSetElevation,
   trackViewerSetElevationPrompt,
+  trackViewerSetGpxUrl,
   trackViewerSetRenderGeojson,
   trackViewerSetSelectedTrack,
   trackViewerSetTrackUID,
@@ -101,6 +102,9 @@ export const trackViewerReducer = createReducer(
         state.elevationPrompt = null;
 
         state.elevationDecision = action.payload.mode;
+      })
+      .addCase(trackViewerSetGpxUrl, (state, { payload }) => {
+        state.gpxUrl = payload;
       })
       .addCase(trackViewerGpxLoad, (state, action) => {
         state.gpxUrl = action.payload;

@@ -146,7 +146,7 @@ Maps flagged **Available offline** keep a copy of the saved map document in the 
 
 While a saved map is loaded ("connected"), a toolbar shows the map name with **Save** and a **Disconnect** button (whose dropdown also offers **Disconnect and clear**, to disconnect and clear the current map contents). **Save** stores the map in place for its owner and editors; on someone else's map it saves the current contents as your own copy (and prompts to log in first when logged out).
 
-Editing the contents of a loaded map (by hand or via browser back/forward) marks it as having unsaved changes: a warning icon appears next to the map name, **Save** is highlighted, and a **Reload map** button offers to discard the changes and re-read the stored map. Unsaved changes survive a page reload — they are kept in the browser history entry (with any imported track, which is too large for a URL, stashed in IndexedDB), and the stored map is then not re-read. They are not part of the shareable link, though — only saving puts them in the map.
+Editing the contents of a loaded map (by hand or via browser back/forward) marks it as having unsaved changes: a warning icon appears next to the map name, **Save** is highlighted, and a **Reload map** button offers to discard the changes and re-read the stored map. Unsaved changes survive a page reload — the map's working copy is kept in the browser (IndexedDB for the imported track, the URL for everything else), and the stored map is re-read only when there is nothing unsaved to protect. They are not part of the shareable link, though — only saving puts them in the map.
 
 ### Drawing and measurement
 

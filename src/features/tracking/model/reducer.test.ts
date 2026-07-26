@@ -37,8 +37,6 @@ const withTracks = (tracks: Track[]) => ({
   modifiedAccessTokenId: undefined,
   trackedDevices: [],
   tracks,
-  showLine: true,
-  showPoints: true,
 });
 
 describe('trackingReducer — tracked devices', () => {

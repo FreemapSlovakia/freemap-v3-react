@@ -80,24 +80,34 @@ export const mapsLoaded = createAction<{
 export const mapsSetMeta = createAction<MapMeta>('MAPS_SET_META');
 
 /**
- * Marks the active map's saveable content as diverging from the last
- * loaded/saved state (`true`) or in sync with it (`false`). Drives the unsaved
- * indicator and the reload path that restores local edits instead of re-reading
- * the map from the backend.
+ * Records the digest of the map as last loaded or saved. Everything about
+ * unsaved changes is derived by comparing it with what's on screen — see
+ * `mapDirtySelector`.
  */
-export const mapsSetDirty = createAction<boolean>('MAPS_SET_DIRTY');
+export const mapsSetSavedFingerprint = createAction<string>(
+  'MAPS_SET_SAVED_FINGERPRINT',
+);
 
 /**
- * Restores the parts of an unsaved-changes draft that the URL can't carry (see
- * `draftStore`), after a reload of a map with unsaved edits.
+ * Opens a map named in the URL: continues from the working copy kept in the
+ * browser when there is one (so unsaved changes survive a reload), and reads the
+ * map from the backend otherwise.
  */
-export const mapsDraftRestore = createAction<{
+export const mapsRestore = createAction<{
   mapId: string;
-  /** `track-uid=` from the URL, deferred so it can't race the stash. */
+  ignoreMap?: boolean;
+  ignoreLayers?: boolean;
+  /**
+   * Whether the history entry carried this map's content. Without it there is
+   * nothing to preserve, so the map is read from the backend even if the browser
+   * holds a working copy from an earlier visit in another tab.
+   */
+  hasRestoredContent: boolean;
+  /** `track-uid=` from the URL, deferred so it can't race the restore. */
   trackUID?: string;
   /** `import-url=` from the URL, deferred for the same reason. */
   gpxUrl?: string;
-}>('MAPS_DRAFT_RESTORE');
+}>('MAPS_RESTORE');
 
 /** Ids of maps available offline, synced from IndexedDB. */
 export const mapsOfflineIdsLoaded = createAction<string[]>(

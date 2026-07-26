@@ -22,6 +22,7 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { mapsDisconnect, mapsLoad, mapsSave } from '../model/actions.js';
+import { mapDirtySelector } from '../model/selectors.js';
 import { loadMyMapsMessages } from '../translations/loadMyMapsMessages.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 
@@ -32,7 +33,7 @@ export function MyMapsMenu(): ReactElement {
 
   const activeMap = useAppSelector((state) => state.myMaps.activeMap);
 
-  const dirty = useAppSelector((state) => state.myMaps.dirty);
+  const dirty = useAppSelector(mapDirtySelector);
 
   const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
 
@@ -49,8 +50,12 @@ export function MyMapsMenu(): ReactElement {
         confirmLabel: mm?.reload,
       }))
     ) {
-      // Re-read the saved map from the backend, discarding the local edits.
-      dispatch(mapsLoad({ id: activeMap.id }));
+      // Re-read the saved map from the backend, discarding the local edits. The
+      // viewport and background layer aren't part of what counts as a change, so
+      // they stay as they are.
+      dispatch(
+        mapsLoad({ id: activeMap.id, ignoreMap: true, ignoreLayers: true }),
+      );
     }
   }, [activeMap, confirm, mm, dispatch]);
 

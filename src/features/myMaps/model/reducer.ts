@@ -7,9 +7,10 @@ import {
   mapsLoad,
   mapsLoaded,
   mapsOfflineIdsLoaded,
-  mapsSetDirty,
+  mapsRestore,
   mapsSetList,
   mapsSetMeta,
+  mapsSetSavedFingerprint,
 } from './actions.js';
 
 export interface MapsState {
@@ -17,8 +18,18 @@ export interface MapsState {
   maps: MapMeta[];
   activeMap: MapMeta | undefined;
   offlineIds: string[];
-  /** The active map has unsaved local changes. */
-  dirty: boolean;
+  /**
+   * Digest of the active map as last loaded or saved, against which the screen
+   * is compared to tell whether there are unsaved changes.
+   */
+  savedFingerprint: string | null;
+  /**
+   * The map a restore is currently opening. Kept apart from `loadMeta`, which
+   * asks `mapsLoadProcessor` to read the map from the backend — a restore may
+   * decide not to, and must not have that decision made for it when the auth
+   * check lands mid-flight.
+   */
+  restoringId: string | undefined;
 }
 
 const initialState: MapsState = {
@@ -26,7 +37,8 @@ const initialState: MapsState = {
   maps: [],
   activeMap: undefined,
   offlineIds: [],
-  dirty: false,
+  savedFingerprint: null,
+  restoringId: undefined,
 };
 
 export const mapsReducer = createReducer(initialState, (builder) =>
@@ -39,23 +51,39 @@ export const mapsReducer = createReducer(initialState, (builder) =>
 
       state.loadMeta = undefined;
 
-      // A merging load keeps the previously shown content alongside the loaded
-      // document, so the result diverges from what's stored for this map.
-      state.dirty = Boolean(payload.merge);
+      state.restoringId = undefined;
     })
     .addCase(mapsLoad, (state, { payload }) => {
       state.loadMeta = payload;
+
+      state.restoringId = undefined;
+    })
+    // The map is claimed as soon as the restore starts, so the URL keeps its
+    // `id=` while the working copy is read and a second pass doesn't re-enter.
+    .addCase(mapsRestore, (state, { payload }) => {
+      state.restoringId = payload.mapId;
     })
     .addCase(mapsDisconnect, (state) => {
       state.activeMap = undefined;
 
-      state.dirty = false;
+      state.savedFingerprint = null;
+
+      state.restoringId = undefined;
     })
     .addCase(mapsSetMeta, (state, { payload }) => {
       state.activeMap = { ...(state.activeMap ?? {}), ...payload };
+
+      // The map is active now, so nothing is pending.
+      state.loadMeta = undefined;
+
+      state.restoringId = undefined;
     })
-    .addCase(mapsSetDirty, (state, { payload }) => {
-      state.dirty = payload;
+    // Every restore ends by setting the digest, including the paths that never
+    // reach a meta — so this is where an in-flight restore is finally released.
+    .addCase(mapsSetSavedFingerprint, (state, { payload }) => {
+      state.savedFingerprint = payload;
+
+      state.restoringId = undefined;
     })
     .addCase(mapsOfflineIdsLoaded, (state, { payload }) => {
       state.offlineIds = payload;
@@ -69,8 +97,8 @@ export const mapsReducer = createReducer(initialState, (builder) =>
             writers: undefined,
           }
         : undefined,
-      // Logging out doesn't save anything: while the map and its edited content
-      // stay on screen, so does the unsaved warning.
-      dirty: state.activeMap?.public ? state.dirty : false,
+      // Logging out saves nothing: while the map and its edited content stay on
+      // screen, so does the comparison that reports them as unsaved.
+      savedFingerprint: state.activeMap?.public ? state.savedFingerprint : null,
     })),
 );

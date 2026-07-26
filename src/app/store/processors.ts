@@ -48,8 +48,6 @@ import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProc
 import { exportMapFeaturesProcessor } from '@features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.js';
 import { measurementProcessor } from '@features/measurement/model/measurementProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
-import { mapsDirtyProcessor } from '@features/myMaps/model/processors/mapsDirtyProcessor.js';
-import { mapsDraftRestoreProcessor } from '@features/myMaps/model/processors/mapsDraftRestoreProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
 import { mapsLoadProcessor } from '@features/myMaps/model/processors/mapsLoadProcessor.js';
 import {
@@ -57,7 +55,9 @@ import {
   mapsSetAllOfflineProcessor,
   mapsSetMapOfflineProcessor,
 } from '@features/myMaps/model/processors/mapsOfflineProcessor.js';
+import { mapsRestoreProcessor } from '@features/myMaps/model/processors/mapsRestoreProcessor.js';
 import { mapsSaveProcessor } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
+import { mapsWorkingCopyProcessor } from '@features/myMaps/model/processors/mapsWorkingCopyProcessor.js';
 import {
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
@@ -183,8 +183,8 @@ export const processors = [
   mapsLoadProcessor,
   mapsDeleteProcessor,
   mapsSaveProcessor,
-  mapsDirtyProcessor,
-  mapsDraftRestoreProcessor,
+  mapsWorkingCopyProcessor,
+  mapsRestoreProcessor,
   mapsSetMapOfflineProcessor,
   mapsSetAllOfflineProcessor,
   mapsOfflinePurgeProcessor,
