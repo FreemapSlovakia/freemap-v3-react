@@ -34,6 +34,26 @@ CSS minification therefore uses `rspack.LightningCssMinimizerRspackPlugin` with 
 
 Symptom of breakage: `classes['typo']` stops being a type error (the ambient `Record` is shadowing because no `.d.css.ts` resolved) — check the loader order, the `.d.css.ts` naming, and `allowArbitraryExtensions`.
 
+## sentry-cli: the URL and the auth token must come from the same source
+
+`pnpm sentry-sourcemaps` (run by `pnpm deploy`) uploads to the self-hosted **https://sentry.freemap.sk**, but the `--url` flag is deliberately **not** passed. sentry-cli ≥ 3 refuses to combine a server URL and an auth token that come from different configuration sources — CLI flag + `~/.sentryclirc` token gives:
+
+```
+WARN  Ignoring an auth token because the selected URL comes from a different configuration source.
+error: Auth token is required for this request. Please run `sentry-cli login` and try again!
+```
+
+So the URL has to sit next to the token. Either put both in `~/.sentryclirc`:
+
+```ini
+[auth]
+token=…
+[defaults]
+url=https://sentry.freemap.sk
+```
+
+or pass both through the environment (`SENTRY_URL` + `SENTRY_AUTH_TOKEN`) — e.g. in CI. Re-adding `--url` to the script breaks the file-based setup again, because the flag re-splits the two across sources.
+
 ## nginx cache headers
 
 Live vhost configs are `etc/nginx/sites-available/www.freemap.sk` and `www.freemap.eu` (deployed under `/home/freemap/www`; no `.htaccess`). Rules that must hold:
