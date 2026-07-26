@@ -4,7 +4,12 @@ import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { putOfflineMap } from '../../offlineStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
-import { mapsLoad, mapsLoaded, mapsRestore } from '../actions.js';
+import {
+  mapsLoad,
+  mapsLoaded,
+  mapsLoadFailed,
+  mapsRestore,
+} from '../actions.js';
 import { readMapDocument } from '../loadMapDocument.js';
 
 export const mapsLoadProcessor: Processor = {
@@ -72,6 +77,19 @@ export const mapsLoadProcessor: Processor = {
 
       dispatch(setActiveModal(null));
     } catch (err) {
+      // The load is over, so it stops being pending — or the map that failed
+      // would keep its `id=` in the URL, navigating to it again would be taken
+      // for a load already in flight, and the working copy of the map that is
+      // actually open would stay blocked. An abort is something else taking
+      // over deliberately — a newer load, or the auth check this processor
+      // re-runs on — and what is pending is then that owner's to say.
+      if (
+        !(err instanceof DOMException && err.name === 'AbortError') &&
+        getState().myMaps.loadMeta === loadMeta
+      ) {
+        dispatch(mapsLoadFailed());
+      }
+
       await toastError(err, loadMyMapsMessages, 'fetchError');
     }
   },

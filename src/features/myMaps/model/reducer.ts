@@ -7,6 +7,7 @@ import {
   mapsDisconnect,
   mapsLoad,
   mapsLoaded,
+  mapsLoadFailed,
   mapsOfflineIdsLoaded,
   mapsRestore,
   mapsSetList,
@@ -66,6 +67,9 @@ export const mapsReducer = createReducer(initialState, (builder) =>
 
       // Withdraw any pending load of another map: it would keep that map's id in
       // the URL and, on completion, silently end this restore.
+      state.loadMeta = undefined;
+    })
+    .addCase(mapsLoadFailed, (state) => {
       state.loadMeta = undefined;
     })
     .addCase(mapsDisconnect, (state) => {

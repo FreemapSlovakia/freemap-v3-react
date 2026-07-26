@@ -67,6 +67,14 @@ export const mapsLoaded = createAction<{
   merge?: boolean;
 }>('MAPS_LOADED');
 
+/**
+ * Releases a load that ended without putting a map on screen. Nothing else
+ * clears `loadMeta`, so without this the failed map would keep its `id=` in the
+ * URL, a repeat navigation to it would be taken for one already in flight, and
+ * the working copy of the map that is actually open would stay blocked.
+ */
+export const mapsLoadFailed = createAction('MAPS_LOAD_FAILED');
+
 export const mapsSetMeta = createAction<MapMeta>('MAPS_SET_META');
 
 /**
