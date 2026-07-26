@@ -105,7 +105,12 @@ function makeState(): RootState {
       colorizeTrackBy: 'heartRate',
       colorizeLegend: true,
     },
-    trackingSettings: { colorizeBy: 'speed', colorizeLegend: true },
+    trackingSettings: {
+      colorizeBy: 'speed',
+      colorizeLegend: true,
+      showLine: false,
+      showPoints: false,
+    },
   } as unknown as RootState;
 }
 
@@ -228,7 +233,12 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         colorizeTrackBy: 'heartRate',
         colorizeLegend: true,
       },
-      trackingSettings: { colorizeBy: 'speed', colorizeLegend: true },
+      trackingSettings: {
+        colorizeBy: 'speed',
+        colorizeLegend: true,
+        showLine: false,
+        showPoints: false,
+      },
     });
   });
 
@@ -322,8 +332,12 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.gallerySettings?.recentTags).toEqual(['x']);
     // trackViewerSettings.colorizeTrackBy round-trips through save → rehydrate.
     expect(initial.trackViewerSettings?.colorizeTrackBy).toBe('heartRate');
-    // trackingSettings.colorizeBy round-trips through save → rehydrate.
+    // trackingSettings round-trips through save → rehydrate. The display prefs
+    // are non-default here on purpose: with the fixture's defaults they would
+    // round-trip even if they were dropped from the schema or the persist call.
     expect(initial.trackingSettings?.colorizeBy).toBe('speed');
+    expect(initial.trackingSettings?.showLine).toBe(false);
+    expect(initial.trackingSettings?.showPoints).toBe(false);
 
     // premiumExpiration round-trips Date → ISO string → Date.
     expect(initial.auth?.user?.premiumExpiration).toBeInstanceOf(Date);

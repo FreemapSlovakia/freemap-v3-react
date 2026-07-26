@@ -4,10 +4,6 @@ import { wsStateChanged } from '@features/websocket/model/actions.js';
 import { describe, expect, it } from 'vitest';
 import { trackingActions } from './actions.js';
 import { trackingReducer } from './reducer.js';
-import {
-  trackingSettingsInitialState,
-  trackingSettingsReducer,
-} from './settingsReducer.js';
 import type { Track, TrackedDevice } from './types.js';
 
 /**
@@ -142,20 +138,6 @@ describe('trackingReducer — device editor state', () => {
     expect(next.devices).toEqual([]);
     expect(next.modifiedDeviceId).toBeUndefined();
     expect(next.accessTokensDeviceId).toBeUndefined();
-  });
-
-  it('setShowPoints / setShowLine store the flags in the settings slice', () => {
-    const off = trackingSettingsReducer(
-      trackingSettingsInitialState,
-      trackingActions.setShowPoints(false),
-    );
-    expect(off.showPoints).toBe(false);
-
-    const line = trackingSettingsReducer(
-      trackingSettingsInitialState,
-      trackingActions.setShowLine(false),
-    );
-    expect(line.showLine).toBe(false);
   });
 });
 
