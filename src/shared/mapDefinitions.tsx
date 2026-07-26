@@ -112,8 +112,8 @@ const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
   {
     type: 'data',
     country: 'it',
-    name: 'Tinitaly DEM: INGV',
-    url: 'https://tinitaly.pi.ingv.it/',
+    name: 'HR-DTM 5 m: IRPI-CNR',
+    url: 'https://doi.org/10.5281/zenodo.18335145',
   },
   {
     type: 'data',
