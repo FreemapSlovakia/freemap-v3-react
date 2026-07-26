@@ -78,9 +78,11 @@ export function TrackingResult(): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const showLine = useAppSelector((state) => state.tracking.showLine);
+  const showLine = useAppSelector((state) => state.trackingSettings.showLine);
 
-  const showPoints = useAppSelector((state) => state.tracking.showPoints);
+  const showPoints = useAppSelector(
+    (state) => state.trackingSettings.showPoints,
+  );
 
   const trackedDevices = useAppSelector(
     (state) => state.tracking.trackedDevices,

@@ -47,9 +47,11 @@ export function TrackingMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const showPoints = useAppSelector((state) => state.tracking.showPoints);
+  const showPoints = useAppSelector(
+    (state) => state.trackingSettings.showPoints,
+  );
 
-  const showLine = useAppSelector((state) => state.tracking.showLine);
+  const showLine = useAppSelector((state) => state.trackingSettings.showLine);
 
   const colorizeBy = useAppSelector(
     (state) => state.trackingSettings.colorizeBy,
