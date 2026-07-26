@@ -20,8 +20,24 @@ export function serializeQuery(parts: QueryPart[]): string {
     .join('&');
 }
 
-export function dateToString(d: Date): string {
-  return d.toISOString().replace(/T.*/, '');
+/**
+ * Adds a date part, or nothing at all when the date isn't one.
+ *
+ * `toISOString()` throws on an Invalid Date. The URL parser keeps those out of
+ * the store, but a saved map document or a persisted filter can hold one too,
+ * and this runs during render through the unsaved-changes comparison — where a
+ * throw is a blank screen rather than a logged error. Dropping the part rather
+ * than writing it empty also keeps a bad date reading the same as no date, so
+ * it can't show up as an unsaved change.
+ */
+function pushDate(parts: QueryPart[], key: string, d: Date | undefined): void {
+  if (d && isValidDate(d)) {
+    parts.push([key, d.toISOString().replace(/T.*/, '')]);
+  }
+}
+
+export function isValidDate(d: Date): boolean {
+  return !Number.isNaN(d.getTime());
 }
 
 /**
@@ -131,30 +147,13 @@ export function getMapContentParts(state: RootState): QueryPart[] {
     parts.push(['gallery-rating-to', galleryFilter.ratingTo]);
   }
 
-  if (galleryFilter.takenAtFrom) {
-    parts.push([
-      'gallery-taken-at-from',
-      dateToString(galleryFilter.takenAtFrom),
-    ]);
-  }
+  pushDate(parts, 'gallery-taken-at-from', galleryFilter.takenAtFrom);
 
-  if (galleryFilter.takenAtTo) {
-    parts.push(['gallery-taken-at-to', dateToString(galleryFilter.takenAtTo)]);
-  }
+  pushDate(parts, 'gallery-taken-at-to', galleryFilter.takenAtTo);
 
-  if (galleryFilter.createdAtFrom) {
-    parts.push([
-      'gallery-created-at-from',
-      dateToString(galleryFilter.createdAtFrom),
-    ]);
-  }
+  pushDate(parts, 'gallery-created-at-from', galleryFilter.createdAtFrom);
 
-  if (galleryFilter.createdAtTo) {
-    parts.push([
-      'gallery-created-at-to',
-      dateToString(galleryFilter.createdAtTo),
-    ]);
-  }
+  pushDate(parts, 'gallery-created-at-to', galleryFilter.createdAtTo);
 
   if (galleryFilter.pano !== undefined) {
     parts.push(['gallery-pano', galleryFilter.pano]);
@@ -191,7 +190,7 @@ export function getMapContentParts(state: RootState): QueryPart[] {
   } of tracking.trackedDevices) {
     const deviceParts = [id];
 
-    if (fromTime) {
+    if (fromTime && isValidDate(fromTime)) {
       deviceParts.push(`f:${fromTime.toISOString()}`);
     }
 

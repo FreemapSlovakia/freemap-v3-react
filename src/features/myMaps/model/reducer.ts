@@ -88,10 +88,17 @@ export const mapsReducer = createReducer(initialState, (builder) =>
           ? { ...state.activeMap, ...payload }
           : payload;
 
-      // The map is active now, so nothing is pending.
-      state.loadMeta = undefined;
+      // This map is active now, so nothing is pending for it — but only for it.
+      // A save refreshes the meta of the map already open, and clearing whatever
+      // happened to be in flight would withdraw a load of a different map that
+      // then never opens and reports nothing.
+      if (state.loadMeta?.id === payload.id) {
+        state.loadMeta = undefined;
+      }
 
-      state.restoring = undefined;
+      if (state.restoring?.mapId === payload.id) {
+        state.restoring = undefined;
+      }
     })
     // Every restore ends by setting the digest, including the paths that never
     // reach a meta — so this is where an in-flight restore is finally released.

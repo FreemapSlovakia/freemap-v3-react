@@ -786,7 +786,7 @@ export function handleLocationChange(store: MyStore): void {
 
       switch (type) {
         case 'f':
-          fromTime = new Date(value);
+          fromTime = parseDate(value) ?? null;
 
           break;
 
@@ -912,19 +912,19 @@ function handleGallery(
 
   a = query['gallery-taken-at-from'];
 
-  const qTakenAtFrom = typeof a === 'string' ? new Date(a) : undefined;
+  const qTakenAtFrom = parseDate(a);
 
   a = query['gallery-taken-at-to'];
 
-  const qTakenAtTo = typeof a === 'string' ? new Date(a) : undefined;
+  const qTakenAtTo = parseDate(a);
 
   a = query['gallery-created-at-from'];
 
-  const qCreatedAtFrom = typeof a === 'string' ? new Date(a) : undefined;
+  const qCreatedAtFrom = parseDate(a);
 
   a = query['gallery-created-at-to'];
 
-  const qCreatedAtTo = typeof a === 'string' ? new Date(a) : undefined;
+  const qCreatedAtTo = parseDate(a);
 
   a = query['gallery-pano'];
 
@@ -1267,6 +1267,24 @@ function handleInfoPoint(
   if (typeof query['q'] === 'string') {
     dispatch(searchSetQuery({ query: query['q'], fromUrl: true }));
   }
+}
+
+/**
+ * A date from the URL, or nothing if it isn't one.
+ *
+ * `new Date('xyz')` yields an Invalid Date, which is truthy and compares
+ * unequal to everything — so unchecked it settles into the store and throws
+ * from `toISOString()` the next time the state is serialized, which since the
+ * unsaved-changes comparison happens during render means a blank screen.
+ */
+function parseDate(value: unknown): Date | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
 function serializePoints(line: Line): string {

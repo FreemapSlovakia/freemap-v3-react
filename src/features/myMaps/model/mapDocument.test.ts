@@ -239,3 +239,34 @@ describe('fingerprintDocument — a saved map matches its own document', () => {
     );
   });
 });
+
+// `toISOString()` throws on an Invalid Date, and this runs during render through
+// the unsaved-changes comparison — so a bad date must degrade, not blow up.
+describe('mapContentString — a date that is not one', () => {
+  const invalid = new Date('xyz');
+
+  it('leaves out an invalid gallery filter date instead of throwing', () => {
+    expect(() =>
+      mapContentString(
+        state({ gallery: { filter: { takenAtFrom: invalid } } }),
+      ),
+    ).not.toThrow();
+
+    expect(
+      mapContentString(
+        state({ gallery: { filter: { takenAtFrom: invalid } } }),
+      ),
+    ).not.toContain('gallery-taken-at-from');
+  });
+
+  it('leaves out an invalid tracked-device time instead of throwing', () => {
+    const withDevice = (fromTime: Date | undefined) =>
+      state({ tracking: { trackedDevices: [{ token: 'd1', fromTime }] } });
+
+    expect(() => mapContentString(withDevice(invalid))).not.toThrow();
+
+    expect(mapContentString(withDevice(invalid))).toBe(
+      mapContentString(withDevice(undefined)),
+    );
+  });
+});

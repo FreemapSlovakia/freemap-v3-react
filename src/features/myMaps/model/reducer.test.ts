@@ -120,6 +120,16 @@ describe('mapsReducer — what is pending', () => {
     });
   });
 
+  // A save refreshes the meta of the map already open, so it must not take a
+  // load of a different map down with it — that load would simply never open.
+  it('leaves a pending load of another map alone when meta is refreshed', () => {
+    const next = mapsReducer(loadingB, mapsSetMeta(meta('A')));
+
+    expect(next.loadMeta).toEqual({ id: 'B' });
+
+    expect(next.activeMap).toEqual(meta('A'));
+  });
+
   it('releases a restore on disconnect', () => {
     const restoring = mapsReducer(
       initial,
