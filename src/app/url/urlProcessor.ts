@@ -165,7 +165,7 @@ export const urlProcessor: Processor = {
 
     if (
       routePlanner.points.length &&
-      routePlanner.points.some((p) => p.transport)
+      routePlanner.points.some((p) => p?.transport)
     ) {
       // for sharing "premium" route
       historyParts.push([

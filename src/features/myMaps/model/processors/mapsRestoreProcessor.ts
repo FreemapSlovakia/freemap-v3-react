@@ -102,6 +102,14 @@ export const mapsRestoreProcessor: Processor<typeof mapsRestore> = {
     if (!hasRestoredContent) {
       load();
 
+      // `handleLocationChange` deferred the track the URL names to this
+      // processor, so it has to be started here or it never loads at all.
+      if (trackUID !== undefined) {
+        dispatch(trackViewerDownloadTrack(trackUID));
+      } else if (gpxUrl !== undefined) {
+        dispatch(trackViewerGpxLoad(gpxUrl));
+      }
+
       return;
     }
 
@@ -158,12 +166,19 @@ export const mapsRestoreProcessor: Processor<typeof mapsRestore> = {
     }
 
     if (!document) {
-      // Nothing to compare against, so the map can't be reported as saved. The
-      // restored content stands, and an explicit Reload re-establishes a
-      // baseline.
       restoreTrack(null, null, null);
 
-      dispatch(mapsSetSavedFingerprint(UNKNOWN_FINGERPRINT));
+      if (getState().myMaps.activeMap?.id === mapId) {
+        // A reload of the map that is already connected: it stays, but nothing
+        // establishes a baseline, so it can't be reported as saved. An explicit
+        // Reload re-establishes one.
+        dispatch(mapsSetSavedFingerprint(UNKNOWN_FINGERPRINT));
+      } else {
+        // The map couldn't be opened, so leave none connected. Staying connected
+        // to the map that was open before would attribute this content to it —
+        // and Save would then write it over that map.
+        dispatch(mapsDisconnect());
+      }
 
       return;
     }

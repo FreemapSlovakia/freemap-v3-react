@@ -7,40 +7,26 @@ import { MapMetaSchema } from './model/actions.js';
 // copy the user asked to keep, so purging one must never touch the other.
 const store = createStore('fm-myMaps-working', 'kv');
 
-// Keyed per map *and* per tab: two tabs open on the same map each have their own
-// working copy, so one can't overwrite the other's stashed track. The tab id
-// lives in sessionStorage, which survives a reload and dies with the tab —
-// exactly the lifetime of the copy it keys.
+// Keyed by map alone. Two tabs open on the same map therefore share one copy and
+// the last write wins — acceptable, because both are showing the same map and
+// the copy only carries its track. Keying per tab instead would need an id that
+// is genuinely per tab (a duplicated tab clones sessionStorage) and a way to
+// reclaim copies left by closed tabs, and got both wrong.
 const PREFIX = 'map:';
 
-const TAB_KEY = 'fm.myMaps.tab';
-
-function tabId(): string {
-  let id: string | null = null;
-
-  try {
-    id = sessionStorage.getItem(TAB_KEY);
-
-    if (!id) {
-      id = crypto.randomUUID();
-
-      sessionStorage.setItem(TAB_KEY, id);
-    }
-  } catch {
-    // Storage disabled: every load looks like a new tab, so the copy simply
-    // never matches and the map is read from the backend.
-    id = 'no-session';
-  }
-
-  return id;
-}
-
 function keyOf(mapId: string): string {
-  return `${PREFIX}${tabId()}:${mapId}`;
+  return PREFIX + mapId;
 }
+
+// Which maps are held and when they were last touched. A tiny separate entry, so
+// pruning never has to read the records themselves — each carries a track that
+// can be megabytes.
+const INDEX_KEY = 'index';
 
 // Enough to cover realistic map-hopping without growing without bound.
 const KEEP = 5;
+
+const IndexSchema = z.record(z.string(), z.number());
 
 const RecordSchema = z.object({
   meta: MapMetaSchema,
@@ -88,47 +74,50 @@ export async function putMapRecord(
   record: Omit<MapRecord, 'updatedAt'>,
   now: number,
 ): Promise<void> {
-  const key = keyOf(record.meta.id);
+  const mapId = record.meta.id;
 
-  await set(key, { ...record, updatedAt: now } satisfies MapRecord, store);
+  await set(
+    keyOf(mapId),
+    { ...record, updatedAt: now } satisfies MapRecord,
+    store,
+  );
 
-  await prune(key, now);
-}
-
-// Which maps are held and when they were last touched. A tiny separate entry, so
-// pruning never has to read the records themselves — each carries a track that
-// can be megabytes.
-// Per tab, like the records themselves, so one tab's map-hopping can't evict
-// another tab's live working copy.
-const indexKey = () => `index:${tabId()}`;
-
-const IndexSchema = z.record(z.string(), z.number());
-
-/**
- * Records the write and drops the least recently used past `KEEP`. Also how
- * copies left behind by closed tabs are eventually reclaimed.
- */
-async function prune(key: string, now: number): Promise<void> {
-  const key0 = indexKey();
-
-  const index = IndexSchema.safeParse(await get(key0, store)).data ?? {};
-
-  index[key] = now;
-
-  const stale = Object.entries(index)
-    .sort(([, a], [, b]) => b - a)
-    .slice(KEEP);
-
-  for (const [staleKey] of stale) {
-    delete index[staleKey];
-  }
-
-  await set(key0, index, store);
-
-  await Promise.all(stale.map(([staleKey]) => del(staleKey, store)));
+  await withIndex((index) => {
+    index[mapId] = now;
+  });
 }
 
 /** Drops a map's working copy — its baseline can no longer be trusted. */
 export async function deleteMapRecord(mapId: string): Promise<void> {
   await del(keyOf(mapId), store);
+
+  // Also from the index, or the phantom entry would count towards `KEEP` and
+  // evict a copy that is still in use.
+  await withIndex((index) => {
+    delete index[mapId];
+  });
+}
+
+/**
+ * Applies `update` to the index, then drops the records past `KEEP`, least
+ * recently touched first.
+ */
+async function withIndex(
+  update: (index: Record<string, number>) => void,
+): Promise<void> {
+  const index = IndexSchema.safeParse(await get(INDEX_KEY, store)).data ?? {};
+
+  update(index);
+
+  const stale = Object.entries(index)
+    .sort(([, a], [, b]) => b - a)
+    .slice(KEEP);
+
+  for (const [mapId] of stale) {
+    delete index[mapId];
+  }
+
+  await set(INDEX_KEY, index, store);
+
+  await Promise.all(stale.map(([mapId]) => del(keyOf(mapId), store)));
 }
