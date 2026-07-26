@@ -1,6 +1,11 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import { deleteMapRecord, putMapRecord } from '../../mapStore.js';
+import { authLogout } from '@features/auth/model/actions.js';
+import {
+  clearMapRecords,
+  deleteMapRecord,
+  putMapRecord,
+} from '../../mapStore.js';
 import { mapsLoaded, mapsSetSavedFingerprint } from '../actions.js';
 import { fingerprintState, UNKNOWN_FINGERPRINT } from '../mapDocument.js';
 
@@ -15,6 +20,18 @@ import { fingerprintState, UNKNOWN_FINGERPRINT } from '../mapDocument.js';
  */
 export const mapsWorkingCopyProcessor: Processor = {
   handle({ getState, dispatch, action }) {
+    if (authLogout.match(action)) {
+      written = null;
+
+      // The copies hold map names and tracks of the account that just left;
+      // a shared browser must not serve them to the next one.
+      clearMapRecords().catch((err) => {
+        console.warn('Error clearing map working copies:', err);
+      });
+
+      return;
+    }
+
     const state = getState();
 
     if (mapsLoaded.match(action)) {

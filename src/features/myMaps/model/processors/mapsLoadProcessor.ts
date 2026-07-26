@@ -10,6 +10,7 @@ import {
   type MapMeta,
   mapsLoad,
   mapsLoaded,
+  mapsRestore,
 } from '../actions.js';
 import { loadMapDocument } from '../loadMapDocument.js';
 
@@ -46,6 +47,7 @@ export const mapsLoadProcessor: Processor = {
 
         ({ meta, data } = await loadMapDocument(loadMeta.id, getState, [
           mapsLoad,
+          mapsRestore,
           authSetUser,
           authLogout,
         ]));
@@ -66,6 +68,12 @@ export const mapsLoadProcessor: Processor = {
         }
 
         ({ meta, data } = offline);
+      }
+
+      // A restore or a newer load has withdrawn this one while it was reading
+      // (the offline path isn't covered by the fetch's cancel actions).
+      if (getState().myMaps.loadMeta !== loadMeta) {
+        return;
       }
 
       // Write a fresh network copy through to the offline cache *before* the

@@ -62,6 +62,10 @@ export const mapsReducer = createReducer(initialState, (builder) =>
     // `id=` while the working copy is read and a second pass doesn't re-enter.
     .addCase(mapsRestore, (state, { payload }) => {
       state.restoringId = payload.mapId;
+
+      // Withdraw any pending load of another map: it would keep that map's id in
+      // the URL and, on completion, silently end this restore.
+      state.loadMeta = undefined;
     })
     .addCase(mapsDisconnect, (state) => {
       state.activeMap = undefined;

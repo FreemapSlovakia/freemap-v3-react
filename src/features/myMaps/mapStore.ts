@@ -1,4 +1,4 @@
-import { createStore, del, get, set } from 'idb-keyval';
+import { clear, createStore, del, get, set } from 'idb-keyval';
 import z from 'zod';
 import { GeoJSONFeatureCollectionSchema } from 'zod-geojson';
 import { MapMetaSchema } from './model/actions.js';
@@ -70,32 +70,58 @@ export async function getMapRecord(
   return parsed.data;
 }
 
-export async function putMapRecord(
+export function putMapRecord(
   record: Omit<MapRecord, 'updatedAt'>,
   now: number,
 ): Promise<void> {
   const mapId = record.meta.id;
 
-  await set(
-    keyOf(mapId),
-    { ...record, updatedAt: now } satisfies MapRecord,
-    store,
-  );
+  return enqueue(async () => {
+    await set(
+      keyOf(mapId),
+      { ...record, updatedAt: now } satisfies MapRecord,
+      store,
+    );
 
-  await withIndex((index) => {
-    index[mapId] = now;
+    await withIndex((index) => {
+      index[mapId] = now;
+    });
   });
 }
 
 /** Drops a map's working copy — its baseline can no longer be trusted. */
-export async function deleteMapRecord(mapId: string): Promise<void> {
-  await del(keyOf(mapId), store);
+export function deleteMapRecord(mapId: string): Promise<void> {
+  return enqueue(async () => {
+    await del(keyOf(mapId), store);
 
-  // Also from the index, or the phantom entry would count towards `KEEP` and
-  // evict a copy that is still in use.
-  await withIndex((index) => {
-    delete index[mapId];
+    // Also from the index, or the phantom entry would count towards `KEEP` and
+    // evict a copy that is still in use.
+    await withIndex((index) => {
+      delete index[mapId];
+    });
   });
+}
+
+/**
+ * Drops every working copy. Called on logout: the records carry map names and
+ * tracks — private ones included — and are served without a server check, so a
+ * shared browser must not offer them to whoever logs in next.
+ */
+export function clearMapRecords(): Promise<void> {
+  return enqueue(() => clear(store));
+}
+
+// Writes are fire-and-forget at the call sites, so they are serialized here:
+// the index is a read-modify-write, and two in flight at once could lose an
+// entry, leaving a multi-megabyte record the pruning never sees again.
+let queue: Promise<unknown> = Promise.resolve();
+
+function enqueue<T>(task: () => Promise<T>): Promise<T> {
+  const run = queue.then(task, task);
+
+  queue = run.catch(() => undefined);
+
+  return run;
 }
 
 /**

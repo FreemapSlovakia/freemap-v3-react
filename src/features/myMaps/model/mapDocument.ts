@@ -3,6 +3,7 @@ import {
   getMapContentParts,
   serializeQuery,
 } from '@app/url/mapContentParts.js';
+import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
 import { hash } from 'ohash';
 import type { MapData } from './actions.js';
 
@@ -133,8 +134,11 @@ export function fingerprintDocument(data: MapData, base: RootState): string {
     ...base,
     drawingLines: { ...base.drawingLines, lines: data.lines ?? [] },
     drawingPoints: { ...base.drawingPoints, points: data.points ?? [] },
+    // Slice defaults, not live state, stand in for fields the document omits
+    // (e.g. a legacy document without `finishOnly`) — falling back to the screen
+    // would make a genuinely changed map read as saved.
     routePlanner: {
-      ...base.routePlanner,
+      ...routePlannerInitialState,
       ...data.routePlanner,
       points: data.routePlanner?.points ?? [],
     },
