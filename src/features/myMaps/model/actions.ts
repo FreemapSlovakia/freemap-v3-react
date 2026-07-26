@@ -93,7 +93,7 @@ export const mapsSetSavedFingerprint = createAction<string>(
  * browser when there is one (so unsaved changes survive a reload), and reads the
  * map from the backend otherwise.
  */
-export const mapsRestore = createAction<{
+export type MapRestore = {
   mapId: string;
   ignoreMap?: boolean;
   ignoreLayers?: boolean;
@@ -107,7 +107,9 @@ export const mapsRestore = createAction<{
   trackUID?: string;
   /** `import-url=` from the URL, deferred for the same reason. */
   gpxUrl?: string;
-}>('MAPS_RESTORE');
+};
+
+export const mapsRestore = createAction<MapRestore>('MAPS_RESTORE');
 
 /** Ids of maps available offline, synced from IndexedDB. */
 export const mapsOfflineIdsLoaded = createAction<string[]>(

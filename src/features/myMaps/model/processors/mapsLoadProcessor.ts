@@ -1,18 +1,11 @@
-import { isNetworkError } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { getOfflineMap, putOfflineMap } from '../../offlineStore.js';
+import { putOfflineMap } from '../../offlineStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
-import {
-  type MapData,
-  type MapMeta,
-  mapsLoad,
-  mapsLoaded,
-  mapsRestore,
-} from '../actions.js';
-import { loadMapDocument } from '../loadMapDocument.js';
+import { mapsLoad, mapsLoaded, mapsRestore } from '../actions.js';
+import { readMapDocument } from '../loadMapDocument.js';
 
 export const mapsLoadProcessor: Processor = {
   actionCreator: [mapsLoad, authSetUser, authLogout],
@@ -36,39 +29,11 @@ export const mapsLoadProcessor: Processor = {
     }
 
     try {
-      let meta: MapMeta;
-      let data: MapData;
-      let fromNetwork = false;
-
-      try {
-        if (!navigator.onLine) {
-          throw new Error('offline');
-        }
-
-        ({ meta, data } = await loadMapDocument(loadMeta.id, getState, [
-          mapsLoad,
-          mapsRestore,
-          authSetUser,
-          authLogout,
-        ]));
-
-        fromNetwork = true;
-      } catch (err) {
-        // Offline, or a genuine network failure while we believed we were
-        // online: resolve from the offline copy if the map was flagged for
-        // offline use. A server or parse error surfaces instead of silently
-        // serving a stale copy.
-        const offline =
-          !navigator.onLine || isNetworkError(err)
-            ? await getOfflineMap(loadMeta.id)
-            : undefined;
-
-        if (!offline) {
-          throw err;
-        }
-
-        ({ meta, data } = offline);
-      }
+      const { meta, data, fromNetwork } = await readMapDocument(
+        loadMeta.id,
+        getState,
+        [mapsLoad, mapsRestore, authSetUser, authLogout],
+      );
 
       // A restore or a newer load has withdrawn this one while it was reading
       // (the offline path isn't covered by the fetch's cancel actions).

@@ -149,7 +149,7 @@ export function handleLocationChange(store: MyStore): void {
     id !== undefined &&
     id !==
       (getState().myMaps.loadMeta?.id ??
-        getState().myMaps.restoringId ??
+        getState().myMaps.restoring?.mapId ??
         getState().myMaps.activeMap?.id)
   ) {
     restore = {

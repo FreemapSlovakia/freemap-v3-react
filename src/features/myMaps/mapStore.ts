@@ -1,4 +1,4 @@
-import { clear, createStore, del, get, set } from 'idb-keyval';
+import { createStore, del, get, keys, set } from 'idb-keyval';
 import z from 'zod';
 import { GeoJSONFeatureCollectionSchema } from 'zod-geojson';
 import { MapMetaSchema } from './model/actions.js';
@@ -103,12 +103,35 @@ export function deleteMapRecord(mapId: string): Promise<void> {
 }
 
 /**
- * Drops every working copy. Called on logout: the records carry map names and
- * tracks — private ones included — and are served without a server check, so a
- * shared browser must not offer them to whoever logs in next.
+ * Drops every working copy but `keepMapId`'s. Called on logout: the records
+ * carry map names and tracks — private ones included — and are served without a
+ * server check, so a shared browser must not offer them to whoever logs in next.
+ *
+ * A public map stays connected across logout, and its copy is kept so the
+ * processor doesn't simply write it back: its name and track are on screen
+ * either way, and dropping it would lose the track on the next reload.
  */
-export function clearMapRecords(): Promise<void> {
-  return enqueue(() => clear(store));
+export function clearMapRecords(keepMapId?: string): Promise<void> {
+  return enqueue(async () => {
+    const keep = keepMapId === undefined ? undefined : keyOf(keepMapId);
+
+    const stale = (await keys(store)).filter(
+      (key): key is string =>
+        typeof key === 'string' && key.startsWith(PREFIX) && key !== keep,
+    );
+
+    await Promise.all(stale.map((key) => del(key, store)));
+
+    const index = IndexSchema.safeParse(await get(INDEX_KEY, store)).data ?? {};
+
+    await set(
+      INDEX_KEY,
+      keepMapId !== undefined && index[keepMapId] !== undefined
+        ? { [keepMapId]: index[keepMapId] }
+        : {},
+      store,
+    );
+  });
 }
 
 // Writes are fire-and-forget at the call sites, so they are serialized here:

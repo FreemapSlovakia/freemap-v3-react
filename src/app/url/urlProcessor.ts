@@ -92,7 +92,7 @@ export const urlProcessor: Processor = {
       search.osmWayId,
       trackViewer.trackUID,
       myMaps.activeMap,
-      myMaps.restoringId,
+      myMaps.restoring,
       main.tools.join(','),
       objects.active,
       wiki.preview,
@@ -144,7 +144,7 @@ export const urlProcessor: Processor = {
     }
 
     const mapId =
-      myMaps.loadMeta?.id || myMaps.restoringId || myMaps.activeMap?.id;
+      myMaps.loadMeta?.id || myMaps.restoring?.mapId || myMaps.activeMap?.id;
 
     if (mapId) {
       queryParts.push(['id', mapId]);

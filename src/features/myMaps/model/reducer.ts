@@ -3,6 +3,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import {
   type MapLoadMeta,
   type MapMeta,
+  type MapRestore,
   mapsDisconnect,
   mapsLoad,
   mapsLoaded,
@@ -24,12 +25,12 @@ export interface MapsState {
    */
   savedFingerprint: string | null;
   /**
-   * The map a restore is currently opening. Kept apart from `loadMeta`, which
-   * asks `mapsLoadProcessor` to read the map from the backend — a restore may
-   * decide not to, and must not have that decision made for it when the auth
-   * check lands mid-flight.
+   * The restore currently opening a map. Kept apart from `loadMeta`, which asks
+   * `mapsLoadProcessor` to read the map from the backend — a restore may decide
+   * not to. Held in full so the restore can resume once the auth check lands,
+   * exactly as `loadMeta` lets a load resume.
    */
-  restoringId: string | undefined;
+  restoring: MapRestore | undefined;
 }
 
 const initialState: MapsState = {
@@ -38,7 +39,7 @@ const initialState: MapsState = {
   activeMap: undefined,
   offlineIds: [],
   savedFingerprint: null,
-  restoringId: undefined,
+  restoring: undefined,
 };
 
 export const mapsReducer = createReducer(initialState, (builder) =>
@@ -51,17 +52,17 @@ export const mapsReducer = createReducer(initialState, (builder) =>
 
       state.loadMeta = undefined;
 
-      state.restoringId = undefined;
+      state.restoring = undefined;
     })
     .addCase(mapsLoad, (state, { payload }) => {
       state.loadMeta = payload;
 
-      state.restoringId = undefined;
+      state.restoring = undefined;
     })
     // The map is claimed as soon as the restore starts, so the URL keeps its
     // `id=` while the working copy is read and a second pass doesn't re-enter.
     .addCase(mapsRestore, (state, { payload }) => {
-      state.restoringId = payload.mapId;
+      state.restoring = payload;
 
       // Withdraw any pending load of another map: it would keep that map's id in
       // the URL and, on completion, silently end this restore.
@@ -72,22 +73,28 @@ export const mapsReducer = createReducer(initialState, (builder) =>
 
       state.savedFingerprint = null;
 
-      state.restoringId = undefined;
+      state.restoring = undefined;
     })
     .addCase(mapsSetMeta, (state, { payload }) => {
-      state.activeMap = { ...(state.activeMap ?? {}), ...payload };
+      // Merging refreshes the meta of the map already open; switching to another
+      // map replaces it, or optional fields of the old one — `writers` — would
+      // be carried over into a map they don't belong to.
+      state.activeMap =
+        state.activeMap?.id === payload.id
+          ? { ...state.activeMap, ...payload }
+          : payload;
 
       // The map is active now, so nothing is pending.
       state.loadMeta = undefined;
 
-      state.restoringId = undefined;
+      state.restoring = undefined;
     })
     // Every restore ends by setting the digest, including the paths that never
     // reach a meta — so this is where an in-flight restore is finally released.
     .addCase(mapsSetSavedFingerprint, (state, { payload }) => {
       state.savedFingerprint = payload;
 
-      state.restoringId = undefined;
+      state.restoring = undefined;
     })
     .addCase(mapsOfflineIdsLoaded, (state, { payload }) => {
       state.offlineIds = payload;

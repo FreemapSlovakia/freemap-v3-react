@@ -1,4 +1,5 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import {
   trackViewerDelete,
   trackViewerDownloadTrack,
@@ -9,7 +10,6 @@ import {
 } from '@features/trackViewer/model/actions.js';
 import type { FeatureCollection } from 'geojson';
 import { getMapRecord } from '../../mapStore.js';
-import { getOfflineMap } from '../../offlineStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
   mapsDisconnect,
@@ -18,7 +18,7 @@ import {
   mapsSetMeta,
   mapsSetSavedFingerprint,
 } from '../actions.js';
-import { loadMapDocument } from '../loadMapDocument.js';
+import { readMapDocument } from '../loadMapDocument.js';
 import {
   fingerprintDocument,
   fingerprintState,
@@ -41,9 +41,20 @@ import {
  * Owns the track for this restore: `handleLocationChange` defers the fetch a
  * `track-uid=` / `import-url=` would start, so nothing can race it.
  */
-export const mapsRestoreProcessor: Processor<typeof mapsRestore> = {
-  actionCreator: mapsRestore,
-  async handle({ getState, dispatch, action, toastError }) {
+export const mapsRestoreProcessor: Processor = {
+  // Re-runs on the auth actions, like `mapsLoadProcessor`: bootstrap decodes the
+  // URL before the token is validated, and reading the map with a stale one
+  // would 401 and disconnect the user from their own map.
+  actionCreator: [mapsRestore, authSetUser, authLogout],
+  async handle({ getState, dispatch, toastError }) {
+    const { auth, myMaps } = getState();
+
+    const restoring = myMaps.restoring;
+
+    if (!restoring || (auth.user && !auth.validated)) {
+      return;
+    }
+
     const {
       mapId,
       ignoreMap,
@@ -51,12 +62,12 @@ export const mapsRestoreProcessor: Processor<typeof mapsRestore> = {
       hasRestoredContent,
       trackUID,
       gpxUrl,
-    } = action.payload;
+    } = restoring;
 
     // Another restore, a plain load or a disconnect has taken over while this
     // one was reading storage or the network. Its decisions concern a map the
     // user has moved on from, so none of them may be applied.
-    const superseded = () => getState().myMaps.restoringId !== mapId;
+    const superseded = () => getState().myMaps.restoring?.mapId !== mapId;
 
     const load = () => {
       dispatch(mapsLoad({ id: mapId, ignoreMap, ignoreLayers }));
@@ -89,11 +100,16 @@ export const mapsRestoreProcessor: Processor<typeof mapsRestore> = {
         dispatch(trackViewerDelete());
       }
 
-      // Nothing stored, but the URL names a source — let it load.
-      if (trackUID !== undefined) {
-        dispatch(trackViewerDownloadTrack(trackUID));
-      } else if (gpxUrl !== undefined) {
-        dispatch(trackViewerGpxLoad(gpxUrl));
+      // No geometry, but a source names one — the map's own, or failing that
+      // the one the URL asked for.
+      const sourceUid = uid ?? trackUID;
+
+      const sourceUrl = url ?? gpxUrl;
+
+      if (sourceUid) {
+        dispatch(trackViewerDownloadTrack(sourceUid));
+      } else if (sourceUrl) {
+        dispatch(trackViewerGpxLoad(sourceUrl));
       }
     };
 
@@ -147,18 +163,15 @@ export const mapsRestoreProcessor: Processor<typeof mapsRestore> = {
     let document;
 
     try {
-      document = await loadMapDocument(mapId, getState, [
+      document = await readMapDocument(mapId, getState, [
         mapsRestore,
         mapsLoad,
         mapsDisconnect,
+        authSetUser,
+        authLogout,
       ]);
     } catch (err) {
-      // Offline: a map kept for offline use still answers from its cached copy.
-      document = await getOfflineMap(mapId).catch(() => undefined);
-
-      if (!document) {
-        await toastError(err, loadMyMapsMessages, 'fetchError');
-      }
+      await toastError(err, loadMyMapsMessages, 'fetchError');
     }
 
     if (superseded()) {
