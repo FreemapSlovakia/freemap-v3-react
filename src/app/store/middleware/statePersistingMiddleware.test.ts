@@ -327,7 +327,7 @@ describe('save → rehydrate round-trip', () => {
 
     // premiumExpiration round-trips Date → ISO string → Date.
     expect(initial.auth?.user?.premiumExpiration).toBeInstanceOf(Date);
-    expect((initial.auth?.user?.premiumExpiration as Date).toISOString()).toBe(
+    expect((initial.auth?.user?.premiumExpiration as Date)?.toISOString()).toBe(
       premiumDate.toISOString(),
     );
   });

@@ -1,4 +1,4 @@
-import { Map as LeafletMap } from 'maplibre-gl';
+import { type ExpressionSpecification, Map as LeafletMap } from 'maplibre-gl';
 
 (
   LeafletMap.prototype as LeafletMap & {
@@ -6,7 +6,7 @@ import { Map as LeafletMap } from 'maplibre-gl';
   }
 ).setLanguage = function (language: string) {
   const setLanguage = () => {
-    const replacer = [
+    const replacer: ExpressionSpecification = [
       'case',
       ['has', `name:${language}`],
       ['get', `name:${language}`],
