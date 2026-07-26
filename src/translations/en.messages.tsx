@@ -184,6 +184,17 @@ const messages: Messages = {
     closeTool: 'Close tool',
     locateMe: 'Locate me',
     locationError: 'Error getting location.',
+    headingSource: 'Direction indicator',
+    headingSources: {
+      none: 'Hidden',
+      gps: 'Direction of travel',
+      compass: 'Device compass',
+    },
+    headingSourceHelp:
+      'Direction of travel comes from the GPS and only shows while you are moving. The device compass works while standing still too, but needs permission and can be inaccurate.',
+    compassPermissionDenied: 'Access to the compass was denied.',
+    compassUnavailable:
+      'No compass data. Your device may have no compass, or access to it is blocked.',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
     devInfo: () => (

@@ -189,6 +189,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Zavrieť nástroj',
     locateMe: 'Kde som?',
     locationError: 'Nepodarilo sa získať pozíciu.',
+    headingSource: 'Ukazovateľ smeru',
+    headingSources: {
+      none: 'Skrytý',
+      gps: 'Smer pohybu',
+      compass: 'Kompas zariadenia',
+    },
+    headingSourceHelp:
+      'Smer pohybu pochádza z GPS a zobrazuje sa iba počas pohybu. Kompas zariadenia funguje aj v stoji, vyžaduje však povolenie a môže byť nepresný.',
+    compassPermissionDenied: 'Prístup ku kompasu bol zamietnutý.',
+    compassUnavailable:
+      'Žiadne údaje z kompasu. Vaše zariadenie ho nemusí mať, alebo je prístup k nemu zablokovaný.',
     zoomIn: 'Priblížiť mapu',
     zoomOut: 'Oddialiť mapu',
     devInfo: () => (

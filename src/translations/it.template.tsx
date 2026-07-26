@@ -196,6 +196,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Chiudi lo strumento',
     locateMe: 'Localizzami',
     locationError: 'Errore nel determinare la locazione.',
+    headingSource: 'Indicatore di direzione',
+    headingSources: {
+      none: 'Nascosto',
+      gps: 'Direzione di marcia',
+      compass: 'Bussola del dispositivo',
+    },
+    headingSourceHelp:
+      'La direzione di marcia proviene dal GPS e appare solo mentre ti muovi. La bussola del dispositivo funziona anche da fermo, ma richiede un permesso e può essere imprecisa.',
+    compassPermissionDenied: 'Accesso alla bussola negato.',
+    compassUnavailable:
+      'Nessun dato dalla bussola. Il dispositivo potrebbe non averla, oppure l’accesso è bloccato.',
     zoomIn: 'Zoom avanti',
     zoomOut: 'Zoom indietro',
     devInfo: () => (

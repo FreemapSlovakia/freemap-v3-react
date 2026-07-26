@@ -192,6 +192,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Werkzeug schließen',
     locateMe: 'Standort ermitteln',
     locationError: 'Fehler beim Abrufen des Standorts.',
+    headingSource: 'Richtungsanzeige',
+    headingSources: {
+      none: 'Ausgeblendet',
+      gps: 'Bewegungsrichtung',
+      compass: 'Gerätekompass',
+    },
+    headingSourceHelp:
+      'Die Bewegungsrichtung stammt vom GPS und erscheint nur in Bewegung. Der Gerätekompass funktioniert auch im Stand, benötigt aber eine Berechtigung und kann ungenau sein.',
+    compassPermissionDenied: 'Zugriff auf den Kompass wurde verweigert.',
+    compassUnavailable:
+      'Keine Kompassdaten. Ihr Gerät hat möglicherweise keinen Kompass, oder der Zugriff darauf ist blockiert.',
     zoomIn: 'Vergrößern',
     zoomOut: 'Verkleinern',
     devInfo: () => (

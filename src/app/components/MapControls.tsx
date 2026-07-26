@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ensureCompassPermission } from '@features/location/ensureCompassPermission.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { type MapViewState, mapRefocus } from '@features/map/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -24,6 +25,21 @@ export function MapControls(): ReactElement | null {
   const locate = useAppSelector((state) => state.location.locate);
 
   const gpsTracked = useAppSelector((state) => state.map.gpsTracked);
+
+  const headingSource = useAppSelector(
+    (state) => state.locationSettings.headingSource,
+  );
+
+  const handleLocateClick = useCallback(() => {
+    // iOS forgets the orientation grant between page loads while the preference
+    // survives, so a stored compass choice needs a gesture to revive it; this is
+    // the earliest one that means "I want to be located".
+    if (!locate && headingSource === 'compass') {
+      ensureCompassPermission(dispatch);
+    }
+
+    dispatch(toggleLocate(undefined));
+  }, [dispatch, headingSource, locate]);
 
   const onMapRefocus = useCallback(
     (changes: Partial<MapViewState>) => {
@@ -105,9 +121,7 @@ export function MapControls(): ReactElement | null {
           {({ props }) => (
             <Button
               className="ms-1"
-              onClick={() => {
-                dispatch(toggleLocate(undefined));
-              }}
+              onClick={handleLocateClick}
               active={locate}
               variant={gpsTracked ? 'warning' : 'secondary'}
               {...props}

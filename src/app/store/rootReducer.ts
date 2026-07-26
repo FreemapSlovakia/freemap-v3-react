@@ -12,6 +12,7 @@ import { geoIpReducer } from '@features/geoip/model/reducer.js';
 import { homeLocationReducer } from '@features/homeLocation/model/reducer.js';
 import { l10nReducer } from '@features/l10n/model/reducer.js';
 import { locationReducer } from '@features/location/model/reducer.js';
+import { locationSettingsReducer } from '@features/location/model/settingsReducer.js';
 import { mapReducer } from '@features/map/model/reducer.js';
 import { mapAreaReducer } from '@features/mapArea/model/reducer.js';
 import { mapDetailsReducer } from '@features/mapDetails/model/reducer.js';
@@ -49,6 +50,7 @@ export const reducers = {
   homeLocation: homeLocationReducer,
   l10n: l10nReducer,
   location: locationReducer,
+  locationSettings: locationSettingsReducer,
   main: mainReducer,
   mapDetails: mapDetailsReducer,
   mapArea: mapAreaReducer,

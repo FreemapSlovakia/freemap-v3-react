@@ -201,6 +201,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Fermer l’outil',
     locateMe: 'Me localiser',
     locationError: 'Erreur lors de l’obtention de la position.',
+    headingSource: 'Indicateur de direction',
+    headingSources: {
+      none: 'Masqué',
+      gps: 'Direction du déplacement',
+      compass: 'Boussole de l’appareil',
+    },
+    headingSourceHelp:
+      'La direction du déplacement provient du GPS et n’apparaît qu’en mouvement. La boussole de l’appareil fonctionne aussi à l’arrêt, mais nécessite une autorisation et peut être imprécise.',
+    compassPermissionDenied: 'L’accès à la boussole a été refusé.',
+    compassUnavailable:
+      'Aucune donnée de boussole. Votre appareil n’en a peut-être pas, ou l’accès est bloqué.',
     zoomIn: 'Zoom avant',
     zoomOut: 'Zoom arrière',
     copyright: 'Droits d’auteur',

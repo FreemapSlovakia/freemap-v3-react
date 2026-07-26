@@ -1,6 +1,13 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
-import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import {
+  locationSetHeadingSource,
+  saveSettings,
+  setActiveModal,
+} from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { isCompassSupported } from '@features/location/compass.js';
+import { ensureCompassPermission } from '@features/location/ensureCompassPermission.js';
+import { locationSettingsInitialState } from '@features/location/model/settingsReducer.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
@@ -48,6 +55,12 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
   const [featureScale, setFeatureScale] = useState(initialFeatureScale);
 
+  const initialHeadingSource = useAppSelector(
+    (state) => state.locationSettings.headingSource,
+  );
+
+  const [headingSource, setHeadingSource] = useState(initialHeadingSource);
+
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
   useDocumentTitle(show ? m?.mapLayers.preferences : undefined);
@@ -68,6 +81,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     );
 
     setFeatureScale(String(mapInitialState.featureScale));
+
+    setHeadingSource(locationSettingsInitialState.headingSource);
   }, []);
 
   const handleSubmit = (e: SubmitEvent) => {
@@ -94,6 +109,17 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       );
     }
 
+    if (headingSource !== initialHeadingSource) {
+      dispatch(locationSetHeadingSource(headingSource));
+
+      // Prompt while the reason for it is still on screen. Reviving an
+      // unchanged stored choice cannot happen here — Save is disabled when the
+      // form is clean — so the locate button carries that case instead.
+      if (headingSource === 'compass') {
+        ensureCompassPermission(dispatch);
+      }
+    }
+
     if (Object.keys(settings).length > 0) {
       // saveSettingsProcessor closes the modal on success;
       // dispatching setActiveModal(null) here would cancel its PATCH.
@@ -113,7 +139,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   const dirty =
     maxZoom !== initialMaxZoom ||
     resolutionScale !== initialResolutionScale ||
-    featureScale !== initialFeatureScale;
+    featureScale !== initialFeatureScale ||
+    headingSource !== initialHeadingSource;
 
   const atDefault =
     maxZoom === String(mapInitialState.maxZoom) &&
@@ -121,7 +148,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       (mapInitialState.resolutionScale === null
         ? ''
         : String(mapInitialState.resolutionScale)) &&
-    featureScale === String(mapInitialState.featureScale);
+    featureScale === String(mapInitialState.featureScale) &&
+    headingSource === locationSettingsInitialState.headingSource;
 
   return (
     <Modal
@@ -208,6 +236,44 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
             <Form.Text muted className="d-block">
               {m?.mapLayers.featureScaleHelp}
+            </Form.Text>
+          </Form.Group>
+
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">{m?.main.headingSource}</Form.Label>
+
+            <ToggleButtonGroup
+              type="radio"
+              name="headingSource"
+              value={headingSource}
+              onChange={setHeadingSource}
+            >
+              {(['none', 'gps', 'compass'] as const)
+                // No point offering the magnetometer where there is none —
+                // unless it is the stored choice, since dropping the selected
+                // value would leave the group with nothing selected. Keyed on
+                // the stored value, not the live one, or picking another source
+                // would make the option vanish with no way back to it.
+                .filter(
+                  (source) =>
+                    source !== 'compass' ||
+                    isCompassSupported() ||
+                    initialHeadingSource === 'compass',
+                )
+                .map((source) => (
+                  <ToggleButton
+                    key={source}
+                    id={`hs-${source}`}
+                    value={source}
+                    variant="outline-primary"
+                  >
+                    {m?.main.headingSources[source]}
+                  </ToggleButton>
+                ))}
+            </ToggleButtonGroup>
+
+            <Form.Text muted className="d-block">
+              {m?.main.headingSourceHelp}
             </Form.Text>
           </Form.Group>
         </Modal.Body>
