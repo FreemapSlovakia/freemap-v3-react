@@ -27,11 +27,9 @@ export const mapsWorkingCopyProcessor: Processor = {
       // shared browser must not serve them to the next one. A public map stays
       // connected, so its copy is kept — otherwise the processor writes it
       // straight back, and its track would be lost on the next reload anyway.
-      clearMapRecords(getState().myMaps.activeMap?.id, Date.now()).catch(
-        (err) => {
-          console.warn('Error clearing map working copies:', err);
-        },
-      );
+      clearMapRecords(getState().myMaps.activeMap?.id).catch((err) => {
+        console.warn('Error clearing map working copies:', err);
+      });
 
       return;
     }

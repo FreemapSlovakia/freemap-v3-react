@@ -5,6 +5,7 @@ import {
 } from '@app/url/mapContentParts.js';
 import { routePlannerFromMapData } from '@features/routePlanner/model/reducer.js';
 import { hash } from 'ohash';
+import { createSelector } from 'reselect';
 import type { MapData } from './actions.js';
 
 /**
@@ -157,37 +158,48 @@ export function fingerprintDocument(data: MapData, base: RootState): string {
   } as RootState);
 }
 
-// Inputs of the last digest, so repeated calls on unrelated dispatches (panning,
-// opening a menu) are free. A pure cache: a miss only costs a recomputation, so
-// unlike a tracked flag it can't fall out of step with the state.
-let memoInputs: unknown[] = [];
-
-let memoValue = '';
-
-/** The digest of what's on screen right now. */
-export function fingerprintState(state: RootState): string {
-  const inputs = [
-    state.drawingLines.lines,
-    state.drawingPoints.points,
-    state.tracking.trackedDevices,
-    state.routePlanner,
-    state.objects.active,
-    state.gallery.filter,
-    state.trackViewer.trackGeojson,
-    state.trackViewer.trackUID,
-    state.trackViewer.gpxUrl,
-  ];
-
-  if (
-    inputs.length === memoInputs.length &&
-    inputs.every((input, i) => input === memoInputs[i])
-  ) {
-    return memoValue;
-  }
-
-  memoInputs = inputs;
-
-  memoValue = fingerprint(state);
-
-  return memoValue;
-}
+/**
+ * The digest of what's on screen right now.
+ *
+ * Memoized on exactly the slices the content serialization reads, so the
+ * repeated calls on unrelated dispatches — panning, opening a menu — are free
+ * and this stays cheap enough for the unsaved-changes selector to call on every
+ * render. A pure cache: a miss only costs a recomputation, so unlike a tracked
+ * flag it can't fall out of step with the state.
+ */
+export const fingerprintState = createSelector(
+  [
+    (state: RootState) => state.drawingLines.lines,
+    (state: RootState) => state.drawingPoints.points,
+    (state: RootState) => state.tracking.trackedDevices,
+    (state: RootState) => state.routePlanner,
+    (state: RootState) => state.objects.active,
+    (state: RootState) => state.gallery.filter,
+    (state: RootState) => state.trackViewer.trackGeojson,
+    (state: RootState) => state.trackViewer.trackUID,
+    (state: RootState) => state.trackViewer.gpxUrl,
+  ],
+  (
+    lines,
+    points,
+    trackedDevices,
+    routePlanner,
+    active,
+    filter,
+    trackGeojson,
+    trackUID,
+    gpxUrl,
+  ) =>
+    // Only the slices the serialization reads are rebuilt, so anything it starts
+    // reading without being listed above fails here rather than silently
+    // digesting a stale value.
+    fingerprint({
+      drawingLines: { lines },
+      drawingPoints: { points },
+      tracking: { trackedDevices },
+      routePlanner,
+      objects: { active },
+      gallery: { filter },
+      trackViewer: { trackGeojson, trackUID, gpxUrl },
+    } as RootState),
+);

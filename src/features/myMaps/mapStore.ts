@@ -1,4 +1,4 @@
-import { createStore, del, get, keys, set } from 'idb-keyval';
+import { createStore, delMany, get, keys, set } from 'idb-keyval';
 import z from 'zod';
 import { GeoJSONFeatureCollectionSchema } from 'zod-geojson';
 import { MapMetaSchema } from './model/actions.js';
@@ -12,32 +12,53 @@ const store = createStore('fm-myMaps-working', 'kv');
 // the copy only carries its track. Keying per tab instead would need an id that
 // is genuinely per tab (a duplicated tab clones sessionStorage) and a way to
 // reclaim copies left by closed tabs, and got both wrong.
+//
+// The key carries when the record was last touched — `map:<updatedAt>:<mapId>` —
+// so pruning can order the records from `keys()` alone, without deserializing a
+// track that can be megabytes. The timestamp comes first and is read up to the
+// first separator, so a map id containing one can't be misparsed.
 const PREFIX = 'map:';
 
-function keyOf(mapId: string): string {
-  return PREFIX + mapId;
+export function keyOf(mapId: string, updatedAt: number): string {
+  return `${PREFIX}${updatedAt}:${mapId}`;
 }
 
-// Which maps are held and when they were last touched. A tiny separate entry, so
-// pruning never has to read the records themselves — each carries a track that
-// can be megabytes.
-const INDEX_KEY = 'index';
+export type StoredKey = { key: string; mapId: string; updatedAt: number };
+
+export function parseKey(key: unknown): StoredKey | undefined {
+  if (typeof key !== 'string' || !key.startsWith(PREFIX)) {
+    return undefined;
+  }
+
+  const rest = key.slice(PREFIX.length);
+
+  const sep = rest.indexOf(':');
+
+  const updatedAt = Number(rest.slice(0, sep));
+
+  return sep === -1 || !Number.isFinite(updatedAt)
+    ? undefined
+    : { key, mapId: rest.slice(sep + 1), updatedAt };
+}
+
+async function storedKeys(): Promise<StoredKey[]> {
+  return (await keys(store))
+    .map(parseKey)
+    .filter((entry): entry is StoredKey => entry !== undefined);
+}
 
 // Enough to cover realistic map-hopping without growing without bound.
-const KEEP = 5;
-
-const IndexSchema = z.record(z.string(), z.number());
+export const KEEP = 5;
 
 const RecordSchema = z.object({
   meta: MapMetaSchema,
-  /** Digest of the map as last loaded or saved (see `fingerprintMapData`). */
+  /** Digest of the map as last loaded or saved (see `fingerprintState`). */
   savedFingerprint: z.string(),
   /** The track on screen — the one part of a map the URL can't carry. */
   track: GeoJSONFeatureCollectionSchema.nullable(),
   /** Where that track came from, so restoring it doesn't re-fetch or read dirty. */
   trackUID: z.string().nullable(),
   gpxUrl: z.string().nullable(),
-  updatedAt: z.number(),
 });
 
 export type MapRecord = z.infer<typeof RecordSchema>;
@@ -53,13 +74,17 @@ export type MapRecord = z.infer<typeof RecordSchema>;
 export async function getMapRecord(
   mapId: string,
 ): Promise<MapRecord | undefined> {
-  const raw = await get(keyOf(mapId), store);
+  const entries = (await storedKeys()).filter((entry) => entry.mapId === mapId);
 
-  if (raw === undefined) {
+  if (entries.length === 0) {
     return undefined;
   }
 
-  const parsed = RecordSchema.safeParse(raw);
+  // Pruning leaves one key per map; should a write have been interrupted, the
+  // newest is the one that counts.
+  const newest = entries.reduce((a, b) => (b.updatedAt > a.updatedAt ? b : a));
+
+  const parsed = RecordSchema.safeParse(await get(newest.key, store));
 
   if (!parsed.success) {
     console.warn(`Discarding unreadable map record ${mapId}:`, parsed.error);
@@ -70,39 +95,20 @@ export async function getMapRecord(
   return parsed.data;
 }
 
-export function putMapRecord(
-  record: Omit<MapRecord, 'updatedAt'>,
-  now: number,
-): Promise<void> {
-  const mapId = record.meta.id;
-
+export function putMapRecord(record: MapRecord, now: number): Promise<void> {
   return enqueue(async () => {
-    // Indexed before it is written, so a failure in between leaves an index
-    // entry naming no record — which reads as absent and prunes normally. The
-    // other order leaves a record the index never mentions, and since pruning
-    // only ever walks the index, its megabytes would never be reclaimed.
-    await withIndex((index) => {
-      index[mapId] = now;
-    });
+    await set(keyOf(record.meta.id, now), record, store);
 
-    await set(
-      keyOf(mapId),
-      { ...record, updatedAt: now } satisfies MapRecord,
-      store,
-    );
+    // After the write, so an interruption leaves a superseded key rather than no
+    // record at all; the next prune reclaims it.
+    await prune();
   });
 }
 
 /** Drops a map's working copy — its baseline can no longer be trusted. */
 export function deleteMapRecord(mapId: string): Promise<void> {
   return enqueue(async () => {
-    await del(keyOf(mapId), store);
-
-    // Also from the index, or the phantom entry would count towards `KEEP` and
-    // evict a copy that is still in use.
-    await withIndex((index) => {
-      delete index[mapId];
-    });
+    await delKeys((entry) => entry.mapId === mapId);
   });
 }
 
@@ -115,36 +121,67 @@ export function deleteMapRecord(mapId: string): Promise<void> {
  * processor doesn't simply write it back: its name and track are on screen
  * either way, and dropping it would lose the track on the next reload.
  */
-export function clearMapRecords(
-  keepMapId: string | undefined,
-  now: number,
-): Promise<void> {
+export function clearMapRecords(keepMapId?: string): Promise<void> {
   return enqueue(async () => {
-    const keep = keepMapId === undefined ? undefined : keyOf(keepMapId);
-
-    const stale = (await keys(store)).filter(
-      (key): key is string =>
-        typeof key === 'string' && key.startsWith(PREFIX) && key !== keep,
-    );
-
-    await Promise.all(stale.map((key) => del(key, store)));
-
-    const index = IndexSchema.safeParse(await get(INDEX_KEY, store)).data ?? {};
-
-    await set(
-      INDEX_KEY,
-      // The kept record stays indexed — pruning only ever walks the index, so an
-      // unindexed record would never be reclaimed. `now` stands in when the
-      // index had already lost track of it.
-      keepMapId === undefined ? {} : { [keepMapId]: index[keepMapId] ?? now },
-      store,
-    );
+    await delKeys((entry) => entry.mapId !== keepMapId);
   });
 }
 
-// Writes are fire-and-forget at the call sites, so they are serialized here:
-// the index is a read-modify-write, and two in flight at once could lose an
-// entry, leaving a multi-megabyte record the pruning never sees again.
+/**
+ * Which keys a prune drops: records a newer write for the same map superseded,
+ * and the maps past `KEEP`, least recently touched first.
+ *
+ * Pure, and decided from the keys alone — a record is never read just to find
+ * out it can stay, which is the point of carrying the timestamp in the key.
+ */
+export function staleKeys(entries: StoredKey[]): string[] {
+  const newest = new Map<string, StoredKey>();
+
+  const stale: string[] = [];
+
+  for (const entry of entries) {
+    const seen = newest.get(entry.mapId);
+
+    if (!seen) {
+      newest.set(entry.mapId, entry);
+    } else if (entry.updatedAt > seen.updatedAt) {
+      newest.set(entry.mapId, entry);
+
+      stale.push(seen.key);
+    } else {
+      stale.push(entry.key);
+    }
+  }
+
+  for (const entry of [...newest.values()]
+    .sort((a, b) => b.updatedAt - a.updatedAt)
+    .slice(KEEP)) {
+    stale.push(entry.key);
+  }
+
+  return stale;
+}
+
+async function prune(): Promise<void> {
+  const stale = staleKeys(await storedKeys());
+
+  if (stale.length) {
+    await delMany(stale, store);
+  }
+}
+
+async function delKeys(match: (entry: StoredKey) => boolean): Promise<void> {
+  const doomed = (await storedKeys()).filter(match).map((entry) => entry.key);
+
+  if (doomed.length) {
+    await delMany(doomed, store);
+  }
+}
+
+// Writes are fire-and-forget at the call sites, so they are serialized here —
+// not for the records themselves, which are keyed per map and safe to race, but
+// so that logout's clear can't be overtaken by a write already in flight and
+// leave the departing account's map behind.
 let queue: Promise<unknown> = Promise.resolve();
 
 function enqueue<T>(task: () => Promise<T>): Promise<T> {
@@ -153,28 +190,4 @@ function enqueue<T>(task: () => Promise<T>): Promise<T> {
   queue = run.catch(() => undefined);
 
   return run;
-}
-
-/**
- * Applies `update` to the index, then drops the records past `KEEP`, least
- * recently touched first.
- */
-async function withIndex(
-  update: (index: Record<string, number>) => void,
-): Promise<void> {
-  const index = IndexSchema.safeParse(await get(INDEX_KEY, store)).data ?? {};
-
-  update(index);
-
-  const stale = Object.entries(index)
-    .sort(([, a], [, b]) => b - a)
-    .slice(KEEP);
-
-  for (const [mapId] of stale) {
-    delete index[mapId];
-  }
-
-  await set(INDEX_KEY, index, store);
-
-  await Promise.all(stale.map(([mapId]) => del(keyOf(mapId), store)));
 }
