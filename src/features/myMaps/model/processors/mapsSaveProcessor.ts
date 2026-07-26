@@ -93,8 +93,6 @@ function getMapDataFromState(state: RootState): MapData {
     points: drawingPoints.points,
     tracking: {
       trackedDevices: tracking.trackedDevices,
-      showLine: tracking.showLine,
-      showPoints: tracking.showPoints,
     },
     routePlanner: {
       transportType: routePlanner.transportType,

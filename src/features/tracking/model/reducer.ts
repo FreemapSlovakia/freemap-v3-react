@@ -28,8 +28,6 @@ export interface TrackingState {
   modifiedAccessTokenId: number | null | undefined;
   trackedDevices: TrackedDevice[];
   tracks: Track[];
-  showLine: boolean;
-  showPoints: boolean;
 }
 
 export const trackingInitialState: TrackingState = {
@@ -40,8 +38,6 @@ export const trackingInitialState: TrackingState = {
   modifiedAccessTokenId: undefined,
   trackedDevices: [],
   tracks: [],
-  showLine: true,
-  showPoints: true,
 };
 
 export const trackingReducer = createReducer(trackingInitialState, (builder) =>
@@ -101,14 +97,6 @@ export const trackingReducer = createReducer(trackingInitialState, (builder) =>
     .addCase(trackingActions.deleteTrackedDevice, (state, { payload }) => ({
       ...state,
       trackedDevices: state.trackedDevices.filter((d) => d.token !== payload),
-    }))
-    .addCase(trackingActions.setShowPoints, (state, { payload }) => ({
-      ...state,
-      showPoints: payload,
-    }))
-    .addCase(trackingActions.setShowLine, (state, { payload }) => ({
-      ...state,
-      showLine: payload,
     }))
     .addCase(wsStateChanged, (state, { payload }) =>
       payload.state === 1 ? state : { ...state, tracks: [] },
@@ -198,8 +186,6 @@ export const trackingReducer = createReducer(trackingInitialState, (builder) =>
             ...(tracking?.trackedDevices ??
               trackingInitialState.trackedDevices),
           ],
-          showLine: tracking?.showLine ?? trackingInitialState.showLine,
-          showPoints: tracking?.showPoints ?? trackingInitialState.showPoints,
         };
       },
     ),
