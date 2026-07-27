@@ -171,7 +171,10 @@ export const PersistedMapDetailsSchema = z
   .partial();
 
 export const PersistedLocationSettingsSchema = z
-  .object({ headingSource: HeadingSourceSchema })
+  .object({
+    headingSource: HeadingSourceSchema,
+    showBearingLine: z.boolean(),
+  })
   .partial();
 
 export const PersistedGallerySettingsSchema = z
@@ -375,7 +378,10 @@ const PERSIST: PersistEntry[] = [
     key: 'locationSettings',
     schema: PersistedLocationSettingsSchema,
     initial: locationSettingsInitialState,
-    persist: (l) => ({ headingSource: l.headingSource }),
+    persist: (l) => ({
+      headingSource: l.headingSource,
+      showBearingLine: l.showBearingLine,
+    }),
   }),
   defineEntry({
     key: 'gallerySettings',

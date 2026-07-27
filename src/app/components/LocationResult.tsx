@@ -1,3 +1,4 @@
+import { BearingLine } from '@features/location/components/BearingLine.js';
 import { useFixOpacity } from '@features/location/hooks/useFixOpacity.js';
 import { useHeading } from '@features/location/hooks/useHeading.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -5,18 +6,19 @@ import { divIcon, type Marker as LeafletMarker } from 'leaflet';
 import { type ReactElement, useEffect, useMemo, useRef } from 'react';
 import { Circle, Marker } from 'react-leaflet';
 
-const circularIcon = divIcon({
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
-  html: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-20 -20 40 40">
-  <g opacity=".67" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round">
-    <path d="M-8 .5h-8.5v0h-.5M9 .5h9M.5-8v-9M.5 9v9"/>
-    <circle cx=".5" cy=".5" r="13" stroke-linejoin="round"/>
-  </g>
-  <g fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round">
-    <path d="M-8 .5h-8.5v0h-.5M9 .5h9M.5-8v-9M.5 9v9"/>
-    <circle cx=".5" cy=".5" r="13" stroke-linejoin="round"/>
-  </g>
+const DOT_SIZE = 26;
+
+/**
+ * A dot rather than a crosshair: this marks a position that has been measured,
+ * while a crosshair says "aim here" — and the aiming one is now the reticle in
+ * the middle of the screen that {@link BearingLine} measures from.
+ */
+const dotIcon = divIcon({
+  iconSize: [DOT_SIZE, DOT_SIZE],
+  iconAnchor: [DOT_SIZE / 2, DOT_SIZE / 2],
+  html: `<svg xmlns="http://www.w3.org/2000/svg" width="${DOT_SIZE}" height="${DOT_SIZE}" viewBox="-13 -13 26 26">
+  <circle r="8" fill="#fff"/>
+  <circle r="5.5" fill="#3388ff"/>
 </svg>`,
 });
 
@@ -50,7 +52,7 @@ function makeBeamIcon(spread: number) {
   // `display:block` on the svg is load-bearing: inline it would sit on the text
   // baseline, leaving the wrapper taller than the svg (`.leaflet-container` sets
   // `line-height: 1.5`) so `transform-origin: 50% 50%` would rotate about a
-  // point below the marker anchor and swing the apex off the crosshair.
+  // point below the marker anchor and swing the apex off the dot.
   return divIcon({
     iconSize: [BEAM_SIZE, BEAM_SIZE],
     iconAnchor: [BEAM_SIZE / 2, BEAM_SIZE / 2],
@@ -70,6 +72,10 @@ export function LocationResult(): ReactElement | null {
   const gpsLocation = useAppSelector((state) => state.location.location);
 
   const heading = useHeading();
+
+  const showBearingLine = useAppSelector(
+    (state) => state.locationSettings.showBearingLine,
+  );
 
   const opacity = useFixOpacity(gpsLocation?.at ?? null);
 
@@ -151,7 +157,9 @@ export function LocationResult(): ReactElement | null {
         />
       )}
 
-      <Marker icon={circularIcon} position={position} opacity={opacity} />
+      <Marker icon={dotIcon} position={position} opacity={opacity} />
+
+      {showBearingLine && <BearingLine position={position} opacity={opacity} />}
     </>
   );
 }

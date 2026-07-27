@@ -10,6 +10,7 @@ import {
 } from '@features/homeLocation/model/actions.js';
 import {
   locationSetHeadingSource,
+  locationSetShowBearingLine,
   setLocation,
   toggleLocate,
 } from '@features/location/model/actions.js';
@@ -64,6 +65,7 @@ export const resetApp = createAction('RESET_APP');
 
 export {
   locationSetHeadingSource,
+  locationSetShowBearingLine,
   saveHomeLocation,
   setSelectingHomeLocation,
   toggleLocate,

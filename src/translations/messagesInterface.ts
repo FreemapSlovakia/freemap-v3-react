@@ -152,6 +152,8 @@ export type Messages = {
     headingSource: string;
     headingSources: Record<'none' | 'gps' | 'compass', string>;
     headingSourceHelp: string;
+    bearingLine: string;
+    bearingLineHelp: string;
     compassPermissionDenied: string;
     compassUnavailable: string;
     zoomIn: string;

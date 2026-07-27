@@ -204,6 +204,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     headingSourceHelp:
       'La direzione di marcia proviene dal GPS e appare solo mentre ti muovi. La bussola del dispositivo funziona anche da fermo, ma richiede un permesso e può essere imprecisa.',
+    bearingLine: 'Distanza e rilevamento',
+    bearingLineHelp:
+      'Durante la localizzazione traccia una linea dal mirino al centro della mappa fino alla tua posizione, con l’indicazione della distanza e del rilevamento. Appare quando sposti la mappa lontano dalla tua posizione.',
     compassPermissionDenied: 'Accesso alla bussola negato.',
     compassUnavailable:
       'Nessun dato dalla bussola. Il dispositivo potrebbe non averla, oppure l’accesso è bloccato.',
