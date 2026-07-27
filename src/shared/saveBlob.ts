@@ -15,28 +15,52 @@ export async function saveBlob(
   suggestedName: string,
   accept?: Record<string, string[]>,
 ): Promise<void> {
+  // The presence of `showSaveFilePicker` says the browser implements it, not
+  // that this document may call it: a cross-origin iframe (the map embed) is
+  // refused with a `SecurityError`, and a missing user gesture or a policy
+  // restriction with a `NotAllowedError`. Both mean "no picker here", so they
+  // fall through to the anchor below rather than failing the save.
   if ('showSaveFilePicker' in window) {
-    const handle = await showSaveFilePicker({
-      suggestedName,
-      // The FS Access types demand template-literal MIME/extension types; the
-      // plainer `Record<string, string[]>` is friendlier for callers.
-      types: accept
-        ? [
-            {
-              description: blob.type || 'File',
-              accept: accept as FilePickerAcceptType['accept'],
-            },
-          ]
-        : undefined,
-    });
+    let handle: FileSystemFileHandle | undefined;
 
-    const writable = await handle.createWritable();
+    // Only the picker call is guarded: once the user has picked a file, a later
+    // failure must surface rather than fall through to the anchor, which would
+    // leave the picked file empty and silently drop a second copy into the
+    // download folder.
+    try {
+      handle = await showSaveFilePicker({
+        suggestedName,
+        // The FS Access types demand template-literal MIME/extension types; the
+        // plainer `Record<string, string[]>` is friendlier for callers.
+        types: accept
+          ? [
+              {
+                description: blob.type || 'File',
+                accept: accept as FilePickerAcceptType['accept'],
+              },
+            ]
+          : undefined,
+      });
+    } catch (err) {
+      if (
+        !(
+          err instanceof DOMException &&
+          (err.name === 'SecurityError' || err.name === 'NotAllowedError')
+        )
+      ) {
+        throw err;
+      }
+    }
 
-    await writable.write(blob);
+    if (handle) {
+      const writable = await handle.createWritable();
 
-    await writable.close();
+      await writable.write(blob);
 
-    return;
+      await writable.close();
+
+      return;
+    }
   }
 
   const url = URL.createObjectURL(blob);

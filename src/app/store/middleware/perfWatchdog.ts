@@ -30,6 +30,18 @@ const STALL_MS = 3000;
 // rest so those minutes-to-hours phantom stalls stay out of Sentry.
 const STALL_MAX_MS = 60000;
 
+// Timer drift alone is a weak signal: Firefox keeps visibilityState "visible"
+// for an occluded or unfocused window while throttling its timers, and a brief
+// OS suspend looks the same. A drift below this needs corroboration — either
+// Redux work during the stalled tick or a longtask overlapping it — before it
+// counts as a real freeze. Above it, a throttled timer is no longer a plausible
+// explanation for a focused window, so the drift stands on its own.
+const STALL_CORROBORATION_MAX_MS = 10000;
+
+// A longtask seen this recently overlaps the tick that just drifted.
+const CORROBORATION_WINDOW_MS = 2000;
+let lastLongTaskAt = 0;
+
 // More dispatches than this within a single tick implies a runaway loop.
 const STORM_THRESHOLD = 800;
 
@@ -39,6 +51,12 @@ const LONGTASK_MS = 1500;
 // Don't flood Sentry while a freeze persists.
 const REPORT_THROTTLE_MS = 20000;
 let lastReportAt = 0;
+
+// The throttle alone still lets a day-long session emit hundreds of reports.
+// A handful per session is all the aggregate needs, and the console keeps the
+// full picture for anyone debugging live.
+const MAX_REMOTE_REPORTS = 5;
+let remoteReportCount = 0;
 
 // Bundle parsing and first render are expected to be heavy; ignore the startup
 // window so it doesn't drown the signal with a report on every page load.
@@ -106,11 +124,17 @@ function report(
   console.warn('perf watchdog:', message, fullExtra);
 
   // Rate-limit the remote events so a sustained freeze doesn't flood Sentry.
-  if (now - startedAt < WARMUP_MS || now - lastReportAt < REPORT_THROTTLE_MS) {
+  if (
+    now - startedAt < WARMUP_MS ||
+    now - lastReportAt < REPORT_THROTTLE_MS ||
+    remoteReportCount >= MAX_REMOTE_REPORTS
+  ) {
     return;
   }
 
   lastReportAt = now;
+
+  remoteReportCount += 1;
 
   window.Sentry?.captureMessage(message, {
     level: 'warning',
@@ -137,6 +161,19 @@ export function startPerfWatchdog(): void {
   // the tab becomes visible again.
   let hiddenSinceTick = document.hidden;
 
+  // A window that is visible but occluded or unfocused gets its timers throttled
+  // too — Firefox notably fires no visibilitychange for it. Tracked alongside
+  // `hiddenSinceTick` so a tick whose interval overlapped an unfocused period is
+  // skipped as well.
+  //
+  // Only meaningful at top level: throttling is decided per page, while an
+  // iframe's `hasFocus()` reports whether focus sits *inside the frame*. An
+  // embed the user hasn't clicked into runs on unthrottled timers yet would
+  // never pass the check, so embeds keep the visibility gate alone.
+  const focusIsThrottlingSignal = !window.fmEmbedded;
+
+  let unfocusedSinceTick = !document.hasFocus();
+
   // performance.now() of the last foreground transition. A longtask entry whose
   // start predates it overlapped a hidden period and carries the inflated
   // sleep/freeze duration the throttled observer reports, so it is dropped.
@@ -151,18 +188,48 @@ export function startPerfWatchdog(): void {
     }
   });
 
+  window.addEventListener('blur', () => {
+    unfocusedSinceTick = true;
+  });
+
+  window.addEventListener('focus', () => {
+    expected = Date.now() + TICK_MS;
+  });
+
   const tick = () => {
     const now = Date.now();
     const drift = now - expected;
     const actions = tickActionCount;
-    const wasForeground = !document.hidden && !hiddenSinceTick;
+    const wasVisible = !document.hidden && !hiddenSinceTick;
 
-    if (wasForeground && drift > STALL_MS && drift < STALL_MAX_MS) {
+    // Focus gates the stall branch only, where the signal *is* the timer
+    // interval and throttling forges it. A dispatch storm is a runaway loop
+    // whichever window has focus, so it stays on the visibility gate — a
+    // stretched tick inflates its count but nothing near the threshold.
+    const wasFocused =
+      !focusIsThrottlingSignal || (document.hasFocus() && !unfocusedSinceTick);
+
+    // Redux work during the stalled tick, or a longtask overlapping it, tells
+    // the drift apart from a throttled timer. Browsers without the longtask API
+    // only have the former, so a rendering freeze there stays unreported until
+    // it passes `STALL_CORROBORATION_MAX_MS` — an aggregate of real freezes is
+    // worth more than a complete one drowned in throttling noise.
+    const corroborated =
+      actions > 0 || now - lastLongTaskAt < CORROBORATION_WINDOW_MS;
+
+    if (
+      wasVisible &&
+      wasFocused &&
+      drift > STALL_MS &&
+      drift < STALL_MAX_MS &&
+      (drift >= STALL_CORROBORATION_MAX_MS || corroborated)
+    ) {
       report('stall', `Main thread stalled for ~${drift} ms`, {
         stallMs: drift,
         actionsDuringStall: actions,
+        corroborated,
       });
-    } else if (wasForeground && actions > STORM_THRESHOLD) {
+    } else if (wasVisible && actions > STORM_THRESHOLD) {
       report('storm', `Dispatch storm: ${actions} actions in one tick`, {
         actionsPerTick: actions,
       });
@@ -173,6 +240,8 @@ export function startPerfWatchdog(): void {
     tickActionTypes.clear();
 
     hiddenSinceTick = document.hidden;
+
+    unfocusedSinceTick = !document.hasFocus();
 
     expected = now + TICK_MS;
 
@@ -190,6 +259,10 @@ export function startPerfWatchdog(): void {
           }
 
           if (entry.duration >= LONGTASK_MS) {
+            // Recorded before the throttle can drop the report, so a suppressed
+            // longtask still corroborates the drift the next tick observes.
+            lastLongTaskAt = Date.now();
+
             report(
               'longtask',
               `Long task blocked UI for ~${Math.round(entry.duration)} ms`,

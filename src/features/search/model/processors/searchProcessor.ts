@@ -41,7 +41,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       }
     }
 
-    (
+    return (
       await import(
         /* webpackChunkName: "search-processor-handler" */
         './searchProcessorHandler.js'

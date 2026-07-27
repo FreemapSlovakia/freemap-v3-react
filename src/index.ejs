@@ -364,6 +364,10 @@
             /promise rejection with keys: code, message/,
             // Background Sync API quirks across browsers
             /Attempted to register a sync event/,
+            // JS bridges injected by third-party in-app browsers (iOS WKWebView
+            // and Android WebView), which break when their host view goes away
+            /window\.webkit\.messageHandlers/,
+            /Java object is gone/,
             // ubiquitous browser noise
             /ResizeObserver loop/,
             'Non-Error promise rejection captured',

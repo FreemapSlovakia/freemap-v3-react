@@ -737,18 +737,22 @@ export default function ElevationChart(): ReactElement | null {
             </LongPressTooltip>
           )}
 
-          <LongPressTooltip label={m?.downloadAsSvg}>
-            {({ props }) => (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleDownload}
-                {...props}
-              >
-                <FaDownload />
-              </Button>
-            )}
-          </LongPressTooltip>
+          {/* The embed is a cross-origin iframe, where the browser refuses both
+              the save picker and a synthesized download. */}
+          {!window.fmEmbedded && (
+            <LongPressTooltip label={m?.downloadAsSvg}>
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleDownload}
+                  {...props}
+                >
+                  <FaDownload />
+                </Button>
+              )}
+            </LongPressTooltip>
+          )}
         </div>
       </div>
     </div>
