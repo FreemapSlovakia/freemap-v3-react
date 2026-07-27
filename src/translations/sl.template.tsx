@@ -199,7 +199,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Smer gibanja izhaja iz GPS in je vidna le med gibanjem. Kompas naprave deluje tudi na mestu, a zahteva dovoljenje in je lahko nenatančen.',
     bearingLine: 'Razdalja in azimut',
     bearingLineHelp:
-      'Med lociranjem nariše črto od merka na sredini zemljevida do vašega položaja, z oznako razdalje in azimuta do njega. Prikaže se, ko zemljevid premaknete stran od svojega položaja.',
+      'Med lociranjem nariše črto med vašim položajem in merkom na sredini zemljevida, z oznako razdalje in azimuta od vašega položaja do merka. Prikaže se, ko zemljevid premaknete stran od svojega položaja.',
     compassPermissionDenied: 'Dostop do kompasa je bil zavrnjen.',
     compassUnavailable:
       'Ni podatkov kompasa. Vaša naprava ga morda nima ali pa je dostop do njega blokiran.',

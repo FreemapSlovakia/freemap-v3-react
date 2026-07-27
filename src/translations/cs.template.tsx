@@ -200,7 +200,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Směr pohybu pochází z GPS a zobrazuje se pouze při pohybu. Kompas zařízení funguje i vestoje, vyžaduje však oprávnění a může být nepřesný.',
     bearingLine: 'Vzdálenost a azimut',
     bearingLineHelp:
-      'Během lokalizace vykreslí čáru od zaměřovacího kříže uprostřed mapy k vaší poloze s popisem vzdálenosti a azimutu k ní. Zobrazí se, jakmile mapu posunete mimo vaši polohu.',
+      'Během lokalizace vykreslí čáru mezi vaší polohou a zaměřovacím křížem uprostřed mapy, s popisem vzdálenosti a azimutu z vaší polohy ke kříži. Zobrazí se, jakmile mapu posunete mimo vaši polohu.',
     compassPermissionDenied: 'Přístup ke kompasu byl zamítnut.',
     compassUnavailable:
       'Žádná data z kompasu. Vaše zařízení ho nemusí mít, nebo je přístup k němu zablokován.',

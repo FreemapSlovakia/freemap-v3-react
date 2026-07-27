@@ -194,7 +194,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Kierunek ruchu pochodzi z GPS i jest widoczny tylko podczas ruchu. Kompas urządzenia działa też w bezruchu, ale wymaga zgody i bywa niedokładny.',
     bearingLine: 'Odległość i azymut',
     bearingLineHelp:
-      'Podczas lokalizowania rysuje linię od celownika na środku mapy do Twojej pozycji, opisaną odległością i azymutem do niej. Pojawia się, gdy przesuniesz mapę poza swoją pozycję.',
+      'Podczas lokalizowania rysuje linię między Twoją pozycją a celownikiem na środku mapy, opisaną odległością i azymutem z Twojej pozycji do celownika. Pojawia się, gdy przesuniesz mapę poza swoją pozycję.',
     compassPermissionDenied: 'Odmówiono dostępu do kompasu.',
     compassUnavailable:
       'Brak danych kompasu. Twoje urządzenie może go nie mieć lub dostęp jest zablokowany.',
