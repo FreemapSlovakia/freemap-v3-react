@@ -1,7 +1,10 @@
 import { createReducer } from '@reduxjs/toolkit';
 import z from 'zod';
 import { isCompassPermissionRequired, isCompassSupported } from '../compass.js';
-import { locationSetHeadingSource } from './actions.js';
+import {
+  locationSetHeadingSource,
+  locationSetShowBearingLine,
+} from './actions.js';
 
 /**
  * Where the heading beam on the located position comes from:
@@ -23,6 +26,11 @@ export type HeadingSource = z.infer<typeof HeadingSourceSchema>;
  */
 export interface LocationSettingsState {
   headingSource: HeadingSource;
+  /**
+   * Draw the crosshair in the middle of the map, the line from it to the
+   * located position, and the distance/bearing readout on that line.
+   */
+  showBearingLine: boolean;
 }
 
 /**
@@ -36,12 +44,21 @@ export interface LocationSettingsState {
 export const locationSettingsInitialState: LocationSettingsState = {
   headingSource:
     isCompassSupported() && !isCompassPermissionRequired() ? 'compass' : 'gps',
+  // On by default because it costs nothing until it says something: the whole
+  // display appears only once the map is panned away from the position, and the
+  // moment it is, "how far away am I, and which way" is the question being
+  // asked.
+  showBearingLine: true,
 };
 
 export const locationSettingsReducer = createReducer(
   locationSettingsInitialState,
   (builder) =>
-    builder.addCase(locationSetHeadingSource, (state, action) => {
-      state.headingSource = action.payload;
-    }),
+    builder
+      .addCase(locationSetHeadingSource, (state, action) => {
+        state.headingSource = action.payload;
+      })
+      .addCase(locationSetShowBearingLine, (state, action) => {
+        state.showBearingLine = action.payload;
+      }),
 );

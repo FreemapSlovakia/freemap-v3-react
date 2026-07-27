@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import {
   locationSetHeadingSource,
+  locationSetShowBearingLine,
   saveSettings,
   setActiveModal,
 } from '@app/store/actions.js';
@@ -61,6 +62,14 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
   const [headingSource, setHeadingSource] = useState(initialHeadingSource);
 
+  const initialShowBearingLine = useAppSelector(
+    (state) => state.locationSettings.showBearingLine,
+  );
+
+  const [showBearingLine, setShowBearingLine] = useState(
+    initialShowBearingLine,
+  );
+
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
   useDocumentTitle(show ? m?.mapLayers.preferences : undefined);
@@ -83,6 +92,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     setFeatureScale(String(mapInitialState.featureScale));
 
     setHeadingSource(locationSettingsInitialState.headingSource);
+
+    setShowBearingLine(locationSettingsInitialState.showBearingLine);
   }, []);
 
   const handleSubmit = (e: SubmitEvent) => {
@@ -120,6 +131,10 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       }
     }
 
+    if (showBearingLine !== initialShowBearingLine) {
+      dispatch(locationSetShowBearingLine(showBearingLine));
+    }
+
     if (Object.keys(settings).length > 0) {
       // saveSettingsProcessor closes the modal on success;
       // dispatching setActiveModal(null) here would cancel its PATCH.
@@ -136,11 +151,19 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     [],
   );
 
+  const handleShowBearingLineChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setShowBearingLine(e.currentTarget.checked);
+    },
+    [],
+  );
+
   const dirty =
     maxZoom !== initialMaxZoom ||
     resolutionScale !== initialResolutionScale ||
     featureScale !== initialFeatureScale ||
-    headingSource !== initialHeadingSource;
+    headingSource !== initialHeadingSource ||
+    showBearingLine !== initialShowBearingLine;
 
   const atDefault =
     maxZoom === String(mapInitialState.maxZoom) &&
@@ -149,7 +172,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
         ? ''
         : String(mapInitialState.resolutionScale)) &&
     featureScale === String(mapInitialState.featureScale) &&
-    headingSource === locationSettingsInitialState.headingSource;
+    headingSource === locationSettingsInitialState.headingSource &&
+    showBearingLine === locationSettingsInitialState.showBearingLine;
 
   return (
     <Modal
@@ -274,6 +298,19 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
             <Form.Text muted className="d-block">
               {m?.main.headingSourceHelp}
+            </Form.Text>
+          </Form.Group>
+
+          <Form.Group className="mt-3">
+            <Form.Check
+              id="chk-bearing-line"
+              label={m?.main.bearingLine}
+              checked={showBearingLine}
+              onChange={handleShowBearingLineChange}
+            />
+
+            <Form.Text muted className="d-block">
+              {m?.main.bearingLineHelp}
             </Form.Text>
           </Form.Group>
         </Modal.Body>

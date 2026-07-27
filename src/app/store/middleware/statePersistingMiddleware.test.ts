@@ -32,7 +32,7 @@ function makeState(): RootState {
         at: 0,
       },
     },
-    locationSettings: { headingSource: 'compass' },
+    locationSettings: { headingSource: 'compass', showBearingLine: false },
     cookieConsent: { cookieConsentResult: true, analyticCookiesAllowed: false },
     drawingSettings: {
       style: {
@@ -212,7 +212,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         resolutionScale: null,
         featureScale: 1,
       },
-      locationSettings: { headingSource: 'compass' },
+      locationSettings: { headingSource: 'compass', showBearingLine: false },
       gallerySettings: {
         colorizeBy: null,
         recentTags: ['x'],

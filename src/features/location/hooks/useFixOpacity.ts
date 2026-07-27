@@ -12,9 +12,15 @@ export const STALE_MS = 120_000;
 /**
  * The display never disappears. After signal loss the last known position is
  * the most useful thing on the map — a person in a tunnel wants to see where
- * they went in — so it dims to a ghost and stays there.
+ * they went in — so it dims and stays there.
+ *
+ * Floored well above invisible: the dimming only has to read as "not live", and
+ * the parts it applies to are translucent to begin with (the accuracy circle
+ * fills at 0.2), so a lower floor takes the whole display to the edge of
+ * legibility instead — including the distance and bearing readout, which is
+ * text meant to be read.
  */
-export const MIN_OPACITY = 0.3;
+export const MIN_OPACITY = 0.5;
 
 const TICK_MS = 1000;
 

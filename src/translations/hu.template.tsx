@@ -199,6 +199,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     headingSourceHelp:
       'A haladási irány a GPS-ből származik, és csak mozgás közben látszik. Az eszköz iránytűje állva is működik, de engedélyt igényel, és pontatlan lehet.',
+    bearingLine: 'Távolság és irányszög',
+    bearingLineHelp:
+      'Helymeghatározás közben vonalat rajzol a térkép közepén lévő célkeresztről az Ön helyzetéhez, a távolság és az irányszög feltüntetésével. Akkor jelenik meg, ha a térképet elhúzza a helyzetétől.',
     compassPermissionDenied: 'Az iránytűhöz való hozzáférés megtagadva.',
     compassUnavailable:
       'Nincsenek iránytűadatok. Lehet, hogy az eszközén nincs iránytű, vagy a hozzáférés blokkolva van.',

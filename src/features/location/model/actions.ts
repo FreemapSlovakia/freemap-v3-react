@@ -18,3 +18,7 @@ export const toggleLocate = createAction<boolean | undefined>('LOCATE');
 export const locationSetHeadingSource = createAction<HeadingSource>(
   'LOCATION_SET_HEADING_SOURCE',
 );
+
+export const locationSetShowBearingLine = createAction<boolean>(
+  'LOCATION_SET_SHOW_BEARING_LINE',
+);
