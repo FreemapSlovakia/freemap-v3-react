@@ -8,7 +8,11 @@ import {
   saveHomeLocation,
   setSelectingHomeLocation,
 } from '@features/homeLocation/model/actions.js';
-import { setLocation, toggleLocate } from '@features/location/model/actions.js';
+import {
+  locationSetHeadingSource,
+  setLocation,
+  toggleLocate,
+} from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
@@ -58,7 +62,12 @@ export const clearMapFeatures = createAction('CLEAR_MAP_FEATURES');
 /** Drops the persisted local settings and reloads the app from defaults. */
 export const resetApp = createAction('RESET_APP');
 
-export { saveHomeLocation, setSelectingHomeLocation, toggleLocate };
+export {
+  locationSetHeadingSource,
+  saveHomeLocation,
+  setSelectingHomeLocation,
+  toggleLocate,
+};
 
 type Settings = {
   layersSettings?: Record<string, LayerSettings>;

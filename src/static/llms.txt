@@ -510,6 +510,8 @@ The toolbar also contains the following buttons:
 - find me (locate me by the browser's geolocation API)
 - toggle fullscreen
 
+The located position is drawn as a crosshair with an accuracy circle, plus a direction beam that widens as the heading gets less certain. Its source is chosen by the **Direction indicator** preference (see Preferences below): *Hidden*, *Direction of travel* (GPS course, shown only while moving), or *Device compass* (also works standing still; offered only on devices with orientation sensors). The compass is the default wherever it needs no permission; on iOS, which prompts for it, the default is direction of travel.
+
 There is also a button with three vertical dots that opens a menu listing additional maps, a "Filter maps" box, and a "Show all maps" item. The same menu includes a "Manage maps" item (described below).
 
 ### Manage maps
@@ -545,7 +547,8 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 - **Max zoom** — global maximum zoom level
 - **Resolution scale** — simulates display pixel density and affects which tile variant is fetched (Auto by default)
 - **Feature size** — enlarges rendered labels and lines (no effect on satellite, shading, WMS, or vector (MapLibre) layers)
-- **Reset to default** — fills this modal's fields (max zoom, resolution scale, feature size) with their defaults; apply with Save or close without saving
+- **Direction indicator** — source of the direction beam on the located position: *Hidden*, *Direction of travel* (GPS course over ground, visible only while moving) or *Device compass* (magnetometer, works standing still, offered only where orientation sensors exist). Defaults to the compass except on iOS, where enabling it costs a permission prompt, so direction of travel is the default there
+- **Reset to default** — fills this modal's fields (max zoom, resolution scale, feature size, direction indicator) with their defaults; apply with Save or close without saving
 
 Modals that edit a persisted default style or settings (Map preferences, Configure layers, drawing **Default properties**, objects **Marker style**, track-viewer **Default style**, **Search result style**) also carry a **Reset to default** button that refills the form with default values (applied with Save, not immediately).
 

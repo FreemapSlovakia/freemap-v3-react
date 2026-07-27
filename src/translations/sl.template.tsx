@@ -189,6 +189,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Zapri orodje',
     locateMe: 'Kje sem?',
     locationError: 'Napaka pri pridobivanju lokacije.',
+    headingSource: 'Kazalnik smeri',
+    headingSources: {
+      none: 'Skrit',
+      gps: 'Smer gibanja',
+      compass: 'Kompas naprave',
+    },
+    headingSourceHelp:
+      'Smer gibanja izhaja iz GPS in je vidna le med gibanjem. Kompas naprave deluje tudi na mestu, a zahteva dovoljenje in je lahko nenatančen.',
+    compassPermissionDenied: 'Dostop do kompasa je bil zavrnjen.',
+    compassUnavailable:
+      'Ni podatkov kompasa. Vaša naprava ga morda nima ali pa je dostop do njega blokiran.',
     zoomIn: 'Približaj',
     zoomOut: 'Oddalji',
     devInfo: () => (

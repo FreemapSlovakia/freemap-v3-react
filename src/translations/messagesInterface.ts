@@ -149,6 +149,11 @@ export type Messages = {
     closeTool: string;
     locateMe: string;
     locationError: string;
+    headingSource: string;
+    headingSources: Record<'none' | 'gps' | 'compass', string>;
+    headingSourceHelp: string;
+    compassPermissionDenied: string;
+    compassUnavailable: string;
     zoomIn: string;
     zoomOut: string;
     devInfo: () => JSX.Element;

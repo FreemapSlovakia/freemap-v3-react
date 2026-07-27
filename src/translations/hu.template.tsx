@@ -191,6 +191,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Eszköz bezárása',
     locateMe: 'Saját pozícióm',
     locationError: 'Nem sikerült megtalálni a helyzetét.',
+    headingSource: 'Irányjelző',
+    headingSources: {
+      none: 'Rejtett',
+      gps: 'Haladási irány',
+      compass: 'Az eszköz iránytűje',
+    },
+    headingSourceHelp:
+      'A haladási irány a GPS-ből származik, és csak mozgás közben látszik. Az eszköz iránytűje állva is működik, de engedélyt igényel, és pontatlan lehet.',
+    compassPermissionDenied: 'Az iránytűhöz való hozzáférés megtagadva.',
+    compassUnavailable:
+      'Nincsenek iránytűadatok. Lehet, hogy az eszközén nincs iránytű, vagy a hozzáférés blokkolva van.',
     zoomIn: 'Nagyítás',
     zoomOut: 'Kicsinyítés',
 

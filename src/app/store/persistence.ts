@@ -11,6 +11,10 @@ import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
 import { gallerySettingsInitialState } from '@features/gallery/model/settingsReducer.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
+import {
+  HeadingSourceSchema,
+  locationSettingsInitialState,
+} from '@features/location/model/settingsReducer.js';
 import { LayerSettingsSchema } from '@features/map/model/actions.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
@@ -164,6 +168,10 @@ export const PersistedMapDetailsSchema = z
   .object({
     excludeSources: z.array(MapDetailsSourceSchema),
   })
+  .partial();
+
+export const PersistedLocationSettingsSchema = z
+  .object({ headingSource: HeadingSourceSchema })
   .partial();
 
 export const PersistedGallerySettingsSchema = z
@@ -362,6 +370,12 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedMapDetailsSchema,
     initial: mapDetailsInitialState,
     persist: (m) => ({ excludeSources: m.excludeSources }),
+  }),
+  defineEntry({
+    key: 'locationSettings',
+    schema: PersistedLocationSettingsSchema,
+    initial: locationSettingsInitialState,
+    persist: (l) => ({ headingSource: l.headingSource }),
   }),
   defineEntry({
     key: 'gallerySettings',
