@@ -510,7 +510,7 @@ The toolbar also contains the following buttons:
 - find me (locate me by the browser's geolocation API)
 - toggle fullscreen
 
-The located position is drawn as a crosshair with an accuracy circle, plus a direction beam that widens as the heading gets less certain. Its source is chosen by the **Direction indicator** preference (see Preferences below): *Hidden*, *Direction of travel* (GPS course, shown only while moving), or *Device compass* (also works standing still; offered only on devices with orientation sensors). The compass is the default wherever it needs no permission; on iOS, which prompts for it, the default is direction of travel.
+The located position is drawn as a crosshair with an accuracy circle, plus a direction beam that widens as the heading gets less certain. Its source is chosen by the **Direction indicator** preference (see Preferences below): *Hidden*, *Direction of travel* (GPS course, shown only while moving), or *Device compass* (also works standing still; offered only on devices with orientation sensors). The compass is the default wherever it needs no permission; on iOS, which prompts for it, the default is direction of travel. The whole display fades as its fix ages, so a lost signal stops reading as a live position: it stays solid for the first 20 seconds, dims until the fix is two minutes old, and then remains as a faint last-known position rather than disappearing.
 
 There is also a button with three vertical dots that opens a menu listing additional maps, a "Filter maps" box, and a "Show all maps" item. The same menu includes a "Manage maps" item (described below).
 
