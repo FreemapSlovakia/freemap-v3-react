@@ -12,6 +12,9 @@ const en: TrackViewerMessages = {
     'Converting to a drawing replaces the track and discards its recorded data (elevation, heart rate, speed, time).',
   moreInfo: 'More info',
   saveAsMap: 'Save to my maps',
+  unsaved: 'Unsaved',
+  unsavedTooltip:
+    'This track is not in any saved map and is not part of the link, so it will be lost when the page reloads. Save it to your maps to keep it.',
   loginToSaveMap: 'Log in first to save the track to your maps.',
   style: {
     title: 'Default style',

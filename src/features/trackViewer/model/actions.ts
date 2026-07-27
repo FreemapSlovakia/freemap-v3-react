@@ -109,6 +109,11 @@ export const trackViewerSetRenderGeojson = createAction<FeatureCollection>(
   'TRACK_VIEWER_SET_RENDER_GEOJSON',
 );
 
+/** Records the source URL without re-fetching, when the track is already here. */
+export const trackViewerSetGpxUrl = createAction<string | null>(
+  'TRACK_VIEWER_SET_GPX_URL',
+);
+
 export const trackViewerGpxLoad = createAction<string>('TRACK_VIEWER_GPX_LOAD');
 
 export const trackViewerDelete = createAction('TRACK_VIEWER_DELETE');

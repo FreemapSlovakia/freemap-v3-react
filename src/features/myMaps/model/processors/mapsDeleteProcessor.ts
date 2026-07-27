@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { deleteMapRecord } from '../../mapStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import { mapsDelete, mapsDisconnect, mapsLoadList } from '../actions.js';
 
@@ -31,6 +32,14 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
     if (getState().myMaps.activeMap?.id === id) {
       dispatch(mapsDisconnect());
     }
+
+    // Or navigating back to its `id=` would reopen it from the working copy,
+    // connected, until the backend answers 404. Best effort, like the other
+    // store writes: the map is already gone from the server, so a blocked
+    // IndexedDB must not turn a successful delete into an error.
+    deleteMapRecord(id).catch((err) => {
+      console.warn('Error clearing map working copy:', err);
+    });
 
     dispatch(mapsLoadList());
 

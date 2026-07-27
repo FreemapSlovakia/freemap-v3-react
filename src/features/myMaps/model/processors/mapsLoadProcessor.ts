@@ -1,17 +1,16 @@
-import { isNetworkError } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { getOfflineMap, putOfflineMap } from '../../offlineStore.js';
+import { putOfflineMap } from '../../offlineStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
-  type MapData,
-  type MapMeta,
   mapsLoad,
   mapsLoaded,
+  mapsLoadFailed,
+  mapsRestore,
 } from '../actions.js';
-import { loadMapDocument } from '../loadMapDocument.js';
+import { readMapDocument } from '../loadMapDocument.js';
 
 export const mapsLoadProcessor: Processor = {
   actionCreator: [mapsLoad, authSetUser, authLogout],
@@ -35,37 +34,16 @@ export const mapsLoadProcessor: Processor = {
     }
 
     try {
-      let meta: MapMeta;
-      let data: MapData;
-      let fromNetwork = false;
+      const { meta, data, fromNetwork } = await readMapDocument(
+        loadMeta.id,
+        getState,
+        [mapsLoad, mapsRestore, authSetUser, authLogout],
+      );
 
-      try {
-        if (!navigator.onLine) {
-          throw new Error('offline');
-        }
-
-        ({ meta, data } = await loadMapDocument(loadMeta.id, getState, [
-          mapsLoad,
-          authSetUser,
-          authLogout,
-        ]));
-
-        fromNetwork = true;
-      } catch (err) {
-        // Offline, or a genuine network failure while we believed we were
-        // online: resolve from the offline copy if the map was flagged for
-        // offline use. A server or parse error surfaces instead of silently
-        // serving a stale copy.
-        const offline =
-          !navigator.onLine || isNetworkError(err)
-            ? await getOfflineMap(loadMeta.id)
-            : undefined;
-
-        if (!offline) {
-          throw err;
-        }
-
-        ({ meta, data } = offline);
+      // A restore or a newer load has withdrawn this one while it was reading
+      // (the offline path isn't covered by the fetch's cancel actions).
+      if (getState().myMaps.loadMeta !== loadMeta) {
+        return;
       }
 
       // Write a fresh network copy through to the offline cache *before* the
@@ -99,6 +77,19 @@ export const mapsLoadProcessor: Processor = {
 
       dispatch(setActiveModal(null));
     } catch (err) {
+      // The load is over, so it stops being pending — or the map that failed
+      // would keep its `id=` in the URL, navigating to it again would be taken
+      // for a load already in flight, and the working copy of the map that is
+      // actually open would stay blocked. An abort is something else taking
+      // over deliberately — a newer load, or the auth check this processor
+      // re-runs on — and what is pending is then that owner's to say.
+      if (
+        !(err instanceof DOMException && err.name === 'AbortError') &&
+        getState().myMaps.loadMeta === loadMeta
+      ) {
+        dispatch(mapsLoadFailed());
+      }
+
       await toastError(err, loadMyMapsMessages, 'fetchError');
     }
   },

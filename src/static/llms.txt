@@ -132,7 +132,7 @@ Toggles the photos toolbar and the community-photos map layer. Photos appear as 
 - Keyboard shortcut: <kbd>g</kbd> <kbd>m</kbd>
 - URL path: `/#show=my-maps` (legacy `/#show=maps` still works)
 
-Opens the user-saved maps manager in a modal. Each saved map stores the current state: active map layers, drawing, planned route, watched live-tracked devices, and GPX track.
+Opens the user-saved maps manager in a modal. Each saved map stores the current state: active map layers, drawing, planned route (including its routing mode and that mode's parameters, such as the roundtrip distance/seed or the isochrone buckets and limit), watched live-tracked devices, and GPX track.
 
 The modal lists saved maps with their created/modified dates and a filter box. A gear menu sets load options:
 
@@ -144,7 +144,9 @@ Each map has a per-item menu with **Load**, **Modify**, and **Delete**. Modify e
 
 Maps flagged **Available offline** keep a copy of the saved map document in the browser (IndexedDB), so they appear in the list and can be **Load**ed even with no connection; an "Offline" badge marks them and they refresh automatically when their server copy is newer. This caches only the map document — the background tiles are cached separately via **Offline maps**. The app logo shows a small red dot while the app is offline.
 
-While a saved map is loaded ("connected"), a toolbar shows the map name with **Save** and a **Disconnect** button (whose dropdown also offers **Disconnect and clear**, to disconnect and clear the current map contents).
+While a saved map is loaded ("connected"), a toolbar shows the map name with **Save** and a **Disconnect** button (whose dropdown also offers **Disconnect and clear**, to disconnect and clear the current map contents). **Save** stores the map in place for its owner and editors; on someone else's map it saves the current contents as your own copy (and prompts to log in first when logged out).
+
+Editing the contents of a loaded map (by hand or via browser back/forward) marks it as having unsaved changes: a warning icon appears next to the map name, **Save** is highlighted, and a **Reload map** button offers to discard the changes and re-read the stored map. Unsaved changes survive a page reload — the map's working copy is kept in the browser (IndexedDB for the imported track, the URL for everything else), and the stored map is re-read only when there is nothing unsaved to protect. They are not part of the shareable link, though — only saving puts them in the map.
 
 ### Drawing and measurement
 
@@ -243,6 +245,7 @@ Toggles the file import toolbar. **Upload** opens the file import modal (URL pat
 - **Elevation profile** — chart of elevation along the active track (with total climb/descent); recorded waypoints are marked along it with their name and elevation and their distance ticked on the x-axis (toggleable), and a toolbar below the chart can download it as SVG (not in an embedded map, where the browser forbids downloads)
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled). While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
 - **More info** — a popup with the track's distance, min/max elevation, total climb and total descent
+- a warning icon while the loaded track isn't part of a saved map — unlike drawing, a track isn't carried in the URL, so it is lost on reload until saved via **Save to my maps**
 - **More** (⋮ menu) — gathers the remaining actions:
   - **Update elevation** — refill/override elevation from the terrain model (shown only while the track still has recorded elevation to replace); premium users get the high-resolution DEM where available
   - **Save to my maps** — save the loaded track into a new personal map (requires login; prompts to log in first otherwise). Hidden when a map is already active, since the active-map toolbar's own **Save** persists the track with the map. Older `#track-uid=…` share links still load

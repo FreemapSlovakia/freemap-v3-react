@@ -13,6 +13,9 @@ const sk: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     'Prevod na kresbu nahradí trasu a zahodí jej zaznamenané údaje (nadmorská výška, tep, rýchlosť, čas).',
   moreInfo: 'Viac info',
   saveAsMap: 'Uložiť do mojich máp',
+  unsaved: 'Neuložené',
+  unsavedTooltip:
+    'Táto trasa nie je v žiadnej uloženej mape ani v odkaze, takže sa pri obnovení stránky stratí. Uložte ju do svojich máp, aby ste ju zachovali.',
   loginToSaveMap: 'Pre uloženie trasy do vašich máp sa najprv prihláste.',
   style: {
     title: 'Predvolený štýl',

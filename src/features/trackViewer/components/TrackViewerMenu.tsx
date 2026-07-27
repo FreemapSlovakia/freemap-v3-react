@@ -22,6 +22,7 @@ import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
+import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -89,6 +90,14 @@ export function TrackViewerMenu(): ReactElement {
   const hasActiveMap = useAppSelector((state) =>
     Boolean(state.myMaps.activeMap),
   );
+
+  const gpxUrl = useAppSelector((state) => state.trackViewer.gpxUrl);
+
+  // A track that is in no saved map and that the URL doesn't name — neither a
+  // `track-uid=` nor an `import-url=` — has nowhere to come back from, so a
+  // reload loses it. The other two are re-fetched from the link and need no
+  // warning.
+  const unsaved = hasTrack && !hasActiveMap && canUpload && !gpxUrl;
 
   const handleSaveAsMap = useCallback(() => {
     if (loggedIn) {
@@ -277,6 +286,14 @@ export function TrackViewerMenu(): ReactElement {
       <TrackViewerElevationPromptModal />
 
       <ToolMenu tool="import-file">
+        {unsaved && (
+          <UnsavedWarningIcon
+            className="ms-1"
+            label={tvm?.unsaved}
+            tooltip={tvm?.unsavedTooltip}
+          />
+        )}
+
         {canUpload && (
           <LongPressTooltip breakpoint="sm" label={tvm?.upload}>
             {({ label, labelClassName, props }) => (

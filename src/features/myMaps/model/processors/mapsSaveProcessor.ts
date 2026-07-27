@@ -1,16 +1,16 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
-  type MapData,
   MapMetaSchema,
   mapsLoadList,
   mapsSave,
   mapsSetMeta,
+  mapsSetSavedFingerprint,
 } from '../actions.js';
+import { fingerprintState, getMapDataFromState } from '../mapDocument.js';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
@@ -28,6 +28,13 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
         asNew ? 'copy' : patchExisting ? 'update' : 'create',
       ]);
 
+      // What is about to be sent becomes the reference the screen is compared
+      // against, so edits made while the request is in flight still show as
+      // unsaved — no bookkeeping needed, the comparison simply stops matching.
+      const sent = getMapDataFromState(getState());
+
+      const sentFingerprint = fingerprintState(getState());
+
       const res = await httpRequest({
         getState,
         method: patchExisting ? 'PATCH' : 'POST',
@@ -42,7 +49,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
           name: action.payload?.name,
           public: true, // TODO
           writers: action.payload?.writers,
-          data: getMapDataFromState(getState()),
+          data: sent,
         },
       });
 
@@ -70,50 +77,10 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       dispatch(mapsLoadList());
 
       dispatch(mapsSetMeta(MapMetaSchema.parse(await res.json())));
+
+      dispatch(mapsSetSavedFingerprint(sentFingerprint));
     } catch (err) {
       await toastError(err, loadMyMapsMessages, 'saveError');
     }
   },
 };
-
-function getMapDataFromState(state: RootState): MapData {
-  const {
-    tracking,
-    drawingLines,
-    drawingPoints,
-    routePlanner,
-    objects,
-    gallery,
-    trackViewer,
-    map,
-  } = state;
-
-  return {
-    lines: drawingLines.lines,
-    points: drawingPoints.points,
-    tracking: {
-      trackedDevices: tracking.trackedDevices,
-    },
-    routePlanner: {
-      transportType: routePlanner.transportType,
-      points: routePlanner.points,
-      finishOnly: routePlanner.finishOnly,
-      pickMode: routePlanner.pickMode,
-      mode: routePlanner.mode,
-      milestones: routePlanner.milestones,
-    },
-    objectsV2: {
-      active: objects.active,
-    },
-    galleryFilter: gallery.filter,
-    trackViewer,
-    map: {
-      lat: map.lat,
-      lon: map.lon,
-      zoom: map.zoom,
-      layers: map.layers,
-      customLayers: map.customLayers,
-      shading: map.shading,
-    },
-  };
-}

@@ -8,6 +8,8 @@ export type TrackViewerMessages = {
   convertLossWarning: string;
   moreInfo: string;
   saveAsMap: string;
+  unsaved: string;
+  unsavedTooltip: string;
   loginToSaveMap: string;
   style: {
     title: string;

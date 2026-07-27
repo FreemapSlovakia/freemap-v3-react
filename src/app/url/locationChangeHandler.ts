@@ -32,7 +32,10 @@ import {
   mapSetCustomLayers,
   mapSetShading,
 } from '@features/map/model/actions.js';
-import { mapsLoad } from '@features/myMaps/model/actions.js';
+import {
+  type MapRestore,
+  mapsRestore,
+} from '@features/myMaps/model/actions.js';
 import {
   objectsSetFilter,
   objectsSetStyle,
@@ -124,9 +127,7 @@ export function handleLocationChange(store: MyStore): void {
 
   const search = (document.location.hash || document.location.search).slice(1);
 
-  const { sq } = (history.state as { sq: string }) ?? {
-    sq: undefined,
-  };
+  const { sq } = (history.state as { sq?: string } | null) ?? { sq: undefined };
 
   const parsedQuery = parseQuery(search);
 
@@ -134,21 +135,33 @@ export function handleLocationChange(store: MyStore): void {
     (typeof parsedQuery['id'] === 'string' ? parsedQuery['id'] : undefined) ||
     undefined;
 
+  // Set when the URL names a map, and dispatched at the end — once any
+  // `track-uid=` / `import-url=` is known, so the restore owns the track instead
+  // of racing a fetch started here. Whether the map continues from the browser's
+  // working copy or is re-read from the backend is decided there.
+  let restore: MapRestore | null = null;
+
   if (
     id !== undefined &&
-    id !== (getState().myMaps.loadMeta?.id ?? getState().myMaps.activeMap?.id)
+    id !==
+      (getState().myMaps.loadMeta?.id ??
+        getState().myMaps.restoring?.mapId ??
+        getState().myMaps.activeMap?.id)
   ) {
-    dispatch(
-      mapsLoad({
-        id,
-        ignoreMap: 'map' in parsedQuery,
-        ignoreLayers: 'layers' in parsedQuery,
-      }),
-    );
+    restore = {
+      mapId: id,
+      ignoreMap: 'map' in parsedQuery,
+      ignoreLayers: 'layers' in parsedQuery,
+      // A fresh tab or a shared link has no entry of its own, so nothing of this
+      // map's content was restored above.
+      hasRestoredContent: sq !== undefined,
+    };
   }
 
   const query =
-    id === undefined ? parsedQuery : { ...parsedQuery, ...parseQuery(sq) };
+    id === undefined
+      ? parsedQuery
+      : { ...parsedQuery, ...parseQuery(sq ?? '') };
 
   // Map legacy URL tool tokens to their current ids so older shared/bookmarked
   // links keep working.
@@ -332,7 +345,11 @@ export function handleLocationChange(store: MyStore): void {
     typeof trackUID === 'string' &&
     getState().trackViewer.trackUID !== trackUID
   ) {
-    dispatch(trackViewerDownloadTrack(trackUID));
+    if (restore) {
+      restore.trackUID = trackUID;
+    } else {
+      dispatch(trackViewerDownloadTrack(trackUID));
+    }
   }
 
   const colorizeTrackBy = query['track-colorize-by'];
@@ -441,7 +458,11 @@ export function handleLocationChange(store: MyStore): void {
     query['load']; /* `gpx-url` and `load` kept for backward compatibility */
 
   if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
-    dispatch(trackViewerGpxLoad(gpxUrl));
+    if (restore) {
+      restore.gpxUrl = gpxUrl;
+    } else {
+      dispatch(trackViewerGpxLoad(gpxUrl));
+    }
   }
 
   const focus = !parsedQuery['map'];
@@ -765,7 +786,7 @@ export function handleLocationChange(store: MyStore): void {
 
       switch (type) {
         case 'f':
-          fromTime = new Date(value);
+          fromTime = parseDate(value) ?? null;
 
           break;
 
@@ -850,6 +871,10 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
+  if (restore) {
+    dispatch(mapsRestore(restore));
+  }
+
   setUrlUpdatingEnabled(true);
 }
 
@@ -887,19 +912,19 @@ function handleGallery(
 
   a = query['gallery-taken-at-from'];
 
-  const qTakenAtFrom = typeof a === 'string' ? new Date(a) : undefined;
+  const qTakenAtFrom = parseDate(a);
 
   a = query['gallery-taken-at-to'];
 
-  const qTakenAtTo = typeof a === 'string' ? new Date(a) : undefined;
+  const qTakenAtTo = parseDate(a);
 
   a = query['gallery-created-at-from'];
 
-  const qCreatedAtFrom = typeof a === 'string' ? new Date(a) : undefined;
+  const qCreatedAtFrom = parseDate(a);
 
   a = query['gallery-created-at-to'];
 
-  const qCreatedAtTo = typeof a === 'string' ? new Date(a) : undefined;
+  const qCreatedAtTo = parseDate(a);
 
   a = query['gallery-pano'];
 
@@ -1242,6 +1267,24 @@ function handleInfoPoint(
   if (typeof query['q'] === 'string') {
     dispatch(searchSetQuery({ query: query['q'], fromUrl: true }));
   }
+}
+
+/**
+ * A date from the URL, or nothing if it isn't one.
+ *
+ * `new Date('xyz')` yields an Invalid Date, which is truthy and compares
+ * unequal to everything — so unchecked it settles into the store and throws
+ * from `toISOString()` the next time the state is serialized, which since the
+ * unsaved-changes comparison happens during render means a blank screen.
+ */
+function parseDate(value: unknown): Date | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
 function serializePoints(line: Line): string {

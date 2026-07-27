@@ -55,7 +55,9 @@ import {
   mapsSetAllOfflineProcessor,
   mapsSetMapOfflineProcessor,
 } from '@features/myMaps/model/processors/mapsOfflineProcessor.js';
+import { mapsRestoreProcessor } from '@features/myMaps/model/processors/mapsRestoreProcessor.js';
 import { mapsSaveProcessor } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
+import { mapsWorkingCopyProcessor } from '@features/myMaps/model/processors/mapsWorkingCopyProcessor.js';
 import {
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
@@ -181,6 +183,8 @@ export const processors = [
   mapsLoadProcessor,
   mapsDeleteProcessor,
   mapsSaveProcessor,
+  mapsWorkingCopyProcessor,
+  mapsRestoreProcessor,
   mapsSetMapOfflineProcessor,
   mapsSetAllOfflineProcessor,
   mapsOfflinePurgeProcessor,
