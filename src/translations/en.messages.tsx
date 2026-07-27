@@ -194,7 +194,7 @@ const messages: Messages = {
       'Direction of travel comes from the GPS and only shows while you are moving. The device compass works while standing still too, but needs permission and can be inaccurate.',
     bearingLine: 'Distance and bearing',
     bearingLineHelp:
-      'While locating, draws a line from a crosshair in the middle of the map to your position, labelled with the distance and the bearing to it. Appears once you pan the map away from your position.',
+      'While locating, draws a line between your position and a crosshair in the middle of the map, labelled with the distance and the bearing from your position to the crosshair. Appears once you pan the map away from your position.',
     compassPermissionDenied: 'Access to the compass was denied.',
     compassUnavailable:
       'No compass data. Your device may have no compass, or access to it is blocked.',

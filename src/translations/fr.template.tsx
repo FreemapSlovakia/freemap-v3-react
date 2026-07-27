@@ -211,7 +211,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'La direction du déplacement provient du GPS et n’apparaît qu’en mouvement. La boussole de l’appareil fonctionne aussi à l’arrêt, mais nécessite une autorisation et peut être imprécise.',
     bearingLine: 'Distance et relèvement',
     bearingLineHelp:
-      'Pendant la localisation, trace une ligne du réticule au centre de la carte jusqu’à votre position, avec la distance et le relèvement. Apparaît dès que vous déplacez la carte hors de votre position.',
+      'Pendant la localisation, trace une ligne entre votre position et un réticule au centre de la carte, avec la distance et le relèvement de votre position vers le réticule. Apparaît dès que vous déplacez la carte hors de votre position.',
     compassPermissionDenied: 'L’accès à la boussole a été refusé.',
     compassUnavailable:
       'Aucune donnée de boussole. Votre appareil n’en a peut-être pas, ou l’accès est bloqué.',

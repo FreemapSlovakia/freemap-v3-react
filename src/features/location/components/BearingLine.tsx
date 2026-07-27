@@ -46,12 +46,14 @@ type Props = {
 };
 
 /**
- * How far away the located position is from where the map is looking, and in
- * which direction: a crosshair in the middle of the screen, a dotted line to
- * the position, and the distance and bearing along it.
+ * How far away what the map is looking at is, and which way to walk to reach
+ * it: a crosshair in the middle of the screen, a dotted line to the located
+ * position, and the distance and bearing along it.
  *
- * Answers the question panning away from yourself raises — "where am I from
- * here, and how far" — without giving up the view being examined.
+ * The bearing is measured at the fix, pointing at the crosshair — the heading
+ * to steer, and the only one comparable with the heading beam, which is drawn
+ * at the same point and says which way the user currently faces. Distance is
+ * the same either way round.
  *
  * Drawn in screen space, in an overlay portalled into the map container, rather
  * than as Leaflet layers: the crosshair belongs to the screen, not to the
@@ -130,9 +132,9 @@ export function BearingLine({ position, opacity }: Props): ReactElement {
 
   const y2 = Math.round(y1 + uy * length);
 
-  const from = [center.lng, center.lat];
+  const positionCoord = [position.lng, position.lat];
 
-  const to = [position.lng, position.lat];
+  const centerCoord = [center.lng, center.lat];
 
   return createPortal(
     <div
@@ -174,8 +176,11 @@ export function BearingLine({ position, opacity }: Props): ReactElement {
 
       {show && !zooming && (
         <div className={classes.readout} style={{ opacity }}>
-          {formatDistance(distance(from, to, { units: 'meters' }), language)} ·{' '}
-          {Math.round(bearing(from, to) + 360) % 360}°
+          {formatDistance(
+            distance(positionCoord, centerCoord, { units: 'meters' }),
+            language,
+          )}{' '}
+          · {Math.round(bearing(positionCoord, centerCoord) + 360) % 360}°
         </div>
       )}
     </div>,

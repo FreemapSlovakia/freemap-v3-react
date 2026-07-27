@@ -202,7 +202,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Die Bewegungsrichtung stammt vom GPS und erscheint nur in Bewegung. Der Gerätekompass funktioniert auch im Stand, benötigt aber eine Berechtigung und kann ungenau sein.',
     bearingLine: 'Entfernung und Peilung',
     bearingLineHelp:
-      'Zeichnet während der Ortung eine Linie vom Fadenkreuz in der Kartenmitte zu Ihrer Position, beschriftet mit der Entfernung und der Peilung dorthin. Erscheint, sobald Sie die Karte von Ihrer Position wegschieben.',
+      'Zeichnet während der Ortung eine Linie zwischen Ihrer Position und einem Fadenkreuz in der Kartenmitte, beschriftet mit der Entfernung und der Peilung von Ihrer Position zum Fadenkreuz. Erscheint, sobald Sie die Karte von Ihrer Position wegschieben.',
     compassPermissionDenied: 'Zugriff auf den Kompass wurde verweigert.',
     compassUnavailable:
       'Keine Kompassdaten. Ihr Gerät hat möglicherweise keinen Kompass, oder der Zugriff darauf ist blockiert.',
