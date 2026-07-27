@@ -1,5 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import { isUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { authLogout } from '@features/auth/model/actions.js';
 import {
   clearMapRecords,
@@ -72,6 +73,16 @@ let written: {
 let dropped: string | null = null;
 
 function persist(state: RootState): void {
+  // A location change applies the URL over many dispatches — clearing the OSM
+  // selection resets the track long before it claims the map it is opening — so
+  // for that whole pass the screen belongs to no single map. Writing then would
+  // file the torn state under the map being left, and a dirty map's track has
+  // nowhere else to come back from. URL updating is suspended for exactly that
+  // window (and for a drag, which likewise commits at its end).
+  if (!isUrlUpdatingEnabled()) {
+    return;
+  }
+
   const { activeMap, savedFingerprint, loadMeta, restoring } = state.myMaps;
 
   if (!activeMap || savedFingerprint === null) {

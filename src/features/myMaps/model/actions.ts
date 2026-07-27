@@ -109,6 +109,12 @@ export type MapRestore = {
 
 export const mapsRestore = createAction<MapRestore>('MAPS_RESTORE');
 
+/**
+ * Releases the restore of this map, for the paths that end without opening one.
+ * Named, so a save or a load landing meanwhile can't release someone else's.
+ */
+export const mapsRestoreEnded = createAction<string>('MAPS_RESTORE_ENDED');
+
 /** Ids of maps available offline, synced from IndexedDB. */
 export const mapsOfflineIdsLoaded = createAction<string[]>(
   'MAPS_OFFLINE_IDS_LOADED',

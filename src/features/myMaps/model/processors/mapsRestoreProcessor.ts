@@ -15,6 +15,7 @@ import {
   mapsDisconnect,
   mapsLoad,
   mapsRestore,
+  mapsRestoreEnded,
   mapsSetMeta,
   mapsSetSavedFingerprint,
 } from '../actions.js';
@@ -198,8 +199,11 @@ export const mapsRestoreProcessor: Processor = {
       if (getState().myMaps.activeMap?.id === mapId) {
         // A reload of the map that is already connected: it stays, but nothing
         // establishes a baseline, so it can't be reported as saved. An explicit
-        // Reload re-establishes one.
+        // Reload re-establishes one. The only path that opens no map and so has
+        // to release itself; every other ends on a meta, a load or a disconnect.
         dispatch(mapsSetSavedFingerprint(UNKNOWN_FINGERPRINT));
+
+        dispatch(mapsRestoreEnded(mapId));
       } else {
         // The map couldn't be opened, so leave none connected. Staying connected
         // to the map that was open before would attribute this content to it —

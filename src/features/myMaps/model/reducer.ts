@@ -10,6 +10,7 @@ import {
   mapsLoadFailed,
   mapsOfflineIdsLoaded,
   mapsRestore,
+  mapsRestoreEnded,
   mapsSetList,
   mapsSetMeta,
   mapsSetSavedFingerprint,
@@ -100,12 +101,17 @@ export const mapsReducer = createReducer(initialState, (builder) =>
         state.restoring = undefined;
       }
     })
-    // Every restore ends by setting the digest, including the paths that never
-    // reach a meta — so this is where an in-flight restore is finally released.
     .addCase(mapsSetSavedFingerprint, (state, { payload }) => {
       state.savedFingerprint = payload;
-
-      state.restoring = undefined;
+    })
+    // Only the restore this belongs to: a save setting a digest while a restore
+    // waits on the network would otherwise abandon it, leaving the map that was
+    // open connected to the content of the one being restored — which the next
+    // save would then write over it.
+    .addCase(mapsRestoreEnded, (state, { payload }) => {
+      if (state.restoring?.mapId === payload) {
+        state.restoring = undefined;
+      }
     })
     .addCase(mapsOfflineIdsLoaded, (state, { payload }) => {
       state.offlineIds = payload;
