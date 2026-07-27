@@ -21,7 +21,18 @@ function makeState(): RootState {
     main: { hiddenInfoBars: { foo: 1 } },
     homeLocation: { homeLocation: { lat: 1, lon: 2 } },
     // In state but not persisted (no PERSIST entry).
-    location: { locate: true, location: { lat: 1, lon: 2, accuracy: 5 } },
+    location: {
+      locate: true,
+      location: {
+        lat: 1,
+        lon: 2,
+        accuracy: 5,
+        heading: null,
+        speed: null,
+        at: 0,
+      },
+    },
+    locationSettings: { headingSource: 'compass', showBearingLine: false },
     cookieConsent: { cookieConsentResult: true, analyticCookiesAllowed: false },
     drawingSettings: {
       style: {
@@ -201,6 +212,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         resolutionScale: null,
         featureScale: 1,
       },
+      locationSettings: { headingSource: 'compass', showBearingLine: false },
       gallerySettings: {
         colorizeBy: null,
         recentTags: ['x'],
@@ -257,6 +269,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         'drawingSettings',
         'homeLocation',
         'l10n',
+        'locationSettings',
         'main',
         'map',
         'mapDetails',

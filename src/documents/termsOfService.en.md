@@ -20,7 +20,7 @@ The words of which the initial letter is capitalized have meanings defined under
 
 For the purposes of these Terms:
 
-- **Service Provider / Seller** (referred to as "We", "Us" or "Our") refers to **Ing. Martin Ždila s.r.o.**, with its registered seat at Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovak Republic, Company ID (IČO): 50545876, Tax ID (DIČ): 2120371594, VAT ID (IČ DPH): SK2120371594, registered in the Commercial Register of the District Court Košice I.
+- **Service Provider / Seller** (referred to as "We", "Us" or "Our") refers to **Ing. Martin Ždila s.r.o.**, with its registered seat at Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovak Republic, Company ID (IČO): 50545876, Tax ID (DIČ): 2120371594, VAT ID (IČ DPH): SK2120371594, registered in the Commercial Register of the City Court Košice (Mestský súd Košice), Section Sro, Insert No. 40119/V.
 
 - **Freemap Slovakia** refers to the civic association that operates the Freemap.sk project and brand. The free parts of the Service are provided by Freemap Slovakia; the paid **Freemap Premium** subscription is sold and provided by the Seller.
 

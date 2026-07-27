@@ -25,19 +25,39 @@ export const locateProcessor: Processor = {
       const mySession = ++session;
 
       const applyFix = ({
-        latitude,
-        longitude,
-        accuracy,
-      }: GeolocationCoordinates) => {
+        coords: { latitude, longitude, accuracy, heading, speed },
+        timestamp,
+      }: GeolocationPosition) => {
         if (mySession !== session) {
           return;
         }
+
+        // The phase-1 fix may be up to `maximumAge` old, so the age the platform
+        // reports is kept rather than stamped as fresh. `null` means it cannot
+        // be trusted — a host reporting a monotonic clock instead of the epoch
+        // the spec asks for — in which case the course is dropped instead of
+        // being passed off as current, since its age is what makes it usable.
+        const at =
+          Number.isFinite(timestamp) &&
+          Math.abs(Date.now() - timestamp) < 86_400_000
+            ? timestamp
+            : null;
 
         dispatch(
           setLocation({
             lat: latitude,
             lon: longitude,
             accuracy,
+            // NaN slips through some implementations where the spec asks for null
+            heading:
+              at === null || heading === null || Number.isNaN(heading)
+                ? null
+                : heading,
+            speed:
+              at === null || speed === null || Number.isNaN(speed)
+                ? null
+                : speed,
+            at: at ?? Date.now(),
           }),
         );
 
@@ -63,9 +83,9 @@ export const locateProcessor: Processor = {
       // phase 1: quick coarse fix so the marker appears immediately; ignored if
       // the accurate watch already delivered a fix
       window.navigator.geolocation?.getCurrentPosition(
-        ({ coords }) => {
+        (position) => {
           if (!getState().location.location) {
-            applyFix(coords);
+            applyFix(position);
           }
         },
         () => {},
@@ -74,9 +94,7 @@ export const locateProcessor: Processor = {
 
       // phase 2: accurate continuous tracking
       watch = window.navigator.geolocation?.watchPosition(
-        ({ coords }) => {
-          applyFix(coords);
-        },
+        applyFix,
         (err) => {
           if (err.code === err.PERMISSION_DENIED) {
             dispatch(toggleLocate(false));
@@ -97,7 +115,7 @@ export const locateProcessor: Processor = {
         },
         { enableHighAccuracy: true, maximumAge: 0, timeout: 30_000 },
       );
-    } else if (window.navigator.geolocation && typeof watch === 'number') {
+    } else if (window.navigator.geolocation && watch !== undefined) {
       session++;
 
       dispatch(mapRefocus({ gpsTracked: false }));

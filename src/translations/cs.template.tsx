@@ -190,6 +190,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Zavřít nástroj',
     locateMe: 'Kde jsem?',
     locationError: 'Nepodařilo se získat pozici.',
+    headingSource: 'Ukazatel směru',
+    headingSources: {
+      none: 'Skrytý',
+      gps: 'Směr pohybu',
+      compass: 'Kompas zařízení',
+    },
+    headingSourceHelp:
+      'Směr pohybu pochází z GPS a zobrazuje se pouze při pohybu. Kompas zařízení funguje i vestoje, vyžaduje však oprávnění a může být nepřesný.',
+    bearingLine: 'Vzdálenost a azimut',
+    bearingLineHelp:
+      'Během lokalizace vykreslí čáru od zaměřovacího kříže uprostřed mapy k vaší poloze s popisem vzdálenosti a azimutu k ní. Zobrazí se, jakmile mapu posunete mimo vaši polohu.',
+    compassPermissionDenied: 'Přístup ke kompasu byl zamítnut.',
+    compassUnavailable:
+      'Žádná data z kompasu. Vaše zařízení ho nemusí mít, nebo je přístup k němu zablokován.',
     zoomIn: 'Přiblížit mapu',
     zoomOut: 'Oddálit mapu',
     devInfo: () => (

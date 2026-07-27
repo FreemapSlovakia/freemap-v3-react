@@ -184,6 +184,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Zamknij narzędzie',
     locateMe: 'Pokaż moją pozycję',
     locationError: 'Błąd pobierania pozycji.',
+    headingSource: 'Wskaźnik kierunku',
+    headingSources: {
+      none: 'Ukryty',
+      gps: 'Kierunek ruchu',
+      compass: 'Kompas urządzenia',
+    },
+    headingSourceHelp:
+      'Kierunek ruchu pochodzi z GPS i jest widoczny tylko podczas ruchu. Kompas urządzenia działa też w bezruchu, ale wymaga zgody i bywa niedokładny.',
+    bearingLine: 'Odległość i azymut',
+    bearingLineHelp:
+      'Podczas lokalizowania rysuje linię od celownika na środku mapy do Twojej pozycji, opisaną odległością i azymutem do niej. Pojawia się, gdy przesuniesz mapę poza swoją pozycję.',
+    compassPermissionDenied: 'Odmówiono dostępu do kompasu.',
+    compassUnavailable:
+      'Brak danych kompasu. Twoje urządzenie może go nie mieć lub dostęp jest zablokowany.',
     zoomIn: 'Powiększ',
     zoomOut: 'Pomniejsz',
     devInfo: () => (

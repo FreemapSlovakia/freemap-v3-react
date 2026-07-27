@@ -14,6 +14,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
+      # sentry-cli only honors the token if the URL comes from the same
+      # configuration source, so both must be set here in the environment.
+      SENTRY_URL: https://sentry.freemap.sk
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v7
