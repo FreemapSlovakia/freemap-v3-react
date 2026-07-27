@@ -1,13 +1,11 @@
 import type { Map as LeafletMap } from 'leaflet';
 import { useEffect, useState } from 'react';
-import { mapPromise } from './leafletElementHolder.js';
+import { onMap } from './leafletElementHolder.js';
 
 export function useMap() {
   const [map, setMap] = useState<LeafletMap>();
 
-  useEffect(() => {
-    mapPromise.then(setMap);
-  }, []);
+  useEffect(() => onMap(setMap), []);
 
   return map;
 }

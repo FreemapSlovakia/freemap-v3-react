@@ -1,14 +1,23 @@
 import type { MyStore } from '@app/store/store.js';
-import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { onMap } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus, mapSetBounds } from './model/actions.js';
 
 export function attachMapStateHandler(store: MyStore) {
-  mapPromise.then((map) => {
+  // re-binds to every map instance; a max-zoom change recreates the map
+  onMap((map) => {
     // `moveend` already fires once per settled gesture, and the URL processor
     // now coalesces consecutive viewport changes into a single history entry,
     // so no debounce is needed here. The delta threshold below still guards
     // against dispatching when the position didn't meaningfully change.
     function handleMapMoveEnd() {
+      // Leaflet debounces the `moveend` of a container resize by 200 ms, so the
+      // map can already be torn down (container detached, panes removed) once
+      // the event lands; reading the center would throw on the missing
+      // `_mapPane`.
+      if (!map.getContainer().isConnected) {
+        return;
+      }
+
       const { zoom, lat, lon } = store.getState().map;
 
       const { lat: newLat, lng: newLon } = map.getCenter();
