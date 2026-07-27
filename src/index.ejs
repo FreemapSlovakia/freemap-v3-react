@@ -332,8 +332,14 @@
 
     <script>
       function _fm_showError() {
-        (document.getElementById('app') || document.body).innerHTML =
-          '<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;"><%= errorHtml %></div>';
+        // both are null while the document is being torn down (navigation away,
+        // a page replaced by an in-app browser); there is nothing to report into
+        var target = document.getElementById('app') || document.body;
+
+        if (target) {
+          target.innerHTML =
+            '<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;"><%= errorHtml %></div>';
+        }
       }
     </script>
 
