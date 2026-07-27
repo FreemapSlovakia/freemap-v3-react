@@ -40,16 +40,21 @@ export function onMap(fn: Listener): () => void {
 }
 
 export function setMapLeafletElement(map: LeafletMap | null): void {
-  if (map === currentMap) {
+  if ((map ?? undefined) === currentMap) {
     return;
   }
 
   currentMap = map ?? undefined;
 
   if (!map) {
-    // detached on unmount; a remount resolves this promise with the new map, so
-    // consumers awaiting during the gap don't get the torn-down one
-    mapPromise = pending();
+    // Detached on unmount; arm a fresh promise so consumers awaiting during the
+    // gap get the remounted map instead of the torn-down one. An unresolved one
+    // is kept — `MapContainer` reports a null ref on its first commit (its
+    // context is only set afterwards), and replacing the promise there would
+    // strand everything that awaited it before the map first mounted.
+    if (!resolveMap) {
+      mapPromise = pending();
+    }
 
     return;
   }
