@@ -94,9 +94,7 @@ export const locateProcessor: Processor = {
 
       // phase 2: accurate continuous tracking
       watch = window.navigator.geolocation?.watchPosition(
-        (position) => {
-          applyFix(position);
-        },
+        applyFix,
         (err) => {
           if (err.code === err.PERMISSION_DENIED) {
             dispatch(toggleLocate(false));
@@ -117,7 +115,7 @@ export const locateProcessor: Processor = {
         },
         { enableHighAccuracy: true, maximumAge: 0, timeout: 30_000 },
       );
-    } else if (window.navigator.geolocation && typeof watch === 'number') {
+    } else if (window.navigator.geolocation && watch !== undefined) {
       session++;
 
       dispatch(mapRefocus({ gpsTracked: false }));

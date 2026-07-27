@@ -1,14 +1,7 @@
-import type { Heading } from '@features/location/hooks/useHeading.js';
 import { useHeading } from '@features/location/hooks/useHeading.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { divIcon, type Marker as LeafletMarker } from 'leaflet';
-import {
-  type ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import { type ReactElement, useEffect, useMemo, useRef } from 'react';
 import { Circle, Marker } from 'react-leaflet';
 
 const circularIcon = divIcon({
@@ -27,11 +20,8 @@ const circularIcon = divIcon({
 });
 
 const BEAM_SIZE = 120;
-
 const BEAM_RADIUS = 52;
-
 const MIN_SPREAD = 12;
-
 const MAX_SPREAD = 60;
 
 const clampSpread = (spread: number) =>
@@ -46,11 +36,8 @@ function makeBeamIcon(spread: number) {
   const half = (spread * Math.PI) / 180;
 
   const x1 = (BEAM_RADIUS * Math.sin(-half)).toFixed(2);
-
   const y1 = (-BEAM_RADIUS * Math.cos(-half)).toFixed(2);
-
   const x2 = (BEAM_RADIUS * Math.sin(half)).toFixed(2);
-
   const y2 = (-BEAM_RADIUS * Math.cos(half)).toFixed(2);
 
   // `display:block` on the svg is load-bearing: inline it would sit on the text
@@ -61,14 +48,14 @@ function makeBeamIcon(spread: number) {
     iconSize: [BEAM_SIZE, BEAM_SIZE],
     iconAnchor: [BEAM_SIZE / 2, BEAM_SIZE / 2],
     html: `<div style="transform-origin:50% 50%">
-  <svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="${BEAM_SIZE}" height="${BEAM_SIZE}" viewBox="${-BEAM_SIZE / 2} ${-BEAM_SIZE / 2} ${BEAM_SIZE} ${BEAM_SIZE}">
-    <radialGradient id="fm-heading-beam" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="${BEAM_RADIUS}">
-      <stop offset="0.2" stop-color="#3388ff" stop-opacity=".75"/>
-      <stop offset="1" stop-color="#3388ff" stop-opacity="0"/>
-    </radialGradient>
-    <path fill="url(#fm-heading-beam)" d="M0 0L${x1} ${y1}A${BEAM_RADIUS} ${BEAM_RADIUS} 0 0 1 ${x2} ${y2}Z"/>
-  </svg>
-</div>`,
+      <svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="${BEAM_SIZE}" height="${BEAM_SIZE}" viewBox="${-BEAM_SIZE / 2} ${-BEAM_SIZE / 2} ${BEAM_SIZE} ${BEAM_SIZE}">
+        <radialGradient id="fm-heading-beam" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="${BEAM_RADIUS}">
+          <stop offset="0.2" stop-color="#3388ff" stop-opacity=".75"/>
+          <stop offset="1" stop-color="#3388ff" stop-opacity="0"/>
+        </radialGradient>
+        <path fill="url(#fm-heading-beam)" d="M0 0L${x1} ${y1}A${BEAM_RADIUS} ${BEAM_RADIUS} 0 0 1 ${x2} ${y2}Z"/>
+      </svg>
+    </div>`,
   });
 }
 
@@ -96,23 +83,13 @@ export function LocationResult(): ReactElement | null {
   // circle and both markers on every one of the ~10 heading updates a second,
   // re-projecting the circle's path each time.
   const position = useMemo(
-    () =>
-      gpsLocation === null
-        ? null
-        : { lat: gpsLocation.lat, lng: gpsLocation.lon },
+    () => gpsLocation && { lat: gpsLocation.lat, lng: gpsLocation.lon },
     [gpsLocation],
   );
 
   // Rotate by mutating the element instead of rebuilding the icon, which would
   // tear down and re-add the DOM node on every one of the ~10 updates a second.
-  const rotate = useCallback((to: Heading | null) => {
-    const wrapper = beamRef.current?.getElement()?.firstElementChild;
-
-    if (wrapper instanceof HTMLElement && to) {
-      wrapper.style.transform = `rotate(${to.value.toFixed(1)}deg)`;
-    }
-  }, []);
-
+  //
   // `hasFix` is a dependency in its own right: the marker mounts afresh whenever
   // the fix returns from null — every locate start, since `toggleLocate` clears
   // the location — while a settled heading is referentially unchanged at that
@@ -122,8 +99,12 @@ export function LocationResult(): ReactElement | null {
   // layer in a passive one, so the element does not exist yet at that point.
   // This effect is passive and belongs to the parent, so it runs after it does.
   useEffect(() => {
-    rotate(hasFix ? heading : null);
-  }, [heading, hasFix, rotate]);
+    const wrapper = beamRef.current?.getElement()?.firstElementChild;
+
+    if (wrapper instanceof HTMLElement && hasFix && heading) {
+      wrapper.style.transform = `rotate(${heading.value.toFixed(1)}deg)`;
+    }
+  }, [heading, hasFix]);
 
   return !gpsLocation || !position ? null : (
     <>
