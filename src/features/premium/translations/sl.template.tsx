@@ -4,14 +4,14 @@ import type { PremiumMessages } from './PremiumMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Pridobi premium dostop',
-  commonHeader: (
+  commonHeader: (price) => (
     <>
       <p>
         <strong>Freemap Premium</strong> je izbirna letna naročnina, ki nadgradi
         aplikacijo.
       </p>
       <p className="mb-1">
-        Za <b>8 €</b> na leto dobite:
+        Za <b>{price} €</b> na leto dobite:
       </p>
       <ul>
         <li>odstranjeno oglasno pasico</li>

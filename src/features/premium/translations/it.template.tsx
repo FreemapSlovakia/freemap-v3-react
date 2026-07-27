@@ -4,14 +4,14 @@ import type { PremiumMessages } from './PremiumMessages.js';
 
 const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Ottieni accesso premium',
-  commonHeader: (
+  commonHeader: (price) => (
     <>
       <p>
         <strong>Freemap Premium</strong> è un abbonamento annuale facoltativo
         che potenzia l’app.
       </p>
       <p>
-        Con <b>8 €</b> all’anno ottieni:
+        Con <b>{price} €</b> all’anno ottieni:
       </p>
       <ul>
         <li>rimozione del banner pubblicitario</li>

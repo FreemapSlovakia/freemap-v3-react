@@ -3,6 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { PREMIUM_PRICE_EUR } from '@shared/premiumPricing.js';
 import { type ReactElement, useCallback } from 'react';
 import { Alert, Button, Modal } from 'react-bootstrap';
 import { FaExclamationTriangle, FaSignInAlt, FaTimes } from 'react-icons/fa';
@@ -36,7 +37,7 @@ export default function LoginModal({ show }: Props): ReactElement {
   const renderPremiumInfo = () =>
     purchaseOnLogin?.type === 'premium' ? (
       <Alert variant="primary">
-        {prm?.commonHeader}
+        {prm?.commonHeader(PREMIUM_PRICE_EUR)}
         {prm?.stepsForAnonymous}
       </Alert>
     ) : null;

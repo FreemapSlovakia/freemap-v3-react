@@ -210,4 +210,10 @@ export const hideInfoBar = createAction<{
   ts: number;
 }>('HIDE_INFO_BAR');
 
+/** Records that an info bar was displayed, so that the next one gets its turn. */
+export const infoBarShown = createAction<{
+  key: string;
+  ts: number;
+}>('INFO_BAR_SHOWN');
+
 export const init = createAction('INIT');

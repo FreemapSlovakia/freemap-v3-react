@@ -19,7 +19,7 @@ Na podporu ďalšieho vývoja a pokrytie prevádzkových nákladov služby ponú
 
 ## Cena
 
-**8 EUR ročne.** Predplatné vám dáva jeden rok prémiového prístupu a obnovuje sa ročne, pokiaľ ho nezrušíte.
+**8 EUR ročne do 31. augusta 2026, 15 EUR ročne od 1. septembra 2026.** Predplatné vám dáva jeden rok prémiového prístupu a obnovuje sa ročne, pokiaľ ho nezrušíte. Predplatné aktivované pred 1. septembrom 2026 si cenu 8 EUR ponecháva, pokiaľ zostane aktívne; jednorazová platba za jeden rok platí len na daný rok.
 
 Predplatné môžete kedykoľvek spravovať a zrušiť; zrušenie nadobudne účinnosť na konci zaplateného obdobia. Podrobnosti o vrátení peňazí nájdete v [Zásadách vrátenia peňazí](#document=refundPolicy).
 

@@ -4,14 +4,14 @@ import type { PremiumMessages } from './PremiumMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Získať prémiový prístup',
-  commonHeader: (
+  commonHeader: (price) => (
     <>
       <p>
         <strong>Freemap Premium</strong> je voliteľné ročné predplatné, ktoré
         rozširuje aplikáciu.
       </p>
       <p className="mb-1">
-        Za <b>8 €</b> ročne získate:
+        Za <b>{price} €</b> ročne získate:
       </p>
       <ul>
         <li>odstránenie reklamného baneru</li>
@@ -66,6 +66,18 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <RovasLink>Rováši</RovasLink>, zvoľte platbu chronmi.
     </>
   ),
+  priceIncrease: ({ date, oldPrice, newPrice }) =>
+    `${date} sa cena prémiového prístupu zvyšuje z ${oldPrice}\xa0€ na ${newPrice}\xa0€ ročne. Ak si predplatné aktivujete pred týmto dátumom, cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude predplatné aktívne. Jednorazová platba platí za ${oldPrice}\xa0€ len na daný jeden rok — ďalší rok si kúpite za cenu platnú v tom čase.`,
+  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} stojí prémiový prístup ${newPrice}\xa0€ ročne. Ak si ho predplatíte skôr, cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude predplatné aktívne.`,
+  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} stojí prémiový prístup ${newPrice}\xa0€ ročne. Ak dovtedy prejdete na predplatné, cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude aktívne — účtovať sa začne až po vyčerpaní roka, ktorý už máte zaplatený, takže nič neplatíte dvakrát.`,
+  priceIncreaseMini: ({ date, newPrice }) =>
+    `Prémium od ${date} za ${newPrice}\xa0€ ročne.`,
+  priceIncreaseMore: 'viac…',
+  winbackOffer: ({ price, expiredAt }) =>
+    `Váš prémiový prístup vypršal ${expiredAt}. Ako bývalý zákazník sa môžete vrátiť za pôvodnú cenu: ročné predplatné s automatickým obnovením za ${price}\xa0€, ktoré vám zostane, pokiaľ bude aktívne. Táto ponuka je určená len vám a dá sa využiť raz.`,
+  winbackAccept: ({ price }) => `Predplatiť si za ${price}\xa0€ ročne`,
 };
 
 export default sk;

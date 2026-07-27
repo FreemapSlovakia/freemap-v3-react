@@ -160,6 +160,21 @@ compute/infra or power-user limits; avoid third-party data (license risk — see
 Strava) and community content (CC-BY-SA can't be made exclusive + optics). Keep
 the free/open core intact.
 
+On 1 September 2026 the premium price rises to €15 for new customers. Nothing
+switches by itself — do all of this on the day:
+
+- set `PREMIUM_PRICE_EUR` to `15` in `src/shared/premiumPricing.ts` (leave
+  `PREMIUM_WINBACK_PRICE_EUR` at 8 — the win-back product keeps that price);
+- drop the announcement: the premium branch of `InfoBar.tsx`,
+  `usePremiumPriceIncreaseInfo`, the `priceIncrease*` messages, and the alert in
+  `PremiumActivationModal` (which then only shows the win-back offer);
+- point `POLAR_PREMIUM_RECURRING_PRODUCT_ID` and
+  `POLAR_PREMIUM_ONETIME_PRODUCT_ID` at the €15 products in the backend env;
+- in Polar, archive the €8 products except the unlisted one the win-back offer
+  (`POLAR_PREMIUM_WINBACK_PRODUCT_ID`) sells;
+- update the price in `src/documents/premium.{en,sk}.md`,
+  `src/documents/termsOfService.{en,sk}.md` and `src/static/llms.txt`.
+
 ## Elevation / track chart
 
 Feature requests are tracked as GitHub issues (label `area: elevation-chart`):

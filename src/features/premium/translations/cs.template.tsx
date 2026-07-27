@@ -4,14 +4,14 @@ import type { PremiumMessages } from './PremiumMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Získat prémiový přístup',
-  commonHeader: (
+  commonHeader: (price) => (
     <>
       <p>
         <strong>Freemap Premium</strong> je volitelné roční předplatné, které
         rozšiřuje aplikaci.
       </p>
       <p className="mb-1">
-        Za <b>8 €</b> ročně získáte:
+        Za <b>{price} €</b> ročně získáte:
       </p>
       <ul>
         <li>odstranění reklamního baneru</li>

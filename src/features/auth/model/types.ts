@@ -109,6 +109,10 @@ export const UserSchema = z.object({
   coordinates: LatLonSchema.nullable(),
   name: z.string(),
   premiumExpiration: IsoDateSchema.nullable(),
+  // Premium comes from an auto-renewing subscription (which keeps the price it
+  // was created with) rather than from a one-time purchase. Defaulted for user
+  // data persisted before the field existed; `authInit` refreshes it.
+  premiumSubscription: z.boolean().default(false),
   sendGalleryEmails: z.boolean(),
   hasPicture: z.boolean(),
   settings: UserSettingsSchema.optional(),
