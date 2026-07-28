@@ -1,18 +1,23 @@
-import { selectFeature, setTool, setTools } from '@app/store/actions.js';
 import {
-  drawingLineAddPoint,
-  drawingLineRemovePoint,
-  drawingLineUpdatePoint,
-} from '@features/drawing/model/actions/drawingLineActions.js';
-import { routePlannerSetResult } from '@features/routePlanner/model/actions.js';
+  clearMapFeatures,
+  setTool,
+  setTools,
+  type Tool,
+} from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { LatLon } from '@shared/types/common.js';
 import {
+  type ElevationProvenance,
   elevationChartClose,
+  elevationChartOpen,
   elevationChartSetActivePoint,
   elevationChartSetElevationProfile,
-  elevationChartSetTrackGeojson,
 } from './actions.js';
+import {
+  type ElevationChartTarget,
+  type ElevationChartTargetType,
+  targetsEqual,
+} from './target.js';
 
 export interface ElevationProfilePoint extends LatLon {
   climbUp?: number;
@@ -30,36 +35,55 @@ export interface ElevationProfileWaypoint {
 }
 
 export interface ElevationChartState {
+  /**
+   * What the chart is showing, or `null` when it is closed. The geometry itself
+   * is never stored: `elevationChartProcessor` resolves this against current
+   * state every time what it points at changes, which is what keeps the profile
+   * in step with a re-route, a reshaped line or an arriving position.
+   */
+  target: ElevationChartTarget | null;
   activePoint: ElevationProfilePoint | null;
   elevationProfilePoints: Array<ElevationProfilePoint> | null;
   waypoints: ElevationProfileWaypoint[];
   /**
    * The terrain models the elevation API named for the shown profile, as source
    * tokens; empty when it named none, in which case the profile credits nobody.
+   * Unrelated to `target`: these are what the numbers were read from, that is
+   * what they describe.
    */
   sources: string[];
-  /**
-   * What the shown profile was computed from. Kept so a profile the elevation
-   * settings apply to can be recomputed without its feature dispatching again —
-   * see `elevationChartResampleProcessor`.
-   */
-  request: ReturnType<typeof elevationChartSetTrackGeojson>['payload'] | null;
+  /** What the shown profile's elevation is credited to; `null` when none is. */
+  provenance: ElevationProvenance | null;
 }
 
 const initialState: ElevationChartState = {
+  target: null,
   activePoint: null,
   elevationProfilePoints: null,
   waypoints: [],
   sources: [],
-  request: null,
+  provenance: null,
+};
+
+// The tool whose closing takes the chart with it. A drawn line is charted by id
+// and outlives any tool, so it has none.
+const targetTools: Record<ElevationChartTargetType, Tool | undefined> = {
+  'route-planner': 'route-planner',
+  'track-viewer': 'import-file',
+  tracking: 'tracking',
+  drawing: undefined,
 };
 
 export const elevationChartReducer = createReducer(initialState, (builder) =>
   builder
-    .addCase(elevationChartSetTrackGeojson, (_state, { payload }) => ({
-      ...initialState,
-      request: payload,
-    }))
+    // Re-aiming at what is already charted keeps the profile on screen; a new
+    // target starts clean rather than showing the old line's elevation under
+    // the new one's name.
+    .addCase(elevationChartOpen, (state, { payload }) =>
+      targetsEqual(state.target, payload.target)
+        ? state
+        : { ...initialState, target: payload.target },
+    )
     .addCase(elevationChartSetActivePoint, (state, action) => {
       state.activePoint = action.payload;
     })
@@ -69,24 +93,22 @@ export const elevationChartReducer = createReducer(initialState, (builder) =>
       state.waypoints = action.payload.waypoints;
 
       state.sources = action.payload.sources;
+
+      state.provenance = action.payload.provenance;
     })
-    // Clear the chart when its owning tool is closed (or all tools are), not on
-    // every setTool — other tools now open alongside route-planner/track-viewer.
+    // Clear the chart when its own target's tool is closed (or all tools are),
+    // not on every setTool — other tools open alongside it.
     .addCase(setTool, (state, action) =>
       action.payload.mode === 'close' &&
-      (action.payload.tool === 'route-planner' ||
-        action.payload.tool === 'import-file')
+      state.target &&
+      action.payload.tool === targetTools[state.target.type]
         ? initialState
         : state,
     )
     .addCase(setTools, (state, action) =>
       action.payload.length === 0 ? initialState : state,
     )
-    .addCase(selectFeature, setInitialState)
-    .addCase(routePlannerSetResult, setInitialState)
-    .addCase(drawingLineAddPoint, setInitialState)
-    .addCase(drawingLineUpdatePoint, setInitialState)
-    .addCase(drawingLineRemovePoint, setInitialState)
+    .addCase(clearMapFeatures, setInitialState)
     .addCase(elevationChartClose, setInitialState),
 );
 

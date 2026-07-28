@@ -45,6 +45,18 @@ export const LineSchema = z.object({
 
 export type Line = z.infer<typeof LineSchema>;
 
+/**
+ * A line as it lives in the store: a {@link Line} plus a stable `id`, assigned
+ * by `drawingLinesReducer` on every path that puts one there.
+ *
+ * The id is deliberately absent from `LineSchema`, so it reaches neither the
+ * URL (whose `line=`/`polygon=` params are positional) nor a persisted map —
+ * already-saved documents carry none, and requiring one would fail their parse.
+ * It exists because an array index is not an identity: deleting, splitting and
+ * joining renumber the lines under anything that remembered one.
+ */
+export type DrawnLine = Line & { id: number };
+
 // Wire form for persisted maps: legacy `area` / `distance` line types
 // are renamed to the current `polygon` / `line`.
 export const LineCompatSchema = z.preprocess((v) => {

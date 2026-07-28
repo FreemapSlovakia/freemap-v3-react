@@ -6,6 +6,7 @@ import { serializeLatLon } from '@shared/urlSerialization.js';
 import { hash } from 'ohash';
 import { encodeActiveModal } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
+import type { RootState } from '../store/store.js';
 import {
   getMapContentParts,
   type QueryPart,
@@ -48,6 +49,7 @@ export const urlProcessor: Processor = {
       search,
       objects,
       wiki,
+      elevationChart,
     } = state;
 
     if (!isUrlUpdatingEnabled()) {
@@ -103,6 +105,7 @@ export const urlProcessor: Processor = {
       objects.active,
       wiki.preview,
       wiki.loading,
+      elevationChart.target,
     ];
 
     const restChanged =
@@ -147,6 +150,16 @@ export const urlProcessor: Processor = {
     if (main.tools.length > 0) {
       // In the order the tools were opened — matches the rendered toolbar order.
       queryParts.push(['tools', main.tools.join(',')]);
+    }
+
+    {
+      const chartParam =
+        elevationChart.target &&
+        serializeChartTarget(elevationChart.target, drawingLines.lines);
+
+      if (chartParam) {
+        queryParts.push(['elevation-chart', chartParam]);
+      }
     }
 
     if (mapId) {
@@ -301,3 +314,31 @@ export const urlProcessor: Processor = {
     }
   },
 };
+
+/**
+ * `elevation-chart=` — which feature's profile is shown, and which of its lines
+ * where that isn't implied. A drawn line is named by *position*, because that is
+ * how the line itself is written (`line=`/`polygon=` are positional and carry no
+ * id); a device by token, since which one is charted is not what `follow=` says.
+ */
+function serializeChartTarget(
+  target: NonNullable<RootState['elevationChart']['target']>,
+  lines: RootState['drawingLines']['lines'],
+): string | null {
+  switch (target.type) {
+    case 'drawing': {
+      const index = lines.findIndex(({ id }) => id === target.lineId);
+
+      // The charted line is gone — deleting one writes the URL before the chart
+      // has closed. A bare `drawing` would name no line at all, and a Back to
+      // that entry would arm a request nothing can ever honour.
+      return index < 0 ? null : `drawing/${index}`;
+    }
+
+    case 'tracking':
+      return `tracking/${target.token}`;
+
+    default:
+      return target.type;
+  }
+}

@@ -106,7 +106,7 @@ export default function ElevationChart(): ReactElement | null {
   const premium = useAppSelector((state) => isPremium(state.auth.user));
 
   const provenance = useAppSelector(
-    (state) => state.elevationChart.request?.credit.provenance,
+    (state) => state.elevationChart.provenance ?? undefined,
   );
 
   const reportedSources = useAppSelector(

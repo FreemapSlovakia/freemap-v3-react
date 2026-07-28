@@ -194,24 +194,35 @@ engineering task, not a user-facing feature:
       credit anywhere near it. The colorize legend is the obvious place;
       `useElevationSources` and the `fm:elevationSources` stamp on the render
       geometry give it the tokens without another request.
-- [ ] **Keep the elevation profile open when its source line changes.** The
-      `elevationChart` reducer resets to `initialState` on `routePlannerSetResult`,
-      `drawingLineAddPoint`/`UpdatePoint`/`RemovePoint` and `selectFeature`, so
-      re-routing, dragging a waypoint or reshaping a drawn line closes the chart
-      instead of redrawing it. Both features already have a refresh processor that
-      rebuilds an open chart (`toggleElevationChartProcessor`,
-      `trackViewerRefreshElevationChartProcessor`); extend that pattern to these
-      triggers and drop the reset cases.
-- [ ] **Give the elevation chart a `source` discriminator.** It doesn't record
-      which feature owns it, so `toggleElevationChartProcessor` and
-      `trackViewerRefreshElevationChartProcessorHandler` disambiguate by which
-      tool is open — a proxy, not a fact. With both tools open they race, and a
-      drawing-line or tracking profile can be replaced by the planned route.
-      Adding `source` to `elevationChartSetTrackGeojson` ('route-planner' |
-      'track-viewer' | 'drawing' | 'tracking') makes each handler's ownership
-      test exact, and would let a drawn line's profile refresh on an
-      `elevationSetSettings` change too — today it only re-reads the elevation
-      settings when reopened.
+- [x] **Keep the elevation profile open when its source line changes.** The
+      chart redraws from its target instead of being reset, and the incidental
+      reducer resets (`routePlannerSetResult`, `drawingLineAdd`/
+      `Update`/`RemovePoint`, `selectFeature`) are gone — re-routing, dragging a
+      waypoint or reshaping a drawn line redraws the profile. Only an explicit
+      close, `clearMapFeatures`, closing the owning tool, or the charted line
+      going away ends it. A vertex drag doesn't fire an
+      elevation request per frame — a redraw now happens only when the object
+      the profile derives from is actually replaced.
+- [ ] **Show which line an open elevation profile belongs to.** A drawing
+      profile is pinned to its line (`target.lineId`) and selecting another line
+      no longer moves it — deliberate, but nothing on screen says so. The only
+      cue is the `active` state of the *Elevation profile* item, which lives
+      inside `DrawingLineSelection`'s `···` dropdown and so isn't visible
+      without expanding it. Options: label the chart with the line (its `label`,
+      else an index), highlight the charted line on the map while the profile is
+      open, or surface the toggle out of the overflow menu.
+- [x] **Give the elevation chart a target.** `elevationChart.target` says what
+      the chart shows ('route-planner' | 'track-viewer' | 'drawing' + lineId |
+      'tracking' + token), and the chart is a derived view of it: one
+      `elevationChartProcessor` resolves the target against current state
+      through a small per-feature resolver, replacing the four per-feature
+      processors that used to push into it and guess ownership from which tool
+      was open. `chartIdentity` — one reference naming what the profile derives
+      from — is the whole redraw rule, so there is no trigger list to keep in
+      step. Drawn lines gained a stable `id` (`DrawnLine`, state-only, absent
+      from `LineSchema` so saved maps still parse), because an index is not an
+      identity. `elevation-chart=` in the URL carries the target, naming a drawn
+      line by position and resolving it to an id at that boundary.
 
 ## Track viewer: generic geodata vs. recorded tracks
 

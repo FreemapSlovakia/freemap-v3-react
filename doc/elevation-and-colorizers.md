@@ -170,9 +170,7 @@ All of them invalidate the derived caches (`routePlanner.renderGeojson`,
 `trackViewer.renderTrackGeojson` clear on `elevationSetSettings`). `routePlannerColorizeProcessor`
 and `trackViewerDensifyProcessor` rebuild them, which has to happen whether or not the
 chart is open — an active elevation/steepness colorize reads the same cache. An open chart
-additionally refreshes through each feature's existing refresh processor, each gated on
-its own tool being open, since the chart doesn't record which feature owns it (see
-`TODO.md`).
+additionally redraws through `elevationChartProcessor` (see *What the chart shows* below).
 
 The UI is an *Elevation profile* group in `MapPreferencesModal`, reachable from a gear in
 the elevation chart's own toolbar.
@@ -210,9 +208,9 @@ model choice — which countries it holds, what premium changes — here to rot.
 is an honest state; a plausible guess isn't. The one cost is deploy skew: a frontend running
 against an API without `?sources=1` shows no credit at all, so ship the API first.
 
-Not every profile is ours to credit, so `elevationChartSetTrackGeojson` carries an
-`ElevationCredit` — a provenance plus, for `terrain-model`, the tokens — that its dispatcher
-supplies, since only the feature's owner knows what sampled it:
+Not every profile is ours to credit, so a target's resolver returns an
+`ElevationCredit` — a provenance plus, for `terrain-model`, the tokens — since only the
+feature being charted knows what sampled it:
 
 - **`terrain-model`** — a drawn line or measurement resampled from the API, a premium route
   (every vertex overridden), a manual/OSRM route (the router returns no elevation, so
@@ -280,6 +278,73 @@ to a chart opened later takes two mechanisms, because the two caches expire diff
 dispatchers; routePlanner's reads the stamp directly. The chart's processor then unions the
 credit's tokens with whatever its own sampling collected (the drawn-line/measurement path)
 into `elevationChartSetElevationProfile`.
+
+### What the chart shows — `elevationChart.target`
+
+The chart is a **derived view**, not something features push into. State holds only
+what to show:
+
+```ts
+type ElevationChartTarget =
+  | { type: 'route-planner' }                    // the active alternative
+  | { type: 'track-viewer' }                     // the active imported track
+  | { type: 'drawing'; lineId: number }
+  | { type: 'tracking'; token: string }
+```
+
+`elevationChartProcessor` is the only thing that draws it, and `chartIdentity(state)`
+(`resolve.ts`) is its whole redraw rule: one cheap reference naming *what the profile is
+derived from* — the render line, the active track feature, the drawn line, the device's
+track. A re-route, a switched alternative, a densified line, a reshaped drawn line, a
+refilled elevation or an arriving position each replace that object; nothing else does. So
+there is no list of actions to keep in step with, and an action that changes anything else
+leaves it identical and draws nothing. Cheap rather than free: the identity is a lookup
+(for a track viewer target, a scan for the active line feature), evaluated against both the
+new and the previous state on every dispatched action.
+
+A drawn line is the one target sampled from the elevation API rather than read off the
+feature, and a vertex drag replaces its geometry on every pointer move — so its redraws are
+coalesced by a timer that dispatches `elevationChartRedraw`. The wait is deliberately not an
+`await` inside the processor, which would hold a progress indicator open for the whole
+gesture.
+
+Each target resolves through a small per-feature `resolveElevationChart.ts`, loaded on
+demand (a resolver may densify, and pulls the sampling path in with it). A resolver
+returns the line, whether to keep its recorded elevation, its waypoints, and the
+`ElevationCredit` only it can know — or `null` when there is nothing to chart.
+
+**Identity, not position.** A drawn line is named by an `id` (`DrawnLine`, assigned in
+`drawingLinesReducer`), a device by its token. An array index is not an identity: deleting,
+splitting and joining renumber lines, and a chart holding an index would quietly come to
+draw a different one. The id is deliberately absent from `LineSchema`, so it reaches
+neither the URL (`line=`/`polygon=` are positional) nor a persisted map — existing saved
+documents carry none, and requiring one would fail their parse. The URL therefore names the
+line by position and the id is resolved at that boundary, in `locationChangeHandler` and
+`urlProcessor`.
+
+**Staleness.** Resolving can take seconds. The processor re-checks that the target is still
+the one it resolved for, and that `chartIdentity` hasn't moved on, before drawing — so a
+chart closed or re-aimed mid-sample is never drawn over.
+
+**"Nothing to draw" is two different answers**, and a resolver says which — the feature is
+the only thing that can tell them apart:
+
+- **`pending`** — the line isn't there *yet*: a route being recomputed (which is what
+  switching transport type does, since every route change clears the old one first), a
+  track still downloading, a device that hasn't reported. The chart stays aimed and draws
+  nothing; the arrival is itself a redraw trigger.
+- **`gone`** — nothing is coming: the line was deleted, the track cleared, the device isn't
+  watched. The chart closes.
+
+Collapsing the two is what made a transport-type switch close the profile for good, and a
+profile of a locally imported track sit aimed at something that could never come back. A
+`fromUrl` flag stood in for this before, and could not work: whether geometry is still on
+its way is a fact about the feature, not about where the request came from. `fromUrl`
+survives only to keep a page load from being counted as a user toggle.
+
+The chart also ends on an explicit `elevationChartClose`, on `clearMapFeatures`, and when
+its target's own tool is closed (`targetTools` in the reducer; a drawn line outlives any
+tool, so it has none).
 
 ### Per-consumer elevation policy
 

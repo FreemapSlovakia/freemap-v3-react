@@ -11,6 +11,12 @@ import {
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
+  elevationChartClose,
+  elevationChartOpen,
+} from '@features/elevationChart/model/actions.js';
+import type { ElevationChartTarget } from '@features/elevationChart/model/target.js';
+import { targetsEqual } from '@features/elevationChart/model/target.js';
+import {
   GALLERY_SOURCES,
   type GallerySource,
 } from '@features/gallery/galleryUtils.js';
@@ -99,6 +105,7 @@ import {
 import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
 import type { MyStore, RootState } from '../store/store.js';
+import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 import { setUrlUpdatingEnabled } from './urlUpdating.js';
 
@@ -871,11 +878,98 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
+  handleElevationChart(getState, dispatch, query, restore !== null);
+
   if (restore) {
     dispatch(mapsRestore(restore));
   }
 
   setUrlUpdatingEnabled(true);
+}
+
+/**
+ * Re-applies a deferred `elevation-chart=` once the feature it names is in the
+ * store — a drawn line is named by position and has no id until then. A no-op
+ * when nothing is held, and the hold expires per `takeChartRequest`.
+ */
+export function applyElevationChartFromUrl(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+) {
+  const { loadMeta, restoring } = getState().myMaps;
+
+  const target = takeChartRequest(
+    (raw) => parseChartTarget(getState, raw),
+    Boolean(loadMeta || restoring),
+  );
+
+  if (target && !targetsEqual(getState().elevationChart.target, target)) {
+    dispatch(elevationChartOpen(target, { fromUrl: true }));
+  }
+}
+
+/** The target an `elevation-chart=` value names, if it can be resolved now. */
+function parseChartTarget(
+  getState: () => RootState,
+  raw: string,
+): ElevationChartTarget | null {
+  const slash = raw.indexOf('/');
+
+  const type = slash < 0 ? raw : raw.slice(0, slash);
+
+  // A token may itself contain a slash, so the key is everything after the
+  // first one.
+  const key = slash < 0 ? undefined : raw.slice(slash + 1);
+
+  switch (type) {
+    case 'route-planner':
+    case 'track-viewer':
+      return { type };
+
+    case 'tracking':
+      return key ? { type: 'tracking', token: key } : null;
+
+    case 'drawing': {
+      const line = getState().drawingLines.lines[Number(key ?? Number.NaN)];
+
+      return line ? { type: 'drawing', lineId: line.id } : null;
+    }
+
+    default:
+      return null;
+  }
+}
+
+/**
+ * `elevation-chart=` — which feature's profile is shown, if any: a drawn line
+ * names its position (`drawing/2`), a tracked device its token. Whether a
+ * target that doesn't resolve yet is worth waiting for is the resolver's call,
+ * not this one's; `mapPending` only says whether a map is still to arrive with
+ * content this could name.
+ */
+function handleElevationChart(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  query: Record<string, string | string[]>,
+  mapPending = false,
+) {
+  const raw = query['elevation-chart'];
+
+  const target =
+    typeof raw === 'string' ? parseChartTarget(getState, raw) : null;
+
+  holdChartRequest(
+    target === null && typeof raw === 'string' ? raw : null,
+    mapPending,
+  );
+
+  if (!targetsEqual(getState().elevationChart.target, target)) {
+    dispatch(
+      target
+        ? elevationChartOpen(target, { fromUrl: true })
+        : elevationChartClose(),
+    );
+  }
 }
 
 // TODO use some generic deep compare fn

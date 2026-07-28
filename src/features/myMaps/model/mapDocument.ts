@@ -26,7 +26,9 @@ export function getMapDataFromState(state: RootState): MapData {
   } = state;
 
   return {
-    lines: drawingLines.lines,
+    // Without the store-only `id`: a document carries no line identity, and
+    // reading one back assigns fresh ids anyway.
+    lines: drawingLines.lines.map(({ id: _id, ...line }) => line),
     points: drawingPoints.points,
     tracking: {
       trackedDevices: tracking.trackedDevices,

@@ -1,26 +1,19 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   elevationChartClose,
-  elevationChartSetTrackGeojson,
+  elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import {
   trackViewerSetElevationPrompt,
   trackViewerToggleElevationChart,
 } from '@features/trackViewer/model/actions.js';
 import { elevationCoverage } from '@shared/geoutils.js';
-import { trackMatomo } from '@shared/trackMatomo.js';
-import {
-  isTrackLine,
-  resolveActiveTrack,
-  trackWaypoints,
-} from '../../trackSelection.js';
-import { elevationCredit } from '../elevationCredit.js';
-import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
+import { resolveActiveTrack } from '../../trackSelection.js';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,
   handle: async ({ dispatch, getState }) => {
-    if (getState().elevationChart.elevationProfilePoints) {
+    if (getState().elevationChart.target?.type === 'track-viewer') {
       dispatch(elevationChartClose());
 
       return;
@@ -45,29 +38,10 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
       elevationDecision !== 'undecided' ||
       elevationCoverage([active.feature]) === 'full'
     ) {
-      trackMatomo(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
-
-      // Densify a sparse line first so the chart isn't a coarse straight-segment
-      // profile; a no-op (and so a fall back to the recorded line) when nothing
-      // needs subdividing.
-      await ensureRenderGeojson(getState, dispatch);
-
-      // The densified copy keeps feature order, so the active track is at the
-      // same index; fall back to the recorded feature when it wasn't densified.
-      const rendered =
-        getState().trackViewer.renderTrackGeojson?.features[active.index];
-
-      const drawn =
-        rendered && isTrackLine(rendered) ? rendered : active.feature;
-
-      dispatch(
-        elevationChartSetTrackGeojson(
-          drawn,
-          true,
-          trackWaypoints(trackGeojson),
-          elevationCredit(getState().trackViewer, drawn),
-        ),
-      );
+      // `elevationChartProcessor` draws it from here — it densifies a sparse
+      // line and states the credit, so the toggle and a URL-restored chart take
+      // one path.
+      dispatch(elevationChartOpen({ type: 'track-viewer' }));
 
       return;
     }

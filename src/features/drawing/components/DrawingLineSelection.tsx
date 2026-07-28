@@ -1,7 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import {
   elevationChartClose,
-  elevationChartSetTrackGeojson,
+  elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -9,7 +9,6 @@ import { Selection } from '@shared/components/Selection.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
-import { lineString } from '@turf/helpers';
 import { type ReactElement, useCallback, useState } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
@@ -54,23 +53,21 @@ export default function DrawingLineSelection(): ReactElement | null {
       : undefined,
   );
 
-  const showElevationChart = useAppSelector((state) =>
-    Boolean(state.elevationChart.elevationProfilePoints),
+  // The chart is of this line by id, so it stays with the line once the
+  // selection goes — and lights this button only for the line it is of.
+  const showElevationChart = useAppSelector(
+    (state) =>
+      state.elevationChart.target?.type === 'drawing' &&
+      state.elevationChart.target.lineId === line?.id,
   );
 
   const toggleElevationChart = useCallback(() => {
-    // TODO to processor
-
-    if (showElevationChart) {
+    if (showElevationChart || !line) {
       dispatch(elevationChartClose());
-    } else if (line) {
-      dispatch(
-        elevationChartSetTrackGeojson(
-          lineString(line.points.map((p) => [p.lon, p.lat])),
-        ),
-      );
+    } else {
+      dispatch(elevationChartOpen({ type: 'drawing', lineId: line.id }));
     }
-  }, [line, showElevationChart, dispatch]);
+  }, [showElevationChart, line, dispatch]);
 
   const [projectPointDialogVisible, setProjectPointDialogVisible] =
     useState(false);

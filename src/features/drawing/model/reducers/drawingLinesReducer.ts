@@ -7,9 +7,11 @@ import {
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { serializeDrawingLine } from '@shared/urlSerialization.js';
 import { lineString } from '@turf/helpers';
 import { simplify as turfSimplify } from '@turf/simplify';
 import {
+  type DrawnLine,
   drawingLineAdd,
   drawingLineAddPoint,
   drawingLineChangeProperties,
@@ -31,7 +33,7 @@ import {
 
 export interface DrawingLinesState {
   drawing: boolean;
-  lines: Line[];
+  lines: DrawnLine[];
   joinWith: undefined | { lineIndex: number; pointId: number };
 }
 
@@ -41,12 +43,29 @@ export const initialState: DrawingLinesState = {
   joinWith: undefined,
 };
 
+// Line ids are handed out here because the reducer is the one funnel every
+// line reaches the store through — a URL parse, a loaded map, a conversion, a
+// split, the draw tool — so no caller has to remember to supply one. Monotonic
+// rather than `max + 1`, so an id is never reused by a later line and anything
+// holding one (the elevation chart) can't be silently re-pointed.
+let nextLineId = 0;
+
+function withId(line: Line): DrawnLine {
+  return { ...line, id: ++nextLineId };
+}
+
+// Everything a `Line` is, minus its id: `serializeDrawingLine` covers every
+// field except `type`, which the URL carries as the param name instead.
+function lineIdentity(line: Line): string {
+  return `${line.type}\x1f${serializeDrawingLine(line)}`;
+}
+
 export const drawingLinesReducer = createReducer(initialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => initialState)
     .addCase(drawingLineAdd, (state, { payload }) => ({
       ...state,
-      lines: [...state.lines, payload],
+      lines: [...state.lines, withId(payload)],
     }))
     .addCase(drawingLineChangeProperties, (state, { payload }) => {
       Object.assign(state.lines[payload.index], payload.properties);
@@ -83,7 +102,7 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       if ('lineProps' in action.payload) {
         const { lineProps } = action.payload;
 
-        line = {
+        line = withId({
           type: lineProps.type,
           color: lineProps.color,
           fillColor: lineProps.fillColor,
@@ -92,7 +111,7 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
           lineCap: lineProps.lineCap,
           lineJoin: lineProps.lineJoin,
           points: [],
-        };
+        });
 
         state.lines.push(line);
       } else {
@@ -163,14 +182,16 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
             ...line,
             points: line.points.slice(0, pos + 1),
           },
-          { ...line, points: line.points.slice(pos) },
+          // The tail is a new line, so it gets its own id; the head keeps the
+          // original's, which is what an open chart on it goes on following.
+          withId({ ...line, points: line.points.slice(pos) }),
           ...state.lines.slice(lineIndex + 1),
         ],
       };
     })
     .addCase(drawingLineSetLines, (state, action) => ({
       ...state,
-      lines: action.payload.filter(linefilter),
+      lines: action.payload.filter(linefilter).map(withId),
     }))
     .addCase(
       drawingLineContinue,
@@ -184,13 +205,9 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
         }
       },
     )
-    .addCase(mapsLoaded, (state, { payload }) => ({
-      ...state,
-      joinWith: undefined,
-      drawing: false,
-      lines: [
-        ...(payload.merge ? state.lines : []),
-        ...(payload.data.lines ?? initialState.lines).map((line) => ({
+    .addCase(mapsLoaded, (state, { payload }) => {
+      const incoming = (payload.data.lines ?? initialState.lines).map(
+        (line) => ({
           ...line,
           type:
             // compatibility
@@ -199,9 +216,47 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
               : (line.type as string) === 'distance'
                 ? 'line'
                 : line.type,
-        })),
-      ],
-    }))
+        }),
+      );
+
+      // Installing a document must not change line identity. The same lines
+      // arrive twice on a restore — from the URL first, so the map draws at
+      // once, then from the document to reconcile with the backend — and
+      // anything holding an id (the elevation chart names its line that way)
+      // would lose its line if the second pass renumbered them.
+      //
+      // So each incoming line adopts an identical one already shown, keeping
+      // its id *and* its object, and only a genuinely new line is allocated
+      // one. Per line rather than all-or-nothing: a document that differs in
+      // one line must not renumber the rest. Matched on the id-free content
+      // string the my-maps dirty check already treats as a line's identity,
+      // and consumed as it matches, so two identical lines stay two lines.
+      const reusable = new Map<string, DrawnLine[]>();
+
+      for (const line of payload.merge ? [] : state.lines) {
+        const key = lineIdentity(line);
+
+        const bucket = reusable.get(key);
+
+        if (bucket) {
+          bucket.push(line);
+        } else {
+          reusable.set(key, [line]);
+        }
+      }
+
+      return {
+        ...state,
+        joinWith: undefined,
+        drawing: false,
+        lines: [
+          ...(payload.merge ? state.lines : []),
+          ...incoming.map(
+            (line) => reusable.get(lineIdentity(line))?.shift() ?? withId(line),
+          ),
+        ],
+      };
+    })
     .addCase(drawingLineJoinStart, (state, action) => ({
       ...state,
       joinWith: action.payload,

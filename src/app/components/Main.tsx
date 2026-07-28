@@ -1,3 +1,7 @@
+import {
+  elevationChartClose,
+  elevationChartOpen,
+} from '@features/elevationChart/model/actions.js';
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
 import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
 import { GalleryResult } from '@features/gallery/components/GalleryResult.js';
@@ -19,7 +23,6 @@ import { MyMapsMenu } from '@features/myMaps/components/MyMapsMenu.js';
 import { isPremium } from '@features/premium/premium.js';
 import RouteLegSelection from '@features/routePlanner/components/RouteLegSelection.js';
 import RoutePointSelection from '@features/routePlanner/components/RoutePointSelection.js';
-import { routePlannerToggleElevationChart } from '@features/routePlanner/model/actions.js';
 import { SearchMenu } from '@features/search/components/SearchMenu.js';
 import { SearchSelection } from '@features/search/components/SearchSelection.js';
 import { Toasts } from '@features/toasts/components/Toasts.js';
@@ -489,8 +492,8 @@ export function Main(): ReactElement {
 
   const online = useOnline();
 
-  const elevationChartActive = useAppSelector((state) =>
-    Boolean(state.elevationChart.elevationProfilePoints),
+  const elevationChartTarget = useAppSelector(
+    (state) => state.elevationChart.target?.type,
   );
 
   const trackFound = useAppSelector(trackGeojsonIsSuitableForElevationChart);
@@ -592,7 +595,7 @@ export function Main(): ReactElement {
                         {({ label, labelClassName, props }) => (
                           <Button
                             variant="secondary"
-                            active={elevationChartActive}
+                            active={elevationChartTarget === 'track-viewer'}
                             onClick={() =>
                               dispatch(trackViewerToggleElevationChart())
                             }
@@ -615,9 +618,15 @@ export function Main(): ReactElement {
                             className={clsx(trackFound && 'ms-1')}
                             variant="secondary"
                             onClick={() =>
-                              dispatch(routePlannerToggleElevationChart())
+                              dispatch(
+                                elevationChartTarget === 'route-planner'
+                                  ? elevationChartClose()
+                                  : elevationChartOpen({
+                                      type: 'route-planner',
+                                    }),
+                              )
                             }
-                            active={elevationChartActive}
+                            active={elevationChartTarget === 'route-planner'}
                             {...props}
                           >
                             <FaChartArea />

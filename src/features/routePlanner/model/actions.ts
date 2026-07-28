@@ -221,10 +221,6 @@ export const routePlannerSetActiveAlternativeIndex = createAction<number>(
   'ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX',
 );
 
-export const routePlannerToggleElevationChart = createAction(
-  'ROUTE_PLANNER_TOGGLE_ELEVATION_CHART',
-);
-
 export const routePlannerColorizeBy = createAction<ColorizingMode | null>(
   'ROUTE_PLANNER_COLORIZE_BY',
 );

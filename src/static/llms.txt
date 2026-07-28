@@ -29,6 +29,7 @@ The highest-value parameters for building links:
 - `line=lat/lon,lat/lon,…` and `polygon=lat/lon,lat/lon,…` — draw a line or a filled area (each repeatable).
 - `points=[transport/]lat/lon,…` together with `transport=…` — a **planned route** through waypoints. This is routing, not standalone markers — do not confuse the plural `points=` with the marker parameter `point=`.
 - `show=type[/arg]` — open a modal/viewer, e.g. `show=gallery-viewer/123`.
+- `elevation-chart=feature` — open the elevation profile on the feature named: `route-planner` (the planned route), `track-viewer` (the active imported track), `tracking/<deviceToken>` (a tracked device), or `drawing/<lineIndex>` (a drawn line, by its zero-based `line=`/`polygon=` index). Only one profile shows at a time, and it opens once the geometry it charts has loaded — so it can be combined with `points=`, `track-uid=`, `import-url=` or a saved map's `id=`.
 - `lang=code` — force the UI language (`en`, `sk`, …).
 
 **Example — a map with two markers** (Bratislava and Košice) on the Outdoor layer:
@@ -178,6 +179,8 @@ While drawing, individual nodes can be edited: a line point can **Join** another
 **Simplify** prompts for a simplification factor (0 = no simplification).
 
 **Elevation profile** opens a chart of elevation along a line, with total climb and total descent. Waypoints are marked with their name and elevation, and their distance is ticked on the x-axis. A toolbar below the chart can download it as SVG (not in an embedded map, where the browser forbids downloads), open the elevation preferences, and, when the line carries waypoints, toggle their markers and labels. Under the toolbar the chart credits the terrain models its elevation was actually read from, as the elevation API reports them: the national high-resolution ones (premium, with the high-resolution preference on) plus GEDTM30 past their borders, or SRTM — which is also what a route on the free tier shows, since it keeps the router's own elevation. Non-premium users get a premium gem there offering higher-precision data. Elevation the user recorded or imported is credited to nobody, so the line is omitted for live tracking and for tracks shown as recorded.
+
+Only one profile is shown at a time, and it stays with whatever opened it — a planned route, an imported track, a tracked device or a drawn line — redrawing itself as that line changes (re-routing, reshaping a drawn line, live positions arriving) rather than closing. Which one it is shows in the URL as `elevation-chart=` (see the URL parameters above), so a link can share an opened profile.
 
 ### Route finder
 

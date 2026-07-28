@@ -3,8 +3,8 @@ import type {
   ElevationProfileWaypoint,
 } from '@features/elevationChart/model/reducer.js';
 import { createAction } from '@reduxjs/toolkit';
-import type { Feature, LineString, MultiLineString } from 'geojson';
 import type { ElevationSettingsState } from './settingsReducer.js';
+import type { ElevationChartTarget } from './target.js';
 
 /** A waypoint to pair onto the profile (by time, else nearest track point). */
 export interface ElevationWaypoint {
@@ -31,37 +31,40 @@ export type ElevationProvenance = 'terrain-model' | 'srtm' | 'recorded';
 /**
  * What the chart may credit a profile's elevation to: where it came from, plus —
  * for `terrain-model` — the source tokens the elevation API named when it was
- * sampled. Only the feature's owner knows both, so it states them when opening
- * the chart; the chart's own sampling adds whatever it reads itself.
+ * sampled. Only the feature being charted knows both, so its resolver states
+ * them; the chart's own sampling adds whatever it reads itself.
  */
 export type ElevationCredit = {
   provenance: ElevationProvenance;
   sources?: string[];
 };
 
-export const elevationChartSetTrackGeojson = createAction(
-  'ELEVATION_CHART_SET_TRACK_GEOJSON',
-  // `keepRecorded` renders the feature's own elevation as-is (with gaps where
-  // it's missing) instead of sampling a complete profile from the server. A
-  // `MultiLineString` is a multi-segment recording (an interrupted track): its
-  // segments are laid end-to-end on the distance axis with a break between them.
-  // `waypoints` are points (e.g. GPX <wpt>) to mark along the profile.
-  // `credit` says what to credit the drawn elevation to; a resampled profile is
-  // ours by construction (and names its own sources), while a feature's own
-  // values default to uncredited until its owner says otherwise.
-  (
-    trackGeojson: Feature<LineString | MultiLineString>,
-    keepRecorded = false,
-    waypoints: ElevationWaypoint[] = [],
-    credit: ElevationCredit = {
-      provenance: keepRecorded ? 'recorded' : 'terrain-model',
-    },
-  ) => ({
-    payload: { trackGeojson, keepRecorded, waypoints, credit },
+/**
+ * Shows the chart on `target`. The geometry needn't exist yet: the chart is a
+ * derived view, so `elevationChartProcessor` resolves the target against
+ * current state — now, and again whenever what it resolves to changes.
+ *
+ * `fromUrl` marks a target restored from the URL rather than asked for by the
+ * user — a page load is not a toggle, so it isn't reported as one. Whether to
+ * wait for geometry that hasn't arrived is not decided here: the target's
+ * resolver says whether it is still coming.
+ */
+export const elevationChartOpen = createAction(
+  'ELEVATION_CHART_OPEN',
+  (target: ElevationChartTarget, { fromUrl = false } = {}) => ({
+    payload: { target, fromUrl },
   }),
 );
 
 export const elevationChartClose = createAction('ELEVATION_CHART_CLOSE');
+
+/**
+ * Redraw the current target now. Carries nothing and changes no state — it
+ * exists so the chart's own debounce can hand work back to the processor
+ * without awaiting a timer inside it, which would hold a progress indicator
+ * open for the length of a drag.
+ */
+export const elevationChartRedraw = createAction('ELEVATION_CHART_REDRAW');
 
 export const elevationChartSetActivePoint =
   createAction<ElevationProfilePoint | null>(
@@ -75,6 +78,8 @@ export const elevationSetSettings = createAction<
 export const elevationChartSetElevationProfile = createAction<{
   points: ElevationProfilePoint[];
   waypoints: ElevationProfileWaypoint[];
+  /** What the drawn elevation is credited to; see {@link ElevationCredit}. */
+  provenance: ElevationProvenance;
   /**
    * Terrain-model tokens the elevation API reported for the points behind this
    * profile — see `elevationSourcesFromTokens`. Empty when it named none (the

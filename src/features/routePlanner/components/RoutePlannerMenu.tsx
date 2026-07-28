@@ -4,6 +4,10 @@ import {
   setSelectingHomeLocation,
   setTool,
 } from '@app/store/actions.js';
+import {
+  elevationChartClose,
+  elevationChartOpen,
+} from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
@@ -85,7 +89,6 @@ import {
   routePlannerSetStart,
   routePlannerSetTransportType,
   routePlannerSwapEnds,
-  routePlannerToggleElevationChart,
   routePlannerToggleMilestones,
 } from '../model/actions.js';
 import {
@@ -485,8 +488,8 @@ export default function RoutePlannerMenu(): ReactElement {
     return !isAvailable || isAvailable(lineFeatures);
   };
 
-  const elevationProfileIsVisible = useAppSelector((state) =>
-    Boolean(state.elevationChart.elevationProfilePoints),
+  const elevationProfileIsVisible = useAppSelector(
+    (state) => state.elevationChart.target?.type === 'route-planner',
   );
 
   const canSwap = useAppSelector(
@@ -519,7 +522,11 @@ export default function RoutePlannerMenu(): ReactElement {
   const handleMoreSelect = (eventKey: string | null) => {
     switch (eventKey) {
       case 'toggle-elevation-chart':
-        dispatch(routePlannerToggleElevationChart());
+        dispatch(
+          elevationProfileIsVisible
+            ? elevationChartClose()
+            : elevationChartOpen({ type: 'route-planner' }),
+        );
 
         break;
 

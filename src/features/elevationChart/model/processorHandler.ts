@@ -1,5 +1,5 @@
-import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
-import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { clearMapFeatures } from '@app/store/actions.js';
+import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
 import { fetchElevations } from '@shared/elevation.js';
 import { smoothElevationSeries } from '@shared/elevationSmoothing.js';
@@ -13,16 +13,19 @@ import { distance } from '@turf/distance';
 import { getCoord } from '@turf/invariant';
 import { length } from '@turf/length';
 import type { Feature, LineString, MultiLineString, Position } from 'geojson';
+import type { Dispatch } from 'redux';
 import {
   type ElevationWaypoint,
   elevationChartClose,
+  elevationChartOpen,
+  elevationChartRedraw,
   elevationChartSetElevationProfile,
-  elevationChartSetTrackGeojson,
 } from './actions.js';
 import type {
   ElevationProfilePoint,
   ElevationProfileWaypoint,
 } from './reducer.js';
+import type { ResolvedProfileSource } from './resolve.js';
 
 // A waypoint nearer than this to the track is considered "on" it and pinned to
 // the profile; farther ones (a POI off to the side) are omitted.
@@ -48,13 +51,14 @@ function toEpoch(value: unknown): number | undefined {
   return Number.isFinite(t) ? t : undefined;
 }
 
-const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
-  dispatch,
-  getState,
-  action,
-}) => {
-  const { trackGeojson, keepRecorded, waypoints, credit } = action.payload;
-
+/** Computes the profile for an already-resolved line and puts it on screen. */
+const computeProfile = async (
+  { trackGeojson, keepRecorded, waypoints, credit }: ResolvedProfileSource,
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  /** False once the chart has moved on and this result is no longer wanted. */
+  stillCurrent: () => boolean = () => true,
+) => {
   // `keepRecorded` shows the recorded elevation verbatim (gaps included); a
   // fully-elevated track is read locally regardless. Everything else samples a
   // complete profile from the server. The local path also carries each point's
@@ -64,6 +68,10 @@ const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
       ? resolveElevationProfilePointsLocally(trackGeojson)
       : await resolveElevationProfilePointsViaApi(getState, trackGeojson);
 
+  if (!stillCurrent()) {
+    return;
+  }
+
   dispatch(
     elevationChartSetElevationProfile({
       points,
@@ -71,11 +79,12 @@ const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
       // What the feature's owner sampled, plus whatever this profile sampled
       // itself — one model may have answered for either.
       sources: [...new Set([...(credit.sources ?? []), ...sources])],
+      provenance: credit.provenance,
     }),
   );
 };
 
-export default handle;
+export default computeProfile;
 
 // Pins each waypoint onto the profile. A waypoint counts as "on" the track only
 // where the profile passes within the snap threshold; among those candidates it
@@ -313,9 +322,11 @@ async function resolveElevationProfilePointsViaApi(
   const eles = await fetchElevations(
     sampled.map(({ lat, lon }) => [lat, lon]),
     getState,
+    // A redraw supersedes whatever is in flight — it is how every reshape of a
+    // drawn line arrives, so leaving it out let a drag stack up requests.
     [
-      elevationChartSetTrackGeojson,
-      selectFeature,
+      elevationChartOpen,
+      elevationChartRedraw,
       elevationChartClose,
       clearMapFeatures,
     ],

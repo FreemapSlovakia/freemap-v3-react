@@ -67,7 +67,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       return state.gallery.editModel ? galleryEditPicture() : galleryClear();
     }
 
-    if (state.elevationChart.elevationProfilePoints) {
+    if (state.elevationChart.target) {
       return elevationChartClose();
     }
 

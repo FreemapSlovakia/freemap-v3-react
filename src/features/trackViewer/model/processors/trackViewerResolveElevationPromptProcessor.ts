@@ -1,6 +1,6 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { elevationChartSetTrackGeojson } from '@features/elevationChart/model/actions.js';
+import { elevationChartOpen } from '@features/elevationChart/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   trackViewerColorizeTrackBy,
@@ -11,14 +11,7 @@ import {
 import { trackInfoToast } from '@features/trackViewer/model/trackInfoToast.js';
 import { loadTrackViewerMessages } from '@features/trackViewer/translations/loadTrackViewerMessages.js';
 import { enrichElevations } from '@shared/elevation.js';
-import { trackMatomo } from '@shared/trackMatomo.js';
-import {
-  isTrackLine,
-  resolveActiveTrack,
-  trackWaypoints,
-} from '../../trackSelection.js';
-import { elevationCredit } from '../elevationCredit.js';
-import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
+import { isTrackLine, resolveActiveTrack } from '../../trackSelection.js';
 
 export const trackViewerResolveElevationPromptProcessor: Processor<
   typeof trackViewerResolveElevationPrompt
@@ -102,37 +95,15 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
       return;
     }
 
-    // Open the chart on the active track, rendering its elevation as-is: 'keep'
-    // shows the recorded values with their gaps, while a fill/override has
-    // already written the server values into these same coordinates. An
-    // override may also densify a sparse line so the profile isn't coarse.
-    await ensureRenderGeojson(getState, dispatch);
-
+    // Claim the chart for the active track, rendering its elevation as-is:
+    // 'keep' shows the recorded values with their gaps, while a fill/override
+    // has already written the server values into these same coordinates.
+    // `elevationChartProcessor` draws it from there (and densifies a sparse
+    // line first, so the profile isn't coarse).
     const after = getState().trackViewer;
 
-    const active = resolveActiveTrack(
-      after.trackGeojson,
-      after.selectedTrackIndex,
-    );
-
-    const rendered = active && after.renderTrackGeojson?.features[active.index];
-
-    const first =
-      rendered && isTrackLine(rendered)
-        ? rendered
-        : (active?.feature ?? lines[0]);
-
-    if (first) {
-      trackMatomo(['trackEvent', 'TrackViewer', 'toggleElevationChart']);
-
-      dispatch(
-        elevationChartSetTrackGeojson(
-          first,
-          true,
-          trackWaypoints(after.trackGeojson),
-          elevationCredit(after, first),
-        ),
-      );
+    if (resolveActiveTrack(after.trackGeojson, after.selectedTrackIndex)) {
+      dispatch(elevationChartOpen({ type: 'track-viewer' }));
     }
   },
 };

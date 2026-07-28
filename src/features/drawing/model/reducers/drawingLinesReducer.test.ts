@@ -3,8 +3,10 @@ import {
   selectFeature,
   setTool,
 } from '@app/store/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { describe, expect, it } from 'vitest';
 import {
+  type DrawnLine,
   drawingLineAdd,
   drawingLineAddPoint,
   drawingLineContinue,
@@ -36,17 +38,20 @@ import {
 
 const p = (id: number, lat = id, lon = id): Point => ({ id, lat, lon });
 
+let nextTestLineId = 1;
+
 const line = (
   type: Line['type'],
   points: Point[],
   extra?: Partial<Line>,
-): Line => ({
+): DrawnLine => ({
+  id: nextTestLineId++,
   type,
   points,
   ...extra,
 });
 
-const withLines = (lines: Line[]): DrawingLinesState => ({
+const withLines = (lines: DrawnLine[]): DrawingLinesState => ({
   ...initialState,
   lines,
 });
@@ -65,7 +70,8 @@ describe('drawingLinesReducer — basic CRUD', () => {
 
     const next = drawingLinesReducer(initialState, drawingLineAdd(l));
 
-    expect(next.lines).toEqual([l]);
+    // The reducer assigns the id, so the fixture's is not part of the contract.
+    expect(next.lines).toEqual([{ ...l, id: expect.any(Number) }]);
   });
 
   it('delete removes the line at lineIndex', () => {
@@ -361,5 +367,45 @@ describe('drawingLinesReducer — linefilter (selectFeature / setLines)', () => 
     expect(drawingLinesReducer(state, clearMapFeatures())).toEqual(
       initialState,
     );
+  });
+});
+
+describe('mapsLoaded line identity', () => {
+  // The elevation chart names its line by id, and a restore installs the same
+  // lines twice — from the URL, then from the document. Renumbering on the
+  // second pass would orphan the chart.
+  const a = line('line', [p(1), p(2)]);
+  const b = line('line', [p(3), p(4)]);
+
+  const load = (state: DrawingLinesState, lines: Line[]) =>
+    drawingLinesReducer(
+      state,
+      mapsLoaded({ merge: false, meta: {}, data: { lines } } as never),
+    );
+
+  it('keeps ids when the document repeats what is already shown', () => {
+    const next = load(withLines([a, b]), [a, b]);
+
+    expect(next.lines.map(({ id }) => id)).toEqual([a.id, b.id]);
+  });
+
+  it('keeps the ids of unchanged lines when another one differs', () => {
+    const changed: Line = { ...b, points: [p(3), p(4), p(5)] };
+
+    const next = load(withLines([a, b]), [a, changed]);
+
+    expect(next.lines[0]?.id).toBe(a.id);
+
+    expect(next.lines[1]?.id).not.toBe(b.id);
+  });
+
+  it('gives two identical lines two distinct ids', () => {
+    const twin: Line = { type: a.type, points: a.points };
+
+    const next = load(withLines([a]), [twin, twin]);
+
+    expect(next.lines[0]?.id).toBe(a.id);
+
+    expect(next.lines[1]?.id).not.toBe(a.id);
   });
 });

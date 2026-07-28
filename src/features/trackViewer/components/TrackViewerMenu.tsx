@@ -121,8 +121,8 @@ export function TrackViewerMenu(): ReactElement {
     }
   }, [dispatch, loggedIn]);
 
-  const elevationChartActive = useAppSelector((state) =>
-    Boolean(state.elevationChart.elevationProfilePoints),
+  const elevationChartActive = useAppSelector(
+    (state) => state.elevationChart.target?.type === 'track-viewer',
   );
 
   const colorizeTrackBy = useAppSelector(

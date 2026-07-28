@@ -20,8 +20,8 @@ import {
   changesetsTrackProcessor,
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
+import { elevationChartPendingTargetProcessor } from '@features/elevationChart/model/pendingTargetProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
-import { elevationChartResampleProcessor } from '@features/elevationChart/model/resampleProcessor.js';
 import { galleryAllOfLicenseProcessor } from '@features/gallery/model/processors/galleryAllOfLicenseProcessor.js';
 import { galleryDeletePictureProcessor } from '@features/gallery/model/processors/galleryDeletePictureProcessor.js';
 import { galleryFetchUsersProcessor } from '@features/gallery/model/processors/galleryFetchUsersProcessor.js';
@@ -74,7 +74,6 @@ import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/pro
 import { routePlannerOptimizeOrderProcessor } from '@features/routePlanner/model/processors/optimizeOrderProcessor.js';
 import { routePlannerRefocusMapProcessor } from '@features/routePlanner/model/processors/refocusMapProcessor.js';
 import { routePlannerSetFromCurrentPositionProcessor } from '@features/routePlanner/model/processors/setFromCurrentPositionProcessor.js';
-import { routePlannerToggleElevationChartProcessor } from '@features/routePlanner/model/processors/toggleElevationChartProcessor.js';
 import * as rpcProcessors from '@features/rpc/model/processors.js';
 import {
   searchHighlightProcessor,
@@ -92,7 +91,6 @@ import { trackingFollowProcessor } from '@features/tracking/model/processors/tra
 import { trackViewerDensifyProcessor } from '@features/trackViewer/model/processors/trackViewerDensifyProcessor.js';
 import { trackViewerDownloadTrackProcessor } from '@features/trackViewer/model/processors/trackViewerDownloadTrackProcessor.js';
 import { trackViewerGpxLoadProcessor } from '@features/trackViewer/model/processors/trackViewerGpxLoadProcessor.js';
-import { trackViewerRefreshElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerRefreshElevationChartProcessor.js';
 import { trackViewerResolveElevationPromptProcessor } from '@features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.js';
 import { trackViewerSetTrackDataProcessor } from '@features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.js';
 import { trackViewerToggleElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.js';
@@ -137,7 +135,7 @@ export const processors = [
   authTrackProcessor,
   l10nSetLanguageProcessor,
   elevationChartProcessor,
-  elevationChartResampleProcessor,
+  elevationChartPendingTargetProcessor,
   objectsFetchProcessor,
   objectsChangePredicateProcessor,
   osmLoadNodeProcessor,
@@ -153,7 +151,6 @@ export const processors = [
   trackViewerGpxLoadProcessor,
   trackViewerToggleElevationChartProcessor,
   trackViewerResolveElevationPromptProcessor,
-  trackViewerRefreshElevationChartProcessor,
   trackViewerDensifyProcessor,
   routePlannerFindRouteProcessor,
   routePlannerOptimizeOrderProcessor,
@@ -174,7 +171,6 @@ export const processors = [
   galleryMakeAllPremiumOrFreeProcessor,
   galleryAllOfLicenseProcessor,
   routePlannerRefocusMapProcessor,
-  routePlannerToggleElevationChartProcessor,
   routePlannerColorizeProcessor,
   routePlannerSetFromCurrentPositionProcessor,
   ...Object.values(trackingAccessTokenProcessors),
