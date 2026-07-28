@@ -56,7 +56,8 @@ export function usePremiumPriceIncreaseInfo(): ReactNode {
         ? prm.priceIncreaseSwitch(params)
         : prm.priceIncreaseShort(params)}{' '}
       <ShowModalLink modal="premium">
-        {switching ? prm.paySubscription : prm.becomePremium}
+        {switching ? prm.subscribe : prm.becomePremium}
+        {'\xa0›'}
       </ShowModalLink>
     </>
   );

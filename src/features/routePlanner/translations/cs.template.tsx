@@ -36,6 +36,8 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     pick: 'Vybrat na mapě',
     current: 'Tvá poloha',
     home: 'Domů',
+    fromStart: 'Poloha startu',
+    fromFinish: 'Poloha cíle',
     point: 'Bod trasy',
   },
   transportType: {

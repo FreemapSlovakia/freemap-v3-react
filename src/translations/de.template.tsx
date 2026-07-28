@@ -262,6 +262,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Öffentlicher Verkehr (ÖPNV)',
       X: outdoorMap,
+      XK: 'KST-Wanderwege',
       i: 'Datenschicht',
       I: 'Fotos',
       l1: 'Forststraßen NLC (2017)',
@@ -301,6 +302,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           hostedBy="gehostet von"
         />
       ),
+      photosCc: 'verschiedene Creative-Commons-Lizenzen',
     },
 
     showAll: 'Alle Karten anzeigen',
@@ -368,6 +370,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ele: `Höhe [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Fehler beim Abrufen des Höhenprofils', err),
+    settings: 'Höhenprofil',
+    settingsHelp:
+      'Diese Einstellungen korrigieren ein Geländemodell und gelten daher überall dort, wo die Höhe daraus gelesen wird: bei geplanten Routen, gezeichneten Linien und Messungen sowie bei importierten Tracks, deren Höhe Sie vom Server ersetzt haben. Aufgezeichnete Höhen — Live-Tracking oder ein Track, den Sie wie aufgezeichnet belassen haben — bleiben unangetastet. Exportierte Dateien behalten immer ihre eigene Höhe.',
+    windowOff: 'aus',
+    despike: 'Spitzen entfernen',
+    despikeHelp:
+      'Wenn ein Weg einige Meter neben der Straße gezeichnet ist, die er beschreibt, liefert das Geländemodell die Böschung oder Felswand daneben. Spitzen, die schmaler als die Hälfte dieses Werts sind, werden entfernt und das Profil leicht geglättet; breitere bleiben erhalten, da sie echtes Gelände sind. Null schaltet die Funktion ab.',
+    ditchFill: 'Gräben des Geländemodells auffüllen',
+    ditchFillHelp:
+      'Die detaillierten nationalen Geländemodelle, die in einigen Ländern verfügbar sind, sind meist hydrologisch angepasst: An jedem Durchlass graben sie einen Graben durch die Straße. Senken, die schmaler als dieser Wert sind, werden aufgefüllt; breitere bleiben erhalten, da sie echtes Gelände sind. Null schaltet die Funktion ab und ändert nichts, wo das globale Modell verwendet wird.',
+    highResolution: 'Hochauflösende Höhendaten',
+    highResolutionHelp:
+      'Liest die detaillierten nationalen Geländemodelle, wo es sie gibt — derzeit in einer Handvoll europäischer Länder. Sie zeigen feinere Details, aber auch die Durchlassgräben und entfernten Brücken, die sie enthalten. Anderswo wird ohnehin das globale Modell verwendet.',
   },
 
   errorCatcher: {

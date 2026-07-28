@@ -24,6 +24,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
   recentTags: 'Nedavne oznake za dodelitev:',
   filter: 'Filter',
   showPhotosFrom: 'Prikaži fotografije',
+  excludesWikimedia: 'Ne vključuje fotografij z Wikimedie',
   showLayer: 'Prikaži sloj',
   upload: 'Naloži',
   f: {
@@ -33,8 +34,14 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'od zadnjega komentarja',
   },
   colorizeBy: 'Obarvaj po',
+  noColorize: 'Brez',
   showDirection: 'Prikaži smer fotografiranja',
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Moje',
+    notMine: 'Drugih',
+    premium: 'Premium',
+    free: 'Brezplačne',
+  },
 
   c: {
     mine: 'Razlikuj moje',
@@ -60,6 +67,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
         Naložil {username} dne {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Naloženo dne {createdAt}</>,
     captured: (takenAt) => <>Posneto dne {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -173,6 +181,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
   noPicturesFound: 'Na tem mestu ni bilo najdenih nobenih fotografij.',
   linkToWww: 'fotografija na www.freemap.sk',
   linkToImage: 'slikovna datoteka fotografije',
+  linkToCommons: 'fotografija na Wikimedia Commons',
   allMyPhotos: {
     title: 'Sprememba dostopa',
     premium: 'Vključi vse moje fotografije v premium vsebino',

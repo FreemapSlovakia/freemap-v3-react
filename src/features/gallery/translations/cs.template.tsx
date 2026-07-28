@@ -25,6 +25,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
   recentTags: 'Nedávné tagy pro přiřazení:',
   filter: 'Filtr',
   showPhotosFrom: 'Prohlížet fotky',
+  excludesWikimedia: 'Nezahrnuje fotky z Wikimedia',
   showLayer: 'Zobrazit vrstvu',
   upload: 'Nahrát',
   f: {
@@ -34,8 +35,14 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'od posledního komentáře',
   },
   colorizeBy: 'Vybarvit podle',
+  noColorize: 'Žádné',
   showDirection: 'Ukaž směr focení',
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Moje',
+    notMine: 'Ostatní',
+    premium: 'Prémiové',
+    free: 'Volné',
+  },
 
   c: {
     mine: 'Odlišit moje',
@@ -61,6 +68,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
         Nahrál {username} dne {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Nahráno dne {createdAt}</>,
     captured: (takenAt) => <>Vyfoceno dne {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -173,6 +181,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
   noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
   linkToWww: 'fotografie na www.freemap.sk',
   linkToImage: 'soubor fotografie',
+  linkToCommons: 'fotografie na Wikimedia Commons',
   allMyPhotos: {
     title: 'Změna přístupu',
     premium: 'Zařadit všechny mé fotky do prémiového obsahu',

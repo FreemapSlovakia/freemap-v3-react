@@ -61,6 +61,7 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumUser: 'Utilisateur avec accès premium',
   payOnce: 'Payer une fois pour un an',
   paySubscription: 'Abonnement annuel (renouvellement automatique)',
+  subscribe: 'S’abonner',
   payWithChrons: 'Payer avec des Chrons',
   chronsHint: (
     <>
@@ -68,6 +69,18 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
       dans <RovasLink>Rovas</RovasLink>, choisissez de payer avec des Chrons.
     </>
   ),
+  priceIncrease: ({ date, oldPrice, newPrice }) =>
+    `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an. Si vous vous abonnez avant, le prix de ${oldPrice}\xa0€ par an vous reste acquis tant que l’abonnement est actif. Un achat unique coûte ${oldPrice}\xa0€ pour cette seule année — la suivante sera au prix en vigueur à ce moment-là.`,
+  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
+    `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an. Si vous vous abonnez avant, le prix de ${oldPrice}\xa0€ par an vous reste acquis tant que l’abonnement est actif.`,
+  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
+    `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an. Si vous passez à un abonnement annuel avant cette date, le prix annuel de ${oldPrice}\xa0€ vous reste acquis tant que l’abonnement est actif. Le prélèvement ne commence qu’à l’expiration de l’année déjà payée, vous ne payez donc rien deux fois.`,
+  priceIncreaseMini: ({ date, newPrice }) =>
+    `Premium à ${newPrice}\xa0€ par an à partir du ${date}.`,
+  priceIncreaseMore: 'plus…',
+  winbackOffer: ({ price, expiredAt }) =>
+    `Votre accès premium a expiré le ${expiredAt}. En tant qu’ancien client, vous pouvez revenir au prix d’origine : un abonnement annuel à renouvellement automatique pour ${price}\xa0€, conservé tant qu’il reste actif. Cette offre vous est réservée et peut être utilisée une fois.`,
+  winbackAccept: ({ price }) => `S’abonner pour ${price}\xa0€ par an`,
 };
 
 export default fr;

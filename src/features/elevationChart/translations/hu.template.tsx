@@ -6,6 +6,7 @@ const hu: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downhill: 'Összes lejtés',
   downloadAsSvg: 'Letöltés SVG-ként',
   showWaypoints: 'Útpontok megjelenítése',
+  settings: 'Magassági profil beállításai',
 };
 
 export default hu;

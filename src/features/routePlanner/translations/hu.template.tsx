@@ -36,6 +36,8 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     pick: 'Kijelölés a térképen',
     current: 'Az Ön pozíciója',
     home: 'Lakhely',
+    fromStart: 'Indulási pozíció',
+    fromFinish: 'Érkezési pozíció',
     point: 'Útpont',
   },
   transportType: {

@@ -36,6 +36,8 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     pick: 'Seleziona sulla mappa',
     current: 'La tua posizione',
     home: 'Posizione casa',
+    fromStart: 'Posizione di partenza',
+    fromFinish: 'Posizione di arrivo',
     point: 'Punto del percorso',
   },
   transportType: {

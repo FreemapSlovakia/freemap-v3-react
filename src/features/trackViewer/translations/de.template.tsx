@@ -84,6 +84,9 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   invalidFormat: 'Die Datei hat kein unterstütztes Format oder ist ungültig.',
   someFilesFailed: ({ names }) =>
     `Einige Dateien konnten nicht geladen werden: ${names}.`,
+  unsaved: 'Nicht gespeichert',
+  unsavedTooltip:
+    'Dieser Track ist in keiner gespeicherten Karte enthalten und nicht Teil des Links, geht also beim Neuladen der Seite verloren. Speichern Sie ihn in Ihren Karten, um ihn zu behalten.',
 };
 
 export default de;

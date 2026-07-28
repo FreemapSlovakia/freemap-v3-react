@@ -82,6 +82,9 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   invalidFormat: 'Soubor není v podporovaném formátu nebo je neplatný.',
   someFilesFailed: ({ names }) =>
     `Některé soubory se nepodařilo načíst: ${names}.`,
+  unsaved: 'Neuloženo',
+  unsavedTooltip:
+    'Tato trasa není v žádné uložené mapě ani v odkazu, takže se při obnovení stránky ztratí. Uložte ji do svých map, abyste ji zachovali.',
 };
 
 export default cs;

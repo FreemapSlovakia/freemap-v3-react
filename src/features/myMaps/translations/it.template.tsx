@@ -7,6 +7,13 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   addNew: 'Aggiungi nuova mappa',
   noMapFound: 'Nessuna mappa trovata',
   save: 'Salva',
+  loginToSave: 'Accedi prima per salvare la mappa nelle tue mappe.',
+  reload: 'Ricarica la mappa',
+  reloadConfirm:
+    'Vuoi scartare le modifiche non salvate e ricaricare la mappa salvata?',
+  unsaved: 'Modifiche non salvate',
+  unsavedTooltip:
+    'La mappa contiene modifiche non salvate che non si riflettono nel collegamento. Salva la mappa per conservarle.',
   disconnect: 'Disconnetti',
   disconnectAndClear: 'Disconnetti e svuota',
   deleteConfirm: (name) => (
@@ -28,6 +35,18 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   writers: 'Editori',
   addWriter: 'Aggiungi editor',
   conflictError: 'La mappa è stata modificata nel frattempo.',
+  availableOffline: 'Disponibile offline',
+  availableOfflineHint:
+    'Conserva una copia di questa mappa nel browser, così può essere aperta anche senza connessione. I tasselli della mappa di sfondo si salvano separatamente tramite le Mappe offline.',
+  offline: 'Offline',
+  makeAllOffline: 'Rendi tutte disponibili offline',
+  removeAllOffline: 'Rimuovi tutte dall’offline',
+  offlineError: ({ err }) =>
+    addError(getMessages()!, 'Errore nel salvataggio offline della mappa', err),
+  offlineCachedAll: ({ count }) =>
+    `${count} mappa/e ora sono disponibili offline.`,
+  offlineCachedPartial: ({ count, failed }) =>
+    `${count} mappa/e salvate offline, ${failed} non riuscite.`,
 };
 
 export default it;

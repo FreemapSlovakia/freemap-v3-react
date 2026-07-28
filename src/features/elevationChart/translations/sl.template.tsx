@@ -6,6 +6,7 @@ const sl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downhill: 'Skupni spust',
   downloadAsSvg: 'Prenesi kot SVG',
   showWaypoints: 'Prikaži točke poti',
+  settings: 'Nastavitve višinskega profila',
 };
 
 export default sl;

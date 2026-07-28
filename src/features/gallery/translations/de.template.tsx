@@ -29,7 +29,12 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'vom letzten Kommentar',
   },
 
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Meine',
+    notMine: 'Andere',
+    premium: 'Premium',
+    free: 'Frei',
+  },
 
   c: {
     mine: 'Meine hervorheben',
@@ -56,6 +61,7 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
         Hochgeladen von {username} am {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Hochgeladen am {createdAt}</>,
     captured: (takenAt) => <>Aufgenommen am {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -153,6 +159,7 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     allSources: 'Alle',
   },
 
+  linkToCommons: 'Foto bei Wikimedia Commons',
   allMyPhotos: {
     title: 'Zugriffsänderung',
     premium: 'Alle meine Fotos in Premium-Inhalte aufnehmen',
@@ -168,9 +175,11 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
   recentTags: 'Kürzlich verwendete Tags:',
   filter: 'Filter',
   showPhotosFrom: 'Fotos anzeigen',
+  excludesWikimedia: 'Enthält keine Fotos von Wikimedia',
   showLayer: 'Ebene anzeigen',
   upload: 'Hochladen',
   colorizeBy: 'Einfärben nach',
+  noColorize: 'Keine',
   showDirection: 'Aufnahmerichtung anzeigen',
 
   deletingError: ({ err }) =>

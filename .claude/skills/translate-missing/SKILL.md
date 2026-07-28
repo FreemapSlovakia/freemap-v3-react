@@ -19,7 +19,21 @@ Translate keys marked `/* TODO translate; non-english translations: ... */` from
 
 `pnpm sync-language-files` (driven by `translation-manager/sync-language-files.ts` and `translation-manager/templates.json`) regenerates the plain locale files from `en` plus each `*.template.*` file. Any key that is in `en` but missing from a `<lang>.template.*` gets emitted into the generated file with a `TODO translate` block comment that includes the English value and any sibling-language translations as hints. The `*.template.*` files are the source of truth; the plain files are gitignored and overwritten on each sync.
 
-The set of governed files is **not** fixed — read it from `translation-manager/templates.json` (`.templates[]`, each carrying a `{LANG}` placeholder) so this skill stays correct as feature folders are added. The English source is `{file}-en.{ext}` / `{LANG}=en` (no `.template`); it has every key and is what the templates fall back to via `DeepPartialWithRequiredObjects<Messages>`.
+The set of governed files is **not** fixed — read it from `translation-manager/templates.json` (`.templates[]`, each carrying a `{LANG}` placeholder) so this skill stays correct as feature folders are added.
+
+### How `{LANG}` expands
+
+`{LANG}` is **not** a bare language code. `sync-language-files.ts` expands the same pattern three ways:
+
+| Role | `{LANG}` becomes | Example from `src/translations/{LANG}.tsx` |
+| --- | --- | --- |
+| English master (every key) | `en.messages` | `src/translations/en.messages.tsx` |
+| Template — **source of truth, what you edit** | `<lang>.template` | `src/translations/sk.template.tsx` |
+| Generated output — gitignored, carries the TODO markers | `<lang>.messages` | `src/translations/sk.messages.tsx` |
+
+Templates fall back to the master via `DeepPartialWithRequiredObjects<Messages>`.
+
+> **Substituting a bare `<lang>` produces paths that do not exist**, so `grep` matches nothing and the scan below reports **"clean"** when markers are in fact present. Always substitute `<lang>.messages` when scanning.
 
 ### Which languages
 
@@ -39,9 +53,17 @@ If `$ARGUMENTS` names specific languages, process only those; otherwise process 
    ```
    # every generated file for <lang> that still has TODO markers, with counts
    jq -r '.templates[]' translation-manager/templates.json \
-     | sed 's/{LANG}/<lang>/' \
+     | sed 's/{LANG}/<lang>.messages/' \
      | xargs grep -c "TODO translate" 2>/dev/null \
      | grep -v ':0$'
+   ```
+
+   Sanity-check the expansion the first time — if every path is reported missing, the substitution is wrong and an empty result means nothing:
+
+   ```
+   jq -r '.templates[]' translation-manager/templates.json \
+     | sed 's/{LANG}/<lang>.messages/' \
+     | while read f; do [ -f "$f" ] || echo "MISSING: $f"; done
    ```
 
    Blocks look like:
@@ -68,7 +90,7 @@ If `$ARGUMENTS` names specific languages, process only those; otherwise process 
    ```
    pnpm sync-language-files
    jq -r '.templates[]' translation-manager/templates.json \
-     | sed 's/{LANG}/<lang>/' \
+     | sed 's/{LANG}/<lang>.messages/' \
      | xargs grep -c "TODO translate" 2>/dev/null | grep -v ':0$' || echo "clean"
    ```
 
@@ -77,8 +99,8 @@ If `$ARGUMENTS` names specific languages, process only those; otherwise process 
 
 ## Notes
 
-- Edit the `.template.*` files only. Never edit the plain generated files — they are regenerated.
-- `en.tsx` / `osmTagToNameMapping-en.ts` etc. are the masters; English strings only ever change there.
+- Edit the `.template.*` files only. Never edit the generated `.messages.*` files — they are regenerated.
+- `en.messages.tsx` / `osmTagToNameMapping-en.messages.ts` etc. are the masters; English strings only ever change there.
 - Keep translations natural for the target language. The Slovak hint is usually close to the intended phrasing, but Italian/German/Hungarian/French translations should match the rest of that template's style, not mirror Slavic word order. For distant targets with no close sibling in the hint set (e.g. `fr`, whose nearest is Italian), review more carefully.
 - Quoting: single quotes, trailing commas — match what Biome / the surrounding file already uses.
 - Run the skill once per language or batch several together — either is fine; the verification scan covers both.

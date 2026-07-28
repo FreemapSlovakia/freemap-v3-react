@@ -7,6 +7,13 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   addNew: 'Dodaj nową mapę',
   noMapFound: 'Nie znaleziono mapy',
   save: 'Zapisz',
+  loginToSave: 'Zaloguj się, aby zapisać mapę w swoich mapach.',
+  reload: 'Wczytaj mapę ponownie',
+  reloadConfirm:
+    'Odrzucić niezapisane zmiany i wczytać ponownie zapisaną mapę?',
+  unsaved: 'Niezapisane zmiany',
+  unsavedTooltip:
+    'Mapa zawiera niezapisane zmiany, które nie są odzwierciedlone w odnośniku. Zapisz mapę, aby je zachować.',
   disconnect: 'Odłącz',
   disconnectAndClear: 'Odłącz i wyczyść',
   deleteConfirm: (name) => (
@@ -28,6 +35,17 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   writers: 'Edytorzy',
   addWriter: 'Dodaj edytora',
   conflictError: 'Mapa została w międzyczasie zmodyfikowana.',
+  availableOffline: 'Dostępne offline',
+  availableOfflineHint:
+    'Przechowuje kopię tej mapy w przeglądarce, aby można ją było otworzyć bez połączenia. Kafelki mapy podkładowej są zapisywane osobno przez Mapy offline.',
+  offline: 'Offline',
+  makeAllOffline: 'Udostępnij wszystkie offline',
+  removeAllOffline: 'Usuń wszystkie z offline',
+  offlineError: ({ err }) =>
+    addError(getMessages()!, 'Błąd podczas zapisywania mapy offline', err),
+  offlineCachedAll: ({ count }) => `Liczba map dostępnych offline: ${count}.`,
+  offlineCachedPartial: ({ count, failed }) =>
+    `Map zapisanych offline: ${count}, nieudanych: ${failed}.`,
 };
 
 export default pl;

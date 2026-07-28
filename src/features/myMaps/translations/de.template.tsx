@@ -7,6 +7,14 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   addNew: 'Neue Karte hinzufügen',
   noMapFound: 'Keine Karte gefunden',
   save: 'Speichern',
+  loginToSave:
+    'Melden Sie sich zuerst an, um die Karte in Ihren Karten zu speichern.',
+  reload: 'Karte neu laden',
+  reloadConfirm:
+    'Nicht gespeicherte Änderungen verwerfen und die gespeicherte Karte neu laden?',
+  unsaved: 'Nicht gespeicherte Änderungen',
+  unsavedTooltip:
+    'Die Karte enthält nicht gespeicherte Änderungen, die sich nicht im Link widerspiegeln. Speichern Sie die Karte, um sie zu behalten.',
   disconnect: 'Trennen',
   disconnectAndClear: 'Trennen und leeren',
   deleteConfirm: (name) => (
@@ -28,6 +36,18 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   writers: 'Bearbeiter',
   addWriter: 'Editor hinzufügen',
   conflictError: 'Die Karte wurde inzwischen geändert.',
+  availableOffline: 'Offline verfügbar',
+  availableOfflineHint:
+    'Behält eine Kopie dieser Karte im Browser, damit sie auch ohne Verbindung geöffnet werden kann. Kacheln der Hintergrundkarte werden separat über Offline-Karten gespeichert.',
+  offline: 'Offline',
+  makeAllOffline: 'Alle offline verfügbar machen',
+  removeAllOffline: 'Alle aus Offline entfernen',
+  offlineError: ({ err }) =>
+    addError(getMessages()!, 'Fehler beim Offline-Speichern der Karte', err),
+  offlineCachedAll: ({ count }) =>
+    `${count} Karte(n) sind jetzt offline verfügbar.`,
+  offlineCachedPartial: ({ count, failed }) =>
+    `${count} Karte(n) offline gespeichert, ${failed} fehlgeschlagen.`,
 };
 
 export default de;

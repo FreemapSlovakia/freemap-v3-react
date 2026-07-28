@@ -62,6 +62,7 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumUser: 'Uporabnik s premium dostopom',
   payOnce: 'Plačaj enkratno za eno leto',
   paySubscription: 'Letna naročnina (samodejno se obnavlja)',
+  subscribe: 'Naroči se',
   payWithChrons: 'Plačaj s chroni',
   chronsHint: (
     <>
@@ -69,6 +70,18 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <RovasLink>Rovasu</RovasLink>, izberite plačilo s chroni.
     </>
   ),
+  priceIncrease: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} bo premium dostop stal ${newPrice}\xa0€ na leto. Če se naročite prej, vam letna cena ${oldPrice}\xa0€ ostane, dokler je naročnina aktivna. Enkratni nakup velja po ${oldPrice}\xa0€ le za to eno leto — naslednje kupite po ceni, ki bo takrat veljala.`,
+  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} bo premium dostop stal ${newPrice}\xa0€ na leto. Če se naročite prej, vam letna cena ${oldPrice}\xa0€ ostane, dokler je naročnina aktivna.`,
+  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} bo premium dostop stal ${newPrice}\xa0€ na leto. Če do takrat preidete na letno naročnino, vam letna cena ${oldPrice}\xa0€ ostane, dokler je naročnina aktivna. Zaračunavati se začne šele, ko poteče že plačano leto, tako da ničesar ne plačate dvakrat.`,
+  priceIncreaseMini: ({ date, newPrice }) =>
+    `Premium od ${date} za ${newPrice}\xa0€ na leto.`,
+  priceIncreaseMore: 'več…',
+  winbackOffer: ({ price, expiredAt }) =>
+    `Vaš premium dostop je potekel ${expiredAt}. Kot nekdanji kupec se lahko vrnete po prvotni ceni: letna naročnina s samodejnim podaljševanjem za ${price}\xa0€, ki vam ostane, dokler je aktivna. Ta ponudba je namenjena samo vam in jo je mogoče izkoristiti enkrat.`,
+  winbackAccept: ({ price }) => `Naroči se za ${price}\xa0€ na leto`,
 };
 
 export default sl;

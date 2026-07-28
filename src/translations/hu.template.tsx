@@ -270,6 +270,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Tömegközlekedés',
       X: outdoorMap,
+      XK: 'KST turistautak',
       i: 'Adatréteg',
       I: 'Fényképek',
       l1: 'Erdészeti utak NLC (2017)',
@@ -311,6 +312,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           hostedBy="hosztolva:"
         />
       ),
+      photosCc: 'különböző Creative Commons licencek',
     },
     showAll: 'Összes térkép megjelenítése',
     filterMaps: 'Térképek szűrése',
@@ -376,6 +378,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Hiba történt a magasságiprofil-adatok lekérésénél',
         err,
       ),
+    settings: 'Magassági profil',
+    settingsHelp:
+      'Ezek a beállítások a terepmodellt korrigálják, ezért mindenhol érvényesek, ahol a magasság abból származik: tervezett útvonalaknál, rajzolt vonalaknál és méréseknél, valamint olyan importált nyomvonalaknál, amelyek magasságát a kiszolgálóról cserélte le. A rögzített tengerszint feletti magasság — élő nyomkövetés, vagy rögzített formában megtartott nyomvonal — érintetlen marad. Az exportált fájlok mindig megtartják a saját magasságukat.',
+    windowOff: 'ki',
+    despike: 'Tüskék eltávolítása',
+    despikeHelp:
+      'Ha egy utat néhány méterrel az általa leírt úttest mellé rajzoltak, a terepmodell a mellette lévő rézsű vagy sziklafal magasságát adja vissza. Az ennek felénél keskenyebb tüskék eltűnnek, a profil pedig enyhén lekerekedik; a szélesebbek megmaradnak, mert valódi terepet jelentenek. A nulla kikapcsolja.',
+    ditchFill: 'Terepmodell-árkok feltöltése',
+    ditchFillHelp:
+      'A részletes nemzeti terepmodellek, amelyek egyes országokban érhetők el, rendszerint hidrológiai szempontból vannak igazítva: minden áteresznél árkot vágnak az úton keresztül. Az ennél keskenyebb mélyedések feltöltődnek; a szélesebbek megmaradnak, mert valódi terepet jelentenek. A nulla kikapcsolja, és ott, ahol a globális modell van használatban, semmit sem változtat.',
+    highResolution: 'Nagy felbontású magassági adatok',
+    highResolutionHelp:
+      'A részletes nemzeti terepmodelleket olvassa be ott, ahol léteznek — jelenleg néhány európai országban. Finomabb részleteket mutatnak, de az áteresz-árkokat és az eltávolított hidakat is, amelyeket tartalmaznak. Máshol amúgy is a globális modell van használatban.',
   },
 
   errorCatcher: {

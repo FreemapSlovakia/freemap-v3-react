@@ -7,6 +7,13 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   addNew: 'Dodaj nov zemljevid',
   noMapFound: 'Ni najdenega zemljevida',
   save: 'Shrani',
+  loginToSave: 'Za shranjevanje zemljevida med svoje se najprej prijavite.',
+  reload: 'Ponovno naloži zemljevid',
+  reloadConfirm:
+    'Zavržem neshranjene spremembe in ponovno naložim shranjeni zemljevid?',
+  unsaved: 'Neshranjene spremembe',
+  unsavedTooltip:
+    'Zemljevid ima neshranjene spremembe, ki se ne odražajo v povezavi. Shranite zemljevid, da jih ohranite.',
   disconnect: 'Odklopi',
   disconnectAndClear: 'Odklopi in počisti',
   deleteConfirm: (name) => (

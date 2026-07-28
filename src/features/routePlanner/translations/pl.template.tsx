@@ -18,6 +18,8 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     pick: 'Wybierz na mapie',
     current: 'Twoja pozycja',
     home: 'Pozycja domowa',
+    fromStart: 'Pozycja startu',
+    fromFinish: 'Pozycja mety',
     point: 'Punkt trasy',
   },
   transportType: {

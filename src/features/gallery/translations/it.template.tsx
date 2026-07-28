@@ -24,6 +24,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
   legend: 'Legenda',
   filter: 'Filtro',
   showPhotosFrom: 'Vedi le foto',
+  excludesWikimedia: 'Non include le foto da Wikimedia',
   showLayer: 'Mostra il livello',
   upload: 'Carica',
 
@@ -35,9 +36,15 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
 
   colorizeBy: 'Colora in base',
+  noColorize: 'Nessuno',
   showDirection: 'Mostra la direzione dello scatto',
 
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Mie',
+    notMine: 'Altri',
+    premium: 'Premium',
+    free: 'Gratuite',
+  },
 
   c: {
     mine: 'Diversi dai miei',
@@ -64,6 +71,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
         Caricato da {username} il {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Caricata il {createdAt}</>,
     captured: (takenAt) => <>Captured on {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -190,6 +198,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
   linkToWww: 'foto su www.freemap.sk',
   linkToImage: 'file immagine',
 
+  linkToCommons: 'foto su Wikimedia Commons',
   allMyPhotos: {
     title: 'Modifica accesso',
     premium: 'Includi tutte le mie foto nei contenuti premium',

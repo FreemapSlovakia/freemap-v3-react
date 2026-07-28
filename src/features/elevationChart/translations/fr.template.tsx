@@ -6,6 +6,7 @@ const fr: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downhill: 'Dénivelé négatif total',
   downloadAsSvg: 'Télécharger en SVG',
   showWaypoints: 'Afficher les points de cheminement',
+  settings: 'Paramètres du profil altimétrique',
 };
 
 export default fr;

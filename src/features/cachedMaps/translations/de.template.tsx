@@ -23,6 +23,7 @@ const de: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   startCaching: 'Speicherung starten',
   cachedSuccess: ({ name }) => `Karte „${name}“ wurde erfolgreich gespeichert.`,
   activate: 'Aktivieren',
+  focus: 'Auf Bereich zoomen',
   namePrefix: 'Offline',
 };
 

@@ -61,6 +61,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumUser: 'Nutzer mit Premium-Zugang',
   payOnce: 'Einmalig für ein Jahr zahlen',
   paySubscription: 'Jährliches Abo (verlängert sich automatisch)',
+  subscribe: 'Abonnieren',
   payWithChrons: 'Mit Chrons bezahlen',
   chronsHint: (
     <>
@@ -68,6 +69,18 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
       ehrenamtliche Arbeit erhalten möchten, wählen Sie die Zahlung mit Chrons.
     </>
   ),
+  priceIncrease: ({ date, oldPrice, newPrice }) =>
+    `Ab ${date} wird der Premium-Zugang ${newPrice}\xa0€ pro Jahr kosten. Wenn Sie vorher ein Abo abschließen, bleibt Ihnen der Preis von ${oldPrice}\xa0€ pro Jahr, solange das Abo aktiv ist. Ein Einmalkauf kostet ${oldPrice}\xa0€ nur für dieses eine Jahr — das nächste zum dann gültigen Preis.`,
+  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
+    `Ab ${date} wird der Premium-Zugang ${newPrice}\xa0€ pro Jahr kosten. Wenn Sie vorher ein Abo abschließen, bleibt Ihnen der Preis von ${oldPrice}\xa0€ pro Jahr, solange das Abo aktiv ist.`,
+  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
+    `Ab ${date} wird der Premium-Zugang ${newPrice}\xa0€ pro Jahr kosten. Wenn Sie vorher zu einem Jahresabo wechseln, bleibt Ihnen der Jahrespreis von ${oldPrice}\xa0€, solange das Abo aktiv ist. Abgerechnet wird erst, wenn das bereits bezahlte Jahr abgelaufen ist, Sie zahlen also nichts doppelt.`,
+  priceIncreaseMini: ({ date, newPrice }) =>
+    `Premium ab ${date} für ${newPrice}\xa0€ pro Jahr.`,
+  priceIncreaseMore: 'mehr…',
+  winbackOffer: ({ price, expiredAt }) =>
+    `Ihr Premium-Zugang ist am ${expiredAt} abgelaufen. Als früherer Kunde können Sie zum ursprünglichen Preis zurückkehren: ein sich automatisch verlängerndes Jahresabo für ${price}\xa0€, das erhalten bleibt, solange es aktiv ist. Dieses Angebot gilt nur für Sie und kann einmal genutzt werden.`,
+  winbackAccept: ({ price }) => `Für ${price}\xa0€ pro Jahr abonnieren`,
 };
 
 export default de;

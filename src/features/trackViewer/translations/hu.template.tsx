@@ -87,6 +87,9 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   invalidFormat: 'A fájl formátuma nem támogatott, vagy a fájl érvénytelen.',
   someFilesFailed: ({ names }) =>
     `Néhány fájlt nem sikerült betölteni: ${names}.`,
+  unsaved: 'Nem mentett',
+  unsavedTooltip:
+    'Ez a nyomvonal nem szerepel egyetlen mentett térképen sem, és nem része a hivatkozásnak sem, ezért az oldal újratöltésekor elveszik. Mentse a térképei közé, hogy megmaradjon.',
 };
 
 export default hu;

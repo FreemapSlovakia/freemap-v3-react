@@ -61,6 +61,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumUser: 'Użytkownik z dostępem premium',
   payOnce: 'Zapłać jednorazowo za jeden rok',
   paySubscription: 'Subskrypcja roczna (odnawia się automatycznie)',
+  subscribe: 'Subskrybuj',
   payWithChrons: 'Zapłać chronami',
   chronsHint: (
     <>
@@ -68,6 +69,18 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <RovasLink>Rovas</RovasLink>, wybierz płatność chronami.
     </>
   ),
+  priceIncrease: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie. Jeśli wykupisz subskrypcję wcześniej, cena ${oldPrice}\xa0€ za rok pozostanie tak długo, jak subskrypcja będzie aktywna. Płatność jednorazowa obowiązuje w cenie ${oldPrice}\xa0€ tylko na ten jeden rok — kolejny kupisz po cenie obowiązującej w tamtym czasie.`,
+  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie. Jeśli wykupisz subskrypcję wcześniej, cena ${oldPrice}\xa0€ za rok pozostanie tak długo, jak subskrypcja będzie aktywna.`,
+  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie. Jeśli do tego czasu przejdziesz na subskrypcję roczną, roczna cena ${oldPrice}\xa0€ pozostanie tak długo, jak subskrypcja będzie aktywna. Naliczanie zacznie się dopiero po wykorzystaniu już opłaconego roku, więc niczego nie płacisz dwa razy.`,
+  priceIncreaseMini: ({ date, newPrice }) =>
+    `Premium od ${date} za ${newPrice}\xa0€ rocznie.`,
+  priceIncreaseMore: 'więcej…',
+  winbackOffer: ({ price, expiredAt }) =>
+    `Twój dostęp premium wygasł ${expiredAt}. Jako były klient możesz wrócić w pierwotnej cenie: roczna subskrypcja z automatycznym odnawianiem za ${price}\xa0€, która pozostanie tak długo, jak będzie aktywna. Ta oferta jest przeznaczona tylko dla Ciebie i można z niej skorzystać raz.`,
+  winbackAccept: ({ price }) => `Subskrybuj za ${price}\xa0€ rocznie`,
 };
 
 export default pl;

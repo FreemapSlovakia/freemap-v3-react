@@ -6,6 +6,7 @@ const pl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downhill: 'Całkowite zejście',
   downloadAsSvg: 'Pobierz jako SVG',
   showWaypoints: 'Pokaż punkty trasy',
+  settings: 'Ustawienia profilu wysokości',
 };
 
 export default pl;

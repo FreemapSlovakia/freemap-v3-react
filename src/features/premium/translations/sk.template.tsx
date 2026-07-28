@@ -59,6 +59,7 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumUser: 'Používateľ s prémiovým prístupom',
   payOnce: 'Zaplatiť jednorazovo na jeden rok',
   paySubscription: 'Ročné predplatné (automatické obnovenie)',
+  subscribe: 'Predplatiť',
   payWithChrons: 'Zaplatiť chronmi',
   chronsHint: (
     <>
@@ -67,11 +68,11 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
   priceIncrease: ({ date, oldPrice, newPrice }) =>
-    `${date} sa cena prémiového prístupu zvyšuje z ${oldPrice}\xa0€ na ${newPrice}\xa0€ ročne. Ak si predplatné aktivujete pred týmto dátumom, cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude predplatné aktívne. Jednorazová platba platí za ${oldPrice}\xa0€ len na daný jeden rok — ďalší rok si kúpite za cenu platnú v tom čase.`,
+    `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne. Ak si ho predplatíte skôr, cena ${oldPrice}\xa0€ za rok vám zostane, pokiaľ bude predplatné aktívne. Jednorazová platba platí za ${oldPrice}\xa0€ len na daný jeden rok — ďalší rok si kúpite za cenu platnú v tom čase.`,
   priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
-    `Od ${date} stojí prémiový prístup ${newPrice}\xa0€ ročne. Ak si ho predplatíte skôr, cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude predplatné aktívne.`,
+    `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne. Ak si ho predplatíte skôr, cena ${oldPrice}\xa0€ za rok vám zostane, pokiaľ bude predplatné aktívne.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
-    `Od ${date} stojí prémiový prístup ${newPrice}\xa0€ ročne. Ak dovtedy prejdete na predplatné, cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude aktívne — účtovať sa začne až po vyčerpaní roka, ktorý už máte zaplatený, takže nič neplatíte dvakrát.`,
+    `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne. Ak dovtedy prejdete na ročné predplatné, ročná cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude predplatné aktívne. Účtovať sa začne až po vyčerpaní už zaplateného roka, takže nič neplatíte dvakrát.`,
   priceIncreaseMini: ({ date, newPrice }) =>
     `Prémium od ${date} za ${newPrice}\xa0€ ročne.`,
   priceIncreaseMore: 'viac…',

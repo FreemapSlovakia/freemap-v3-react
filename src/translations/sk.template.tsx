@@ -336,6 +336,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           hostedBy="hostované na"
         />
       ),
+      photosCc: 'rôzne licencie Creative Commons',
     },
     configureLayers: 'Nastavenie vrstiev',
     customMaps: 'Vlastné mapy',
@@ -393,6 +394,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ele: `Nadm. výška [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Nastala chyba pri získavaní výškového profilu', err),
+    settings: 'Výškový profil',
+    settingsHelp:
+      'Tieto nastavenia opravujú model terénu, takže platia všade, kde sa výška číta z neho: pri plánovaných trasách, nakreslených líniách a meraniach a pri importovaných trasách, ktorým ste výšku nahradili zo servera. Zaznamenaná nadmorská výška — živé sledovanie alebo trasa, ktorú ste ponechali tak, ako bola zaznamenaná — zostáva nedotknutá. Exportované súbory si vždy zachovajú vlastnú výšku.',
+    windowOff: 'vypnuté',
+    despike: 'Odstrániť špice',
+    despikeHelp:
+      'Keď je cesta nakreslená pár metrov vedľa vozovky, ktorú opisuje, model terénu vráti výšku svahu alebo skalnej steny vedľa nej. Špice užšie ako polovica tejto hodnoty sa odstránia a profil sa mierne zaoblí; širšie sa zachovajú, keďže ide o skutočný terén. Nula funkciu vypne.',
+    ditchFill: 'Zaplniť priekopy modelu terénu',
+    ditchFillHelp:
+      'Detailné národné modely terénu, dostupné v niektorých krajinách, bývajú upravené pre hydrológiu: pri každom priepuste vyrežú cez cestu priekopu. Preliačiny užšie ako táto hodnota sa zaplnia; širšie sa zachovajú, keďže ide o skutočný terén. Nula funkciu vypne a tam, kde sa používa globálny model, nemení nič.',
+    highResolution: 'Výškové dáta s vysokým rozlíšením',
+    highResolutionHelp:
+      'Číta detailné národné modely terénu tam, kde existujú — momentálne v niekoľkých európskych krajinách. Zobrazujú jemnejšie detaily, ale aj priekopy pri priepustoch a odstránené mosty, ktoré obsahujú. Inde sa tak či tak použije globálny model.',
   },
 
   errorCatcher: {

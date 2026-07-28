@@ -82,6 +82,9 @@ const sl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   invalidFormat: 'Datoteka ni v podprti obliki ali je neveljavna.',
   someFilesFailed: ({ names }) =>
     `Nekaterih datotek ni bilo mogoče naložiti: ${names}.`,
+  unsaved: 'Ni shranjeno',
+  unsavedTooltip:
+    'Ta sled ni v nobenem shranjenem zemljevidu in ni del povezave, zato bo ob ponovnem nalaganju strani izgubljena. Shranite jo med svoje zemljevide, da jo ohranite.',
 };
 
 export default sl;

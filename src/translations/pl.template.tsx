@@ -254,6 +254,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Transport publiczny (ÖPNV)',
       X: outdoorMap,
+      XK: 'Szlaki turystyczne KST',
       i: 'Warstwa danych',
       I: 'Zdjęcia',
       l1: 'Leśne drogi NLC (2017)',
@@ -291,6 +292,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           hostedBy="hostowane przez"
         />
       ),
+      photosCc: 'różne licencje Creative Commons',
     },
     showAll: 'Pokaż wszystkie mapy',
     filterMaps: 'Filtruj mapy',
@@ -357,6 +359,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ele: `Wysokość [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Błąd podczas pobierania profilu wysokościowego', err),
+    settings: 'Profil wysokościowy',
+    settingsHelp:
+      'Te ustawienia korygują model terenu, więc obowiązują wszędzie tam, gdzie wysokość jest z niego odczytywana: przy planowanych trasach, narysowanych liniach i pomiarach oraz przy zaimportowanych śladach, w których zastąpiono wysokość danymi z serwera. Zarejestrowana wysokość — śledzenie na żywo lub ślad pozostawiony w zarejestrowanej postaci — pozostaje nietknięta. Eksportowane pliki zawsze zachowują własną wysokość.',
+    windowOff: 'wyłączone',
+    despike: 'Usuń piki',
+    despikeHelp:
+      'Gdy droga jest narysowana kilka metrów obok jezdni, którą opisuje, model terenu zwraca wysokość skarpy lub ściany skalnej obok niej. Piki węższe niż połowa tej wartości są usuwane, a profil jest lekko wygładzany; szersze pozostają, bo to rzeczywisty teren. Zero wyłącza tę funkcję.',
+    ditchFill: 'Wypełnij rowy modelu terenu',
+    ditchFillHelp:
+      'Szczegółowe krajowe modele terenu, dostępne w niektórych krajach, są zwykle dostosowane do hydrologii: przy każdym przepuście przecinają drogę rowem. Zagłębienia węższe niż ta wartość są wypełniane; szersze pozostają, bo to rzeczywisty teren. Zero wyłącza tę funkcję i nic nie zmienia tam, gdzie używany jest model globalny.',
+    highResolution: 'Dane wysokościowe wysokiej rozdzielczości',
+    highResolutionHelp:
+      'Odczytuje szczegółowe krajowe modele terenu tam, gdzie istnieją — obecnie w kilku krajach europejskich. Pokazują drobniejsze szczegóły, ale także rowy przy przepustach i usunięte mosty, które zawierają. Gdzie indziej i tak używany jest model globalny.',
   },
 
   errorCatcher: {

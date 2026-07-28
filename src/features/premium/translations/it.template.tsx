@@ -59,6 +59,7 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumUser: 'Utente con accesso premium',
   payOnce: 'Paga una volta per un anno',
   paySubscription: 'Abbonamento annuale (rinnovo automatico)',
+  subscribe: 'Abbonati',
   payWithChrons: 'Paga con i Chron',
   chronsHint: (
     <>
@@ -66,6 +67,18 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
       segnalato in <RovasLink>Rovas</RovasLink>, scegli di pagare con i Chron.
     </>
   ),
+  priceIncrease: ({ date, oldPrice, newPrice }) =>
+    `Dal ${date} l’accesso premium costerà ${newPrice}\xa0€ all’anno. Se ti abboni prima, il prezzo di ${oldPrice}\xa0€ all’anno resta tuo finché l’abbonamento è attivo. L’acquisto una tantum costa ${oldPrice}\xa0€ solo per quell’anno — il successivo sarà al prezzo in vigore in quel momento.`,
+  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
+    `Dal ${date} l’accesso premium costerà ${newPrice}\xa0€ all’anno. Se ti abboni prima, il prezzo di ${oldPrice}\xa0€ all’anno resta tuo finché l’abbonamento è attivo.`,
+  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
+    `Dal ${date} l’accesso premium costerà ${newPrice}\xa0€ all’anno. Se passi a un abbonamento annuale prima di allora, il prezzo annuale di ${oldPrice}\xa0€ resta tuo finché l’abbonamento è attivo. L’addebito parte solo quando scade l’anno che hai già pagato, quindi non paghi nulla due volte.`,
+  priceIncreaseMini: ({ date, newPrice }) =>
+    `Premium a ${newPrice}\xa0€ all’anno dal ${date}.`,
+  priceIncreaseMore: 'altro…',
+  winbackOffer: ({ price, expiredAt }) =>
+    `Il tuo accesso premium è scaduto il ${expiredAt}. Come ex cliente puoi tornare al prezzo originale: un abbonamento annuale con rinnovo automatico a ${price}\xa0€, mantenuto finché resta attivo. Questa offerta è riservata a te e può essere usata una sola volta.`,
+  winbackAccept: ({ price }) => `Abbonati per ${price}\xa0€ all’anno`,
 };
 
 export default it;

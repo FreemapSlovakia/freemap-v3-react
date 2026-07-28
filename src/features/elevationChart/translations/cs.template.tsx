@@ -6,6 +6,7 @@ const cs: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downhill: 'Celkové klesání',
   downloadAsSvg: 'Stáhnout jako SVG',
   showWaypoints: 'Zobrazit trasové body',
+  settings: 'Nastavení výškového profilu',
 };
 
 export default cs;

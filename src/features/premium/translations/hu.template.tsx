@@ -59,6 +59,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
   payOnce: 'Egyszeri fizetés egy évre',
   paySubscription: 'Éves előfizetés (automatikus megújítás)',
+  subscribe: 'Előfizetés',
   payWithChrons: 'Fizetés chronnal',
   chronsHint: (
     <>
@@ -67,6 +68,18 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       történő fizetést.
     </>
   ),
+  priceIncrease: ({ date, oldPrice, newPrice }) =>
+    `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz. Ha előbb fizet elő, az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív. Az egyszeri vásárlás csak arra az egy évre szól ${oldPrice}\xa0€-ért — a következőt az akkor érvényes áron veheti meg.`,
+  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
+    `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz. Ha előbb fizet elő, az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív.`,
+  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
+    `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz. Ha addig éves előfizetésre vált, az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív. A terhelés csak a már kifizetett év letelte után indul, így semmit sem fizet kétszer.`,
+  priceIncreaseMini: ({ date, newPrice }) =>
+    `Prémium ${date} után évi ${newPrice}\xa0€.`,
+  priceIncreaseMore: 'tovább…',
+  winbackOffer: ({ price, expiredAt }) =>
+    `Prémium hozzáférése ${expiredAt} lejárt. Korábbi ügyfélként visszatérhet az eredeti áron: automatikusan megújuló éves előfizetés ${price}\xa0€-ért, amely mindaddig megmarad, amíg aktív. Ez az ajánlat csak Önnek szól, és egyszer használható fel.`,
+  winbackAccept: ({ price }) => `Előfizetés évi ${price}\xa0€-ért`,
 };
 
 export default hu;

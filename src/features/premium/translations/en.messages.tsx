@@ -58,6 +58,7 @@ const en: PremiumMessages = {
   premiumUser: 'User with premium access',
   payOnce: 'Pay once for one year',
   paySubscription: 'Subscribe yearly (auto-renews)',
+  subscribe: 'Subscribe',
   payWithChrons: 'Pay with Chrons',
   chronsHint: (
     <>
@@ -66,11 +67,11 @@ const en: PremiumMessages = {
     </>
   ),
   priceIncrease: ({ date, oldPrice, newPrice }) =>
-    `On ${date} the price of premium access rises from ${oldPrice}\xa0€ to ${newPrice}\xa0€ per year. Subscribe before that date and you keep the ${oldPrice}\xa0€ price for as long as your subscription stays active. A one-time purchase costs ${oldPrice}\xa0€ for that one year only — the next one is at the price valid at the time.`,
+    `From ${date} premium access will cost ${newPrice}\xa0€ a year. Subscribe before then and the ${oldPrice}\xa0€ a year price stays yours for as long as the subscription is active. A one-time purchase costs ${oldPrice}\xa0€ for that one year only — the next one is at the price valid at the time.`,
   priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
-    `From ${date} premium access costs ${newPrice}\xa0€ a year. Subscribe before then for ${oldPrice}\xa0€ and keep that price for as long as your subscription stays active.`,
+    `From ${date} premium access will cost ${newPrice}\xa0€ a year. Subscribe before then and the ${oldPrice}\xa0€ a year price stays yours for as long as the subscription is active.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
-    `From ${date} premium access costs ${newPrice}\xa0€ a year. Switch to a subscription before then and you keep the ${oldPrice}\xa0€ price for as long as it stays active — it starts charging only when the year you have already paid for runs out, so you pay nothing twice.`,
+    `From ${date} premium access will cost ${newPrice}\xa0€ a year. Switch to a yearly subscription before then and the ${oldPrice}\xa0€ yearly price stays yours for as long as the subscription is active. Charging starts only when the year you have already paid for runs out, so you pay nothing twice.`,
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium ${newPrice}\xa0€ a year from ${date}.`,
   priceIncreaseMore: 'more…',

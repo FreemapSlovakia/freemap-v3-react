@@ -23,6 +23,7 @@ const pl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   startCaching: 'Rozpocznij pobieranie',
   cachedSuccess: ({ name }) => `Mapa „${name}” została pomyślnie pobrana.`,
   activate: 'Aktywuj',
+  focus: 'Przybliż do obszaru',
   namePrefix: 'Offline',
 };
 

@@ -266,6 +266,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Javni prevoz (ÖPNV)',
       X: outdoorMap,
+      XK: 'Pohodniške poti KST',
       i: 'Podatkovni sloj',
       I: 'Fotografije',
       l1: 'Gozdne poti NLC (2017)',
@@ -304,6 +305,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           hostedBy="gostuje"
         />
       ),
+      photosCc: 'različne licence Creative Commons',
     },
     configureLayers: 'Nastavitev slojev',
     customMaps: 'Zemljevidi po meri',
@@ -366,6 +368,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Napaka pri pridobivanju podatkov višinskega profila',
         err,
       ),
+    settings: 'Višinski profil',
+    settingsHelp:
+      'Te nastavitve popravljajo model terena, zato veljajo povsod, kjer se višina bere iz njega: pri načrtovanih poteh, narisanih črtah in meritvah ter pri uvoženih sledeh, ki ste jim višino nadomestili s strežnika. Zabeležena nadmorska višina — sledenje v živo ali sled, ki ste jo ohranili tako, kot je bila zabeležena — ostane nedotaknjena. Izvožene datoteke vedno ohranijo svojo višino.',
+    windowOff: 'izklopljeno',
+    despike: 'Odstrani konice',
+    despikeHelp:
+      'Kadar je pot narisana nekaj metrov stran od ceste, ki jo opisuje, model terena vrne višino brežine ali skalne stene ob njej. Konice, ožje od polovice te vrednosti, se odstranijo in profil se rahlo zaokroži; širše se ohranijo, saj gre za resnični teren. Nič to izklopi.',
+    ditchFill: 'Zapolni jarke modela terena',
+    ditchFillHelp:
+      'Podrobni nacionalni modeli terena, ki so na voljo v nekaterih državah, so običajno prilagojeni hidrologiji: pri vsakem prepustu izkopljejo jarek čez cesto. Vdolbine, ožje od te vrednosti, se zapolnijo; širše se ohranijo, saj gre za resnični teren. Nič to izklopi, tam, kjer se uporablja globalni model, pa ne spremeni ničesar.',
+    highResolution: 'Podatki o višini visoke ločljivosti',
+    highResolutionHelp:
+      'Bere podrobne nacionalne modele terena tam, kjer obstajajo — trenutno v peščici evropskih držav. Prikazujejo več podrobnosti, a tudi jarke pri prepustih in odstranjene mostove, ki jih vsebujejo. Drugod se tako ali tako uporablja globalni model.',
   },
 
   errorCatcher: {

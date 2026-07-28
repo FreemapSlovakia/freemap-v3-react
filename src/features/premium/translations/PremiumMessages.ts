@@ -15,6 +15,11 @@ export type PremiumMessages = {
   premiumUser: string;
   payOnce: string;
   paySubscription: string;
+  /**
+   * Short call to action for the price-increase info bar; the modal's buy
+   * button uses the fuller `paySubscription`.
+   */
+  subscribe: string;
   payWithChrons: string;
   chronsHint: ReactNode;
   priceIncrease: (params: {

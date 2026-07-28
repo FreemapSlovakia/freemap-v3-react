@@ -24,6 +24,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
   legend: 'Jelmagyarázat',
   filter: 'Szűrő',
   showPhotosFrom: 'Fényképek megtekintése',
+  excludesWikimedia: 'Nem tartalmazza a Wikimedia fényképeit',
   showLayer: 'Réteg megjelenítése',
   upload: 'Feltöltés',
 
@@ -36,7 +37,12 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
 
   showDirection: 'Mutasd a fényképezés irányát',
 
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Sajátok',
+    notMine: 'Mások',
+    premium: 'Prémium',
+    free: 'Ingyenes',
+  },
 
   c: {
     mine: 'Különítsd el a sajátjaimat',
@@ -63,6 +69,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
         {username} töltötte fel ekkor: {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Feltöltve: {createdAt}</>,
     captured: (takenAt) => <>Ekkor készült: {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -187,6 +194,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     allSources: 'Mind',
   },
 
+  linkToCommons: 'fénykép a Wikimedia Commonson',
   allMyPhotos: {
     title: 'Hozzáférés módosítása',
     premium: 'Minden fotóm felvétele a prémium tartalomba',
@@ -200,6 +208,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
 
   recentTags: 'Legutóbbi címkék hozzárendeléshez:',
   colorizeBy: 'Színezés ez alapján',
+  noColorize: 'Nincs',
   noPicturesFound: 'Ezen a helyen nem találhatók fotók.',
   linkToWww: 'fotó a www.freemap.sk oldalon',
   linkToImage: 'fotófájl',

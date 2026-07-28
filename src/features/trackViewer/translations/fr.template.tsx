@@ -89,6 +89,9 @@ const fr: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     'Le fichier n’est pas dans un format pris en charge ou est invalide.',
   someFilesFailed: ({ names }) =>
     `Certains fichiers n’ont pas pu être chargés : ${names}.`,
+  unsaved: 'Non enregistrée',
+  unsavedTooltip:
+    'Cette trace ne figure dans aucune carte enregistrée et ne fait pas partie du lien ; elle sera donc perdue au rechargement de la page. Enregistrez-la dans vos cartes pour la conserver.',
 };
 
 export default fr;

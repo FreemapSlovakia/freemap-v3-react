@@ -34,6 +34,14 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   addNew: 'Ajouter une nouvelle carte',
   noMapFound: 'Aucune carte trouvée',
   save: 'Enregistrer',
+  loginToSave:
+    'Connectez-vous d’abord pour enregistrer la carte dans vos cartes.',
+  reload: 'Recharger la carte',
+  reloadConfirm:
+    'Abandonner vos modifications non enregistrées et recharger la carte enregistrée ?',
+  unsaved: 'Modifications non enregistrées',
+  unsavedTooltip:
+    'La carte comporte des modifications non enregistrées qui ne sont pas reflétées dans le lien. Enregistrez la carte pour les conserver.',
   disconnect: 'Déconnecter',
   disconnectAndClear: 'Déconnecter et vider',
   deleteTitle: 'Suppression de la carte',

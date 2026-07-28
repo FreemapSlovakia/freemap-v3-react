@@ -87,6 +87,9 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   onlyOne: "E' atteso un singolo file.",
   invalidFormat: 'Il file non è in un formato supportato o non è valido.',
   someFilesFailed: ({ names }) => `Impossibile caricare alcuni file: ${names}.`,
+  unsaved: 'Non salvata',
+  unsavedTooltip:
+    'Questa traccia non si trova in nessuna mappa salvata e non fa parte del collegamento, quindi andrà persa al ricaricamento della pagina. Salvala nelle tue mappe per conservarla.',
 };
 
 export default it;

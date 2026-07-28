@@ -23,6 +23,7 @@ const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   startCaching: 'Letöltés indítása',
   cachedSuccess: ({ name }) => `A(z) „${name}” térkép sikeresen letöltődött.`,
   activate: 'Aktiválás',
+  focus: 'Nagyítás a területre',
   namePrefix: 'Offline',
 };
 

@@ -24,6 +24,7 @@ const it: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   startCaching: 'Avvia salvataggio',
   cachedSuccess: ({ name }) => `Mappa «${name}» salvata con successo.`,
   activate: 'Attiva',
+  focus: 'Zooma sull’area',
   namePrefix: 'Offline',
 };
 

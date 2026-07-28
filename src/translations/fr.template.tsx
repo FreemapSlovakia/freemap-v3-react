@@ -246,6 +246,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoomWarning: (minZoom) => `Accessible à partir du zoom ${minZoom}`,
     letters: {
       X: outdoorMap,
+      XK: 'Sentiers de randonnée KST',
       S: 'Aérienne',
       Z: 'Aérienne',
       J1: 'Aérienne (2017-2019)',
@@ -289,6 +290,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
       osmData: '©\xa0contributeurs d’OpenStreetMap',
+      photosCc: 'diverses licences Creative Commons',
     },
     technologies: {
       tile: 'Tuiles d’images (TMS, XYZ)',
@@ -361,6 +363,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         err,
       ),
     distance: 'Distance [km]',
+    settings: 'Profil altimétrique',
+    settingsHelp:
+      'Ces réglages corrigent un modèle de terrain et s’appliquent donc partout où l’altitude en est issue : itinéraires planifiés, lignes tracées et mesures, ainsi que traces importées dont vous avez remplacé l’altitude depuis le serveur. L’altitude enregistrée — suivi en direct, ou une trace conservée telle qu’enregistrée — reste intacte. Les fichiers exportés conservent toujours leur propre altitude.',
+    windowOff: 'désactivé',
+    despike: 'Supprimer les pics',
+    despikeHelp:
+      'Lorsqu’un chemin est tracé à quelques mètres de la route qu’il décrit, le modèle de terrain renvoie le talus ou la paroi rocheuse voisine. Les pics plus étroits que la moitié de cette valeur sont supprimés et le profil est légèrement lissé ; les plus larges sont conservés, car il s’agit de terrain réel. Zéro désactive la fonction.',
+    ditchFill: 'Combler les fossés du modèle de terrain',
+    ditchFillHelp:
+      'Les modèles de terrain nationaux détaillés, disponibles dans certains pays, sont généralement adaptés à l’hydrologie : à chaque buse, ils creusent un fossé en travers de la route. Les creux plus étroits que cette valeur sont comblés ; les plus larges sont conservés, car il s’agit de terrain réel. Zéro désactive la fonction et ne change rien là où le modèle global est utilisé.',
+    highResolution: 'Données d’altitude à haute résolution',
+    highResolutionHelp:
+      'Lit les modèles de terrain nationaux détaillés là où ils existent — actuellement dans une poignée de pays européens. Ils montrent des détails plus fins, mais aussi les fossés de buses et les ponts supprimés qu’ils contiennent. Ailleurs, le modèle global est utilisé de toute façon.',
   },
   errorCatcher: {
     html: (ticketId) => `${getErrorMarkup(ticketId)}

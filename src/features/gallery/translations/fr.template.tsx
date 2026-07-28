@@ -25,7 +25,12 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-rating': 'de la mieux notée',
     '-lastCommentedAt': 'du dernier commentaire',
   },
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Les miennes',
+    notMine: 'Autres',
+    premium: 'Premium',
+    free: 'Gratuites',
+  },
 
   c: {
     mine: 'Distinguer les miennes',
@@ -44,6 +49,7 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
         Importée par {username} le {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Importée le {createdAt}</>,
     captured: (takenAt) => <>Prise le {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -162,6 +168,7 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     source: 'Source',
     allSources: 'Toutes',
   },
+  linkToCommons: 'photo sur Wikimedia Commons',
   allMyPhotos: {
     title: 'Modification d’accès',
     premium: 'Inclure toutes mes photos dans le contenu premium',
@@ -177,9 +184,11 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
   recentTags: 'Étiquettes récentes à attribuer :',
   filter: 'Filtre',
   showPhotosFrom: 'Voir les photos',
+  excludesWikimedia: 'N’inclut pas les photos de Wikimedia',
   showLayer: 'Afficher la couche',
   upload: 'Importer',
   colorizeBy: 'Colorer selon',
+  noColorize: 'Aucun',
   showDirection: 'Afficher la direction de prise de vue',
   missingPositionError: 'Emplacement manquant.',
   invalidPositionError: 'Format de coordonnées de l’emplacement invalide.',

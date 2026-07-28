@@ -276,6 +276,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Trasporti pubblici (ÖPNV)',
       X: outdoorMap,
+      XK: 'Sentieri escursionistici KST',
       i: 'Livello dati',
       I: 'Foto',
       l1: 'Tracce forestali NLC (2017)',
@@ -316,6 +317,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           hostedBy="ospitato da"
         />
       ),
+      photosCc: 'varie licenze Creative Commons',
     },
     customMaps: 'Mappe personalizzate',
     addCustomMap: 'Aggiungi mappa personalizzata',
@@ -367,9 +369,26 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   elevationChart: {
     distance: 'Distanza [km]',
-    ele: `Elevation [${masl}]`,
+    ele: `Altitudine [${masl}]`,
     fetchError: ({ err }) =>
-      addError(messages, 'Error fetching elevation profile data:', err),
+      addError(
+        messages,
+        'Errore durante il recupero dei dati del profilo altimetrico',
+        err,
+      ),
+    settings: 'Profilo altimetrico',
+    settingsHelp:
+      'Queste impostazioni correggono un modello del terreno, quindi valgono ovunque l’altitudine venga letta da esso: percorsi pianificati, linee disegnate e misurazioni, e tracce importate la cui altitudine è stata sostituita dal server. L’altitudine registrata — tracciamento in tempo reale o una traccia mantenuta così com’è stata registrata — resta intatta. I file esportati conservano sempre la propria altitudine.',
+    windowOff: 'disattivato',
+    despike: 'Rimuovi i picchi',
+    despikeHelp:
+      'Quando un percorso è disegnato a qualche metro dalla strada che descrive, il modello del terreno restituisce la scarpata o la parete rocciosa accanto. I picchi più stretti della metà di questo valore vengono eliminati e il profilo viene leggermente arrotondato; quelli più larghi si mantengono, perché sono terreno reale. Zero disattiva la funzione.',
+    ditchFill: 'Riempi i fossi del modello del terreno',
+    ditchFillHelp:
+      'I modelli del terreno nazionali di dettaglio, disponibili in alcuni paesi, sono di solito adattati all’idrologia: a ogni tombino scavano un fosso attraverso la strada. Gli avvallamenti più stretti di questo valore vengono riempiti; quelli più larghi si mantengono, perché sono terreno reale. Zero disattiva la funzione e non cambia nulla dove si usa il modello globale.',
+    highResolution: 'Dati altimetrici ad alta risoluzione',
+    highResolutionHelp:
+      'Legge i modelli del terreno nazionali di dettaglio dove esistono — attualmente in una manciata di paesi europei. Mostrano dettagli più fini, ma anche i fossi dei tombini e i ponti rimossi che contengono. Altrove si usa comunque il modello globale.',
   },
 
   errorCatcher: {

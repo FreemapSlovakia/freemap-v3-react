@@ -59,6 +59,7 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
   premiumUser: 'Uživatel s prémiovým přístupem',
   payOnce: 'Zaplatit jednorázově na jeden rok',
   paySubscription: 'Roční předplatné (automatické obnovení)',
+  subscribe: 'Předplatit',
   payWithChrons: 'Zaplatit chrony',
   chronsHint: (
     <>
@@ -66,6 +67,18 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <RovasLink>Rováši</RovasLink>, zvolte platbu chrony.
     </>
   ),
+  priceIncrease: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} bude prémiový přístup stát ${newPrice}\xa0€ ročně. Pokud si ho předplatíte dříve, cena ${oldPrice}\xa0€ za rok vám zůstane, dokud bude předplatné aktivní. Jednorázová platba platí za ${oldPrice}\xa0€ jen na daný jeden rok — další rok si koupíte za cenu platnou v té době.`,
+  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} bude prémiový přístup stát ${newPrice}\xa0€ ročně. Pokud si ho předplatíte dříve, cena ${oldPrice}\xa0€ za rok vám zůstane, dokud bude předplatné aktivní.`,
+  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} bude prémiový přístup stát ${newPrice}\xa0€ ročně. Pokud do té doby přejdete na roční předplatné, roční cena ${oldPrice}\xa0€ vám zůstane, dokud bude předplatné aktivní. Účtovat se začne až po vyčerpání již zaplaceného roku, takže nic neplatíte dvakrát.`,
+  priceIncreaseMini: ({ date, newPrice }) =>
+    `Prémium od ${date} za ${newPrice}\xa0€ ročně.`,
+  priceIncreaseMore: 'více…',
+  winbackOffer: ({ price, expiredAt }) =>
+    `Váš prémiový přístup vypršel ${expiredAt}. Jako bývalý zákazník se můžete vrátit za původní cenu: roční předplatné s automatickým obnovením za ${price}\xa0€, které vám zůstane, dokud bude aktivní. Tato nabídka je určena jen vám a lze ji využít jednou.`,
+  winbackAccept: ({ price }) => `Předplatit si za ${price}\xa0€ ročně`,
 };
 
 export default cs;

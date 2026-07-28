@@ -87,6 +87,9 @@ const pl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     'Plik nie jest w obsługiwanym formacie lub jest nieprawidłowy.',
   someFilesFailed: ({ names }) =>
     `Nie udało się wczytać niektórych plików: ${names}.`,
+  unsaved: 'Niezapisane',
+  unsavedTooltip:
+    'Ten ślad nie znajduje się w żadnej zapisanej mapie ani nie jest częścią odnośnika, więc zostanie utracony po przeładowaniu strony. Zapisz go w swoich mapach, aby go zachować.',
 };
 
 export default pl;
