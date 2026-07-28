@@ -10,6 +10,7 @@ import { elevationSettingsReducer } from '@features/elevationChart/model/setting
 import { galleryReducer } from '@features/gallery/model/reducer.js';
 import { gallerySettingsReducer } from '@features/gallery/model/settingsReducer.js';
 import { geoIpReducer } from '@features/geoip/model/reducer.js';
+import { gpsRecorderReducer } from '@features/gpsRecorder/model/reducer.js';
 import { homeLocationReducer } from '@features/homeLocation/model/reducer.js';
 import { l10nReducer } from '@features/l10n/model/reducer.js';
 import { locationReducer } from '@features/location/model/reducer.js';
@@ -49,6 +50,7 @@ export const reducers = {
   geoip: geoIpReducer,
   gallery: galleryReducer,
   gallerySettings: gallerySettingsReducer,
+  gpsRecorder: gpsRecorderReducer,
   homeLocation: homeLocationReducer,
   l10n: l10nReducer,
   location: locationReducer,

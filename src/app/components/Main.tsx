@@ -11,6 +11,7 @@ import {
   galleryAddItem,
   galleryMergeItem,
 } from '@features/gallery/model/actions.js';
+import { gpsRecorderAvailable } from '@features/gpsRecorder/support.js';
 import { HomeLocationPickingResult } from '@features/homeLocation/components/HomeLocationPickingResult.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MainMenuButton } from '@features/mainMenu/components/MainMenuButton.js';
@@ -93,6 +94,12 @@ const trackingMenuFactory = () =>
   import(
     /* webpackChunkName: "tracking-menu" */
     '@features/tracking/components/TrackingMenu.js'
+  );
+
+const gpsRecorderMenuFactory = () =>
+  import(
+    /* webpackChunkName: "gps-recorder-menu" */
+    '@features/gpsRecorder/components/GpsRecorderMenu.js'
   );
 
 const drawingMenuFactory = () =>
@@ -665,6 +672,15 @@ export function Main(): ReactElement {
                     <MapDetailsMenu key={t} />
                   ) : t === 'tracking' ? (
                     <AsyncComponent key={t} factory={trackingMenuFactory} />
+                  ) : t === 'gps-recorder' ? (
+                    // Also gated here: the tool can be named in the URL hash on
+                    // a device the recorder can't run on.
+                    gpsRecorderAvailable && (
+                      <AsyncComponent
+                        key={t}
+                        factory={gpsRecorderMenuFactory}
+                      />
+                    )
                   ) : null,
                 )}
 

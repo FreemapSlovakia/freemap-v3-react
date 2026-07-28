@@ -24,6 +24,10 @@ export function Results(): ReactElement {
     (state) => state.objects.objects.length > 0,
   );
 
+  const hasRecordedPoints = useAppSelector(
+    (state) => state.gpsRecorder.points.length > 0,
+  );
+
   // Mount the route-planner result only once route planning is engaged — a
   // route exists, or its tool is active (so map clicks add points). This keeps
   // the feature's lazy message bundle out of the initial boot.
@@ -82,6 +86,17 @@ export function Results(): ReactElement {
       <ChangesetsResult />
 
       <TrackingResult />
+
+      {hasRecordedPoints && (
+        <AsyncComponent
+          factory={() =>
+            import(
+              /* webpackChunkName: "gps-recorder-result" */
+              '@features/gpsRecorder/components/GpsRecorderResult.js'
+            )
+          }
+        />
+      )}
     </>
   );
 }

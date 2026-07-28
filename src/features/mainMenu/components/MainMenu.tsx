@@ -104,7 +104,7 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       {toolDefinitions
-        .filter(({ draw }) => !draw)
+        .filter(({ draw, available }) => !draw && available !== false)
         .map(
           ({ tool: newTool, icon, msgKey, kbd }) =>
             newTool && (

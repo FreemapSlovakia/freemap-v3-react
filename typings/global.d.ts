@@ -1,3 +1,23 @@
+/**
+ * Chrome's Local Network Access opt-in: naming the target space makes the
+ * permission check resolve (and prompt) instead of blocking the request.
+ * Not in lib.dom yet.
+ */
+interface RequestInit {
+  targetAddressSpace?: 'local' | 'private' | 'public' | 'loopback';
+}
+
+/** User-Agent Client Hints; Chromium-only, so its presence is itself a signal. */
+interface NavigatorUAData {
+  readonly brands: readonly { brand: string; version: string }[];
+  readonly mobile: boolean;
+  readonly platform: string;
+}
+
+interface Navigator {
+  readonly userAgentData?: NavigatorUAData;
+}
+
 declare module '*.wgsl' {
   const value: string;
   export default value;

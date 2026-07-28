@@ -300,6 +300,40 @@ off that — never re-derive "is this a track?" from density/timestamps.
       payload variant (e.g. `{ type: 'tracking'; id }`) handled in
       `convertToDrawingProcessor`, plus a menu action in the tracking UI.
 
+## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
+
+Stage 1 (viability proof) is built: Start/Stop/Reconnect, recording state and
+point count, a live-growing plain polyline, raw English error text, behind the
+`?gps-recorder=1` flag on Android+Chromium. Stage 2 is everything that makes it
+shippable, and should only start once stage 1 is proven on a real device.
+
+- [ ] **Confirm the wire contract against the APK.** `protocol.ts` was written
+      against the integration spec, not a running recorder. `RECORDER_ORIGIN`'s
+      port, `RECORDER_INTENT_URL`'s scheme/host, `RECORDER_DOWNLOAD_URL`,
+      `MIN_RECORDER_VERSION_CODE`, and the `/status`, `/track` and `/stream`
+      payload shapes all need checking; the schemas are `looseObject`, so extra
+      fields are already tolerated.
+- [ ] **Readout: elapsed time, distance, current accuracy.** Distance can reuse
+      the shared track helpers rather than a private implementation.
+- [ ] **Style the live track like a displayed GPX track** instead of the stage-1
+      red polyline, and consider running it through the shared colorizers.
+- [ ] **Designed, localized error states** for the three causes
+      (`lna-denied` / `setup-needed` / `unreachable`), replacing
+      `describeFailure`'s raw English. Strings belong in a per-feature lazy
+      bundle (`src/features/gpsRecorder/translations/`), not the global blob.
+- [ ] **Warning banner from `/status`** for `missingPermissions` and
+      `batteryExempt`, with the intent link back into the recorder app.
+- [ ] **Recorder version check.** `assertSupportedVersion` already fails on a
+      `versionCode` below `MIN_RECORDER_VERSION_CODE`; turn that into an
+      update prompt pointing at the APK download.
+- [ ] **Save/export the finished track into the existing track handling** — hand
+      it to `trackViewer` so elevation, colorize, the elevation chart, and GPX
+      export all work on it. Once the points can leave the feature, revisit
+      persisting them (and then the cursor, which is deliberately not persisted
+      today — see the doc).
+- [ ] **Unflag it.** Drop the `?gps-recorder=1` gate, keep the platform gate, and
+      add the tool to the `src/static/llms.txt` menu/tools list.
+
 ## Offline maps (`src/features/cachedMaps/`)
 
 - [ ] **Support caching WMS layers.** The "Cache map for offline use" form offers

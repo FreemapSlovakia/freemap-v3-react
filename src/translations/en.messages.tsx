@@ -143,6 +143,7 @@ const messages: Messages = {
     changesets: 'Map changes',
     mapDetails: 'Map details',
     tracking: 'Live tracking',
+    gpsRecorder: 'GPS recorder',
     myMaps: 'My maps',
     myMap: 'My map',
   },

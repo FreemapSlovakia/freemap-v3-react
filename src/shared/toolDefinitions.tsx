@@ -1,7 +1,9 @@
 import type { Tool } from '@app/store/actions.js';
+import { gpsRecorderAvailable } from '@features/gpsRecorder/support.js';
 import type { ReactElement } from 'react';
 import {
   FaBullseye,
+  FaCircle,
   FaDrawPolygon,
   FaFileImport,
   FaInfo,
@@ -19,6 +21,12 @@ export interface ToolDefinition {
   msgKey: keyof Messages['tools'];
   kbd?: string;
   draw?: true;
+  /**
+   * `false` hides the tool from the menu on this device. Evaluated once at load
+   * — only for gates that cannot change within a page lifetime (platform
+   * support, build flags).
+   */
+  available?: boolean;
 }
 
 /**
@@ -119,5 +127,11 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <FaBullseye />,
     msgKey: 'tracking',
     kbd: 'KeyT',
+  },
+  {
+    tool: 'gps-recorder',
+    icon: <FaCircle />,
+    msgKey: 'gpsRecorder',
+    available: gpsRecorderAvailable,
   },
 ];
