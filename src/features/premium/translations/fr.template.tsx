@@ -78,9 +78,6 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium à ${newPrice}\xa0€ par an à partir du ${date}.`,
   priceIncreaseMore: 'plus…',
-  winbackOffer: ({ price, expiredAt }) =>
-    `Votre accès premium a expiré le ${expiredAt}. En tant qu’ancien client, vous pouvez revenir au prix d’origine : un abonnement annuel à renouvellement automatique pour ${price}\xa0€, conservé tant qu’il reste actif. Cette offre vous est réservée et peut être utilisée une fois.`,
-  winbackAccept: ({ price }) => `S’abonner pour ${price}\xa0€ par an`,
 };
 
 export default fr;

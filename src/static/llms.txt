@@ -75,7 +75,7 @@ The Account modal has three collapsible sections (below); from the buttons at th
 - Shows current premium status (e.g. "premium access until <date>") and the credit balance, with a **Buy credits** button
 - History of purchases (date and item)
 - Users can purchase yearly premium access and/or credits
-- Yearly premium costs 8 € up to 31 August 2026 and 15 € from 1 September 2026; it is bought either as an auto-renewing subscription (which keeps the price it was started at) or as a one-time year (which keeps the price for that year only). Until the increase, an info bar and a notice in the "Get premium access" modal announce it. A customer whose one-time year has lapsed is offered a personal, single-use win-back subscription at the original 8 €
+- Yearly premium costs 8 € up to 31 August 2026 and 15 € from 1 September 2026; it is bought either as an auto-renewing subscription (which keeps the price it was started at) or as a one-time year (which keeps the price for that year only). Until the increase, an info bar and a notice in the "Get premium access" modal announce it; a user holding a one-time year is invited to switch to a subscription before then, which starts charging only once their paid year runs out
 - Credits are currently spent only on "Offline maps export" (see description below)
 - Yearly premium allows:
   - Removal of the ad banner

@@ -6,13 +6,11 @@ import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import {
   PREMIUM_PRICE_EUR,
   PREMIUM_PRICE_INCREASE_AT,
-  PREMIUM_WINBACK_PRICE_EUR,
 } from '@shared/premiumPricing.js';
 import type { ReactElement } from 'react';
 import { Alert, Button, ButtonGroup, Dropdown, Modal } from 'react-bootstrap';
 import { FaGem, FaRegGem, FaStopwatch, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { useWinbackOffer } from '../hooks/useWinbackOffer.js';
 import { isPremiumWithoutSubscription } from '../premium.js';
 import { usePremiumMessages } from '../translations/usePremiumMessages.js';
 
@@ -27,15 +25,11 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? prm?.title : undefined);
 
-  const authToken = useAppSelector((state) => state.auth.user?.authToken);
-
   // Someone holding a one-time year is told to switch, not to buy: the
   // subscription starts charging only once that year runs out.
   const switching = useAppSelector((state) =>
     isPremiumWithoutSubscription(state.auth.user),
   );
-
-  const winback = useWinbackOffer(show ? authToken : undefined);
 
   const dateFormat = useDateTimeFormat({
     year: 'numeric',
@@ -47,8 +41,6 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
-  // The backend gives an eligible user the win-back price on any yearly
-  // subscription, so nothing about the offer has to be sent from here.
   function buy(opts: { recurring?: boolean; via?: 'rovas' } = {}) {
     dispatch(setActiveModal(null));
 
@@ -67,16 +59,11 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
         {prm?.commonHeader(PREMIUM_PRICE_EUR)}
 
         <Alert variant="warning" className="mt-3 mb-0">
-          {winback
-            ? prm?.winbackOffer({
-                price: PREMIUM_WINBACK_PRICE_EUR,
-                expiredAt: dateFormat.format(new Date(winback.expiredAt)),
-              })
-            : (switching ? prm?.priceIncreaseSwitch : prm?.priceIncrease)?.({
-                date: dateFormat.format(PREMIUM_PRICE_INCREASE_AT),
-                oldPrice: PREMIUM_PRICE_EUR,
-                newPrice: 15,
-              })}
+          {(switching ? prm?.priceIncreaseSwitch : prm?.priceIncrease)?.({
+            date: dateFormat.format(PREMIUM_PRICE_INCREASE_AT),
+            oldPrice: PREMIUM_PRICE_EUR,
+            newPrice: 15,
+          })}
         </Alert>
 
         <hr />
@@ -87,10 +74,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
       <Modal.Footer>
         <Dropdown as={ButtonGroup}>
           <Button variant="primary" onClick={() => buy({ recurring: true })}>
-            <FaGem />{' '}
-            {winback
-              ? prm?.winbackAccept({ price: PREMIUM_WINBACK_PRICE_EUR })
-              : prm?.paySubscription}
+            <FaGem /> {prm?.paySubscription}
           </Button>
 
           <Dropdown.Toggle split variant="primary" id="premium-buy" />

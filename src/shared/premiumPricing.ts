@@ -12,13 +12,6 @@
 export const PREMIUM_PRICE_EUR = 8;
 
 /**
- * What the win-back offer is sold for. Pinned to the unlisted 8 € product in
- * Polar (`POLAR_PREMIUM_WINBACK_PRODUCT_ID`), so it does *not* follow
- * `PREMIUM_PRICE_EUR` when that goes up.
- */
-export const PREMIUM_WINBACK_PRICE_EUR = 8;
-
-/**
  * Only used to render the date in the announcement — midday, so that every
  * timezone formats it as 1 September.
  */

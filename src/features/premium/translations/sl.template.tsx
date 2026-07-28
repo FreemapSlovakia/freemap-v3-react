@@ -79,9 +79,6 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium od ${date} za ${newPrice}\xa0€ na leto.`,
   priceIncreaseMore: 'več…',
-  winbackOffer: ({ price, expiredAt }) =>
-    `Vaš premium dostop je potekel ${expiredAt}. Kot nekdanji kupec se lahko vrnete po prvotni ceni: letna naročnina s samodejnim podaljševanjem za ${price}\xa0€, ki vam ostane, dokler je aktivna. Ta ponudba je namenjena samo vam in jo je mogoče izkoristiti enkrat.`,
-  winbackAccept: ({ price }) => `Naroči se za ${price}\xa0€ na leto`,
 };
 
 export default sl;

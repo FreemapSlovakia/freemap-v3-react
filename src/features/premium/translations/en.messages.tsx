@@ -75,9 +75,6 @@ const en: PremiumMessages = {
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium ${newPrice}\xa0€ a year from ${date}.`,
   priceIncreaseMore: 'more…',
-  winbackOffer: ({ price, expiredAt }) =>
-    `Your premium access expired on ${expiredAt}. As a former customer you can come back to the original price: an auto-renewing yearly subscription for ${price}\xa0€, kept for as long as it stays active. This offer is for you only and can be used once.`,
-  winbackAccept: ({ price }) => `Subscribe for ${price}\xa0€ a year`,
 };
 
 export default en;

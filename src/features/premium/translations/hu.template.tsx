@@ -77,9 +77,6 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   priceIncreaseMini: ({ date, newPrice }) =>
     `Prémium ${date} után évi ${newPrice}\xa0€.`,
   priceIncreaseMore: 'tovább…',
-  winbackOffer: ({ price, expiredAt }) =>
-    `Prémium hozzáférése ${expiredAt} lejárt. Korábbi ügyfélként visszatérhet az eredeti áron: automatikusan megújuló éves előfizetés ${price}\xa0€-ért, amely mindaddig megmarad, amíg aktív. Ez az ajánlat csak Önnek szól, és egyszer használható fel.`,
-  winbackAccept: ({ price }) => `Előfizetés évi ${price}\xa0€-ért`,
 };
 
 export default hu;

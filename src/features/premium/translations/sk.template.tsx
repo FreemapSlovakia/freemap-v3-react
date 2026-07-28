@@ -76,9 +76,6 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
   priceIncreaseMini: ({ date, newPrice }) =>
     `Prémium od ${date} za ${newPrice}\xa0€ ročne.`,
   priceIncreaseMore: 'viac…',
-  winbackOffer: ({ price, expiredAt }) =>
-    `Váš prémiový prístup vypršal ${expiredAt}. Ako bývalý zákazník sa môžete vrátiť za pôvodnú cenu: ročné predplatné s automatickým obnovením za ${price}\xa0€, ktoré vám zostane, pokiaľ bude aktívne. Táto ponuka je určená len vám a dá sa využiť raz.`,
-  winbackAccept: ({ price }) => `Predplatiť si za ${price}\xa0€ ročne`,
 };
 
 export default sk;

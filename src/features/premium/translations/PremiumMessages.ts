@@ -43,6 +43,4 @@ export type PremiumMessages = {
   priceIncreaseMini: (params: { date: string; newPrice: number }) => string;
   /** Label of the link to the premium document. */
   priceIncreaseMore: string;
-  winbackOffer: (params: { price: number; expiredAt: string }) => string;
-  winbackAccept: (params: { price: number }) => string;
 };
