@@ -2,6 +2,7 @@ import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { fetchElevations } from '@shared/elevation.js';
+import { smoothElevationSeries } from '@shared/elevationSmoothing.js';
 import {
   containsElevations,
   lineSegments,
@@ -310,6 +311,37 @@ async function resolveElevationProfilePointsViaApi(
       clearMapFeatures,
     ],
   );
+
+  // The samples come straight from the terrain model, so they carry the same
+  // artifacts as a planned route's profile; clean each run the same way. A
+  // no-data point breaks a run, like a segment gap does.
+  const windows = getState().elevationSettings;
+
+  let runStart = 0;
+
+  const smoothRun = (end: number) => {
+    if (end - runStart > 1) {
+      const cum = sampled.slice(runStart, end).map((e) => e.distance);
+
+      smoothElevationSeries(
+        eles.slice(runStart, end) as number[],
+        cum,
+        windows,
+      ).forEach((ele, k) => {
+        eles[runStart + k] = ele;
+      });
+    }
+
+    runStart = end + 1;
+  };
+
+  for (let k = 0; k < eles.length; k++) {
+    if (eles[k] == null) {
+      smoothRun(k);
+    }
+  }
+
+  smoothRun(eles.length);
 
   let climbUp = 0;
 

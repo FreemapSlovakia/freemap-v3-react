@@ -68,6 +68,18 @@ export interface Leg {
 /** A `[lon, lat]` or `[lon, lat, ele]` coordinate; arity can vary per point. */
 export type StepCoordinate = [number, number] | [number, number, number];
 
+/**
+ * A stretch of a step carried by a bridge or running through a tunnel, as
+ * inclusive indices into the step's own `geometry.coordinates`. The terrain
+ * model describes the ground there, not the road, so the elevation between the
+ * abutments (or portals) is not the road's.
+ */
+export interface StepStructure {
+  from: number;
+  to: number;
+  kind: 'bridge' | 'tunnel';
+}
+
 export interface Step {
   maneuver: {
     type:
@@ -97,6 +109,8 @@ export interface Step {
     coordinates: StepCoordinate[];
   };
   extra?: RouteStepExtra;
+  /** Bridges/tunnels along the step; only GraphHopper reports them. */
+  structures?: StepStructure[];
   /**
    * Marks a synthetic straight bridge between two independently-routed
    * segments. Rendered like a `manual` step but not selectable or draggable.

@@ -1,4 +1,5 @@
 import { clearMapFeatures } from '@app/store/actions.js';
+import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { osmClear } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
@@ -85,6 +86,10 @@ export const trackViewerReducer = createReducer(
       })
       .addCase(trackViewerSetRenderGeojson, (state, action) => {
         state.renderTrackGeojson = action.payload;
+      })
+      .addCase(elevationSetSettings, (state) => {
+        // The render copy is derived from the elevation settings.
+        state.renderTrackGeojson = null;
       })
       .addCase(trackViewerSetTrackUID, (state, action) => {
         state.trackUID = action.payload;

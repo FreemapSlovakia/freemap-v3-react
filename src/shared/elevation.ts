@@ -12,14 +12,29 @@ import z from 'zod';
 const ElevationsSchema = z.array(z.number().nullable());
 
 /**
+ * Grid spacing of the finest terrain model the elevation API serves (the 1 m
+ * national ALS models); everything else it falls back to is coarser. The floor
+ * on how densely a line is worth sampling.
+ */
+const FINEST_DEM_METERS = 1;
+
+/**
  * Resolves elevation for a batch of `[lat, lon]` pairs via the elevation API.
  * Returns one value (or `null` where the API has no data) per input pair, in
  * the same order. An empty input resolves to an empty array without a request.
+ *
+ * With the high-resolution terrain model switched off the request is sent
+ * unauthenticated, which is what selects the coarse model — the API picks the
+ * resolution from the account, so opting out means not presenting it. That
+ * preference governs what the profile *shows*; pass `bestAvailable` for data
+ * the user keeps (an export), which should carry the finest the account can
+ * read whatever the display is set to.
  */
 export async function fetchElevations(
   latLons: [number, number][],
   getState: () => RootState,
   cancelActions?: ActionCreatorMatchable[],
+  bestAvailable = false,
 ): Promise<(number | null)[]> {
   if (latLons.length === 0) {
     return [];
@@ -32,6 +47,7 @@ export async function fetchElevations(
     data: latLons,
     expectedStatus: 200,
     cancelActions,
+    anonymous: !bestAvailable && !getState().elevationSettings.highResolution,
   });
 
   return ElevationsSchema.parse(await res.json());
@@ -127,10 +143,19 @@ export async function densifyAlong<G extends LineString | MultiLineString>(
 ): Promise<Feature<G>> {
   const segments = lineSegments(feature.geometry);
 
-  // ~2 px per sample at the current viewport width, never finer than 100 m.
-  // Derived from the whole track so the sample spacing is uniform regardless of
-  // how the recording is split into segments.
-  const stepKm = Math.min(0.1, length(feature) / (window.innerWidth / 2));
+  // ~2 px per sample at the current viewport width, never coarser than 100 m
+  // and never finer than the terrain model itself resolves — sampling below
+  // that buys no detail, only the model's own quantization drawn as steps, and
+  // hundreds of points for a route a few hundred metres long. Derived from the
+  // whole track so the sample spacing is uniform regardless of how the
+  // recording is split into segments.
+  const stepKm = Math.min(
+    0.1,
+    Math.max(
+      FINEST_DEM_METERS / 1000,
+      length(feature) / (window.innerWidth / 2),
+    ),
+  );
 
   if (!(stepKm > 0)) {
     return feature;

@@ -5,6 +5,7 @@ const en: ElevationChartMessages = {
   downhill: 'Total descend',
   downloadAsSvg: 'Download as SVG',
   showWaypoints: 'Show waypoints',
+  settings: 'Elevation settings',
 };
 
 export default en;

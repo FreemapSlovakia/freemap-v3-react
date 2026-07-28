@@ -2,6 +2,7 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
 import { densifyAlong } from '@shared/elevation.js';
+import { smoothElevation } from '@shared/elevationSmoothing.js';
 import type { Dispatch } from 'redux';
 import { isTrackLine } from '../trackSelection.js';
 import {
@@ -17,9 +18,9 @@ import {
  * point is known to be DEM-derived, so inserting DEM-sampled points between
  * vertices adds no recorded-vs-DEM seam. A track's own recorded elevation is
  * left alone (even when full) rather than have DEM injected between its measured
- * points, as are *fill missing* and *keep recorded*. It is also a no-op for a
- * dense track (no long segments to subdivide), leaving consumers reading
- * `trackGeojson`.
+ * points, as are *fill missing* and *keep recorded*. The culvert ditches of a
+ * conditioned terrain model are filled here too. With nothing to subdivide and
+ * nothing to fill it is a no-op, leaving consumers reading `trackGeojson`.
  */
 export async function ensureRenderGeojson(
   getState: () => RootState,
@@ -48,8 +49,13 @@ export async function ensureRenderGeojson(
     ),
   );
 
-  // Nothing was long enough to subdivide → dense track, leave the cache empty.
-  if (densified.every((line, i) => line === lines[i])) {
+  const smoothed = densified.map((line) =>
+    smoothElevation(line, getState().elevationSettings),
+  );
+
+  // Nothing was long enough to subdivide and no ditch needed filling → leave
+  // the cache empty.
+  if (smoothed.every((line, i) => line === lines[i])) {
     return;
   }
 
@@ -64,7 +70,7 @@ export async function ensureRenderGeojson(
   let i = 0;
 
   const features = trackGeojson.features.map((f) =>
-    isTrackLine(f) ? densified[i++]! : f,
+    isTrackLine(f) ? smoothed[i++]! : f,
   );
 
   dispatch(trackViewerSetRenderGeojson({ ...trackGeojson, features }));

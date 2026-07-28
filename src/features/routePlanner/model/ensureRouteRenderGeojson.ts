@@ -3,6 +3,7 @@ import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import { densifyAlong, enrichElevations } from '@shared/elevation.js';
+import { smoothElevation } from '@shared/elevationSmoothing.js';
 import { lineString } from '@turf/helpers';
 import type { Dispatch } from 'redux';
 import {
@@ -11,6 +12,10 @@ import {
   routePlannerSetRenderGeojson,
   routePlannerSetResult,
 } from './actions.js';
+import {
+  flattenWithStructures,
+  straightenStructures,
+} from './structureElevation.js';
 
 const cancelActions = [
   routePlannerSetResult,
@@ -35,6 +40,15 @@ const cancelActions = [
  * `alternatives` stay the router's, so export and the drawn route are
  * untouched. A planned route has no recorded measurement to preserve, so
  * overriding is safe.
+ *
+ * Bridges and tunnels GraphHopper reported are then levelled to a straight line
+ * between their ends: the terrain model has bridges removed and mountains
+ * intact, so it reads the stream bed below or the ridge above instead of the
+ * road. This uses the router's own tagging rather than detecting spikes, so
+ * genuine narrow terrain features are left alone. OSRM reports no such data,
+ * and its routes keep the artifacts. What no router can flag — the ditches a
+ * conditioned terrain model digs for culverts — is then filled by
+ * {@link smoothElevation}.
  */
 export async function ensureRouteRenderGeojson(
   getState: () => RootState,
@@ -53,15 +67,7 @@ export async function ensureRouteRenderGeojson(
     return;
   }
 
-  // Consecutive steps share their boundary vertex, so drop the duplicate to
-  // avoid a zero-length segment at each step end.
-  const coordinates = alternative.legs
-    .flatMap((leg) => leg.steps)
-    .flatMap((step) => step.geometry.coordinates)
-    .filter(
-      (c, i, all) =>
-        i === 0 || c[0] !== all[i - 1]![0] || c[1] !== all[i - 1]![1],
-    );
+  const { coordinates, structures } = flattenWithStructures(alternative);
 
   if (coordinates.length < 2) {
     return;
@@ -82,9 +88,16 @@ export async function ensureRouteRenderGeojson(
 
   // Densify only for premium, so a GraphHopper route on the free tier doesn't
   // hit the elevation service at all.
-  const render = premium
+  const densified = premium
     ? await densifyAlong(enriched!, getState, cancelActions)
     : enriched!;
+
+  // After densifying: the inserted points are sampled from the terrain model
+  // too, so they'd put the artifact straight back inside a long bridge.
+  const render = smoothElevation(
+    straightenStructures(densified, structures),
+    getState().elevationSettings,
+  );
 
   // The route may have changed (or a concurrent call won) while sampling.
   const after = getState().routePlanner;

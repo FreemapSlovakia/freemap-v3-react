@@ -6,6 +6,7 @@ import {
   DrawingStyleSchema,
   drawingSettingsInitialState,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
+import { elevationSettingsInitialState } from '@features/elevationChart/model/settingsReducer.js';
 import { GalleryLicenseSchema } from '@features/gallery/licenses.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
 import { gallerySettingsInitialState } from '@features/gallery/model/settingsReducer.js';
@@ -131,6 +132,14 @@ export const PersistedRoutePlannerSettingsSchema = z
     lineWidth: z.number(),
     lineOpacity: z.number(),
     markerOpacity: z.number(),
+  })
+  .partial();
+
+export const PersistedElevationSettingsSchema = z
+  .object({
+    despikeWindow: z.number().min(0).max(100),
+    ditchFillWindow: z.number().min(0).max(100),
+    highResolution: z.boolean(),
   })
   .partial();
 
@@ -337,6 +346,16 @@ const PERSIST: PersistEntry[] = [
       resultStyle: { ...initial.resultStyle, ...data.resultStyle },
     }),
     persist: (s) => ({ resultStyle: s.resultStyle }),
+  }),
+  defineEntry({
+    key: 'elevationSettings',
+    schema: PersistedElevationSettingsSchema,
+    initial: elevationSettingsInitialState,
+    persist: (e) => ({
+      despikeWindow: e.despikeWindow,
+      ditchFillWindow: e.ditchFillWindow,
+      highResolution: e.highResolution,
+    }),
   }),
   defineEntry({
     key: 'trackViewerSettings',

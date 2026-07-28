@@ -240,6 +240,15 @@ export type Messages = {
     distance: string;
     ele: string;
     fetchError: (props: Err) => string;
+    settings: string;
+    settingsHelp: string;
+    windowOff: string;
+    despike: string;
+    despikeHelp: string;
+    ditchFill: string;
+    ditchFillHelp: string;
+    highResolution: string;
+    highResolutionHelp: string;
   };
   errorCatcher: {
     html: (ticketId?: string) => string;

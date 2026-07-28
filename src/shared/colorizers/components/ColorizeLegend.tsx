@@ -54,10 +54,11 @@ function span(values: Iterable<number>): { min: number; max: number } | null {
 function numericRange(
   mode: ColorizingMode,
   feature: Feature<LineString>,
+  zoom: number,
 ): { unit: string; min: number; max: number } | null {
   const lg = colorizers[mode].legend;
 
-  const range = lg && span(lg.values(feature));
+  const range = lg && span(lg.values(feature, { zoom }));
 
   return range ? { unit: lg.unit, ...range } : null;
 }
@@ -76,6 +77,7 @@ function legendSpec(
   cm: ColorizerMessages,
   features: Feature<LineString>[] | undefined,
   language: string,
+  zoom: number,
 ): LegendSpec {
   switch (mode) {
     case 'steepness':
@@ -137,7 +139,7 @@ function legendSpec(
     return { ticks: [] };
   }
 
-  const numeric = numericRange(mode, feature);
+  const numeric = numericRange(mode, feature, zoom);
 
   if (numeric) {
     const { unit, min, max } = numeric;
@@ -172,12 +174,16 @@ export function ColorizeLegend({ mode, icon, features }: Props) {
 
   const language = useAppSelector((state) => state.l10n.language);
 
+  // The same zoom the line is colorized at: a mode's smoothing window widens
+  // with it, and the labels describe the smoothed values, not the raw samples.
+  const zoom = useAppSelector((state) => Math.round(state.map.zoom));
+
   // Scanning every coordinate (and building the Intl formatter) is kept off the
   // render path; it only reruns when the mode, features, language, or messages
   // change.
   const { unit, ticks } = useMemo(
-    () => (cm ? legendSpec(mode, cm, features, language) : { ticks: [] }),
-    [mode, cm, features, language],
+    () => (cm ? legendSpec(mode, cm, features, language, zoom) : { ticks: [] }),
+    [mode, cm, features, language, zoom],
   );
 
   if (!cm) {

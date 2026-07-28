@@ -4,6 +4,7 @@ import {
   setTool,
   setTools,
 } from '@app/store/actions.js';
+import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
@@ -387,6 +388,10 @@ export const routePlannerReducer = createReducer(
       }))
       .addCase(routePlannerSetRenderGeojson, (state, action) => {
         state.renderGeojson = action.payload;
+      })
+      .addCase(elevationSetSettings, (state) => {
+        // The render line is derived from the elevation settings.
+        state.renderGeojson = null;
       })
       .addCase(routePlannerSetRoundtripParams, (state, { payload }) => ({
         ...state,

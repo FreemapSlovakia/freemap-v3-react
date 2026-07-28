@@ -193,6 +193,24 @@ engineering task, not a user-facing feature:
       DTM answered) so we don't hand-sync the country→provider table on both
       sides — the mapping is currently inferred from `ELEVATION_SOURCES` and
       duplicated by hand.
+- [ ] **Keep the elevation profile open when its source line changes.** The
+      `elevationChart` reducer resets to `initialState` on `routePlannerSetResult`,
+      `drawingLineAddPoint`/`UpdatePoint`/`RemovePoint` and `selectFeature`, so
+      re-routing, dragging a waypoint or reshaping a drawn line closes the chart
+      instead of redrawing it. Both features already have a refresh processor that
+      rebuilds an open chart (`toggleElevationChartProcessor`,
+      `trackViewerRefreshElevationChartProcessor`); extend that pattern to these
+      triggers and drop the reset cases.
+- [ ] **Give the elevation chart a `source` discriminator.** It doesn't record
+      which feature owns it, so `toggleElevationChartProcessor` and
+      `trackViewerRefreshElevationChartProcessorHandler` disambiguate by which
+      tool is open — a proxy, not a fact. With both tools open they race, and a
+      drawing-line or tracking profile can be replaced by the planned route.
+      Adding `source` to `elevationChartSetTrackGeojson` ('route-planner' |
+      'track-viewer' | 'drawing' | 'tracking') makes each handler's ownership
+      test exact, and would let a drawn line's profile refresh on an
+      `elevationSetSettings` change too — today it only re-reads the elevation
+      settings when reopened.
 
 ## Track viewer: generic geodata vs. recorded tracks
 

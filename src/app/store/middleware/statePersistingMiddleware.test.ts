@@ -92,6 +92,11 @@ function makeState(): RootState {
       premium: true,
     },
     mapDetails: { excludeSources: [] },
+    elevationSettings: {
+      despikeWindow: 25,
+      ditchFillWindow: 25,
+      highResolution: true,
+    },
     searchSettings: {
       resultStyle: {
         color: '#3388ff',
@@ -221,6 +226,11 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         premium: true,
       },
       mapDetails: { excludeSources: [] },
+      elevationSettings: {
+        despikeWindow: 25,
+        ditchFillWindow: 25,
+        highResolution: true,
+      },
       searchSettings: {
         resultStyle: {
           color: '#3388ff',
@@ -278,6 +288,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         'routePlanner',
         'routePlannerSettings',
         'searchSettings',
+        'elevationSettings',
         'trackViewerSettings',
         'trackingSettings',
       ].sort(),

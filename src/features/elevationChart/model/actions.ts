@@ -4,6 +4,7 @@ import type {
 } from '@features/elevationChart/model/reducer.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { Feature, LineString, MultiLineString } from 'geojson';
+import type { ElevationSettingsState } from './settingsReducer.js';
 
 /** A waypoint to pair onto the profile (by time, else nearest track point). */
 export interface ElevationWaypoint {
@@ -36,6 +37,10 @@ export const elevationChartSetActivePoint =
   createAction<ElevationProfilePoint | null>(
     'ELEVATION_CHART_SET_ACTIVE_POINT',
   );
+
+export const elevationSetSettings = createAction<
+  Partial<ElevationSettingsState>
+>('ELEVATION_SET_SETTINGS');
 
 export const elevationChartSetElevationProfile = createAction<{
   points: ElevationProfilePoint[];

@@ -21,6 +21,7 @@ import {
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
+import { elevationChartResampleProcessor } from '@features/elevationChart/model/resampleProcessor.js';
 import { galleryAllOfLicenseProcessor } from '@features/gallery/model/processors/galleryAllOfLicenseProcessor.js';
 import { galleryDeletePictureProcessor } from '@features/gallery/model/processors/galleryDeletePictureProcessor.js';
 import { galleryFetchUsersProcessor } from '@features/gallery/model/processors/galleryFetchUsersProcessor.js';
@@ -136,6 +137,7 @@ export const processors = [
   authTrackProcessor,
   l10nSetLanguageProcessor,
   elevationChartProcessor,
+  elevationChartResampleProcessor,
   objectsFetchProcessor,
   objectsChangePredicateProcessor,
   osmLoadNodeProcessor,

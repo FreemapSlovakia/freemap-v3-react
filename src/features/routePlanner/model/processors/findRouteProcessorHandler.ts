@@ -36,6 +36,7 @@ import {
   type Step,
   type StepCoordinate,
   type StepMode,
+  type StepStructure,
   type Waypoint,
 } from '../actions.js';
 import {
@@ -556,6 +557,9 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           'ch.disable': mode === 'roundtrip',
           'alternative_route.max_paths': 2,
           instructions: true,
+          // Bridges and tunnels, so the elevation profile can ignore the
+          // terrain model where it describes the ground instead of the road.
+          details: ['road_environment'],
           profile: ttDef.profile,
           points_encoded: false,
           locale: getState().l10n.language,
@@ -699,7 +703,17 @@ function fromGraphhopper(
 
     const gob = (path.details['get_off_bike'] ?? []).filter((q) => q[2]);
 
+    // Whole-path coordinate ranges; clipped to each step's own interval below.
+    const structures = (path.details['road_environment'] ?? []).flatMap(
+      ([from, to, value]): StepStructure[] =>
+        value === 'bridge' || value === 'tunnel'
+          ? [{ from, to, kind: value }]
+          : [],
+    );
+
     for (const instruction of path.instructions) {
+      const [start, end] = instruction.interval;
+
       dist += instruction.distance;
 
       time += instruction.time;
@@ -715,11 +729,7 @@ function fromGraphhopper(
         name: instruction.text,
         mode:
           transportType === 'mtb' || transportType === 'racingbike'
-            ? gob.some(
-                (seg) =>
-                  instruction.interval[0] >= seg[0] &&
-                  instruction.interval[1] <= seg[1],
-              )
+            ? gob.some((seg) => start >= seg[0] && end <= seg[1])
               ? 'pushing bike' // TODO can it happen that not whole interval has the same GOB value?
               : 'cycling'
             : ((
@@ -736,12 +746,21 @@ function fromGraphhopper(
           // points to 2D so the bogus sea-level reading doesn't leak downstream.
           // Arities can be mixed within a single response, so map per-point.
           coordinates: path.points.coordinates
-            .slice(instruction.interval[0], instruction.interval[1] + 1)
+            .slice(start, end + 1)
             .map(
               (c): StepCoordinate =>
                 c[2] ? [c[0]!, c[1]!, c[2]] : [c[0]!, c[1]!],
             ),
         },
+        structures: structures.flatMap(({ from, to, kind }) => {
+          const a = Math.max(from, start);
+
+          const b = Math.min(to, end);
+
+          // A structure crossing a step boundary is clipped into both steps;
+          // the flattening in `ensureRouteRenderGeojson` joins the parts again.
+          return b > a ? [{ from: a - start, to: b - start, kind }] : [];
+        }),
       });
 
       if (

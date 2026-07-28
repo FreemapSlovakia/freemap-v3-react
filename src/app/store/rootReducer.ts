@@ -6,6 +6,7 @@ import { drawingLinesReducer } from '@features/drawing/model/reducers/drawingLin
 import { drawingPointsReducer } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import { drawingSettingsReducer } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { elevationChartReducer } from '@features/elevationChart/model/reducer.js';
+import { elevationSettingsReducer } from '@features/elevationChart/model/settingsReducer.js';
 import { galleryReducer } from '@features/gallery/model/reducer.js';
 import { gallerySettingsReducer } from '@features/gallery/model/settingsReducer.js';
 import { geoIpReducer } from '@features/geoip/model/reducer.js';
@@ -44,6 +45,7 @@ export const reducers = {
   drawingLines: drawingLinesReducer,
   drawingPoints: drawingPointsReducer,
   elevationChart: elevationChartReducer,
+  elevationSettings: elevationSettingsReducer,
   geoip: geoIpReducer,
   gallery: galleryReducer,
   gallerySettings: gallerySettingsReducer,

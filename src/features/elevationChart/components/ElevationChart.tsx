@@ -1,3 +1,4 @@
+import { setActiveModal } from '@app/store/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -12,7 +13,7 @@ import {
   useState,
 } from 'react';
 import { Button, CloseButton } from 'react-bootstrap';
-import { FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { downloadChartSvg } from '../downloadChartSvg.js';
 import {
@@ -736,6 +737,21 @@ export default function ElevationChart(): ReactElement | null {
               )}
             </LongPressTooltip>
           )}
+
+          <LongPressTooltip label={m?.settings}>
+            {({ props }) => (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() =>
+                  dispatch(setActiveModal({ type: 'map-preferences' }))
+                }
+                {...props}
+              >
+                <FaCog />
+              </Button>
+            )}
+          </LongPressTooltip>
 
           {/* The embed is a cross-origin iframe, where the browser refuses both
               the save picker and a synthesized download. */}

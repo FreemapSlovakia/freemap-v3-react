@@ -177,7 +177,7 @@ While drawing, individual nodes can be edited: a line point can **Join** another
 
 **Simplify** prompts for a simplification factor (0 = no simplification).
 
-**Elevation profile** opens a chart of elevation along a line, with total climb and total descent. Waypoints are marked with their name and elevation, and their distance is ticked on the x-axis. A toolbar below the chart can download it as SVG (not in an embedded map, where the browser forbids downloads) and, when the line carries waypoints, toggle their markers and labels.
+**Elevation profile** opens a chart of elevation along a line, with total climb and total descent. Waypoints are marked with their name and elevation, and their distance is ticked on the x-axis. A toolbar below the chart can download it as SVG (not in an embedded map, where the browser forbids downloads), open the elevation preferences, and, when the line carries waypoints, toggle their markers and labels.
 
 ### Route finder
 
@@ -555,7 +555,12 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 - **Feature size** — enlarges rendered labels and lines (no effect on satellite, shading, WMS, or vector (MapLibre) layers)
 - **Direction indicator** — source of the direction beam on the located position: *Hidden*, *Direction of travel* (GPS course over ground, visible only while moving) or *Device compass* (magnetometer, works standing still, offered only where orientation sensors exist). Defaults to the compass except on iOS, where enabling it costs a permission prompt, so direction of travel is the default there
 - **Distance and bearing** — while locating, draws a line between the located position and a crosshair in the middle of the map, labelled with the distance and the bearing from the position to the crosshair; visible only once the map is panned away from that position. On by default
-- **Reset to default** — fills this modal's fields (max zoom, resolution scale, feature size, direction indicator, distance and bearing) with their defaults; apply with Save or close without saving
+- **Remove spikes** (Elevation profile section) — a slider, 0–100 m, default 25 m. Where a way is drawn a few metres off the road it describes, the terrain model answers with the bank or rock face beside it; a running median drops excursions narrower than half this window, up or down, and keeps anything wider as real terrain, followed by a light average that rounds off the steps a median leaves. Zero switches it off
+- **Fill terrain-model ditches** (Elevation profile section) — a slider, 0–100 m, default 25 m. The detailed national terrain models (available in some countries) are usually adjusted for hydrology and dig a ditch through the road at every culvert; dips narrower than this are filled in the elevation profile and its climb/descent totals, while wider ones are kept as real terrain. Zero switches it off, and it changes nothing where the global model is used. Bridges and tunnels a route crosses are levelled separately, from the router's own data, and are unaffected by this setting
+- **High-resolution elevation data** (Elevation profile section) — premium-only; on by default. Reads the detailed national terrain models where they exist (a handful of European countries); switching it off uses the coarse global model instead, trading detail for a model with no culvert ditches or removed bridges. Elsewhere the global model is used either way. It affects what profiles show; exported files always carry the finest elevation the account can read
+
+The two sliders correct a terrain model, so they apply wherever elevation is read from one — planned routes, drawn lines and measurements, and imported tracks whose elevation was replaced from the server — and never to recorded altitude (live tracking, or a track kept as recorded).
+- **Reset to default** — fills this modal's fields (max zoom, resolution scale, feature size, direction indicator, distance and bearing, spike removal, ditch filling, high-resolution elevation) with their defaults; apply with Save or close without saving
 
 Modals that edit a persisted default style or settings (Map preferences, Configure layers, drawing **Default properties**, objects **Marker style**, track-viewer **Default style**, **Search result style**) also carry a **Reset to default** button that refills the form with default values (applied with Save, not immediately).
 

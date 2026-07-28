@@ -33,17 +33,27 @@ export interface ElevationChartState {
   activePoint: ElevationProfilePoint | null;
   elevationProfilePoints: Array<ElevationProfilePoint> | null;
   waypoints: ElevationProfileWaypoint[];
+  /**
+   * What the shown profile was computed from. Kept so a profile the elevation
+   * settings apply to can be recomputed without its feature dispatching again —
+   * see `elevationChartResampleProcessor`.
+   */
+  request: ReturnType<typeof elevationChartSetTrackGeojson>['payload'] | null;
 }
 
 const initialState: ElevationChartState = {
   activePoint: null,
   elevationProfilePoints: null,
   waypoints: [],
+  request: null,
 };
 
 export const elevationChartReducer = createReducer(initialState, (builder) =>
   builder
-    .addCase(elevationChartSetTrackGeojson, () => initialState)
+    .addCase(elevationChartSetTrackGeojson, (_state, { payload }) => ({
+      ...initialState,
+      request: payload,
+    }))
     .addCase(elevationChartSetActivePoint, (state, action) => {
       state.activePoint = action.payload;
     })

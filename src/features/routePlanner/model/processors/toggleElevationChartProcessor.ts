@@ -2,6 +2,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
+  elevationSetSettings,
 } from '@features/elevationChart/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { lineString } from '@turf/helpers';
@@ -14,12 +15,23 @@ import { ensureRouteRenderGeojson } from '../ensureRouteRenderGeojson.js';
 export const routePlannerToggleElevationChartProcessor: Processor<
   | typeof routePlannerToggleElevationChart
   | typeof routePlannerSetActiveAlternativeIndex
+  | typeof elevationSetSettings
 > = {
   actionCreator: [
     routePlannerToggleElevationChart,
     routePlannerSetActiveAlternativeIndex,
+    elevationSetSettings,
   ],
   handle: async ({ dispatch, getState, action }) => {
+    // Changed elevation settings re-derive an open chart. Whichever tool is in
+    // use owns it, so stand aside when it isn't this one.
+    if (
+      elevationSetSettings.match(action) &&
+      !getState().main.tools.includes('route-planner')
+    ) {
+      return;
+    }
+
     const shown = Boolean(getState().elevationChart.elevationProfilePoints);
 
     const toggling = routePlannerToggleElevationChart.match(action);

@@ -358,6 +358,19 @@ const messages: Messages = {
     ele: `Elevation [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Error fetching elevation profile data', err),
+    settings: 'Elevation profile',
+    settingsHelp:
+      'These correct a terrain model, so they apply wherever elevation is read from one: planned routes, drawn lines and measurements, and imported tracks whose elevation you replaced from the server. Recorded altitude — live tracking, or a track you kept as recorded — is left untouched. Exported files always keep their own elevation.',
+    windowOff: 'off',
+    despike: 'Remove spikes',
+    despikeHelp:
+      'Where a way is drawn a few metres off the road it describes, the terrain model answers with the bank or rock face beside it. Spikes narrower than half of this are dropped and the profile is lightly rounded; anything wider is kept, being real terrain. Zero switches it off.',
+    ditchFill: 'Fill terrain-model ditches',
+    ditchFillHelp:
+      'The detailed national terrain models, available in some countries, are usually adjusted for hydrology: they dig a ditch through the road at every culvert. Dips narrower than this are filled; wider ones are kept, being real terrain. Zero switches it off, and it changes nothing where the global model is used.',
+    highResolution: 'High-resolution elevation data',
+    highResolutionHelp:
+      'Reads the detailed national terrain models where they exist — currently a handful of European countries. They show finer detail, but also the culvert ditches and removed bridges they carry. Elsewhere the global model is used either way.',
   },
 
   errorCatcher: {
