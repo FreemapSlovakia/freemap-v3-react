@@ -16,7 +16,7 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>odstranjeno oglasno pasico</li>
         <li
-          className="text-decoration-underline"
+          className="text-decoration-underline fm-cursor-help"
           title="podrobno senčenje reliefa Slovaške in Češke v visoki ločljivosti, najvišje ravni približevanja Outdoor zemljevida, najvišje ravni približevanja ortofoto zemljevidov Slovaške in Češke, različni zemljevidi na osnovi WMS"
         >
           premium sloje zemljevida

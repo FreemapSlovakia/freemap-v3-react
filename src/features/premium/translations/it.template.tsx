@@ -16,7 +16,7 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>rimozione del banner pubblicitario</li>
         <li
-          className="text-decoration-underline"
+          className="text-decoration-underline fm-cursor-help"
           title="ombreggiatura dettagliata ad alta risoluzione di Slovacchia e Cechia, livelli di zoom più alti della mappa Outdoor, livelli di zoom più alti delle mappe ortofoto di Slovacchia e Cechia, varie mappe basate su WMS"
         >
           livelli mappa premium

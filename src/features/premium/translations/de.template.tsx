@@ -17,7 +17,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>entferntes Werbebanner</li>
         <li
-          className="text-decoration-underline"
+          className="text-decoration-underline fm-cursor-help"
           title="Hochauflösende detaillierte Schummerung der Slowakei und Tschechiens, höchste Zoomstufen der Outdoor-Karte, höchste Zoomstufen der Orthofotokarten der Slowakei und Tschechiens, verschiedene WMS-basierte Karten"
         >
           Premium-Kartenebenen

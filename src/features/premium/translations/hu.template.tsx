@@ -16,7 +16,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>reklámszalag eltávolítása</li>
         <li
-          className="text-decoration-underline"
+          className="text-decoration-underline fm-cursor-help"
           title="Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, az Outdoor Map túratérkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotóinak legnagyobb nagyítási szintjei, különféle WMS-alapú térképek"
         >
           prémium térképrétegek

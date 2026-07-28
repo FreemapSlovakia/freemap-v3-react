@@ -16,7 +16,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>usunięcie banera reklamowego</li>
         <li
-          className="text-decoration-underline"
+          className="text-decoration-underline fm-cursor-help"
           title="szczegółowe cieniowanie Słowacji i Czech w wysokiej rozdzielczości, najwyższe poziomy powiększenia mapy Outdoor, najwyższe poziomy powiększenia map ortofoto Słowacji i Czech, różne mapy oparte na WMS"
         >
           warstwy map premium

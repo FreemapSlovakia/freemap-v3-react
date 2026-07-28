@@ -309,6 +309,10 @@ button#freemap-logo {
   field-sizing: content;
 }
 
+.fm-cursor-help {
+  cursor: help;
+}
+
 .fm-ellipsis {
   max-width: 100%;
   overflow: hidden;

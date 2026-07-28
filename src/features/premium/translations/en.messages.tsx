@@ -15,7 +15,7 @@ const en: PremiumMessages = {
       <ul>
         <li>removed ad banner</li>
         <li
-          className="text-decoration-underline"
+          className="text-decoration-underline fm-cursor-help"
           title="hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps"
         >
           premium map layers

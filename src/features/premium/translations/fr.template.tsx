@@ -16,7 +16,7 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>la suppression de la bannière publicitaire</li>
         <li
-          className="text-decoration-underline"
+          className="text-decoration-underline fm-cursor-help"
           title="ombrage détaillé en haute résolution de la Slovaquie et de la Tchéquie, niveaux de zoom les plus élevés de la carte Outdoor, niveaux de zoom les plus élevés des orthophotos de la Slovaquie et de la Tchéquie, diverses cartes basées sur WMS"
         >
           des couches cartographiques premium

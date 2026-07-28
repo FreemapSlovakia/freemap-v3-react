@@ -16,7 +16,7 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>odstranění reklamního baneru</li>
         <li
-          className="text-decoration-underline"
+          className="text-decoration-underline fm-cursor-help"
           title="podrobné stínování Slovenska a Česka ve vysokém rozlišení, nejvyšší úrovně přiblížení Outdoor mapy, nejvyšší úrovně přiblížení ortofotomap Slovenska a Česka, různé mapy založené na WMS"
         >
           prémiové mapové vrstvy
