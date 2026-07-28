@@ -6,10 +6,69 @@ import { along } from '@turf/along';
 import { distance } from '@turf/distance';
 import { getCoord } from '@turf/invariant';
 import { length } from '@turf/length';
-import type { Feature, LineString, MultiLineString, Position } from 'geojson';
+import type {
+  Feature,
+  Geometry,
+  LineString,
+  MultiLineString,
+  Position,
+} from 'geojson';
 import z from 'zod';
 
 const ElevationsSchema = z.array(z.number().nullable());
+
+/**
+ * What `?sources=1` adds: the terrain models that answered, as the union over
+ * the whole batch. Tokens are a lowercase ISO 3166-1 alpha-2 country code for
+ * that country's national model, or the model's own id (`gedtm30`) for one that
+ * isn't country-scoped — see `elevationSourcesFromTokens`.
+ */
+const ElevationsWithSourcesSchema = z.object({
+  elevations: ElevationsSchema,
+  sources: z.array(z.string()),
+});
+
+/**
+ * Without `?sources=1` — and from an API too old to know the parameter — the
+ * response is the bare elevation array, which reads as "no sources reported" and
+ * so is credited to nobody.
+ */
+const ElevationsResponseCompatSchema = z.preprocess(
+  (res) => (Array.isArray(res) ? { elevations: res, sources: [] } : res),
+  ElevationsWithSourcesSchema,
+);
+
+/**
+ * The property the render-only geometry carries its source tokens in, so a
+ * cached render line and the credit for its elevation can't drift apart. Only
+ * ever stamped on geometry that is never exported.
+ */
+export const ELEVATION_SOURCES_PROP = 'fm:elevationSources';
+
+/** The tokens a render feature was stamped with, empty when it carries none. */
+export function readElevationSources(feature: Feature): string[] {
+  const sources = feature.properties?.[ELEVATION_SOURCES_PROP];
+
+  return Array.isArray(sources)
+    ? sources.filter((token): token is string => typeof token === 'string')
+    : [];
+}
+
+/** Stamps `sources` onto a copy of `feature`; a no-op for an empty set. */
+export function withElevationSources<G extends Geometry>(
+  feature: Feature<G>,
+  sources: Set<string>,
+): Feature<G> {
+  return sources.size === 0
+    ? feature
+    : {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          [ELEVATION_SOURCES_PROP]: [...sources],
+        },
+      };
+}
 
 /**
  * Grid spacing of the finest terrain model the elevation API serves (the 1 m
@@ -25,16 +84,23 @@ const FINEST_DEM_METERS = 1;
  *
  * With the high-resolution terrain model switched off the request is sent
  * unauthenticated, which is what selects the coarse model — the API picks the
- * resolution from the account, so opting out means not presenting it. That
+ * resolution from the account, so opting out means not presenting it. An
+ * anonymous read is answered from SRTM everywhere, not from GEDTM30, which only
+ * backs a premium read past the national models' borders. That
  * preference governs what the profile *shows*; pass `bestAvailable` for data
  * the user keeps (an export), which should carry the finest the account can
  * read whatever the display is set to.
+ *
+ * Pass `sources` to have the models that answered added to that set (the API
+ * reports them only when asked, so it stays out of the response — and out of the
+ * cache key — for the callers that don't credit anything).
  */
 export async function fetchElevations(
   latLons: [number, number][],
   getState: () => RootState,
   cancelActions?: ActionCreatorMatchable[],
   bestAvailable = false,
+  sources?: Set<string>,
 ): Promise<(number | null)[]> {
   if (latLons.length === 0) {
     return [];
@@ -43,14 +109,20 @@ export async function fetchElevations(
   const res = await httpRequest({
     getState,
     method: 'POST',
-    url: '/geotools/elevation',
+    url: `/geotools/elevation${sources ? '?sources=1' : ''}`,
     data: latLons,
     expectedStatus: 200,
     cancelActions,
     anonymous: !bestAvailable && !getState().elevationSettings.highResolution,
   });
 
-  return ElevationsSchema.parse(await res.json());
+  const parsed = ElevationsResponseCompatSchema.parse(await res.json());
+
+  for (const token of parsed.sources) {
+    sources?.add(token);
+  }
+
+  return parsed.elevations;
 }
 
 // Deep-clones a line-like geometry's coordinates so callers can write `z` back
@@ -78,12 +150,15 @@ function cloneLineGeometry<G extends LineString | MultiLineString>(
  * overwrites every `z`. Coordinates the API has no data for are left unchanged.
  * Inputs are never mutated. With `'missing'` and nothing to fill the input
  * array is returned as-is (no request).
+ *
+ * `sources` collects the models that answered — see {@link fetchElevations}.
  */
 export async function enrichElevations<G extends LineString | MultiLineString>(
   features: Feature<G>[],
   mode: 'missing' | 'all',
   getState: () => RootState,
   cancelActions?: ActionCreatorMatchable[],
+  sources?: Set<string>,
 ): Promise<Feature<G>[]> {
   const enriched = features.map((feature) => ({
     ...feature,
@@ -108,6 +183,8 @@ export async function enrichElevations<G extends LineString | MultiLineString>(
     targets.map((coord) => [coord[1]!, coord[0]!]),
     getState,
     cancelActions,
+    false,
+    sources,
   );
 
   targets.forEach((coord, i) => {
@@ -135,11 +212,14 @@ export async function enrichElevations<G extends LineString | MultiLineString>(
  * can't be meaningfully interpolated onto inserted points — so this output is
  * for elevation-derived rendering (chart, elevation/steepness colorize,
  * climb/descent stats), not for export.
+ *
+ * `sources` collects the models that answered — see {@link fetchElevations}.
  */
 export async function densifyAlong<G extends LineString | MultiLineString>(
   feature: Feature<G>,
   getState: () => RootState,
   cancelActions?: ActionCreatorMatchable[],
+  sources?: Set<string>,
 ): Promise<Feature<G>> {
   const segments = lineSegments(feature.geometry);
 
@@ -213,6 +293,8 @@ export async function densifyAlong<G extends LineString | MultiLineString>(
     inserts.map(({ lat, lon }) => [lat, lon]),
     getState,
     cancelActions,
+    false,
+    sources,
   );
 
   // `inserts` is ordered by segment then vertex, so one cursor walks it as we

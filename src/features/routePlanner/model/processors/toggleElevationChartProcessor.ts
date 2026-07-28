@@ -4,7 +4,10 @@ import {
   elevationChartSetTrackGeojson,
   elevationSetSettings,
 } from '@features/elevationChart/model/actions.js';
+import { isPremium } from '@features/premium/premium.js';
+import { readElevationSources } from '@shared/elevation.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { lineString } from '@turf/helpers';
 import {
   routePlannerSetActiveAlternativeIndex,
@@ -71,9 +74,25 @@ export const routePlannerToggleElevationChartProcessor: Processor<
         .slice(1, -1)
         .map(({ lat, lon }) => ({ lat, lon }));
 
+      // Which model the profile's elevation belongs to: premium overrides every
+      // vertex from our terrain model, and a router that returns none at all
+      // (manual, OSRM) has its coordinates filled from it too — only
+      // GraphHopper's own values, kept on the free tier, are SRTM. The sources
+      // ride on the render line, so they survive its cache being reused.
+      const provenance =
+        isPremium(getState().auth.user) ||
+        transportTypeDefs[getState().routePlanner.transportType].api !== 'gh'
+          ? 'terrain-model'
+          : 'srtm';
+
       // Render the line's coordinates as-is rather than resampling a fresh
       // server profile.
-      dispatch(elevationChartSetTrackGeojson(feature, true, midpoints));
+      dispatch(
+        elevationChartSetTrackGeojson(feature, true, midpoints, {
+          provenance,
+          sources: readElevationSources(feature),
+        }),
+      );
     }
   },
 };

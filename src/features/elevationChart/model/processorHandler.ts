@@ -31,9 +31,11 @@ const WAYPOINT_SNAP_METERS = 100;
 // The profile points plus, index-aligned, each point's recorded time (epoch ms)
 // when available — empty/undefined when the source has no per-point time (the
 // API-sampled path), in which case waypoints fall back to spatial pairing.
+// `sources` are the terrain models the API named for the points it answered.
 interface ResolvedProfile {
   points: ElevationProfilePoint[];
   times: (number | undefined)[];
+  sources: string[];
 }
 
 function toEpoch(value: unknown): number | undefined {
@@ -51,13 +53,13 @@ const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
   getState,
   action,
 }) => {
-  const { trackGeojson, keepRecorded, waypoints } = action.payload;
+  const { trackGeojson, keepRecorded, waypoints, credit } = action.payload;
 
   // `keepRecorded` shows the recorded elevation verbatim (gaps included); a
   // fully-elevated track is read locally regardless. Everything else samples a
   // complete profile from the server. The local path also carries each point's
   // recorded time (for time-based waypoint pairing); the API path has none.
-  const { points, times } =
+  const { points, times, sources } =
     keepRecorded || containsElevations(trackGeojson)
       ? resolveElevationProfilePointsLocally(trackGeojson)
       : await resolveElevationProfilePointsViaApi(getState, trackGeojson);
@@ -66,6 +68,9 @@ const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
     elevationChartSetElevationProfile({
       points,
       waypoints: pairWaypoints(points, times, waypoints),
+      // What the feature's owner sampled, plus whatever this profile sampled
+      // itself — one model may have answered for either.
+      sources: [...new Set([...(credit.sources ?? []), ...sources])],
     }),
   );
 };
@@ -234,7 +239,9 @@ function resolveElevationProfilePointsLocally(
     }
   }
 
-  return { points: elevationProfilePoints, times };
+  // The elevation is the feature's own, so only its owner can name a source for
+  // it — nothing is read here.
+  return { points: elevationProfilePoints, times, sources: [] };
 }
 
 async function resolveElevationProfilePointsViaApi(
@@ -301,6 +308,8 @@ async function resolveElevationProfilePointsViaApi(
 
   const sampled = entries.filter((e) => !e.gap);
 
+  const sources = new Set<string>();
+
   const eles = await fetchElevations(
     sampled.map(({ lat, lon }) => [lat, lon]),
     getState,
@@ -310,6 +319,8 @@ async function resolveElevationProfilePointsViaApi(
       elevationChartClose,
       clearMapFeatures,
     ],
+    false,
+    sources,
   );
 
   // The samples come straight from the terrain model, so they carry the same
@@ -389,5 +400,9 @@ async function resolveElevationProfilePointsViaApi(
 
   // The API path resamples the track, so there are no per-point recorded times;
   // waypoints fall back to spatial pairing.
-  return { points: entries.map(({ gap: _gap, ...point }) => point), times: [] };
+  return {
+    points: entries.map(({ gap: _gap, ...point }) => point),
+    times: [],
+    sources: [...sources],
+  };
 }

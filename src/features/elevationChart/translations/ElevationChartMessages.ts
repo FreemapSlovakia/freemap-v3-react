@@ -4,4 +4,5 @@ export type ElevationChartMessages = {
   downloadAsSvg: string;
   showWaypoints: string;
   settings: string;
+  elevationSource: string;
 };

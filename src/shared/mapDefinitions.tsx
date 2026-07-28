@@ -93,9 +93,25 @@ const OFM_URL =
 
 const GEDTM30_URL = 'https://codeberg.org/openlandmap/GEDTM30';
 
-// Every national elevation/relief source the outdoor renderer blends in;
-// countries missing from this list fall back to GEDTM30.
-const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
+/**
+ * The global terrain model everything without a national one falls back to —
+ * both for the outdoor renderer's shading and for the elevation API (see
+ * `elevationSources.ts`). Add `exceptCountries` where the national sources are
+ * credited beside it, so it shows only past their coverage.
+ */
+export const GEDTM30_ATTR: AttributionDef = {
+  type: 'data',
+  name: 'GEDTM30',
+  url: GEDTM30_URL,
+};
+
+/**
+ * Every national elevation/relief source the outdoor renderer blends in;
+ * countries missing from this list fall back to GEDTM30. The elevation API
+ * answers from the same models, for a subset of these countries — see
+ * `ELEVATION_API_DTM_COUNTRIES`.
+ */
+export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
   country: string;
 })[] = [
   {
@@ -188,12 +204,7 @@ const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
   FM_ATTR,
   OSM_DATA_ATTR,
   ...OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
-  {
-    type: 'data',
-    name: 'GEDTM30',
-    url: GEDTM30_URL,
-    exceptCountries: OUTDOOR_NATIONAL_DTM_COUNTRIES,
-  },
+  { ...GEDTM30_ATTR, exceptCountries: OUTDOOR_NATIONAL_DTM_COUNTRIES },
 ];
 
 export type HasUrl = {
@@ -997,14 +1008,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     shortcut: { code: 'KeyH', shift: true },
     scaleWithDpi: true,
     maxNativeZoom: 13,
-    attribution: [
-      FM_ATTR,
-      {
-        type: 'data',
-        name: 'GEDTM30',
-        url: GEDTM30_URL,
-      },
-    ],
+    attribution: [FM_ATTR, GEDTM30_ATTR],
     experimental: true,
     zIndex: 2,
   },

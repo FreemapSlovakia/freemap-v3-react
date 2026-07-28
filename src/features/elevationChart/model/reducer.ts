@@ -34,6 +34,11 @@ export interface ElevationChartState {
   elevationProfilePoints: Array<ElevationProfilePoint> | null;
   waypoints: ElevationProfileWaypoint[];
   /**
+   * The terrain models the elevation API named for the shown profile, as source
+   * tokens; empty when it named none, in which case the profile credits nobody.
+   */
+  sources: string[];
+  /**
    * What the shown profile was computed from. Kept so a profile the elevation
    * settings apply to can be recomputed without its feature dispatching again —
    * see `elevationChartResampleProcessor`.
@@ -45,6 +50,7 @@ const initialState: ElevationChartState = {
   activePoint: null,
   elevationProfilePoints: null,
   waypoints: [],
+  sources: [],
   request: null,
 };
 
@@ -61,6 +67,8 @@ export const elevationChartReducer = createReducer(initialState, (builder) =>
       state.elevationProfilePoints = action.payload.points;
 
       state.waypoints = action.payload.waypoints;
+
+      state.sources = action.payload.sources;
     })
     // Clear the chart when its owning tool is closed (or all tools are), not on
     // every setTool — other tools now open alongside route-planner/track-viewer.

@@ -17,6 +17,7 @@ import {
   resolveActiveTrack,
   trackWaypoints,
 } from '../../trackSelection.js';
+import { elevationCredit } from '../elevationCredit.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 export const trackViewerResolveElevationPromptProcessor: Processor<
@@ -39,8 +40,19 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
     // colorize and export all reuse it.
     let lines = lineFeatures;
 
+    // What answered, kept in the slice: this write is the only place the models
+    // behind an overridden track are named, and the chart crediting them opens
+    // separately.
+    const sources = new Set<string>();
+
     if (mode !== 'keep') {
-      lines = await enrichElevations(lineFeatures, mode, getState);
+      lines = await enrichElevations(
+        lineFeatures,
+        mode,
+        getState,
+        undefined,
+        sources,
+      );
 
       let i = 0;
 
@@ -48,7 +60,12 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
         isTrackLine(f) ? lines[i++]! : f,
       );
 
-      dispatch(trackViewerSetElevation({ ...trackGeojson, features }));
+      dispatch(
+        trackViewerSetElevation({
+          trackGeojson: { ...trackGeojson, features },
+          sources: [...sources],
+        }),
+      );
     }
 
     if (consumer.type === 'colorize') {
@@ -113,6 +130,7 @@ export const trackViewerResolveElevationPromptProcessor: Processor<
           first,
           true,
           trackWaypoints(after.trackGeojson),
+          elevationCredit(after, first),
         ),
       );
     }

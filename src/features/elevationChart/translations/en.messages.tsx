@@ -6,6 +6,7 @@ const en: ElevationChartMessages = {
   downloadAsSvg: 'Download as SVG',
   showWaypoints: 'Show waypoints',
   settings: 'Elevation settings',
+  elevationSource: 'Elevation data',
 };
 
 export default en;

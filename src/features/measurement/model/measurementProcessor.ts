@@ -1,4 +1,3 @@
-import { httpRequest } from '@app/httpRequest.js';
 import {
   clearMapFeatures,
   deleteFeature,
@@ -10,13 +9,13 @@ import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActi
 import type { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
 import { loadMeasurementMessages } from '@features/measurement/translations/loadMeasurementMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { fetchElevations } from '@shared/elevation.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import { area } from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import { length } from '@turf/length';
-import z from 'zod';
 
 // Every measurement readout pins a fixed geographic target (a drawn geometry or
 // a picked point), so panning/zooming the map must not dismiss it — only a
@@ -76,10 +75,13 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
       async function measurePoint(point: LatLon) {
         let elevation;
 
+        const sources = new Set<string>();
+
         const toastParams: ElevationInfoBaseProps = {
           point,
           elevation: null,
           loading: false,
+          sources: [],
         };
 
         if (action.payload.elevation !== false) {
@@ -94,16 +96,16 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             }),
           );
 
-          const res = await httpRequest({
+          // Through the shared fetch, so a single point honours the same
+          // high-resolution preference a profile does — and the readout's
+          // tooltip credits the model that actually answered.
+          [elevation] = await fetchElevations(
+            [[point.lat, point.lon]],
             getState,
-            url: `/geotools/elevation?coordinates=${point.lat},${point.lon}`,
-            cancelActions: [drawingMeasure, clearMapFeatures],
-          });
-
-          elevation = z
-            .array(z.number().nullable())
-            .length(1)
-            .parse(await res.json())[0];
+            [drawingMeasure, clearMapFeatures],
+            false,
+            sources,
+          );
         }
 
         dispatch(
@@ -115,6 +117,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             messageParams: {
               ...toastParams,
               elevation,
+              sources: [...sources],
             },
             cancelType,
           }),

@@ -7,6 +7,7 @@ const sl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downloadAsSvg: 'Prenesi kot SVG',
   showWaypoints: 'Prikaži točke poti',
   settings: 'Nastavitve višinskega profila',
+  elevationSource: 'Podatki o višini',
 };
 
 export default sl;

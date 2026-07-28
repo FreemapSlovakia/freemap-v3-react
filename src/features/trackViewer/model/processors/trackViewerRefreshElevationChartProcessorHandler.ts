@@ -8,6 +8,7 @@ import {
   resolveActiveTrack,
   trackWaypoints,
 } from '../../trackSelection.js';
+import { elevationCredit } from '../elevationCredit.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
@@ -30,8 +31,9 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   // invalidated by the elevation change) so the chart stays high-resolution.
   await ensureRenderGeojson(getState, dispatch);
 
-  const { trackGeojson, renderTrackGeojson, selectedTrackIndex } =
-    getState().trackViewer;
+  const trackViewer = getState().trackViewer;
+
+  const { trackGeojson, renderTrackGeojson, selectedTrackIndex } = trackViewer;
 
   const active = resolveActiveTrack(trackGeojson, selectedTrackIndex);
 
@@ -41,11 +43,14 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
   const rendered = renderTrackGeojson?.features[active.index];
 
+  const drawn = rendered && isTrackLine(rendered) ? rendered : active.feature;
+
   dispatch(
     elevationChartSetTrackGeojson(
-      rendered && isTrackLine(rendered) ? rendered : active.feature,
+      drawn,
       true,
       trackWaypoints(trackGeojson),
+      elevationCredit(trackViewer, drawn),
     ),
   );
 };

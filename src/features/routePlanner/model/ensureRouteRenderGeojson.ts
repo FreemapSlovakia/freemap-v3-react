@@ -2,7 +2,11 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
-import { densifyAlong, enrichElevations } from '@shared/elevation.js';
+import {
+  densifyAlong,
+  enrichElevations,
+  withElevationSources,
+} from '@shared/elevation.js';
 import { smoothElevation } from '@shared/elevationSmoothing.js';
 import { lineString } from '@turf/helpers';
 import type { Dispatch } from 'redux';
@@ -77,6 +81,10 @@ export async function ensureRouteRenderGeojson(
 
   const premium = isPremium(getState().auth.user);
 
+  // What answered across both reads below, stamped onto the render line so the
+  // chart credits the models this very profile was sampled from.
+  const sources = new Set<string>();
+
   // Premium overrides every vertex from the terrain model; everyone else keeps
   // the router's own elevation and only fills coordinates that lack it.
   const [enriched] = await enrichElevations(
@@ -84,12 +92,13 @@ export async function ensureRouteRenderGeojson(
     premium ? 'all' : 'missing',
     getState,
     cancelActions,
+    sources,
   );
 
   // Densify only for premium, so a GraphHopper route on the free tier doesn't
   // hit the elevation service at all.
   const densified = premium
-    ? await densifyAlong(enriched!, getState, cancelActions)
+    ? await densifyAlong(enriched!, getState, cancelActions, sources)
     : enriched!;
 
   // After densifying: the inserted points are sampled from the terrain model
@@ -109,5 +118,5 @@ export async function ensureRouteRenderGeojson(
     return;
   }
 
-  dispatch(routePlannerSetRenderGeojson(render));
+  dispatch(routePlannerSetRenderGeojson(withElevationSources(render, sources)));
 }

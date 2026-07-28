@@ -7,6 +7,7 @@ const pl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downloadAsSvg: 'Pobierz jako SVG',
   showWaypoints: 'Pokaż punkty trasy',
   settings: 'Ustawienia profilu wysokości',
+  elevationSource: 'Dane wysokościowe',
 };
 
 export default pl;

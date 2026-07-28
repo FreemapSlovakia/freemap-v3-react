@@ -37,6 +37,12 @@ export interface TrackViewerState extends TrackViewerStateBase {
   // source), then the chosen fill mode. 'all' means every point now comes from
   // the terrain model, so another server overwrite would be pointless.
   elevationDecision: ElevationDecision;
+  // Source tokens the elevation API named for the values it wrote into
+  // `trackGeojson` (see `elevationSourcesFromTokens`). Kept because the write
+  // happens once, at the prompt, while the chart crediting it can open much
+  // later — and a dense recording densifies to nothing, so the render copy alone
+  // would name no source. Tracks `elevationDecision`: emptied whenever that is.
+  elevationSources: string[];
   // Which line the chart / "more info" / highlight act on, by index into
   // `trackGeojson.features`; `null` falls back to the first line. Reset on load.
   selectedTrackIndex: number | null;
@@ -54,6 +60,7 @@ export const cleanState: TrackViewerStateBase = {
 export const trackViewerInitialState: TrackViewerState = {
   elevationPrompt: null,
   elevationDecision: 'undecided',
+  elevationSources: [],
   selectedTrackIndex: null,
   ...cleanState,
 };
@@ -74,12 +81,16 @@ export const trackViewerReducer = createReducer(
 
           state.elevationDecision = 'undecided';
 
+          state.elevationSources = [];
+
           // The feature indices changed; fall back to the first line.
           state.selectedTrackIndex = null;
         }
       })
       .addCase(trackViewerSetElevation, (state, action) => {
-        state.trackGeojson = action.payload;
+        state.trackGeojson = action.payload.trackGeojson;
+
+        state.elevationSources = action.payload.sources;
 
         // Re-enriched elevation invalidates the densified render cache.
         state.renderTrackGeojson = null;

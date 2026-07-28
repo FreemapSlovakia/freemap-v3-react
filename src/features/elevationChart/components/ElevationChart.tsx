@@ -1,10 +1,14 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { isPremium } from '@features/premium/premium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import clsx from 'clsx';
 import {
+  Fragment,
   type ReactElement,
   type PointerEvent as ReactPointerEvent,
   useEffect,
@@ -16,6 +20,7 @@ import { Button, CloseButton } from 'react-bootstrap';
 import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { downloadChartSvg } from '../downloadChartSvg.js';
+import { useElevationSources } from '../hooks/useElevationSources.js';
 import {
   elevationChartClose,
   elevationChartSetActivePoint,
@@ -95,6 +100,25 @@ export default function ElevationChart(): ReactElement | null {
   );
 
   const waypoints = useAppSelector((state) => state.elevationChart.waypoints);
+
+  const prm = usePremiumMessages();
+
+  const premium = useAppSelector((state) => isPremium(state.auth.user));
+
+  const provenance = useAppSelector(
+    (state) => state.elevationChart.request?.credit.provenance,
+  );
+
+  const reportedSources = useAppSelector(
+    (state) => state.elevationChart.sources,
+  );
+
+  // The terrain models behind the drawn elevation, credited under the chart.
+  // Recorded elevation names none, so the line disappears there.
+  const sources = useElevationSources(
+    provenance ?? 'recorded',
+    reportedSources,
+  );
 
   const [showWaypoints, setShowWaypoints] = usePersistentBoolean(
     'fm.elevationChart.showWaypoints',
@@ -713,7 +737,12 @@ export default function ElevationChart(): ReactElement | null {
         />
       </svg>
 
-      <div className="d-flex align-items-center gap-2 mb-1 mx-2" ref={setRef2}>
+      {/* One wrapping row, measured as a whole so the SVG is sized around it
+          however many lines it takes. */}
+      <div
+        className="d-flex flex-wrap align-items-center gap-2 mb-1 mx-2"
+        ref={setRef2}
+      >
         {typeof climbUp === 'number' && typeof climbDown === 'number' && (
           <p className="m-0">
             {m?.uphill}: {nf0.format(climbUp)}&nbsp;m, {m?.downhill}:{' '}
@@ -721,7 +750,48 @@ export default function ElevationChart(): ReactElement | null {
           </p>
         )}
 
-        <div className="ms-auto d-flex align-items-center gap-1">
+        {sources.length > 0 && (
+          // Pushed against the buttons at the right end of its line, so the one
+          // auto margin belongs here rather than to them.
+          <p className="m-0 ms-auto small text-body-secondary">
+            {m?.elevationSource}:{' '}
+            {sources.map((attr, i) => (
+              <Fragment key={attr.name}>
+                {i > 0 ? ', ' : null}
+
+                {/* A model we have no link for — a country the API gained since
+                    — is still named, just not as a link. */}
+                {attr.url ? (
+                  <a
+                    href={attr.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="link-body-emphasis"
+                  >
+                    {attr.name}
+                  </a>
+                ) : (
+                  attr.name
+                )}
+              </Fragment>
+            ))}
+            {/* The finer national models are premium's; say so where they'd
+                otherwise just be missing from the list. */}
+            {!premium && (
+              <PremiumGem
+                className="ms-1"
+                hint={prm?.higherPrecisionElevation}
+              />
+            )}
+          </p>
+        )}
+
+        <div
+          className={clsx(
+            'd-flex align-items-center gap-1',
+            sources.length === 0 && 'ms-auto',
+          )}
+        >
           {waypoints.length > 0 && (
             <LongPressTooltip label={m?.showWaypoints}>
               {({ props }) => (
@@ -754,7 +824,7 @@ export default function ElevationChart(): ReactElement | null {
           </LongPressTooltip>
 
           {/* The embed is a cross-origin iframe, where the browser refuses both
-              the save picker and a synthesized download. */}
+                the save picker and a synthesized download. */}
           {!window.fmEmbedded && (
             <LongPressTooltip label={m?.downloadAsSvg}>
               {({ props }) => (

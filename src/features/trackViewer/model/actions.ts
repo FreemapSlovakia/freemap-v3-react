@@ -92,13 +92,15 @@ export const trackViewerResolveElevationPrompt = createAction<{
 }>('TRACK_VIEWER_RESOLVE_ELEVATION_PROMPT');
 
 /**
- * Caches server-resolved elevation back into the loaded track. Unlike
+ * Caches server-resolved elevation back into the loaded track, with the source
+ * tokens the API named for it so the chart can credit them later. Unlike
  * {@link trackViewerSetData} this is not a fresh load, so it preserves the
  * user's elevation decision for the track.
  */
-export const trackViewerSetElevation = createAction<FeatureCollection>(
-  'TRACK_VIEWER_SET_ELEVATION',
-);
+export const trackViewerSetElevation = createAction<{
+  trackGeojson: FeatureCollection;
+  sources: string[];
+}>('TRACK_VIEWER_SET_ELEVATION');
 
 /**
  * Caches a render-only densified copy of the track (extra DEM-sampled points on

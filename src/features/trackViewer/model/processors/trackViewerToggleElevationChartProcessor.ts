@@ -14,6 +14,7 @@ import {
   resolveActiveTrack,
   trackWaypoints,
 } from '../../trackSelection.js';
+import { elevationCredit } from '../elevationCredit.js';
 import { ensureRenderGeojson } from '../ensureRenderGeojson.js';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
@@ -56,11 +57,15 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
       const rendered =
         getState().trackViewer.renderTrackGeojson?.features[active.index];
 
+      const drawn =
+        rendered && isTrackLine(rendered) ? rendered : active.feature;
+
       dispatch(
         elevationChartSetTrackGeojson(
-          rendered && isTrackLine(rendered) ? rendered : active.feature,
+          drawn,
           true,
           trackWaypoints(trackGeojson),
+          elevationCredit(getState().trackViewer, drawn),
         ),
       );
 

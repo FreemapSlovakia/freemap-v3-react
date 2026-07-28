@@ -1,7 +1,7 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
-import { densifyAlong } from '@shared/elevation.js';
+import { densifyAlong, withElevationSources } from '@shared/elevation.js';
 import { smoothElevation } from '@shared/elevationSmoothing.js';
 import type { Dispatch } from 'redux';
 import { isTrackLine } from '../trackSelection.js';
@@ -39,13 +39,18 @@ export async function ensureRenderGeojson(
     return;
   }
 
+  // What answered, stamped onto the render lines so the chart credits the models
+  // the profile it draws was sampled from.
+  const sources = new Set<string>();
+
   const densified = await Promise.all(
     lines.map((line) =>
-      densifyAlong(line, getState, [
-        trackViewerSetData,
-        trackViewerDelete,
-        clearMapFeatures,
-      ]),
+      densifyAlong(
+        line,
+        getState,
+        [trackViewerSetData, trackViewerDelete, clearMapFeatures],
+        sources,
+      ),
     ),
   );
 
@@ -70,7 +75,7 @@ export async function ensureRenderGeojson(
   let i = 0;
 
   const features = trackGeojson.features.map((f) =>
-    isTrackLine(f) ? smoothed[i++]! : f,
+    isTrackLine(f) ? withElevationSources(smoothed[i++]!, sources) : f,
   );
 
   dispatch(trackViewerSetRenderGeojson({ ...trackGeojson, features }));

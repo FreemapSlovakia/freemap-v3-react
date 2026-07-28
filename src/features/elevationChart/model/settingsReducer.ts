@@ -21,7 +21,8 @@ export interface ElevationSettingsState {
   ditchFillWindow: number;
   /**
    * Whether to read the high-resolution terrain model. Premium-only; switching
-   * it off trades detail for a model with no culvert ditches at all.
+   * it off sends the read anonymously, which SRTM answers everywhere — trading
+   * detail for a model with no culvert ditches at all.
    */
   highResolution: boolean;
 }

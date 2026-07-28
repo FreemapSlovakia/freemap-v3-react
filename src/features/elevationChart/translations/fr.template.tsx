@@ -7,6 +7,7 @@ const fr: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downloadAsSvg: 'Télécharger en SVG',
   showWaypoints: 'Afficher les points de cheminement',
   settings: 'Paramètres du profil altimétrique',
+  elevationSource: 'Données altimétriques',
 };
 
 export default fr;

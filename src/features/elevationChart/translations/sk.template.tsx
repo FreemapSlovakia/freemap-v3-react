@@ -7,6 +7,7 @@ const sk: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downloadAsSvg: 'Stiahnuť ako SVG',
   showWaypoints: 'Zobraziť trasové body',
   settings: 'Nastavenia výškového profilu',
+  elevationSource: 'Výškové dáta',
 };
 
 export default sk;
