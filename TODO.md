@@ -182,16 +182,18 @@ multi-property chart (#933), toggle waypoints (#934), label route midpoints
 chart as SVG (#938), and further enrichments (#939). The remaining item here is an
 engineering task, not a user-facing feature:
 
-- [ ] **Attribute the elevation data source where it's used.** The elevation API
-      now serves per-country high-res DTMs (`ELEVATION_API_DTM_COUNTRIES`) with a global
-      GEDTM30 fallback, but the only place we credit them is the hand-maintained
-      `llms.txt` and the outdoor-map layer attribution in `mapDefinitions.tsx`.
-      Show the source next to where the value is consumed: the elevation chart,
-      the point readout (`ElevationInfo.tsx`), and probably track colorization.
-      Prefer having the **backend return the source** per point/response (which
-      DTM answered) so we don't hand-sync the country→provider table on both
-      sides — the mapping is currently inferred from `ELEVATION_SOURCES` and
-      duplicated by hand.
+- [~] **Attribute the elevation data source where it's used.** Done for the
+      elevation chart (a credit line under its toolbar) and the point readout
+      (an info icon beside the value) — see the crediting section of
+      [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md).
+      The backend reports which models answered, as this item asked: `?sources=1`
+      switches `/geotools/elevation` to `{ elevations, sources }`, so no
+      country→provider table is hand-synced across the two sides. Names and links
+      come from the attribution table the outdoor map already uses. **Still open:
+      track colorization**, which paints the same terrain-model values with no
+      credit anywhere near it. The colorize legend is the obvious place;
+      `useElevationSources` and the `fm:elevationSources` stamp on the render
+      geometry give it the tokens without another request.
 - [ ] **Keep the elevation profile open when its source line changes.** The
       `elevationChart` reducer resets to `initialState` on `routePlannerSetResult`,
       `drawingLineAddPoint`/`UpdatePoint`/`RemovePoint` and `selectFeature`, so
