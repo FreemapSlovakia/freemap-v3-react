@@ -28,6 +28,24 @@ export function toAttributionCountries(
       : countriesState;
 }
 
+/**
+ * Tells whether an attribution applies to the covered `countries`: a
+ * country-specific source needs its country in the list, and a global fallback
+ * (`exceptCountries`) needs at least one covered country the national sources
+ * don't serve. An `undefined` country list means "unknown", so everything shows.
+ */
+function coversCountries(
+  def: AttributionDef,
+  countries: string[] | undefined,
+): boolean {
+  return (
+    !countries ||
+    ((!def.country || countries.includes(def.country)) &&
+      (!def.exceptCountries ||
+        countries.some((country) => !def.exceptCountries?.includes(country))))
+  );
+}
+
 export function Attribution({ unknown }: Props): ReactElement {
   const layers = useAppSelector((state) => state.map.layers);
 
@@ -62,9 +80,7 @@ function useCategorizedAttribution(layers: string[], countries?: string[]) {
         .filter(({ type }) => layers.includes(type))
         .flatMap((def) => def.attribution),
       ...cachedAttrs,
-    ].filter(
-      (def) => !countries || !def.country || countries.includes(def.country),
-    ),
+    ].filter((def) => coversCountries(def, countries)),
   );
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
@@ -179,6 +195,9 @@ function categorize(
 ): { type: AttributionDef['type']; attributions: AttributionDef[] }[] {
   const res: Partial<Record<AttributionDef['type'], AttributionDef[]>> = {};
 
+  // the same source can be listed by several layers under separate defs
+  const seen = new Set<string>();
+
   for (const attribution of attributions) {
     let x = res[attribution.type];
 
@@ -188,7 +207,11 @@ function categorize(
       res[attribution.type] = x;
     }
 
-    if (!x.includes(attribution)) {
+    const key = `${attribution.type}\0${attribution.name ?? attribution.nameKey}\0${attribution.url}`;
+
+    if (!seen.has(key)) {
+      seen.add(key);
+
       x.push(attribution);
     }
   }

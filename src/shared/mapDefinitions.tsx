@@ -32,6 +32,11 @@ export interface AttributionDef {
     | 'photosCc';
   url?: string;
   country?: string;
+  /**
+   * Marks a global source that national data supersedes: it is shown only when
+   * the covered area reaches beyond the listed countries.
+   */
+  exceptCountries?: string[];
 }
 
 const OSM_MAP_ATTR: AttributionDef = {
@@ -86,11 +91,13 @@ const LLS_URL =
 const OFM_URL =
   'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#ortofoto';
 
-// Attribution shared by the outdoor map and its KST-routes variant: Freemap,
-// OSM data, and every national elevation/relief source the renderer blends in.
-const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
-  FM_ATTR,
-  OSM_DATA_ATTR,
+const GEDTM30_URL = 'https://codeberg.org/openlandmap/GEDTM30';
+
+// Every national elevation/relief source the outdoor renderer blends in;
+// countries missing from this list fall back to GEDTM30.
+const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
+  country: string;
+})[] = [
   {
     type: 'data',
     country: 'at',
@@ -162,6 +169,21 @@ const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
     country: 'es',
     name: 'MDT05: IGN (CNIG)',
     url: 'https://centrodedescargas.cnig.es/CentroDescargas/modelos-digitales-elevaciones',
+  },
+];
+
+// Attribution shared by the outdoor map and its KST-routes variant: Freemap,
+// OSM data, the national elevation sources, and the global GEDTM30 model that
+// covers everywhere else.
+const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
+  FM_ATTR,
+  OSM_DATA_ATTR,
+  ...OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
+  {
+    type: 'data',
+    name: 'GEDTM30',
+    url: GEDTM30_URL,
+    exceptCountries: OUTDOOR_NATIONAL_DTM_ATTRIBUTION.map((a) => a.country),
   },
 ];
 
@@ -971,7 +993,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       {
         type: 'data',
         name: 'GEDTM30',
-        url: 'https://codeberg.org/openlandmap/GEDTM30',
+        url: GEDTM30_URL,
       },
     ],
     experimental: true,
