@@ -59,6 +59,7 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   higherPrecisionElevation:
     'Natančnejši podatki o nadmorski višini so na voljo s premium dostopom.',
   alreadyPremium: 'Premium dostop že imate.',
+  alreadySubscribed: 'Aktivno naročnino že imate.',
   premiumUser: 'Uporabnik s premium dostopom',
   payOnce: 'Plačaj enkratno za eno leto',
   paySubscription: 'Letna naročnina (samodejno se obnavlja)',
@@ -76,6 +77,14 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
     `Od ${date} bo premium dostop stal ${newPrice}\xa0€ na leto. Če se naročite prej, vam letna cena ${oldPrice}\xa0€ ostane, dokler je naročnina aktivna.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
     `Od ${date} bo premium dostop stal ${newPrice}\xa0€ na leto. Če do takrat preidete na letno naročnino, vam letna cena ${oldPrice}\xa0€ ostane, dokler je naročnina aktivna. Zaračunavati se začne šele, ko poteče že plačano leto, tako da ničesar ne plačate dvakrat.`,
+  switchTitle: 'Ohranite trenutno ceno',
+  switchStatus: ({ expiration }) =>
+    `Premium dostop imate do ${expiration} — to ni naročnina.`,
+  switchOffer: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} bo premium dostop stal ${newPrice}\xa0€ na leto. Če do takrat preidete na letno naročnino, vam letna cena ${oldPrice}\xa0€ ostane, dokler je naročnina aktivna.`,
+  switchNoDoubleCharge: ({ expiration }) =>
+    `S prehodom zdaj ne izgubite ničesar: naročnina se začne z brezplačnim obdobjem do ${expiration}, prvo plačilo pa bo šele takrat.`,
+  switchAction: 'Preidi na letno naročnino',
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium od ${date} za ${newPrice}\xa0€ na leto.`,
   priceIncreaseMore: 'več…',

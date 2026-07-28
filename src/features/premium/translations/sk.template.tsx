@@ -56,6 +56,7 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
   higherPrecisionElevation:
     'Presnejšie výškové dáta dostupné s prémiovým prístupom.',
   alreadyPremium: 'Už máte prémiový prístup.',
+  alreadySubscribed: 'Už máte aktívne predplatné.',
   premiumUser: 'Používateľ s prémiovým prístupom',
   payOnce: 'Zaplatiť jednorazovo na jeden rok',
   paySubscription: 'Ročné predplatné (automatické obnovenie)',
@@ -73,6 +74,14 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
     `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne. Ak si ho predplatíte skôr, cena ${oldPrice}\xa0€ za rok vám zostane, pokiaľ bude predplatné aktívne.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
     `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne. Ak dovtedy prejdete na ročné predplatné, ročná cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude predplatné aktívne. Účtovať sa začne až po vyčerpaní už zaplateného roka, takže nič neplatíte dvakrát.`,
+  switchTitle: 'Zachovajte si súčasnú cenu',
+  switchStatus: ({ expiration }) =>
+    `Prémiový prístup máte do ${expiration} — nie je to predplatné.`,
+  switchOffer: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne. Ak dovtedy prejdete na ročné predplatné, ročná cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude predplatné aktívne.`,
+  switchNoDoubleCharge: ({ expiration }) =>
+    `Prechodom teraz nič nestrácate: predplatné začne bezplatným obdobím do ${expiration} a prvá platba sa strhne až vtedy.`,
+  switchAction: 'Prejsť na ročné predplatné',
   priceIncreaseMini: ({ date, newPrice }) =>
     `Prémium od ${date} za ${newPrice}\xa0€ ročne.`,
   priceIncreaseMore: 'viac…',

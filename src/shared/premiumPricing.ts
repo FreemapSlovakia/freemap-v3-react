@@ -12,6 +12,15 @@
 export const PREMIUM_PRICE_EUR = 8;
 
 /**
+ * A subscription starts as a trial covering the premium the user already has,
+ * so that switching early costs nothing — but Polar validates the trial length
+ * as at most 1000 days, which the backend clamps to (`MAX_TRIAL_DAYS` in
+ * `polarCheckoutHandler`). Premium reaching beyond that can't be moved without
+ * paying twice, so the switch isn't offered. Keep the two in sync.
+ */
+export const PREMIUM_MAX_TRIAL_DAYS = 1000;
+
+/**
  * Only used to render the date in the announcement — midday, so that every
  * timezone formats it as 1 September.
  */

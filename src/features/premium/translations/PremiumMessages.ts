@@ -12,6 +12,7 @@ export type PremiumMessages = {
   clickToActivate: string;
   higherPrecisionElevation: string;
   alreadyPremium: string;
+  alreadySubscribed: string;
   premiumUser: string;
   payOnce: string;
   paySubscription: string;
@@ -39,6 +40,16 @@ export type PremiumMessages = {
     oldPrice: number;
     newPrice: number;
   }) => string;
+  /** The modal offering that user the switch, while the current price lasts. */
+  switchTitle: string;
+  switchStatus: (params: { expiration: string }) => string;
+  switchOffer: (params: {
+    date: string;
+    oldPrice: number;
+    newPrice: number;
+  }) => string;
+  switchNoDoubleCharge: (params: { expiration: string }) => string;
+  switchAction: string;
   /** Headline for the info bar on a phone, paired with `priceIncreaseMore`. */
   priceIncreaseMini: (params: { date: string; newPrice: number }) => string;
   /** Label of the link to the premium document. */

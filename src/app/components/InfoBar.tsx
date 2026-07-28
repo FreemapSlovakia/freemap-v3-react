@@ -1,5 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { usePremiumPriceIncreaseInfo } from '@features/premium/hooks/usePremiumPriceIncreaseInfo.js';
+import {
+  canSwitchToSubscription,
+  isPremium,
+} from '@features/premium/premium.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { CloseButton } from 'react-bootstrap';
@@ -25,11 +29,16 @@ export function InfoBar(): ReactElement | null {
 
   const premiumPriceIncrease = usePremiumPriceIncreaseInfo();
 
-  // A running subscription keeps its price, so the increase is not its owner's
-  // problem. Everyone else is told — including a user holding a one-time year,
-  // who can still switch to a subscription and lock the current price.
-  const grandfathered = useAppSelector((state) =>
-    Boolean(state.auth.user?.premiumSubscription),
+  // Told to whoever the increase can still cost something: a subscription keeps
+  // its price, and premium reaching past the switch trial can't be moved
+  // either, so both are left alone. A one-time year in between is exactly who
+  // should hear it. The subscription flag is checked on its own, so a renewal
+  // falling due while the page stays open doesn't start nagging its owner —
+  // `premiumExpiration` only catches up on the next `authInit`.
+  const announce = useAppSelector(
+    (state) =>
+      !state.auth.user?.premiumSubscription &&
+      (!isPremium(state.auth.user) || canSwitchToSubscription(state.auth.user)),
   );
 
   // Frozen at mount: recording the chosen bar as shown (below) must not rotate
@@ -53,7 +62,7 @@ export function InfoBar(): ReactElement | null {
   // starves while another one is up.
   const key = [
     ...Object.keys(infoBars ?? {}),
-    ...(grandfathered ? [] : [PREMIUM_PRICE_INCREASE_KEY]),
+    ...(announce ? [PREMIUM_PRICE_INCREASE_KEY] : []),
   ]
     .filter((key) => ts - (hiddenInfoBars[key] ?? 0) > 24 * 60 * 60_000) // dismissal expires in a day
     .sort((a, b) => (rotation[a] ?? 0) - (rotation[b] ?? 0))[0];

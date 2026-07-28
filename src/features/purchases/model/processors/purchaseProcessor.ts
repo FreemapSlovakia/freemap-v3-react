@@ -30,6 +30,27 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       return;
     }
 
+    // A second subscription would be refused by the backend, and it can be
+    // asked for from a stale UI or by a purchase replayed after login — so it
+    // is stopped here rather than in any one modal.
+    if (
+      action.payload.type === 'premium' &&
+      action.payload.recurring &&
+      user.premiumSubscription
+    ) {
+      dispatch(
+        toastsAdd({
+          id: 'alreadySubscribed',
+          style: 'warning',
+          messageKey: 'alreadySubscribed',
+          messageLoader: loadPremiumMessages,
+          timeout: 5000,
+        }),
+      );
+
+      return;
+    }
+
     if (!isBroadcastChannelSupported()) {
       // The payment popup relays its result back over a BroadcastChannel;
       // without it the purchase could never complete. Warn instead of opening a

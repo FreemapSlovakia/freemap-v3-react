@@ -165,8 +165,9 @@ switches by itself — do all of this on the day:
 
 - set `PREMIUM_PRICE_EUR` to `15` in `src/shared/premiumPricing.ts`;
 - drop the announcement: the premium branch of `InfoBar.tsx`,
-  `usePremiumPriceIncreaseInfo`, the `priceIncrease*` messages, and the alert in
-  `PremiumActivationModal` (which then loses its only content);
+  `usePremiumPriceIncreaseInfo`, the `priceIncrease*` and `switch*` messages,
+  the alert in `PremiumActivationModal`, and `PremiumSwitchModal` together with
+  its `premium-switch` modal id and its `AsyncModal` entry in `Main.tsx`;
 - point `POLAR_PREMIUM_RECURRING_PRODUCT_ID` and
   `POLAR_PREMIUM_ONETIME_PRODUCT_ID` at the €15 products in the backend env;
 - in Polar, archive the €8 products;

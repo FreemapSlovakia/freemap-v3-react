@@ -58,6 +58,7 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
   higherPrecisionElevation:
     'Des données d’altitude plus précises sont disponibles avec l’accès premium.',
   alreadyPremium: 'Vous avez déjà l’accès premium.',
+  alreadySubscribed: 'Vous avez déjà un abonnement actif.',
   premiumUser: 'Utilisateur avec accès premium',
   payOnce: 'Payer une fois pour un an',
   paySubscription: 'Abonnement annuel (renouvellement automatique)',
@@ -75,6 +76,14 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
     `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an. Si vous vous abonnez avant, le prix de ${oldPrice}\xa0€ par an vous reste acquis tant que l’abonnement est actif.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
     `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an. Si vous passez à un abonnement annuel avant cette date, le prix annuel de ${oldPrice}\xa0€ vous reste acquis tant que l’abonnement est actif. Le prélèvement ne commence qu’à l’expiration de l’année déjà payée, vous ne payez donc rien deux fois.`,
+  switchTitle: 'Conservez votre prix actuel',
+  switchStatus: ({ expiration }) =>
+    `Vous avez l’accès premium jusqu’au ${expiration} — ce n’est pas un abonnement.`,
+  switchOffer: ({ date, oldPrice, newPrice }) =>
+    `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an. Si vous passez à un abonnement annuel avant cette date, le prix annuel de ${oldPrice}\xa0€ vous reste acquis tant que l’abonnement est actif.`,
+  switchNoDoubleCharge: ({ expiration }) =>
+    `Vous ne perdez rien en changeant maintenant : l’abonnement commence par une période gratuite jusqu’au ${expiration}, et le premier prélèvement n’a lieu qu’à ce moment-là.`,
+  switchAction: 'Passer à l’abonnement annuel',
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium à ${newPrice}\xa0€ par an à partir du ${date}.`,
   priceIncreaseMore: 'plus…',

@@ -58,6 +58,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
   higherPrecisionElevation:
     'Höhendaten mit höherer Genauigkeit mit Premium-Zugang verfügbar.',
   alreadyPremium: 'Du hast bereits Premium-Zugang.',
+  alreadySubscribed: 'Du hast bereits ein aktives Abo.',
   premiumUser: 'Nutzer mit Premium-Zugang',
   payOnce: 'Einmalig für ein Jahr zahlen',
   paySubscription: 'Jährliches Abo (verlängert sich automatisch)',
@@ -75,6 +76,14 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
     `Ab ${date} wird der Premium-Zugang ${newPrice}\xa0€ pro Jahr kosten. Wenn Sie vorher ein Abo abschließen, bleibt Ihnen der Preis von ${oldPrice}\xa0€ pro Jahr, solange das Abo aktiv ist.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
     `Ab ${date} wird der Premium-Zugang ${newPrice}\xa0€ pro Jahr kosten. Wenn Sie vorher zu einem Jahresabo wechseln, bleibt Ihnen der Jahrespreis von ${oldPrice}\xa0€, solange das Abo aktiv ist. Abgerechnet wird erst, wenn das bereits bezahlte Jahr abgelaufen ist, Sie zahlen also nichts doppelt.`,
+  switchTitle: 'Behalten Sie Ihren aktuellen Preis',
+  switchStatus: ({ expiration }) =>
+    `Sie haben Premium-Zugang bis ${expiration} — es ist kein Abo.`,
+  switchOffer: ({ date, oldPrice, newPrice }) =>
+    `Ab ${date} wird der Premium-Zugang ${newPrice}\xa0€ pro Jahr kosten. Wenn Sie vorher zu einem Jahresabo wechseln, bleibt Ihnen der Jahrespreis von ${oldPrice}\xa0€, solange das Abo aktiv ist.`,
+  switchNoDoubleCharge: ({ expiration }) =>
+    `Durch den Wechsel verlieren Sie nichts: Das Abo beginnt mit einem kostenlosen Zeitraum bis ${expiration}, und erst dann wird die erste Zahlung fällig.`,
+  switchAction: 'Zum Jahresabo wechseln',
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium ab ${date} für ${newPrice}\xa0€ pro Jahr.`,
   priceIncreaseMore: 'mehr…',

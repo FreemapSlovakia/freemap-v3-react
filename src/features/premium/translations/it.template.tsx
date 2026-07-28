@@ -56,6 +56,7 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
   higherPrecisionElevation:
     'Dati di quota a maggiore precisione disponibili con accesso premium.',
   alreadyPremium: 'Hai già accesso premium.',
+  alreadySubscribed: 'Hai già un abbonamento attivo.',
   premiumUser: 'Utente con accesso premium',
   payOnce: 'Paga una volta per un anno',
   paySubscription: 'Abbonamento annuale (rinnovo automatico)',
@@ -73,6 +74,14 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
     `Dal ${date} l’accesso premium costerà ${newPrice}\xa0€ all’anno. Se ti abboni prima, il prezzo di ${oldPrice}\xa0€ all’anno resta tuo finché l’abbonamento è attivo.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
     `Dal ${date} l’accesso premium costerà ${newPrice}\xa0€ all’anno. Se passi a un abbonamento annuale prima di allora, il prezzo annuale di ${oldPrice}\xa0€ resta tuo finché l’abbonamento è attivo. L’addebito parte solo quando scade l’anno che hai già pagato, quindi non paghi nulla due volte.`,
+  switchTitle: 'Mantieni il prezzo attuale',
+  switchStatus: ({ expiration }) =>
+    `Hai accesso premium fino al ${expiration} — non è un abbonamento.`,
+  switchOffer: ({ date, oldPrice, newPrice }) =>
+    `Dal ${date} l’accesso premium costerà ${newPrice}\xa0€ all’anno. Se passi a un abbonamento annuale prima di allora, il prezzo annuale di ${oldPrice}\xa0€ resta tuo finché l’abbonamento è attivo.`,
+  switchNoDoubleCharge: ({ expiration }) =>
+    `Passando ora non perdi nulla: l’abbonamento inizia con un periodo gratuito fino al ${expiration} e il primo pagamento viene addebitato solo allora.`,
+  switchAction: 'Passa all’abbonamento annuale',
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium a ${newPrice}\xa0€ all’anno dal ${date}.`,
   priceIncreaseMore: 'altro…',

@@ -11,7 +11,7 @@ import type { ReactElement } from 'react';
 import { Alert, Button, ButtonGroup, Dropdown, Modal } from 'react-bootstrap';
 import { FaGem, FaRegGem, FaStopwatch, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { isPremiumWithoutSubscription } from '../premium.js';
+import { canSwitchToSubscription, isPremium } from '../premium.js';
 import { usePremiumMessages } from '../translations/usePremiumMessages.js';
 
 type Props = { show: boolean };
@@ -25,10 +25,22 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? prm?.title : undefined);
 
-  // Someone holding a one-time year is told to switch, not to buy: the
-  // subscription starts charging only once that year runs out.
+  // Nothing is sold to a live subscriber: a second subscription is refused by
+  // the backend, and another one-time year or a chrons payment would only pay
+  // ahead for what renews by itself. They get their status and a way out.
+  const subscribed = useAppSelector((state) =>
+    Boolean(state.auth.user?.premiumSubscription),
+  );
+
+  // Someone holding a one-time year is told to switch rather than to buy; the
+  // info bar sends them to `PremiumSwitchModal`, this is the same offer for
+  // whoever lands here instead.
   const switching = useAppSelector((state) =>
-    isPremiumWithoutSubscription(state.auth.user),
+    canSwitchToSubscription(state.auth.user),
+  );
+
+  const premiumExpiration = useAppSelector((state) =>
+    isPremium(state.auth.user) ? state.auth.user?.premiumExpiration : undefined,
   );
 
   const dateFormat = useDateTimeFormat({
@@ -58,46 +70,58 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
       <Modal.Body>
         {prm?.commonHeader(PREMIUM_PRICE_EUR)}
 
-        <Alert variant="warning" className="mt-3 mb-0">
-          {(switching ? prm?.priceIncreaseSwitch : prm?.priceIncrease)?.({
-            date: dateFormat.format(PREMIUM_PRICE_INCREASE_AT),
-            oldPrice: PREMIUM_PRICE_EUR,
-            newPrice: 15,
-          })}
-        </Alert>
+        {premiumExpiration && !switching ? (
+          <Alert variant="info" className="mt-3 mb-0">
+            {prm?.youArePremium(dateFormat.format(premiumExpiration))}
+          </Alert>
+        ) : (
+          <Alert variant="warning" className="mt-3 mb-0">
+            {(switching ? prm?.priceIncreaseSwitch : prm?.priceIncrease)?.({
+              date: dateFormat.format(PREMIUM_PRICE_INCREASE_AT),
+              oldPrice: PREMIUM_PRICE_EUR,
+              newPrice: 15,
+            })}
+          </Alert>
+        )}
 
-        <hr />
+        {!subscribed && (
+          <>
+            <hr />
 
-        <p className="mb-0 text-body-secondary">{prm?.chronsHint}</p>
+            <p className="mb-0 text-body-secondary">{prm?.chronsHint}</p>
+          </>
+        )}
       </Modal.Body>
 
       <Modal.Footer>
-        <Dropdown as={ButtonGroup}>
-          <Button variant="primary" onClick={() => buy({ recurring: true })}>
-            <FaGem /> {prm?.paySubscription}
-          </Button>
+        {!subscribed && (
+          <Dropdown as={ButtonGroup}>
+            <Button variant="primary" onClick={() => buy({ recurring: true })}>
+              <FaGem /> {prm?.paySubscription}
+            </Button>
 
-          <Dropdown.Toggle split variant="primary" id="premium-buy" />
+            <Dropdown.Toggle split variant="primary" id="premium-buy" />
 
-          <Dropdown.Menu renderOnMount popperConfig={{ strategy: 'fixed' }}>
-            <Dropdown.Item
-              className="text-nowrap"
-              onClick={() => buy({ recurring: false })}
-            >
-              <FaRegGem /> {prm?.payOnce}
-            </Dropdown.Item>
+            <Dropdown.Menu renderOnMount popperConfig={{ strategy: 'fixed' }}>
+              <Dropdown.Item
+                className="text-nowrap"
+                onClick={() => buy({ recurring: false })}
+              >
+                <FaRegGem /> {prm?.payOnce}
+              </Dropdown.Item>
 
-            <Dropdown.Item
-              className="text-nowrap"
-              onClick={() => buy({ via: 'rovas' })}
-            >
-              <FaStopwatch /> {prm?.payWithChrons}
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+              <Dropdown.Item
+                className="text-nowrap"
+                onClick={() => buy({ via: 'rovas' })}
+              >
+                <FaStopwatch /> {prm?.payWithChrons}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
 
         <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.cancel}
+          <FaTimes /> {subscribed ? m?.general.close : m?.general.cancel}
         </Button>
       </Modal.Footer>
     </Modal>

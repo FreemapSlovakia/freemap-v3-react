@@ -7,7 +7,7 @@ import {
 } from '@shared/premiumPricing.js';
 import { type ReactNode, useState } from 'react';
 import { Anchor } from 'react-bootstrap';
-import { isPremiumWithoutSubscription } from '../premium.js';
+import { canSwitchToSubscription } from '../premium.js';
 import { usePremiumMessages } from '../translations/usePremiumMessages.js';
 
 /**
@@ -25,7 +25,7 @@ export function usePremiumPriceIncreaseInfo(): ReactNode {
 
   // Someone holding a one-time year is told to switch instead of to buy.
   const switching = useAppSelector((state) =>
-    isPremiumWithoutSubscription(state.auth.user),
+    canSwitchToSubscription(state.auth.user),
   );
 
   const dateFormat = useDateTimeFormat({
@@ -55,7 +55,7 @@ export function usePremiumPriceIncreaseInfo(): ReactNode {
       {switching
         ? prm.priceIncreaseSwitch(params)
         : prm.priceIncreaseShort(params)}{' '}
-      <ShowModalLink modal="premium">
+      <ShowModalLink modal={switching ? 'premium-switch' : 'premium'}>
         {switching ? prm.subscribe : prm.becomePremium}
         {'\xa0›'}
       </ShowModalLink>

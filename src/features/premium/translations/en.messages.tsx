@@ -55,6 +55,7 @@ const en: PremiumMessages = {
   higherPrecisionElevation:
     'Higher-precision elevation data available with premium access.',
   alreadyPremium: 'You already have premium access.',
+  alreadySubscribed: 'You already have an active subscription.',
   premiumUser: 'User with premium access',
   payOnce: 'Pay once for one year',
   paySubscription: 'Subscribe yearly (auto-renews)',
@@ -72,6 +73,14 @@ const en: PremiumMessages = {
     `From ${date} premium access will cost ${newPrice}\xa0€ a year. Subscribe before then and the ${oldPrice}\xa0€ a year price stays yours for as long as the subscription is active.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
     `From ${date} premium access will cost ${newPrice}\xa0€ a year. Switch to a yearly subscription before then and the ${oldPrice}\xa0€ yearly price stays yours for as long as the subscription is active. Charging starts only when the year you have already paid for runs out, so you pay nothing twice.`,
+  switchTitle: 'Keep your current price',
+  switchStatus: ({ expiration }) =>
+    `You have premium access until ${expiration} — it isn't a subscription.`,
+  switchOffer: ({ date, oldPrice, newPrice }) =>
+    `From ${date} premium access will cost ${newPrice}\xa0€ a year. Switch to a yearly subscription before then and the ${oldPrice}\xa0€ a year price stays yours for as long as the subscription is active.`,
+  switchNoDoubleCharge: ({ expiration }) =>
+    `You lose nothing by switching now: the subscription starts as a free period until ${expiration}, and the first payment is taken only then.`,
+  switchAction: 'Switch to a yearly subscription',
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium ${newPrice}\xa0€ a year from ${date}.`,
   priceIncreaseMore: 'more…',

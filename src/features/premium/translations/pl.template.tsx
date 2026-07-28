@@ -58,6 +58,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   higherPrecisionElevation:
     'Dokładniejsze dane wysokości dostępne z dostępem premium.',
   alreadyPremium: 'Masz już dostęp premium.',
+  alreadySubscribed: 'Masz już aktywną subskrypcję.',
   premiumUser: 'Użytkownik z dostępem premium',
   payOnce: 'Zapłać jednorazowo za jeden rok',
   paySubscription: 'Subskrypcja roczna (odnawia się automatycznie)',
@@ -75,6 +76,14 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
     `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie. Jeśli wykupisz subskrypcję wcześniej, cena ${oldPrice}\xa0€ za rok pozostanie tak długo, jak subskrypcja będzie aktywna.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
     `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie. Jeśli do tego czasu przejdziesz na subskrypcję roczną, roczna cena ${oldPrice}\xa0€ pozostanie tak długo, jak subskrypcja będzie aktywna. Naliczanie zacznie się dopiero po wykorzystaniu już opłaconego roku, więc niczego nie płacisz dwa razy.`,
+  switchTitle: 'Zachowaj obecną cenę',
+  switchStatus: ({ expiration }) =>
+    `Masz dostęp premium do ${expiration} — to nie jest subskrypcja.`,
+  switchOffer: ({ date, oldPrice, newPrice }) =>
+    `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie. Jeśli do tego czasu przejdziesz na subskrypcję roczną, roczna cena ${oldPrice}\xa0€ pozostanie tak długo, jak subskrypcja będzie aktywna.`,
+  switchNoDoubleCharge: ({ expiration }) =>
+    `Przechodząc teraz, nic nie tracisz: subskrypcja zacznie się bezpłatnym okresem do ${expiration}, a pierwsza płatność zostanie pobrana dopiero wtedy.`,
+  switchAction: 'Przejdź na subskrypcję roczną',
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium od ${date} za ${newPrice}\xa0€ rocznie.`,
   priceIncreaseMore: 'więcej…',

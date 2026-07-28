@@ -56,6 +56,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   higherPrecisionElevation:
     'Nagyobb pontosságú magassági adatok prémium hozzáféréssel érhetők el.',
   alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
+  alreadySubscribed: 'Már van aktív előfizetésed.',
   premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
   payOnce: 'Egyszeri fizetés egy évre',
   paySubscription: 'Éves előfizetés (automatikus megújítás)',
@@ -74,6 +75,14 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
     `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz. Ha előbb fizet elő, az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
     `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz. Ha addig éves előfizetésre vált, az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív. A terhelés csak a már kifizetett év letelte után indul, így semmit sem fizet kétszer.`,
+  switchTitle: 'Tartsa meg a jelenlegi árat',
+  switchStatus: ({ expiration }) =>
+    `A prémium hozzáférése eddig érvényes: ${expiration} — ez nem előfizetés.`,
+  switchOffer: ({ date, oldPrice, newPrice }) =>
+    `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz. Ha addig éves előfizetésre vált, az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív.`,
+  switchNoDoubleCharge: ({ expiration }) =>
+    `A váltással semmit sem veszít: az előfizetés ingyenes időszakkal indul eddig: ${expiration}, és az első terhelés csak ekkor történik.`,
+  switchAction: 'Váltás éves előfizetésre',
   priceIncreaseMini: ({ date, newPrice }) =>
     `Prémium ${date} után évi ${newPrice}\xa0€.`,
   priceIncreaseMore: 'tovább…',
