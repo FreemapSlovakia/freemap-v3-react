@@ -4,7 +4,7 @@ import type { PremiumMessages } from './PremiumMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Prémium hozzáférés megszerzése',
-  commonHeader: (price) => (
+  commonHeader: (price, dtmCountries) => (
     <>
       <p>
         A <strong>Freemap Premium</strong> egy opcionális éves előfizetés, amely
@@ -23,7 +23,12 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>prémium fényképek</li>
         <li>multimodális útvonaltervezés</li>
-        <li>nagy felbontású magassági adatok (számos európai ország)</li>
+        <li
+          className="text-decoration-underline fm-cursor-help"
+          title={dtmCountries}
+        >
+          nagy felbontású magassági adatok (számos európai ország)
+        </li>
       </ul>
       <p className="mb-0">A Freemap ingyenes és nyílt marad.</p>
     </>

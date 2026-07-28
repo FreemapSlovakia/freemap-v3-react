@@ -11,6 +11,7 @@ import type { ReactElement } from 'react';
 import { Alert, Button, ButtonGroup, Dropdown, Modal } from 'react-bootstrap';
 import { FaGem, FaRegGem, FaStopwatch, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useDtmCountryNames } from '../hooks/useDtmCountryNames.js';
 import { canSwitchToSubscription, isPremium } from '../premium.js';
 import { usePremiumMessages } from '../translations/usePremiumMessages.js';
 
@@ -22,6 +23,8 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const prm = usePremiumMessages();
+
+  const dtmCountries = useDtmCountryNames();
 
   useDocumentTitle(show ? prm?.title : undefined);
 
@@ -68,7 +71,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
-        {prm?.commonHeader(PREMIUM_PRICE_EUR)}
+        {prm?.commonHeader(PREMIUM_PRICE_EUR, dtmCountries)}
 
         {premiumExpiration && !switching ? (
           <Alert variant="info" className="mt-3 mb-0">

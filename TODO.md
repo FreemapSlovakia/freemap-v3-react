@@ -183,7 +183,7 @@ chart as SVG (#938), and further enrichments (#939). The remaining item here is 
 engineering task, not a user-facing feature:
 
 - [ ] **Attribute the elevation data source where it's used.** The elevation API
-      now serves per-country high-res DTMs (SK/CZ/AT/CH/IT/SI/ES/SE) with a global
+      now serves per-country high-res DTMs (`ELEVATION_API_DTM_COUNTRIES`) with a global
       GEDTM30 fallback, but the only place we credit them is the hand-maintained
       `llms.txt` and the outdoor-map layer attribution in `mapDefinitions.tsx`.
       Show the source next to where the value is consumed: the elevation chart,

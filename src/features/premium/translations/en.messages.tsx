@@ -3,7 +3,7 @@ import type { PremiumMessages } from './PremiumMessages.js';
 
 const en: PremiumMessages = {
   title: 'Get premium access',
-  commonHeader: (price) => (
+  commonHeader: (price, dtmCountries) => (
     <>
       <p>
         <strong>Freemap Premium</strong> is an optional yearly subscription that
@@ -22,7 +22,12 @@ const en: PremiumMessages = {
         </li>
         <li>premium photos</li>
         <li>multimodal routing</li>
-        <li>high-resolution elevation data (many European countries)</li>
+        <li
+          className="text-decoration-underline fm-cursor-help"
+          title={dtmCountries}
+        >
+          high-resolution elevation data (many European countries)
+        </li>
       </ul>
       <p className="mb-0">Freemap stays free and open.</p>
     </>

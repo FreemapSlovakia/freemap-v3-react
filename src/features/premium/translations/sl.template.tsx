@@ -4,7 +4,7 @@ import type { PremiumMessages } from './PremiumMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Pridobi premium dostop',
-  commonHeader: (price) => (
+  commonHeader: (price, dtmCountries) => (
     <>
       <p>
         <strong>Freemap Premium</strong> je izbirna letna naročnina, ki nadgradi
@@ -23,7 +23,10 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>premium fotografije</li>
         <li>multimodalno načrtovanje poti</li>
-        <li>
+        <li
+          className="text-decoration-underline fm-cursor-help"
+          title={dtmCountries}
+        >
           podatke o nadmorski višini v visoki ločljivosti (številne evropske
           države)
         </li>

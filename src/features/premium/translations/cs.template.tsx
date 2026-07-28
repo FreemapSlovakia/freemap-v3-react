@@ -4,7 +4,7 @@ import type { PremiumMessages } from './PremiumMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Získat prémiový přístup',
-  commonHeader: (price) => (
+  commonHeader: (price, dtmCountries) => (
     <>
       <p>
         <strong>Freemap Premium</strong> je volitelné roční předplatné, které
@@ -23,7 +23,12 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>prémiové fotky</li>
         <li>multimodální plánování trasy</li>
-        <li>výšková data ve vysokém rozlišení (řada evropských zemí)</li>
+        <li
+          className="text-decoration-underline fm-cursor-help"
+          title={dtmCountries}
+        >
+          výšková data ve vysokém rozlišení (řada evropských zemí)
+        </li>
       </ul>
       <p className="mb-0">Freemap zůstává bezplatný a otevřený.</p>
     </>

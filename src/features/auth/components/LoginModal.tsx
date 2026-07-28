@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useDtmCountryNames } from '@features/premium/hooks/useDtmCountryNames.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { PREMIUM_PRICE_EUR } from '@shared/premiumPricing.js';
@@ -20,6 +21,8 @@ export default function LoginModal({ show }: Props): ReactElement {
 
   const am = useAuthMessages();
 
+  const dtmCountries = useDtmCountryNames();
+
   const dispatch = useDispatch();
 
   const close = useCallback(() => {
@@ -37,7 +40,7 @@ export default function LoginModal({ show }: Props): ReactElement {
   const renderPremiumInfo = () =>
     purchaseOnLogin?.type === 'premium' ? (
       <Alert variant="primary">
-        {prm?.commonHeader(PREMIUM_PRICE_EUR)}
+        {prm?.commonHeader(PREMIUM_PRICE_EUR, dtmCountries)}
         {prm?.stepsForAnonymous}
       </Alert>
     ) : null;

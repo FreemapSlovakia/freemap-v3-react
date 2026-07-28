@@ -2,7 +2,8 @@ import type { JSX, ReactNode } from 'react';
 
 export type PremiumMessages = {
   title: string;
-  commonHeader: (price: number) => ReactNode;
+  /** `dtmCountries` is the localized country list of the elevation bullet. */
+  commonHeader: (price: number, dtmCountries: string) => ReactNode;
   stepsForAnonymous: ReactNode;
   success: string;
   becomePremium: string;

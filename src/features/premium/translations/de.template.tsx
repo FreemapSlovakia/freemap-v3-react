@@ -5,7 +5,7 @@ import type { PremiumMessages } from './PremiumMessages.js';
 const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Premium-Zugang erhalten',
 
-  commonHeader: (price) => (
+  commonHeader: (price, dtmCountries) => (
     <>
       <p>
         <strong>Freemap Premium</strong> ist ein optionales Jahresabo, das die
@@ -24,7 +24,12 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>Premium-Fotos</li>
         <li>multimodale Routenplanung</li>
-        <li>hochauflösende Höhendaten (viele europäische Länder)</li>
+        <li
+          className="text-decoration-underline fm-cursor-help"
+          title={dtmCountries}
+        >
+          hochauflösende Höhendaten (viele europäische Länder)
+        </li>
       </ul>
       <p className="mb-0">Freemap bleibt kostenlos und offen.</p>
     </>

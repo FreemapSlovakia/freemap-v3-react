@@ -172,6 +172,15 @@ const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
   },
 ];
 
+/**
+ * Countries the outdoor renderer shades from a national elevation model. Not
+ * the same set as `ELEVATION_API_DTM_COUNTRIES` — the elevation API has its own
+ * models.
+ */
+const OUTDOOR_NATIONAL_DTM_COUNTRIES = OUTDOOR_NATIONAL_DTM_ATTRIBUTION.map(
+  (a) => a.country,
+);
+
 // Attribution shared by the outdoor map and its KST-routes variant: Freemap,
 // OSM data, the national elevation sources, and the global GEDTM30 model that
 // covers everywhere else.
@@ -183,7 +192,7 @@ const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
     type: 'data',
     name: 'GEDTM30',
     url: GEDTM30_URL,
-    exceptCountries: OUTDOOR_NATIONAL_DTM_ATTRIBUTION.map((a) => a.country),
+    exceptCountries: OUTDOOR_NATIONAL_DTM_COUNTRIES,
   },
 ];
 
