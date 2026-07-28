@@ -4,14 +4,14 @@ import type { PremiumMessages } from './PremiumMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Prémium hozzáférés megszerzése',
-  commonHeader: (
+  commonHeader: (price) => (
     <>
       <p>
         A <strong>Freemap Premium</strong> egy opcionális éves előfizetés, amely
         kibővíti az alkalmazást.
       </p>
       <p className="mb-1">
-        <b>8 €</b> összegért évente a következőket kapod:
+        <b>{price} €</b> összegért évente a következőket kapod:
       </p>
       <ul>
         <li>reklámszalag eltávolítása</li>

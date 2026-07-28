@@ -3,14 +3,14 @@ import type { PremiumMessages } from './PremiumMessages.js';
 
 const en: PremiumMessages = {
   title: 'Get premium access',
-  commonHeader: (
+  commonHeader: (price) => (
     <>
       <p>
         <strong>Freemap Premium</strong> is an optional yearly subscription that
         enhances the app.
       </p>
       <p className="mb-1">
-        For <b>8 €</b> per year you get:
+        For <b>{price} €</b> per year you get:
       </p>
       <ul>
         <li>removed ad banner</li>
@@ -65,6 +65,18 @@ const en: PremiumMessages = {
       <RovasLink>Rovas</RovasLink>, choose to pay with Chrons.
     </>
   ),
+  priceIncrease: ({ date, oldPrice, newPrice }) =>
+    `On ${date} the price of premium access rises from ${oldPrice}\xa0€ to ${newPrice}\xa0€ per year. Subscribe before that date and you keep the ${oldPrice}\xa0€ price for as long as your subscription stays active. A one-time purchase costs ${oldPrice}\xa0€ for that one year only — the next one is at the price valid at the time.`,
+  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
+    `From ${date} premium access costs ${newPrice}\xa0€ a year. Subscribe before then for ${oldPrice}\xa0€ and keep that price for as long as your subscription stays active.`,
+  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
+    `From ${date} premium access costs ${newPrice}\xa0€ a year. Switch to a subscription before then and you keep the ${oldPrice}\xa0€ price for as long as it stays active — it starts charging only when the year you have already paid for runs out, so you pay nothing twice.`,
+  priceIncreaseMini: ({ date, newPrice }) =>
+    `Premium ${newPrice}\xa0€ a year from ${date}.`,
+  priceIncreaseMore: 'more…',
+  winbackOffer: ({ price, expiredAt }) =>
+    `Your premium access expired on ${expiredAt}. As a former customer you can come back to the original price: an auto-renewing yearly subscription for ${price}\xa0€, kept for as long as it stays active. This offer is for you only and can be used once.`,
+  winbackAccept: ({ price }) => `Subscribe for ${price}\xa0€ a year`,
 };
 
 export default en;

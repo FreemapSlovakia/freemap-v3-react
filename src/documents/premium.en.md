@@ -21,7 +21,7 @@ Freemap.sk is an open web and mobile mapping application for outdoor and everyda
 
 ## Price
 
-**EUR 8 per year.** The subscription gives you one year of premium access and renews yearly unless cancelled.
+**EUR 8 per year up to 31 August 2026, EUR 15 per year from 1 September 2026.** The subscription gives you one year of premium access and renews yearly unless cancelled. A subscription started before 1 September 2026 keeps the EUR 8 price for as long as it stays active; a one-time purchase of a single year keeps it for that year only.
 
 You can manage and cancel your subscription at any time; cancellation takes effect at the end of the paid period. For details on refunds, see our [Refund Policy](#document=refundPolicy).
 

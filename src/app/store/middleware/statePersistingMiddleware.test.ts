@@ -18,7 +18,7 @@ const premiumDate = new Date('2026-05-17T12:00:48.000Z');
 function makeState(): RootState {
   return {
     l10n: { chosenLanguage: 'sk', language: 'en' },
-    main: { hiddenInfoBars: { foo: 1 } },
+    main: { hiddenInfoBars: { foo: 1 }, shownInfoBars: { foo: 2 } },
     homeLocation: { homeLocation: { lat: 1, lon: 2 } },
     // In state but not persisted (no PERSIST entry).
     location: {
@@ -155,7 +155,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
 
     expect(saved).toEqual({
       l10n: { chosenLanguage: 'sk' },
-      main: { hiddenInfoBars: { foo: 1 } },
+      main: { hiddenInfoBars: { foo: 1 }, shownInfoBars: { foo: 2 } },
       homeLocation: { homeLocation: { lat: 1, lon: 2 } },
       cookieConsent: {
         cookieConsentResult: true,
@@ -335,6 +335,7 @@ describe('save → rehydrate round-trip', () => {
 
     expect(initial.l10n?.chosenLanguage).toBe('sk');
     expect(initial.main?.hiddenInfoBars).toEqual({ foo: 1 });
+    expect(initial.main?.shownInfoBars).toEqual({ foo: 2 });
     expect(initial.homeLocation?.homeLocation).toEqual({ lat: 1, lon: 2 });
     expect(initial.cookieConsent?.cookieConsentResult).toBe(true);
     expect(initial.objectsSettings?.selectedIcon).toBe('pin');

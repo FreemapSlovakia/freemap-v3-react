@@ -29,6 +29,7 @@ import {
   convertToDrawing,
   deleteFeature,
   hideInfoBar,
+  infoBarShown,
   type Selection,
   selectFeature,
   setActiveModal,
@@ -49,6 +50,7 @@ export interface MainState {
   embedFeatures: string[];
   selection: Selection | null;
   hiddenInfoBars: Record<string, number>;
+  shownInfoBars: Record<string, number>;
 }
 
 export const mainInitialState: MainState = {
@@ -59,6 +61,7 @@ export const mainInitialState: MainState = {
   embedFeatures: [],
   selection: null,
   hiddenInfoBars: {},
+  shownInfoBars: {},
 };
 
 export const mainReducer = createReducer(mainInitialState, (builder) => {
@@ -182,6 +185,9 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     })
     .addCase(hideInfoBar, (state, action) => {
       state.hiddenInfoBars[action.payload.key] = action.payload.ts;
+    })
+    .addCase(infoBarShown, (state, action) => {
+      state.shownInfoBars[action.payload.key] = action.payload.ts;
     })
     .addCase(routePlannerAddPoint, (state, action) => {
       return {

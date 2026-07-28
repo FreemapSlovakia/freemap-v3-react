@@ -103,6 +103,7 @@ export const PersistedHomeLocationSchema = z
 export const PersistedMainSchema = z
   .object({
     hiddenInfoBars: z.record(z.string(), z.number()),
+    shownInfoBars: z.record(z.string(), z.number()),
   })
   .partial();
 
@@ -292,7 +293,10 @@ const PERSIST: PersistEntry[] = [
     key: 'main',
     schema: PersistedMainSchema,
     initial: mainInitialState,
-    persist: (s) => ({ hiddenInfoBars: s.hiddenInfoBars }),
+    persist: (s) => ({
+      hiddenInfoBars: s.hiddenInfoBars,
+      shownInfoBars: s.shownInfoBars,
+    }),
   }),
   defineEntry({
     key: 'objectsSettings',
