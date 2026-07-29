@@ -66,6 +66,7 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   modeLabel: 'Način načrtovanja poti',
   alternative: 'Alternativa',
+  isochroneRing: 'Izokrona',
   distance: ({ value, diff }) => (
     <>
       Razdalja:{' '}

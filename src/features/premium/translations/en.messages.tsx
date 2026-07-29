@@ -1,3 +1,4 @@
+import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { RovasLink } from '@shared/components/RovasLink.js';
 import type { PremiumMessages } from './PremiumMessages.js';
 
@@ -14,19 +15,17 @@ const en: PremiumMessages = {
       </p>
       <ul>
         <li>removed ad banner</li>
-        <li
-          className="text-decoration-underline fm-cursor-help"
-          title="hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps"
-        >
-          premium map layers
+        <li>
+          <HintTooltip hint="hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps">
+            premium map layers
+          </HintTooltip>
         </li>
         <li>premium photos</li>
         <li>multimodal routing</li>
-        <li
-          className="text-decoration-underline fm-cursor-help"
-          title={dtmCountries}
-        >
-          high-resolution elevation data (many European countries)
+        <li>
+          <HintTooltip hint={dtmCountries}>
+            high-resolution elevation data (many European countries)
+          </HintTooltip>
         </li>
       </ul>
       <p className="mb-0">Freemap stays free and open.</p>

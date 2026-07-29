@@ -4,16 +4,16 @@ import { HideArrow } from '@features/search/components/SearchMenu.js';
 import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import type { Node, OsmMapping } from '@osm/types.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import classes from '@shared/poiIcon.module.css';
 import { removeAccents } from '@shared/stringUtils.js';
 import {
   type ChangeEvent,
+  type KeyboardEvent,
   type ReactElement,
   useCallback,
   useEffect,
@@ -150,7 +150,19 @@ export default function ObjectsMenu(): ReactElement {
     inputRef.current?.blur();
   };
 
-  const sc = useScrollClasses('vertical');
+  // The dropdown ignores Escape coming from a `search` input, and the global
+  // shortcut handler steps aside while a menu is expanded — so Escape closes
+  // this one here, and only then leaves the input to the app's own handling.
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.code === 'Escape' && dropdownOpened) {
+      setDropdownOpened(false);
+      setFilter('');
+
+      inputRef.current?.blur();
+
+      e.preventDefault();
+    }
+  };
 
   const normalizedFilter = removeAccents(filter.trim().toLowerCase());
 
@@ -183,7 +195,12 @@ export default function ObjectsMenu(): ReactElement {
         );
 
         return (
-          <Dropdown.Item key={key} eventKey={key} active={active.includes(key)}>
+          <Dropdown.Item
+            as="button"
+            key={key}
+            eventKey={key}
+            active={active.includes(key)}
+          >
             {img.length > 0 ? (
               <img src={img[0]} className={classes.icon} alt="" />
             ) : (
@@ -229,24 +246,18 @@ export default function ObjectsMenu(): ReactElement {
 
               setDropdownOpened(true);
             }}
+            onKeyDown={handleKeyDown}
             ref={inputRef}
           />
         </Dropdown.Toggle>
 
-        <Dropdown.Menu
-          popperConfig={fixedPopperConfig}
-          className="fm-dropdown-with-scroller"
-        >
-          <div className="dropdown-long" ref={sc}>
-            <div />
+        <FmDropdownMenu>
+          {activeItems}
 
-            {activeItems}
+          {activeItems?.length ? <Dropdown.Divider /> : null}
 
-            {activeItems?.length ? <Dropdown.Divider /> : null}
-
-            {makeItems()}
-          </div>
-        </Dropdown.Menu>
+          {makeItems()}
+        </FmDropdownMenu>
       </Dropdown>
 
       <LongPressTooltip label={om?.style.button}>

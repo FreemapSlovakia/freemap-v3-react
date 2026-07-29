@@ -19,18 +19,11 @@ export interface ElevationSettingsState {
    * than this are left alone, so genuine terrain survives. `0` turns it off.
    */
   ditchFillWindow: number;
-  /**
-   * Whether to read the high-resolution terrain model. Premium-only; switching
-   * it off sends the read anonymously, which SRTM answers everywhere — trading
-   * detail for a model with no culvert ditches at all.
-   */
-  highResolution: boolean;
 }
 
 export const elevationSettingsInitialState: ElevationSettingsState = {
   despikeWindow: 25,
   ditchFillWindow: 25,
-  highResolution: true,
 };
 
 export const elevationSettingsReducer = createReducer(

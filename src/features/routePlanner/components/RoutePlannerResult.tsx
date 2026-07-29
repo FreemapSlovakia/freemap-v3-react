@@ -54,8 +54,13 @@ import {
   routePlannerSetPoint,
   routePlannerSetStart,
   type StepCoordinate,
-  type StepMode,
 } from '../model/actions.js';
+import { ISOCHRONE_FILL_OPACITY, isochroneColor } from '../model/isochrones.js';
+import {
+  INACTIVE_ALTERNATIVE_COLOR,
+  STEP_MODE_COLORS,
+  stepModeDashArray,
+} from '../model/routeColors.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import classes from './RoutePlannerResult.module.css';
 
@@ -807,28 +812,10 @@ export function RoutePlannerResult(): ReactElement {
                       weight: lineWidth,
                       color:
                         alt !== activeAlternativeIndex
-                          ? '#868e96'
-                          : (
-                              {
-                                manual: '#868e96',
-                                cycling: '#968dfd',
-                                driving: '#25a6fd',
-                                walking: '#1db2c0',
-                                'pushing bike': '#1db2c0',
-                                foot: '#1db2c0',
-                                ferry: '#3060ff',
-                                train: '#000',
-                                error: '#f00',
-                              } satisfies Record<StepMode, string>
-                            )[routeSlice.mode],
+                          ? INACTIVE_ALTERNATIVE_COLOR
+                          : STEP_MODE_COLORS[routeSlice.mode],
                     }}
-                    dashArray={
-                      ['manual', 'pushing bike', 'ferry', 'error'].includes(
-                        routeSlice.mode,
-                      )
-                        ? '0, 10'
-                        : undefined
-                    }
+                    dashArray={stepModeDashArray(routeSlice.mode)?.join(', ')}
                     interactive={false}
                     bubblingMouseEvents={false}
                   />
@@ -902,6 +889,31 @@ export function RoutePlannerResult(): ReactElement {
             options={hotlineOptions}
           />
         ))}
+
+        {isochrones?.map((isochrone) => (
+          // `lineWidth` in the key remounts the ring on a width change, which
+          // react-leaflet's GeoJSON doesn't restyle live.
+          <GeoJSON
+            key={`iso-${timestamp}-${isochrone.properties?.['bucket']}-${lineWidth}`}
+            interactive={false}
+            style={(f) => {
+              const bucket = f?.properties['bucket'];
+
+              const color = isochroneColor(bucket, isochrones.length);
+
+              // Only the outermost ring is filled; the inner ones would stack
+              // their fills into an opaque blob.
+              return bucket === isochrones.length - 1
+                ? {
+                    weight: lineWidth,
+                    color,
+                    fillOpacity: ISOCHRONE_FILL_OPACITY,
+                  }
+                : { weight: lineWidth, fill: false, color };
+            }}
+            data={isochrone}
+          />
+        ))}
       </Pane>
 
       {milestones.map((milestone, i) => (
@@ -914,29 +926,6 @@ export function RoutePlannerResult(): ReactElement {
             <div>{milestone.properties?.['label']}</div>
           </Tooltip>
         </CircleMarker>
-      ))}
-
-      {isochrones?.map((isochrone) => (
-        <GeoJSON
-          key={`iso_${timestamp}_${isochrone.properties?.['bucket']}`}
-          interactive={false}
-          style={(f) =>
-            f?.properties['bucket'] === isochrones.length - 1
-              ? { weight: 5, color: '#3388ff', fillOpacity: 0.15 }
-              : {
-                  weight: 5,
-                  fill: false,
-                  color: [
-                    '#3388ff',
-                    '#5f6fc8',
-                    '#8b5692',
-                    '#b73d5b',
-                    '#e32525',
-                  ][isochrones.length - f?.properties['bucket'] - 1],
-                }
-          }
-          data={isochrone}
-        />
       ))}
 
       <ElevationChartActivePoint />

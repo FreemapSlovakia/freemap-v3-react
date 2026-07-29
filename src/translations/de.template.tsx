@@ -380,9 +380,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Gräben des Geländemodells auffüllen',
     ditchFillHelp:
       'Die detaillierten nationalen Geländemodelle, die in einigen Ländern verfügbar sind, sind meist hydrologisch angepasst: An jedem Durchlass graben sie einen Graben durch die Straße. Senken, die schmaler als dieser Wert sind, werden aufgefüllt; breitere bleiben erhalten, da sie echtes Gelände sind. Null schaltet die Funktion ab und ändert nichts, wo das globale Modell verwendet wird.',
-    highResolution: 'Hochauflösende Höhendaten',
-    highResolutionHelp:
-      'Liest die detaillierten nationalen Geländemodelle, wo es sie gibt — derzeit in einer Handvoll europäischer Länder. Sie zeigen feinere Details, aber auch die Durchlassgräben und entfernten Brücken, die sie enthalten. Anderswo wird ohnehin das globale Modell verwendet.',
   },
 
   errorCatcher: {

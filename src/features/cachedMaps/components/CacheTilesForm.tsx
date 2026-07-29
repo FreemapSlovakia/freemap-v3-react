@@ -4,6 +4,7 @@ import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
@@ -264,13 +265,18 @@ export function CacheTilesForm(): ReactElement {
               {mapDef ? getItem(mapDef) : '???'}
             </Dropdown.Toggle>
 
-            <Dropdown.Menu popperConfig={sameMinWidthPopperConfig}>
+            <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
               {mapDefs.map((def) => (
-                <Dropdown.Item key={def.type} eventKey={def.type}>
+                <Dropdown.Item
+                  as="button"
+                  type="button"
+                  key={def.type}
+                  eventKey={def.type}
+                >
                   {getItem(def)}
                 </Dropdown.Item>
               ))}
-            </Dropdown.Menu>
+            </FmDropdownMenu>
           </Dropdown>
         </Form.Group>
 

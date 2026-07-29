@@ -1,3 +1,4 @@
+import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { RovasLink } from '@shared/components/RovasLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import type { PremiumMessages } from './PremiumMessages.js';
@@ -15,19 +16,17 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
       </p>
       <ul>
         <li>odstránenie reklamného baneru</li>
-        <li
-          className="text-decoration-underline fm-cursor-help"
-          title="detailné tieňovanie reliéfu Slovenska a Česka vo vysokom rozlíšení, najvyššie úrovne priblíženia Outdoor mapy, najvyššie úrovne priblíženia ortofotomáp Slovenska a Česka, rôzne mapy založené na WMS"
-        >
-          prémiové mapové vrstvy
+        <li>
+          <HintTooltip hint="detailné tieňovanie reliéfu Slovenska a Česka vo vysokom rozlíšení, najvyššie úrovne priblíženia Outdoor mapy, najvyššie úrovne priblíženia ortofotomáp Slovenska a Česka, rôzne mapy založené na WMS">
+            prémiové mapové vrstvy
+          </HintTooltip>
         </li>
         <li>prémiové fotky</li>
         <li>multimodálne plánovanie trasy</li>
-        <li
-          className="text-decoration-underline fm-cursor-help"
-          title={dtmCountries}
-        >
-          výškové dáta vo vysokom rozlíšení (viaceré európske krajiny)
+        <li>
+          <HintTooltip hint={dtmCountries}>
+            výškové dáta vo vysokom rozlíšení (viaceré európske krajiny)
+          </HintTooltip>
         </li>
       </ul>
       <p className="mb-0">Freemap zostáva bezplatný a otvorený.</p>

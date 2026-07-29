@@ -1,8 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaBars } from 'react-icons/fa';
@@ -14,8 +13,6 @@ import { SocialButtons } from './SocialButtons.js';
 
 export function MainMenuButton(): ReactElement {
   const m = useMessages();
-
-  const sc = useScrollClasses('vertical');
 
   const { handleSelect, menuShown, handleMenuToggle, closeMenu, submenu } =
     useMenuHandler();
@@ -35,32 +32,25 @@ export function MainMenuButton(): ReactElement {
         )}
       </LongPressTooltip>
 
-      <Dropdown.Menu
-        popperConfig={fixedPopperConfig}
-        className="fm-dropdown-with-scroller"
-      >
-        <div className="fm-menu-scroller" ref={sc}>
-          <div />
+      <FmDropdownMenu>
+        {submenu === null ? (
+          <MainMenu />
+        ) : submenu === 'help' ? (
+          <HelpSubmenu />
+        ) : submenu === 'openExternally' ? (
+          <OpenExternallySubmenu />
+        ) : submenu === 'language' ? (
+          <LanguageSubmenu />
+        ) : null}
 
-          {submenu === null ? (
-            <MainMenu />
-          ) : submenu === 'help' ? (
-            <HelpSubmenu />
-          ) : submenu === 'openExternally' ? (
-            <OpenExternallySubmenu />
-          ) : submenu === 'language' ? (
-            <LanguageSubmenu />
-          ) : null}
+        {submenu === null && (
+          <>
+            <Dropdown.Divider />
 
-          {submenu === null && (
-            <>
-              <Dropdown.Divider />
-
-              <SocialButtons closeMenu={closeMenu} />
-            </>
-          )}
-        </div>
-      </Dropdown.Menu>
+            <SocialButtons closeMenu={closeMenu} />
+          </>
+        )}
+      </FmDropdownMenu>
     </Dropdown>
   );
 }

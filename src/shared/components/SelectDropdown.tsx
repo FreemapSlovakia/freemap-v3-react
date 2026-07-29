@@ -1,7 +1,6 @@
 import type { Breakpoint } from '@shared/breakpoints.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { LongPressTooltip } from './LongPressTooltip.js';
@@ -48,8 +47,6 @@ type Props = {
   breakpoint?: Breakpoint;
   /** Toggle keyboard hint shown in the tooltip. */
   kbd?: string;
-  /** Wrap the menu in a vertical scroller for long option lists. */
-  scrollable?: boolean;
   /** Render the toggle as a native-like `<select>` with an always-visible label. */
   asSelect?: boolean;
   className?: string;
@@ -70,13 +67,10 @@ export function SelectDropdown({
   name,
   breakpoint,
   kbd,
-  scrollable,
   asSelect,
   className,
   id,
 }: Props): ReactElement {
-  const sc = useScrollClasses('vertical');
-
   const selected = options.find((o) => o.value === value);
 
   const icon = toggleIcon ?? selected?.icon;
@@ -101,6 +95,8 @@ export function SelectDropdown({
     items.push(
       <Dropdown.Item
         key={opt.value}
+        as="button"
+        type="button"
         eventKey={opt.value}
         active={opt.active ?? opt.value === value}
         disabled={opt.disabled}
@@ -151,19 +147,7 @@ export function SelectDropdown({
         </LongPressTooltip>
       )}
 
-      <Dropdown.Menu
-        popperConfig={fixedPopperConfig}
-        className={scrollable ? 'fm-dropdown-with-scroller' : undefined}
-      >
-        {scrollable ? (
-          <div className="dropdown-long" ref={sc}>
-            <div />
-            {items}
-          </div>
-        ) : (
-          items
-        )}
-      </Dropdown.Menu>
+      <FmDropdownMenu>{items}</FmDropdownMenu>
     </Dropdown>
   );
 }

@@ -1,8 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { type ReactElement, type ReactNode, useState } from 'react';
@@ -101,7 +101,7 @@ export function MapDetailsMenu(): ReactElement | null {
           )}
         </LongPressTooltip>
 
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
+        <FmDropdownMenu>
           {sources.map((source) => (
             <Dropdown.Item
               as="button"
@@ -112,7 +112,7 @@ export function MapDetailsMenu(): ReactElement | null {
               <Checkbox value={source.selected} /> {source.name}
             </Dropdown.Item>
           ))}
-        </Dropdown.Menu>
+        </FmDropdownMenu>
       </Dropdown>
     </ToolMenu>
   );

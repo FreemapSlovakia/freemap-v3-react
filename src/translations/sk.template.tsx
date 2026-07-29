@@ -404,9 +404,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Zaplniť priekopy modelu terénu',
     ditchFillHelp:
       'Detailné národné modely terénu, dostupné v niektorých krajinách, bývajú upravené pre hydrológiu: pri každom priepuste vyrežú cez cestu priekopu. Preliačiny užšie ako táto hodnota sa zaplnia; širšie sa zachovajú, keďže ide o skutočný terén. Nula funkciu vypne a tam, kde sa používa globálny model, nemení nič.',
-    highResolution: 'Výškové dáta s vysokým rozlíšením',
-    highResolutionHelp:
-      'Číta detailné národné modely terénu tam, kde existujú — momentálne v niekoľkých európskych krajinách. Zobrazujú jemnejšie detaily, ale aj priekopy pri priepustoch a odstránené mosty, ktoré obsahujú. Inde sa tak či tak použije globálny model.',
   },
 
   errorCatcher: {

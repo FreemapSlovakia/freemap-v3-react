@@ -1,6 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { modalMenuItemProps } from '@shared/hooks/useMenuHandler.js';
+import {
+  documentMenuItemProps,
+  modalMenuItemProps,
+} from '@shared/hooks/useMenuHandler.js';
 import { type JSX, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -62,18 +65,14 @@ export function HelpSubmenu(): JSX.Element {
       {getDocuments(language)
         .filter((item) => item.listed !== false)
         .map(({ key, icon, title }) => (
-          <Dropdown.Item
-            key={key}
-            href={`?document=${key}`}
-            eventKey={`document-${key}`}
-          >
+          <Dropdown.Item key={key} {...documentMenuItemProps(key)}>
             {icon} {title}
           </Dropdown.Item>
         ))}
 
       <Dropdown.Divider />
 
-      <Dropdown.Item eventKey="reset-app" className="text-danger">
+      <Dropdown.Item as="button" eventKey="reset-app" className="text-danger">
         <FaPowerOff /> {m?.mapLayers.resetApp}
       </Dropdown.Item>
     </>

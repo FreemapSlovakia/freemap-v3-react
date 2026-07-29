@@ -378,9 +378,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Zapolni jarke modela terena',
     ditchFillHelp:
       'Podrobni nacionalni modeli terena, ki so na voljo v nekaterih državah, so običajno prilagojeni hidrologiji: pri vsakem prepustu izkopljejo jarek čez cesto. Vdolbine, ožje od te vrednosti, se zapolnijo; širše se ohranijo, saj gre za resnični teren. Nič to izklopi, tam, kjer se uporablja globalni model, pa ne spremeni ničesar.',
-    highResolution: 'Podatki o višini visoke ločljivosti',
-    highResolutionHelp:
-      'Bere podrobne nacionalne modele terena tam, kjer obstajajo — trenutno v peščici evropskih držav. Prikazujejo več podrobnosti, a tudi jarke pri prepustih in odstranjene mostove, ki jih vsebujejo. Drugod se tako ali tako uporablja globalni model.',
   },
 
   errorCatcher: {

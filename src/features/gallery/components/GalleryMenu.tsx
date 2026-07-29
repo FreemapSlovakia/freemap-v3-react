@@ -5,9 +5,9 @@ import { mapToggleLayer } from '@features/map/model/actions.js';
 import { LEGEND_ITEM } from '@shared/colorizers/components/legendToggleOption.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
@@ -286,10 +286,11 @@ export default function GalleryMenu() {
                     )}
                   </LongPressTooltip>
 
-                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                  <FmDropdownMenu>
                     {pictureLegendApplies(colorizeBy) && (
                       <>
                         <Dropdown.Item
+                          as="button"
                           eventKey={LEGEND_ITEM}
                           active={showLegend}
                         >
@@ -301,7 +302,11 @@ export default function GalleryMenu() {
                       </>
                     )}
 
-                    <Dropdown.Item eventKey="none" active={!colorizeBy}>
+                    <Dropdown.Item
+                      as="button"
+                      eventKey="none"
+                      active={!colorizeBy}
+                    >
                       <FaBan /> {gm?.noColorize ?? '…'}
                     </Dropdown.Item>
 
@@ -310,6 +315,7 @@ export default function GalleryMenu() {
 
                       return (
                         <Dropdown.Item
+                          as="button"
                           eventKey={by}
                           key={by}
                           title={gm?.c[by]}
@@ -319,7 +325,7 @@ export default function GalleryMenu() {
                         </Dropdown.Item>
                       );
                     })}
-                  </Dropdown.Menu>
+                  </FmDropdownMenu>
                 </Dropdown>
 
                 <Dropdown
@@ -337,7 +343,7 @@ export default function GalleryMenu() {
                     )}
                   </LongPressTooltip>
 
-                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                  <FmDropdownMenu>
                     {(Object.keys(gm?.f ?? {}) as GalleryListOrder[]).map(
                       (key) => {
                         const Icon = LIST_ORDER_ICONS[key];
@@ -354,7 +360,7 @@ export default function GalleryMenu() {
                         );
                       },
                     )}
-                  </Dropdown.Menu>
+                  </FmDropdownMenu>
                 </Dropdown>
 
                 <LongPressTooltip
@@ -391,7 +397,7 @@ export default function GalleryMenu() {
                     <FaCog />
                   </Dropdown.Toggle>
 
-                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                  <FmDropdownMenu>
                     {moreView === 'license' ? (
                       <>
                         <SubmenuHeader
@@ -445,7 +451,7 @@ export default function GalleryMenu() {
                         )}
                       </>
                     )}
-                  </Dropdown.Menu>
+                  </FmDropdownMenu>
                 </Dropdown>
               </>
             )}

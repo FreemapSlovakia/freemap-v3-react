@@ -23,6 +23,7 @@ import {
   colorizingModes,
 } from '@shared/colorizers/index.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
@@ -433,6 +434,15 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.alternatives.length > 0,
   );
 
+  // Isochrones replace the route alternatives, so the result-dependent controls
+  // key off either. Most of them (colorize, elevation profile, milestones,
+  // optimization) only make sense for a route and stay route-only.
+  const isochronesFound = useAppSelector(
+    (state) => (state.routePlanner.isochrones?.length ?? 0) > 0,
+  );
+
+  const resultFound = routeFound || isochronesFound;
+
   const colorizeBy = useAppSelector(
     (state) => state.routePlannerSettings.colorizeBy,
   );
@@ -659,6 +669,7 @@ export default function RoutePlannerMenu(): ReactElement {
                 ['route', 'roundtrip', 'isochrone'] satisfies RoutingMode[]
               ).map((mode) => (
                 <Dropdown.Item
+                  as="button"
                   eventKey={mode}
                   key={mode}
                   title={rpm?.mode[mode]}
@@ -731,18 +742,19 @@ export default function RoutePlannerMenu(): ReactElement {
               )}
             </LongPressTooltip>
 
-            <Dropdown.Menu popperConfig={fixedPopperConfig}>
-              <Dropdown.Item eventKey="pick">
+            <FmDropdownMenu>
+              <Dropdown.Item as="button" eventKey="pick">
                 <FaMapMarkerAlt />
                 &nbsp;{rpm?.point.pick ?? '…'}
               </Dropdown.Item>
 
-              <Dropdown.Item eventKey="current">
+              <Dropdown.Item as="button" eventKey="current">
                 <FaBullseye />
                 &nbsp;{rpm?.point.current ?? '…'}
               </Dropdown.Item>
 
               <Dropdown.Item
+                as="button"
                 className="d-flex align-items-center justify-content-between"
                 eventKey="home"
               >
@@ -763,12 +775,12 @@ export default function RoutePlannerMenu(): ReactElement {
               {finishPoint &&
                 activeMode !== 'roundtrip' &&
                 activeMode !== 'isochrone' && (
-                  <Dropdown.Item eventKey="from-finish">
+                  <Dropdown.Item as="button" eventKey="from-finish">
                     <FaStop color="#d9534f" />
                     &nbsp;{rpm?.point.fromFinish ?? '…'}
                   </Dropdown.Item>
                 )}
-            </Dropdown.Menu>
+            </FmDropdownMenu>
           </Dropdown>
 
           {activeMode !== 'roundtrip' && activeMode !== 'isochrone' && (
@@ -824,20 +836,21 @@ export default function RoutePlannerMenu(): ReactElement {
                   )}
                 </LongPressTooltip>
 
-                <Dropdown.Menu popperConfig={fixedPopperConfig}>
-                  <Dropdown.Item eventKey="pick">
+                <FmDropdownMenu>
+                  <Dropdown.Item as="button" eventKey="pick">
                     <FaMapMarkerAlt />
                     &nbsp;
                     {rpm?.point.pick ?? '…'}
                   </Dropdown.Item>
 
-                  <Dropdown.Item eventKey="current">
+                  <Dropdown.Item as="button" eventKey="current">
                     <FaBullseye />
                     &nbsp;
                     {rpm?.point.current ?? '…'}
                   </Dropdown.Item>
 
                   <Dropdown.Item
+                    as="button"
                     className="d-flex align-items-center justify-content-between"
                     eventKey="home"
                   >
@@ -856,12 +869,12 @@ export default function RoutePlannerMenu(): ReactElement {
                   </Dropdown.Item>
 
                   {startPoint && (
-                    <Dropdown.Item eventKey="from-start">
+                    <Dropdown.Item as="button" eventKey="from-start">
                       <FaPlay color="#409a40" />
                       &nbsp;{rpm?.point.fromStart ?? '…'}
                     </Dropdown.Item>
                   )}
-                </Dropdown.Menu>
+                </FmDropdownMenu>
               </Dropdown>
             </>
           )}
@@ -917,42 +930,57 @@ export default function RoutePlannerMenu(): ReactElement {
           />
         )}
 
-        {routeFound && (
+        {resultFound && (
           <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
             <Dropdown.Toggle variant="secondary">
               <FaEllipsisV />
             </Dropdown.Toggle>
 
-            <Dropdown.Menu popperConfig={fixedPopperConfig}>
-              <Dropdown.Item
-                active={elevationProfileIsVisible}
-                eventKey="toggle-elevation-chart"
-              >
-                <FaChartArea />
-                &nbsp;{m?.general.elevationProfile ?? '…'}
-              </Dropdown.Item>
+            <FmDropdownMenu>
+              {routeFound && (
+                <Dropdown.Item
+                  as="button"
+                  active={elevationProfileIsVisible}
+                  eventKey="toggle-elevation-chart"
+                >
+                  <FaChartArea />
+                  &nbsp;{m?.general.elevationProfile ?? '…'}
+                </Dropdown.Item>
+              )}
 
-              <Dropdown.Item eventKey="convert-to-drawing">
+              <Dropdown.Item as="button" eventKey="convert-to-drawing">
                 <FaPencilAlt />
                 &nbsp;{m?.general.convertToDrawing ?? '…'}
               </Dropdown.Item>
 
-              <Dropdown.Item eventKey="route-style">
+              <Dropdown.Item as="button" eventKey="route-style">
                 <FaPaintBrush />
                 &nbsp;{rpm?.style.menuItem ?? '…'}
               </Dropdown.Item>
 
-              <Dropdown.Divider />
+              {routeFound && (
+                <>
+                  <Dropdown.Divider />
 
-              <Dropdown.Item eventKey="toggle-milestones-km">
-                {milestones === 'abs' ? <FaRegCheckSquare /> : <FaRegSquare />}
-                &nbsp;{rpm?.milestones ?? '…'} (km)
-              </Dropdown.Item>
+                  <Dropdown.Item as="button" eventKey="toggle-milestones-km">
+                    {milestones === 'abs' ? (
+                      <FaRegCheckSquare />
+                    ) : (
+                      <FaRegSquare />
+                    )}
+                    &nbsp;{rpm?.milestones ?? '…'} (km)
+                  </Dropdown.Item>
 
-              <Dropdown.Item eventKey="toggle-milestones-%">
-                {milestones === 'rel' ? <FaRegCheckSquare /> : <FaRegSquare />}
-                &nbsp;{rpm?.milestones ?? '…'} (%)
-              </Dropdown.Item>
+                  <Dropdown.Item as="button" eventKey="toggle-milestones-%">
+                    {milestones === 'rel' ? (
+                      <FaRegCheckSquare />
+                    ) : (
+                      <FaRegSquare />
+                    )}
+                    &nbsp;{rpm?.milestones ?? '…'} (%)
+                  </Dropdown.Item>
+                </>
+              )}
 
               {optimizeApplicable && (
                 <>
@@ -974,6 +1002,7 @@ export default function RoutePlannerMenu(): ReactElement {
                     ] as const
                   ).map(([eventKey, label]) => (
                     <Dropdown.Item
+                      as="button"
                       key={eventKey}
                       eventKey={eventKey}
                       disabled={optimizeBlocked || Boolean(becomePremium)}
@@ -983,7 +1012,7 @@ export default function RoutePlannerMenu(): ReactElement {
                   ))}
                 </>
               )}
-            </Dropdown.Menu>
+            </FmDropdownMenu>
           </Dropdown>
         )}
       </ToolMenu>

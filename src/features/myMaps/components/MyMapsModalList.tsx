@@ -1,12 +1,12 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
   Action,
   ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -119,7 +119,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
               <FaCog />
             </Dropdown.Toggle>
 
-            <Dropdown.Menu popperConfig={fixedPopperConfig}>
+            <FmDropdownMenu>
               <Dropdown.Header>{m?.general.load}</Dropdown.Header>
 
               <Dropdown.Item as="button" onClick={() => setClear((b) => !b)}>
@@ -154,7 +154,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
               >
                 <FaTimes /> {mm?.removeAllOffline}
               </Dropdown.Item>
-            </Dropdown.Menu>
+            </FmDropdownMenu>
           </Dropdown>
         </div>
 

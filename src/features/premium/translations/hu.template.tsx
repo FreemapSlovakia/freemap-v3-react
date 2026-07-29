@@ -1,3 +1,4 @@
+import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { RovasLink } from '@shared/components/RovasLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import type { PremiumMessages } from './PremiumMessages.js';
@@ -15,19 +16,17 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       </p>
       <ul>
         <li>reklámszalag eltávolítása</li>
-        <li
-          className="text-decoration-underline fm-cursor-help"
-          title="Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, az Outdoor Map túratérkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotóinak legnagyobb nagyítási szintjei, különféle WMS-alapú térképek"
-        >
-          prémium térképrétegek
+        <li>
+          <HintTooltip hint="Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, az Outdoor Map túratérkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotóinak legnagyobb nagyítási szintjei, különféle WMS-alapú térképek">
+            prémium térképrétegek
+          </HintTooltip>
         </li>
         <li>prémium fényképek</li>
         <li>multimodális útvonaltervezés</li>
-        <li
-          className="text-decoration-underline fm-cursor-help"
-          title={dtmCountries}
-        >
-          nagy felbontású magassági adatok (számos európai ország)
+        <li>
+          <HintTooltip hint={dtmCountries}>
+            nagy felbontású magassági adatok (számos európai ország)
+          </HintTooltip>
         </li>
       </ul>
       <p className="mb-0">A Freemap ingyenes és nyílt marad.</p>

@@ -66,6 +66,7 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   modeLabel: 'Mode de calcul d’itinéraire',
   alternative: 'Alternative',
+  isochroneRing: 'Isochrone',
   distance: ({ value, diff }) => (
     <>
       Distance :{' '}

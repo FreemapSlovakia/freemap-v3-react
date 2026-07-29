@@ -13,12 +13,12 @@ The same deployment is served under both `www.freemap.sk` and `www.freemap.eu` (
 
 ## 1. `sitemap-generator/` — produces the static pages
 
-Run with `pnpm gen-sitemap` (executes `sitemap-generator/index.ts` via `tsx`). It writes static HTML and sitemap files into the repo's `sitemap/` directory (gitignored). Filenames are **exactly the app query string**, e.g. `show=route-planner&lang=en`, so nginx can map a request straight to a file. Filenames are the same regardless of domain (the language suffix already implies the domain).
+Run with `pnpm gen-sitemap` (executes `sitemap-generator/index.ts` via `tsx`). It writes static HTML and sitemap files into the repo's `sitemap/` directory (gitignored). Filenames are **exactly the app query string**, e.g. `tool=route-planner&lang=en`, so nginx can map a request straight to a file. Filenames are the same regardless of domain (the language suffix already implies the domain).
 
 What it generates:
 
 - **Per-language homepages** — `layers=X&lang=<lang>` for all 9 UI languages, cross-linked with `hreflang` + `x-default`. Title/description come from `src/translations/<lang>-shared.ts`.
-- **Hub (layer/tool) landing pages** — `seo.ts` holds curated copy distilled from `src/static/llms.txt` for the main map layers and tools (e.g. `layers=O`, `show=route-planner`). Rendered in **sk + en** (`HUB_LANGS`) for now, with `WebPage` JSON-LD, canonical, Open Graph, and a cross-linked sibling list. _Expanding hubs to all 9 languages is pending — it needs the `Hub.title`/`description` records translated (≈19 hubs × title+description per language)._
+- **Hub (layer/tool) landing pages** — `seo.ts` holds curated copy distilled from `src/static/llms.txt` for the main map layers and tools (e.g. `layers=O`, `tool=route-planner`). Rendered in **sk + en** (`HUB_LANGS`) for now, with `WebPage` JSON-LD, canonical, Open Graph, and a cross-linked sibling list. Curated copy writes the two names as placeholders, expanded by `expandNames(text, lang)`: `{brand}` → the home domain (`Freemap.sk` for sk/cs, `Freemap.eu` otherwise) and `{site}` → the portal name (`Freemap Slovakia` / `Freemap Europe`). Never hardcode either in the copy, or `freemap.eu` pages advertise the wrong site. The same pair drives the `<title>` suffix, the nav breadcrumb, `og:site_name` and the JSON-LD `name` — in `objects.ts`'s POI pages too. The homepage `<title>`/description come from `src/translations/<lang>-shared.ts`, where each language's title already carries the name for its own domain. _Expanding hubs to all 9 languages is pending — it needs the `Hub.title`/`description` records translated (≈19 hubs × title+description per language)._
 - **Per-feature POI pages** — `objects.ts`, see below.
 - **Document pages** — `layers=X&document=<name>&lang=<lang>` rendered from `src/documents/<key>.<lang>.md`; each document appears only in the languages it has a markdown file for.
 - **Sitemaps** — two indexes:
@@ -60,7 +60,7 @@ try_files "/sitemap/$args" "/sitemap/layers=X&lang=sk";   # freemap.sk
 try_files "/sitemap/$args" "/sitemap/layers=X&lang=en";   # freemap.eu
 ```
 
-So a bot hitting `/?show=route-planner&lang=en` is served `sitemap/show=route-planner&lang=en`; if no prerender exists (or bare `/`), it falls back to the domain's homepage prerender (Slovak on freemap.sk, English on freemap.eu). Humans (no crawler UA) always get the SPA.
+So a bot hitting `/?tool=route-planner&lang=en` is served `sitemap/tool=route-planner&lang=en`; if no prerender exists (or bare `/`), it falls back to the domain's homepage prerender (Slovak on freemap.sk, English on freemap.eu). Humans (no crawler UA) always get the SPA.
 
 **Canonical is not set in nginx** — each prerender file carries its own `<link rel="canonical">` (cross-domain, from `appUrl`), so a page served on the "wrong" host still points Google at its home domain. (There is no per-domain canonical `Link` header; the old hardcoded-SK one was removed.)
 

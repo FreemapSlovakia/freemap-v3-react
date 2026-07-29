@@ -386,9 +386,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Riempi i fossi del modello del terreno',
     ditchFillHelp:
       'I modelli del terreno nazionali di dettaglio, disponibili in alcuni paesi, sono di solito adattati all’idrologia: a ogni tombino scavano un fosso attraverso la strada. Gli avvallamenti più stretti di questo valore vengono riempiti; quelli più larghi si mantengono, perché sono terreno reale. Zero disattiva la funzione e non cambia nulla dove si usa il modello globale.',
-    highResolution: 'Dati altimetrici ad alta risoluzione',
-    highResolutionHelp:
-      'Legge i modelli del terreno nazionali di dettaglio dove esistono — attualmente in una manciata di paesi europei. Mostrano dettagli più fini, ma anche i fossi dei tombini e i ponti rimossi che contengono. Altrove si usa comunque il modello globale.',
   },
 
   errorCatcher: {

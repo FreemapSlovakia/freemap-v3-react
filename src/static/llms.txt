@@ -178,7 +178,7 @@ While drawing, individual nodes can be edited: a line point can **Join** another
 
 **Simplify** prompts for a simplification factor (0 = no simplification).
 
-**Elevation profile** opens a chart of elevation along a line, with total climb and total descent. Waypoints are marked with their name and elevation, and their distance is ticked on the x-axis. A toolbar below the chart can download it as SVG (not in an embedded map, where the browser forbids downloads), open the elevation preferences, and, when the line carries waypoints, toggle their markers and labels. Under the toolbar the chart credits the terrain models its elevation was actually read from, as the elevation API reports them: the national high-resolution ones (premium, with the high-resolution preference on) plus GEDTM30 past their borders, or SRTM — which is also what a route on the free tier shows, since it keeps the router's own elevation. Non-premium users get a premium gem there offering higher-precision data. Elevation the user recorded or imported is credited to nobody, so the line is omitted for live tracking and for tracks shown as recorded.
+**Elevation profile** opens a chart of elevation along a line, with total climb and total descent. Waypoints are marked with their name and elevation, and their distance is ticked on the x-axis. A toolbar below the chart can download it as SVG (not in an embedded map, where the browser forbids downloads), open the elevation preferences, and, when the line carries waypoints, toggle their markers and labels. Under the toolbar the chart credits the terrain models its elevation was actually read from, as the elevation API reports them: the national high-resolution ones (premium) plus GEDTM30 past their borders, or SRTM — which is also what a route on the free tier shows, since it keeps the router's own elevation. Non-premium users get a premium gem there offering higher-precision data. Elevation the user recorded or imported is credited to nobody, so the line is omitted for live tracking and for tracks shown as recorded.
 
 Only one profile is shown at a time, and it stays with whatever opened it — a planned route, an imported track, a tracked device or a drawn line — redrawing itself as that line changes (re-routing, reshaping a drawn line, live positions arriving) rather than closing. Which one it is shows in the URL as `elevation-chart=` (see the URL parameters above), so a link can share an opened profile.
 
@@ -186,7 +186,7 @@ Only one profile is shown at a time, and it stays with whatever opened it — a 
 
 - Access: Main menu > Route finder
 - Keyboard shortcut: <kbd>g</kbd> <kbd>r</kbd>
-- URL path: `/#show=route-planner`
+- URL path: `/#tools=route-planner` (legacy `/#tool=route-planner` still works)
 
 Toggles the route finder toolbar, which has: a transport/router selector, a mode selector, **Start** and **Finish** point pickers, a swap-endpoints button, and a close button.
 
@@ -225,13 +225,16 @@ Routing modes:
 Once a route is found the toolbar also offers:
 
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Heading (only modes the route has data for are shown); for the elevation profile and elevation/steepness colorize, premium users get every point sampled from the terrain model (high-resolution where available), while others keep the router's own elevation and only have missing values filled on demand. While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
-- **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing, **Route style…** (opens a modal with sliders for line width, line opacity, and marker opacity; saved in local storage), kilometre/percent milestone toggles, and (premium; GraphHopper "Ordered" mode with 3+ points, single transport) **Optimize order** — reorders the waypoints to minimize total travel time, with variants: keep start fixed, keep start and finish fixed, round trip (return to start), or free (reorder all)
+- **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing (the route becomes one drawing line in its transport-mode color, plus a point per start/finish/stop), **Route style…** (opens a modal with sliders for line width, line opacity, and marker opacity; saved in local storage), kilometre/percent milestone toggles, and (premium; GraphHopper "Ordered" mode with 3+ points, single transport) **Optimize order** — reorders the waypoints to minimize total travel time, with variants: keep start fixed, keep start and finish fixed, round trip (return to start), or free (reorder all)
+- **Delete** — removes the result together with its start/finish/stop points
+
+An isochrone result offers the same **Delete** button and a reduced ⋮ menu with only Convert to drawing (one drawing polygon per reachability ring) and **Route style…** (the line width and opacity apply to the rings). It also counts as the "found route" source in the map data export and the map-to-document export, which always carry the route's start/finish/stop markers (named Start/Finish/Stop N in the data formats; on a rendered document the marker glyph speaks for itself, so no text label is drawn) and paint the route in the same transport-mode colors, width and opacity the map uses. Each ring is named after the limit it reaches — "Isochrone 30 min", or "Isochrone 5.000 km" for a distance-limited one — in the drawing, in the exported files, and as the label drawn on an exported document.
 
 ### Objects (POIs)
 
 - Access: Main menu > Objects (POIs)
 - Keyboard shortcut: <kbd>g</kbd> <kbd>o</kbd>
-- URL path: `/#show=objects`
+- URL path: `/#tools=objects` (legacy `/#tool=objects` still works)
 
 Toggles the objects toolbar.
 The toolbar contains a combo box to search for various POIs by type. Multiple types can be activated and will be visible interactively as markers with icons on the map.
@@ -373,7 +376,7 @@ Opens a modal to export the map as an image or document. Options:
 - Export area: visible area, or a rectangle drawn on the map
 - Format: JPEG, PNG, PDF, or SVG
 - Optional server-rendered overlays: contours, shaded relief, hiking trails, bicycle trails, ski trails, horse trails
-- Own map-feature sources to draw on top (only those with data are selectable, same set as the map data export): found route (optionally with stops), objects (POIs), photos, drawing lines/areas/points, live tracking, imported GPX track, highlighted map feature
+- Own map-feature sources to draw on top (only those with data are selectable, same set as the map data export): found route (always with its start/finish/stop markers), objects (POIs), photos, drawing lines/areas/points, live tracking, imported GPX track, highlighted map feature
 - Glow: optional glow/shadow drawn around all own map-feature markers and lines, with configurable color (incl. opacity) and width
 - Marker size: configurable pixel size of own map-feature point markers
 - Labels: configurable color (no opacity), size, and weight of own map-feature labels
@@ -560,10 +563,11 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 - **Distance and bearing** — while locating, draws a line between the located position and a crosshair in the middle of the map, labelled with the distance and the bearing from the position to the crosshair; visible only once the map is panned away from that position. On by default
 - **Remove spikes** (Elevation profile section) — a slider, 0–100 m, default 25 m. Where a way is drawn a few metres off the road it describes, the terrain model answers with the bank or rock face beside it; a running median drops excursions narrower than half this window, up or down, and keeps anything wider as real terrain, followed by a light average that rounds off the steps a median leaves. Zero switches it off
 - **Fill terrain-model ditches** (Elevation profile section) — a slider, 0–100 m, default 25 m. The detailed national terrain models (available in some countries) are usually adjusted for hydrology and dig a ditch through the road at every culvert; dips narrower than this are filled in the elevation profile and its climb/descent totals, while wider ones are kept as real terrain. Zero switches it off, and it changes nothing where the global model is used. Bridges and tunnels a route crosses are levelled separately, from the router's own data, and are unaffected by this setting
-- **High-resolution elevation data** (Elevation profile section) — premium-only; on by default. Reads the detailed national terrain models where they exist (a handful of European countries), and a global 30 m model (GEDTM30) past their borders; switching it off reads SRTM everywhere instead, trading detail for a model with no culvert ditches or removed bridges. It affects what profiles show; exported files always carry the finest elevation the account can read
+
+Which terrain model answers is not a setting: premium reads get the detailed national models where they exist and GEDTM30 past their borders, everyone else gets SRTM everywhere, for profiles and exports alike.
 
 The two sliders correct a terrain model, so they apply wherever elevation is read from one — planned routes, drawn lines and measurements, and imported tracks whose elevation was replaced from the server — and never to recorded altitude (live tracking, or a track kept as recorded).
-- **Reset to default** — fills this modal's fields (max zoom, resolution scale, feature size, direction indicator, distance and bearing, spike removal, ditch filling, high-resolution elevation) with their defaults; apply with Save or close without saving
+- **Reset to default** — fills this modal's fields (max zoom, resolution scale, feature size, direction indicator, distance and bearing, spike removal, ditch filling) with their defaults; apply with Save or close without saving
 
 Modals that edit a persisted default style or settings (Map preferences, Configure layers, drawing **Default properties**, objects **Marker style**, track-viewer **Default style**, **Search result style**) also carry a **Reset to default** button that refills the form with default values (applied with Save, not immediately).
 

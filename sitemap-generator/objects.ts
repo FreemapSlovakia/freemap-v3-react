@@ -7,7 +7,15 @@ import {
   getNameFromOsmElement,
   getOsmMapping,
 } from '../src/osm/osmNameResolver.js';
-import { appUrl, BASE_EU, fileName, type Lang, langBase } from './seo.js';
+import {
+  appUrl,
+  BASE_EU,
+  expandNames,
+  fileName,
+  type Lang,
+  langBase,
+  siteName,
+} from './seo.js';
 
 const html = htm.bind(vhtml);
 
@@ -82,6 +90,7 @@ function fullQueries(area: number): Record<string, string> {
  * warrant a native review before leaning on them for ranking.
  */
 interface Copy {
+  /** Portal name for the breadcrumb; `{site}` expands per the page's domain. */
   siteName: string;
   showOnMap: string;
   onMap: string;
@@ -94,7 +103,7 @@ interface Copy {
 
 const COPY: Partial<Record<Lang, Copy>> = {
   sk: {
-    siteName: 'Freemap Slovakia – mapa',
+    siteName: '{site} – mapa',
     showOnMap: 'Zobraziť na mape',
     onMap: 'na detailnej outdoorovej mape.',
     contact: 'Kontakt.',
@@ -105,7 +114,7 @@ const COPY: Partial<Record<Lang, Copy>> = {
     history: 'história',
   },
   cs: {
-    siteName: 'Freemap Slovakia – mapa',
+    siteName: '{site} – mapa',
     showOnMap: 'Zobrazit na mapě',
     onMap: 'na podrobné outdoorové mapě.',
     contact: 'Kontakt.',
@@ -116,7 +125,7 @@ const COPY: Partial<Record<Lang, Copy>> = {
     history: 'historie',
   },
   hu: {
-    siteName: 'Freemap Slovakia – térkép',
+    siteName: '{site} – térkép',
     showOnMap: 'Megjelenítés a térképen',
     onMap: 'a részletes túratérképen.',
     contact: 'Kapcsolat.',
@@ -127,7 +136,7 @@ const COPY: Partial<Record<Lang, Copy>> = {
     history: 'előzmények',
   },
   pl: {
-    siteName: 'Freemap Slovakia – mapa',
+    siteName: '{site} – mapa',
     showOnMap: 'Pokaż na mapie',
     onMap: 'na szczegółowej mapie outdoorowej.',
     contact: 'Kontakt.',
@@ -138,7 +147,7 @@ const COPY: Partial<Record<Lang, Copy>> = {
     history: 'historia',
   },
   it: {
-    siteName: 'Freemap Slovakia – mappa',
+    siteName: '{site} – mappa',
     showOnMap: 'Mostra sulla mappa',
     onMap: 'sulla mappa outdoor dettagliata.',
     contact: 'Contatti.',
@@ -448,7 +457,7 @@ async function generateCountry(
         '<!doctype html>\n' +
         html`<html lang=${lang}>
           <head>
-            <title>${`${fullName} - freemap.sk`}</title>
+            <title>${`${fullName} - ${siteName(lang)}`}</title>
 
             <meta
               name="viewport"
@@ -487,7 +496,10 @@ async function generateCountry(
 
           <body>
             <nav>
-              <a href=${`/?layers=X&lang=${lang}`}>${copy.siteName}</a> ›${' '}
+              <a href=${`/?layers=X&lang=${lang}`}>
+                ${expandNames(copy.siteName, lang)}
+              </a>
+              ›${' '}
               <a href=${url}>${copy.showOnMap}</a>
             </nav>
 

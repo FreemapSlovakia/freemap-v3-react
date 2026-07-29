@@ -9,7 +9,6 @@ const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Error exporting:', err),
   what: {
     plannedRoute: 'trova percorso',
-    plannedRouteWithStops: 'incluse fermate',
     objects: 'oggetti (POI)',
     pictures: 'foto (area di mappa visibile)',
     drawingLines: 'disegno - linee',

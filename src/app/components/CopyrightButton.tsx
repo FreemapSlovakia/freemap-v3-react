@@ -1,5 +1,6 @@
 import { documentShow } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -66,7 +67,7 @@ export function CopyrightButton(): ReactElement {
           )}
         </LongPressTooltip>
 
-        <Dropdown.Menu style={{ width: 'max-content' }}>
+        <FmDropdownMenu style={{ width: 'max-content' }}>
           <Dropdown.Item
             key="attribution"
             as="button"
@@ -123,7 +124,7 @@ export function CopyrightButton(): ReactElement {
           >
             <FaMoneyBillWave /> {m?.general.refundPolicy}
           </Dropdown.Item>
-        </Dropdown.Menu>
+        </FmDropdownMenu>
       </Dropdown>
     </Toolbar>
   );

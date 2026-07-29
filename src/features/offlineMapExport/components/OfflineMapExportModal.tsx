@@ -5,6 +5,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
@@ -359,13 +360,18 @@ export default function OfflineMapExportModal({
                 {mapDef ? getItem(mapDef) : ome?.unknownMapType}
               </Dropdown.Toggle>
 
-              <Dropdown.Menu popperConfig={sameMinWidthPopperConfig}>
+              <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
                 {mapDefs.map((def) => (
-                  <Dropdown.Item key={def.type} eventKey={def.type}>
+                  <Dropdown.Item
+                    as="button"
+                    type="button"
+                    key={def.type}
+                    eventKey={def.type}
+                  >
                     {getItem(def)}
                   </Dropdown.Item>
                 ))}
-              </Dropdown.Menu>
+              </FmDropdownMenu>
             </Dropdown>
           </Form.Group>
 

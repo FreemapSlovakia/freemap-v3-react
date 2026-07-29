@@ -11,6 +11,12 @@ import type { Alternative } from './actions.js';
 export interface StructureSpan {
   start: number;
   end: number;
+  /**
+   * A deck is at or above the ground it spans, a bore at or below it, which is
+   * what lets the straight line be clamped against the terrain rather than
+   * replacing it outright.
+   */
+  kind: 'bridge' | 'tunnel';
 }
 
 function cumulativeMeters(coordinates: Position[]): number[] {
@@ -38,7 +44,7 @@ export function flattenWithStructures(alternative: Alternative): {
 } {
   const coordinates: Position[] = [];
 
-  const ranges: [number, number][] = [];
+  const ranges: [number, number, StructureSpan['kind']][] = [];
 
   for (const leg of alternative.legs) {
     for (const step of leg.steps) {
@@ -57,7 +63,7 @@ export function flattenWithStructures(alternative: Alternative): {
         }
       }
 
-      for (const { from, to } of step.structures ?? []) {
+      for (const { from, to, kind } of step.structures ?? []) {
         const a = indices[from];
 
         const b = indices[to];
@@ -71,7 +77,7 @@ export function flattenWithStructures(alternative: Alternative): {
         if (last && a <= last[1]) {
           last[1] = Math.max(last[1], b);
         } else {
-          ranges.push([a, b]);
+          ranges.push([a, b, kind]);
         }
       }
     }
@@ -81,23 +87,30 @@ export function flattenWithStructures(alternative: Alternative): {
 
   return {
     coordinates,
-    structures: ranges.map(([a, b]) => ({ start: cum[a]!, end: cum[b]! })),
+    structures: ranges.map(([a, b, kind]) => ({
+      start: cum[a]!,
+      end: cum[b]!,
+      kind,
+    })),
   };
 }
 
-/** How much road outside a structure an anchor is taken from. */
+/** How much road outside a structure an anchor is taken from… */
 const anchorSpanMeters = 10;
 
+/** …and how many samples it needs regardless, where they're further apart. */
+const anchorSamples = 3;
+
 /**
- * The road's elevation just outside a structure, as the median of the samples
- * within {@link anchorSpanMeters} of `index` in `direction`.
+ * The road's elevation outside a structure, as the median of the samples from
+ * `index` in `direction`: those within {@link anchorSpanMeters}, but never
+ * fewer than {@link anchorSamples}.
  *
- * A median rather than the sample at the edge itself: a tunnel's portal node is
- * one of the likeliest places in a terrain model for a single sample to land
- * metres above the road, on the portal face or the wall of the cutting leading
- * to it — and anchoring the whole bore on that one sample tilts it. Taking the
- * median from the road a few metres back costs only the grade over that
- * distance (centimetres) and survives a wall several samples wide.
+ * A median rather than the sample nearest the structure: a portal or an
+ * abutment is one of the likeliest places in a terrain model for a single
+ * sample to sit metres off the road, and anchoring the whole span on that one
+ * sample tilts it. Taking the median from the road a little further back costs
+ * only the grade over that distance.
  */
 function anchorElevation(
   coordinates: Position[],
@@ -107,13 +120,14 @@ function anchorElevation(
 ): number | undefined {
   const values: number[] = [];
 
-  for (
-    let i = index;
-    i >= 0 &&
-    i < cum.length &&
-    Math.abs(cum[i]! - cum[index]!) <= anchorSpanMeters;
-    i += direction
-  ) {
+  for (let i = index; i >= 0 && i < cum.length; i += direction) {
+    if (
+      values.length >= anchorSamples &&
+      Math.abs(cum[i]! - cum[index]!) > anchorSpanMeters
+    ) {
+      break;
+    }
+
     const z = coordinates[i]![2];
 
     if (z !== undefined) {
@@ -127,12 +141,20 @@ function anchorElevation(
 }
 
 /**
- * Replaces the elevation of every point strictly inside a structure span with a
- * straight line between the road either side of it — a bridge deck and a tunnel
- * bore are straight, whereas the terrain model gives the stream bed below or
- * the ridge above. Points outside a span keep their sampled elevation, so
- * genuine terrain detail is never touched. The input is not mutated; a route
- * with no structures is returned as-is.
+ * Lays a straight line across each structure — a bridge deck and a tunnel bore
+ * are straight, whereas the terrain model gives the stream bed below or the
+ * ridge above.
+ *
+ * The line covers the span's own end samples, not just what lies between them:
+ * a short bridge often has no sample strictly inside it, so the whole notch is
+ * those two ends. Its anchors therefore come from one sample further out again.
+ *
+ * Rather than replacing the terrain outright, the line is clamped against it —
+ * a deck is never below the ground it spans, a bore never above it. That makes
+ * reaching past the mapped ends safe: beyond the real structure the terrain is
+ * already on the right side of the line, so nothing changes there. Points
+ * outside a span keep their sampled elevation. The input is not mutated; a
+ * route with no structures is returned as-is.
  */
 export function straightenStructures(
   feature: Feature<LineString>,
@@ -154,20 +176,24 @@ export function straightenStructures(
 
   let changed = false;
 
-  for (const { start, end } of structures) {
-    // The abutments (or portals): the outermost points the structure does not
-    // span, where the terrain model still describes the road.
-    let a = 0;
+  for (const { start, end, kind } of structures) {
+    // The structure's own end samples…
+    let first = 0;
 
-    while (a + 1 < cum.length && cum[a + 1]! <= start + eps) {
-      a++;
+    while (first + 1 < cum.length && cum[first + 1]! <= start + eps) {
+      first++;
     }
 
-    let b = cum.length - 1;
+    let last = cum.length - 1;
 
-    while (b > 0 && cum[b - 1]! >= end - eps) {
-      b--;
+    while (last > 0 && cum[last - 1]! >= end - eps) {
+      last--;
     }
+
+    // …and the samples the line is anchored on, one further out.
+    const a = Math.max(0, first - 1);
+
+    const b = Math.min(cum.length - 1, last + 1);
 
     const za = anchorElevation(coordinates, cum, a, -1);
 
@@ -180,9 +206,22 @@ export function straightenStructures(
     }
 
     for (let i = a + 1; i < b; i++) {
-      coordinates[i]![2] = za + ((zb - za) * (cum[i]! - cum[a]!)) / span;
+      const z = coordinates[i]![2];
 
-      changed = true;
+      const line = za + ((zb - za) * (cum[i]! - cum[a]!)) / span;
+
+      const levelled =
+        z === undefined
+          ? line
+          : kind === 'tunnel'
+            ? Math.min(z, line)
+            : Math.max(z, line);
+
+      if (levelled !== z) {
+        coordinates[i]![2] = levelled;
+
+        changed = true;
+      }
     }
   }
 

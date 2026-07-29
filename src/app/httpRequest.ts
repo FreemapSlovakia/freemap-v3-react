@@ -50,12 +50,6 @@ interface HttpRequestParams
   data?: unknown;
   getState: () => RootState;
   expectedStatus?: number | number[] | null;
-  /**
-   * Sends no `Authorization` header even when signed in, so the API answers as
-   * it would for an anonymous caller. For opting out of an account's
-   * entitlements on a single request, not for hiding the user.
-   */
-  anonymous?: boolean;
 }
 
 export function addHeader(
@@ -92,7 +86,6 @@ export async function httpRequest({
   stateChangePredicate,
   predicatesOperation,
   data,
-  anonymous,
   ...rest
 }: HttpRequestParams): Promise<Response> {
   let ac: AbortController | undefined;
@@ -136,7 +129,7 @@ export async function httpRequest({
 
   const { user } = getState().auth;
 
-  if (urlIsRelative && user && !anonymous) {
+  if (urlIsRelative && user) {
     const authorization = `Bearer ${user.authToken}`;
 
     init.headers = addHeader(init.headers, 'Authorization', authorization);

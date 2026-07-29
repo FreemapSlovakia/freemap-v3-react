@@ -65,6 +65,7 @@ const en: RoutePlannerMessages = {
   },
   modeLabel: 'Routing mode',
   alternative: 'Alternative',
+  isochroneRing: 'Isochrone',
   distance: ({ value, diff }) => (
     <>
       Distance:{' '}

@@ -388,9 +388,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Terepmodell-árkok feltöltése',
     ditchFillHelp:
       'A részletes nemzeti terepmodellek, amelyek egyes országokban érhetők el, rendszerint hidrológiai szempontból vannak igazítva: minden áteresznél árkot vágnak az úton keresztül. Az ennél keskenyebb mélyedések feltöltődnek; a szélesebbek megmaradnak, mert valódi terepet jelentenek. A nulla kikapcsolja, és ott, ahol a globális modell van használatban, semmit sem változtat.',
-    highResolution: 'Nagy felbontású magassági adatok',
-    highResolutionHelp:
-      'A részletes nemzeti terepmodelleket olvassa be ott, ahol léteznek — jelenleg néhány európai országban. Finomabb részleteket mutatnak, de az áteresz-árkokat és az eltávolított hidakat is, amelyeket tartalmaznak. Máshol amúgy is a globális modell van használatban.',
   },
 
   errorCatcher: {

@@ -15,19 +15,17 @@ import {
 import { createRoot, type Root } from 'react-dom/client';
 import { Marker, type MarkerProps } from 'react-leaflet';
 import { splitColorAlpha } from '../colorAlpha.js';
-import { COLORS } from '../colors.js';
+import { COLORS, GLYPH_INSET_LIGHT, glyphInsetColor } from '../colors.js';
 
 // Fixed glyph box (in viewBox units) and font size, shared by all marker
 // shapes so icon/text size is independent of the shape.
 const GLYPH_SIZE = 160;
 
-// Glyph color; always drawn on a white inset, so a solid black. `var()` only
-// works in CSS `style` (not in the SVG `fill` presentation attribute), so
-// apply it via style.
-const GLYPH_COLOR = 'black';
-
+// The glyph takes the marker's own color on the white inset, so shape and glyph
+// read as one marker. Only applies to the monochrome glyph kinds we draw
+// ourselves (label text, Font Awesome paths); a `poi` icon is referenced as an
+// `<image>` and keeps the colors baked into the asset.
 const textStyle: CSSProperties = {
-  fill: GLYPH_COLOR,
   fontSize: '150px',
   fontWeight: 'bold',
   whiteSpace: 'pre',
@@ -38,6 +36,12 @@ const textStyle: CSSProperties = {
 interface BaseIconProps {
   color?: string;
   markerType?: MarkerType;
+  /**
+   * Color of the glyph on the white inset; defaults to the marker's own color.
+   * Set it when the shape is drawn in a derived color (a paled selection) and
+   * the glyph should keep the original one to stay readable.
+   */
+  glyphColor?: string;
 }
 
 // A Font Awesome icon described as a raw `{ width, height, path }`, embedded
@@ -168,6 +172,7 @@ export function RichMarker({
   autoOpenPopup,
   markerType = 'pin',
   color,
+  glyphColor,
   faIcon,
   iconSvg,
   image,
@@ -213,6 +218,7 @@ export function RichMarker({
         icon: (
           <MarkerIcon
             color={color}
+            glyphColor={glyphColor}
             faIcon={faIcon}
             iconSvg={iconSvg}
             image={image}
@@ -222,7 +228,16 @@ export function RichMarker({
           />
         ),
       }),
-    [color, faIcon, iconSvg, image, imageOpacity, label, markerType],
+    [
+      color,
+      glyphColor,
+      faIcon,
+      iconSvg,
+      image,
+      imageOpacity,
+      label,
+      markerType,
+    ],
   );
 
   return (
@@ -272,6 +287,7 @@ export function MarkerIcon({
   faIcon,
   iconSvg,
   color = COLORS.normal,
+  glyphColor,
   label,
   markerType,
 }: MarkerIconProps): ReactElement {
@@ -280,6 +296,13 @@ export function MarkerIcon({
   // inset + glyph) so the entire marker fades uniformly rather than only its
   // background.
   const { color: fillColor, opacity } = splitColorAlpha(color);
+
+  const glyphFill = glyphColor ?? fillColor;
+
+  // A `poi` icon is external multi-color artwork drawn for a light background,
+  // so it always keeps the white inset; the glyphs painted in `glyphFill` get
+  // whichever inset they read on.
+  const insetFill = image ? GLYPH_INSET_LIGHT : glyphInsetColor(glyphFill);
 
   // A glyph (label text, poi image or Font Awesome icon) fills the white inset;
   // this flag also drives whether the inset is drawn.
@@ -295,7 +318,7 @@ export function MarkerIcon({
     // A `react-icons` element is a self-contained `<svg viewBox=…>`; clone it
     // into a GLYPH_SIZE box centered on the inset so it scales exactly like
     // `image`/`iconSvg`. Its `fill="currentColor"` resolves to the wrapping
-    // `<g>`'s GLYPH_SIZE color unless the element sets its own `color`.
+    // `<g>`'s color unless the element sets its own `color`.
     // Size via `size`, not `width`/`height`: react-icons' IconBase writes its
     // own `height`/`width` from `size` *after* spreading our props, so a cloned
     // `width`/`height` is overridden by the default `1em` (~1px glyph).
@@ -347,7 +370,7 @@ export function MarkerIcon({
             y={cy}
             textAnchor="middle"
             dominantBaseline="central"
-            style={textStyle}
+            style={{ ...textStyle, fill: glyphFill }}
           >
             {label}
           </text>
@@ -358,12 +381,12 @@ export function MarkerIcon({
         {iconSvg && (
           <path
             d={iconSvg.path}
-            style={{ fill: GLYPH_COLOR }}
+            style={{ fill: glyphFill }}
             transform={iconTransform}
           />
         )}
 
-        {faGlyph && <g style={{ color: GLYPH_COLOR }}>{faGlyph}</g>}
+        {faGlyph && <g style={{ color: glyphFill }}>{faGlyph}</g>}
       </>
     );
   };
@@ -381,7 +404,7 @@ export function MarkerIcon({
           <ellipse cx={155} cy={155} rx={135} ry={135} fill={fillColor} />
 
           {hasContent && (
-            <ellipse cx={155} cy={155} rx={110} ry={110} fill="white" />
+            <ellipse cx={155} cy={155} rx={110} ry={110} fill={insetFill} />
           )}
 
           {renderGlyph(155, 155)}
@@ -412,7 +435,7 @@ export function MarkerIcon({
               height={200}
               rx={20}
               ry={20}
-              fill="white"
+              fill={insetFill}
             />
           )}
 
@@ -437,7 +460,7 @@ export function MarkerIcon({
               cy={163.702}
               rx={119.462}
               ry={119.462}
-              fill="white"
+              fill={insetFill}
             />
           )}
 

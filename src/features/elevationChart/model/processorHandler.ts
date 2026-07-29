@@ -330,7 +330,6 @@ async function resolveElevationProfilePointsViaApi(
       elevationChartClose,
       clearMapFeatures,
     ],
-    false,
     sources,
   );
 

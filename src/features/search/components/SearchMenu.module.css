@@ -8,14 +8,6 @@
   min-width: 160px !important;
 }
 
-.search-dropdown :global(.dropdown-long) {
-  max-height: calc(100dvh - 80px);
-
-  @media (min-height: 400px) {
-    max-height: calc(100dvh - 130px);
-  }
-}
-
 .search-dropdown {
   @media (min-width: 768px) {
     max-width: calc(100dvw - 160px);

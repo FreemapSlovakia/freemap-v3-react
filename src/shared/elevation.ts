@@ -82,14 +82,10 @@ const FINEST_DEM_METERS = 1;
  * Returns one value (or `null` where the API has no data) per input pair, in
  * the same order. An empty input resolves to an empty array without a request.
  *
- * With the high-resolution terrain model switched off the request is sent
- * unauthenticated, which is what selects the coarse model — the API picks the
- * resolution from the account, so opting out means not presenting it. An
- * anonymous read is answered from SRTM everywhere, not from GEDTM30, which only
- * backs a premium read past the national models' borders. That
- * preference governs what the profile *shows*; pass `bestAvailable` for data
- * the user keeps (an export), which should carry the finest the account can
- * read whatever the display is set to.
+ * The API picks the model from the account the read presents: the national
+ * high-resolution ones where they exist and GEDTM30 past their borders for
+ * premium, SRTM everywhere otherwise. Nothing here chooses — every read asks for
+ * the finest the account can get.
  *
  * Pass `sources` to have the models that answered added to that set (the API
  * reports them only when asked, so it stays out of the response — and out of the
@@ -99,7 +95,6 @@ export async function fetchElevations(
   latLons: [number, number][],
   getState: () => RootState,
   cancelActions?: ActionCreatorMatchable[],
-  bestAvailable = false,
   sources?: Set<string>,
 ): Promise<(number | null)[]> {
   if (latLons.length === 0) {
@@ -113,7 +108,6 @@ export async function fetchElevations(
     data: latLons,
     expectedStatus: 200,
     cancelActions,
-    anonymous: !bestAvailable && !getState().elevationSettings.highResolution,
   });
 
   const parsed = ElevationsResponseCompatSchema.parse(await res.json());
@@ -183,7 +177,6 @@ export async function enrichElevations<G extends LineString | MultiLineString>(
     targets.map((coord) => [coord[1]!, coord[0]!]),
     getState,
     cancelActions,
-    false,
     sources,
   );
 
@@ -293,7 +286,6 @@ export async function densifyAlong<G extends LineString | MultiLineString>(
     inserts.map(({ lat, lon }) => [lat, lon]),
     getState,
     cancelActions,
-    false,
     sources,
   );
 

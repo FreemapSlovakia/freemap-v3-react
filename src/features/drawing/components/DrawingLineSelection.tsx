@@ -4,9 +4,9 @@ import {
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
 import { type ReactElement, useCallback, useState } from 'react';
@@ -210,9 +210,10 @@ export default function DrawingLineSelection(): ReactElement | null {
             <FaEllipsisV />
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+          <FmDropdownMenu>
             {isLine && line.points.length > 1 && (
               <Dropdown.Item
+                as="button"
                 eventKey="toggle-elevation-chart"
                 active={showElevationChart}
               >
@@ -222,26 +223,26 @@ export default function DrawingLineSelection(): ReactElement | null {
             )}
 
             {line.points.length > 0 && (
-              <Dropdown.Item eventKey="project-point">
+              <Dropdown.Item as="button" eventKey="project-point">
                 <TbAngle />
                 &nbsp;{dm?.projection.projectPoint ?? '…'}
               </Dropdown.Item>
             )}
 
             {line.points.length > 2 && (
-              <Dropdown.Item eventKey="simplify">
+              <Dropdown.Item as="button" eventKey="simplify">
                 <FaCompressAlt />
                 &nbsp;{dm?.simplify ?? '…'}
               </Dropdown.Item>
             )}
 
             {line.points.length > 1 && (
-              <Dropdown.Item eventKey="reverse">
+              <Dropdown.Item as="button" eventKey="reverse">
                 <FaExchangeAlt />
                 &nbsp;{dm?.reverse ?? '…'}
               </Dropdown.Item>
             )}
-          </Dropdown.Menu>
+          </FmDropdownMenu>
         </Dropdown>
       </Selection>
     </>

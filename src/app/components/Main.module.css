@@ -22,6 +22,15 @@
   flex-wrap: wrap;
 }
 
+/* Toolbar dropdowns are `position: fixed` but still confined to the header's
+   stacking context, so at an equal z-index the later-in-DOM bottom controls
+   would cover them. Raise the header while one of its menus is open; the
+   bottom controls keep painting on top the rest of the time (their own
+   upward-opening menus can't be open at the same time). */
+.header:has(:global(.dropdown-menu.show)) {
+  z-index: 1011;
+}
+
 .type-zoom-control {
   display: flex;
   flex-wrap: wrap;

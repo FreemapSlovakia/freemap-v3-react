@@ -16,7 +16,6 @@ const cs: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Chyba exportu', err),
   what: {
     plannedRoute: 'vyhledanou trasu',
-    plannedRouteWithStops: 'se zastávkami',
     objects: 'objekty (POI)',
     pictures: 'fotografie (ve viditelné části mapy)',
     drawingLines: 'kreslení - čáry',

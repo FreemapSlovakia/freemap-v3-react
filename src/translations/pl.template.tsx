@@ -369,9 +369,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Wypełnij rowy modelu terenu',
     ditchFillHelp:
       'Szczegółowe krajowe modele terenu, dostępne w niektórych krajach, są zwykle dostosowane do hydrologii: przy każdym przepuście przecinają drogę rowem. Zagłębienia węższe niż ta wartość są wypełniane; szersze pozostają, bo to rzeczywisty teren. Zero wyłącza tę funkcję i nic nie zmienia tam, gdzie używany jest model globalny.',
-    highResolution: 'Dane wysokościowe wysokiej rozdzielczości',
-    highResolutionHelp:
-      'Odczytuje szczegółowe krajowe modele terenu tam, gdzie istnieją — obecnie w kilku krajach europejskich. Pokazują drobniejsze szczegóły, ale także rowy przy przepustach i usunięte mosty, które zawierają. Gdzie indziej i tak używany jest model globalny.',
   },
 
   errorCatcher: {

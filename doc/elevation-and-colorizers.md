@@ -74,13 +74,22 @@ step's own coordinates).
 1. `flattenWithStructures` merges legs/steps into one coordinate list (dropping the vertex
    consecutive steps share) and converts the structure ranges into **spans in metres along
    the line** — a structure split across a step boundary is rejoined here;
-2. `straightenStructures` runs **after** `densifyAlong` and replaces the elevation of every
-   point strictly inside a span with a straight line between the road either side of it.
+2. `straightenStructures` runs **after** `densifyAlong` and lays a straight line across
+   each span.
 
-Each end of that line is the **median** of the samples within 10 m outside the span
-(`anchorElevation`), not the single sample at the span's edge. A tunnel portal is one of the likeliest
-places for a single sample to sit metres above the road, and anchoring a 400 m bore on it
-tilts the whole thing. The median costs only the road's grade over a few metres.
+The line covers the span's **own end samples**, not just what lies between them: a short
+bridge on a long route often has no sample strictly inside it (the densification step
+scales with route length, up to 100 m), so the whole notch *is* those two ends. Its
+anchors come from one sample further out again, each the **median** of the samples within
+10 m — but never fewer than three, since on a long route they can be 35 m apart
+(`anchorElevation`). A single sample sitting metres off the road at a portal or an
+abutment would otherwise tilt the entire span.
+
+Rather than replacing the terrain outright, the line is **clamped** against it: a deck is
+never below the ground it spans (`Math.max`), a bore never above it (`Math.min`) — which
+is why `StructureSpan` carries the `kind`. That is what makes reaching past the mapped
+ends safe: beyond the real structure the terrain is already on the right side of the line,
+so nothing changes there.
 
 Metres, not indices, because densification renumbers every point but leaves distances
 along the line alone — and it must run last, since the inserted points are DEM-sampled too
@@ -138,8 +147,7 @@ in difficult terrain.
 
 Neither pass rescues a way digitised into a riverbank next to a 1 m terrain model: those
 excursions are tens of metres wide *and* tens of metres tall, and a window that big
-flattens real terrain. The honest fixes there are to move the way in OSM, or to turn the
-high-resolution model off.
+flattens real terrain. The honest fix there is to move the way in OSM.
 
 `smoothElevationSeries` is the single entry point for both passes, so every consumer of
 terrain-model elevation applies them in the same order: `ensureRouteRenderGeojson` (after
@@ -159,14 +167,11 @@ derived from it, rather than a pref per consumer:
 
 - **`despikeWindow`** — the median window above, in metres; `0` disables it.
 - **`ditchFillWindow`** — the closing window above, in metres; `0` disables it.
-- **`highResolution`** — premium-only. Switching it off makes `fetchElevations` send the
-  request **without the `Authorization` header** (`httpRequest`'s `anonymous` flag): the
-  API picks the model from the account, so opting out means not presenting it. This is
-  the one lever that removes the artifacts at the source rather than patching them. It
-  governs what a profile *shows*; the export fills pass `bestAvailable`, so a file the
-  user keeps always carries the finest elevation the account can read.
 
-All of them invalidate the derived caches (`routePlanner.renderGeojson`,
+Which terrain model answers is not among them: every read presents the account, so premium
+decides it (see *Crediting the terrain model* below), for profiles and exports alike.
+
+Both of them invalidate the derived caches (`routePlanner.renderGeojson`,
 `trackViewer.renderTrackGeojson` clear on `elevationSetSettings`). `routePlannerColorizeProcessor`
 and `trackViewerDensifyProcessor` rebuild them, which has to happen whether or not the
 chart is open — an active elevation/steepness colorize reads the same cache. An open chart
@@ -184,9 +189,8 @@ holds — `ELEVATION_API_DTM_COUNTRIES` stays the authority on which those are, 
 renderer also shades Norway.
 
 Which model answers depends on the read, not only on the place: a **premium** read gets the
-national models and GEDTM30 past their borders, while an **anonymous** one — no premium, or
-`highResolution` switched off, which is what makes `fetchElevations` drop the auth header —
-is answered from **SRTM everywhere**. So a non-premium profile has exactly one source to
+national models and GEDTM30 past their borders, while a **non-premium** one is answered from
+**SRTM everywhere**. So a non-premium profile has exactly one source to
 credit, known without waiting on coverage, and the upsell gem always applies to it.
 
 **The API reports what answered** (see the request contract below), and
@@ -197,7 +201,7 @@ that country's national model, anything else is looked up in `GLOBAL_MODELS` (`g
 under-credit it, which is the worse direction. The order is the table's own, global models
 last, so the list doesn't reshuffle between requests.
 
-GraphHopper's `srtm` is the same dataset as the API's anonymous fallback, so the `srtm`
+GraphHopper's `srtm` is the same dataset as the API's non-premium answer, so the `srtm`
 provenance is expressed by *appending `SRTM_TOKEN` to the reported tokens* rather than
 crediting it separately — reported twice, it collapses to one entry.
 
@@ -217,7 +221,7 @@ feature being charted knows what sampled it:
   `enrichElevations` fills all of it), or a track the user had **overridden**
   (`elevationDecision === 'all'`, via `elevationCredit` in trackViewer).
 - **`srtm`** — GraphHopper's own elevation, kept on the free tier
-  (`graph.elevation.provider: srtm`), which is the same data the API answers an anonymous
+  (`graph.elevation.provider: srtm`), which is the same data the API answers a non-premium
   read with.
 - **`recorded`** — a GPS recording, an imported file, or a track merely gap-filled: a
   measurement no terrain model answered for, credited to nobody.
@@ -226,7 +230,7 @@ feature being charted knows what sampled it:
 links under its toolbar (with a `PremiumGem` for non-premium users) and `ElevationInfo`
 names in its gem's tooltip. A point readout is always `terrain-model` — which is why
 `measurementProcessor` reads it through `fetchElevations` rather than its own request, so
-the preference the tooltip claims to reflect is the one that was sent.
+the model the tooltip credits is the one that answered.
 
 #### The `?sources=1` contract
 
@@ -243,7 +247,7 @@ the preference the tooltip claims to reflect is the one that was sent.
 A token is either a **lowercase ISO 3166-1 alpha-2 country code**, meaning that country's
 national high-resolution model answered for at least one point, or the **model's own id**
 for one that isn't country-scoped (`gedtm30` for a premium read past the national borders,
-`srtm` for an anonymous one) — so length alone tells the two apart, and a new national model
+`srtm` for a non-premium one) — so length alone tells the two apart, and a new national model
 needs no new vocabulary. Duplicates are tolerated; points the API has no
 data for contribute nothing; an empty array is valid. The parameter belongs in the cache
 key, which a query parameter is by default.

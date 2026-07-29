@@ -11,7 +11,6 @@ export type MapFeaturesExportMessages = {
   exportError: (props: { err: unknown }) => string;
   what: {
     plannedRoute: string;
-    plannedRouteWithStops: string;
     objects: string;
     pictures: string;
     drawingLines: string;

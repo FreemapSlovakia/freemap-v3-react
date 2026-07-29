@@ -4,7 +4,6 @@ import z from 'zod';
 
 export type Exportable =
   | 'plannedRoute'
-  | 'plannedRouteWithStops'
   | 'objects'
   | 'pictures'
   | 'drawingLines'

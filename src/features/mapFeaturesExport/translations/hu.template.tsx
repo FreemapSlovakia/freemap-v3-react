@@ -9,7 +9,6 @@ const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     addError(getMessages()!, 'Hiba a exportálásakor', err),
   what: {
     plannedRoute: 'útvonal',
-    plannedRouteWithStops: 'megállásokkal',
     objects: 'érdekes pontok (POI-k)',
     pictures: 'fényképek (a látható térképterületen)',
     drawingLines: 'rajzolás - vonalak',

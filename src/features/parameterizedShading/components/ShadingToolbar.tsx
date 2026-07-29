@@ -33,16 +33,21 @@ export function ShadingToolbar({
         onSelect={onAdd}
       >
         {SHADING_COMPONENT_TYPES.map((st) => (
-          <Dropdown.Item key={st} eventKey={st} className="text-nowrap">
+          <Dropdown.Item
+            as="button"
+            key={st}
+            eventKey={st}
+            className="text-nowrap"
+          >
             {sm?.types[st]}
           </Dropdown.Item>
         ))}
 
         <Dropdown.Divider />
-        <Dropdown.Item eventKey="contour" className="text-nowrap">
+        <Dropdown.Item as="button" eventKey="contour" className="text-nowrap">
           {sm?.contour}
         </Dropdown.Item>
-        <Dropdown.Item eventKey="fog" className="text-nowrap">
+        <Dropdown.Item as="button" eventKey="fog" className="text-nowrap">
           {sm?.fogInversion}
         </Dropdown.Item>
       </DropdownButton>

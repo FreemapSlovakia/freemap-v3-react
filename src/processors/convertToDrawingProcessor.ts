@@ -10,9 +10,25 @@ import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointAct
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
+import {
+  ISOCHRONE_FILL_OPACITY,
+  isochroneColor,
+  isochroneLabel,
+} from '@features/routePlanner/model/isochrones.js';
+import {
+  dominantStepMode,
+  STEP_MODE_COLORS,
+  stepModeDashArray,
+  stopNumber,
+  WAYPOINT_COLORS,
+  WAYPOINT_ICONS,
+  waypointKind,
+} from '@features/routePlanner/model/routeColors.js';
+import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import { searchClear } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
+import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
 import { mergeLines } from '@shared/geoutils.js';
 import {
@@ -21,7 +37,6 @@ import {
 } from '@shared/styleFromProperties.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { flatten as turfFlatten } from '@turf/flatten';
-import { lineString } from '@turf/helpers';
 import { simplify } from '@turf/simplify';
 import type { Feature, FeatureCollection, Position } from 'geojson';
 import type { Dispatch } from 'redux';
@@ -146,6 +161,148 @@ function selectAfterConvert(
   );
 }
 
+/**
+ * Turns the route-planner result into drawing features, in the colors the map
+ * gives it: the active alternative as one line (or, for an isochrone, one
+ * polygon per ring, named after the limit it reaches), plus a point per
+ * start/finish/stop. Needs the route-planner messages for the names, so it runs
+ * asynchronously.
+ */
+async function convertPlannedRoute(
+  getState: () => RootState,
+  dispatch: Dispatch,
+): Promise<void> {
+  const state = getState();
+
+  const { language } = state.l10n;
+
+  const {
+    isochrones,
+    alternatives,
+    activeAlternativeIndex,
+    points,
+    waypoints,
+    finishOnly,
+    mode,
+  } = state.routePlanner;
+
+  const alternative = alternatives[activeAlternativeIndex];
+
+  if (!isochrones?.length && !alternative) {
+    return;
+  }
+
+  const rpm = await loadRoutePlannerMessages(language);
+
+  // Keep the width and opacity the route had on the map, rather than falling
+  // back to the (narrower, opaque) drawing defaults. Opacity rides on the
+  // color's alpha, which is how a drawing feature carries it.
+  const {
+    lineWidth: width,
+    lineOpacity,
+    markerOpacity,
+  } = state.routePlannerSettings;
+
+  const firstLineIndex = state.drawingLines.lines.length;
+
+  let lineCount = 0;
+
+  if (isochrones?.length) {
+    // Every ring (outer and holes alike) becomes its own polygon, since drawing
+    // has no hole representation.
+    for (const isochrone of isochrones) {
+      const bucket = isochrone.properties?.['bucket'] ?? 0;
+
+      const color = isochroneColor(bucket, isochrones.length);
+
+      for (const ring of isochrone.geometry.coordinates) {
+        dispatch(
+          drawingLineAdd({
+            ...state.drawingSettings.style,
+            type: 'polygon',
+            label: isochroneLabel(
+              isochrone,
+              bucket,
+              rpm.isochroneRing,
+              language,
+            ),
+            color: joinColorAlpha(color, lineOpacity),
+            width,
+            // Only the outermost ring is filled, as on the map; the inner ones
+            // keep a transparent fill so their interior stays clickable.
+            fillColor: joinColorAlpha(
+              color,
+              bucket === isochrones.length - 1
+                ? ISOCHRONE_FILL_OPACITY * lineOpacity
+                : 0,
+            ),
+            points: ringToPoints(ring, true),
+          }),
+        );
+
+        lineCount++;
+      }
+    }
+  } else if (alternative) {
+    // Each leg/step shares its endpoint with the next one's start, so drop
+    // consecutive duplicate coordinates to avoid stacked nodes at the joints.
+    const coords = alternative.legs
+      .flatMap((leg) => leg.steps.flatMap((step) => step.geometry.coordinates))
+      .filter(
+        (coord, i, all) =>
+          i === 0 || coord[0] !== all[i - 1][0] || coord[1] !== all[i - 1][1],
+      );
+
+    const dominant = dominantStepMode(alternative);
+
+    dispatch(
+      drawingLineAdd({
+        ...state.drawingSettings.style,
+        type: 'line',
+        // A drawing line is one color and one dash pattern, so a multimodal
+        // route takes those of the mode covering most of it. The dash is set
+        // explicitly rather than left to the drawing defaults, which the user
+        // may have made dashed.
+        color: joinColorAlpha(STEP_MODE_COLORS[dominant], lineOpacity),
+        dashArray: stepModeDashArray(dominant) ?? [],
+        width,
+        points: coords.map(([lon, lat], id) => ({ lat, lon, id })),
+      }),
+    );
+
+    lineCount++;
+  }
+
+  for (const [i, pt] of points.entries()) {
+    const kind = waypointKind(i, points.length, finishOnly, mode);
+
+    const number = stopNumber(i, mode, waypoints);
+
+    dispatch(
+      drawingPointAdd({
+        ...state.drawingSettings.style,
+        coords: { lat: pt.lat, lon: pt.lon },
+        color: joinColorAlpha(WAYPOINT_COLORS[kind], markerOpacity),
+        // The marker carries the same glyph the map gives it — a play/stop icon
+        // for the ends, the visiting number for a stop. No `label`: that would
+        // hang a permanent tooltip off every waypoint.
+        icon:
+          WAYPOINT_ICONS[kind] ??
+          (number === undefined ? undefined : String(number)),
+        id: getState().drawingPoints.points.length,
+      }),
+    );
+  }
+
+  dispatch(
+    selectFeature(
+      lineCount === 1 ? { type: 'draw-line-poly', id: firstLineIndex } : null,
+    ),
+  );
+
+  dispatch(routePlannerDelete());
+}
+
 export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   actionCreator: convertToDrawing,
   id: 'convertToDrawing',
@@ -157,48 +314,9 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
     const state = getState();
 
     if (payload.type === 'planned-route') {
-      const alt =
-        state.routePlanner.alternatives[
-          state.routePlanner.activeAlternativeIndex
-        ];
-
-      if (!alt) {
-        return;
-      }
-
-      // Each leg/step shares its endpoint with the next one's start, so drop
-      // consecutive duplicate coordinates to avoid stacked nodes at the joints.
-      const coords = alt.legs
-        .flatMap((leg) =>
-          leg.steps.flatMap((step) => step.geometry.coordinates),
-        )
-        .filter(
-          (coord, i, all) =>
-            i === 0 || coord[0] !== all[i - 1][0] || coord[1] !== all[i - 1][1],
-        );
-
-      const ls = lineString(coords.map(([lat, lon]) => [lon, lat]));
-
-      dispatch(
-        drawingLineAdd({
-          ...state.drawingSettings.style,
-          type: 'line',
-          points: ls.geometry.coordinates.map((p, id) => ({
-            lat: p[0],
-            lon: p[1],
-            id,
-          })),
-        }),
-      );
-
-      dispatch(
-        selectFeature({
-          type: 'draw-line-poly',
-          id: state.drawingLines.lines.length,
-        }),
-      );
-
-      dispatch(routePlannerDelete());
+      // Naming the waypoints needs the route-planner messages, so this path
+      // runs in `handle` — leave the action alone for it.
+      return action;
     } else if (payload.type === 'objects') {
       // `id` present → convert just that object as a point.
       // `id` absent  → bulk-convert every visible object (points only;
@@ -375,6 +493,12 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
     }
   },
   handle: async ({ getState, dispatch, action }) => {
+    if (action.payload.type === 'planned-route') {
+      await convertPlannedRoute(getState, dispatch);
+
+      return;
+    }
+
     if (action.payload.type !== 'objects-geometry') {
       return;
     }

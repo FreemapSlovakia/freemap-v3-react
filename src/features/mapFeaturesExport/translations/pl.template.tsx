@@ -6,7 +6,6 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   what: {
     plannedRoute: 'znaleziona trasa',
-    plannedRouteWithStops: 'z przystankami',
     objects: 'obiekty (POI)',
     pictures: 'zdjęcia (w widocznym obszarze mapy)',
     drawingLines: 'rysowanie – linie',
