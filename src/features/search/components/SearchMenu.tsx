@@ -6,17 +6,15 @@ import {
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import {
   featureIdsEqual,
   type OsmFeatureId,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
-import clsx from 'clsx';
 import {
   type ChangeEvent,
   Fragment,
@@ -207,8 +205,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     }
   };
 
-  const sc = useScrollClasses('vertical');
-
   let prevSource: SearchSource | undefined;
 
   return (
@@ -259,56 +255,49 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           </InputGroup>
         </Dropdown.Toggle>
 
-        <Dropdown.Menu
-          className={clsx(classes.searchDropdown, 'fm-dropdown-with-scroller')}
-          popperConfig={fixedPopperConfig}
-        >
-          <div className="dropdown-long" ref={sc}>
-            <div />
+        <FmDropdownMenu className={classes.searchDropdown}>
+          {results.map((result) => {
+            const id = stringifyFeatureId(result.id);
 
-            {results.map((result) => {
-              const id = stringifyFeatureId(result.id);
+            const divider =
+              !(
+                [
+                  'nominatim-forward',
+                  'bbox',
+                  'coords',
+                  'geojson',
+                ] as SearchSource[]
+              ).includes(result.source) && prevSource !== result.source ? (
+                <div className="dropdown-caption-divider">
+                  <SourceName result={result} />
+                </div>
+              ) : null;
 
-              const divider =
-                !(
-                  [
-                    'nominatim-forward',
-                    'bbox',
-                    'coords',
-                    'geojson',
-                  ] as SearchSource[]
-                ).includes(result.source) && prevSource !== result.source ? (
-                  <div className="dropdown-caption-divider">
-                    <SourceName result={result} />
-                  </div>
-                ) : null;
+            prevSource = result.source;
 
-              prevSource = result.source;
+            return (
+              <Fragment key={id}>
+                {divider}
 
-              return (
-                <Fragment key={id}>
-                  {divider}
-
-                  <Dropdown.Item
-                    eventKey={id}
-                    onClick={preventDefault}
-                    href={
-                      result.id.type === 'osm'
-                        ? `#osm-${result.id.elementType}=${result.id.id}`
-                        : undefined
-                    }
-                    active={
-                      selectedResult !== null &&
-                      featureIdsEqual(result.id, selectedResult.id)
-                    }
-                  >
-                    <Result value={result} />
-                  </Dropdown.Item>
-                </Fragment>
-              );
-            })}
-          </div>
-        </Dropdown.Menu>
+                <Dropdown.Item
+                  eventKey={id}
+                  onClick={preventDefault}
+                  {...(result.id.type === 'osm'
+                    ? {
+                        href: `#osm-${result.id.elementType}=${result.id.id}`,
+                      }
+                    : ({ as: 'button', type: 'button' } as const))}
+                  active={
+                    selectedResult !== null &&
+                    featureIdsEqual(result.id, selectedResult.id)
+                  }
+                >
+                  <Result value={result} />
+                </Dropdown.Item>
+              </Fragment>
+            );
+          })}
+        </FmDropdownMenu>
       </Dropdown>
     </Form>
   );

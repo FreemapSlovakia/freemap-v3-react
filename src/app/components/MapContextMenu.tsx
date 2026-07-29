@@ -19,6 +19,7 @@ import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import clsx from 'clsx';
 import type { LeafletMouseEvent } from 'leaflet';
 import {
   type ReactElement,
@@ -380,7 +381,7 @@ export function MapContextMenu(): ReactElement {
       />
 
       <Dropdown.Menu
-        className="fm-dropdown-with-scroller"
+        className={clsx('fm-dropdown-with-scroller', classes.menu)}
         popperConfig={popperConfig}
       >
         <span ref={arrowRef} className={classes.arrow} />

@@ -1,5 +1,5 @@
 import { type Breakpoint, useBreakpointMatches } from '@shared/breakpoints.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import clsx from 'clsx';
 import {
   Children,
@@ -184,15 +184,17 @@ export function ResponsiveActions({
             {toggle}
           </Dropdown.Toggle>
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
+          <FmDropdownMenu>
             {packed.map((entry, i) =>
               entry.divider ? (
                 <Dropdown.Divider key={`divider-${i}`} />
               ) : (
                 <Dropdown.Item
                   key={entry.index}
+                  {...(entry.props.href
+                    ? { href: entry.props.href }
+                    : ({ as: 'button', type: 'button' } as const))}
                   onClick={entry.props.onClick}
-                  href={entry.props.href}
                   disabled={entry.props.disabled}
                   active={entry.props.active}
                   className={clsx(
@@ -212,7 +214,7 @@ export function ResponsiveActions({
                 </Dropdown.Item>
               ),
             )}
-          </Dropdown.Menu>
+          </FmDropdownMenu>
         </Dropdown>
       )}
     </div>

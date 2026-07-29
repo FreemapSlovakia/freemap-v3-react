@@ -5,9 +5,9 @@ import {
   routePlannerSetStart,
 } from '@features/routePlanner/model/actions.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
 import { point } from '@turf/helpers';
@@ -148,8 +148,9 @@ export default function ObjectSelection(): ReactElement | null {
 
         <Dropdown.Toggle split variant="secondary" id="object-convert-split" />
 
-        <Dropdown.Menu popperConfig={fixedPopperConfig}>
+        <FmDropdownMenu>
           <Dropdown.Item
+            as="button"
             onClick={() => {
               dispatch(convertToDrawing({ type: 'objects', id: object.id }));
             }}
@@ -159,6 +160,7 @@ export default function ObjectSelection(): ReactElement | null {
 
           {hasGeometry && (
             <Dropdown.Item
+              as="button"
               onClick={() => {
                 dispatch(
                   convertToDrawing({
@@ -175,6 +177,7 @@ export default function ObjectSelection(): ReactElement | null {
           <Dropdown.Divider />
 
           <Dropdown.Item
+            as="button"
             onClick={() => {
               dispatch(
                 searchSelectResult({
@@ -194,7 +197,7 @@ export default function ObjectSelection(): ReactElement | null {
           >
             <FaSearch /> {om?.showAsLookup}
           </Dropdown.Item>
-        </Dropdown.Menu>
+        </FmDropdownMenu>
       </Dropdown>
     </Selection>
   );

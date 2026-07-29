@@ -170,17 +170,16 @@ button#freemap-logo {
 }
 
 .fm-menu-scroller {
-  /* hack to prevent popovers go outside view on mobiles */
-  max-height: calc(100dvh - 160px);
+  /* `availableHeightModifier` measures the room below the toggle; the constant
+     is the fallback for scrollers outside a popper. */
+  max-height: var(--fm-menu-available-height, calc(100dvh - 160px));
   overflow-y: auto;
 }
 
 .fm-ib-scroller::before,
 .fm-ib-scroller > div:first-child::before,
 .fm-menu-scroller::before,
-.fm-menu-scroller > div:first-child::before,
-.dropdown-long::before,
-.dropdown-long > div:first-child::before {
+.fm-menu-scroller > div:first-child::before {
   content: "";
   position: fixed;
   z-index: 100;
@@ -228,8 +227,7 @@ button#freemap-logo {
   margin-top: 0.5rem;
 }
 
-.fm-menu-scroller::before,
-.dropdown-long::before {
+.fm-menu-scroller::before {
   width: 100%;
   height: 2rem;
   mix-blend-mode: var(--scroller-mix-blend-mode);
@@ -242,8 +240,7 @@ button#freemap-logo {
   border-top-right-radius: 4px;
 }
 
-.fm-menu-scroller > div:first-child::before,
-.dropdown-long > div:first-child::before {
+.fm-menu-scroller > div:first-child::before {
   width: 100%;
   height: 2rem;
   bottom: 0;
@@ -259,11 +256,6 @@ button#freemap-logo {
 
 .fm-menu-scroller::before,
 .fm-menu-scroller > div:first-child::before {
-  margin-top: -0.5rem;
-}
-
-.dropdown-long::before,
-.dropdown-long > div:first-child::before {
   margin-top: -0.5rem;
 }
 
@@ -322,6 +314,12 @@ button#freemap-logo {
 
 .fm-dropdown-with-scroller {
   padding: 0;
+
+  /* The scroller is a square box in a rounded one, so its scrollbar (Chrome)
+     and its highlighted items (Firefox) paint into the corners. Clipping here
+     rounds them off, because the menu's padding box is what carries the inner
+     radius. */
+  overflow: hidden;
 
   & > div {
     padding-block: 0.5rem;

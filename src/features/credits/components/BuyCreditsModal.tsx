@@ -1,5 +1,6 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
@@ -119,15 +120,17 @@ export default function CurrentDrawingPropertiesModal({
               disabled={invalidCredits}
             />
 
-            <Dropdown.Menu renderOnMount popperConfig={{ strategy: 'fixed' }}>
+            <FmDropdownMenu renderOnMount>
               <Dropdown.Item
+                as="button"
+                type="button"
                 className="text-nowrap"
                 disabled={invalidCredits}
                 onClick={buyWithChrons}
               >
                 <FaStopwatch /> {cm?.payWithChrons}
               </Dropdown.Item>
-            </Dropdown.Menu>
+            </FmDropdownMenu>
           </Dropdown>
 
           <Button variant="dark" onClick={close}>

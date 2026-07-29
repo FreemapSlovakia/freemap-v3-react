@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import {
@@ -105,8 +106,9 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
 
             <Dropdown.Toggle split variant="primary" id="premium-buy" />
 
-            <Dropdown.Menu renderOnMount popperConfig={{ strategy: 'fixed' }}>
+            <FmDropdownMenu renderOnMount>
               <Dropdown.Item
+                as="button"
                 className="text-nowrap"
                 onClick={() => buy({ recurring: false })}
               >
@@ -114,12 +116,13 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
               </Dropdown.Item>
 
               <Dropdown.Item
+                as="button"
                 className="text-nowrap"
                 onClick={() => buy({ via: 'rovas' })}
               >
                 <FaStopwatch /> {prm?.payWithChrons}
               </Dropdown.Item>
-            </Dropdown.Menu>
+            </FmDropdownMenu>
           </Dropdown>
         )}
 

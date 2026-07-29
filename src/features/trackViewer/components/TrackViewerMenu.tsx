@@ -19,11 +19,11 @@ import {
   useConfirmCancel,
 } from '@shared/components/ConfirmProvider.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { flatten } from '@turf/flatten';
@@ -449,27 +449,27 @@ export function TrackViewerMenu(): ReactElement {
               <FaEllipsisV />
             </Dropdown.Toggle>
 
-            <Dropdown.Menu popperConfig={fixedPopperConfig}>
-              <Dropdown.Item eventKey="edit-style">
+            <FmDropdownMenu>
+              <Dropdown.Item as="button" eventKey="edit-style">
                 <FaPaintBrush /> &nbsp;{tvm?.style.title ?? '…'}
               </Dropdown.Item>
 
               {enableElevationChart && canUpdateElevation && (
-                <Dropdown.Item eventKey="update-elevation">
+                <Dropdown.Item as="button" eventKey="update-elevation">
                   <FaMountain /> &nbsp;{tvm?.elevationFill.update ?? '…'}
                 </Dropdown.Item>
               )}
 
               {!hasActiveMap && (
-                <Dropdown.Item eventKey="save-as-map">
+                <Dropdown.Item as="button" eventKey="save-as-map">
                   <FaSave /> &nbsp;{tvm?.saveAsMap ?? '…'}
                 </Dropdown.Item>
               )}
 
-              <Dropdown.Item eventKey="convert-to-drawing">
+              <Dropdown.Item as="button" eventKey="convert-to-drawing">
                 <FaPencilAlt /> &nbsp;{m?.general.convertToDrawing ?? '…'}
               </Dropdown.Item>
-            </Dropdown.Menu>
+            </FmDropdownMenu>
           </Dropdown>
         )}
 

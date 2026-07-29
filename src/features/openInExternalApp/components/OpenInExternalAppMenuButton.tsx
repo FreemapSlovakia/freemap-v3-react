@@ -1,8 +1,7 @@
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { JSX, ReactElement } from 'react';
 import type { OverlayProps } from 'react-bootstrap';
@@ -41,8 +40,6 @@ export function OpenInExternalAppMenuButton({
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const sc = useScrollClasses('vertical');
-
   return (
     <Dropdown
       placement={placement}
@@ -55,21 +52,15 @@ export function OpenInExternalAppMenuButton({
         {children}
       </Dropdown.Toggle>
 
-      <Dropdown.Menu
-        popperConfig={fixedPopperConfig}
-        className="fm-dropdown-with-scroller"
-      >
-        <div className="fm-menu-scroller" ref={sc}>
-          <div />
-          <OpenInExternalAppDropdownItems
-            lat={lat}
-            lon={lon}
-            zoom={zoom}
-            includePoint={includePoint}
-            url={url}
-          />
-        </div>
-      </Dropdown.Menu>
+      <FmDropdownMenu>
+        <OpenInExternalAppDropdownItems
+          lat={lat}
+          lon={lon}
+          zoom={zoom}
+          includePoint={includePoint}
+          url={url}
+        />
+      </FmDropdownMenu>
     </Dropdown>
   );
 }

@@ -83,7 +83,7 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item
-        href="?layers=I"
+        href="#layers=I"
         key="gallery"
         eventKey="gallery"
         active={galleryActive}
@@ -109,7 +109,7 @@ export function MainMenu(): ReactElement {
           ({ tool: newTool, icon, msgKey, kbd }) =>
             newTool && (
               <Dropdown.Item
-                href={`?tools=${newTool}`}
+                href={`#tools=${newTool}`}
                 key={newTool}
                 eventKey={`tool-${newTool}`}
                 active={tools.includes(newTool)}

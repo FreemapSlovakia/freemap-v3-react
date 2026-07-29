@@ -2,10 +2,10 @@ import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
@@ -171,8 +171,9 @@ export function MyMapsMenu(): ReactElement {
                     id="dropdown-split-basic"
                   />
 
-                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                  <FmDropdownMenu>
                     <Dropdown.Item
+                      as="button"
                       onClick={() => {
                         dispatch(mapsDisconnect());
                         dispatch(clearMapFeatures());
@@ -180,7 +181,7 @@ export function MyMapsMenu(): ReactElement {
                     >
                       <FaEraser /> {mm?.disconnectAndClear}
                     </Dropdown.Item>
-                  </Dropdown.Menu>
+                  </FmDropdownMenu>
                 </Dropdown>
               )}
             </LongPressTooltip>

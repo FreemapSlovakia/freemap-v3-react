@@ -52,7 +52,7 @@ export function modalMenuItemProps(modalId: ModalId) {
 export function documentMenuItemProps(document: string) {
   return {
     eventKey: `document-${document}`,
-    href: `document=${document}`,
+    href: `#document=${document}`,
   };
 }
 
