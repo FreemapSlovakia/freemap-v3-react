@@ -49,6 +49,19 @@ export function langBase(lang: Lang): string {
   return SK_LANGS.includes(lang) ? BASE_SK : BASE_EU;
 }
 
+/**
+ * The domain name to show in a language's page copy — it must match the domain
+ * the page is canonical on, so `freemap.eu` pages never advertise `Freemap.sk`.
+ */
+export function brand(lang: Lang): string {
+  return SK_LANGS.includes(lang) ? 'Freemap.sk' : 'Freemap.eu';
+}
+
+/** Substitutes the `{brand}` placeholder in curated copy with {@link brand}. */
+function withBrand(text: string, lang: Lang): string {
+  return text.replace(/\{brand\}/g, brand(lang));
+}
+
 /** Per-language <title>/<meta description>, reused from the SPA's SEO strings. */
 export const homeMeta: Record<Lang, { title: string; description: string }> = {
   sk: skShared,
@@ -89,8 +102,9 @@ export const featuresLabel: Record<Lang, string> = {
 };
 
 export interface Hub {
-  /** Query-string fragment identifying the app state, e.g. `layers=O` or `show=route-planner`. */
+  /** Query-string fragment identifying the app state, e.g. `layers=O` or `tool=route-planner`. */
   param: string;
+  /** Copy may use the `{brand}` placeholder for the page's domain name. */
   title: Record<HubLang, string>;
   description: Record<HubLang, string>;
 }
@@ -108,8 +122,8 @@ export const hubs: Hub[] = [
       sk: 'Podkladová mapa OpenStreetMap',
     },
     description: {
-      en: 'OpenStreetMap base layer on Freemap.sk — the standard worldwide OpenStreetMap map. Pan, zoom and explore continuously updated OSM data, plan routes and view points of interest.',
-      sk: 'Podkladová vrstva OpenStreetMap na Freemap.sk — štandardná celosvetová mapa OpenStreetMap. Posúvajte a približujte neustále aktualizované dáta OSM, plánujte trasy a prezerajte body záujmu.',
+      en: 'OpenStreetMap base layer on {brand} — the standard worldwide OpenStreetMap map. Pan, zoom and explore continuously updated OSM data, plan routes and view points of interest.',
+      sk: 'Podkladová vrstva OpenStreetMap na {brand} — štandardná celosvetová mapa OpenStreetMap. Posúvajte a približujte neustále aktualizované dáta OSM, plánujte trasy a prezerajte body záujmu.',
     },
   },
   {
@@ -119,8 +133,8 @@ export const hubs: Hub[] = [
       sk: 'Letecká a satelitná mapa',
     },
     description: {
-      en: 'Aerial / satellite imagery on Freemap.sk — worldwide high-resolution aerial photography from Esri, combined with overlays for hiking and cycling trails, contours and shaded relief.',
-      sk: 'Letecká / satelitná mapa na Freemap.sk — celosvetové ortofoto s vysokým rozlíšením od Esri, v kombinácii s prekryvmi turistických a cyklistických trás, vrstevníc a tieňovaného reliéfu.',
+      en: 'Aerial / satellite imagery on {brand} — worldwide high-resolution aerial photography from Esri, combined with overlays for hiking and cycling trails, contours and shaded relief.',
+      sk: 'Letecká / satelitná mapa na {brand} — celosvetové ortofoto s vysokým rozlíšením od Esri, v kombinácii s prekryvmi turistických a cyklistických trás, vrstevníc a tieňovaného reliéfu.',
     },
   },
   {
@@ -130,8 +144,8 @@ export const hubs: Hub[] = [
       sk: 'Slovenské a české ortofoto',
     },
     description: {
-      en: 'Slovak and Czech orthophoto on Freemap.sk — detailed national aerial imagery (© GKÚ, NLC, ČÚZK) up to high zoom levels, ideal for precise outdoor navigation.',
-      sk: 'Slovenské a české ortofoto na Freemap.sk — detailná štátna letecká mapa (© GKÚ, NLC, ČÚZK) do vysokého priblíženia, ideálna na presnú navigáciu v teréne.',
+      en: 'Slovak and Czech orthophoto on {brand} — detailed national aerial imagery (© GKÚ, NLC, ČÚZK) up to high zoom levels, ideal for precise outdoor navigation.',
+      sk: 'Slovenské a české ortofoto na {brand} — detailná štátna letecká mapa (© GKÚ, NLC, ČÚZK) do vysokého priblíženia, ideálna na presnú navigáciu v teréne.',
     },
   },
   {
@@ -141,8 +155,8 @@ export const hubs: Hub[] = [
       sk: 'Mapa verejnej dopravy',
     },
     description: {
-      en: 'Public transport map on Freemap.sk — the ÖPNV layer showing bus, tram and train lines and stops based on OpenStreetMap data (© MeMoMaps).',
-      sk: 'Mapa verejnej dopravy na Freemap.sk — vrstva ÖPNV zobrazujúca autobusové, električkové a vlakové linky a zastávky na základe dát OpenStreetMap (© MeMoMaps).',
+      en: 'Public transport map on {brand} — the ÖPNV layer showing bus, tram and train lines and stops based on OpenStreetMap data (© MeMoMaps).',
+      sk: 'Mapa verejnej dopravy na {brand} — vrstva ÖPNV zobrazujúca autobusové, električkové a vlakové linky a zastávky na základe dát OpenStreetMap (© MeMoMaps).',
     },
   },
   {
@@ -152,8 +166,8 @@ export const hubs: Hub[] = [
       sk: 'Wikipédia v mape',
     },
     description: {
-      en: 'Wikipedia overlay on Freemap.sk — discover nearby places that have Wikipedia articles, shown as markers directly on the map.',
-      sk: 'Prekryv Wikipédia na Freemap.sk — objavujte okolité miesta s článkami na Wikipédii zobrazené ako značky priamo v mape.',
+      en: 'Wikipedia overlay on {brand} — discover nearby places that have Wikipedia articles, shown as markers directly on the map.',
+      sk: 'Prekryv Wikipédia na {brand} — objavujte okolité miesta s článkami na Wikipédii zobrazené ako značky priamo v mape.',
     },
   },
   {
@@ -163,20 +177,20 @@ export const hubs: Hub[] = [
       sk: 'Komunitné outdoorové fotografie',
     },
     description: {
-      en: 'Community photos on Freemap.sk — browse thousands of geotagged outdoor photos (CC BY-SA 4.0) shown as markers on the map; filter, rate and upload your own.',
-      sk: 'Komunitné fotografie na Freemap.sk — prezerajte tisíce geolokalizovaných outdoorových fotografií (CC BY-SA 4.0) zobrazené ako značky v mape; filtrujte, hodnoťte a pridávajte vlastné.',
+      en: 'Community photos on {brand} — browse thousands of geotagged outdoor photos (CC BY-SA 4.0) shown as markers on the map; filter, rate and upload your own.',
+      sk: 'Komunitné fotografie na {brand} — prezerajte tisíce geolokalizovaných outdoorových fotografií (CC BY-SA 4.0) zobrazené ako značky v mape; filtrujte, hodnoťte a pridávajte vlastné.',
     },
   },
   // ---- Tools ----
   {
-    param: 'show=route-planner',
+    param: 'tool=route-planner',
     title: {
       en: 'Route planner',
       sk: 'Plánovač trás',
     },
     description: {
-      en: 'Route planner on Freemap.sk — plan walking, hiking, cycling, mountain-bike and car routes with GraphHopper and OSRM routing, multiple waypoints, round trips and isochrones, then export to GPX.',
-      sk: 'Plánovač trás na Freemap.sk — naplánujte pešie, turistické, cyklistické, horské a automobilové trasy pomocou smerovania GraphHopper a OSRM, s viacerými prechodmi, okruhmi a izochrónami, a exportujte do GPX.',
+      en: 'Route planner on {brand} — plan walking, hiking, cycling, mountain-bike and car routes with GraphHopper and OSRM routing, multiple waypoints, round trips and isochrones, then export to GPX.',
+      sk: 'Plánovač trás na {brand} — naplánujte pešie, turistické, cyklistické, horské a automobilové trasy pomocou smerovania GraphHopper a OSRM, s viacerými prechodmi, okruhmi a izochrónami, a exportujte do GPX.',
     },
   },
   {
@@ -186,19 +200,19 @@ export const hubs: Hub[] = [
       sk: 'Kreslenie a meranie',
     },
     description: {
-      en: 'Drawing and measurement on Freemap.sk — draw points, lines and polygons on the map, measure distance, area, elevation and azimuth, view elevation profiles and style your annotations.',
-      sk: 'Kreslenie a meranie na Freemap.sk — kreslite body, čiary a polygóny v mape, merajte vzdialenosť, plochu, výšku a azimut, zobrazujte výškové profily a štýlujte svoje poznámky.',
+      en: 'Drawing and measurement on {brand} — draw points, lines and polygons on the map, measure distance, area, elevation and azimuth, view elevation profiles and style your annotations.',
+      sk: 'Kreslenie a meranie na {brand} — kreslite body, čiary a polygóny v mape, merajte vzdialenosť, plochu, výšku a azimut, zobrazujte výškové profily a štýlujte svoje poznámky.',
     },
   },
   {
-    param: 'show=objects',
+    param: 'tool=objects',
     title: {
       en: 'Points of interest (POIs)',
       sk: 'Body záujmu (POI)',
     },
     description: {
-      en: 'Points of interest on Freemap.sk — search and display POIs by category (accommodation, food, shops, tourism, natural features and more) as icons on the map.',
-      sk: 'Body záujmu na Freemap.sk — vyhľadávajte a zobrazujte POI podľa kategórie (ubytovanie, jedlo, obchody, turistika, prírodné prvky a ďalšie) ako ikony v mape.',
+      en: 'Points of interest on {brand} — search and display POIs by category (accommodation, food, shops, tourism, natural features and more) as icons on the map.',
+      sk: 'Body záujmu na {brand} — vyhľadávajte a zobrazujte POI podľa kategórie (ubytovanie, jedlo, obchody, turistika, prírodné prvky a ďalšie) ako ikony v mape.',
     },
   },
   {
@@ -208,8 +222,8 @@ export const hubs: Hub[] = [
       sk: 'Detaily mapy',
     },
     description: {
-      en: 'Map details on Freemap.sk — click any place to query its address, nearby features and the administrative and geographic areas that contain it, with links to OpenStreetMap.',
-      sk: 'Detaily mapy na Freemap.sk — kliknite na ľubovoľné miesto a získajte jeho adresu, okolité prvky a administratívne a geografické oblasti, ktoré ho obsahujú, s odkazmi na OpenStreetMap.',
+      en: 'Map details on {brand} — click any place to query its address, nearby features and the administrative and geographic areas that contain it, with links to OpenStreetMap.',
+      sk: 'Detaily mapy na {brand} — kliknite na ľubovoľné miesto a získajte jeho adresu, okolité prvky a administratívne a geografické oblasti, ktoré ho obsahujú, s odkazmi na OpenStreetMap.',
     },
   },
   {
@@ -219,8 +233,8 @@ export const hubs: Hub[] = [
       sk: 'Zmeny v OpenStreetMap',
     },
     description: {
-      en: 'OpenStreetMap changes on Freemap.sk — browse recent OSM edits on the map by time window and author, with links to changesets on osm.org and Achavi.',
-      sk: 'Zmeny OpenStreetMap na Freemap.sk — prezerajte nedávne úpravy OSM v mape podľa časového obdobia a autora, s odkazmi na changesety na osm.org a Achavi.',
+      en: 'OpenStreetMap changes on {brand} — browse recent OSM edits on the map by time window and author, with links to changesets on osm.org and Achavi.',
+      sk: 'Zmeny OpenStreetMap na {brand} — prezerajte nedávne úpravy OSM v mape podľa časového obdobia a autora, s odkazmi na changesety na osm.org a Achavi.',
     },
   },
   {
@@ -230,8 +244,8 @@ export const hubs: Hub[] = [
       sk: 'Export mapy do obrázka alebo PDF',
     },
     description: {
-      en: 'Map export on Freemap.sk — export the map as JPEG, PNG, PDF or SVG at a chosen resolution, optionally with contours, shaded relief, trails, drawing and planned routes, ready for printing.',
-      sk: 'Export mapy na Freemap.sk — exportujte mapu ako JPEG, PNG, PDF alebo SVG vo zvolenom rozlíšení, voliteľne s vrstevnicami, tieňovaným reliéfom, trasami, kresbou a naplánovanými trasami, pripravené na tlač.',
+      en: 'Map export on {brand} — export the map as JPEG, PNG, PDF or SVG at a chosen resolution, optionally with contours, shaded relief, trails, drawing and planned routes, ready for printing.',
+      sk: 'Export mapy na {brand} — exportujte mapu ako JPEG, PNG, PDF alebo SVG vo zvolenom rozlíšení, voliteľne s vrstevnicami, tieňovaným reliéfom, trasami, kresbou a naplánovanými trasami, pripravené na tlač.',
     },
   },
   {
@@ -241,8 +255,8 @@ export const hubs: Hub[] = [
       sk: 'Export mapových dát (GPX, GeoJSON)',
     },
     description: {
-      en: 'Map data export on Freemap.sk — export your routes, points of interest, photos, drawings, live tracks and GPX data as GPX or GeoJSON, or send them to Google Drive, Dropbox or Garmin Connect.',
-      sk: 'Export mapových dát na Freemap.sk — exportujte svoje trasy, body záujmu, fotografie, kresby, živé záznamy a GPX dáta ako GPX alebo GeoJSON, alebo ich odošlite do Google Drive, Dropboxu či Garmin Connect.',
+      en: 'Map data export on {brand} — export your routes, points of interest, photos, drawings, live tracks and GPX data as GPX or GeoJSON, or send them to Google Drive, Dropbox or Garmin Connect.',
+      sk: 'Export mapových dát na {brand} — exportujte svoje trasy, body záujmu, fotografie, kresby, živé záznamy a GPX dáta ako GPX alebo GeoJSON, alebo ich odošlite do Google Drive, Dropboxu či Garmin Connect.',
     },
   },
   {
@@ -252,8 +266,8 @@ export const hubs: Hub[] = [
       sk: 'Vloženie mapy do stránky',
     },
     description: {
-      en: 'Embed the map from Freemap.sk — generate an iframe to put an interactive outdoor map on your own website, with configurable size and controls.',
-      sk: 'Vloženie mapy z Freemap.sk — vygenerujte iframe a umiestnite interaktívnu turistickú mapu na vlastnú stránku s nastaviteľnou veľkosťou a ovládacími prvkami.',
+      en: 'Embed the map from {brand} — generate an iframe to put an interactive outdoor map on your own website, with configurable size and controls.',
+      sk: 'Vloženie mapy z {brand} — vygenerujte iframe a umiestnite interaktívnu turistickú mapu na vlastnú stránku s nastaviteľnou veľkosťou a ovládacími prvkami.',
     },
   },
   {
@@ -263,8 +277,8 @@ export const hubs: Hub[] = [
       sk: 'Export offline máp (MBTiles)',
     },
     description: {
-      en: 'Offline map export on Freemap.sk — download map areas as MBTiles or SQLiteDB for offline use in GPS apps, choosing the area and zoom range.',
-      sk: 'Export offline máp na Freemap.sk — stiahnite oblasti mapy ako MBTiles alebo SQLiteDB na offline použitie v GPS aplikáciách s výberom oblasti a rozsahu priblíženia.',
+      en: 'Offline map export on {brand} — download map areas as MBTiles or SQLiteDB for offline use in GPS apps, choosing the area and zoom range.',
+      sk: 'Export offline máp na {brand} — stiahnite oblasti mapy ako MBTiles alebo SQLiteDB na offline použitie v GPS aplikáciách s výberom oblasti a rozsahu priblíženia.',
     },
   },
 ];
@@ -319,9 +333,9 @@ const sharedStyle = html`
 
 /** Render a hub (layer/tool) landing page for one language. */
 export function renderHub(hub: Hub, lang: HubLang): string {
-  const title = hub.title[lang];
+  const title = withBrand(hub.title[lang], lang);
 
-  const description = hub.description[lang];
+  const description = withBrand(hub.description[lang], lang);
 
   const url = appUrl(hub.param, lang);
 
@@ -332,14 +346,18 @@ export function renderHub(hub: Hub, lang: HubLang): string {
     description,
     url,
     inLanguage: lang,
-    isPartOf: { '@type': 'WebSite', name: 'Freemap.sk', url: langBase(lang) },
+    isPartOf: {
+      '@type': 'WebSite',
+      name: brand(lang),
+      url: langBase(lang),
+    },
   });
 
   return (
     '<!doctype html>\n' +
     html`<html lang=${lang}>
       <head>
-        <title>${`${title} – Freemap.sk`}</title>
+        <title>${`${title} – ${brand(lang)}`}</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -379,7 +397,9 @@ export function renderHub(hub: Hub, lang: HubLang): string {
             .map(
               (h) =>
                 html`<li>
-                  <a href=${appUrl(h.param, lang)}>${h.title[lang]}</a>
+                  <a href=${appUrl(h.param, lang)}>
+                    ${withBrand(h.title[lang], lang)}
+                  </a>
                 </li>`,
             )}
         </ul>
@@ -400,7 +420,7 @@ export function renderHome(lang: Lang): string {
   const jsonLd = encodeJsonLd({
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'Freemap.sk',
+    name: brand(lang),
     description,
     url,
     inLanguage: lang,
@@ -447,7 +467,9 @@ export function renderHome(lang: Lang): string {
           ${hubs.map(
             (h) =>
               html`<li>
-                <a href=${appUrl(h.param, lang)}>${h.title[hubLang]}</a>
+                <a href=${appUrl(h.param, lang)}>
+                  ${withBrand(h.title[hubLang], lang)}
+                </a>
               </li>`,
           )}
         </ul>
@@ -482,7 +504,7 @@ export function renderDocument(opts: {
     '<!doctype html>\n' +
     html`<html lang=${lang}>
       <head>
-        <title>${`${title} – Freemap.sk`}</title>
+        <title>${`${title} – ${brand(lang)}`}</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
