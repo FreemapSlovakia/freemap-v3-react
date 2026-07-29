@@ -342,6 +342,8 @@ The "Cache map for offline use" form lets the user choose:
 
 It shows the estimated tile count and size before caching starts.
 
+Picking the rectangle option (in this form and in the map/document exports below) hides the modal and lets the user drag the rectangle's corner, edge, and center handles on the map, confirming with **OK** or discarding with **Cancel** (<kbd>Esc</kbd>). The confirmed rectangle is remembered for the other export/cache forms until the page is reloaded; if it lies outside the current view, the map jumps to it.
+
 ### Share / Open in external app
 
 - Access: Main menu > Share / Open in external app
