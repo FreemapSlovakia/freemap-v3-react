@@ -247,8 +247,6 @@ export type Messages = {
     despikeHelp: string;
     ditchFill: string;
     ditchFillHelp: string;
-    highResolution: string;
-    highResolutionHelp: string;
   };
   errorCatcher: {
     html: (ticketId?: string) => string;

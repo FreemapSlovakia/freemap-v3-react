@@ -368,9 +368,6 @@ const messages: Messages = {
     ditchFill: 'Fill terrain-model ditches',
     ditchFillHelp:
       'The detailed national terrain models, available in some countries, are usually adjusted for hydrology: they dig a ditch through the road at every culvert. Dips narrower than this are filled; wider ones are kept, being real terrain. Zero switches it off, and it changes nothing where the global model is used.',
-    highResolution: 'High-resolution elevation data',
-    highResolutionHelp:
-      'Reads the detailed national terrain models where they exist — currently a handful of European countries. They show finer detail, but also the culvert ditches and removed bridges they carry. Elsewhere the global model is used either way.',
   },
 
   errorCatcher: {

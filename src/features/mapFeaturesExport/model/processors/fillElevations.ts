@@ -51,7 +51,6 @@ export async function fillFcElevations(
     targets.map((pos) => [pos[1], pos[0]]),
     getState,
     exportElevationCancelActions,
-    true,
   );
 
   targets.forEach((pos, i) => {

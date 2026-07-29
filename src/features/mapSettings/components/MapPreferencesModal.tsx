@@ -13,9 +13,6 @@ import { ensureCompassPermission } from '@features/location/ensureCompassPermiss
 import { locationSettingsInitialState } from '@features/location/model/settingsReducer.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
-import { PremiumGem } from '@features/premium/components/PremiumGem.js';
-import { isPremium } from '@features/premium/premium.js';
-import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -40,8 +37,6 @@ type Props = { show: boolean };
 
 export default function MapPreferencesModal({ show }: Props): ReactElement {
   const m = useMessages();
-
-  const prm = usePremiumMessages();
 
   const dispatch = useDispatch();
 
@@ -91,14 +86,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     initialDitchFillWindow,
   );
 
-  const premium = useAppSelector((state) => isPremium(state.auth.user));
-
-  const initialHighResolution = useAppSelector(
-    (state) => state.elevationSettings.highResolution,
-  );
-
-  const [highResolution, setHighResolution] = useState(initialHighResolution);
-
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
   useDocumentTitle(show ? m?.mapLayers.preferences : undefined);
@@ -127,8 +114,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     setDespikeWindow(String(elevationSettingsInitialState.despikeWindow));
 
     setDitchFillWindow(String(elevationSettingsInitialState.ditchFillWindow));
-
-    setHighResolution(elevationSettingsInitialState.highResolution);
   }, []);
 
   const handleSubmit = (e: SubmitEvent) => {
@@ -172,14 +157,12 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
     if (
       despikeWindow !== initialDespikeWindow ||
-      ditchFillWindow !== initialDitchFillWindow ||
-      highResolution !== initialHighResolution
+      ditchFillWindow !== initialDitchFillWindow
     ) {
       dispatch(
         elevationSetSettings({
           despikeWindow: Number(despikeWindow),
           ditchFillWindow: Number(ditchFillWindow),
-          highResolution,
         }),
       );
     }
@@ -214,13 +197,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     [],
   );
 
-  const handleHighResolutionChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setHighResolution(e.currentTarget.checked);
-    },
-    [],
-  );
-
   const handleShowBearingLineChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setShowBearingLine(e.currentTarget.checked);
@@ -235,8 +211,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     headingSource !== initialHeadingSource ||
     showBearingLine !== initialShowBearingLine ||
     despikeWindow !== initialDespikeWindow ||
-    ditchFillWindow !== initialDitchFillWindow ||
-    highResolution !== initialHighResolution;
+    ditchFillWindow !== initialDitchFillWindow;
 
   const atDefault =
     maxZoom === String(mapInitialState.maxZoom) &&
@@ -248,8 +223,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     headingSource === locationSettingsInitialState.headingSource &&
     showBearingLine === locationSettingsInitialState.showBearingLine &&
     despikeWindow === String(elevationSettingsInitialState.despikeWindow) &&
-    ditchFillWindow === String(elevationSettingsInitialState.ditchFillWindow) &&
-    highResolution === elevationSettingsInitialState.highResolution;
+    ditchFillWindow === String(elevationSettingsInitialState.ditchFillWindow);
 
   return (
     <Modal
@@ -441,31 +415,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
             <Form.Text muted className="d-block">
               {m?.elevationChart.ditchFillHelp}
-            </Form.Text>
-          </Form.Group>
-
-          <Form.Group className="mt-3">
-            <Form.Check
-              id="chk-high-resolution"
-              label={
-                <>
-                  {m?.elevationChart.highResolution}
-                  {!premium && (
-                    <PremiumGem
-                      className="ms-1"
-                      nested
-                      hint={prm?.higherPrecisionElevation}
-                    />
-                  )}
-                </>
-              }
-              checked={highResolution && premium}
-              disabled={!premium}
-              onChange={handleHighResolutionChange}
-            />
-
-            <Form.Text muted className="d-block">
-              {m?.elevationChart.highResolutionHelp}
             </Form.Text>
           </Form.Group>
         </Modal.Body>

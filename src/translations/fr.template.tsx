@@ -373,9 +373,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Combler les fossés du modèle de terrain',
     ditchFillHelp:
       'Les modèles de terrain nationaux détaillés, disponibles dans certains pays, sont généralement adaptés à l’hydrologie : à chaque buse, ils creusent un fossé en travers de la route. Les creux plus étroits que cette valeur sont comblés ; les plus larges sont conservés, car il s’agit de terrain réel. Zéro désactive la fonction et ne change rien là où le modèle global est utilisé.',
-    highResolution: 'Données d’altitude à haute résolution',
-    highResolutionHelp:
-      'Lit les modèles de terrain nationaux détaillés là où ils existent — actuellement dans une poignée de pays européens. Ils montrent des détails plus fins, mais aussi les fossés de buses et les ponts supprimés qu’ils contiennent. Ailleurs, le modèle global est utilisé de toute façon.',
   },
   errorCatcher: {
     html: (ticketId) => `${getErrorMarkup(ticketId)}

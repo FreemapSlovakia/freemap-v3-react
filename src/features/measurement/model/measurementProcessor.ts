@@ -96,14 +96,13 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             }),
           );
 
-          // Through the shared fetch, so a single point honours the same
-          // high-resolution preference a profile does — and the readout's
-          // tooltip credits the model that actually answered.
+          // Through the shared fetch, so a single point is read the same way a
+          // profile is — and the readout's tooltip credits the model that
+          // actually answered.
           [elevation] = await fetchElevations(
             [[point.lat, point.lon]],
             getState,
             [drawingMeasure, clearMapFeatures],
-            false,
             sources,
           );
         }

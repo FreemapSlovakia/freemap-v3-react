@@ -325,7 +325,6 @@ async function fillGpxElevations(
     ]),
     getState,
     exportElevationCancelActions,
-    true,
   );
 
   candidates.forEach(({ el, existing }, i) => {

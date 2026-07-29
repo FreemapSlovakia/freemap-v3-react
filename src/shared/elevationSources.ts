@@ -10,8 +10,7 @@ import {
  * read falls back to the global 30 m GEDTM30. This is what the premium offer
  * advertises, so it must track the models the API actually holds.
  *
- * An anonymous read — no premium, or the high-resolution preference switched off
- * — gets none of these: it is answered from SRTM everywhere.
+ * A non-premium read gets none of these: it is answered from SRTM everywhere.
  *
  * A subset of the outdoor renderer's shading sources
  * (`OUTDOOR_NATIONAL_DTM_ATTRIBUTION` in `mapDefinitions.tsx`): the models are
@@ -43,7 +42,7 @@ export const ELEVATION_API_DTM_ATTRIBUTION =
 
 /**
  * The near-global model behind two unrelated things: what the elevation API
- * answers an anonymous read with, and what GraphHopper serves its own elevation
+ * answers a non-premium read with, and what GraphHopper serves its own elevation
  * from (`graph.elevation.provider: srtm`), which a route's profile keeps on the
  * free tier. Being one dataset, it is credited once either way.
  */
@@ -60,7 +59,7 @@ export const SRTM_TOKEN = 'srtm';
  * The models the elevation API falls back to outside the national ones, by the
  * token it reports them under — the sources that aren't scoped to a country, so
  * they can't be named by a country code. GEDTM30 answers a premium read past the
- * national borders, SRTM answers an anonymous one everywhere.
+ * national borders, SRTM answers a non-premium one everywhere.
  */
 const GLOBAL_MODELS: Record<string, AttributionDef> = {
   gedtm30: GEDTM30_ATTR,
