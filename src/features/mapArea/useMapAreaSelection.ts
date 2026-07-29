@@ -1,6 +1,8 @@
+import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { hasVisibleHandle } from './hasVisibleHandle.js';
 import { insetBbox } from './insetBbox.js';
 import { type Bbox, mapAreaSelectStart } from './model/actions.js';
 
@@ -37,6 +39,13 @@ export function useMapAreaSelection() {
     }
 
     setArea('area');
+
+    // the remembered rectangle can sit outside the map the user has panned to
+    // meanwhile, leaving drawing mode with no handle to grab — bring it in view
+    // instead of dropping the selection
+    if (areaBbox && !hasVisibleHandle(areaBbox, bounds)) {
+      fitMapToBbox(areaBbox, { padding: [40, 40] });
+    }
 
     dispatch(mapAreaSelectStart(areaBbox ?? insetBbox(bounds)));
   }, [dispatch, bounds, areaBbox]);
