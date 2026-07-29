@@ -150,7 +150,7 @@ describe('straightenStructures', () => {
     const feature = line(holed(60, 25, 34, 8));
 
     const levelled = straightenStructures(feature, [
-      { start: at(25), end: at(34) },
+      { start: at(25), end: at(34), kind: 'bridge' },
     ]);
 
     for (const coord of levelled.geometry.coordinates.slice(26, 34)) {
@@ -166,7 +166,7 @@ describe('straightenStructures', () => {
     raw[55] = 109;
 
     const levelled = straightenStructures(line(raw), [
-      { start: at(25), end: at(34) },
+      { start: at(25), end: at(34), kind: 'bridge' },
     ]);
 
     expect(levelled.geometry.coordinates[5]![2]).toBe(91);
@@ -177,17 +177,51 @@ describe('straightenStructures', () => {
   it('is not tilted by a lone bad sample at the span edge', () => {
     // A tunnel portal is a likely place for one sample to sit metres above the
     // road; anchoring the whole bore on it would tilt the lot.
-    const raw = holed(60, 25, 34, 8);
+    const raw: number[] = Array.from({ length: 60 }, (_, i) =>
+      i >= 25 && i <= 34 ? 108 : 100,
+    );
 
     raw[25] = 104;
 
     const levelled = straightenStructures(line(raw), [
-      { start: at(25), end: at(34) },
+      { start: at(25), end: at(34), kind: 'tunnel' },
     ]);
 
-    for (const coord of levelled.geometry.coordinates.slice(26, 34)) {
+    for (const coord of levelled.geometry.coordinates.slice(25, 35)) {
       expect(coord[2]).toBeCloseTo(100, 6);
     }
+  });
+
+  it('covers the span ends, where a short structure has all its samples', () => {
+    // Nothing lies strictly between them, so replacing only the interior would
+    // leave the whole notch in place.
+    const raw = holed(60, 25, 26, 8);
+
+    const levelled = straightenStructures(line(raw), [
+      { start: at(25), end: at(26), kind: 'bridge' },
+    ]);
+
+    expect(levelled.geometry.coordinates[25]![2]).toBeCloseTo(100, 6);
+
+    expect(levelled.geometry.coordinates[26]![2]).toBeCloseTo(100, 6);
+  });
+
+  it('never digs a bridge below the ground it spans', () => {
+    // Reaching past the mapped ends is safe because the line is clamped: real
+    // terrain outside the structure is already above it.
+    const raw = holed(60, 25, 34, 8);
+
+    raw[24] = 106;
+
+    raw[35] = 106;
+
+    const levelled = straightenStructures(line(raw), [
+      { start: at(25), end: at(34), kind: 'bridge' },
+    ]);
+
+    expect(levelled.geometry.coordinates[24]![2]).toBe(106);
+
+    expect(levelled.geometry.coordinates[35]![2]).toBe(106);
   });
 
   it('keeps the profile when there is no road to anchor on', () => {
@@ -200,14 +234,18 @@ describe('straightenStructures', () => {
     const feature = line(raw);
 
     expect(
-      straightenStructures(feature, [{ start: at(25), end: at(34) }]),
+      straightenStructures(feature, [
+        { start: at(25), end: at(34), kind: 'bridge' },
+      ]),
     ).toBe(feature);
   });
 
   it('does not mutate its input', () => {
     const feature = line(holed(60, 25, 34, 8));
 
-    straightenStructures(feature, [{ start: at(25), end: at(34) }]);
+    straightenStructures(feature, [
+      { start: at(25), end: at(34), kind: 'bridge' },
+    ]);
 
     expect(feature.geometry.coordinates[30]![2]).toBe(92);
   });

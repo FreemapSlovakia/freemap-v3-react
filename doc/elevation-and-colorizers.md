@@ -74,13 +74,22 @@ step's own coordinates).
 1. `flattenWithStructures` merges legs/steps into one coordinate list (dropping the vertex
    consecutive steps share) and converts the structure ranges into **spans in metres along
    the line** — a structure split across a step boundary is rejoined here;
-2. `straightenStructures` runs **after** `densifyAlong` and replaces the elevation of every
-   point strictly inside a span with a straight line between the road either side of it.
+2. `straightenStructures` runs **after** `densifyAlong` and lays a straight line across
+   each span.
 
-Each end of that line is the **median** of the samples within 10 m outside the span
-(`anchorElevation`), not the single sample at the span's edge. A tunnel portal is one of the likeliest
-places for a single sample to sit metres above the road, and anchoring a 400 m bore on it
-tilts the whole thing. The median costs only the road's grade over a few metres.
+The line covers the span's **own end samples**, not just what lies between them: a short
+bridge on a long route often has no sample strictly inside it (the densification step
+scales with route length, up to 100 m), so the whole notch *is* those two ends. Its
+anchors come from one sample further out again, each the **median** of the samples within
+10 m — but never fewer than three, since on a long route they can be 35 m apart
+(`anchorElevation`). A single sample sitting metres off the road at a portal or an
+abutment would otherwise tilt the entire span.
+
+Rather than replacing the terrain outright, the line is **clamped** against it: a deck is
+never below the ground it spans (`Math.max`), a bore never above it (`Math.min`) — which
+is why `StructureSpan` carries the `kind`. That is what makes reaching past the mapped
+ends safe: beyond the real structure the terrain is already on the right side of the line,
+so nothing changes there.
 
 Metres, not indices, because densification renumbers every point but leaves distances
 along the line alone — and it must run last, since the inserted points are DEM-sampled too
