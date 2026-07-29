@@ -39,6 +39,15 @@ export function onMap(fn: Listener): () => void {
   };
 }
 
+/**
+ * The mounted map, or `undefined` between mounts. For the rare caller that must
+ * decide synchronously — a keydown handler can't await {@link mapPromise} and
+ * still suppress the browser's own handling of the key.
+ */
+export function getMapLeafletElement(): LeafletMap | undefined {
+  return currentMap;
+}
+
 export function setMapLeafletElement(map: LeafletMap | null): void {
   if ((map ?? undefined) === currentMap) {
     return;

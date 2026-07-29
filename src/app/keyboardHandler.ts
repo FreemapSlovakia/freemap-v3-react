@@ -13,7 +13,8 @@ import {
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
 } from '@features/gallery/model/actions.js';
-import { mapToggleLayer } from '@features/map/model/actions.js';
+import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
+import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
@@ -380,7 +381,147 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
   return undefined;
 }
 
+const zoomKeyDeltas: Record<string, number> = {
+  '+': 1,
+  '=': 1,
+  '-': -1,
+  _: -1,
+};
+
+// Leaflet's own `keyboardPanDelta`, so the step is the size users of the
+// focused map already know.
+const PAN_PX = 80;
+
+const panKeyOffsets: Record<string, [number, number]> = {
+  ArrowLeft: [-PAN_PX, 0],
+  ArrowRight: [PAN_PX, 0],
+  ArrowUp: [0, -PAN_PX],
+  ArrowDown: [0, PAN_PX],
+};
+
+/**
+ * Moving the map with `+`/`-` and the arrow keys. Leaflet binds its own on the
+ * map container, which only receives keys once the map has been clicked; going
+ * through the store instead makes them work anywhere and matches what the
+ * on-screen controls do. Holding shift triples an arrow step, as Leaflet does;
+ * a zoom step is always one level, because on most layouts `+` is typed as
+ * shift-`=` and there is no telling that shift from a deliberate one.
+ *
+ * Routing a zoom through the store also means the store learns it before the
+ * map does, which is what keeps GPS following alive across a zoom — whereas an
+ * arrow key carries coordinates and so ends following, being a deliberate move
+ * away from the located position.
+ */
+export function handleMapKey(event: KeyboardEvent, state: RootState) {
+  const zoomDelta = zoomKeyDeltas[event.key];
+
+  const panOffset = panKeyOffsets[event.key];
+
+  if (
+    (!zoomDelta && !panOffset) ||
+    event.ctrlKey ||
+    event.altKey ||
+    event.metaKey ||
+    event.isComposing
+  ) {
+    return undefined;
+  }
+
+  if (
+    event.target instanceof HTMLElement &&
+    ['input', 'select', 'textarea'].includes(event.target.tagName.toLowerCase())
+  ) {
+    return undefined;
+  }
+
+  // An open dropdown moves its own selection with the arrow keys, and this
+  // handler runs in the capture phase, so it would claim them before the menu
+  // ever sees them. Same signal the Escape handling above uses.
+  if (document.querySelector('*[aria-expanded=true]') !== null) {
+    return undefined;
+  }
+
+  // The picking/selecting overlays leave the map live underneath, so moving it
+  // stays available there; a real modal takes the keys — which is also what
+  // leaves the gallery viewer its own arrow-key handling.
+  const suspendedModal =
+    state.homeLocation.selectingHomeLocation !== false ||
+    state.gallery.pickingPositionForId ||
+    state.gallery.showPosition ||
+    state.mapArea.selecting;
+
+  const showingModal =
+    Boolean(state.main.activeModal) ||
+    Boolean(state.gallery.activeImageId) ||
+    Boolean(state.wiki.preview) ||
+    Boolean(state.wiki.loading);
+
+  if (showingModal && !suspendedModal) {
+    return undefined;
+  }
+
+  const map = getMapLeafletElement();
+
+  if (!map) {
+    return undefined;
+  }
+
+  if (panOffset) {
+    const step = event.shiftKey ? 3 : 1;
+
+    // Panning starts from where the map actually is, not from the store, which
+    // while following runs ahead of it.
+    const mapZoom = map.getZoom();
+
+    const { lat, lng } = map.unproject(
+      map
+        .project(map.getCenter(), mapZoom)
+        .add([panOffset[0] * step, panOffset[1] * step]),
+      mapZoom,
+    );
+
+    return mapRefocus({ lat, lon: lng });
+  }
+
+  const zoom = Math.min(
+    map.getMaxZoom(),
+    Math.max(map.getMinZoom(), state.map.zoom + zoomDelta),
+  );
+
+  return zoom === state.map.zoom ? undefined : mapRefocus({ zoom });
+}
+
 export function attachKeyboardHandler(store: MyStore): void {
+  // Capture phase, so the key is claimed before it reaches the map container
+  // and Leaflet's own handler moves the map a second time on top.
+  document.addEventListener(
+    'keydown',
+    (e) => {
+      const action = handleMapKey(e, store.getState());
+
+      if (!action) {
+        return;
+      }
+
+      store.dispatch(action);
+
+      e.preventDefault();
+
+      e.stopPropagation();
+
+      // The document-level handler below never sees this key, so the pending
+      // multi-key sequence it would have cancelled is cleared here instead.
+      if (keyTimer) {
+        window.clearTimeout(keyTimer);
+
+        keyTimer = null;
+
+        initCode = null;
+      }
+    },
+    { capture: true },
+  );
+
   document.addEventListener('keydown', (e) => {
     const action = handleEvent(e, store.getState());
 

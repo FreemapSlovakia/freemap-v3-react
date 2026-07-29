@@ -1,5 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '../../hooks/leafletElementHolder.js';
+import { duringProgrammaticMove } from '../../moveOrigin.js';
 import { mapRefocus } from '../actions.js';
 
 export const mapRefocusProcessor: Processor = {
@@ -38,9 +39,11 @@ export const mapRefocusProcessor: Processor = {
     ) {
       const fixing = lon !== fixedLon;
 
-      map.setView([lat, fixedLon], zoom, {
-        animate: !fixing,
-      });
+      duringProgrammaticMove(() =>
+        map.setView([lat, fixedLon], zoom, {
+          animate: !fixing,
+        }),
+      );
 
       if (fixing) {
         dispatch(mapRefocus({ lon: fixedLon }));
