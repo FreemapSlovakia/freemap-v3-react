@@ -1,7 +1,7 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import { describe, expect, it } from 'vitest';
 import type { RecorderPoint } from '../protocol.js';
-import { gpsRecorderAddPoints } from './actions.js';
+import { gpsRecorderAddPoints, gpsRecorderTrackCleared } from './actions.js';
 import {
   gpsRecorderInitialState,
   gpsRecorderReducer,
@@ -10,9 +10,13 @@ import {
 
 const pt = (seq: number): RecorderPoint => ({
   seq,
+  ts: 1_700_000_000_000 + seq * 1000,
   lat: 48 + seq / 1000,
   lon: 17 + seq / 1000,
-  ts: 1_700_000_000_000 + seq * 1000,
+  alt: null,
+  acc: null,
+  spd: null,
+  brg: null,
 });
 
 const seqs = (points: RecorderPoint[]) => points.map((point) => point.seq);
@@ -62,6 +66,18 @@ describe('gpsRecorderReducer', () => {
     expect(
       gpsRecorderReducer(state, gpsRecorderAddPoints([pt(5)])).cursor,
     ).toBe(7);
+  });
+
+  it('rewinds the cursor once the recorder confirms the delete', () => {
+    const state = gpsRecorderReducer(
+      gpsRecorderInitialState,
+      gpsRecorderAddPoints([pt(1), pt(2)]),
+    );
+
+    const cleared = gpsRecorderReducer(state, gpsRecorderTrackCleared());
+
+    expect(cleared.points).toEqual([]);
+    expect(cleared.cursor).toBe(0);
   });
 
   it('rewinds the cursor when the local copy is cleared', () => {

@@ -302,17 +302,26 @@ off that — never re-derive "is this a track?" from density/timestamps.
 
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 
-Stage 1 (viability proof) is built: Start/Stop/Reconnect, recording state and
-point count, a live-growing plain polyline, raw English error text, behind the
-`?gps-recorder=1` flag on Android+Chromium. Stage 2 is everything that makes it
-shippable, and should only start once stage 1 is proven on a real device.
+Stage 1 (viability proof) is built and works end to end on a real device:
+Start/Stop/Reconnect/Delete, convert-to-drawing, export, a live-growing plain
+polyline and raw English error text — on Android+Chromium, for holders of the
+`layerPreview` role. The recorder's `API.md` is the contract's source of truth.
 
-- [ ] **Confirm the wire contract against the APK.** `protocol.ts` was written
-      against the integration spec, not a running recorder. `RECORDER_ORIGIN`'s
-      port, `RECORDER_INTENT_URL`'s scheme/host, `RECORDER_DOWNLOAD_URL`,
-      `MIN_RECORDER_VERSION_CODE`, and the `/status`, `/track` and `/stream`
-      payload shapes all need checking; the schemas are `looseObject`, so extra
-      fields are already tolerated.
+- [ ] **Give it a role of its own.** It rides on `layerPreview` for want of a
+      better fit; a `gpsRecorder` (or a general "beta features") role would say
+      what it means.
+- [ ] **A landing page for the APK.** `RECORDER_DOWNLOAD_URL` points straight at
+      the APK, so the install fallback drops the user into a bare download with
+      no explanation of the "install unknown apps" permission they will need.
+- [ ] **Verify the `intent://` fallback on non-Chromium Android.** The platform
+      gate is Android-wide, but `intent://` with `S.browser_fallback_url` is a
+      Chrome convention; a browser that ignores it leaves the "recorder not
+      installed" path doing nothing at all.
+- [ ] **`getExportables()` in `garminExport.ts` has no `gpsRecorder` entry.** It
+      is a `Partial` record, so this compiles, but the Garmin target silently
+      produces nothing for the recorder. Mirror the `import` branch.
+- [ ] **Save the recording as an imported track**, not just via export/convert,
+      so elevation, colorize and the elevation chart work on it in place.
 - [ ] **Readout: elapsed time, distance, current accuracy.** Distance can reuse
       the shared track helpers rather than a private implementation.
 - [ ] **Style the live track like a displayed GPX track** instead of the stage-1

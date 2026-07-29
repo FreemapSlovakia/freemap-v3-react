@@ -37,6 +37,7 @@ export async function buildFilledFeatureCollection(
       objects: set.has('objects'),
       plannedRoute: set.has('plannedRoute'),
       tracking: set.has('tracking'),
+      gpsRecorder: set.has('gpsRecorder'),
       import: set.has('import'),
       search: set.has('search'),
     },

@@ -169,6 +169,9 @@ export const convertToDrawing = createAction<
   | { type: 'objects-geometry'; id: OsmFeatureId }
   | { type: 'planned-route' }
   | { type: 'track'; tolerance: number }
+  // Unlike a track, the recording keeps running, so this copies rather than
+  // replaces — the recorder stays the owner of its own data.
+  | { type: 'gps-recorder'; tolerance: number }
   | { type: 'search-result' }
   | { type: 'changesets' }
 >('CONVERT_TO_DRAWING');

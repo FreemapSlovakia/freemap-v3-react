@@ -23,6 +23,17 @@ export const gpsRecorderStop = createAction('GPS_RECORDER_STOP');
 /** Catch up over `/track?since=` and (re)attach the stream. */
 export const gpsRecorderSync = createAction('GPS_RECORDER_SYNC');
 
+/**
+ * Asks the recorder to discard its whole track — the one action that destroys
+ * data it owns, so the UI confirms first.
+ */
+export const gpsRecorderClear = createAction('GPS_RECORDER_CLEAR');
+
+/** The recorder confirmed the track is gone; drop the local copy with it. */
+export const gpsRecorderTrackCleared = createAction(
+  'GPS_RECORDER_TRACK_CLEARED',
+);
+
 export const gpsRecorderSetStatus = createAction<RecorderStatus | null>(
   'GPS_RECORDER_SET_STATUS',
 );

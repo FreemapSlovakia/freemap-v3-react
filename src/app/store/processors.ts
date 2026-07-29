@@ -40,6 +40,7 @@ import { gallerySubmitStarsProcessor } from '@features/gallery/model/processors/
 import { galleryUploadModalProcessor } from '@features/gallery/model/processors/galleryUploadModalProcessor.js';
 import { geoipProcessor } from '@features/geoip/model/processors/geoIpProcessor.js';
 import {
+  gpsRecorderClearProcessor,
   gpsRecorderStartProcessor,
   gpsRecorderStopProcessor,
   gpsRecorderSyncProcessor,
@@ -184,6 +185,7 @@ export const processors = [
   gpsRecorderStartProcessor,
   gpsRecorderStopProcessor,
   gpsRecorderSyncProcessor,
+  gpsRecorderClearProcessor,
   setActiveModalTransformer,
   mapsLoadListProcessor,
   mapsLoadProcessor,

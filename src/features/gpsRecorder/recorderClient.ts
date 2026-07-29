@@ -1,7 +1,9 @@
 import {
+  decodePoints,
   MIN_RECORDER_VERSION_CODE,
   RECORDER_ORIGIN,
   RecorderError,
+  type RecorderFailure,
   type RecorderPoint,
   type RecorderStatus,
   RecorderStatusSchema,
@@ -55,13 +57,52 @@ async function recorderFetch(
   }
 
   if (!response.ok) {
+    // 403 and 409 carry the whole status object plus an `error` naming the
+    // cause, so the body says more than the code: 403 is the recorder's own
+    // `canRecord` gate, while 409 is either a delete refused mid-recording or
+    // Android refusing a backgrounded foreground-service start (which the
+    // battery-optimisation exemption fixes).
+    const reason = await readErrorReason(response);
+
     throw new RecorderError(
-      'http',
-      `${init?.method ?? 'GET'} ${path} → HTTP ${response.status}`,
+      classifyHttpFailure(response.status, reason),
+      `${init?.method ?? 'GET'} ${path} → HTTP ${response.status}${
+        reason ? `: ${reason}` : ''
+      }`,
     );
   }
 
   return response;
+}
+
+function classifyHttpFailure(
+  status: number,
+  reason: string | null,
+): RecorderFailure {
+  if (status === 403) {
+    return 'setup-needed';
+  }
+
+  if (status === 409) {
+    return reason === 'recording' ? 'recording' : 'setup-needed';
+  }
+
+  return 'http';
+}
+
+async function readErrorReason(response: Response): Promise<string | null> {
+  try {
+    const body: unknown = await response.json();
+
+    const reason =
+      typeof body === 'object' && body !== null
+        ? (body as { error?: unknown }).error
+        : undefined;
+
+    return typeof reason === 'string' ? reason : null;
+  } catch {
+    return null;
+  }
 }
 
 async function recorderJson(
@@ -129,10 +170,10 @@ export async function waitForStatus(
 
 /** Throws when the running recorder is too old for the endpoints used here. */
 export function assertSupportedVersion(status: RecorderStatus): void {
-  if (status.versionCode < MIN_RECORDER_VERSION_CODE) {
+  if (status.version.code < MIN_RECORDER_VERSION_CODE) {
     throw new RecorderError(
       'outdated',
-      `recorder versionCode ${status.versionCode} < ${MIN_RECORDER_VERSION_CODE}`,
+      `recorder version ${status.version.name} (code ${status.version.code}) < ${MIN_RECORDER_VERSION_CODE}`,
     );
   }
 }
@@ -145,11 +186,26 @@ export async function stopRecording(signal?: AbortSignal): Promise<void> {
   await recorderFetch('/stop', { method: 'POST', signal });
 }
 
-/** Every point the recorder holds with a `seq` above the cursor. */
+/**
+ * Discards the recorder's whole track. The one call that destroys data the
+ * recorder owns, so it is only ever made on an explicit, confirmed request.
+ *
+ * Refused with `409 "recording"` while a recording is in progress — stop first.
+ * `seq` does not restart afterwards; `generation` is what marks the break.
+ */
+export async function clearTrack(signal?: AbortSignal): Promise<void> {
+  await recorderFetch('/track', { method: 'DELETE', signal });
+}
+
+/**
+ * Every point the recorder holds with a `seq` above the cursor — `since` is
+ * exclusive. The page's column order comes back with it, because the stream
+ * sends bare rows and needs it to decode them.
+ */
 export async function getTrackSince(
   since: number,
   signal?: AbortSignal,
-): Promise<RecorderPoint[]> {
+): Promise<{ points: RecorderPoint[]; fields: string[] }> {
   const result = RecorderTrackPageSchema.safeParse(
     await recorderJson(`/track?since=${since}`, { signal }),
   );
@@ -158,5 +214,7 @@ export async function getTrackSince(
     throw new RecorderError('protocol', `/track: ${result.error.message}`);
   }
 
-  return result.data.points;
+  const { fields, points } = result.data;
+
+  return { points: decodePoints(fields, points), fields };
 }

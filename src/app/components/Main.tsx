@@ -11,7 +11,7 @@ import {
   galleryAddItem,
   galleryMergeItem,
 } from '@features/gallery/model/actions.js';
-import { gpsRecorderAvailable } from '@features/gpsRecorder/support.js';
+import { gpsRecorderAvailableSelector } from '@features/gpsRecorder/support.js';
 import { HomeLocationPickingResult } from '@features/homeLocation/components/HomeLocationPickingResult.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MainMenuButton } from '@features/mainMenu/components/MainMenuButton.js';
@@ -358,6 +358,8 @@ export function Main(): ReactElement {
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
   const tools = useAppSelector(toolsSelector);
+
+  const gpsRecorderAvailable = useAppSelector(gpsRecorderAvailableSelector);
 
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 

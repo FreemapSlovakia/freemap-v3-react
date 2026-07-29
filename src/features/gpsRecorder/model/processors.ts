@@ -1,5 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
+  gpsRecorderClear,
   gpsRecorderStart,
   gpsRecorderStop,
   gpsRecorderSync,
@@ -29,4 +30,10 @@ export const gpsRecorderSyncProcessor: Processor = {
   actionCreator: gpsRecorderSync,
   id: 'gpsRecorder.sync',
   handle: async (...params) => (await handlers()).syncHandler(...params),
+};
+
+export const gpsRecorderClearProcessor: Processor = {
+  actionCreator: gpsRecorderClear,
+  id: 'gpsRecorder.clear',
+  handle: async (...params) => (await handlers()).clearHandler(...params),
 };

@@ -21,6 +21,7 @@ const en: MapFeaturesExportMessages = {
     drawingAreas: 'drawing - polygons',
     drawingPoints: 'drawing - points',
     tracking: 'live tracking',
+    gpsRecorder: 'GPS recorder',
     import: 'imported file',
     search: 'lookup',
   },

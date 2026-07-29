@@ -7,6 +7,7 @@ import {
   type Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import { recorderPointsToFeature } from '@features/gpsRecorder/trackGeojson.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
@@ -351,6 +352,35 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           }),
         );
       }
+    } else if (payload.type === 'gps-recorder') {
+      const { points } = state.gpsRecorder;
+
+      if (points.length < 2) {
+        return;
+      }
+
+      const feature = recorderPointsToFeature(points);
+
+      const { geometry } = payload.tolerance
+        ? simplify(feature, {
+            mutate: false,
+            highQuality: true,
+            tolerance: payload.tolerance,
+          })
+        : feature;
+
+      dispatch(
+        drawingLineAdd({
+          ...state.drawingSettings.style,
+          type: 'line',
+          points: ringToPoints(geometry.coordinates, false),
+        }),
+      );
+
+      // No delete counterpart to the track branch's `trackViewerDelete`: the
+      // recording continues and the recorder owns it, so this is a copy taken
+      // at a moment in time, not a hand-over.
+      selectAfterConvert(dispatch, getState, 1, 0);
     } else if (payload.type === 'objects-geometry') {
       // Async fetch path — leave the action alone so `handle` picks it up.
       return action;

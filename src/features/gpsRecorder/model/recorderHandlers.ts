@@ -1,6 +1,7 @@
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { Dispatch } from 'redux';
 import {
+  missingPermissions,
   RECORDER_DOWNLOAD_URL,
   RECORDER_INTENT_URL,
   RecorderError,
@@ -8,6 +9,7 @@ import {
 } from '../protocol.js';
 import {
   assertSupportedVersion,
+  clearTrack,
   getStatus,
   getTrackSince,
   startRecording,
@@ -24,6 +26,7 @@ import {
   gpsRecorderSetConnection,
   gpsRecorderSetError,
   gpsRecorderSetStatus,
+  gpsRecorderTrackCleared,
 } from './actions.js';
 
 /**
@@ -43,6 +46,9 @@ function describeFailure(err: unknown): string {
     case 'setup-needed':
       return `The recorder needs setup — open it and grant what it asks for. (${err.message})`;
 
+    case 'recording':
+      return 'Stop the recording before deleting its track.';
+
     case 'unreachable':
       return `The recorder did not respond. Install it from ${RECORDER_DOWNLOAD_URL}. (${err.message})`;
 
@@ -61,26 +67,53 @@ function reportFailure(dispatch: Dispatch, err: unknown): void {
 function assertReady(status: RecorderStatus): void {
   assertSupportedVersion(status);
 
-  if (status.missingPermissions.length > 0) {
+  // `canRecord` is the recorder's own verdict and the only blocking gate.
+  // `setupComplete` covers recommended-but-optional steps (a vendor battery
+  // policy, say), which belong in a warning rather than a refusal to start.
+  if (!status.canRecord) {
+    const missing = missingPermissions(status);
+
     throw new RecorderError(
       'setup-needed',
-      `missing permissions: ${status.missingPermissions.join(', ')}`,
+      missing.length > 0
+        ? `missing permissions: ${missing.join(', ')}`
+        : 'the recorder reports it cannot record',
     );
   }
 }
 
 /** Catches up over `/track?since=` and leaves the live stream attached. */
 export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
-  const { points, cursor } = getState().gpsRecorder;
+  // Read before the fresh status lands, so the generation below is the one this
+  // page's points were fetched under.
+  const { points, cursor, generation } = getState().gpsRecorder;
 
-  // A cold start holds no points, so the whole track is refetched: the recorder
-  // owns it, and the cursor only describes what this page already has.
-  const since = points.length === 0 ? 0 : cursor;
+  let fields: string[];
 
   try {
-    dispatch(gpsRecorderAddPoints(await getTrackSince(since)));
+    const status = await getStatus();
 
-    dispatch(gpsRecorderSetStatus(await getStatus()));
+    // `seq` never restarts, so a cleared track is indistinguishable from one
+    // that simply hasn't grown — a bumped `generation` is the only reliable
+    // signal that what we hold is gone. Asking for everything after a stale
+    // cursor would leave the deleted track on screen forever.
+    const cleared = generation !== null && status.generation !== generation;
+
+    if (cleared) {
+      dispatch(gpsRecorderTrackCleared());
+    }
+
+    dispatch(gpsRecorderSetStatus(status));
+
+    // A cold start holds no points, so the whole track is refetched: the
+    // recorder owns it, and the cursor only says what this page already has.
+    const page = await getTrackSince(
+      cleared || points.length === 0 ? 0 : cursor,
+    );
+
+    fields = page.fields;
+
+    dispatch(gpsRecorderAddPoints(page.points));
   } catch (err) {
     // A failed catch-up says nothing about an already-working stream, so it is
     // only reported — the browser keeps the stream and its retries alive.
@@ -93,9 +126,9 @@ export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
 
   if (!isRecorderStreamOpen()) {
     dispatch(gpsRecorderSetConnection('connecting'));
-
-    openRecorderStream(dispatch);
   }
+
+  openRecorderStream(dispatch, fields);
 };
 
 export const startHandler: ProcessorHandler = async (params) => {
@@ -152,6 +185,31 @@ export const startHandler: ProcessorHandler = async (params) => {
   }
 
   await syncHandler(params);
+};
+
+/**
+ * Discards the recorder's track, then the local copy of it. Ordered that way on
+ * purpose: if the delete fails, the screen still shows what the recorder holds
+ * rather than pretending it is gone.
+ */
+export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
+  try {
+    await clearTrack();
+  } catch (err) {
+    reportFailure(dispatch, err);
+
+    return;
+  }
+
+  dispatch(gpsRecorderTrackCleared());
+
+  dispatch(gpsRecorderSetError(null));
+
+  try {
+    dispatch(gpsRecorderSetStatus(await getStatus()));
+  } catch (err) {
+    reportFailure(dispatch, err);
+  }
 };
 
 export const stopHandler: ProcessorHandler = async ({ dispatch }) => {

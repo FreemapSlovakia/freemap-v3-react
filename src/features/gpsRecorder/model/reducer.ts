@@ -8,6 +8,7 @@ import {
   gpsRecorderSetError,
   gpsRecorderSetStatus,
   gpsRecorderStop,
+  gpsRecorderTrackCleared,
 } from './actions.js';
 
 export interface GpsRecorderState {
@@ -23,6 +24,12 @@ export interface GpsRecorderState {
    * and refetches the track from the recorder, which owns it.
    */
   cursor: number;
+  /**
+   * The recorder's `generation` as of the last status seen — how many times its
+   * track has been thrown away. A change means the points held here are gone.
+   * Null before any status has been read.
+   */
+  generation: number | null;
   connection: GpsRecorderConnection;
   error: string | null;
 }
@@ -31,6 +38,7 @@ export const gpsRecorderInitialState: GpsRecorderState = {
   status: null,
   points: [],
   cursor: 0,
+  generation: null,
   connection: 'idle',
   error: null,
 };
@@ -81,9 +89,17 @@ export const gpsRecorderReducer = createReducer(
         points: [],
         cursor: 0,
       }))
+      // The recorder's own track is gone, so the copy of it goes too. Applied
+      // only once the delete has been acknowledged, never optimistically.
+      .addCase(gpsRecorderTrackCleared, (state) => ({
+        ...state,
+        points: [],
+        cursor: 0,
+      }))
       .addCase(gpsRecorderSetStatus, (state, { payload }) => ({
         ...state,
         status: payload,
+        generation: payload?.generation ?? state.generation,
       }))
       .addCase(gpsRecorderAddPoints, (state, { payload }) => {
         const points = mergePoints(state.points, payload);

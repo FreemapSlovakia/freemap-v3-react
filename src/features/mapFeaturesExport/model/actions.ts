@@ -10,6 +10,7 @@ export type Exportable =
   | 'drawingAreas'
   | 'drawingPoints'
   | 'tracking'
+  | 'gpsRecorder'
   | 'import'
   | 'search';
 

@@ -1,5 +1,6 @@
 import type { Tool } from '@app/store/actions.js';
-import { gpsRecorderAvailable } from '@features/gpsRecorder/support.js';
+import type { RootState } from '@app/store/store.js';
+import { gpsRecorderAvailableSelector } from '@features/gpsRecorder/support.js';
 import type { ReactElement } from 'react';
 import {
   FaBullseye,
@@ -22,11 +23,26 @@ export interface ToolDefinition {
   kbd?: string;
   draw?: true;
   /**
-   * `false` hides the tool from the menu on this device. Evaluated once at load
-   * — only for gates that cannot change within a page lifetime (platform
-   * support, build flags).
+   * Hides the tool when it returns false — for platform support and per-account
+   * gates. Absent means always available.
    */
-  available?: boolean;
+  available?: (state: RootState) => boolean;
+}
+
+/**
+ * Tools hidden for this device/account, as the `|a|b|`-delimited string the
+ * menus use: a stable string keeps `useAppSelector` from re-rendering on every
+ * action the way a fresh array would.
+ */
+export function unavailableToolsSelector(state: RootState): string {
+  return `|${toolDefinitions
+    .filter((td) => td.available && !td.available(state))
+    .map((td) => `${td.tool}|`)
+    .join('')}`;
+}
+
+export function isToolAvailable(tools: string, tool: Tool): boolean {
+  return !tools.includes(`|${tool}|`);
 }
 
 /**
@@ -132,6 +148,6 @@ export const toolDefinitions: ToolDefinition[] = [
     tool: 'gps-recorder',
     icon: <FaCircle />,
     msgKey: 'gpsRecorder',
-    available: gpsRecorderAvailable,
+    available: gpsRecorderAvailableSelector,
   },
 ];

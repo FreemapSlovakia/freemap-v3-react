@@ -1,44 +1,31 @@
-import storage from 'local-storage-fallback';
-
-/** Remembers the stage-1 opt-in across reloads. */
-const FLAG_KEY = 'fm.gpsRecorder.enabled';
+import type { RootState } from '@app/store/store.js';
+import { hasRole } from '@features/auth/model/types.js';
 
 /**
- * Chromium on Android, the only combination the integration can work on: the
- * recorder ships as an Android APK, and reaching its loopback API needs
- * Chrome's Local Network Access opt-in.
+ * Android, because the recorder ships as an Android APK and nothing else can
+ * reach it. Not narrowed to Chromium: other Android browsers can talk to
+ * loopback too, and the pieces that are Chromium-specific — the
+ * `targetAddressSpace` hint, the Local Network Access permission — degrade to
+ * no-ops rather than errors elsewhere.
  *
- * `navigator.userAgentData` exists only in Chromium, so its presence already
- * carries the engine half of the test; `platform` and `mobile` are low-entropy
- * hints and therefore readable synchronously.
+ * Tested against the userAgent string rather than `navigator.userAgentData`,
+ * which is both Chromium-only and secure-context-only: over plain http on a dev
+ * host it is `undefined`, which would hide the tool exactly where it is being
+ * developed.
+ *
+ * A module constant — this cannot change within a page lifetime.
  */
-function isSupportedPlatform(): boolean {
-  const uaData = navigator.userAgentData;
-
-  return uaData?.mobile === true && uaData.platform === 'Android';
-}
+export const gpsRecorderPlatformSupported = /Android/i.test(
+  navigator.userAgent,
+);
 
 /**
- * Stage-1 feature flag. `?gps-recorder=1` turns the tool on and is remembered;
- * `?gps-recorder=0` turns it back off. Read from the query string rather than
- * the hash because the hash is owned by the URL processor.
+ * Whether the GPS recorder tool is offered. Limited to holders of
+ * `layerPreview` while the feature is still being proven, so it can ship to
+ * production without being on for everyone.
  */
-function isFlagged(): boolean {
-  const param = new URLSearchParams(window.location.search).get('gps-recorder');
-
-  if (param === null) {
-    return storage.getItem(FLAG_KEY) === '1';
-  }
-
-  const on = param !== '0' && param !== 'false';
-
-  storage.setItem(FLAG_KEY, on ? '1' : '0');
-
-  return on;
+export function gpsRecorderAvailableSelector(state: RootState): boolean {
+  return (
+    gpsRecorderPlatformSupported && hasRole(state.auth.user, 'layerPreview')
+  );
 }
-
-/**
- * Whether the GPS recorder tool is offered at all. Evaluated once: neither the
- * platform nor the flag can change within a page lifetime.
- */
-export const gpsRecorderAvailable = isFlagged() && isSupportedPlatform();

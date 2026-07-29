@@ -5,14 +5,20 @@ import {
   gpsRecorderSync,
 } from './model/actions.js';
 import {
+  DEFAULT_POINT_FIELDS,
+  decodePoints,
   RECORDER_ORIGIN,
   type RecorderPoint,
   RecorderStreamPayloadSchema,
+  streamPayloadToRows,
 } from './protocol.js';
 
 let source: EventSource | null = null;
 
 let dispatchRef: Dispatch | null = null;
+
+/** Column order for the bare rows the stream sends; see `DEFAULT_POINT_FIELDS`. */
+let fields: readonly string[] = DEFAULT_POINT_FIELDS;
 
 function parsePoints(data: string): RecorderPoint[] | null {
   let json: unknown;
@@ -29,7 +35,7 @@ function parsePoints(data: string): RecorderPoint[] | null {
     return null;
   }
 
-  return Array.isArray(result.data) ? result.data : [result.data];
+  return decodePoints(fields, streamPayloadToRows(result.data));
 }
 
 /**
@@ -51,8 +57,15 @@ function handleVisibilityChange() {
  * Local Network Access permission has been granted by an earlier gestured
  * fetch. That is why the start flow calls `/status` first.
  */
-export function openRecorderStream(dispatch: Dispatch): void {
+export function openRecorderStream(
+  dispatch: Dispatch,
+  pointFields: readonly string[],
+): void {
   dispatchRef = dispatch;
+
+  // Kept current even for an already-open stream: the column order comes from
+  // the last `/track` page, and a resume may have read a newer one.
+  fields = pointFields;
 
   if (source) {
     return;

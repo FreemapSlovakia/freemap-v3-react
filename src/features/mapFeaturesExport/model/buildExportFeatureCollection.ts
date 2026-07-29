@@ -1,6 +1,7 @@
 import type { Selection } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
+import type { RecorderPoint } from '@features/gpsRecorder/protocol.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
 import {
   ISOCHRONE_FILL_OPACITY,
@@ -82,6 +83,7 @@ export interface ExportInclude {
   objects?: boolean;
   plannedRoute?: boolean;
   tracking?: boolean;
+  gpsRecorder?: boolean;
   import?: boolean;
   search?: boolean;
 }
@@ -590,6 +592,49 @@ function addTracking(
   }
 }
 
+/**
+ * The recorder's live track. One line plus, for a data export, a Point per fix
+ * carrying what the recorder measured. There is no selection to narrow by —
+ * the recorder has exactly one track.
+ */
+function addGpsRecorder(
+  features: Feature[],
+  points: RecorderPoint[],
+  samplePoints: boolean,
+) {
+  // A line needs ≥2 points; turf's lineString throws on fewer and would abort
+  // the whole export, so a track that short contributes only its samples.
+  if (points.length >= 2) {
+    features.push(
+      lineString(
+        points.map((p) => [p.lon, p.lat]),
+        {
+          fromTime: points[0].ts,
+          toTime: points[points.length - 1].ts,
+        },
+      ),
+    );
+  }
+
+  if (!samplePoints) {
+    return;
+  }
+
+  for (const { ts, lat, lon, alt, acc, spd, brg } of points) {
+    features.push(
+      point([lon, lat], {
+        time: new Date(ts).toISOString(),
+        lat,
+        lon,
+        altitude: alt,
+        accuracy: acc,
+        speed: spd,
+        bearing: brg,
+      }),
+    );
+  }
+}
+
 // Builds the GeoJSON FeatureCollection shared by the data export
 // (`pointMode: { props: true }`) and the raster map export
 // (`pointMode: { svgMarker: true }`). Source order matches the legacy
@@ -613,6 +658,7 @@ export async function buildExportFeatureCollection({
     routePlanner,
     routePlannerSettings,
     tracking,
+    gpsRecorder,
     trackViewer,
     trackViewerSettings,
     search,
@@ -775,6 +821,14 @@ export async function buildExportFeatureCollection({
       tracking,
       options.trackingPoints ?? true,
       selectedTrackToken(only),
+    );
+  }
+
+  if (include.gpsRecorder) {
+    addGpsRecorder(
+      features,
+      gpsRecorder.points,
+      options.trackingPoints ?? true,
     );
   }
 

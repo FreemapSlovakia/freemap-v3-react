@@ -10,7 +10,12 @@ import {
   documentMenuItemProps,
   modalMenuItemProps,
 } from '@shared/hooks/useMenuHandler.js';
-import { isDrawTool, toolDefinitions } from '@shared/toolDefinitions.js';
+import {
+  isDrawTool,
+  isToolAvailable,
+  toolDefinitions,
+  unavailableToolsSelector,
+} from '@shared/toolDefinitions.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -41,6 +46,8 @@ export function MainMenu(): ReactElement {
   );
 
   const tools = useAppSelector(toolsSelector);
+
+  const unavailable = useAppSelector(unavailableToolsSelector);
 
   const hasClearableMapFeatures = useAppSelector(
     hasClearableMapFeaturesSelector,
@@ -104,7 +111,7 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       {toolDefinitions
-        .filter(({ draw, available }) => !draw && available !== false)
+        .filter(({ draw, tool }) => !draw && isToolAvailable(unavailable, tool))
         .map(
           ({ tool: newTool, icon, msgKey, kbd }) =>
             newTool && (
