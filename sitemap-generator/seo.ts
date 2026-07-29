@@ -57,9 +57,22 @@ export function brand(lang: Lang): string {
   return SK_LANGS.includes(lang) ? 'Freemap.sk' : 'Freemap.eu';
 }
 
-/** Substitutes the `{brand}` placeholder in curated copy with {@link brand}. */
-function withBrand(text: string, lang: Lang): string {
-  return text.replace(/\{brand\}/g, brand(lang));
+/**
+ * The portal name to show in a language's page copy — the pages on
+ * {@link BASE_EU} carry the international brand.
+ */
+export function siteName(lang: Lang): string {
+  return SK_LANGS.includes(lang) ? 'Freemap Slovakia' : 'Freemap Europe';
+}
+
+/**
+ * Substitutes the copy placeholders `{brand}` (the domain, {@link brand}) and
+ * `{site}` (the portal name, {@link siteName}) for the page's language.
+ */
+export function expandNames(text: string, lang: Lang): string {
+  return text
+    .replace(/\{brand\}/g, brand(lang))
+    .replace(/\{site\}/g, siteName(lang));
 }
 
 /** Per-language <title>/<meta description>, reused from the SPA's SEO strings. */
@@ -104,7 +117,7 @@ export const featuresLabel: Record<Lang, string> = {
 export interface Hub {
   /** Query-string fragment identifying the app state, e.g. `layers=O` or `tool=route-planner`. */
   param: string;
-  /** Copy may use the `{brand}` placeholder for the page's domain name. */
+  /** Copy may use the `{brand}` and `{site}` placeholders — see {@link expandNames}. */
   title: Record<HubLang, string>;
   description: Record<HubLang, string>;
 }
@@ -333,9 +346,9 @@ const sharedStyle = html`
 
 /** Render a hub (layer/tool) landing page for one language. */
 export function renderHub(hub: Hub, lang: HubLang): string {
-  const title = withBrand(hub.title[lang], lang);
+  const title = expandNames(hub.title[lang], lang);
 
-  const description = withBrand(hub.description[lang], lang);
+  const description = expandNames(hub.description[lang], lang);
 
   const url = appUrl(hub.param, lang);
 
@@ -348,7 +361,7 @@ export function renderHub(hub: Hub, lang: HubLang): string {
     inLanguage: lang,
     isPartOf: {
       '@type': 'WebSite',
-      name: brand(lang),
+      name: siteName(lang),
       url: langBase(lang),
     },
   });
@@ -357,7 +370,7 @@ export function renderHub(hub: Hub, lang: HubLang): string {
     '<!doctype html>\n' +
     html`<html lang=${lang}>
       <head>
-        <title>${`${title} – ${brand(lang)}`}</title>
+        <title>${`${title} – ${siteName(lang)}`}</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -365,6 +378,7 @@ export function renderHub(hub: Hub, lang: HubLang): string {
 
         ${alternateLinks(hub.param, HUB_LANGS, lang, 'en')}
 
+        <meta property="og:site_name" content=${siteName(lang)} />
         <meta property="og:title" content=${title} />
         <meta property="og:description" content=${description} />
         <meta property="og:url" content=${url} />
@@ -380,7 +394,7 @@ export function renderHub(hub: Hub, lang: HubLang): string {
 
       <body>
         <nav>
-          <a href=${appUrl('layers=X', lang)}>Freemap Slovakia</a>
+          <a href=${appUrl('layers=X', lang)}>${siteName(lang)}</a>
         </nav>
 
         <h1>${title}</h1>
@@ -398,7 +412,7 @@ export function renderHub(hub: Hub, lang: HubLang): string {
               (h) =>
                 html`<li>
                   <a href=${appUrl(h.param, lang)}>
-                    ${withBrand(h.title[lang], lang)}
+                    ${expandNames(h.title[lang], lang)}
                   </a>
                 </li>`,
             )}
@@ -420,7 +434,7 @@ export function renderHome(lang: Lang): string {
   const jsonLd = encodeJsonLd({
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: brand(lang),
+    name: siteName(lang),
     description,
     url,
     inLanguage: lang,
@@ -441,6 +455,7 @@ export function renderHome(lang: Lang): string {
 
         ${alternateLinks('layers=X', LANGS, lang, 'en')}
 
+        <meta property="og:site_name" content=${siteName(lang)} />
         <meta property="og:title" content=${title} />
         <meta property="og:description" content=${description} />
         <meta property="og:url" content=${url} />
@@ -468,7 +483,7 @@ export function renderHome(lang: Lang): string {
             (h) =>
               html`<li>
                 <a href=${appUrl(h.param, lang)}>
-                  ${withBrand(h.title[hubLang], lang)}
+                  ${expandNames(h.title[hubLang], lang)}
                 </a>
               </li>`,
           )}
@@ -504,7 +519,7 @@ export function renderDocument(opts: {
     '<!doctype html>\n' +
     html`<html lang=${lang}>
       <head>
-        <title>${`${title} – ${brand(lang)}`}</title>
+        <title>${`${title} – ${siteName(lang)}`}</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -512,6 +527,7 @@ export function renderDocument(opts: {
 
         ${alternateLinks(param, langs, lang, xDefaultLang)}
 
+        <meta property="og:site_name" content=${siteName(lang)} />
         <meta property="og:title" content=${title} />
         <meta property="og:url" content=${url} />
         <meta property="og:type" content="article" />
@@ -521,7 +537,7 @@ export function renderDocument(opts: {
 
       <body>
         <nav>
-          <a href=${appUrl('layers=X', lang)}>Freemap Slovakia</a>
+          <a href=${appUrl('layers=X', lang)}>${siteName(lang)}</a>
         </nav>
 
         <article dangerouslySetInnerHTML=${{ __html: bodyHtml }}></article>
