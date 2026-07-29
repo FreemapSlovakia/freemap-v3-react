@@ -1,3 +1,4 @@
+import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { RovasLink } from '@shared/components/RovasLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import type { PremiumMessages } from './PremiumMessages.js';
@@ -16,19 +17,17 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
       </p>
       <ul>
         <li>entferntes Werbebanner</li>
-        <li
-          className="text-decoration-underline fm-cursor-help"
-          title="Hochauflösende detaillierte Schummerung der Slowakei und Tschechiens, höchste Zoomstufen der Outdoor-Karte, höchste Zoomstufen der Orthofotokarten der Slowakei und Tschechiens, verschiedene WMS-basierte Karten"
-        >
-          Premium-Kartenebenen
+        <li>
+          <HintTooltip hint="Hochauflösende detaillierte Schummerung der Slowakei und Tschechiens, höchste Zoomstufen der Outdoor-Karte, höchste Zoomstufen der Orthofotokarten der Slowakei und Tschechiens, verschiedene WMS-basierte Karten">
+            Premium-Kartenebenen
+          </HintTooltip>
         </li>
         <li>Premium-Fotos</li>
         <li>multimodale Routenplanung</li>
-        <li
-          className="text-decoration-underline fm-cursor-help"
-          title={dtmCountries}
-        >
-          hochauflösende Höhendaten (viele europäische Länder)
+        <li>
+          <HintTooltip hint={dtmCountries}>
+            hochauflösende Höhendaten (viele europäische Länder)
+          </HintTooltip>
         </li>
       </ul>
       <p className="mb-0">Freemap bleibt kostenlos und offen.</p>

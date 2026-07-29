@@ -305,6 +305,13 @@ button#freemap-logo {
   cursor: help;
 }
 
+/* A phrase with an explanation behind it (see `HintTooltip`). */
+.fm-hint {
+  cursor: help;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+}
+
 .fm-ellipsis {
   max-width: 100%;
   overflow: hidden;
