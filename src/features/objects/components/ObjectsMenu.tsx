@@ -13,6 +13,7 @@ import classes from '@shared/poiIcon.module.css';
 import { removeAccents } from '@shared/stringUtils.js';
 import {
   type ChangeEvent,
+  type KeyboardEvent,
   type ReactElement,
   useCallback,
   useEffect,
@@ -149,6 +150,20 @@ export default function ObjectsMenu(): ReactElement {
     inputRef.current?.blur();
   };
 
+  // The dropdown ignores Escape coming from a `search` input, and the global
+  // shortcut handler steps aside while a menu is expanded — so Escape closes
+  // this one here, and only then leaves the input to the app's own handling.
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.code === 'Escape' && dropdownOpened) {
+      setDropdownOpened(false);
+      setFilter('');
+
+      inputRef.current?.blur();
+
+      e.preventDefault();
+    }
+  };
+
   const normalizedFilter = removeAccents(filter.trim().toLowerCase());
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -231,6 +246,7 @@ export default function ObjectsMenu(): ReactElement {
 
               setDropdownOpened(true);
             }}
+            onKeyDown={handleKeyDown}
             ref={inputRef}
           />
         </Dropdown.Toggle>
