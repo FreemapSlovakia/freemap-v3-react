@@ -590,11 +590,6 @@ function addTracking(
   }
 }
 
-/**
- * The recorder's live track. One line plus, for a data export, a Point per fix
- * carrying what the recorder measured. There is no selection to narrow by —
- * the recorder has exactly one track.
- */
 // Builds the GeoJSON FeatureCollection shared by the data export
 // (`pointMode: { props: true }`) and the raster map export
 // (`pointMode: { svgMarker: true }`). Source order matches the legacy

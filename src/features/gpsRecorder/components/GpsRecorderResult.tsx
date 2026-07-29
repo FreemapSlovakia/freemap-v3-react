@@ -31,6 +31,8 @@ export default function GpsRecorderResult(): ReactElement | null {
     (state) => state.gpsRecorder.status?.recording ?? false,
   );
 
+  const gpsTracked = useAppSelector((state) => state.map.gpsTracked);
+
   const positions = useMemo(
     () =>
       segments
@@ -41,17 +43,25 @@ export default function GpsRecorderResult(): ReactElement | null {
     [segments],
   );
 
-  // Follows the recorder's own fixes rather than asking the browser for a
-  // second, competing GPS feed. `gpsTracked` is the map's existing flag, so
-  // grabbing the map ends the following exactly as it does for the locate
-  // button — and only a live recording moves the map at all.
+  // Engages the map's own following flag when a recording starts (or the
+  // preference is turned on), which is what the locate button sets too.
   useEffect(() => {
-    if (followPosition && recording && latest) {
+    if (followPosition && recording) {
+      dispatch(mapRefocus({ gpsTracked: true }));
+    }
+  }, [dispatch, followPosition, recording]);
+
+  // Follows the recorder's own fixes rather than asking the browser for a
+  // second, competing GPS feed. Only while `gpsTracked` holds, so grabbing the
+  // map ends the following exactly as it does for the locate button — and only
+  // a live recording moves the map at all.
+  useEffect(() => {
+    if (followPosition && recording && gpsTracked && latest) {
       dispatch(
         mapRefocus({ lat: latest.lat, lon: latest.lon, gpsTracked: true }),
       );
     }
-  }, [dispatch, followPosition, recording, latest]);
+  }, [dispatch, followPosition, recording, gpsTracked, latest]);
 
   if (positions.length === 0 && !latest) {
     return null;

@@ -27,6 +27,7 @@ import {
   gpsRecorderStop,
   gpsRecorderSync,
 } from '../model/actions.js';
+import { selectRecorderSegments } from '../model/selectors.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
 import { GpsRecorderNotices } from './GpsRecorderNotices.js';
 import { GpsRecorderStats } from './GpsRecorderStats.js';
@@ -57,7 +58,11 @@ export default function GpsRecorderMenu(): ReactElement {
 
   const pending = useAppSelector((state) => state.gpsRecorder.pending);
 
-  const heldPoints = useAppSelector((state) => state.gpsRecorder.points.length);
+  // What saving would actually produce: the handler drops segments too short
+  // to be a line, so counting raw fixes would offer a Save that does nothing.
+  const saveable = useAppSelector((state) =>
+    selectRecorderSegments(state).some((segment) => segment.length >= 2),
+  );
 
   const keepScreenAwake = useAppSelector(
     (state) => state.gpsRecorderSettings.keepScreenAwake,
@@ -224,7 +229,7 @@ export default function GpsRecorderMenu(): ReactElement {
             label={m?.save}
             icon={<FaSave />}
             showFrom="never"
-            disabled={heldPoints < 2}
+            disabled={!saveable}
             onClick={handleSave}
           />
 

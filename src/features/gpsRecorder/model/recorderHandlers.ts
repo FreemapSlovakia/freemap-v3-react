@@ -92,11 +92,19 @@ export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
   try {
     const status = await getStatus();
 
+    // Checked here too, not only on the way into a recording: a recorder too
+    // old for these endpoints is told so as soon as the tool is opened, with
+    // the update link the failure carries.
+    assertSupportedVersion(status);
+
     // `seq` never restarts, so a cleared track is indistinguishable from one
     // that simply hasn't grown — a bumped `generation` is the only reliable
     // signal that what we hold is gone. Asking for everything after a stale
     // cursor would leave the deleted track on screen forever.
-    const cleared = generation !== null && status.generation !== generation;
+    const cleared =
+      generation !== null &&
+      status.generation != null &&
+      status.generation !== generation;
 
     if (cleared) {
       dispatch(gpsRecorderTrackCleared());

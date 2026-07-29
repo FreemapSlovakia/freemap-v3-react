@@ -40,10 +40,14 @@ export default function GpsRecorderSettingsModal({
   const saved = useAppSelector((state) => state.gpsRecorderSettings);
 
   // A recorder that read the `POST /start` body reports back what it applied;
-  // one that ignored it reports nothing, which is the only way to tell.
-  const configurable = useAppSelector(
-    (state) => state.gpsRecorder.status?.config != null,
-  );
+  // one that ignored it reports nothing, which is the only way to tell. A
+  // recorder that hasn't answered at all says nothing either way, so it is not
+  // accused of ignoring anything.
+  const configurable = useAppSelector((state) => {
+    const status = state.gpsRecorder.status;
+
+    return status === null || status.config != null;
+  });
 
   const [draft, setDraft] = useState<GpsRecorderSettingsState>(saved);
 
@@ -92,8 +96,12 @@ export default function GpsRecorderSettingsModal({
           <Form.Group className="mb-3">
             <Form.Label>{grm?.settingsModal.intervalMs}</Form.Label>
 
+            {/* Required, so an emptied field can't submit as a zero interval:
+                the recorder rejects it and the persisted settings would fail
+                their own schema on the next load. */}
             <Form.Control
               type="number"
+              required
               min={0.2}
               max={600}
               step={0.2}

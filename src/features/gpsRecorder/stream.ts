@@ -100,6 +100,15 @@ export function openRecorderStream(
   cancelRevive();
 
   if (source) {
+    // A sync that ran while the stream was attached has already moved the
+    // connection to `connecting`/`syncing`, and `onopen` won't fire again for a
+    // socket that never closed — so the live state is restored from here.
+    dispatch(
+      gpsRecorderSetConnection(
+        source.readyState === EventSource.OPEN ? 'live' : 'reconnecting',
+      ),
+    );
+
     return;
   }
 

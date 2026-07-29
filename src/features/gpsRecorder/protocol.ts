@@ -183,8 +183,12 @@ export const RecorderStatusSchema = z.looseObject({
    * How many times the track has been thrown away. The only reliable signal
    * that points held here are gone: `seq` never restarts, so a cleared track is
    * otherwise indistinguishable from one that simply hasn't grown.
+   *
+   * Optional only so a recorder below `MIN_RECORDER_VERSION_CODE` — which is
+   * defined as the versions that don't send it — still parses far enough to be
+   * reported as outdated rather than as an unexpected answer.
    */
-  generation: z.number().int(),
+  generation: z.number().int().nullish(),
   version: z.looseObject({
     code: z.number().int(),
     name: z.string(),
