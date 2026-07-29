@@ -60,6 +60,7 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     isochrone: 'Isocrono',
   },
   alternative: 'Alternativo',
+  isochroneRing: 'Isocrona',
   distance: ({ value, diff }) => (
     <>
       Distance:{' '}

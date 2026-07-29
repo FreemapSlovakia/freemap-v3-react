@@ -225,7 +225,10 @@ Routing modes:
 Once a route is found the toolbar also offers:
 
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Heading (only modes the route has data for are shown); for the elevation profile and elevation/steepness colorize, premium users get every point sampled from the terrain model (high-resolution where available), while others keep the router's own elevation and only have missing values filled on demand. While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
-- **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing, **Route style…** (opens a modal with sliders for line width, line opacity, and marker opacity; saved in local storage), kilometre/percent milestone toggles, and (premium; GraphHopper "Ordered" mode with 3+ points, single transport) **Optimize order** — reorders the waypoints to minimize total travel time, with variants: keep start fixed, keep start and finish fixed, round trip (return to start), or free (reorder all)
+- **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing (the route becomes one drawing line in its transport-mode color, plus a point per start/finish/stop), **Route style…** (opens a modal with sliders for line width, line opacity, and marker opacity; saved in local storage), kilometre/percent milestone toggles, and (premium; GraphHopper "Ordered" mode with 3+ points, single transport) **Optimize order** — reorders the waypoints to minimize total travel time, with variants: keep start fixed, keep start and finish fixed, round trip (return to start), or free (reorder all)
+- **Delete** — removes the result together with its start/finish/stop points
+
+An isochrone result offers the same **Delete** button and a reduced ⋮ menu with only Convert to drawing (one drawing polygon per reachability ring) and **Route style…** (the line width and opacity apply to the rings). It also counts as the "found route" source in the map data export and the map-to-document export, which always carry the route's start/finish/stop markers (named Start/Finish/Stop N in the data formats; on a rendered document the marker glyph speaks for itself, so no text label is drawn) and paint the route in the same transport-mode colors, width and opacity the map uses. Each ring is named after the limit it reaches — "Isochrone 30 min", or "Isochrone 5.000 km" for a distance-limited one — in the drawing, in the exported files, and as the label drawn on an exported document.
 
 ### Objects (POIs)
 
@@ -373,7 +376,7 @@ Opens a modal to export the map as an image or document. Options:
 - Export area: visible area, or a rectangle drawn on the map
 - Format: JPEG, PNG, PDF, or SVG
 - Optional server-rendered overlays: contours, shaded relief, hiking trails, bicycle trails, ski trails, horse trails
-- Own map-feature sources to draw on top (only those with data are selectable, same set as the map data export): found route (optionally with stops), objects (POIs), photos, drawing lines/areas/points, live tracking, imported GPX track, highlighted map feature
+- Own map-feature sources to draw on top (only those with data are selectable, same set as the map data export): found route (always with its start/finish/stop markers), objects (POIs), photos, drawing lines/areas/points, live tracking, imported GPX track, highlighted map feature
 - Glow: optional glow/shadow drawn around all own map-feature markers and lines, with configurable color (incl. opacity) and width
 - Marker size: configurable pixel size of own map-feature point markers
 - Labels: configurable color (no opacity), size, and weight of own map-feature labels

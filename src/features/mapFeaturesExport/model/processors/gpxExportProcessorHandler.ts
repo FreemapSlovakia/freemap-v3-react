@@ -2,19 +2,37 @@ import type { Selection } from '@app/store/actions.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import type { DrawingLineType } from '@features/drawing/model/actions/drawingLineActions.js';
+import type {
+  DrawingLineType,
+  Line,
+} from '@features/drawing/model/actions/drawingLineActions.js';
 import type { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import type { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import type { GalleryMessages } from '@features/gallery/translations/GalleryMessages.js';
 import { loadGalleryMessages } from '@features/gallery/translations/loadGalleryMessages.js';
 import type { ObjectsState } from '@features/objects/model/reducer.js';
+import {
+  ISOCHRONE_FILL_OPACITY,
+  isochroneColor,
+  isochroneLabel,
+} from '@features/routePlanner/model/isochrones.js';
 import type { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import {
+  dominantStepMode,
+  INACTIVE_ALTERNATIVE_COLOR,
+  STEP_MODE_COLORS,
+  stepModeDashArray,
+  stopNumber,
+  WAYPOINT_COLORS,
+  waypointKind,
+} from '@features/routePlanner/model/routeColors.js';
+import type { RoutePlannerSettingsState } from '@features/routePlanner/model/settingsReducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
 import type { TrackViewerState } from '@features/trackViewer/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
 import { fetchElevations } from '@shared/elevation.js';
@@ -134,6 +152,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     drawingPoints,
     objects,
     routePlanner,
+    routePlannerSettings,
     tracking,
     trackViewer,
     search,
@@ -169,12 +188,13 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     addObjects(doc, objects, only);
   }
 
-  if (set.has('plannedRoute') || set.has('plannedRouteWithStops')) {
+  if (set.has('plannedRoute')) {
     addPlannedRoute(
       doc,
       routePlanner,
-      set.has('plannedRouteWithStops'),
+      routePlannerSettings,
       await loadRoutePlannerMessages(language),
+      language,
     );
   }
 
@@ -466,148 +486,158 @@ function addDrawingLines(
       continue;
     }
 
-    const trkEle = createElement(doc.documentElement, 'trk');
+    addStyledTrk(doc, line);
+  }
+}
 
-    if (line.label) {
-      createElement(trkEle, 'name', line.label);
-    }
+// Writes one line/polygon as a `<trk>` carrying its full styling: gpx_style for
+// generic consumers, Locus and OsmAnd extensions for those apps, and the
+// freemap-private `fm:*` shadows for a lossless round-trip through our own
+// importer. A polygon's ring is closed here, since drawing polygons are stored
+// open.
+function addStyledTrk(doc: Document, line: Line) {
+  const trkEle = createElement(doc.documentElement, 'trk');
 
-    const extEle = createElement(trkEle, 'extensions');
+  if (line.label) {
+    createElement(trkEle, 'name', line.label);
+  }
 
-    const stroke = splitColorAlpha(line.color ?? COLORS.normal);
-    const rgb = stroke.color.slice(1);
+  writeTrkStyle(trkEle, line);
 
-    const fillSrc = line.fillColor ?? line.color ?? COLORS.normal;
-    const fillRaw = splitColorAlpha(fillSrc);
-    const fill = {
-      color: fillRaw.color,
-      opacity: line.fillColor ? fillRaw.opacity : 0.33,
-    };
-    const fillRgb = fill.color.slice(1);
+  const trksegEle = createElement(trkEle, 'trkseg');
 
-    if (type === 'polygon') {
-      const fillStyleEle = createElement(extEle, [GPX_STYLE_NS, 'fill']);
+  const points =
+    line.type === 'line' ? line.points : [...line.points, line.points[0]];
 
-      createElement(fillStyleEle, [GPX_STYLE_NS, 'color'], fillRgb);
+  for (const { lat, lon } of points) {
+    createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
+  }
+}
 
-      createElement(
-        fillStyleEle,
-        [GPX_STYLE_NS, 'opacity'],
-        fill.opacity.toFixed(2),
-      );
-    }
+// Writes a track's `<extensions>` styling block. Split out of
+// {@link addStyledTrk} so the planned route can carry the same styling while
+// writing its own trackpoints (which additionally hold elevation).
+function writeTrkStyle(trkEle: Element, line: Omit<Line, 'points'>) {
+  const type = line.type;
 
-    const lineStyleEle = createElement(extEle, [GPX_STYLE_NS, 'line']);
+  const extEle = createElement(trkEle, 'extensions');
 
-    createElement(lineStyleEle, [GPX_STYLE_NS, 'color'], rgb);
+  const stroke = splitColorAlpha(line.color ?? COLORS.normal);
+  const rgb = stroke.color.slice(1);
+
+  const fillSrc = line.fillColor ?? line.color ?? COLORS.normal;
+  const fillRaw = splitColorAlpha(fillSrc);
+  const fill = {
+    color: fillRaw.color,
+    opacity: line.fillColor ? fillRaw.opacity : 0.33,
+  };
+  const fillRgb = fill.color.slice(1);
+
+  if (type === 'polygon') {
+    const fillStyleEle = createElement(extEle, [GPX_STYLE_NS, 'fill']);
+
+    createElement(fillStyleEle, [GPX_STYLE_NS, 'color'], fillRgb);
 
     createElement(
-      lineStyleEle,
+      fillStyleEle,
       [GPX_STYLE_NS, 'opacity'],
-      stroke.opacity.toFixed(2),
+      fill.opacity.toFixed(2),
     );
+  }
 
+  const lineStyleEle = createElement(extEle, [GPX_STYLE_NS, 'line']);
+
+  createElement(lineStyleEle, [GPX_STYLE_NS, 'color'], rgb);
+
+  createElement(
+    lineStyleEle,
+    [GPX_STYLE_NS, 'opacity'],
+    stroke.opacity.toFixed(2),
+  );
+
+  createElement(lineStyleEle, [GPX_STYLE_NS, 'width'], String(line.width || 4));
+
+  if (line.lineCap) {
+    createElement(lineStyleEle, [GPX_STYLE_NS, 'linecap'], line.lineCap);
+  }
+
+  if (line.lineJoin) {
+    createElement(lineStyleEle, [GPX_STYLE_NS, 'linejoin'], line.lineJoin);
+  }
+
+  if (line.dashArray && line.dashArray.length > 0) {
     createElement(
       lineStyleEle,
-      [GPX_STYLE_NS, 'width'],
-      String(line.width || 4),
+      [GPX_STYLE_NS, 'dasharray'],
+      line.dashArray.join(' '),
     );
+  }
 
-    if (line.lineCap) {
-      createElement(lineStyleEle, [GPX_STYLE_NS, 'linecap'], line.lineCap);
-    }
+  const ext2Ele = createElement(lineStyleEle, 'extensions');
 
-    if (line.lineJoin) {
-      createElement(lineStyleEle, [GPX_STYLE_NS, 'linejoin'], line.lineJoin);
-    }
+  createElement(
+    ext2Ele,
+    [LOCUS_NS, 'locus:lsColorBase'],
+    `#${toLocusAlpha(stroke.opacity)}${rgb}`,
+  );
 
-    if (line.dashArray && line.dashArray.length > 0) {
-      createElement(
-        lineStyleEle,
-        [GPX_STYLE_NS, 'dasharray'],
-        line.dashArray.join(' '),
-      );
-    }
+  createElement(ext2Ele, [LOCUS_NS, 'locus:lsWidth'], String(line.width ?? 4));
 
-    const ext2Ele = createElement(lineStyleEle, 'extensions');
+  createElement(ext2Ele, [LOCUS_NS, 'locus:lsUnits'], 'PIXELS');
 
+  if (type === 'polygon') {
     createElement(
       ext2Ele,
-      [LOCUS_NS, 'locus:lsColorBase'],
-      `#${toLocusAlpha(stroke.opacity)}${rgb}`,
+      [LOCUS_NS, 'locus:lsColorFill'],
+      `#${toLocusAlpha(fill.opacity)}${fillRgb}`,
     );
+  }
 
-    createElement(
-      ext2Ele,
-      [LOCUS_NS, 'locus:lsWidth'],
-      String(line.width ?? 4),
-    );
+  // Freemap-private extensions for lossless round-trip. GPX has no native
+  // polygon type — `fm:type=polygon` is the unambiguous signal for our
+  // importer, separate from the gpx_style:fill heuristic that other
+  // consumers use. Color/lineCap/lineJoin/dashArray are duplicated here
+  // because gpx_style splits color into RGB+opacity (losing the original
+  // hex alpha precision) and not every reader handles linecap/linejoin.
+  appendNs(extEle, FM_NS, 'fm:type', type);
 
-    createElement(ext2Ele, [LOCUS_NS, 'locus:lsUnits'], 'PIXELS');
+  if (line.color) {
+    appendNs(extEle, FM_NS, 'fm:color', line.color);
+  }
 
-    if (type === 'polygon') {
-      createElement(
-        ext2Ele,
-        [LOCUS_NS, 'locus:lsColorFill'],
-        `#${toLocusAlpha(fill.opacity)}${fillRgb}`,
-      );
-    }
+  if (type === 'polygon' && line.fillColor) {
+    appendNs(extEle, FM_NS, 'fm:fillColor', line.fillColor);
+  }
 
-    // Freemap-private extensions for lossless round-trip. GPX has no native
-    // polygon type — `fm:type=polygon` is the unambiguous signal for our
-    // importer, separate from the gpx_style:fill heuristic that other
-    // consumers use. Color/lineCap/lineJoin/dashArray are duplicated here
-    // because gpx_style splits color into RGB+opacity (losing the original
-    // hex alpha precision) and not every reader handles linecap/linejoin.
-    appendNs(extEle, FM_NS, 'fm:type', type);
+  if (line.lineCap) {
+    appendNs(extEle, FM_NS, 'fm:lineCap', line.lineCap);
+  }
 
-    if (line.color) {
-      appendNs(extEle, FM_NS, 'fm:color', line.color);
-    }
+  if (line.lineJoin) {
+    appendNs(extEle, FM_NS, 'fm:lineJoin', line.lineJoin);
+  }
 
-    if (type === 'polygon' && line.fillColor) {
-      appendNs(extEle, FM_NS, 'fm:fillColor', line.fillColor);
-    }
+  if (line.dashArray && line.dashArray.length > 0) {
+    appendNs(extEle, FM_NS, 'fm:dashArray', line.dashArray.join(' '));
+  }
 
-    if (line.lineCap) {
-      appendNs(extEle, FM_NS, 'fm:lineCap', line.lineCap);
-    }
+  if (line.width != null) {
+    appendNs(extEle, FM_NS, 'fm:width', String(line.width));
+  }
 
-    if (line.lineJoin) {
-      appendNs(extEle, FM_NS, 'fm:lineJoin', line.lineJoin);
-    }
+  // OsmAnd track styling: a single colour element + width, plus a fill
+  // colour for polygons. OsmAnd renders closed tracks with a fill colour
+  // as filled areas.
+  if (line.color) {
+    appendNs(extEle, OSMAND_NS, 'osmand:color', stroke.color);
+  }
 
-    if (line.dashArray && line.dashArray.length > 0) {
-      appendNs(extEle, FM_NS, 'fm:dashArray', line.dashArray.join(' '));
-    }
+  if (line.width != null) {
+    appendNs(extEle, OSMAND_NS, 'osmand:width', String(line.width));
+  }
 
-    if (line.width != null) {
-      appendNs(extEle, FM_NS, 'fm:width', String(line.width));
-    }
-
-    // OsmAnd track styling: a single colour element + width, plus a fill
-    // colour for polygons. OsmAnd renders closed tracks with a fill colour
-    // as filled areas.
-    if (line.color) {
-      appendNs(extEle, OSMAND_NS, 'osmand:color', stroke.color);
-    }
-
-    if (line.width != null) {
-      appendNs(extEle, OSMAND_NS, 'osmand:width', String(line.width));
-    }
-
-    if (type === 'polygon') {
-      appendNs(extEle, OSMAND_NS, 'osmand:fill_color', fill.color);
-    }
-
-    const trksegEle = createElement(trkEle, 'trkseg');
-
-    const points =
-      type === 'line' ? line.points : [...line.points, line.points[0]];
-
-    for (const { lat, lon } of points) {
-      createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
-    }
+  if (type === 'polygon') {
+    appendNs(extEle, OSMAND_NS, 'osmand:fill_color', fill.color);
   }
 }
 
@@ -825,42 +855,111 @@ function addObjects(
 
 function addPlannedRoute(
   doc: Document,
-  { alternatives, points, finishOnly }: RoutePlannerState,
-  withStops: boolean,
+  {
+    alternatives,
+    activeAlternativeIndex,
+    isochrones,
+    points,
+    waypoints,
+    finishOnly,
+    mode,
+  }: RoutePlannerState,
+  { lineWidth, lineOpacity, markerOpacity }: RoutePlannerSettingsState,
   rpm: RoutePlannerMessages,
+  language: string,
 ) {
   // TODO add itinerar details and metadata
   // TODO add option to only export selected alternative
 
-  if (withStops) {
-    for (const [i, point] of points.entries()) {
-      const midpointWptEle = createElement(
-        doc.documentElement,
-        'wpt',
-        undefined,
-        toLatLon(point),
-      );
+  // The start/finish/stop markers are part of what the route puts on the map,
+  // so they always come along.
+  for (const [i, point] of points.entries()) {
+    const midpointWptEle = createElement(
+      doc.documentElement,
+      'wpt',
+      undefined,
+      toLatLon(point),
+    );
 
-      createElement(
-        midpointWptEle,
-        'name',
-        i === 0 && !finishOnly
-          ? rpm.start
-          : i === points.length - 1
-            ? rpm.finish // TODO not for roundtrip?
-            : `${rpm.stop} ${i + 1}`,
-      );
-    }
+    const kind = waypointKind(i, points.length, finishOnly, mode);
+
+    createElement(
+      midpointWptEle,
+      'name',
+      kind === 'start'
+        ? rpm.start
+        : kind === 'finish'
+          ? rpm.finish
+          : `${rpm.stop} ${stopNumber(i, mode, waypoints) ?? i}`,
+    );
+
+    const extEle = createElement(midpointWptEle, 'extensions');
+
+    const color = joinColorAlpha(WAYPOINT_COLORS[kind], markerOpacity);
+
+    appendNs(extEle, FM_NS, 'fm:color', color);
+
+    appendNs(extEle, OSMAND_NS, 'osmand:color', WAYPOINT_COLORS[kind]);
   }
 
-  for (const [i, { legs }] of alternatives.entries()) {
+  // Isochrones replace the route alternatives, so they are what the route
+  // source exports when present. GPX has no polygon type, so each ring goes out
+  // as a styled closed track — the same representation a drawing polygon uses,
+  // which our importer reads back as a polygon.
+  if (isochrones?.length) {
+    for (const isochrone of isochrones) {
+      const bucket = isochrone.properties?.['bucket'] ?? 0;
+
+      const color = isochroneColor(bucket, isochrones.length);
+
+      for (const ring of isochrone.geometry.coordinates) {
+        addStyledTrk(doc, {
+          type: 'polygon',
+          label: isochroneLabel(isochrone, bucket, rpm.isochroneRing, language),
+          color: joinColorAlpha(color, lineOpacity),
+          width: lineWidth,
+          // Only the outermost ring is filled, as on the map, which fades the
+          // whole ring group — so the fill takes `lineOpacity` on top of its own.
+          fillColor: joinColorAlpha(
+            color,
+            bucket === isochrones.length - 1
+              ? ISOCHRONE_FILL_OPACITY * lineOpacity
+              : 0,
+          ),
+          // The ring arrives closed; `addStyledTrk` closes polygons itself.
+          points: ring.slice(0, -1).map(([lon, lat], id) => ({ lat, lon, id })),
+        });
+      }
+    }
+
+    return;
+  }
+
+  for (const [i, alternative] of alternatives.entries()) {
+    const dominant = dominantStepMode(alternative);
+
     const trkEle = createElement(doc.documentElement, 'trk');
 
     createElement(trkEle, 'name', `${rpm.alternative} ${i + 1}`);
 
+    // A GPX track is one line, so a multimodal route takes its dominant mode's
+    // color; alternatives the user isn't following are dimmed, as on the map.
+    writeTrkStyle(trkEle, {
+      type: 'line',
+      // The alpha becomes the gpx_style/Locus opacity in `writeTrkStyle`.
+      color: joinColorAlpha(
+        i === activeAlternativeIndex
+          ? STEP_MODE_COLORS[dominant]
+          : INACTIVE_ALTERNATIVE_COLOR,
+        lineOpacity,
+      ),
+      width: lineWidth,
+      dashArray: stepModeDashArray(dominant),
+    });
+
     const trksegEle = createElement(trkEle, 'trkseg');
 
-    for (const leg of legs) {
+    for (const leg of alternative.legs) {
       for (const step of leg.steps) {
         for (const [lon, lat, ele] of step.geometry.coordinates) {
           const trkptEle = createElement(

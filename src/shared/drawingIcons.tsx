@@ -569,6 +569,25 @@ export function loadAllIcons(): Promise<IconDefinition[]> {
 }
 
 /**
+ * Resolves a Font Awesome solid icon by `iconName` outside React, loading the
+ * set if needed. Answers from the whole solid set, not just the curated picker
+ * subset, so a stored `fa:<name>` renders even when it isn't pickable.
+ */
+export async function getFaIcon(
+  name: string,
+): Promise<IconDefinition | undefined> {
+  const cached = iconCache.get(name);
+
+  if (cached) {
+    return cached;
+  }
+
+  await loadAllIcons();
+
+  return iconCache.get(name);
+}
+
+/**
  * Resolves a Font Awesome solid icon by `iconName`. Returns a cached definition
  * synchronously when available, otherwise triggers the lazy load and resolves
  * on the next render. Returns `undefined` until ready / if the name is unknown.

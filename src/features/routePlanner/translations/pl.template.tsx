@@ -64,6 +64,7 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   swap: 'Zamień start i metę',
   development: 'w przygotowaniu',
   alternative: 'Alternatywa',
+  isochroneRing: 'Izolinia czasu',
   distance: ({ value, diff }) => (
     <>
       Dystans:{' '}

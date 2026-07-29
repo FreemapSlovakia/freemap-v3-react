@@ -60,6 +60,7 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   swap: 'Start und Ziel tauschen',
   development: 'in Entwicklung',
   alternative: 'Alternative',
+  isochroneRing: 'Isochrone',
   distance: ({ value, diff }) => (
     <>
       Entfernung:{' '}

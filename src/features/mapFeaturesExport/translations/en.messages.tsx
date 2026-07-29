@@ -15,7 +15,6 @@ const en: MapFeaturesExportMessages = {
   exportError: ({ err }) => addError(getMessages()!, 'Error exporting', err),
   what: {
     plannedRoute: 'found route',
-    plannedRouteWithStops: 'include stops',
     objects: 'objects (POIs)',
     pictures: 'photos (in the visible map area)',
     drawingLines: 'drawing - lines',

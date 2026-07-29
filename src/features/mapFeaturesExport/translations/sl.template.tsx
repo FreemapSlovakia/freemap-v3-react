@@ -16,7 +16,6 @@ const sl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Napaka pri izvozu', err),
   what: {
     plannedRoute: 'najdeno pot',
-    plannedRouteWithStops: 's postanki',
     objects: 'objekti (POI)',
     pictures: 'fotografije (v vidnem delu zemljevida)',
     drawingLines: 'risanje - črte',

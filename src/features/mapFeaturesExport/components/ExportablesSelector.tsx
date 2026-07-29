@@ -1,7 +1,7 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
-import { ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { ToggleButton } from 'react-bootstrap';
 import type { IconType } from 'react-icons';
 import {
   FaBullseye,
@@ -9,7 +9,6 @@ import {
   FaDrawPolygon,
   FaFileImport,
   FaMapMarkerAlt,
-  FaMapSigns,
   FaRoute,
   FaSearch,
 } from 'react-icons/fa';
@@ -46,7 +45,6 @@ export type ElevationCapability = 'none' | 'fillable' | 'recorded';
 
 export const elevationCapabilities: Record<Exportable, ElevationCapability> = {
   plannedRoute: 'recorded',
-  plannedRouteWithStops: 'fillable',
   objects: 'recorded',
   pictures: 'fillable',
   drawingLines: 'fillable',
@@ -68,7 +66,12 @@ export function useAvailableExportables(): string {
       exportables.push('search');
     }
 
-    if (state.routePlanner.alternatives.length) {
+    // Isochrones replace the route alternatives, and the route source exports
+    // them in its place.
+    if (
+      state.routePlanner.alternatives.length ||
+      state.routePlanner.isochrones?.length
+    ) {
       exportables.push('plannedRoute');
     }
 
@@ -176,8 +179,7 @@ type Props = {
 };
 
 // The checkbox group of map-feature sources shared by the data export modal and
-// the raster map export modal — the wrapping flex row plus every toggle button
-// (incl. the connected "found route + with stops" pair).
+// the raster map export modal.
 export function ExportablesSelector({
   value,
   available,
@@ -186,67 +188,29 @@ export function ExportablesSelector({
   const em = useMapFeaturesExportMessages();
 
   const toggle = (type: Exportable) => {
-    let next = value;
-
-    if (value.includes(`|${type}|`)) {
-      next = value.replace(`${type}|`, '');
-
-      if (type === 'plannedRoute') {
-        next = next.replace('|plannedRouteWithStops', '');
-      }
-    } else {
-      next += `${type}|`;
-    }
-
-    onChange(next);
+    onChange(
+      value.includes(`|${type}|`)
+        ? value.replace(`${type}|`, '')
+        : `${value}${type}|`,
+    );
   };
 
   return (
     <div className="d-flex flex-wrap gap-2">
-      {exportableDefinitions.map(([type, Icon]) =>
-        type === 'plannedRoute' ? (
-          // "found route" and its "include stops" modifier stay a connected
-          // segmented pair among the detached pills
-          <ButtonGroup key={type}>
-            <ToggleButton
-              id={`chk-${type}`}
-              type="checkbox"
-              variant="outline-primary"
-              value={type}
-              checked={value.includes(`|${type}|`)}
-              disabled={!available.includes(`|${type}|`)}
-              onChange={() => toggle(type)}
-            >
-              <Icon /> {em?.what[type]}
-            </ToggleButton>
-
-            <ToggleButton
-              id="chk-plannedRouteWithStops"
-              type="checkbox"
-              variant="outline-primary"
-              value="plannedRouteWithStops"
-              checked={value.includes('|plannedRouteWithStops|')}
-              disabled={!value.includes(`|${type}|`)}
-              onChange={() => toggle('plannedRouteWithStops')}
-            >
-              <FaMapSigns /> {em?.what['plannedRouteWithStops']}
-            </ToggleButton>
-          </ButtonGroup>
-        ) : (
-          <ToggleButton
-            key={type}
-            id={`chk-${type}`}
-            type="checkbox"
-            variant="outline-primary"
-            value={type}
-            checked={value.includes(`|${type}|`)}
-            disabled={!available.includes(`|${type}|`)}
-            onChange={() => toggle(type)}
-          >
-            <Icon /> {em?.what[type]}
-          </ToggleButton>
-        ),
-      )}
+      {exportableDefinitions.map(([type, Icon]) => (
+        <ToggleButton
+          key={type}
+          id={`chk-${type}`}
+          type="checkbox"
+          variant="outline-primary"
+          value={type}
+          checked={value.includes(`|${type}|`)}
+          disabled={!available.includes(`|${type}|`)}
+          onChange={() => toggle(type)}
+        >
+          <Icon /> {em?.what[type]}
+        </ToggleButton>
+      ))}
     </div>
   );
 }

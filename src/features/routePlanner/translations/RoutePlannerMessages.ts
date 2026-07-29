@@ -51,6 +51,8 @@ export type RoutePlannerMessages = {
   mode: Record<RoutingMode | 'routndtrip-gh', string>;
   modeLabel: string;
   alternative: string;
+  /** Singular label of one isochrone ring, numbered in exports. */
+  isochroneRing: string;
   distance: ({ value, diff }: { value: string; diff?: string }) => JSX.Element;
   duration: ({
     h,

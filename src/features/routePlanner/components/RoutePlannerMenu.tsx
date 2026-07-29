@@ -434,6 +434,15 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.alternatives.length > 0,
   );
 
+  // Isochrones replace the route alternatives, so the result-dependent controls
+  // key off either. Most of them (colorize, elevation profile, milestones,
+  // optimization) only make sense for a route and stay route-only.
+  const isochronesFound = useAppSelector(
+    (state) => (state.routePlanner.isochrones?.length ?? 0) > 0,
+  );
+
+  const resultFound = routeFound || isochronesFound;
+
   const colorizeBy = useAppSelector(
     (state) => state.routePlannerSettings.colorizeBy,
   );
@@ -921,21 +930,23 @@ export default function RoutePlannerMenu(): ReactElement {
           />
         )}
 
-        {routeFound && (
+        {resultFound && (
           <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
             <Dropdown.Toggle variant="secondary">
               <FaEllipsisV />
             </Dropdown.Toggle>
 
             <FmDropdownMenu>
-              <Dropdown.Item
-                as="button"
-                active={elevationProfileIsVisible}
-                eventKey="toggle-elevation-chart"
-              >
-                <FaChartArea />
-                &nbsp;{m?.general.elevationProfile ?? '…'}
-              </Dropdown.Item>
+              {routeFound && (
+                <Dropdown.Item
+                  as="button"
+                  active={elevationProfileIsVisible}
+                  eventKey="toggle-elevation-chart"
+                >
+                  <FaChartArea />
+                  &nbsp;{m?.general.elevationProfile ?? '…'}
+                </Dropdown.Item>
+              )}
 
               <Dropdown.Item as="button" eventKey="convert-to-drawing">
                 <FaPencilAlt />
@@ -947,17 +958,29 @@ export default function RoutePlannerMenu(): ReactElement {
                 &nbsp;{rpm?.style.menuItem ?? '…'}
               </Dropdown.Item>
 
-              <Dropdown.Divider />
+              {routeFound && (
+                <>
+                  <Dropdown.Divider />
 
-              <Dropdown.Item as="button" eventKey="toggle-milestones-km">
-                {milestones === 'abs' ? <FaRegCheckSquare /> : <FaRegSquare />}
-                &nbsp;{rpm?.milestones ?? '…'} (km)
-              </Dropdown.Item>
+                  <Dropdown.Item as="button" eventKey="toggle-milestones-km">
+                    {milestones === 'abs' ? (
+                      <FaRegCheckSquare />
+                    ) : (
+                      <FaRegSquare />
+                    )}
+                    &nbsp;{rpm?.milestones ?? '…'} (km)
+                  </Dropdown.Item>
 
-              <Dropdown.Item as="button" eventKey="toggle-milestones-%">
-                {milestones === 'rel' ? <FaRegCheckSquare /> : <FaRegSquare />}
-                &nbsp;{rpm?.milestones ?? '…'} (%)
-              </Dropdown.Item>
+                  <Dropdown.Item as="button" eventKey="toggle-milestones-%">
+                    {milestones === 'rel' ? (
+                      <FaRegCheckSquare />
+                    ) : (
+                      <FaRegSquare />
+                    )}
+                    &nbsp;{rpm?.milestones ?? '…'} (%)
+                  </Dropdown.Item>
+                </>
+              )}
 
               {optimizeApplicable && (
                 <>

@@ -17,7 +17,6 @@ const fr: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     addError(getMessages()!, 'Erreur lors de l’exportation', err),
   what: {
     plannedRoute: 'itinéraire trouvé',
-    plannedRouteWithStops: 'avec les arrêts',
     objects: 'objets (POI)',
     pictures: 'photos (dans la zone visible de la carte)',
     drawingLines: 'dessin - lignes',

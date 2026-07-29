@@ -80,7 +80,6 @@ export async function exportMapToDocument({
       drawingPoints: exportableSet.has('drawingPoints'),
       objects: exportableSet.has('objects'),
       plannedRoute: exportableSet.has('plannedRoute'),
-      plannedRouteWithStops: exportableSet.has('plannedRouteWithStops'),
       tracking: exportableSet.has('tracking'),
       import: exportableSet.has('import'),
       search: exportableSet.has('search'),

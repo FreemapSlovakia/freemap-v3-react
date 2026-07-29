@@ -215,19 +215,13 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
   const handleCheckboxChange = useCallback(
     (type: Exportable) => {
-      let next = isGarmin ? '|' : exportables;
+      const base = isGarmin ? '|' : exportables;
 
-      if (exportables.includes(`|${type}|`)) {
-        next = exportables.replace(`${type}|`, '');
-
-        if (type === 'plannedRoute') {
-          next = next.replace('|plannedRouteWithStops', '');
-        }
-      } else {
-        next += `${type}|`;
-      }
-
-      setExportables(next);
+      setExportables(
+        exportables.includes(`|${type}|`)
+          ? base.replace(`${type}|`, '')
+          : `${base}${type}|`,
+      );
     },
     [exportables, isGarmin],
   );

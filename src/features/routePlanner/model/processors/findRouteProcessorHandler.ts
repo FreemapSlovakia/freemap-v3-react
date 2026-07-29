@@ -44,6 +44,7 @@ import {
   ghSnapPreventions,
   graphhopperRouteUrl,
 } from '../graphhopperRoute.js';
+import { withIsochroneLimits } from '../isochrones.js';
 import { updateRouteTypes } from './findRouteProcessor.js';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures];
@@ -282,8 +283,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
     dispatch(
       routePlannerSetIsochrones({
-        isochrones: IsochroneResponseSchema.parse(await response.json())
-          .polygons,
+        isochrones: withIsochroneLimits(
+          IsochroneResponseSchema.parse(await response.json()).polygons,
+          isochroneParams,
+        ),
         timestamp: Date.now(),
       }),
     );

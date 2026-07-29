@@ -2,9 +2,10 @@ import type { MarkerType } from '@features/objects/model/actions.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { type PoiIconBBox, poiIconBBoxes } from '@osm/poiIconBBoxes.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { GLYPH_INSET_LIGHT, glyphInsetColor } from '@shared/colors.js';
 import {
   faIconToSvg,
-  loadAllIcons,
+  getFaIcon,
   parseIconSpec,
   poiIconNameToUrl,
 } from '@shared/drawingIcons.js';
@@ -14,10 +15,6 @@ import {
   poiIconGlyphRect,
 } from '@shared/poiIconGlyph.js';
 import { escapeXml } from '@shared/stringUtils.js';
-
-// Glyph color: matches RichMarker's GLYPH_COLOR ('black'), drawn on the white
-// inset. Kept literal here so the export pipeline doesn't need a runtime lookup.
-const GLYPH_COLOR_LITERAL = 'black';
 
 // Flattened Font Awesome icon geometry, as returned by `faIconToSvg`.
 type FaSvg = { width: number; height: number; path: string };
@@ -134,8 +131,7 @@ export async function resolveMarkerGlyph({
     let def = faCache.get(spec.name);
 
     if (!faCache.has(spec.name)) {
-      const all = await loadAllIcons();
-      def = all.find((d) => d.iconName === spec.name);
+      def = await getFaIcon(spec.name);
       faCache.set(spec.name, def);
     }
 
@@ -267,6 +263,11 @@ export function buildMarkerSvg({
   // (shape + white inset + glyph) fades uniformly — matching RichMarker.
   const { color: fillColor, opacity } = splitColorAlpha(color);
 
+  // An inlined poi icon is multi-color artwork drawn for a light background, so
+  // it always keeps the white inset; the glyphs painted in `fillColor` get
+  // whichever inset they read on. Mirrors RichMarker.
+  const insetFill = poiSvg ? GLYPH_INSET_LIGHT : glyphInsetColor(fillColor);
+
   const opacityAttr = opacity < 1 ? ` opacity="${opacity}"` : '';
 
   // viewBox stays in artwork units (width MARKER_VIEWBOX_WIDTH); the px scale
@@ -284,7 +285,7 @@ export function buildMarkerSvg({
     if (text) {
       return (
         `<text x="${cx}" y="${cy}" text-anchor="middle" ` +
-        `dominant-baseline="central" fill="${GLYPH_COLOR_LITERAL}" ` +
+        `dominant-baseline="central" fill="${fillColor}" ` +
         `font-size="150" font-weight="bold" font-family="Sans-Serif" ` +
         `style="white-space:pre">${escapeXml(text)}</text>`
       );
@@ -296,7 +297,7 @@ export function buildMarkerSvg({
       const ty = cy - (faSvg.height * scale) / 2;
 
       return (
-        `<path d="${escapeXml(faSvg.path)}" fill="${GLYPH_COLOR_LITERAL}" ` +
+        `<path d="${escapeXml(faSvg.path)}" fill="${fillColor}" ` +
         `transform="translate(${tx} ${ty}) scale(${scale})"/>`
       );
     }
@@ -330,7 +331,7 @@ export function buildMarkerSvg({
         `<ellipse cx="155" cy="155" rx="135" ry="135" fill="${fillColor}" ` +
         `stroke="${fillColor}" stroke-width="10" stroke-opacity="0.5"/>` +
         (hasContent
-          ? `<ellipse cx="155" cy="155" rx="110" ry="110" fill="#fff"/>`
+          ? `<ellipse cx="155" cy="155" rx="110" ry="110" fill="${insetFill}"/>`
           : '') +
         renderGlyph(155, 155) +
         `</svg>`,
@@ -350,7 +351,7 @@ export function buildMarkerSvg({
         `stroke-opacity="0.6"/>` +
         (hasContent
           ? `<rect x="50" y="50" width="200" height="200" rx="20" ry="20" ` +
-            `fill="#fff"/>`
+            `fill="${insetFill}"/>`
           : '') +
         renderGlyph(150, 150) +
         `</svg>`,
@@ -379,7 +380,7 @@ export function buildMarkerSvg({
       `stroke-opacity="0.5"/>` +
       (hasContent
         ? `<ellipse cx="154.12" cy="163.702" rx="119.462" ry="119.462" ` +
-          `fill="#fff"/>`
+          `fill="${insetFill}"/>`
         : '') +
       renderGlyph(154, 164) +
       `</svg>`,

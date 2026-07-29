@@ -106,9 +106,14 @@ export function DrawingPointsResult(): ReactElement {
 
         const { color: rgb, opacity } = splitColorAlpha(color || COLORS.normal);
 
+        // Selection pales the shape by mixing it toward white. A multiplicative
+        // `lighten` would clip any color already lighter than ~57% to pure white
+        // (a red pin vanished entirely); mixing keeps the hue at every input
+        // lightness. The glyph keeps the point's own color so it stays readable
+        // on the paled shape, matching how a selected route waypoint is drawn.
         const renderColor =
           activeIndex === i
-            ? joinColorAlpha(Color(rgb).lighten(0.75).hex(), opacity)
+            ? joinColorAlpha(Color(rgb).mix(Color('white'), 0.6).hex(), opacity)
             : color || COLORS.normal;
 
         return (
@@ -116,6 +121,7 @@ export function DrawingPointsResult(): ReactElement {
             key={`${change}-${i}`}
             point={point}
             renderColor={renderColor}
+            glyphColor={activeIndex === i ? rgb : undefined}
             interactive={interactive}
             draggable={!window.fmEmbedded && activeIndex === i}
             eventHandlers={{
@@ -141,12 +147,14 @@ export function DrawingPointsResult(): ReactElement {
 function DrawingPointMarker({
   point: { coords, label, markerType, icon },
   renderColor,
+  glyphColor,
   interactive,
   draggable,
   eventHandlers,
 }: {
   point: DrawingPoint;
   renderColor: string;
+  glyphColor?: string;
   interactive: boolean;
   draggable: boolean;
   eventHandlers: LeafletEventHandlerFnMap;
@@ -165,6 +173,7 @@ function DrawingPointMarker({
     <RichMarker
       position={{ lat: coords.lat, lng: coords.lon }}
       color={renderColor}
+      glyphColor={glyphColor}
       markerType={markerType}
       {...contentProps}
       draggable={draggable}

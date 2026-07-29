@@ -2,7 +2,24 @@ import type { Selection } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
+import {
+  ISOCHRONE_FILL_OPACITY,
+  isochroneColor,
+  isochroneLabel,
+} from '@features/routePlanner/model/isochrones.js';
 import type { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import {
+  dominantStepMode,
+  INACTIVE_ALTERNATIVE_COLOR,
+  routeModeRuns,
+  STEP_MODE_COLORS,
+  stepModeDashArray,
+  stopNumber,
+  WAYPOINT_COLORS,
+  WAYPOINT_ICONS,
+  waypointKind,
+} from '@features/routePlanner/model/routeColors.js';
+import type { RoutePlannerSettingsState } from '@features/routePlanner/model/settingsReducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
@@ -10,7 +27,7 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
-import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import {
   buildMarkerSvg,
@@ -64,7 +81,6 @@ export interface ExportInclude {
   drawingPoints?: boolean;
   objects?: boolean;
   plannedRoute?: boolean;
-  plannedRouteWithStops?: boolean;
   tracking?: boolean;
   import?: boolean;
   search?: boolean;
@@ -78,9 +94,10 @@ export interface BuildExportOptions {
    */
   only?: Selection;
   /**
-   * Planned-route geometry: `all` emits every alternative as a MultiLineString
-   * (data export); `active` emits only the active alternative as a single
-   * LineString (raster map).
+   * Planned-route geometry: `all` emits every alternative as one
+   * MultiLineString (data export); `active` emits only the active alternative,
+   * split into one LineString per same-mode stretch so each carries the color
+   * and dash the map gives it (raster map).
    */
   route?: 'all' | 'active';
   /**
@@ -344,61 +361,152 @@ function addPictures(features: Feature[], pictures: Picture[]) {
   }
 }
 
-function addPlannedRoute(
+async function addPlannedRoute(
   features: Feature[],
   {
     alternatives,
     activeAlternativeIndex,
+    isochrones,
     points,
+    waypoints,
     finishOnly,
+    mode,
   }: RoutePlannerState,
+  { lineWidth, lineOpacity, markerOpacity }: RoutePlannerSettingsState,
   selection: 'all' | 'active',
-  withStops: boolean,
   rpm: RoutePlannerMessages,
+  language: string,
+  pointMode: PointRenderMode,
+  caches: Caches,
 ) {
-  if (withStops) {
-    for (const [i, pt] of points.entries()) {
-      features.push(
-        point([pt.lon, pt.lat], {
-          title:
-            i === 0 && !finishOnly
-              ? rpm.start
-              : i === points.length - 1
-                ? rpm.finish
-                : `${rpm.stop} ${i + 1}`,
-        }),
-      );
+  // The start/finish/stop markers are part of what the route puts on the map,
+  // so they always come along, in the colors and glyphs the map gives them.
+  for (const [i, pt] of points.entries()) {
+    const kind = waypointKind(i, points.length, finishOnly, mode);
+
+    // `markerOpacity` rides on the color's alpha: both the baked SVG and the
+    // in-app marker turn it into a group opacity, fading shape, inset and glyph
+    // together.
+    const color = joinColorAlpha(WAYPOINT_COLORS[kind], markerOpacity);
+
+    const number = stopNumber(i, mode, waypoints);
+
+    // Stops are numbered inside their marker, in the visiting order the map
+    // shows.
+    const label =
+      kind === 'stop' && number !== undefined ? String(number) : undefined;
+
+    const props: Record<string, unknown> = {};
+
+    // A waypoint's name is generated boilerplate, and its marker already shows
+    // the play/stop glyph or the stop's number — so it goes only into the data
+    // formats, where a name is the sole way to tell waypoints apart. A rendered
+    // map would just get "Start"/"Finish" repeating what the marker says.
+    if (pointMode.props) {
+      props['title'] =
+        kind === 'start'
+          ? rpm.start
+          : kind === 'finish'
+            ? rpm.finish
+            : `${rpm.stop} ${number ?? i}`;
+
+      props['marker-color'] = WAYPOINT_COLORS[kind];
+
+      if (markerOpacity < 1) {
+        props['marker-color-opacity'] = markerOpacity;
+      }
     }
+
+    Object.assign(
+      props,
+      await bakeMarkerProps(
+        {
+          markerType: 'pin',
+          color,
+          icon: WAYPOINT_ICONS[kind],
+          label,
+        },
+        pointMode,
+        caches,
+      ),
+    );
+
+    features.push(point([pt.lon, pt.lat], props));
   }
 
-  if (selection === 'active') {
-    const alt = alternatives[activeAlternativeIndex];
+  // Isochrones replace the route alternatives, so they are what the route
+  // source exports when present. Simplestyle mirrors the on-map rendering:
+  // per-bucket stroke color, fill on the outermost ring only.
+  if (isochrones?.length) {
+    for (const isochrone of isochrones) {
+      const bucket = isochrone.properties?.['bucket'] ?? 0;
 
-    if (alt) {
-      const coords: Position[] = [];
+      const color = isochroneColor(bucket, isochrones.length);
 
-      for (const leg of alt.legs) {
-        for (const step of leg.steps) {
-          coords.push(...step.geometry.coordinates);
-        }
-      }
-
-      if (coords.length >= 2) {
-        features.push(lineString(coords, {}));
-      }
+      features.push({
+        type: 'Feature',
+        properties: {
+          title: isochroneLabel(isochrone, bucket, rpm.isochroneRing, language),
+          stroke: color,
+          'stroke-opacity': lineOpacity < 1 ? lineOpacity : undefined,
+          'stroke-width': lineWidth,
+          fill: color,
+          // The inner rings are outlines only; a fully transparent fill says so
+          // explicitly, so no consumer falls back to a default fill. The map
+          // fades the whole ring group, so the fill takes `lineOpacity` on top
+          // of its own.
+          'fill-opacity':
+            bucket === isochrones.length - 1
+              ? ISOCHRONE_FILL_OPACITY * lineOpacity
+              : 0,
+        },
+        geometry: isochrone.geometry,
+      });
     }
 
     return;
   }
 
-  for (const [i, { legs }] of alternatives.entries()) {
+  // One feature per same-mode stretch, each in the color the map paints it, so
+  // a multimodal route reads the same on paper as on screen.
+  if (selection === 'active') {
+    const alt = alternatives[activeAlternativeIndex];
+
+    for (const run of alt ? routeModeRuns(alt) : []) {
+      features.push(
+        lineString(run.coordinates, {
+          stroke: STEP_MODE_COLORS[run.mode],
+          'stroke-opacity': lineOpacity < 1 ? lineOpacity : undefined,
+          'stroke-width': lineWidth,
+          'stroke-dasharray': stepModeDashArray(run.mode),
+        }),
+      );
+    }
+
+    return;
+  }
+
+  for (const [i, alternative] of alternatives.entries()) {
+    const dominant = dominantStepMode(alternative);
+
     features.push(
       multiLineString(
-        legs.flatMap((leg) =>
+        alternative.legs.flatMap((leg) =>
           leg.steps.map((step) => step.geometry.coordinates),
         ),
         {
           title: `${rpm.alternative} ${i + 1}`,
+          // One feature per alternative keeps the data export's structure, so
+          // a multimodal route gets its dominant mode's color rather than a
+          // per-stretch one. Alternatives the user isn't following are drawn
+          // dimmed, as on the map.
+          stroke:
+            i === activeAlternativeIndex
+              ? STEP_MODE_COLORS[dominant]
+              : INACTIVE_ALTERNATIVE_COLOR,
+          'stroke-opacity': lineOpacity < 1 ? lineOpacity : undefined,
+          'stroke-width': lineWidth,
+          'stroke-dasharray': stepModeDashArray(dominant),
         },
       ),
     );
@@ -503,6 +611,7 @@ export async function buildExportFeatureCollection({
     objects,
     objectsSettings,
     routePlanner,
+    routePlannerSettings,
     tracking,
     trackViewer,
     trackViewerSettings,
@@ -647,13 +756,16 @@ export async function buildExportFeatureCollection({
     }
   }
 
-  if (include.plannedRoute || include.plannedRouteWithStops) {
-    addPlannedRoute(
+  if (include.plannedRoute) {
+    await addPlannedRoute(
       features,
       routePlanner,
+      routePlannerSettings,
       options.route ?? 'all',
-      Boolean(include.plannedRouteWithStops),
       await loadRoutePlannerMessages(getState().l10n.language),
+      getState().l10n.language,
+      pointMode,
+      caches,
     );
   }
 

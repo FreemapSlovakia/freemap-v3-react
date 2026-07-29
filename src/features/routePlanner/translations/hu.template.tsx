@@ -60,6 +60,7 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     isochrone: 'Izokron',
   },
   alternative: 'Alternatíva',
+  isochroneRing: 'Izokron',
   distance: ({ value, diff }) => (
     <>
       Távolság:{' '}
