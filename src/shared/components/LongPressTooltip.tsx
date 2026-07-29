@@ -9,6 +9,7 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -54,6 +55,10 @@ export function LongPressTooltip({
 
   const [labelHidden, setLabelHidden] = useState(false);
 
+  // Whether the pointer that opened the tooltip was a finger or a stylus, which
+  // covers the control it points at and so needs the tooltip pushed clear of it.
+  const [coarse, setCoarse] = useState(false);
+
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -77,6 +82,8 @@ export function LongPressTooltip({
 
   const handleStart = useCallback(
     (e: PointerEvent) => {
+      setCoarse(e.pointerType === 'touch' || e.pointerType === 'pen');
+
       if ((!labelHidden && name == null) || timeoutRef.current) {
         return;
       }
@@ -138,6 +145,29 @@ export function LongPressTooltip({
       name
     );
 
+  // Undefined for a mouse, so the tooltip keeps Bootstrap's own offset.
+  const offset = useMemo(
+    () => (coarse ? ([0, 30] as [number, number]) : undefined),
+    [coarse],
+  );
+
+  // Near the top edge the preferred `top` placement flips, and for a finger
+  // `bottom` would land right under the fingertip; sidestep to a side first.
+  const popperConfig = useMemo(
+    () =>
+      coarse
+        ? {
+            modifiers: [
+              {
+                name: 'flip',
+                options: { fallbackPlacements: ['right', 'left', 'bottom'] },
+              },
+            ],
+          }
+        : undefined,
+    [coarse],
+  );
+
   return (
     <>
       {children({
@@ -161,7 +191,14 @@ export function LongPressTooltip({
       })}
 
       {target && (labelHidden || name != null) && (
-        <Overlay target={target} show={show} placement="top" flip>
+        <Overlay
+          target={target}
+          show={show}
+          placement="top"
+          flip
+          offset={offset}
+          popperConfig={popperConfig}
+        >
           {(props) => (
             <Tooltip {...props}>
               {tooltipBody}
