@@ -324,6 +324,12 @@ const predefinedDrawingPropertiesModalFactory = () =>
     './PredefinedDrawingPropertiesModal.js'
   );
 
+const gpsRecorderSettingsModalFactory = () =>
+  import(
+    /* webpackChunkName: "gps-recorder-settings-modal" */
+    '@features/gpsRecorder/components/GpsRecorderSettingsModal.js'
+  );
+
 const trackViewerStyleModalFactory = () =>
   import(
     /* webpackChunkName: "track-viewer-style-modal" */
@@ -929,6 +935,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'drawing-properties'}
         factory={predefinedDrawingPropertiesModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'gps-recorder-settings'}
+        factory={gpsRecorderSettingsModalFactory}
       />
 
       <AsyncModal

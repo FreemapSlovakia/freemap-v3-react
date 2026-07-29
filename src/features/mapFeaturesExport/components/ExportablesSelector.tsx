@@ -6,7 +6,6 @@ import type { IconType } from 'react-icons';
 import {
   FaBullseye,
   FaCamera,
-  FaCircle,
   FaDrawPolygon,
   FaFileImport,
   FaMapMarkerAlt,
@@ -32,7 +31,6 @@ export const exportableDefinitions: readonly [
   ['drawingAreas', FaDrawPolygon, false],
   ['drawingPoints', FaMapMarkerAlt, false],
   ['tracking', FaBullseye, true],
-  ['gpsRecorder', FaCircle, true],
   ['import', FaFileImport, true],
   ['search', FaSearch, true],
 ];
@@ -53,8 +51,6 @@ export const elevationCapabilities: Record<Exportable, ElevationCapability> = {
   drawingAreas: 'none',
   drawingPoints: 'fillable',
   tracking: 'recorded',
-  // GPS altitude, when the fix carried one.
-  gpsRecorder: 'recorded',
   import: 'recorded',
   search: 'recorded',
 };
@@ -101,10 +97,6 @@ export function useAvailableExportables(): string {
 
     if (state.tracking.tracks.length) {
       exportables.push('tracking');
-    }
-
-    if (state.gpsRecorder.points.length) {
-      exportables.push('gpsRecorder');
     }
 
     if (state.trackViewer.trackGeojson) {

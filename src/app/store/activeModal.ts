@@ -55,6 +55,7 @@ const MODAL_RENAMES: Record<string, string> = {
 export const ModalIdSchema = z.enum([
   ...URL_MODAL_IDS,
   'current-drawing-properties',
+  'gps-recorder-settings',
   'track-viewer-style',
   'objects-style',
   'search-result-style',

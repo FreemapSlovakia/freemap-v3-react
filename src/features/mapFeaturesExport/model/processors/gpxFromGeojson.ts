@@ -22,8 +22,12 @@ const GPXTPX_POINT_PROPS: Record<string, string> = {
 };
 
 // Non-namespaced trackpoint extensions togeojson reads as `<name>` -> `${name}s`.
+// `accuracy` has no GPX-native home — `<hdop>` is a dimensionless dilution of
+// precision, not the metres a GNSS fix reports — so a recorded track keeps it
+// here, where our own reader gets it back.
 const CUSTOM_POINT_PROPS: Record<string, string> = {
   powers: 'power',
+  accuracies: 'accuracy',
 };
 
 // Reads one per-point value out of a feature's `coordinateProperties`. `seg` is

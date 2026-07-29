@@ -1,136 +1,262 @@
-import { convertToDrawing } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { setActiveModal } from '@app/store/actions.js';
+import { useTrackMergeMode } from '@features/trackViewer/hooks/useTrackMergeMode.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback } from 'react';
-import { Button } from 'react-bootstrap';
+import { type ReactElement, useCallback, useEffect } from 'react';
+import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
 import {
   FaCircle,
-  FaPencilRuler,
-  FaPlug,
+  FaCog,
+  FaPause,
+  FaSave,
   FaStop,
   FaTrash,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   gpsRecorderClear,
+  gpsRecorderDisconnect,
+  gpsRecorderPause,
+  gpsRecorderSave,
   gpsRecorderStart,
   gpsRecorderStop,
   gpsRecorderSync,
 } from '../model/actions.js';
+import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
+import { GpsRecorderNotices } from './GpsRecorderNotices.js';
+import { GpsRecorderStats } from './GpsRecorderStats.js';
 
 /**
- * Stage-1 panel: enough controls and readout to prove the chain end to end.
- * The strings are intentionally raw English — stage 2 designs and localizes it.
+ * How often the recorder is re-read while the tool is open. `/status` is a
+ * loopback call answered from memory, and the sync only fetches a track page
+ * when the recorder says it holds fixes above our cursor — so this is cheap
+ * enough to run throughout, and it is what keeps the panel honest when there is
+ * no live stream to carry the news.
  */
+const POLL_INTERVAL_MS = 15_000;
+
 export default function GpsRecorderMenu(): ReactElement {
   const dispatch = useDispatch();
 
-  const m = useMessages();
+  const m = useGpsRecorderMessages();
 
   const confirm = useConfirm();
+
+  const askMergeMode = useTrackMergeMode();
 
   const status = useAppSelector((state) => state.gpsRecorder.status);
 
   const connection = useAppSelector((state) => state.gpsRecorder.connection);
 
-  const error = useAppSelector((state) => state.gpsRecorder.error);
+  const paused = useAppSelector((state) => state.gpsRecorder.paused);
+
+  const pending = useAppSelector((state) => state.gpsRecorder.pending);
 
   const heldPoints = useAppSelector((state) => state.gpsRecorder.points.length);
 
+  const keepScreenAwake = useAppSelector(
+    (state) => state.gpsRecorderSettings.keepScreenAwake,
+  );
+
   const recording = status?.recording ?? false;
 
-  const handleConvert = useCallback(() => {
-    // The recording is dense, so offer the same simplification the track viewer
-    // does. Nothing is lost here — this copies, leaving the recorder's track
-    // alone — so there's no loss warning to pair with it.
-    const answer = window.prompt(m?.general.simplifyPrompt, '50');
+  // The spinner covers any wait, but only a command the user gave blocks the
+  // transport: the background poll passes through `connecting` every few
+  // seconds, and disabling Record for it would fight the user on exactly the
+  // recorder that isn't answering.
+  const busy =
+    pending || connection === 'connecting' || connection === 'syncing';
 
-    if (answer === null) {
+  // Connecting on open rather than behind a button: a recording begun on an
+  // earlier page load, or a stream the browser gave up on, would otherwise
+  // leave the panel blank until something was pressed. The Local Network Access
+  // prompt still needs a gesture, so the panel offers one when this fails.
+  useEffect(() => {
+    dispatch(gpsRecorderSync());
+
+    const timer = setInterval(() => {
+      // A frozen background page runs neither the timer nor the stream; the
+      // catch-up on returning is what fills the gap.
+      if (document.visibilityState === 'visible') {
+        dispatch(gpsRecorderSync());
+      }
+    }, POLL_INTERVAL_MS);
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        dispatch(gpsRecorderSync());
+      }
+    };
+
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      clearInterval(timer);
+
+      document.removeEventListener('visibilitychange', onVisible);
+
+      dispatch(gpsRecorderDisconnect());
+    };
+  }, [dispatch]);
+
+  // Held only while there is something to watch, so closing the tool or
+  // stopping the recording gives the screen back to the platform's own timeout.
+  useEffect(() => {
+    if (!keepScreenAwake || !recording || !('wakeLock' in navigator)) {
       return;
     }
 
-    dispatch(
-      convertToDrawing({
-        type: 'gps-recorder',
-        tolerance: Number(answer || '0') / 100000,
-      }),
-    );
-  }, [dispatch, m]);
+    let sentinel: WakeLockSentinel | null = null;
+
+    let released = false;
+
+    navigator.wakeLock
+      .request('screen')
+      .then((s) => {
+        if (released) {
+          void s.release();
+        } else {
+          sentinel = s;
+        }
+      })
+      // Denied (or the tab lost visibility mid-request); the recording is
+      // unaffected, so there is nothing to report.
+      .catch(() => undefined);
+
+    return () => {
+      released = true;
+
+      void sentinel?.release();
+    };
+  }, [keepScreenAwake, recording]);
+
+  const handleSave = useCallback(async () => {
+    const mode = await askMergeMode();
+
+    if (mode !== 'cancel') {
+      dispatch(gpsRecorderSave(mode));
+    }
+  }, [askMergeMode, dispatch]);
 
   const handleClear = useCallback(async () => {
     if (
       await confirm({
-        title: 'Delete the recording?',
-        message:
-          'The recorder deletes its whole track. This cannot be undone, and it is the only copy.',
-        confirmLabel: 'Delete',
+        title: m?.deleteModal.title,
+        message: m?.deleteModal.message,
+        confirmLabel: m?.deleteModal.confirm,
         confirmStyle: 'danger',
       })
     ) {
       dispatch(gpsRecorderClear());
     }
-  }, [confirm, dispatch]);
+  }, [confirm, dispatch, m]);
+
+  const stateLabel = recording
+    ? m?.state.recording
+    : paused
+      ? m?.state.paused
+      : status
+        ? m?.state.stopped
+        : m?.state.unknown;
+
+  const connectionLabel =
+    connection === 'live'
+      ? m?.connection.live
+      : connection === 'connecting'
+        ? m?.connection.connecting
+        : connection === 'syncing'
+          ? m?.connection.syncing
+          : connection === 'reconnecting'
+            ? m?.connection.reconnecting
+            : m?.connection.offline;
 
   return (
-    <ToolMenu tool="gps-recorder">
-      <Button
-        className="ms-1"
-        variant="primary"
-        disabled={recording}
-        // Must stay a direct gesture handler: this tap is what allows the
-        // Local Network Access prompt and the launch intent.
-        onClick={() => dispatch(gpsRecorderStart())}
-      >
-        <FaCircle /> Start
-      </Button>
+    <>
+      <ToolMenu tool="gps-recorder">
+        <ButtonGroup className="ms-1">
+          <Button
+            variant="primary"
+            disabled={pending}
+            // Must stay a direct gesture handler: this tap is what allows the
+            // Local Network Access prompt and the launch intent.
+            onClick={() =>
+              dispatch(recording ? gpsRecorderStop() : gpsRecorderStart())
+            }
+          >
+            {busy ? (
+              <Spinner animation="border" size="sm" />
+            ) : recording ? (
+              <FaStop />
+            ) : (
+              <FaCircle />
+            )}{' '}
+            {recording ? m?.stop : paused ? m?.resume : m?.record}
+          </Button>
 
-      <Button
-        className="ms-1"
-        variant="secondary"
-        disabled={!recording}
-        onClick={() => dispatch(gpsRecorderStop())}
-      >
-        <FaStop /> Stop
-      </Button>
+          {recording && (
+            <Button
+              variant="secondary"
+              disabled={pending}
+              onClick={() => dispatch(gpsRecorderPause())}
+            >
+              <FaPause /> {m?.pause}
+            </Button>
+          )}
 
-      <Button
-        className="ms-1"
-        variant="secondary"
-        onClick={() => dispatch(gpsRecorderSync())}
-      >
-        <FaPlug /> Reconnect
-      </Button>
+          {paused && (
+            <Button
+              variant="secondary"
+              disabled={pending}
+              onClick={() => dispatch(gpsRecorderStop())}
+            >
+              <FaStop /> {m?.stop}
+            </Button>
+          )}
+        </ButtonGroup>
 
-      <Button
-        className="ms-1"
-        variant="secondary"
-        disabled={heldPoints < 2}
-        onClick={handleConvert}
-      >
-        <FaPencilRuler /> To drawing
-      </Button>
+        <ResponsiveActions className="ms-1" size={undefined}>
+          <Action
+            label={m?.save}
+            icon={<FaSave />}
+            showFrom="never"
+            disabled={heldPoints < 2}
+            onClick={handleSave}
+          />
 
-      <Button
-        className="ms-1"
-        variant="danger"
-        // The recorder refuses to delete mid-recording, so don't offer it.
-        disabled={!status || status.count === 0 || recording}
-        onClick={handleClear}
-      >
-        <FaTrash /> Delete
-      </Button>
+          <Action
+            label={m?.delete}
+            icon={<FaTrash />}
+            variant="danger"
+            showFrom="never"
+            // The recorder refuses to delete mid-recording, so don't offer it.
+            disabled={!status || status.count === 0 || recording}
+            onClick={handleClear}
+          />
 
-      <span className="align-self-center ms-2 text-nowrap">
-        {recording ? 'recording' : status ? 'stopped' : 'unknown'} ·{' '}
-        {connection} · {heldPoints}/{status?.count ?? '?'} pts
-        {status && !status.setupComplete && ' · setup incomplete'}
-      </span>
+          <Action
+            label={m?.settings}
+            icon={<FaCog />}
+            showFrom="never"
+            onClick={() =>
+              dispatch(setActiveModal({ type: 'gps-recorder-settings' }))
+            }
+          />
+        </ResponsiveActions>
 
-      {error && (
-        <span className="align-self-center ms-2 text-danger">{error}</span>
-      )}
-    </ToolMenu>
+        <span className="align-self-center ms-2 text-nowrap">
+          {stateLabel}
+          <span className="text-body-secondary"> · {connectionLabel}</span>
+        </span>
+
+        <GpsRecorderStats />
+      </ToolMenu>
+
+      <GpsRecorderNotices />
+    </>
   );
 }

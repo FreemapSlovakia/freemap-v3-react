@@ -126,6 +126,16 @@ function makeState(): RootState {
       showLine: false,
       showPoints: false,
     },
+    gpsRecorderSettings: {
+      intervalMs: 2000,
+      minDistanceM: 5,
+      maxAccuracyM: 30,
+      priority: 'balanced',
+      splitGapS: 120,
+      showAccuracyCircle: false,
+      followPosition: false,
+      keepScreenAwake: true,
+    },
   } as unknown as RootState;
 }
 
@@ -259,6 +269,16 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         showLine: false,
         showPoints: false,
       },
+      gpsRecorderSettings: {
+        intervalMs: 2000,
+        minDistanceM: 5,
+        maxAccuracyM: 30,
+        priority: 'balanced',
+        splitGapS: 120,
+        showAccuracyCircle: false,
+        followPosition: false,
+        keepScreenAwake: true,
+      },
     });
   });
 
@@ -289,6 +309,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         'elevationSettings',
         'trackViewerSettings',
         'trackingSettings',
+        'gpsRecorderSettings',
       ].sort(),
     );
   });
@@ -361,6 +382,12 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.trackingSettings?.colorizeBy).toBe('speed');
     expect(initial.trackingSettings?.showLine).toBe(false);
     expect(initial.trackingSettings?.showPoints).toBe(false);
+    // gpsRecorderSettings round-trips both halves: what the recorder is asked
+    // for, and what only this app acts on.
+    expect(initial.gpsRecorderSettings?.priority).toBe('balanced');
+    expect(initial.gpsRecorderSettings?.maxAccuracyM).toBe(30);
+    expect(initial.gpsRecorderSettings?.splitGapS).toBe(120);
+    expect(initial.gpsRecorderSettings?.followPosition).toBe(false);
 
     // premiumExpiration round-trips Date → ISO string → Date.
     expect(initial.auth?.user?.premiumExpiration).toBeInstanceOf(Date);

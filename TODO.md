@@ -302,10 +302,13 @@ off that — never re-derive "is this a track?" from density/timestamps.
 
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 
-Stage 1 (viability proof) is built and works end to end on a real device:
-Start/Stop/Reconnect/Delete, convert-to-drawing, export, a live-growing plain
-polyline and raw English error text — on Android+Chromium, for holders of the
-`layerPreview` role. The recorder's `API.md` is the contract's source of truth.
+Works end to end on a real device for holders of the `layerPreview` role on
+Android: record/pause/stop, derived segments, a live readout, save-to-track-viewer,
+localized errors and the setup warning banner, and a settings modal. The
+recorder's `API.md` is the contract's source of truth; the parts it does not
+implement yet are filed as
+[issues #1–#4](https://github.com/FreemapSlovakia/freemap-gps-recorder/issues)
+and the client falls back cleanly until they land.
 
 - [ ] **Give it a role of its own.** It rides on `layerPreview` for want of a
       better fit; a `gpsRecorder` (or a general "beta features") role would say
@@ -317,31 +320,23 @@ polyline and raw English error text — on Android+Chromium, for holders of the
       gate is Android-wide, but `intent://` with `S.browser_fallback_url` is a
       Chrome convention; a browser that ignores it leaves the "recorder not
       installed" path doing nothing at all.
-- [ ] **`getExportables()` in `garminExport.ts` has no `gpsRecorder` entry.** It
-      is a `Partial` record, so this compiles, but the Garmin target silently
-      produces nothing for the recorder. Mirror the `import` branch.
-- [ ] **Save the recording as an imported track**, not just via export/convert,
-      so elevation, colorize and the elevation chart work on it in place.
-- [ ] **Readout: elapsed time, distance, current accuracy.** Distance can reuse
-      the shared track helpers rather than a private implementation.
-- [ ] **Style the live track like a displayed GPX track** instead of the stage-1
-      red polyline, and consider running it through the shared colorizers.
-- [ ] **Designed, localized error states** for the three causes
-      (`lna-denied` / `setup-needed` / `unreachable`), replacing
-      `describeFailure`'s raw English. Strings belong in a per-feature lazy
-      bundle (`src/features/gpsRecorder/translations/`), not the global blob.
-- [ ] **Warning banner from `/status`** for `missingPermissions` and
-      `batteryExempt`, with the intent link back into the recorder app.
-- [ ] **Recorder version check.** `assertSupportedVersion` already fails on a
-      `versionCode` below `MIN_RECORDER_VERSION_CODE`; turn that into an
-      update prompt pointing at the APK download.
-- [ ] **Save/export the finished track into the existing track handling** — hand
-      it to `trackViewer` so elevation, colorize, the elevation chart, and GPX
-      export all work on it. Once the points can leave the feature, revisit
-      persisting them (and then the cursor, which is deliberately not persisted
-      today — see the doc).
-- [ ] **Unflag it.** Drop the `?gps-recorder=1` gate, keep the platform gate, and
-      add the tool to the `src/static/llms.txt` menu/tools list.
+- [ ] **Style the live track like a displayed GPX track** instead of the plain
+      red polyline, and run it through the shared colorizers — the per-segment
+      `Feature<LineString>[]` the save path builds is already the shape
+      `colorize` takes, so the live view can reuse it.
+- [ ] **Update prompt on an outdated `versionCode`.** `assertSupportedVersion`
+      fails on a recorder below `MIN_RECORDER_VERSION_CODE` and the panel offers
+      the APK download, but nothing prompts on a merely *old* recorder that
+      still works — which is what will hide the `/pause` and config support once
+      issues #1 and #2 ship.
+- [ ] **Persist the recording across a reload.** Neither the recorder's points
+      nor the track viewer's saved copy survive one; today both are recovered by
+      refetching from the recorder, which is fine only while nothing deletes its
+      copy automatically. An IndexedDB cache (out of band, throttled — not the
+      `statePersistingMiddleware` subset) is the precondition for offering a
+      delete-after-save.
+- [ ] **Unflag it.** Drop the role gate, keep the platform gate, and add the tool
+      to the `src/static/llms.txt` menu/tools list.
 
 ## Offline maps (`src/features/cachedMaps/`)
 

@@ -101,6 +101,7 @@ describe('decodePoints', () => {
       // An absent value is null and never 0, so a standstill stays a standstill.
       spd: 0,
       brg: null,
+      seg: null,
     });
   });
 
@@ -121,6 +122,7 @@ describe('decodePoints', () => {
         acc: null,
         spd: null,
         brg: null,
+        seg: null,
       },
     ]);
   });

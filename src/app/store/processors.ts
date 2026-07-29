@@ -41,6 +41,9 @@ import { galleryUploadModalProcessor } from '@features/gallery/model/processors/
 import { geoipProcessor } from '@features/geoip/model/processors/geoIpProcessor.js';
 import {
   gpsRecorderClearProcessor,
+  gpsRecorderDisconnectProcessor,
+  gpsRecorderPauseProcessor,
+  gpsRecorderSaveProcessor,
   gpsRecorderStartProcessor,
   gpsRecorderStopProcessor,
   gpsRecorderSyncProcessor,
@@ -183,9 +186,12 @@ export const processors = [
   ...Object.values(trackingDeviceProcessors),
   trackingFollowProcessor,
   gpsRecorderStartProcessor,
+  gpsRecorderPauseProcessor,
   gpsRecorderStopProcessor,
   gpsRecorderSyncProcessor,
+  gpsRecorderDisconnectProcessor,
   gpsRecorderClearProcessor,
+  gpsRecorderSaveProcessor,
   setActiveModalTransformer,
   mapsLoadListProcessor,
   mapsLoadProcessor,

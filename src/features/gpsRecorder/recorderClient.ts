@@ -2,6 +2,7 @@ import {
   decodePoints,
   MIN_RECORDER_VERSION_CODE,
   RECORDER_ORIGIN,
+  type RecorderConfig,
   RecorderError,
   type RecorderFailure,
   type RecorderPoint,
@@ -85,6 +86,12 @@ function classifyHttpFailure(
 
   if (status === 409) {
     return reason === 'recording' ? 'recording' : 'setup-needed';
+  }
+
+  // A recorder that predates an endpoint answers 404 ("no such endpoint") or
+  // 405; either way the caller can fall back to what older builds do offer.
+  if (status === 404 || status === 405) {
+    return 'unsupported';
   }
 
   return 'http';
@@ -178,12 +185,63 @@ export function assertSupportedVersion(status: RecorderStatus): void {
   }
 }
 
-export async function startRecording(signal?: AbortSignal): Promise<void> {
-  await recorderFetch('/start', { method: 'POST', signal });
+/**
+ * Begins recording, asking for the given sampling config. A recorder that
+ * doesn't read the body ignores it and reports no `config` in `/status`, which
+ * is how the UI knows the settings didn't take.
+ */
+export async function startRecording(
+  config?: RecorderConfig,
+  signal?: AbortSignal,
+): Promise<void> {
+  await recorderFetch('/start', {
+    method: 'POST',
+    signal,
+    ...(config && {
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
+    }),
+  });
 }
 
 export async function stopRecording(signal?: AbortSignal): Promise<void> {
   await recorderFetch('/stop', { method: 'POST', signal });
+}
+
+/**
+ * Suspends the session without ending it, keeping the GPS engine warm so the
+ * first fixes after a resume are usable.
+ *
+ * Falls back to `POST /stop` on a recorder without the endpoint: from this
+ * app's side the difference is only that a resume then costs a re-acquisition,
+ * since the segment break is tracked here either way.
+ */
+export async function pauseRecording(signal?: AbortSignal): Promise<void> {
+  try {
+    await recorderFetch('/pause', { method: 'POST', signal });
+  } catch (err) {
+    if (!(err instanceof RecorderError) || err.failure !== 'unsupported') {
+      throw err;
+    }
+
+    await stopRecording(signal);
+  }
+}
+
+/** Resumes a paused session; see {@link pauseRecording} for the fallback. */
+export async function resumeRecording(
+  config?: RecorderConfig,
+  signal?: AbortSignal,
+): Promise<void> {
+  try {
+    await recorderFetch('/resume', { method: 'POST', signal });
+  } catch (err) {
+    if (!(err instanceof RecorderError) || err.failure !== 'unsupported') {
+      throw err;
+    }
+
+    await startRecording(config, signal);
+  }
 }
 
 /**

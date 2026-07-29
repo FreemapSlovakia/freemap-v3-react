@@ -1,6 +1,9 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   gpsRecorderClear,
+  gpsRecorderDisconnect,
+  gpsRecorderPause,
+  gpsRecorderSave,
   gpsRecorderStart,
   gpsRecorderStop,
   gpsRecorderSync,
@@ -20,6 +23,12 @@ export const gpsRecorderStartProcessor: Processor = {
   handle: async (...params) => (await handlers()).startHandler(...params),
 };
 
+export const gpsRecorderPauseProcessor: Processor = {
+  actionCreator: gpsRecorderPause,
+  id: 'gpsRecorder.pause',
+  handle: async (...params) => (await handlers()).pauseHandler(...params),
+};
+
 export const gpsRecorderStopProcessor: Processor = {
   actionCreator: gpsRecorderStop,
   id: 'gpsRecorder.stop',
@@ -32,8 +41,20 @@ export const gpsRecorderSyncProcessor: Processor = {
   handle: async (...params) => (await handlers()).syncHandler(...params),
 };
 
+export const gpsRecorderDisconnectProcessor: Processor = {
+  actionCreator: gpsRecorderDisconnect,
+  id: 'gpsRecorder.disconnect',
+  handle: async (...params) => (await handlers()).disconnectHandler(...params),
+};
+
 export const gpsRecorderClearProcessor: Processor = {
   actionCreator: gpsRecorderClear,
   id: 'gpsRecorder.clear',
   handle: async (...params) => (await handlers()).clearHandler(...params),
+};
+
+export const gpsRecorderSaveProcessor: Processor<typeof gpsRecorderSave> = {
+  actionCreator: gpsRecorderSave,
+  id: 'gpsRecorder.save',
+  handle: async (...params) => (await handlers()).saveHandler(...params),
 };

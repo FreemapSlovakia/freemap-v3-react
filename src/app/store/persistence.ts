@@ -10,6 +10,8 @@ import { elevationSettingsInitialState } from '@features/elevationChart/model/se
 import { GalleryLicenseSchema } from '@features/gallery/licenses.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
 import { gallerySettingsInitialState } from '@features/gallery/model/settingsReducer.js';
+import { gpsRecorderSettingsInitialState } from '@features/gpsRecorder/model/settingsReducer.js';
+import { RecorderConfigSchema } from '@features/gpsRecorder/protocol.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
 import {
@@ -161,6 +163,16 @@ export const PersistedTrackingSettingsSchema = z
     ...ColorizeSettingsShape,
     showLine: z.boolean(),
     showPoints: z.boolean(),
+  })
+  .partial();
+
+export const PersistedGpsRecorderSettingsSchema = z
+  .object({
+    ...RecorderConfigSchema.shape,
+    splitGapS: z.number().nonnegative(),
+    showAccuracyCircle: z.boolean(),
+    followPosition: z.boolean(),
+    keepScreenAwake: z.boolean(),
   })
   .partial();
 
@@ -374,6 +386,21 @@ const PERSIST: PersistEntry[] = [
       style: t.style,
       colorizeTrackBy: t.colorizeTrackBy,
       colorizeLegend: t.colorizeLegend,
+    }),
+  }),
+  defineEntry({
+    key: 'gpsRecorderSettings',
+    schema: PersistedGpsRecorderSettingsSchema,
+    initial: gpsRecorderSettingsInitialState,
+    persist: (g) => ({
+      intervalMs: g.intervalMs,
+      minDistanceM: g.minDistanceM,
+      maxAccuracyM: g.maxAccuracyM,
+      priority: g.priority,
+      splitGapS: g.splitGapS,
+      showAccuracyCircle: g.showAccuracyCircle,
+      followPosition: g.followPosition,
+      keepScreenAwake: g.keepScreenAwake,
     }),
   }),
   defineEntry({

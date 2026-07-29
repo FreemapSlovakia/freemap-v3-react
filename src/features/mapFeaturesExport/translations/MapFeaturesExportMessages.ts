@@ -17,7 +17,6 @@ export type MapFeaturesExportMessages = {
     drawingAreas: string;
     drawingPoints: string;
     tracking: string;
-    gpsRecorder: string;
     import: string;
     search: string;
   };

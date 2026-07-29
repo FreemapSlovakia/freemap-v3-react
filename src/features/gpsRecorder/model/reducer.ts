@@ -3,9 +3,13 @@ import { createReducer } from '@reduxjs/toolkit';
 import type { RecorderPoint, RecorderStatus } from '../protocol.js';
 import {
   type GpsRecorderConnection,
+  type GpsRecorderFailure,
+  gpsRecorderAddBreak,
   gpsRecorderAddPoints,
   gpsRecorderSetConnection,
   gpsRecorderSetError,
+  gpsRecorderSetPaused,
+  gpsRecorderSetPending,
   gpsRecorderSetStatus,
   gpsRecorderStop,
   gpsRecorderTrackCleared,
@@ -25,19 +29,40 @@ export interface GpsRecorderState {
    */
   cursor: number;
   /**
+   * Seqs of the last point before each break this app caused by pausing or
+   * stopping. Feeds `splitPointsIntoSegments` alongside the time-gap rule, so a
+   * pause shorter than the gap threshold still splits the track.
+   */
+  breaks: number[];
+  /**
+   * Whether the session is only suspended. Held here rather than read from
+   * `status.paused` so a recorder without `/pause` — where a pause is a stop the
+   * app remembers — reads the same to the rest of the app.
+   */
+  paused: boolean;
+  /**
+   * Whether a transport command the user gave is still in flight, so the
+   * controls can wait for it without the background poll's own connecting
+   * phases disabling them.
+   */
+  pending: boolean;
+  /**
    * The recorder's `generation` as of the last status seen — how many times its
    * track has been thrown away. A change means the points held here are gone.
    * Null before any status has been read.
    */
   generation: number | null;
   connection: GpsRecorderConnection;
-  error: string | null;
+  error: GpsRecorderFailure | null;
 }
 
 export const gpsRecorderInitialState: GpsRecorderState = {
   status: null,
   points: [],
   cursor: 0,
+  breaks: [],
+  paused: false,
+  pending: false,
   generation: null,
   connection: 'idle',
   error: null,
@@ -88,6 +113,7 @@ export const gpsRecorderReducer = createReducer(
         ...state,
         points: [],
         cursor: 0,
+        breaks: [],
       }))
       // The recorder's own track is gone, so the copy of it goes too. Applied
       // only once the delete has been acknowledged, never optimistically.
@@ -95,6 +121,7 @@ export const gpsRecorderReducer = createReducer(
         ...state,
         points: [],
         cursor: 0,
+        breaks: [],
       }))
       .addCase(gpsRecorderSetStatus, (state, { payload }) => ({
         ...state,
@@ -110,6 +137,21 @@ export const gpsRecorderReducer = createReducer(
           cursor: points.length === 0 ? 0 : points.at(-1)!.seq,
         };
       })
+      .addCase(gpsRecorderAddBreak, (state, { payload }) =>
+        // A break at the same seq twice — two stops with no fix between them —
+        // is the same break, and an empty track has nothing to break after.
+        payload <= 0 || state.breaks.includes(payload)
+          ? state
+          : { ...state, breaks: [...state.breaks, payload] },
+      )
+      .addCase(gpsRecorderSetPaused, (state, { payload }) => ({
+        ...state,
+        paused: payload,
+      }))
+      .addCase(gpsRecorderSetPending, (state, { payload }) => ({
+        ...state,
+        pending: payload,
+      }))
       .addCase(gpsRecorderSetConnection, (state, { payload }) => ({
         ...state,
         connection: payload,

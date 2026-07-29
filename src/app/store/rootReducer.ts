@@ -11,6 +11,7 @@ import { galleryReducer } from '@features/gallery/model/reducer.js';
 import { gallerySettingsReducer } from '@features/gallery/model/settingsReducer.js';
 import { geoIpReducer } from '@features/geoip/model/reducer.js';
 import { gpsRecorderReducer } from '@features/gpsRecorder/model/reducer.js';
+import { gpsRecorderSettingsReducer } from '@features/gpsRecorder/model/settingsReducer.js';
 import { homeLocationReducer } from '@features/homeLocation/model/reducer.js';
 import { l10nReducer } from '@features/l10n/model/reducer.js';
 import { locationReducer } from '@features/location/model/reducer.js';
@@ -51,6 +52,7 @@ export const reducers = {
   gallery: galleryReducer,
   gallerySettings: gallerySettingsReducer,
   gpsRecorder: gpsRecorderReducer,
+  gpsRecorderSettings: gpsRecorderSettingsReducer,
   homeLocation: homeLocationReducer,
   l10n: l10nReducer,
   location: locationReducer,

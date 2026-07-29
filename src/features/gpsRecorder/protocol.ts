@@ -71,6 +71,14 @@ export interface RecorderPoint {
   spd: number | null;
   /** Degrees clockwise from true north, or null. */
   brg: number | null;
+  /**
+   * Segment ordinal, incremented by the recorder whenever recording starts or
+   * resumes: a point whose `seg` differs from its predecessor's begins a new
+   * segment. Null on a recorder that doesn't send the column, which is why
+   * `splitPointsIntoSegments` also splits on a time gap and on the breaks this
+   * app caused itself.
+   */
+  seg: number | null;
 }
 
 const RecorderRowSchema = z.array(z.number().nullable());
@@ -124,6 +132,7 @@ export function decodePoints(
       acc: read(row, 'acc'),
       spd: read(row, 'spd'),
       brg: read(row, 'brg'),
+      seg: read(row, 'seg'),
     });
   }
 
@@ -139,8 +148,33 @@ export function streamPayloadToRows(
     : [payload as (number | null)[]];
 }
 
+/** How the recorder samples, sent as the `POST /start` body. */
+export const RecorderConfigSchema = z.looseObject({
+  /** Desired milliseconds between fixes. */
+  intervalMs: z.number().int().positive(),
+  /** Minimum displacement in metres before a fix is recorded; 0 records every one. */
+  minDistanceM: z.number().nonnegative(),
+  /** Fixes with a worse `acc` are discarded; null keeps every fix. */
+  maxAccuracyM: z.number().positive().nullable(),
+  /** Accuracy/battery trade-off, mapped to Android's `Priority` constants. */
+  priority: z.enum(['high', 'balanced', 'low']),
+});
+
+export type RecorderConfig = z.infer<typeof RecorderConfigSchema>;
+
 export const RecorderStatusSchema = z.looseObject({
   recording: z.boolean(),
+  /**
+   * Whether a live session is only suspended. Absent on a recorder without
+   * `/pause`, where a pause is a `POST /stop` the app remembers locally.
+   */
+  paused: z.boolean().nullish(),
+  /**
+   * The sampling config in force, after the recorder clamped what was asked for
+   * to what the platform allows. Its presence is how support for a configurable
+   * `POST /start` is detected — a recorder that ignored the body reports none.
+   */
+  config: RecorderConfigSchema.nullish(),
   /** Points held on disk. */
   count: z.number().int(),
   /** Highest `seq` on file; 0 while the track is empty. */
@@ -209,6 +243,8 @@ export type RecorderFailure =
   | 'setup-needed'
   /** Refused because a recording is in progress; stop it first. */
   | 'recording'
+  /** The endpoint isn't in this recorder's build; the caller falls back. */
+  | 'unsupported'
   /** Reachable, but older than `MIN_RECORDER_VERSION_CODE`. */
   | 'outdated'
   /** Reachable, but answered with an error status. */

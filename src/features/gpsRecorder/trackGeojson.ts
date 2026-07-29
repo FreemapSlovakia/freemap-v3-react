@@ -1,24 +1,30 @@
-import type { Feature, LineString } from 'geojson';
+import type { Feature, FeatureCollection, LineString } from 'geojson';
 import type { RecorderPoint } from './protocol.js';
 
 /**
- * Adapts recorded fixes to the GeoJSON `LineString` the shared colorizers, the
- * elevation chart and the exporters consume. Coordinates are
+ * Adapts one recorded segment to the GeoJSON `LineString` the shared
+ * colorizers, the elevation chart and the GPX writer consume. Coordinates are
  * `[lon, lat, altitude?]` — altitude omitted when the fix carried none, so
- * elevation-derived colorizers treat it as a gap — alongside the per-point
- * series those consumers read: `coordTimes` and `coordinateProperties`.
+ * elevation-derived colorizers treat it as a gap.
+ *
+ * The per-point series use togeojson's names (`times`, `speeds`, `courses`,
+ * `accuracies`), because that is the shape an imported GPX track arrives in:
+ * `gpxFromGeojson` reads exactly these back out into `<time>` and the
+ * trackpoint extensions, and the colorizers read them the same way whatever the
+ * track's origin. `brg` goes to `courses` — it is the direction of travel, not
+ * a compass heading.
  */
-export function recorderPointsToFeature(
-  points: RecorderPoint[],
+export function recorderSegmentToFeature(
+  points: readonly RecorderPoint[],
 ): Feature<LineString> {
   return {
     type: 'Feature',
     properties: {
-      coordTimes: points.map((p) => new Date(p.ts).toISOString()),
       coordinateProperties: {
-        accuracy: points.map((p) => p.acc),
-        speed: points.map((p) => p.spd),
-        bearing: points.map((p) => p.brg),
+        times: points.map((p) => new Date(p.ts).toISOString()),
+        speeds: points.map((p) => p.spd),
+        courses: points.map((p) => p.brg),
+        accuracies: points.map((p) => p.acc),
       },
     },
     geometry: {
@@ -29,5 +35,24 @@ export function recorderPointsToFeature(
           : [p.lon, p.lat],
       ),
     },
+  };
+}
+
+/**
+ * The recording as a collection the track viewer can hold like any import.
+ *
+ * One feature per segment rather than a single `MultiLineString`: the
+ * colorizers require a per-point array as long as the line's own coordinates,
+ * so the nested arrays a Multi geometry carries would make every value-based
+ * colorize mode unavailable. Segments too short to be a line are dropped.
+ */
+export function recorderSegmentsToFeatureCollection(
+  segments: readonly (readonly RecorderPoint[])[],
+): FeatureCollection {
+  return {
+    type: 'FeatureCollection',
+    features: segments
+      .filter((segment) => segment.length >= 2)
+      .map(recorderSegmentToFeature),
   };
 }
