@@ -11,6 +11,7 @@ const en: GpsRecorderMessages = {
   save: 'Save to tracks',
   delete: 'Delete recording',
   settings: 'Recording settings',
+  details: 'Recording details',
   state: {
     recording: 'Recording',
     paused: 'Paused',
@@ -33,6 +34,7 @@ const en: GpsRecorderMessages = {
     accuracy: 'Accuracy',
     points: 'Points',
     segments: 'Segments',
+    lastFix: 'Last fix',
   },
   deleteModal: {
     title: 'Delete the recording?',

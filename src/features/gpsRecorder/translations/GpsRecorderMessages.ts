@@ -11,6 +11,8 @@ export type GpsRecorderMessages = {
   save: string;
   delete: string;
   settings: string;
+  /** Opens the readout dropdown; the summary in it is the visible label. */
+  details: string;
   state: {
     recording: string;
     paused: string;
@@ -33,6 +35,7 @@ export type GpsRecorderMessages = {
     accuracy: string;
     points: string;
     segments: string;
+    lastFix: string;
   };
   deleteModal: {
     title: string;

@@ -12,6 +12,7 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   save: 'Uložiť do trás',
   delete: 'Zmazať záznam',
   settings: 'Nastavenia záznamu',
+  details: 'Podrobnosti záznamu',
   state: {
     recording: 'Nahráva sa',
     paused: 'Pozastavené',
@@ -34,6 +35,7 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     accuracy: 'Presnosť',
     points: 'Body',
     segments: 'Úseky',
+    lastFix: 'Posledný bod',
   },
   deleteModal: {
     title: 'Zmazať záznam?',

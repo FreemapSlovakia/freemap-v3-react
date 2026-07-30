@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useTrackMergeMode } from '@features/trackViewer/hooks/useTrackMergeMode.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import {
@@ -30,7 +31,7 @@ import {
 import { selectRecorderSegments } from '../model/selectors.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
 import { GpsRecorderNotices } from './GpsRecorderNotices.js';
-import { GpsRecorderStats } from './GpsRecorderStats.js';
+import { GpsRecorderReadout } from './GpsRecorderReadout.js';
 
 /**
  * How often the recorder is re-read while the tool is open. `/status` is a
@@ -45,6 +46,8 @@ export default function GpsRecorderMenu(): ReactElement {
   const dispatch = useDispatch();
 
   const m = useGpsRecorderMessages();
+
+  const gm = useMessages();
 
   const confirm = useConfirm();
 
@@ -161,25 +164,6 @@ export default function GpsRecorderMenu(): ReactElement {
     }
   }, [confirm, dispatch, m]);
 
-  const stateLabel = recording
-    ? m?.state.recording
-    : paused
-      ? m?.state.paused
-      : status
-        ? m?.state.stopped
-        : m?.state.unknown;
-
-  const connectionLabel =
-    connection === 'live'
-      ? m?.connection.live
-      : connection === 'connecting'
-        ? m?.connection.connecting
-        : connection === 'syncing'
-          ? m?.connection.syncing
-          : connection === 'reconnecting'
-            ? m?.connection.reconnecting
-            : m?.connection.offline;
-
   return (
     <>
       <ToolMenu tool="gps-recorder">
@@ -224,7 +208,13 @@ export default function GpsRecorderMenu(): ReactElement {
           )}
         </ButtonGroup>
 
-        <ResponsiveActions className="ms-1" size={undefined}>
+        {/* `md` so the toggle is the same height as the transport buttons — the
+            `sm` default suits the list rows this is otherwise used in. */}
+        <ResponsiveActions
+          className="ms-1"
+          size="md"
+          toggleLabel={gm?.general.actions}
+        >
           <Action
             label={m?.save}
             icon={<FaSave />}
@@ -253,12 +243,7 @@ export default function GpsRecorderMenu(): ReactElement {
           />
         </ResponsiveActions>
 
-        <span className="align-self-center ms-2 text-nowrap">
-          {stateLabel}
-          <span className="text-body-secondary"> · {connectionLabel}</span>
-        </span>
-
-        <GpsRecorderStats />
+        <GpsRecorderReadout />
       </ToolMenu>
 
       <GpsRecorderNotices />
