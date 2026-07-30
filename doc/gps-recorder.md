@@ -351,18 +351,30 @@ ride alike. The recorder is only a caller.
 pessimistic:
 
 1. `POST /stop`, so the track is not moving under us.
-2. Hand it to the track viewer.
-3. `storeTrack` — which requests `navigator.storage.persist()` — and **stop here
-   if it answers `false`**. Without that promise the browser may evict the copy
-   under storage pressure, and deleting the recorder's copy would leave the ride
-   nowhere. The recording stays where it is and a toast says why
+2. **Catch up, and refuse to go on unless the page holds every fix the recorder
+   does** — `cursor === lastSeq` after `applyStatus`. What this page holds is only
+   what reached it, and a tab that was frozen in the background or whose stream
+   died is routinely behind. Handing over a truncated ride and then deleting the
+   complete one is the exact mistake this flow exists to prevent, so a short page
+   ends it here (`errors.incomplete`) with nothing taken and nothing deleted.
+3. Hand it to the track viewer.
+4. `storeTrackDurably` — which requests `navigator.storage.persist()` — and **stop
+   here if it answers `false`**. Without that promise the browser may evict the
+   copy under storage pressure, and deleting the recorder's copy would leave the
+   ride nowhere. The recording stays where it is and a toast says why
    (`errors.notPersisted`), with the track still on screen to export.
-4. Only now `DELETE /track`.
+5. Only now `DELETE /track`.
 
-The store writes on `trackViewerSetData` anyway, so step 3 is the same write —
-awaited, and reading the answer, because what follows it cannot be undone.
-`storeTrack` skips a re-write of the object it stored last, so the two paths cost
-one write.
+The store writes on `trackViewerSetData` anyway, so step 4 is the same write —
+awaited, reading the answer, and asking for persistence, because what follows it
+cannot be undone. `storeTrack` skips a re-write of the object it stored last, so
+the two paths cost one write.
+
+**Clearing the map leaves the recording alone.** The points here are a live view of
+what the recorder owns, not something the user put on the map — and dropping them
+would only flicker, since the next status event refetches the whole track from
+`since=0`. Only `gpsRecorderTrackCleared`, once the recorder has acknowledged a
+delete, empties them.
 
 Once finished, the ride belongs to the track viewer: **the recorder's trash only
 ever deletes the recorder's own copy**, and deleting the track in the viewer is

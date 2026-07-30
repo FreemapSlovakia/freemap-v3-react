@@ -27,7 +27,9 @@ function formatDuration(ms: number): string {
     : `${minutes}:${seconds}`;
 }
 
-type Row = { label: string | undefined; value: string };
+// `id` rather than the label: the labels come from a lazily loaded bundle and are
+// all `undefined` until it lands, which would make them the same React key.
+type Row = { id: string; label: string | undefined; value: string };
 
 /**
  * The live readout: distance and time in the toolbar, everything else a tap
@@ -118,14 +120,20 @@ export function GpsRecorderReadout(): ReactElement {
 
   const rows: Row[] = [
     {
+      id: 'distance',
       label: m?.stats.distance,
       value: formatDistance(stats.distance, language),
     },
-    { label: m?.stats.duration, value: formatDuration(stats.recordedDuration) },
+    {
+      id: 'duration',
+      label: m?.stats.duration,
+      value: formatDuration(stats.recordedDuration),
+    },
   ];
 
   if (stats.ascent > 0) {
     rows.push({
+      id: 'ascent',
       label: m?.stats.ascent,
       value: metersFormat.format(stats.ascent),
     });
@@ -133,6 +141,7 @@ export function GpsRecorderReadout(): ReactElement {
 
   if (stats.speed !== null) {
     rows.push({
+      id: 'speed',
       label: m?.stats.speed,
       value: speedFormat.format(stats.speed * 3.6),
     });
@@ -140,6 +149,7 @@ export function GpsRecorderReadout(): ReactElement {
 
   if (stats.averageSpeed !== null) {
     rows.push({
+      id: 'avgSpeed',
       label: m?.stats.avgSpeed,
       value: speedFormat.format(stats.averageSpeed * 3.6),
     });
@@ -147,19 +157,29 @@ export function GpsRecorderReadout(): ReactElement {
 
   if (latest?.acc != null) {
     rows.push({
+      id: 'accuracy',
       label: m?.stats.accuracy,
       value: metersFormat.format(latest.acc),
     });
   }
 
-  rows.push({ label: m?.stats.points, value: String(stats.points) });
+  rows.push({
+    id: 'points',
+    label: m?.stats.points,
+    value: String(stats.points),
+  });
 
   if (stats.segments > 1) {
-    rows.push({ label: m?.stats.segments, value: String(stats.segments) });
+    rows.push({
+      id: 'segments',
+      label: m?.stats.segments,
+      value: String(stats.segments),
+    });
   }
 
   if (latest) {
     rows.push({
+      id: 'lastFix',
       label: m?.stats.lastFix,
       value: timeFormat.format(latest.ts),
     });
@@ -198,10 +218,7 @@ export function GpsRecorderReadout(): ReactElement {
           <div className="mb-2">{state}</div>
 
           {rows.map((row) => (
-            <div
-              key={row.label}
-              className="d-flex justify-content-between gap-4"
-            >
+            <div key={row.id} className="d-flex justify-content-between gap-4">
               <span className="text-body-secondary">{row.label}</span>
 
               <strong>{row.value}</strong>

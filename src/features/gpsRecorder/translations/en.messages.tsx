@@ -75,6 +75,9 @@ const en: GpsRecorderMessages = {
     setupNeeded:
       'The recorder cannot record yet — open it and grant what it asks for.',
     recording: 'Stop the recording before deleting its track.',
+    incomplete:
+      'Part of the recording has not reached this page yet, so nothing was ' +
+      'taken and nothing was deleted. Reconnect and finish again.',
     notPersisted:
       'This browser would not promise to keep its storage, so the recording was ' +
       'left on the recorder. It is in your tracks — export or save it, then ' +

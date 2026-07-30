@@ -475,22 +475,27 @@ about. The check runs off state, on every action that can change the answer, so 
 does not depend on whether a loader sets the track before or after the thing that
 gives it a home.
 
-**The history entry is the authority, not the store.** `storeTrack` `replaceState`s
-a `tr: true` flag onto the current entry as it writes; `urlProcessor` carries the
-flag onto the entries it writes afterwards; `handleLocationChange` dispatches
-`trackViewerRestoreStored` when it sees it, and a **fresh load carrying no flag
-evicts the entry instead**. So reloading the page you were on puts the track back,
-a fresh visit or a shared link is never ambushed by a track from a previous
-session, and nothing can outlive the session that stored it. Eviction is skipped on
-`popstate`, because going back to an entry that had no track must not throw away
-the one the entry ahead of it holds.
+**The history entry decides whether it comes back.** `storeTrack` `replaceState`s a
+`tr: true` flag onto the current entry as it writes; `urlProcessor` carries the flag
+onto the entries it writes afterwards; `handleLocationChange` dispatches
+`trackViewerRestoreStored` when it sees it. So reloading the page you were on puts
+the track back, while a fresh visit or a shared link is never ambushed by a track
+from a previous session.
+
+A load carrying no flag deliberately **does not evict** the record. The record is one
+per origin and the flag is one per history entry, so a second tab — a fresh load
+with no flag of its own — would delete the only durable copy of a ride the first tab
+is still holding. Hygiene comes from the store being a single entry that the next
+write and its own delete reclaim.
 
 The write is best effort (`trackViewerStoreProcessor` logs and moves on), and the
 copy is dropped on `trackViewerDelete` and `clearMapFeatures` — a copy that
 outlived the track would come back as something the user had already thrown away.
-One caller reads `storeTrack`'s answer instead of ignoring it: the GPS recorder
-finishing a ride, because it then deletes the phone's copy and `false` — stored,
-but evictable — is not good enough to be the only one. See
+`navigator.storage.persist()` is asked for by `storeTrackDurably` **only** — the GPS
+recorder finishing a ride, which then deletes the phone's copy, so `false` (stored,
+but evictable) is its cue to leave that copy alone. The ordinary path never asks:
+Chrome decides silently but Firefox prompts, and prompting because somebody opened a
+GPX file would be asking about a hazard they don't have. See
 [`doc/gps-recorder.md`](./gps-recorder.md).
 
 ## Where features surface in the UI

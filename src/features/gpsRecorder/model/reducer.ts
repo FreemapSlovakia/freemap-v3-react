@@ -1,4 +1,3 @@
-import { clearMapFeatures } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { RecorderPoint, RecorderStatus } from '../protocol.js';
 import {
@@ -91,13 +90,6 @@ export const gpsRecorderReducer = createReducer(
   gpsRecorderInitialState,
   (builder) =>
     builder
-      // Drops only this local copy of the track. The recorder keeps its own and
-      // is never told to discard anything; the next sync refetches from zero.
-      .addCase(clearMapFeatures, (state) => ({
-        ...state,
-        points: [],
-        cursor: 0,
-      }))
       // The recorder's own track is gone, so the copy of it goes too. Applied
       // only once the delete has been acknowledged, never optimistically.
       .addCase(gpsRecorderTrackCleared, (state) => ({

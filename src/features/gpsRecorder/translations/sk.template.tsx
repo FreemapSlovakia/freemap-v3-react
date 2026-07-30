@@ -66,6 +66,9 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     setupNeeded:
       'Zaznamenávač zatiaľ nemôže nahrávať — otvorte ho a udeľte, o čo žiada.',
     recording: 'Pred zmazaním trasy zastavte nahrávanie.',
+    incomplete:
+      'Časť záznamu sa na túto stránku ešte nedostala, takže sa nič neprevzalo ' +
+      'ani nezmazalo. Obnovte spojenie a ukončite znova.',
     notPersisted:
       'Prehliadač neprisľúbil, že si ponechá svoje úložisko, takže záznam ' +
       'zostal v zaznamenávači. Máte ho v trasách — vyexportujte alebo uložte ' +

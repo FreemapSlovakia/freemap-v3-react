@@ -260,6 +260,11 @@ export type RecorderFailure =
    * on the recorder rather than trusted to a copy it may evict.
    */
   | 'not-persisted'
+  /**
+   * The page does not hold the whole recording — fixes are still on the recorder
+   * that never reached here — so nothing was taken and nothing was deleted.
+   */
+  | 'incomplete'
   /** Reachable, but answered with an error status. */
   | 'http'
   /** Reachable, but the body did not match the expected shape. */

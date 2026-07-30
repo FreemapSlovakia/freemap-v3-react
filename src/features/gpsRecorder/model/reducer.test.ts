@@ -81,7 +81,10 @@ describe('gpsRecorderReducer', () => {
     expect(cleared.cursor).toBe(0);
   });
 
-  it('rewinds the cursor when the local copy is cleared', () => {
+  it('leaves the recording alone when the map is cleared', () => {
+    // Clearing the map is about what the user put on it. The recording is a live
+    // view of what the recorder owns, and dropping it here would only flicker:
+    // the next status event refetches the whole track from `since=0`.
     const state = gpsRecorderReducer(
       gpsRecorderInitialState,
       gpsRecorderAddPoints([pt(1), pt(2)]),
@@ -89,9 +92,8 @@ describe('gpsRecorderReducer', () => {
 
     const cleared = gpsRecorderReducer(state, clearMapFeatures());
 
-    expect(cleared.points).toEqual([]);
+    expect(cleared.points).toEqual(state.points);
 
-    // Zero, so the next sync refetches the whole track from the recorder.
-    expect(cleared.cursor).toBe(0);
+    expect(cleared.cursor).toBe(2);
   });
 });

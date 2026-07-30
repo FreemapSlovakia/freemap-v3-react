@@ -23,6 +23,7 @@ const ERROR_KEYS: Record<
   'needs-foreground': 'errors.needsForeground',
   recording: 'errors.recording',
   'not-persisted': 'errors.notPersisted',
+  incomplete: 'errors.incomplete',
   outdated: 'errors.outdated',
   http: 'errors.http',
   protocol: 'errors.protocol',

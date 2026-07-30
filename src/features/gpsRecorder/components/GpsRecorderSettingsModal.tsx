@@ -88,7 +88,9 @@ export default function GpsRecorderSettingsModal({
               required
               min={0.2}
               max={600}
-              step={0.2}
+              // Anchored to `min`, so a coarser step would reject 1.5 s, 2.5 s
+              // and every other value between its multiples.
+              step={0.1}
               value={draft.intervalMs / 1000}
               onChange={(e) =>
                 set({ intervalMs: Math.round(Number(e.target.value) * 1000) })

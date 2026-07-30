@@ -6,7 +6,7 @@ import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from '@features/trackViewer/model/actions.js';
-import { storeTrack } from '@features/trackViewer/trackStore.js';
+import { storeTrackDurably } from '@features/trackViewer/trackStore.js';
 import type { FeatureCollection } from 'geojson';
 import type { Dispatch } from 'redux';
 import {
@@ -30,6 +30,8 @@ import {
   closeRecorderStream,
   isRecorderStreamOpen,
   openRecorderStream,
+  recorderStreamGeneration,
+  reportRecorderStreamState,
 } from '../stream.js';
 import { recorderSegmentsToFeatureCollection } from '../trackGeojson.js';
 import {
@@ -139,6 +141,10 @@ export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
     dispatch(gpsRecorderSetConnection('connecting'));
   }
 
+  // Captured before anything is awaited: the tool can be closed mid-sync, and
+  // what follows must not resurrect the stream it just closed.
+  const since = recorderStreamGeneration();
+
   let fields: readonly string[];
 
   try {
@@ -149,19 +155,19 @@ export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
     });
   } catch (err) {
     // A failed catch-up says nothing about an already-working stream, so it is
-    // only reported — the browser keeps the stream and its retries alive.
+    // only reported — the browser keeps the stream and its retries alive. The
+    // connection goes back to whatever the stream is actually doing, so a `syncing`
+    // that never completed doesn't spin forever with the transport disabled.
     reportFailure(dispatch, err);
 
-    if (!streaming) {
-      dispatch(gpsRecorderSetConnection('idle'));
-    }
+    reportRecorderStreamState(dispatch);
 
     return;
   }
 
   dispatch(gpsRecorderSetError(null));
 
-  openRecorderStream(dispatch, fields);
+  openRecorderStream(dispatch, fields, since);
 };
 
 /**
@@ -174,6 +180,8 @@ export const pushedStatusHandler: ProcessorHandler<
 > = async ({ dispatch, getState, action }) => {
   const { points, cursor, generation } = getState().gpsRecorder;
 
+  const since = recorderStreamGeneration();
+
   try {
     const fields = await applyStatus(dispatch, action.payload, {
       points: points.length,
@@ -183,9 +191,11 @@ export const pushedStatusHandler: ProcessorHandler<
 
     // Idempotent for an already-open stream; this only refreshes the column
     // order and restores the connection state the catch-up moved off `live`.
-    openRecorderStream(dispatch, fields);
+    openRecorderStream(dispatch, fields, since);
   } catch (err) {
     reportFailure(dispatch, err);
+
+    reportRecorderStreamState(dispatch);
   }
 };
 
@@ -406,8 +416,28 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
   try {
     if (getState().gpsRecorder.status?.recording) {
       await stopRecording();
+    }
 
-      dispatch(gpsRecorderSetStatus(await getStatus()));
+    // Catch up *before* taking the track, and refuse to take it at all unless the
+    // page holds every fix the recorder does. What this page holds is only what
+    // reached it: a tab that was frozen in the background, or whose stream died,
+    // is routinely behind — and handing over a truncated ride and then deleting
+    // the complete one is the one mistake this whole flow exists to avoid.
+    const { points, cursor, generation } = getState().gpsRecorder;
+
+    const status = await getStatus();
+
+    await applyStatus(dispatch, status, {
+      points: points.length,
+      cursor,
+      generation,
+    });
+
+    if (getState().gpsRecorder.cursor !== status.lastSeq) {
+      throw new RecorderError(
+        'incomplete',
+        `page holds up to ${getState().gpsRecorder.cursor}, recorder has ${status.lastSeq}`,
+      );
     }
 
     const trackGeojson = handOverTrack(dispatch, getState(), action.payload);
@@ -420,7 +450,7 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
     // awaited, because what comes next is irreversible. `false` means the browser
     // stored it but would not promise to keep it — not good enough to be the only
     // copy of a ride.
-    if (!(await storeTrack(trackGeojson))) {
+    if (!(await storeTrackDurably(trackGeojson))) {
       throw new RecorderError(
         'not-persisted',
         'the browser would not promise to keep local storage',

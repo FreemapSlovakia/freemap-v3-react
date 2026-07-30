@@ -17,6 +17,18 @@ import {
 let source: EventSource | null = null;
 
 /**
+ * Bumped whenever the stream is deliberately closed, so work that started before
+ * that can tell it has been superseded. Without it, a sync whose fetches were
+ * still in flight when the tool closed would open a stream nothing is left to
+ * close — and `scheduleRevive` would keep it alive indefinitely.
+ */
+let generation = 0;
+
+export function recorderStreamGeneration(): number {
+  return generation;
+}
+
+/**
  * Column order for the bare rows the stream sends. Set before the stream is ever
  * opened — `/status` names it, and the status frame on connect names it again.
  */
@@ -94,7 +106,13 @@ function parsePoints(data: string): RecorderPoint[] | null {
 export function openRecorderStream(
   dispatch: Dispatch,
   pointFields: readonly string[],
+  /** The generation the caller started under; a stale one opens nothing. */
+  since = generation,
 ): void {
+  if (since !== generation) {
+    return;
+  }
+
   // Kept current even for an already-open stream: a resync may have read a newer
   // column order than the one this stream opened with.
   fields = pointFields;
@@ -175,6 +193,8 @@ export function openRecorderStream(
 }
 
 export function closeRecorderStream(): void {
+  generation++;
+
   cancelRevive();
 
   reviveAttempt = 0;
@@ -186,4 +206,22 @@ export function closeRecorderStream(): void {
 
 export function isRecorderStreamOpen(): boolean {
   return source !== null;
+}
+
+/**
+ * Says what the stream is doing, for a caller that has just finished something
+ * else and must not leave the connection reading as busy. A failed catch-up says
+ * nothing about the stream, and `syncing` left behind would spin forever — and
+ * keep the transport disabled with it.
+ */
+export function reportRecorderStreamState(dispatch: Dispatch): void {
+  dispatch(
+    gpsRecorderSetConnection(
+      source === null
+        ? 'idle'
+        : source.readyState === EventSource.OPEN
+          ? 'live'
+          : 'reconnecting',
+    ),
+  );
 }

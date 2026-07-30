@@ -76,7 +76,6 @@ import {
   trackViewerRestoreStored,
   trackViewerSetStyle,
 } from '@features/trackViewer/model/actions.js';
-import { deleteStoredTrack } from '@features/trackViewer/trackStore.js';
 import {
   wikiLoadPreview,
   wikiSetPreview,
@@ -129,7 +128,7 @@ function parseQuery(search: string) {
   return q;
 }
 
-export function handleLocationChange(store: MyStore, initial = false): void {
+export function handleLocationChange(store: MyStore): void {
   const { getState, dispatch } = store;
 
   setUrlUpdatingEnabled(false);
@@ -893,16 +892,13 @@ export function handleLocationChange(store: MyStore, initial = false): void {
   // no-op when something else already owns the track viewer, so a map or a shared
   // track named in the URL wins.
   //
-  // A *fresh load* carrying no flag is what evicts the store: the flag is the
-  // authority on whether a stored track is still wanted, so nothing outlives the
-  // session that put it there. Not done for a `popstate` — going back to an entry
-  // that had no track must not throw away the one the entry ahead of it holds.
+  // A load carrying no flag deliberately does *not* evict the store. The record is
+  // one per origin while the flag is one per history entry, so a second tab — a
+  // fresh load with no flag of its own — would delete the only durable copy of a
+  // ride the first tab is still holding. Hygiene is left to the store being a
+  // single entry that its own delete and the next write reclaim.
   if (tr) {
     dispatch(trackViewerRestoreStored());
-  } else if (initial) {
-    deleteStoredTrack().catch((err) => {
-      console.warn('Evicting the stored track failed:', err);
-    });
   }
 
   setUrlUpdatingEnabled(true);

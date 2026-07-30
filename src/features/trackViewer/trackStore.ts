@@ -39,12 +39,13 @@ let lastStored: unknown = null;
  * Asks the browser to keep this origin's storage rather than reclaim it under
  * pressure, and reports whether it will.
  *
- * This is what makes deleting the recorder's copy defensible: without the
- * promise, the browser may evict the only remaining copy of a ride. Chrome grants
- * it silently to an installed or frequently-used site and refuses otherwise, so
- * the answer is a fact about this device, not something to retry.
+ * Deliberately *not* on the ordinary path. Chrome decides silently, but Firefox
+ * asks the user — and prompting for a permission because somebody opened a GPX
+ * file would be asking about a hazard they don't have: the file is still on their
+ * disk. Only {@link storeTrackDurably} requests it, for the one case where the
+ * answer decides whether another copy gets deleted.
  */
-export async function persistStorage(): Promise<boolean> {
+async function requestPersistence(): Promise<boolean> {
   try {
     return (
       (await navigator.storage?.persisted()) ||
@@ -59,17 +60,13 @@ export async function persistStorage(): Promise<boolean> {
 }
 
 /**
- * Stores the track and reports whether the browser has promised to keep it.
- *
- * `false` means it was stored but is evictable, which is enough for an imported
- * file (the file is still on disk) and not enough to delete a recording off the
- * phone — so the caller decides what to do about it rather than this.
+ * Stores the track, so a reload of this history entry puts it back. Nothing is
+ * promised about how long the browser keeps it — for an imported file that is
+ * enough, since the file itself has not gone anywhere.
  */
-export async function storeTrack(geojson: unknown): Promise<boolean> {
-  const persisted = await persistStorage();
-
+export async function storeTrack(geojson: unknown): Promise<void> {
   if (geojson === lastStored) {
-    return persisted;
+    return;
   }
 
   await set(KEY, { savedAt: Date.now(), geojson }, store);
@@ -77,6 +74,19 @@ export async function storeTrack(geojson: unknown): Promise<boolean> {
   lastStored = geojson;
 
   markHistoryEntry(true);
+}
+
+/**
+ * Stores the track *and* reports whether the browser has promised to keep it, for
+ * the caller that is about to delete another copy — the GPS recorder finishing a
+ * ride. `false` means it was stored but is evictable, which is not good enough to
+ * be the only copy of a ride, and is the caller's cue to leave the other one
+ * alone.
+ */
+export async function storeTrackDurably(geojson: unknown): Promise<boolean> {
+  const persisted = await requestPersistence();
+
+  await storeTrack(geojson);
 
   return persisted;
 }
