@@ -53,6 +53,9 @@ const en: PremiumMessages = {
       You have premium access until <b>{date}</b>.
     </>
   ),
+  youArePremiumRenews: (
+    <>You have premium access. Your subscription renews automatically.</>
+  ),
   premiumOnly: 'Only available with premium access.',
   noPremium: 'You have no premium access.',
   clickToActivate: 'Click to activate.',

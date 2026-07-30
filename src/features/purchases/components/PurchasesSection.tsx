@@ -1,3 +1,4 @@
+import { authInit } from '@features/auth/model/actions.js';
 import {
   type Purchase,
   type PurchasesResponse,
@@ -6,8 +7,10 @@ import {
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { subscriptionAutoRenews } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import {
@@ -15,13 +18,23 @@ import {
   type ReactElement,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Alert, Button, Spinner, Table } from 'react-bootstrap';
-import { FaExclamationTriangle, FaGem, FaShoppingBasket } from 'react-icons/fa';
+import {
+  FaExclamationTriangle,
+  FaExternalLinkAlt,
+  FaGem,
+  FaShoppingBasket,
+} from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import z from 'zod';
 
 export function PurchasesSection(): ReactElement | null {
   const user = useAppSelector((state) => state.auth.user);
+
+  const dispatch = useDispatch();
 
   const m = useMessages();
 
@@ -47,6 +60,11 @@ export function PurchasesSection(): ReactElement | null {
     | { type: 'success'; result: PurchasesResponse }
   >({ type: 'fetching' });
 
+  // Bumped to re-run the fetch below when something outside this component (the
+  // Polar customer portal) may have changed what it shows.
+  const [reload, setReload] = useState(0);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reload is an intentional refetch key
   useEffect(() => {
     const ac = new AbortController();
 
@@ -78,7 +96,102 @@ export function PurchasesSection(): ReactElement | null {
     return () => {
       ac.abort();
     };
-  }, [authToken]);
+  }, [authToken, reload]);
+
+  const [openingPortal, setOpeningPortal] = useState(false);
+
+  // Drops the return-from-portal listener below when this section goes away, so
+  // it can't outlive the component that its refresh is for.
+  const portalReturnRef = useRef<AbortController | null>(null);
+
+  useEffect(
+    () => () => {
+      portalReturnRef.current?.abort();
+    },
+    [],
+  );
+
+  // The portal URL carries a short-lived session token, so it has to be minted
+  // on click rather than rendered as an href. The tab is opened synchronously
+  // (before the await) or a popup blocker would swallow it, then pointed at the
+  // URL once it arrives.
+  //
+  // `noopener`/`noreferrer` must NOT be passed here: they make `window.open`
+  // return null, leaving a blank tab nothing can navigate. Severing `opener` by
+  // hand gives the same protection while keeping the handle.
+  function openPortal() {
+    const tab = window.open('', '_blank');
+
+    if (tab) {
+      tab.opener = null;
+    }
+
+    setOpeningPortal(true);
+
+    // Cancelling (or un-cancelling) in the portal changes the subscription
+    // status and the purchase list, and nothing tells this tab about it — so
+    // both are re-read once the user comes back here. Listening from here
+    // rather than after the await, which the user can beat by switching back
+    // while the URL is still being minted.
+    portalReturnRef.current?.abort();
+
+    const returnAc = new AbortController();
+
+    portalReturnRef.current = returnAc;
+
+    window.addEventListener(
+      'focus',
+      () => {
+        dispatch(authInit());
+
+        setReload((reload) => reload + 1);
+      },
+      { once: true, signal: returnAc.signal },
+    );
+
+    (async () => {
+      const res = await fetch(`${process.env['API_URL']}/auth/polar/portal`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...(authToken ? { authorization: `Bearer ${authToken}` } : {}),
+        },
+        body: JSON.stringify({ returnUrl: location.origin }),
+      });
+
+      if (!res.ok) {
+        throw new Error(String(res.status));
+      }
+
+      const { portalUrl } = z
+        .object({ portalUrl: z.string() })
+        .parse(await res.json());
+
+      if (tab) {
+        // `replace` so the blank placeholder doesn't become a history entry
+        // the portal's back button would land on.
+        tab.location.replace(portalUrl);
+      } else {
+        // Popup blocked despite the synchronous open — use this tab instead.
+        location.href = portalUrl;
+      }
+    })()
+      .catch((error) => {
+        tab?.close();
+
+        // Focus comes back to a section that shows what it already showed.
+        returnAc.abort();
+
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.operationError',
+            messageParams: { err: error },
+          }),
+        );
+      })
+      .finally(() => setOpeningPortal(false));
+  }
 
   const showAwaitingBankPayment = Boolean(
     state.type === 'success' &&
@@ -178,7 +291,9 @@ export function PurchasesSection(): ReactElement | null {
       ) : (
         <Alert variant="success">
           <FaGem />{' '}
-          {prm?.youArePremium(dateFormat.format(user.premiumExpiration!))}
+          {subscriptionAutoRenews(user)
+            ? prm?.youArePremiumRenews
+            : prm?.youArePremium(dateFormat.format(user.premiumExpiration!))}
         </Alert>
       )}
 
@@ -248,6 +363,27 @@ export function PurchasesSection(): ReactElement | null {
                     )}
                   </tbody>
                 </Table>
+
+                {state.result.polarCustomer && (
+                  <div className="d-flex flex-column align-items-start gap-1">
+                    <Button
+                      variant="secondary"
+                      disabled={openingPortal}
+                      onClick={openPortal}
+                    >
+                      {openingPortal ? (
+                        <Spinner animation="border" size="sm" />
+                      ) : (
+                        <FaExternalLinkAlt />
+                      )}{' '}
+                      {pm?.managePayments}
+                    </Button>
+
+                    <small className="text-body-secondary">
+                      {pm?.managePaymentsHint}
+                    </small>
+                  </div>
+                )}
               </>
             );
         }

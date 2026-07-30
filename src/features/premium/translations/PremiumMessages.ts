@@ -8,6 +8,8 @@ export type PremiumMessages = {
   success: string;
   becomePremium: string;
   youArePremium: (date: string) => JSX.Element;
+  /** Live subscription that auto-renews, so there's no end date to show. */
+  youArePremiumRenews: JSX.Element;
   premiumOnly: string;
   noPremium: string;
   clickToActivate: string;

@@ -77,6 +77,9 @@ export type PurchaseIntent = z.infer<typeof PurchaseIntentSchema>;
 export const PurchasesResponseSchema = z.object({
   purchases: z.array(PurchaseRecordSchema),
   intents: z.array(PurchaseIntentSchema),
+  // Whether there is a Polar customer portal to link to. Defaulted for
+  // responses from an API that predates the field.
+  polarCustomer: z.boolean().default(false),
 });
 
 export type PurchasesResponse = z.infer<typeof PurchasesResponseSchema>;
@@ -109,10 +112,15 @@ export const UserSchema = z.object({
   coordinates: LatLonSchema.nullable(),
   name: z.string(),
   premiumExpiration: IsoDateSchema.nullable(),
-  // Premium comes from an auto-renewing subscription (which keeps the price it
-  // was created with) rather than from a one-time purchase. Defaulted for user
-  // data persisted before the field existed; `authInit` refreshes it.
-  premiumSubscription: z.boolean().default(false),
+  // Whether premium comes from a Polar subscription (which keeps the price it
+  // was created with) rather than a one-time purchase, and if so, whether it's
+  // still set to auto-renew ('active') or already set to end at
+  // `premiumExpiration` ('canceled'). 'none' covers both a one-time purchase
+  // and no premium at all. Defaulted for user data persisted before the field
+  // existed; `authInit` refreshes it.
+  premiumSubscriptionStatus: z
+    .enum(['none', 'active', 'canceled'])
+    .default('none'),
   sendGalleryEmails: z.boolean(),
   hasPicture: z.boolean(),
   settings: UserSettingsSchema.optional(),

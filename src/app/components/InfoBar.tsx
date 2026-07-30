@@ -2,6 +2,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { usePremiumPriceIncreaseInfo } from '@features/premium/hooks/usePremiumPriceIncreaseInfo.js';
 import {
   canSwitchToSubscription,
+  hasSubscription,
   isPremium,
 } from '@features/premium/premium.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -37,7 +38,7 @@ export function InfoBar(): ReactElement | null {
   // `premiumExpiration` only catches up on the next `authInit`.
   const announce = useAppSelector(
     (state) =>
-      !state.auth.user?.premiumSubscription &&
+      !hasSubscription(state.auth.user) &&
       (!isPremium(state.auth.user) || canSwitchToSubscription(state.auth.user)),
   );
 

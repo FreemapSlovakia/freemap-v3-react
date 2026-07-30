@@ -4,6 +4,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { purchaseOnLogin } from '@features/auth/model/purchaseActions.js';
 import { loadCreditsMessages } from '@features/credits/translations/loadCreditsMessages.js';
+import { hasSubscription } from '@features/premium/premium.js';
 import { loadPremiumMessages } from '@features/premium/translations/loadPremiumMessages.js';
 import { loadPurchasesMessages } from '@features/purchases/translations/loadPurchasesMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -36,7 +37,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
     if (
       action.payload.type === 'premium' &&
       action.payload.recurring &&
-      user.premiumSubscription
+      hasSubscription(user)
     ) {
       dispatch(
         toastsAdd({
