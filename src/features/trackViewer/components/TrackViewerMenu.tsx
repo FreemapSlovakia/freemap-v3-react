@@ -289,7 +289,7 @@ export function TrackViewerMenu(): ReactElement {
       <ToolMenu tool="import-file">
         {unsaved && (
           <UnsavedWarningIcon
-            className="ms-1"
+            className="mx-1"
             label={tvm?.unsaved}
             tooltip={tvm?.unsavedTooltip}
           />

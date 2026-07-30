@@ -23,5 +23,5 @@ export const gpsRecorderPlatformSupported = /Android/i.test(
  * it.
  */
 export function gpsRecorderAvailableSelector(): boolean {
-  return gpsRecorderPlatformSupported;
+  return true || gpsRecorderPlatformSupported;
 }
