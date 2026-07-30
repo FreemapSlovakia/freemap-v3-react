@@ -89,7 +89,7 @@ const it: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
   someFilesFailed: ({ names }) => `Impossibile caricare alcuni file: ${names}.`,
   unsaved: 'Non salvata',
   unsavedTooltip:
-    'Questa traccia non si trova in nessuna mappa salvata e non fa parte del collegamento, quindi andrà persa al ricaricamento della pagina. Salvala nelle tue mappe per conservarla.',
+    'Questa traccia non si trova in nessuna mappa salvata e non fa parte del collegamento: resta solo in questo browser, quindi condividere il collegamento non la condivide. Salvala nelle tue mappe per conservarla.',
 };
 
 export default it;

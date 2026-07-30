@@ -91,7 +91,7 @@ const fr: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     `Certains fichiers n’ont pas pu être chargés : ${names}.`,
   unsaved: 'Non enregistrée',
   unsavedTooltip:
-    'Cette trace ne figure dans aucune carte enregistrée et ne fait pas partie du lien ; elle sera donc perdue au rechargement de la page. Enregistrez-la dans vos cartes pour la conserver.',
+    'Cette trace ne figure dans aucune carte enregistrée et ne fait pas partie du lien : elle reste uniquement dans ce navigateur, partager le lien ne la partagera donc pas. Enregistrez-la dans vos cartes pour la conserver.',
 };
 
 export default fr;
