@@ -14,6 +14,7 @@ const pt = (seq: number): RecorderPoint => ({
   lat: 48 + seq / 1000,
   lon: 17 + seq / 1000,
   alt: null,
+  altMsl: null,
   acc: null,
   spd: null,
   brg: null,

@@ -7,6 +7,11 @@ import type { RecorderPoint } from './protocol.js';
  * `[lon, lat, altitude?]` — altitude omitted when the fix carried none, so
  * elevation-derived colorizers treat it as a gap.
  *
+ * The altitude is `altMsl` where the fix has one: GPX `<ele>` means metres above
+ * mean sea level, and `alt` is above the ellipsoid — some 42 m higher over
+ * Slovakia. `alt` remains the fallback because `altMsl` is null below Android 14
+ * and before the first GNSS fix.
+ *
  * The per-point series use togeojson's names (`times`, `speeds`, `courses`,
  * `accuracies`), because that is the shape an imported GPX track arrives in:
  * `gpxFromGeojson` reads exactly these back out into `<time>` and the
@@ -29,11 +34,13 @@ export function recorderSegmentToFeature(
     },
     geometry: {
       type: 'LineString',
-      coordinates: points.map((p) =>
-        typeof p.alt === 'number' && Number.isFinite(p.alt)
-          ? [p.lon, p.lat, p.alt]
-          : [p.lon, p.lat],
-      ),
+      coordinates: points.map((p) => {
+        const ele = p.altMsl ?? p.alt;
+
+        return typeof ele === 'number' && Number.isFinite(ele)
+          ? [p.lon, p.lat, ele]
+          : [p.lon, p.lat];
+      }),
     },
   };
 }

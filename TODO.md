@@ -322,14 +322,17 @@ refuse — belongs to the recorder.
       gate is Android-wide, but `intent://` with `S.browser_fallback_url` is a
       Chrome convention; a browser that ignores it leaves the "recorder not
       installed" path doing nothing at all.
-- [ ] **Read the columns the recorder already sends.** `decodePoints` takes eight
-      of the fifteen: `altMsl`, `altAcc`, `spdAcc`, `brgAcc`, `sat` and `src` are
-      all dropped. `altMsl` is the one that matters — GPX `<ele>` wants metres
-      above mean sea level, and the geoid separation is around +40 m over
-      Slovakia, so every saved and exported recording is currently that far out.
-      It is null below Android 14 and until a GNSS fix has been seen, so `alt` has
-      to stay the fallback. `sat` and the accuracies have GPX equivalents
-      (`<sat>`, `<hdop>`-ish) that the export could carry too.
+- [ ] **Read the columns the recorder already sends.** `decodePoints` takes nine
+      of the fifteen: `altAcc`, `spdAcc`, `brgAcc`, `sat` and `src` are all
+      dropped. `sat` and the accuracies have GPX equivalents (`<sat>`,
+      `<hdop>`-ish) that the export could carry.
+- [ ] **A track that changes elevation datum mid-way steps by the geoid.**
+      `altMsl ?? alt` is per point, so a recording whose opening fixes predate the
+      first GNSS fix splices ellipsoidal metres onto MSL ones — a ~42 m cliff in
+      the profile over Slovakia, read as ascent by anything that sums differences.
+      Deriving the separation from the points that carry both and applying it to
+      the rest would make the track continuous, at the cost of writing out an
+      elevation the recorder never measured.
 - [ ] **Decimate the drawn track by zoom.** The polyline re-maps every point into
       a fresh array per fix and Leaflet re-projects the whole line, which is the
       remaining per-fix cost over the whole track now that the statistics are

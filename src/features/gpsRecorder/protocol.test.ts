@@ -182,6 +182,7 @@ describe('decodePoints', () => {
       lat: 48.7062033,
       lon: 21.2367267,
       alt: 279.2,
+      altMsl: 237.1,
       acc: 1.9,
       // An absent value is null and never 0, so a standstill stays a standstill.
       spd: 0,
@@ -226,6 +227,7 @@ describe('decodePoints', () => {
         lon: 21.5,
         seg: 2,
         alt: null,
+        altMsl: null,
         acc: null,
         spd: null,
         brg: null,

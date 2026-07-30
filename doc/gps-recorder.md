@@ -71,6 +71,15 @@ as both the `/track?since=` cursor and the SSE event id. `decodePoints` reads
 rows *by the declared column order*, so a recorder that reorders or adds columns
 costs nothing here.
 
+**Two altitudes, and the exported one is `altMsl`.** GPX `<ele>` means metres
+above mean sea level, `alt` is metres above the WGS84 ellipsoid, and over
+Slovakia the ellipsoid sits some 42 m higher — so `trackGeojson.ts` puts
+`altMsl ?? alt` into the coordinate. The fallback is not optional: `altMsl` is
+null below Android 14 and until a GNSS fix has been seen, so the opening fixes of
+a recording can carry only `alt`. The statistics keep reading `alt` instead,
+because ascent is a sum of differences that a constant offset cannot change,
+while a mid-track switch between the two sources would invent one.
+
 The list is **append-only**, and a reader is meant to ignore what it doesn't
 know — so a cell is typed as `unknown` and read as the number its column should
 hold, or as absent. Typing cells as numbers is what breaks on the day a column

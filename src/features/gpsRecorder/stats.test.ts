@@ -19,6 +19,7 @@ const pt = (
   lat: 48,
   lon: 17,
   alt: null,
+  altMsl: null,
   acc: null,
   spd: null,
   brg: null,

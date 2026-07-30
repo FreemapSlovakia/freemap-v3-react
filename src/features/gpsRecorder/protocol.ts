@@ -67,6 +67,15 @@ export interface RecorderPoint {
   lon: number;
   /** Metres above the WGS84 ellipsoid, or null when the fix carried none. */
   alt: number | null;
+  /**
+   * Metres above mean sea level — what GPX `<ele>` is defined as, so this is the
+   * elevation to prefer wherever a track leaves this app.
+   *
+   * Null below Android 14, and until a GNSS fix has been seen, which is why
+   * {@link RecorderPoint.alt} has to stay the fallback. The two differ by the
+   * geoid separation: around 42 m over Slovakia, with the ellipsoid above.
+   */
+  altMsl: number | null;
   /** Horizontal accuracy in metres at 68% confidence, or null. */
   acc: number | null;
   /** Ground speed in m/s, or null. A standstill is 0, absent is null. */
@@ -148,6 +157,7 @@ export function decodePoints(
       lon,
       seg,
       alt: read(row, 'alt'),
+      altMsl: read(row, 'altMsl'),
       acc: read(row, 'acc'),
       spd: read(row, 'spd'),
       brg: read(row, 'brg'),
