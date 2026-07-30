@@ -35,9 +35,9 @@ export interface GpsRecorderState {
    */
   breaks: number[];
   /**
-   * Whether the session is only suspended. Held here rather than read from
-   * `status.paused` so a recorder without `/pause` — where a pause is a stop the
-   * app remembers — reads the same to the rest of the app.
+   * Whether the session is only suspended. Follows `status.paused` when the
+   * recorder reports it, and otherwise remembers the pause this app faked with a
+   * stop — so a recorder without `/pause` reads the same to the rest of the app.
    */
   paused: boolean;
   /**
@@ -127,6 +127,13 @@ export const gpsRecorderReducer = createReducer(
         ...state,
         status: payload,
         generation: payload?.generation ?? state.generation,
+        // The recorder's own answer wins when it has one: `recording` stays true
+        // across a pause there, so `paused` is the only thing that says which of
+        // the two live states this is. A recorder without `/pause` reports none,
+        // and then the local flag — set when the pause was faked with a stop —
+        // is all there is.
+        paused:
+          typeof payload?.paused === 'boolean' ? payload.paused : state.paused,
       }))
       .addCase(gpsRecorderAddPoints, (state, { payload }) => {
         const points = mergePoints(state.points, payload);

@@ -49,6 +49,16 @@ export const gpsRecorderStop = createAction('GPS_RECORDER_STOP');
  */
 export const gpsRecorderSync = createAction('GPS_RECORDER_SYNC');
 
+/**
+ * The stream pushed a status of its own accord — on connect, and thereafter
+ * whenever the recorder's state genuinely changed. Reconciled exactly like a
+ * polled one, so a clear, a stop or a permission withdrawn arrives when it
+ * happens instead of on the next poll.
+ */
+export const gpsRecorderPushedStatus = createAction<RecorderStatus>(
+  'GPS_RECORDER_PUSHED_STATUS',
+);
+
 /** Detaches the live view, without touching the recording or the track. */
 export const gpsRecorderDisconnect = createAction('GPS_RECORDER_DISCONNECT');
 

@@ -1,3 +1,4 @@
+import type { z } from 'zod';
 import {
   decodePoints,
   MIN_RECORDER_VERSION_CODE,
@@ -112,6 +113,26 @@ async function readErrorReason(response: Response): Promise<string | null> {
   }
 }
 
+/**
+ * The first complaint, with a count of the rest. A schema error over a track page
+ * carries one issue per point it disliked, and the first one names the column
+ * that is actually the problem.
+ */
+function describeZodError(error: z.ZodError): string {
+  const [issue] = error.issues;
+
+  if (!issue) {
+    return error.message;
+  }
+
+  const rest = error.issues.length - 1;
+
+  return (
+    `${issue.path.join('.') || '(root)'}: ${issue.message}` +
+    (rest > 0 ? ` (+${rest} more)` : '')
+  );
+}
+
 async function recorderJson(
   path: string,
   init?: RequestInit,
@@ -131,7 +152,10 @@ export async function getStatus(signal?: AbortSignal): Promise<RecorderStatus> {
   );
 
   if (!result.success) {
-    throw new RecorderError('protocol', `/status: ${result.error.message}`);
+    throw new RecorderError(
+      'protocol',
+      `/status: ${describeZodError(result.error)}`,
+    );
   }
 
   return result.data;
@@ -269,7 +293,10 @@ export async function getTrackSince(
   );
 
   if (!result.success) {
-    throw new RecorderError('protocol', `/track: ${result.error.message}`);
+    throw new RecorderError(
+      'protocol',
+      `/track: ${describeZodError(result.error)}`,
+    );
   }
 
   const { fields, points } = result.data;

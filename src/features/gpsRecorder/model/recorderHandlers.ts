@@ -12,6 +12,7 @@ import {
   RECORDER_INTENT_URL,
   RecorderError,
   type RecorderStatus,
+  truncateDetail,
 } from '../protocol.js';
 import {
   assertSupportedVersion,
@@ -33,6 +34,7 @@ import { recorderSegmentsToFeatureCollection } from '../trackGeojson.js';
 import {
   gpsRecorderAddBreak,
   gpsRecorderAddPoints,
+  type gpsRecorderPushedStatus,
   gpsRecorderSetConnection,
   gpsRecorderSetError,
   gpsRecorderSetPaused,
@@ -48,7 +50,7 @@ function reportFailure(dispatch: Dispatch, err: unknown): void {
     gpsRecorderSetError(
       err instanceof RecorderError
         ? { failure: err.failure, detail: err.message }
-        : { failure: 'unknown', detail: String(err) },
+        : { failure: 'unknown', detail: truncateDetail(String(err)) },
     ),
   );
 }
@@ -72,9 +74,60 @@ function assertReady(status: RecorderStatus): void {
 }
 
 /**
+ * Reconciles a status — however it arrived — with the track held here, fetching
+ * whatever the recorder has that this page hasn't. Returns the point column
+ * order it learned, for the stream to decode its bare rows with.
+ */
+async function applyStatus(
+  dispatch: Dispatch,
+  status: RecorderStatus,
+  held: { points: number; cursor: number; generation: number | null },
+): Promise<readonly string[] | undefined> {
+  // Checked wherever a status lands, not only on the way into a recording: a
+  // recorder too old for these endpoints is told so as soon as the tool is
+  // opened, with the update link the failure carries.
+  assertSupportedVersion(status);
+
+  // `seq` never restarts, so a cleared track is indistinguishable from one that
+  // simply hasn't grown — a bumped `generation` is the only reliable signal that
+  // what we hold is gone. Asking for everything after a stale cursor would leave
+  // the deleted track on screen forever.
+  const cleared =
+    held.generation !== null &&
+    status.generation != null &&
+    status.generation !== held.generation;
+
+  if (cleared) {
+    dispatch(gpsRecorderTrackCleared());
+  }
+
+  dispatch(gpsRecorderSetStatus(status));
+
+  // A cold start holds no points, so the whole track is refetched: the recorder
+  // owns it, and the cursor only says what this page already has.
+  const fromZero = cleared || held.points === 0;
+
+  // `lastSeq` above the cursor means fixes are missing here — the page was
+  // frozen in the background, or the stream is not attached at all. Both are
+  // single comparisons against a status that has to be read anyway.
+  if (status.count > 0 && (fromZero || (status.lastSeq ?? 0) > held.cursor)) {
+    dispatch(gpsRecorderSetConnection('syncing'));
+
+    const page = await getTrackSince(fromZero ? 0 : held.cursor);
+
+    dispatch(gpsRecorderAddPoints(page.points));
+
+    return page.fields;
+  }
+
+  return status.fields ?? undefined;
+}
+
+/**
  * Catches up over `/track?since=` and leaves the live stream attached. Runs when
- * the tool opens, on its slow timer, when the page returns to the foreground,
- * after the stream has been given up on, and at the end of the start flow.
+ * the tool opens, when the page returns to the foreground, after the stream has
+ * been given up on, at the end of the start flow, and on the fallback timer for
+ * a recorder that pushes no status of its own.
  */
 export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
   // Read before the fresh status lands, so the generation below is the one this
@@ -87,48 +140,14 @@ export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
     dispatch(gpsRecorderSetConnection('connecting'));
   }
 
-  let fields: string[] | undefined;
+  let fields: readonly string[] | undefined;
 
   try {
-    const status = await getStatus();
-
-    // Checked here too, not only on the way into a recording: a recorder too
-    // old for these endpoints is told so as soon as the tool is opened, with
-    // the update link the failure carries.
-    assertSupportedVersion(status);
-
-    // `seq` never restarts, so a cleared track is indistinguishable from one
-    // that simply hasn't grown — a bumped `generation` is the only reliable
-    // signal that what we hold is gone. Asking for everything after a stale
-    // cursor would leave the deleted track on screen forever.
-    const cleared =
-      generation !== null &&
-      status.generation != null &&
-      status.generation !== generation;
-
-    if (cleared) {
-      dispatch(gpsRecorderTrackCleared());
-    }
-
-    dispatch(gpsRecorderSetStatus(status));
-
-    // A cold start holds no points, so the whole track is refetched: the
-    // recorder owns it, and the cursor only says what this page already has.
-    const fromZero = cleared || points.length === 0;
-
-    // `lastSeq` above the cursor means fixes are missing here — the page was
-    // frozen in the background, or the stream is not attached at all. It is a
-    // single comparison against a status that has to be read anyway, so the
-    // timer can run often without refetching a track that hasn't moved.
-    if (fromZero || (status.lastSeq ?? 0) > cursor) {
-      dispatch(gpsRecorderSetConnection('syncing'));
-
-      const page = await getTrackSince(fromZero ? 0 : cursor);
-
-      fields = page.fields;
-
-      dispatch(gpsRecorderAddPoints(page.points));
-    }
+    fields = await applyStatus(dispatch, await getStatus(), {
+      points: points.length,
+      cursor,
+      generation,
+    });
   } catch (err) {
     // A failed catch-up says nothing about an already-working stream, so it is
     // only reported — the browser keeps the stream and its retries alive.
@@ -144,6 +163,31 @@ export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
   dispatch(gpsRecorderSetError(null));
 
   openRecorderStream(dispatch, fields);
+};
+
+/**
+ * A status the stream pushed. Same reconciliation as a polled one — the point of
+ * the push is that it arrives at the moment the recorder's state changed, not
+ * that it means anything different.
+ */
+export const pushedStatusHandler: ProcessorHandler<
+  typeof gpsRecorderPushedStatus
+> = async ({ dispatch, getState, action }) => {
+  const { points, cursor, generation } = getState().gpsRecorder;
+
+  try {
+    const fields = await applyStatus(dispatch, action.payload, {
+      points: points.length,
+      cursor,
+      generation,
+    });
+
+    // Idempotent for an already-open stream; this only refreshes the column
+    // order and restores the connection state the catch-up moved off `live`.
+    openRecorderStream(dispatch, fields);
+  } catch (err) {
+    reportFailure(dispatch, err);
+  }
 };
 
 /** Begins recording, or resumes a session this app paused. */

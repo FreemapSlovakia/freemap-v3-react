@@ -3,6 +3,7 @@ import {
   gpsRecorderClear,
   gpsRecorderDisconnect,
   gpsRecorderPause,
+  gpsRecorderPushedStatus,
   gpsRecorderSave,
   gpsRecorderStart,
   gpsRecorderStop,
@@ -39,6 +40,15 @@ export const gpsRecorderSyncProcessor: Processor = {
   actionCreator: gpsRecorderSync,
   id: 'gpsRecorder.sync',
   handle: async (...params) => (await handlers()).syncHandler(...params),
+};
+
+export const gpsRecorderPushedStatusProcessor: Processor<
+  typeof gpsRecorderPushedStatus
+> = {
+  actionCreator: gpsRecorderPushedStatus,
+  id: 'gpsRecorder.pushedStatus',
+  handle: async (...params) =>
+    (await handlers()).pushedStatusHandler(...params),
 };
 
 export const gpsRecorderDisconnectProcessor: Processor = {

@@ -44,25 +44,59 @@ schemas are `looseObject`, so the recorder may add fields freely.
 
 | | |
 | --- | --- |
-| `GET /status` | `{ recording, paused?, config?, count, lastSeq, generation, version: { code, name }, permissions: { fine, background, notifications }, batteryExempt, oem: { vendor, needed, acknowledged }, canRecord, setupComplete, port }` |
+| `GET /status` | `{ recording, paused?, config?, count, lastSeq, generation, fields?, version: { code, name }, permissions: { fine, background, notifications }, batteryExempt, oem: { vendor, needed, acknowledged }, canRecord, setupComplete, port }` |
 | `POST /start` | begin recording; body is the `RecorderConfig` |
 | `POST /stop` | end recording |
 | `POST /pause` / `/resume` | suspend and continue a session |
 | `GET /track?since=<seq>` | `{ fields: [...], points: [[...], ...] }` — everything **above** the cursor (`since` is exclusive) |
 | `DELETE /track` | discard the whole track |
-| `GET /stream` | SSE; `id:` is the point's `seq`, `data:` one bare row (or a batch of them) |
+| `GET /stream` | SSE; an unnamed event is a point (`id:` its `seq`, `data:` one bare row or a batch), a named `status` event is the whole status object |
 
-**Points travel columnar**, not as objects: a row of numbers per fix, ordered by
-the `fields` header — `["seq","ts","lat","lon","alt","acc","spd","brg"]` as of
-versionCode 2, with `seg` proposed on top. `ts` is epoch milliseconds; `seq` is the recorder-assigned
-monotonic id that doubles as both the `/track?since=` cursor and the SSE event
-id. `decodePoints` reads rows *by the declared column order*, so a recorder that
-reorders or adds columns costs nothing here.
+**Points travel columnar**, not as objects: a row per fix, ordered by the
+`fields` header — as of versionCode 7 that is `["seq","ts","lat","lon","alt",
+"acc","spd","brg","altMsl","altAcc","spdAcc","brgAcc","sat","src","seg"]`. `ts`
+is epoch milliseconds; `seq` is the recorder-assigned monotonic id that doubles
+as both the `/track?since=` cursor and the SSE event id. `decodePoints` reads
+rows *by the declared column order*, so a recorder that reorders or adds columns
+costs nothing here.
 
-`/stream` sends bare rows with **no `fields` header**, so the column order comes
-from the last `/track` page (`DEFAULT_POINT_FIELDS` covers a stream somehow
-opened before any page was read). Since `syncHandler` always reads a page before
-attaching the stream, the order is known by then.
+The list is **append-only**, and a reader is meant to ignore what it doesn't
+know — so a cell is typed as `unknown` and read as the number its column should
+hold, or as absent. Typing cells as numbers is what breaks on the day a column
+like `src` (a provider name) is appended: zod then rejects the whole page, every
+point of it, and the live view stops on a column nothing here even reads.
+
+`/stream` sends bare rows with **no `fields` header** of their own, so the column
+order comes from the status frame the stream opens with, from `/status`, or from
+the last `/track` page — in that order of freshness. `DEFAULT_POINT_FIELDS` is
+the last resort, for a stream attached before any of the three has been read; it
+names all fifteen columns, which is safe against an older recorder too, since a
+name mapping past the end of a row reads as absent.
+
+**The stream carries state, not just points.** A named `status` event arrives on
+connect and thereafter whenever the recorder's state genuinely changed — start,
+stop, pause, resume, `DELETE /track`, and a permission or battery change the next
+time the recorder's own screen resumes. `stream.ts` reconciles it through the
+same `applyStatus` a polled status goes through, so a cleared `generation` or a
+stopped recording lands the moment it happens.
+
+That makes the `/status` poll a fallback rather than the mechanism:
+`isRecorderStatusPushed()` is true once a status frame has arrived on an open
+stream, and `POLL_INTERVAL_MS` in `GpsRecorderMenu` stands down to a no-op while
+it is. A recorder that pushes nothing keeps the timer, and the catch-up on
+`visibilitychange` runs either way — a frozen page runs neither timer nor stream.
+
+Support is *learned*, not inferred from a version: a named event is invisible to
+a client that doesn't listen for it, so a recorder without them simply never sets
+the flag.
+
+**A pause is not a stop, and `recording` does not say so.** The recorder keeps
+`recording` true while paused — the session and its foreground service are still
+up — and reports `paused` alongside it. The three transport states are therefore
+`!recording`, `recording && paused` and `recording && !paused`, which is what the
+buttons and the readout label are driven off. The store's own `paused` takes the
+recorder's answer whenever there is one, and only falls back to the local flag on
+a recorder that fakes a pause with a stop.
 
 Two flags decide readiness, and they are not the same thing: **`canRecord`** is
 the recorder's own verdict and the only gate that blocks a start;
@@ -71,12 +105,13 @@ or battery policy (`oem`), say — and belongs in a warning, not a refusal.
 `GpsRecorderNotices` renders exactly that split: `canRecord` failures are the
 error panel, `setupComplete` ones the warning panel above the map.
 
-### Parts the recorder does not implement yet
+### Feature detection, not version gates
 
-`paused`, `config`, `POST /pause`, `POST /resume` and the `seg` column are
-[proposed](https://github.com/FreemapSlovakia/freemap-gps-recorder/issues) but
-not shipped, and the client is written to work either way rather than gated on a
-version:
+`paused`, `config`, `POST /pause`, `POST /resume` and the `seg` column ship in
+versionCode 6, and `fields` in `/status` plus the `status` stream event in 7 —
+but the minimum this app accepts is 4, so an installed recorder may have none of
+them, and every one is detected rather than inferred from a version. That also
+means a recorder can gain them in any order without this app being changed:
 
 - **`POST /pause` / `/resume`** fall back to `/stop` and `/start` on a `404`,
   which `classifyHttpFailure` maps to its own `unsupported` failure. The only
@@ -91,6 +126,11 @@ version:
 - **`seg`** is decoded when the `fields` header declares it and null otherwise,
   which is why `splitPointsIntoSegments` splits on a time gap and on locally
   recorded breaks too.
+- **The `status` stream event** sets `isRecorderStatusPushed()` on arrival, and
+  that flag is what silences the poll. A recorder without the event never sets
+  it, so the poll simply keeps running as it always did.
+- **`fields` in `/status`** is used when it is there and skipped when it is not;
+  the `/track` page's own header covers the older recorder.
 
 ### CORS
 

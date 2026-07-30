@@ -83,10 +83,12 @@ export function GpsRecorderReadout(): ReactElement {
     [language],
   );
 
-  const stateLabel = status?.recording
-    ? m?.state.recording
-    : paused
-      ? m?.state.paused
+  // Paused is checked first: the recorder keeps `recording` true across a pause,
+  // so it says which of the two live states this is.
+  const stateLabel = paused
+    ? m?.state.paused
+    : status?.recording
+      ? m?.state.recording
       : status
         ? m?.state.stopped
         : m?.state.unknown;

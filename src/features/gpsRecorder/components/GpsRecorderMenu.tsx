@@ -14,6 +14,7 @@ import {
   FaCircle,
   FaCog,
   FaPause,
+  FaPlay,
   FaSave,
   FaStop,
   FaTrash,
@@ -29,16 +30,17 @@ import {
   gpsRecorderSync,
 } from '../model/actions.js';
 import { selectRecorderSegments } from '../model/selectors.js';
+import { isRecorderStatusPushed } from '../stream.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
 import { GpsRecorderNotices } from './GpsRecorderNotices.js';
 import { GpsRecorderReadout } from './GpsRecorderReadout.js';
 
 /**
- * How often the recorder is re-read while the tool is open. `/status` is a
- * loopback call answered from memory, and the sync only fetches a track page
- * when the recorder says it holds fixes above our cursor — so this is cheap
- * enough to run throughout, and it is what keeps the panel honest when there is
- * no live stream to carry the news.
+ * How often the recorder is re-read while the tool is open, on a recorder whose
+ * stream does not carry its state. `/status` is a loopback call answered from
+ * memory, and the sync only fetches a track page when the recorder says it holds
+ * fixes above our cursor — so this is cheap enough to run throughout, and it is
+ * what keeps the panel honest when nothing else brings the news.
  */
 const POLL_INTERVAL_MS = 15_000;
 
@@ -73,6 +75,10 @@ export default function GpsRecorderMenu(): ReactElement {
 
   const recording = status?.recording ?? false;
 
+  // `recording` stays true across a pause on the recorder's side, so the three
+  // transport states are `!recording`, `recording && paused` and this one.
+  const running = recording && !paused;
+
   // The spinner covers any wait, but only a command the user gave blocks the
   // transport: the background poll passes through `connecting` every few
   // seconds, and disabling Record for it would fight the user on exactly the
@@ -89,8 +95,10 @@ export default function GpsRecorderMenu(): ReactElement {
 
     const timer = setInterval(() => {
       // A frozen background page runs neither the timer nor the stream; the
-      // catch-up on returning is what fills the gap.
-      if (document.visibilityState === 'visible') {
+      // catch-up on returning is what fills the gap. A stream that pushes its
+      // own status needs no poll at all — it says when something changed, at
+      // the moment it changed — so this stands down to a no-op there.
+      if (document.visibilityState === 'visible' && !isRecorderStatusPushed()) {
         dispatch(gpsRecorderSync());
       }
     }, POLL_INTERVAL_MS);
@@ -115,7 +123,7 @@ export default function GpsRecorderMenu(): ReactElement {
   // Held only while there is something to watch, so closing the tool or
   // stopping the recording gives the screen back to the platform's own timeout.
   useEffect(() => {
-    if (!keepScreenAwake || !recording || !('wakeLock' in navigator)) {
+    if (!keepScreenAwake || !running || !('wakeLock' in navigator)) {
       return;
     }
 
@@ -141,7 +149,7 @@ export default function GpsRecorderMenu(): ReactElement {
 
       void sentinel?.release();
     };
-  }, [keepScreenAwake, recording]);
+  }, [keepScreenAwake, running]);
 
   const handleSave = useCallback(async () => {
     const mode = await askMergeMode();
@@ -174,20 +182,22 @@ export default function GpsRecorderMenu(): ReactElement {
             // Must stay a direct gesture handler: this tap is what allows the
             // Local Network Access prompt and the launch intent.
             onClick={() =>
-              dispatch(recording ? gpsRecorderStop() : gpsRecorderStart())
+              dispatch(running ? gpsRecorderStop() : gpsRecorderStart())
             }
           >
             {busy ? (
               <Spinner animation="border" size="sm" />
-            ) : recording ? (
+            ) : running ? (
               <FaStop />
+            ) : paused ? (
+              <FaPlay />
             ) : (
               <FaCircle />
             )}{' '}
-            {recording ? m?.stop : paused ? m?.resume : m?.record}
+            {running ? m?.stop : paused ? m?.resume : m?.record}
           </Button>
 
-          {recording && (
+          {running && (
             <Button
               variant="secondary"
               disabled={pending}

@@ -13,10 +13,28 @@ import {
 // in step with its implementation. Divergence here means the contract moved.
 const STATUS = {
   recording: false,
+  paused: false,
   lastSeq: 1919,
   count: 1919,
   generation: 0,
-  version: { code: 4, name: '0.4' },
+  fields: [
+    'seq',
+    'ts',
+    'lat',
+    'lon',
+    'alt',
+    'acc',
+    'spd',
+    'brg',
+    'altMsl',
+    'altAcc',
+    'spdAcc',
+    'brgAcc',
+    'sat',
+    'src',
+    'seg',
+  ],
+  version: { code: 7, name: '0.7' },
   port: 8378,
   portEcho: null,
   permissions: { fine: true, background: true, notifications: true },
@@ -24,13 +42,67 @@ const STATUS = {
   oem: { vendor: 'xiaomi', needed: true, acknowledged: false },
   canRecord: true,
   setupComplete: false,
+  config: {
+    intervalMs: 1000,
+    minDistanceM: 0.0,
+    maxAccuracyM: null,
+    priority: 'high',
+  },
 };
 
 const TRACK_PAGE = {
-  fields: ['seq', 'ts', 'lat', 'lon', 'alt', 'acc', 'spd', 'brg'],
+  fields: [
+    'seq',
+    'ts',
+    'lat',
+    'lon',
+    'alt',
+    'acc',
+    'spd',
+    'brg',
+    'altMsl',
+    'altAcc',
+    'spdAcc',
+    'brgAcc',
+    'sat',
+    'src',
+    'seg',
+  ],
   points: [
-    [550, 1785174195365, 48.7062033, 21.2367267, 279.2, 1.9, 0.0, null],
-    [551, 1785174196371, 48.7062102, 21.2367301, 279.4, 1.9, 0.4, 183.0],
+    [
+      550,
+      1785174195365,
+      48.7062033,
+      21.2367267,
+      279.2,
+      1.9,
+      0.0,
+      null,
+      237.1,
+      2.4,
+      0.3,
+      null,
+      9,
+      'fused',
+      3,
+    ],
+    [
+      551,
+      1785174196371,
+      48.7062102,
+      21.2367301,
+      279.4,
+      1.9,
+      0.4,
+      183.0,
+      237.3,
+      2.4,
+      0.3,
+      2.0,
+      9,
+      'gps',
+      3,
+    ],
   ],
 };
 
@@ -38,11 +110,25 @@ describe('RecorderStatusSchema', () => {
   it('parses what the recorder actually serves', () => {
     const status = RecorderStatusSchema.parse(STATUS);
 
-    expect(status.version.code).toBe(4);
+    expect(status.version.code).toBe(7);
     expect(status.count).toBe(1919);
     expect(status.generation).toBe(0);
     expect(status.canRecord).toBe(true);
     expect(status.setupComplete).toBe(false);
+    expect(status.paused).toBe(false);
+    expect(status.config?.priority).toBe('high');
+  });
+
+  it('carries the point column order, for a stream attached without a page', () => {
+    expect(RecorderStatusSchema.parse(STATUS).fields).toEqual(
+      TRACK_PAGE.fields,
+    );
+  });
+
+  it('accepts a recorder that reports no column order', () => {
+    const { fields: _, ...withoutFields } = STATUS;
+
+    expect(RecorderStatusSchema.parse(withoutFields).fields).toBeUndefined();
   });
 
   it('accepts a device with no vendor quirk', () => {
@@ -101,8 +187,29 @@ describe('decodePoints', () => {
       // An absent value is null and never 0, so a standstill stays a standstill.
       spd: 0,
       brg: null,
-      seg: null,
+      seg: 3,
     });
+  });
+
+  it('survives a column whose cells are not numbers', () => {
+    // `src` carries a provider name, and the `fields` list is append-only — so a
+    // reader that insisted on numbers would lose the whole page over a column it
+    // doesn't even read.
+    const page = RecorderTrackPageSchema.parse({
+      fields: [...TRACK_PAGE.fields, 'somethingNew'],
+      points: [[...TRACK_PAGE.points[0]!, { nested: true }]],
+    });
+
+    expect(decodePoints(page.fields, page.points)).toHaveLength(1);
+  });
+
+  it('reads a cell that should be a number but is not as absent', () => {
+    expect(
+      decodePoints(
+        ['seq', 'ts', 'lat', 'lon', 'alt'],
+        [[7, 1785329624603, 48.5, 21.5, 'high']],
+      )[0]?.alt,
+    ).toBeNull();
   });
 
   it('reads by the declared column order, not by position', () => {

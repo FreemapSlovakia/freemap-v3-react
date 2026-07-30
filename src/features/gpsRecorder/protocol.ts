@@ -40,9 +40,13 @@ export const RECORDER_INTENT_URL =
   `S.browser_fallback_url=${encodeURIComponent(RECORDER_DOWNLOAD_URL)};end`;
 
 /**
- * Points travel columnar: a row per fix, ordered by a `fields` header. `/track`
- * restates the order with every page, but `/stream` sends bare rows, so this is
- * the order assumed for a stream opened before any page has been read.
+ * Points travel columnar: a row per fix, ordered by a `fields` header. `/status`
+ * names the order and `/track` restates it with every page, so this last-resort
+ * list only decodes a stream attached before either has been read.
+ *
+ * Naming more columns than an older recorder sends is safe — a name that maps
+ * past the end of a row reads as absent — but naming them in the wrong order
+ * would not be, which is why the recorder's list is append-only.
  */
 export const DEFAULT_POINT_FIELDS = [
   'seq',
@@ -53,6 +57,13 @@ export const DEFAULT_POINT_FIELDS = [
   'acc',
   'spd',
   'brg',
+  'altMsl',
+  'altAcc',
+  'spdAcc',
+  'brgAcc',
+  'sat',
+  'src',
+  'seg',
 ] as const;
 
 /** One recorded fix, decoded out of its row. */
@@ -81,34 +92,44 @@ export interface RecorderPoint {
   seg: number | null;
 }
 
-const RecorderRowSchema = z.array(z.number().nullable());
+/**
+ * A cell holds whatever its column holds — a number, a null, or `src`'s provider
+ * name. The `fields` list is append-only and a reader is meant to ignore the
+ * columns it doesn't know, so typing cells as numbers would break the whole page
+ * on the day a non-numeric column is appended.
+ */
+const RecorderRowSchema = z.array(z.unknown());
 
 export const RecorderTrackPageSchema = z.looseObject({
   fields: z.array(z.string()),
   points: z.array(RecorderRowSchema),
 });
 
-/** A stream event carries one row, or a batch of them. */
-export const RecorderStreamPayloadSchema = z.union([
-  RecorderRowSchema,
-  z.array(RecorderRowSchema),
-]);
+/**
+ * A stream event carries one row, or a batch of them — told apart by
+ * {@link streamPayloadToRows} rather than by the schema, since a row of unknown
+ * cells and a batch of rows are the same shape to it.
+ */
+export const RecorderStreamPayloadSchema = RecorderRowSchema;
 
 /**
  * Reads rows against their declared column order, so a reordered or extended
- * `fields` header costs nothing here. A row without a position is not a fix and
- * is dropped.
+ * `fields` header costs nothing here. A cell that isn't the number its column
+ * should hold reads as absent, and a row without a position is not a fix and is
+ * dropped.
  */
 export function decodePoints(
   fields: readonly string[],
-  rows: readonly (number | null)[][],
+  rows: readonly (readonly unknown[])[],
 ): RecorderPoint[] {
   const at = new Map(fields.map((name, i) => [name, i]));
 
-  const read = (row: readonly (number | null)[], name: string) => {
+  const read = (row: readonly unknown[], name: string): number | null => {
     const i = at.get(name);
 
-    return i === undefined ? null : (row[i] ?? null);
+    const cell = i === undefined ? null : row[i];
+
+    return typeof cell === 'number' && Number.isFinite(cell) ? cell : null;
   };
 
   const points: RecorderPoint[] = [];
@@ -141,11 +162,11 @@ export function decodePoints(
 
 /** Normalizes a stream payload to rows, whether it carried one or a batch. */
 export function streamPayloadToRows(
-  payload: z.infer<typeof RecorderStreamPayloadSchema>,
-): (number | null)[][] {
+  payload: readonly unknown[],
+): (readonly unknown[])[] {
   return payload.length > 0 && Array.isArray(payload[0])
-    ? (payload as (number | null)[][])
-    : [payload as (number | null)[]];
+    ? (payload as (readonly unknown[])[])
+    : [payload];
 }
 
 /** How the recorder samples, sent as the `POST /start` body. */
@@ -175,6 +196,12 @@ export const RecorderStatusSchema = z.looseObject({
    * `POST /start` is detected — a recorder that ignored the body reports none.
    */
   config: RecorderConfigSchema.nullish(),
+  /**
+   * The point column names, in order — the same list `/track` returns with every
+   * page. Absent on a recorder that doesn't send it, where the order has to come
+   * from a page instead.
+   */
+  fields: z.array(z.string()).nullish(),
   /** Points held on disk. */
   count: z.number().int(),
   /** Highest `seq` on file; 0 while the track is empty. */
@@ -256,11 +283,20 @@ export type RecorderFailure =
   /** Reachable, but the body did not match the expected shape. */
   | 'protocol';
 
+/**
+ * Detail text is shown verbatim and kept in the store, so it has to stay short
+ * whatever produced it: a schema complaint about a track page names every point
+ * it disliked, which on a long recording is megabytes of it.
+ */
+export function truncateDetail(text: string): string {
+  return text.length <= 300 ? text : `${text.slice(0, 300)}…`;
+}
+
 export class RecorderError extends Error {
   readonly failure: RecorderFailure;
 
   constructor(failure: RecorderFailure, message: string) {
-    super(message);
+    super(truncateDetail(message));
 
     this.name = 'RecorderError';
 

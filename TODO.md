@@ -305,10 +305,10 @@ off that — never re-derive "is this a track?" from density/timestamps.
 Works end to end on a real device for holders of the `layerPreview` role on
 Android: record/pause/stop, derived segments, a live readout, save-to-track-viewer,
 localized errors and the setup warning banner, and a settings modal. The
-recorder's `API.md` is the contract's source of truth; the parts it does not
-implement yet are filed as
-[issues #1–#4](https://github.com/FreemapSlovakia/freemap-gps-recorder/issues)
-and the client falls back cleanly until they land.
+recorder's `API.md` is the contract's source of truth. `/pause`, the config body,
+`paused` and the `seg` column ship in its versionCode 6, and `fields` in
+`/status` plus the `status` stream event in 7; each is feature-detected rather
+than version-gated, so an older installed APK still works.
 
 - [ ] **Give it a role of its own.** It rides on `layerPreview` for want of a
       better fit; a `gpsRecorder` (or a general "beta features") role would say
@@ -320,6 +320,14 @@ and the client falls back cleanly until they land.
       gate is Android-wide, but `intent://` with `S.browser_fallback_url` is a
       Chrome convention; a browser that ignores it leaves the "recorder not
       installed" path doing nothing at all.
+- [ ] **Read the columns the recorder already sends.** `decodePoints` takes eight
+      of the fifteen: `altMsl`, `altAcc`, `spdAcc`, `brgAcc`, `sat` and `src` are
+      all dropped. `altMsl` is the one that matters — GPX `<ele>` wants metres
+      above mean sea level, and the geoid separation is around +40 m over
+      Slovakia, so every saved and exported recording is currently that far out.
+      It is null below Android 14 and until a GNSS fix has been seen, so `alt` has
+      to stay the fallback. `sat` and the accuracies have GPX equivalents
+      (`<sat>`, `<hdop>`-ish) that the export could carry too.
 - [ ] **Style the live track like a displayed GPX track** instead of the plain
       red polyline, and run it through the shared colorizers — the per-segment
       `Feature<LineString>[]` the save path builds is already the shape
