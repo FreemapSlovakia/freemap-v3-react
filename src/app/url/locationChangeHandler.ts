@@ -32,7 +32,6 @@ import {
   galleryRequestImage,
   gallerySetFilter,
 } from '@features/gallery/model/actions.js';
-import { gpsRecorderRestoreSaved } from '@features/gpsRecorder/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import {
   mapRefocus,
@@ -74,8 +73,10 @@ import {
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
+  trackViewerRestoreStored,
   trackViewerSetStyle,
 } from '@features/trackViewer/model/actions.js';
+import { deleteStoredTrack } from '@features/trackViewer/trackStore.js';
 import {
   wikiLoadPreview,
   wikiSetPreview,
@@ -128,17 +129,17 @@ function parseQuery(search: string) {
   return q;
 }
 
-export function handleLocationChange(store: MyStore): void {
+export function handleLocationChange(store: MyStore, initial = false): void {
   const { getState, dispatch } = store;
 
   setUrlUpdatingEnabled(false);
 
   const search = (document.location.hash || document.location.search).slice(1);
 
-  const { sq, rec } = (history.state as {
+  const { sq, tr } = (history.state as {
     sq?: string;
-    rec?: true;
-  } | null) ?? { sq: undefined, rec: undefined };
+    tr?: true;
+  } | null) ?? { sq: undefined, tr: undefined };
 
   const parsedQuery = parseQuery(search);
 
@@ -888,11 +889,20 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(mapsRestore(restore));
   }
 
-  // A finished recording this browser is holding for a history entry that was
-  // holding it. Dispatched last, and a no-op when something else already owns the
-  // track viewer, so a map or a shared track named in the URL wins.
-  if (rec) {
-    dispatch(gpsRecorderRestoreSaved());
+  // The track this browser stored for this history entry. Dispatched last, and a
+  // no-op when something else already owns the track viewer, so a map or a shared
+  // track named in the URL wins.
+  //
+  // A *fresh load* carrying no flag is what evicts the store: the flag is the
+  // authority on whether a stored track is still wanted, so nothing outlives the
+  // session that put it there. Not done for a `popstate` — going back to an entry
+  // that had no track must not throw away the one the entry ahead of it holds.
+  if (tr) {
+    dispatch(trackViewerRestoreStored());
+  } else if (initial) {
+    deleteStoredTrack().catch((err) => {
+      console.warn('Evicting the stored track failed:', err);
+    });
   }
 
   setUrlUpdatingEnabled(true);

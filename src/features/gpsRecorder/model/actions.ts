@@ -52,19 +52,6 @@ export const gpsRecorderStop = createAction<'replace' | 'append'>(
 );
 
 /**
- * Puts back the recording this browser is holding, when the history entry says
- * it was holding one. See `trackStore.ts` for why the copy exists at all.
- */
-export const gpsRecorderRestoreSaved = createAction(
-  'GPS_RECORDER_RESTORE_SAVED',
-);
-
-/** Whether this browser is holding a finished recording the recorder no longer has. */
-export const gpsRecorderSetStored = createAction<boolean>(
-  'GPS_RECORDER_SET_STORED',
-);
-
-/**
  * Catch up over `/track?since=` and (re)attach the stream. Dispatched when the
  * tool opens, on a slow timer, and whenever the page returns to the foreground
  * — none of which needs a user gesture once Local Network Access has been

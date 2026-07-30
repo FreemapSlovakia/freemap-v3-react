@@ -6,6 +6,7 @@ import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from '@features/trackViewer/model/actions.js';
+import { storeTrack } from '@features/trackViewer/trackStore.js';
 import type { FeatureCollection } from 'geojson';
 import type { Dispatch } from 'redux';
 import {
@@ -32,12 +33,6 @@ import {
 } from '../stream.js';
 import { recorderSegmentsToFeatureCollection } from '../trackGeojson.js';
 import {
-  deleteRecorderTrack,
-  getRecorderTrack,
-  persistStorage,
-  putRecorderTrack,
-} from '../trackStore.js';
-import {
   gpsRecorderAddPoints,
   type gpsRecorderPushedStatus,
   type gpsRecorderSave,
@@ -45,7 +40,6 @@ import {
   gpsRecorderSetError,
   gpsRecorderSetPending,
   gpsRecorderSetStatus,
-  gpsRecorderSetStored,
   type gpsRecorderStop,
   gpsRecorderTrackCleared,
 } from './actions.js';
@@ -306,35 +300,25 @@ export const disconnectHandler: ProcessorHandler = ({ dispatch }) => {
 };
 
 /**
- * Throws the recording away — wherever it is. The recorder's own copy goes first,
- * and only then this page's, so a failed delete leaves the screen showing what the
- * recorder still holds rather than pretending it is gone. The browser's stored copy
- * goes too: after a finish the recorder has nothing left, and this is the one
- * action that means "I don't want this ride".
+ * Discards the recorder's track, then the local copy of it. Ordered that way on
+ * purpose: if the delete fails, the screen still shows what the recorder holds
+ * rather than pretending it is gone.
+ *
+ * Only ever the recorder's copy. Once a ride has been finished it belongs to the
+ * track viewer, and deleting it there is what throws it away.
  */
-export const clearHandler: ProcessorHandler = async ({
-  dispatch,
-  getState,
-}) => {
-  if ((getState().gpsRecorder.status?.count ?? 0) > 0) {
-    try {
-      await clearTrack();
-    } catch (err) {
-      reportFailure(dispatch, err);
+export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
+  try {
+    await clearTrack();
+  } catch (err) {
+    reportFailure(dispatch, err);
 
-      return;
-    }
+    return;
   }
 
   dispatch(gpsRecorderTrackCleared());
 
   dispatch(gpsRecorderSetError(null));
-
-  if (getState().gpsRecorder.stored) {
-    await deleteRecorderTrack();
-
-    dispatch(gpsRecorderSetStored(false));
-  }
 
   try {
     dispatch(gpsRecorderSetStatus(await getStatus()));
@@ -432,16 +416,16 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
       return;
     }
 
-    if (!(await persistStorage())) {
+    // The track viewer stores what it is given anyway; this is the same write,
+    // awaited, because what comes next is irreversible. `false` means the browser
+    // stored it but would not promise to keep it — not good enough to be the only
+    // copy of a ride.
+    if (!(await storeTrack(trackGeojson))) {
       throw new RecorderError(
         'not-persisted',
         'the browser would not promise to keep local storage',
       );
     }
-
-    await putRecorderTrack({ savedAt: Date.now(), geojson: trackGeojson });
-
-    dispatch(gpsRecorderSetStored(true));
 
     await clearTrack();
 
@@ -453,36 +437,4 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
   } finally {
     dispatch(gpsRecorderSetPending(false));
   }
-};
-
-/**
- * Puts back the recording this browser is holding. Only ever runs for a history
- * entry that was holding one, so an ordinary visit is not ambushed by a track
- * from a previous session.
- */
-export const restoreSavedHandler: ProcessorHandler = async ({
-  dispatch,
-  getState,
-}) => {
-  const record = await getRecorderTrack();
-
-  if (!record) {
-    // The entry outlived the copy — cleared storage, or a record too old to read.
-    // Take the flag off this entry so the next reload doesn't ask again.
-    await deleteRecorderTrack();
-
-    return;
-  }
-
-  dispatch(gpsRecorderSetStored(true));
-
-  // Something else — a map named in the URL, a shared track — got there first and
-  // owns the viewer; the copy stays stored rather than fighting it.
-  if (getState().trackViewer.trackGeojson) {
-    return;
-  }
-
-  dispatch(trackViewerSetTrackUID(null));
-
-  dispatch(trackViewerSetData({ trackGeojson: record.geojson }));
 };

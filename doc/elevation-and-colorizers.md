@@ -458,6 +458,41 @@ fetch directly rather than the per-feature `enrichElevations` wrapper:
 - GPX: `fillElevations.ts` filling/replacing `<ele>` on wpt/trkpt/rtept.
 - Polygons (and `fm:type=polygon` GPX tracks) are always skipped.
 
+## The loaded track survives a reload
+
+The track viewer's track is the one thing the URL cannot carry, so
+[`trackViewer/trackStore.ts`](../src/features/trackViewer/trackStore.ts) keeps it —
+a **single entry** in its own `idb-keyval` database, validated on read like the
+my-maps working copy (`myMaps/mapStore.ts`).
+
+**Only a track with no other home.** A map's track already lives in the my-maps
+working copy and is restored from there; a `track-uid=` or `import-url=` track is
+named by the URL and re-fetched from it. Storing either would be a second copy of
+the same thing, so `trackViewerStoreProcessor` checks `homedElsewhere` and deletes
+the entry instead. What is left is the case the store exists for: a file import, a
+conversion, a finished recording — the same condition `TrackViewerMenu` warns
+about. The check runs off state, on every action that can change the answer, so it
+does not depend on whether a loader sets the track before or after the thing that
+gives it a home.
+
+**The history entry is the authority, not the store.** `storeTrack` `replaceState`s
+a `tr: true` flag onto the current entry as it writes; `urlProcessor` carries the
+flag onto the entries it writes afterwards; `handleLocationChange` dispatches
+`trackViewerRestoreStored` when it sees it, and a **fresh load carrying no flag
+evicts the entry instead**. So reloading the page you were on puts the track back,
+a fresh visit or a shared link is never ambushed by a track from a previous
+session, and nothing can outlive the session that stored it. Eviction is skipped on
+`popstate`, because going back to an entry that had no track must not throw away
+the one the entry ahead of it holds.
+
+The write is best effort (`trackViewerStoreProcessor` logs and moves on), and the
+copy is dropped on `trackViewerDelete` and `clearMapFeatures` — a copy that
+outlived the track would come back as something the user had already thrown away.
+One caller reads `storeTrack`'s answer instead of ignoring it: the GPS recorder
+finishing a ride, because it then deletes the phone's copy and `false` — stored,
+but evictable — is not good enough to be the only one. See
+[`doc/gps-recorder.md`](./gps-recorder.md).
+
 ## Where features surface in the UI
 
 `tracking` is a real **tool** (`ToolSchema`/`toolDefinitions`, <kbd>g</kbd> <kbd>t</kbd>);

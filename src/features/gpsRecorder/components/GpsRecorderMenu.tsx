@@ -59,10 +59,6 @@ export default function GpsRecorderMenu(): ReactElement {
     (state) => state.gpsRecorderSettings.keepScreenAwake,
   );
 
-  // A finished recording leaves the recorder empty and this browser holding the
-  // copy, which is still something the user may want thrown away.
-  const stored = useAppSelector((state) => state.gpsRecorder.stored);
-
   const recording = status?.recording ?? false;
 
   // The spinner covers any wait, but only a command the user gave blocks the
@@ -237,7 +233,7 @@ export default function GpsRecorderMenu(): ReactElement {
             className="ms-1"
             variant="danger"
             // The recorder refuses to delete mid-recording, so don't offer it.
-            disabled={recording || (!stored && (status?.count ?? 0) === 0)}
+            disabled={recording || (status?.count ?? 0) === 0}
             onClick={handleClear}
             {...props}
           >

@@ -264,7 +264,7 @@ export const urlProcessor: Processor = {
 
     const prevHistoryState = history.state as {
       sq?: string;
-      rec?: true;
+      tr?: true;
     } | null;
 
     const contentChanged =
@@ -295,12 +295,12 @@ export const urlProcessor: Processor = {
       // SecurityError. Normalizing also self-heals the address bar.
       const path = window.location.pathname.replace(/\/{2,}/g, '/');
 
-      // `rec` says this entry was holding a finished recording in the browser's
-      // own storage, so a reload of it puts the track back. Carried forward
-      // rather than recomputed: it belongs to the entry, and the flag is set on
-      // the current one by whoever stored the track.
+      // `tr` says this entry was holding a track in the browser's own storage, so
+      // a reload of it puts the track back. Carried forward rather than
+      // recomputed: it belongs to the entry, and `trackStore` sets it on the
+      // current one when it writes.
       history[method](
-        { sq, rec: prevHistoryState?.rec },
+        { sq, tr: prevHistoryState?.tr },
         '',
         path + (urlSearch ? `#${urlSearch}` : ''),
       );

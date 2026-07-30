@@ -44,7 +44,6 @@ import {
   gpsRecorderDisconnectProcessor,
   gpsRecorderPauseProcessor,
   gpsRecorderPushedStatusProcessor,
-  gpsRecorderRestoreSavedProcessor,
   gpsRecorderSaveProcessor,
   gpsRecorderStartProcessor,
   gpsRecorderStopProcessor,
@@ -105,6 +104,11 @@ import { trackViewerDownloadTrackProcessor } from '@features/trackViewer/model/p
 import { trackViewerGpxLoadProcessor } from '@features/trackViewer/model/processors/trackViewerGpxLoadProcessor.js';
 import { trackViewerResolveElevationPromptProcessor } from '@features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.js';
 import { trackViewerSetTrackDataProcessor } from '@features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.js';
+import {
+  trackViewerForgetStoredProcessor,
+  trackViewerRestoreStoredProcessor,
+  trackViewerStoreProcessor,
+} from '@features/trackViewer/model/processors/trackViewerStoreProcessors.js';
 import { trackViewerToggleElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
@@ -160,6 +164,9 @@ export const processors = [
   toastsRestartTimeoutProcessor,
   toastsStopTimeoutProcessor,
   trackViewerSetTrackDataProcessor,
+  trackViewerStoreProcessor,
+  trackViewerForgetStoredProcessor,
+  trackViewerRestoreStoredProcessor,
   trackViewerDownloadTrackProcessor,
   trackViewerGpxLoadProcessor,
   trackViewerToggleElevationChartProcessor,
@@ -194,7 +201,6 @@ export const processors = [
   gpsRecorderStopProcessor,
   gpsRecorderSyncProcessor,
   gpsRecorderPushedStatusProcessor,
-  gpsRecorderRestoreSavedProcessor,
   gpsRecorderDisconnectProcessor,
   gpsRecorderClearProcessor,
   gpsRecorderSaveProcessor,

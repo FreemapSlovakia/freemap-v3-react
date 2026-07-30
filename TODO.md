@@ -347,19 +347,11 @@ refuse — belongs to the recorder.
       link (`getStatus` probes the body for a `version` when the full schema
       rejects it). Nothing tells the user about a *newer* one, though — the
       recorder's own in-app update check is the only thing that does.
-- [ ] **Drop the stored ride when the user deletes it elsewhere.** Finishing
-      stores the track in `trackStore.ts` and flags the history entry; deleting
-      that track from the *track viewer* (or `clearMapFeatures`) leaves the entry
-      and the stored copy behind, so a reload brings it back. Not data loss, but
-      confusing. The recorder's own trash clears both, which is the way out today.
-      A fix needs a way to tell "the viewer is showing the stored ride" from "the
-      viewer is showing an unrelated import", so deleting the import can't take a
-      ride with it.
-- [ ] **Nudge the user to save the stored ride somewhere durable.** The my-maps
-      exclamation mark only appears for an *active map* with unsaved changes
-      (`mapDirtySelector`), so a finished recording sitting in IndexedDB with no
-      map open shows nothing. It is one `persist()`-ed copy in one browser — worth
-      an indicator that says "not saved anywhere else yet".
+- [ ] **Say that a stored track is only in this browser.** `TrackViewerMenu`
+      already warns on a track that is in no map and that the URL doesn't name,
+      which now covers a finished recording too. Consider making the wording say
+      what the copy actually is — one `persist()`-ed copy in one browser — since
+      the reload it survives may read as "saved".
 - [ ] **Unflag it.** Drop the role gate, keep the platform gate, and add the tool
       to the `src/static/llms.txt` menu/tools list.
 

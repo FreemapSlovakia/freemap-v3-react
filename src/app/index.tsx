@@ -130,7 +130,7 @@ window.addEventListener('popstate', () => {
   handleLocationChange(store);
 });
 
-handleLocationChange(store);
+handleLocationChange(store, true);
 
 attachOAuthLoginMessageHandler(store);
 

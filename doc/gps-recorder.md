@@ -341,40 +341,32 @@ the recorder discard it.
 
 ### Storing the finished ride
 
-Finishing deletes the recorder's copy, so before it does, the browser's copy has
-to be worth trusting. `trackStore.ts` is that copy: a **single entry** in its own
-`idb-keyval` database, validated on read like the my-maps working copy, holding
-the geojson and when it was taken. One entry, because finishing means "take this
-ride off the phone and give it to me" — a thing the user then exports, uploads or
-discards before the next one. An archive of every ride needs a list to manage it
-and a rule for reclaiming space, neither of which is worth inventing yet.
+Finishing deletes the recorder's copy, so before it does, the browser's copy has to
+be worth trusting. That copy is **not the recorder's business**: it is
+[`trackViewer/trackStore.ts`](../src/features/trackViewer/trackStore.ts), which
+keeps whatever track the viewer holds — a file import, a conversion, a finished
+ride alike. The recorder is only a caller.
 
 **The order in `stopHandler` is the whole design**, and it is deliberately
 pessimistic:
 
 1. `POST /stop`, so the track is not moving under us.
 2. Hand it to the track viewer.
-3. `navigator.storage.persist()` — and **stop here if it refuses**. Without that
-   promise the browser may evict the copy under storage pressure, and deleting
-   the recorder's copy would leave the ride nowhere. The recording stays where it
-   is and a toast says why (`errors.notPersisted`), with the track still on screen
-   to export.
-4. Write the entry.
-5. Only now `DELETE /track`.
+3. `storeTrack` — which requests `navigator.storage.persist()` — and **stop here
+   if it answers `false`**. Without that promise the browser may evict the copy
+   under storage pressure, and deleting the recorder's copy would leave the ride
+   nowhere. The recording stays where it is and a toast says why
+   (`errors.notPersisted`), with the track still on screen to export.
+4. Only now `DELETE /track`.
 
-**A reload is answered by the history entry, not by storage.** `trackStore`
-`replaceState`s a `rec: true` flag onto the current entry when it stores the track
-and takes it off when it deletes it; `urlProcessor` carries the flag onto the
-entries it writes afterwards, and `handleLocationChange` dispatches
-`gpsRecorderRestoreSaved` when it sees it. So reloading the page you were looking
-at brings the ride back, while a fresh visit — or a shared link — is not ambushed
-by a track from a previous session. The restore is a no-op when something else
-already owns the viewer (a map named in the URL, a shared track), and it clears
-the flag when the entry outlived the copy.
+The store writes on `trackViewerSetData` anyway, so step 3 is the same write —
+awaited, and reading the answer, because what follows it cannot be undone.
+`storeTrack` skips a re-write of the object it stored last, so the two paths cost
+one write.
 
-The trash button owns **both** copies: the recorder's, and the one held here. After
-a finish the recorder has nothing left, so this is the only way to say "I don't
-want this ride" — and its confirmation says so.
+Once finished, the ride belongs to the track viewer: **the recorder's trash only
+ever deletes the recorder's own copy**, and deleting the track in the viewer is
+what throws the ride away.
 
 The feature therefore has **no `Exportable` and no `convertToDrawing` variant of
 its own**. Both were duplicates of machinery the saved track already gets, and

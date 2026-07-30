@@ -9,7 +9,6 @@ import {
   gpsRecorderSetError,
   gpsRecorderSetPending,
   gpsRecorderSetStatus,
-  gpsRecorderSetStored,
   gpsRecorderStop,
   gpsRecorderTrackCleared,
 } from './actions.js';
@@ -41,12 +40,6 @@ export interface GpsRecorderState {
   generation: number | null;
   connection: GpsRecorderConnection;
   error: GpsRecorderFailure | null;
-  /**
-   * Whether this browser holds a finished recording the recorder no longer has.
-   * Read when a history entry is written, so a reload of that entry knows to put
-   * the track back — see `trackStore.ts`.
-   */
-  stored: boolean;
 }
 
 export const gpsRecorderInitialState: GpsRecorderState = {
@@ -57,7 +50,6 @@ export const gpsRecorderInitialState: GpsRecorderState = {
   generation: null,
   connection: 'idle',
   error: null,
-  stored: false,
 };
 
 /**
@@ -138,10 +130,6 @@ export const gpsRecorderReducer = createReducer(
       .addCase(gpsRecorderSetError, (state, { payload }) => ({
         ...state,
         error: payload,
-      }))
-      .addCase(gpsRecorderSetStored, (state, { payload }) => ({
-        ...state,
-        stored: payload,
       }))
       .addCase(gpsRecorderStop, (state) => ({
         ...state,

@@ -38,9 +38,8 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   deleteModal: {
     title: 'Zmazať záznam?',
     message:
-      'Celý záznam sa zahodí — kópia v zaznamenávači aj tá, ktorú drží tento ' +
-      'prehliadač. Túto akciu nemožno vrátiť späť. Ak si ho chcete ponechať, ' +
-      'najprv ho uložte do svojich trás alebo vyexportujte.',
+      'Zaznamenávač zahodí celú svoju trasu. Túto akciu nemožno vrátiť späť. ' +
+      'Ak si záznam chcete ponechať, namiesto toho ho ukončite.',
     confirm: 'Zmazať',
   },
   setup: {

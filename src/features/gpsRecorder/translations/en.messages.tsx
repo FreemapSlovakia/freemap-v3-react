@@ -37,9 +37,8 @@ const en: GpsRecorderMessages = {
   deleteModal: {
     title: 'Delete the recording?',
     message:
-      'The whole recording goes — the recorder\u2019s copy and the one this ' +
-      'browser is holding. This cannot be undone. Save it to your tracks or ' +
-      'export it first if you want to keep it.',
+      'The recorder discards its whole track. This cannot be undone. Finish the ' +
+      'recording instead if you want to keep it.',
     confirm: 'Delete',
   },
   setup: {

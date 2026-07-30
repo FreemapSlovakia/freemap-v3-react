@@ -32,6 +32,15 @@ export const trackViewerSetTrackUID = createAction<string | null>(
   'TRACK_VIEWER_SET_TRACK_UID',
 );
 
+/**
+ * Puts back the track this browser stored for the current history entry. See
+ * `trackStore.ts`: the flag on the entry is what says there is one, and a load
+ * that carries no flag evicts the store instead.
+ */
+export const trackViewerRestoreStored = createAction(
+  'TRACK_VIEWER_RESTORE_STORED',
+);
+
 export const trackViewerDownloadTrack = createAction<string>(
   'TRACK_VIEWER_DOWNLOAD_TRACK',
 );
