@@ -8,7 +8,6 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   connect: 'Pripojiť',
   install: 'Nainštalovať zaznamenávač',
   update: 'Aktualizovať zaznamenávač',
-  save: 'Uložiť do trás',
   delete: 'Zmazať záznam',
   settings: 'Nastavenia záznamu',
   details: 'Podrobnosti záznamu',

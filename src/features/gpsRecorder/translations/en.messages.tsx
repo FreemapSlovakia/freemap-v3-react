@@ -7,7 +7,6 @@ const en: GpsRecorderMessages = {
   connect: 'Connect',
   install: 'Install the recorder',
   update: 'Update the recorder',
-  save: 'Save to tracks',
   delete: 'Delete recording',
   settings: 'Recording settings',
   details: 'Recording details',

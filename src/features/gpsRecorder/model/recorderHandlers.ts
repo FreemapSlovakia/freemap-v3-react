@@ -37,7 +37,6 @@ import { recorderSegmentsToFeatureCollection } from '../trackGeojson.js';
 import {
   gpsRecorderAddPoints,
   type gpsRecorderPushedStatus,
-  type gpsRecorderSave,
   gpsRecorderSetConnection,
   gpsRecorderSetError,
   gpsRecorderSetPending,
@@ -127,8 +126,8 @@ async function applyStatus(
 /**
  * Catches up over `/track?since=` and leaves the live stream attached. Runs when
  * the tool opens, when the page returns to the foreground, after the stream has
- * been given up on, at the end of the start flow, and on the fallback timer for
- * a recorder that pushes no status of its own.
+ * been given up on, and at the end of the start flow. Never on a timer: the
+ * stream pushes a status whenever the recorder's state changes.
  */
 export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
   // Read before the fresh status lands, so the generation below is the one this
@@ -345,14 +344,6 @@ export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
  * A copy, not a move — the recording may still be running, and the recorder
  * stays the owner of its data until the user deletes it explicitly.
  */
-export const saveHandler: ProcessorHandler<typeof gpsRecorderSave> = ({
-  dispatch,
-  getState,
-  action,
-}) => {
-  handOverTrack(dispatch, getState(), action.payload);
-};
-
 /**
  * Puts the recording into the track viewer, where it becomes an ordinary loaded
  * track. Returns what the viewer now holds, so a caller that has to make the copy

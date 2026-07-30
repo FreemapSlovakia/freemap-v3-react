@@ -1,5 +1,6 @@
 import { setTool, type Tool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -73,11 +74,23 @@ export function ToolMenu({ tool, children }: Props): ReactElement {
                   >
                     {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}{' '}
                     <span className={labelClassName}> {label}</span>
+                    {toolDef.experimental && (
+                      <>
+                        {' '}
+                        <ExperimentalFunction />
+                      </>
+                    )}
                   </Button>
                 ) : (
                   <span className="align-self-center ms-1" {...props}>
                     {toolDef.icon}{' '}
                     <span className={labelClassName}> {label}</span>
+                    {toolDef.experimental && (
+                      <>
+                        {' '}
+                        <ExperimentalFunction />
+                      </>
+                    )}
                   </span>
                 )
               }

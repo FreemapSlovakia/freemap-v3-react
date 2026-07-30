@@ -32,9 +32,8 @@ const ERROR_KEYS: Record<
 
 /**
  * Raises the tool's failure and setup notices as toasts, which is where this app
- * says everything else of the kind. They were panels below the toolbar, which on
- * a phone pushed the map and its controls down the screen to say something the
- * user often already knew.
+ * says everything else of the kind — and, on a phone, the only place that doesn't
+ * push the map and its controls down the screen.
  *
  * The technical detail behind a failure is deliberately not shown: it is kept in
  * `gpsRecorder.error` for the devtools, where it belongs, rather than printed
@@ -54,10 +53,13 @@ export function useRecorderNotices(): void {
       return;
     }
 
-    // Every cause offers the one thing that can resolve it: install or update
-    // the recorder, open it — because a start its own activity makes is one
-    // Android allows, and because that is where permissions are granted — or
-    // simply try again, which is also what re-prompts for Local Network Access.
+    // Every cause that *can* be resolved offers the one thing that resolves it:
+    // install or update the recorder, open it — because a start its own activity
+    // makes is one Android allows, and because that is where permissions are
+    // granted — or simply try again, which is also what re-prompts for Local
+    // Network Access. `not-persisted` is the exception: nothing the tool can offer
+    // changes the browser's mind about keeping its storage, and a button that
+    // cannot help is worse than none.
     const action =
       failure === 'unreachable'
         ? { name: m.install, href: RECORDER_DOWNLOAD_URL }
@@ -65,7 +67,9 @@ export function useRecorderNotices(): void {
           ? { name: m.update, href: RECORDER_DOWNLOAD_URL }
           : failure === 'setup-needed' || failure === 'needs-foreground'
             ? { name: m.setup.open, href: RECORDER_INTENT_URL }
-            : { name: m.connect, action: gpsRecorderSync() };
+            : failure === 'not-persisted'
+              ? null
+              : { name: m.connect, action: gpsRecorderSync() };
 
     dispatch(
       toastsAdd({
@@ -73,7 +77,7 @@ export function useRecorderNotices(): void {
         style: 'danger',
         messageKey: ERROR_KEYS[failure],
         messageLoader: loadGpsRecorderMessages,
-        actions: [{ ...action, variant: 'primary' }],
+        actions: action ? [{ ...action, variant: 'primary' }] : [],
         // Gone the moment the recorder answers again, without the user having to
         // dismiss a warning about something that has already fixed itself.
         statePredicate: (state) => state.gpsRecorder.error === null,

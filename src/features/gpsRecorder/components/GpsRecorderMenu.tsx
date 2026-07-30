@@ -6,14 +6,7 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useEffect } from 'react';
 import { Button, Spinner } from 'react-bootstrap';
-import {
-  FaCircle,
-  FaCog,
-  FaPause,
-  FaSave,
-  FaStop,
-  FaTrash,
-} from 'react-icons/fa';
+import { FaCircle, FaCog, FaPause, FaStop, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useRecorderLocationFeed } from '../hooks/useRecorderLocationFeed.js';
 import { useRecorderNotices } from '../hooks/useRecorderNotices.js';
@@ -21,7 +14,6 @@ import {
   gpsRecorderClear,
   gpsRecorderDisconnect,
   gpsRecorderPause,
-  gpsRecorderSave,
   gpsRecorderStart,
   gpsRecorderStop,
   gpsRecorderSync,
@@ -49,8 +41,8 @@ export default function GpsRecorderMenu(): ReactElement {
 
   const pending = useAppSelector((state) => state.gpsRecorder.pending);
 
-  // What saving would actually produce: the handler drops segments too short
-  // to be a line, so counting raw fixes would offer a Save that does nothing.
+  // What finishing would actually produce: the hand-over drops segments too short
+  // to be a line, so counting raw fixes would offer a Finish that takes nothing.
   const saveable = useAppSelector((state) =>
     selectRecorderSegments(state).some((segment) => segment.length >= 2),
   );
@@ -126,14 +118,6 @@ export default function GpsRecorderMenu(): ReactElement {
     };
   }, [keepScreenAwake, recording]);
 
-  const handleSave = useCallback(async () => {
-    const mode = await askMergeMode();
-
-    if (mode !== 'cancel') {
-      dispatch(gpsRecorderSave(mode));
-    }
-  }, [askMergeMode, dispatch]);
-
   const handleStop = useCallback(async () => {
     const mode = await askMergeMode();
 
@@ -181,34 +165,42 @@ export default function GpsRecorderMenu(): ReactElement {
       </Button>
 
       {/* Ending the ride: the track leaves the recorder for the app. Offered
-          whenever there is something to take, recording or not. */}
-      <LongPressTooltip label={m?.stop}>
-        {({ props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            disabled={pending || !saveable}
-            onClick={handleStop}
-            {...props}
-          >
-            <FaStop />
-          </Button>
-        )}
-      </LongPressTooltip>
+          whenever there is something to take, recording or not — there is no
+          separate save, because taking the track *is* saving it. */}
+      {saveable && (
+        <LongPressTooltip label={m?.stop}>
+          {({ props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              disabled={pending}
+              onClick={handleStop}
+              {...props}
+            >
+              <FaStop />
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
 
-      <LongPressTooltip label={m?.save}>
-        {({ props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            disabled={!saveable}
-            onClick={handleSave}
-            {...props}
-          >
-            <FaSave />
-          </Button>
-        )}
-      </LongPressTooltip>
+      {/* Beside Finish, because they are the two ends of the same decision: take
+          the ride or throw it away. Hidden rather than disabled — the recorder
+          refuses to delete mid-recording, and a permanently greyed button says
+          nothing about why. */}
+      {!recording && (status?.count ?? 0) > 0 && (
+        <LongPressTooltip label={m?.delete}>
+          {({ props }) => (
+            <Button
+              className="ms-1"
+              variant="danger"
+              onClick={handleClear}
+              {...props}
+            >
+              <FaTrash />
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
 
       <LongPressTooltip label={m?.settings}>
         {({ props }) => (

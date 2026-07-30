@@ -11,7 +11,6 @@ export type GpsRecorderMessages = {
   connect: string;
   install: string;
   update: string;
-  save: string;
   delete: string;
   settings: string;
   /** Opens the readout dropdown; the summary in it is the visible label. */

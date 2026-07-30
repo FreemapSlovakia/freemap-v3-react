@@ -24,12 +24,14 @@ Two gates, both in [`support.ts`](../src/features/gpsRecorder/support.ts):
   Chromium-only and secure-context-only, so over plain http on a dev host it is
   `undefined` and would hide the tool exactly where it is being developed. A
   module constant: it cannot change within a page lifetime.
-- **Role** — the `layerPreview` role, so the feature can ship to production
-  without being on for everyone. (There is no better-fitting role yet.) This one
-  is a *selector*, because logging in or out changes it mid-session.
+- **Nothing else.** It was behind the `layerPreview` role while it was being
+  proven; it is now marked `experimental: true` in `toolDefinitions` instead, which
+  puts `ExperimentalFunction`'s flask on the menu item and on the tool's own title.
+  The people who would find the rough edges are the people who would use it, and a
+  role gate kept them out.
 
-`ToolDefinition.available` therefore takes a `(state) => boolean` predicate
-rather than a flag. `unavailableToolsSelector` folds the whole registry into the
+`ToolDefinition.available` takes a `(state) => boolean` predicate rather than a
+flag, because other tools' gates do depend on state. `unavailableToolsSelector` folds the whole registry into the
 `|a|b|`-delimited string the menus filter against — a stable string, so
 `useAppSelector` doesn't re-render on every unrelated action the way a fresh
 array would. `Main.tsx` re-checks the gate independently, because
@@ -187,7 +189,7 @@ exemption fixes). `recorderFetch` reads that body and maps both to
    and hands focus straight back, while any other authority merely opens the
    app. A missing app follows `S.browser_fallback_url` to the download page.
    The `?port=` is echoed back as `portEcho` in `/status`.
-3. `waitForStatus` then re-polls with a widening backoff — the service needs a
+3. `waitForStatus` then retries with a widening backoff — the service needs a
    moment to bind, and the browser throttles timers while backgrounded, so the
    steps are generous (~15 s total).
 4. Version and permission checks, `POST /start`, then the sync below.
@@ -401,12 +403,11 @@ extensions, so a recording exports at the same fidelity as a preserved raw GPX.
 precision, not metres), so it rides in `CUSTOM_POINT_PROPS` as a plain
 `<accuracy>` extension, which our own reader gets back.
 
-Note that **the track viewer's track is not persisted** — `persistence.ts`
-carries only `trackViewerSettings`. A saved recording therefore dies on reload,
-which is tolerable precisely because Stop is not destructive: the recorder is
-the durable store and the viewer is the working copy. That is also why there is
-no IndexedDB cache here; it only becomes necessary if something starts deleting
-the recorder's copy automatically.
+The viewer's track is not in `persistence.ts` — that carries only
+`trackViewerSettings` — but it is not lost on a reload either:
+[`trackViewer/trackStore.ts`](../src/features/trackViewer/trackStore.ts) keeps it
+in IndexedDB, which is what makes Finish's delete defensible in the first place.
+See "Storing the finished ride" above.
 
 ## Settings
 
@@ -465,6 +466,6 @@ The stage-2 list — a role of its own, an APK landing page, styling the live
 track like a displayed GPX track, and unflagging the tool — is in
 [`TODO.md`](../TODO.md).
 
-`src/static/llms.txt` deliberately does not mention the tool: it reaches only
-`layerPreview` holders on one platform, so it is not user-visible behavior yet.
-That changes when the role gate comes off.
+`src/static/llms.txt` documents the tool under **GPS recorder**, as user-visible
+behavior now that only the platform gates it. Keep it in step with the toolbar —
+it names each button and what Finish does with the track.

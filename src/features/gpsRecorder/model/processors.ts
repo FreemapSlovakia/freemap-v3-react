@@ -4,7 +4,6 @@ import {
   gpsRecorderDisconnect,
   gpsRecorderPause,
   gpsRecorderPushedStatus,
-  gpsRecorderSave,
   gpsRecorderStart,
   gpsRecorderStop,
   gpsRecorderSync,
@@ -19,8 +18,9 @@ const handlers = () =>
 export const gpsRecorderStartProcessor: Processor = {
   actionCreator: gpsRecorderStart,
   id: 'gpsRecorder.start',
-  // Every recorder failure is surfaced in the tool's own panel, so nothing here
-  // reaches the generic processor-error toast.
+  // Every recorder failure is reported by the tool's own toasts, which say what
+  // can be done about each cause — so nothing here reaches the generic
+  // processor-error toast.
   handle: async (...params) => (await handlers()).startHandler(...params),
 };
 
@@ -61,10 +61,4 @@ export const gpsRecorderClearProcessor: Processor = {
   actionCreator: gpsRecorderClear,
   id: 'gpsRecorder.clear',
   handle: async (...params) => (await handlers()).clearHandler(...params),
-};
-
-export const gpsRecorderSaveProcessor: Processor<typeof gpsRecorderSave> = {
-  actionCreator: gpsRecorderSave,
-  id: 'gpsRecorder.save',
-  handle: async (...params) => (await handlers()).saveHandler(...params),
 };

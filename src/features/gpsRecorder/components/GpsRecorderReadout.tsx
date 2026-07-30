@@ -85,36 +85,33 @@ export function GpsRecorderReadout(): ReactElement {
     [language],
   );
 
-  const stateLabel = status?.recording
-    ? m?.state.recording
-    : status
-      ? m?.state.stopped
-      : m?.state.unknown;
+  /**
+   * Said out loud only when it is *not* what the user expects. `Recording` is
+   * already on the transport button, `Stopped` adds nothing to a button that says
+   * Record, and `Live` is only worth a word when it stops being true — the dot on
+   * the chip carries that at a glance. What is left is the states the user can act
+   * on: nothing connected yet, a connection being made, or a live view that has
+   * gone away while the recorder carries on regardless.
+   */
+  const notice: ReactNode = !status
+    ? m?.state.unknown
+    : connection === 'connecting'
+      ? m?.connection.connecting
+      : connection === 'syncing'
+        ? m?.connection.syncing
+        : connection === 'reconnecting'
+          ? m?.connection.reconnecting
+          : connection === 'idle'
+            ? m?.connection.offline
+            : null;
 
-  const connectionLabel =
-    connection === 'live'
-      ? m?.connection.live
-      : connection === 'connecting'
-        ? m?.connection.connecting
-        : connection === 'syncing'
-          ? m?.connection.syncing
-          : connection === 'reconnecting'
-            ? m?.connection.reconnecting
-            : m?.connection.offline;
-
-  const state: ReactNode = (
-    <>
-      {stateLabel}
-      <span className="text-body-secondary"> · {connectionLabel}</span>
-    </>
-  );
-
-  // Nothing recorded yet: the state is short enough to say in the row itself,
-  // and a dropdown whose only content is that same line would be a tap for
-  // nothing.
+  // Nothing recorded yet: there are no figures to summarize, so the row carries
+  // whatever there is to say — often nothing at all.
   if (stats.points === 0) {
-    return (
-      <span className="align-self-center ms-2 text-nowrap small">{state}</span>
+    return notice === null ? (
+      <></>
+    ) : (
+      <span className="align-self-center ms-2 text-nowrap small">{notice}</span>
     );
   }
 
@@ -215,7 +212,23 @@ export function GpsRecorderReadout(): ReactElement {
       <FmDropdownMenu>
         {/* A minimum width so the box doesn't twitch as the numbers change. */}
         <div className="px-3 py-1" style={{ minWidth: '15rem' }}>
-          <div className="mb-2">{state}</div>
+          {/* The details view is where spelling it out belongs, so the state and
+              the live view are named here even when they are nominal. */}
+          <div className="mb-2">
+            {status?.recording ? m?.state.recording : m?.state.stopped}
+            <span className="text-body-secondary">
+              {' · '}
+              {connection === 'live'
+                ? m?.connection.live
+                : connection === 'connecting'
+                  ? m?.connection.connecting
+                  : connection === 'syncing'
+                    ? m?.connection.syncing
+                    : connection === 'reconnecting'
+                      ? m?.connection.reconnecting
+                      : m?.connection.offline}
+            </span>
+          </div>
 
           {rows.map((row) => (
             <div key={row.id} className="d-flex justify-content-between gap-4">

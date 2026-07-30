@@ -20,9 +20,9 @@ export type GpsRecorderConnection =
   | 'reconnecting';
 
 /**
- * A failure by cause, so the panel can say what to do about it. `detail` is the
- * untranslated technical text, shown alongside the localized explanation
- * because on a loopback API it is often the only clue there is.
+ * A failure by cause, so the toast can say what to do about it. `detail` is the
+ * untranslated technical text, kept for the devtools rather than shown: on a
+ * loopback API it is often the only clue there is, and it is no use to the user.
  */
 export interface GpsRecorderFailure {
   failure: RecorderFailure | 'unknown';
@@ -53,9 +53,9 @@ export const gpsRecorderStop = createAction<'replace' | 'append'>(
 
 /**
  * Catch up over `/track?since=` and (re)attach the stream. Dispatched when the
- * tool opens, on a slow timer, and whenever the page returns to the foreground
- * — none of which needs a user gesture once Local Network Access has been
- * granted.
+ * tool opens, whenever the page returns to the foreground, and when a stream the
+ * browser gave up on is revived — none of which needs a user gesture once Local
+ * Network Access has been granted.
  */
 export const gpsRecorderSync = createAction('GPS_RECORDER_SYNC');
 
@@ -81,15 +81,6 @@ export const gpsRecorderClear = createAction('GPS_RECORDER_CLEAR');
 /** The recorder confirmed the track is gone; drop the local copy with it. */
 export const gpsRecorderTrackCleared = createAction(
   'GPS_RECORDER_TRACK_CLEARED',
-);
-
-/**
- * Copies the recording to the track viewer, beside or in place of its track,
- * leaving the recorder's own copy alone. {@link gpsRecorderStop} is the version
- * that ends the ride.
- */
-export const gpsRecorderSave = createAction<'replace' | 'append'>(
-  'GPS_RECORDER_SAVE',
 );
 
 export const gpsRecorderSetStatus = createAction<RecorderStatus | null>(

@@ -1,6 +1,3 @@
-import type { RootState } from '@app/store/store.js';
-import { hasRole } from '@features/auth/model/types.js';
-
 /**
  * Android, because the recorder ships as an Android APK and nothing else can
  * reach it. Not narrowed to Chromium: other Android browsers can talk to
@@ -20,12 +17,11 @@ export const gpsRecorderPlatformSupported = /Android/i.test(
 );
 
 /**
- * Whether the GPS recorder tool is offered. Limited to holders of
- * `layerPreview` while the feature is still being proven, so it can ship to
- * production without being on for everyone.
+ * Whether the GPS recorder tool is offered. The platform is the only gate — it is
+ * marked experimental in the menus instead of being hidden from all but a role,
+ * because the people who would find the rough edges are the people who would use
+ * it.
  */
-export function gpsRecorderAvailableSelector(state: RootState): boolean {
-  return (
-    gpsRecorderPlatformSupported && hasRole(state.auth.user, 'layerPreview')
-  );
+export function gpsRecorderAvailableSelector(): boolean {
+  return gpsRecorderPlatformSupported;
 }

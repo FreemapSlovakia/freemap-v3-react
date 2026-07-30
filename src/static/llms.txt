@@ -253,7 +253,7 @@ Toggles the file import toolbar. **Upload** opens the file import modal (URL pat
 - **Elevation profile** — chart of elevation along the active track (with total climb/descent); recorded waypoints are marked along it with their name and elevation and their distance ticked on the x-axis (toggleable), and a toolbar below the chart can download it as SVG (not in an embedded map, where the browser forbids downloads)
 - **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled). While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
 - **More info** — a popup with the track's distance, min/max elevation, total climb and total descent
-- a warning icon while the loaded track isn't part of a saved map — unlike drawing, a track isn't carried in the URL, so it is lost on reload until saved via **Save to my maps**
+- a warning icon while the loaded track isn't part of a saved map — unlike drawing, a track isn't carried in the URL, so it exists only in this browser until saved via **Save to my maps**. It does survive a page reload: the track you have open is kept in the browser (IndexedDB) and put back when you reload the page you were on. That copy goes with the browser's storage, which is why the warning stays.
 - **More** (⋮ menu) — gathers the remaining actions:
   - **Update elevation** — refill/override elevation from the terrain model (shown only while the track still has recorded elevation to replace); premium users get the high-resolution DEM where available
   - **Save to my maps** — save the loaded track into a new personal map (requires login; prompts to log in first otherwise). Hidden when a map is already active, since the active-map toolbar's own **Save** persists the track with the map. Older `#track-uid=…` share links still load
@@ -323,6 +323,22 @@ Each location sent by a device may carry properties such as altitude, speed, bea
 Manage devices you follow to see your friends' positions. Note: the watched-devices list is only reflected in the page URL — to persist it, save it via **My maps**.
 
 Each watched device is added with a **Watch Device** form: Watch Token (required), Label, Color, line Width (px), Since (date/time), Max Age (minutes), Max Count, Split Distance (meters), and Split Duration (minutes). Watched tracks render on the map; selecting one shows a small toolbar to delete or close it.
+
+### GPS recorder
+
+- Access: Main menu > GPS recorder (marked **experimental**)
+- URL path: `/#tools=gps-recorder`
+- **Android only**, and it needs a separate app: the *Freemap GPS Recorder*, a self-hosted APK the tool links to when it isn't installed. The tool is hidden entirely on other platforms.
+
+Records a GPS track with the Android app while the map shows it live, so the recording survives the browser being closed, backgrounded or killed — the phone does the recording, the page is a viewer and a remote control. The toolbar offers:
+
+- **Record** / **Pause** — one button. Pausing keeps the recording; pressing Record again continues it as a new segment, drawn with a gap rather than a straight line across the break
+- **Finish** (⏹) — ends the ride: the track becomes an ordinary loaded track in **File import** (elevation, colorize, the elevation profile and every export then work on it), a copy is kept in this browser, and only then does the app delete its own. Asks whether to **append** or **replace** when geodata is already shown, the same as a file import
+- **Delete recording** (🗑) — throws the recording away without taking it; shown only when there is one and nothing is recording
+- **Recording settings** (⚙) — time between fixes, minimum distance between fixes, an accuracy limit for discarding poor fixes, and the accuracy/battery trade-off (all applied by the app when a recording starts), plus: after what gap a new segment begins, whether the position marker follows the recorded fixes instead of the browser watching GPS a second time, and whether to keep the screen on
+- a summary — distance and elapsed time, with a dropdown for climb, current and average speed, accuracy, point and segment counts, and the time of the last fix
+
+The recording is also shown as a red line on the map with its newest fix marked; clicking either opens the tool.
 
 ### Offline maps
 

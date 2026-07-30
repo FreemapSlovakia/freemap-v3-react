@@ -27,6 +27,12 @@ export interface ToolDefinition {
    * gates. Absent means always available.
    */
   available?: (state: RootState) => boolean;
+  /**
+   * Marks the tool as not finished yet: the menu item and the tool's own title
+   * carry `ExperimentalFunction`'s flask, so the user knows what they are using
+   * before something surprises them.
+   */
+  experimental?: true;
 }
 
 /**
@@ -149,5 +155,6 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <FaCircle />,
     msgKey: 'gpsRecorder',
     available: gpsRecorderAvailableSelector,
+    experimental: true,
   },
 ];

@@ -5,6 +5,7 @@ import {
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { Emoji } from '@shared/components/Emoji.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   documentMenuItemProps,
@@ -113,7 +114,7 @@ export function MainMenu(): ReactElement {
       {toolDefinitions
         .filter(({ draw, tool }) => !draw && isToolAvailable(unavailable, tool))
         .map(
-          ({ tool: newTool, icon, msgKey, kbd }) =>
+          ({ tool: newTool, icon, msgKey, kbd, experimental }) =>
             newTool && (
               <Dropdown.Item
                 href={`#tools=${newTool}`}
@@ -122,6 +123,11 @@ export function MainMenu(): ReactElement {
                 active={tools.includes(newTool)}
               >
                 {icon} {m?.tools[msgKey]}{' '}
+                {experimental && (
+                  <>
+                    <ExperimentalFunction />{' '}
+                  </>
+                )}
                 {kbd && (
                   <>
                     <kbd>g</kbd>{' '}

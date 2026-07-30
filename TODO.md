@@ -315,9 +315,6 @@ There is deliberately no pause: for the track it is the same event as a stop, an
 what it adds — a Resume action in the notification, a restart Android cannot
 refuse — belongs to the recorder.
 
-- [ ] **Give it a role of its own.** It rides on `layerPreview` for want of a
-      better fit; a `gpsRecorder` (or a general "beta features") role would say
-      what it means.
 - [ ] **A landing page for the APK.** `RECORDER_DOWNLOAD_URL` points straight at
       the APK, so the install fallback drops the user into a bare download with
       no explanation of the "install unknown apps" permission they will need.
@@ -352,8 +349,9 @@ refuse — belongs to the recorder.
       which now covers a finished recording too. Consider making the wording say
       what the copy actually is — one `persist()`-ed copy in one browser — since
       the reload it survives may read as "saved".
-- [ ] **Unflag it.** Drop the role gate, keep the platform gate, and add the tool
-      to the `src/static/llms.txt` menu/tools list.
+- [ ] **Drop the experimental flask** once the tool has been used in anger for a
+      while: `experimental: true` on its `toolDefinitions` entry is all that marks
+      it now, the role gate having gone.
 
 ## Offline maps (`src/features/cachedMaps/`)
 

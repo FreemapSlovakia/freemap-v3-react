@@ -1,6 +1,21 @@
 import type { RecorderPoint } from './protocol.js';
 
 /**
+ * Whether `point` begins a new segment after `previous`. Shared with the
+ * statistics, which fold over the flat track and have to break it the same way —
+ * two rules that disagreed would put the distance and the drawn line at odds.
+ */
+export function startsNewSegment(
+  previous: RecorderPoint,
+  point: RecorderPoint,
+  gapMs: number,
+): boolean {
+  return (
+    point.seg !== previous.seg || (gapMs > 0 && point.ts - previous.ts > gapMs)
+  );
+}
+
+/**
  * Splits a flat, `seq`-ordered track into the segments it should be drawn and
  * exported as, so a restart or a long silence doesn't become a straight line
  * across the break.
@@ -20,21 +35,6 @@ import type { RecorderPoint } from './protocol.js';
  *   rather than a fact about the recording: a long stop inside one segment shows
  *   as a break because a straight line across it would be a lie. `0` disables it.
  */
-/**
- * Whether `point` begins a new segment after `previous`. Shared with the
- * statistics, which fold over the flat track and have to break it the same way —
- * two rules that disagreed would put the distance and the drawn line at odds.
- */
-export function startsNewSegment(
-  previous: RecorderPoint,
-  point: RecorderPoint,
-  gapMs: number,
-): boolean {
-  return (
-    point.seg !== previous.seg || (gapMs > 0 && point.ts - previous.ts > gapMs)
-  );
-}
-
 export function splitPointsIntoSegments(
   points: readonly RecorderPoint[],
   gapMs: number,
