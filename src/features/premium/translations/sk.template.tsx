@@ -54,6 +54,9 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
       Máte prémiový prístup do <b>{date}</b>.
     </>
   ),
+  youArePremiumRenews: (
+    <>Máte prémiový prístup. Predplatné sa obnovuje automaticky.</>
+  ),
   premiumOnly: 'Dostupné len s prémiovým prístupom.',
   noPremium: 'Nemáte prémiový prístup.',
   clickToActivate: 'Kliknutím aktivujete.',

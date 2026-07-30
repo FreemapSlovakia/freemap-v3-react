@@ -24,6 +24,9 @@ const en: PurchasesMessages = {
   noPurchases: 'No purchases',
   premium: 'Premium',
   credits: (amount) => <>Credits ({amount})</>,
+  managePayments: 'Manage payments',
+  managePaymentsHint:
+    'Opens the customer portal of Polar, our payment provider, where you can cancel your subscription, change your payment method and download invoices. It only covers what was paid through Polar, not through Rovas.',
 };
 
 export default en;

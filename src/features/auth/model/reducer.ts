@@ -29,7 +29,7 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         authToken: action.payload.authToken,
         roles: action.payload.roles,
         premiumExpiration: action.payload.premiumExpiration,
-        premiumSubscription: action.payload.premiumSubscription,
+        premiumSubscriptionStatus: action.payload.premiumSubscriptionStatus,
         authProviders: action.payload.authProviders,
         credits: action.payload.credits,
         coordinates: action.payload.coordinates,

@@ -13,7 +13,12 @@ import { Alert, Button, ButtonGroup, Dropdown, Modal } from 'react-bootstrap';
 import { FaGem, FaRegGem, FaStopwatch, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useDtmCountryNames } from '../hooks/useDtmCountryNames.js';
-import { canSwitchToSubscription, isPremium } from '../premium.js';
+import {
+  canSwitchToSubscription,
+  hasSubscription,
+  isPremium,
+  subscriptionAutoRenews,
+} from '../premium.js';
 import { usePremiumMessages } from '../translations/usePremiumMessages.js';
 
 type Props = { show: boolean };
@@ -33,7 +38,11 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
   // the backend, and another one-time year or a chrons payment would only pay
   // ahead for what renews by itself. They get their status and a way out.
   const subscribed = useAppSelector((state) =>
-    Boolean(state.auth.user?.premiumSubscription),
+    hasSubscription(state.auth.user),
+  );
+
+  const autoRenews = useAppSelector((state) =>
+    subscriptionAutoRenews(state.auth.user),
   );
 
   // Someone holding a one-time year is told to switch rather than to buy; the
@@ -76,7 +85,9 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
 
         {premiumExpiration && !switching ? (
           <Alert variant="info" className="mt-3 mb-0">
-            {prm?.youArePremium(dateFormat.format(premiumExpiration))}
+            {autoRenews
+              ? prm?.youArePremiumRenews
+              : prm?.youArePremium(dateFormat.format(premiumExpiration))}
           </Alert>
         ) : (
           <Alert variant="warning" className="mt-3 mb-0">
