@@ -61,13 +61,12 @@ const en: GpsRecorderMessages = {
     battery:
       'The recorder is subject to battery optimization, so Android may stop it.',
     oem: ({ vendor }) =>
-      `${vendor} devices need autostart or battery settings changed by hand, ` +
-      `or the recorder is stopped in the background.`,
+      `${vendor} devices restrict background apps beyond Android's own rules, ` +
+      `and the recorder's step for that is not confirmed done.`,
     open: 'Open the recorder',
   },
   errors: {
-    unreachable:
-      'The recorder did not answer. Make sure it is installed and running.',
+    unreachable: 'The recorder did not answer — it may not be running.',
     lnaDenied:
       'The browser refused access to the local network, so the live view is ' +
       'unavailable. The recording itself is unaffected.',
@@ -113,12 +112,10 @@ const en: GpsRecorderMessages = {
     splitGapHint:
       'A break longer than this is drawn and exported as a gap instead of a ' +
       'straight line across it.',
-    feedLocation: 'Show my position from the recording',
+    feedLocation: 'Use the recording for “Locate me”',
     feedLocationHint:
-      'While recording, the position marker follows the recorded fixes instead ' +
-      'of the browser watching the GPS a second time. Turn this off for a ' +
-      'smoother marker when recording at long intervals — at the cost of the ' +
-      'battery the interval was meant to save.',
+      'While recording, “Locate me” shows the recorded fixes instead of the ' +
+      'browser tracking GPS separately.',
     keepScreenAwake: 'Keep the screen on while recording',
   },
 };

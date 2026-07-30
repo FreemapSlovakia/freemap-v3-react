@@ -3,24 +3,36 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { CircleMarker, Polyline } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { useRecorderLocationFeed } from '../hooks/useRecorderLocationFeed.js';
+import { useRecorderWakeLock } from '../hooks/useRecorderWakeLock.js';
 import {
   selectLatestRecorderPoint,
   selectRecorderSegments,
 } from '../model/selectors.js';
 
 /**
- * The live track: one polyline per segment, so a pause or a restart shows as a
- * break rather than a straight line across it, with the newest fix marked as its
- * head. The track outlives the tool being closed — the points stay in the store —
- * so clicking it opens the tool again, as clicking a loaded track opens the
- * import tool.
+ * The recording's presence on this page: the live track, and the two things that
+ * follow from a recording being in progress at all — the position feed and the
+ * screen wake lock.
+ *
+ * Mounted by `Results` whenever there are fixes, so none of it depends on the
+ * recorder's toolbar being open. A recording carries on whichever toolbar the user
+ * has up, and it used to stop dead when this one was closed.
+ *
+ * One polyline per segment, so a pause or a restart shows as a break rather than a
+ * straight line across it, with the newest fix marked as its head. Clicking either
+ * opens the tool again, as clicking a loaded track opens the import tool.
  *
  * The head marks where the recording has reached, which is not the same claim as
- * where the user is: the position marker is the app's own, fed from these fixes
- * by `useRecorderLocationFeed` and shown only when the user asked to be located.
+ * where the user is: the position marker is the app's own, fed from these fixes by
+ * `useRecorderLocationFeed` and shown only when the user asked to be located.
  */
 export default function GpsRecorderResult(): ReactElement | null {
   const dispatch = useDispatch();
+
+  useRecorderLocationFeed();
+
+  useRecorderWakeLock();
 
   const segments = useAppSelector(selectRecorderSegments);
 

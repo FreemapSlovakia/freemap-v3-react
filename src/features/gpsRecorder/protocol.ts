@@ -30,17 +30,32 @@ export const MIN_RECORDER_VERSION_CODE = 8;
 export const RECORDER_DOWNLOAD_URL =
   'https://download.freemap.sk/freemap-gps-recorder/freemap-gps-recorder.apk';
 
+function intentUrl(authority: string): string {
+  return (
+    `intent://${authority}?port=${new URL(RECORDER_ORIGIN).port}` +
+    '#Intent;scheme=freemap-gps-recorder;' +
+    `S.browser_fallback_url=${encodeURIComponent(RECORDER_DOWNLOAD_URL)};end`
+  );
+}
+
 /**
- * Launches the recorder app. The `start` authority is what makes it begin
- * recording and hand focus straight back — any other authority merely opens
- * it. `port` is echoed back as `portEcho` in `/status`, so the page can confirm
- * both ends agree on the port. Without the app installed, Android follows
- * `browser_fallback_url` to the download page.
+ * Launches the recorder app **and starts recording**: the `start` authority is
+ * what makes it begin, and hand focus straight back.
+ *
+ * `port` is echoed back as `portEcho` in `/status`, so the page can confirm both
+ * ends agree on the port. Without the app installed, Android follows
+ * `browser_fallback_url` to the download page — which is why this doubles as the
+ * install prompt.
  */
-export const RECORDER_INTENT_URL =
-  `intent://start?port=${new URL(RECORDER_ORIGIN).port}` +
-  '#Intent;scheme=freemap-gps-recorder;' +
-  `S.browser_fallback_url=${encodeURIComponent(RECORDER_DOWNLOAD_URL)};end`;
+export const RECORDER_INTENT_URL = intentUrl('start');
+
+/**
+ * Launches the recorder app and nothing more — any authority other than `start`
+ * merely opens it. Its process is what serves the HTTP API, so this is how a page
+ * revives a recorder that was killed or swiped away, without also deciding on the
+ * user's behalf that a recording should begin.
+ */
+export const RECORDER_OPEN_INTENT_URL = intentUrl('open');
 
 /** One recorded fix, decoded out of its row. */
 export interface RecorderPoint {

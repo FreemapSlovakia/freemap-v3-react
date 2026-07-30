@@ -52,13 +52,12 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     battery:
       'Zaznamenávač podlieha optimalizácii batérie, takže ho Android môže zastaviť.',
     oem: ({ vendor }) =>
-      `Na zariadeniach ${vendor} treba ručne zmeniť nastavenia automatického ` +
-      `spúšťania alebo batérie, inak sa zaznamenávač na pozadí zastaví.`,
+      `Zariadenia ${vendor} obmedzujú aplikácie na pozadí nad rámec pravidiel ` +
+      `Androidu a príslušný krok v zaznamenávači nie je potvrdený.`,
     open: 'Otvoriť zaznamenávač',
   },
   errors: {
-    unreachable:
-      'Zaznamenávač neodpovedal. Skontrolujte, či je nainštalovaný a spustený.',
+    unreachable: 'Zaznamenávač neodpovedal — možno nie je spustený.',
     lnaDenied:
       'Prehliadač odmietol prístup k lokálnej sieti, takže živý náhľad nie je ' +
       'k dispozícii. Samotné nahrávanie to neovplyvní.',
@@ -104,12 +103,10 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     splitGapHint:
       'Prestávka dlhšia ako táto sa vykreslí a exportuje ako medzera, nie ako ' +
       'priama čiara cez ňu.',
-    feedLocation: 'Zobrazovať moju polohu zo záznamu',
+    feedLocation: 'Použiť záznam pre „Kde som?“',
     feedLocationHint:
-      'Počas nahrávania sa značka polohy riadi zaznamenanými bodmi namiesto ' +
-      'toho, aby prehliadač sledoval GPS druhýkrát. Vypnite to, ak chcete ' +
-      'plynulejšiu značku pri nahrávaní s dlhým intervalom — za cenu batérie, ' +
-      'ktorú mal ten interval ušetriť.',
+      'Počas nahrávania „Kde som?“ zobrazuje zaznamenané body namiesto toho, ' +
+      'aby prehliadač sledoval GPS samostatne.',
     keepScreenAwake: 'Nechať obrazovku zapnutú počas nahrávania',
   },
 };

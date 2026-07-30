@@ -1,4 +1,8 @@
-import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
+import {
+  type ToastAction,
+  toastsAdd,
+  toastsRemove,
+} from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Leaves } from '@shared/types/common.js';
 import { useEffect } from 'react';
@@ -7,11 +11,20 @@ import { gpsRecorderSync } from '../model/actions.js';
 import {
   RECORDER_DOWNLOAD_URL,
   RECORDER_INTENT_URL,
+  RECORDER_OPEN_INTENT_URL,
   type RecorderFailure,
 } from '../protocol.js';
 import type { GpsRecorderMessages } from '../translations/GpsRecorderMessages.js';
 import { loadGpsRecorderMessages } from '../translations/loadGpsRecorderMessages.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
+
+/**
+ * Causes that mean something is broken, as opposed to a state the user can do
+ * something about. A recorder that isn't running, a permission not granted, a
+ * refusal that protected the recording — none of those are errors, and dressing
+ * them in red says the app has failed when it has merely reported.
+ */
+const BROKEN: ReadonlySet<string> = new Set(['http', 'protocol', 'unknown']);
 
 const ERROR_KEYS: Record<
   RecorderFailure | 'unknown',
@@ -55,30 +68,69 @@ export function useRecorderNotices(): void {
     }
 
     // Every cause that *can* be resolved offers the one thing that resolves it:
-    // install or update the recorder, open it — because a start its own activity
-    // makes is one Android allows, and because that is where permissions are
-    // granted — or simply try again, which is also what re-prompts for Local
-    // Network Access. `not-persisted` is the exception: nothing the tool can offer
-    // changes the browser's mind about keeping its storage, and a button that
-    // cannot help is worse than none.
-    const action =
+    // open the recorder — because its process is what serves the API, and because
+    // that is where permissions are granted, and because a start its own activity
+    // makes is one Android allows — update it, or simply try again, which is also
+    // what re-prompts for Local Network Access. `not-persisted` and `not-stored`
+    // are the exceptions: nothing the tool can offer changes the browser's mind
+    // about its own storage, and a button that cannot help is worse than none.
+    //
+    // Nothing answering does *not* mean nothing is installed — a recorder that was
+    // killed or swiped away answers exactly the same way — so that case leads with
+    // opening it and offers the download second. The launch intent carries
+    // `browser_fallback_url`, so it lands on the download page anyway if the app
+    // really isn't there.
+    const actions: ToastAction[] =
       failure === 'unreachable'
-        ? { name: m.install, href: RECORDER_DOWNLOAD_URL }
+        ? [
+            {
+              name: m.setup.open,
+              href: RECORDER_OPEN_INTENT_URL,
+              variant: 'primary',
+            },
+            {
+              name: m.install,
+              href: RECORDER_DOWNLOAD_URL,
+              variant: 'secondary',
+            },
+          ]
         : failure === 'outdated'
-          ? { name: m.update, href: RECORDER_DOWNLOAD_URL }
-          : failure === 'setup-needed' || failure === 'needs-foreground'
-            ? { name: m.setup.open, href: RECORDER_INTENT_URL }
+          ? [
+              {
+                name: m.update,
+                href: RECORDER_DOWNLOAD_URL,
+                variant: 'primary',
+              },
+            ]
+          : // These two arise from a start the user asked for, so the `start`
+            // authority is right: the recorder resolves what is standing in the
+            // way on its own screen and then begins the recording that was
+            // wanted, rather than leaving the user to press Record again.
+            failure === 'setup-needed' || failure === 'needs-foreground'
+            ? [
+                {
+                  name: m.setup.open,
+                  href: RECORDER_INTENT_URL,
+                  variant: 'primary',
+                },
+              ]
             : failure === 'not-persisted' || failure === 'not-stored'
-              ? null
-              : { name: m.connect, action: gpsRecorderSync() };
+              ? []
+              : [
+                  {
+                    name: m.connect,
+                    action: gpsRecorderSync(),
+                    variant: 'primary',
+                  },
+                ];
 
     dispatch(
       toastsAdd({
         id: 'gpsRecorder.failure',
-        style: 'danger',
+        style: BROKEN.has(failure) ? 'danger' : 'warning',
         messageKey: ERROR_KEYS[failure],
         messageLoader: loadGpsRecorderMessages,
-        actions: action ? [{ ...action, variant: 'primary' }] : [],
+        actions,
         // Gone the moment the recorder answers again, without the user having to
         // dismiss a warning about something that has already fixed itself.
         statePredicate: (state) => state.gpsRecorder.error === null,
@@ -154,8 +206,17 @@ export function useRecorderNotices(): void {
         messageKey: 'setup.summary',
         messageParams: { items },
         messageLoader: loadGpsRecorderMessages,
+        // The `open` authority, not `start`: this is the checklist on the
+        // recorder's own screen, and the user came to read it. A `start` link
+        // would find `canRecord` already true — none of these items block
+        // recording — begin a recording nobody asked for, and hand focus back
+        // before the screen had been seen at all.
         actions: [
-          { name: m.setup.open, href: RECORDER_INTENT_URL, variant: 'primary' },
+          {
+            name: m.setup.open,
+            href: RECORDER_OPEN_INTENT_URL,
+            variant: 'primary',
+          },
         ],
         statePredicate: (state) =>
           state.gpsRecorder.status?.setupComplete === true,

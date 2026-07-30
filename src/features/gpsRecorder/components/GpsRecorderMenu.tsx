@@ -8,11 +8,9 @@ import { type ReactElement, useCallback, useEffect } from 'react';
 import { Button, Spinner } from 'react-bootstrap';
 import { FaCircle, FaCog, FaPause, FaStop, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { useRecorderLocationFeed } from '../hooks/useRecorderLocationFeed.js';
 import { useRecorderNotices } from '../hooks/useRecorderNotices.js';
 import {
   gpsRecorderClear,
-  gpsRecorderDisconnect,
   gpsRecorderPause,
   gpsRecorderStart,
   gpsRecorderStop,
@@ -31,8 +29,6 @@ export default function GpsRecorderMenu(): ReactElement {
 
   const askMergeMode = useTrackMergeMode();
 
-  useRecorderLocationFeed();
-
   useRecorderNotices();
 
   const status = useAppSelector((state) => state.gpsRecorder.status);
@@ -47,10 +43,6 @@ export default function GpsRecorderMenu(): ReactElement {
     selectRecorderSegments(state).some((segment) => segment.length >= 2),
   );
 
-  const keepScreenAwake = useAppSelector(
-    (state) => state.gpsRecorderSettings.keepScreenAwake,
-  );
-
   const recording = status?.recording ?? false;
 
   // The spinner covers any wait, but only a command the user gave blocks the
@@ -61,62 +53,21 @@ export default function GpsRecorderMenu(): ReactElement {
     pending || connection === 'connecting' || connection === 'syncing';
 
   // Connecting on open rather than behind a button: a recording begun on an
-  // earlier page load, or a stream the browser gave up on, would otherwise
-  // leave the panel blank until something was pressed. The Local Network Access
-  // prompt still needs a gesture, so the panel offers one when this fails.
+  // earlier page load, or a stream the browser gave up on, would otherwise leave
+  // the panel blank until something was pressed. The Local Network Access prompt
+  // still needs a gesture, so the panel offers one when this fails.
   //
-  // There is no polling: the stream pushes a status whenever the recorder's state
-  // changes. A frozen background page hears none of them, so returning to the
-  // foreground re-syncs — and a stream the browser gave up on schedules its own
-  // retry from `stream.ts`.
+  // Opening the tool is all this does. The connection itself belongs to
+  // `attachRecorderFollow`, which keeps it for as long as there is a recording to
+  // follow — closing this toolbar says nothing about whether the phone is still
+  // recording, and used to stop the track dead.
+  //
+  // There is no polling either: the stream pushes a status whenever the recorder's
+  // state changes, returning to the foreground catches up on what a frozen tab
+  // missed, and a stream the browser gave up on schedules its own retry.
   useEffect(() => {
     dispatch(gpsRecorderSync());
-
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') {
-        dispatch(gpsRecorderSync());
-      }
-    };
-
-    document.addEventListener('visibilitychange', onVisible);
-
-    return () => {
-      document.removeEventListener('visibilitychange', onVisible);
-
-      dispatch(gpsRecorderDisconnect());
-    };
   }, [dispatch]);
-
-  // Held only while there is something to watch, so closing the tool or
-  // stopping the recording gives the screen back to the platform's own timeout.
-  useEffect(() => {
-    if (!keepScreenAwake || !recording || !('wakeLock' in navigator)) {
-      return;
-    }
-
-    let sentinel: WakeLockSentinel | null = null;
-
-    let released = false;
-
-    navigator.wakeLock
-      .request('screen')
-      .then((s) => {
-        if (released) {
-          void s.release();
-        } else {
-          sentinel = s;
-        }
-      })
-      // Denied (or the tab lost visibility mid-request); the recording is
-      // unaffected, so there is nothing to report.
-      .catch(() => undefined);
-
-    return () => {
-      released = true;
-
-      void sentinel?.release();
-    };
-  }, [keepScreenAwake, recording]);
 
   const handleStop = useCallback(async () => {
     const mode = await askMergeMode();
@@ -213,23 +164,6 @@ export default function GpsRecorderMenu(): ReactElement {
             {...props}
           >
             <FaCog />
-          </Button>
-        )}
-      </LongPressTooltip>
-
-      {/* Last of the actions, as in every other tool that can delete what it
-            made — the collapse and close buttons follow from `ToolMenu`. */}
-      <LongPressTooltip label={m?.delete}>
-        {({ props }) => (
-          <Button
-            className="ms-1"
-            variant="danger"
-            // The recorder refuses to delete mid-recording, so don't offer it.
-            disabled={recording || (status?.count ?? 0) === 0}
-            onClick={handleClear}
-            {...props}
-          >
-            <FaTrash />
           </Button>
         )}
       </LongPressTooltip>

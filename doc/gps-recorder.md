@@ -90,10 +90,10 @@ recorder's own screen resumes. `stream.ts` reconciles it through the
 same `applyStatus` a polled status goes through, so a cleared `generation` or a
 stopped recording lands the moment it happens.
 
-**So nothing polls `/status`.** The tool syncs when it mounts, when the page
-returns to the foreground — a frozen page hears no events, so that catch-up is
-what fills the gap — and when `stream.ts` revives a stream the browser gave up
-on. A timer would only ask again for what the stream already said.
+**So nothing polls `/status`.** A sync runs at boot, when the page returns to the
+foreground — a frozen page hears no events, so that catch-up is what fills the gap
+— when the tool is opened, and when `stream.ts` revives a stream the browser gave
+up on. A timer would only ask again for what the stream already said.
 
 **`POST /stop` is a pause, so that is what the button says.** The recorder keeps
 its track across a stop and opens a new segment on the next start, so stopping it
@@ -111,9 +111,18 @@ the recorder's own verdict and the only gate that blocks a start;
 **`setupComplete`** covers recommended-but-optional steps — a vendor autostart
 or battery policy (`oem`), say — and belongs in a warning, not a refusal.
 `useRecorderNotices` renders exactly that split, and renders it as **toasts** —
-where this app says everything else of the kind: a `canRecord` failure is a
-`danger` toast, an incomplete `setupComplete` a `warning` one listing what is
-outstanding. Each carries the one action that resolves it, and each dismisses
+where this app says everything else of the kind. Both are `warning`s: a recorder
+that isn't running, a permission not granted, a refusal that protected the
+recording are states to act on rather than failures of the app. Only `http`,
+`protocol` and `unknown` — the ones that mean something is genuinely broken — are
+`danger`.
+
+**A status nobody could reach is dropped.** `unreachable` and `lna-denied` clear
+`gpsRecorder.status`, because everything read from it is otherwise a claim about
+the past: the readout would go on saying `Stopped` for an app that has been
+killed, and the setup warning would keep advising about a recording that cannot
+start. Whether the recorder is set up is its own news to give, and it is not
+giving any. Each carries the one action that resolves it, and each dismisses
 itself through a `statePredicate` once the condition is gone, so nothing has to
 be closed by hand. The technical detail stays in `gpsRecorder.error` for the
 devtools instead of being printed over the map.
@@ -231,19 +240,57 @@ business and not this app's.
   `navigator.permissions.query({ name: 'local-network-access' })`.
 - **`setup-needed`** — reachable but reporting `missingPermissions`; link back
   into the app via the intent.
-- **`unreachable`** — offer install/download.
+- **`unreachable`** — nothing answered, which does *not* mean nothing is
+  installed: a recorder that was killed or swiped off the task list answers
+  exactly the same way, and telling that user to install what they already have
+  is both wrong and no help. The toast leads with **Open the recorder**
+  (`RECORDER_OPEN_INTENT_URL` — the `open` authority launches the app, and its
+  process is what serves the API, without deciding that a recording should begin)
+  and offers the download second. The intent carries `browser_fallback_url`, so it
+  lands on the download page anyway when the app really isn't there.
 
 `needs-foreground` is the fourth, and it is handled before the user sees it: the
 start flow retries through the intent by itself, and the panel only reports it if
 that did not end in a recording either.
 
+**Which intent a link uses is not a detail.** `RECORDER_INTENT_URL` (`start`) is
+for the cases that came from the user asking to record — `setup-needed` and
+`needs-foreground` — where the recorder resolves what is in the way and then
+begins the recording that was wanted. Everything else uses
+`RECORDER_OPEN_INTENT_URL` (`open`): an unreachable recorder, and the setup
+checklist, which the user opened to *read*. A `start` link there finds
+`canRecord` already true — none of the `setupComplete` items block recording —
+starts a recording nobody asked for, and hands focus back before the screen has
+been seen, which shows up as the page flickering and nothing else.
+
 ## Track sync
 
-`syncHandler` runs when the tool mounts, on `visibilitychange` back to `visible`,
-after a stream the browser gave up on, and at the end of the start flow — never on
-a timer, because the stream says when something changed. Its lifetime lives in
-`GpsRecorderMenu`'s effect rather than in the stream module, so it keeps running
-when there is no stream, which is exactly when it matters.
+`syncHandler` runs at boot, on `visibilitychange` back to `visible`, when the tool
+is opened, after a stream the browser gave up on, and at the end of the start flow
+— never on a timer, because the stream says when something changed.
+
+**The connection does not belong to the toolbar.** A recording carries on whichever
+toolbar the user has open, and on the phone even while the browser is closed — so
+[`follow.ts`](../src/features/gpsRecorder/follow.ts) owns it instead:
+`attachRecorderFollow` is installed at boot next to the app's other attach helpers,
+and syncs whenever `isRecorderFollowed()` (or the tool being open) says there is
+something to follow. `applyStatus` sets that flag from the recorder's own answer —
+recording, or holding points — and it lives in `localStorage` rather than the store,
+because the question outlives the page. Closing the toolbar used to dispatch
+`gpsRecorderDisconnect` and stop the track dead; that action now means "give up on
+the recorder", and only the user's own actions reach it.
+
+Syncs from the follow path are **quiet**: nobody asked for them, so a recorder that
+has since been killed or uninstalled must not greet the user with an error. The
+failure is swallowed, following stops, and opening the tool is what tries again.
+
+Two more things follow the recording rather than the toolbar, and moved into
+`GpsRecorderResult` — which `Results` mounts whenever there are fixes: the position
+feed (`useRecorderLocationFeed`) and the screen wake lock
+(`useRecorderWakeLock`). Leaving them in the menu meant closing it handed "Locate
+me" back to the browser's own GPS watch mid-ride, which is the second watch the
+feed exists to avoid. What stays in the menu is what belongs to the tool: its
+buttons, and the failure and setup toasts.
 
 1. `GET /status` — always, because it is what carries `recording`, `generation`
    and the setup flags.
@@ -457,8 +504,10 @@ Where the recording has *reached* is a separate claim from where the user is, so
 locating — and the track and its head open the tool when clicked, as a loaded
 track opens the import tool.
 
-`feedLocation` is the escape hatch: off, the browser is always the source, which
-tracks a sparse recording more smoothly at the cost of the second watch. The feed
+`feedLocation` is the escape hatch, and it is named after what the user sees: it
+decides what answers **Locate me** while recording. Off, the browser is always the
+source, which follows a sparse recording more smoothly at the cost of the second
+watch. The feed
 lives with the tool rather than with the map layer, because fixes reach the page
 only while the tool holds the stream open.
 

@@ -56,8 +56,15 @@ export const gpsRecorderStop = createAction<'replace' | 'append'>(
  * tool opens, whenever the page returns to the foreground, and when a stream the
  * browser gave up on is revived — none of which needs a user gesture once Local
  * Network Access has been granted.
+ *
+ * `quiet` is for the syncs nobody asked for: following a recording at boot or on
+ * returning to the page. A recorder that has since been killed or uninstalled
+ * should not greet the user with an error they did nothing to provoke, so the
+ * failure is swallowed and the following stops instead.
  */
-export const gpsRecorderSync = createAction('GPS_RECORDER_SYNC');
+export const gpsRecorderSync = createAction<{ quiet?: boolean } | undefined>(
+  'GPS_RECORDER_SYNC',
+);
 
 /**
  * The stream pushed a status of its own accord — on connect, and thereafter

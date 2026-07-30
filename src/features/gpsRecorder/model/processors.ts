@@ -36,7 +36,7 @@ export const gpsRecorderStopProcessor: Processor<typeof gpsRecorderStop> = {
   handle: async (...params) => (await handlers()).stopHandler(...params),
 };
 
-export const gpsRecorderSyncProcessor: Processor = {
+export const gpsRecorderSyncProcessor: Processor<typeof gpsRecorderSync> = {
   actionCreator: gpsRecorderSync,
   id: 'gpsRecorder.sync',
   handle: async (...params) => (await handlers()).syncHandler(...params),

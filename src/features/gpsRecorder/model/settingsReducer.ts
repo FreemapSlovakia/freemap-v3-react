@@ -18,10 +18,10 @@ export interface GpsRecorderSettingsState extends RecorderConfig {
    */
   splitGapS: number;
   /**
-   * Feeds the recorder's fixes to the map's own position marker while
-   * recording, instead of the browser watching the GPS a second time. Off means
-   * the browser is always the source, which tracks a sparse recording more
-   * smoothly at the cost of running its own high-accuracy watch alongside.
+   * What answers "Locate me" while recording: the recorded fixes, or the
+   * browser's own GPS watch. Off means the browser is always the source, which
+   * follows a sparse recording more smoothly but watches the GPS a second time
+   * alongside the recorder.
    */
   feedLocation: boolean;
   /** Holds a screen wake lock while recording, so a long ride stays visible. */

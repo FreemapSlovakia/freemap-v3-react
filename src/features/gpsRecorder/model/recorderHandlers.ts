@@ -9,6 +9,7 @@ import {
 import { storeTrackDurably } from '@features/trackViewer/trackStore.js';
 import type { FeatureCollection } from 'geojson';
 import type { Dispatch } from 'redux';
+import { setRecorderFollowed } from '../follow.js';
 import {
   missingPermissions,
   RECORDER_INTENT_URL,
@@ -42,6 +43,7 @@ import {
   gpsRecorderSetPending,
   gpsRecorderSetStatus,
   type gpsRecorderStop,
+  type gpsRecorderSync,
   gpsRecorderTrackCleared,
 } from './actions.js';
 import { selectRecorderSegments } from './selectors.js';
@@ -55,6 +57,26 @@ function reportFailure(dispatch: Dispatch, err: unknown): void {
         : { failure: 'unknown', detail: truncateDetail(String(err)) },
     ),
   );
+
+  forgetUnreachableStatus(dispatch, err);
+}
+
+/**
+ * Drops the last status when nothing answered at all.
+ *
+ * It described a recorder this page can no longer see, and everything read from
+ * it is then a claim about the past: the readout would say `Stopped` for an app
+ * that has been killed, and the setup warning would go on advising about a
+ * recording that cannot start. Whether it is set up is the recorder's news to
+ * give, and it is not giving any.
+ */
+function forgetUnreachableStatus(dispatch: Dispatch, err: unknown): void {
+  if (
+    err instanceof RecorderError &&
+    (err.failure === 'unreachable' || err.failure === 'lna-denied')
+  ) {
+    dispatch(gpsRecorderSetStatus(null));
+  }
 }
 
 function assertReady(status: RecorderStatus): void {
@@ -103,6 +125,10 @@ async function applyStatus(
 
   dispatch(gpsRecorderSetStatus(status));
 
+  // Remembered for the next page load: a recording carries on in the phone's own
+  // app while the browser is closed, and nothing else would know to go looking.
+  setRecorderFollowed(status.recording || status.count > 0);
+
   // A cold start holds no points, so the whole track is refetched: the recorder
   // owns it, and the cursor only says what this page already has.
   const fromZero = cleared || held.points === 0;
@@ -129,7 +155,11 @@ async function applyStatus(
  * been given up on, and at the end of the start flow. Never on a timer: the
  * stream pushes a status whenever the recorder's state changes.
  */
-export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
+export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = async ({
+  dispatch,
+  getState,
+  action,
+}) => {
   // Read before the fresh status lands, so the generation below is the one this
   // page's points were fetched under.
   const { points, cursor, generation } = getState().gpsRecorder;
@@ -157,7 +187,17 @@ export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
     // only reported — the browser keeps the stream and its retries alive. The
     // connection goes back to whatever the stream is actually doing, so a `syncing`
     // that never completed doesn't spin forever with the transport disabled.
-    reportFailure(dispatch, err);
+    //
+    // A quiet sync is one nobody asked for, so it says nothing and stops
+    // following instead: the recorder has been killed, uninstalled, or is simply
+    // not there any more, and opening the tool is what tries again.
+    if (action.payload?.quiet) {
+      setRecorderFollowed(false);
+
+      forgetUnreachableStatus(dispatch, err);
+    } else {
+      reportFailure(dispatch, err);
+    }
 
     reportRecorderStreamState(dispatch);
 
@@ -316,9 +356,17 @@ export const pauseHandler: ProcessorHandler = async ({
   }
 };
 
-/** Detaches the live view. The recorder keeps recording and keeps its track. */
+/**
+ * Detaches the live view and stops following the recorder.
+ *
+ * Not dispatched when the toolbar closes: a recording carries on whichever
+ * toolbar is open, and the track should keep growing on the map. This is for
+ * giving up on the recorder entirely.
+ */
 export const disconnectHandler: ProcessorHandler = ({ dispatch }) => {
   closeRecorderStream();
+
+  setRecorderFollowed(false);
 
   dispatch(gpsRecorderSetConnection('idle'));
 };
@@ -350,6 +398,12 @@ export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
     reportFailure(dispatch, err);
   }
 };
+
+/**
+ * Detaches the live view and stops following — the tool being closed does not,
+ * because a recording carries on regardless of which toolbar is open. This is the
+ * user saying they are done with it.
+ */
 
 /**
  * Hands the recording to the track viewer, where it becomes an ordinary loaded
