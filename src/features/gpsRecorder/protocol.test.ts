@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  DEFAULT_POINT_FIELDS,
   decodePoints,
   missingPermissions,
   RecorderStatusSchema,
@@ -13,7 +12,6 @@ import {
 // in step with its implementation. Divergence here means the contract moved.
 const STATUS = {
   recording: false,
-  paused: false,
   lastSeq: 1919,
   count: 1919,
   generation: 0,
@@ -34,7 +32,7 @@ const STATUS = {
     'src',
     'seg',
   ],
-  version: { code: 7, name: '0.7' },
+  version: { code: 8, name: '0.8' },
   port: 8378,
   portEcho: null,
   permissions: { fine: true, background: true, notifications: true },
@@ -110,13 +108,12 @@ describe('RecorderStatusSchema', () => {
   it('parses what the recorder actually serves', () => {
     const status = RecorderStatusSchema.parse(STATUS);
 
-    expect(status.version.code).toBe(7);
+    expect(status.version.code).toBe(8);
     expect(status.count).toBe(1919);
     expect(status.generation).toBe(0);
     expect(status.canRecord).toBe(true);
     expect(status.setupComplete).toBe(false);
-    expect(status.paused).toBe(false);
-    expect(status.config?.priority).toBe('high');
+    expect(status.config.priority).toBe('high');
   });
 
   it('carries the point column order, for a stream attached without a page', () => {
@@ -125,10 +122,12 @@ describe('RecorderStatusSchema', () => {
     );
   });
 
-  it('accepts a recorder that reports no column order', () => {
+  it('rejects a status missing a field the recorder always sends', () => {
+    // There is one recorder version and no compatibility to keep, so an answer
+    // that isn't it is an error rather than something to work around.
     const { fields: _, ...withoutFields } = STATUS;
 
-    expect(RecorderStatusSchema.parse(withoutFields).fields).toBeUndefined();
+    expect(RecorderStatusSchema.safeParse(withoutFields).success).toBe(false);
   });
 
   it('accepts a device with no vendor quirk', () => {
@@ -139,7 +138,7 @@ describe('RecorderStatusSchema', () => {
       oem: { vendor: null, needed: false, acknowledged: false },
     });
 
-    expect(status.oem?.vendor).toBeNull();
+    expect(status.oem.vendor).toBeNull();
   });
 
   it('parses the error body a refused start returns', () => {
@@ -206,8 +205,8 @@ describe('decodePoints', () => {
   it('reads a cell that should be a number but is not as absent', () => {
     expect(
       decodePoints(
-        ['seq', 'ts', 'lat', 'lon', 'alt'],
-        [[7, 1785329624603, 48.5, 21.5, 'high']],
+        ['seq', 'ts', 'lat', 'lon', 'seg', 'alt'],
+        [[7, 1785329624603, 48.5, 21.5, 0, 'high']],
       )[0]?.alt,
     ).toBeNull();
   });
@@ -215,8 +214,8 @@ describe('decodePoints', () => {
   it('reads by the declared column order, not by position', () => {
     // A recorder that reorders or adds columns must still decode correctly.
     const points = decodePoints(
-      ['ts', 'lon', 'lat', 'seq'],
-      [[1785329624603, 21.5, 48.5, 7]],
+      ['ts', 'lon', 'seg', 'lat', 'seq'],
+      [[1785329624603, 21.5, 2, 48.5, 7]],
     );
 
     expect(points).toEqual([
@@ -225,45 +224,86 @@ describe('decodePoints', () => {
         ts: 1785329624603,
         lat: 48.5,
         lon: 21.5,
+        seg: 2,
         alt: null,
         acc: null,
         spd: null,
         brg: null,
-        seg: null,
       },
     ]);
   });
 
   it('drops a row that carries no position', () => {
     expect(
-      decodePoints(DEFAULT_POINT_FIELDS, [[1, 1785329624603, null, null]]),
+      decodePoints(TRACK_PAGE.fields, [[1, 1785329624603, null, null]]),
+    ).toEqual([]);
+  });
+
+  it('drops a row with no segment ordinal', () => {
+    // The recorder always sends one, so a row without it is not a fix this app
+    // can place in a segment.
+    expect(
+      decodePoints(
+        ['seq', 'ts', 'lat', 'lon'],
+        [[1, 1785329624603, 48.5, 21.5]],
+      ),
     ).toEqual([]);
   });
 });
 
 describe('stream payloads', () => {
+  // The stream sends bare rows, so a reader needs the order from `/status` or a
+  // `/track` page; this is that order.
+  const FIELDS = TRACK_PAGE.fields;
+
+  // The `/stream` example from API.md: a full row, exactly as `/track` encodes it.
   const single = [
-    551, 1785174196371, 48.7062102, 21.2367301, 279.4, 1.9, 0.4, 183.0,
+    551,
+    1785174196371,
+    48.7062102,
+    21.2367301,
+    279.4,
+    1.9,
+    0.4,
+    183.0,
+    237.3,
+    2.4,
+    0.3,
+    12.0,
+    9,
+    'fused',
+    3,
+  ];
+
+  const next = [
+    552,
+    1785174197380,
+    48.7062,
+    21.2367,
+    279.5,
+    1.8,
+    0.5,
+    181.0,
+    237.4,
+    2.4,
+    0.3,
+    12.0,
+    9,
+    'fused',
+    3,
   ];
 
   it('decodes the single bare row the stream sends', () => {
     const rows = streamPayloadToRows(RecorderStreamPayloadSchema.parse(single));
 
-    expect(decodePoints(DEFAULT_POINT_FIELDS, rows).map((p) => p.seq)).toEqual([
-      551,
-    ]);
+    expect(decodePoints(FIELDS, rows).map((p) => p.seq)).toEqual([551]);
   });
 
   it('also decodes a batch of rows', () => {
     const rows = streamPayloadToRows(
-      RecorderStreamPayloadSchema.parse([
-        single,
-        [552, 1785174197380, 48.7062, 21.2367],
-      ]),
+      RecorderStreamPayloadSchema.parse([single, next]),
     );
 
-    expect(decodePoints(DEFAULT_POINT_FIELDS, rows).map((p) => p.seq)).toEqual([
-      551, 552,
-    ]);
+    expect(decodePoints(FIELDS, rows).map((p) => p.seq)).toEqual([551, 552]);
   });
 });

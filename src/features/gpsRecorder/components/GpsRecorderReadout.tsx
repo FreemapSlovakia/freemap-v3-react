@@ -5,8 +5,10 @@ import clsx from 'clsx';
 import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaCircle } from 'react-icons/fa';
-import { selectRecorderSegments } from '../model/selectors.js';
-import { computeRecorderStats } from '../stats.js';
+import {
+  selectLatestRecorderPoint,
+  selectRecorderStats,
+} from '../model/selectors.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
 
 /** `h:mm:ss`, dropping the hours until there are any. */
@@ -50,11 +52,9 @@ export function GpsRecorderReadout(): ReactElement {
 
   const connection = useAppSelector((state) => state.gpsRecorder.connection);
 
-  const paused = useAppSelector((state) => state.gpsRecorder.paused);
+  const stats = useAppSelector(selectRecorderStats);
 
-  const segments = useAppSelector(selectRecorderSegments);
-
-  const stats = useMemo(() => computeRecorderStats(segments), [segments]);
+  const latest = useAppSelector(selectLatestRecorderPoint);
 
   const speedFormat = useMemo(
     () =>
@@ -83,15 +83,11 @@ export function GpsRecorderReadout(): ReactElement {
     [language],
   );
 
-  // Paused is checked first: the recorder keeps `recording` true across a pause,
-  // so it says which of the two live states this is.
-  const stateLabel = paused
-    ? m?.state.paused
-    : status?.recording
-      ? m?.state.recording
-      : status
-        ? m?.state.stopped
-        : m?.state.unknown;
+  const stateLabel = status?.recording
+    ? m?.state.recording
+    : status
+      ? m?.state.stopped
+      : m?.state.unknown;
 
   const connectionLabel =
     connection === 'live'
@@ -119,8 +115,6 @@ export function GpsRecorderReadout(): ReactElement {
       <span className="align-self-center ms-2 text-nowrap small">{state}</span>
     );
   }
-
-  const latest = segments.at(-1)?.at(-1);
 
   const rows: Row[] = [
     {

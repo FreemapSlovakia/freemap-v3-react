@@ -9,7 +9,7 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { gpsRecorderSetSettings } from '../model/actions.js';
@@ -38,16 +38,6 @@ export default function GpsRecorderSettingsModal({
   const dispatch = useDispatch();
 
   const saved = useAppSelector((state) => state.gpsRecorderSettings);
-
-  // A recorder that read the `POST /start` body reports back what it applied;
-  // one that ignored it reports nothing, which is the only way to tell. A
-  // recorder that hasn't answered at all says nothing either way, so it is not
-  // accused of ignoring anything.
-  const configurable = useAppSelector((state) => {
-    const status = state.gpsRecorder.status;
-
-    return status === null || status.config != null;
-  });
 
   const [draft, setDraft] = useState<GpsRecorderSettingsState>(saved);
 
@@ -86,12 +76,6 @@ export default function GpsRecorderSettingsModal({
           <p className="text-body-secondary small">
             {grm?.settingsModal.recorderIntro}
           </p>
-
-          {!configurable && (
-            <Alert variant="warning" className="py-2 small">
-              {grm?.settingsModal.recorderUnsupported}
-            </Alert>
-          )}
 
           <Form.Group className="mb-3">
             <Form.Label>{grm?.settingsModal.intervalMs}</Form.Label>
@@ -191,23 +175,17 @@ export default function GpsRecorderSettingsModal({
             <Form.Text>{grm?.settingsModal.splitGapHint}</Form.Text>
           </Form.Group>
 
-          <Form.Check
-            id="chkGpsRecorderAccuracyCircle"
-            type="checkbox"
-            label={grm?.settingsModal.showAccuracyCircle}
-            checked={draft.showAccuracyCircle}
-            onChange={(e) =>
-              set({ showAccuracyCircle: e.currentTarget.checked })
-            }
-          />
+          <Form.Group className="mb-3">
+            <Form.Check
+              id="chkGpsRecorderFeedLocation"
+              type="checkbox"
+              label={grm?.settingsModal.feedLocation}
+              checked={draft.feedLocation}
+              onChange={(e) => set({ feedLocation: e.currentTarget.checked })}
+            />
 
-          <Form.Check
-            id="chkGpsRecorderFollow"
-            type="checkbox"
-            label={grm?.settingsModal.followPosition}
-            checked={draft.followPosition}
-            onChange={(e) => set({ followPosition: e.currentTarget.checked })}
-          />
+            <Form.Text>{grm?.settingsModal.feedLocationHint}</Form.Text>
+          </Form.Group>
 
           <Form.Check
             id="chkGpsRecorderKeepAwake"

@@ -2,9 +2,8 @@ import type { GpsRecorderMessages } from './GpsRecorderMessages.js';
 
 const en: GpsRecorderMessages = {
   record: 'Record',
-  resume: 'Resume',
   pause: 'Pause',
-  stop: 'Stop',
+  stop: 'Finish',
   connect: 'Connect',
   install: 'Install the recorder',
   update: 'Update the recorder',
@@ -14,7 +13,6 @@ const en: GpsRecorderMessages = {
   details: 'Recording details',
   state: {
     recording: 'Recording',
-    paused: 'Paused',
     stopped: 'Stopped',
     unknown: 'Not connected',
   },
@@ -39,12 +37,23 @@ const en: GpsRecorderMessages = {
   deleteModal: {
     title: 'Delete the recording?',
     message:
-      'The recorder discards its whole track. This cannot be undone. Save the ' +
-      'recording to your tracks first if you want to keep it.',
+      'The whole recording goes — the recorder\u2019s copy and the one this ' +
+      'browser is holding. This cannot be undone. Save it to your tracks or ' +
+      'export it first if you want to keep it.',
     confirm: 'Delete',
   },
   setup: {
     title: 'The recorder may not survive a long recording',
+    summary: ({ items }) => (
+      <>
+        The recorder may not survive a long recording:
+        <ul className="mb-0 ps-4">
+          {items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </>
+    ),
     permissionFine: 'Precise location is not allowed.',
     permissionBackground:
       'Location in the background is not allowed, so recording stops when the ' +
@@ -67,8 +76,15 @@ const en: GpsRecorderMessages = {
     setupNeeded:
       'The recorder cannot record yet — open it and grant what it asks for.',
     recording: 'Stop the recording before deleting its track.',
+    notPersisted:
+      'This browser would not promise to keep its storage, so the recording was ' +
+      'left on the recorder. It is in your tracks — export or save it, then ' +
+      'delete the recording.',
+    needsForeground:
+      'Android would not let the recorder start from the background. Open it ' +
+      'and start there, or allow it to run without battery restrictions so it ' +
+      'can be started from here.',
     outdated: 'The recorder is too old for this version of the map.',
-    unsupported: 'This recorder does not offer that function.',
     http: 'The recorder answered with an error.',
     protocol: 'The recorder answered with something unexpected.',
     unknown: 'Talking to the recorder failed.',
@@ -79,8 +95,6 @@ const en: GpsRecorderMessages = {
     recorderIntro:
       'Applied by the recorder when a recording starts, so changing them does ' +
       'not affect a recording already running.',
-    recorderUnsupported:
-      'The installed recorder ignores these settings. Update it to use them.',
     intervalMs: 'Time between fixes (s)',
     minDistanceM: 'Minimum distance between fixes (m)',
     maxAccuracyM: 'Discard fixes less accurate than (m)',
@@ -95,8 +109,12 @@ const en: GpsRecorderMessages = {
     splitGapHint:
       'A break longer than this is drawn and exported as a gap instead of a ' +
       'straight line across it.',
-    showAccuracyCircle: 'Show the accuracy of the last fix',
-    followPosition: 'Keep the map on the last fix',
+    feedLocation: 'Show my position from the recording',
+    feedLocationHint:
+      'While recording, the position marker follows the recorded fixes instead ' +
+      'of the browser watching the GPS a second time. Turn this off for a ' +
+      'smoother marker when recording at long intervals — at the cost of the ' +
+      'battery the interval was meant to save.',
     keepScreenAwake: 'Keep the screen on while recording',
   },
 };

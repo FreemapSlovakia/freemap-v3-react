@@ -1,5 +1,6 @@
 import { setTool } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import {
   trackViewerSetData,
@@ -19,10 +20,9 @@ import {
   clearTrack,
   getStatus,
   getTrackSince,
-  pauseRecording,
-  resumeRecording,
   startRecording,
   stopRecording,
+  waitForRecording,
   waitForStatus,
 } from '../recorderClient.js';
 import {
@@ -32,14 +32,21 @@ import {
 } from '../stream.js';
 import { recorderSegmentsToFeatureCollection } from '../trackGeojson.js';
 import {
-  gpsRecorderAddBreak,
+  deleteRecorderTrack,
+  getRecorderTrack,
+  persistStorage,
+  putRecorderTrack,
+} from '../trackStore.js';
+import {
   gpsRecorderAddPoints,
   type gpsRecorderPushedStatus,
+  type gpsRecorderSave,
   gpsRecorderSetConnection,
   gpsRecorderSetError,
-  gpsRecorderSetPaused,
   gpsRecorderSetPending,
   gpsRecorderSetStatus,
+  gpsRecorderSetStored,
+  type gpsRecorderStop,
   gpsRecorderTrackCleared,
 } from './actions.js';
 import { selectRecorderSegments } from './selectors.js';
@@ -82,7 +89,7 @@ async function applyStatus(
   dispatch: Dispatch,
   status: RecorderStatus,
   held: { points: number; cursor: number; generation: number | null },
-): Promise<readonly string[] | undefined> {
+): Promise<readonly string[]> {
   // Checked wherever a status lands, not only on the way into a recording: a
   // recorder too old for these endpoints is told so as soon as the tool is
   // opened, with the update link the failure carries.
@@ -93,9 +100,7 @@ async function applyStatus(
   // what we hold is gone. Asking for everything after a stale cursor would leave
   // the deleted track on screen forever.
   const cleared =
-    held.generation !== null &&
-    status.generation != null &&
-    status.generation !== held.generation;
+    held.generation !== null && status.generation !== held.generation;
 
   if (cleared) {
     dispatch(gpsRecorderTrackCleared());
@@ -110,7 +115,7 @@ async function applyStatus(
   // `lastSeq` above the cursor means fixes are missing here — the page was
   // frozen in the background, or the stream is not attached at all. Both are
   // single comparisons against a status that has to be read anyway.
-  if (status.count > 0 && (fromZero || (status.lastSeq ?? 0) > held.cursor)) {
+  if (status.count > 0 && (fromZero || status.lastSeq > held.cursor)) {
     dispatch(gpsRecorderSetConnection('syncing'));
 
     const page = await getTrackSince(fromZero ? 0 : held.cursor);
@@ -120,7 +125,7 @@ async function applyStatus(
     return page.fields;
   }
 
-  return status.fields ?? undefined;
+  return status.fields;
 }
 
 /**
@@ -140,7 +145,7 @@ export const syncHandler: ProcessorHandler = async ({ dispatch, getState }) => {
     dispatch(gpsRecorderSetConnection('connecting'));
   }
 
-  let fields: readonly string[] | undefined;
+  let fields: readonly string[];
 
   try {
     fields = await applyStatus(dispatch, await getStatus(), {
@@ -190,11 +195,9 @@ export const pushedStatusHandler: ProcessorHandler<
   }
 };
 
-/** Begins recording, or resumes a session this app paused. */
+/** Begins recording. */
 export const startHandler: ProcessorHandler = async (params) => {
   const { dispatch, getState } = params;
-
-  const wasPaused = getState().gpsRecorder.paused;
 
   const config = recorderConfigOf(getState().gpsRecorderSettings);
 
@@ -243,13 +246,26 @@ export const startHandler: ProcessorHandler = async (params) => {
   try {
     assertReady(status);
 
-    if (wasPaused) {
-      await resumeRecording(config);
-    } else {
+    try {
       await startRecording(config);
-    }
+    } catch (err) {
+      if (
+        !(err instanceof RecorderError) ||
+        err.failure !== 'needs-foreground'
+      ) {
+        throw err;
+      }
 
-    dispatch(gpsRecorderSetPaused(false));
+      // Android refused the recorder's foreground-service start because the
+      // recorder is in the background — which it is whenever the page is what
+      // the user is looking at, and which only a battery-optimisation exemption
+      // lifts. So hand the job to the recorder's own activity, where the same
+      // call is allowed. The config asked for above is already saved on its
+      // side, so the recording it starts is the one that was requested.
+      window.location.href = RECORDER_INTENT_URL;
+
+      await waitForRecording();
+    }
 
     dispatch(gpsRecorderSetStatus(await getStatus()));
   } catch (err) {
@@ -264,46 +280,22 @@ export const startHandler: ProcessorHandler = async (params) => {
 };
 
 /**
- * Ends the fix flow, marking where the track breaks so the next start opens a
- * new segment rather than drawing a line across the interruption.
- *
- * The break is taken from the recorder's own `lastSeq` rather than this page's
- * cursor: a fix recorded while the page was frozen has not arrived here yet,
- * and breaking after the cursor would then cut the track mid-segment.
+ * Suspends the recording — the recorder's own `POST /stop`, which keeps the track
+ * and opens a new segment on the next start. Nothing has to be remembered about
+ * where it stopped: the recorder bumps `seg`, and that is what splits the track.
  */
-async function endRecording(
-  dispatch: Dispatch,
-  paused: boolean,
-): Promise<void> {
+export const pauseHandler: ProcessorHandler = async ({ dispatch }) => {
   dispatch(gpsRecorderSetPending(true));
 
   try {
-    if (paused) {
-      await pauseRecording();
-    } else {
-      await stopRecording();
-    }
+    await stopRecording();
 
-    const status = await getStatus();
-
-    dispatch(gpsRecorderSetStatus(status));
-
-    dispatch(gpsRecorderAddBreak(status.lastSeq ?? 0));
-
-    dispatch(gpsRecorderSetPaused(paused));
+    dispatch(gpsRecorderSetStatus(await getStatus()));
   } catch (err) {
     reportFailure(dispatch, err);
   } finally {
     dispatch(gpsRecorderSetPending(false));
   }
-}
-
-export const pauseHandler: ProcessorHandler = async ({ dispatch }) => {
-  await endRecording(dispatch, true);
-};
-
-export const stopHandler: ProcessorHandler = async ({ dispatch }) => {
-  await endRecording(dispatch, false);
 };
 
 /** Detaches the live view. The recorder keeps recording and keeps its track. */
@@ -314,22 +306,35 @@ export const disconnectHandler: ProcessorHandler = ({ dispatch }) => {
 };
 
 /**
- * Discards the recorder's track, then the local copy of it. Ordered that way on
- * purpose: if the delete fails, the screen still shows what the recorder holds
- * rather than pretending it is gone.
+ * Throws the recording away — wherever it is. The recorder's own copy goes first,
+ * and only then this page's, so a failed delete leaves the screen showing what the
+ * recorder still holds rather than pretending it is gone. The browser's stored copy
+ * goes too: after a finish the recorder has nothing left, and this is the one
+ * action that means "I don't want this ride".
  */
-export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
-  try {
-    await clearTrack();
-  } catch (err) {
-    reportFailure(dispatch, err);
+export const clearHandler: ProcessorHandler = async ({
+  dispatch,
+  getState,
+}) => {
+  if ((getState().gpsRecorder.status?.count ?? 0) > 0) {
+    try {
+      await clearTrack();
+    } catch (err) {
+      reportFailure(dispatch, err);
 
-    return;
+      return;
+    }
   }
 
   dispatch(gpsRecorderTrackCleared());
 
   dispatch(gpsRecorderSetError(null));
+
+  if (getState().gpsRecorder.stored) {
+    await deleteRecorderTrack();
+
+    dispatch(gpsRecorderSetStored(false));
+  }
 
   try {
     dispatch(gpsRecorderSetStatus(await getStatus()));
@@ -346,25 +351,36 @@ export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
  * A copy, not a move — the recording may still be running, and the recorder
  * stays the owner of its data until the user deletes it explicitly.
  */
-export const saveHandler: ProcessorHandler = ({
+export const saveHandler: ProcessorHandler<typeof gpsRecorderSave> = ({
   dispatch,
   getState,
   action,
 }) => {
-  const state = getState();
+  handOverTrack(dispatch, getState(), action.payload);
+};
 
+/**
+ * Puts the recording into the track viewer, where it becomes an ordinary loaded
+ * track. Returns what the viewer now holds, so a caller that has to make the copy
+ * durable knows exactly what to store.
+ */
+function handOverTrack(
+  dispatch: Dispatch,
+  state: RootState,
+  mode: 'replace' | 'append',
+): FeatureCollection | null {
   const saved = recorderSegmentsToFeatureCollection(
     selectRecorderSegments(state),
   );
 
   if (saved.features.length === 0) {
-    return;
+    return null;
   }
 
   const existing = state.trackViewer.trackGeojson;
 
   const trackGeojson: FeatureCollection =
-    action.payload === 'append' && existing
+    mode === 'append' && existing
       ? {
           type: 'FeatureCollection',
           features: [...existing.features, ...saved.features],
@@ -381,4 +397,92 @@ export const saveHandler: ProcessorHandler = ({
   // The track viewer's own toolbar is where the saved copy is worked on, so
   // open it beside the recorder rather than replacing it.
   dispatch(setTool({ tool: 'import-file', mode: 'open' }));
+
+  return trackGeojson;
+}
+
+/**
+ * Ends a ride: suspend the recording, hand the track over, keep a copy in this
+ * browser, and only then let the recorder discard its own — so the ride isn't
+ * left sitting on the phone *and* in the app, which is the duplicate this exists
+ * to avoid.
+ *
+ * The order is the whole point. The recorder's copy is deleted last, and only if
+ * the browser both stored the track and promised to keep it; anything less and the
+ * recording stays where it is, with the reason said out loud. Deleting the only
+ * copy of a ride is not something to be optimistic about.
+ */
+export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
+  dispatch,
+  getState,
+  action,
+}) => {
+  dispatch(gpsRecorderSetPending(true));
+
+  try {
+    if (getState().gpsRecorder.status?.recording) {
+      await stopRecording();
+
+      dispatch(gpsRecorderSetStatus(await getStatus()));
+    }
+
+    const trackGeojson = handOverTrack(dispatch, getState(), action.payload);
+
+    if (trackGeojson === null) {
+      return;
+    }
+
+    if (!(await persistStorage())) {
+      throw new RecorderError(
+        'not-persisted',
+        'the browser would not promise to keep local storage',
+      );
+    }
+
+    await putRecorderTrack({ savedAt: Date.now(), geojson: trackGeojson });
+
+    dispatch(gpsRecorderSetStored(true));
+
+    await clearTrack();
+
+    dispatch(gpsRecorderTrackCleared());
+
+    dispatch(gpsRecorderSetStatus(await getStatus()));
+  } catch (err) {
+    reportFailure(dispatch, err);
+  } finally {
+    dispatch(gpsRecorderSetPending(false));
+  }
+};
+
+/**
+ * Puts back the recording this browser is holding. Only ever runs for a history
+ * entry that was holding one, so an ordinary visit is not ambushed by a track
+ * from a previous session.
+ */
+export const restoreSavedHandler: ProcessorHandler = async ({
+  dispatch,
+  getState,
+}) => {
+  const record = await getRecorderTrack();
+
+  if (!record) {
+    // The entry outlived the copy — cleared storage, or a record too old to read.
+    // Take the flag off this entry so the next reload doesn't ask again.
+    await deleteRecorderTrack();
+
+    return;
+  }
+
+  dispatch(gpsRecorderSetStored(true));
+
+  // Something else — a map named in the URL, a shared track — got there first and
+  // owns the viewer; the copy stays stored rather than fighting it.
+  if (getState().trackViewer.trackGeojson) {
+    return;
+  }
+
+  dispatch(trackViewerSetTrackUID(null));
+
+  dispatch(trackViewerSetData({ trackGeojson: record.geojson }));
 };

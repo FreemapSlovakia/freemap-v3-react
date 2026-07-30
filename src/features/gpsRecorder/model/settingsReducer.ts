@@ -17,10 +17,13 @@ export interface GpsRecorderSettingsState extends RecorderConfig {
    * A display/export preference, not something the recorder is told.
    */
   splitGapS: number;
-  /** Draws the newest fix's reported accuracy as a circle around it. */
-  showAccuracyCircle: boolean;
-  /** Keeps the map centred on the newest fix, as long as the map isn't grabbed. */
-  followPosition: boolean;
+  /**
+   * Feeds the recorder's fixes to the map's own position marker while
+   * recording, instead of the browser watching the GPS a second time. Off means
+   * the browser is always the source, which tracks a sparse recording more
+   * smoothly at the cost of running its own high-accuracy watch alongside.
+   */
+  feedLocation: boolean;
   /** Holds a screen wake lock while recording, so a long ride stays visible. */
   keepScreenAwake: boolean;
 }
@@ -31,8 +34,7 @@ export const gpsRecorderSettingsInitialState: GpsRecorderSettingsState = {
   maxAccuracyM: null,
   priority: 'high',
   splitGapS: 300,
-  showAccuracyCircle: true,
-  followPosition: true,
+  feedLocation: true,
   keepScreenAwake: false,
 };
 

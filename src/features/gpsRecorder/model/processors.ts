@@ -4,6 +4,7 @@ import {
   gpsRecorderDisconnect,
   gpsRecorderPause,
   gpsRecorderPushedStatus,
+  gpsRecorderRestoreSaved,
   gpsRecorderSave,
   gpsRecorderStart,
   gpsRecorderStop,
@@ -30,10 +31,17 @@ export const gpsRecorderPauseProcessor: Processor = {
   handle: async (...params) => (await handlers()).pauseHandler(...params),
 };
 
-export const gpsRecorderStopProcessor: Processor = {
+export const gpsRecorderStopProcessor: Processor<typeof gpsRecorderStop> = {
   actionCreator: gpsRecorderStop,
   id: 'gpsRecorder.stop',
   handle: async (...params) => (await handlers()).stopHandler(...params),
+};
+
+export const gpsRecorderRestoreSavedProcessor: Processor = {
+  actionCreator: gpsRecorderRestoreSaved,
+  id: 'gpsRecorder.restoreSaved',
+  handle: async (...params) =>
+    (await handlers()).restoreSavedHandler(...params),
 };
 
 export const gpsRecorderSyncProcessor: Processor = {

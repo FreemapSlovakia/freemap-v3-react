@@ -17,7 +17,7 @@ const pt = (seq: number): RecorderPoint => ({
   acc: null,
   spd: null,
   brg: null,
-  seg: null,
+  seg: 0,
 });
 
 const seqs = (points: RecorderPoint[]) => points.map((point) => point.seq);

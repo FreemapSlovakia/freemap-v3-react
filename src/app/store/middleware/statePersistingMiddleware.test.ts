@@ -132,8 +132,7 @@ function makeState(): RootState {
       maxAccuracyM: 30,
       priority: 'balanced',
       splitGapS: 120,
-      showAccuracyCircle: false,
-      followPosition: false,
+      feedLocation: false,
       keepScreenAwake: true,
     },
   } as unknown as RootState;
@@ -275,8 +274,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         maxAccuracyM: 30,
         priority: 'balanced',
         splitGapS: 120,
-        showAccuracyCircle: false,
-        followPosition: false,
+        feedLocation: false,
         keepScreenAwake: true,
       },
     });
@@ -387,7 +385,7 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.gpsRecorderSettings?.priority).toBe('balanced');
     expect(initial.gpsRecorderSettings?.maxAccuracyM).toBe(30);
     expect(initial.gpsRecorderSettings?.splitGapS).toBe(120);
-    expect(initial.gpsRecorderSettings?.followPosition).toBe(false);
+    expect(initial.gpsRecorderSettings?.['feedLocation']).toBe(false);
 
     // premiumExpiration round-trips Date → ISO string → Date.
     expect(initial.auth?.user?.premiumExpiration).toBeInstanceOf(Date);

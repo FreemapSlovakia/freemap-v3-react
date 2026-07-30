@@ -303,12 +303,17 @@ off that — never re-derive "is this a track?" from density/timestamps.
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 
 Works end to end on a real device for holders of the `layerPreview` role on
-Android: record/pause/stop, derived segments, a live readout, save-to-track-viewer,
-localized errors and the setup warning banner, and a settings modal. The
-recorder's `API.md` is the contract's source of truth. `/pause`, the config body,
-`paused` and the `seg` column ship in its versionCode 6, and `fields` in
-`/status` plus the `status` stream event in 7; each is feature-detected rather
-than version-gated, so an older installed APK still works.
+Android: record/stop, derived segments, a live readout, save-to-track-viewer, the
+recorder as the app's position source, localized failure and setup toasts, and a
+settings modal. The recorder's `API.md` is the contract's source of truth. The
+client is written against **one** recorder version — `MIN_RECORDER_VERSION_CODE`,
+currently 8 — with no feature detection and no fallbacks, because the APK has
+never been released beyond its developers. Raise that constant when the recorder
+changes and delete whatever the new contract makes unnecessary.
+
+There is deliberately no pause: for the track it is the same event as a stop, and
+what it adds — a Resume action in the notification, a restart Android cannot
+refuse — belongs to the recorder.
 
 - [ ] **Give it a role of its own.** It rides on `layerPreview` for want of a
       better fit; a `gpsRecorder` (or a general "beta features") role would say
@@ -328,21 +333,33 @@ than version-gated, so an older installed APK still works.
       It is null below Android 14 and until a GNSS fix has been seen, so `alt` has
       to stay the fallback. `sat` and the accuracies have GPX equivalents
       (`<sat>`, `<hdop>`-ish) that the export could carry too.
+- [ ] **Decimate the drawn track by zoom.** The polyline re-maps every point into
+      a fresh array per fix and Leaflet re-projects the whole line, which is the
+      remaining per-fix cost over the whole track now that the statistics are
+      folded incrementally. Only worth doing if a long recording actually feels
+      slow — measure first.
 - [ ] **Style the live track like a displayed GPX track** instead of the plain
       red polyline, and run it through the shared colorizers — the per-segment
       `Feature<LineString>[]` the save path builds is already the shape
       `colorize` takes, so the live view can reuse it.
-- [ ] **Update prompt on an outdated `versionCode`.** `assertSupportedVersion`
-      fails on a recorder below `MIN_RECORDER_VERSION_CODE` and the panel offers
-      the APK download, but nothing prompts on a merely *old* recorder that
-      still works — which is what will hide the `/pause` and config support once
-      issues #1 and #2 ship.
-- [ ] **Persist the recording across a reload.** Neither the recorder's points
-      nor the track viewer's saved copy survive one; today both are recovered by
-      refetching from the recorder, which is fine only while nothing deletes its
-      copy automatically. An IndexedDB cache (out of band, throttled — not the
-      `statePersistingMiddleware` subset) is the precondition for offering a
-      delete-after-save.
+- [ ] **Update prompt on a newer `versionCode`.** An APK *older* than
+      `MIN_RECORDER_VERSION_CODE` is already reported as outdated with a download
+      link (`getStatus` probes the body for a `version` when the full schema
+      rejects it). Nothing tells the user about a *newer* one, though — the
+      recorder's own in-app update check is the only thing that does.
+- [ ] **Drop the stored ride when the user deletes it elsewhere.** Finishing
+      stores the track in `trackStore.ts` and flags the history entry; deleting
+      that track from the *track viewer* (or `clearMapFeatures`) leaves the entry
+      and the stored copy behind, so a reload brings it back. Not data loss, but
+      confusing. The recorder's own trash clears both, which is the way out today.
+      A fix needs a way to tell "the viewer is showing the stored ride" from "the
+      viewer is showing an unrelated import", so deleting the import can't take a
+      ride with it.
+- [ ] **Nudge the user to save the stored ride somewhere durable.** The my-maps
+      exclamation mark only appears for an *active map* with unsaved changes
+      (`mapDirtySelector`), so a finished recording sitting in IndexedDB with no
+      map open shows nothing. It is one `persist()`-ed copy in one browser — worth
+      an indicator that says "not saved anywhere else yet".
 - [ ] **Unflag it.** Drop the role gate, keep the platform gate, and add the tool
       to the `src/static/llms.txt` menu/tools list.
 

@@ -44,6 +44,7 @@ import {
   gpsRecorderDisconnectProcessor,
   gpsRecorderPauseProcessor,
   gpsRecorderPushedStatusProcessor,
+  gpsRecorderRestoreSavedProcessor,
   gpsRecorderSaveProcessor,
   gpsRecorderStartProcessor,
   gpsRecorderStopProcessor,
@@ -51,6 +52,7 @@ import {
 } from '@features/gpsRecorder/model/processors.js';
 import { l10nSetLanguageProcessor } from '@features/l10n/model/processor.js';
 import { legendProcessor } from '@features/legend/model/legendProcessor.js';
+import { followLocationProcessor } from '@features/location/model/followProcessor.js';
 import { locateProcessor } from '@features/location/model/locateProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
 import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxProcessor.js';
@@ -136,6 +138,7 @@ export const processors = [
   searchHighlightTrafo,
   searchHighlightProcessor,
   locateProcessor,
+  followLocationProcessor,
   saveSettingsProcessor,
   resetAppProcessor,
   measurementProcessor,
@@ -191,6 +194,7 @@ export const processors = [
   gpsRecorderStopProcessor,
   gpsRecorderSyncProcessor,
   gpsRecorderPushedStatusProcessor,
+  gpsRecorderRestoreSavedProcessor,
   gpsRecorderDisconnectProcessor,
   gpsRecorderClearProcessor,
   gpsRecorderSaveProcessor,

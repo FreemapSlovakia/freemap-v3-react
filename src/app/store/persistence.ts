@@ -170,8 +170,7 @@ export const PersistedGpsRecorderSettingsSchema = z
   .object({
     ...RecorderConfigSchema.shape,
     splitGapS: z.number().nonnegative(),
-    showAccuracyCircle: z.boolean(),
-    followPosition: z.boolean(),
+    feedLocation: z.boolean(),
     keepScreenAwake: z.boolean(),
   })
   .partial();
@@ -398,8 +397,7 @@ const PERSIST: PersistEntry[] = [
       maxAccuracyM: g.maxAccuracyM,
       priority: g.priority,
       splitGapS: g.splitGapS,
-      showAccuracyCircle: g.showAccuracyCircle,
-      followPosition: g.followPosition,
+      feedLocation: g.feedLocation,
       keepScreenAwake: g.keepScreenAwake,
     }),
   }),

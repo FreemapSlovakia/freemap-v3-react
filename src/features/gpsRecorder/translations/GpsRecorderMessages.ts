@@ -1,8 +1,11 @@
+import type { ReactNode } from 'react';
+
 export type GpsRecorderMessages = {
   /** Transport controls. */
   record: string;
-  resume: string;
+  /** The recorder's own stop: the track stays, and recording can continue. */
   pause: string;
+  /** Ends the ride — the track moves out of the recorder and into the app. */
   stop: string;
   /** Reconnect call-to-action, offered only once a connection has failed. */
   connect: string;
@@ -15,7 +18,6 @@ export type GpsRecorderMessages = {
   details: string;
   state: {
     recording: string;
-    paused: string;
     stopped: string;
     unknown: string;
   };
@@ -45,6 +47,8 @@ export type GpsRecorderMessages = {
   /** Warnings from `/status` that decide whether a long recording survives. */
   setup: {
     title: string;
+    /** The whole warning as one toast message, the outstanding items as a list. */
+    summary: (props: { items: string[] }) => ReactNode;
     permissionFine: string;
     permissionBackground: string;
     permissionNotifications: string;
@@ -57,8 +61,9 @@ export type GpsRecorderMessages = {
     lnaDenied: string;
     setupNeeded: string;
     recording: string;
+    needsForeground: string;
+    notPersisted: string;
     outdated: string;
-    unsupported: string;
     http: string;
     protocol: string;
     unknown: string;
@@ -67,8 +72,6 @@ export type GpsRecorderMessages = {
     title: string;
     recorderSection: string;
     recorderIntro: string;
-    /** Shown when the running recorder ignores the config it was sent. */
-    recorderUnsupported: string;
     intervalMs: string;
     minDistanceM: string;
     maxAccuracyM: string;
@@ -81,8 +84,8 @@ export type GpsRecorderMessages = {
     splitGapS: string;
     splitGapOff: string;
     splitGapHint: string;
-    showAccuracyCircle: string;
-    followPosition: string;
+    feedLocation: string;
+    feedLocationHint: string;
     keepScreenAwake: string;
   };
 };

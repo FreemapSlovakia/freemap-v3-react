@@ -262,7 +262,10 @@ export const urlProcessor: Processor = {
 
     const urlSearch = serializeQuery(queryParts);
 
-    const prevHistoryState = history.state as { sq?: string } | null;
+    const prevHistoryState = history.state as {
+      sq?: string;
+      rec?: true;
+    } | null;
 
     const contentChanged =
       (mapId && sq !== prevHistoryState?.sq) ||
@@ -292,7 +295,15 @@ export const urlProcessor: Processor = {
       // SecurityError. Normalizing also self-heals the address bar.
       const path = window.location.pathname.replace(/\/{2,}/g, '/');
 
-      history[method]({ sq }, '', path + (urlSearch ? `#${urlSearch}` : ''));
+      // `rec` says this entry was holding a finished recording in the browser's
+      // own storage, so a reload of it puts the track back. Carried forward
+      // rather than recomputed: it belongs to the entry, and the flag is set on
+      // the current one by whoever stored the track.
+      history[method](
+        { sq, rec: prevHistoryState?.rec },
+        '',
+        path + (urlSearch ? `#${urlSearch}` : ''),
+      );
 
       if (window.fmEmbedded) {
         window.parent.postMessage(

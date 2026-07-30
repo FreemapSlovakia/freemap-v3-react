@@ -42,18 +42,27 @@ Everything the recorder's HTTP API is assumed to provide lives in
 minimum version, and the zod schemas. **Change it there and nowhere else.** The
 schemas are `looseObject`, so the recorder may add fields freely.
 
+**There is one recorder version and no backward compatibility.** The APK has never
+been released to anyone but its developers, so `MIN_RECORDER_VERSION_CODE` names
+the current build and everything is written against it: every field the recorder
+always sends is required, nothing is feature-detected, and there are no fallbacks.
+When the recorder changes, raise that constant and *delete* whatever the new
+contract makes unnecessary rather than keeping a branch for the version before it.
+An older APK fails the schema outright — `getStatus` probes the body for a
+`version` first, so it is reported as outdated with the download link rather than
+as an answer that makes no sense.
+
 | | |
 | --- | --- |
-| `GET /status` | `{ recording, paused?, config?, count, lastSeq, generation, fields?, version: { code, name }, permissions: { fine, background, notifications }, batteryExempt, oem: { vendor, needed, acknowledged }, canRecord, setupComplete, port }` |
+| `GET /status` | `{ recording, config, count, lastSeq, generation, fields, version: { code, name }, permissions: { fine, background, notifications }, batteryExempt, oem: { vendor, needed, acknowledged }, canRecord, setupComplete, port, portEcho }` |
 | `POST /start` | begin recording; body is the `RecorderConfig` |
 | `POST /stop` | end recording |
-| `POST /pause` / `/resume` | suspend and continue a session |
 | `GET /track?since=<seq>` | `{ fields: [...], points: [[...], ...] }` — everything **above** the cursor (`since` is exclusive) |
 | `DELETE /track` | discard the whole track |
 | `GET /stream` | SSE; an unnamed event is a point (`id:` its `seq`, `data:` one bare row or a batch), a named `status` event is the whole status object |
 
 **Points travel columnar**, not as objects: a row per fix, ordered by the
-`fields` header — as of versionCode 7 that is `["seq","ts","lat","lon","alt",
+`fields` header — as of versionCode 8 that is `["seq","ts","lat","lon","alt",
 "acc","spd","brg","altMsl","altAcc","spdAcc","brgAcc","sat","src","seg"]`. `ts`
 is epoch milliseconds; `seq` is the recorder-assigned monotonic id that doubles
 as both the `/track?since=` cursor and the SSE event id. `decodePoints` reads
@@ -67,75 +76,61 @@ like `src` (a provider name) is appended: zod then rejects the whole page, every
 point of it, and the live view stops on a column nothing here even reads.
 
 `/stream` sends bare rows with **no `fields` header** of their own, so the column
-order comes from the status frame the stream opens with, from `/status`, or from
-the last `/track` page — in that order of freshness. `DEFAULT_POINT_FIELDS` is
-the last resort, for a stream attached before any of the three has been read; it
-names all fifteen columns, which is safe against an older recorder too, since a
-name mapping past the end of a row reads as absent.
+order comes from `/status`, from the status frame the stream opens with, or from
+the last `/track` page. The sync reads a status before it ever opens a stream, so
+the order is always known by then and `openRecorderStream` takes it as a required
+argument.
 
 **The stream carries state, not just points.** A named `status` event arrives on
 connect and thereafter whenever the recorder's state genuinely changed — start,
-stop, pause, resume, `DELETE /track`, and a permission or battery change the next
-time the recorder's own screen resumes. `stream.ts` reconciles it through the
+stop, `DELETE /track`, and a permission or battery change the next time the
+recorder's own screen resumes. `stream.ts` reconciles it through the
 same `applyStatus` a polled status goes through, so a cleared `generation` or a
 stopped recording lands the moment it happens.
 
-That makes the `/status` poll a fallback rather than the mechanism:
-`isRecorderStatusPushed()` is true once a status frame has arrived on an open
-stream, and `POLL_INTERVAL_MS` in `GpsRecorderMenu` stands down to a no-op while
-it is. A recorder that pushes nothing keeps the timer, and the catch-up on
-`visibilitychange` runs either way — a frozen page runs neither timer nor stream.
+**So nothing polls `/status`.** The tool syncs when it mounts, when the page
+returns to the foreground — a frozen page hears no events, so that catch-up is
+what fills the gap — and when `stream.ts` revives a stream the browser gave up
+on. A timer would only ask again for what the stream already said.
 
-Support is *learned*, not inferred from a version: a named event is invisible to
-a client that doesn't listen for it, so a recorder without them simply never sets
-the flag.
+**`POST /stop` is a pause, so that is what the button says.** The recorder keeps
+its track across a stop and opens a new segment on the next start, so stopping it
+interrupts a ride rather than ending one — the transport is therefore Record ↔
+Pause. The recorder has no `/pause` endpoint of its own and needs none.
 
-**A pause is not a stop, and `recording` does not say so.** The recorder keeps
-`recording` true while paused — the session and its foreground service are still
-up — and reports `paused` alongside it. The three transport states are therefore
-`!recording`, `recording && paused` and `recording && !paused`, which is what the
-buttons and the readout label are driven off. The store's own `paused` takes the
-recorder's answer whenever there is one, and only falls back to the local flag on
-a recorder that fakes a pause with a stop.
+**Ending a ride is Finish**, and it is about ownership rather than recording:
+suspend, hand the track to the track viewer, keep a copy in this browser, and only
+then let the recorder discard its own. That last step is what stops the same ride
+living on the phone and in the app at once — see below for why the copy has to be
+durable before it happens.
 
 Two flags decide readiness, and they are not the same thing: **`canRecord`** is
 the recorder's own verdict and the only gate that blocks a start;
 **`setupComplete`** covers recommended-but-optional steps — a vendor autostart
 or battery policy (`oem`), say — and belongs in a warning, not a refusal.
-`GpsRecorderNotices` renders exactly that split: `canRecord` failures are the
-error panel, `setupComplete` ones the warning panel above the map.
+`useRecorderNotices` renders exactly that split, and renders it as **toasts** —
+where this app says everything else of the kind: a `canRecord` failure is a
+`danger` toast, an incomplete `setupComplete` a `warning` one listing what is
+outstanding. Each carries the one action that resolves it, and each dismisses
+itself through a `statePredicate` once the condition is gone, so nothing has to
+be closed by hand. The technical detail stays in `gpsRecorder.error` for the
+devtools instead of being printed over the map.
 
-### Feature detection, not version gates
+### What the recorder owns
 
-`paused`, `config`, `POST /pause`, `POST /resume` and the `seg` column ship in
-versionCode 6, and `fields` in `/status` plus the `status` stream event in 7 —
-but the minimum this app accepts is 4, so an installed recorder may have none of
-them, and every one is detected rather than inferred from a version. That also
-means a recorder can gain them in any order without this app being changed:
-
-- **`POST /pause` / `/resume`** fall back to `/stop` and `/start` on a `404`,
-  which `classifyHttpFailure` maps to its own `unsupported` failure. The only
-  difference the user sees is a GPS re-acquisition on resume — the segment break
-  is tracked here regardless.
-- **The `POST /start` config body** is sent unconditionally; a recorder that
-  ignores it reports no `config` in `/status`, and *that absence* is the feature
-  detection. There is no version gate, because a recorder could gain the fields
-  in any order. The settings modal says so, and `maxAccuracyM` is then applied
-  client-side instead — to the geometry, the statistics *and* the saved track
-  alike, so nothing ends up filtered on screen but present in the file.
-- **`seg`** is decoded when the `fields` header declares it and null otherwise,
-  which is why `splitPointsIntoSegments` splits on a time gap and on locally
-  recorded breaks too.
-- **The `status` stream event** sets `isRecorderStatusPushed()` on arrival, and
-  that flag is what silences the poll. A recorder without the event never sets
-  it, so the poll simply keeps running as it always did.
-- **`fields` in `/status`** is used when it is there and skipped when it is not;
-  the `/track` page's own header covers the older recorder.
+- **The sampling config** travels with `POST /start`, and the recorder reports
+  back what it clamped it to. `maxAccuracyM` is applied *there*, so this app runs
+  no filter of its own — a second one could only disagree with the file on disk.
+- **`seg`**, the segment ordinal, which it bumps on every start. That makes it the
+  authority on where a recording was interrupted, so this app keeps no break list
+  of its own: `splitPointsIntoSegments` splits on `seg` and, as a display
+  preference, on a silence longer than `splitGapS`.
+- **The track itself**, including whether it exists at all. `generation` is the
+  only signal that the copy held here is gone.
 
 ### CORS
 
-From versionCode 3 the recorder reflects the caller's `Origin` when it is on its
-allowlist — `https://freemap.sk`, `https://www.freemap.sk`,
+The recorder reflects the caller's `Origin` when it is on its allowlist — `https://freemap.sk`, `https://www.freemap.sk`,
 `https://www.freemap.eu`, plus **`local.freemap.sk` on any port over http or
 https** for development. An origin is scheme + host + port, so `www` and
 non-`www` are different origins and both must be listed.
@@ -176,7 +171,7 @@ exemption fixes). `recorderFetch` reads that body and maps both to
   start flow calls `/status` first.
 - **A Local Network Access *prompt* needs a real user gesture.** Once the
   permission is granted, nothing else does — so the tool syncs on mount and on a
-  timer, and only offers a gestured "Connect" button (in `GpsRecorderNotices`)
+  timer, and only offers a gestured "Connect" button (on the failure toast)
   after a failure, which is the one case a fresh prompt could help. The Record
   button likewise dispatches straight from `onClick`, since it may need the
   launch intent.
@@ -196,6 +191,32 @@ exemption fixes). `recorderFetch` reads that body and maps both to
    moment to bind, and the browser throttles timers while backgrounded, so the
    steps are generous (~15 s total).
 4. Version and permission checks, `POST /start`, then the sync below.
+5. A `409` naming a `ForegroundService…` exception sends the user through the
+   same intent, and `waitForRecording` then waits for `recording` rather than
+   merely for an answer — see below.
+
+### A start from the page is a background start
+
+`RecorderApp` brings the recorder's HTTP server up **with the process**, not with
+the recording, so `/status` answers while nothing is recording and no foreground
+service is up. In that state `POST /start` makes the recorder call
+`startForegroundService` while it is itself in the background — which it always is
+when the page is what the user is looking at — and Android 12+ refuses that unless
+the app is exempt from battery optimisation. `Setup.kt` deliberately keeps
+`batteryExempt` out of `canRecord` (it is in `complete`), so a device that skipped
+it can record but cannot be started from here.
+
+The state is ordinary rather than exotic: stop a recording, stay in the browser,
+press Record again. The recovery is the launch intent, where the recorder's own
+visible activity makes the call and Android allows it. `POST /start` saves the
+config *before* trying to start, so the recording the intent begins is the one
+that was asked for — the fallback loses nothing.
+
+It is also why a `/resume` cannot fail the same way, on a recorder that has one:
+plain `startService` against a service already running and already foreground has
+no foreground-service start for the platform to refuse. That, and the notification
+action, is the whole of what a pause adds — which is why it is the recorder's
+business and not this app's.
 
 ### Telling the failures apart
 
@@ -210,20 +231,23 @@ exemption fixes). `recorderFetch` reads that body and maps both to
   into the app via the intent.
 - **`unreachable`** — offer install/download.
 
+`needs-foreground` is the fourth, and it is handled before the user sees it: the
+start flow retries through the intent by itself, and the panel only reports it if
+that did not end in a recording either.
+
 ## Track sync
 
-`syncHandler` runs when the tool mounts, every 15 s while it is open and the
-page visible, on `visibilitychange` back to `visible`, after a stream the
-browser gave up on, and at the end of the start flow. All of that lifetime lives
-in `GpsRecorderMenu`'s effect rather than in the stream module, so it keeps
-running when there is no stream — which is exactly when it matters.
+`syncHandler` runs when the tool mounts, on `visibilitychange` back to `visible`,
+after a stream the browser gave up on, and at the end of the start flow — never on
+a timer, because the stream says when something changed. Its lifetime lives in
+`GpsRecorderMenu`'s effect rather than in the stream module, so it keeps running
+when there is no stream, which is exactly when it matters.
 
-1. `GET /status` — always, because it is what carries `recording`, `paused`,
-   `generation` and the setup flags.
+1. `GET /status` — always, because it is what carries `recording`, `generation`
+   and the setup flags.
 2. `GET /track?since=<cursor>` **only when the recorder says there is something
    to fetch**: `lastSeq > cursor`, or nothing is held here yet. One comparison
-   against a status that had to be read anyway, which is what makes a 15-second
-   poll cheap enough to leave running.
+   against a status that had to be read anyway.
 3. Attach `/stream` — only if not already attached, so a resync never drops a
    working stream. **Reconnection is the browser's job** (`Last-Event-ID`) while
    it still believes in the connection; once it reports `CLOSED`, `stream.ts`
@@ -246,25 +270,35 @@ the track from `since=0` regardless — the recorder owns it.
 
 ## Segments
 
-A recording that was paused, stopped and restarted, or simply left alone for an
-hour is one track with breaks in it — drawing it as a single line lies about
-where the user went. `splitPointsIntoSegments` in
-[`segments.ts`](../src/features/gpsRecorder/segments.ts) splits on any of three
-signals: the recorder's own `seg` ordinal, a `breaks` entry this app recorded
-when *it* paused or stopped, and a `ts` gap over the configured threshold.
+A recording that was stopped and restarted, or simply left alone for an hour, is
+one track with breaks in it — drawing it as a single line lies about where the user
+went. `splitPointsIntoSegments` in
+[`segments.ts`](../src/features/gpsRecorder/segments.ts) splits on two signals:
+the recorder's own `seg` ordinal, which it bumps on every start, and a `ts` gap
+over the configured threshold.
+
+The two are not the same kind of claim. `seg` is a fact about the recording, so it
+always splits; the gap is a display preference — a long stop inside one segment
+becomes a break because a straight line across it would be a lie — so `splitGapS`
+can turn it off.
 
 **Segments are derived, never stored.** `points` stays flat because the merge is
-by `seq`, and a cold reload refetches the whole track anyway — but the
-timestamps still carry the gaps, so the same split falls out again with nothing
-persisted, and changing the threshold re-splits an existing track for free. The
-`breaks` list exists only for the case the other two rules cannot see: a pause
-shorter than the gap threshold, on a recorder with no `seg`. It records the
-recorder's `lastSeq` rather than this page's cursor, because a fix taken while
-the page was frozen has not arrived here yet and breaking after the cursor would
-cut the track mid-segment.
+by `seq`, and a cold reload refetches the whole track anyway — but the ordinals
+and timestamps still carry the breaks, so the same split falls out again with
+nothing persisted, and changing the threshold re-splits an existing track for
+free.
 
-`selectRecorderSegments` memoizes filter-then-split, so the whole chain — map,
-statistics, save — recomputes once per fix rather than once per consumer.
+`selectRecorderSegments` memoizes the split, so the map and the save path share
+one result per fix rather than recomputing per consumer.
+
+**The statistics are folded, not recomputed.** Every figure is a sum or a property
+of the newest point, so `foldRecorderStats` advances over the points that arrived
+since the last read and `selectRecorderStats` carries the fold between fixes. The
+alternative is what it replaced: a full pass per fix, which is quadratic over a
+session and calls a haversine per pair per second — on an eight-hour ride at 1 Hz
+that is 28 800 of them a second by the end. The fold checks that the track still
+starts with what it has already counted, so a cleared or back-filled track (and a
+changed `splitGapS`) is refolded from scratch instead of trusted.
 
 ## Deleting the track
 
@@ -294,13 +328,53 @@ Android's "clear storage", or a delete from another page.
 
 ## Handing the track to the rest of the app
 
-**One route: save it to the track viewer.** `saveHandler` hands
+**One route: it becomes the track viewer's track.** `handOverTrack` gives
 `recorderSegmentsToFeatureCollection` to `trackViewerSetData`, after which the
 recording is an ordinary loaded track — elevation, colorize, the elevation
 chart, "more info", convert-to-drawing and every export target work on it
-without knowing the recorder exists. It is a copy: the recording may still be
-running, and the recorder stays the owner of its data until the user deletes it
-explicitly.
+without knowing the recorder exists.
+
+Two actions take that route, and the difference is ownership. **Save** copies:
+the recording may still be running and the recorder keeps its own copy. **Finish**
+moves: it suspends the recording, hands the track over, stores it, and then has
+the recorder discard it.
+
+### Storing the finished ride
+
+Finishing deletes the recorder's copy, so before it does, the browser's copy has
+to be worth trusting. `trackStore.ts` is that copy: a **single entry** in its own
+`idb-keyval` database, validated on read like the my-maps working copy, holding
+the geojson and when it was taken. One entry, because finishing means "take this
+ride off the phone and give it to me" — a thing the user then exports, uploads or
+discards before the next one. An archive of every ride needs a list to manage it
+and a rule for reclaiming space, neither of which is worth inventing yet.
+
+**The order in `stopHandler` is the whole design**, and it is deliberately
+pessimistic:
+
+1. `POST /stop`, so the track is not moving under us.
+2. Hand it to the track viewer.
+3. `navigator.storage.persist()` — and **stop here if it refuses**. Without that
+   promise the browser may evict the copy under storage pressure, and deleting
+   the recorder's copy would leave the ride nowhere. The recording stays where it
+   is and a toast says why (`errors.notPersisted`), with the track still on screen
+   to export.
+4. Write the entry.
+5. Only now `DELETE /track`.
+
+**A reload is answered by the history entry, not by storage.** `trackStore`
+`replaceState`s a `rec: true` flag onto the current entry when it stores the track
+and takes it off when it deletes it; `urlProcessor` carries the flag onto the
+entries it writes afterwards, and `handleLocationChange` dispatches
+`gpsRecorderRestoreSaved` when it sees it. So reloading the page you were looking
+at brings the ride back, while a fresh visit — or a shared link — is not ambushed
+by a track from a previous session. The restore is a no-op when something else
+already owns the viewer (a map named in the URL, a shared track), and it clears
+the flag when the entry outlived the copy.
+
+The trash button owns **both** copies: the recorder's, and the one held here. After
+a finish the recorder has nothing left, so this is the only way to say "I don't
+want this ride" — and its confirmation says so.
 
 The feature therefore has **no `Exportable` and no `convertToDrawing` variant of
 its own**. Both were duplicates of machinery the saved track already gets, and
@@ -338,13 +412,48 @@ value — which is also how the modal presents it:
 - **`RecorderConfig`** (`intervalMs`, `minDistanceM`, `maxAccuracyM`,
   `priority`) travels with `POST /start` and decides what is recorded at all.
   Changing it cannot affect a recording already running.
-- **The rest** (`splitGapS`, `showAccuracyCircle`, `followPosition`,
-  `keepScreenAwake`) never leaves the browser.
+- **The rest** (`splitGapS`, `feedLocation`, `keepScreenAwake`) never leaves the
+  browser.
 
-`followPosition` dispatches `mapRefocus({ …, gpsTracked: true })` from the
-recorder's own newest fix rather than starting the browser's geolocation — one
-GPS consumer instead of two, and grabbing the map ends the following through the
-same path the locate button uses.
+### Who supplies the position
+
+While recording, the recorder is the app's location provider:
+`useRecorderLocationFeed` publishes each fix with `setLocation`, so the map's own
+marker — dot, accuracy circle, heading beam (`brg`), fading as the fix ages —
+draws the recording. The recorder's map layer therefore draws only the track.
+
+**Only one source runs at a time.** The browser's watch asks for continuous high
+accuracy, and Android merges concurrent requests at the highest rate anyone asked
+for — so leaving it running alongside would quietly cancel whatever the
+recording's `intervalMs`/`priority` was configured to save, and would need the
+browser's own location permission on top of the recorder's. The feed claims the
+source with `locationSetExternalSource(true)`, and `locateProcessor` runs the
+watch only while `locate && !externalSource`. It reconciles against that pair
+rather than reacting to the toggle, which is what makes the handover automatic:
+the watch starts by itself when a recording ends.
+
+**The feed never turns locating on and never moves the map.** The locate button
+is how the user asks to be shown and followed; starting a recording is a
+different request, and answering it by grabbing the map would fight a user who
+had panned somewhere deliberately. Following, when it is asked for, is
+`followLocationProcessor`: it reacts to `setLocation` rather than living inside
+the browser watch, so a recorder-fed fix moves the map exactly as a browser one
+does.
+
+**A pause releases the source.** No fixes are coming, so holding it would pin the
+marker to wherever the last one was taken while the browser's watch stayed
+blocked from saying otherwise. Releasing hands back mid-pause and reclaims on
+resume.
+
+Where the recording has *reached* is a separate claim from where the user is, so
+`GpsRecorderResult` marks the newest fix as the track's head regardless of
+locating — and the track and its head open the tool when clicked, as a loaded
+track opens the import tool.
+
+`feedLocation` is the escape hatch: off, the browser is always the source, which
+tracks a sparse recording more smoothly at the cost of the second watch. The feed
+lives with the tool rather than with the map layer, because fixes reach the page
+only while the tool holds the stream open.
 
 ## Remaining work
 

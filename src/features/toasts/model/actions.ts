@@ -7,6 +7,13 @@ import type { Messages } from '@/translations/messagesInterface.js';
 
 export type ToastAction = {
   action?: RootAction | RootAction[];
+  /**
+   * Makes the button a link. For a destination the app cannot express as an
+   * action — an external page, or an `intent://` URL that hands off to another
+   * app — where routing it through a dispatch would only lose the user's click
+   * as the gesture that allowed the navigation.
+   */
+  href?: string;
   variant?: ButtonVariant;
 } & ({ name: string } | { nameKey: MessagePaths });
 

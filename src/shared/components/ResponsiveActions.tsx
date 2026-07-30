@@ -49,14 +49,7 @@ type Props = {
   children: ReactNode;
   /** Dropdown alignment for the packed menu. */
   align?: 'start' | 'end';
-  /**
-   * `'md'` is Bootstrap's own default button size, which react-bootstrap spells
-   * as no `size` at all — named here because the prop already defaults to `'sm'`
-   * for the list rows this is mostly used in, and a default parameter cannot
-   * tell "not given" from "given as undefined". Toolbars want `'md'` so the
-   * toggle matches the buttons beside it.
-   */
-  size?: ButtonProps['size'] | 'md';
+  size?: ButtonProps['size'];
   /** Variant for inline buttons that don't set their own, and for the toggle. */
   variant?: ButtonProps['variant'];
   toggle?: ReactNode;
@@ -76,8 +69,6 @@ export function ResponsiveActions({
   className,
 }: Props): ReactElement {
   const matches = useBreakpointMatches();
-
-  const buttonSize = size === 'md' ? undefined : size;
 
   const isInline = (showFrom: NonNullable<ActionProps['showFrom']> = 'xs') => {
     return showFrom !== 'never' && (showFrom === 'xs' || matches[showFrom]);
@@ -146,7 +137,7 @@ export function ResponsiveActions({
         {({ props: tipProps }) => (
           <Button
             variant={ownVariant ?? variant}
-            size={buttonSize}
+            size={size}
             {...rest}
             {...tipProps}
             aria-label={
@@ -159,12 +150,7 @@ export function ResponsiveActions({
         )}
       </LongPressTooltip>
     ) : (
-      <Button
-        key={key}
-        variant={ownVariant ?? variant}
-        size={buttonSize}
-        {...rest}
-      >
+      <Button key={key} variant={ownVariant ?? variant} size={size} {...rest}>
         {label}
       </Button>
     );
@@ -192,7 +178,7 @@ export function ResponsiveActions({
           <Dropdown.Toggle
             ref={toggleRef}
             variant={variant}
-            size={buttonSize}
+            size={size}
             aria-label={toggleLabel}
           >
             {toggle}

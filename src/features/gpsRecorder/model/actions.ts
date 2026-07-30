@@ -30,16 +30,39 @@ export interface GpsRecorderFailure {
 }
 
 /**
- * User asked to record, or to resume a paused session. Must come from a real
- * gesture: this is what triggers the Local Network Access prompt and, if
- * needed, the launch intent.
+ * User asked to record. Must come from a real gesture: this is what triggers the
+ * Local Network Access prompt and, if needed, the launch intent.
  */
 export const gpsRecorderStart = createAction('GPS_RECORDER_START');
 
-/** Suspends the session; resuming it opens a new segment. */
+/**
+ * Suspends the recording. This is the recorder's own `POST /stop` — it keeps the
+ * track, and the next start continues it in a new segment — so from the user's
+ * side it is a pause, and {@link gpsRecorderStop} is what actually ends a ride.
+ */
 export const gpsRecorderPause = createAction('GPS_RECORDER_PAUSE');
 
-export const gpsRecorderStop = createAction('GPS_RECORDER_STOP');
+/**
+ * Ends the recording and takes the track: suspend, hand the ride to the track
+ * viewer, keep a copy in this browser, and only then let the recorder discard
+ * its own — so the ride does not end up on the phone and in the app at once.
+ */
+export const gpsRecorderStop = createAction<'replace' | 'append'>(
+  'GPS_RECORDER_STOP',
+);
+
+/**
+ * Puts back the recording this browser is holding, when the history entry says
+ * it was holding one. See `trackStore.ts` for why the copy exists at all.
+ */
+export const gpsRecorderRestoreSaved = createAction(
+  'GPS_RECORDER_RESTORE_SAVED',
+);
+
+/** Whether this browser is holding a finished recording the recorder no longer has. */
+export const gpsRecorderSetStored = createAction<boolean>(
+  'GPS_RECORDER_SET_STORED',
+);
 
 /**
  * Catch up over `/track?since=` and (re)attach the stream. Dispatched when the
@@ -73,7 +96,11 @@ export const gpsRecorderTrackCleared = createAction(
   'GPS_RECORDER_TRACK_CLEARED',
 );
 
-/** Hands the recording to the track viewer, beside or in place of its track. */
+/**
+ * Copies the recording to the track viewer, beside or in place of its track,
+ * leaving the recorder's own copy alone. {@link gpsRecorderStop} is the version
+ * that ends the ride.
+ */
 export const gpsRecorderSave = createAction<'replace' | 'append'>(
   'GPS_RECORDER_SAVE',
 );
@@ -84,21 +111,6 @@ export const gpsRecorderSetStatus = createAction<RecorderStatus | null>(
 
 export const gpsRecorderAddPoints = createAction<RecorderPoint[]>(
   'GPS_RECORDER_ADD_POINTS',
-);
-
-/**
- * Marks the seq of the last point before a break this app caused, so a pause
- * too short for the time rule to notice still splits the track. Recorded at the
- * pause/stop rather than at the resume, because that is when the recorder can
- * still say what its last point was.
- */
-export const gpsRecorderAddBreak = createAction<number>(
-  'GPS_RECORDER_ADD_BREAK',
-);
-
-/** Whether a stopped recorder is holding a session open rather than finished. */
-export const gpsRecorderSetPaused = createAction<boolean>(
-  'GPS_RECORDER_SET_PAUSED',
 );
 
 /**

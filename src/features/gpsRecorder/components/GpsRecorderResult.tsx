@@ -1,7 +1,7 @@
-import { mapRefocus } from '@features/map/model/actions.js';
+import { setTool } from '@app/store/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useEffect, useMemo } from 'react';
-import { Circle, Polyline } from 'react-leaflet';
+import { type ReactElement, useCallback, useMemo } from 'react';
+import { CircleMarker, Polyline } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
   selectLatestRecorderPoint,
@@ -10,7 +10,14 @@ import {
 
 /**
  * The live track: one polyline per segment, so a pause or a restart shows as a
- * break rather than a straight line across it.
+ * break rather than a straight line across it, with the newest fix marked as its
+ * head. The track outlives the tool being closed — the points stay in the store —
+ * so clicking it opens the tool again, as clicking a loaded track opens the
+ * import tool.
+ *
+ * The head marks where the recording has reached, which is not the same claim as
+ * where the user is: the position marker is the app's own, fed from these fixes
+ * by `useRecorderLocationFeed` and shown only when the user asked to be located.
  */
 export default function GpsRecorderResult(): ReactElement | null {
   const dispatch = useDispatch();
@@ -18,20 +25,6 @@ export default function GpsRecorderResult(): ReactElement | null {
   const segments = useAppSelector(selectRecorderSegments);
 
   const latest = useAppSelector(selectLatestRecorderPoint);
-
-  const showAccuracyCircle = useAppSelector(
-    (state) => state.gpsRecorderSettings.showAccuracyCircle,
-  );
-
-  const followPosition = useAppSelector(
-    (state) => state.gpsRecorderSettings.followPosition,
-  );
-
-  const recording = useAppSelector(
-    (state) => state.gpsRecorder.status?.recording ?? false,
-  );
-
-  const gpsTracked = useAppSelector((state) => state.map.gpsTracked);
 
   const positions = useMemo(
     () =>
@@ -43,25 +36,11 @@ export default function GpsRecorderResult(): ReactElement | null {
     [segments],
   );
 
-  // Engages the map's own following flag when a recording starts (or the
-  // preference is turned on), which is what the locate button sets too.
-  useEffect(() => {
-    if (followPosition && recording) {
-      dispatch(mapRefocus({ gpsTracked: true }));
-    }
-  }, [dispatch, followPosition, recording]);
+  const openTool = useCallback(() => {
+    dispatch(setTool({ tool: 'gps-recorder', mode: 'open' }));
+  }, [dispatch]);
 
-  // Follows the recorder's own fixes rather than asking the browser for a
-  // second, competing GPS feed. Only while `gpsTracked` holds, so grabbing the
-  // map ends the following exactly as it does for the locate button — and only
-  // a live recording moves the map at all.
-  useEffect(() => {
-    if (followPosition && recording && gpsTracked && latest) {
-      dispatch(
-        mapRefocus({ lat: latest.lat, lon: latest.lon, gpsTracked: true }),
-      );
-    }
-  }, [dispatch, followPosition, recording, gpsTracked, latest]);
+  const handlers = useMemo(() => ({ click: openTool }), [openTool]);
 
   if (positions.length === 0 && !latest) {
     return null;
@@ -75,18 +54,19 @@ export default function GpsRecorderResult(): ReactElement | null {
           positions={segment}
           color="#f00"
           weight={4}
-          interactive={false}
+          eventHandlers={handlers}
         />
       ))}
 
-      {showAccuracyCircle && latest?.acc != null && (
-        <Circle
+      {latest && (
+        <CircleMarker
           center={[latest.lat, latest.lon]}
-          radius={latest.acc}
+          radius={5}
+          weight={2}
           color="#f00"
-          weight={1}
-          fillOpacity={0.1}
-          interactive={false}
+          fillColor="#fff"
+          fillOpacity={1}
+          eventHandlers={handlers}
         />
       )}
     </>

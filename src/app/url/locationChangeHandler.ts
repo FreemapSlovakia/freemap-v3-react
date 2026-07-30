@@ -32,6 +32,7 @@ import {
   galleryRequestImage,
   gallerySetFilter,
 } from '@features/gallery/model/actions.js';
+import { gpsRecorderRestoreSaved } from '@features/gpsRecorder/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import {
   mapRefocus,
@@ -134,7 +135,10 @@ export function handleLocationChange(store: MyStore): void {
 
   const search = (document.location.hash || document.location.search).slice(1);
 
-  const { sq } = (history.state as { sq?: string } | null) ?? { sq: undefined };
+  const { sq, rec } = (history.state as {
+    sq?: string;
+    rec?: true;
+  } | null) ?? { sq: undefined, rec: undefined };
 
   const parsedQuery = parseQuery(search);
 
@@ -882,6 +886,13 @@ export function handleLocationChange(store: MyStore): void {
 
   if (restore) {
     dispatch(mapsRestore(restore));
+  }
+
+  // A finished recording this browser is holding for a history entry that was
+  // holding it. Dispatched last, and a no-op when something else already owns the
+  // track viewer, so a map or a shared track named in the URL wins.
+  if (rec) {
+    dispatch(gpsRecorderRestoreSaved());
   }
 
   setUrlUpdatingEnabled(true);

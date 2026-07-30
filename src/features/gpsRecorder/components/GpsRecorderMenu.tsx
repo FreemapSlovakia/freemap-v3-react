@@ -1,25 +1,22 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useTrackMergeMode } from '@features/trackViewer/hooks/useTrackMergeMode.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
-import {
-  Action,
-  ResponsiveActions,
-} from '@shared/components/ResponsiveActions.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useEffect } from 'react';
-import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
+import { Button, Spinner } from 'react-bootstrap';
 import {
   FaCircle,
   FaCog,
   FaPause,
-  FaPlay,
   FaSave,
   FaStop,
   FaTrash,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useRecorderLocationFeed } from '../hooks/useRecorderLocationFeed.js';
+import { useRecorderNotices } from '../hooks/useRecorderNotices.js';
 import {
   gpsRecorderClear,
   gpsRecorderDisconnect,
@@ -30,36 +27,25 @@ import {
   gpsRecorderSync,
 } from '../model/actions.js';
 import { selectRecorderSegments } from '../model/selectors.js';
-import { isRecorderStatusPushed } from '../stream.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
-import { GpsRecorderNotices } from './GpsRecorderNotices.js';
 import { GpsRecorderReadout } from './GpsRecorderReadout.js';
-
-/**
- * How often the recorder is re-read while the tool is open, on a recorder whose
- * stream does not carry its state. `/status` is a loopback call answered from
- * memory, and the sync only fetches a track page when the recorder says it holds
- * fixes above our cursor — so this is cheap enough to run throughout, and it is
- * what keeps the panel honest when nothing else brings the news.
- */
-const POLL_INTERVAL_MS = 15_000;
 
 export default function GpsRecorderMenu(): ReactElement {
   const dispatch = useDispatch();
 
   const m = useGpsRecorderMessages();
 
-  const gm = useMessages();
-
   const confirm = useConfirm();
 
   const askMergeMode = useTrackMergeMode();
 
+  useRecorderLocationFeed();
+
+  useRecorderNotices();
+
   const status = useAppSelector((state) => state.gpsRecorder.status);
 
   const connection = useAppSelector((state) => state.gpsRecorder.connection);
-
-  const paused = useAppSelector((state) => state.gpsRecorder.paused);
 
   const pending = useAppSelector((state) => state.gpsRecorder.pending);
 
@@ -73,11 +59,11 @@ export default function GpsRecorderMenu(): ReactElement {
     (state) => state.gpsRecorderSettings.keepScreenAwake,
   );
 
-  const recording = status?.recording ?? false;
+  // A finished recording leaves the recorder empty and this browser holding the
+  // copy, which is still something the user may want thrown away.
+  const stored = useAppSelector((state) => state.gpsRecorder.stored);
 
-  // `recording` stays true across a pause on the recorder's side, so the three
-  // transport states are `!recording`, `recording && paused` and this one.
-  const running = recording && !paused;
+  const recording = status?.recording ?? false;
 
   // The spinner covers any wait, but only a command the user gave blocks the
   // transport: the background poll passes through `connecting` every few
@@ -90,18 +76,13 @@ export default function GpsRecorderMenu(): ReactElement {
   // earlier page load, or a stream the browser gave up on, would otherwise
   // leave the panel blank until something was pressed. The Local Network Access
   // prompt still needs a gesture, so the panel offers one when this fails.
+  //
+  // There is no polling: the stream pushes a status whenever the recorder's state
+  // changes. A frozen background page hears none of them, so returning to the
+  // foreground re-syncs — and a stream the browser gave up on schedules its own
+  // retry from `stream.ts`.
   useEffect(() => {
     dispatch(gpsRecorderSync());
-
-    const timer = setInterval(() => {
-      // A frozen background page runs neither the timer nor the stream; the
-      // catch-up on returning is what fills the gap. A stream that pushes its
-      // own status needs no poll at all — it says when something changed, at
-      // the moment it changed — so this stands down to a no-op there.
-      if (document.visibilityState === 'visible' && !isRecorderStatusPushed()) {
-        dispatch(gpsRecorderSync());
-      }
-    }, POLL_INTERVAL_MS);
 
     const onVisible = () => {
       if (document.visibilityState === 'visible') {
@@ -112,8 +93,6 @@ export default function GpsRecorderMenu(): ReactElement {
     document.addEventListener('visibilitychange', onVisible);
 
     return () => {
-      clearInterval(timer);
-
       document.removeEventListener('visibilitychange', onVisible);
 
       dispatch(gpsRecorderDisconnect());
@@ -123,7 +102,7 @@ export default function GpsRecorderMenu(): ReactElement {
   // Held only while there is something to watch, so closing the tool or
   // stopping the recording gives the screen back to the platform's own timeout.
   useEffect(() => {
-    if (!keepScreenAwake || !running || !('wakeLock' in navigator)) {
+    if (!keepScreenAwake || !recording || !('wakeLock' in navigator)) {
       return;
     }
 
@@ -149,13 +128,21 @@ export default function GpsRecorderMenu(): ReactElement {
 
       void sentinel?.release();
     };
-  }, [keepScreenAwake, running]);
+  }, [keepScreenAwake, recording]);
 
   const handleSave = useCallback(async () => {
     const mode = await askMergeMode();
 
     if (mode !== 'cancel') {
       dispatch(gpsRecorderSave(mode));
+    }
+  }, [askMergeMode, dispatch]);
+
+  const handleStop = useCallback(async () => {
+    const mode = await askMergeMode();
+
+    if (mode !== 'cancel') {
+      dispatch(gpsRecorderStop(mode));
     }
   }, [askMergeMode, dispatch]);
 
@@ -173,90 +160,93 @@ export default function GpsRecorderMenu(): ReactElement {
   }, [confirm, dispatch, m]);
 
   return (
-    <>
-      <ToolMenu tool="gps-recorder">
-        <ButtonGroup className="ms-1">
+    <ToolMenu tool="gps-recorder">
+      {/* Record and Pause are one button, because they are one thing: the
+          recorder keeps its track across a `POST /stop`, so stopping it is a
+          pause and the next start continues the same ride. */}
+      <Button
+        className="ms-1"
+        variant="primary"
+        disabled={pending}
+        // Must stay a direct gesture handler: this tap is what allows the
+        // Local Network Access prompt and the launch intent.
+        onClick={() =>
+          dispatch(recording ? gpsRecorderPause() : gpsRecorderStart())
+        }
+      >
+        {busy ? (
+          <Spinner animation="border" size="sm" />
+        ) : recording ? (
+          <FaPause />
+        ) : (
+          <FaCircle />
+        )}{' '}
+        {recording ? m?.pause : m?.record}
+      </Button>
+
+      {/* Ending the ride: the track leaves the recorder for the app. Offered
+          whenever there is something to take, recording or not. */}
+      <LongPressTooltip label={m?.stop}>
+        {({ props }) => (
           <Button
-            variant="primary"
-            disabled={pending}
-            // Must stay a direct gesture handler: this tap is what allows the
-            // Local Network Access prompt and the launch intent.
-            onClick={() =>
-              dispatch(running ? gpsRecorderStop() : gpsRecorderStart())
-            }
+            className="ms-1"
+            variant="secondary"
+            disabled={pending || !saveable}
+            onClick={handleStop}
+            {...props}
           >
-            {busy ? (
-              <Spinner animation="border" size="sm" />
-            ) : running ? (
-              <FaStop />
-            ) : paused ? (
-              <FaPlay />
-            ) : (
-              <FaCircle />
-            )}{' '}
-            {running ? m?.stop : paused ? m?.resume : m?.record}
+            <FaStop />
           </Button>
+        )}
+      </LongPressTooltip>
 
-          {running && (
-            <Button
-              variant="secondary"
-              disabled={pending}
-              onClick={() => dispatch(gpsRecorderPause())}
-            >
-              <FaPause /> {m?.pause}
-            </Button>
-          )}
-
-          {paused && (
-            <Button
-              variant="secondary"
-              disabled={pending}
-              onClick={() => dispatch(gpsRecorderStop())}
-            >
-              <FaStop /> {m?.stop}
-            </Button>
-          )}
-        </ButtonGroup>
-
-        {/* `md` so the toggle is the same height as the transport buttons — the
-            `sm` default suits the list rows this is otherwise used in. */}
-        <ResponsiveActions
-          className="ms-1"
-          size="md"
-          toggleLabel={gm?.general.actions}
-        >
-          <Action
-            label={m?.save}
-            icon={<FaSave />}
-            showFrom="never"
+      <LongPressTooltip label={m?.save}>
+        {({ props }) => (
+          <Button
+            className="ms-1"
+            variant="secondary"
             disabled={!saveable}
             onClick={handleSave}
-          />
+            {...props}
+          >
+            <FaSave />
+          </Button>
+        )}
+      </LongPressTooltip>
 
-          <Action
-            label={m?.delete}
-            icon={<FaTrash />}
-            variant="danger"
-            showFrom="never"
-            // The recorder refuses to delete mid-recording, so don't offer it.
-            disabled={!status || status.count === 0 || recording}
-            onClick={handleClear}
-          />
-
-          <Action
-            label={m?.settings}
-            icon={<FaCog />}
-            showFrom="never"
+      <LongPressTooltip label={m?.settings}>
+        {({ props }) => (
+          <Button
+            className="ms-1"
+            variant="secondary"
             onClick={() =>
               dispatch(setActiveModal({ type: 'gps-recorder-settings' }))
             }
-          />
-        </ResponsiveActions>
+            {...props}
+          >
+            <FaCog />
+          </Button>
+        )}
+      </LongPressTooltip>
 
-        <GpsRecorderReadout />
-      </ToolMenu>
+      {/* Last of the actions, as in every other tool that can delete what it
+            made — the collapse and close buttons follow from `ToolMenu`. */}
+      <LongPressTooltip label={m?.delete}>
+        {({ props }) => (
+          <Button
+            className="ms-1"
+            variant="danger"
+            // The recorder refuses to delete mid-recording, so don't offer it.
+            disabled={recording || (!stored && (status?.count ?? 0) === 0)}
+            onClick={handleClear}
+            {...props}
+          >
+            <FaTrash />
+          </Button>
+        )}
+      </LongPressTooltip>
 
-      <GpsRecorderNotices />
-    </>
+      <GpsRecorderReadout />
+    </ToolMenu>
   );
 }

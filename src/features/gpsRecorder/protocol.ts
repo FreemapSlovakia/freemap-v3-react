@@ -13,11 +13,14 @@ import z from 'zod';
 export const RECORDER_ORIGIN = 'http://127.0.0.1:8378';
 
 /**
- * Below this there is no `generation`, so a cleared track cannot be detected,
- * and no `DELETE /track`. (Below 3, CORS also answered with a single hardcoded
- * origin the production page could never match.)
+ * The recorder is a self-hosted APK that has never been released to anyone but
+ * its own developers, so there is exactly one version to speak to and nothing to
+ * be compatible with. Everything below assumes this one: no optional fields
+ * standing in for an older build, no feature detection, no fallbacks. Raise this
+ * with the recorder, and delete whatever the new contract makes unnecessary
+ * rather than keeping a branch for the version before it.
  */
-export const MIN_RECORDER_VERSION_CODE = 4;
+export const MIN_RECORDER_VERSION_CODE = 8;
 
 /**
  * Where a device without the recorder installed ends up. A direct APK link, so
@@ -39,33 +42,6 @@ export const RECORDER_INTENT_URL =
   '#Intent;scheme=freemap-gps-recorder;' +
   `S.browser_fallback_url=${encodeURIComponent(RECORDER_DOWNLOAD_URL)};end`;
 
-/**
- * Points travel columnar: a row per fix, ordered by a `fields` header. `/status`
- * names the order and `/track` restates it with every page, so this last-resort
- * list only decodes a stream attached before either has been read.
- *
- * Naming more columns than an older recorder sends is safe — a name that maps
- * past the end of a row reads as absent — but naming them in the wrong order
- * would not be, which is why the recorder's list is append-only.
- */
-export const DEFAULT_POINT_FIELDS = [
-  'seq',
-  'ts',
-  'lat',
-  'lon',
-  'alt',
-  'acc',
-  'spd',
-  'brg',
-  'altMsl',
-  'altAcc',
-  'spdAcc',
-  'brgAcc',
-  'sat',
-  'src',
-  'seg',
-] as const;
-
 /** One recorded fix, decoded out of its row. */
 export interface RecorderPoint {
   /** Recorder-assigned monotonic id; the `/track?since=` cursor and SSE event id. */
@@ -83,13 +59,12 @@ export interface RecorderPoint {
   /** Degrees clockwise from true north, or null. */
   brg: number | null;
   /**
-   * Segment ordinal, incremented by the recorder whenever recording starts or
-   * resumes: a point whose `seg` differs from its predecessor's begins a new
-   * segment. Null on a recorder that doesn't send the column, which is why
-   * `splitPointsIntoSegments` also splits on a time gap and on the breaks this
-   * app caused itself.
+   * Segment ordinal, incremented by the recorder on every start: a point whose
+   * `seg` differs from its predecessor's begins a new segment. The recorder is
+   * the only thing that decides where a track breaks, which is why this app
+   * keeps no break list of its own.
    */
-  seg: number | null;
+  seg: number;
 }
 
 /**
@@ -139,8 +114,15 @@ export function decodePoints(
     const ts = read(row, 'ts');
     const lat = read(row, 'lat');
     const lon = read(row, 'lon');
+    const seg = read(row, 'seg');
 
-    if (seq === null || ts === null || lat === null || lon === null) {
+    if (
+      seq === null ||
+      ts === null ||
+      lat === null ||
+      lon === null ||
+      seg === null
+    ) {
       continue;
     }
 
@@ -149,11 +131,11 @@ export function decodePoints(
       ts,
       lat,
       lon,
+      seg,
       alt: read(row, 'alt'),
       acc: read(row, 'acc'),
       spd: read(row, 'spd'),
       brg: read(row, 'brg'),
-      seg: read(row, 'seg'),
     });
   }
 
@@ -186,36 +168,26 @@ export type RecorderConfig = z.infer<typeof RecorderConfigSchema>;
 export const RecorderStatusSchema = z.looseObject({
   recording: z.boolean(),
   /**
-   * Whether a live session is only suspended. Absent on a recorder without
-   * `/pause`, where a pause is a `POST /stop` the app remembers locally.
-   */
-  paused: z.boolean().nullish(),
-  /**
    * The sampling config in force, after the recorder clamped what was asked for
-   * to what the platform allows. Its presence is how support for a configurable
-   * `POST /start` is detected — a recorder that ignored the body reports none.
+   * to what the platform allows.
    */
-  config: RecorderConfigSchema.nullish(),
+  config: RecorderConfigSchema,
   /**
    * The point column names, in order — the same list `/track` returns with every
-   * page. Absent on a recorder that doesn't send it, where the order has to come
-   * from a page instead.
+   * page. Here as well because a stream attached without reading a page still
+   * needs it to decode the bare rows that follow.
    */
-  fields: z.array(z.string()).nullish(),
+  fields: z.array(z.string()),
   /** Points held on disk. */
   count: z.number().int(),
   /** Highest `seq` on file; 0 while the track is empty. */
-  lastSeq: z.number().int().nullish(),
+  lastSeq: z.number().int(),
   /**
    * How many times the track has been thrown away. The only reliable signal
    * that points held here are gone: `seq` never restarts, so a cleared track is
    * otherwise indistinguishable from one that simply hasn't grown.
-   *
-   * Optional only so a recorder below `MIN_RECORDER_VERSION_CODE` — which is
-   * defined as the versions that don't send it — still parses far enough to be
-   * reported as outdated rather than as an unexpected answer.
    */
-  generation: z.number().int().nullish(),
+  generation: z.number().int(),
   version: z.looseObject({
     code: z.number().int(),
     name: z.string(),
@@ -232,20 +204,21 @@ export const RecorderStatusSchema = z.looseObject({
    * Vendor autostart/battery policy that Android's own settings don't cover.
    * `vendor` is null on a device with no such quirk, and `needed` is false with it.
    */
-  oem: z
-    .looseObject({
-      vendor: z.string().nullable(),
-      needed: z.boolean(),
-      acknowledged: z.boolean(),
-    })
-    .nullish(),
+  oem: z.looseObject({
+    vendor: z.string().nullable(),
+    needed: z.boolean(),
+    acknowledged: z.boolean(),
+  }),
   /** Whether the recorder can record right now. The gate that blocks a start. */
   canRecord: z.boolean(),
   /** False while a recommended (but non-blocking) setup step is outstanding. */
   setupComplete: z.boolean(),
-  port: z.number().int().nullish(),
-  /** The port the launch link asked for, so both ends can be shown to agree. */
-  portEcho: z.number().int().nullish(),
+  port: z.number().int(),
+  /**
+   * The port the launch link asked for, so both ends can be shown to agree; null
+   * until the recorder has been launched by one.
+   */
+  portEcho: z.number().int().nullable(),
   /** Present only on an error response, naming what went wrong. */
   error: z.string().nullish(),
 });
@@ -274,10 +247,19 @@ export type RecorderFailure =
   | 'setup-needed'
   /** Refused because a recording is in progress; stop it first. */
   | 'recording'
-  /** The endpoint isn't in this recorder's build; the caller falls back. */
-  | 'unsupported'
+  /**
+   * Android refused the recorder's foreground-service start because the recorder
+   * was in the background — which it is whenever the page is what the user is
+   * looking at. Recoverable by launching it, so its own activity makes the call.
+   */
+  | 'needs-foreground'
   /** Reachable, but older than `MIN_RECORDER_VERSION_CODE`. */
   | 'outdated'
+  /**
+   * The browser would not promise to keep its storage, so the recording was left
+   * on the recorder rather than trusted to a copy it may evict.
+   */
+  | 'not-persisted'
   /** Reachable, but answered with an error status. */
   | 'http'
   /** Reachable, but the body did not match the expected shape. */

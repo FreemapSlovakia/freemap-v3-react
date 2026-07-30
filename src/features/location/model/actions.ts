@@ -15,6 +15,20 @@ export const setLocation = createAction<{
 
 export const toggleLocate = createAction<boolean | undefined>('LOCATE');
 
+/**
+ * Whether something other than the browser is supplying fixes — the GPS
+ * recorder, while it is recording and set to feed them here.
+ *
+ * Only one source may run at a time: the browser's own `watchPosition` asks for
+ * continuous high accuracy, which Android merges with the recorder's request at
+ * the higher rate, quietly cancelling whatever the recording was configured to
+ * save. So while this holds, `locateProcessor` leaves the watch alone and the
+ * external source dispatches {@link setLocation} itself.
+ */
+export const locationSetExternalSource = createAction<boolean>(
+  'LOCATION_SET_EXTERNAL_SOURCE',
+);
+
 export const locationSetHeadingSource = createAction<HeadingSource>(
   'LOCATION_SET_HEADING_SOURCE',
 );

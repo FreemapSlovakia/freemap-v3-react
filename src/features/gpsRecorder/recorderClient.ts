@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 import {
   decodePoints,
   MIN_RECORDER_VERSION_CODE,
@@ -86,13 +86,16 @@ function classifyHttpFailure(
   }
 
   if (status === 409) {
-    return reason === 'recording' ? 'recording' : 'setup-needed';
-  }
+    if (reason === 'recording') {
+      return 'recording';
+    }
 
-  // A recorder that predates an endpoint answers 404 ("no such endpoint") or
-  // 405; either way the caller can fall back to what older builds do offer.
-  if (status === 404 || status === 405) {
-    return 'unsupported';
+    // The recorder answers a refused start with the exception's class name, so
+    // the platform's own refusal is distinguishable from a recorder that simply
+    // isn't set up — and it is the one the caller can do something about.
+    return reason?.includes('ForegroundService')
+      ? 'needs-foreground'
+      : 'setup-needed';
   }
 
   return 'http';
@@ -146,12 +149,31 @@ async function recorderJson(
   }
 }
 
+/**
+ * Just enough of the status to name the version. The full schema describes one
+ * recorder and rejects anything else, so this is what tells an out-of-date APK
+ * apart from an answer that makes no sense — the difference between offering the
+ * user the download and telling them something is broken.
+ */
+const RecorderVersionProbeSchema = z.looseObject({
+  version: z.looseObject({ code: z.number().int(), name: z.string() }),
+});
+
 export async function getStatus(signal?: AbortSignal): Promise<RecorderStatus> {
-  const result = RecorderStatusSchema.safeParse(
-    await recorderJson('/status', { signal }),
-  );
+  const body = await recorderJson('/status', { signal });
+
+  const result = RecorderStatusSchema.safeParse(body);
 
   if (!result.success) {
+    const probe = RecorderVersionProbeSchema.safeParse(body);
+
+    if (probe.success && probe.data.version.code < MIN_RECORDER_VERSION_CODE) {
+      throw new RecorderError(
+        'outdated',
+        `recorder version ${probe.data.version.name} (code ${probe.data.version.code}) < ${MIN_RECORDER_VERSION_CODE}`,
+      );
+    }
+
     throw new RecorderError(
       'protocol',
       `/status: ${describeZodError(result.error)}`,
@@ -162,20 +184,28 @@ export async function getStatus(signal?: AbortSignal): Promise<RecorderStatus> {
 }
 
 /**
- * Polls `/status` with a widening backoff, for use right after the launch
- * intent: the recorder needs a moment to bind its socket, and while the browser
+ * Widening backoff for waiting on the recorder after the launch intent: it needs
+ * a moment to bind its socket or to bring its activity up, and while the browser
  * is backgrounded these timers are throttled, so the steps are generous.
  */
-export async function waitForStatus(
-  signal?: AbortSignal,
-): Promise<RecorderStatus> {
-  const delays = [500, 1000, 1500, 2500, 4000, 6000];
+const WAIT_DELAYS_MS = [500, 1000, 1500, 2500, 4000, 6000];
 
+async function pollStatus(
+  signal: AbortSignal | undefined,
+  until: (status: RecorderStatus) => boolean,
+  unmet: () => RecorderError,
+): Promise<RecorderStatus> {
   let last: unknown;
 
   for (let i = 0; ; i++) {
     try {
-      return await getStatus(signal);
+      const status = await getStatus(signal);
+
+      if (until(status)) {
+        return status;
+      }
+
+      last = unmet();
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') {
         throw err;
@@ -189,7 +219,7 @@ export async function waitForStatus(
       last = err;
     }
 
-    const delay = delays[i];
+    const delay = WAIT_DELAYS_MS[i];
 
     if (delay === undefined) {
       throw last;
@@ -197,6 +227,35 @@ export async function waitForStatus(
 
     await new Promise<void>((resolve) => setTimeout(resolve, delay));
   }
+}
+
+/** Waits for the recorder to answer at all. */
+export function waitForStatus(signal?: AbortSignal): Promise<RecorderStatus> {
+  return pollStatus(
+    signal,
+    () => true,
+    () => new RecorderError('unreachable', 'the recorder did not answer'),
+  );
+}
+
+/**
+ * Waits for a recording to be running, for use after the launch intent has been
+ * handed the job: the recorder answers throughout, so reachability says nothing
+ * about whether it took. A setup step standing in the way is resolved on its own
+ * screen first, which is why this waits as long as it does.
+ */
+export function waitForRecording(
+  signal?: AbortSignal,
+): Promise<RecorderStatus> {
+  return pollStatus(
+    signal,
+    (status) => status.recording,
+    () =>
+      new RecorderError(
+        'needs-foreground',
+        'the recorder was launched but is not recording',
+      ),
+  );
 }
 
 /** Throws when the running recorder is too old for the endpoints used here. */
@@ -230,42 +289,6 @@ export async function startRecording(
 
 export async function stopRecording(signal?: AbortSignal): Promise<void> {
   await recorderFetch('/stop', { method: 'POST', signal });
-}
-
-/**
- * Suspends the session without ending it, keeping the GPS engine warm so the
- * first fixes after a resume are usable.
- *
- * Falls back to `POST /stop` on a recorder without the endpoint: from this
- * app's side the difference is only that a resume then costs a re-acquisition,
- * since the segment break is tracked here either way.
- */
-export async function pauseRecording(signal?: AbortSignal): Promise<void> {
-  try {
-    await recorderFetch('/pause', { method: 'POST', signal });
-  } catch (err) {
-    if (!(err instanceof RecorderError) || err.failure !== 'unsupported') {
-      throw err;
-    }
-
-    await stopRecording(signal);
-  }
-}
-
-/** Resumes a paused session; see {@link pauseRecording} for the fallback. */
-export async function resumeRecording(
-  config?: RecorderConfig,
-  signal?: AbortSignal,
-): Promise<void> {
-  try {
-    await recorderFetch('/resume', { method: 'POST', signal });
-  } catch (err) {
-    if (!(err instanceof RecorderError) || err.failure !== 'unsupported') {
-      throw err;
-    }
-
-    await startRecording(config, signal);
-  }
 }
 
 /**

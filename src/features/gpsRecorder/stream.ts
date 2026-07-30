@@ -6,7 +6,6 @@ import {
   gpsRecorderSync,
 } from './model/actions.js';
 import {
-  DEFAULT_POINT_FIELDS,
   decodePoints,
   RECORDER_ORIGIN,
   type RecorderPoint,
@@ -17,24 +16,11 @@ import {
 
 let source: EventSource | null = null;
 
-/** Column order for the bare rows the stream sends; see `DEFAULT_POINT_FIELDS`. */
-let fields: readonly string[] = DEFAULT_POINT_FIELDS;
-
 /**
- * Whether this recorder pushes `status` events. Learned rather than assumed: one
- * arrives on connect, so a recorder that sends them says so within a moment of
- * the stream opening, and a recorder that doesn't never claims to.
+ * Column order for the bare rows the stream sends. Set before the stream is ever
+ * opened — `/status` names it, and the status frame on connect names it again.
  */
-let pushesStatus = false;
-
-/**
- * Whether the live view is carrying state changes as well as points — i.e.
- * whether anything still needs to poll `/status` to notice a stop, a pause or a
- * cleared track.
- */
-export function isRecorderStatusPushed(): boolean {
-  return pushesStatus && source?.readyState === EventSource.OPEN;
-}
+let fields: readonly string[] = [];
 
 /**
  * Backoff for reviving a stream the browser gave up on. `EventSource` retries
@@ -107,13 +93,11 @@ function parsePoints(data: string): RecorderPoint[] | null {
  */
 export function openRecorderStream(
   dispatch: Dispatch,
-  pointFields?: readonly string[],
+  pointFields: readonly string[],
 ): void {
-  // Kept current even for an already-open stream: the column order comes from
-  // the last `/track` page, and a resync may have read a newer one.
-  if (pointFields) {
-    fields = pointFields;
-  }
+  // Kept current even for an already-open stream: a resync may have read a newer
+  // column order than the one this stream opened with.
+  fields = pointFields;
 
   cancelRevive();
 
@@ -134,10 +118,6 @@ export function openRecorderStream(
 
   source = es;
 
-  // Re-learned per connection: the recorder may have been updated, or replaced
-  // by an older build, since the last one.
-  pushesStatus = false;
-
   es.onopen = () => {
     reviveAttempt = 0;
 
@@ -152,9 +132,9 @@ export function openRecorderStream(
     }
   };
 
-  // A named event, so a recorder without them leaves this listener silent. The
-  // first one arrives before any point and names the columns, which is what lets
-  // a stream attached without a `/track` page read the rows that follow.
+  // Arrives before any point on every connection, and names the columns as well
+  // as the state — so a stream that outlives a `/status` read still decodes the
+  // rows that follow it.
   es.addEventListener('status', (event) => {
     let json: unknown;
 
@@ -170,11 +150,7 @@ export function openRecorderStream(
       return;
     }
 
-    pushesStatus = true;
-
-    if (result.data.fields) {
-      fields = result.data.fields;
-    }
+    fields = result.data.fields;
 
     dispatch(gpsRecorderPushedStatus(result.data));
   });
@@ -202,8 +178,6 @@ export function closeRecorderStream(): void {
   cancelRevive();
 
   reviveAttempt = 0;
-
-  pushesStatus = false;
 
   source?.close();
 

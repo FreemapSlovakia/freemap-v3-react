@@ -4,13 +4,12 @@ import type { RecorderPoint, RecorderStatus } from '../protocol.js';
 import {
   type GpsRecorderConnection,
   type GpsRecorderFailure,
-  gpsRecorderAddBreak,
   gpsRecorderAddPoints,
   gpsRecorderSetConnection,
   gpsRecorderSetError,
-  gpsRecorderSetPaused,
   gpsRecorderSetPending,
   gpsRecorderSetStatus,
+  gpsRecorderSetStored,
   gpsRecorderStop,
   gpsRecorderTrackCleared,
 } from './actions.js';
@@ -29,18 +28,6 @@ export interface GpsRecorderState {
    */
   cursor: number;
   /**
-   * Seqs of the last point before each break this app caused by pausing or
-   * stopping. Feeds `splitPointsIntoSegments` alongside the time-gap rule, so a
-   * pause shorter than the gap threshold still splits the track.
-   */
-  breaks: number[];
-  /**
-   * Whether the session is only suspended. Follows `status.paused` when the
-   * recorder reports it, and otherwise remembers the pause this app faked with a
-   * stop — so a recorder without `/pause` reads the same to the rest of the app.
-   */
-  paused: boolean;
-  /**
    * Whether a transport command the user gave is still in flight, so the
    * controls can wait for it without the background poll's own connecting
    * phases disabling them.
@@ -54,25 +41,30 @@ export interface GpsRecorderState {
   generation: number | null;
   connection: GpsRecorderConnection;
   error: GpsRecorderFailure | null;
+  /**
+   * Whether this browser holds a finished recording the recorder no longer has.
+   * Read when a history entry is written, so a reload of that entry knows to put
+   * the track back — see `trackStore.ts`.
+   */
+  stored: boolean;
 }
 
 export const gpsRecorderInitialState: GpsRecorderState = {
   status: null,
   points: [],
   cursor: 0,
-  breaks: [],
-  paused: false,
   pending: false,
   generation: null,
   connection: 'idle',
   error: null,
+  stored: false,
 };
 
 /**
  * Merges a batch into a `seq`-ordered list, dropping seqs already held.
  *
- * Catch-up and the stream overlap by design — a resume refetches from the
- * cursor while the reconnected stream replays from its Last-Event-ID — so
+ * Catch-up and the stream overlap by design — a sync refetches from the cursor
+ * while the reconnected stream replays from its Last-Event-ID — so
  * batches arrive duplicated and, briefly, out of order.
  */
 export function mergePoints(
@@ -113,7 +105,6 @@ export const gpsRecorderReducer = createReducer(
         ...state,
         points: [],
         cursor: 0,
-        breaks: [],
       }))
       // The recorder's own track is gone, so the copy of it goes too. Applied
       // only once the delete has been acknowledged, never optimistically.
@@ -121,19 +112,11 @@ export const gpsRecorderReducer = createReducer(
         ...state,
         points: [],
         cursor: 0,
-        breaks: [],
       }))
       .addCase(gpsRecorderSetStatus, (state, { payload }) => ({
         ...state,
         status: payload,
         generation: payload?.generation ?? state.generation,
-        // The recorder's own answer wins when it has one: `recording` stays true
-        // across a pause there, so `paused` is the only thing that says which of
-        // the two live states this is. A recorder without `/pause` reports none,
-        // and then the local flag — set when the pause was faked with a stop —
-        // is all there is.
-        paused:
-          typeof payload?.paused === 'boolean' ? payload.paused : state.paused,
       }))
       .addCase(gpsRecorderAddPoints, (state, { payload }) => {
         const points = mergePoints(state.points, payload);
@@ -144,17 +127,6 @@ export const gpsRecorderReducer = createReducer(
           cursor: points.length === 0 ? 0 : points.at(-1)!.seq,
         };
       })
-      .addCase(gpsRecorderAddBreak, (state, { payload }) =>
-        // A break at the same seq twice — two stops with no fix between them —
-        // is the same break, and an empty track has nothing to break after.
-        payload <= 0 || state.breaks.includes(payload)
-          ? state
-          : { ...state, breaks: [...state.breaks, payload] },
-      )
-      .addCase(gpsRecorderSetPaused, (state, { payload }) => ({
-        ...state,
-        paused: payload,
-      }))
       .addCase(gpsRecorderSetPending, (state, { payload }) => ({
         ...state,
         pending: payload,
@@ -166,6 +138,10 @@ export const gpsRecorderReducer = createReducer(
       .addCase(gpsRecorderSetError, (state, { payload }) => ({
         ...state,
         error: payload,
+      }))
+      .addCase(gpsRecorderSetStored, (state, { payload }) => ({
+        ...state,
+        stored: payload,
       }))
       .addCase(gpsRecorderStop, (state) => ({
         ...state,
