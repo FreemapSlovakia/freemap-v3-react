@@ -46,6 +46,9 @@ type CacheableLayerDef = IntegratedLayerDef<IsTileLayerDef> & {
 
 const AVG_TILE_SIZE = 20_000;
 
+// pre-filled upper bound; the layer's own `maxNativeZoom` still caps it
+const DEFAULT_MAX_ZOOM = 16;
+
 export function CacheTilesForm(): ReactElement {
   const m = useMessages();
 
@@ -120,7 +123,14 @@ export function CacheTilesForm(): ReactElement {
 
     setMinZoom(String(mapDef.minZoom ?? 0));
 
-    setMaxZoom(String(mapDef.maxNativeZoom ?? 18));
+    setMaxZoom(
+      String(
+        Math.max(
+          mapDef.minZoom ?? 0,
+          Math.min(mapDef.maxNativeZoom ?? Infinity, DEFAULT_MAX_ZOOM),
+        ),
+      ),
+    );
   }, [mapDef]);
 
   useEffect(() => {

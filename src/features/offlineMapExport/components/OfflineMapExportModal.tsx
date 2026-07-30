@@ -44,6 +44,9 @@ import { useDispatch } from 'react-redux';
 import { downloadMap } from '../model/actions.js';
 import { useOfflineMapExportMessages } from '../translations/useOfflineMapExportMessages.js';
 
+// pre-filled upper bound; the layer's own `maxNativeZoom` still caps it
+const DEFAULT_MAX_ZOOM = 16;
+
 type Props = { show: boolean };
 
 export default function OfflineMapExportModal({
@@ -146,7 +149,14 @@ export default function OfflineMapExportModal({
 
     setMinZoom(String(mapDef.minZoom ?? 0));
 
-    setMaxZoom(String(mapDef.maxNativeZoom));
+    setMaxZoom(
+      String(
+        Math.max(
+          mapDef.minZoom ?? 0,
+          Math.min(mapDef.maxNativeZoom ?? Infinity, DEFAULT_MAX_ZOOM),
+        ),
+      ),
+    );
   }, [mapDef]);
 
   const tileCount = useMemo(() => {
