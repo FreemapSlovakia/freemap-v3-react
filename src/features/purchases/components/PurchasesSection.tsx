@@ -18,6 +18,7 @@ import {
   type ReactElement,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Alert, Button, Spinner, Table } from 'react-bootstrap';
@@ -99,6 +100,17 @@ export function PurchasesSection(): ReactElement | null {
 
   const [openingPortal, setOpeningPortal] = useState(false);
 
+  // Drops the return-from-portal listener below when this section goes away, so
+  // it can't outlive the component that its refresh is for.
+  const portalReturnRef = useRef<AbortController | null>(null);
+
+  useEffect(
+    () => () => {
+      portalReturnRef.current?.abort();
+    },
+    [],
+  );
+
   // The portal URL carries a short-lived session token, so it has to be minted
   // on click rather than rendered as an href. The tab is opened synchronously
   // (before the await) or a popup blocker would swallow it, then pointed at the
@@ -115,6 +127,27 @@ export function PurchasesSection(): ReactElement | null {
     }
 
     setOpeningPortal(true);
+
+    // Cancelling (or un-cancelling) in the portal changes the subscription
+    // status and the purchase list, and nothing tells this tab about it — so
+    // both are re-read once the user comes back here. Listening from here
+    // rather than after the await, which the user can beat by switching back
+    // while the URL is still being minted.
+    portalReturnRef.current?.abort();
+
+    const returnAc = new AbortController();
+
+    portalReturnRef.current = returnAc;
+
+    window.addEventListener(
+      'focus',
+      () => {
+        dispatch(authInit());
+
+        setReload((reload) => reload + 1);
+      },
+      { once: true, signal: returnAc.signal },
+    );
 
     (async () => {
       const res = await fetch(`${process.env['API_URL']}/auth/polar/portal`, {
@@ -138,19 +171,6 @@ export function PurchasesSection(): ReactElement | null {
         // `replace` so the blank placeholder doesn't become a history entry
         // the portal's back button would land on.
         tab.location.replace(portalUrl);
-
-        // Cancelling (or un-cancelling) in the portal changes the subscription
-        // status and the purchase list, and nothing tells this tab about it —
-        // so both are re-read once the user comes back here.
-        window.addEventListener(
-          'focus',
-          () => {
-            dispatch(authInit());
-
-            setReload((reload) => reload + 1);
-          },
-          { once: true },
-        );
       } else {
         // Popup blocked despite the synchronous open — use this tab instead.
         location.href = portalUrl;
@@ -158,6 +178,9 @@ export function PurchasesSection(): ReactElement | null {
     })()
       .catch((error) => {
         tab?.close();
+
+        // Focus comes back to a section that shows what it already showed.
+        returnAc.abort();
 
         dispatch(
           toastsAdd({
