@@ -269,8 +269,6 @@ export const startHandler: ProcessorHandler = async (params) => {
 
       await waitForRecording();
     }
-
-    dispatch(gpsRecorderSetStatus(await getStatus()));
   } catch (err) {
     fail(err);
 
@@ -279,6 +277,11 @@ export const startHandler: ProcessorHandler = async (params) => {
 
   dispatch(gpsRecorderSetPending(false));
 
+  // The sync reads a status of its own and reconciles it, which is also why none
+  // is read here: a raw `gpsRecorderSetStatus` would carry the recorder's
+  // `generation` into the store without the comparison that gives it meaning, and
+  // a `DELETE /track` that happened while the stream was down would then pass
+  // unnoticed — leaving the deleted points merged into the new recording.
   await syncHandler(params);
 };
 
@@ -287,13 +290,25 @@ export const startHandler: ProcessorHandler = async (params) => {
  * and opens a new segment on the next start. Nothing has to be remembered about
  * where it stopped: the recorder bumps `seg`, and that is what splits the track.
  */
-export const pauseHandler: ProcessorHandler = async ({ dispatch }) => {
+export const pauseHandler: ProcessorHandler = async ({
+  dispatch,
+  getState,
+}) => {
   dispatch(gpsRecorderSetPending(true));
 
   try {
     await stopRecording();
 
-    dispatch(gpsRecorderSetStatus(await getStatus()));
+    // Through `applyStatus`, not a raw dispatch: it is what compares
+    // `generation` before storing it, so a track cleared while the stream was
+    // down is noticed here rather than absorbed silently.
+    const { points, cursor, generation } = getState().gpsRecorder;
+
+    await applyStatus(dispatch, await getStatus(), {
+      points: points.length,
+      cursor,
+      generation,
+    });
   } catch (err) {
     reportFailure(dispatch, err);
   } finally {
@@ -438,13 +453,16 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
     }
 
     // The track viewer stores what it is given anyway; this is the same write,
-    // awaited, because what comes next is irreversible. `false` means the browser
-    // stored it but would not promise to keep it — not good enough to be the only
-    // copy of a ride.
-    if (!(await storeTrackDurably(trackGeojson))) {
+    // awaited and answered, because what comes next is irreversible. Anything but
+    // a durable copy leaves the recording where it is: `evictable` means the
+    // browser may reclaim it, `unreadable` means it would not have come back at
+    // all — and neither is good enough to be the only copy of a ride.
+    const outcome = await storeTrackDurably(trackGeojson);
+
+    if (outcome !== 'durable') {
       throw new RecorderError(
-        'not-persisted',
-        'the browser would not promise to keep local storage',
+        outcome === 'evictable' ? 'not-persisted' : 'not-stored',
+        `the copy in this browser is ${outcome}`,
       );
     }
 
@@ -452,6 +470,8 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
 
     dispatch(gpsRecorderTrackCleared());
 
+    // Safe as a raw dispatch: the track was just cleared here, so the generation
+    // this reports is the one the empty local copy belongs to.
     dispatch(gpsRecorderSetStatus(await getStatus()));
   } catch (err) {
     reportFailure(dispatch, err);

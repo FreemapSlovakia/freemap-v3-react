@@ -68,6 +68,9 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     incomplete:
       'Časť záznamu sa na túto stránku ešte nedostala, takže sa nič neprevzalo ' +
       'ani nezmazalo. Obnovte spojenie a ukončite znova.',
+    notStored:
+      'Záznam sa nepodarilo uložiť v tomto prehliadači, takže zostal v ' +
+      'zaznamenávači. Máte ho v trasách — odtiaľ ho vyexportujte alebo uložte.',
     notPersisted:
       'Prehliadač neprisľúbil, že si ponechá svoje úložisko, takže záznam ' +
       'zostal v zaznamenávači. Máte ho v trasách — vyexportujte alebo uložte ' +

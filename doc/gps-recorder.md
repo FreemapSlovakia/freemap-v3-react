@@ -361,10 +361,12 @@ pessimistic:
    ends it here (`errors.incomplete`) with nothing taken and nothing deleted.
 3. Hand it to the track viewer.
 4. `storeTrackDurably` — which requests `navigator.storage.persist()` — and **stop
-   here if it answers `false`**. Without that promise the browser may evict the
-   copy under storage pressure, and deleting the recorder's copy would leave the
-   ride nowhere. The recording stays where it is and a toast says why
-   (`errors.notPersisted`), with the track still on screen to export.
+   here unless it answers `durable`**. `evictable` means the browser may reclaim
+   the copy under storage pressure; `unreadable` means it was refused because it
+   would not have parsed back on read, which is checked on write precisely so a
+   caller cannot believe it holds something already lost. Either way the recording
+   stays where it is and a toast says which (`errors.notPersisted` /
+   `errors.notStored`), with the track still on screen to export.
 5. Only now `DELETE /track`.
 
 The store writes on `trackViewerSetData` anyway, so step 4 is the same write —

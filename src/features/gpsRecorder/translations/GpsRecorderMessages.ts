@@ -62,6 +62,7 @@ export type GpsRecorderMessages = {
     recording: string;
     needsForeground: string;
     notPersisted: string;
+    notStored: string;
     incomplete: string;
     outdated: string;
     http: string;

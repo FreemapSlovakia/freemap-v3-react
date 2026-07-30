@@ -9,6 +9,8 @@ import {
 } from '../../trackStore.js';
 import {
   trackViewerDelete,
+  trackViewerDownloadTrack,
+  trackViewerGpxLoad,
   trackViewerRestoreStored,
   trackViewerSetData,
   trackViewerSetGpxUrl,
@@ -57,6 +59,13 @@ export const trackViewerStoreProcessor: Processor = {
     trackViewerSetData,
     trackViewerSetTrackUID,
     trackViewerSetGpxUrl,
+    // The URL's own loaders: their reducer cases are what set `trackUID` and
+    // `gpxUrl`, and listening for them drops the stored copy as soon as the URL
+    // names a track — rather than only if its fetch succeeds. A fetch that fails
+    // would otherwise leave the copy and its flag behind, for the next reload to
+    // race against the download.
+    trackViewerDownloadTrack,
+    trackViewerGpxLoad,
     mapsSetMeta,
   ],
   handle: async ({ getState }) => {
@@ -110,7 +119,12 @@ export const trackViewerRestoreStoredProcessor: Processor = {
       return;
     }
 
-    if (getState().trackViewer.trackGeojson) {
+    // Both halves matter. A track already in the viewer is the one the user asked
+    // for — but so is one still being fetched because the URL names it, and that
+    // fetch has nothing in the viewer yet to say so. Restoring over it would win
+    // the race (IndexedDB beats the network) and then declare a server-hosted
+    // track local, taking `track-uid=` out of the URL with it.
+    if (getState().trackViewer.trackGeojson || homedElsewhere(getState())) {
       return;
     }
 

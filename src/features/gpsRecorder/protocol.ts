@@ -265,6 +265,11 @@ export type RecorderFailure =
    * that never reached here — so nothing was taken and nothing was deleted.
    */
   | 'incomplete'
+  /**
+   * The browser could not store the track in a form it would read back, so the
+   * recording was left on the recorder.
+   */
+  | 'not-stored'
   /** Reachable, but answered with an error status. */
   | 'http'
   /** Reachable, but the body did not match the expected shape. */

@@ -77,6 +77,9 @@ const en: GpsRecorderMessages = {
     incomplete:
       'Part of the recording has not reached this page yet, so nothing was ' +
       'taken and nothing was deleted. Reconnect and finish again.',
+    notStored:
+      'The recording could not be stored in this browser, so it was left on the ' +
+      'recorder. It is in your tracks — export or save it from there.',
     notPersisted:
       'This browser would not promise to keep its storage, so the recording was ' +
       'left on the recorder. It is in your tracks — export or save it, then ' +

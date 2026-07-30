@@ -488,9 +488,14 @@ with no flag of its own — would delete the only durable copy of a ride the fir
 is still holding. Hygiene comes from the store being a single entry that the next
 write and its own delete reclaim.
 
-The write is best effort (`trackViewerStoreProcessor` logs and moves on), and the
-copy is dropped on `trackViewerDelete` and `clearMapFeatures` — a copy that
+The write is validated with the same schema the read uses, so a record that would
+be discarded on the way back is refused on the way in rather than counted as a
+copy. Otherwise it is best effort (`trackViewerStoreProcessor` logs and moves on),
+and the copy is dropped on `trackViewerDelete` and `clearMapFeatures` — one that
 outlived the track would come back as something the user had already thrown away.
+The restore also stands down for a track the URL merely *names*: `homedElsewhere`
+covers a fetch that is still in flight, which IndexedDB would otherwise beat, and
+declaring a server-hosted track local would take `track-uid=` out of the URL.
 `navigator.storage.persist()` is asked for by `storeTrackDurably` **only** — the GPS
 recorder finishing a ride, which then deletes the phone's copy, so `false` (stored,
 but evictable) is its cue to leave that copy alone. The ordinary path never asks:

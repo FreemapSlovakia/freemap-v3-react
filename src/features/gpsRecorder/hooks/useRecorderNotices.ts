@@ -1,4 +1,4 @@
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Leaves } from '@shared/types/common.js';
 import { useEffect } from 'react';
@@ -23,6 +23,7 @@ const ERROR_KEYS: Record<
   'needs-foreground': 'errors.needsForeground',
   recording: 'errors.recording',
   'not-persisted': 'errors.notPersisted',
+  'not-stored': 'errors.notStored',
   incomplete: 'errors.incomplete',
   outdated: 'errors.outdated',
   http: 'errors.http',
@@ -67,7 +68,7 @@ export function useRecorderNotices(): void {
           ? { name: m.update, href: RECORDER_DOWNLOAD_URL }
           : failure === 'setup-needed' || failure === 'needs-foreground'
             ? { name: m.setup.open, href: RECORDER_INTENT_URL }
-            : failure === 'not-persisted'
+            : failure === 'not-persisted' || failure === 'not-stored'
               ? null
               : { name: m.connect, action: gpsRecorderSync() };
 
@@ -84,6 +85,18 @@ export function useRecorderNotices(): void {
       }),
     );
   }, [dispatch, failure, m]);
+
+  // Both toasts go with the tool. Their actions reconnect to the recorder, and a
+  // toast that outlived the panel would open a stream with nothing left to close
+  // it — which `stream.ts`'s revive timer would then keep alive indefinitely.
+  useEffect(
+    () => () => {
+      dispatch(toastsRemove('gpsRecorder.failure'));
+
+      dispatch(toastsRemove('gpsRecorder.setup'));
+    },
+    [dispatch],
+  );
 
   // Only the recommended-but-missing steps: a hard gate is a failure and travels
   // as one. Keyed on the set of outstanding items, so resolving one re-states

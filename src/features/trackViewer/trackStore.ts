@@ -63,13 +63,27 @@ async function requestPersistence(): Promise<boolean> {
  * Stores the track, so a reload of this history entry puts it back. Nothing is
  * promised about how long the browser keeps it — for an imported file that is
  * enough, since the file itself has not gone anywhere.
+ *
+ * Throws when the track would not read back. The read validates and discards
+ * whatever fails, so writing without the same check would let a caller believe it
+ * had a copy of something that is already lost.
  */
 export async function storeTrack(geojson: unknown): Promise<void> {
   if (geojson === lastStored) {
     return;
   }
 
-  await set(KEY, { savedAt: Date.now(), geojson }, store);
+  const record = { savedAt: Date.now(), geojson };
+
+  const parsed = RecordSchema.safeParse(record);
+
+  if (!parsed.success) {
+    throw new Error(
+      `the track would not read back: ${parsed.error.issues[0]?.message ?? 'invalid'}`,
+    );
+  }
+
+  await set(KEY, record, store);
 
   lastStored = geojson;
 
@@ -77,18 +91,33 @@ export async function storeTrack(geojson: unknown): Promise<void> {
 }
 
 /**
- * Stores the track *and* reports whether the browser has promised to keep it, for
- * the caller that is about to delete another copy — the GPS recorder finishing a
- * ride. `false` means it was stored but is evictable, which is not good enough to
- * be the only copy of a ride, and is the caller's cue to leave the other one
- * alone.
+ * What became of a store the caller is about to act on.
+ *
+ * - `durable` — written, and the browser has promised to keep it.
+ * - `evictable` — written, but the browser may reclaim it under storage pressure.
+ * - `unreadable` — not written: it would not have read back.
  */
-export async function storeTrackDurably(geojson: unknown): Promise<boolean> {
+export type StoreOutcome = 'durable' | 'evictable' | 'unreadable';
+
+/**
+ * Stores the track and says exactly how well, for the caller that is about to
+ * delete another copy — the GPS recorder finishing a ride. Anything but `durable`
+ * is its cue to leave the other copy where it is.
+ */
+export async function storeTrackDurably(
+  geojson: unknown,
+): Promise<StoreOutcome> {
   const persisted = await requestPersistence();
 
-  await storeTrack(geojson);
+  try {
+    await storeTrack(geojson);
+  } catch (err) {
+    console.warn('Refusing to store an unreadable track:', err);
 
-  return persisted;
+    return 'unreadable';
+  }
+
+  return persisted ? 'durable' : 'evictable';
 }
 
 /**

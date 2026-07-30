@@ -41,11 +41,22 @@ export default function GpsRecorderSettingsModal({
 
   const [draft, setDraft] = useState<GpsRecorderSettingsState>(saved);
 
+  // Seconds as typed. Only the draft is submitted, so an empty or half-written
+  // field simply leaves the last good value in place — `required` and `min` are
+  // what stop it being submitted in that state.
+  const [interval, setInterval] = useState(String(saved.intervalMs / 1000));
+
   const set = useCallback(
     (patch: Partial<GpsRecorderSettingsState>) =>
       setDraft((current) => ({ ...current, ...patch })),
     [],
   );
+
+  const resetDefaults = useCallback(() => {
+    setDraft(gpsRecorderSettingsInitialState);
+
+    setInterval(String(gpsRecorderSettingsInitialState.intervalMs / 1000));
+  }, []);
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
@@ -80,9 +91,11 @@ export default function GpsRecorderSettingsModal({
           <Form.Group className="mb-3">
             <Form.Label>{grm?.settingsModal.intervalMs}</Form.Label>
 
-            {/* Required, so an emptied field can't submit as a zero interval:
-                the recorder rejects it and the persisted settings would fail
-                their own schema on the next load. */}
+            {/* The field keeps its own text while it is being edited, so clearing
+                it leaves it empty instead of snapping to "0" under the cursor —
+                which is what a value derived straight from the draft did, and what
+                also made `required` unreachable, since the field was never
+                actually empty. */}
             <Form.Control
               type="number"
               required
@@ -91,10 +104,16 @@ export default function GpsRecorderSettingsModal({
               // Anchored to `min`, so a coarser step would reject 1.5 s, 2.5 s
               // and every other value between its multiples.
               step={0.1}
-              value={draft.intervalMs / 1000}
-              onChange={(e) =>
-                set({ intervalMs: Math.round(Number(e.target.value) * 1000) })
-              }
+              value={interval}
+              onChange={(e) => {
+                setInterval(e.target.value);
+
+                const seconds = Number(e.target.value);
+
+                if (e.target.value !== '' && Number.isFinite(seconds)) {
+                  set({ intervalMs: Math.round(seconds * 1000) });
+                }
+              }}
             />
           </Form.Group>
 
@@ -203,9 +222,7 @@ export default function GpsRecorderSettingsModal({
             <FaCheck /> {m?.general.save}
           </Button>
 
-          <ResetToDefaultsButton
-            onClick={() => setDraft(gpsRecorderSettingsInitialState)}
-          />
+          <ResetToDefaultsButton onClick={resetDefaults} />
 
           <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel}
