@@ -353,6 +353,11 @@ export const pauseHandler: ProcessorHandler = async ({
     reportFailure(dispatch, err);
   } finally {
     dispatch(gpsRecorderSetPending(false));
+
+    // The catch-up above moves the connection to `syncing`, and only the stream
+    // knows what it should read as afterwards. Without this the button spins for
+    // good on a pause that worked perfectly.
+    reportRecorderStreamState(dispatch);
   }
 };
 
@@ -531,5 +536,9 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
     reportFailure(dispatch, err);
   } finally {
     dispatch(gpsRecorderSetPending(false));
+
+    // As in the pause: the catch-up left the connection reading as `syncing`,
+    // which nothing else here undoes.
+    reportRecorderStreamState(dispatch);
   }
 };
