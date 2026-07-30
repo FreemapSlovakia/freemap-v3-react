@@ -73,7 +73,12 @@ export default function GpsRecorderSettingsModal({
   useDocumentTitle(show ? grm?.settingsModal.title : undefined);
 
   return (
-    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
+    <Modal
+      show={show}
+      onHide={close}
+      contentClassName="bg-body-tertiary"
+      scrollable
+    >
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
