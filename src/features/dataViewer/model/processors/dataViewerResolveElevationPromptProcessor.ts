@@ -1,10 +1,10 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
-  trackViewerColorizeTrackBy,
-  trackViewerResolveElevationPrompt,
-  trackViewerSetData,
-  trackViewerSetElevation,
+  dataViewerColorizeTrackBy,
+  dataViewerResolveElevationPrompt,
+  dataViewerSetData,
+  dataViewerSetElevation,
 } from '@features/dataViewer/model/actions.js';
 import { trackInfoToast } from '@features/dataViewer/model/trackInfoToast.js';
 import { loadDataViewerMessages } from '@features/dataViewer/translations/loadDataViewerMessages.js';
@@ -14,9 +14,9 @@ import { enrichElevations } from '@shared/elevation.js';
 import { isTrackLine, resolveActiveTrack } from '../../trackSelection.js';
 
 export const dataViewerResolveElevationPromptProcessor: Processor<
-  typeof trackViewerResolveElevationPrompt
+  typeof dataViewerResolveElevationPrompt
 > = {
-  actionCreator: trackViewerResolveElevationPrompt,
+  actionCreator: dataViewerResolveElevationPrompt,
   handle: async ({ dispatch, getState, action }) => {
     const { trackGeojson } = getState().trackViewer;
 
@@ -54,7 +54,7 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
       );
 
       dispatch(
-        trackViewerSetElevation({
+        dataViewerSetElevation({
           trackGeojson: { ...trackGeojson, features },
           sources: [...sources],
         }),
@@ -64,7 +64,7 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
     if (consumer.type === 'colorize') {
       // The colorize renders from trackGeojson, which the enrich above already
       // refreshed; applying the mode is all that's left.
-      dispatch(trackViewerColorizeTrackBy(consumer.mode));
+      dispatch(dataViewerColorizeTrackBy(consumer.mode));
 
       return;
     }
@@ -82,11 +82,11 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
       // reaches here (the modal hides it for this consumer).
       dispatch(
         toastsAdd({
-          id: 'trackViewer.elevationUpdated',
+          id: 'dataViewer.elevationUpdated',
           messageKey: 'elevationFill.updatedToast',
           messageParams: { mode },
           messageLoader: loadDataViewerMessages,
-          cancelType: [clearMapFeatures.type, trackViewerSetData.type],
+          cancelType: [clearMapFeatures.type, dataViewerSetData.type],
           timeout: 5000,
           style: 'success',
         }),

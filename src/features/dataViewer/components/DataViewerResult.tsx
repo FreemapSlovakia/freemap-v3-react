@@ -34,7 +34,7 @@ import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
-import { trackViewerSetSelectedTrack } from '../model/actions.js';
+import { dataViewerSetSelectedTrack } from '../model/actions.js';
 import { isTrackLine, resolveActiveTrack } from '../trackSelection.js';
 
 interface GetFeatures {
@@ -120,7 +120,7 @@ export default function DataViewerResult({
   // loaded, makes the clicked one active for the chart / "more info".
   const selectTrack = (featureIndex: number) => {
     if (multipleTracks) {
-      dispatch(trackViewerSetSelectedTrack(featureIndex));
+      dispatch(dataViewerSetSelectedTrack(featureIndex));
     }
 
     setThisTool();

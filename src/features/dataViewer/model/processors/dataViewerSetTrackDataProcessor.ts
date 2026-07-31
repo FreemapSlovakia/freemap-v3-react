@@ -1,12 +1,12 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { trackViewerSetData } from '@features/dataViewer/model/actions.js';
+import { dataViewerSetData } from '@features/dataViewer/model/actions.js';
 import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
 import bbox from '@turf/bbox';
 
 export const dataViewerSetTrackDataProcessor: Processor<
-  typeof trackViewerSetData
+  typeof dataViewerSetData
 > = {
-  actionCreator: trackViewerSetData,
+  actionCreator: dataViewerSetData,
   transform: ({ action }) => {
     const { focus, trackGeojson } = action.payload;
 

@@ -1,6 +1,6 @@
 import * as auth from '@features/auth/model/actions.js';
 import * as changesets from '@features/changesets/model/actions.js';
-import * as trackViewer from '@features/dataViewer/model/actions.js';
+import * as dataViewer from '@features/dataViewer/model/actions.js';
 import * as drawing from '@features/drawing/model/actions/drawingLineActions.js';
 import * as drawingPoints from '@features/drawing/model/actions/drawingPointActions.js';
 import * as elevationChart from '@features/elevationChart/model/actions.js';
@@ -39,7 +39,7 @@ export const actions = {
   routePlanner,
   search,
   toasts,
-  trackViewer,
+  dataViewer,
   maps,
   wiki,
 } as const;

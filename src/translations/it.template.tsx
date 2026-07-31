@@ -151,7 +151,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Disegno a punti',
     drawLines: 'Disegno a linee',
     drawPolygons: 'Disegno a poligoni',
-    trackViewer: 'Tracce e dati',
+    dataViewer: 'Tracce e dati',
     changesets: 'Modifiche mappa',
     mapDetails: 'Dettagli mappa',
     tracking: 'Tracciamento in tempo reale',

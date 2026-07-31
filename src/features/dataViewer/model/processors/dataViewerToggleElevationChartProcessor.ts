@@ -1,7 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
-  trackViewerSetElevationPrompt,
-  trackViewerToggleElevationChart,
+  dataViewerSetElevationPrompt,
+  dataViewerToggleElevationChart,
 } from '@features/dataViewer/model/actions.js';
 import {
   elevationChartClose,
@@ -11,7 +11,7 @@ import { elevationCoverage } from '@shared/geoutils.js';
 import { resolveActiveTrack } from '../../trackSelection.js';
 
 export const dataViewerToggleElevationChartProcessor: Processor = {
-  actionCreator: trackViewerToggleElevationChart,
+  actionCreator: dataViewerToggleElevationChart,
   handle: async ({ dispatch, getState }) => {
     if (getState().elevationChart.target?.type === 'track-viewer') {
       dispatch(elevationChartClose());
@@ -46,6 +46,6 @@ export const dataViewerToggleElevationChartProcessor: Processor = {
       return;
     }
 
-    dispatch(trackViewerSetElevationPrompt({ type: 'chart' }));
+    dispatch(dataViewerSetElevationPrompt({ type: 'chart' }));
   },
 };

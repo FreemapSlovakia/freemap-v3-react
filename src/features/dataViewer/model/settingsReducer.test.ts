@@ -1,56 +1,56 @@
 import type { FeatureCollection } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import {
-  trackViewerColorizeTrackBy,
-  trackViewerSetColorizeLegend,
-  trackViewerSetData,
+  dataViewerColorizeTrackBy,
+  dataViewerSetColorizeLegend,
+  dataViewerSetData,
 } from './actions.js';
 import {
-  trackViewerSettingsInitialState,
-  trackViewerSettingsReducer,
+  dataViewerSettingsInitialState,
+  dataViewerSettingsReducer,
 } from './settingsReducer.js';
 
 /** Pure reducer tests for the persisted track-viewer settings slice. */
 
 const emptyFc: FeatureCollection = { type: 'FeatureCollection', features: [] };
 
-describe('trackViewerSettingsReducer — colorize', () => {
+describe('dataViewerSettingsReducer — colorize', () => {
   it('colorizeTrackBy stores the mode', () => {
-    const next = trackViewerSettingsReducer(
-      trackViewerSettingsInitialState,
-      trackViewerColorizeTrackBy('elevation'),
+    const next = dataViewerSettingsReducer(
+      dataViewerSettingsInitialState,
+      dataViewerColorizeTrackBy('elevation'),
     );
 
     expect(next.colorizeTrackBy).toBe('elevation');
   });
 
   it('setColorizeLegend flips with no payload, honors an explicit value', () => {
-    const flipped = trackViewerSettingsReducer(
-      trackViewerSettingsInitialState,
-      trackViewerSetColorizeLegend(undefined),
+    const flipped = dataViewerSettingsReducer(
+      dataViewerSettingsInitialState,
+      dataViewerSetColorizeLegend(undefined),
     );
     expect(flipped.colorizeLegend).toBe(
-      !trackViewerSettingsInitialState.colorizeLegend,
+      !dataViewerSettingsInitialState.colorizeLegend,
     );
 
-    const explicit = trackViewerSettingsReducer(
-      trackViewerSettingsInitialState,
-      trackViewerSetColorizeLegend(false),
+    const explicit = dataViewerSettingsReducer(
+      dataViewerSettingsInitialState,
+      dataViewerSetColorizeLegend(false),
     );
     expect(explicit.colorizeLegend).toBe(false);
   });
 });
 
-describe('trackViewerSettingsReducer — new-track elevation guard', () => {
+describe('dataViewerSettingsReducer — new-track elevation guard', () => {
   it('drops an elevation-derived mode when the new track lacks full elevation', () => {
     const state = {
-      ...trackViewerSettingsInitialState,
+      ...dataViewerSettingsInitialState,
       colorizeTrackBy: 'elevation' as const,
     };
 
-    const next = trackViewerSettingsReducer(
+    const next = dataViewerSettingsReducer(
       state,
-      trackViewerSetData({ trackGeojson: emptyFc }),
+      dataViewerSetData({ trackGeojson: emptyFc }),
     );
 
     expect(next.colorizeTrackBy).toBeNull();
@@ -58,13 +58,13 @@ describe('trackViewerSettingsReducer — new-track elevation guard', () => {
 
   it('leaves the mode untouched when the payload omits the track', () => {
     const state = {
-      ...trackViewerSettingsInitialState,
+      ...dataViewerSettingsInitialState,
       colorizeTrackBy: 'elevation' as const,
     };
 
-    const next = trackViewerSettingsReducer(
+    const next = dataViewerSettingsReducer(
       state,
-      trackViewerSetData({ focus: true }),
+      dataViewerSetData({ focus: true }),
     );
 
     expect(next.colorizeTrackBy).toBe('elevation');

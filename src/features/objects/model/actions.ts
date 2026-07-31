@@ -21,7 +21,7 @@ export const objectsSetResult =
 /**
  * Replaces the whole marker style (shape + color) applied to displayed objects.
  * A single whole-replace setter mirrors the other style settings
- * (`searchSetResultStyle`, `trackViewerSetStyle`); partial updates (e.g. from the
+ * (`searchSetResultStyle`, `dataViewerSetStyle`); partial updates (e.g. from the
  * `#objects-style=` URL param) merge against the current value before dispatch.
  */
 export const objectsSetStyle = createAction<{

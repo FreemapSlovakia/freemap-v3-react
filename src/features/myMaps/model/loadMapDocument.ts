@@ -100,7 +100,7 @@ const MapMapDataCompatSchema = z.preprocess(
 // Colorize is a global display preference (`trackViewerSettings`), not part of
 // the saved map document, so it is intentionally absent here; an old map's
 // `colorizeTrackBy` is simply ignored on load.
-const TrackViewerMapDataSchema = z.object({
+const DataViewerMapDataSchema = z.object({
   trackGeojson: GeoJSONFeatureCollectionSchema.nullable().optional(),
   trackUID: z.string().nullable().optional(),
   gpxUrl: z.string().nullable().optional(),
@@ -118,7 +118,7 @@ export const MapsLoadResponseSchema = z.object({
       .optional(),
     routePlanner: RoutePlannerMapDataCompatSchema.optional(),
     galleryFilter: GalleryFilterSchema.optional(),
-    trackViewer: TrackViewerMapDataSchema.optional(),
+    trackViewer: DataViewerMapDataSchema.optional(),
     map: MapMapDataCompatSchema.optional(),
     objectsV2: z.object({ active: z.array(z.string()) }).optional(),
   }),

@@ -2,8 +2,8 @@ import { setTool } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import {
-  trackViewerSetData,
-  trackViewerSetTrackUID,
+  dataViewerSetData,
+  dataViewerSetTrackUID,
 } from '@features/dataViewer/model/actions.js';
 import { storeTrackDurably } from '@features/dataViewer/trackStore.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
@@ -466,9 +466,9 @@ function handOverTrack(
   dispatch(elevationChartClose());
 
   // Not a server-shared track, so it carries no id to share it back by.
-  dispatch(trackViewerSetTrackUID(null));
+  dispatch(dataViewerSetTrackUID(null));
 
-  dispatch(trackViewerSetData({ trackGeojson }));
+  dispatch(dataViewerSetData({ trackGeojson }));
 
   // The track viewer's own toolbar is where the saved copy is worked on, so
   // open it beside the recorder rather than replacing it.

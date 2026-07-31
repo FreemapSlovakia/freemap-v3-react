@@ -1,8 +1,8 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
-  trackViewerDownloadTrack,
-  trackViewerSetData,
+  dataViewerDownloadTrack,
+  dataViewerSetData,
 } from '@features/dataViewer/model/actions.js';
 import { parseDataFile } from '@features/dataViewer/parseDataFile.js';
 import { loadDataViewerMessages } from '@features/dataViewer/translations/loadDataViewerMessages.js';
@@ -10,7 +10,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import z from 'zod';
 
 export const dataViewerDownloadTrackProcessor: Processor = {
-  actionCreator: trackViewerDownloadTrack,
+  actionCreator: dataViewerDownloadTrack,
   handle: async ({ dispatch, getState, toastError }) => {
     const { trackUID } = getState().trackViewer;
 
@@ -42,7 +42,7 @@ export const dataViewerDownloadTrackProcessor: Processor = {
         return;
       }
 
-      dispatch(trackViewerSetData({ trackGeojson }));
+      dispatch(dataViewerSetData({ trackGeojson }));
     } catch (err) {
       await toastError(err, loadDataViewerMessages, 'fetchingError');
     }

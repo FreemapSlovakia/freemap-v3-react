@@ -1,5 +1,5 @@
 import { useLoadDataFiles } from '@features/dataViewer/hooks/useLoadDataFiles.js';
-import { trackViewerToggleElevationChart } from '@features/dataViewer/model/actions.js';
+import { dataViewerToggleElevationChart } from '@features/dataViewer/model/actions.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -612,7 +612,7 @@ export function Main(): ReactElement {
                             variant="secondary"
                             active={elevationChartTarget === 'track-viewer'}
                             onClick={() =>
-                              dispatch(trackViewerToggleElevationChart())
+                              dispatch(dataViewerToggleElevationChart())
                             }
                             {...props}
                           >

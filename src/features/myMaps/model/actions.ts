@@ -1,4 +1,4 @@
-import type { TrackViewerState } from '@features/dataViewer/model/reducer.js';
+import type { DataViewerState } from '@features/dataViewer/model/reducer.js';
 import type { Line } from '@features/drawing/model/actions/drawingLineActions.js';
 import type { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { GalleryFilter } from '@features/gallery/model/actions.js';
@@ -28,7 +28,7 @@ export interface MapData<LT = Line, PT = DrawingPoint> {
   tracking?: Partial<Pick<TrackingState, 'trackedDevices'>>;
   routePlanner?: RoutePlannerMapData;
   galleryFilter?: GalleryFilter;
-  trackViewer?: Partial<TrackViewerState>;
+  trackViewer?: Partial<DataViewerState>;
   map?: Partial<
     Pick<
       MapState,

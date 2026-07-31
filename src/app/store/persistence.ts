@@ -1,7 +1,7 @@
 import { authInitialState } from '@features/auth/model/reducer.js';
 import { UserSchema, UserSettingsSchema } from '@features/auth/model/types.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
-import { trackViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
+import { dataViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
 import {
   DrawingSettingsCompatSchema,
   DrawingStyleSchema,
@@ -150,7 +150,7 @@ export const PersistedSearchSettingsSchema = z
   })
   .partial();
 
-export const PersistedTrackViewerSettingsSchema = z
+export const PersistedDataViewerSettingsSchema = z
   .object({
     style: DrawingStyleSchema.partial(),
     colorizeTrackBy: ColorizingModeSchema.nullable(),
@@ -368,8 +368,8 @@ const PERSIST: PersistEntry[] = [
   }),
   defineEntry({
     key: 'trackViewerSettings',
-    schema: PersistedTrackViewerSettingsSchema,
-    initial: trackViewerSettingsInitialState,
+    schema: PersistedDataViewerSettingsSchema,
+    initial: dataViewerSettingsInitialState,
     // Also read the colorize prefs from the legacy `trackViewer` blob. This
     // slice's key predates the colorize move (it persisted `style`), so the
     // fallback must fill colorize per key rather than be shadowed by the

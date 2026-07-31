@@ -2,7 +2,7 @@ import { convertToDrawing, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { changesetsSet } from '@features/changesets/model/actions.js';
-import { trackViewerDelete } from '@features/dataViewer/model/actions.js';
+import { dataViewerDelete } from '@features/dataViewer/model/actions.js';
 import {
   drawingLineAdd,
   type Point,
@@ -444,7 +444,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       // rather than leave both: a static duplicate over the original would
       // double the geometry and its click hit-area. The menu warns first when
       // there's recorded data to lose.
-      dispatch(trackViewerDelete());
+      dispatch(dataViewerDelete());
 
       selectAfterConvert(dispatch, getState, lineCount, pointCount);
     } else if (payload.type === 'changesets') {

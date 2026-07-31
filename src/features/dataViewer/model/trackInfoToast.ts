@@ -1,7 +1,7 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadDataViewerMessages } from '../translations/loadDataViewerMessages.js';
-import { trackViewerSetData } from './actions.js';
+import { dataViewerSetData } from './actions.js';
 
 /**
  * Toast showing the loaded track's stats (distance, elevation min/max, ascent,
@@ -9,9 +9,9 @@ import { trackViewerSetData } from './actions.js';
  * consumer so both render the same panel once elevation is settled.
  */
 export const trackInfoToast = toastsAdd({
-  id: 'trackViewer.trackInfo',
+  id: 'dataViewer.trackInfo',
   messageKey: 'info',
   messageLoader: loadDataViewerMessages,
-  cancelType: [clearMapFeatures.type, trackViewerSetData.type],
+  cancelType: [clearMapFeatures.type, dataViewerSetData.type],
   style: 'info',
 });

@@ -63,7 +63,7 @@ Still emitting at info level (non-blocking, optional cleanup):
 - [ ] **Reconcile toolbar Delete/Close buttons with their `kbd` shortcut.** A
       dedicated toolbar button can dispatch a feature-specific action while its
       `kbd` hint advertises a global key that resolves differently. The dataViewer
-      trash button dispatches `trackViewerDelete()` but shows `kbd="Del"`, and the
+      trash button dispatches `dataViewerDelete()` but shows `kbd="Del"`, and the
       `Del` key (`keyboardHandler` → `deleteFeature()` → `deleteProcessor`) is
       selection-aware — so with a track loaded *and* a drawing selected, the button
       deletes the track while `Del` deletes the drawing. The same mismatch applies
@@ -253,7 +253,7 @@ off that — never re-derive "is this a track?" from density/timestamps.
       processors no longer drop `MultiLineString`. `densifyAlong` /
       `ensureRenderGeojson` densify a `MultiLineString` per segment (no inserts
       across the gap), so a server elevation override gets the same chart detail
-      as a single-segment track. A new `trackViewerSetElevation` processor
+      as a single-segment track. A new `dataViewerSetElevation` processor
       refreshes an already-open chart when elevation is refilled (it no longer
       goes stale until re-opened). The "more info" stats are now multi-segment
       aware (climb/descent measured per segment).
@@ -271,25 +271,41 @@ off that — never re-derive "is this a track?" from density/timestamps.
       the API-sampled path has none and uses spatial pairing. **Refinement:** a
       very sparse line could still miss a mid-segment waypoint — could project
       onto the nearest segment rather than the nearest vertex.
-- [ ] **Finish renaming the feature away from "track viewer".** It's a general
-      geodata viewer (GPX/KML/KMZ/TCX/GeoJSON, points/lines/polygons,
-      multi-file), so the `trackViewer` name is misleading. The directory is
-      `src/features/dataViewer/` and the file-level names follow it —
-      `DataViewer*` components, `dataViewer*Processor`, `DataViewerMessages` /
-      `loadDataViewerMessages` / `useDataViewerMessages`, `useLoadDataFiles`,
-      `useDataMergeMode`, `parseDataFile(s)`. What still carries the old name:
-      the redux slices (`trackViewer`, `trackViewerSettings`), their
-      state/actions (`trackViewer*`, `trackGeojson`, `TRACK_VIEWER_*`), the
-      per-feature message keys and toast ids, and the track-flavoured helpers
+- [~] **Rename the feature away from "track viewer".** It's a general geodata
+      viewer (GPX/KML/KMZ/TCX/GeoJSON, points/lines/polygons, multi-file), so
+      the `trackViewer` name was misleading. Done: the directory
+      (`src/features/dataViewer/`), the filenames and their namesakes
+      (`DataViewer*` components, `dataViewer*Processor`, `DataViewerMessages` /
+      `load…` / `use…`, `useLoadDataFiles`, `useDataMergeMode`,
+      `parseDataFile(s)`), every action creator (`dataViewer*`) and its
+      `DATA_VIEWER_*` type string, the reducers/state/schema types
+      (`DataViewerState`, `dataViewerReducer`, `PersistedDataViewerSettingsSchema`,
+      `DataViewerMapDataSchema`, …), the toast ids (`dataViewer.*`) and the
+      `tools.dataViewer` message key.
+
+      **What deliberately still says `trackViewer`, because the literal is
+      serialized somewhere and renaming it would strand existing data:**
+      - the redux slice keys `trackViewer` / `trackViewerSettings` — they double
+        as the localStorage keys (`PersistEntry.key` is `keyof RootState`), and
+        `fallbackKey: 'trackViewer'` reads the pre-settings-split blob;
+      - the my-maps map-document fields `trackViewer: { trackGeojson, trackUID,
+        gpxUrl }`, which are in every saved map on the server;
+      - the idb database name `fm-trackViewer` in `trackStore.ts`;
+      - the Matomo event label `TrackViewer` (`elevationChart/model/processor.ts`),
+        splitting it would split the historical stats;
+      - the URL tokens: `tools=import-file`, the legacy `track-viewer` /
+        `#show=upload-track` / `gpx-url=` / `load=` aliases,
+        `elevation-chart=track-viewer`, `track-uid=`, `import-url=`,
+        `track-colorize-by=`, `track-style=`.
+
+      Renaming the slices later needs a `storageKey` override on `PersistEntry`
+      (so the saved blob keeps the old name) plus an explicit map-document
+      mapping. Separately, the track-flavoured helpers inside the feature
       (`trackStore`, `trackSelection`, `trackEndpoints`, `trackInfoToast`,
-      `useStartFinishPoints`, `trackWaypoints`, `TrackPoint`).
-      **Keep serialized identifiers stable for back-compat** — the slice keys
-      double as the persisted localStorage keys (`PersistEntry.key` is
-      `keyof RootState`), and the URL tokens (`tools=import-file`, the legacy
-      `track-viewer` / `#show=upload-track` / `gpx-url=` / `load=` aliases,
-      `elevation-chart=track-viewer`) must keep working — so renaming the slices
-      needs a `storageKey` override on `PersistEntry` or an equivalent
-      migration. Do it in its own PR to keep the diff reviewable.
+      `useStartFinishPoints`, `trackWaypoints`, `TrackPoint`,
+      `renderTrackGeojson`, `selectedTrackIndex`) still read as track-only and
+      could be generalized — but that's a semantic rename, not this mechanical
+      one.
 
 ## Live tracking
 

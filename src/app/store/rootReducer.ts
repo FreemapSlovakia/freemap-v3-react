@@ -2,8 +2,8 @@ import { authReducer } from '@features/auth/model/reducer.js';
 import { cachedMapsReducer } from '@features/cachedMaps/model/reducer.js';
 import { changesetReducer } from '@features/changesets/model/reducer.js';
 import { cookieConsentReducer } from '@features/cookieConsent/model/reducer.js';
-import { trackViewerReducer } from '@features/dataViewer/model/reducer.js';
-import { trackViewerSettingsReducer } from '@features/dataViewer/model/settingsReducer.js';
+import { dataViewerReducer } from '@features/dataViewer/model/reducer.js';
+import { dataViewerSettingsReducer } from '@features/dataViewer/model/settingsReducer.js';
 import { drawingLinesReducer } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import { drawingPointsReducer } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import { drawingSettingsReducer } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
@@ -71,8 +71,8 @@ export const reducers = {
   toasts: toastsReducer,
   tracking: trackingReducer,
   trackingSettings: trackingSettingsReducer,
-  trackViewer: trackViewerReducer,
-  trackViewerSettings: trackViewerSettingsReducer,
+  trackViewer: dataViewerReducer,
+  trackViewerSettings: dataViewerSettingsReducer,
   websocket: websocketReducer,
   myMaps: mapsReducer,
   wiki: wikiReducer,

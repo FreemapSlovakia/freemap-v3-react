@@ -145,7 +145,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Kreslení bodů',
     drawLines: 'Kreslení čar',
     drawPolygons: 'Kreslení polygonů',
-    trackViewer: 'Trasy a data',
+    dataViewer: 'Trasy a data',
     changesets: 'Změny v mapě',
     mapDetails: 'Detaily v mapě',
     tracking: 'Sledování',

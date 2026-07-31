@@ -47,13 +47,13 @@ import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   ColorizingModeSchema,
-  trackViewerColorizeTrackBy,
-  trackViewerDelete,
-  trackViewerResolveElevationPrompt,
-  trackViewerSetColorizeLegend,
-  trackViewerSetElevationPrompt,
-  trackViewerSetSelectedTrack,
-  trackViewerToggleElevationChart,
+  dataViewerColorizeTrackBy,
+  dataViewerDelete,
+  dataViewerResolveElevationPrompt,
+  dataViewerSetColorizeLegend,
+  dataViewerSetElevationPrompt,
+  dataViewerSetSelectedTrack,
+  dataViewerToggleElevationChart,
 } from '../model/actions.js';
 import { trackInfoToast } from '../model/trackInfoToast.js';
 import { featureKind } from '../provenance.js';
@@ -106,7 +106,7 @@ export function DataViewerMenu(): ReactElement {
     } else {
       dispatch(
         toastsAdd({
-          id: 'trackViewer.loginToSaveMap',
+          id: 'dataViewer.loginToSaveMap',
           messageKey: 'loginToSaveMap',
           messageLoader: loadDataViewerMessages,
           style: 'warning',
@@ -224,7 +224,7 @@ export function DataViewerMenu(): ReactElement {
     // With only some points missing, defer to the adaptive modal so the user
     // can fill just the gaps instead of overwriting the recorded values.
     if (coverage === 'partial') {
-      dispatch(trackViewerSetElevationPrompt({ type: 'update' }));
+      dispatch(dataViewerSetElevationPrompt({ type: 'update' }));
 
       return;
     }
@@ -250,7 +250,7 @@ export function DataViewerMenu(): ReactElement {
       })
     ) {
       dispatch(
-        trackViewerResolveElevationPrompt({
+        dataViewerResolveElevationPrompt({
           mode: 'all',
           consumer: { type: 'update' },
         }),
@@ -329,7 +329,7 @@ export function DataViewerMenu(): ReactElement {
             name={tvm?.trackLabel}
             value={String(activeTrackIndex ?? '')}
             onSelect={(value) => {
-              dispatch(trackViewerSetSelectedTrack(Number(value)));
+              dispatch(dataViewerSetSelectedTrack(Number(value)));
             }}
             options={trackLines.map(({ feature, index }, i) => ({
               value: String(index),
@@ -348,7 +348,7 @@ export function DataViewerMenu(): ReactElement {
                 variant="secondary"
                 active={elevationChartActive}
                 onClick={() => {
-                  dispatch(trackViewerToggleElevationChart());
+                  dispatch(dataViewerToggleElevationChart());
                 }}
                 {...props}
               >
@@ -369,7 +369,7 @@ export function DataViewerMenu(): ReactElement {
             value={colorizeTrackBy ?? 'none'}
             onSelect={(approach) => {
               if (approach === LEGEND_ITEM) {
-                dispatch(trackViewerSetColorizeLegend());
+                dispatch(dataViewerSetColorizeLegend());
 
                 return;
               }
@@ -387,10 +387,10 @@ export function DataViewerMenu(): ReactElement {
                 needsElevationDecision
               ) {
                 dispatch(
-                  trackViewerSetElevationPrompt({ type: 'colorize', mode }),
+                  dataViewerSetElevationPrompt({ type: 'colorize', mode }),
                 );
               } else {
-                dispatch(trackViewerColorizeTrackBy(mode));
+                dispatch(dataViewerColorizeTrackBy(mode));
               }
             }}
             options={[
@@ -430,7 +430,7 @@ export function DataViewerMenu(): ReactElement {
                   // The info stats depend on elevation, so settle it first when
                   // some is missing and the user hasn't decided yet.
                   if (needsElevationDecision) {
-                    dispatch(trackViewerSetElevationPrompt({ type: 'info' }));
+                    dispatch(dataViewerSetElevationPrompt({ type: 'info' }));
                   } else {
                     dispatch(trackInfoToast);
                   }
@@ -474,7 +474,7 @@ export function DataViewerMenu(): ReactElement {
           </Dropdown>
         )}
 
-        {hasTrack && <DeleteButton action={trackViewerDelete()} />}
+        {hasTrack && <DeleteButton action={dataViewerDelete()} />}
       </ToolMenu>
 
       {enableElevationChart && colorizeLegend && colorizeTrackBy && (

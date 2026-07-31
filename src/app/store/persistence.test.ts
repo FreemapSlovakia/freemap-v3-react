@@ -1,6 +1,6 @@
 import { authInitialState } from '@features/auth/model/reducer.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
-import { trackViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
+import { dataViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
 import { drawingSettingsInitialState } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
@@ -241,7 +241,7 @@ describe('getInitialState — merge over initialState', () => {
     seed({ trackViewerSettings: { colorizeTrackBy: 'heartRate' } });
 
     expect(getInitialState().trackViewerSettings).toEqual({
-      ...trackViewerSettingsInitialState,
+      ...dataViewerSettingsInitialState,
       colorizeTrackBy: 'heartRate',
     });
   });
@@ -252,7 +252,7 @@ describe('getInitialState — merge over initialState', () => {
     // letting the present primary shadow it.
     seed({
       trackViewerSettings: {
-        style: { ...trackViewerSettingsInitialState.style, color: '#abcdef' },
+        style: { ...dataViewerSettingsInitialState.style, color: '#abcdef' },
       },
       trackViewer: { colorizeTrackBy: 'heartRate', colorizeLegend: false },
     });

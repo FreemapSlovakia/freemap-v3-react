@@ -1,6 +1,6 @@
 import { deleteFeature, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { trackViewerDelete } from '@features/dataViewer/model/actions.js';
+import { dataViewerDelete } from '@features/dataViewer/model/actions.js';
 import {
   drawingLineDelete,
   drawingLineDeletePoint,
@@ -55,7 +55,7 @@ export const deleteProcessor: Processor = {
 
       // dispatch(searchSetQuery({ query: '' }));
     } else if (state.main.tools.includes('import-file')) {
-      dispatch(trackViewerDelete());
+      dispatch(dataViewerDelete());
     }
   },
 };

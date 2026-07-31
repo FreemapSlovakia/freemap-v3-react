@@ -7,8 +7,8 @@ import { Button, Modal } from 'react-bootstrap';
 import { FaMountain, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
-  trackViewerResolveElevationPrompt,
-  trackViewerSetElevationPrompt,
+  dataViewerResolveElevationPrompt,
+  dataViewerSetElevationPrompt,
 } from '../model/actions.js';
 import { isTrackLine } from '../trackSelection.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
@@ -34,10 +34,10 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
 
   const ef = tvm.elevationFill;
 
-  const close = () => dispatch(trackViewerSetElevationPrompt(null));
+  const close = () => dispatch(dataViewerSetElevationPrompt(null));
 
   const resolve = (mode: 'missing' | 'all' | 'keep') =>
-    dispatch(trackViewerResolveElevationPrompt({ mode, consumer }));
+    dispatch(dataViewerResolveElevationPrompt({ mode, consumer }));
 
   // "Update elevation" is an explicit change request, so offering "leave
   // unchanged" there would just duplicate Cancel.

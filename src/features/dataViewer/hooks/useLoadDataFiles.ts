@@ -5,10 +5,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { FeatureCollection } from 'geojson';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  trackViewerSetData,
-  trackViewerSetTrackUID,
-} from '../model/actions.js';
+import { dataViewerSetData, dataViewerSetTrackUID } from '../model/actions.js';
 import { parseDataFiles } from '../parseDataFiles.js';
 import { loadDataViewerMessages } from '../translations/loadDataViewerMessages.js';
 import { useDataMergeMode } from './useDataMergeMode.js';
@@ -39,7 +36,7 @@ export function useLoadDataFiles(): (files: File[]) => Promise<void> {
       if (failed.length) {
         dispatch(
           toastsAdd({
-            id: 'trackViewer.loadError',
+            id: 'dataViewer.loadError',
             messageKey: merged ? 'someFilesFailed' : 'invalidFormat',
             messageParams: { names: failed.join(', ') },
             messageLoader: loadDataViewerMessages,
@@ -69,9 +66,9 @@ export function useLoadDataFiles(): (files: File[]) => Promise<void> {
       dispatch(elevationChartClose());
 
       // A fresh local import has no server-shared track id.
-      dispatch(trackViewerSetTrackUID(null));
+      dispatch(dataViewerSetTrackUID(null));
 
-      dispatch(trackViewerSetData({ trackGeojson, focus: true }));
+      dispatch(dataViewerSetData({ trackGeojson, focus: true }));
 
       dispatch(setActiveModal(null));
 

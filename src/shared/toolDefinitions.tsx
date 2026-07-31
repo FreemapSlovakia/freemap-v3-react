@@ -128,7 +128,7 @@ export const toolDefinitions: ToolDefinition[] = [
   {
     tool: 'import-file',
     icon: <MdShapeLine />,
-    msgKey: 'trackViewer',
+    msgKey: 'dataViewer',
     kbd: 'KeyG',
   },
   {

@@ -1,12 +1,12 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import {
-  trackViewerDelete,
-  trackViewerDownloadTrack,
-  trackViewerGpxLoad,
-  trackViewerSetData,
-  trackViewerSetGpxUrl,
-  trackViewerSetTrackUID,
+  dataViewerDelete,
+  dataViewerDownloadTrack,
+  dataViewerGpxLoad,
+  dataViewerSetData,
+  dataViewerSetGpxUrl,
+  dataViewerSetTrackUID,
 } from '@features/dataViewer/model/actions.js';
 import type { FeatureCollection } from 'geojson';
 import { getMapRecord } from '../../mapStore.js';
@@ -86,19 +86,19 @@ export const mapsRestoreProcessor: Processor = {
 
       if (track) {
         if (track !== current) {
-          dispatch(trackViewerSetData({ trackGeojson: track }));
+          dispatch(dataViewerSetData({ trackGeojson: track }));
         }
 
-        dispatch(trackViewerSetTrackUID(uid));
+        dispatch(dataViewerSetTrackUID(uid));
 
-        dispatch(trackViewerSetGpxUrl(url));
+        dispatch(dataViewerSetGpxUrl(url));
 
         return;
       }
 
       // This map has no track, so drop one left over from the map before it.
       if (current) {
-        dispatch(trackViewerDelete());
+        dispatch(dataViewerDelete());
       }
 
       // No geometry, but a source names one — the map's own, or failing that
@@ -110,11 +110,11 @@ export const mapsRestoreProcessor: Processor = {
       // Both, when the URL names both — as the two independent `track-uid=` /
       // `import-url=` fetches `handleLocationChange` deferred would have done.
       if (sourceUid) {
-        dispatch(trackViewerDownloadTrack(sourceUid));
+        dispatch(dataViewerDownloadTrack(sourceUid));
       }
 
       if (sourceUrl) {
-        dispatch(trackViewerGpxLoad(sourceUrl));
+        dispatch(dataViewerGpxLoad(sourceUrl));
       }
     };
 
@@ -126,11 +126,11 @@ export const mapsRestoreProcessor: Processor = {
       // `handleLocationChange` deferred the track the URL names to this
       // processor, so it has to be started here or it never loads at all.
       if (trackUID !== undefined) {
-        dispatch(trackViewerDownloadTrack(trackUID));
+        dispatch(dataViewerDownloadTrack(trackUID));
       }
 
       if (gpxUrl !== undefined) {
-        dispatch(trackViewerGpxLoad(gpxUrl));
+        dispatch(dataViewerGpxLoad(gpxUrl));
       }
 
       return;

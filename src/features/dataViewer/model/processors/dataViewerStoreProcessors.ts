@@ -8,13 +8,13 @@ import {
   storeTrack,
 } from '../../trackStore.js';
 import {
-  trackViewerDelete,
-  trackViewerDownloadTrack,
-  trackViewerGpxLoad,
-  trackViewerRestoreStored,
-  trackViewerSetData,
-  trackViewerSetGpxUrl,
-  trackViewerSetTrackUID,
+  dataViewerDelete,
+  dataViewerDownloadTrack,
+  dataViewerGpxLoad,
+  dataViewerRestoreStored,
+  dataViewerSetData,
+  dataViewerSetGpxUrl,
+  dataViewerSetTrackUID,
 } from '../actions.js';
 
 /**
@@ -56,16 +56,16 @@ function homedElsewhere(state: RootState): boolean {
  */
 export const dataViewerStoreProcessor: Processor = {
   actionCreator: [
-    trackViewerSetData,
-    trackViewerSetTrackUID,
-    trackViewerSetGpxUrl,
+    dataViewerSetData,
+    dataViewerSetTrackUID,
+    dataViewerSetGpxUrl,
     // The URL's own loaders: their reducer cases are what set `trackUID` and
     // `gpxUrl`, and listening for them drops the stored copy as soon as the URL
     // names a track — rather than only if its fetch succeeds. A fetch that fails
     // would otherwise leave the copy and its flag behind, for the next reload to
     // race against the download.
-    trackViewerDownloadTrack,
-    trackViewerGpxLoad,
+    dataViewerDownloadTrack,
+    dataViewerGpxLoad,
     mapsSetMeta,
   ],
   handle: async ({ getState }) => {
@@ -91,7 +91,7 @@ export const dataViewerStoreProcessor: Processor = {
  * reload as a track they had already thrown away.
  */
 export const dataViewerForgetStoredProcessor: Processor = {
-  actionCreator: [trackViewerDelete, clearMapFeatures],
+  actionCreator: [dataViewerDelete, clearMapFeatures],
   handle: async () => {
     try {
       await deleteStoredTrack();
@@ -107,7 +107,7 @@ export const dataViewerForgetStoredProcessor: Processor = {
  * shared track — because that is the thing the user actually asked for.
  */
 export const dataViewerRestoreStoredProcessor: Processor = {
-  actionCreator: trackViewerRestoreStored,
+  actionCreator: dataViewerRestoreStored,
   handle: async ({ dispatch, getState }) => {
     const record = await getStoredTrack();
 
@@ -130,8 +130,8 @@ export const dataViewerRestoreStoredProcessor: Processor = {
 
     // Nothing on the server to share it back by: whatever it was, it is a local
     // track now.
-    dispatch(trackViewerSetTrackUID(null));
+    dispatch(dataViewerSetTrackUID(null));
 
-    dispatch(trackViewerSetData({ trackGeojson: record.geojson }));
+    dispatch(dataViewerSetData({ trackGeojson: record.geojson }));
   },
 };

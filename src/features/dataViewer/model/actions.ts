@@ -13,8 +13,8 @@ export { type ColorizingMode, ColorizingModeSchema };
  * The style applied to imported track/line/polygon/point features that carry no
  * style of their own. Independent of the drawing tool's defaults.
  */
-export const trackViewerSetStyle = createAction<DrawingStyle>(
-  'TRACK_VIEWER_SET_STYLE',
+export const dataViewerSetStyle = createAction<DrawingStyle>(
+  'DATA_VIEWER_SET_STYLE',
 );
 
 export interface TrackPoint extends LatLon {
@@ -23,13 +23,13 @@ export interface TrackPoint extends LatLon {
   length: number;
 }
 
-export const trackViewerSetData = createAction<{
+export const dataViewerSetData = createAction<{
   trackGeojson?: FeatureCollection;
   focus?: boolean;
-}>('TRACK_VIEWER_SET_TRACK_DATA');
+}>('DATA_VIEWER_SET_TRACK_DATA');
 
-export const trackViewerSetTrackUID = createAction<string | null>(
-  'TRACK_VIEWER_SET_TRACK_UID',
+export const dataViewerSetTrackUID = createAction<string | null>(
+  'DATA_VIEWER_SET_TRACK_UID',
 );
 
 /**
@@ -37,20 +37,20 @@ export const trackViewerSetTrackUID = createAction<string | null>(
  * `trackStore.ts`: the flag on the entry is what says there is one, and a load
  * that carries no flag evicts the store instead.
  */
-export const trackViewerRestoreStored = createAction(
-  'TRACK_VIEWER_RESTORE_STORED',
+export const dataViewerRestoreStored = createAction(
+  'DATA_VIEWER_RESTORE_STORED',
 );
 
-export const trackViewerDownloadTrack = createAction<string>(
-  'TRACK_VIEWER_DOWNLOAD_TRACK',
+export const dataViewerDownloadTrack = createAction<string>(
+  'DATA_VIEWER_DOWNLOAD_TRACK',
 );
 
-export const trackViewerColorizeTrackBy = createAction<ColorizingMode | null>(
-  'TRACK_VIEWER_COLORIZE_TRACK_BY',
+export const dataViewerColorizeTrackBy = createAction<ColorizingMode | null>(
+  'DATA_VIEWER_COLORIZE_TRACK_BY',
 );
 
-export const trackViewerSetColorizeLegend = createAction<boolean | undefined>(
-  'TRACK_VIEWER_SET_COLORIZE_LEGEND',
+export const dataViewerSetColorizeLegend = createAction<boolean | undefined>(
+  'DATA_VIEWER_SET_COLORIZE_LEGEND',
 );
 
 /**
@@ -58,12 +58,12 @@ export const trackViewerSetColorizeLegend = createAction<boolean | undefined>(
  * info" and the map highlight act on when several are loaded; `null` falls back
  * to the first line. Reset whenever the loaded data changes.
  */
-export const trackViewerSetSelectedTrack = createAction<number | null>(
-  'TRACK_VIEWER_SET_SELECTED_TRACK',
+export const dataViewerSetSelectedTrack = createAction<number | null>(
+  'DATA_VIEWER_SET_SELECTED_TRACK',
 );
 
-export const trackViewerToggleElevationChart = createAction(
-  'TRACK_VIEWER_TOGGLE_ELEVATION_CHART',
+export const dataViewerToggleElevationChart = createAction(
+  'DATA_VIEWER_TOGGLE_ELEVATION_CHART',
 );
 
 /**
@@ -84,8 +84,8 @@ export type ElevationConsumer =
  * Opens the elevation fill/override prompt for the given consumer; `null`
  * closes it.
  */
-export const trackViewerSetElevationPrompt =
-  createAction<ElevationConsumer | null>('TRACK_VIEWER_SET_ELEVATION_PROMPT');
+export const dataViewerSetElevationPrompt =
+  createAction<ElevationConsumer | null>('DATA_VIEWER_SET_ELEVATION_PROMPT');
 
 /**
  * User's answer to the elevation prompt: fill only the gaps, override every
@@ -95,36 +95,36 @@ export const trackViewerSetElevationPrompt =
 /** How the prompt fills elevation: gaps only, every point, or not at all. */
 export type ElevationFillMode = 'missing' | 'all' | 'keep';
 
-export const trackViewerResolveElevationPrompt = createAction<{
+export const dataViewerResolveElevationPrompt = createAction<{
   mode: ElevationFillMode;
   consumer: ElevationConsumer;
-}>('TRACK_VIEWER_RESOLVE_ELEVATION_PROMPT');
+}>('DATA_VIEWER_RESOLVE_ELEVATION_PROMPT');
 
 /**
  * Caches server-resolved elevation back into the loaded track, with the source
  * tokens the API named for it so the chart can credit them later. Unlike
- * {@link trackViewerSetData} this is not a fresh load, so it preserves the
+ * {@link dataViewerSetData} this is not a fresh load, so it preserves the
  * user's elevation decision for the track.
  */
-export const trackViewerSetElevation = createAction<{
+export const dataViewerSetElevation = createAction<{
   trackGeojson: FeatureCollection;
   sources: string[];
-}>('TRACK_VIEWER_SET_ELEVATION');
+}>('DATA_VIEWER_SET_ELEVATION');
 
 /**
  * Caches a render-only densified copy of the track (extra DEM-sampled points on
  * long segments) for the chart, colorize and details. It is never exported and
  * never treated as the source; it is cleared whenever `trackGeojson` changes.
  */
-export const trackViewerSetRenderGeojson = createAction<FeatureCollection>(
-  'TRACK_VIEWER_SET_RENDER_GEOJSON',
+export const dataViewerSetRenderGeojson = createAction<FeatureCollection>(
+  'DATA_VIEWER_SET_RENDER_GEOJSON',
 );
 
 /** Records the source URL without re-fetching, when the track is already here. */
-export const trackViewerSetGpxUrl = createAction<string | null>(
-  'TRACK_VIEWER_SET_GPX_URL',
+export const dataViewerSetGpxUrl = createAction<string | null>(
+  'DATA_VIEWER_SET_GPX_URL',
 );
 
-export const trackViewerGpxLoad = createAction<string>('TRACK_VIEWER_GPX_LOAD');
+export const dataViewerGpxLoad = createAction<string>('DATA_VIEWER_GPX_LOAD');
 
-export const trackViewerDelete = createAction('TRACK_VIEWER_DELETE');
+export const dataViewerDelete = createAction('DATA_VIEWER_DELETE');

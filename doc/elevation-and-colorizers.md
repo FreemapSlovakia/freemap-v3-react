@@ -478,7 +478,7 @@ gives it a home.
 **The history entry decides whether it comes back.** `storeTrack` `replaceState`s a
 `tr: true` flag onto the current entry as it writes; `urlProcessor` carries the flag
 onto the entries it writes afterwards; `handleLocationChange` dispatches
-`trackViewerRestoreStored` when it sees it. So reloading the page you were on puts
+`dataViewerRestoreStored` when it sees it. So reloading the page you were on puts
 the track back, while a fresh visit or a shared link is never ambushed by a track
 from a previous session.
 
@@ -491,7 +491,7 @@ write and its own delete reclaim.
 The write is validated with the same schema the read uses, so a record that would
 be discarded on the way back is refused on the way in rather than counted as a
 copy. Otherwise it is best effort (`dataViewerStoreProcessor` logs and moves on),
-and the copy is dropped on `trackViewerDelete` and `clearMapFeatures` — one that
+and the copy is dropped on `dataViewerDelete` and `clearMapFeatures` — one that
 outlived the track would come back as something the user had already thrown away.
 The restore also stands down for a track the URL merely *names*: `homedElsewhere`
 covers a fetch that is still in flight, which IndexedDB would otherwise beat, and

@@ -7,7 +7,7 @@ import { ColorizingModeSchema } from './index.js';
 // persisted `{ colorizeBy, colorizeLegend }` shape (used by the two slices
 // whose field is named `colorizeBy`). The colorize-mode *setter* stays inline
 // in each reducer because trackViewer's field is `colorizeTrackBy` (matching
-// its `track-colorize-by` URL param and `trackViewerColorizeTrackBy` action),
+// its `track-colorize-by` URL param and `dataViewerColorizeTrackBy` action),
 // so a shared setter would need a per-feature field accessor that saves nothing.
 
 /**

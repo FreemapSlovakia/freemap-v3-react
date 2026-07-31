@@ -397,7 +397,7 @@ Android's "clear storage", or a delete from another page.
 ## Handing the track to the rest of the app
 
 **One route: it becomes the track viewer's track.** `handOverTrack` gives
-`recorderSegmentsToFeatureCollection` to `trackViewerSetData`, after which the
+`recorderSegmentsToFeatureCollection` to `dataViewerSetData`, after which the
 recording is an ordinary loaded track — elevation, colorize, the elevation
 chart, "more info", convert-to-drawing and every export target work on it
 without knowing the recorder exists.
@@ -435,7 +435,7 @@ pessimistic:
    `errors.notStored`), with the track still on screen to export.
 5. Only now `DELETE /track`.
 
-The store writes on `trackViewerSetData` anyway, so step 4 is the same write —
+The store writes on `dataViewerSetData` anyway, so step 4 is the same write —
 awaited, reading the answer, and asking for persistence, because what follows it
 cannot be undone. `storeTrack` skips a re-write of the object it stored last, so
 the two paths cost one write.

@@ -5,11 +5,11 @@ import {
 } from '@features/changesets/model/actions.js';
 import {
   type ColorizingMode,
-  trackViewerColorizeTrackBy,
-  trackViewerDownloadTrack,
-  trackViewerGpxLoad,
-  trackViewerRestoreStored,
-  trackViewerSetStyle,
+  dataViewerColorizeTrackBy,
+  dataViewerDownloadTrack,
+  dataViewerGpxLoad,
+  dataViewerRestoreStored,
+  dataViewerSetStyle,
 } from '@features/dataViewer/model/actions.js';
 import {
   drawingLineSetLines,
@@ -359,7 +359,7 @@ export function handleLocationChange(store: MyStore): void {
     if (restore) {
       restore.trackUID = trackUID;
     } else {
-      dispatch(trackViewerDownloadTrack(trackUID));
+      dispatch(dataViewerDownloadTrack(trackUID));
     }
   }
 
@@ -367,10 +367,10 @@ export function handleLocationChange(store: MyStore): void {
 
   if (typeof colorizeTrackBy === 'string') {
     if (getState().trackViewerSettings.colorizeTrackBy !== colorizeTrackBy) {
-      dispatch(trackViewerColorizeTrackBy(colorizeTrackBy as ColorizingMode));
+      dispatch(dataViewerColorizeTrackBy(colorizeTrackBy as ColorizingMode));
     }
   } else if (getState().trackViewerSettings.colorizeTrackBy) {
-    dispatch(trackViewerColorizeTrackBy(null));
+    dispatch(dataViewerColorizeTrackBy(null));
   }
 
   handleInfoPoint(getState, dispatch, query);
@@ -472,7 +472,7 @@ export function handleLocationChange(store: MyStore): void {
     if (restore) {
       restore.gpxUrl = gpxUrl;
     } else {
-      dispatch(trackViewerGpxLoad(gpxUrl));
+      dispatch(dataViewerGpxLoad(gpxUrl));
     }
   }
 
@@ -898,7 +898,7 @@ export function handleLocationChange(store: MyStore): void {
   // ride the first tab is still holding. Hygiene is left to the store being a
   // single entry that its own delete and the next write reclaim.
   if (tr) {
-    dispatch(trackViewerRestoreStored());
+    dispatch(dataViewerRestoreStored());
   }
 
   setUrlUpdatingEnabled(true);
@@ -1264,7 +1264,7 @@ function handleFeatureStyles(
     };
 
     if (JSON.stringify(next) !== JSON.stringify(cur)) {
-      dispatch(trackViewerSetStyle(next));
+      dispatch(dataViewerSetStyle(next));
     }
   }
 

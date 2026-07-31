@@ -74,7 +74,7 @@ export function chartIdentity(state: RootState): unknown {
       // The whole collection, not the active feature within it: resolving that
       // means scanning every imported feature, and this runs for both the new
       // and the previous state on every dispatched action. Which track is
-      // active is caught by `trackViewerSetSelectedTrack` instead.
+      // active is caught by `dataViewerSetSelectedTrack` instead.
       return (
         state.trackViewer.renderTrackGeojson ?? state.trackViewer.trackGeojson
       );

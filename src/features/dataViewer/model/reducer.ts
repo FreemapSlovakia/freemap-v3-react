@@ -5,22 +5,22 @@ import { osmClear } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { FeatureCollection } from 'geojson';
 import {
+  dataViewerDelete,
+  dataViewerDownloadTrack,
+  dataViewerGpxLoad,
+  dataViewerResolveElevationPrompt,
+  dataViewerSetData,
+  dataViewerSetElevation,
+  dataViewerSetElevationPrompt,
+  dataViewerSetGpxUrl,
+  dataViewerSetRenderGeojson,
+  dataViewerSetSelectedTrack,
+  dataViewerSetTrackUID,
   type ElevationConsumer,
   type ElevationFillMode,
-  trackViewerDelete,
-  trackViewerDownloadTrack,
-  trackViewerGpxLoad,
-  trackViewerResolveElevationPrompt,
-  trackViewerSetData,
-  trackViewerSetElevation,
-  trackViewerSetElevationPrompt,
-  trackViewerSetGpxUrl,
-  trackViewerSetRenderGeojson,
-  trackViewerSetSelectedTrack,
-  trackViewerSetTrackUID,
 } from './actions.js';
 
-export interface TrackViewerStateBase {
+export interface DataViewerStateBase {
   trackGeojson: FeatureCollection | null;
   // Render-only densified copy of `trackGeojson` (extra DEM-sampled points on
   // long segments). A cache: `null` means consumers read `trackGeojson`. Never
@@ -30,7 +30,7 @@ export interface TrackViewerStateBase {
   gpxUrl: string | null;
 }
 
-export interface TrackViewerState extends TrackViewerStateBase {
+export interface DataViewerState extends DataViewerStateBase {
   elevationPrompt: ElevationConsumer | null;
   // The user's elevation decision for the loaded track: 'undecided' until they
   // answer the prompt (so we don't ask again, and the info panel can report the
@@ -50,14 +50,14 @@ export interface TrackViewerState extends TrackViewerStateBase {
 
 export type ElevationDecision = 'undecided' | ElevationFillMode;
 
-export const cleanState: TrackViewerStateBase = {
+export const cleanState: DataViewerStateBase = {
   trackGeojson: null,
   renderTrackGeojson: null,
   trackUID: null,
   gpxUrl: null, // TODO to separate reducer (?)
 };
 
-export const trackViewerInitialState: TrackViewerState = {
+export const dataViewerInitialState: DataViewerState = {
   elevationPrompt: null,
   elevationDecision: 'undecided',
   elevationSources: [],
@@ -65,13 +65,13 @@ export const trackViewerInitialState: TrackViewerState = {
   ...cleanState,
 };
 
-export const trackViewerReducer = createReducer(
-  trackViewerInitialState,
+export const dataViewerReducer = createReducer(
+  dataViewerInitialState,
   (builder) =>
     builder
-      .addCase(clearMapFeatures, () => trackViewerInitialState)
-      .addCase(trackViewerDelete, () => trackViewerInitialState)
-      .addCase(trackViewerSetData, (state, action) => {
+      .addCase(clearMapFeatures, () => dataViewerInitialState)
+      .addCase(dataViewerDelete, () => dataViewerInitialState)
+      .addCase(dataViewerSetData, (state, action) => {
         // A new track is a fresh elevation decision.
         if (action.payload.trackGeojson) {
           state.trackGeojson = action.payload.trackGeojson;
@@ -87,7 +87,7 @@ export const trackViewerReducer = createReducer(
           state.selectedTrackIndex = null;
         }
       })
-      .addCase(trackViewerSetElevation, (state, action) => {
+      .addCase(dataViewerSetElevation, (state, action) => {
         state.trackGeojson = action.payload.trackGeojson;
 
         state.elevationSources = action.payload.sources;
@@ -95,37 +95,37 @@ export const trackViewerReducer = createReducer(
         // Re-enriched elevation invalidates the densified render cache.
         state.renderTrackGeojson = null;
       })
-      .addCase(trackViewerSetRenderGeojson, (state, action) => {
+      .addCase(dataViewerSetRenderGeojson, (state, action) => {
         state.renderTrackGeojson = action.payload;
       })
       .addCase(elevationSetSettings, (state) => {
         // The render copy is derived from the elevation settings.
         state.renderTrackGeojson = null;
       })
-      .addCase(trackViewerSetTrackUID, (state, action) => {
+      .addCase(dataViewerSetTrackUID, (state, action) => {
         state.trackUID = action.payload;
       })
-      .addCase(trackViewerDownloadTrack, (state, action) => {
+      .addCase(dataViewerDownloadTrack, (state, action) => {
         state.trackUID = action.payload;
       })
-      .addCase(trackViewerSetSelectedTrack, (state, action) => {
+      .addCase(dataViewerSetSelectedTrack, (state, action) => {
         state.selectedTrackIndex = action.payload;
       })
-      .addCase(trackViewerSetElevationPrompt, (state, action) => {
+      .addCase(dataViewerSetElevationPrompt, (state, action) => {
         state.elevationPrompt = action.payload;
       })
-      .addCase(trackViewerResolveElevationPrompt, (state, action) => {
+      .addCase(dataViewerResolveElevationPrompt, (state, action) => {
         state.elevationPrompt = null;
 
         state.elevationDecision = action.payload.mode;
       })
-      .addCase(trackViewerSetGpxUrl, (state, { payload }) => {
+      .addCase(dataViewerSetGpxUrl, (state, { payload }) => {
         state.gpxUrl = payload;
       })
-      .addCase(trackViewerGpxLoad, (state, action) => {
+      .addCase(dataViewerGpxLoad, (state, action) => {
         state.gpxUrl = action.payload;
       })
-      .addCase(osmClear, () => trackViewerInitialState)
+      .addCase(osmClear, () => dataViewerInitialState)
       .addCase(
         mapsLoaded,
         (
@@ -135,6 +135,6 @@ export const trackViewerReducer = createReducer(
               data: { trackViewer },
             },
           },
-        ) => ({ ...trackViewerInitialState, ...trackViewer }),
+        ) => ({ ...dataViewerInitialState, ...trackViewer }),
       ),
 );

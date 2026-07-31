@@ -1,5 +1,5 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { trackViewerSetSelectedTrack } from '@features/dataViewer/model/actions.js';
+import { dataViewerSetSelectedTrack } from '@features/dataViewer/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   elevationChartClose,
@@ -52,7 +52,7 @@ export const elevationChartProcessor: Processor = {
     // Which track is active isn't part of the identity below — resolving that
     // would mean scanning every imported feature on every action — so the
     // switch is listened for instead.
-    trackViewerSetSelectedTrack,
+    dataViewerSetSelectedTrack,
   ],
   stateChangePredicate: chartIdentity,
   errorKey: 'elevationChart.fetchError',

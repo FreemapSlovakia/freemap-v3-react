@@ -1,7 +1,7 @@
 import type { ElevationCredit } from '@features/elevationChart/model/actions.js';
 import { readElevationSources } from '@shared/elevation.js';
 import type { Feature } from 'geojson';
-import type { TrackViewerState } from './reducer.js';
+import type { DataViewerState } from './reducer.js';
 
 /**
  * What the chart may credit a loaded track's elevation to. Only an override
@@ -14,7 +14,7 @@ import type { TrackViewerState } from './reducer.js';
  * densifying, so the render copy alone would name nothing.
  */
 export function elevationCredit(
-  { elevationDecision, elevationSources }: TrackViewerState,
+  { elevationDecision, elevationSources }: DataViewerState,
   drawn: Feature,
 ): ElevationCredit {
   return elevationDecision === 'all'

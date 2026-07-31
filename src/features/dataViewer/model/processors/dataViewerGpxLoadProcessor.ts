@@ -1,15 +1,15 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
-  trackViewerGpxLoad,
-  trackViewerSetData,
+  dataViewerGpxLoad,
+  dataViewerSetData,
 } from '@features/dataViewer/model/actions.js';
 import { parseDataBuffer } from '@features/dataViewer/parseDataFile.js';
 import { loadDataViewerMessages } from '@features/dataViewer/translations/loadDataViewerMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 
 export const dataViewerGpxLoadProcessor: Processor = {
-  actionCreator: trackViewerGpxLoad,
+  actionCreator: dataViewerGpxLoad,
   handle: async ({ dispatch, getState, toastError }) => {
     const url = getState().trackViewer.gpxUrl;
 
@@ -39,7 +39,7 @@ export const dataViewerGpxLoadProcessor: Processor = {
         return;
       }
 
-      dispatch(trackViewerSetData({ trackGeojson }));
+      dispatch(dataViewerSetData({ trackGeojson }));
     } catch (err) {
       await toastError(err, loadDataViewerMessages, 'fetchingError');
     }

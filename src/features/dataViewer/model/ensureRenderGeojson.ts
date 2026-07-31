@@ -6,14 +6,14 @@ import { smoothElevation } from '@shared/elevationSmoothing.js';
 import type { Dispatch } from 'redux';
 import { isTrackLine } from '../trackSelection.js';
 import {
-  trackViewerDelete,
-  trackViewerSetData,
-  trackViewerSetRenderGeojson,
+  dataViewerDelete,
+  dataViewerSetData,
+  dataViewerSetRenderGeojson,
 } from './actions.js';
 
 /**
  * Lazily builds the densified render copy of the loaded track and caches it via
- * {@link trackViewerSetRenderGeojson}. Runs **only after a server elevation
+ * {@link dataViewerSetRenderGeojson}. Runs **only after a server elevation
  * override** (`elevationDecision === 'all'`): that is the one state where every
  * point is known to be DEM-derived, so inserting DEM-sampled points between
  * vertices adds no recorded-vs-DEM seam. A track's own recorded elevation is
@@ -48,7 +48,7 @@ export async function ensureRenderGeojson(
       densifyAlong(
         line,
         getState,
-        [trackViewerSetData, trackViewerDelete, clearMapFeatures],
+        [dataViewerSetData, dataViewerDelete, clearMapFeatures],
         sources,
       ),
     ),
@@ -78,5 +78,5 @@ export async function ensureRenderGeojson(
     isTrackLine(f) ? withElevationSources(smoothed[i++]!, sources) : f,
   );
 
-  dispatch(trackViewerSetRenderGeojson({ ...trackGeojson, features }));
+  dispatch(dataViewerSetRenderGeojson({ ...trackGeojson, features }));
 }

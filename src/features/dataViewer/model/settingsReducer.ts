@@ -11,16 +11,16 @@ import {
 import { elevationCoverage } from '@shared/geoutils.js';
 import { isTrackLine } from '../trackSelection.js';
 import {
-  trackViewerColorizeTrackBy,
-  trackViewerSetColorizeLegend,
-  trackViewerSetData,
-  trackViewerSetStyle,
+  dataViewerColorizeTrackBy,
+  dataViewerSetColorizeLegend,
+  dataViewerSetData,
+  dataViewerSetStyle,
 } from './actions.js';
 
 // Persisted track-viewer display preferences. A dedicated settings slice (not
 // the transient track data), so they survive map clears without per-handler
 // preservation.
-export interface TrackViewerSettingsState {
+export interface DataViewerSettingsState {
   // Style applied to imported track-viewer features that carry no style of
   // their own.
   style: DrawingStyle;
@@ -29,26 +29,26 @@ export interface TrackViewerSettingsState {
   colorizeLegend: boolean;
 }
 
-export const trackViewerSettingsInitialState: TrackViewerSettingsState = {
+export const dataViewerSettingsInitialState: DataViewerSettingsState = {
   style: makeDrawingStyle('#0000ff', 4),
   colorizeTrackBy: null,
   colorizeLegend: true,
 };
 
-export const trackViewerSettingsReducer = createReducer(
-  trackViewerSettingsInitialState,
+export const dataViewerSettingsReducer = createReducer(
+  dataViewerSettingsInitialState,
   (builder) =>
     builder
-      .addCase(trackViewerSetStyle, (state, action) => {
+      .addCase(dataViewerSetStyle, (state, action) => {
         state.style = action.payload;
       })
-      .addCase(trackViewerColorizeTrackBy, (state, action) => {
+      .addCase(dataViewerColorizeTrackBy, (state, action) => {
         state.colorizeTrackBy = action.payload;
       })
-      .addCase(trackViewerSetColorizeLegend, (state, { payload }) => {
+      .addCase(dataViewerSetColorizeLegend, (state, { payload }) => {
         toggleColorizeLegend(state, payload);
       })
-      .addCase(trackViewerSetData, (state, action) => {
+      .addCase(dataViewerSetData, (state, action) => {
         // A persisted elevation-derived colorize mode would render as a flat
         // mid-palette on a track that lacks full elevation; drop it so the new
         // track starts uncolorized rather than in a misleading state. Cleared

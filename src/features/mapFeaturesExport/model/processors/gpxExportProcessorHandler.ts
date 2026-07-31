@@ -2,7 +2,7 @@ import type { Selection } from '@app/store/actions.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import type { TrackViewerState } from '@features/dataViewer/model/reducer.js';
+import type { DataViewerState } from '@features/dataViewer/model/reducer.js';
 import type {
   DrawingLineType,
   Line,
@@ -1080,7 +1080,7 @@ function addTracking(
   }
 }
 
-function addImportedTrack(doc: Document, { trackGeojson }: TrackViewerState) {
+function addImportedTrack(doc: Document, { trackGeojson }: DataViewerState) {
   if (trackGeojson) {
     addGeojson(doc, trackGeojson);
   }

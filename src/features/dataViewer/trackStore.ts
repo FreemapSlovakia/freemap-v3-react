@@ -28,7 +28,7 @@ const RecordSchema = z.object({
 export type StoredTrack = z.infer<typeof RecordSchema>;
 
 /**
- * The geojson last written, by reference. `trackViewerSetData` is what triggers a
+ * The geojson last written, by reference. `dataViewerSetData` is what triggers a
  * write, and a caller that has already stored the very object being set — the
  * recorder finishing a ride, which must know the write succeeded before it lets
  * the recorder delete anything — would otherwise have it written twice.

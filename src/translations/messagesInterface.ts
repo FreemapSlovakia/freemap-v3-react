@@ -106,7 +106,7 @@ export type Messages = {
     drawPoints: string;
     drawLines: string;
     drawPolygons: string;
-    trackViewer: string;
+    dataViewer: string;
     changesets: string;
     mapDetails: string;
     tracking: string;
