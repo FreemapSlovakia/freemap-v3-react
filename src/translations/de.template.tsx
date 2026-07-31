@@ -146,7 +146,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Punkte zeichnen',
     drawLines: 'Linien zeichnen',
     drawPolygons: 'Polygone zeichnen',
-    trackViewer: 'Dateiimport',
+    trackViewer: 'Tracks und Daten',
     changesets: 'Kartenänderungen',
     mapDetails: 'Kartendetails',
     tracking: 'Live-Tracking',

@@ -22,7 +22,7 @@ const sl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     drawingAreas: 'risanje - poligoni',
     drawingPoints: 'risanje - točke',
     tracking: 'sledenje v živo',
-    import: 'uvožena datoteka',
+    import: 'sledi in podatki',
     search: 'najdba',
   },
   onlySelected: 'Samo izbrani element',

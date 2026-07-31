@@ -12,7 +12,7 @@ const de: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     drawingAreas: 'Zeichnung – Polygone',
     drawingPoints: 'Zeichnung – Punkte',
     tracking: 'Live-Tracking',
-    import: 'Importierte Datei',
+    import: 'Tracks und Daten',
     search: 'Fund',
   },
   garmin: {

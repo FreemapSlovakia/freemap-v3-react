@@ -15,7 +15,7 @@ const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     drawingAreas: 'disegno - poligoni',
     drawingPoints: 'disegno - punti',
     tracking: 'tracciamento in tempo reale',
-    import: 'file importato',
+    import: 'tracce e dati',
     search: 'risultato',
   },
   onlySelected: "Solo l'elemento selezionato",

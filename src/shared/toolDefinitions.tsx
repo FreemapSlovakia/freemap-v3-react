@@ -6,13 +6,12 @@ import {
   FaBullseye,
   FaCircle,
   FaDrawPolygon,
-  FaFileImport,
   FaInfo,
   FaMapMarkerAlt,
   FaPencilAlt,
   FaRoute,
 } from 'react-icons/fa';
-import { MdPolyline } from 'react-icons/md';
+import { MdPolyline, MdShapeLine } from 'react-icons/md';
 import { TbMapPins } from 'react-icons/tb';
 import type { Messages } from '../translations/messagesInterface.js';
 
@@ -128,7 +127,7 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     tool: 'import-file',
-    icon: <FaFileImport />,
+    icon: <MdShapeLine />,
     msgKey: 'trackViewer',
     kbd: 'KeyG',
   },

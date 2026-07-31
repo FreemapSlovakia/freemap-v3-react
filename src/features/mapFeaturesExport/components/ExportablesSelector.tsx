@@ -7,12 +7,11 @@ import {
   FaBullseye,
   FaCamera,
   FaDrawPolygon,
-  FaFileImport,
   FaMapMarkerAlt,
   FaRoute,
   FaSearch,
 } from 'react-icons/fa';
-import { MdTimeline } from 'react-icons/md';
+import { MdShapeLine, MdTimeline } from 'react-icons/md';
 import { TbMapPins } from 'react-icons/tb';
 import type { Exportable } from '../model/actions.js';
 import { useMapFeaturesExportMessages } from '../translations/useMapFeaturesExportMessages.js';
@@ -31,7 +30,7 @@ export const exportableDefinitions: readonly [
   ['drawingAreas', FaDrawPolygon, false],
   ['drawingPoints', FaMapMarkerAlt, false],
   ['tracking', FaBullseye, true],
-  ['import', FaFileImport, true],
+  ['import', MdShapeLine, true],
   ['search', FaSearch, true],
 ];
 

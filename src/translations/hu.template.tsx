@@ -146,7 +146,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Pont rajzolása',
     drawLines: 'Vonal rajzolása',
     drawPolygons: 'Sokszög rajzolása',
-    trackViewer: 'Fájlimportálás',
+    trackViewer: 'Nyomvonalak és adatok',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
     tracking: 'Élő követés',

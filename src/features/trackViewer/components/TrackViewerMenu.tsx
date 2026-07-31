@@ -33,7 +33,6 @@ import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaEllipsisV,
-  FaFileImport,
   FaGem,
   FaInfoCircle,
   FaMountain,
@@ -44,6 +43,7 @@ import {
   FaSave,
   FaUpload,
 } from 'react-icons/fa';
+import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   ColorizingModeSchema,
@@ -480,7 +480,7 @@ export function TrackViewerMenu(): ReactElement {
       {enableElevationChart && colorizeLegend && colorizeTrackBy && (
         <ColorizeLegend
           mode={colorizeTrackBy}
-          icon={<FaFileImport />}
+          icon={<MdShapeLine />}
           features={lineFeatures}
         />
       )}

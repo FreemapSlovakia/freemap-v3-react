@@ -139,7 +139,7 @@ const messages: Messages = {
     drawPoints: 'Point drawing',
     drawLines: 'Line drawing',
     drawPolygons: 'Polygon drawing',
-    trackViewer: 'File import',
+    trackViewer: 'Tracks and data',
     changesets: 'Map changes',
     mapDetails: 'Map details',
     tracking: 'Live tracking',

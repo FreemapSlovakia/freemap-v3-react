@@ -21,7 +21,7 @@ const en: MapFeaturesExportMessages = {
     drawingAreas: 'drawing - polygons',
     drawingPoints: 'drawing - points',
     tracking: 'live tracking',
-    import: 'imported file',
+    import: 'tracks and data',
     search: 'lookup',
   },
   onlySelected: 'Only the selected item',
