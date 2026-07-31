@@ -186,6 +186,12 @@ export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
     name: 'MDT05: IGN (CNIG)',
     url: 'https://centrodedescargas.cnig.es/CentroDescargas/modelos-digitales-elevaciones',
   },
+  {
+    type: 'data',
+    country: 'hr',
+    name: 'DMR: Državna geodetska uprava',
+    url: 'https://dgu.gov.hr/proizvodi-i-usluge/podaci-topografske-izmjere/digitalni-model-reljefa/180',
+  },
 ];
 
 /**
