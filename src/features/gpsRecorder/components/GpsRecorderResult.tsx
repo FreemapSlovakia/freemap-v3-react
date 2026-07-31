@@ -16,8 +16,8 @@ import {
  * screen wake lock.
  *
  * Mounted by `Results` whenever there are fixes, so none of it depends on the
- * recorder's toolbar being open. A recording carries on whichever toolbar the user
- * has up, and it used to stop dead when this one was closed.
+ * recorder's toolbar being open — a recording carries on whichever toolbar the
+ * user has up.
  *
  * One polyline per segment, so a pause or a restart shows as a break rather than a
  * straight line across it, with the newest fix marked as its head. Clicking either

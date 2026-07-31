@@ -3,7 +3,6 @@ import {
   decodePoints,
   missingPermissions,
   RecorderStatusSchema,
-  RecorderStreamPayloadSchema,
   RecorderTrackPageSchema,
   streamPayloadToRows,
 } from './protocol.js';
@@ -140,16 +139,6 @@ describe('RecorderStatusSchema', () => {
     });
 
     expect(status.oem.vendor).toBeNull();
-  });
-
-  it('parses the error body a refused start returns', () => {
-    const status = RecorderStatusSchema.parse({
-      ...STATUS,
-      canRecord: false,
-      error: 'setup incomplete',
-    });
-
-    expect(status.error).toBe('setup incomplete');
   });
 
   it('keeps fields it does not model', () => {
@@ -297,15 +286,13 @@ describe('stream payloads', () => {
   ];
 
   it('decodes the single bare row the stream sends', () => {
-    const rows = streamPayloadToRows(RecorderStreamPayloadSchema.parse(single));
+    const rows = streamPayloadToRows(single);
 
     expect(decodePoints(FIELDS, rows).map((p) => p.seq)).toEqual([551]);
   });
 
   it('also decodes a batch of rows', () => {
-    const rows = streamPayloadToRows(
-      RecorderStreamPayloadSchema.parse([single, next]),
-    );
+    const rows = streamPayloadToRows([single, next]);
 
     expect(decodePoints(FIELDS, rows).map((p) => p.seq)).toEqual([551, 552]);
   });

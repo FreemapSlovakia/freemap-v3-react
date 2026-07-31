@@ -42,7 +42,6 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     confirm: 'Zmazať',
   },
   setup: {
-    title: 'Zaznamenávač nemusí prežiť dlhé nahrávanie',
     permissionFine: 'Nie je povolená presná poloha.',
     permissionBackground:
       'Nie je povolená poloha na pozadí, takže nahrávanie sa zastaví, keď ' +

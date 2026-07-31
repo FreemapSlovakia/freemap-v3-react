@@ -1,14 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import type { RecorderPoint } from './protocol.js';
 import {
-  computeRecorderStats,
   foldRecorderStats,
+  type RecorderStats,
   recorderStatsOf,
 } from './stats.js';
 
 const T0 = 1_700_000_000_000;
 
 const GAP_MS = 60_000;
+
+/** The whole track in one pass, against which the incremental fold is checked. */
+const computeRecorderStats = (
+  points: readonly RecorderPoint[],
+  gapMs: number,
+): RecorderStats => recorderStatsOf(foldRecorderStats(null, points, gapMs));
 
 const pt = (
   seq: number,
@@ -27,7 +33,7 @@ const pt = (
   ...overrides,
 });
 
-describe('computeRecorderStats', () => {
+describe('recorderStatsOf', () => {
   it('reports nothing for an empty recording', () => {
     const stats = computeRecorderStats([], GAP_MS);
 

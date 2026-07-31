@@ -269,21 +269,20 @@ export function assertSupportedVersion(status: RecorderStatus): void {
 }
 
 /**
- * Begins recording, asking for the given sampling config. A recorder that
- * doesn't read the body ignores it and reports no `config` in `/status`, which
- * is how the UI knows the settings didn't take.
+ * Begins recording, asking for the given sampling config. The recorder saves it
+ * before it tries to start, so even a start it then refuses leaves the config
+ * that was asked for in place — which is what makes the launch-intent fallback
+ * begin the recording that was wanted.
  */
 export async function startRecording(
-  config?: RecorderConfig,
+  config: RecorderConfig,
   signal?: AbortSignal,
 ): Promise<void> {
   await recorderFetch('/start', {
     method: 'POST',
     signal,
-    ...(config && {
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config),
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(config),
   });
 }
 

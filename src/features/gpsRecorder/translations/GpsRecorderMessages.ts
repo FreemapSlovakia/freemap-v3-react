@@ -45,7 +45,6 @@ export type GpsRecorderMessages = {
   };
   /** Warnings from `/status` that decide whether a long recording survives. */
   setup: {
-    title: string;
     /** The whole warning as one toast message, the outstanding items as a list. */
     summary: (props: { items: string[] }) => ReactNode;
     permissionFine: string;

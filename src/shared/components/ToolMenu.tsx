@@ -78,12 +78,6 @@ export function ToolMenu({ tool, children }: Props): ReactElement {
                     >
                       {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}{' '}
                       <span className={labelClassName}> {label}</span>
-                      {toolDef.experimental && (
-                        <>
-                          {' '}
-                          <ExperimentalFunction />
-                        </>
-                      )}
                     </Button>
                   ) : (
                     <span className="align-self-center mx-1" {...props}>

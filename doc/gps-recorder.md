@@ -285,18 +285,18 @@ toolbar the user has open, and on the phone even while the browser is closed —
 and syncs whenever `isRecorderFollowed()` (or the tool being open) says there is
 something to follow. `applyStatus` sets that flag from the recorder's own answer —
 recording, or holding points — and it lives in `localStorage` rather than the store,
-because the question outlives the page. Closing the toolbar used to dispatch
-`gpsRecorderDisconnect` and stop the track dead; that action now means "give up on
-the recorder", and only the user's own actions reach it.
+because the question outlives the page. Nothing detaches the stream on the way out:
+closing the toolbar says nothing about whether the phone is still recording, and the
+follow flag going false is what ends the following.
 
 Syncs from the follow path are **quiet**: nobody asked for them, so a recorder that
 has since been killed or uninstalled must not greet the user with an error. The
 failure is swallowed, following stops, and opening the tool is what tries again.
 
-Two more things follow the recording rather than the toolbar, and moved into
+Two more things follow the recording rather than the toolbar, and so live in
 `GpsRecorderResult` — which `Results` mounts whenever there are fixes: the position
 feed (`useRecorderLocationFeed`) and the screen wake lock
-(`useRecorderWakeLock`). Leaving them in the menu meant closing it handed "Locate
+(`useRecorderWakeLock`). In the menu, closing it would hand "Locate
 me" back to the browser's own GPS watch mid-ride, which is the second watch the
 feed exists to avoid. What stays in the menu is what belongs to the tool: its
 buttons, and the failure and setup toasts.
@@ -314,7 +314,7 @@ buttons, and the failure and setup toasts.
    socket, because whatever killed the stream may equally have stopped the
    recording or cleared the track.
 
-There is no Reconnect button: the above covers every case one used to.
+There is no Reconnect button: the above covers every case one would answer.
 
 Catch-up and the stream overlap by design, so batches arrive duplicated and
 briefly out of order. `mergePoints` in the reducer merges by `seq` — appending

@@ -76,9 +76,6 @@ export const gpsRecorderPushedStatus = createAction<RecorderStatus>(
   'GPS_RECORDER_PUSHED_STATUS',
 );
 
-/** Detaches the live view, without touching the recording or the track. */
-export const gpsRecorderDisconnect = createAction('GPS_RECORDER_DISCONNECT');
-
 /**
  * Asks the recorder to discard its whole track — the one action that destroys
  * data it owns, so the UI confirms first.

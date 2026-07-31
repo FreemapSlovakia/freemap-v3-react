@@ -39,10 +39,10 @@ export function setRecorderFollowed(followed: boolean): void {
  * Keeps the recording on the map for as long as there is one — whether or not the
  * tool's toolbar is open, and across a reload.
  *
- * The toolbar used to own the connection, which made closing it stop the track
- * and a reload lose it: neither says anything about whether the phone is still
- * recording. This runs at boot and whenever the page comes back to the
- * foreground, which is also when a frozen tab has missed the stream's events.
+ * The connection is deliberately not the toolbar's: neither closing it nor a
+ * reload says anything about whether the phone is still recording. This runs at
+ * boot and whenever the page comes back to the foreground, which is also when a
+ * frozen tab has missed the stream's events.
  *
  * Syncs raised from here are **quiet**: nothing the user did prompted them, so a
  * recorder that has since been killed or uninstalled must not greet them with an

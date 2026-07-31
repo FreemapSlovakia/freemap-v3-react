@@ -302,8 +302,8 @@ off that — never re-derive "is this a track?" from density/timestamps.
 
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 
-Works end to end on a real device for holders of the `layerPreview` role on
-Android: record/stop, derived segments, a live readout, save-to-track-viewer, the
+Works end to end on a real Android device, for everyone, marked experimental:
+record/stop, derived segments, a live readout, save-to-track-viewer, the
 recorder as the app's position source, localized failure and setup toasts, and a
 settings modal. The recorder's `API.md` is the contract's source of truth. The
 client is written against **one** recorder version — `MIN_RECORDER_VERSION_CODE`,

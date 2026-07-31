@@ -10,7 +10,6 @@ import {
   RECORDER_ORIGIN,
   type RecorderPoint,
   RecorderStatusSchema,
-  RecorderStreamPayloadSchema,
   streamPayloadToRows,
 } from './protocol.js';
 
@@ -86,13 +85,12 @@ function parsePoints(data: string): RecorderPoint[] | null {
     return null;
   }
 
-  const result = RecorderStreamPayloadSchema.safeParse(json);
-
-  if (!result.success) {
+  // A row, or a batch of them; anything else is not a point event.
+  if (!Array.isArray(json)) {
     return null;
   }
 
-  return decodePoints(fields, streamPayloadToRows(result.data));
+  return decodePoints(fields, streamPayloadToRows(json));
 }
 
 /**

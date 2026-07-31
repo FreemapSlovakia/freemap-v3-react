@@ -105,13 +105,6 @@ export const RecorderTrackPageSchema = z.looseObject({
 });
 
 /**
- * A stream event carries one row, or a batch of them — told apart by
- * {@link streamPayloadToRows} rather than by the schema, since a row of unknown
- * cells and a batch of rows are the same shape to it.
- */
-export const RecorderStreamPayloadSchema = RecorderRowSchema;
-
-/**
  * Reads rows against their declared column order, so a reordered or extended
  * `fields` header costs nothing here. A cell that isn't the number its column
  * should hold reads as absent, and a row without a position is not a fix and is
@@ -167,7 +160,11 @@ export function decodePoints(
   return points;
 }
 
-/** Normalizes a stream payload to rows, whether it carried one or a batch. */
+/**
+ * Normalizes a stream payload to rows, whether it carried one or a batch. The
+ * two are the same shape to a schema — a row of unknown cells and a list of
+ * them — so the first cell is what tells them apart.
+ */
 export function streamPayloadToRows(
   payload: readonly unknown[],
 ): (readonly unknown[])[] {
@@ -262,8 +259,6 @@ export const RecorderStatusSchema = z.looseObject({
    * until the recorder has been launched by one.
    */
   portEcho: z.number().int().nullable(),
-  /** Present only on an error response, naming what went wrong. */
-  error: z.string().nullish(),
 });
 
 export type RecorderStatus = z.infer<typeof RecorderStatusSchema>;

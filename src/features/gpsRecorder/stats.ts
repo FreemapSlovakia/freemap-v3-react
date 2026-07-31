@@ -180,11 +180,3 @@ export function recorderStatsOf(fold: RecorderStatsFold): RecorderStats {
     segments: fold.segments,
   };
 }
-
-/** One-shot statistics for a whole track; the incremental path is the fold above. */
-export function computeRecorderStats(
-  points: readonly RecorderPoint[],
-  gapMs: number,
-): RecorderStats {
-  return recorderStatsOf(foldRecorderStats(null, points, gapMs));
-}

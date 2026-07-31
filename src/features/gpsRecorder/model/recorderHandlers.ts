@@ -362,21 +362,6 @@ export const pauseHandler: ProcessorHandler = async ({
 };
 
 /**
- * Detaches the live view and stops following the recorder.
- *
- * Not dispatched when the toolbar closes: a recording carries on whichever
- * toolbar is open, and the track should keep growing on the map. This is for
- * giving up on the recorder entirely.
- */
-export const disconnectHandler: ProcessorHandler = ({ dispatch }) => {
-  closeRecorderStream();
-
-  setRecorderFollowed(false);
-
-  dispatch(gpsRecorderSetConnection('idle'));
-};
-
-/**
  * Discards the recorder's track, then the local copy of it. Ordered that way on
  * purpose: if the delete fails, the screen still shows what the recorder holds
  * rather than pretending it is gone.
@@ -405,22 +390,11 @@ export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
 };
 
 /**
- * Detaches the live view and stops following — the tool being closed does not,
- * because a recording carries on regardless of which toolbar is open. This is the
- * user saying they are done with it.
- */
-
-/**
- * Hands the recording to the track viewer, where it becomes an ordinary loaded
+ * Puts the recording into the track viewer, where it becomes an ordinary loaded
  * track: elevation, colorize, the chart and every export target then work on it
  * without the recorder knowing anything about them.
  *
- * A copy, not a move — the recording may still be running, and the recorder
- * stays the owner of its data until the user deletes it explicitly.
- */
-/**
- * Puts the recording into the track viewer, where it becomes an ordinary loaded
- * track. Returns what the viewer now holds, so a caller that has to make the copy
+ * Returns what the viewer now holds, so a caller that has to make the copy
  * durable knows exactly what to store.
  */
 function handOverTrack(

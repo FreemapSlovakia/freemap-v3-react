@@ -1,7 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   gpsRecorderClear,
-  gpsRecorderDisconnect,
   gpsRecorderPause,
   gpsRecorderPushedStatus,
   gpsRecorderStart,
@@ -49,12 +48,6 @@ export const gpsRecorderPushedStatusProcessor: Processor<
   id: 'gpsRecorder.pushedStatus',
   handle: async (...params) =>
     (await handlers()).pushedStatusHandler(...params),
-};
-
-export const gpsRecorderDisconnectProcessor: Processor = {
-  actionCreator: gpsRecorderDisconnect,
-  id: 'gpsRecorder.disconnect',
-  handle: async (...params) => (await handlers()).disconnectHandler(...params),
 };
 
 export const gpsRecorderClearProcessor: Processor = {

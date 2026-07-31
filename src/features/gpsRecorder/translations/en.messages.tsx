@@ -41,7 +41,6 @@ const en: GpsRecorderMessages = {
     confirm: 'Delete',
   },
   setup: {
-    title: 'The recorder may not survive a long recording',
     summary: ({ items }) => (
       <>
         The recorder may not survive a long recording:

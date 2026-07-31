@@ -60,7 +60,7 @@ export default function GpsRecorderMenu(): ReactElement {
   // Opening the tool is all this does. The connection itself belongs to
   // `attachRecorderFollow`, which keeps it for as long as there is a recording to
   // follow — closing this toolbar says nothing about whether the phone is still
-  // recording, and used to stop the track dead.
+  // recording.
   //
   // There is no polling either: the stream pushes a status whenever the recorder's
   // state changes, returning to the foreground catches up on what a frozen tab
