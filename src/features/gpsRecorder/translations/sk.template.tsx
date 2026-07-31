@@ -89,9 +89,9 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     recorderIntro:
       'Zaznamenávač ich uplatní pri spustení nahrávania, takže ich zmena ' +
       'neovplyvní už bežiaci záznam.',
-    intervalMs: 'Čas medzi meraniami (s)',
-    minDistanceM: 'Minimálna vzdialenosť medzi meraniami (m)',
-    maxAccuracyM: 'Zahodiť merania s presnosťou horšou ako (m)',
+    intervalMs: 'Čas medzi meraniami',
+    minDistanceM: 'Minimálna vzdialenosť medzi meraniami',
+    maxAccuracyM: 'Zahodiť merania s presnosťou horšou ako',
     maxAccuracyOff: 'Ponechať všetky merania',
     source: 'Zdroj polohy',
     sourceGps: 'GPS prijímač',
@@ -106,7 +106,7 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     priorityLow: 'Nízka (najmenej batérie)',
     priorityFusedOnly: 'Týka sa len kombinovaného zdroja.',
     displaySection: 'Zobrazenie',
-    splitGapS: 'Začať nový úsek po prestávke (min)',
+    splitGapS: 'Začať nový úsek po prestávke',
     splitGapOff: 'Nikdy nedeliť',
     splitGapHint:
       'Prestávka dlhšia ako táto sa vykreslí a exportuje ako medzera, nie ako ' +

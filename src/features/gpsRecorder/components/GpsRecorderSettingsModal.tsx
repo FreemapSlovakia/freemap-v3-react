@@ -9,7 +9,7 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { gpsRecorderSetSettings } from '../model/actions.js';
@@ -96,61 +96,75 @@ export default function GpsRecorderSettingsModal({
           <Form.Group className="mb-3">
             <Form.Label>{grm?.settingsModal.intervalMs}</Form.Label>
 
-            {/* The field keeps its own text while it is being edited, so clearing
-                it leaves it empty instead of snapping to "0" under the cursor —
-                which is what a value derived straight from the draft did, and what
-                also made `required` unreachable, since the field was never
-                actually empty. */}
-            <Form.Control
-              type="number"
-              required
-              min={0.2}
-              max={600}
-              // Anchored to `min`, so a coarser step would reject 1.5 s, 2.5 s
-              // and every other value between its multiples.
-              step={0.1}
-              value={interval}
-              onChange={(e) => {
-                setInterval(e.target.value);
+            <InputGroup>
+              {/* The field keeps its own text while it is being edited, so clearing
+                  it leaves it empty instead of snapping to "0" under the cursor —
+                  which is what a value derived straight from the draft did, and what
+                  also made `required` unreachable, since the field was never
+                  actually empty. */}
+              <Form.Control
+                type="number"
+                required
+                min={0.2}
+                max={600}
+                // Anchored to `min`, so a coarser step would reject 1.5 s, 2.5 s
+                // and every other value between its multiples.
+                step={0.1}
+                value={interval}
+                onChange={(e) => {
+                  setInterval(e.target.value);
 
-                const seconds = Number(e.target.value);
+                  const seconds = Number(e.target.value);
 
-                if (e.target.value !== '' && Number.isFinite(seconds)) {
-                  set({ intervalMs: Math.round(seconds * 1000) });
-                }
-              }}
-            />
+                  if (e.target.value !== '' && Number.isFinite(seconds)) {
+                    set({ intervalMs: Math.round(seconds * 1000) });
+                  }
+                }}
+              />
+
+              <InputGroup.Text>{m?.general.seconds}</InputGroup.Text>
+            </InputGroup>
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>{grm?.settingsModal.minDistanceM}</Form.Label>
 
-            <Form.Control
-              type="number"
-              min={0}
-              max={1000}
-              step={1}
-              value={draft.minDistanceM}
-              onChange={(e) => set({ minDistanceM: Number(e.target.value) })}
-            />
+            <InputGroup>
+              <Form.Control
+                type="number"
+                min={0}
+                max={1000}
+                step={1}
+                value={draft.minDistanceM}
+                onChange={(e) => set({ minDistanceM: Number(e.target.value) })}
+              />
+
+              <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
+            </InputGroup>
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>{grm?.settingsModal.maxAccuracyM}</Form.Label>
 
-            <Form.Control
-              type="number"
-              min={1}
-              max={1000}
-              step={1}
-              placeholder={grm?.settingsModal.maxAccuracyOff}
-              value={draft.maxAccuracyM ?? ''}
-              onChange={(e) =>
-                set({
-                  maxAccuracyM: e.target.value ? Number(e.target.value) : null,
-                })
-              }
-            />
+            <InputGroup>
+              <Form.Control
+                type="number"
+                min={1}
+                max={1000}
+                step={1}
+                placeholder={grm?.settingsModal.maxAccuracyOff}
+                value={draft.maxAccuracyM ?? ''}
+                onChange={(e) =>
+                  set({
+                    maxAccuracyM: e.target.value
+                      ? Number(e.target.value)
+                      : null,
+                  })
+                }
+              />
+
+              <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
+            </InputGroup>
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -209,21 +223,25 @@ export default function GpsRecorderSettingsModal({
           <Form.Group className="mb-3">
             <Form.Label>{grm?.settingsModal.splitGapS}</Form.Label>
 
-            <Form.Control
-              type="number"
-              min={0}
-              max={720}
-              step={1}
-              placeholder={grm?.settingsModal.splitGapOff}
-              value={draft.splitGapS === 0 ? '' : draft.splitGapS / 60}
-              onChange={(e) =>
-                set({
-                  splitGapS: e.target.value
-                    ? Math.round(Number(e.target.value) * 60)
-                    : 0,
-                })
-              }
-            />
+            <InputGroup>
+              <Form.Control
+                type="number"
+                min={0}
+                max={720}
+                step={1}
+                placeholder={grm?.settingsModal.splitGapOff}
+                value={draft.splitGapS === 0 ? '' : draft.splitGapS / 60}
+                onChange={(e) =>
+                  set({
+                    splitGapS: e.target.value
+                      ? Math.round(Number(e.target.value) * 60)
+                      : 0,
+                  })
+                }
+              />
+
+              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            </InputGroup>
 
             <Form.Text>{grm?.settingsModal.splitGapHint}</Form.Text>
           </Form.Group>

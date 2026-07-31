@@ -98,9 +98,9 @@ const en: GpsRecorderMessages = {
     recorderIntro:
       'Applied by the recorder when a recording starts, so changing them does ' +
       'not affect a recording already running.',
-    intervalMs: 'Time between fixes (s)',
-    minDistanceM: 'Minimum distance between fixes (m)',
-    maxAccuracyM: 'Discard fixes less accurate than (m)',
+    intervalMs: 'Time between fixes',
+    minDistanceM: 'Minimum distance between fixes',
+    maxAccuracyM: 'Discard fixes less accurate than',
     maxAccuracyOff: 'Keep every fix',
     source: 'Position source',
     sourceGps: 'GPS receiver',
@@ -115,7 +115,7 @@ const en: GpsRecorderMessages = {
     priorityLow: 'Low (least battery)',
     priorityFusedOnly: 'Applies to the fused source only.',
     displaySection: 'Display',
-    splitGapS: 'Start a new segment after a gap of (min)',
+    splitGapS: 'Start a new segment after a gap of',
     splitGapOff: 'Never split',
     splitGapHint:
       'A break longer than this is drawn and exported as a gap instead of a ' +
