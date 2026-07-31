@@ -651,7 +651,7 @@ export default function RoutePlannerMenu(): ReactElement {
                 ]
               }
               name={rpm?.modeLabel}
-              breakpoint="sm"
+              breakpoint="lg"
             >
               {({ props, label, labelClassName }) => (
                 <Dropdown.Toggle id="mode" variant="secondary" {...props}>
@@ -688,7 +688,7 @@ export default function RoutePlannerMenu(): ReactElement {
           <SelectDropdown
             className="ms-1"
             id="mode"
-            breakpoint="sm"
+            breakpoint="md"
             name={rpm?.modeLabel}
             value={activeMode}
             onSelect={(mode) => {
@@ -884,7 +884,7 @@ export default function RoutePlannerMenu(): ReactElement {
           <SelectDropdown
             className="ms-1"
             id="route-colorizing-mode"
-            breakpoint="sm"
+            breakpoint="lg"
             toggleIcon={<FaPalette />}
             name={cm?.colorizeBy}
             value={colorizeBy ?? 'none'}

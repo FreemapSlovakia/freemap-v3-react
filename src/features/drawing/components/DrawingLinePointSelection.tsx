@@ -95,8 +95,8 @@ export default function DrawingLinePointSelection(): ReactElement | null {
         <>
           <DrawingToggleButton
             tool={line.type === 'line' ? 'draw-lines' : 'draw-polygons'}
-          />{' '}
-          {line.type === 'line' ? <MdTimeline /> : <FaDrawPolygon />}
+          />
+          {line.type === 'line' ? <MdTimeline className='ms-2' /> : <FaDrawPolygon className='ms-2' />}
         </>
       }
       label={

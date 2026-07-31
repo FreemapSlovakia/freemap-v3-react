@@ -341,7 +341,7 @@ export function DataViewerMenu(): ReactElement {
         )}
 
         {enableElevationChart && (
-          <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
+          <LongPressTooltip breakpoint="md" label={m?.general.elevationProfile}>
             {({ label, labelClassName, props }) => (
               <Button
                 className="ms-1"
@@ -363,7 +363,7 @@ export function DataViewerMenu(): ReactElement {
           <SelectDropdown
             className="ms-1"
             id="colorizing_mode"
-            breakpoint="sm"
+            breakpoint="lg"
             toggleIcon={<FaPalette />}
             name={cm?.colorizeBy}
             value={colorizeTrackBy ?? 'none'}

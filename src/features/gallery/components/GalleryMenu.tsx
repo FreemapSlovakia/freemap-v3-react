@@ -214,7 +214,7 @@ export default function GalleryMenu() {
           <ButtonToolbar>
             <LongPressTooltip label={m?.tools.photos} breakpoint="sm">
               {({ props, label, labelClassName }) => (
-                <span className="align-self-center ms-1" {...props}>
+                <span className="align-self-center ms-1 me-1" {...props}>
                   <FaCamera /> <span className={labelClassName}>{label}</span>
                 </span>
               )}

@@ -96,7 +96,7 @@ export function TrackingMenu(): ReactElement {
     <>
       <ToolMenu tool="tracking">
         <LongPressTooltip
-          breakpoint="sm"
+          breakpoint="md"
           label={tm?.trackedDevices.button}
           kbd="g w"
         >
@@ -115,7 +115,7 @@ export function TrackingMenu(): ReactElement {
           )}
         </LongPressTooltip>
 
-        <LongPressTooltip breakpoint="sm" label={tm?.devices.button} kbd="g d">
+        <LongPressTooltip breakpoint="md" label={tm?.devices.button} kbd="g d">
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"
@@ -132,7 +132,7 @@ export function TrackingMenu(): ReactElement {
         <SelectDropdown
           className="ms-1"
           id="tracking_visual"
-          breakpoint="sm"
+          breakpoint="lg"
           toggleIcon={<FaRegEye />}
           name={m?.general.visual}
           value={display}
@@ -155,7 +155,7 @@ export function TrackingMenu(): ReactElement {
         <SelectDropdown
           className="ms-1"
           id="tracking_colorize"
-          breakpoint="sm"
+          breakpoint="lg"
           toggleIcon={<FaPalette />}
           name={cm?.colorizeBy}
           value={colorizeBy ?? 'none'}

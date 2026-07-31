@@ -109,7 +109,7 @@ export function MyMapsMenu(): ReactElement {
             )}
           </LongPressTooltip>
 
-          <span className="align-self-center mx-1">
+          <span className="align-self-center ms-2 me-1">
             {m?.tools.myMap}: <b>{activeMap?.name ?? '???'}</b>
           </span>
 

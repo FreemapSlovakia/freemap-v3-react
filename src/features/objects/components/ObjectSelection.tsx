@@ -74,7 +74,8 @@ export default function ObjectSelection(): ReactElement | null {
     <Selection
       icon={
         <>
-          <ObjectsToggleButton /> <FaMapMarkerAlt />
+          <ObjectsToggleButton />
+          <FaMapMarkerAlt className='ms-2' />
         </>
       }
       label={m?.selections.objects}

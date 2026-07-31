@@ -22,7 +22,8 @@ export default function RoutePointSelection():
       <Selection
         icon={
           <>
-            <RoutePlannerToggleButton /> <FaMapMarkerAlt />
+            <RoutePlannerToggleButton />
+            <FaMapMarkerAlt className='ms-2' />
           </>
         }
         label={rpm?.point.point}
