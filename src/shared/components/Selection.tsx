@@ -38,7 +38,10 @@ export function Selection({
           <LongPressTooltip breakpoint="sm" label={label}>
             {({ label, labelClassName, props }) => (
               <span
-                className={clsx('align-self-center me-1', noLeftMargin || 'ms-2')}
+                className={clsx(
+                  'align-self-center me-1',
+                  noLeftMargin || 'ms-2',
+                )}
                 {...props}
               >
                 {icon}

@@ -38,7 +38,7 @@ export default function RouteLegSelection(): ReactElement | undefined | false {
         icon={
           <>
             <RoutePlannerToggleButton />
-            <FaMapMarkerAlt className='ms-2' />
+            <FaMapMarkerAlt className="ms-2" />
           </>
         }
         label={rpm?.leg}

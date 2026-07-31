@@ -300,7 +300,7 @@ export function DataViewerMenu(): ReactElement {
             {({ label, labelClassName, props }) => (
               <Button
                 className="ms-1"
-                variant="secondary"
+                variant={hasTrack ? 'secondary' : 'primary'}
                 onClick={() => {
                   dispatch(setActiveModal({ type: 'file-import' }));
                 }}

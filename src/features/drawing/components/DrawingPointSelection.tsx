@@ -86,7 +86,7 @@ export default function DrawingPointSelection(): ReactElement | null {
         icon={
           <>
             <DrawingToggleButton tool="draw-points" />
-            <FaMapMarkerAlt className='ms-2' />
+            <FaMapMarkerAlt className="ms-2" />
           </>
         }
         label={m?.selections.drawPoints}

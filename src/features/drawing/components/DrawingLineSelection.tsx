@@ -166,7 +166,11 @@ export default function DrawingLineSelection(): ReactElement | null {
             <DrawingToggleButton
               tool={isLine ? 'draw-lines' : 'draw-polygons'}
             />
-            {isLine ? <TbTimeline className='ms-2' /> : <FaDrawPolygon className='ms-2' />}
+            {isLine ? (
+              <TbTimeline className="ms-2" />
+            ) : (
+              <FaDrawPolygon className="ms-2" />
+            )}
           </>
         }
         label={isLine ? m?.selections.drawLines : m?.selections.drawPolygons}
