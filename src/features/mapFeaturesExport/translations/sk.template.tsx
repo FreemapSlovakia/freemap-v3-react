@@ -22,7 +22,7 @@ const sk: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     drawingAreas: 'kreslenie - polygóny',
     drawingPoints: 'kreslenie - body',
     tracking: 'sledovanie',
-    import: 'trasy a údaje',
+    import: 'trasy a dáta',
     search: 'nález',
   },
   onlySelected: 'Iba vybraný prvok',
