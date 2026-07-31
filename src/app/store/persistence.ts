@@ -396,6 +396,7 @@ const PERSIST: PersistEntry[] = [
       minDistanceM: g.minDistanceM,
       maxAccuracyM: g.maxAccuracyM,
       priority: g.priority,
+      source: g.source,
       splitGapS: g.splitGapS,
       feedLocation: g.feedLocation,
       keepScreenAwake: g.keepScreenAwake,

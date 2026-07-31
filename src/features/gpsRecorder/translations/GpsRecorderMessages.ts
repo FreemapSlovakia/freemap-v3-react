@@ -77,10 +77,16 @@ export type GpsRecorderMessages = {
     minDistanceM: string;
     maxAccuracyM: string;
     maxAccuracyOff: string;
+    source: string;
+    sourceGps: string;
+    sourceFused: string;
+    sourceHint: string;
     priority: string;
     priorityHigh: string;
     priorityBalanced: string;
     priorityLow: string;
+    /** Shown in place of a choice the recorder would ignore. */
+    priorityFusedOnly: string;
     displaySection: string;
     splitGapS: string;
     splitGapOff: string;

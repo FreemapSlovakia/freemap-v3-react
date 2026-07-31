@@ -93,10 +93,18 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     minDistanceM: 'Minimálna vzdialenosť medzi meraniami (m)',
     maxAccuracyM: 'Zahodiť merania s presnosťou horšou ako (m)',
     maxAccuracyOff: 'Ponechať všetky merania',
+    source: 'Zdroj polohy',
+    sourceGps: 'GPS prijímač',
+    sourceFused: 'Kombinovaný (GPS, wifi a senzory)',
+    sourceHint:
+      'Prijímač meria nadmorskú výšku pri každom meraní; kombinovaný zdroj vás ' +
+      'lepšie umiestni medzi budovami a pod stromami, ale tú istú výšku ' +
+      'opakuje aj niekoľko sekúnd.',
     priority: 'Presnosť',
     priorityHigh: 'Najvyššia (GPS, najviac batérie)',
     priorityBalanced: 'Vyvážená',
     priorityLow: 'Nízka (najmenej batérie)',
+    priorityFusedOnly: 'Týka sa len kombinovaného zdroja.',
     displaySection: 'Zobrazenie',
     splitGapS: 'Začať nový úsek po prestávke (min)',
     splitGapOff: 'Nikdy nedeliť',

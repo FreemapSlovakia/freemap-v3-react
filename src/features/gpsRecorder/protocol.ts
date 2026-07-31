@@ -20,7 +20,7 @@ export const RECORDER_ORIGIN = 'http://127.0.0.1:8378';
  * with the recorder, and delete whatever the new contract makes unnecessary
  * rather than keeping a branch for the version before it.
  */
-export const MIN_RECORDER_VERSION_CODE = 8;
+export const MIN_RECORDER_VERSION_CODE = 11;
 
 /**
  * Where a device without the recorder installed ends up. A direct APK link, so
@@ -184,8 +184,26 @@ export const RecorderConfigSchema = z.looseObject({
   minDistanceM: z.number().nonnegative(),
   /** Fixes with a worse `acc` are discarded; null keeps every fix. */
   maxAccuracyM: z.number().positive().nullable(),
-  /** Accuracy/battery trade-off, mapped to Android's `Priority` constants. */
+  /**
+   * Accuracy/battery trade-off, mapped to Android's `Priority` constants. A
+   * fused concept: the recorder ignores it under `source: 'gps'`, while still
+   * storing it for the switch back.
+   */
   priority: z.enum(['high', 'balanced', 'low']),
+  /**
+   * Which provider the fixes come from. `fused` blends GNSS with wifi, cell and
+   * the phone's sensors and places the user better in a street; `gps` is the
+   * platform's receiver with nothing in front of it.
+   *
+   * It is the altitude that makes this worth choosing: the fused altitude is
+   * modelled and refreshed every few seconds, repeated verbatim in between —
+   * around four points in five carry a copy of the one before at a 1 s
+   * interval, which draws a profile as flat treads and sharp risers and
+   * inflates any climb computed from it. `gps` recomputes it every epoch, at
+   * the cost of metres of noise, and carries its own `altMsl` instead of one
+   * rebuilt from a geoid separation.
+   */
+  source: z.enum(['fused', 'gps']),
 });
 
 export type RecorderConfig = z.infer<typeof RecorderConfigSchema>;

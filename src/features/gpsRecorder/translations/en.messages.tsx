@@ -102,10 +102,18 @@ const en: GpsRecorderMessages = {
     minDistanceM: 'Minimum distance between fixes (m)',
     maxAccuracyM: 'Discard fixes less accurate than (m)',
     maxAccuracyOff: 'Keep every fix',
+    source: 'Position source',
+    sourceGps: 'GPS receiver',
+    sourceFused: 'Fused (GPS, wifi and sensors)',
+    sourceHint:
+      'The receiver measures elevation for every fix; the fused source places ' +
+      'you better among buildings and under trees, but repeats the same ' +
+      'elevation for seconds at a time.',
     priority: 'Accuracy',
     priorityHigh: 'Highest (GPS, most battery)',
     priorityBalanced: 'Balanced',
     priorityLow: 'Low (least battery)',
+    priorityFusedOnly: 'Applies to the fused source only.',
     displaySection: 'Display',
     splitGapS: 'Start a new segment after a gap of (min)',
     splitGapOff: 'Never split',

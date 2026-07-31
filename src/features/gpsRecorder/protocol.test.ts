@@ -32,7 +32,7 @@ const STATUS = {
     'src',
     'seg',
   ],
-  version: { code: 8, name: '0.8' },
+  version: { code: 11, name: '0.11' },
   port: 8378,
   portEcho: null,
   permissions: { fine: true, background: true, notifications: true },
@@ -45,6 +45,7 @@ const STATUS = {
     minDistanceM: 0.0,
     maxAccuracyM: null,
     priority: 'high',
+    source: 'fused',
   },
 };
 
@@ -108,7 +109,7 @@ describe('RecorderStatusSchema', () => {
   it('parses what the recorder actually serves', () => {
     const status = RecorderStatusSchema.parse(STATUS);
 
-    expect(status.version.code).toBe(8);
+    expect(status.version.code).toBe(11);
     expect(status.count).toBe(1919);
     expect(status.generation).toBe(0);
     expect(status.canRecord).toBe(true);

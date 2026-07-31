@@ -307,7 +307,7 @@ Android: record/stop, derived segments, a live readout, save-to-track-viewer, th
 recorder as the app's position source, localized failure and setup toasts, and a
 settings modal. The recorder's `API.md` is the contract's source of truth. The
 client is written against **one** recorder version — `MIN_RECORDER_VERSION_CODE`,
-currently 8 — with no feature detection and no fallbacks, because the APK has
+currently 11 — with no feature detection and no fallbacks, because the APK has
 never been released beyond its developers. Raise that constant when the recorder
 changes and delete whatever the new contract makes unnecessary.
 

@@ -64,7 +64,7 @@ as an answer that makes no sense.
 | `GET /stream` | SSE; an unnamed event is a point (`id:` its `seq`, `data:` one bare row or a batch), a named `status` event is the whole status object |
 
 **Points travel columnar**, not as objects: a row per fix, ordered by the
-`fields` header — as of versionCode 8 that is `["seq","ts","lat","lon","alt",
+`fields` header — as of versionCode 11 that is `["seq","ts","lat","lon","alt",
 "acc","spd","brg","altMsl","altAcc","spdAcc","brgAcc","sat","src","seg"]`. `ts`
 is epoch milliseconds; `seq` is the recorder-assigned monotonic id that doubles
 as both the `/track?since=` cursor and the SSE event id. `decodePoints` reads
@@ -473,10 +473,19 @@ See "Storing the finished ride" above.
 value — which is also how the modal presents it:
 
 - **`RecorderConfig`** (`intervalMs`, `minDistanceM`, `maxAccuracyM`,
-  `priority`) travels with `POST /start` and decides what is recorded at all.
-  Changing it cannot affect a recording already running.
+  `priority`, `source`) travels with `POST /start` and decides what is recorded
+  at all. Changing it cannot affect a recording already running.
 - **The rest** (`splitGapS`, `feedLocation`, `keepScreenAwake`) never leaves the
   browser.
+
+`source` picks the provider, and this app defaults it to `gps` where the recorder
+itself defaults to `fused`. The fused position is the better one — GNSS blended
+with wifi, cell and the phone's sensors — but its altitude is modelled rather
+than measured per fix and repeats verbatim for seconds at a time, which is a flat
+tread and a sharp riser in every profile drawn from it. A recording here is kept
+for its elevation as much as its line, so the receiver wins the default and
+`priority`, which only the fused provider has modes for, is disabled in the modal
+under it.
 
 ### Who supplies the position
 

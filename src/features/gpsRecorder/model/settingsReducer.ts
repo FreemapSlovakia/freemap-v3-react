@@ -33,6 +33,10 @@ export const gpsRecorderSettingsInitialState: GpsRecorderSettingsState = {
   minDistanceM: 0,
   maxAccuracyM: null,
   priority: 'high',
+  // The receiver rather than the fusion, because a recording is kept for its
+  // profile as much as its line, and the fused altitude repeats itself for
+  // seconds at a time. The recorder's own default is the other way round.
+  source: 'gps',
   splitGapS: 300,
   feedLocation: true,
   keepScreenAwake: false,
@@ -53,6 +57,7 @@ export function recorderConfigOf({
   minDistanceM,
   maxAccuracyM,
   priority,
+  source,
 }: GpsRecorderSettingsState): RecorderConfig {
-  return { intervalMs, minDistanceM, maxAccuracyM, priority };
+  return { intervalMs, minDistanceM, maxAccuracyM, priority, source };
 }

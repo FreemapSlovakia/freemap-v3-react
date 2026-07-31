@@ -154,9 +154,32 @@ export default function GpsRecorderSettingsModal({
           </Form.Group>
 
           <Form.Group className="mb-3">
+            <Form.Label>{grm?.settingsModal.source}</Form.Label>
+
+            <Form.Select
+              value={draft.source}
+              onChange={(e) =>
+                set({
+                  source: e.target.value as GpsRecorderSettingsState['source'],
+                })
+              }
+            >
+              <option value="gps">{grm?.settingsModal.sourceGps}</option>
+
+              <option value="fused">{grm?.settingsModal.sourceFused}</option>
+            </Form.Select>
+
+            <Form.Text>{grm?.settingsModal.sourceHint}</Form.Text>
+          </Form.Group>
+
+          {/* Only the fused provider has modes to trade off, and the recorder
+              ignores this under the other one — so the field says so rather than
+              taking a choice that would go nowhere. */}
+          <Form.Group className="mb-3">
             <Form.Label>{grm?.settingsModal.priority}</Form.Label>
 
             <Form.Select
+              disabled={draft.source === 'gps'}
               value={draft.priority}
               onChange={(e) =>
                 set({
@@ -173,6 +196,10 @@ export default function GpsRecorderSettingsModal({
 
               <option value="low">{grm?.settingsModal.priorityLow}</option>
             </Form.Select>
+
+            {draft.source === 'gps' && (
+              <Form.Text>{grm?.settingsModal.priorityFusedOnly}</Form.Text>
+            )}
           </Form.Group>
 
           <hr />
