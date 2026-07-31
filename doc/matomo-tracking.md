@@ -80,7 +80,7 @@ from both the old and new identities.
 
 | Category | Action | Name (low-cardinality) / value | Previous (historical) | Source |
 |----------|--------|--------------------------------|-----------------------|--------|
-| `Ad` | `impression` / `click` | ad id (`tShirt`/`rovas`/`self`/`zdilaAuthorship`/`zdilaMapNative`) | *(added 2026-07)* | [`Ad.tsx`](../src/features/ad/components/Ad.tsx) |
+| `Ad` | `impression` / `click` | ad id (`tShirt`/`rovas`/`self`/`zdilaAuthorship`/`zdilaMapNative`); `impression` capped at one event per ad per page load; **value** on `click` = times that ad had been shown when it was clicked | *(added 2026-07)* | [`Ad.tsx`](../src/features/ad/components/Ad.tsx) |
 | `App` | `error` | `error.name` (e.g. `TypeError`); deduped + capped per page load | `Main`/`error` — *dropped Sentry event id (high cardinality)* | [`globalErrorHandler.ts`](../src/app/store/middleware/globalErrorHandler.ts) |
 | `Perf` | `stall` / `storm` / `longtask` | `document.visibilityState` (`visible`/`hidden`/…) | *(added 2026-06)* | [`perfWatchdog.ts`](../src/app/store/middleware/perfWatchdog.ts) |
 | `Auth` | `login` | `login` or `connect` (linking an extra provider) | *(added 2026-06)* | [`loginResponseHandler.ts`](../src/features/auth/model/processors/loginResponseHandler.ts) |
@@ -126,6 +126,19 @@ from both the old and new identities.
 
 Observed in the live Matomo data (30-day window, verified 2026-07-04):
 
+- **`Ad`/`impression` no longer floods the dataset** *(fixed 2026-07-30)*.
+  The banner rotates every 30 s, so tracking every appearance emitted an
+  impression per rotation for as long as a tab stayed open: 1,045,998 events
+  from 61,743 visits (≈17 per visit) over 2026-07-17…30 — **74% of all events**
+  on the site. Because Matomo counts events as actions and derives visit length
+  from the first→last action timestamp, the 30 s heartbeat also made idle tabs
+  look like long active sessions, inflating two site-wide metrics from 2026-07-16
+  on: actions/visit 8–9 → 26–39, avg. session 175 s → 810–1330 s. **Those two
+  metrics are not comparable across 2026-07-16** — the pre-flood baseline is the
+  meaningful one. [`Ad.tsx`](../src/features/ad/components/Ad.tsx) now dedupes on
+  a module-level `Set` (module-level so it survives the remounts caused by the
+  elevation chart and the consent toast), capping impressions at one per ad per
+  page load — ≤5 events per visit. `Ad`/`click` was never affected (343 events).
 - **`Drawing`/`measure` no longer floods the dataset** *(fixed 2026-07-04)*.
   `drawingMeasure` re-fires on every vertex add/drag, which previously made it the
   single largest event source (~275k events from ~2.3k visits, ~120/visit, ≈26%

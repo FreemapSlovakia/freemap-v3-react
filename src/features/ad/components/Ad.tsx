@@ -17,6 +17,21 @@ const ads: AdItem[] = [
   { id: 'zdilaMapNative', chance: 4 }, // zdila.sk — map-native banner
 ];
 
+/**
+ * How many times each ad has been shown in this page load.
+ *
+ * The count drives two things: an `impression` event is reported only on an ad's
+ * first appearance, and a `click` carries the count it had reached by then,
+ * which tells whether the 30 s rotation earns clicks on first sight or only
+ * after repeats. Reporting every appearance instead would emit an unbounded
+ * event stream — and since a Matomo visit is kept alive by its events, it would
+ * also stretch the reported visit duration.
+ *
+ * Module-level, not a ref: it has to survive the remounts caused by the
+ * elevation chart and the consent toast.
+ */
+const adViews = new Map<AdItem['id'], number>();
+
 export default function Ad(): ReactElement | null {
   const [closed, setClosed] = useState(false);
 
@@ -49,7 +64,15 @@ export default function Ad(): ReactElement | null {
   const ad = useAd(ads);
 
   useEffect(() => {
-    if (ad) {
+    if (!ad) {
+      return;
+    }
+
+    const views = (adViews.get(ad) ?? 0) + 1;
+
+    adViews.set(ad, views);
+
+    if (views === 1) {
       trackMatomo(['trackEvent', 'Ad', 'impression', ad]);
     }
   }, [ad]);
@@ -70,7 +93,13 @@ export default function Ad(): ReactElement | null {
         ref={ref}
         onClickCapture={(e) => {
           if (ad && (e.target as HTMLElement).closest('a')) {
-            trackMatomo(['trackEvent', 'Ad', 'click', ad]);
+            trackMatomo([
+              'trackEvent',
+              'Ad',
+              'click',
+              ad,
+              adViews.get(ad) ?? 0,
+            ]);
           }
         }}
       >
