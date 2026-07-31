@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 
 // Stands in for `Intl.DisplayNames`, which the caller supplies.
 const regionName = (country: string) =>
-  ({ hr: 'Croatia' })[country.toLowerCase()];
+  ({ pt: 'Portugal' })[country.toLowerCase()];
 
 const tokenNames = (tokens: string[]) =>
   elevationSourcesFromTokens(tokens, regionName).map((attr) => attr.name);
@@ -54,10 +54,10 @@ describe('elevationSourcesFromTokens', () => {
   });
 
   it('credits a country it has no entry for under its localized name', () => {
-    expect(tokenNames(['hr'])).toEqual(['Croatia']);
+    expect(tokenNames(['pt'])).toEqual(['Portugal']);
 
     expect(
-      elevationSourcesFromTokens(['hr'], regionName)[0]?.url,
+      elevationSourcesFromTokens(['pt'], regionName)[0]?.url,
     ).toBeUndefined();
   });
 
