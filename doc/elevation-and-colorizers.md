@@ -458,6 +458,51 @@ fetch directly rather than the per-feature `enrichElevations` wrapper:
 - GPX: `fillElevations.ts` filling/replacing `<ele>` on wpt/trkpt/rtept.
 - Polygons (and `fm:type=polygon` GPX tracks) are always skipped.
 
+## The loaded track survives a reload
+
+The track viewer's track is the one thing the URL cannot carry, so
+[`trackViewer/trackStore.ts`](../src/features/trackViewer/trackStore.ts) keeps it —
+a **single entry** in its own `idb-keyval` database, validated on read like the
+my-maps working copy (`myMaps/mapStore.ts`).
+
+**Only a track with no other home.** A map's track already lives in the my-maps
+working copy and is restored from there; a `track-uid=` or `import-url=` track is
+named by the URL and re-fetched from it. Storing either would be a second copy of
+the same thing, so `trackViewerStoreProcessor` checks `homedElsewhere` and deletes
+the entry instead. What is left is the case the store exists for: a file import, a
+conversion, a finished recording — the same condition `TrackViewerMenu` warns
+about. The check runs off state, on every action that can change the answer, so it
+does not depend on whether a loader sets the track before or after the thing that
+gives it a home.
+
+**The history entry decides whether it comes back.** `storeTrack` `replaceState`s a
+`tr: true` flag onto the current entry as it writes; `urlProcessor` carries the flag
+onto the entries it writes afterwards; `handleLocationChange` dispatches
+`trackViewerRestoreStored` when it sees it. So reloading the page you were on puts
+the track back, while a fresh visit or a shared link is never ambushed by a track
+from a previous session.
+
+A load carrying no flag deliberately **does not evict** the record. The record is one
+per origin and the flag is one per history entry, so a second tab — a fresh load
+with no flag of its own — would delete the only durable copy of a ride the first tab
+is still holding. Hygiene comes from the store being a single entry that the next
+write and its own delete reclaim.
+
+The write is validated with the same schema the read uses, so a record that would
+be discarded on the way back is refused on the way in rather than counted as a
+copy. Otherwise it is best effort (`trackViewerStoreProcessor` logs and moves on),
+and the copy is dropped on `trackViewerDelete` and `clearMapFeatures` — one that
+outlived the track would come back as something the user had already thrown away.
+The restore also stands down for a track the URL merely *names*: `homedElsewhere`
+covers a fetch that is still in flight, which IndexedDB would otherwise beat, and
+declaring a server-hosted track local would take `track-uid=` out of the URL.
+`navigator.storage.persist()` is asked for by `storeTrackDurably` **only** — the GPS
+recorder finishing a ride, which then deletes the phone's copy, so `false` (stored,
+but evictable) is its cue to leave that copy alone. The ordinary path never asks:
+Chrome decides silently but Firefox prompts, and prompting because somebody opened a
+GPX file would be asking about a hazard they don't have. See
+[`doc/gps-recorder.md`](./gps-recorder.md).
+
 ## Where features surface in the UI
 
 `tracking` is a real **tool** (`ToolSchema`/`toolDefinitions`, <kbd>g</kbd> <kbd>t</kbd>);

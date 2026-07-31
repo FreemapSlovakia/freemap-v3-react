@@ -89,7 +89,7 @@ const hu: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     `Néhány fájlt nem sikerült betölteni: ${names}.`,
   unsaved: 'Nem mentett',
   unsavedTooltip:
-    'Ez a nyomvonal nem szerepel egyetlen mentett térképen sem, és nem része a hivatkozásnak sem, ezért az oldal újratöltésekor elveszik. Mentse a térképei közé, hogy megmaradjon.',
+    'Ez a nyomvonal nem szerepel egyetlen mentett térképen sem, és nem része a hivatkozásnak – csak ebben a böngészőben marad meg, ezért a hivatkozás megosztásával nem osztja meg. Mentse a térképei közé, hogy megmaradjon.',
 };
 
 export default hu;

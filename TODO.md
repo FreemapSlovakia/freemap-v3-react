@@ -300,6 +300,62 @@ off that — never re-derive "is this a track?" from density/timestamps.
       payload variant (e.g. `{ type: 'tracking'; id }`) handled in
       `convertToDrawingProcessor`, plus a menu action in the tracking UI.
 
+## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
+
+Works end to end on a real Android device, for everyone, marked experimental:
+record/stop, derived segments, a live readout, save-to-track-viewer, the
+recorder as the app's position source, localized failure and setup toasts, and a
+settings modal. The recorder's `API.md` is the contract's source of truth. The
+client is written against **one** recorder version — `MIN_RECORDER_VERSION_CODE`,
+currently 11 — with no feature detection and no fallbacks, because the APK has
+never been released beyond its developers. Raise that constant when the recorder
+changes and delete whatever the new contract makes unnecessary.
+
+There is deliberately no pause: for the track it is the same event as a stop, and
+what it adds — a Resume action in the notification, a restart Android cannot
+refuse — belongs to the recorder.
+
+- [ ] **A landing page for the APK.** `RECORDER_DOWNLOAD_URL` points straight at
+      the APK, so the install fallback drops the user into a bare download with
+      no explanation of the "install unknown apps" permission they will need.
+- [ ] **Verify the `intent://` fallback on non-Chromium Android.** The platform
+      gate is Android-wide, but `intent://` with `S.browser_fallback_url` is a
+      Chrome convention; a browser that ignores it leaves the "recorder not
+      installed" path doing nothing at all.
+- [ ] **Read the columns the recorder already sends.** `decodePoints` takes nine
+      of the fifteen: `altAcc`, `spdAcc`, `brgAcc`, `sat` and `src` are all
+      dropped. `sat` and the accuracies have GPX equivalents (`<sat>`,
+      `<hdop>`-ish) that the export could carry.
+- [ ] **A track that changes elevation datum mid-way steps by the geoid.**
+      `altMsl ?? alt` is per point, so a recording whose opening fixes predate the
+      first GNSS fix splices ellipsoidal metres onto MSL ones — a ~42 m cliff in
+      the profile over Slovakia, read as ascent by anything that sums differences.
+      Deriving the separation from the points that carry both and applying it to
+      the rest would make the track continuous, at the cost of writing out an
+      elevation the recorder never measured.
+- [ ] **Decimate the drawn track by zoom.** The polyline re-maps every point into
+      a fresh array per fix and Leaflet re-projects the whole line, which is the
+      remaining per-fix cost over the whole track now that the statistics are
+      folded incrementally. Only worth doing if a long recording actually feels
+      slow — measure first.
+- [ ] **Style the live track like a displayed GPX track** instead of the plain
+      red polyline, and run it through the shared colorizers — the per-segment
+      `Feature<LineString>[]` the save path builds is already the shape
+      `colorize` takes, so the live view can reuse it.
+- [ ] **Update prompt on a newer `versionCode`.** An APK *older* than
+      `MIN_RECORDER_VERSION_CODE` is already reported as outdated with a download
+      link (`getStatus` probes the body for a `version` when the full schema
+      rejects it). Nothing tells the user about a *newer* one, though — the
+      recorder's own in-app update check is the only thing that does.
+- [ ] **Say that a stored track is only in this browser.** `TrackViewerMenu`
+      already warns on a track that is in no map and that the URL doesn't name,
+      which now covers a finished recording too. Consider making the wording say
+      what the copy actually is — one `persist()`-ed copy in one browser — since
+      the reload it survives may read as "saved".
+- [ ] **Drop the experimental flask** once the tool has been used in anger for a
+      while: `experimental: true` on its `toolDefinitions` entry is all that marks
+      it now, the role gate having gone.
+
 ## Offline maps (`src/features/cachedMaps/`)
 
 - [ ] **Support caching WMS layers.** The "Cache map for offline use" form offers

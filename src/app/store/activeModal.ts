@@ -15,6 +15,7 @@ const URL_MODAL_IDS = [
   'gallery-filter',
   'gallery-leaderboard',
   'gallery-upload',
+  'gps-recorder-settings',
   'legend',
   'login',
   'map-features-export',
@@ -22,6 +23,7 @@ const URL_MODAL_IDS = [
   'map-preferences',
   'map-to-document-export',
   'my-maps',
+  'objects-style',
   'offline-map-export',
   'offline-maps',
   'premium',
@@ -29,7 +31,9 @@ const URL_MODAL_IDS = [
   // year to switch to a subscription while the current price lasts.
   'premium-switch',
   'route-planner-style',
+  'search-result-style',
   'support-us',
+  'track-viewer-style',
   'tracking-my',
   'tracking-watched',
 ] as const;
@@ -55,9 +59,6 @@ const MODAL_RENAMES: Record<string, string> = {
 export const ModalIdSchema = z.enum([
   ...URL_MODAL_IDS,
   'current-drawing-properties',
-  'track-viewer-style',
-  'objects-style',
-  'search-result-style',
 ]);
 
 export type ModalId = z.infer<typeof ModalIdSchema>;
@@ -148,7 +149,7 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
     default: {
       const r = UrlModalIdSchema.safeParse(type);
 
-      return r.success ? { type: r.data } : null;
+      return r.success ? modalOf(r.data) : null;
     }
   }
 }

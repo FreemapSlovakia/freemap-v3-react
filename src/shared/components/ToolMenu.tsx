@@ -1,5 +1,6 @@
 import { setTool, type Tool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -47,41 +48,52 @@ export function ToolMenu({ tool, children }: Props): ReactElement {
       <Toolbar className={clsx('mt-2', isActive && 'fm-toolbar-active')}>
         <ButtonToolbar>
           {toolDef && (
-            <LongPressTooltip
-              breakpoint="sm"
-              label={
-                toolDef.draw ? m?.tools.measurement : m?.tools[toolDef.msgKey]
-              }
-            >
-              {({ label, labelClassName, props }) =>
-                // Only map-click tools can be focused: their title is a clickable
-                // pill that captures clicks when active. Overlays show a plain,
-                // non-focusable title.
-                isMapClickTool(tool) ? (
-                  <Button
-                    variant="outline-primary"
-                    active={isActive}
-                    // react-bootstrap only adds the `active` class, so the
-                    // pressed state would otherwise be conveyed by color alone
-                    aria-pressed={isActive}
-                    onClick={() =>
-                      dispatch(
-                        setTool({ tool, mode: isActive ? 'open' : 'activate' }),
-                      )
-                    }
-                    {...props}
-                  >
-                    {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}{' '}
-                    <span className={labelClassName}> {label}</span>
-                  </Button>
-                ) : (
-                  <span className="align-self-center ms-1" {...props}>
-                    {toolDef.icon}{' '}
-                    <span className={labelClassName}> {label}</span>
-                  </span>
-                )
-              }
-            </LongPressTooltip>
+            <>
+              <LongPressTooltip
+                breakpoint="sm"
+                label={
+                  toolDef.draw ? m?.tools.measurement : m?.tools[toolDef.msgKey]
+                }
+              >
+                {({ label, labelClassName, props }) =>
+                  // Only map-click tools can be focused: their title is a clickable
+                  // pill that captures clicks when active. Overlays show a plain,
+                  // non-focusable title.
+                  isMapClickTool(tool) ? (
+                    <Button
+                      variant="outline-primary"
+                      active={isActive}
+                      // react-bootstrap only adds the `active` class, so the
+                      // pressed state would otherwise be conveyed by color alone
+                      aria-pressed={isActive}
+                      onClick={() =>
+                        dispatch(
+                          setTool({
+                            tool,
+                            mode: isActive ? 'open' : 'activate',
+                          }),
+                        )
+                      }
+                      {...props}
+                    >
+                      {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}{' '}
+                      <span className={labelClassName}> {label}</span>
+                    </Button>
+                  ) : (
+                    <span className="align-self-center mx-1" {...props}>
+                      {toolDef.icon}{' '}
+                      <span className={labelClassName}> {label}</span>
+                    </span>
+                  )
+                }
+              </LongPressTooltip>
+
+              {toolDef.experimental && (
+                <span className="align-self-center mx-1">
+                  <ExperimentalFunction />
+                </span>
+              )}
+            </>
           )}
 
           {!hidden && children}

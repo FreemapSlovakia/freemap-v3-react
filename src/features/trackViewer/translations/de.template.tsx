@@ -86,7 +86,7 @@ const de: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     `Einige Dateien konnten nicht geladen werden: ${names}.`,
   unsaved: 'Nicht gespeichert',
   unsavedTooltip:
-    'Dieser Track ist in keiner gespeicherten Karte enthalten und nicht Teil des Links, geht also beim Neuladen der Seite verloren. Speichern Sie ihn in Ihren Karten, um ihn zu behalten.',
+    'Dieser Track ist in keiner gespeicherten Karte enthalten und nicht Teil des Links – er bleibt nur in diesem Browser, das Teilen des Links gibt ihn also nicht weiter. Speichern Sie ihn in Ihren Karten, um ihn zu behalten.',
 };
 
 export default de;

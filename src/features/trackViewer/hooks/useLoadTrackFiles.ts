@@ -1,7 +1,6 @@
 import { setActiveModal, setTool } from '@app/store/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { useConfirmChoice } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { FeatureCollection } from 'geojson';
 import { useCallback } from 'react';
@@ -12,7 +11,7 @@ import {
 } from '../model/actions.js';
 import { parseTrackFiles } from '../parseTrackFiles.js';
 import { loadTrackViewerMessages } from '../translations/loadTrackViewerMessages.js';
-import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.js';
+import { useTrackMergeMode } from './useTrackMergeMode.js';
 
 /**
  * Returns a handler that imports one or more track files of any supported
@@ -25,9 +24,7 @@ import { useTrackViewerMessages } from '../translations/useTrackViewerMessages.j
 export function useLoadTrackFiles(): (files: File[]) => Promise<void> {
   const dispatch = useDispatch();
 
-  const confirmChoice = useConfirmChoice();
-
-  const tvm = useTrackViewerMessages();
+  const askMergeMode = useTrackMergeMode();
 
   const existing = useAppSelector((state) => state.trackViewer.trackGeojson);
 
@@ -55,24 +52,10 @@ export function useLoadTrackFiles(): (files: File[]) => Promise<void> {
         return;
       }
 
-      let mode: 'replace' | 'append' = 'replace';
+      const mode = await askMergeMode();
 
-      // Already showing data → let the user choose. Append is the safe default
-      // (confirm / Enter); replace is the destructive option.
-      if (existing) {
-        const choice = await confirmChoice({
-          title: tvm?.uploadModal.mergeTitle,
-          message: tvm?.uploadModal.mergeMessage,
-          confirmLabel: tvm?.uploadModal.append,
-          extraLabel: tvm?.uploadModal.replace,
-          extraStyle: 'danger',
-        });
-
-        if (choice === 'cancel') {
-          return;
-        }
-
-        mode = choice === 'extra' ? 'replace' : 'append';
+      if (mode === 'cancel') {
+        return;
       }
 
       const trackGeojson: FeatureCollection =
@@ -94,6 +77,6 @@ export function useLoadTrackFiles(): (files: File[]) => Promise<void> {
 
       dispatch(setTool({ tool: 'import-file', mode: 'open' }));
     },
-    [dispatch, confirmChoice, tvm, existing],
+    [dispatch, askMergeMode, existing],
   );
 }

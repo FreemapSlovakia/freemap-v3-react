@@ -94,9 +94,10 @@ export function TrackViewerMenu(): ReactElement {
   const gpxUrl = useAppSelector((state) => state.trackViewer.gpxUrl);
 
   // A track that is in no saved map and that the URL doesn't name — neither a
-  // `track-uid=` nor an `import-url=` — has nowhere to come back from, so a
-  // reload loses it. The other two are re-fetched from the link and need no
-  // warning.
+  // `track-uid=` nor an `import-url=` — exists nowhere but this browser. A reload
+  // does put it back (`trackStore.ts`), but that copy goes with the browser's
+  // storage, so it still deserves saying. The other two are re-fetched from the
+  // link and need no warning.
   const unsaved = hasTrack && !hasActiveMap && canUpload && !gpxUrl;
 
   const handleSaveAsMap = useCallback(() => {
@@ -288,7 +289,7 @@ export function TrackViewerMenu(): ReactElement {
       <ToolMenu tool="import-file">
         {unsaved && (
           <UnsavedWarningIcon
-            className="ms-1"
+            className="mx-1"
             label={tvm?.unsaved}
             tooltip={tvm?.unsavedTooltip}
           />

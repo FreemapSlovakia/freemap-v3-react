@@ -84,7 +84,7 @@ const cs: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     `Některé soubory se nepodařilo načíst: ${names}.`,
   unsaved: 'Neuloženo',
   unsavedTooltip:
-    'Tato trasa není v žádné uložené mapě ani v odkazu, takže se při obnovení stránky ztratí. Uložte ji do svých map, abyste ji zachovali.',
+    'Tato trasa není v žádné uložené mapě ani v odkazu – zůstává jen v tomto prohlížeči, takže sdílením odkazu ji nesdílíte. Uložte ji do svých map, abyste ji zachovali.',
 };
 
 export default cs;

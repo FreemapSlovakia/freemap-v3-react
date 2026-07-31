@@ -110,6 +110,7 @@ export type Messages = {
     changesets: string;
     mapDetails: string;
     tracking: string;
+    gpsRecorder: string;
     myMap: string;
     myMaps: string;
   };

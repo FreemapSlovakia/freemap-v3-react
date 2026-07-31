@@ -1,7 +1,10 @@
 import type { Tool } from '@app/store/actions.js';
+import type { RootState } from '@app/store/store.js';
+import { gpsRecorderAvailableSelector } from '@features/gpsRecorder/support.js';
 import type { ReactElement } from 'react';
 import {
   FaBullseye,
+  FaCircle,
   FaDrawPolygon,
   FaFileImport,
   FaInfo,
@@ -19,6 +22,33 @@ export interface ToolDefinition {
   msgKey: keyof Messages['tools'];
   kbd?: string;
   draw?: true;
+  /**
+   * Hides the tool when it returns false — for platform support and per-account
+   * gates. Absent means always available.
+   */
+  available?: (state: RootState) => boolean;
+  /**
+   * Marks the tool as not finished yet: the menu item and the tool's own title
+   * carry `ExperimentalFunction`'s flask, so the user knows what they are using
+   * before something surprises them.
+   */
+  experimental?: true;
+}
+
+/**
+ * Tools hidden for this device/account, as the `|a|b|`-delimited string the
+ * menus use: a stable string keeps `useAppSelector` from re-rendering on every
+ * action the way a fresh array would.
+ */
+export function unavailableToolsSelector(state: RootState): string {
+  return `|${toolDefinitions
+    .filter((td) => td.available && !td.available(state))
+    .map((td) => `${td.tool}|`)
+    .join('')}`;
+}
+
+export function isToolAvailable(tools: string, tool: Tool): boolean {
+  return !tools.includes(`|${tool}|`);
 }
 
 /**
@@ -119,5 +149,12 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <FaBullseye />,
     msgKey: 'tracking',
     kbd: 'KeyT',
+  },
+  {
+    tool: 'gps-recorder',
+    icon: <FaCircle />,
+    msgKey: 'gpsRecorder',
+    available: gpsRecorderAvailableSelector,
+    experimental: true,
   },
 ];

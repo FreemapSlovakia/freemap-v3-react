@@ -5,12 +5,18 @@ import {
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { Emoji } from '@shared/components/Emoji.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   documentMenuItemProps,
   modalMenuItemProps,
 } from '@shared/hooks/useMenuHandler.js';
-import { isDrawTool, toolDefinitions } from '@shared/toolDefinitions.js';
+import {
+  isDrawTool,
+  isToolAvailable,
+  toolDefinitions,
+  unavailableToolsSelector,
+} from '@shared/toolDefinitions.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -41,6 +47,8 @@ export function MainMenu(): ReactElement {
   );
 
   const tools = useAppSelector(toolsSelector);
+
+  const unavailable = useAppSelector(unavailableToolsSelector);
 
   const hasClearableMapFeatures = useAppSelector(
     hasClearableMapFeaturesSelector,
@@ -104,9 +112,9 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       {toolDefinitions
-        .filter(({ draw }) => !draw)
+        .filter(({ draw, tool }) => !draw && isToolAvailable(unavailable, tool))
         .map(
-          ({ tool: newTool, icon, msgKey, kbd }) =>
+          ({ tool: newTool, icon, msgKey, kbd, experimental }) =>
             newTool && (
               <Dropdown.Item
                 href={`#tools=${newTool}`}
@@ -115,6 +123,11 @@ export function MainMenu(): ReactElement {
                 active={tools.includes(newTool)}
               >
                 {icon} {m?.tools[msgKey]}{' '}
+                {experimental && (
+                  <>
+                    <ExperimentalFunction />{' '}
+                  </>
+                )}
                 {kbd && (
                   <>
                     <kbd>g</kbd>{' '}

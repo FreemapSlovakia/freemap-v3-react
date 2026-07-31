@@ -84,7 +84,7 @@ const sl: DeepPartialWithRequiredObjects<TrackViewerMessages> = {
     `Nekaterih datotek ni bilo mogoče naložiti: ${names}.`,
   unsaved: 'Ni shranjeno',
   unsavedTooltip:
-    'Ta sled ni v nobenem shranjenem zemljevidu in ni del povezave, zato bo ob ponovnem nalaganju strani izgubljena. Shranite jo med svoje zemljevide, da jo ohranite.',
+    'Ta sled ni v nobenem shranjenem zemljevidu in ni del povezave – ostane samo v tem brskalniku, zato je z deljenjem povezave ne boste delili. Shranite jo med svoje zemljevide, da jo ohranite.',
 };
 
 export default sl;

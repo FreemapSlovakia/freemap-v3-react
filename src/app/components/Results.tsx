@@ -24,6 +24,15 @@ export function Results(): ReactElement {
     (state) => state.objects.objects.length > 0,
   );
 
+  // A recording to represent, not merely fixes to draw: the wake lock inside
+  // belongs to the ride, and a screen that blanks between pressing Record and
+  // the first fix is the case it exists for.
+  const hasRecording = useAppSelector(
+    (state) =>
+      state.gpsRecorder.points.length > 0 ||
+      (state.gpsRecorder.status?.recording ?? false),
+  );
+
   // Mount the route-planner result only once route planning is engaged — a
   // route exists, or its tool is active (so map clicks add points). This keeps
   // the feature's lazy message bundle out of the initial boot.
@@ -82,6 +91,17 @@ export function Results(): ReactElement {
       <ChangesetsResult />
 
       <TrackingResult />
+
+      {hasRecording && (
+        <AsyncComponent
+          factory={() =>
+            import(
+              /* webpackChunkName: "gps-recorder-result" */
+              '@features/gpsRecorder/components/GpsRecorderResult.js'
+            )
+          }
+        />
+      )}
     </>
   );
 }

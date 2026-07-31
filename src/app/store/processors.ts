@@ -39,8 +39,17 @@ import { gallerySubmitCommentProcessor } from '@features/gallery/model/processor
 import { gallerySubmitStarsProcessor } from '@features/gallery/model/processors/gallerySubmitStarsProcessor.js';
 import { galleryUploadModalProcessor } from '@features/gallery/model/processors/galleryUploadModalProcessor.js';
 import { geoipProcessor } from '@features/geoip/model/processors/geoIpProcessor.js';
+import {
+  gpsRecorderClearProcessor,
+  gpsRecorderPauseProcessor,
+  gpsRecorderPushedStatusProcessor,
+  gpsRecorderStartProcessor,
+  gpsRecorderStopProcessor,
+  gpsRecorderSyncProcessor,
+} from '@features/gpsRecorder/model/processors.js';
 import { l10nSetLanguageProcessor } from '@features/l10n/model/processor.js';
 import { legendProcessor } from '@features/legend/model/legendProcessor.js';
+import { followLocationProcessor } from '@features/location/model/followProcessor.js';
 import { locateProcessor } from '@features/location/model/locateProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
 import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxProcessor.js';
@@ -93,6 +102,11 @@ import { trackViewerDownloadTrackProcessor } from '@features/trackViewer/model/p
 import { trackViewerGpxLoadProcessor } from '@features/trackViewer/model/processors/trackViewerGpxLoadProcessor.js';
 import { trackViewerResolveElevationPromptProcessor } from '@features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.js';
 import { trackViewerSetTrackDataProcessor } from '@features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.js';
+import {
+  trackViewerForgetStoredProcessor,
+  trackViewerRestoreStoredProcessor,
+  trackViewerStoreProcessor,
+} from '@features/trackViewer/model/processors/trackViewerStoreProcessors.js';
 import { trackViewerToggleElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
@@ -126,6 +140,7 @@ export const processors = [
   searchHighlightTrafo,
   searchHighlightProcessor,
   locateProcessor,
+  followLocationProcessor,
   saveSettingsProcessor,
   resetAppProcessor,
   measurementProcessor,
@@ -147,6 +162,9 @@ export const processors = [
   toastsRestartTimeoutProcessor,
   toastsStopTimeoutProcessor,
   trackViewerSetTrackDataProcessor,
+  trackViewerStoreProcessor,
+  trackViewerForgetStoredProcessor,
+  trackViewerRestoreStoredProcessor,
   trackViewerDownloadTrackProcessor,
   trackViewerGpxLoadProcessor,
   trackViewerToggleElevationChartProcessor,
@@ -176,6 +194,12 @@ export const processors = [
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),
   trackingFollowProcessor,
+  gpsRecorderStartProcessor,
+  gpsRecorderPauseProcessor,
+  gpsRecorderStopProcessor,
+  gpsRecorderSyncProcessor,
+  gpsRecorderPushedStatusProcessor,
+  gpsRecorderClearProcessor,
   setActiveModalTransformer,
   mapsLoadListProcessor,
   mapsLoadProcessor,

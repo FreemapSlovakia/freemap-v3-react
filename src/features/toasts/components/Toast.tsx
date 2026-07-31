@@ -94,17 +94,23 @@ export function Toast({
 
       {buttonActions.length > 0 && (
         <ButtonToolbar className="mt-2">
-          {buttonActions.map(({ name, action, variant: buttonStyle }, i) => (
-            <Button
-              size="sm"
-              className={i > 0 ? 'ms-2' : ''}
-              key={i}
-              variant={buttonStyle}
-              onClick={() => onAction(id, action)}
-            >
-              {name}
-            </Button>
-          ))}
+          {buttonActions.map(
+            ({ name, action, href, variant: buttonStyle }, i) => (
+              <Button
+                size="sm"
+                className={i > 0 ? 'ms-2' : ''}
+                key={i}
+                variant={buttonStyle}
+                // A link still dismisses: the toast has been acted on, and one
+                // that survived an `intent://` hand-off would be waiting on return
+                // to say something the user has already dealt with.
+                href={href}
+                onClick={() => onAction(id, action)}
+              >
+                {name}
+              </Button>
+            ),
+          )}
         </ButtonToolbar>
       )}
 

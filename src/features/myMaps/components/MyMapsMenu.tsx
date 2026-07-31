@@ -115,6 +115,7 @@ export function MyMapsMenu(): ReactElement {
 
           {dirty && (
             <UnsavedWarningIcon
+              className="mx-1"
               label={mm?.unsaved}
               tooltip={mm?.unsavedTooltip}
             />

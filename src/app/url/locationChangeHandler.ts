@@ -73,6 +73,7 @@ import {
   trackViewerColorizeTrackBy,
   trackViewerDownloadTrack,
   trackViewerGpxLoad,
+  trackViewerRestoreStored,
   trackViewerSetStyle,
 } from '@features/trackViewer/model/actions.js';
 import {
@@ -134,7 +135,10 @@ export function handleLocationChange(store: MyStore): void {
 
   const search = (document.location.hash || document.location.search).slice(1);
 
-  const { sq } = (history.state as { sq?: string } | null) ?? { sq: undefined };
+  const { sq, tr } = (history.state as {
+    sq?: string;
+    tr?: true;
+  } | null) ?? { sq: undefined, tr: undefined };
 
   const parsedQuery = parseQuery(search);
 
@@ -882,6 +886,19 @@ export function handleLocationChange(store: MyStore): void {
 
   if (restore) {
     dispatch(mapsRestore(restore));
+  }
+
+  // The track this browser stored for this history entry. Dispatched last, and a
+  // no-op when something else already owns the track viewer, so a map or a shared
+  // track named in the URL wins.
+  //
+  // A load carrying no flag deliberately does *not* evict the store. The record is
+  // one per origin while the flag is one per history entry, so a second tab — a
+  // fresh load with no flag of its own — would delete the only durable copy of a
+  // ride the first tab is still holding. Hygiene is left to the store being a
+  // single entry that its own delete and the next write reclaim.
+  if (tr) {
+    dispatch(trackViewerRestoreStored());
   }
 
   setUrlUpdatingEnabled(true);

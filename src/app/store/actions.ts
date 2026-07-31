@@ -26,6 +26,7 @@ export const ToolSchema = z.enum([
   'draw-lines',
   'draw-points',
   'draw-polygons',
+  'gps-recorder',
   'import-file',
   'map-details',
   'objects',
