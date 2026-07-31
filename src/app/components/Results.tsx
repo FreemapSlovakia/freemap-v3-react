@@ -24,8 +24,13 @@ export function Results(): ReactElement {
     (state) => state.objects.objects.length > 0,
   );
 
-  const hasRecordedPoints = useAppSelector(
-    (state) => state.gpsRecorder.points.length > 0,
+  // A recording to represent, not merely fixes to draw: the wake lock inside
+  // belongs to the ride, and a screen that blanks between pressing Record and
+  // the first fix is the case it exists for.
+  const hasRecording = useAppSelector(
+    (state) =>
+      state.gpsRecorder.points.length > 0 ||
+      (state.gpsRecorder.status?.recording ?? false),
   );
 
   // Mount the route-planner result only once route planning is engaged — a
@@ -87,7 +92,7 @@ export function Results(): ReactElement {
 
       <TrackingResult />
 
-      {hasRecordedPoints && (
+      {hasRecording && (
         <AsyncComponent
           factory={() =>
             import(

@@ -278,6 +278,14 @@ been seen, which shows up as the page flickering and nothing else.
 is opened, after a stream the browser gave up on, and at the end of the start flow
 — never on a timer, because the stream says when something changed.
 
+**Concurrent asks share one run.** Returning to the page with the tool open raises
+both the `visibilitychange` sync and the menu's own, which on a stale cursor would
+be two full `/track?since=0` downloads for the same answer, so `syncHandler`
+coalesces onto the sync already in flight. A joiner's `quiet` is folded into it —
+one caller who asked out loud is enough for a failure to be reported out loud. The
+start flow is the exception and calls `runSync` directly: it needs a status newer
+than its own `POST /start`, which a run already in flight might predate.
+
 **The connection does not belong to the toolbar.** A recording carries on whichever
 toolbar the user has open, and on the phone even while the browser is closed — so
 [`follow.ts`](../src/features/gpsRecorder/follow.ts) owns it instead:
@@ -294,9 +302,11 @@ has since been killed or uninstalled must not greet the user with an error. The
 failure is swallowed, following stops, and opening the tool is what tries again.
 
 Two more things follow the recording rather than the toolbar, and so live in
-`GpsRecorderResult` — which `Results` mounts whenever there are fixes: the position
-feed (`useRecorderLocationFeed`) and the screen wake lock
-(`useRecorderWakeLock`). In the menu, closing it would hand "Locate
+`GpsRecorderResult` — which `Results` mounts whenever there are fixes **or** a
+recording in progress: the position feed (`useRecorderLocationFeed`) and the
+screen wake lock (`useRecorderWakeLock`). The second half of that gate is the
+wake lock's: it belongs to the ride, and a screen that blanks between pressing
+Record and the first fix is the case it exists for. In the menu, closing it would hand "Locate
 me" back to the browser's own GPS watch mid-ride, which is the second watch the
 feed exists to avoid. What stays in the menu is what belongs to the tool: its
 buttons, and the failure and setup toasts.
@@ -503,6 +513,13 @@ source with `locationSetExternalSource(true)`, and `locateProcessor` runs the
 watch only while `locate && !externalSource`. It reconciles against that pair
 rather than reacting to the toggle, which is what makes the handover automatic:
 the watch starts by itself when a recording ends.
+
+**The claim waits for a fix**, though — `feedLocation && recording && latest`.
+Taking the source at the moment Record is pressed would stop the browser's watch
+while the recorder still has nothing to say, leaving the marker on the last
+position anyone reported until the first fix arrives, which on a cold GNSS start
+is a while. So the browser feeds the marker across the warm-up and the recorder
+takes over the moment it can.
 
 **The feed never turns locating on and never moves the map.** The locate button
 is how the user asks to be shown and followed; starting a recording is a

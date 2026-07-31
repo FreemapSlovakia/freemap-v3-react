@@ -36,38 +36,46 @@ export const selectLatestRecorderPoint = createSelector(
 );
 
 /**
- * The fold behind {@link selectRecorderStats}, and the statistics last derived
- * from it.
+ * Builds a selector for the whole track's statistics, advanced by the fixes that
+ * arrived since the last read. It returns the same object until something
+ * changes, so a component may select it directly.
  *
- * Held here rather than inside a `createSelector` because the whole point is to
- * continue from the previous result, which reselect cannot hand to a recompute.
- * Advancing over one new point is what keeps a long recording cheap; the fold
- * itself checks that the track still starts with what it has already counted, so
- * a cleared or back-filled track is refolded rather than trusted.
+ * The fold is held in the closure rather than inside a `createSelector` because
+ * the whole point is to continue from the previous result, which reselect cannot
+ * hand to a recompute. Advancing over one new point is what keeps a long
+ * recording cheap; the fold itself checks that the track still starts with what
+ * it has already counted, so a cleared or back-filled track is refolded rather
+ * than trusted.
+ *
+ * One instance per store: the fold is a running total, and two stores sharing
+ * one would each advance the other's.
  */
-let statsFold: RecorderStatsFold | null = null;
+export function makeRecorderStatsSelector(): (
+  state: RootState,
+) => RecorderStats {
+  let statsFold: RecorderStatsFold | null = null;
 
-let stats: RecorderStats | null = null;
+  let stats: RecorderStats | null = null;
 
-/**
- * Statistics for the whole track, advanced by the fixes that arrived since the
- * last read. Returns the same object until something changes, so a component may
- * select it directly.
- */
-export function selectRecorderStats(state: RootState): RecorderStats {
-  const { points } = state.gpsRecorder;
+  return function selectRecorderStats(state) {
+    const { points } = state.gpsRecorder;
 
-  const gapMs = state.gpsRecorderSettings.splitGapS * 1000;
+    const gapMs = state.gpsRecorderSettings.splitGapS * 1000;
 
-  if (stats !== null && statsFold !== null) {
-    if (isFoldCurrent(statsFold, points, gapMs)) {
+    if (
+      stats !== null &&
+      statsFold !== null &&
+      isFoldCurrent(statsFold, points, gapMs)
+    ) {
       return stats;
     }
-  }
 
-  statsFold = foldRecorderStats(statsFold, points, gapMs);
+    statsFold = foldRecorderStats(statsFold, points, gapMs);
 
-  stats = recorderStatsOf(statsFold);
+    stats = recorderStatsOf(statsFold);
 
-  return stats;
+    return stats;
+  };
 }
+
+export const selectRecorderStats = makeRecorderStatsSelector();

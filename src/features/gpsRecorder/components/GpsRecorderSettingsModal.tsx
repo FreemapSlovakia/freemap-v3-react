@@ -228,7 +228,10 @@ export default function GpsRecorderSettingsModal({
                 type="number"
                 min={0}
                 max={720}
-                step={1}
+                // Minutes, over a value held in seconds — a stored gap that is
+                // not a whole number of minutes must still submit. The arrows
+                // step by one regardless.
+                step="any"
                 placeholder={grm?.settingsModal.splitGapOff}
                 value={draft.splitGapS === 0 ? '' : draft.splitGapS / 60}
                 onChange={(e) =>

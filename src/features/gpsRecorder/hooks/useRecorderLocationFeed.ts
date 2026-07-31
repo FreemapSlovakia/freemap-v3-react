@@ -40,7 +40,10 @@ export function useRecorderLocationFeed(): void {
 
   const latest = useAppSelector(selectLatestRecorderPoint);
 
-  const external = feedLocation && recording;
+  // Claimed only once there is a fix to publish. Taking the source earlier
+  // stops the browser's watch and leaves the marker on the last position it
+  // reported until the recorder's first fix — which on a cold start is a while.
+  const external = feedLocation && recording && latest !== null;
 
   useEffect(() => {
     if (!external) {

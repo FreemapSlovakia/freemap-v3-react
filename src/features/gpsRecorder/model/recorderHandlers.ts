@@ -154,19 +154,20 @@ async function applyStatus(
  * the tool opens, when the page returns to the foreground, after the stream has
  * been given up on, and at the end of the start flow. Never on a timer: the
  * stream pushes a status whenever the recorder's state changes.
+ *
+ * `isQuiet` is read at the moment a failure happens rather than on the way in,
+ * because callers may have joined this run since it started — see
+ * {@link syncHandler}.
  */
-export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = async ({
-  dispatch,
-  getState,
-  action,
-}) => {
+async function runSync(
+  { dispatch, getState }: { dispatch: Dispatch; getState: () => RootState },
+  isQuiet: () => boolean,
+): Promise<void> {
   // Read before the fresh status lands, so the generation below is the one this
   // page's points were fetched under.
   const { points, cursor, generation } = getState().gpsRecorder;
 
-  const streaming = isRecorderStreamOpen();
-
-  if (!streaming) {
+  if (!isRecorderStreamOpen()) {
     dispatch(gpsRecorderSetConnection('connecting'));
   }
 
@@ -191,7 +192,7 @@ export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = async ({
     // A quiet sync is one nobody asked for, so it says nothing and stops
     // following instead: the recorder has been killed, uninstalled, or is simply
     // not there any more, and opening the tool is what tries again.
-    if (action.payload?.quiet) {
+    if (isQuiet()) {
       setRecorderFollowed(false);
 
       forgetUnreachableStatus(dispatch, err);
@@ -207,6 +208,44 @@ export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = async ({
   dispatch(gpsRecorderSetError(null));
 
   openRecorderStream(dispatch, fields, since);
+}
+
+/**
+ * The sync in flight, if any. Several things ask for one at nearly the same
+ * moment — returning to the page with the tool open raises both the
+ * `visibilitychange` sync and the menu's own — and they all want the same
+ * answer, so the later ones wait instead of fetching the whole track again.
+ *
+ * `quiet` is the weakest claim any waiter made: one caller who asked out loud is
+ * enough for a failure to be reported out loud.
+ */
+let inFlightSync: { promise: Promise<void>; quiet: boolean } | null = null;
+
+export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = (
+  params,
+) => {
+  const quiet = params.action.payload?.quiet ?? false;
+
+  if (inFlightSync) {
+    inFlightSync.quiet &&= quiet;
+
+    return inFlightSync.promise;
+  }
+
+  const entry: { promise: Promise<void>; quiet: boolean } = {
+    quiet,
+    promise: Promise.resolve(),
+  };
+
+  inFlightSync = entry;
+
+  entry.promise = runSync(params, () => entry.quiet).finally(() => {
+    if (inFlightSync === entry) {
+      inFlightSync = null;
+    }
+  });
+
+  return entry.promise;
 };
 
 /**
@@ -322,7 +361,11 @@ export const startHandler: ProcessorHandler = async (params) => {
   // `generation` into the store without the comparison that gives it meaning, and
   // a `DELETE /track` that happened while the stream was down would then pass
   // unnoticed — leaving the deleted points merged into the new recording.
-  await syncHandler(params);
+  //
+  // `runSync` rather than `syncHandler`: this needs a status newer than the
+  // `POST /start` above, and joining a sync already in flight could answer with
+  // one read before it. Never quiet — the user asked for this recording.
+  await runSync(params, () => false);
 };
 
 /**
