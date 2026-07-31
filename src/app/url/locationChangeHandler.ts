@@ -4,6 +4,14 @@ import {
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
 import {
+  type ColorizingMode,
+  trackViewerColorizeTrackBy,
+  trackViewerDownloadTrack,
+  trackViewerGpxLoad,
+  trackViewerRestoreStored,
+  trackViewerSetStyle,
+} from '@features/dataViewer/model/actions.js';
+import {
   drawingLineSetLines,
   type Line,
   type LineCap,
@@ -68,14 +76,6 @@ import {
 } from '@features/search/model/actions.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
 import type { TrackedDevice } from '@features/tracking/model/types.js';
-import {
-  type ColorizingMode,
-  trackViewerColorizeTrackBy,
-  trackViewerDownloadTrack,
-  trackViewerGpxLoad,
-  trackViewerRestoreStored,
-  trackViewerSetStyle,
-} from '@features/trackViewer/model/actions.js';
 import {
   wikiLoadPreview,
   wikiSetPreview,

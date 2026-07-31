@@ -1,12 +1,12 @@
 import { setTool } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
-} from '@features/trackViewer/model/actions.js';
-import { storeTrackDurably } from '@features/trackViewer/trackStore.js';
+} from '@features/dataViewer/model/actions.js';
+import { storeTrackDurably } from '@features/dataViewer/trackStore.js';
+import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import type { FeatureCollection } from 'geojson';
 import type { Dispatch } from 'redux';
 import { setRecorderFollowed } from '../follow.js';

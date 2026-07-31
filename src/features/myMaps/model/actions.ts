@@ -1,10 +1,10 @@
+import type { TrackViewerState } from '@features/dataViewer/model/reducer.js';
 import type { Line } from '@features/drawing/model/actions/drawingLineActions.js';
 import type { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { GalleryFilter } from '@features/gallery/model/actions.js';
 import type { MapState } from '@features/map/model/reducer.js';
 import type { RoutePlannerMapData } from '@features/routePlanner/model/reducer.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
-import type { TrackViewerState } from '@features/trackViewer/model/reducer.js';
 import { createAction } from '@reduxjs/toolkit';
 import { IsoDateSchema } from '@shared/types/common.js';
 import z from 'zod';

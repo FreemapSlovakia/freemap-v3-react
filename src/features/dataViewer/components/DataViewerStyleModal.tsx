@@ -1,0 +1,27 @@
+import { DrawingStyleSettingsModal } from '@features/drawing/components/DrawingStyleSettingsModal.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import type { ReactElement } from 'react';
+import { useDispatch } from 'react-redux';
+import { trackViewerSetStyle } from '../model/actions.js';
+import { trackViewerSettingsInitialState } from '../model/settingsReducer.js';
+import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
+
+type Props = { show: boolean };
+
+export default function DataViewerStyleModal({ show }: Props): ReactElement {
+  const tvm = useDataViewerMessages();
+
+  const style = useAppSelector((state) => state.trackViewerSettings.style);
+
+  const dispatch = useDispatch();
+
+  return (
+    <DrawingStyleSettingsModal
+      show={show}
+      title={tvm?.style.title}
+      current={style}
+      defaults={trackViewerSettingsInitialState.style}
+      onSave={(s) => dispatch(trackViewerSetStyle(s))}
+    />
+  );
+}

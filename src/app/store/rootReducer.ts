@@ -2,6 +2,8 @@ import { authReducer } from '@features/auth/model/reducer.js';
 import { cachedMapsReducer } from '@features/cachedMaps/model/reducer.js';
 import { changesetReducer } from '@features/changesets/model/reducer.js';
 import { cookieConsentReducer } from '@features/cookieConsent/model/reducer.js';
+import { trackViewerReducer } from '@features/dataViewer/model/reducer.js';
+import { trackViewerSettingsReducer } from '@features/dataViewer/model/settingsReducer.js';
 import { drawingLinesReducer } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import { drawingPointsReducer } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import { drawingSettingsReducer } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
@@ -30,8 +32,6 @@ import { searchSettingsReducer } from '@features/search/model/settingsReducer.js
 import { toastsReducer } from '@features/toasts/model/reducer.js';
 import { trackingReducer } from '@features/tracking/model/reducer.js';
 import { trackingSettingsReducer } from '@features/tracking/model/settingsReducer.js';
-import { trackViewerReducer } from '@features/trackViewer/model/reducer.js';
-import { trackViewerSettingsReducer } from '@features/trackViewer/model/settingsReducer.js';
 import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
 import { mainReducer } from './reducer.js';

@@ -1,3 +1,5 @@
+import { useLoadDataFiles } from '@features/dataViewer/hooks/useLoadDataFiles.js';
+import { trackViewerToggleElevationChart } from '@features/dataViewer/model/actions.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -28,8 +30,6 @@ import { SearchMenu } from '@features/search/components/SearchMenu.js';
 import { SearchSelection } from '@features/search/components/SearchSelection.js';
 import { Toasts } from '@features/toasts/components/Toasts.js';
 import { TrackingSelection } from '@features/tracking/components/TrackingSelection.js';
-import { useLoadTrackFiles } from '@features/trackViewer/hooks/useLoadTrackFiles.js';
-import { trackViewerToggleElevationChart } from '@features/trackViewer/model/actions.js';
 import { WikiLayer } from '@features/wiki/components/WikiLayer.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -78,10 +78,10 @@ const routePlannerMenuFactory = () =>
     '@features/routePlanner/components/RoutePlannerMenu.js'
   );
 
-const trackViewerMenuFactory = () =>
+const dataViewerMenuFactory = () =>
   import(
-    /* webpackChunkName: "track-viewer-menu" */
-    '@features/trackViewer/components/TrackViewerMenu.js'
+    /* webpackChunkName: "data-viewer-menu" */
+    '@features/dataViewer/components/DataViewerMenu.js'
   );
 
 const changesetsMenuFactory = () =>
@@ -276,10 +276,10 @@ const currentDrawingPropertiesModalFactory = () =>
     '../../features/drawing/components/CurrentDrawingPropertiesModal.js'
   );
 
-const trackViewerUploadModalFactory = () =>
+const dataViewerUploadModalFactory = () =>
   import(
-    /* webpackChunkName: "track-viewer-upload-modal" */
-    '@features/trackViewer/components/TrackViewerUploadModal.js'
+    /* webpackChunkName: "data-viewer-upload-modal" */
+    '@features/dataViewer/components/DataViewerUploadModal.js'
   );
 
 const loginModalFactory = () =>
@@ -330,10 +330,10 @@ const gpsRecorderSettingsModalFactory = () =>
     '@features/gpsRecorder/components/GpsRecorderSettingsModal.js'
   );
 
-const trackViewerStyleModalFactory = () =>
+const dataViewerStyleModalFactory = () =>
   import(
-    /* webpackChunkName: "track-viewer-style-modal" */
-    '@features/trackViewer/components/TrackViewerStyleModal.js'
+    /* webpackChunkName: "data-viewer-style-modal" */
+    '@features/dataViewer/components/DataViewerStyleModal.js'
   );
 
 const objectsStyleModalFactory = () =>
@@ -461,7 +461,7 @@ export function Main(): ReactElement {
     onPictureUpdated,
   );
 
-  const loadTrackFiles = useLoadTrackFiles();
+  const loadTrackFiles = useLoadDataFiles();
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -669,7 +669,7 @@ export function Main(): ReactElement {
                   ) : t === 'route-planner' ? (
                     <AsyncComponent key={t} factory={routePlannerMenuFactory} />
                   ) : t === 'import-file' ? (
-                    <AsyncComponent key={t} factory={trackViewerMenuFactory} />
+                    <AsyncComponent key={t} factory={dataViewerMenuFactory} />
                   ) : t === 'changesets' ? (
                     <AsyncComponent key={t} factory={changesetsMenuFactory} />
                   ) : t === 'draw-lines' ||
@@ -899,7 +899,7 @@ export function Main(): ReactElement {
 
       <AsyncModal
         show={activeModal?.type === 'file-import'}
-        factory={trackViewerUploadModalFactory}
+        factory={dataViewerUploadModalFactory}
       />
 
       <AsyncModal
@@ -944,7 +944,7 @@ export function Main(): ReactElement {
 
       <AsyncModal
         show={activeModal?.type === 'track-viewer-style'}
-        factory={trackViewerStyleModalFactory}
+        factory={dataViewerStyleModalFactory}
       />
 
       <AsyncModal

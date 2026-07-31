@@ -1,5 +1,6 @@
 import { deleteFeature, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { trackViewerDelete } from '@features/dataViewer/model/actions.js';
 import {
   drawingLineDelete,
   drawingLineDeletePoint,
@@ -11,7 +12,6 @@ import {
 } from '@features/routePlanner/model/actions.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
-import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
 
 export const deleteProcessor: Processor = {
   actionCreator: deleteFeature,

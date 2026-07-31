@@ -232,7 +232,7 @@ async function bakeMarkerProps(
 // Converts a foreign GeoJSON FeatureCollection (an imported GPX/GeoJSON track
 // or a search result, carrying simplestyle / freemap:* / osmand:* / Garmin
 // <sym> styling in its properties) into export features: points become baked
-// markers, lines/polygons become simplestyle. Mirrors how `TrackViewerResult`
+// markers, lines/polygons become simplestyle. Mirrors how `DataViewerResult`
 // renders the same features in-app, so the export matches the on-screen
 // preview. Unstyled features fall back to the supplied default style (the
 // track-viewer or search result style, matching the on-map rendering).

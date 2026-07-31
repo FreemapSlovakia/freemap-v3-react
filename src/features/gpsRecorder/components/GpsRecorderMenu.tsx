@@ -1,5 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { useTrackMergeMode } from '@features/trackViewer/hooks/useTrackMergeMode.js';
+import { useDataMergeMode } from '@features/dataViewer/hooks/useDataMergeMode.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
@@ -27,7 +27,7 @@ export default function GpsRecorderMenu(): ReactElement {
 
   const confirm = useConfirm();
 
-  const askMergeMode = useTrackMergeMode();
+  const askMergeMode = useDataMergeMode();
 
   useRecorderNotices();
 

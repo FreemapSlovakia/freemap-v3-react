@@ -2,6 +2,7 @@ import { convertToDrawing, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { changesetsSet } from '@features/changesets/model/actions.js';
+import { trackViewerDelete } from '@features/dataViewer/model/actions.js';
 import {
   drawingLineAdd,
   type Point,
@@ -27,7 +28,6 @@ import {
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import { searchClear } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
 import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
 import { mergeLines } from '@shared/geoutils.js';

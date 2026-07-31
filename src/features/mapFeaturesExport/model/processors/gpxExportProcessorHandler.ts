@@ -2,6 +2,7 @@ import type { Selection } from '@app/store/actions.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import type { TrackViewerState } from '@features/dataViewer/model/reducer.js';
 import type {
   DrawingLineType,
   Line,
@@ -30,7 +31,6 @@ import type { RoutePlannerSettingsState } from '@features/routePlanner/model/set
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
-import type { TrackViewerState } from '@features/trackViewer/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';

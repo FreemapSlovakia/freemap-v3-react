@@ -1,6 +1,7 @@
 import { authInitialState } from '@features/auth/model/reducer.js';
 import { UserSchema, UserSettingsSchema } from '@features/auth/model/types.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
+import { trackViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
 import {
   DrawingSettingsCompatSchema,
   DrawingStyleSchema,
@@ -29,7 +30,6 @@ import { routePlannerSettingsInitialState } from '@features/routePlanner/model/s
 import { SearchResultStyleSchema } from '@features/search/model/actions.js';
 import { searchSettingsInitialState } from '@features/search/model/settingsReducer.js';
 import { trackingSettingsInitialState } from '@features/tracking/model/settingsReducer.js';
-import { trackViewerSettingsInitialState } from '@features/trackViewer/model/settingsReducer.js';
 import { ColorizeSettingsShape } from '@shared/colorizers/colorizeSettings.js';
 import { ColorizingModeSchema } from '@shared/colorizers/index.js';
 import { LanguageSchema } from '@shared/langUtils.js';

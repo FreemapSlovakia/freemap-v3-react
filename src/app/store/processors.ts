@@ -20,6 +20,17 @@ import {
   changesetsTrackProcessor,
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
+import { dataViewerDensifyProcessor } from '@features/dataViewer/model/processors/dataViewerDensifyProcessor.js';
+import { dataViewerDownloadTrackProcessor } from '@features/dataViewer/model/processors/dataViewerDownloadTrackProcessor.js';
+import { dataViewerGpxLoadProcessor } from '@features/dataViewer/model/processors/dataViewerGpxLoadProcessor.js';
+import { dataViewerResolveElevationPromptProcessor } from '@features/dataViewer/model/processors/dataViewerResolveElevationPromptProcessor.js';
+import { dataViewerSetTrackDataProcessor } from '@features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.js';
+import {
+  dataViewerForgetStoredProcessor,
+  dataViewerRestoreStoredProcessor,
+  dataViewerStoreProcessor,
+} from '@features/dataViewer/model/processors/dataViewerStoreProcessors.js';
+import { dataViewerToggleElevationChartProcessor } from '@features/dataViewer/model/processors/dataViewerToggleElevationChartProcessor.js';
 import { elevationChartPendingTargetProcessor } from '@features/elevationChart/model/pendingTargetProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
 import { galleryAllOfLicenseProcessor } from '@features/gallery/model/processors/galleryAllOfLicenseProcessor.js';
@@ -97,17 +108,6 @@ import { toastsStopTimeoutProcessor } from '@features/toasts/model/processors/to
 import * as trackingAccessTokenProcessors from '@features/tracking/model/processors/trackingAccessTokenProcessors.js';
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
 import { trackingFollowProcessor } from '@features/tracking/model/processors/trackingFollowProcessors.js';
-import { trackViewerDensifyProcessor } from '@features/trackViewer/model/processors/trackViewerDensifyProcessor.js';
-import { trackViewerDownloadTrackProcessor } from '@features/trackViewer/model/processors/trackViewerDownloadTrackProcessor.js';
-import { trackViewerGpxLoadProcessor } from '@features/trackViewer/model/processors/trackViewerGpxLoadProcessor.js';
-import { trackViewerResolveElevationPromptProcessor } from '@features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.js';
-import { trackViewerSetTrackDataProcessor } from '@features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.js';
-import {
-  trackViewerForgetStoredProcessor,
-  trackViewerRestoreStoredProcessor,
-  trackViewerStoreProcessor,
-} from '@features/trackViewer/model/processors/trackViewerStoreProcessors.js';
-import { trackViewerToggleElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { cancelProcessor } from '@/processors/cancelProcessor.js';
@@ -161,15 +161,15 @@ export const processors = [
   toastsRemoveProcessor,
   toastsRestartTimeoutProcessor,
   toastsStopTimeoutProcessor,
-  trackViewerSetTrackDataProcessor,
-  trackViewerStoreProcessor,
-  trackViewerForgetStoredProcessor,
-  trackViewerRestoreStoredProcessor,
-  trackViewerDownloadTrackProcessor,
-  trackViewerGpxLoadProcessor,
-  trackViewerToggleElevationChartProcessor,
-  trackViewerResolveElevationPromptProcessor,
-  trackViewerDensifyProcessor,
+  dataViewerSetTrackDataProcessor,
+  dataViewerStoreProcessor,
+  dataViewerForgetStoredProcessor,
+  dataViewerRestoreStoredProcessor,
+  dataViewerDownloadTrackProcessor,
+  dataViewerGpxLoadProcessor,
+  dataViewerToggleElevationChartProcessor,
+  dataViewerResolveElevationPromptProcessor,
+  dataViewerDensifyProcessor,
   routePlannerFindRouteProcessor,
   routePlannerOptimizeOrderProcessor,
   galleryDeletePictureProcessor,

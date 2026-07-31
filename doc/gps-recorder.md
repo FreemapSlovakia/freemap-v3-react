@@ -411,7 +411,7 @@ the recorder discard it.
 
 Finishing deletes the recorder's copy, so before it does, the browser's copy has to
 be worth trusting. That copy is **not the recorder's business**: it is
-[`trackViewer/trackStore.ts`](../src/features/trackViewer/trackStore.ts), which
+[`dataViewer/trackStore.ts`](../src/features/dataViewer/trackStore.ts), which
 keeps whatever track the viewer holds — a file import, a conversion, a finished
 ride alike. The recorder is only a caller.
 
@@ -456,7 +456,7 @@ keeping them meant a second, parallel GeoJSON encoder that could drift from the
 one the importers produce.
 
 Saving asks the same replace-or-append question a file import does, through the
-shared `useTrackMergeMode` hook — so however geodata reaches the viewer, the
+shared `useDataMergeMode` hook — so however geodata reaches the viewer, the
 question, its wording and its defaults are identical.
 
 `trackGeojson.ts` emits **one `Feature<LineString>` per segment**, not a single
@@ -473,7 +473,7 @@ precision, not metres), so it rides in `CUSTOM_POINT_PROPS` as a plain
 
 The viewer's track is not in `persistence.ts` — that carries only
 `trackViewerSettings` — but it is not lost on a reload either:
-[`trackViewer/trackStore.ts`](../src/features/trackViewer/trackStore.ts) keeps it
+[`dataViewer/trackStore.ts`](../src/features/dataViewer/trackStore.ts) keeps it
 in IndexedDB, which is what makes Finish's delete defensible in the first place.
 See "Storing the finished ride" above.
 

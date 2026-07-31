@@ -7,7 +7,7 @@ import {
   trackViewerSetData,
   trackViewerSetGpxUrl,
   trackViewerSetTrackUID,
-} from '@features/trackViewer/model/actions.js';
+} from '@features/dataViewer/model/actions.js';
 import type { FeatureCollection } from 'geojson';
 import { getMapRecord } from '../../mapStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';

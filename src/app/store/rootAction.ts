@@ -1,5 +1,6 @@
 import * as auth from '@features/auth/model/actions.js';
 import * as changesets from '@features/changesets/model/actions.js';
+import * as trackViewer from '@features/dataViewer/model/actions.js';
 import * as drawing from '@features/drawing/model/actions/drawingLineActions.js';
 import * as drawingPoints from '@features/drawing/model/actions/drawingPointActions.js';
 import * as elevationChart from '@features/elevationChart/model/actions.js';
@@ -15,7 +16,6 @@ import * as rpc from '@features/rpc/model/actions.js';
 import * as search from '@features/search/model/actions.js';
 import * as toasts from '@features/toasts/model/actions.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
-import * as trackViewer from '@features/trackViewer/model/actions.js';
 import * as ws from '@features/websocket/model/actions.js';
 import * as wiki from '@features/wiki/model/actions.js';
 import * as main from './actions.js';

@@ -1,5 +1,5 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { trackViewerSetSelectedTrack } from '@features/trackViewer/model/actions.js';
+import { trackViewerSetSelectedTrack } from '@features/dataViewer/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   elevationChartClose,

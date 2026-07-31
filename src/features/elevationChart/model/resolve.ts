@@ -113,8 +113,8 @@ export function loadResolver(
 
     case 'track-viewer':
       return import(
-        /* webpackChunkName: "track-viewer-elevation-chart-resolver" */
-        '@features/trackViewer/model/resolveElevationChart.js'
+        /* webpackChunkName: "data-viewer-elevation-chart-resolver" */
+        '@features/dataViewer/model/resolveElevationChart.js'
       ).then((m) => m.default);
 
     case 'drawing':

@@ -2,7 +2,7 @@
 
 How imported/recorded/planned tracks acquire elevation, get colorized, and round-trip
 through file formats. One shared elevation-acquisition layer and one shared colorizer
-layer feed every consumer — **routePlanner**, **trackViewer**, **tracking**, and
+layer feed every consumer — **routePlanner**, **dataViewer**, **tracking**, and
 **export** — so changes belong in the shared modules below, not per-feature.
 
 Guiding principle: **gaps are the honest default; enrichment is opt-in.** Elevation is
@@ -23,7 +23,7 @@ functions (each has authoritative JSDoc — read it before changing behavior):
   `LineString` features with `z` filled. `'missing'` fills only coords lacking a `z`
   ordinate; `'all'` overwrites every `z`. Never mutates input; `'missing'` with nothing
   to fill returns the input array as-is (no request). This is the LineString-feature
-  path used by routePlanner/trackViewer.
+  path used by routePlanner/dataViewer.
 - **`densifyAlong(feature, …)`** — inserts intermediate points (≈2 px, between 1 m and
   100 m spacing, via `@turf/along`) into segments long enough to draw as a coarse
   straight line, then
@@ -44,11 +44,11 @@ Densification exists purely so charts/colorize don't draw straight DEM-ignorant
 segments. The densified line is cached as a *derived* slice field, distinct from the
 real geometry, and is never serialized:
 
-- **trackViewer**: `renderTrackGeojson` (vs. `trackGeojson`), built lazily by
-  `ensureRenderGeojson` (`src/features/trackViewer/model/`) **only after a server
+- **dataViewer**: `renderTrackGeojson` (vs. `trackGeojson`), built lazily by
+  `ensureRenderGeojson` (`src/features/dataViewer/model/`) **only after a server
   elevation override** — the one state where every point is known DEM-derived, so
   inserted DEM points add no seam. A track's own recorded elevation is left alone (no
-  DEM injected between measured points). `trackViewerDensifyProcessor` keeps it fresh.
+  DEM injected between measured points). `dataViewerDensifyProcessor` keeps it fresh.
 - **routePlanner**: `renderGeojson` via `ensureRouteRenderGeojson`. A planned route has
   no recorded measurement, so for **premium** the router's own (different-DEM,
   shape-point-density) elevation is ignored for rendering: `enrichElevations('all')`
@@ -58,7 +58,7 @@ real geometry, and is never serialized:
   elevation so export and the drawn route/distances are untouched.
 
 Consumers read `renderTrackGeojson ?? trackGeojson` (`Results.tsx`,
-`TrackViewerDetails.tsx`). Chart paths `await ensureRenderGeojson` first.
+`DataViewerDetails.tsx`). Chart paths `await ensureRenderGeojson` first.
 
 ### Bridges and tunnels — `src/features/routePlanner/model/structureElevation.ts`
 
@@ -151,7 +151,7 @@ flattens real terrain. The honest fix there is to move the way in OSM.
 
 `smoothElevationSeries` is the single entry point for both passes, so every consumer of
 terrain-model elevation applies them in the same order: `ensureRouteRenderGeojson` (after
-`straightenStructures`), trackViewer's `ensureRenderGeojson` (which already runs only
+`straightenStructures`), dataViewer's `ensureRenderGeojson` (which already runs only
 after a server elevation override), and the elevation chart's own
 `processorHandler.ts`, which samples a drawn line or a measurement straight from the API.
 Never on recorded altitude — these correct a terrain model, not a barometer — and never on
@@ -173,7 +173,7 @@ decides it (see *Crediting the terrain model* below), for profiles and exports a
 
 Both of them invalidate the derived caches (`routePlanner.renderGeojson`,
 `trackViewer.renderTrackGeojson` clear on `elevationSetSettings`). `routePlannerColorizeProcessor`
-and `trackViewerDensifyProcessor` rebuild them, which has to happen whether or not the
+and `dataViewerDensifyProcessor` rebuild them, which has to happen whether or not the
 chart is open — an active elevation/steepness colorize reads the same cache. An open chart
 additionally redraws through `elevationChartProcessor` (see *What the chart shows* below).
 
@@ -219,7 +219,7 @@ feature being charted knows what sampled it:
 - **`terrain-model`** — a drawn line or measurement resampled from the API, a premium route
   (every vertex overridden), a manual/OSRM route (the router returns no elevation, so
   `enrichElevations` fills all of it), or a track the user had **overridden**
-  (`elevationDecision === 'all'`, via `elevationCredit` in trackViewer).
+  (`elevationDecision === 'all'`, via `elevationCredit` in dataViewer).
 - **`srtm`** — GraphHopper's own elevation, kept on the free tier
   (`graph.elevation.provider: srtm`), which is the same data the API answers a non-premium
   read with.
@@ -264,7 +264,7 @@ nor fragment the cache.
 that they add to, so a line built from several reads accumulates the union. Getting that union
 to a chart opened later takes two mechanisms, because the two caches expire differently:
 
-- **Stamped on the geometry** — `ensureRouteRenderGeojson` and trackViewer's
+- **Stamped on the geometry** — `ensureRouteRenderGeojson` and dataViewer's
   `ensureRenderGeojson` put the union on the render feature as `fm:elevationSources`
   (`ELEVATION_SOURCES_PROP` / `readElevationSources`). The render line is cached, so on the
   second chart open the sampling doesn't happen again; carrying the credit *on* the cached
@@ -278,7 +278,7 @@ to a chart opened later takes two mechanisms, because the two caches expire diff
   The field tracks `elevationDecision` — set with it, emptied with it — so there are only two
   sites to keep aligned.
 
-`elevationCredit(trackViewer, drawn)` unions the two for trackViewer's three chart
+`elevationCredit(trackViewer, drawn)` unions the two for dataViewer's three chart
 dispatchers; routePlanner's reads the stamp directly. The chart's processor then unions the
 credit's tokens with whatever its own sampling collected (the drawn-line/measurement path)
 into `elevationChartSetElevationProfile`.
@@ -352,7 +352,7 @@ tool, so it has none).
 
 ### Per-consumer elevation policy
 
-- **trackViewer** prompts once per track when elevation is missing/partial — **Fill
+- **dataViewer** prompts once per track when elevation is missing/partial — **Fill
   missing / Override all / Keep recorded** — and the answer drives `enrichElevations`
   writing `z` into `trackGeojson` (cached; static data). Full-elevation tracks skip the
   prompt; an explicit "update elevation" button overrides from the server. The prompt
@@ -388,12 +388,12 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
 ## Track file formats — import/export
 
 togeojson bundles the `gpx`/`kml`/`tcx` parsers, so only KMZ needs an extra step
-(unzip). The format layer lives under `src/features/trackViewer/`:
+(unzip). The format layer lives under `src/features/dataViewer/`:
 
-- **`parseTrackFile(text, filename)`** — the single import boundary. Resolves format by
+- **`parseDataFile(text, filename)`** — the single import boundary. Resolves format by
   extension (falling back to the XML root element) to togeojson `gpx`/`kml`/`tcx` or
   `parseGeojsonFile`. Wired into both drop paths (`Main.tsx` `onDrop`,
-  `TrackViewerUploadModal`). GPX stays raw text for the set-data processor; everything
+  `DataViewerUploadModal`). GPX stays raw text for the set-data processor; everything
   else becomes a `FeatureCollection`.
 - **TCX normalization** relocates togeojson's top-level
   `cadences`/`speeds`/`watts`/`heartRates` onto
@@ -407,13 +407,13 @@ togeojson bundles the `gpx`/`kml`/`tcx` parsers, so only KMZ needs an extra step
 
 ### Provenance, not heuristics — the geodata-viewer model
 
-trackViewer began as a GPX recording viewer and grew into a general geodata viewer
+dataViewer began as a GPX recording viewer and grew into a general geodata viewer
 (GPX/KML/KMZ/TCX/GeoJSON, points/lines/polygons, multi-file). Affordances written for a
 single recorded GPS log misfire on arbitrary imported geometry, so behavior keys off
 provenance tagged at parse time — never re-derived from density/timestamps:
 
 - **`fm:kind: 'track' | 'route' | 'waypoint' | 'feature'`** (`provenance.ts`) is stamped
-  by `parseTrackFile` from togeojson's `_gpxType` (`trk`/`rte`), Point waypoints, TCX
+  by `parseDataFile` from togeojson's `_gpxType` (`trk`/`rte`), Point waypoints, TCX
   (always `track`), and KML/GeoJSON (`feature`). An already-stamped kind is respected, so
   an exported-then-reimported GeoJSON round-trips. Start/finish markers + distance labels
   are emitted only for `isTrackOrRoute` (`useStartFinishPoints`) — generic `feature`
@@ -440,7 +440,7 @@ provenance tagged at parse time — never re-derived from density/timestamps:
 
 ### Lossless GeoJSON↔GPX transfer
 
-trackViewer keeps **no retained raw source string** — a loaded track is GeoJSON in state,
+dataViewer keeps **no retained raw source string** — a loaded track is GeoJSON in state,
 and round-trips are lossless through `gpxFromGeojson.ts` (`geojsonToGpxDoc`, in
 `src/features/mapFeaturesExport/`): it preserves per-point elevation/time and the
 `gpxtpx` sensor channels (hr, cad, atemp, speed, course, bearing) plus `<power>`, and
@@ -461,16 +461,16 @@ fetch directly rather than the per-feature `enrichElevations` wrapper:
 ## The loaded track survives a reload
 
 The track viewer's track is the one thing the URL cannot carry, so
-[`trackViewer/trackStore.ts`](../src/features/trackViewer/trackStore.ts) keeps it —
+[`dataViewer/trackStore.ts`](../src/features/dataViewer/trackStore.ts) keeps it —
 a **single entry** in its own `idb-keyval` database, validated on read like the
 my-maps working copy (`myMaps/mapStore.ts`).
 
 **Only a track with no other home.** A map's track already lives in the my-maps
 working copy and is restored from there; a `track-uid=` or `import-url=` track is
 named by the URL and re-fetched from it. Storing either would be a second copy of
-the same thing, so `trackViewerStoreProcessor` checks `homedElsewhere` and deletes
+the same thing, so `dataViewerStoreProcessor` checks `homedElsewhere` and deletes
 the entry instead. What is left is the case the store exists for: a file import, a
-conversion, a finished recording — the same condition `TrackViewerMenu` warns
+conversion, a finished recording — the same condition `DataViewerMenu` warns
 about. The check runs off state, on every action that can change the answer, so it
 does not depend on whether a loader sets the track before or after the thing that
 gives it a home.
@@ -490,7 +490,7 @@ write and its own delete reclaim.
 
 The write is validated with the same schema the read uses, so a record that would
 be discarded on the way back is refused on the way in rather than counted as a
-copy. Otherwise it is best effort (`trackViewerStoreProcessor` logs and moves on),
+copy. Otherwise it is best effort (`dataViewerStoreProcessor` logs and moves on),
 and the copy is dropped on `trackViewerDelete` and `clearMapFeatures` — one that
 outlived the track would come back as something the user had already thrown away.
 The restore also stands down for a track the URL merely *names*: `homedElsewhere`

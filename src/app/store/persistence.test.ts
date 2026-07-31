@@ -1,5 +1,6 @@
 import { authInitialState } from '@features/auth/model/reducer.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
+import { trackViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
 import { drawingSettingsInitialState } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
@@ -7,7 +8,6 @@ import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
 import { routePlannerSettingsInitialState } from '@features/routePlanner/model/settingsReducer.js';
-import { trackViewerSettingsInitialState } from '@features/trackViewer/model/settingsReducer.js';
 import storage from 'local-storage-fallback';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {

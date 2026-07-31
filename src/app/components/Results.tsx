@@ -80,8 +80,8 @@ export function Results(): ReactElement {
         <AsyncComponent
           factory={() =>
             import(
-              /* webpackChunkName: "track-viewer-result" */
-              '@features/trackViewer/components/TrackViewerResult.js'
+              /* webpackChunkName: "data-viewer-result" */
+              '@features/dataViewer/components/DataViewerResult.js'
             )
           }
           trackGeojson={trackGeojson}
