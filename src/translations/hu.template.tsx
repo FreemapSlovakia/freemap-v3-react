@@ -380,7 +380,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     settings: 'Magassági profil',
     settingsHelp:
-      'Ezek a beállítások a terepmodellt korrigálják, ezért mindenhol érvényesek, ahol a magasság abból származik: tervezett útvonalaknál, rajzolt vonalaknál és méréseknél, valamint olyan importált nyomvonalaknál, amelyek magasságát a kiszolgálóról cserélte le. A rögzített tengerszint feletti magasság — élő nyomkövetés, vagy rögzített formában megtartott nyomvonal — érintetlen marad. Az exportált fájlok mindig megtartják a saját magasságukat.',
+      'Az első két beállítás a terepmodellt korrigálja, ezért mindenhol érvényes, ahol a magasság abból származik: tervezett útvonalaknál, rajzolt vonalaknál és méréseknél, valamint olyan importált nyomvonalaknál, amelyek magasságát a kiszolgálóról cserélte le. A rögzített tengerszint feletti magasság — élő nyomkövetés, vagy rögzített formában megtartott nyomvonal — érintetlen marad. Az exportált fájlok mindig megtartják a saját magasságukat.',
     windowOff: 'ki',
     despike: 'Tüskék eltávolítása',
     despikeHelp:
@@ -388,6 +388,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Terepmodell-árkok feltöltése',
     ditchFillHelp:
       'A részletes nemzeti terepmodellek, amelyek egyes országokban érhetők el, rendszerint hidrológiai szempontból vannak igazítva: minden áteresznél árkot vágnak az úton keresztül. Az ennél keskenyebb mélyedések feltöltődnek; a szélesebbek megmaradnak, mert valódi terepet jelentenek. A nulla kikapcsolja, és ott, ahol a globális modell van használatban, semmit sem változtat.',
+    gradeWindow: 'Meredekség ablaka',
+    gradeWindowHelp:
+      'Ha a magassági profilra mutat, a hely megjelenik a térképen, az ottani meredekséggel együtt. A meredekség az adott pont körüli, ilyen hosszú szakaszra átlagolódik, hogy néhány méternyi GPS-zaj ne tűnjön falnak. A nulla a profil szomszédos pontjai között méri.',
   },
 
   errorCatcher: {

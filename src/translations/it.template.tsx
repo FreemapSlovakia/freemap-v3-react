@@ -378,7 +378,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     settings: 'Profilo altimetrico',
     settingsHelp:
-      'Queste impostazioni correggono un modello del terreno, quindi valgono ovunque l’altitudine venga letta da esso: percorsi pianificati, linee disegnate e misurazioni, e tracce importate la cui altitudine è stata sostituita dal server. L’altitudine registrata — tracciamento in tempo reale o una traccia mantenuta così com’è stata registrata — resta intatta. I file esportati conservano sempre la propria altitudine.',
+      'Le prime due impostazioni correggono un modello del terreno, quindi valgono ovunque l’altitudine venga letta da esso: percorsi pianificati, linee disegnate e misurazioni, e tracce importate la cui altitudine è stata sostituita dal server. L’altitudine registrata — tracciamento in tempo reale o una traccia mantenuta così com’è stata registrata — resta intatta. I file esportati conservano sempre la propria altitudine.',
     windowOff: 'disattivato',
     despike: 'Rimuovi i picchi',
     despikeHelp:
@@ -386,6 +386,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Riempi i fossi del modello del terreno',
     ditchFillHelp:
       'I modelli del terreno nazionali di dettaglio, disponibili in alcuni paesi, sono di solito adattati all’idrologia: a ogni tombino scavano un fosso attraverso la strada. Gli avvallamenti più stretti di questo valore vengono riempiti; quelli più larghi si mantengono, perché sono terreno reale. Zero disattiva la funzione e non cambia nulla dove si usa il modello globale.',
+    gradeWindow: 'Finestra della pendenza',
+    gradeWindowHelp:
+      'Puntando il profilo altimetrico, il punto viene segnato sulla mappa insieme alla pendenza che vi si trova. La pendenza è mediata su un tratto di questa lunghezza attorno al punto, così che qualche metro di rumore GPS non sembri un muro. Zero la misura tra punti vicini del profilo.',
   },
 
   errorCatcher: {

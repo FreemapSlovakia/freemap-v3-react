@@ -248,6 +248,8 @@ export type Messages = {
     despikeHelp: string;
     ditchFill: string;
     ditchFillHelp: string;
+    gradeWindow: string;
+    gradeWindowHelp: string;
   };
   errorCatcher: {
     html: (ticketId?: string) => string;

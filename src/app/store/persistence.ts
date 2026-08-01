@@ -141,6 +141,7 @@ export const PersistedElevationSettingsSchema = z
   .object({
     despikeWindow: z.number().min(0).max(100),
     ditchFillWindow: z.number().min(0).max(100),
+    gradeWindow: z.number().min(0).max(200),
   })
   .partial();
 
@@ -364,6 +365,7 @@ const PERSIST: PersistEntry[] = [
     persist: (e) => ({
       despikeWindow: e.despikeWindow,
       ditchFillWindow: e.ditchFillWindow,
+      gradeWindow: e.gradeWindow,
     }),
   }),
   defineEntry({

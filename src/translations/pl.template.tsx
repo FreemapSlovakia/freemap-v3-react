@@ -361,7 +361,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Błąd podczas pobierania profilu wysokościowego', err),
     settings: 'Profil wysokościowy',
     settingsHelp:
-      'Te ustawienia korygują model terenu, więc obowiązują wszędzie tam, gdzie wysokość jest z niego odczytywana: przy planowanych trasach, narysowanych liniach i pomiarach oraz przy zaimportowanych śladach, w których zastąpiono wysokość danymi z serwera. Zarejestrowana wysokość — śledzenie na żywo lub ślad pozostawiony w zarejestrowanej postaci — pozostaje nietknięta. Eksportowane pliki zawsze zachowują własną wysokość.',
+      'Pierwsze dwa ustawienia korygują model terenu, więc obowiązują wszędzie tam, gdzie wysokość jest z niego odczytywana: przy planowanych trasach, narysowanych liniach i pomiarach oraz przy zaimportowanych śladach, w których zastąpiono wysokość danymi z serwera. Zarejestrowana wysokość — śledzenie na żywo lub ślad pozostawiony w zarejestrowanej postaci — pozostaje nietknięta. Eksportowane pliki zawsze zachowują własną wysokość.',
     windowOff: 'wyłączone',
     despike: 'Usuń piki',
     despikeHelp:
@@ -369,6 +369,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Wypełnij rowy modelu terenu',
     ditchFillHelp:
       'Szczegółowe krajowe modele terenu, dostępne w niektórych krajach, są zwykle dostosowane do hydrologii: przy każdym przepuście przecinają drogę rowem. Zagłębienia węższe niż ta wartość są wypełniane; szersze pozostają, bo to rzeczywisty teren. Zero wyłącza tę funkcję i nic nie zmienia tam, gdzie używany jest model globalny.',
+    gradeWindow: 'Okno nachylenia',
+    gradeWindowHelp:
+      'Gdy wskażesz profil wysokości, miejsce zostaje zaznaczone na mapie wraz z panującym tam nachyleniem. Nachylenie jest uśredniane na odcinku tej długości wokół danego punktu, aby kilka metrów szumu GPS nie wyglądało jak ściana. Zero mierzy je między sąsiednimi punktami profilu.',
   },
 
   errorCatcher: {

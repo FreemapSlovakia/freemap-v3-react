@@ -365,7 +365,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     distance: 'Distance [km]',
     settings: 'Profil altimétrique',
     settingsHelp:
-      'Ces réglages corrigent un modèle de terrain et s’appliquent donc partout où l’altitude en est issue : itinéraires planifiés, lignes tracées et mesures, ainsi que traces importées dont vous avez remplacé l’altitude depuis le serveur. L’altitude enregistrée — suivi en direct, ou une trace conservée telle qu’enregistrée — reste intacte. Les fichiers exportés conservent toujours leur propre altitude.',
+      'Les deux premiers réglages corrigent un modèle de terrain et s’appliquent donc partout où l’altitude en est issue : itinéraires planifiés, lignes tracées et mesures, ainsi que traces importées dont vous avez remplacé l’altitude depuis le serveur. L’altitude enregistrée — suivi en direct, ou une trace conservée telle qu’enregistrée — reste intacte. Les fichiers exportés conservent toujours leur propre altitude.',
     windowOff: 'désactivé',
     despike: 'Supprimer les pics',
     despikeHelp:
@@ -373,6 +373,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Combler les fossés du modèle de terrain',
     ditchFillHelp:
       'Les modèles de terrain nationaux détaillés, disponibles dans certains pays, sont généralement adaptés à l’hydrologie : à chaque buse, ils creusent un fossé en travers de la route. Les creux plus étroits que cette valeur sont comblés ; les plus larges sont conservés, car il s’agit de terrain réel. Zéro désactive la fonction et ne change rien là où le modèle global est utilisé.',
+    gradeWindow: 'Fenêtre de la pente',
+    gradeWindowHelp:
+      'Lorsque vous pointez le profil altimétrique, l’endroit est marqué sur la carte avec la pente qui y règne. La pente est moyennée sur un tronçon de cette longueur autour du point, afin que quelques mètres de bruit GPS ne passent pas pour un mur. Zéro la mesure entre deux points voisins du profil.',
   },
   errorCatcher: {
     html: (ticketId) => `${getErrorMarkup(ticketId)}

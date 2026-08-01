@@ -372,7 +372,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Fehler beim Abrufen des Höhenprofils', err),
     settings: 'Höhenprofil',
     settingsHelp:
-      'Diese Einstellungen korrigieren ein Geländemodell und gelten daher überall dort, wo die Höhe daraus gelesen wird: bei geplanten Routen, gezeichneten Linien und Messungen sowie bei importierten Tracks, deren Höhe Sie vom Server ersetzt haben. Aufgezeichnete Höhen — Live-Tracking oder ein Track, den Sie wie aufgezeichnet belassen haben — bleiben unangetastet. Exportierte Dateien behalten immer ihre eigene Höhe.',
+      'Die ersten beiden Einstellungen korrigieren ein Geländemodell und gelten daher überall dort, wo die Höhe daraus gelesen wird: bei geplanten Routen, gezeichneten Linien und Messungen sowie bei importierten Tracks, deren Höhe Sie vom Server ersetzt haben. Aufgezeichnete Höhen — Live-Tracking oder ein Track, den Sie wie aufgezeichnet belassen haben — bleiben unangetastet. Exportierte Dateien behalten immer ihre eigene Höhe.',
     windowOff: 'aus',
     despike: 'Spitzen entfernen',
     despikeHelp:
@@ -380,6 +380,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Gräben des Geländemodells auffüllen',
     ditchFillHelp:
       'Die detaillierten nationalen Geländemodelle, die in einigen Ländern verfügbar sind, sind meist hydrologisch angepasst: An jedem Durchlass graben sie einen Graben durch die Straße. Senken, die schmaler als dieser Wert sind, werden aufgefüllt; breitere bleiben erhalten, da sie echtes Gelände sind. Null schaltet die Funktion ab und ändert nichts, wo das globale Modell verwendet wird.',
+    gradeWindow: 'Fenster für die Steigung',
+    gradeWindowHelp:
+      'Wenn Sie auf das Höhenprofil zeigen, wird die Stelle auf der Karte markiert und ihre Steigung angezeigt. Die Steigung wird über einen Abschnitt dieser Länge um den Punkt gemittelt, damit ein paar Meter GPS-Rauschen nicht wie eine Wand wirken. Null misst sie zwischen benachbarten Punkten des Profils.',
   },
 
   errorCatcher: {

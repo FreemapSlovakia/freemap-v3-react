@@ -1,5 +1,6 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
+import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { osmClear } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
@@ -98,9 +99,13 @@ export const dataViewerReducer = createReducer(
       .addCase(dataViewerSetRenderGeojson, (state, action) => {
         state.renderTrackGeojson = action.payload;
       })
-      .addCase(elevationSetSettings, (state) => {
-        // The render copy is derived from the elevation settings.
-        state.renderTrackGeojson = null;
+      .addCase(elevationSetSettings, (state, { payload }) => {
+        // The render copy is derived from the smoothing windows, and from
+        // nothing else in the slice — the steepness window is read off the
+        // drawn points, so dropping the cache for it would resample for nothing.
+        if (affectsElevationSmoothing(payload)) {
+          state.renderTrackGeojson = null;
+        }
       })
       .addCase(dataViewerSetTrackUID, (state, action) => {
         state.trackUID = action.payload;

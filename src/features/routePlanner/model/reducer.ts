@@ -5,6 +5,7 @@ import {
   setTools,
 } from '@app/store/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
+import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
@@ -389,9 +390,13 @@ export const routePlannerReducer = createReducer(
       .addCase(routePlannerSetRenderGeojson, (state, action) => {
         state.renderGeojson = action.payload;
       })
-      .addCase(elevationSetSettings, (state) => {
-        // The render line is derived from the elevation settings.
-        state.renderGeojson = null;
+      .addCase(elevationSetSettings, (state, { payload }) => {
+        // The render line is derived from the smoothing windows, and from
+        // nothing else in the slice — the steepness window is read off the
+        // drawn points, so dropping the cache for it would resample for nothing.
+        if (affectsElevationSmoothing(payload)) {
+          state.renderGeojson = null;
+        }
       })
       .addCase(routePlannerSetRoundtripParams, (state, { payload }) => ({
         ...state,

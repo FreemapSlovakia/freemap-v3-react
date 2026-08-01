@@ -167,15 +167,29 @@ derived from it, rather than a pref per consumer:
 
 - **`despikeWindow`** — the median window above, in metres; `0` disables it.
 - **`ditchFillWindow`** — the closing window above, in metres; `0` disables it.
+- **`gradeWindow`** — the stretch, in metres, the steepness readout on the elevation
+  chart's active point is averaged over (`gradeAt` in
+  `src/features/elevationChart/grade.ts`); `0` measures between neighbouring profile
+  points. It corrects nothing — it is read off the already-drawn profile points.
 
 Which terrain model answers is not among them: every read presents the account, so premium
 decides it (see *Crediting the terrain model* below), for profiles and exports alike.
 
-Both of them invalidate the derived caches (`routePlanner.renderGeojson`,
+The first two invalidate the derived caches (`routePlanner.renderGeojson`,
 `trackViewer.renderTrackGeojson` clear on `elevationSetSettings`). `routePlannerColorizeProcessor`
 and `dataViewerDensifyProcessor` rebuild them, which has to happen whether or not the
 chart is open — an active elevation/steepness colorize reads the same cache. An open chart
 additionally redraws through `elevationChartProcessor` (see *What the chart shows* below).
+
+`gradeWindow` shares the same `elevationSetSettings` action but must do none of that, so
+every one of those five consumers gates on `affectsElevationSmoothing(payload)` rather than
+on the bare action. `MapPreferencesModal` accordingly dispatches only the keys the user
+actually changed.
+
+That predicate lives in `settingsReducer.ts`, next to the settings it reads, and not beside
+the action it tests: `RootAction` is a union built from every export of the `model/actions`
+modules, so a plain function exported from one widens that union with its return type and
+breaks type narrowing across the store.
 
 The UI is an *Elevation profile* group in `MapPreferencesModal`, reachable from a gear in
 the elevation chart's own toolbar.

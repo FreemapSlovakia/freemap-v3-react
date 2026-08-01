@@ -6,7 +6,10 @@ import {
   setActiveModal,
 } from '@app/store/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
-import { elevationSettingsInitialState } from '@features/elevationChart/model/settingsReducer.js';
+import {
+  type ElevationSettingsState,
+  elevationSettingsInitialState,
+} from '@features/elevationChart/model/settingsReducer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { isCompassSupported } from '@features/location/compass.js';
 import { ensureCompassPermission } from '@features/location/ensureCompassPermission.js';
@@ -86,6 +89,12 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     initialDitchFillWindow,
   );
 
+  const initialGradeWindow = useAppSelector((state) =>
+    String(state.elevationSettings.gradeWindow),
+  );
+
+  const [gradeWindow, setGradeWindow] = useState(initialGradeWindow);
+
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
   useDocumentTitle(show ? m?.mapLayers.preferences : undefined);
@@ -114,6 +123,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     setDespikeWindow(String(elevationSettingsInitialState.despikeWindow));
 
     setDitchFillWindow(String(elevationSettingsInitialState.ditchFillWindow));
+
+    setGradeWindow(String(elevationSettingsInitialState.gradeWindow));
   }, []);
 
   const handleSubmit = (e: SubmitEvent) => {
@@ -155,16 +166,24 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       dispatch(locationSetShowBearingLine(showBearingLine));
     }
 
-    if (
-      despikeWindow !== initialDespikeWindow ||
-      ditchFillWindow !== initialDitchFillWindow
-    ) {
-      dispatch(
-        elevationSetSettings({
-          despikeWindow: Number(despikeWindow),
-          ditchFillWindow: Number(ditchFillWindow),
-        }),
-      );
+    // Only what changed: a redraw follows the smoothing windows, and the
+    // steepness window asks for none.
+    const elevationSettings: Partial<ElevationSettingsState> = {};
+
+    if (despikeWindow !== initialDespikeWindow) {
+      elevationSettings.despikeWindow = Number(despikeWindow);
+    }
+
+    if (ditchFillWindow !== initialDitchFillWindow) {
+      elevationSettings.ditchFillWindow = Number(ditchFillWindow);
+    }
+
+    if (gradeWindow !== initialGradeWindow) {
+      elevationSettings.gradeWindow = Number(gradeWindow);
+    }
+
+    if (Object.keys(elevationSettings).length > 0) {
+      dispatch(elevationSetSettings(elevationSettings));
     }
 
     if (Object.keys(settings).length > 0) {
@@ -197,6 +216,13 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     [],
   );
 
+  const handleGradeWindowChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setGradeWindow(e.currentTarget.value);
+    },
+    [],
+  );
+
   const handleShowBearingLineChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setShowBearingLine(e.currentTarget.checked);
@@ -211,7 +237,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     headingSource !== initialHeadingSource ||
     showBearingLine !== initialShowBearingLine ||
     despikeWindow !== initialDespikeWindow ||
-    ditchFillWindow !== initialDitchFillWindow;
+    ditchFillWindow !== initialDitchFillWindow ||
+    gradeWindow !== initialGradeWindow;
 
   const atDefault =
     maxZoom === String(mapInitialState.maxZoom) &&
@@ -223,7 +250,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     headingSource === locationSettingsInitialState.headingSource &&
     showBearingLine === locationSettingsInitialState.showBearingLine &&
     despikeWindow === String(elevationSettingsInitialState.despikeWindow) &&
-    ditchFillWindow === String(elevationSettingsInitialState.ditchFillWindow);
+    ditchFillWindow === String(elevationSettingsInitialState.ditchFillWindow) &&
+    gradeWindow === String(elevationSettingsInitialState.gradeWindow);
 
   return (
     <Modal
@@ -415,6 +443,29 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
             <Form.Text muted className="d-block">
               {m?.elevationChart.ditchFillHelp}
+            </Form.Text>
+          </Form.Group>
+
+          <Form.Group controlId="gradeWindow" className="mt-3">
+            <Form.Label>
+              {m?.elevationChart.gradeWindow}{' '}
+              <span className="text-body-secondary">
+                {gradeWindow === '0'
+                  ? `(${m?.elevationChart.windowOff})`
+                  : `(${gradeWindow}\u00a0m)`}
+              </span>
+            </Form.Label>
+
+            <Form.Range
+              min={0}
+              max={200}
+              step={5}
+              value={gradeWindow}
+              onChange={handleGradeWindowChange}
+            />
+
+            <Form.Text muted className="d-block">
+              {m?.elevationChart.gradeWindowHelp}
             </Form.Text>
           </Form.Group>
         </Modal.Body>

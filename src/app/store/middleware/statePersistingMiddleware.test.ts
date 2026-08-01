@@ -95,6 +95,7 @@ function makeState(): RootState {
     elevationSettings: {
       despikeWindow: 25,
       ditchFillWindow: 25,
+      gradeWindow: 50,
     },
     searchSettings: {
       resultStyle: {
@@ -237,6 +238,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
       elevationSettings: {
         despikeWindow: 25,
         ditchFillWindow: 25,
+        gradeWindow: 50,
       },
       searchSettings: {
         resultStyle: {

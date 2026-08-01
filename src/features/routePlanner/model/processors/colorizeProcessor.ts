@@ -1,5 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
+import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { colorizerNeedsElevation } from '@shared/colorizers/index.js';
 import {
   routePlannerColorizeBy,
@@ -20,6 +21,11 @@ export const routePlannerColorizeProcessor: Processor<
     routePlannerSetActiveAlternativeIndex,
     elevationSetSettings,
   ],
+  // Only the smoothing windows reset the cache below; the steepness window is
+  // measured off the drawn points, so it rebuilds nothing.
+  actionPredicate: (action) =>
+    !elevationSetSettings.match(action) ||
+    affectsElevationSmoothing(action.payload),
   handle: async ({ dispatch, getState }) => {
     const { colorizeBy } = getState().routePlannerSettings;
 

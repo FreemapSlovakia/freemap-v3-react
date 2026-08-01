@@ -361,7 +361,7 @@ const messages: Messages = {
       addError(messages, 'Error fetching elevation profile data', err),
     settings: 'Elevation profile',
     settingsHelp:
-      'These correct a terrain model, so they apply wherever elevation is read from one: planned routes, drawn lines and measurements, and imported tracks whose elevation you replaced from the server. Recorded altitude — live tracking, or a track you kept as recorded — is left untouched. Exported files always keep their own elevation.',
+      'The first two correct a terrain model, so they apply wherever elevation is read from one: planned routes, drawn lines and measurements, and imported tracks whose elevation you replaced from the server. Recorded altitude — live tracking, or a track you kept as recorded — is left untouched. Exported files always keep their own elevation.',
     windowOff: 'off',
     despike: 'Remove spikes',
     despikeHelp:
@@ -369,6 +369,9 @@ const messages: Messages = {
     ditchFill: 'Fill terrain-model ditches',
     ditchFillHelp:
       'The detailed national terrain models, available in some countries, are usually adjusted for hydrology: they dig a ditch through the road at every culvert. Dips narrower than this are filled; wider ones are kept, being real terrain. Zero switches it off, and it changes nothing where the global model is used.',
+    gradeWindow: 'Steepness window',
+    gradeWindowHelp:
+      'Pointing at the elevation profile marks the spot on the map and reports how steep it is there. The steepness is averaged over a stretch this long around that point, so that a couple of metres of GPS noise don’t read as a wall. Zero measures it between neighbouring points of the profile.',
   },
 
   errorCatcher: {

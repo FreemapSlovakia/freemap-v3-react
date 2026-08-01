@@ -370,7 +370,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     settings: 'Višinski profil',
     settingsHelp:
-      'Te nastavitve popravljajo model terena, zato veljajo povsod, kjer se višina bere iz njega: pri načrtovanih poteh, narisanih črtah in meritvah ter pri uvoženih sledeh, ki ste jim višino nadomestili s strežnika. Zabeležena nadmorska višina — sledenje v živo ali sled, ki ste jo ohranili tako, kot je bila zabeležena — ostane nedotaknjena. Izvožene datoteke vedno ohranijo svojo višino.',
+      'Prvi dve nastavitvi popravljata model terena, zato veljata povsod, kjer se višina bere iz njega: pri načrtovanih poteh, narisanih črtah in meritvah ter pri uvoženih sledeh, ki ste jim višino nadomestili s strežnika. Zabeležena nadmorska višina — sledenje v živo ali sled, ki ste jo ohranili tako, kot je bila zabeležena — ostane nedotaknjena. Izvožene datoteke vedno ohranijo svojo višino.',
     windowOff: 'izklopljeno',
     despike: 'Odstrani konice',
     despikeHelp:
@@ -378,6 +378,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Zapolni jarke modela terena',
     ditchFillHelp:
       'Podrobni nacionalni modeli terena, ki so na voljo v nekaterih državah, so običajno prilagojeni hidrologiji: pri vsakem prepustu izkopljejo jarek čez cesto. Vdolbine, ožje od te vrednosti, se zapolnijo; širše se ohranijo, saj gre za resnični teren. Nič to izklopi, tam, kjer se uporablja globalni model, pa ne spremeni ničesar.',
+    gradeWindow: 'Okno naklona',
+    gradeWindowHelp:
+      'Ko pokažete na višinski profil, se mesto označi na zemljevidu skupaj z naklonom na njem. Naklon se povpreči na odseku te dolžine okoli te točke, da nekaj metrov šuma GPS ne izpade kot stena. Nič ga izmeri med sosednjima točkama profila.',
   },
 
   errorCatcher: {

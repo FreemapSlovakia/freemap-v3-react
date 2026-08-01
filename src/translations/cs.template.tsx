@@ -371,7 +371,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Nastala chyba při získávání výškového profilu', err),
     settings: 'Výškový profil',
     settingsHelp:
-      'Tato nastavení opravují model terénu, takže platí všude, kde se výška čte z něj: u plánovaných tras, nakreslených linií a měření a u importovaných tras, kterým jste výšku nahradili ze serveru. Zaznamenaná nadmořská výška — živé sledování nebo trasa, kterou jste ponechali tak, jak byla zaznamenána — zůstává nedotčená. Exportované soubory si vždy zachovají vlastní výšku.',
+      'První dvě nastavení opravují model terénu, takže platí všude, kde se výška čte z něj: u plánovaných tras, nakreslených linií a měření a u importovaných tras, kterým jste výšku nahradili ze serveru. Zaznamenaná nadmořská výška — živé sledování nebo trasa, kterou jste ponechali tak, jak byla zaznamenána — zůstává nedotčená. Exportované soubory si vždy zachovají vlastní výšku.',
     windowOff: 'vypnuto',
     despike: 'Odstranit špice',
     despikeHelp:
@@ -379,6 +379,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ditchFill: 'Zaplnit příkopy modelu terénu',
     ditchFillHelp:
       'Detailní národní modely terénu, dostupné v některých zemích, bývají upraveny pro hydrologii: u každého propustku vyřežou přes cestu příkop. Prohlubně užší než tato hodnota se zaplní; širší se zachovají, protože jde o skutečný terén. Nula funkci vypne a tam, kde se používá globální model, nemění nic.',
+    gradeWindow: 'Okno pro sklon',
+    gradeWindowHelp:
+      'Když ukážete na výškový profil, místo se vyznačí na mapě spolu s tím, jaký je tam sklon. Sklon se průměruje na úseku této délky kolem daného bodu, aby pár metrů nepřesnosti GPS nevypadalo jako stěna. Nula jej měří mezi sousedními body profilu.',
   },
 
   errorCatcher: {

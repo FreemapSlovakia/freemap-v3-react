@@ -8,6 +8,7 @@ import {
   elevationSetSettings,
 } from './actions.js';
 import { chartIdentity, loadResolver } from './resolve.js';
+import { affectsElevationSmoothing } from './settingsReducer.js';
 import type { ElevationChartTargetType } from './target.js';
 
 // A drawn line is the one target whose profile is sampled from the elevation
@@ -60,6 +61,16 @@ export const elevationChartProcessor: Processor = {
     const { target } = getState().elevationChart;
 
     if (!target) {
+      return;
+    }
+
+    // Not every elevation setting changes the profile: the steepness window is
+    // measured off the drawn points by whoever shows the readout, so changing
+    // it alone would resample the whole line for nothing.
+    if (
+      elevationSetSettings.match(action) &&
+      !affectsElevationSmoothing(action.payload)
+    ) {
       return;
     }
 
