@@ -34,7 +34,7 @@ let keyTimer: number | null = null;
 
 let initCode: 'KeyE' | 'KeyG' | 'KeyP' | 'KeyJ' | 'KeyM' | null = null;
 
-function handleEvent(event: KeyboardEvent, state: RootState) {
+export function handleEvent(event: KeyboardEvent, state: RootState) {
   const withModifiers =
     event.ctrlKey || event.altKey || event.metaKey || event.isComposing;
 
@@ -65,6 +65,15 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
 
     if (showGalleryViewerSelector(state)) {
       return state.gallery.editModel ? galleryEditPicture() : galleryClear();
+    }
+
+    // A modal in the foreground owns Escape: it closes itself on its own
+    // document listener, which only fires while the key is not already claimed
+    // — and this handler, registered first, would claim it. The picking
+    // overlays hide their modal and leave the map live, so they keep the
+    // dismissals below.
+    if (showingModal && !suspendedModal) {
+      return undefined;
     }
 
     if (state.elevationChart.target) {

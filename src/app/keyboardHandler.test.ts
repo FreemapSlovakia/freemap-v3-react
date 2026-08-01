@@ -1,5 +1,7 @@
+import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
+import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import {
   CRS,
   type LatLngExpression,
@@ -9,7 +11,7 @@ import {
   point,
 } from 'leaflet';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { handleMapKey } from './keyboardHandler.js';
+import { handleEvent, handleMapKey } from './keyboardHandler.js';
 import type { RootState } from './store/store.js';
 
 /**
@@ -51,6 +53,8 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     wiki: { preview: null, loading: false },
     homeLocation: { selectingHomeLocation: false },
     mapArea: { selecting: null },
+    elevationChart: { target: null },
+    drawingLines: { joinWith: undefined, drawing: false },
     ...overrides,
   } as unknown as RootState;
 }
@@ -225,5 +229,41 @@ describe('handleMapKey — when the keys are not the map’s', () => {
 
   it('passes other keys through', () => {
     expect(handleMapKey(press('KeyG'), makeState())).toBeUndefined();
+  });
+});
+
+describe('handleEvent — Escape', () => {
+  const esc = () => press('Escape', { code: 'Escape' });
+
+  it('closes the elevation chart when nothing is above it', () => {
+    expect(
+      handleEvent(esc(), makeState({ elevationChart: { target: {} } })),
+    ).toEqual(elevationChartClose());
+  });
+
+  // The modal closes itself on its own document listener, which runs only
+  // while the key has not been claimed here first.
+  it('leaves the key to a modal in the foreground', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          main: { activeModal: { type: 'map-preferences' } },
+          elevationChart: { target: {} },
+        }),
+      ),
+    ).toBeUndefined();
+  });
+
+  it('cancels a picking overlay even though its modal is open', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          main: { activeModal: { type: 'offline-map-export' } },
+          mapArea: { selecting: 'export' },
+        }),
+      ),
+    ).toEqual(mapAreaSelectCancel());
   });
 });
