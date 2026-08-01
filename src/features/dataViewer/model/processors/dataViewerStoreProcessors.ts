@@ -13,6 +13,7 @@ import {
   dataViewerGpxLoad,
   dataViewerRestoreStored,
   dataViewerSetData,
+  dataViewerSetElevation,
   dataViewerSetGpxUrl,
   dataViewerSetTrackUID,
 } from '../actions.js';
@@ -57,6 +58,9 @@ function homedElsewhere(state: RootState): boolean {
 export const dataViewerStoreProcessor: Processor = {
   actionCreator: [
     dataViewerSetData,
+    // Re-enriched elevation replaces the whole track, and the copy has to follow
+    // it — otherwise a reload puts back the values the user just overrode.
+    dataViewerSetElevation,
     dataViewerSetTrackUID,
     dataViewerSetGpxUrl,
     // The URL's own loaders: their reducer cases are what set `trackUID` and
