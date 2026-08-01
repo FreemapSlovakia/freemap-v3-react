@@ -43,7 +43,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
               variant="secondary"
               {...props}
               onClick={() => {
-                dispatch(setTool({ tool: 'route-planner', mode: 'activate' }));
+                dispatch(setTool('route-planner'));
 
                 if (selectedResult.geojson) {
                   const c = center(selectedResult.geojson).geometry.coordinates;
@@ -67,7 +67,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
             <Button
               variant="secondary"
               onClick={() => {
-                dispatch(setTool({ tool: 'route-planner', mode: 'activate' }));
+                dispatch(setTool('route-planner'));
 
                 if (selectedResult.geojson) {
                   const c = center(selectedResult.geojson).geometry.coordinates;

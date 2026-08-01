@@ -47,10 +47,9 @@ const cancelType = [
   searchSetQuery.type,
 ];
 
-// Dismiss the details toast when the map-details tool is closed — not merely
-// when another tool opens alongside it.
+// Dismiss the details toast once the map-details tool is gone.
 const mapDetailsClosed = (state: RootState) =>
-  !state.main.tools.includes('map-details');
+  state.main.tool !== 'map-details';
 
 export async function handle(
   [lat, lon]: [number, number],

@@ -112,7 +112,7 @@ export default function DataViewerResult({
   const dispatch = useDispatch();
 
   const setThisTool = () => {
-    dispatch(setTool({ tool: 'import-file', mode: 'open' }));
+    dispatch(setTool('import-file'));
   };
 
   // Clicking a line focuses the import tool and, when several tracks are

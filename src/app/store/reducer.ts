@@ -15,15 +15,11 @@ import {
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
   routePlannerAddPoint,
+  routePlannerDelete,
   routePlannerSetPoint,
 } from '@features/routePlanner/model/actions.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
-import {
-  dedupeOpenTools,
-  isDrawTool,
-  isMapClickTool,
-} from '@shared/toolDefinitions.js';
 import {
   clearMapFeatures,
   convertToDrawing,
@@ -36,15 +32,13 @@ import {
   setEmbedFeatures,
   setErrorTicketId,
   setTool,
-  setTools,
   type Tool,
 } from './actions.js';
 import type { ActiveModal } from './activeModal.js';
 
 export interface MainState {
-  tools: Tool[];
-  /** The focused tool whose toolbar is highlighted; the click owner if it's a map-click tool. */
-  activeTool: Tool | null;
+  /** The open tool — at most one, and the owner of map clicks when it takes them. */
+  tool: Tool | null;
   activeModal: ActiveModal | null;
   errorTicketId: string | undefined;
   embedFeatures: string[];
@@ -54,8 +48,7 @@ export interface MainState {
 }
 
 export const mainInitialState: MainState = {
-  tools: [],
-  activeTool: null,
+  tool: null,
   activeModal: null,
   errorTicketId: undefined,
   embedFeatures: [],
@@ -64,6 +57,35 @@ export const mainInitialState: MainState = {
   shownInfoBars: {},
 };
 
+/**
+ * Whether the selected feature belongs to `tool` — such a tool keeps the
+ * selection when opened, so reaching for a feature's tool from its selection
+ * toolbar doesn't throw the selection away.
+ */
+function ownsSelection(tool: Tool, selection: Selection | null): boolean {
+  switch (selection?.type) {
+    case 'draw-points':
+      return tool === 'draw-points';
+
+    case 'draw-line-poly':
+    case 'line-point':
+      return tool === 'draw-lines' || tool === 'draw-polygons';
+
+    case 'objects':
+      return tool === 'objects';
+
+    case 'tracking':
+      return tool === 'tracking';
+
+    case 'route-point':
+    case 'route-leg':
+      return tool === 'route-planner';
+
+    default:
+      return false;
+  }
+}
+
 export const mainReducer = createReducer(mainInitialState, (builder) => {
   builder
     .addCase(setTool, (state, action) => {
@@ -71,47 +93,19 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         return;
       }
 
-      const { tool, mode } = action.payload;
+      const tool = action.payload;
 
-      if (mode === 'close') {
-        state.tools = state.tools.filter((t) => t !== tool);
-
-        if (state.activeTool === tool) {
-          state.activeTool = null;
-        }
-
-        return;
-      }
-
-      // open / activate: ensure the tool is open, keeping the order tools were
-      // opened in (already-open keeps its slot). The draw-* tools share one menu,
-      // so a new draw tool replaces the open one in place.
-      const drawIndex = isDrawTool(tool)
-        ? state.tools.findIndex(isDrawTool)
-        : -1;
-
-      if (drawIndex >= 0) {
-        state.tools[drawIndex] = tool;
-      } else if (!state.tools.includes(tool)) {
-        state.tools.push(tool);
-      }
-
-      if (mode === 'activate') {
-        // Focus it (overlays can't be active); a tool and a selection are
-        // mutually exclusive, so drop the selection.
-        state.activeTool = isMapClickTool(tool) ? tool : null;
+      // Switching to another tool leaves the selected feature behind; closing
+      // the tool (or reopening the one the feature belongs to) keeps it.
+      if (
+        tool &&
+        tool !== state.tool &&
+        !ownsSelection(tool, state.selection)
+      ) {
         state.selection = null;
-      } else if (state.activeTool === tool) {
-        // mode 'open' is passive — deactivate this tool if it was the active one.
-        state.activeTool = null;
       }
-    })
-    .addCase(setTools, (state, action) => {
-      const tools = dedupeOpenTools(action.payload);
 
-      state.tools = tools;
-
-      state.activeTool = tools.filter(isMapClickTool).at(-1) ?? null;
+      state.tool = tool;
     })
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;
@@ -151,16 +145,9 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       }
 
       state.selection = action.payload;
-
-      // Selecting a feature is the active thing now — deactivate any tool (its
-      // toolbar stays open, just unfocused).
-      if (action.payload) {
-        state.activeTool = null;
-      }
     })
     .addCase(convertToDrawing, (state) => {
-      state.tools = [];
-      state.activeTool = null;
+      state.tool = null;
     })
     .addCase(drawingLineJoinFinish, (state, { payload }) => {
       state.selection = payload.selection;
@@ -194,6 +181,17 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         ...state,
         selection: { type: 'route-point', id: action.payload.position + 1 },
       };
+    })
+    // The route's own toolbar deletes it directly, so what it deletes must not
+    // stay selected. Only a route selection goes: `convertToDrawing` deletes the
+    // route too, after selecting the drawing line it turned into.
+    .addCase(routePlannerDelete, (state) => {
+      if (
+        state.selection?.type === 'route-point' ||
+        state.selection?.type === 'route-leg'
+      ) {
+        state.selection = null;
+      }
     })
     .addCase(routePlannerSetPoint, (state, action) => {
       return action.payload.preventSelect

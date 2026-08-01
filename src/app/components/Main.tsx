@@ -52,7 +52,7 @@ import { setActiveModal } from '../store/actions.js';
 import {
   askingCookieConsentSelector,
   showGalleryPickerSelector,
-  toolsSelector,
+  toolSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from '../store/selectors.js';
 import { AsyncComponent } from './AsyncComponent.js';
@@ -363,7 +363,7 @@ export function Main(): ReactElement {
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
-  const tools = useAppSelector(toolsSelector);
+  const tool = useAppSelector(toolSelector);
 
   const gpsRecorderAvailable = useAppSelector(gpsRecorderAvailableSelector);
 
@@ -496,9 +496,9 @@ export function Main(): ReactElement {
     disabled: activeModal !== null,
   });
 
-  // The selection toolbar for whatever is currently selected. Map-click tools
-  // (drawing, route-planner, map-details) keep their feature selected while
-  // staying active, so the selection toolbar sits alongside the tool's toolbar.
+  // The selection toolbar for whatever is currently selected. A tool keeps the
+  // feature that belongs to it selected, so the selection toolbar sits
+  // alongside the tool's own toolbar.
   const selectionMenu = showMenu ? selectionType : null;
 
   const scLogo = useScrollClasses('horizontal');
@@ -660,37 +660,32 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={galleryMenuFactory} />
               )}
 
-              {/* tool menus; one per open tool, stacked in the order opened */}
+              {/* the open tool's menu */}
 
               {showMenu &&
-                tools.map((t) =>
-                  t === 'objects' ? (
-                    <AsyncComponent key={t} factory={objectsMenuFactory} />
-                  ) : t === 'route-planner' ? (
-                    <AsyncComponent key={t} factory={routePlannerMenuFactory} />
-                  ) : t === 'import-file' ? (
-                    <AsyncComponent key={t} factory={dataViewerMenuFactory} />
-                  ) : t === 'changesets' ? (
-                    <AsyncComponent key={t} factory={changesetsMenuFactory} />
-                  ) : t === 'draw-lines' ||
-                    t === 'draw-points' ||
-                    t === 'draw-polygons' ? (
-                    <AsyncComponent key={t} factory={drawingMenuFactory} />
-                  ) : t === 'map-details' ? (
-                    <MapDetailsMenu key={t} />
-                  ) : t === 'tracking' ? (
-                    <AsyncComponent key={t} factory={trackingMenuFactory} />
-                  ) : t === 'gps-recorder' ? (
-                    // Also gated here: the tool can be named in the URL hash on
-                    // a device the recorder can't run on.
-                    gpsRecorderAvailable && (
-                      <AsyncComponent
-                        key={t}
-                        factory={gpsRecorderMenuFactory}
-                      />
-                    )
-                  ) : null,
-                )}
+                (tool === 'objects' ? (
+                  <AsyncComponent factory={objectsMenuFactory} />
+                ) : tool === 'route-planner' ? (
+                  <AsyncComponent factory={routePlannerMenuFactory} />
+                ) : tool === 'import-file' ? (
+                  <AsyncComponent factory={dataViewerMenuFactory} />
+                ) : tool === 'changesets' ? (
+                  <AsyncComponent factory={changesetsMenuFactory} />
+                ) : tool === 'draw-lines' ||
+                  tool === 'draw-points' ||
+                  tool === 'draw-polygons' ? (
+                  <AsyncComponent factory={drawingMenuFactory} />
+                ) : tool === 'map-details' ? (
+                  <MapDetailsMenu />
+                ) : tool === 'tracking' ? (
+                  <AsyncComponent factory={trackingMenuFactory} />
+                ) : tool === 'gps-recorder' ? (
+                  // Also gated here: the tool can be named in the URL hash on
+                  // a device the recorder can't run on.
+                  gpsRecorderAvailable && (
+                    <AsyncComponent factory={gpsRecorderMenuFactory} />
+                  )
+                ) : null)}
 
               {selectionMenu === 'search' ? (
                 <SearchSelection />

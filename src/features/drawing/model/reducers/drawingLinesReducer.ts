@@ -3,7 +3,6 @@ import {
   clearMapFeatures,
   selectFeature,
   setTool,
-  setTools,
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
@@ -292,17 +291,9 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
 
       state.joinWith = undefined;
     })
-    // Merely deactivating (unfocusing) or closing the draw tool must not abort an
-    // in-progress drawing — you can keep appending points. Only activating a tool
-    // does, since that clears the drawing line's selection.
-    .addCase(setTool, (state, { payload }) => {
-      state.joinWith = undefined;
-
-      if (payload.mode === 'activate') {
-        state.drawing = false;
-      }
-    })
-    .addMatcher(isAnyOf(setTools, drawingLineStopDrawing), (state) => ({
+    // Reaching for a tool ends the line being drawn — a "continue" resumes one
+    // without touching the tool, so that keeps appending points.
+    .addMatcher(isAnyOf(setTool, drawingLineStopDrawing), (state) => ({
       ...state,
       drawing: false,
       joinWith: undefined,

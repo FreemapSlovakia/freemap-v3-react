@@ -25,15 +25,11 @@ import type { RootState } from './store.js';
 type Overrides = Partial<Record<keyof RootState, Record<string, unknown>>>;
 
 function makeState(o: Overrides = {}): RootState {
-  // Convenience: a `tool` override sets it as the single open + active tool.
-  const { tool, ...mainRest } = (o.main ?? {}) as { tool?: string };
-
   return {
     main: {
-      tools: tool ? [tool] : [],
-      activeTool: tool ?? null,
+      tool: null,
       selection: undefined,
-      ...mainRest,
+      ...o.main,
     },
     map: { layers: [], ...o.map },
     homeLocation: { selectingHomeLocation: false, ...o.homeLocation },
@@ -290,24 +286,11 @@ describe('drawingLinePolys', () => {
     ).toBe(true);
   });
 
-  it('is false when the drawing tool is open but not active', () => {
+  it('is true while a drawing is in progress with no tool open', () => {
+    // Continuing an existing line keeps capturing clicks so points can still be
+    // appended.
     expect(
-      drawingLinePolys(
-        makeState({ main: { tools: ['draw-lines'], activeTool: null } }),
-      ),
-    ).toBe(false);
-  });
-
-  it('is true while a drawing is in progress even with no active tool', () => {
-    // Continuing an existing line, or a line whose tool was deactivated/closed,
-    // keeps capturing clicks so points can still be appended.
-    expect(
-      drawingLinePolys(
-        makeState({
-          main: { tools: [], activeTool: null },
-          drawingLines: { drawing: true },
-        }),
-      ),
+      drawingLinePolys(makeState({ drawingLines: { drawing: true } })),
     ).toBe(true);
   });
 

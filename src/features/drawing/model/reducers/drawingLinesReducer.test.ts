@@ -266,7 +266,7 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
     expect(next.lines[0].points.map((pt) => pt.lat)).toEqual([0, 1]);
   });
 
-  it('stopDrawing / activating a tool clear the drawing + join state', () => {
+  it('stopDrawing / reaching for a tool clear the drawing + join state', () => {
     const state: DrawingLinesState = {
       drawing: true,
       joinWith: { lineIndex: 0, pointId: 1 },
@@ -275,7 +275,9 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
 
     for (const action of [
       drawingLineStopDrawing(),
-      setTool({ tool: 'draw-lines', mode: 'activate' }),
+      setTool('draw-lines'),
+      setTool('objects'),
+      setTool(null),
     ]) {
       const next = drawingLinesReducer(state, action);
 
@@ -312,25 +314,6 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
     );
 
     expect(next.drawing).toBe(false);
-  });
-
-  it('deactivating or closing the draw tool keeps the in-progress drawing', () => {
-    const state: DrawingLinesState = {
-      drawing: true,
-      joinWith: { lineIndex: 0, pointId: 1 },
-      lines: [],
-    };
-
-    for (const mode of ['open', 'close'] as const) {
-      const next = drawingLinesReducer(
-        state,
-        setTool({ tool: 'draw-lines', mode }),
-      );
-
-      // Drawing survives; only the transient join cursor is dropped.
-      expect(next.drawing).toBe(true);
-      expect(next.joinWith).toBeUndefined();
-    }
   });
 });
 

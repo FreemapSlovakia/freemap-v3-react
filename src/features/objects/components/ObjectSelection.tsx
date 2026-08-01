@@ -25,9 +25,7 @@ import { useDispatch } from 'react-redux';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
 function ObjectsToggleButton(): ReactElement {
-  const objectsOpen = useAppSelector((state) =>
-    state.main.tools.includes('objects'),
-  );
+  const objectsOpen = useAppSelector((state) => state.main.tool === 'objects');
 
   const m = useMessages();
 
@@ -40,7 +38,7 @@ function ObjectsToggleButton(): ReactElement {
           {...props}
           variant="dark"
           disabled={objectsOpen}
-          onClick={() => dispatch(setTool({ tool: 'objects', mode: 'open' }))}
+          onClick={() => dispatch(setTool('objects'))}
         >
           <TbMapPins />
         </Button>
@@ -88,9 +86,7 @@ export default function ObjectSelection(): ReactElement | null {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  dispatch(
-                    setTool({ tool: 'route-planner', mode: 'activate' }),
-                  );
+                  dispatch(setTool('route-planner'));
 
                   dispatch(
                     routePlannerSetStart({
@@ -111,9 +107,7 @@ export default function ObjectSelection(): ReactElement | null {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  dispatch(
-                    setTool({ tool: 'route-planner', mode: 'activate' }),
-                  );
+                  dispatch(setTool('route-planner'));
 
                   dispatch(
                     routePlannerSetFinish({

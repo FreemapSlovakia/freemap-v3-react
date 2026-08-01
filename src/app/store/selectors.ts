@@ -1,25 +1,23 @@
 import { isTrackLine } from '@features/dataViewer/trackSelection.js';
 import type { PickMode } from '@features/routePlanner/model/actions.js';
 import type { Track } from '@features/tracking/model/types.js';
-import { isDrawTool } from '@shared/toolDefinitions.js';
+import { isDrawTool, isMapClickTool } from '@shared/toolDefinitions.js';
 import { createSelector } from 'reselect';
 import marker from '@/images/cursors/marker.svg';
 import pencil from '@/images/cursors/pencil.svg';
 import type { Tool } from '../store/actions.js';
 import type { RootState } from '../store/store.js';
 
-export const toolsSelector = (state: RootState): Tool[] => state.main.tools;
+export const toolSelector = (state: RootState): Tool | null => state.main.tool;
 
-// The focused/active tool — i.e. the one that owns map clicks. The reducer only
-// ever sets `activeTool` to a map-click tool (or null), so it always reflects
-// "the active mode" without further filtering.
+// The open tool as far as map clicks go — i.e. the one that owns them; null for
+// a tool that only brings a toolbar.
 export const activeModeSelector = (state: RootState): Tool | null =>
-  state.main.activeTool;
+  isMapClickTool(state.main.tool) ? state.main.tool : null;
 
-// The open draw-* tool, regardless of which tool is focused (the three draw
-// tools share one menu, so at most one is open).
+// The open draw-* tool (the three of them share one menu).
 export const openDrawToolSelector = (state: RootState): Tool | null =>
-  state.main.tools.find(isDrawTool) ?? null;
+  isDrawTool(state.main.tool) ? state.main.tool : null;
 
 export const mapLayersSelector = (state: RootState): string[] =>
   state.map.layers;
@@ -57,7 +55,7 @@ export const pickingModeSelector = (state: RootState): boolean =>
 // The active tool as far as map interaction is concerned: the open map-click
 // tool, but masked to null while a picking mode owns the map so it goes inert.
 // Map-interaction code should read this; menus/processors that want the open
-// set should use toolsSelector / activeModeSelector.
+// tool should use toolSelector / activeModeSelector.
 export const activeMapToolSelector = (state: RootState): Tool | null =>
   pickingModeSelector(state) ? null : activeModeSelector(state);
 
@@ -182,10 +180,9 @@ export const selectingModeSelector = (state: RootState): boolean => {
 };
 
 export const drawingLinePolys = (state: RootState): boolean => {
-  // The active drawing tool captures clicks (to start a line) — being merely
-  // open (visible toolbar) must not. An in-progress drawing also captures
-  // clicks (to append points) even after its tool was deactivated or closed,
-  // and during a "continue" that never activated a tool.
+  // The open drawing tool captures clicks (to start a line). So does an
+  // in-progress drawing (to append points), which a "continue" starts without
+  // opening any tool.
   const tool = activeMapToolSelector(state);
 
   return (

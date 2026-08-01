@@ -13,8 +13,8 @@ import { useDispatch } from 'react-redux';
 export function TrackingSelection(): ReactElement {
   const m = useMessages();
 
-  const trackingOpen = useAppSelector((state) =>
-    state.main.tools.includes('tracking'),
+  const trackingOpen = useAppSelector(
+    (state) => state.main.tool === 'tracking',
   );
 
   const selectedToken = useAppSelector(trackingActiveTrackIdSelector);
@@ -31,9 +31,7 @@ export function TrackingSelection(): ReactElement {
                 {...props}
                 variant="dark"
                 disabled={trackingOpen}
-                onClick={() =>
-                  dispatch(setTool({ tool: 'tracking', mode: 'open' }))
-                }
+                onClick={() => dispatch(setTool('tracking'))}
               >
                 <FaBullseye />
               </Button>

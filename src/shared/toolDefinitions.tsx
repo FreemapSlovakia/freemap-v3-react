@@ -51,10 +51,8 @@ export function isToolAvailable(tools: string, tool: Tool): boolean {
 }
 
 /**
- * Tools that react to clicking on the map. Only one of them can be open at a
- * time (otherwise a map click would be ambiguous); the remaining tools are
- * overlays that may be open simultaneously with each other and with one of
- * these.
+ * Tools that take clicks on the map, so while one of them is open a click no
+ * longer selects a feature. The remaining tools only bring a toolbar.
  */
 export const MAP_CLICK_TOOLS: Tool[] = [
   'draw-points',
@@ -68,27 +66,9 @@ export function isMapClickTool(tool: Tool | null | undefined): boolean {
   return tool != null && MAP_CLICK_TOOLS.includes(tool);
 }
 
-/** The three draw-* tools share one menu, so at most one is ever open. */
+/** The three draw-* tools share one menu, which switches between them. */
 export function isDrawTool(tool: Tool | null | undefined): boolean {
   return tool?.startsWith('draw-') ?? false;
-}
-
-/** Drops duplicates and keeps at most one draw-* tool (they share one menu). */
-export function dedupeOpenTools(tools: Tool[]): Tool[] {
-  const result: Tool[] = [];
-
-  for (const tool of tools) {
-    if (
-      result.includes(tool) ||
-      (isDrawTool(tool) && result.some(isDrawTool))
-    ) {
-      continue;
-    }
-
-    result.push(tool);
-  }
-
-  return result;
 }
 
 export const toolDefinitions: ToolDefinition[] = [

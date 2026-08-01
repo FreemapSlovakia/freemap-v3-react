@@ -35,7 +35,7 @@ flag, because other tools' gates do depend on state. `unavailableToolsSelector` 
 `|a|b|`-delimited string the menus filter against — a stable string, so
 `useAppSelector` doesn't re-render on every unrelated action the way a fresh
 array would. `Main.tsx` re-checks the gate independently, because
-`#tools=gps-recorder` can name the tool on a device or account that can't use it.
+`#tool=gps-recorder` can name the tool on a device or account that can't use it.
 
 ## Wire contract
 

@@ -29,7 +29,7 @@ export function DrawingToggleButton({ tool }: Props): ReactElement {
           {...props}
           variant="dark"
           disabled={open}
-          onClick={() => dispatch(setTool({ tool, mode: 'open' }))}
+          onClick={() => dispatch(setTool(tool))}
         >
           <FaPencilRuler />
         </Button>

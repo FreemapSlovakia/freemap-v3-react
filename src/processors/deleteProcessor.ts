@@ -38,10 +38,6 @@ export const deleteProcessor: Processor = {
       dispatch(selectFeature(null));
 
       dispatch(trackingActions.delete({ token: state.main.selection.id }));
-    } else if (state.main.selection?.type === 'route-leg') {
-      dispatch(selectFeature(null));
-
-      dispatch(routePlannerDelete());
     } else if (state.main.selection?.type === 'route-point') {
       dispatch(selectFeature(null));
 
@@ -54,8 +50,10 @@ export const deleteProcessor: Processor = {
       // dispatch(searchSetResults([]));
 
       // dispatch(searchSetQuery({ query: '' }));
-    } else if (state.main.tools.includes('import-file')) {
+    } else if (state.main.tool === 'import-file') {
       dispatch(dataViewerDelete());
+    } else if (state.main.tool === 'route-planner') {
+      dispatch(routePlannerDelete());
     }
   },
 };

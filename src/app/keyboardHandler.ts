@@ -26,7 +26,6 @@ import {
   setActiveModal,
   setSelectingHomeLocation,
   setTool,
-  setTools,
 } from './store/actions.js';
 import { showGalleryViewerSelector } from './store/selectors.js';
 import type { MyStore, RootState } from './store/store.js';
@@ -96,14 +95,8 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       return selectFeature(null);
     }
 
-    // Back out gradually: first unfocus the active tool (keeping it open), then
-    // on a further Esc close all open tools.
-    if (!showingModal && !suspendedModal && state.main.activeTool) {
-      return setTool({ tool: state.main.activeTool, mode: 'open' });
-    }
-
-    if (!showingModal && !suspendedModal && state.main.tools.length > 0) {
-      return setTools([]);
+    if (!showingModal && !suspendedModal && state.main.tool) {
+      return setTool(null);
     }
 
     return undefined;
@@ -259,7 +252,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       );
 
       if (toolDefinition?.kbd) {
-        return setTool({ tool: toolDefinition.tool, mode: 'activate' });
+        return setTool(toolDefinition.tool);
       }
 
       if (event.code === 'KeyW') {

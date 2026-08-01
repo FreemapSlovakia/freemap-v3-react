@@ -8,8 +8,8 @@ import { FaRoute } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 export function RoutePlannerToggleButton(): ReactElement | undefined | false {
-  const routePlannerOpen = useAppSelector((state) =>
-    state.main.tools.includes('route-planner'),
+  const routePlannerOpen = useAppSelector(
+    (state) => state.main.tool === 'route-planner',
   );
 
   const m = useMessages();
@@ -23,9 +23,7 @@ export function RoutePlannerToggleButton(): ReactElement | undefined | false {
           {...props}
           variant="dark"
           disabled={routePlannerOpen}
-          onClick={() =>
-            dispatch(setTool({ tool: 'route-planner', mode: 'open' }))
-          }
+          onClick={() => dispatch(setTool('route-planner'))}
         >
           <FaRoute />
         </Button>

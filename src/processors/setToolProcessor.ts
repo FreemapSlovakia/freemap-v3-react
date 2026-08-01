@@ -7,9 +7,9 @@ import storage from 'local-storage-fallback';
 export const setToolProcessor: Processor<typeof setTool> = {
   actionCreator: setTool,
   async handle({ action, getState }) {
-    const { tool, mode } = action.payload;
+    const tool = action.payload;
 
-    if (mode === 'close') {
+    if (!tool) {
       return;
     }
 

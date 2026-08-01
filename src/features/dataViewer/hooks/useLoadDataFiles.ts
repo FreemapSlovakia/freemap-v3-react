@@ -72,7 +72,7 @@ export function useLoadDataFiles(): (files: File[]) => Promise<void> {
 
       dispatch(setActiveModal(null));
 
-      dispatch(setTool({ tool: 'import-file', mode: 'open' }));
+      dispatch(setTool('import-file'));
     },
     [dispatch, askMergeMode, existing],
   );

@@ -1,4 +1,4 @@
-import { clearMapFeatures, setTool, setTools } from '@app/store/actions.js';
+import { clearMapFeatures, setTool } from '@app/store/actions.js';
 import { describe, expect, it } from 'vitest';
 import {
   elevationChartClose,
@@ -63,29 +63,29 @@ describe('elevationChartReducer', () => {
     expect(state.elevationProfilePoints).toBeNull();
   });
 
-  it('closes with the tool that owns it, and only that one', () => {
+  it('goes with the tool that owns it, and stays for any other', () => {
     const state = shown({ type: 'track-viewer' });
 
-    for (const tool of ['objects', 'route-planner'] as const) {
-      expect(
-        elevationChartReducer(state, setTool({ tool, mode: 'close' })).target,
-      ).toEqual({ type: 'track-viewer' });
-    }
+    expect(elevationChartReducer(state, setTool('import-file')).target).toEqual(
+      { type: 'track-viewer' },
+    );
 
-    expect(
-      elevationChartReducer(
-        state,
-        setTool({ tool: 'import-file', mode: 'close' }),
-      ).target,
-    ).toBeNull();
+    for (const tool of ['objects', 'route-planner', null] as const) {
+      expect(elevationChartReducer(state, setTool(tool)).target).toBeNull();
+    }
   });
 
-  it('closes on close, on clearing the map and when all tools go', () => {
-    for (const action of [
-      elevationChartClose(),
-      clearMapFeatures(),
-      setTools([]),
-    ]) {
+  it('outlives every tool when it charts a drawn line, which has no owning tool', () => {
+    expect(
+      elevationChartReducer(
+        shown({ type: 'drawing', lineId: 1 }),
+        setTool(null),
+      ).target,
+    ).toEqual({ type: 'drawing', lineId: 1 });
+  });
+
+  it('closes on close and on clearing the map', () => {
+    for (const action of [elevationChartClose(), clearMapFeatures()]) {
       expect(
         elevationChartReducer(shown({ type: 'drawing', lineId: 1 }), action)
           .target,

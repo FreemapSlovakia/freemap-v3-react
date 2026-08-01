@@ -470,9 +470,9 @@ function handOverTrack(
 
   dispatch(dataViewerSetData({ trackGeojson }));
 
-  // The track viewer's own toolbar is where the saved copy is worked on, so
-  // open it beside the recorder rather than replacing it.
-  dispatch(setTool({ tool: 'import-file', mode: 'open' }));
+  // The track viewer's own toolbar is where the saved copy is worked on, so it
+  // takes over from the recorder's.
+  dispatch(setTool('import-file'));
 
   return trackGeojson;
 }

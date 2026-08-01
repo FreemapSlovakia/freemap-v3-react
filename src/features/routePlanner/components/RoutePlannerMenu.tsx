@@ -2,7 +2,6 @@ import {
   convertToDrawing,
   setActiveModal,
   setSelectingHomeLocation,
-  setTool,
 } from '@app/store/actions.js';
 import {
   elevationChartClose,
@@ -23,6 +22,7 @@ import {
   colorizingModes,
 } from '@shared/colorizers/index.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
+import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
@@ -79,6 +79,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import {
   type RoutingMode,
   routePlannerColorizeBy,
+  routePlannerDelete,
   routePlannerOptimizeOrder,
   routePlannerSetColorizeLegend,
   routePlannerSetFinish,
@@ -422,13 +423,7 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const activeMode = useAppSelector((state) => state.routePlanner.mode);
 
-  // Only reflect the armed pick mode while route-planner is the active tool;
-  // when it's open but passive nothing is "toggled".
-  const pickPointMode = useAppSelector((state) =>
-    state.main.activeTool === 'route-planner'
-      ? state.routePlanner.pickMode
-      : null,
-  );
+  const pickPointMode = useAppSelector((state) => state.routePlanner.pickMode);
 
   const routeFound = useAppSelector(
     (state) => state.routePlanner.alternatives.length > 0,
@@ -442,6 +437,12 @@ export default function RoutePlannerMenu(): ReactElement {
   );
 
   const resultFound = routeFound || isochronesFound;
+
+  // A single placed point is already worth a delete — it is what the next click
+  // would extend, and no route needs to have been computed yet.
+  const hasRoute = useAppSelector(
+    (state) => state.routePlanner.points.length > 0,
+  );
 
   const colorizeBy = useAppSelector(
     (state) => state.routePlannerSettings.colorizeBy,
@@ -711,8 +712,6 @@ export default function RoutePlannerMenu(): ReactElement {
             id="set-start-dropdown"
             onSelect={(eventKey, e) => {
               if (eventKey === 'pick') {
-                // Picking on the map needs route-planner to own clicks.
-                dispatch(setTool({ tool: 'route-planner', mode: 'activate' }));
                 dispatch(routePlannerSetPickMode('start'));
               } else if (eventKey === 'current') {
                 dispatch(routePlannerSetFromCurrentPosition('start'));
@@ -803,10 +802,6 @@ export default function RoutePlannerMenu(): ReactElement {
                 className="btn-group"
                 onSelect={(eventKey, e) => {
                   if (eventKey === 'pick') {
-                    // Picking on the map needs route-planner to own clicks.
-                    dispatch(
-                      setTool({ tool: 'route-planner', mode: 'activate' }),
-                    );
                     dispatch(routePlannerSetPickMode('finish'));
                   } else if (eventKey === 'current') {
                     dispatch(routePlannerSetFromCurrentPosition('finish'));
@@ -1015,6 +1010,8 @@ export default function RoutePlannerMenu(): ReactElement {
             </FmDropdownMenu>
           </Dropdown>
         )}
+
+        {hasRoute && <DeleteButton action={routePlannerDelete()} />}
       </ToolMenu>
 
       {routeFound && colorizeLegend && colorizeBy && (

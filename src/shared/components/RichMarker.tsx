@@ -118,7 +118,7 @@ export const markerIconOptions = {
  * react-leaflet doesn't diff the option, so the declarative way to change it is
  * remounting the marker — which throws the icon element away and re-renders its
  * content through a fresh async React root, leaving the marker blank for a frame
- * (a visible blink whenever e.g. `state.main.activeTool` changes). Mutating the
+ * (a visible blink whenever e.g. `state.main.tool` changes). Mutating the
  * live marker avoids that.
  *
  * `draggable` is re-applied here because Leaflet only creates the drag handler

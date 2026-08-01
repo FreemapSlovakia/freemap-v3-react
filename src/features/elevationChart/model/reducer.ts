@@ -1,9 +1,4 @@
-import {
-  clearMapFeatures,
-  setTool,
-  setTools,
-  type Tool,
-} from '@app/store/actions.js';
+import { clearMapFeatures, setTool, type Tool } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { LatLon } from '@shared/types/common.js';
 import {
@@ -96,17 +91,13 @@ export const elevationChartReducer = createReducer(initialState, (builder) =>
 
       state.provenance = action.payload.provenance;
     })
-    // Clear the chart when its own target's tool is closed (or all tools are),
-    // not on every setTool — other tools open alongside it.
+    // Clear the chart once the tool that owns its target is gone.
     .addCase(setTool, (state, action) =>
-      action.payload.mode === 'close' &&
       state.target &&
-      action.payload.tool === targetTools[state.target.type]
+      targetTools[state.target.type] &&
+      action.payload !== targetTools[state.target.type]
         ? initialState
         : state,
-    )
-    .addCase(setTools, (state, action) =>
-      action.payload.length === 0 ? initialState : state,
     )
     .addCase(clearMapFeatures, setInitialState)
     .addCase(elevationChartClose, setInitialState),

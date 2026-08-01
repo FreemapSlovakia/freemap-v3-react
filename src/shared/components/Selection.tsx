@@ -33,7 +33,7 @@ export function Selection({
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
 
-      <Toolbar className="mt-2 fm-toolbar-selection fm-toolbar-active">
+      <Toolbar className="mt-2 fm-toolbar-selection">
         <ButtonToolbar>
           <LongPressTooltip breakpoint="sm" label={label}>
             {({ label, labelClassName, props }) => (

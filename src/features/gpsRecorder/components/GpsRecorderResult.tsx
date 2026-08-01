@@ -49,7 +49,7 @@ export default function GpsRecorderResult(): ReactElement | null {
   );
 
   const openTool = useCallback(() => {
-    dispatch(setTool({ tool: 'gps-recorder', mode: 'open' }));
+    dispatch(setTool('gps-recorder'));
   }, [dispatch]);
 
   const handlers = useMemo(() => ({ click: openTool }), [openTool]);

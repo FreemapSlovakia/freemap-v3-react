@@ -6,7 +6,6 @@ import {
   saveSettings,
   setActiveModal,
   setTool,
-  setTools,
   type Tool,
   ToolSchema,
 } from '@app/store/actions.js';
@@ -77,7 +76,7 @@ export function useMenuHandler({
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const tools = useAppSelector((state) => state.main.tools);
+  const openTool = useAppSelector((state) => state.main.tool);
 
   const [menuShown, setShow] = useState(false);
 
@@ -179,20 +178,15 @@ export function useMenuHandler({
 
       if (tool !== undefined) {
         if (!tool) {
-          dispatch(setTools([]));
+          dispatch(setTool(null));
         } else {
           const parsed = ToolSchema.safeParse(tool);
 
           if (parsed.success) {
             const t = parsed.data;
 
-            // Menu items toggle: close if open, otherwise open and focus it.
-            dispatch(
-              setTool({
-                tool: t,
-                mode: tools.includes(t) ? 'close' : 'activate',
-              }),
-            );
+            // Menu items toggle: close if it is the open one, otherwise open it.
+            dispatch(setTool(openTool === t ? null : t));
           }
         }
 
@@ -204,12 +198,7 @@ export function useMenuHandler({
       if (key === 'drawing') {
         const parsed = ToolSchema.safeParse(storage.getItem('fm.drawingTool'));
 
-        dispatch(
-          setTool({
-            tool: parsed.success ? parsed.data : 'draw-points',
-            mode: 'activate',
-          }),
-        );
+        dispatch(setTool(parsed.success ? parsed.data : 'draw-points'));
 
         setShow(false);
 
@@ -314,7 +303,7 @@ export function useMenuHandler({
       pointTitle,
       zoom,
       layers,
-      tools,
+      openTool,
       sendGalleryEmails,
     ],
   );

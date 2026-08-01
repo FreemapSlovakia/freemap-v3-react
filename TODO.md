@@ -92,7 +92,7 @@ Still emitting at info level (non-blocking, optional cleanup):
       `<CircleMarker>` whose interactivity is derived from `selectingModeSelector`
       carries it in its `key` (`trackViewer`, `tracking`, `routePlanner`'s route
       halo, `drawing` lines) and is destroyed + rebuilt whenever
-      `state.main.activeTool` changes. Unlike markers — fixed by
+      `state.main.tool` changes. Unlike markers — fixed by
       `setMarkerInteractive` in `RichMarker.tsx`, whose async icon root made the
       remount a visible blink — paths swap within one commit so there's no flash,
       just wasted work on big tracks. Toggling a path's interactivity only means
@@ -293,7 +293,7 @@ off that — never re-derive "is this a track?" from density/timestamps.
       - the idb database name `fm-trackViewer` in `trackStore.ts`;
       - the Matomo event label `TrackViewer` (`elevationChart/model/processor.ts`),
         splitting it would split the historical stats;
-      - the URL tokens: `tools=import-file`, the legacy `track-viewer` /
+      - the URL tokens: `tool=import-file`, the legacy `track-viewer` /
         `#show=upload-track` / `gpx-url=` / `load=` aliases,
         `elevation-chart=track-viewer`, `track-uid=`, `import-url=`,
         `track-colorize-by=`, `track-style=`.

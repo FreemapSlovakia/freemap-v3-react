@@ -126,17 +126,11 @@ button#freemap-logo {
   }
 }
 
-/* The active-outline: a focused tool toolbar (its title also renders as a
-   filled/active pill), or a selection toolbar, which always carries it since it
-   only mounts for an actual selection. */
-.fm-toolbar-active {
+/* A selection toolbar, outlined to set the selected feature apart from the
+   toolbars that are simply on screen. */
+.fm-toolbar-selection {
   @media screen {
     outline: 2px solid rgba(13, 110, 253, 0.8);
-
-    &.fm-toolbar-selection {
-      /*outline: 2px solid rgba(25, 135, 34, 0.8);*/
-      outline: 2px solid rgba(13, 202, 240, 0.8);
-    }
     outline-offset: -1px;
   }
 }
@@ -146,7 +140,7 @@ button#freemap-logo {
 }
 
 /* The toolbar has no bottom room, and `useLeftMarginAdjuster` removes the left
-   margin of non-first toolbars so they pack tightly — so the active outline
+   margin of non-first toolbars so they pack tightly — so the selection outline
    would be clipped at the bottom and left by `overflow: auto`. Extend the clip
    box on those edges with padding and cancel the size change with a matching
    negative margin, so the outline shows without shifting layout. */

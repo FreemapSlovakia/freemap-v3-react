@@ -101,7 +101,7 @@ export const urlProcessor: Processor = {
       // way a map can claim or release it — a load that starts, opens, or is
       // given up on — without this list having to name them.
       mapId,
-      main.tools.join(','),
+      main.tool,
       objects.active,
       wiki.preview,
       wiki.loading,
@@ -147,9 +147,8 @@ export const urlProcessor: Processor = {
       queryParts.push(['shading', serializeShading(map.shading)]);
     }
 
-    if (main.tools.length > 0) {
-      // In the order the tools were opened — matches the rendered toolbar order.
-      queryParts.push(['tools', main.tools.join(',')]);
+    if (main.tool) {
+      queryParts.push(['tool', main.tool]);
     }
 
     {

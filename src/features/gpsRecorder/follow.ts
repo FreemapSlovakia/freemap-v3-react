@@ -60,10 +60,7 @@ export function attachRecorderFollow(store: MyStore): void {
 
     // The tool being open counts as well, so returning to the page with it open
     // catches up even when there is nothing recorded yet.
-    if (
-      isRecorderFollowed() ||
-      store.getState().main.tools.includes('gps-recorder')
-    ) {
+    if (isRecorderFollowed() || store.getState().main.tool === 'gps-recorder') {
       store.dispatch(gpsRecorderSync({ quiet: true }));
     }
   };

@@ -32,8 +32,8 @@ Params are read from `document.location.hash || document.location.search` (so `?
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `tools` | Open tool toolbar(s) | r/w | `,`-separated tool ids |
-| `tool` | Single tool (legacy) | read-only | tool id |
+| `tool` | Open tool's toolbar | r/w | tool id |
+| `tools` | Open tools (legacy) | read-only | `,`-separated tool ids; only the first opens |
 | `show` | Open modal / viewer | r/w | `type` or `type/arg` (e.g. `gallery-viewer/123`, `wiki/en:Title`) |
 | `document`, `tip`, `image`, `wmc` | Legacy modal aliases → `show=…` | read-only | id |
 
@@ -133,6 +133,6 @@ Each default-style param applies only the fields it supports (e.g. `objects-styl
 # A map with two markers, the second red and labelled "Košice"
 #map=8/48.43/19.18&layers=X&point=48.14816/17.10674&point=48.72083/21.25808%1EC%23ff0000%1ELKošice
 
-# A blue ring marker labelled "Ahoj!" with the animal-shelter icon (tools=draw-points is optional — it only opens the editing toolbar)
-#map=17/48.979457/21.169961&layers=X&tools=draw-points&point=48.979061/21.167738%1EC%230000ff%1ELAhoj!%1ESr%1EIpoi%3Aanimal_shelter
+# A blue ring marker labelled "Ahoj!" with the animal-shelter icon (tool=draw-points is optional — it only opens the editing toolbar)
+#map=17/48.979457/21.169961&layers=X&tool=draw-points&point=48.979061/21.167738%1EC%230000ff%1ELAhoj!%1ESr%1EIpoi%3Aanimal_shelter
 ```

@@ -37,21 +37,12 @@ export const ToolSchema = z.enum([
 export type Tool = z.infer<typeof ToolSchema>;
 
 /**
- * Sets a single tool's state, the only action for opening/focusing/closing one:
- * - `open` — show the toolbar, passive (and deactivate it if it was the active
- *   one); doesn't touch other tools or the selection.
- * - `activate` — show + make it the focused/active tool (a map-click tool then
- *   captures clicks); clears the selection (a tool and a selection are exclusive).
- * - `close` — remove it from the open set.
- *
- * The `draw-*` tools share one menu, so opening one replaces the open one.
+ * Opens a tool, replacing the one that was open; `null` closes it. Exactly one
+ * tool is open at a time, and it owns map clicks when it is a map-click tool.
+ * Switching tools drops the selection unless the tool opened is the one that
+ * owns the selected feature.
  */
-export type ToolMode = 'open' | 'activate' | 'close';
-
-export const setTool = createAction<{ tool: Tool; mode: ToolMode }>('SET_TOOL');
-
-/** Replaces the whole open-tools set (URL restore; `[]` closes everything). */
-export const setTools = createAction<Tool[]>('SET_TOOLS');
+export const setTool = createAction<Tool | null>('SET_TOOL');
 
 export const setActiveModal = createAction<ActiveModal | null>(
   'SET_ACTIVE_MODAL',

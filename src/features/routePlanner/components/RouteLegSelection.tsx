@@ -42,7 +42,6 @@ export default function RouteLegSelection(): ReactElement | undefined | false {
           </>
         }
         label={rpm?.leg}
-        deletable
         noLeftMargin
       >
         {canBeManual && (
