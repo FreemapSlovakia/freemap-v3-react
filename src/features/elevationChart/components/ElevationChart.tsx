@@ -26,6 +26,7 @@ import {
   elevationChartSetActivePoint,
 } from '../model/actions.js';
 import type { ElevationProfilePoint } from '../model/reducer.js';
+import { profilePointAtDistance } from '../profilePoint.js';
 import { useElevationChartMessages } from '../translations/useElevationChartMessages.js';
 import classes from './ElevationChart.module.css';
 
@@ -250,27 +251,37 @@ export default function ElevationChart(): ReactElement | null {
     return [mapX, mapY, d, vLines, hLines];
   }, [elevationProfilePoints, width, height, mt]);
 
-  const [pointerX, setPointerX] = useState<number | undefined>();
+  // The marked place, wherever it was pointed at: hovering the chart sets it,
+  // and so does hovering the drawn line on the map, which is what puts the
+  // crosshair under the map's pointer.
+  const activePoint = useAppSelector(
+    (state) => state.elevationChart.activePoint,
+  );
+
+  // A profile redrawn while a place is marked can end before it — a re-route
+  // shortening the way, say — and the crosshair belongs inside the plot, so it
+  // goes rather than reaching past its edge.
+  const pointerX =
+    activePoint && activePoint.distance <= d
+      ? mapX(activePoint.distance)
+      : undefined;
 
   const handlePointerMove = (e: ReactPointerEvent<SVGRectElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
 
     const x = e.clientX - rect.left;
 
-    setPointerX(x + ml);
+    const point = profilePointAtDistance(
+      elevationProfilePoints,
+      (d / (width - ml - mr)) * x,
+    );
 
-    for (const pt of elevationProfilePoints) {
-      if (pt.distance > (d / (width - ml - mr)) * x) {
-        dispatch(elevationChartSetActivePoint(pt));
-
-        break;
-      }
+    if (point) {
+      dispatch(elevationChartSetActivePoint(point));
     }
   };
 
   const handlePointerOut = () => {
-    setPointerX(undefined);
-
     dispatch(elevationChartSetActivePoint(null));
   };
 

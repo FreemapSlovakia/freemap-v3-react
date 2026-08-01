@@ -1,6 +1,5 @@
 import { setTool } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
-import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import {
   NO_DATA_COLOR,
@@ -450,8 +449,6 @@ export default function DataViewerResult({
           </Tooltip>
         </RichMarker>
       ))}
-
-      <ElevationChartActivePoint />
     </Fragment>
   );
 }

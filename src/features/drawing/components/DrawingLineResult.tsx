@@ -1,7 +1,6 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
-import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
@@ -858,8 +857,6 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           </Marker>
         ),
       )}
-
-      <ElevationChartActivePoint />
     </Fragment>
   );
 }

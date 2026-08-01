@@ -2,6 +2,7 @@ import { activeMapToolSelector } from '@app/store/selectors.js';
 import { ChangesetsResult } from '@features/changesets/components/ChangesetsResult.js';
 import { DrawingLinesResult } from '@features/drawing/components/DrawingLinesResult.js';
 import { DrawingPointsResult } from '@features/drawing/components/DrawingPointsResult.js';
+import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { ObjectsResult } from '@features/objects/components/ObjectsResult.js';
 import { RoutePlannerResult } from '@features/routePlanner/components/RoutePlannerResult.js';
@@ -64,6 +65,10 @@ export function Results(): ReactElement {
 
   return (
     <>
+      {/* Mounted once for every charted feature: it reads only the chart's own
+          state, and its map hover must listen once. */}
+      <ElevationChartActivePoint />
+
       <SearchResults />
 
       {hasObjects && <ObjectsResult />}

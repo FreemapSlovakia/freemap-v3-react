@@ -1,28 +1,67 @@
 import type { ElevationProfilePoint } from './model/reducer.js';
 
 /**
- * Where `point` sits on `points`. The active point is normally one of the
- * profile's own, so identity finds it; a profile redrawn while the pointer
- * rests on it — a live track gaining positions, say — leaves that reference
- * behind, and the same distance along the new profile is the same place.
+ * Which of `points` the given point stands at: the sample nearest it along the
+ * distance axis, the earliest one where two are equally near. It is located by
+ * distance rather than by identity because it rarely is one of the profile's
+ * own — the pointer marks a place between two samples, and a profile redrawn
+ * while the pointer rests on it (a live track gaining positions, say) leaves
+ * any reference behind. The axis is non-decreasing, so the pair it falls
+ * between is found by bisection, this being called from a selector.
  * `-1` on an empty profile.
  */
 export function indexOfProfilePoint(
   points: ElevationProfilePoint[],
   point: ElevationProfilePoint,
 ): number {
-  const own = points.indexOf(point);
-
-  if (own >= 0) {
-    return own;
+  if (points.length === 0) {
+    return -1;
   }
 
-  let nearest = -1;
+  let lo = 0;
 
-  let nearestGap = Number.POSITIVE_INFINITY;
+  let hi = points.length;
 
-  for (let i = 0; i < points.length; i++) {
-    const gap = Math.abs(points[i]!.distance - point.distance);
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+
+    if (points[mid]!.distance < point.distance) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+
+  // `lo` is the first sample at or past the point.
+  const at =
+    lo === 0
+      ? 0
+      : lo === points.length
+        ? lo - 1
+        : point.distance - points[lo - 1]!.distance <=
+            points[lo]!.distance - point.distance
+          ? lo - 1
+          : lo;
+
+  if (points[at]!.distance !== point.distance) {
+    return at;
+  }
+
+  // Samples can share a distance — a pause's last fix and the first of the
+  // segment resuming somewhere else — and the axis alone cannot say which of
+  // them the point stands at, though the grade is measured along a different
+  // stretch at each. The position can, so it settles the run. Degrees are
+  // compared unscaled: this only ranks candidates, it measures nothing.
+  let nearest = at;
+
+  let nearestGap = coordGap(points[at]!, point);
+
+  for (
+    let i = at + 1;
+    i < points.length && points[i]!.distance === point.distance;
+    i++
+  ) {
+    const gap = coordGap(points[i]!, point);
 
     if (gap < nearestGap) {
       nearestGap = gap;
@@ -32,6 +71,14 @@ export function indexOfProfilePoint(
   }
 
   return nearest;
+}
+
+function coordGap(a: ElevationProfilePoint, b: ElevationProfilePoint) {
+  const dLat = a.lat - b.lat;
+
+  const dLon = a.lon - b.lon;
+
+  return dLat * dLat + dLon * dLon;
 }
 
 /**

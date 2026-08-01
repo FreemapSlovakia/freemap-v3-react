@@ -3,7 +3,6 @@ import {
   activeMapToolSelector,
   selectingModeSelector,
 } from '@app/store/selectors.js';
-import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import {
   NO_DATA_COLOR,
@@ -927,8 +926,6 @@ export function RoutePlannerResult(): ReactElement {
           </Tooltip>
         </CircleMarker>
       ))}
-
-      <ElevationChartActivePoint />
     </>
   );
 }

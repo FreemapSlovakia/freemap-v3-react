@@ -1,6 +1,5 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
-import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import {
   type ColorizedPoint,
   NO_DATA_COLOR,
@@ -352,8 +351,6 @@ export function TrackingResult(): ReactElement {
           </Fragment>
         );
       })}
-
-      <ElevationChartActivePoint />
     </>
   );
 }

@@ -1,4 +1,3 @@
-import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -43,8 +42,6 @@ export function DrawingLinesResult(): ReactElement {
       {lines.map((_, i) => (
         <DrawingLineResult key={i} lineIndex={i} />
       ))}
-
-      <ElevationChartActivePoint />
     </>
   );
 }
