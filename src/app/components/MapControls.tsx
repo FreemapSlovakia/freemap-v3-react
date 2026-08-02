@@ -30,7 +30,24 @@ export function MapControls(): ReactElement | null {
     (state) => state.locationSettings.headingSource,
   );
 
+  const location = useAppSelector((state) => state.location.location);
+
   const handleLocateClick = useCallback(() => {
+    // Locating on but not following — the user panned away from the position.
+    // Pressing the button then means "take me back", not "stop locating"; only
+    // a press while following turns locating off.
+    if (locate && !gpsTracked) {
+      dispatch(
+        mapRefocus(
+          location
+            ? { lat: location.lat, lon: location.lon, gpsTracked: true }
+            : { gpsTracked: true },
+        ),
+      );
+
+      return;
+    }
+
     // iOS forgets the orientation grant between page loads while the preference
     // survives, so a stored compass choice needs a gesture to revive it; this is
     // the earliest one that means "I want to be located".
@@ -39,7 +56,7 @@ export function MapControls(): ReactElement | null {
     }
 
     dispatch(toggleLocate(undefined));
-  }, [dispatch, headingSource, locate]);
+  }, [dispatch, gpsTracked, headingSource, locate, location]);
 
   const onMapRefocus = useCallback(
     (changes: Partial<MapViewState>) => {
