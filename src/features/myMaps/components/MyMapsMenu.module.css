@@ -1,0 +1,6 @@
+/* A map name has no length limit, so cap the readout and let it ellipsize;
+   otherwise it pushes the toolbar buttons out of the visible area. The full
+   name stays available in the tooltip. */
+.name {
+  max-width: min(40dvw, 20rem);
+}

@@ -1,6 +1,7 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -25,6 +26,7 @@ import { mapsDisconnect, mapsLoad, mapsSave } from '../model/actions.js';
 import { mapDirtySelector } from '../model/selectors.js';
 import { loadMyMapsMessages } from '../translations/loadMyMapsMessages.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
+import classes from './MyMapsMenu.module.css';
 
 export function MyMapsMenu(): ReactElement {
   const m = useMessages();
@@ -88,6 +90,10 @@ export function MyMapsMenu(): ReactElement {
 
   const sc = useScrollClasses('horizontal');
 
+  const { sm } = useBreakpointMatches();
+
+  const mapName = activeMap?.name ?? '???';
+
   const [hidden, setHidden] = usePersistentBoolean('fm.myMapsMenu.collapsed');
 
   return (
@@ -96,7 +102,20 @@ export function MyMapsMenu(): ReactElement {
 
       <Toolbar className="mt-2">
         <ButtonToolbar>
-          <LongPressTooltip breakpoint="xl" label={m?.tools.myMaps}>
+          <LongPressTooltip
+            breakpoint="xl"
+            label={
+              // Below `sm` the readout next to the button is hidden, so the
+              // tooltip is the only place left to tell which map is active.
+              sm ? (
+                m?.tools.myMaps
+              ) : (
+                <>
+                  {m?.tools.myMaps} ({mapName})
+                </>
+              )
+            }
+          >
             {({ labelClassName, props }) => (
               <Button
                 variant="primary"
@@ -109,9 +128,26 @@ export function MyMapsMenu(): ReactElement {
             )}
           </LongPressTooltip>
 
-          <span className="align-self-center ms-2 me-1">
-            {m?.tools.myMap}: <b>{activeMap?.name ?? '???'}</b>
-          </span>
+          {/* The readout is capped and ellipsized, and below `md` it drops the
+              prefix, so the tooltip carries the whole thing unabbreviated. */}
+          <LongPressTooltip
+            label={
+              <>
+                {m?.tools.myMap}: {mapName}
+              </>
+            }
+          >
+            {({ props }) => (
+              <span
+                className={`${classes['name']} align-self-center d-none d-sm-inline-block text-truncate ms-2 me-1`}
+                {...props}
+              >
+                <span className="d-none d-md-inline">{m?.tools.myMap}: </span>
+
+                <b>{mapName}</b>
+              </span>
+            )}
+          </LongPressTooltip>
 
           {dirty && (
             <UnsavedWarningIcon
