@@ -8,7 +8,6 @@
   "scope": "/",
   "lang": "sk",
   "display": "standalone",
-  "orientation": "any",
   "background_color": "#f8f9fa",
   "theme_color": "#0d6efd",
   "dir": "auto",
