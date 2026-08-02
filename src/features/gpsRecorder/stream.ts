@@ -1,5 +1,6 @@
 import type { Dispatch } from 'redux';
 import {
+  type GpsRecorderConnection,
   gpsRecorderAddPoints,
   gpsRecorderPushedStatus,
   gpsRecorderSetConnection,
@@ -32,6 +33,40 @@ export function recorderStreamGeneration(): number {
  * opened — `/status` names it, and the status frame on connect names it again.
  */
 let fields: readonly string[] = [];
+
+/**
+ * Set when the page goes away with a stream attached, and cleared only when that
+ * stream goes — replaced on the way back in, or dropped by the browser giving up
+ * on it.
+ *
+ * A page that was hidden — the phone's screen off, or another tab in front — comes
+ * back to an `EventSource` the browser still reports as `OPEN` while nothing
+ * arrives on it. Loopback delivers no reset for the browser to notice, so it goes
+ * on believing in the socket for tens of seconds, and the reconnect it eventually
+ * makes replays every fix above its last event id in one burst — a screenful of
+ * dispatches that locks the page up for a moment. In between, the live view is
+ * frozen while reading as `live`.
+ *
+ * None of that is worth waiting for, because the sync that runs on the way back in
+ * has refetched the track over `/track?since=` anyway. So a stream that spanned a
+ * hidden page is dropped and reopened rather than trusted: a fresh `EventSource`
+ * carries no `Last-Event-ID`, so it replays nothing, and its own status frame
+ * covers whatever arrived between the catch-up and the connect.
+ */
+let suspect = false;
+
+/**
+ * Marks the attached stream as not to be believed — see {@link suspect}. Called
+ * when the page is hidden, which is the last thing that happens before it may be
+ * frozen.
+ */
+export function suspectRecorderStream(): void {
+  suspect = source !== null;
+}
+
+export function isRecorderStreamSuspect(): boolean {
+  return suspect;
+}
 
 /**
  * Backoff for reviving a stream the browser gave up on. `EventSource` retries
@@ -95,7 +130,10 @@ function parsePoints(data: string): RecorderPoint[] | null {
 
 /**
  * Attaches the live view. Idempotent — a stream that is already open is left
- * alone, so a resync does not drop and re-establish it.
+ * alone, so a resync does not drop and re-establish it. The exception is a
+ * {@link suspect} one, which is what a stream that spanned a hidden page is: once
+ * the page is visible again it is replaced, because "already open" is precisely
+ * what such a stream lies about.
  *
  * `EventSource` cannot pass `targetAddressSpace`, so this only works once the
  * Local Network Access permission has been granted by an earlier gestured
@@ -117,15 +155,29 @@ export function openRecorderStream(
 
   cancelRevive();
 
+  const hidden = document.visibilityState !== 'visible';
+
+  // A stream that spanned a hidden page is replaced rather than reused, whatever
+  // the browser claims its readyState is — see `suspect`. Only once the page is
+  // back, though: a replacement opened while still hidden is born suspect itself,
+  // and the status frame it opens with comes straight back here asking for
+  // another one.
+  if (source && suspect && !hidden) {
+    source.close();
+
+    source = null;
+  }
+
+  // A stream opened while the page is already hidden — a sync that was still in
+  // flight when the page went away — has spanned exactly what makes one suspect,
+  // so it is born that way and gets replaced on the way back in like any other.
+  suspect = hidden;
+
   if (source) {
     // A sync that ran while the stream was attached has already moved the
     // connection to `connecting`/`syncing`, and `onopen` won't fire again for a
     // socket that never closed — so the live state is restored from here.
-    dispatch(
-      gpsRecorderSetConnection(
-        source.readyState === EventSource.OPEN ? 'live' : 'reconnecting',
-      ),
-    );
+    dispatch(gpsRecorderSetConnection(streamState()));
 
     return;
   }
@@ -184,6 +236,11 @@ export function openRecorderStream(
       if (source === es) {
         source = null;
 
+        // Nothing is held any more, so there is nothing left to distrust: the
+        // revive below is what opens the next stream, and it opens a fresh one
+        // either way.
+        suspect = false;
+
         scheduleRevive(dispatch);
       }
     }
@@ -197,13 +254,29 @@ export function closeRecorderStream(): void {
 
   reviveAttempt = 0;
 
+  suspect = false;
+
   source?.close();
 
   source = null;
 }
 
-export function isRecorderStreamOpen(): boolean {
-  return source !== null;
+/**
+ * Whether the live view can be relied on to keep arriving. A suspect stream
+ * counts as no stream: it is about to be replaced, and until it is, nothing is
+ * coming through it.
+ */
+export function isRecorderStreamUsable(): boolean {
+  return source !== null && !suspect;
+}
+
+/** What the attached stream, if any, is currently doing. */
+function streamState(): GpsRecorderConnection {
+  return source === null
+    ? 'idle'
+    : suspect || source.readyState !== EventSource.OPEN
+      ? 'reconnecting'
+      : 'live';
 }
 
 /**
@@ -213,13 +286,5 @@ export function isRecorderStreamOpen(): boolean {
  * keep the transport disabled with it.
  */
 export function reportRecorderStreamState(dispatch: Dispatch): void {
-  dispatch(
-    gpsRecorderSetConnection(
-      source === null
-        ? 'idle'
-        : source.readyState === EventSource.OPEN
-          ? 'live'
-          : 'reconnecting',
-    ),
-  );
+  dispatch(gpsRecorderSetConnection(streamState()));
 }

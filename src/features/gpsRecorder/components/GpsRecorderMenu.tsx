@@ -59,8 +59,15 @@ export default function GpsRecorderMenu(): ReactElement {
   // transport: the background poll passes through `connecting` every few
   // seconds, and disabling Record for it would fight the user on exactly the
   // recorder that isn't answering.
+  //
+  // `reconnecting` is a wait like the others, and the one worth showing most: the
+  // figures beside the button have stopped advancing, and without the spinner
+  // nothing on the toolbar says the app is working on getting them back.
   const busy =
-    pending || connection === 'connecting' || connection === 'syncing';
+    pending ||
+    connection === 'connecting' ||
+    connection === 'syncing' ||
+    connection === 'reconnecting';
 
   // Connecting on open rather than behind a button: a recording begun on an
   // earlier page load, or a stream the browser gave up on, would otherwise leave

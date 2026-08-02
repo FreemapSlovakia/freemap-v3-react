@@ -3,13 +3,14 @@ import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import clsx from 'clsx';
 import { type ReactElement, type ReactNode, useMemo } from 'react';
-import { Dropdown } from 'react-bootstrap';
+import { Dropdown, Spinner } from 'react-bootstrap';
 import { FaCircle } from 'react-icons/fa';
 import {
   selectLatestRecorderPoint,
   selectRecorderStats,
 } from '../model/selectors.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
+import classes from './GpsRecorderReadout.module.css';
 
 /** `h:mm:ss`, dropping the hours until there are any. */
 function formatDuration(ms: number): string {
@@ -216,19 +217,27 @@ export function GpsRecorderReadout(): ReactElement {
         aria-label={m?.details}
       >
         {/* Says how the live view is doing without spending words on it; the
-            dropdown spells the same thing out. */}
-        <FaCircle
-          size={8}
-          className={clsx(
-            'align-middle',
-            connection === 'live'
-              ? 'text-success'
-              : connection === 'idle'
-                ? 'text-body-secondary'
-                : 'text-warning',
-          )}
-          aria-hidden
-        />{' '}
+            dropdown spells the same thing out. A dot for the two settled states,
+            and a spinner for the ones in between — the figures next to it have
+            stopped advancing then, and a still dot over frozen numbers reads as a
+            live recording that has merely stood still. */}
+        {connection === 'live' || connection === 'idle' ? (
+          <FaCircle
+            size={8}
+            className={clsx(
+              'align-middle',
+              connection === 'live' ? 'text-success' : 'text-body-secondary',
+            )}
+            aria-hidden
+          />
+        ) : (
+          <Spinner
+            animation="border"
+            size="sm"
+            className={clsx('align-middle', classes.connectingSpinner)}
+            aria-hidden
+          />
+        )}{' '}
         {formatDistance(stats.distance, language)}
         {' · '}
         {formatDuration(stats.recordedDuration)}

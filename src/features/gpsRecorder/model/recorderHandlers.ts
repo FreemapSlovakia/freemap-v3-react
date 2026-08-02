@@ -29,7 +29,7 @@ import {
 } from '../recorderClient.js';
 import {
   closeRecorderStream,
-  isRecorderStreamOpen,
+  isRecorderStreamUsable,
   openRecorderStream,
   recorderStreamGeneration,
   reportRecorderStreamState,
@@ -167,7 +167,9 @@ async function runSync(
   // page's points were fetched under.
   const { points, cursor, generation } = getState().gpsRecorder;
 
-  if (!isRecorderStreamOpen()) {
+  // A stream held over from a hidden page is about to be replaced, so it counts
+  // as no stream: the connection is being made again, not merely caught up.
+  if (!isRecorderStreamUsable()) {
     dispatch(gpsRecorderSetConnection('connecting'));
   }
 

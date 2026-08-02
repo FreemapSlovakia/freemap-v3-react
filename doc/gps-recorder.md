@@ -354,6 +354,38 @@ stops answering mid-ride is worth a toast whether or not its toolbar is open.
 
 There is no Reconnect button: the above covers every case one would answer.
 
+**A stream that spanned a hidden page is not a working stream**, and step 3's
+"already attached" test would otherwise keep it. The page comes back to an
+`EventSource` the browser still reports as `OPEN` while nothing arrives on it —
+loopback delivers no reset for it to notice, so it goes on believing in the
+socket for tens of seconds — and the reconnect it eventually makes replays every
+fix above its last event id in one burst, which is a screenful of dispatches and
+a page that locks up for a moment. Until then the live view is frozen while
+reading as `Live`.
+
+So `follow.ts` calls `suspectRecorderStream()` on the way out (the `hidden`
+half of the same `visibilitychange` it already listens to), and
+`openRecorderStream` **replaces** a suspect stream instead of keeping it. A
+fresh `EventSource` carries no `Last-Event-ID`, so it replays nothing, and the
+`/track?since=` catch-up that has just run is what fills the gap — with the new
+stream's own status frame covering whatever arrived in between. A stream opened
+while the page is *already* hidden is born suspect for the same reason, which is
+also why the replacement waits for the page to be visible: every connection
+opens with a status frame, that frame is dispatched and reconciled, and the
+reconcile calls `openRecorderStream` again — so replacing while still hidden
+would hand out a stream that is instantly suspect again and loop.
+`isRecorderStreamUsable()` reports a suspect stream as no stream at all, so the
+connection reads `reconnecting` rather than `live` for as long as one is held.
+
+**Anything but `live` or `idle` is said with a spinner**, in both places the
+toolbar has to say it: the readout's status dot becomes one, and the Record
+button shows one over its own icon. The two settled states keep the dot —
+green for a live view, grey for none — because they are states rather than
+waits. The point is the numbers beside it: distance, duration and the rest stop
+advancing whenever the live view is down, and a still green dot over frozen
+figures reads as a recording that has merely stood still. The spinner does not
+disable the transport; only a command the user gave (`pending`) does.
+
 Catch-up and the stream overlap by design, so batches arrive duplicated and
 briefly out of order. `mergePoints` in the reducer merges by `seq` — appending
 when the batch simply follows the track, and filling gaps below the cursor

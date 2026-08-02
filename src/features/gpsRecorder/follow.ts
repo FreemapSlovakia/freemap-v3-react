@@ -1,5 +1,6 @@
 import type { MyStore } from '@app/store/store.js';
 import { gpsRecorderSync } from './model/actions.js';
+import { isRecorderStreamSuspect, suspectRecorderStream } from './stream.js';
 import { gpsRecorderPlatformSupported } from './support.js';
 
 /**
@@ -47,25 +48,36 @@ export function setRecorderFollowed(followed: boolean): void {
  * Syncs raised from here are **quiet**: nothing the user did prompted them, so a
  * recorder that has since been killed or uninstalled must not greet them with an
  * error. It stops following instead, and opening the tool is what tries again.
+ *
+ * Going the other way matters just as much: a page on its way out takes its live
+ * stream with it into whatever the browser does next, unobserved, so the stream is
+ * marked as not to be believed until it has been replaced.
  */
 export function attachRecorderFollow(store: MyStore): void {
   if (!gpsRecorderPlatformSupported) {
     return;
   }
 
-  const follow = () => {
+  const onVisibilityChange = () => {
     if (document.visibilityState !== 'visible') {
+      suspectRecorderStream();
+
       return;
     }
 
     // The tool being open counts as well, so returning to the page with it open
-    // catches up even when there is nothing recorded yet.
-    if (isRecorderFollowed() || store.getState().main.tool === 'gps-recorder') {
+    // catches up even when there is nothing recorded yet — and so does a stream
+    // held over from the hidden page, which only a sync replaces.
+    if (
+      isRecorderFollowed() ||
+      store.getState().main.tool === 'gps-recorder' ||
+      isRecorderStreamSuspect()
+    ) {
       store.dispatch(gpsRecorderSync({ quiet: true }));
     }
   };
 
-  document.addEventListener('visibilitychange', follow);
+  document.addEventListener('visibilitychange', onVisibilityChange);
 
-  follow();
+  onVisibilityChange();
 }
