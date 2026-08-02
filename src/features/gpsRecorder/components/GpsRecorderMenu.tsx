@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { toolSelector } from '@app/store/selectors.js';
 import { useDataMergeMode } from '@features/dataViewer/hooks/useDataMergeMode.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
@@ -19,6 +20,7 @@ import {
 } from '../model/actions.js';
 import { selectRecorderSegments } from '../model/selectors.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
+import classes from './GpsRecorderMenu.module.css';
 import { GpsRecorderReadout } from './GpsRecorderReadout.js';
 
 export default function GpsRecorderMenu(): ReactElement {
@@ -48,6 +50,11 @@ export default function GpsRecorderMenu(): ReactElement {
 
   const recording = status?.recording ?? false;
 
+  // A recording keeps this toolbar on the screen whatever tool is open, so being
+  // the open tool is what tells the full set of controls from the strip that only
+  // says a recording is running.
+  const collapsed = useAppSelector(toolSelector) !== 'gps-recorder';
+
   // The spinner covers any wait, but only a command the user gave blocks the
   // transport: the background poll passes through `connecting` every few
   // seconds, and disabling Record for it would fight the user on exactly the
@@ -60,6 +67,10 @@ export default function GpsRecorderMenu(): ReactElement {
   // the panel blank until something was pressed. The Local Network Access prompt
   // still needs a gesture, so the panel offers one when this fails.
   //
+  // Keyed on the panel being open rather than on this component mounting, which a
+  // recording does on its own: expanding the strip is the same gesture as opening
+  // the tool, and it is the one a user makes when the live view has gone quiet.
+  //
   // Opening the tool is all this does. The connection itself belongs to
   // `attachRecorderFollow`, which keeps it for as long as there is a recording to
   // follow — closing this toolbar says nothing about whether the phone is still
@@ -69,8 +80,10 @@ export default function GpsRecorderMenu(): ReactElement {
   // state changes, returning to the foreground catches up on what a frozen tab
   // missed, and a stream the browser gave up on schedules its own retry.
   useEffect(() => {
-    dispatch(gpsRecorderSync());
-  }, [dispatch]);
+    if (!collapsed) {
+      dispatch(gpsRecorderSync());
+    }
+  }, [collapsed, dispatch]);
 
   // Asked only while the recorder is still running: that tap ends a ride that
   // cannot be resumed — the recorder's track is taken and deleted, so a start
@@ -109,82 +122,97 @@ export default function GpsRecorderMenu(): ReactElement {
   }, [confirm, dispatch, grm]);
 
   return (
-    <ToolMenu tool="gps-recorder">
-      {/* Record and Pause are one button, because they are one thing: the
-          recorder keeps its track across a `POST /stop`, so stopping it is a
-          pause and the next start continues the same ride. */}
-      <Button
-        className="ms-1"
-        variant="primary"
-        disabled={pending}
-        // Must stay a direct gesture handler: this tap is what allows the
-        // Local Network Access prompt and the launch intent.
-        onClick={() =>
-          dispatch(recording ? gpsRecorderPause() : gpsRecorderStart())
-        }
-      >
-        {busy ? (
-          <Spinner animation="border" size="sm" />
-        ) : recording ? (
-          <FaPause />
-        ) : (
-          <FaCircle />
-        )}{' '}
-        {recording ? grm?.pause : grm?.record}
-      </Button>
-
-      {/* Ending the ride: the track leaves the recorder for the app. Offered
-          whenever there is something to take, recording or not — there is no
-          separate save, because taking the track *is* saving it. */}
-      {saveable && (
-        <LongPressTooltip label={grm?.stop}>
-          {({ props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              disabled={pending}
-              onClick={handleStop}
-              {...props}
-            >
-              <FaStop />
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
-
-      {/* Beside Finish, because they are the two ends of the same decision: take
-          the ride or throw it away. Hidden rather than disabled — the recorder
-          refuses to delete mid-recording, and a permanently greyed button says
-          nothing about why. */}
-      {!recording && (status?.count ?? 0) > 0 && (
-        <LongPressTooltip label={grm?.delete}>
-          {({ props }) => (
-            <Button
-              className="ms-1"
-              variant="danger"
-              onClick={handleClear}
-              {...props}
-            >
-              <FaTrash />
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
-
-      <LongPressTooltip label={grm?.settings}>
-        {({ props }) => (
+    // Collapsing rather than closing while a recording runs: the toolbar is the
+    // only thing on the screen that says the phone is still recording, and a tool
+    // switch or an Escape would otherwise take it away for the rest of the ride.
+    <ToolMenu
+      tool="gps-recorder"
+      collapsed={collapsed}
+      collapsible={recording}
+      iconClassName={recording ? classes.recording : undefined}
+    >
+      {/* The strip keeps the readout — distance and time are what the glance is
+          for — and nothing that acts on the recording: reaching Pause or Finish
+          is what expanding is for. */}
+      {!collapsed && (
+        <>
+          {/* Record and Pause are one button, because they are one thing: the
+              recorder keeps its track across a `POST /stop`, so stopping it is a
+              pause and the next start continues the same ride. */}
           <Button
             className="ms-1"
-            variant="secondary"
+            variant="primary"
+            disabled={pending}
+            // Must stay a direct gesture handler: this tap is what allows the
+            // Local Network Access prompt and the launch intent.
             onClick={() =>
-              dispatch(setActiveModal({ type: 'gps-recorder-settings' }))
+              dispatch(recording ? gpsRecorderPause() : gpsRecorderStart())
             }
-            {...props}
           >
-            <FaCog />
+            {busy ? (
+              <Spinner animation="border" size="sm" />
+            ) : recording ? (
+              <FaPause />
+            ) : (
+              <FaCircle />
+            )}{' '}
+            {recording ? grm?.pause : grm?.record}
           </Button>
-        )}
-      </LongPressTooltip>
+
+          {/* Ending the ride: the track leaves the recorder for the app. Offered
+              whenever there is something to take, recording or not — there is no
+              separate save, because taking the track *is* saving it. */}
+          {saveable && (
+            <LongPressTooltip label={grm?.stop}>
+              {({ props }) => (
+                <Button
+                  className="ms-1"
+                  variant="secondary"
+                  disabled={pending}
+                  onClick={handleStop}
+                  {...props}
+                >
+                  <FaStop />
+                </Button>
+              )}
+            </LongPressTooltip>
+          )}
+
+          {/* Beside Finish, because they are the two ends of the same decision:
+              take the ride or throw it away. Hidden rather than disabled — the
+              recorder refuses to delete mid-recording, and a permanently greyed
+              button says nothing about why. */}
+          {!recording && (status?.count ?? 0) > 0 && (
+            <LongPressTooltip label={grm?.delete}>
+              {({ props }) => (
+                <Button
+                  className="ms-1"
+                  variant="danger"
+                  onClick={handleClear}
+                  {...props}
+                >
+                  <FaTrash />
+                </Button>
+              )}
+            </LongPressTooltip>
+          )}
+
+          <LongPressTooltip label={grm?.settings}>
+            {({ props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() =>
+                  dispatch(setActiveModal({ type: 'gps-recorder-settings' }))
+                }
+                {...props}
+              >
+                <FaCog />
+              </Button>
+            )}
+          </LongPressTooltip>
+        </>
+      )}
 
       <GpsRecorderReadout />
     </ToolMenu>

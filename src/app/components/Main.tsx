@@ -367,6 +367,10 @@ export function Main(): ReactElement {
 
   const gpsRecorderAvailable = useAppSelector(gpsRecorderAvailableSelector);
 
+  const gpsRecorderRecording = useAppSelector(
+    (state) => state.gpsRecorder.status?.recording ?? false,
+  );
+
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
   const activeModal = useAppSelector((state) => state.main.activeModal);
@@ -660,6 +664,21 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={galleryMenuFactory} />
               )}
 
+              {/* Outside the chain below: a running recording keeps its toolbar
+                  — collapsed to a strip, and told apart by its own gate — for as
+                  long as it runs, because nothing else on the screen says the
+                  phone is recording. Also gated here for the same reason the tool
+                  is: the tool can be named in the URL hash on a device the
+                  recorder can't run on. Not in an embedded map: `setTool` is a
+                  no-op there, so the strip could never be expanded — and the
+                  recording belongs to the full app that started it. */}
+              {showMenu &&
+                gpsRecorderAvailable &&
+                !window.fmEmbedded &&
+                (tool === 'gps-recorder' || gpsRecorderRecording) && (
+                  <AsyncComponent factory={gpsRecorderMenuFactory} />
+                )}
+
               {/* the open tool's menu */}
 
               {showMenu &&
@@ -679,12 +698,6 @@ export function Main(): ReactElement {
                   <MapDetailsMenu />
                 ) : tool === 'tracking' ? (
                   <AsyncComponent factory={trackingMenuFactory} />
-                ) : tool === 'gps-recorder' ? (
-                  // Also gated here: the tool can be named in the URL hash on
-                  // a device the recorder can't run on.
-                  gpsRecorderAvailable && (
-                    <AsyncComponent factory={gpsRecorderMenuFactory} />
-                  )
                 ) : null)}
 
               {selectionMenu === 'search' ? (

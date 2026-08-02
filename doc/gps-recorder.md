@@ -320,6 +320,25 @@ me" back to the browser's own GPS watch mid-ride, which is the second watch the
 feed exists to avoid. What stays in the menu is what belongs to the tool: its
 buttons, and the failure and setup toasts.
 
+**The toolbar follows the recording as well, collapsed.** `Main` mounts
+`GpsRecorderMenu` outside the `tool === …` chain, on `tool === 'gps-recorder'` **or**
+a recording in progress, so a running recording keeps a toolbar whatever tool is
+open — the only thing on the screen that says the phone is still recording. Being
+the open tool is then no longer what mounts it but what *expands* it: `ToolMenu`'s
+`collapsed` leaves the strip — the tool's icon, blinking red through the
+`iconClassName` the menu hands it, its name, and the readout — and turns the
+dismiss button into one that opens the tool again. `collapsible` says the same
+thing about the other direction, so while recording the close button reads as a
+collapse. Escape needs nothing of its own: it dispatches `setTool(null)`, which is
+now exactly the collapse.
+
+Two consequences worth knowing. The sync that opening the tool raises is keyed on
+the panel being expanded rather than on the component mounting, because a
+recording mounts it on its own and expanding is the gesture a user makes when the
+live view has gone quiet. And `useRecorderNotices` now lives as long as the
+recording rather than as long as the panel — which is the point: a recorder that
+stops answering mid-ride is worth a toast whether or not its toolbar is open.
+
 1. `GET /status` — always, because it is what carries `recording`, `generation`
    and the setup flags.
 2. `GET /track?since=<cursor>` **only when the recorder says there is something
