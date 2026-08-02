@@ -18,6 +18,7 @@ const pt = (seq: number): RecorderPoint => ({
   acc: null,
   spd: null,
   brg: null,
+  sat: null,
   seg: 0,
 });
 

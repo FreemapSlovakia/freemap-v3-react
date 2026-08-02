@@ -17,6 +17,7 @@ const pt = (
   acc: null,
   spd: null,
   brg: null,
+  sat: null,
   seg: 0,
   ...overrides,
 });

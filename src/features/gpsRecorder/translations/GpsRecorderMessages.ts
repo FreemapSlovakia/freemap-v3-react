@@ -30,10 +30,14 @@ export type GpsRecorderMessages = {
   stats: {
     distance: string;
     duration: string;
+    /** Elevation of the newest fix, above mean sea level. */
+    elevation: string;
     ascent: string;
     speed: string;
     avgSpeed: string;
     accuracy: string;
+    /** Satellites used in the newest fix. */
+    satellites: string;
     points: string;
     segments: string;
     lastFix: string;

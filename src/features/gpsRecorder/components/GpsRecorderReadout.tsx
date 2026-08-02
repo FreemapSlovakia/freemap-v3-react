@@ -128,6 +128,20 @@ export function GpsRecorderReadout(): ReactElement {
     },
   ];
 
+  // Above mean sea level, which is the elevation a map reads in — `alt` is
+  // metres above the ellipsoid and sits some 42 m higher over Slovakia. The
+  // fallback is not cosmetic: `altMsl` is null below Android 14 and until a GNSS
+  // fix has been seen, so the opening fixes of a recording carry only `alt`.
+  const elevation = latest ? (latest.altMsl ?? latest.alt) : null;
+
+  if (elevation !== null) {
+    rows.push({
+      id: 'elevation',
+      label: m?.stats.elevation,
+      value: metersFormat.format(elevation),
+    });
+  }
+
   if (stats.ascent > 0) {
     rows.push({
       id: 'ascent',
@@ -157,6 +171,17 @@ export function GpsRecorderReadout(): ReactElement {
       id: 'accuracy',
       label: m?.stats.accuracy,
       value: metersFormat.format(latest.acc),
+    });
+  }
+
+  // Absent whenever the receiver hasn't reported recently enough to speak for
+  // this fix — a network fix, or a duty-cycled receiver between sparse fixes —
+  // so the row goes away rather than claiming zero satellites.
+  if (latest?.sat != null) {
+    rows.push({
+      id: 'satellites',
+      label: m?.stats.satellites,
+      value: String(latest.sat),
     });
   }
 

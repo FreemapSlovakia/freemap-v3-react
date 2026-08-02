@@ -78,7 +78,16 @@ Slovakia the ellipsoid sits some 42 m higher — so `trackGeojson.ts` puts
 null below Android 14 and until a GNSS fix has been seen, so the opening fixes of
 a recording can carry only `alt`. The statistics keep reading `alt` instead,
 because ascent is a sum of differences that a constant offset cannot change,
-while a mid-track switch between the two sources would invent one.
+while a mid-track switch between the two sources would invent one. The readout's
+elevation is a figure the user reads off a map rather than a sum, so it takes
+`altMsl ?? alt` like the export does.
+
+**`sat` is best-effort and often absent.** A fused fix carries no satellite count
+of its own, so the recorder reads one off the GNSS receiver running alongside and
+matches it to the fix by time; it is null whenever the receiver has not reported
+recently enough to speak for that fix — a network fix, or one taken while the
+receiver was duty-cycled off between widely spaced fixes. So the readout's
+satellite row is dropped rather than shown as zero.
 
 The list is **append-only**, and a reader is meant to ignore what it doesn't
 know — so a cell is typed as `unknown` and read as the number its column should

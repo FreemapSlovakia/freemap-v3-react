@@ -83,6 +83,16 @@ export interface RecorderPoint {
   /** Degrees clockwise from true north, or null. */
   brg: number | null;
   /**
+   * Satellites used in the fix, or null.
+   *
+   * Best-effort: a fused fix carries no satellite count of its own, so the
+   * recorder reads it off the GNSS receiver running alongside and matches it to
+   * the fix by time. Null whenever the receiver has not reported recently enough
+   * to speak for the fix in hand — a network fix, or one taken while the
+   * receiver was duty-cycled off between widely spaced fixes.
+   */
+  sat: number | null;
+  /**
    * Segment ordinal, incremented by the recorder on every start: a point whose
    * `seg` differs from its predecessor's begins a new segment. The recorder is
    * the only thing that decides where a track breaks, which is why this app
@@ -154,6 +164,7 @@ export function decodePoints(
       acc: read(row, 'acc'),
       spd: read(row, 'spd'),
       brg: read(row, 'brg'),
+      sat: read(row, 'sat'),
     });
   }
 

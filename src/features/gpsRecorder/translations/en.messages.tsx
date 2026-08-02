@@ -25,10 +25,12 @@ const en: GpsRecorderMessages = {
   stats: {
     distance: 'Distance',
     duration: 'Duration',
+    elevation: 'Elevation',
     ascent: 'Climb',
     speed: 'Speed',
     avgSpeed: 'Average speed',
     accuracy: 'Accuracy',
+    satellites: 'Satellites',
     points: 'Points',
     segments: 'Segments',
     lastFix: 'Last fix',

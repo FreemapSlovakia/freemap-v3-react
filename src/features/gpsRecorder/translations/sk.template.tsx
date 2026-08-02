@@ -26,10 +26,12 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   stats: {
     distance: 'Vzdialenosť',
     duration: 'Trvanie',
+    elevation: 'Nadmorská výška',
     ascent: 'Stúpanie',
     speed: 'Rýchlosť',
     avgSpeed: 'Priemerná rýchlosť',
     accuracy: 'Presnosť',
+    satellites: 'Satelity',
     points: 'Body',
     segments: 'Úseky',
     lastFix: 'Posledný bod',
