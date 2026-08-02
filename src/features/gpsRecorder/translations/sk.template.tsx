@@ -34,6 +34,17 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     segments: 'Úseky',
     lastFix: 'Posledný bod',
   },
+  stopModal: {
+    title: 'Ukončiť záznam?',
+    message: ({ tool }) => (
+      <>
+        Nahrávanie stále beží. Ukončením sa zastaví a trasa sa presunie do
+        nástroja <b>{tool}</b>. V zaznamenávači nezostane nič, takže ďalšie
+        nahrávanie začne novú trasu.
+      </>
+    ),
+    confirm: 'Ukončiť',
+  },
   deleteModal: {
     title: 'Zmazať záznam?',
     message:

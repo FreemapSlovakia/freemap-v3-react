@@ -38,6 +38,13 @@ export type GpsRecorderMessages = {
     segments: string;
     lastFix: string;
   };
+  /** Asked before a Finish that would cut a recording still in progress. */
+  stopModal: {
+    title: string;
+    /** `tool` is the localized name of the tool the track lands in. */
+    message: (props: { tool: ReactNode }) => ReactNode;
+    confirm: string;
+  };
   deleteModal: {
     title: string;
     message: string;

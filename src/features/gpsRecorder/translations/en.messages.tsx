@@ -33,6 +33,17 @@ const en: GpsRecorderMessages = {
     segments: 'Segments',
     lastFix: 'Last fix',
   },
+  stopModal: {
+    title: 'Finish the recording?',
+    message: ({ tool }) => (
+      <>
+        Recording is still running. Finishing stops it and moves the track to{' '}
+        <b>{tool}</b>. The recorder keeps nothing, so the next recording starts
+        a new track.
+      </>
+    ),
+    confirm: 'Finish',
+  },
   deleteModal: {
     title: 'Delete the recording?',
     message:

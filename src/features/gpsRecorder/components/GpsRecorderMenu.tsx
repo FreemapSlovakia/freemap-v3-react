@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useDataMergeMode } from '@features/dataViewer/hooks/useDataMergeMode.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
@@ -23,7 +24,9 @@ import { GpsRecorderReadout } from './GpsRecorderReadout.js';
 export default function GpsRecorderMenu(): ReactElement {
   const dispatch = useDispatch();
 
-  const m = useGpsRecorderMessages();
+  const m = useMessages();
+
+  const grm = useGpsRecorderMessages();
 
   const confirm = useConfirm();
 
@@ -69,26 +72,41 @@ export default function GpsRecorderMenu(): ReactElement {
     dispatch(gpsRecorderSync());
   }, [dispatch]);
 
+  // Asked only while the recorder is still running: that tap ends a ride that
+  // cannot be resumed — the recorder's track is taken and deleted, so a start
+  // afterwards begins a new one. Finishing an already stopped recording only
+  // collects what is sitting there, and the merge question below covers the rest.
   const handleStop = useCallback(async () => {
+    if (
+      recording &&
+      !(await confirm({
+        title: grm?.stopModal.title,
+        message: grm?.stopModal.message({ tool: m?.tools.dataViewer }),
+        confirmLabel: grm?.stopModal.confirm,
+      }))
+    ) {
+      return;
+    }
+
     const mode = await askMergeMode();
 
     if (mode !== 'cancel') {
       dispatch(gpsRecorderStop(mode));
     }
-  }, [askMergeMode, dispatch]);
+  }, [recording, confirm, m, grm, askMergeMode, dispatch]);
 
   const handleClear = useCallback(async () => {
     if (
       await confirm({
-        title: m?.deleteModal.title,
-        message: m?.deleteModal.message,
-        confirmLabel: m?.deleteModal.confirm,
+        title: grm?.deleteModal.title,
+        message: grm?.deleteModal.message,
+        confirmLabel: grm?.deleteModal.confirm,
         confirmStyle: 'danger',
       })
     ) {
       dispatch(gpsRecorderClear());
     }
-  }, [confirm, dispatch, m]);
+  }, [confirm, dispatch, grm]);
 
   return (
     <ToolMenu tool="gps-recorder">
@@ -112,14 +130,14 @@ export default function GpsRecorderMenu(): ReactElement {
         ) : (
           <FaCircle />
         )}{' '}
-        {recording ? m?.pause : m?.record}
+        {recording ? grm?.pause : grm?.record}
       </Button>
 
       {/* Ending the ride: the track leaves the recorder for the app. Offered
           whenever there is something to take, recording or not — there is no
           separate save, because taking the track *is* saving it. */}
       {saveable && (
-        <LongPressTooltip label={m?.stop}>
+        <LongPressTooltip label={grm?.stop}>
           {({ props }) => (
             <Button
               className="ms-1"
@@ -139,7 +157,7 @@ export default function GpsRecorderMenu(): ReactElement {
           refuses to delete mid-recording, and a permanently greyed button says
           nothing about why. */}
       {!recording && (status?.count ?? 0) > 0 && (
-        <LongPressTooltip label={m?.delete}>
+        <LongPressTooltip label={grm?.delete}>
           {({ props }) => (
             <Button
               className="ms-1"
@@ -153,7 +171,7 @@ export default function GpsRecorderMenu(): ReactElement {
         </LongPressTooltip>
       )}
 
-      <LongPressTooltip label={m?.settings}>
+      <LongPressTooltip label={grm?.settings}>
         {({ props }) => (
           <Button
             className="ms-1"

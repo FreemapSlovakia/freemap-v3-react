@@ -5,6 +5,7 @@ const pl: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   state: {},
   connection: {},
   stats: {},
+  stopModal: {},
   deleteModal: {},
   setup: {},
   errors: {},
