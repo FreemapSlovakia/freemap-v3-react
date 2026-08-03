@@ -813,6 +813,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   'carousel-control-next',
                   (editModel || index >= imageIds.length - 1) &&
                     'carousel-control-disabled',
+                  pano && 'carousel-control-short',
                 )}
                 onClick={() => dispatch(galleryRequestImage('next'))}
               >

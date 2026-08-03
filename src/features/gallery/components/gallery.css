@@ -28,11 +28,22 @@ button:is(.carousel-control-prev, .carousel-control-next) {
 }
 
 /* Widen each arrow to cover its half of the image so the whole left/right side
-   navigates; panorama arrows stay narrow so the panorama can still be dragged. */
+   navigates. */
 button:is(.carousel-control-prev, .carousel-control-next):not(
   .carousel-control-short
 ) {
   width: 50%;
+}
+
+/* Panorama arrows react only to a click on the icon itself; the rest of the
+   control (a full-height column) passes pointers through to pannellum so the
+   panorama can be dragged and double-click-zoomed right up to the icon. */
+button:is(
+  .carousel-control-prev,
+  .carousel-control-next
+).carousel-control-short {
+  width: auto;
+  pointer-events: none;
 }
 
 /* Push each arrow out to its edge (needs `button` to outrank Bootstrap's
@@ -60,6 +71,12 @@ button.carousel-control-next {
   height: 44px;
   padding: 9px;
   background-color: hsla(0, 0%, 0%, 0.45);
+}
+
+/* Re-arm the icon of a panorama arrow, the one part of the control that clicks. */
+button:is(.carousel-control-prev, .carousel-control-next).carousel-control-short
+:is(.carousel-control-prev-icon, .carousel-control-next-icon) {
+  pointer-events: auto;
 }
 
 /* On hover-capable pointers, reveal the arrows only over the image; touch
