@@ -303,6 +303,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l1: 'Lesné cesty NLC (2017)',
       l2: 'Lesné cesty NLC',
       w: 'Wikipedia',
+      R: 'Meteoradar',
       M: 'Fotografie z Wikimedia Commons',
       '5': 'Tieňovanie terénu',
       '6': 'Tieňovanie povrchu',

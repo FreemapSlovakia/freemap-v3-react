@@ -18,6 +18,7 @@
     "src/features/changesets/translations/{LANG}.tsx",
     "src/features/dataViewer/translations/{LANG}.tsx",
     "src/features/gpsRecorder/translations/{LANG}.tsx",
+    "src/features/weatherRadar/translations/{LANG}.tsx",
     "src/features/elevationChart/translations/{LANG}.tsx",
     "src/shared/colorizers/translations/{LANG}.tsx",
     "src/features/openInExternalApp/translations/{LANG}.tsx",

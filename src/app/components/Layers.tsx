@@ -4,7 +4,11 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { integratedLayerDefs, type LayerDef } from '@shared/mapDefinitions.js';
+import {
+  integratedLayerDefs,
+  type LayerDef,
+  resolveLayerOpacity,
+} from '@shared/mapDefinitions.js';
 import { type ReactElement, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import missingTile from '@/images/missing-tile-256x256.png';
@@ -29,6 +33,12 @@ const maplibreLayerFactory = () =>
   import(
     /* webpackChunkName: "maplibre-layer" */
     './MaplibreLayer.js'
+  );
+
+const radarLayerFactory = () =>
+  import(
+    /* webpackChunkName: "radar-layer" */
+    '@features/weatherRadar/components/RadarLayer.js'
   );
 
 export function Layers(): ReactElement | null {
@@ -77,7 +87,10 @@ export function Layers(): ReactElement | null {
   function getLayer(layerDef: LayerDef) {
     const { type, minZoom } = layerDef;
 
-    const opacity = layersSettings[type]?.opacity ?? 1;
+    const opacity = resolveLayerOpacity(
+      layerDef,
+      layersSettings[type]?.opacity,
+    );
 
     if (layerDef.technology === 'gallery') {
       return (
@@ -93,6 +106,24 @@ export function Layers(): ReactElement | null {
           authToken={user?.authToken}
           showDirection={galleryShowDirection}
           dirtySeq={galleryDirtySeq}
+        />
+      );
+    }
+
+    if (layerDef.technology === 'radar') {
+      // The frame series, its playback and the tile options all live in the
+      // feature's own slices, so only the layer-registry side comes from here.
+      return (
+        <AsyncComponent
+          factory={radarLayerFactory}
+          // `maxZoom` is baked into every frame's tile layer when it is built,
+          // and a frame that stays on screen is not rebuilt — so a change of it
+          // takes a remount.
+          key={`${type}-${maxZoom}`}
+          opacity={opacity}
+          zIndex={layerDef.zIndex ?? 1}
+          maxZoom={maxZoom}
+          maxNativeZoom={layerDef.maxNativeZoom}
         />
       );
     }

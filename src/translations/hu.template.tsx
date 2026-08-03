@@ -276,6 +276,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l1: 'Erdészeti utak NLC (2017)',
       l2: 'Erdészeti utak NLC',
       w: 'Wikipedia',
+      R: 'Csapadékradar',
       '5': 'Terepárnyékolás',
       '6': 'Felszínárnyékolás',
       '7': 'Részletes terepárnyékolás',

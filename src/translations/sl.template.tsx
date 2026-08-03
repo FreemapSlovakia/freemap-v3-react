@@ -272,6 +272,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l1: 'Gozdne poti NLC (2017)',
       l2: 'Gozdne poti NLC',
       w: 'Wikipedia',
+      R: 'Vremenski radar',
       M: 'Fotografije iz Wikimedia Commons',
       '5': 'Senčenje terena',
       '6': 'Senčenje površja',

@@ -30,6 +30,7 @@ import { routePlannerSettingsInitialState } from '@features/routePlanner/model/s
 import { SearchResultStyleSchema } from '@features/search/model/actions.js';
 import { searchSettingsInitialState } from '@features/search/model/settingsReducer.js';
 import { trackingSettingsInitialState } from '@features/tracking/model/settingsReducer.js';
+import { weatherRadarSettingsInitialState } from '@features/weatherRadar/model/settingsReducer.js';
 import { ColorizeSettingsShape } from '@shared/colorizers/colorizeSettings.js';
 import { ColorizingModeSchema } from '@shared/colorizers/index.js';
 import { LanguageSchema } from '@shared/langUtils.js';
@@ -206,6 +207,15 @@ export const PersistedGallerySettingsSchema = z
     showLegend: z.boolean(),
     premium: z.boolean(),
     license: GalleryLicenseSchema,
+  })
+  .partial();
+
+export const PersistedWeatherRadarSettingsSchema = z
+  .object({
+    colorScheme: z.number(),
+    smooth: z.boolean(),
+    snow: z.boolean(),
+    showNowcast: z.boolean(),
   })
   .partial();
 
@@ -444,6 +454,17 @@ const PERSIST: PersistEntry[] = [
       showDirection: g.showDirection,
       showLegend: g.showLegend,
       premium: g.premium,
+    }),
+  }),
+  defineEntry({
+    key: 'weatherRadarSettings',
+    schema: PersistedWeatherRadarSettingsSchema,
+    initial: weatherRadarSettingsInitialState,
+    persist: (r) => ({
+      colorScheme: r.colorScheme,
+      smooth: r.smooth,
+      snow: r.snow,
+      showNowcast: r.showNowcast,
     }),
   }),
 ];

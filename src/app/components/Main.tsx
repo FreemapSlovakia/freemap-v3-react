@@ -30,6 +30,7 @@ import { SearchMenu } from '@features/search/components/SearchMenu.js';
 import { SearchSelection } from '@features/search/components/SearchSelection.js';
 import { Toasts } from '@features/toasts/components/Toasts.js';
 import { TrackingSelection } from '@features/tracking/components/TrackingSelection.js';
+import { RADAR_LAYER } from '@features/weatherRadar/api.js';
 import { WikiLayer } from '@features/wiki/components/WikiLayer.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -166,6 +167,12 @@ const galleryMenuFactory = () =>
   import(
     /* webpackChunkName: "gallery-menu" */
     '@features/gallery/components/GalleryMenu.js'
+  );
+
+const weatherRadarMenuFactory = () =>
+  import(
+    /* webpackChunkName: "weather-radar-menu" */
+    '@features/weatherRadar/components/WeatherRadarMenu.js'
   );
 
 const adFactory = () =>
@@ -419,6 +426,10 @@ export function Main(): ReactElement {
     state.map.layers.includes('I'),
   );
 
+  const showWeatherRadar = useAppSelector((state) =>
+    state.map.layers.includes(RADAR_LAYER),
+  );
+
   const language = useAppSelector((state) => state.l10n.language);
 
   const isUserValidated = useAppSelector((state) => state.auth.validated);
@@ -668,6 +679,10 @@ export function Main(): ReactElement {
 
               {showMenu && showPictures && (
                 <AsyncComponent factory={galleryMenuFactory} />
+              )}
+
+              {showMenu && showWeatherRadar && (
+                <AsyncComponent factory={weatherRadarMenuFactory} />
               )}
 
               {/* Outside the chain below: a running recording keeps its toolbar

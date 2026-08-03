@@ -282,6 +282,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l1: 'Tracce forestali NLC (2017)',
       l2: 'Tracce forestali NLC',
       w: 'Wikipedia',
+      R: 'Radar meteo',
       '5': 'Ombreggiatura del terreno',
       '6': 'Ombreggiatura della superficie',
       '7': 'Ombreggiatura dettagliata della terreno',

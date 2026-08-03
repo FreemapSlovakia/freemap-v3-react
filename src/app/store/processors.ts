@@ -108,6 +108,10 @@ import { toastsStopTimeoutProcessor } from '@features/toasts/model/processors/to
 import * as trackingAccessTokenProcessors from '@features/tracking/model/processors/trackingAccessTokenProcessors.js';
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
 import { trackingFollowProcessor } from '@features/tracking/model/processors/trackingFollowProcessors.js';
+import {
+  weatherRadarLayerProcessor,
+  weatherRadarRefreshProcessor,
+} from '@features/weatherRadar/model/processors.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { cancelProcessor } from '@/processors/cancelProcessor.js';
@@ -212,6 +216,8 @@ export const processors = [
   mapsOfflinePurgeProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
+  weatherRadarLayerProcessor,
+  weatherRadarRefreshProcessor,
   legendProcessor,
   legacyMapWarningProcessor,
   openInExternalAppProcessor,
