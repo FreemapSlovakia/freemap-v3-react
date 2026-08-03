@@ -132,10 +132,18 @@ slider's tail and what `showNowcast` filters on.
 ## State
 
 - **`weatherRadar`** (transient) — the frame list, the colour schemes the server
-  offers, and where the user is in the animation. `selectedTime: null` means
-  "follow the newest observed frame", so a refresh moves the view forward on its
-  own; the reducer falls back to `null` when the frame a user picked ages out of
-  the list.
+  offers, and where the user is in the animation. The selection has three
+  states, all decided by `pinnedTime` in the reducer:
+  - **`null` is live** — follow the newest observed frame, so a refresh carries
+    the view forward. Picking that frame *stores* `null`, rather than its
+    timestamp, or playing to the end would silently freeze the layer until the
+    frame aged off the list — six hours, at the history we keep.
+  - **Any other frame pins** to its absolute time and stays there as the
+    window advances.
+  - **A pin that ceases to exist moves to the nearest frame that does.** The
+    oldest ages off every ten minutes and forecast frames are republished on
+    shifted timestamps, so this is routine; going to the nearest keeps a viewer
+    of the old end at the old end instead of flinging them forward to live.
 - **`weatherRadarSettings`** (persisted) — colour scheme, smoothing, snow,
   show-nowcast. A dedicated settings slice per the convention in the root agent
   file, so the choices survive turning the layer off and on.

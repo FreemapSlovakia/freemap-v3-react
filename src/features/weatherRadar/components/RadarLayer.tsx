@@ -9,8 +9,16 @@ import { useRadarPlayback } from '../hooks/useRadarPlayback.js';
 import { weatherRadarRefresh } from '../model/actions.js';
 import { radarFramesSelector, radarIndexSelector } from '../model/selectors.js';
 
-/** Floor between two frame-list re-reads provoked by a vanished frame. */
-const DEAD_FRAME_REFRESH_MS = 5_000;
+/** Floor between two frame-list re-reads provoked by the list being behind. */
+const REFRESH_THROTTLE_MS = 5_000;
+
+/** A frame's layer, and what it was built from. */
+type FrameLayer = {
+  layer: TileLayer;
+  loaded: boolean;
+  /** Whether the frame was extrapolated when this layer was built. */
+  forecast: boolean;
+};
 
 type Props = {
   opacity: number;
@@ -48,6 +56,9 @@ export default function RadarLayer({
 
   const playing = useAppSelector((state) => state.weatherRadar.playing);
 
+  /** Bumped by the server on every fetch cycle; the forecast is redrawn then. */
+  const generated = useAppSelector((state) => state.weatherRadar.generated);
+
   const colorScheme = useAppSelector(
     (state) => state.weatherRadarSettings.colorScheme,
   );
@@ -74,9 +85,7 @@ export default function RadarLayer({
     [colorScheme, smooth, snow, size],
   );
 
-  const layersRef = useRef(new Map<number, TileLayer>());
-
-  const loadedRef = useRef(new Set<number>());
+  const layersRef = useRef(new Map<number, FrameLayer>());
 
   /** The frame currently at full opacity. */
   const shownRef = useRef<number>(undefined);
@@ -93,17 +102,17 @@ export default function RadarLayer({
 
     if (
       wantedRef.current !== frameTime ||
-      !loadedRef.current.has(frameTime) ||
+      !layers.get(frameTime)?.loaded ||
       shownRef.current === frameTime
     ) {
       return;
     }
 
     if (shownRef.current !== undefined) {
-      layers.get(shownRef.current)?.setOpacity(0);
+      layers.get(shownRef.current)?.layer.setOpacity(0);
     }
 
-    layers.get(frameTime)?.setOpacity(opacityRef.current);
+    layers.get(frameTime)?.layer.setOpacity(opacityRef.current);
 
     shownRef.current = frameTime;
   }
@@ -141,61 +150,70 @@ export default function RadarLayer({
       failed++;
     });
 
+    const entry: FrameLayer = {
+      layer,
+      loaded: false,
+      forecast: frame.forecast,
+    };
+
     layer.on('load', () => {
       if (ok === 0 && failed > 0) {
         // Nothing of this frame exists any more: the window rolls forward
         // every ten minutes and the list in hand can be a poll behind it. Ask
         // for a fresh one rather than leaving a dead frame on the timeline.
-        onDeadFrameRef.current();
+        refreshFramesRef.current();
 
         return;
       }
 
-      loadedRef.current.add(frame.time);
+      entry.loaded = true;
 
       revealRef.current(frame.time);
     });
 
-    layersRef.current.set(frame.time, layer);
+    layersRef.current.set(frame.time, entry);
 
     layer.addTo(map);
   }
 
+  function dropFrame(frameTime: number) {
+    layersRef.current.get(frameTime)?.layer.remove();
+
+    layersRef.current.delete(frameTime);
+  }
+
   function dropFrames(...keep: (number | undefined)[]) {
-    for (const [frameTime, layer] of layersRef.current) {
+    for (const frameTime of [...layersRef.current.keys()]) {
       if (!keep.includes(frameTime)) {
-        layer.remove();
-
-        layersRef.current.delete(frameTime);
-
-        loadedRef.current.delete(frameTime);
+        dropFrame(frameTime);
       }
     }
   }
 
   /**
-   * Re-reads the frame list after a frame turns out to be gone, at most once
-   * every few seconds — every tile of a dead frame reports the same news.
+   * Asks for the frame list again when what we hold turns out to be behind the
+   * server, at most once every few seconds — every tile of a dead frame brings
+   * the same news.
    */
-  function onDeadFrame() {
+  function refreshFrames() {
     const now = performance.now();
 
-    if (now - lastDeadFrameRef.current < DEAD_FRAME_REFRESH_MS) {
+    if (now - lastRefreshRef.current < REFRESH_THROTTLE_MS) {
       return;
     }
 
-    lastDeadFrameRef.current = now;
+    lastRefreshRef.current = now;
 
     dispatch(weatherRadarRefresh());
   }
 
-  const lastDeadFrameRef = useRef(-Infinity);
+  const lastRefreshRef = useRef(-Infinity);
 
   // Effects and Leaflet callbacks reach the current closures through these, so
   // neither has to list every prop the helpers read among its dependencies.
-  const onDeadFrameRef = useRef(onDeadFrame);
+  const refreshFramesRef = useRef(refreshFrames);
 
-  onDeadFrameRef.current = onDeadFrame;
+  refreshFramesRef.current = refreshFrames;
 
   const revealRef = useRef(reveal);
 
@@ -208,6 +226,10 @@ export default function RadarLayer({
   const dropFramesRef = useRef(dropFrames);
 
   dropFramesRef.current = dropFrames;
+
+  const dropFrameRef = useRef(dropFrame);
+
+  dropFrameRef.current = dropFrame;
 
   const frame = frames[index];
 
@@ -244,24 +266,59 @@ export default function RadarLayer({
     }
   }, [playing, frames, index]);
 
-  // Frames the server has dropped can never be shown again.
+  const generatedRef = useRef(generated);
+
+  // Everything the pool has to unlearn when a new frame list lands.
   useEffect(() => {
-    const times = new Set(frames.map((f) => f.time));
+    const current = new Map(frames.map((f) => [f.time, f]));
 
-    for (const [frameTime, layer] of layersRef.current) {
-      if (!times.has(frameTime)) {
-        layer.remove();
+    // A cycle the server has published since these layers were built. Only the
+    // forecast half is affected: its frames are re-computed each cycle under
+    // the same URL, so the layer holding the previous version would never ask
+    // for the new one. Observed composites don't change once published, and
+    // they are the bulk of the pool.
+    const republished = generatedRef.current !== generated;
 
-        layersRef.current.delete(frameTime);
+    generatedRef.current = generated;
 
-        loadedRef.current.delete(frameTime);
+    for (const [frameTime, entry] of layersRef.current) {
+      const frame = current.get(frameTime);
+
+      // Gone from the list: it can never be shown again.
+      if (!frame) {
+        dropFrameRef.current(frameTime);
+
+        continue;
+      }
+
+      // A frame that was extrapolated when this layer was built and is now
+      // measured. Same timestamp, different picture — and nothing else here
+      // would notice, since the pool is keyed on time alone.
+      if (entry.forecast && !frame.forecast) {
+        dropFrameRef.current(frameTime);
+
+        continue;
+      }
+
+      // The visible one is spared, or the map would go blank; it is rebuilt as
+      // soon as the animation moves off it.
+      if (republished && entry.forecast && frameTime !== shownRef.current) {
+        dropFrameRef.current(frameTime);
       }
     }
-  }, [frames]);
+  }, [frames, generated]);
+
+  // A forecast frame whose moment has passed means the list is behind the
+  // server: an observed composite for it very likely exists by now.
+  useEffect(() => {
+    if (frame?.forecast && frame.time * 1000 <= Date.now()) {
+      refreshFramesRef.current();
+    }
+  }, [frame]);
 
   useEffect(() => {
     if (shownRef.current !== undefined) {
-      layersRef.current.get(shownRef.current)?.setOpacity(opacity);
+      layersRef.current.get(shownRef.current)?.layer.setOpacity(opacity);
     }
   }, [opacity]);
 

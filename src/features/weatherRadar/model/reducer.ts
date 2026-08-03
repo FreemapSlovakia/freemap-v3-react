@@ -35,6 +35,38 @@ export const weatherRadarInitialState: WeatherRadarState = {
   playing: false,
 };
 
+/**
+ * What to store as the selection for a wanted time.
+ *
+ * `null` means "live": follow the newest observed frame, so a refresh carries
+ * the view forward. Any other frame is pinned to its absolute time and stays
+ * put as the window advances — but a pinned frame does not last forever. The
+ * oldest ages off the end every ten minutes, and forecast frames are
+ * republished on shifted timestamps, so a selection can simply cease to exist.
+ * It then moves to the nearest frame that does, which keeps a viewer of the old
+ * end at the old end instead of flinging them six hours forward to live.
+ */
+function pinnedTime(
+  frames: RadarFrame[],
+  wanted: number | null,
+): number | null {
+  if (wanted === null || frames.length === 0) {
+    return null;
+  }
+
+  const target = frames.some((frame) => frame.time === wanted)
+    ? wanted
+    : frames.reduce((best, frame) =>
+        Math.abs(frame.time - wanted) < Math.abs(best.time - wanted)
+          ? frame
+          : best,
+      ).time;
+
+  const newestObserved = frames.findLast((frame) => !frame.forecast)?.time;
+
+  return target === newestObserved ? null : target;
+}
+
 export const weatherRadarReducer = createReducer(
   weatherRadarInitialState,
   (builder) =>
@@ -48,18 +80,11 @@ export const weatherRadarReducer = createReducer(
 
           state.generated = generated;
 
-          // A frame the server has dropped can't be shown any more, so fall
-          // back to following the newest one instead of showing nothing.
-          if (
-            state.selectedTime !== null &&
-            !frames.some((frame) => frame.time === state.selectedTime)
-          ) {
-            state.selectedTime = null;
-          }
+          state.selectedTime = pinnedTime(frames, state.selectedTime);
         },
       )
       .addCase(weatherRadarSetTime, (state, { payload }) => {
-        state.selectedTime = payload;
+        state.selectedTime = pinnedTime(state.frames, payload);
       })
       .addCase(weatherRadarSetPlaying, (state, { payload }) => {
         state.playing = payload;
