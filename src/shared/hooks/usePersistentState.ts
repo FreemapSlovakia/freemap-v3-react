@@ -15,7 +15,9 @@ export function usePersistentState<
   serialize: (value: T) => string,
   deserialize: (value: string | null) => T,
 ) {
-  const [value, setValue] = useState(deserialize(storage.getItem(key)));
+  // Lazy: the stored value is only ever read as the component mounts, so a
+  // costly `deserialize` mustn't run again on every render.
+  const [value, setValue] = useState(() => deserialize(storage.getItem(key)));
 
   const cookiesEnabled = useAppSelector(
     (state) => state.cookieConsent.cookieConsentResult !== null,

@@ -6,11 +6,13 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
+import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import clsx from 'clsx';
 import {
   Fragment,
   type ReactElement,
   type PointerEvent as ReactPointerEvent,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -18,6 +20,7 @@ import {
 } from 'react';
 import { Button, CloseButton } from 'react-bootstrap';
 import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
+import { LuMoveDiagonal2 } from 'react-icons/lu';
 import { useDispatch } from 'react-redux';
 import { downloadChartSvg } from '../downloadChartSvg.js';
 import { useElevationSources } from '../hooks/useElevationSources.js';
@@ -90,6 +93,72 @@ const ticks = new Array(11)
   .flatMap((_, k) => [1, 2.5, 2, 5].map((x) => x * 10 ** k));
 
 const EMPTY_ARRAY: ElevationProfilePoint[] = [];
+
+// Absolute floor the window can be dragged to. The height the grip actually
+// stops at is at least this but grows with what the plot's chrome takes (see
+// `minHeight`), because the axis margins and the footer row are not constant.
+const MIN_WIDTH = 260;
+const MIN_HEIGHT = 200;
+
+// What's left for the plot itself, between the axis margins, at that floor.
+const MIN_PLOT_HEIGHT = 40;
+
+// The `m-2` margin the box keeps between its far edge and the viewport's.
+const EDGE_GAP = 8;
+
+// The `p-2` padding between the box's edges and its contents.
+const BOX_PADDING = 8;
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), Math.max(min, max));
+}
+
+// A mouse held down keeps reporting its position after it leaves the browser
+// window, and is released there too. Kept to the viewport, the drag stops at
+// the edge instead of parking the chart where it can no longer be grabbed.
+function pointerInView(e: PointerEvent) {
+  return [
+    clamp(e.clientX, 0, window.innerWidth),
+    clamp(e.clientY, 0, window.innerHeight),
+  ] as const;
+}
+
+// Where the window sat and how big it was when it was last dragged or resized.
+// `left`/`top` are the offset from where it opens, which is what the drag keeps.
+type ChartBox = { left: number; top: number; width: number; height: number };
+
+const BOX_KEY = 'fm.elevationChart.box';
+
+const serializeBox = ({ left, top, width, height }: ChartBox) =>
+  [left, top, width, height].join(',');
+
+// Anything but the four numbers written back — nothing stored yet, an entry
+// tampered with — opens at the default size. A size remembered from a roomier
+// window (a desktop browser since made narrow, a phone since rotated) comes
+// back fitting the screen.
+function deserializeBox(value: string | null): ChartBox {
+  const [left, top, width, height] = (value ?? '').split(',').map(Number);
+
+  return [left, top, width, height].every(Number.isFinite)
+    ? {
+        left: left!,
+        top: top!,
+        width: clamp(width!, MIN_WIDTH, window.innerWidth - 2 * EDGE_GAP),
+        height: clamp(height!, MIN_HEIGHT, window.innerHeight - 2 * EDGE_GAP),
+      }
+    : {
+        left: 0,
+        top: 0,
+        width: Math.min(
+          Math.max(window.innerWidth / 2, 400),
+          Math.max(window.innerWidth - 14, 40),
+        ),
+        height: Math.min(
+          Math.max(window.innerHeight / 2, 300),
+          Math.max(window.innerHeight - 130, 40),
+        ),
+      };
+}
 
 export default function ElevationChart(): ReactElement | null {
   const m = useElevationChartMessages();
@@ -289,75 +358,276 @@ export default function ElevationChart(): ReactElement | null {
 
   const [ref2, setRef2] = useState<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!ref) {
-      return;
-    }
+  // Where the window was left the last time it was moved or resized. Read as
+  // it opens, and written at the end of each gesture; `chosenRef` carries it
+  // in between.
+  const [box, setBox] = usePersistentState<ChartBox>(
+    BOX_KEY,
+    serializeBox,
+    deserializeBox,
+  );
 
-    const ro = new ResizeObserver(([e]) => {
-      setWidth(e!.contentRect.width);
-
-      setHeight(e.contentRect.height - (ref2 ? ref2.offsetHeight : 0));
-    });
-
-    ref.style.width = `${Math.min(
-      Math.max(window.innerWidth / 2, 400),
-      Math.max(window.innerWidth - 14, 40),
-    )}px`;
-
-    ref.style.height = `${Math.min(
-      Math.max(window.innerHeight / 2, 300),
-      Math.max(window.innerHeight - 130, 40),
-    )}px`;
-
-    ro.observe(ref);
-
-    return () => ro.disconnect();
-  }, [ref, ref2]);
+  const [initialBox] = useState(box);
 
   const svgRef = useRef<SVGSVGElement>(null);
 
   const startPosRef = useRef<[number, number]>(undefined);
 
-  const posRef = useRef([0, 0]);
+  const posRef = useRef([initialBox.left, initialBox.top]);
 
-  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [pos, setPos] = useState({
+    top: initialBox.top,
+    left: initialBox.left,
+  });
+
+  // The geometry the user chose, which is also what gets stored. The live box
+  // can be smaller and shifted from it to fit a window too small to hold it,
+  // and is put back to this much of it as each window afterwards has room for.
+  const chosenRef = useRef<ChartBox>(initialBox);
+
+  // Stored at the end of a gesture rather than on every move, so a drag writes
+  // to storage once.
+  const persistBox = useCallback(() => {
+    setBox(chosenRef.current);
+  }, [setBox]);
+
+  // Neither margin is constant — the top one grows with the waypoint labels,
+  // the footer rewraps as the box narrows — so the floor the height stops at
+  // has to be measured, or the plot between them collapses.
+  const minBoxHeight = useCallback(
+    () =>
+      Math.max(
+        MIN_HEIGHT,
+        mt + mb + MIN_PLOT_HEIGHT + (ref2?.offsetHeight ?? 0) + 2 * BOX_PADDING,
+      ),
+    [mt, ref2],
+  );
+
+  // Lays the chosen box out in the window there is: shrunk to fit it, then
+  // nudged in. Always derived from the chosen one rather than from where the
+  // box currently is, so a window that shrinks and grows back — a phone turned
+  // twice, an Android URL bar sliding in and out — leaves nothing behind.
+  const fitIntoView = useCallback(() => {
+    if (!ref) {
+      return;
+    }
+
+    const chosen = chosenRef.current;
+
+    ref.style.width = `${clamp(
+      chosen.width,
+      MIN_WIDTH,
+      window.innerWidth - 2 * EDGE_GAP,
+    )}px`;
+
+    ref.style.height = `${clamp(
+      chosen.height,
+      minBoxHeight(),
+      window.innerHeight - 2 * EDGE_GAP,
+    )}px`;
+
+    // Where that size would sit at the chosen offset: the box is positioned
+    // relative to where it lands on its own, which the current offset backs out
+    // of the freshly laid out rectangle.
+    const rect = ref.getBoundingClientRect();
+
+    const left = rect.left - posRef.current[0]! + chosen.left;
+
+    const top = rect.top - posRef.current[1]! + chosen.top;
+
+    // Nudged as little as possible, and towards the top-left corner when the
+    // box no longer fits at all.
+    const dx = clamp(0, -left, window.innerWidth - (left + rect.width));
+
+    const dy = clamp(0, -top, window.innerHeight - (top + rect.height));
+
+    if (
+      chosen.left + dx !== posRef.current[0] ||
+      chosen.top + dy !== posRef.current[1]
+    ) {
+      posRef.current = [chosen.left + dx, chosen.top + dy];
+
+      setPos({ left: posRef.current[0]!, top: posRef.current[1]! });
+    }
+  }, [ref, minBoxHeight]);
+
+  // The geometry it opens with was measured against a window that may since
+  // have changed, and the window keeps changing under it afterwards — rotate
+  // the phone, drag the browser narrower — so it's refitted on both.
+  useEffect(() => {
+    if (!ref) {
+      return;
+    }
+
+    fitIntoView();
+
+    window.addEventListener('resize', fitIntoView);
+
+    return () => window.removeEventListener('resize', fitIntoView);
+  }, [ref, fitIntoView]);
+
+  // The chart fills what the footer row leaves over, so both are watched: the
+  // footer grows on its own once the elevation sources resolve, or whenever it
+  // rewraps, and the chart has to give that space back instead of pushing the
+  // row out of the (clipped) window.
+  useEffect(() => {
+    if (!ref) {
+      return;
+    }
+
+    const content = { width: 0, height: 0 };
+
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) {
+        if (e.target === ref) {
+          content.width = e.contentRect.width;
+
+          content.height = e.contentRect.height;
+        }
+      }
+
+      setWidth(content.width);
+
+      setHeight(Math.max(content.height - (ref2 ? ref2.offsetHeight : 0), 0));
+    });
+
+    ro.observe(ref);
+
+    if (ref2) {
+      ro.observe(ref2);
+    }
+
+    return () => ro.disconnect();
+  }, [ref, ref2]);
+
+  const resizeStartRef = useRef<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    left: number;
+    top: number;
+  }>(undefined);
+
+  const handleResizeStart = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!ref) {
+      return;
+    }
+
+    // Capture so the grip keeps receiving moves even when a fast drag outruns
+    // it, and so the map below never sees the gesture.
+    e.currentTarget.setPointerCapture(e.pointerId);
+
+    const rect = ref.getBoundingClientRect();
+
+    resizeStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      width: ref.offsetWidth,
+      height: ref.offsetHeight,
+      left: rect.left,
+      top: rect.top,
+    };
+  };
+
+  const handleResizeMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const start = resizeStartRef.current;
+
+    if (!start || !ref) {
+      return;
+    }
+
+    // Room is measured from the box's own top-left corner, since it only grows
+    // right and down; against the bare viewport, a pointer taken outside the
+    // window would push the footer (this grip included) off the screen.
+    ref.style.width = `${clamp(
+      start.width + e.clientX - start.x,
+      MIN_WIDTH,
+      window.innerWidth - start.left - EDGE_GAP,
+    )}px`;
+
+    ref.style.height = `${clamp(
+      start.height + e.clientY - start.y,
+      minBoxHeight(),
+      window.innerHeight - start.top - EDGE_GAP,
+    )}px`;
+  };
+
+  const handleResizeEnd = () => {
+    if (resizeStartRef.current && ref) {
+      resizeStartRef.current = undefined;
+
+      chosenRef.current = {
+        left: posRef.current[0]!,
+        top: posRef.current[1]!,
+        width: ref.offsetWidth,
+        height: ref.offsetHeight,
+      };
+
+      persistBox();
+    }
+  };
 
   useEffect(() => {
+    // Only a move ever moves the chart, so `posRef` always holds where it is
+    // now and a release is merely the end of the gesture. Reading the position
+    // off the release instead would jump the chart by however far the button
+    // travelled unseen — a mouse leaving the window keeps reporting itself,
+    // and comes up out there.
+    let moved = false;
+
     const handleWindowPointerDown = (e: PointerEvent) => {
       // Drag only from within the chart itself — not from the toolbar buttons,
       // whose icons are their own <svg> elements.
       if (e.target instanceof Node && svgRef.current?.contains(e.target)) {
         startPosRef.current = [e.clientX, e.clientY];
+
+        moved = false;
       }
     };
 
-    const handleWindowPointerUp = (e: PointerEvent) => {
+    const handleWindowPointerUp = () => {
       if (!startPosRef.current) {
         return;
       }
 
-      const pos = [
-        e.clientX - startPosRef.current[0] + posRef.current[0],
-        e.clientY - startPosRef.current[1] + posRef.current[1],
-      ];
-
-      setPos({ left: pos[0], top: pos[1] });
-
-      posRef.current = pos;
-
       startPosRef.current = undefined;
+
+      // A pointer that went down and up on the same spot read a value off the
+      // plot rather than moving anything — nothing to store.
+      if (moved) {
+        persistBox();
+      }
     };
 
     const handleWindowPointerMove = (e: PointerEvent) => {
-      if (!startPosRef.current) {
+      const start = startPosRef.current;
+
+      if (!start) {
         return;
       }
 
-      setPos({
-        left: posRef.current[0] + e.clientX - startPosRef.current[0],
-        top: posRef.current[1] + e.clientY - startPosRef.current[1],
-      });
+      const [x, y] = pointerInView(e);
+
+      // Measured from the last point seen — the clamped one — so a pointer
+      // that left the window carries the chart no further, and picks it up
+      // again from the edge it stopped at.
+      posRef.current = [
+        posRef.current[0] + x - start[0],
+        posRef.current[1] + y - start[1],
+      ];
+
+      startPosRef.current = [x, y];
+
+      chosenRef.current = {
+        ...chosenRef.current,
+        left: posRef.current[0]!,
+        top: posRef.current[1]!,
+      };
+
+      setPos({ left: posRef.current[0], top: posRef.current[1] });
+
+      moved = true;
     };
 
     window.addEventListener('pointerdown', handleWindowPointerDown);
@@ -373,7 +643,7 @@ export default function ElevationChart(): ReactElement | null {
 
       window.removeEventListener('pointermove', handleWindowPointerMove);
     };
-  }, []);
+  }, [persistBox]);
 
   const handleDownload = () => {
     downloadChartSvg(svgRef.current, width, height);
@@ -751,7 +1021,10 @@ export default function ElevationChart(): ReactElement | null {
       {/* One wrapping row, measured as a whole so the SVG is sized around it
           however many lines it takes. */}
       <div
-        className="d-flex flex-wrap align-items-center gap-2 mb-1 mx-2"
+        className={clsx(
+          classes.footer,
+          'd-flex flex-wrap align-items-center gap-2 mb-1 mx-2',
+        )}
         ref={setRef2}
       >
         {typeof climbUp === 'number' && typeof climbDown === 'number' && (
@@ -851,6 +1124,25 @@ export default function ElevationChart(): ReactElement | null {
             </LongPressTooltip>
           )}
         </div>
+      </div>
+
+      {/* Pinned to the corner instead of ending the toolbar row, which wraps
+          its buttons to the left of the next line as the box narrows. Out of
+          that row's flow, so it doesn't count towards the height measured for
+          the chart either. */}
+      <div
+        className={classes.resizeHandle}
+        onPointerDown={handleResizeStart}
+        onPointerMove={handleResizeMove}
+        onPointerUp={handleResizeEnd}
+        onPointerCancel={handleResizeEnd}
+        // Capture can also be lost without either — the element being moved,
+        // say. Ending there too keeps a later button-less hover over the grip
+        // from carrying on the gesture. It follows a normal release as well,
+        // where the end has already been dealt with.
+        onLostPointerCapture={handleResizeEnd}
+      >
+        <LuMoveDiagonal2 />
       </div>
     </div>
   );
