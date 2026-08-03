@@ -448,6 +448,7 @@ export const osmTagToIconMapping: Node = {
     lift_gate,
     motorcycle_barrier,
     stile,
+    swing_gate: lift_gate,
     toll_booth,
     cattle_grid,
   },
