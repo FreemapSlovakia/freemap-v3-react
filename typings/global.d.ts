@@ -79,6 +79,7 @@ declare module 'virtual/markdown-dict.js' {
  * fields on its own. Recent enough — Chrome 129, Safari 18.4 — that callers
  * still need a fallback, and not in TypeScript's lib yet.
  */
+// biome-ignore lint/style/noNamespace: the only way to augment the global `Intl`
 declare namespace Intl {
   type DurationFormatStyle = 'long' | 'short' | 'narrow' | 'digital';
 
@@ -92,10 +93,16 @@ declare namespace Intl {
     seconds?: number;
   }
 
+  type DurationFieldDisplay = 'auto' | 'always';
+
   class DurationFormat {
     constructor(
       locales?: string | string[],
-      options?: { style?: DurationFormatStyle },
+      options?: {
+        style?: DurationFormatStyle;
+        hoursDisplay?: DurationFieldDisplay;
+        minutesDisplay?: DurationFieldDisplay;
+      },
     );
     format(duration: DurationInput): string;
   }

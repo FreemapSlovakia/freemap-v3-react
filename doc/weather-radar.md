@@ -184,7 +184,14 @@ work:
   the frame list. Leaflet fires `load` even when every tile errored — an errored
   tile counts as settled once `errorTileUrl` renders — so without counting
   `tileload` against `tileerror`, a frame that has rolled off the server would
-  be shown as a sheet of nothing over the frame that was working.
+  be shown as a sheet of nothing over the frame that was working. The
+  replacement image fires a `tileload` of its own, so only a tile still carrying
+  its radar URL is counted as answered.
+- Dropping a layer that is the visible one forgets that it was visible, so a
+  layer rebuilt for the same frame is revealed rather than mistaken for the one
+  already on screen. The pool cleanup that a new frame list triggers runs ahead
+  of the effect that shows a frame, so anything it drops is rebuilt in the same
+  commit instead of leaving the map blank until the next list arrives.
 - On `moveend`, every layer but the visible one and the one most recently asked
   for is dropped. Keeping them all would make a single pan re-fetch a whole
   animation's worth of tiles for the new area; they are rebuilt lazily as the

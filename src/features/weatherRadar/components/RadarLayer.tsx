@@ -142,8 +142,13 @@ export default function RadarLayer({
 
     let failed = 0;
 
-    layer.on('tileload', () => {
-      ok++;
+    layer.on('tileload', (e) => {
+      // A tile that errored is re-pointed at `errorTileUrl`, and that image
+      // loading fires `tileload` in its turn — so only a tile still carrying
+      // its radar URL counts as one the server answered.
+      if (e.tile.getAttribute('src') !== transparent1x1) {
+        ok++;
+      }
     });
 
     layer.on('tileerror', () => {
@@ -180,6 +185,12 @@ export default function RadarLayer({
     layersRef.current.get(frameTime)?.layer.remove();
 
     layersRef.current.delete(frameTime);
+
+    // Nothing is on screen any more, and a rebuilt layer for the same frame
+    // has to be revealed rather than taken for the one already showing.
+    if (shownRef.current === frameTime) {
+      shownRef.current = undefined;
+    }
   }
 
   function dropFrames(...keep: (number | undefined)[]) {
@@ -233,42 +244,12 @@ export default function RadarLayer({
 
   const frame = frames[index];
 
-  const optionsRef = useRef(tileOptions);
-
-  useEffect(() => {
-    // The tile options are baked into every URL, so a change starts a new pool.
-    if (optionsRef.current !== tileOptions) {
-      optionsRef.current = tileOptions;
-
-      dropFramesRef.current();
-
-      shownRef.current = undefined;
-    }
-
-    if (!frame) {
-      return;
-    }
-
-    wantedRef.current = frame.time;
-
-    ensureLayerRef.current(frame);
-
-    revealRef.current(frame.time);
-  }, [frame, tileOptions]);
-
-  // While playing, the next frame loads behind the current one, so a step lands
-  // on tiles that are already there instead of stalling on the first pass.
-  useEffect(() => {
-    const next = playing ? frames[(index + 1) % frames.length] : undefined;
-
-    if (next) {
-      ensureLayerRef.current(next);
-    }
-  }, [playing, frames, index]);
-
   const generatedRef = useRef(generated);
 
-  // Everything the pool has to unlearn when a new frame list lands.
+  // Everything the pool has to unlearn when a new frame list lands. Ahead of
+  // the effect that shows a frame, so a layer dropped here is rebuilt in the
+  // same commit — the other order leaves the wanted frame with no layer at all
+  // until the next list arrives, minutes later.
   useEffect(() => {
     const current = new Map(frames.map((f) => [f.time, f]));
 
@@ -307,6 +288,37 @@ export default function RadarLayer({
       }
     }
   }, [frames, generated]);
+
+  const optionsRef = useRef(tileOptions);
+
+  useEffect(() => {
+    // The tile options are baked into every URL, so a change starts a new pool.
+    if (optionsRef.current !== tileOptions) {
+      optionsRef.current = tileOptions;
+
+      dropFramesRef.current();
+    }
+
+    if (!frame) {
+      return;
+    }
+
+    wantedRef.current = frame.time;
+
+    ensureLayerRef.current(frame);
+
+    revealRef.current(frame.time);
+  }, [frame, tileOptions]);
+
+  // While playing, the next frame loads behind the current one, so a step lands
+  // on tiles that are already there instead of stalling on the first pass.
+  useEffect(() => {
+    const next = playing ? frames[(index + 1) % frames.length] : undefined;
+
+    if (next) {
+      ensureLayerRef.current(next);
+    }
+  }, [playing, frames, index]);
 
   // A forecast frame whose moment has passed means the list is behind the
   // server: an observed composite for it very likely exists by now.

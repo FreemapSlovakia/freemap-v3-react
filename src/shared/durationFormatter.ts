@@ -20,7 +20,12 @@ export function formatDuration(
   const minutes = totalMinutes % 60;
 
   if (typeof Intl.DurationFormat === 'function') {
-    return new Intl.DurationFormat(locale, { style }).format({
+    return new Intl.DurationFormat(locale, {
+      style,
+      // Every zero-valued field is dropped by default, so a zero duration would
+      // format as an empty string rather than as "0 min".
+      ...(totalMinutes === 0 ? { minutesDisplay: 'always' as const } : {}),
+    }).format({
       hours,
       minutes,
     });
