@@ -47,6 +47,55 @@ describe('gradeAt', () => {
     }
   });
 
+  it('slides the window with the place rather than by whole samples', () => {
+    // A stretch of a hand-drawn ski-course GPX, its samples 12–40 m apart: a
+    // climb, a flat top, a 10 m drop over 29 m, then a long flat run.
+    const profile = [
+      climbing(2003.6, 1374),
+      climbing(2033.3, 1374),
+      climbing(2065.7, 1376),
+      climbing(2082.4, 1376),
+      climbing(2094.8, 1378),
+      climbing(2109.5, 1378),
+      climbing(2138.6, 1368),
+      climbing(2178.6, 1368),
+      climbing(2213.0, 1368),
+    ];
+
+    // The window is the length asked for, its ends interpolated: 50 m centered
+    // on the drop reaches flat ground either side, so it reads the 10 m the
+    // terrain falls over exactly those 50 m.
+    expect(gradeAt(profile, marked(2124), 50)).toBeCloseTo(-0.2, 10);
+
+    // Approaching that drop the readout steepens with every metre, rather than
+    // standing still until the window snaps onto the next sample.
+    const approach = [2104, 2108, 2112, 2116, 2120].map((distance) =>
+      gradeAt(profile, marked(distance), 50),
+    );
+
+    for (let i = 1; i < approach.length; i++) {
+      expect(approach[i]!).toBeLessThan(approach[i - 1]!);
+    }
+  });
+
+  it('keeps the window its full length where the place stands off the stretch', () => {
+    // A track whose fixes stop carrying altitude partway: the pointer 30 m past
+    // the last elevated sample keeps that sample's elevation, so it reads, but
+    // the window it asks for lies wholly behind it.
+    const profile = [
+      climbing(0, 100),
+      climbing(20, 100),
+      climbing(50, 100),
+      climbing(100, 150),
+      climbing(200, Number.NaN),
+    ];
+
+    // The elevated stretch is 100 m long, so a 100 m window slid against its
+    // end covers all of it — not the 80 m back to the sample nearest where the
+    // window would have started had the place been on the stretch.
+    expect(gradeAt(profile, climbing(130, 150), 100)).toBeCloseTo(0.5, 10);
+  });
+
   it('keeps a window off terrain the place is nowhere near', () => {
     // A stretch of a hand-drawn ski-course GPX: a flat top, a 10 m drop over
     // 29 m, then a long flat run. Anchoring on the sample nearest the place

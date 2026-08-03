@@ -171,10 +171,12 @@ derived from it, rather than a pref per consumer:
   chart's active point is averaged over (`gradeAt` in
   `src/features/elevationChart/grade.ts`); `0` measures across the segment the active
   point stands on. It corrects nothing — it is read off the already-drawn profile
-  points. The window opens from the segment the active point stands between and grows
-  about its own distance — never from the sample nearest it, which on a profile whose
-  samples are far apart (a hand-drawn GPX, with a point only where the slope changes)
-  sits on a different stretch of terrain than the pointer does.
+  points. The window is centered on the active point's own distance and its ends are
+  interpolated between the samples they fall between, so it is exactly the length asked
+  for and slides with the pointer. Snapping the ends to samples instead — or centering
+  on the sample nearest the point — makes the readout a coarse step function on a
+  profile whose samples are far apart (a hand-drawn GPX, with a point only where the
+  slope changes), and one that never reaches the grade the slope actually has.
   The out-of-band value `GRADE_WINDOW_WHOLE_LINE` (`-1`) asks for an unbounded window,
   so the readout spans the whole stretch the point lies on (ends and elevation gaps
   still stop it) and reads the same wherever on it the pointer is. Consumers pass the

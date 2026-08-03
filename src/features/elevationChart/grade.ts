@@ -116,25 +116,71 @@ function segmentAt(
 }
 
 /**
+ * The elevation that far along, interpolated between the two samples it falls
+ * between, searched within `start`…`end` alone. That range is one unbroken
+ * stretch of the profile, so the pair found always spans real terrain — where
+ * distances repeat, at a pause, a search over the whole profile could straddle
+ * the break instead.
+ */
+function eleAtDistance(
+  points: ElevationProfilePoint[],
+  start: number,
+  end: number,
+  distance: number,
+): number {
+  if (distance <= points[start]!.distance) {
+    return points[start]!.ele;
+  }
+
+  if (distance >= points[end]!.distance) {
+    return points[end]!.ele;
+  }
+
+  let lo = start;
+
+  let hi = end;
+
+  while (hi - lo > 1) {
+    const mid = (lo + hi) >> 1;
+
+    if (points[mid]!.distance <= distance) {
+      lo = mid;
+    } else {
+      hi = mid;
+    }
+  }
+
+  const span = points[hi]!.distance - points[lo]!.distance;
+
+  return span > 0
+    ? points[lo]!.ele +
+        ((points[hi]!.ele - points[lo]!.ele) *
+          (distance - points[lo]!.distance)) /
+          span
+    : points[hi]!.ele;
+}
+
+/**
  * The along-track grade at a marked place as a ratio — 0.05 is a 5 % climb in
  * the direction of travel, negative descends. Measured as rise over run across
- * a window at least `windowMeters` long centered on the place itself, stopping
- * at the profile's ends and at gaps (points with no elevation), so no rise is
- * read across terrain we don't know.
+ * a window `windowMeters` long centered on the place, its ends interpolated
+ * between the samples they fall between rather than snapped to them: the window
+ * is then the length that was asked for, and it slides with the pointer instead
+ * of jumping a whole sample at a time — on a profile whose samples are tens of
+ * metres apart the snapped window would sit still across half a slope and then
+ * lurch, never reading the grade the slope actually has.
  *
- * The place is where the pointer is, which is mostly between two of the
- * profile's samples, so the window opens from the segment it stands on and
- * grows about its own distance. A window shorter than the sample spacing then
- * measures that segment alone, and a longer one sits centered on the place.
- * Anchoring on the sample nearest the place instead would describe whatever
- * surrounds *that* — on a profile whose samples are far apart (a hand-drawn
- * GPX, with a point only where the slope changes) the two are different
- * stretches of terrain, and only the first is the one under the pointer.
+ * The window stops at the ends of the unbroken stretch the place stands on —
+ * the profile's own ends, or a gap (points with no elevation) either side — so
+ * no rise is read across terrain we don't know. Against one of those it slides
+ * rather than shrinks, keeping its length while there is room for it.
  *
- * An infinite window runs to the limits above, reporting the rise over run
- * between the ends of the stretch the place lies on — the same reading wherever
- * on it it is. `undefined` where the place has no elevation or nothing to
- * measure against.
+ * A zero window measures the segment the place stands between, which is the
+ * limit the readout approaches as the window closes; a place standing on a
+ * sample has no such segment, so it reads the nearer of the two meeting there
+ * rather than what a closing window would average them to. An infinite window
+ * measures the whole stretch, the same reading wherever on it the place is.
+ * `undefined` where the place has no elevation or nothing to measure against.
  */
 export function gradeAt(
   points: ElevationProfilePoint[],
@@ -149,16 +195,9 @@ export function gradeAt(
 
   let [lo, hi] = segment;
 
-  for (;;) {
-    const span = points[hi]!.distance - points[lo]!.distance;
-
-    // Widen while the window is short of what was asked for, and always past a
-    // zero span — neighbouring points can coincide, and a rise over no run is
-    // no grade at all.
-    if (span > 0 && span >= windowMeters) {
-      break;
-    }
-
+  // A place standing on a sample has no segment of its own, and samples can
+  // coincide besides. Open to the nearer neighbour until there is a run.
+  while (points[hi]!.distance - points[lo]!.distance <= 0) {
     const nextLo = lo > 0 && Number.isFinite(points[lo - 1]!.ele) ? lo - 1 : -1;
 
     const nextHi =
@@ -167,11 +206,9 @@ export function gradeAt(
         : -1;
 
     if (nextLo < 0 && nextHi < 0) {
-      break;
+      return undefined;
     }
 
-    // Grow the side that reaches less far from the place, keeping the window as
-    // centered on it as the remaining room allows.
     if (
       nextLo >= 0 &&
       (nextHi < 0 ||
@@ -184,7 +221,71 @@ export function gradeAt(
     }
   }
 
-  const run = points[hi]!.distance - points[lo]!.distance;
+  const segmentGrade =
+    (points[hi]!.ele - points[lo]!.ele) /
+    (points[hi]!.distance - points[lo]!.distance);
 
-  return run > 0 ? (points[hi]!.ele - points[lo]!.ele) / run : undefined;
+  if (!(windowMeters > 0)) {
+    return segmentGrade;
+  }
+
+  // Where the window is measured from. That is the place itself while it stands
+  // on the stretch, and the near end of the stretch while it doesn't — a place
+  // past the last sample before a gap keeps that sample's elevation, so it is a
+  // reading like any other, but the window it asks for lies wholly behind it.
+  const anchor = Math.min(
+    Math.max(point.distance, points[lo]!.distance),
+    points[hi]!.distance,
+  );
+
+  // The stretch the window may draw on. Walked out only as far as the window
+  // can reach — its own length either way, which covers one slid off an end —
+  // so a pointer moving along a long profile doesn't scan it end to end.
+  let start = lo;
+
+  while (
+    start > 0 &&
+    Number.isFinite(points[start - 1]!.ele) &&
+    points[start]!.distance > anchor - windowMeters
+  ) {
+    start--;
+  }
+
+  let end = hi;
+
+  while (
+    end < points.length - 1 &&
+    Number.isFinite(points[end + 1]!.ele) &&
+    points[end]!.distance < anchor + windowMeters
+  ) {
+    end++;
+  }
+
+  const startD = points[start]!.distance;
+
+  const endD = points[end]!.distance;
+
+  let from = point.distance - windowMeters / 2;
+
+  let to = point.distance + windowMeters / 2;
+
+  if (from < startD) {
+    to = Math.min(endD, to + (startD - from));
+
+    from = startD;
+  }
+
+  if (to > endD) {
+    from = Math.max(startD, from - (to - endD));
+
+    to = endD;
+  }
+
+  const run = to - from;
+
+  return run > 0
+    ? (eleAtDistance(points, start, end, to) -
+        eleAtDistance(points, start, end, from)) /
+        run
+    : segmentGrade;
 }
