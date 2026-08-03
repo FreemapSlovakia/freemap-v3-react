@@ -101,8 +101,11 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Nahrát fotky',
     uploading: (n) => `Nahrávám (${n})`,
     upload: 'Nahrát',
+    hint: {
+      drop: 'Zatáhněte sem fotky, nebo sem klikněte pro jejich výběr.',
+      tap: 'Klepněte sem pro přidání fotek.',
+    },
     rules: `
-      <p>Zatáhněte sem fotky, nebo sem klikněte pro jejich výběr.</p>
       <ul>
         <li>Nevkládejte příliš malé obrázky (miniatury). Maximální rozměr není omezen, je ale omezena velikost souboru na 10MB. Větší soubory server odmítne.</li>
         <li>Vkládejte pouze fotografie krajiny včetně dokumentačních fotografií. Portréty a makro-fotografie jsou považovány za nevhodný obsah a budou bez varování smazány.</li>

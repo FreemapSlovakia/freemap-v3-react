@@ -100,8 +100,11 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Naloži fotografije',
     uploading: (n) => `Nalaganje (${n})`,
     upload: 'Naloži',
+    hint: {
+      drop: 'Povlecite fotografije sem ali kliknite tukaj za njihovo izbiro.',
+      tap: 'Tapnite sem za dodajanje fotografij.',
+    },
     rules: `
-      <p>Povlecite fotografije sem ali kliknite tukaj za njihovo izbiro.</p>
       <ul>
         <li>Ne nalagajte premajhnih fotografij (sličic). Največje mere niso omejene. Največja velikost datoteke je omejena na 10 MB. Večje datoteke bodo zavrnjene.</li>
         <li>Nalagajte samo fotografije krajine ali dokumentacijske slike. Portreti in makro fotografije so nezaželeni in bodo izbrisani brez opozorila.</li>

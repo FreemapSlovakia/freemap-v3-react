@@ -87,8 +87,11 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
   uploadModal: {
     uploading: (n) => `Import en cours (${n})`,
+    hint: {
+      drop: 'Déposez vos photos ici ou cliquez ici pour les sélectionner.',
+      tap: 'Touchez ici pour ajouter des photos.',
+    },
     rules: `
-      <p>Déposez vos photos ici ou cliquez ici pour les sélectionner.</p>
       <ul>
         <li>N’importez pas de photos trop petites (miniatures). Les dimensions maximales ne sont pas limitées. La taille maximale du fichier est limitée à 10 Mo. Les fichiers plus volumineux seront refusés.</li>
         <li>N’importez que des photos de paysages ou des photos documentaires. Les portraits et les photos macro sont indésirables et seront supprimés sans avertissement.</li>

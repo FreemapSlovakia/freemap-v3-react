@@ -95,8 +95,11 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Prześlij zdjęcia',
     uploading: (n) => `Przesyłanie (${n})`,
     upload: 'Prześlij',
+    hint: {
+      drop: 'Upuść tutaj swoje zdjęcia lub kliknij, aby je wybrać.',
+      tap: 'Dotknij tutaj, aby dodać zdjęcia.',
+    },
     rules: `
-      <p>Upuść tutaj swoje zdjęcia lub kliknij, aby je wybrać.</p>
       <ul>
         <li>Nie przesyłaj zbyt małych zdjęć (miniaturek). Maksymalne wymiary nie są ograniczone. Maksymalny rozmiar pliku to 10 MB. Większe pliki zostaną odrzucone.</li>
         <li>Przesyłaj tylko zdjęcia krajobrazów lub zdjęcia dokumentacyjne. Portrety i zdjęcia makro są niepożądane i będą usuwane bez ostrzeżenia.</li>

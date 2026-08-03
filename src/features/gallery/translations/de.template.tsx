@@ -96,8 +96,11 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Fotos hochladen',
     uploading: (n) => `Wird hochgeladen (${n})`,
     upload: 'Hochladen',
+    hint: {
+      drop: 'Ziehe deine Fotos hierher oder klicke hier, um sie auszuwählen.',
+      tap: 'Tippe hier, um Fotos hinzuzufügen.',
+    },
     rules: `
-      <p>Ziehe deine Fotos hierher oder klicke hier, um sie auszuwählen.</p>
       <ul>
         <li>Lade keine zu kleinen Bilder hoch (Thumbnails). Die maximale Auflösung ist nicht begrenzt, die maximale Dateigröße beträgt jedoch 10 MB. Größere Dateien werden abgelehnt.</li>
         <li>Lade nur Landschafts- oder Dokumentationsfotos hoch. Porträts und Makroaufnahmen gelten als unangemessener Inhalt und werden ohne Vorwarnung gelöscht.</li>

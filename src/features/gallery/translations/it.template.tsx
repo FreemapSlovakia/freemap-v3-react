@@ -106,8 +106,11 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Carica foto',
     uploading: (n) => `Uploading (${n})`,
     upload: 'Carica',
+    hint: {
+      drop: 'Trascina qui le tue foto o clicca qui per selezionarle.',
+      tap: 'Tocca qui per aggiungere foto.',
+    },
     rules: `
-      <p>Trascina qui le tue foto o clicca qui per selezionarle.</p>
       <ul>
         <li>Non caricare foto troppo piccole (diapositive). Le dimensioni massime non sono limitate. La dimensione massima del file è limitata a 10 MB. I file più grandi saranno respinti.</li>
         <li>Carica soltanto foto di panorami o di documentazione. I ritratti e le macro non sono accettate e saranno eliminate senza preavviso.</li>

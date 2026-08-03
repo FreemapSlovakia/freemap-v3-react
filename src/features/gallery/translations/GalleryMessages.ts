@@ -83,6 +83,10 @@ export type GalleryMessages = {
     title: string;
     uploading: (n: number) => string;
     upload: string;
+    hint: {
+      drop: string;
+      tap: string;
+    };
     rules: string;
     success: string;
     showPreview: string;

@@ -104,8 +104,11 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Fényképek feltöltése',
     uploading: (n) => `Feltöltés folyamatban (${n})`,
     upload: 'Feltöltés',
+    hint: {
+      drop: 'Húzza ide a fényképeit vagy kattintson ide a kijelölésükhöz.',
+      tap: 'Koppintson ide fényképek hozzáadásához.',
+    },
     rules: `
-      <p>Húzza ide a fényképeit vagy kattintson ide a kijelölésükhöz.</p>
       <ul>
         <li>Ne töltsön fel túl kicsi fényképeket (bélyegképek/thumbnails). A fénykép legnagyobb mérete nincs korlátozva. A legnagyobb fájlméret 10MB, a nagyobb fájlok elutasíttatnak.</li>
         <li>Csak tájak fényképeit vagy dokumentációs jellegű képeket töltsön fel. A portrék és a makrofényképek nem kívánatosak, és figyelmeztetés nélkül töröltetnek.</li>

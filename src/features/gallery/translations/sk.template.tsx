@@ -100,8 +100,11 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Nahrať fotky',
     uploading: (n) => `Nahrávam (${n})`,
     upload: 'Nahrať',
+    hint: {
+      drop: 'Potiahnite sem fotky alebo kliknite sem pre ich výber.',
+      tap: 'Ťuknite sem pre pridanie fotiek.',
+    },
     rules: `
-      <p>Potiahnite sem fotky alebo kliknite sem pre ich výber.</p>
       <ul>
         <li>Nevkladajte príliš malé obrázky (miniatúry). Maximálny rozmer nie je obmedzený, je však obmedzená veľkosť súboru na max. 10 MB. Väčšie súbory server odmietne.</li>
         <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania odstránené.</li>

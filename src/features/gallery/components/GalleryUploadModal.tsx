@@ -339,6 +339,11 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
               )}
             >
               <input {...getInputProps()} />
+
+              <p className={classes.dropHint}>{gm?.uploadModal.hint.drop}</p>
+
+              <p className={classes.tapHint}>{gm?.uploadModal.hint.tap}</p>
+
               {m && (
                 <div
                   dangerouslySetInnerHTML={{
