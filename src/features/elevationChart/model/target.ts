@@ -8,12 +8,13 @@
  * Each variant names its line by something that survives the feature reordering
  * its own collection: a drawn line by the `id` it was created with (indexes are
  * renumbered by deleting, splitting and joining), a tracked device by its token.
- * The route planner and the track viewer chart whatever is currently active, so
- * they need no key of their own.
+ * The route planner, the track viewer and the GPS recorder chart whatever is
+ * currently active, so they need no key of their own.
  */
 export type ElevationChartTarget =
   | { type: 'route-planner' }
   | { type: 'track-viewer' }
+  | { type: 'gps-recorder' }
   | { type: 'drawing'; lineId: number }
   | { type: 'tracking'; token: string };
 

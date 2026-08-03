@@ -1,6 +1,10 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { isToolOpen } from '@app/store/selectors.js';
 import { useDataMergeMode } from '@features/dataViewer/hooks/useDataMergeMode.js';
+import {
+  elevationChartClose,
+  elevationChartOpen,
+} from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -8,7 +12,14 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useEffect } from 'react';
 import { Button, Spinner } from 'react-bootstrap';
-import { FaCircle, FaCog, FaPause, FaStop, FaTrash } from 'react-icons/fa';
+import {
+  FaChartArea,
+  FaCircle,
+  FaCog,
+  FaPause,
+  FaStop,
+  FaTrash,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useRecorderNotices } from '../hooks/useRecorderNotices.js';
 import {
@@ -18,7 +29,10 @@ import {
   gpsRecorderStop,
   gpsRecorderSync,
 } from '../model/actions.js';
-import { selectRecorderSegments } from '../model/selectors.js';
+import {
+  selectRecorderHasProfile,
+  selectRecorderSegments,
+} from '../model/selectors.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
 import classes from './GpsRecorderMenu.module.css';
 import { GpsRecorderReadout } from './GpsRecorderReadout.js';
@@ -46,6 +60,15 @@ export default function GpsRecorderMenu(): ReactElement {
   // to be a line, so counting raw fixes would offer a Finish that takes nothing.
   const saveable = useAppSelector((state) =>
     selectRecorderSegments(state).some((segment) => segment.length >= 2),
+  );
+
+  // The profile of the ride so far, redrawn as fixes arrive — offered while the
+  // recording is still the recorder's, since afterwards it is the track
+  // viewer's chart that shows it.
+  const chartable = useAppSelector(selectRecorderHasProfile);
+
+  const chartActive = useAppSelector(
+    (state) => state.elevationChart.target?.type === 'gps-recorder',
   );
 
   const recording = status?.recording ?? false;
@@ -194,6 +217,28 @@ export default function GpsRecorderMenu(): ReactElement {
               {...props}
             >
               <FaTrash />
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
+
+      {chartable && (
+        <LongPressTooltip label={m?.general.elevationProfile}>
+          {({ props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              active={chartActive}
+              onClick={() =>
+                dispatch(
+                  chartActive
+                    ? elevationChartClose()
+                    : elevationChartOpen({ type: 'gps-recorder' }),
+                )
+              }
+              {...props}
+            >
+              <FaChartArea />
             </Button>
           )}
         </LongPressTooltip>

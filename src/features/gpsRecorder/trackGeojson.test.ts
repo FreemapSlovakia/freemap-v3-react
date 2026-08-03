@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { RecorderPoint } from './protocol.js';
-import { recorderSegmentToFeature } from './trackGeojson.js';
+import {
+  recorderSegmentsToProfileFeature,
+  recorderSegmentToFeature,
+} from './trackGeojson.js';
 
 const T0 = 1785174195365;
 
@@ -41,5 +44,51 @@ describe('recorderSegmentToFeature', () => {
     expect(recorderSegmentToFeature([pt(1)]).geometry.coordinates).toEqual([
       [17, 48],
     ]);
+  });
+});
+
+describe('recorderSegmentsToProfileFeature', () => {
+  const elevated = (seq: number) => pt(seq, { altMsl: 200 + seq });
+
+  it('keeps the segments apart, so the profile breaks where the ride did', () => {
+    expect(
+      recorderSegmentsToProfileFeature([
+        [elevated(1), elevated(2)],
+        [elevated(3), elevated(4)],
+      ])?.geometry,
+    ).toEqual({
+      type: 'MultiLineString',
+      coordinates: [
+        [
+          [17, 48, 201],
+          [17, 48, 202],
+        ],
+        [
+          [17, 48, 203],
+          [17, 48, 204],
+        ],
+      ],
+    });
+  });
+
+  it('drops a segment too short to be a line', () => {
+    expect(
+      recorderSegmentsToProfileFeature([
+        [elevated(1), elevated(2)],
+        [elevated(3)],
+      ])?.geometry.coordinates,
+    ).toHaveLength(1);
+  });
+
+  it('has no profile until two fixes carry an altitude', () => {
+    expect(recorderSegmentsToProfileFeature([])).toBeNull();
+
+    expect(recorderSegmentsToProfileFeature([[pt(1), pt(2)]])).toBeNull();
+
+    expect(recorderSegmentsToProfileFeature([[elevated(1), pt(2)]])).toBeNull();
+
+    expect(
+      recorderSegmentsToProfileFeature([[elevated(1), elevated(2)]]),
+    ).not.toBeNull();
   });
 });

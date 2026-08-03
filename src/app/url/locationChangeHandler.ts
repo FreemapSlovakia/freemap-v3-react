@@ -963,6 +963,7 @@ function parseChartTarget(
   switch (type) {
     case 'route-planner':
     case 'track-viewer':
+    case 'gps-recorder':
       return { type };
 
     case 'tracking':

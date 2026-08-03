@@ -71,6 +71,7 @@ const initialState: ElevationChartState = {
 const targetTools: Record<ElevationChartTargetType, Tool | undefined> = {
   'route-planner': 'route-planner',
   'track-viewer': 'import-file',
+  'gps-recorder': 'gps-recorder',
   tracking: 'tracking',
   drawing: undefined,
 };

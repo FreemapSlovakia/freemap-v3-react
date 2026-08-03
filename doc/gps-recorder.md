@@ -520,6 +520,38 @@ Saving asks the same replace-or-append question a file import does, through the
 shared `useDataMergeMode` hook — so however geodata reaches the viewer, the
 question, its wording and its defaults are identical.
 
+### The one thing drawn before the hand-over: the elevation profile
+
+A ride's climb is worth watching while it is being ridden, so the elevation
+chart takes `{ type: 'gps-recorder' }` as a target of its own, resolved by
+[`resolveElevationChart.ts`](../src/features/gpsRecorder/resolveElevationChart.ts).
+This is not a second route out of the feature: nothing leaves the recorder, and
+once the ride is finished the profile is the track viewer's, whose own chart the
+hand-over opens the way to.
+
+`recorderSegmentsToProfileFeature` gives the chart **one `Feature<MultiLineString>`**
+where the hand-over gives a feature per segment. The reason the exported form is
+split — a colorizer needs a per-point array as long as the line's own
+coordinates — does not apply to a chart that draws one profile, and the chart is
+segment-aware in the way that matters: it breaks the line at each pause, resets
+the climb baseline, and counts no distance across it.
+
+The altitude is shown as recorded (`keepRecorded`, credited `recorded`): nothing
+is sampled, densified or smoothed. Those passes correct a terrain model, and this
+is a measurement — which is also why `source` defaults to the GNSS receiver (see
+*Settings*).
+
+The button appears once two fixes carry an altitude (`selectRecorderHasProfile`);
+below that there is a chart of gaps rather than a profile. A recording that has
+none *yet* resolves as `pending`, so the chart stays aimed and fills in when the
+altitudes start arriving — and so does a recorder that hasn't answered yet, since
+a reload restores this target from the URL while the whole track is still being
+refetched. `gone` is only for a track the recorder has reported on and that holds
+nothing, which covers a delete and the hand-over alike, and for a platform the
+recorder cannot run on. Closing the tool closes the chart, as it
+does for every other target — the strip a recording leaves behind carries the
+readout, not the controls.
+
 `trackGeojson.ts` emits **one `Feature<LineString>` per segment**, not a single
 `MultiLineString`. The colorizers require a per-point array exactly as long as
 the line's own coordinates (`readNumericArray`), so the nested arrays a Multi

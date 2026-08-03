@@ -306,6 +306,7 @@ what to show:
 type ElevationChartTarget =
   | { type: 'route-planner' }                    // the active alternative
   | { type: 'track-viewer' }                     // the active imported track
+  | { type: 'gps-recorder' }                     // the recording in progress
   | { type: 'drawing'; lineId: number }
   | { type: 'tracking'; token: string }
 ```
@@ -313,12 +314,21 @@ type ElevationChartTarget =
 `elevationChartProcessor` is the only thing that draws it, and `chartIdentity(state)`
 (`resolve.ts`) is its whole redraw rule: one cheap reference naming *what the profile is
 derived from* — the render line, the active track feature, the drawn line, the device's
-track. A re-route, a switched alternative, a densified line, a reshaped drawn line, a
-refilled elevation or an arriving position each replace that object; nothing else does. So
+track, the recorder's fixes. A re-route, a switched alternative, a densified line, a
+reshaped drawn line, a refilled elevation or an arriving position each replace that object;
+nothing else does. So
 there is no list of actions to keep in step with, and an action that changes anything else
 leaves it identical and draws nothing. Cheap rather than free: the identity is a lookup
 (for a track viewer target, a scan for the active line feature), evaluated against both the
 new and the previous state on every dispatched action.
+
+That price is also what keeps a derived value out of the identity. A recording's profile is
+drawn from its *segments*, but splitting the whole track twice per action is not a lookup —
+so the identity names the flat `gpsRecorder.points` the split reads, and `splitGapS`, the
+only other thing that can move the breaks, is listened for as `gpsRecorderSetSettings`
+alongside `dataViewerSetSelectedTrack`. (Calling the memoized `selectRecorderSegments` here
+would be worse than recomputing: alternating it between the new and the previous state
+thrashes its one-entry cache, and the map's own consumer of it re-renders on every action.)
 
 A drawn line is the one target sampled from the elevation API rather than read off the
 feature, and a vertex drag replaces its geometry on every pointer move — so its redraws are
@@ -375,6 +385,9 @@ tool, so it has none).
 - **routePlanner** auto-fills (`'missing'`, lazy, cached per result) — no prompt.
 - **tracking** uses recorded altitude as-is (`keepRecorded`); no fetch/cache, so it
   stays ephemeral for live data.
+- **gpsRecorder** likewise, for the same reason: the recorded altitude is what a
+  recording is kept for, and it grows a fix at a time. See
+  [`doc/gps-recorder.md`](./gps-recorder.md).
 - **export** offers an opt-in **Elevation** control (Keep recorded / Fill missing /
   Override all; hidden for Garmin) — see below.
 

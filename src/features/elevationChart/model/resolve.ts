@@ -79,6 +79,13 @@ export function chartIdentity(state: RootState): unknown {
         state.trackViewer.renderTrackGeojson ?? state.trackViewer.trackGeojson
       );
 
+    case 'gps-recorder':
+      // The fixes as they arrived, not the segments they are split into:
+      // splitting is a pass over the whole track, and this runs twice per
+      // dispatched action. The split's own input — `splitGapS` — is listened
+      // for instead, through `gpsRecorderSetSettings`.
+      return state.gpsRecorder.points;
+
     case 'drawing':
       // The points, not the line: restyling replaces the line object, and
       // keying on that would re-sample the whole profile from the elevation API
@@ -115,6 +122,12 @@ export function loadResolver(
       return import(
         /* webpackChunkName: "data-viewer-elevation-chart-resolver" */
         '@features/dataViewer/model/resolveElevationChart.js'
+      ).then((m) => m.default);
+
+    case 'gps-recorder':
+      return import(
+        /* webpackChunkName: "gps-recorder-elevation-chart-resolver" */
+        '@features/gpsRecorder/resolveElevationChart.js'
       ).then((m) => m.default);
 
     case 'drawing':

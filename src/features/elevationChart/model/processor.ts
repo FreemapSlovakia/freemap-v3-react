@@ -1,5 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { dataViewerSetSelectedTrack } from '@features/dataViewer/model/actions.js';
+import { gpsRecorderSetSettings } from '@features/gpsRecorder/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   elevationChartClose,
@@ -24,6 +25,7 @@ let settleTimer: ReturnType<typeof setTimeout> | undefined;
 const matomoFeature: Record<ElevationChartTargetType, string> = {
   'route-planner': 'RoutePlanner',
   'track-viewer': 'TrackViewer',
+  'gps-recorder': 'GpsRecorder',
   drawing: 'Drawing',
   tracking: 'Tracking',
 };
@@ -54,6 +56,10 @@ export const elevationChartProcessor: Processor = {
     // would mean scanning every imported feature on every action — so the
     // switch is listened for instead.
     dataViewerSetSelectedTrack,
+    // Same reason: `splitGapS` decides where a recording breaks into segments,
+    // and so where its profile breaks, but the split itself is too costly to
+    // put in the identity.
+    gpsRecorderSetSettings,
   ],
   stateChangePredicate: chartIdentity,
   errorKey: 'elevationChart.fetchError',

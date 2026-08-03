@@ -29,6 +29,31 @@ export const selectRecorderSegments: (state: RootState) => RecorderPoint[][] =
     (points, splitGapS) => splitPointsIntoSegments(points, splitGapS * 1000),
   );
 
+/**
+ * Whether the recording has a profile to draw: two fixes carrying an altitude,
+ * since one is a chart of gaps rather than a profile. The gate for the
+ * toolbar's elevation-profile button.
+ *
+ * Read off the flat points rather than the segments the chart is actually built
+ * from — the split only drops segments too short to be a line, so at worst the
+ * button appears a fix early, and the chart it opens says `pending` until then.
+ * Memoized, so the toolbar pays for it once per fix.
+ */
+export const selectRecorderHasProfile = createSelector(
+  (state: RootState) => state.gpsRecorder.points,
+  (points) => {
+    let n = 0;
+
+    for (const point of points) {
+      if ((point.altMsl ?? point.alt) !== null && ++n >= 2) {
+        return true;
+      }
+    }
+
+    return false;
+  },
+);
+
 /** The newest fix, or null on an empty track. */
 export const selectLatestRecorderPoint = createSelector(
   (state: RootState) => state.gpsRecorder.points,
