@@ -1,3 +1,5 @@
+import { canShareFile } from '@shared/webShare.js';
+
 export type ExportFileType = 'gpx' | 'geojson' | 'kml' | 'kmz';
 
 // MIME type + save-dialog extensions per export file type. The type string
@@ -25,15 +27,6 @@ export function exportFileName(type: ExportFileType): string {
 const isChromium = 'userAgentData' in navigator;
 
 const TEXT_MIME = 'text/plain';
-
-// Whether the share sheet takes a file presented under this name and MIME type.
-function canShareFile(name: string, mime: string): boolean {
-  return (
-    typeof navigator.share === 'function' &&
-    typeof navigator.canShare === 'function' &&
-    navigator.canShare({ files: [new File([], name, { type: mime })] })
-  );
-}
 
 /**
  * How this browser is willing to take an export of `type`: under its own name

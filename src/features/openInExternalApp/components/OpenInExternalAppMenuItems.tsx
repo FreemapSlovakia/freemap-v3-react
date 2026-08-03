@@ -2,6 +2,7 @@ import type { ExternalTarget } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import type { LatLon } from '@shared/types/common.js';
+import { canShareFile } from '@shared/webShare.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -62,10 +63,12 @@ export function OpenInExternalAppDropdownItems({
 
   const hasShare = 'share' in window.navigator;
 
-  // Sharing the picture itself needs both a browser that shares files and a picture to share — the
-  // item used to appear for any `url`, which on a drawing point meant offering to share a map link
-  // as a photo.
-  const canShareImage = Boolean(imageUrl) && 'canShare' in window.navigator;
+  // Sharing the picture itself needs a picture to share and a browser that shares files — which is
+  // a different question from knowing the API: Firefox has `canShare` and shares no file at all,
+  // and Chromium has a share sheet only on some platforms. So the offer is made only where a photo
+  // would actually be taken.
+  const canShareImage =
+    Boolean(imageUrl) && canShareFile('photo.jpg', 'image/jpeg');
 
   const hasClipboard = Boolean(window.navigator.clipboard?.writeText);
 
