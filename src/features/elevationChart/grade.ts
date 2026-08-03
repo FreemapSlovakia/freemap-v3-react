@@ -10,7 +10,7 @@ import type { ElevationProfilePoint } from './model/reducer.js';
  * between is found by bisection, this being called from a selector.
  * `-1` on an empty profile.
  */
-export function indexOfProfilePoint(
+function indexOfProfilePoint(
   points: ElevationProfilePoint[],
   point: ElevationProfilePoint,
 ): number {
@@ -82,30 +82,72 @@ function coordGap(a: ElevationProfilePoint, b: ElevationProfilePoint) {
 }
 
 /**
- * The along-track grade at a profile point as a ratio — 0.05 is a 5 % climb in
- * the direction of travel, negative descends. Measured as rise over run across
- * a window at least `windowMeters` long centered on the point, stopping at the
- * profile's ends and at gaps (points with no elevation), so no rise is read
- * across terrain we don't know. A window shorter than the profile's own point
- * spacing simply measures against the nearest neighbour; an infinite one runs
- * to those same limits, reporting the rise over run between the ends of the
- * stretch the point lies on — the same reading wherever on it the point is.
- * `undefined` where the point has no elevation or nothing to measure against.
+ * The two samples a marked place stands between — the segment of the profile it
+ * is on, which is where a window measured about it starts. `undefined` where
+ * there is no elevation to measure.
+ *
+ * A place standing on a sample has no one segment to call its own, so it starts
+ * from that sample alone and the window opens either way from there.
  */
-export function gradeAt(
+function segmentAt(
   points: ElevationProfilePoint[],
-  index: number,
-  windowMeters: number,
-): number | undefined {
+  point: ElevationProfilePoint,
+): [number, number] | undefined {
+  const index = indexOfProfilePoint(points, point);
+
   const at = points[index];
 
   if (!at || !Number.isFinite(at.ele)) {
     return undefined;
   }
 
-  let lo = index;
+  // The sample nearest the place is one end of the segment it stands on; which
+  // end is whichever side of it the place lies.
+  const other = point.distance > at.distance ? index + 1 : index - 1;
 
-  let hi = index;
+  return point.distance !== at.distance &&
+    other >= 0 &&
+    other < points.length &&
+    Number.isFinite(points[other]!.ele)
+    ? other > index
+      ? [index, other]
+      : [other, index]
+    : [index, index];
+}
+
+/**
+ * The along-track grade at a marked place as a ratio — 0.05 is a 5 % climb in
+ * the direction of travel, negative descends. Measured as rise over run across
+ * a window at least `windowMeters` long centered on the place itself, stopping
+ * at the profile's ends and at gaps (points with no elevation), so no rise is
+ * read across terrain we don't know.
+ *
+ * The place is where the pointer is, which is mostly between two of the
+ * profile's samples, so the window opens from the segment it stands on and
+ * grows about its own distance. A window shorter than the sample spacing then
+ * measures that segment alone, and a longer one sits centered on the place.
+ * Anchoring on the sample nearest the place instead would describe whatever
+ * surrounds *that* — on a profile whose samples are far apart (a hand-drawn
+ * GPX, with a point only where the slope changes) the two are different
+ * stretches of terrain, and only the first is the one under the pointer.
+ *
+ * An infinite window runs to the limits above, reporting the rise over run
+ * between the ends of the stretch the place lies on — the same reading wherever
+ * on it it is. `undefined` where the place has no elevation or nothing to
+ * measure against.
+ */
+export function gradeAt(
+  points: ElevationProfilePoint[],
+  point: ElevationProfilePoint,
+  windowMeters: number,
+): number | undefined {
+  const segment = segmentAt(points, point);
+
+  if (!segment) {
+    return undefined;
+  }
+
+  let [lo, hi] = segment;
 
   for (;;) {
     const span = points[hi]!.distance - points[lo]!.distance;
@@ -128,13 +170,13 @@ export function gradeAt(
       break;
     }
 
-    // Grow the side that reaches less far from the point, keeping the window as
-    // centered as the remaining room allows.
+    // Grow the side that reaches less far from the place, keeping the window as
+    // centered on it as the remaining room allows.
     if (
       nextLo >= 0 &&
       (nextHi < 0 ||
-        at.distance - points[nextLo]!.distance <=
-          points[nextHi]!.distance - at.distance)
+        point.distance - points[nextLo]!.distance <=
+          points[nextHi]!.distance - point.distance)
     ) {
       lo = nextLo;
     } else {

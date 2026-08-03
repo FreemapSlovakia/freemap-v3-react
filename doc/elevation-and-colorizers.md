@@ -169,8 +169,12 @@ derived from it, rather than a pref per consumer:
 - **`ditchFillWindow`** — the closing window above, in metres; `0` disables it.
 - **`gradeWindow`** — the stretch, in metres, the steepness readout on the elevation
   chart's active point is averaged over (`gradeAt` in
-  `src/features/elevationChart/grade.ts`); `0` measures between neighbouring profile
-  points. It corrects nothing — it is read off the already-drawn profile points.
+  `src/features/elevationChart/grade.ts`); `0` measures across the segment the active
+  point stands on. It corrects nothing — it is read off the already-drawn profile
+  points. The window opens from the segment the active point stands between and grows
+  about its own distance — never from the sample nearest it, which on a profile whose
+  samples are far apart (a hand-drawn GPX, with a point only where the slope changes)
+  sits on a different stretch of terrain than the pointer does.
   The out-of-band value `GRADE_WINDOW_WHOLE_LINE` (`-1`) asks for an unbounded window,
   so the readout spans the whole stretch the point lies on (ends and elevation gaps
   still stop it) and reads the same wherever on it the pointer is. Consumers pass the

@@ -9,7 +9,7 @@ import type { ReactElement } from 'react';
 import { FaInfo } from 'react-icons/fa';
 import { Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { gradeAt, indexOfProfilePoint } from '../grade.js';
+import { gradeAt } from '../grade.js';
 import { elevationChartSetActivePoint } from '../model/actions.js';
 import { gradeWindowMeters } from '../model/settingsReducer.js';
 import { projectOnProfile } from '../profilePoint.js';
@@ -96,15 +96,13 @@ export function ElevationChartActivePoint(): ReactElement | null {
     (state) => state.elevationChart.activePoint,
   );
 
-  // The grade is measured along the profile's distance axis, so the point has
-  // to be located on it first.
   const grade = useAppSelector(({ elevationChart, elevationSettings }) => {
     const { activePoint, elevationProfilePoints } = elevationChart;
 
     return activePoint && elevationProfilePoints
       ? gradeAt(
           elevationProfilePoints,
-          indexOfProfilePoint(elevationProfilePoints, activePoint),
+          activePoint,
           gradeWindowMeters(elevationSettings.gradeWindow),
         )
       : undefined;

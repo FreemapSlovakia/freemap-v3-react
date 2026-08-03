@@ -408,7 +408,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Detailné národné modely terénu, dostupné v niektorých krajinách, bývajú upravené pre hydrológiu: pri každom priepuste vyrežú cez cestu priekopu. Preliačiny užšie ako táto hodnota sa zaplnia; širšie sa zachovajú, keďže ide o skutočný terén. Nula funkciu vypne a tam, kde sa používa globálny model, nemení nič.',
     gradeWindow: 'Okno pre sklon',
     gradeWindowHelp:
-      'Keď ukážete na výškový profil, miesto sa vyznačí na mape spolu s tým, aký je tam sklon. Sklon sa priemeruje na úseku tejto dĺžky okolo daného bodu, aby pár metrov nepresnosti GPS nevyzeralo ako stena. Nula ho meria medzi susednými bodmi profilu; druhý koniec stupnice ho meria naraz cez celú trasu, čiže udáva jej prevýšenie na celej jej dĺžke — pri rovnej meracej línii je to uhol, pod akým je jeden koniec vidieť z druhého.',
+      'Keď ukážete na výškový profil, miesto sa vyznačí na mape spolu s tým, aký je tam sklon. Sklon sa priemeruje na úseku tejto dĺžky okolo daného bodu, aby pár metrov nepresnosti GPS nevyzeralo ako stena. Nula ho meria len na tom úseku, na ktorom dané miesto stojí; druhý koniec stupnice ho meria naraz cez celú trasu, čiže udáva jej prevýšenie na celej jej dĺžke — pri rovnej meracej línii je to uhol, pod akým je jeden koniec vidieť z druhého.',
   },
 
   errorCatcher: {

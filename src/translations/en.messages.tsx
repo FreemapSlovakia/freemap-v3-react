@@ -373,7 +373,7 @@ const messages: Messages = {
       'The detailed national terrain models, available in some countries, are usually adjusted for hydrology: they dig a ditch through the road at every culvert. Dips narrower than this are filled; wider ones are kept, being real terrain. Zero switches it off, and it changes nothing where the global model is used.',
     gradeWindow: 'Steepness window',
     gradeWindowHelp:
-      'Pointing at the elevation profile marks the spot on the map and reports how steep it is there. The steepness is averaged over a stretch this long around that point, so that a couple of metres of GPS noise don’t read as a wall. Zero measures it between neighbouring points of the profile; the far end of the scale measures across the whole line at once, reporting its rise over its whole length — on a straight measuring line, the angle one end is seen at from the other.',
+      'Pointing at the elevation profile marks the spot on the map and reports how steep it is there. The steepness is averaged over a stretch this long around that point, so that a couple of metres of GPS noise don’t read as a wall. Zero measures it across just the segment that point stands on; the far end of the scale measures across the whole line at once, reporting its rise over its whole length — on a straight measuring line, the angle one end is seen at from the other.',
   },
 
   errorCatcher: {
