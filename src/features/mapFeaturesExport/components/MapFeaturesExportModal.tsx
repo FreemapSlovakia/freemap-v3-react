@@ -2,6 +2,7 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { authWithGarmin } from '@features/auth/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -85,6 +86,10 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const confirm = useConfirm();
+
+  // Joined single-choice groups with long labels can't shrink, so below `sm`
+  // they stack instead of pushing the modal wider than the viewport.
+  const { sm } = useBreakpointMatches();
 
   const initExportables = useAvailableExportables();
 
@@ -357,7 +362,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
             <Form.Label>{em?.target}</Form.Label>
 
             <div>
-              <ButtonGroup>
+              <ButtonGroup vertical={!sm}>
                 {ExportTargetSchema.options
                   .filter(
                     (exportTarget) => exportTarget !== 'share' || shareable,
@@ -397,13 +402,18 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                           ),
                           garmin: (
                             <>
+                              {/* A wordmark in a square 24×24 viewBox: it needs
+                                  the scale-up to read, and the negative margin
+                                  (in the scaled em, so it tracks the size) to
+                                  give back the empty box around it. */}
                               <SiGarmin
+                                title="Garmin"
                                 style={{
                                   fontSize: '400%',
-                                  marginBlock: '-24px',
+                                  marginBlock: '-0.375em',
                                 }}
                               />
-                              &ensp;Garmin&ensp;
+                              &ensp;
                               <ExperimentalFunction />
                             </>
                           ),
@@ -443,30 +453,22 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 />
               </Form.Group>
 
-              <Form.Group className="mb-3">
-                <Form.Label className="d-block">
-                  {em?.garmin.activityType}
-                </Form.Label>
+              {/* Too many options with too long labels for a joined group. */}
+              <Form.Group controlId="activityType" className="mb-3">
+                <Form.Label>{em?.garmin.activityType}</Form.Label>
 
-                <div>
-                  <ButtonGroup>
-                    {garminActivityTypes.map(([value, labelKey]) => (
-                      <ToggleButton
-                        key={value}
-                        id={`at-${value}`}
-                        type="checkbox"
-                        value={value}
-                        variant="outline-primary"
-                        checked={activity === value}
-                        onChange={() =>
-                          setActivity(activity === value ? '' : value)
-                        }
-                      >
-                        {em?.garmin.at[labelKey]}
-                      </ToggleButton>
-                    ))}
-                  </ButtonGroup>
-                </div>
+                <Form.Select
+                  value={activity}
+                  onChange={(e) => setActivity(e.currentTarget.value)}
+                >
+                  <option value="" />
+
+                  {garminActivityTypes.map(([value, labelKey]) => (
+                    <option key={value} value={value}>
+                      {em?.garmin.at[labelKey]}
+                    </option>
+                  ))}
+                </Form.Select>
               </Form.Group>
             </>
           ) : (
@@ -584,7 +586,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
               <Form.Label>{em?.elevation.label}</Form.Label>
 
               <div>
-                <ButtonGroup>
+                <ButtonGroup vertical={!sm}>
                   {ExportElevationSchema.options.map((option) => (
                     <ToggleButton
                       id={`ele-${option}`}

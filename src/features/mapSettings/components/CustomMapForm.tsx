@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-handler-names */
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Layer, wms } from '@shared/wms.js';
@@ -205,6 +206,10 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   const m = useMessages();
 
+  // The technology labels are long enough that their joined group can't fit a
+  // phone, so below `sm` it stacks instead of widening the form.
+  const { sm } = useBreakpointMatches();
+
   const [wmsLayersFetchError, setWmsLayersFetchError] = useState<string>();
 
   useEffect(() => {
@@ -351,7 +356,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       <Form.Group className="mt-3">
         <Form.Label className="d-block">{m?.mapLayers.technology}</Form.Label>
 
-        <ButtonGroup>
+        <ButtonGroup vertical={!sm}>
           {(['tile', 'maplibre', 'wms'] as const).map((technology) => (
             <ToggleButton
               key={technology}
