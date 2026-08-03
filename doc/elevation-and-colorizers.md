@@ -171,6 +171,13 @@ derived from it, rather than a pref per consumer:
   chart's active point is averaged over (`gradeAt` in
   `src/features/elevationChart/grade.ts`); `0` measures between neighbouring profile
   points. It corrects nothing — it is read off the already-drawn profile points.
+  The out-of-band value `GRADE_WINDOW_WHOLE_LINE` (`-1`) asks for an unbounded window,
+  so the readout spans the whole stretch the point lies on (ends and elevation gaps
+  still stop it) and reads the same wherever on it the pointer is. Consumers pass the
+  stored value through `gradeWindowMeters`, which turns that sentinel into
+  `Infinity` — the only thing `gradeAt` itself knows about. `MapPreferencesModal` puts
+  it on the slider's top notch, one step past the 200 m maximum, converting in both
+  directions around the control.
 
 Which terrain model answers is not among them: every read presents the account, so premium
 decides it (see *Crediting the terrain model* below), for profiles and exports alike.

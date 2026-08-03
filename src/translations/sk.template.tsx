@@ -399,6 +399,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settingsHelp:
       'Prvé dve nastavenia opravujú model terénu, takže platia všade, kde sa výška číta z neho: pri plánovaných trasách, nakreslených líniách a meraniach a pri importovaných trasách, ktorým ste výšku nahradili zo servera. Zaznamenaná nadmorská výška — živé sledovanie alebo trasa, ktorú ste ponechali tak, ako bola zaznamenaná — zostáva nedotknutá. Exportované súbory si vždy zachovajú vlastnú výšku.',
     windowOff: 'vypnuté',
+    windowWholeLine: 'celá trasa',
     despike: 'Odstrániť špice',
     despikeHelp:
       'Keď je cesta nakreslená pár metrov vedľa vozovky, ktorú opisuje, model terénu vráti výšku svahu alebo skalnej steny vedľa nej. Špice užšie ako polovica tejto hodnoty sa odstránia a profil sa mierne zaoblí; širšie sa zachovajú, keďže ide o skutočný terén. Nula funkciu vypne.',
@@ -407,7 +408,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Detailné národné modely terénu, dostupné v niektorých krajinách, bývajú upravené pre hydrológiu: pri každom priepuste vyrežú cez cestu priekopu. Preliačiny užšie ako táto hodnota sa zaplnia; širšie sa zachovajú, keďže ide o skutočný terén. Nula funkciu vypne a tam, kde sa používa globálny model, nemení nič.',
     gradeWindow: 'Okno pre sklon',
     gradeWindowHelp:
-      'Keď ukážete na výškový profil, miesto sa vyznačí na mape spolu s tým, aký je tam sklon. Sklon sa priemeruje na úseku tejto dĺžky okolo daného bodu, aby pár metrov nepresnosti GPS nevyzeralo ako stena. Nula ho meria medzi susednými bodmi profilu.',
+      'Keď ukážete na výškový profil, miesto sa vyznačí na mape spolu s tým, aký je tam sklon. Sklon sa priemeruje na úseku tejto dĺžky okolo daného bodu, aby pár metrov nepresnosti GPS nevyzeralo ako stena. Nula ho meria medzi susednými bodmi profilu; druhý koniec stupnice ho meria naraz cez celú trasu, čiže udáva jej prevýšenie na celej jej dĺžke — pri rovnej meracej línii je to uhol, pod akým je jeden koniec vidieť z druhého.',
   },
 
   errorCatcher: {

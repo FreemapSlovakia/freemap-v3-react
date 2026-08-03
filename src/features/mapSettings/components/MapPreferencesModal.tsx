@@ -9,6 +9,7 @@ import { elevationSetSettings } from '@features/elevationChart/model/actions.js'
 import {
   type ElevationSettingsState,
   elevationSettingsInitialState,
+  GRADE_WINDOW_WHOLE_LINE,
 } from '@features/elevationChart/model/settingsReducer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { isCompassSupported } from '@features/location/compass.js';
@@ -35,6 +36,16 @@ import {
 } from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+
+const GRADE_WINDOW_STEP_M = 5;
+
+const GRADE_WINDOW_MAX_M = 200;
+
+// The whole-line window sits on the slider's own top notch, one step past the
+// longest window measured in metres: it is unbounded, so no place on a scale of
+// metres belongs to it. The stored value is out of band, hence the two
+// conversions around the control.
+const GRADE_WINDOW_WHOLE_LINE_POS = GRADE_WINDOW_MAX_M + GRADE_WINDOW_STEP_M;
 
 type Props = { show: boolean };
 
@@ -218,7 +229,13 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
   const handleGradeWindowChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setGradeWindow(e.currentTarget.value);
+      const pos = Number(e.currentTarget.value);
+
+      setGradeWindow(
+        String(
+          pos === GRADE_WINDOW_WHOLE_LINE_POS ? GRADE_WINDOW_WHOLE_LINE : pos,
+        ),
+      );
     },
     [],
   );
@@ -452,15 +469,21 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               <span className="text-body-secondary">
                 {gradeWindow === '0'
                   ? `(${m?.elevationChart.windowOff})`
-                  : `(${gradeWindow}\u00a0m)`}
+                  : gradeWindow === String(GRADE_WINDOW_WHOLE_LINE)
+                    ? `(${m?.elevationChart.windowWholeLine})`
+                    : `(${gradeWindow}\u00a0m)`}
               </span>
             </Form.Label>
 
             <Form.Range
               min={0}
-              max={200}
-              step={5}
-              value={gradeWindow}
+              max={GRADE_WINDOW_WHOLE_LINE_POS}
+              step={GRADE_WINDOW_STEP_M}
+              value={
+                gradeWindow === String(GRADE_WINDOW_WHOLE_LINE)
+                  ? GRADE_WINDOW_WHOLE_LINE_POS
+                  : gradeWindow
+              }
               onChange={handleGradeWindowChange}
             />
 

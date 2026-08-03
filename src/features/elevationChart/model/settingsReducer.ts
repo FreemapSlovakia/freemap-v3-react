@@ -23,9 +23,27 @@ export interface ElevationSettingsState {
    * Length in metres of the stretch the steepness readout is averaged over —
    * see `gradeAt`. Unlike the two above this corrects nothing, it only widens
    * what a single readout describes. `0` measures between neighbouring profile
-   * points, which on a recorded track is mostly GPS noise.
+   * points, which on a recorded track is mostly GPS noise;
+   * `GRADE_WINDOW_WHOLE_LINE` measures across the whole line at once.
    */
   gradeWindow: number;
+}
+
+/**
+ * The `gradeWindow` that stretches to whatever the line is long, so the readout
+ * reports the rise between its two ends over its whole length — on a straight
+ * measuring line, the angle one end stands at as seen from the other, the run
+ * being measured along the line either way. Out of band rather than a large
+ * number of metres: the window is unbounded, and no metre value is right for
+ * every line. Turn it into the window `gradeAt` takes with `gradeWindowMeters`.
+ */
+export const GRADE_WINDOW_WHOLE_LINE = -1;
+
+/** The length `gradeAt` measures over for a stored `gradeWindow`. */
+export function gradeWindowMeters(gradeWindow: number): number {
+  return gradeWindow === GRADE_WINDOW_WHOLE_LINE
+    ? Number.POSITIVE_INFINITY
+    : gradeWindow;
 }
 
 /**

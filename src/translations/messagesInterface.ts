@@ -244,6 +244,7 @@ export type Messages = {
     settings: string;
     settingsHelp: string;
     windowOff: string;
+    windowWholeLine: string;
     despike: string;
     despikeHelp: string;
     ditchFill: string;

@@ -11,6 +11,7 @@ import { Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gradeAt, indexOfProfilePoint } from '../grade.js';
 import { elevationChartSetActivePoint } from '../model/actions.js';
+import { gradeWindowMeters } from '../model/settingsReducer.js';
 import { projectOnProfile } from '../profilePoint.js';
 
 // How near the drawn line the pointer must come for the readout to appear.
@@ -104,7 +105,7 @@ export function ElevationChartActivePoint(): ReactElement | null {
       ? gradeAt(
           elevationProfilePoints,
           indexOfProfilePoint(elevationProfilePoints, activePoint),
-          elevationSettings.gradeWindow,
+          gradeWindowMeters(elevationSettings.gradeWindow),
         )
       : undefined;
   });

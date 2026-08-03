@@ -7,7 +7,10 @@ import {
   DrawingStyleSchema,
   drawingSettingsInitialState,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
-import { elevationSettingsInitialState } from '@features/elevationChart/model/settingsReducer.js';
+import {
+  elevationSettingsInitialState,
+  GRADE_WINDOW_WHOLE_LINE,
+} from '@features/elevationChart/model/settingsReducer.js';
 import { GalleryLicenseSchema } from '@features/gallery/licenses.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
 import { gallerySettingsInitialState } from '@features/gallery/model/settingsReducer.js';
@@ -142,7 +145,10 @@ export const PersistedElevationSettingsSchema = z
   .object({
     despikeWindow: z.number().min(0).max(100),
     ditchFillWindow: z.number().min(0).max(100),
-    gradeWindow: z.number().min(0).max(200),
+    gradeWindow: z.union([
+      z.literal(GRADE_WINDOW_WHOLE_LINE),
+      z.number().min(0).max(200),
+    ]),
   })
   .partial();
 

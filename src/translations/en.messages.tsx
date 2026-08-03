@@ -364,6 +364,7 @@ const messages: Messages = {
     settingsHelp:
       'The first two correct a terrain model, so they apply wherever elevation is read from one: planned routes, drawn lines and measurements, and imported tracks whose elevation you replaced from the server. Recorded altitude — live tracking, or a track you kept as recorded — is left untouched. Exported files always keep their own elevation.',
     windowOff: 'off',
+    windowWholeLine: 'whole line',
     despike: 'Remove spikes',
     despikeHelp:
       'Where a way is drawn a few metres off the road it describes, the terrain model answers with the bank or rock face beside it. Spikes narrower than half of this are dropped and the profile is lightly rounded; anything wider is kept, being real terrain. Zero switches it off.',
@@ -372,7 +373,7 @@ const messages: Messages = {
       'The detailed national terrain models, available in some countries, are usually adjusted for hydrology: they dig a ditch through the road at every culvert. Dips narrower than this are filled; wider ones are kept, being real terrain. Zero switches it off, and it changes nothing where the global model is used.',
     gradeWindow: 'Steepness window',
     gradeWindowHelp:
-      'Pointing at the elevation profile marks the spot on the map and reports how steep it is there. The steepness is averaged over a stretch this long around that point, so that a couple of metres of GPS noise don’t read as a wall. Zero measures it between neighbouring points of the profile.',
+      'Pointing at the elevation profile marks the spot on the map and reports how steep it is there. The steepness is averaged over a stretch this long around that point, so that a couple of metres of GPS noise don’t read as a wall. Zero measures it between neighbouring points of the profile; the far end of the scale measures across the whole line at once, reporting its rise over its whole length — on a straight measuring line, the angle one end is seen at from the other.',
   },
 
   errorCatcher: {

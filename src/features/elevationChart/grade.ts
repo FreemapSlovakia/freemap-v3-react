@@ -87,8 +87,10 @@ function coordGap(a: ElevationProfilePoint, b: ElevationProfilePoint) {
  * a window at least `windowMeters` long centered on the point, stopping at the
  * profile's ends and at gaps (points with no elevation), so no rise is read
  * across terrain we don't know. A window shorter than the profile's own point
- * spacing simply measures against the nearest neighbour. `undefined` where the
- * point has no elevation or nothing to measure against.
+ * spacing simply measures against the nearest neighbour; an infinite one runs
+ * to those same limits, reporting the rise over run between the ends of the
+ * stretch the point lies on — the same reading wherever on it the point is.
+ * `undefined` where the point has no elevation or nothing to measure against.
  */
 export function gradeAt(
   points: ElevationProfilePoint[],
