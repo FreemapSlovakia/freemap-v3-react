@@ -118,12 +118,17 @@ Everything the app knows about the API lives in `src/features/weatherRadar/api.t
   Each frame is `{ time (unix seconds), path }`. Currently 12 past frames and 6
   nowcast frames, ten minutes apart — but nothing in the code assumes those
   counts.
-- Tiles: `{path}/{size}/{z}/{x}/{y}/{colorScheme}/{smooth}_{snow}.webp`. WebP
+- Tiles: `{path}/{size}/{z}/{x}/{y}/{colorScheme}/{smooth}_{snow}.webp[?v=]`. WebP
   because a radar tile is about half the size of the same frame as PNG, and the
   animation fetches one per frame. `size` is 256 or 512 for the *same* ground —
   512 is simply the @2x render, so it is what a HiDPI screen gets
   (`resolutionScale ?? devicePixelRatio > 1.4`), displayed at Leaflet's usual
-  256 CSS px.
+  256 CSS px. Forecast tiles carry `?v=<newest observed frame time>`, because
+  their content changes under a fixed URL and the browser would otherwise answer
+  the re-fetch from its own five-minute cache. Observed tiles carry no version:
+  they never change, and churning their URLs would re-render six hours of
+  history every cycle. Note the version is **not** the metadata's `generated`,
+  which ticks on every fetch rather than every cycle.
 
 `toFrames` merges the two lists into the single timeline the UI animates,
 tagging the nowcast half with `forecast: true`. That flag is what colours the

@@ -38,7 +38,17 @@ export function RadarTimeline() {
 
   const observed = frames.filter((f) => !f.forecast).length;
 
-  const split = frames.length < 2 ? 100 : (observed / frames.length) * 100;
+  // Where the tint starts. The thumb sits at `index / (count - 1)` of the
+  // track, so the boundary between measured and extrapolated lies midway
+  // between the last observed frame and the first forecast one — not at the
+  // observed share of the count, which is half a step off.
+  const split =
+    frames.length < 2
+      ? 100
+      : Math.min(
+          100,
+          Math.max(0, ((observed - 0.5) / (frames.length - 1)) * 100),
+        );
 
   const minutes = Math.round((frame.time * 1000 - Date.now()) / 60_000);
 

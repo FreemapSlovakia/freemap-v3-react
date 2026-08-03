@@ -56,8 +56,16 @@ export default function RadarLayer({
 
   const playing = useAppSelector((state) => state.weatherRadar.playing);
 
-  /** Bumped by the server on every fetch cycle; the forecast is redrawn then. */
-  const generated = useAppSelector((state) => state.weatherRadar.generated);
+  /**
+   * The newest observed frame, which is the layer's notion of a server cycle:
+   * it advances exactly once per composite, and its arrival is what re-computes
+   * the forecast. `generated` in the metadata looks like the same thing but
+   * ticks on every fetch, so keying on it would invalidate several times a
+   * cycle for nothing.
+   */
+  const cycle = useAppSelector(
+    (state) => state.weatherRadar.frames.findLast((f) => !f.forecast)?.time,
+  );
 
   const colorScheme = useAppSelector(
     (state) => state.weatherRadarSettings.colorScheme,
@@ -123,16 +131,19 @@ export default function RadarLayer({
       return;
     }
 
-    const layer = new TileLayer(radarTileUrl(frame.path, tileOptions), {
-      opacity: 0,
-      zIndex,
-      maxZoom,
-      maxNativeZoom,
-      errorTileUrl: transparent1x1,
-      // A frame is one moment in time: tiles kept from the previous view would
-      // be redrawn at a zoom this frame is no longer showing.
-      keepBuffer: 0,
-    });
+    const layer = new TileLayer(
+      radarTileUrl(frame.path, tileOptions, frame.forecast ? cycle : undefined),
+      {
+        opacity: 0,
+        zIndex,
+        maxZoom,
+        maxNativeZoom,
+        errorTileUrl: transparent1x1,
+        // A frame is one moment in time: tiles kept from the previous view
+        // would be redrawn at a zoom this frame is no longer showing.
+        keepBuffer: 0,
+      },
+    );
 
     // `load` fires once every tile has settled — and an errored tile counts as
     // settled, because `errorTileUrl` renders in its place. So the outcome has
@@ -244,7 +255,7 @@ export default function RadarLayer({
 
   const frame = frames[index];
 
-  const generatedRef = useRef(generated);
+  const cycleRef = useRef(cycle);
 
   // Everything the pool has to unlearn when a new frame list lands. Ahead of
   // the effect that shows a frame, so a layer dropped here is rebuilt in the
@@ -258,9 +269,9 @@ export default function RadarLayer({
     // the same URL, so the layer holding the previous version would never ask
     // for the new one. Observed composites don't change once published, and
     // they are the bulk of the pool.
-    const republished = generatedRef.current !== generated;
+    const republished = cycleRef.current !== cycle;
 
-    generatedRef.current = generated;
+    cycleRef.current = cycle;
 
     for (const [frameTime, entry] of layersRef.current) {
       const frame = current.get(frameTime);
@@ -287,7 +298,7 @@ export default function RadarLayer({
         dropFrameRef.current(frameTime);
       }
     }
-  }, [frames, generated]);
+  }, [frames, cycle]);
 
   const optionsRef = useRef(tileOptions);
 

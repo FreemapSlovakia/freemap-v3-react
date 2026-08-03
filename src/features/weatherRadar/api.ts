@@ -58,12 +58,23 @@ export type RadarTileOptions = {
 /**
  * Leaflet URL template for one frame. WebP because a radar tile halves in size
  * against the PNG of the same frame, and the animation fetches a tile per frame.
+ *
+ * `version` is appended for frames whose content changes under a fixed URL —
+ * the forecast half, re-computed from newer radar each cycle. Without it the
+ * browser answers the re-fetch from its own five-minute cache and the new
+ * forecast is invisible for up to that long. Observed frames pass no version:
+ * they never change, and churning their URLs would re-render six hours of
+ * history every cycle.
  */
 export function radarTileUrl(
   path: string,
   { colorScheme, smooth, snow, size }: RadarTileOptions,
+  version?: number,
 ): string {
-  return `${LIBREWXR_URL}${path}/${size}/{z}/{x}/{y}/${colorScheme}/${smooth ? 1 : 0}_${snow ? 1 : 0}.webp`;
+  return (
+    `${LIBREWXR_URL}${path}/${size}/{z}/{x}/{y}/${colorScheme}/${smooth ? 1 : 0}_${snow ? 1 : 0}.webp` +
+    (version === undefined ? '' : `?v=${version}`)
+  );
 }
 
 /** Merges the two frame lists into the single timeline the UI animates. */
