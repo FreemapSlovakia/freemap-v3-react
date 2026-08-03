@@ -1,5 +1,8 @@
-import { setActiveModal, setTool } from '@app/store/actions.js';
-import { trackingActiveTrackIdSelector } from '@app/store/selectors.js';
+import { openTool, setActiveModal } from '@app/store/actions.js';
+import {
+  isToolOpen,
+  trackingActiveTrackIdSelector,
+} from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
@@ -13,9 +16,7 @@ import { useDispatch } from 'react-redux';
 export function TrackingSelection(): ReactElement {
   const m = useMessages();
 
-  const trackingOpen = useAppSelector(
-    (state) => state.main.tool === 'tracking',
-  );
+  const trackingOpen = useAppSelector((state) => isToolOpen(state, 'tracking'));
 
   const selectedToken = useAppSelector(trackingActiveTrackIdSelector);
 
@@ -31,7 +32,7 @@ export function TrackingSelection(): ReactElement {
                 {...props}
                 variant="dark"
                 disabled={trackingOpen}
-                onClick={() => dispatch(setTool('tracking'))}
+                onClick={() => dispatch(openTool('tracking'))}
               >
                 <FaBullseye />
               </Button>

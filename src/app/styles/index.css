@@ -135,6 +135,16 @@ button#freemap-logo {
   }
 }
 
+/* The toolbar of the tool taking clicks on the map — while it is open a click
+   no longer selects a feature, and several tool toolbars can be up at once, so
+   it says which one the map belongs to. Green rather than the selection's blue. */
+.fm-toolbar-map-click {
+  @media screen {
+    outline: 2px solid rgba(var(--bs-success-rgb), 0.8);
+    outline-offset: -1px;
+  }
+}
+
 .fm-ib-scroller {
   overflow: auto;
 }

@@ -1,3 +1,4 @@
+import { isToolOpen } from '@app/store/selectors.js';
 import type { MyStore } from '@app/store/store.js';
 import { gpsRecorderSync } from './model/actions.js';
 import { isRecorderStreamSuspect, suspectRecorderStream } from './stream.js';
@@ -70,7 +71,7 @@ export function attachRecorderFollow(store: MyStore): void {
     // held over from the hidden page, which only a sync replaces.
     if (
       isRecorderFollowed() ||
-      store.getState().main.tool === 'gps-recorder' ||
+      isToolOpen(store.getState(), 'gps-recorder') ||
       isRecorderStreamSuspect()
     ) {
       store.dispatch(gpsRecorderSync({ quiet: true }));

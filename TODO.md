@@ -60,6 +60,22 @@ Still emitting at info level (non-blocking, optional cleanup):
 - [ ] **Minor processor-middleware cleanups.** Internal `any` casts;
       `Math.random()` for fallback toast IDs; duplicated transform/handle predicate
       logic. Low priority.
+- [ ] **Let changesets outlive their tool.** Every other data-bearing tool leaves
+      its features on the map when its toolbar closes (objects, tracks, tracking,
+      drawings); changesets are the exception — `changesets/model/reducer.ts`
+      resets the slice on `closeTool('changesets')`, so closing the tool clears
+      the markers. To make them behave like the rest: drop that case, add a
+      `changesetsDelete` action + a `danger`/`FaTrash` button to `ChangesetsMenu`
+      gated on the `hasChangesets` selector already there, and a matching
+      `isToolOpen(state, 'changesets')` branch in `deleteProcessor` so the button
+      and `Del` agree. `changesetsDelete` must also null `lastFetchedBBox` (else
+      `canRefresh` stays false and Refresh is dead until the map is panned) and
+      join the detail toast's `cancelType`. For getting the toolbar back after a
+      marker click, add an action button to that detail toast rather than opening
+      the tool from the click — nothing else in the app opens chrome from a plain
+      map click. Watch the clutter: the markers carry `permanent` tooltips, so a
+      screenful left behind is heavier than leftover POIs. (*Clear map* already
+      counts them.)
 - [ ] **Reconcile toolbar Delete/Close buttons with their `kbd` shortcut.** A
       dedicated toolbar button can dispatch a feature-specific action while its
       `kbd` hint advertises a global key that resolves differently. The dataViewer
@@ -92,7 +108,7 @@ Still emitting at info level (non-blocking, optional cleanup):
       `<CircleMarker>` whose interactivity is derived from `selectingModeSelector`
       carries it in its `key` (`trackViewer`, `tracking`, `routePlanner`'s route
       halo, `drawing` lines) and is destroyed + rebuilt whenever
-      `state.main.tool` changes. Unlike markers — fixed by
+      `state.main.mapTool` changes. Unlike markers — fixed by
       `setMarkerInteractive` in `RichMarker.tsx`, whose async icon root made the
       remount a visible blink — paths swap within one commit so there's no flash,
       just wasted work on big tracks. Toggling a path's interactivity only means

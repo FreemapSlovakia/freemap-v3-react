@@ -115,17 +115,17 @@ import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcesso
 import { deleteProcessor } from '@/processors/deleteProcessor.js';
 import { errorProcessor } from '@/processors/errorProcessor.js';
 import { legacyMapWarningProcessor } from '@/processors/legacyMapWarningProcessor.js';
+import { openToolProcessor } from '@/processors/openToolProcessor.js';
 import { resetAppProcessor } from '@/processors/resetAppProcessor.js';
 import { saveSettingsProcessor } from '@/processors/saveSettingsProcessor.js';
 import { setActiveModalTransformer } from '@/processors/setActiveModalProcessor.js';
-import { setToolProcessor } from '@/processors/setToolProcessor.js';
 import { urlProcessor } from '../url/urlProcessor.js';
 
 export const processors = [
   errorProcessor,
   toastsCancelTypeProcessor,
   cancelProcessor,
-  setToolProcessor,
+  openToolProcessor,
   deleteProcessor,
   geoipProcessor,
   convertToDrawingProcessor,

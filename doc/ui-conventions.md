@@ -41,6 +41,19 @@ Since color is the only cue, a lone `active`-driven toggle also gets
 `aria-pressed` (react-bootstrap's `active` prop only adds the class) — see the
 tool pill in `ToolMenu`.
 
+## Toolbar outlines
+
+Several toolbars share the top of the screen at once, so an outline on one says
+what it is, not merely that it is there. Two exist, both 2px with
+`outline-offset: -1px`, and no third should be added lightly:
+
+- **Blue** (`fm-toolbar-selection`) — a selection toolbar: it acts on the feature
+  that is selected.
+- **Green** (`fm-toolbar-map-click`, bootstrap's `success`) — the toolbar of the tool taking clicks on
+  the map, so a click is no longer selecting features. Carried only while the
+  tool actually owns the clicks: a picking mode (home location, photo position,
+  export area) masks it, and the outline goes with it.
+
 ### Notes & accepted exceptions
 
 - **`dark` means dismiss, not "on the map".** Action buttons that happen to sit

@@ -158,9 +158,10 @@ Adding persisted state = add to the slice + add **one `PERSIST` entry** (schema 
 ## URL ⇄ state synchronization
 
 `src/app/url/` (`urlProcessor.ts`, `urlUpdating.ts`, `locationChangeHandler.ts`,
-`urlMapUtils.ts`). The map position/zoom, active layers, the open tool, and several
-modal flags are encoded in the URL hash (`#map=…`, `layers=…`, `#tool=…`,
-`#show=…`, etc.; the legacy comma-separated `tools=` is still read, of which only the first opens). `urlProcessor` is the **last** processor in the array so it observes the
+`urlMapUtils.ts`). The map position/zoom, active layers, the open tools, and several
+modal flags are encoded in the URL hash (`#map=…`, `layers=…`, `#tools=…`,
+`#show=…`, etc.; the comma-separated `tools=` lists every open tool, and the older
+single-tool `tool=` is read the same way). `urlProcessor` is the **last** processor in the array so it observes the
 final state. `hashchange` is handled by `locationChangeHandler`. When you add
 state that should be shareable/bookmarkable, wire it through here **and** update
 the hash-param docs in `src/static/llms.txt`.
@@ -200,8 +201,36 @@ Gotcha: toast`messageKey`s referenced from processors must resolve against the
   drift-prone file; mirrored in `src/static/llms.txt` and (for POI icons) shared
   by filename with the `freemap-outdoor-map` renderer.
 - `src/shared/toolDefinitions.tsx` — the tool list (id, icon, message key, keyboard
-  shortcut, whether it's a drawing tool). `Tool` itself is a Zod enum in
+  shortcut, whether it's a drawing tool) and `MAP_CLICK_TOOLS`, which decides
+  which slot a tool opens into (see "Open tools"). `Tool` itself is a Zod enum in
   `src/app/store/actions.ts`.
+
+## Open tools
+
+`main.mapTool` + `main.panelTools` (`src/app/store/reducer.ts`), driven by
+`openTool(tool)` / `closeTool(tool)`. Which of the two slots a tool opens into is
+`MAP_CLICK_TOOLS`' answer:
+
+- **Map-click tools** (route planner, the three drawing tools, map details) take
+  clicks on the map, so at most one is open — opening another replaces it, and a
+  click stops selecting features while one is. Because there can only be one,
+  which toolbar owns the click is derived (`activeModeSelector`) rather than
+  stored, and its toolbar carries the green `fm-toolbar-map-click` outline (the
+  selection toolbar's is blue). Escape closes it; taking the slot from another
+  tool drops the selection unless the tool opened is the one the selected feature
+  belongs to.
+- **Toolbar-only tools** (objects, tracks and data, changesets, live tracking, GPS
+  recorder) accumulate: any number of them are open at once, in the order opened,
+  alongside a map-click tool. Opening or closing one says nothing about the
+  selection, and Escape leaves them alone — they close by their own button.
+  A toolbar with something worth leaving on the screen can also offer a collapse
+  button (`ToolMenu`'s `collapsible`, local state): only the GPS recorder does,
+  because its strip keeps saying that the phone is recording. A toolbar with
+  nothing to leave behind is closed instead.
+
+A reducer that clears its slice when its tool goes must key on `closeTool` with
+its own tool as the payload — another tool opening beside it means nothing (see
+`changesets/model/reducer.ts`, `elevationChart/model/reducer.ts`).
 
 ## Lazy loading / code splitting
 

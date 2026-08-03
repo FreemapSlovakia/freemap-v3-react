@@ -1,7 +1,7 @@
 import {
   convertToDrawing,
+  openTool,
   setActiveModal,
-  setTool,
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
@@ -43,7 +43,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
               variant="secondary"
               {...props}
               onClick={() => {
-                dispatch(setTool('route-planner'));
+                dispatch(openTool('route-planner'));
 
                 if (selectedResult.geojson) {
                   const c = center(selectedResult.geojson).geometry.coordinates;
@@ -67,7 +67,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
             <Button
               variant="secondary"
               onClick={() => {
-                dispatch(setTool('route-planner'));
+                dispatch(openTool('route-planner'));
 
                 if (selectedResult.geojson) {
                   const c = center(selectedResult.geojson).geometry.coordinates;

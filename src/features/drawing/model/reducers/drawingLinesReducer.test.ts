@@ -1,7 +1,8 @@
 import {
   clearMapFeatures,
+  closeTool,
+  openTool,
   selectFeature,
-  setTool,
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { describe, expect, it } from 'vitest';
@@ -266,7 +267,7 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
     expect(next.lines[0].points.map((pt) => pt.lat)).toEqual([0, 1]);
   });
 
-  it('stopDrawing / reaching for a tool clear the drawing + join state', () => {
+  it('stopDrawing / reaching for a map-click tool clear the drawing + join state', () => {
     const state: DrawingLinesState = {
       drawing: true,
       joinWith: { lineIndex: 0, pointId: 1 },
@@ -275,15 +276,28 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
 
     for (const action of [
       drawingLineStopDrawing(),
-      setTool('draw-lines'),
-      setTool('objects'),
-      setTool(null),
+      openTool('draw-lines'),
+      openTool('route-planner'),
+      closeTool('draw-lines'),
     ]) {
       const next = drawingLinesReducer(state, action);
 
       expect(next.drawing).toBe(false);
       expect(next.joinWith).toBeUndefined();
     }
+  });
+
+  it('keeps drawing when a toolbar-only tool opens beside it — it takes no clicks', () => {
+    const state: DrawingLinesState = {
+      drawing: true,
+      joinWith: { lineIndex: 0, pointId: 1 },
+      lines: [],
+    };
+
+    const next = drawingLinesReducer(state, openTool('objects'));
+
+    expect(next.drawing).toBe(true);
+    expect(next.joinWith).toEqual({ lineIndex: 0, pointId: 1 });
   });
 
   it('addPoint with drawing:true enters drawing mode (interactive map click)', () => {

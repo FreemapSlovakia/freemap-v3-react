@@ -1,4 +1,4 @@
-import { setTool } from '@app/store/actions.js';
+import { openTool } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import {
@@ -474,7 +474,7 @@ function handOverTrack(
 
   // The track viewer's own toolbar is where the saved copy is worked on, so it
   // takes over from the recorder's.
-  dispatch(setTool('import-file'));
+  dispatch(openTool('import-file'));
 
   return trackGeojson;
 }

@@ -49,7 +49,7 @@ const cancelType = [
 
 // Dismiss the details toast once the map-details tool is gone.
 const mapDetailsClosed = (state: RootState) =>
-  state.main.tool !== 'map-details';
+  state.main.mapTool !== 'map-details';
 
 export async function handle(
   [lat, lon]: [number, number],
@@ -378,7 +378,7 @@ export async function handle(
   }
 
   if (sr.length > 0) {
-    // dispatch(setTool(null));
+    // dispatch(closeTool('map-details'));
 
     dispatch(searchSetResults(sr));
   } else {

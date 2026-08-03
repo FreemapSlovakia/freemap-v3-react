@@ -39,10 +39,16 @@ import { useOnline } from '@shared/hooks/useOnline.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import { isDrawTool } from '@shared/toolDefinitions.js';
 import fmLogo from '@/images/freemap-logo-print.png';
 import 'leaflet/dist/leaflet.css';
 import clsx from 'clsx';
-import { type MouseEvent, type ReactElement, useCallback } from 'react';
+import {
+  Fragment,
+  type MouseEvent,
+  type ReactElement,
+  useCallback,
+} from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
@@ -51,8 +57,8 @@ import { useMouseCursor } from '../hooks/useMouseCursor.js';
 import { setActiveModal } from '../store/actions.js';
 import {
   askingCookieConsentSelector,
+  openToolsSelector,
   showGalleryPickerSelector,
-  toolSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from '../store/selectors.js';
 import { AsyncComponent } from './AsyncComponent.js';
@@ -363,7 +369,7 @@ export function Main(): ReactElement {
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
-  const tool = useAppSelector(toolSelector);
+  const openTools = useAppSelector(openToolsSelector);
 
   const gpsRecorderAvailable = useAppSelector(gpsRecorderAvailableSelector);
 
@@ -669,36 +675,51 @@ export function Main(): ReactElement {
                   long as it runs, because nothing else on the screen says the
                   phone is recording. Also gated here for the same reason the tool
                   is: the tool can be named in the URL hash on a device the
-                  recorder can't run on. Not in an embedded map: `setTool` is a
+                  recorder can't run on. Not in an embedded map: `openTool` is a
                   no-op there, so the strip could never be expanded — and the
                   recording belongs to the full app that started it. */}
               {showMenu &&
                 gpsRecorderAvailable &&
                 !window.fmEmbedded &&
-                (tool === 'gps-recorder' || gpsRecorderRecording) && (
+                (openTools.includes('gps-recorder') ||
+                  gpsRecorderRecording) && (
                   <AsyncComponent factory={gpsRecorderMenuFactory} />
                 )}
 
-              {/* the open tool's menu */}
+              {/* every open tool's menu, the map-click one first and the rest in
+                  the order they were opened, so opening another toolbar-only
+                  tool doesn't reorder the ones already on the screen.
+
+                  The three draw-* tools share one menu, so they share one key
+                  too: keying them apart would unmount and re-mount it on every
+                  switch between them, and its lazy chunk re-renders as nothing
+                  until the import settles — a toolbar that blinks away for a
+                  frame. */}
 
               {showMenu &&
-                (tool === 'objects' ? (
-                  <AsyncComponent factory={objectsMenuFactory} />
-                ) : tool === 'route-planner' ? (
-                  <AsyncComponent factory={routePlannerMenuFactory} />
-                ) : tool === 'import-file' ? (
-                  <AsyncComponent factory={dataViewerMenuFactory} />
-                ) : tool === 'changesets' ? (
-                  <AsyncComponent factory={changesetsMenuFactory} />
-                ) : tool === 'draw-lines' ||
-                  tool === 'draw-points' ||
-                  tool === 'draw-polygons' ? (
-                  <AsyncComponent factory={drawingMenuFactory} />
-                ) : tool === 'map-details' ? (
-                  <MapDetailsMenu />
-                ) : tool === 'tracking' ? (
-                  <AsyncComponent factory={trackingMenuFactory} />
-                ) : null)}
+                openTools.map((openedTool) => (
+                  <Fragment
+                    key={isDrawTool(openedTool) ? 'drawing' : openedTool}
+                  >
+                    {openedTool === 'objects' ? (
+                      <AsyncComponent factory={objectsMenuFactory} />
+                    ) : openedTool === 'route-planner' ? (
+                      <AsyncComponent factory={routePlannerMenuFactory} />
+                    ) : openedTool === 'import-file' ? (
+                      <AsyncComponent factory={dataViewerMenuFactory} />
+                    ) : openedTool === 'changesets' ? (
+                      <AsyncComponent factory={changesetsMenuFactory} />
+                    ) : openedTool === 'draw-lines' ||
+                      openedTool === 'draw-points' ||
+                      openedTool === 'draw-polygons' ? (
+                      <AsyncComponent factory={drawingMenuFactory} />
+                    ) : openedTool === 'map-details' ? (
+                      <MapDetailsMenu />
+                    ) : openedTool === 'tracking' ? (
+                      <AsyncComponent factory={trackingMenuFactory} />
+                    ) : null}
+                  </Fragment>
+                ))}
 
               {selectionMenu === 'search' ? (
                 <SearchSelection />

@@ -87,6 +87,11 @@ import {
   integratedLayerDefMap,
 } from '@shared/mapDefinitions.js';
 import {
+  isMapClickTool,
+  isToolAvailable,
+  unavailableToolsSelector,
+} from '@shared/toolDefinitions.js';
+import {
   type TransportType,
   TransportTypeCompatSchema,
   TransportTypeSchema,
@@ -95,15 +100,17 @@ import type { LatLon } from '@shared/types/common.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
+  closeTool,
+  openTool,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
-  setTool,
   type Tool,
   ToolSchema,
 } from '../store/actions.js';
 import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
+import { openToolsSelector } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
@@ -182,20 +189,43 @@ export function handleLocationChange(store: MyStore): void {
     'track-viewer': 'import-file',
   };
 
-  // `tool=` names the open tool; `tools=` is the legacy comma-separated list of
-  // several, of which only the first still opens.
-  const toolParam = query['tool'] ?? query['tools'];
+  const unavailable = unavailableToolsSelector(getState());
 
-  const tool =
+  // `tools=` is the comma-separated list of open tools; `tool=` is the older
+  // single-tool spelling, read the same way.
+  const toolParam = query['tools'] ?? query['tool'];
+
+  const tools =
     typeof toolParam !== 'string' || !toolParam
-      ? null
-      : (toolParam
+      ? []
+      : toolParam
           .split(',')
           .map((t) => toolAliases[t] ?? ToolSchema.safeParse(t).data)
-          .find((t): t is Tool => Boolean(t)) ?? null);
+          .filter((t): t is Tool => Boolean(t))
+          // A tool this device or account can't offer brings no toolbar, so once
+          // opened nothing could close it again — and it would be written back
+          // into every URL from then on. (`Main` re-checks the gate anyway, for
+          // a tool that becomes unavailable while it is open.)
+          .filter((t) => isToolAvailable(unavailable, t))
+          // Only one tool can own map clicks, so a link naming several opens the
+          // first of them and drops the rest.
+          .filter(
+            (t, i, all) =>
+              !isMapClickTool(t) || all.findIndex(isMapClickTool) === i,
+          );
 
-  if (getState().main.tool !== tool) {
-    dispatch(setTool(tool));
+  const openTools = openToolsSelector(getState());
+
+  for (const t of openTools) {
+    if (!tools.includes(t)) {
+      dispatch(closeTool(t));
+    }
+  }
+
+  for (const t of tools) {
+    if (!openTools.includes(t)) {
+      dispatch(openTool(t));
+    }
   }
 
   {

@@ -44,7 +44,7 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { setTool } from '../store/actions.js';
+import { openTool } from '../store/actions.js';
 import classes from './MapContextMenu.module.css';
 
 const initialState = {
@@ -287,7 +287,7 @@ export function MapContextMenu(): ReactElement {
           break;
 
         case 'startLine':
-          dispatch(setTool('draw-lines'));
+          dispatch(openTool('draw-lines'));
 
           dispatch(
             drawingLineAddPoint({
@@ -311,7 +311,7 @@ export function MapContextMenu(): ReactElement {
           break;
 
         case 'startRoute':
-          dispatch(setTool('route-planner'));
+          dispatch(openTool('route-planner'));
 
           dispatch(
             routePlannerSetStart({
@@ -325,7 +325,7 @@ export function MapContextMenu(): ReactElement {
           break;
 
         case 'finishRoute':
-          dispatch(setTool('route-planner'));
+          dispatch(openTool('route-planner'));
 
           dispatch(
             routePlannerSetFinish({

@@ -1,5 +1,6 @@
 import { deleteFeature, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { isToolOpen } from '@app/store/selectors.js';
 import { dataViewerDelete } from '@features/dataViewer/model/actions.js';
 import {
   drawingLineDelete,
@@ -50,10 +51,13 @@ export const deleteProcessor: Processor = {
       // dispatch(searchSetResults([]));
 
       // dispatch(searchSetQuery({ query: '' }));
-    } else if (state.main.tool === 'import-file') {
-      dispatch(dataViewerDelete());
-    } else if (state.main.tool === 'route-planner') {
+    } else if (state.main.mapTool === 'route-planner') {
+      // Nothing is selected, so Del means "delete all of the open tool's" — of
+      // the tools that have such a thing, the one owning map clicks goes first,
+      // it being what the map is currently for.
       dispatch(routePlannerDelete());
+    } else if (isToolOpen(state, 'import-file')) {
+      dispatch(dataViewerDelete());
     }
   },
 };

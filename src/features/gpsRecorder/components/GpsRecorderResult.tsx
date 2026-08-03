@@ -1,4 +1,4 @@
-import { setTool } from '@app/store/actions.js';
+import { openTool } from '@app/store/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { CircleMarker, Polyline } from 'react-leaflet';
@@ -48,11 +48,11 @@ export default function GpsRecorderResult(): ReactElement | null {
     [segments],
   );
 
-  const openTool = useCallback(() => {
-    dispatch(setTool('gps-recorder'));
+  const handleClick = useCallback(() => {
+    dispatch(openTool('gps-recorder'));
   }, [dispatch]);
 
-  const handlers = useMemo(() => ({ click: openTool }), [openTool]);
+  const handlers = useMemo(() => ({ click: handleClick }), [handleClick]);
 
   if (positions.length === 0 && !latest) {
     return null;

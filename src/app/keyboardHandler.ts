@@ -20,14 +20,15 @@ import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import {
   clearMapFeatures,
+  closeTool,
   deleteFeature,
   openInExternalApp,
+  openTool,
   selectFeature,
   setActiveModal,
   setSelectingHomeLocation,
-  setTool,
 } from './store/actions.js';
-import { showGalleryViewerSelector } from './store/selectors.js';
+import { isToolOpen, showGalleryViewerSelector } from './store/selectors.js';
 import type { MyStore, RootState } from './store/store.js';
 
 let keyTimer: number | null = null;
@@ -104,8 +105,12 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       return selectFeature(null);
     }
 
-    if (!showingModal && !suspendedModal && state.main.tool) {
-      return setTool(null);
+    // Only the tool that owns map clicks: it is the one holding the map in a
+    // mode, and Escape is for leaving a mode. The toolbar-only tools sit there
+    // passively, several at a time, and are closed by their own button — one of
+    // them going on an Escape aimed at something else would be a surprise.
+    if (!showingModal && !suspendedModal && state.main.mapTool) {
+      return closeTool(state.main.mapTool);
     }
 
     return undefined;
@@ -261,7 +266,10 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       );
 
       if (toolDefinition?.kbd) {
-        return setTool(toolDefinition.tool);
+        // The shortcut toggles, like the menu item it stands for.
+        return isToolOpen(state, toolDefinition.tool)
+          ? closeTool(toolDefinition.tool)
+          : openTool(toolDefinition.tool);
       }
 
       if (event.code === 'KeyW') {

@@ -31,10 +31,10 @@ export const cancelType = [
 // converting a route to a drawing, which opens no draw tool). It is dismissed
 // once neither holds; selection changes are handled by cancelType.
 export const measurementStale = (state: RootState) => {
-  const { tool, selection } = state.main;
+  const { mapTool, selection } = state.main;
 
   return (
-    !isDrawTool(tool) &&
+    !isDrawTool(mapTool) &&
     selection?.type !== 'draw-line-poly' &&
     selection?.type !== 'line-point'
   );

@@ -93,7 +93,7 @@ from both the old and new identities.
 | `MapShading` | `add` | shading component type (`hillshade-*`/`slope-*`/`color-relief`/`aspect`/`contour`) | *(added 2026-06)* | [`ShadingControl.tsx`](../src/features/parameterizedShading/components/ShadingControl.tsx) |
 | `HomeLocation` | `save` | — | *(added 2026-06)* | [`HomeLocationPickingMenu.tsx`](../src/features/homeLocation/components/HomeLocationPickingMenu.tsx) |
 | `Osm` | `view` | `node` / `way` / `relation` | *(added 2026-06)* | [`osmLoadNodeProcessor.ts`](../src/features/osm/model/processors/osmLoadNodeProcessor.ts), [`…WayProcessor.ts`](../src/features/osm/model/processors/osmLoadWayProcessor.ts), [`…RelationProcessor.ts`](../src/features/osm/model/processors/osmLoadRelationProcessor.ts) |
-| `Tool` | `set` | tool id | `Main`/`setTool` | [`setToolProcessor.ts`](../src/processors/setToolProcessor.ts) |
+| `Tool` | `set` | tool id | `Main`/`openTool` | [`openToolProcessor.ts`](../src/processors/openToolProcessor.ts) |
 | `Settings` | `save` | — | `Main`/`saveSettings` | [`saveSettingsProcessor.ts`](../src/processors/saveSettingsProcessor.ts) |
 | `Share` | `openExternal` | target (`where`) | `Main`/`openInExternalApp` | [`openInExternalAppProcessor.ts`](../src/features/openInExternalApp/openInExternalAppProcessor.ts) |
 | `Map` | `setLayers` | sorted comma-joined layer ids | *(unchanged)* | [`mapTypeGaProcessor.ts`](../src/features/map/model/processors/mapTypeGaProcessor.ts) |

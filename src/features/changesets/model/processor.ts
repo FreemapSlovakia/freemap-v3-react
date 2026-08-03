@@ -1,10 +1,11 @@
 import { httpRequest } from '@app/httpRequest.js';
 import {
   clearMapFeatures,
+  openTool,
   selectFeature,
-  setTool,
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { isToolOpen } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
@@ -40,16 +41,16 @@ export const changesetsTrackProcessor: Processor = {
 
 export const changesetsProcessor: Processor = {
   id: 'changeset.detail',
-  actionCreator: [changesetsSetParams, changesetsRefresh, setTool],
+  actionCreator: [changesetsSetParams, changesetsRefresh, openTool],
   handle: async ({ dispatch, getState, toastError }) => {
     const state = getState();
 
-    if (state.main.tool !== 'changesets') {
+    if (!isToolOpen(state, 'changesets')) {
       return;
     }
 
     // Cancel the fetch/toasts as soon as the changesets tool is gone.
-    const changesetsClosed = (s: RootState) => s.main.tool !== 'changesets';
+    const changesetsClosed = (s: RootState) => !isToolOpen(s, 'changesets');
 
     const { zoom } = state.map;
 

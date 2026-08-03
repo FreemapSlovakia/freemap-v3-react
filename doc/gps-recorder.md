@@ -34,8 +34,11 @@ Two gates, both in [`support.ts`](../src/features/gpsRecorder/support.ts):
 flag, because other tools' gates do depend on state. `unavailableToolsSelector` folds the whole registry into the
 `|a|b|`-delimited string the menus filter against — a stable string, so
 `useAppSelector` doesn't re-render on every unrelated action the way a fresh
-array would. `Main.tsx` re-checks the gate independently, because
-`#tool=gps-recorder` can name the tool on a device or account that can't use it.
+array would. `#tools=gps-recorder` can name the tool on a device or account that
+can't use it, so `locationChangeHandler` filters the URL's tools through the gate
+— an unavailable tool brings no toolbar, and nothing would be left to close it
+again — and `Main.tsx` re-checks it independently for a tool that becomes
+unavailable while open.
 
 ## Wire contract
 
@@ -321,23 +324,21 @@ feed exists to avoid. What stays in the menu is what belongs to the tool: its
 buttons, and the failure and setup toasts.
 
 **The toolbar follows the recording as well, collapsed.** `Main` mounts
-`GpsRecorderMenu` outside the `tool === …` chain, on `tool === 'gps-recorder'` **or**
-a recording in progress, so a running recording keeps a toolbar whatever tool is
-open — the only thing on the screen that says the phone is still recording. Being
-the open tool is then no longer what mounts it but what *expands* it: `ToolMenu`'s
-`collapsed` leaves the strip — the tool's icon, blinking red through the
-`iconClassName` the menu hands it, its name, and the readout — and turns the
-dismiss button into one that opens the tool again. `collapsible` says the same
-thing about the other direction, so while recording the close button reads as a
-collapse. Escape needs nothing of its own: it dispatches `setTool(null)`, which is
-now exactly the collapse.
+`GpsRecorderMenu` outside the chain that renders the open tools, on the recorder
+being open **or** a recording in progress, so a closed toolbar still leaves a
+strip for as long as the phone is recording — the only thing on the screen that
+says it is. The tool being open is then no longer what mounts the toolbar but
+what gives it its controls: `ToolMenu` renders the strip — the tool's icon,
+blinking red through the `iconClassName` the menu hands it, its name, and the
+`stripChildren` readout — whenever its tool is closed, and turns the button into
+one that opens it again. (Being merely put away by the user's collapse button
+looks the same, but that state is the toolbar's own.)
 
 Two consequences worth knowing. The sync that opening the tool raises is keyed on
-the panel being expanded rather than on the component mounting, because a
-recording mounts it on its own and expanding is the gesture a user makes when the
-live view has gone quiet. And `useRecorderNotices` now lives as long as the
-recording rather than as long as the panel — which is the point: a recorder that
-stops answering mid-ride is worth a toast whether or not its toolbar is open.
+the tool being open rather than on the component mounting, because a recording
+mounts it on its own. And `useRecorderNotices` lives as long as the recording
+rather than as long as the panel — which is the point: a recorder that stops
+answering mid-ride is worth a toast whether or not its toolbar is open.
 
 1. `GET /status` — always, because it is what carries `recording`, `generation`
    and the setup flags.

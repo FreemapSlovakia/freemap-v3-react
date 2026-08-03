@@ -1,11 +1,13 @@
 import {
   applySettings,
   clearMapFeatures,
+  closeTool,
+  openTool,
   selectFeature,
-  setTool,
 } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { createReducer } from '@reduxjs/toolkit';
+import { isDrawTool, isMapClickTool } from '@shared/toolDefinitions.js';
 import { serializeDrawingLine } from '@shared/urlSerialization.js';
 import { lineString } from '@turf/helpers';
 import { simplify as turfSimplify } from '@turf/simplify';
@@ -291,13 +293,21 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
 
       state.joinWith = undefined;
     })
-    // Reaching for a tool ends the line being drawn — a "continue" resumes one
-    // without touching the tool, so that keeps appending points.
-    .addMatcher(isAnyOf(setTool, drawingLineStopDrawing), (state) => ({
-      ...state,
-      drawing: false,
-      joinWith: undefined,
-    })),
+    // Reaching for another tool that takes map clicks ends the line being drawn,
+    // as does closing the drawing tool. A toolbar-only tool opening beside it
+    // takes no clicks, so the line survives it — and a "continue" resumes a line
+    // without touching the tool at all, so that keeps appending points.
+    .addMatcher(
+      (action) =>
+        (openTool.match(action) && isMapClickTool(action.payload)) ||
+        (closeTool.match(action) && isDrawTool(action.payload)) ||
+        drawingLineStopDrawing.match(action),
+      (state) => ({
+        ...state,
+        drawing: false,
+        joinWith: undefined,
+      }),
+    ),
 );
 
 function linefilter(line: Line) {

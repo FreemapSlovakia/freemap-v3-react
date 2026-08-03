@@ -1,4 +1,5 @@
-import { convertToDrawing, setTool } from '@app/store/actions.js';
+import { convertToDrawing, openTool } from '@app/store/actions.js';
+import { isToolOpen } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   routePlannerSetFinish,
@@ -25,7 +26,7 @@ import { useDispatch } from 'react-redux';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
 function ObjectsToggleButton(): ReactElement {
-  const objectsOpen = useAppSelector((state) => state.main.tool === 'objects');
+  const objectsOpen = useAppSelector((state) => isToolOpen(state, 'objects'));
 
   const m = useMessages();
 
@@ -38,7 +39,7 @@ function ObjectsToggleButton(): ReactElement {
           {...props}
           variant="dark"
           disabled={objectsOpen}
-          onClick={() => dispatch(setTool('objects'))}
+          onClick={() => dispatch(openTool('objects'))}
         >
           <TbMapPins />
         </Button>
@@ -86,7 +87,7 @@ export default function ObjectSelection(): ReactElement | null {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  dispatch(setTool('route-planner'));
+                  dispatch(openTool('route-planner'));
 
                   dispatch(
                     routePlannerSetStart({
@@ -107,7 +108,7 @@ export default function ObjectSelection(): ReactElement | null {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  dispatch(setTool('route-planner'));
+                  dispatch(openTool('route-planner'));
 
                   dispatch(
                     routePlannerSetFinish({

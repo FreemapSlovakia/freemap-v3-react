@@ -1,4 +1,9 @@
-import { selectFeature, setTool } from '@app/store/actions.js';
+import {
+  closeTool,
+  convertToDrawing,
+  openTool,
+  selectFeature,
+} from '@app/store/actions.js';
 import { drawingLineStopDrawing } from '@features/drawing/model/actions/drawingLineActions.js';
 import {
   type SearchResult,
@@ -9,10 +14,10 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { type MainState, mainInitialState, mainReducer } from './reducer.js';
 
 /**
- * The open-tool state machine in the main reducer. Rules pinned here: exactly
- * one tool is open at a time, `setTool(null)` closes it, and switching tools
- * drops the selection unless the tool opened is the one the selected feature
- * belongs to.
+ * The open-tool state machine in the main reducer. Rules pinned here: at most
+ * one map-click tool is open and opening another replaces it, toolbar-only
+ * tools accumulate, and taking the map-click slot from another tool drops the
+ * selection unless the tool opened is the one the selected feature belongs to.
  */
 
 const run = (...actions: Action[]): MainState =>
@@ -28,51 +33,119 @@ afterEach(() => {
   window.fmEmbedded = false;
 });
 
-describe('setTool', () => {
-  it('opens a tool', () => {
-    expect(run(setTool('route-planner')).tool).toBe('route-planner');
+describe('openTool', () => {
+  it('opens a map-click tool into the map-click slot', () => {
+    const s = run(openTool('route-planner'));
+
+    expect(s.mapTool).toBe('route-planner');
+    expect(s.panelTools).toEqual([]);
   });
 
-  it('replaces the open tool — only one is ever open', () => {
-    const s = run(setTool('route-planner'), setTool('objects'));
+  it('opens a toolbar-only tool beside the map-click one', () => {
+    const s = run(openTool('route-planner'), openTool('objects'));
 
-    expect(s.tool).toBe('objects');
+    expect(s.mapTool).toBe('route-planner');
+    expect(s.panelTools).toEqual(['objects']);
   });
 
-  it('closes the open tool on null', () => {
-    expect(run(setTool('route-planner'), setTool(null)).tool).toBe(null);
+  it('keeps toolbar-only tools open alongside each other, in the order opened', () => {
+    const s = run(
+      openTool('objects'),
+      openTool('tracking'),
+      openTool('import-file'),
+    );
+
+    expect(s.panelTools).toEqual(['objects', 'tracking', 'import-file']);
+  });
+
+  it('replaces the open map-click tool — only one of them owns the clicks', () => {
+    const s = run(openTool('route-planner'), openTool('draw-points'));
+
+    expect(s.mapTool).toBe('draw-points');
+  });
+
+  it('opens an already open tool only once', () => {
+    const s = run(openTool('objects'), openTool('objects'));
+
+    expect(s.panelTools).toEqual(['objects']);
   });
 
   it('does nothing while embedded', () => {
     window.fmEmbedded = true;
 
-    expect(run(setTool('route-planner')).tool).toBe(null);
+    const s = run(openTool('route-planner'), openTool('objects'));
+
+    expect(s.mapTool).toBe(null);
+    expect(s.panelTools).toEqual([]);
   });
 });
 
-describe('setTool and the selection', () => {
-  it('drops the selection when switching to an unrelated tool', () => {
-    const s = run(selectFeature(aLine), setTool('route-planner'));
+describe('closeTool', () => {
+  it('closes the named map-click tool', () => {
+    const s = run(openTool('route-planner'), closeTool('route-planner'));
+
+    expect(s.mapTool).toBe(null);
+  });
+
+  it('closes the named toolbar-only tool and leaves the others open', () => {
+    const s = run(
+      openTool('objects'),
+      openTool('tracking'),
+      closeTool('objects'),
+    );
+
+    expect(s.panelTools).toEqual(['tracking']);
+  });
+
+  it('leaves the map-click tool alone when a panel is closed', () => {
+    const s = run(
+      openTool('draw-lines'),
+      openTool('tracking'),
+      closeTool('tracking'),
+    );
+
+    expect(s.mapTool).toBe('draw-lines');
+  });
+});
+
+describe('openTool and the selection', () => {
+  it('drops the selection when an unrelated tool takes the map-click slot', () => {
+    const s = run(selectFeature(aLine), openTool('route-planner'));
 
     expect(s.selection).toBe(null);
   });
 
   it('keeps the selection for the tool the feature belongs to', () => {
     for (const tool of ['draw-lines', 'draw-polygons'] as const) {
-      const s = run(selectFeature(aLine), setTool(tool));
+      const s = run(selectFeature(aLine), openTool(tool));
 
       expect(s.selection).toEqual(aLine);
     }
   });
 
-  it('keeps the selection when the tool is closed', () => {
-    const s = run(setTool('objects'), selectFeature(aLine), setTool(null));
+  it('keeps the selection when a toolbar-only tool is opened', () => {
+    // Opening one is no mode change — it takes no clicks off the map.
+    const s = run(selectFeature(aLine), openTool('tracking'));
 
     expect(s.selection).toEqual(aLine);
   });
 
-  it('keeps the selection when the open tool is reopened', () => {
-    const s = run(setTool('objects'), selectFeature(aLine), setTool('objects'));
+  it('keeps the selection when a tool is closed', () => {
+    const s = run(
+      openTool('objects'),
+      selectFeature(aLine),
+      closeTool('objects'),
+    );
+
+    expect(s.selection).toEqual(aLine);
+  });
+
+  it('keeps the selection when the open map-click tool is reopened', () => {
+    const s = run(
+      openTool('draw-lines'),
+      selectFeature(aLine),
+      openTool('draw-lines'),
+    );
 
     expect(s.selection).toEqual(aLine);
   });
@@ -80,28 +153,49 @@ describe('setTool and the selection', () => {
 
 describe('selecting a feature', () => {
   it('leaves the open tool alone', () => {
-    const s = run(setTool('route-planner'), selectFeature(aLine));
+    const s = run(openTool('route-planner'), selectFeature(aLine));
 
     expect(s.selection).toEqual(aLine);
-    expect(s.tool).toBe('route-planner');
+    expect(s.mapTool).toBe('route-planner');
   });
 
   it('keeps the tool open when a search result is selected', () => {
     // The selection toolbar renders alongside the tool's own toolbar.
     const s = run(
-      setTool('map-details'),
+      openTool('map-details'),
       searchSelectResult({ result: {} as SearchResult }),
     );
 
     expect(s.selection).toEqual({ type: 'search' });
-    expect(s.tool).toBe('map-details');
+    expect(s.mapTool).toBe('map-details');
+  });
+});
+
+describe('convertToDrawing', () => {
+  it('closes the tool the conversion was reached for from', () => {
+    const s = run(
+      openTool('objects'),
+      openTool('tracking'),
+      convertToDrawing({ type: 'objects' }),
+    );
+
+    expect(s.panelTools).toEqual(['tracking']);
+  });
+
+  it('leaves the tools alone when converting from a selection toolbar', () => {
+    const s = run(
+      openTool('objects'),
+      convertToDrawing({ type: 'search-result' }),
+    );
+
+    expect(s.panelTools).toEqual(['objects']);
   });
 });
 
 describe('drawingLineStopDrawing', () => {
   it('keeps the draw tool open — stopping only clears the drawing flag in the drawingLines slice', () => {
-    const s = run(setTool('draw-lines'), drawingLineStopDrawing());
+    const s = run(openTool('draw-lines'), drawingLineStopDrawing());
 
-    expect(s.tool).toBe('draw-lines');
+    expect(s.mapTool).toBe('draw-lines');
   });
 });

@@ -37,12 +37,19 @@ export const ToolSchema = z.enum([
 export type Tool = z.infer<typeof ToolSchema>;
 
 /**
- * Opens a tool, replacing the one that was open; `null` closes it. Exactly one
- * tool is open at a time, and it owns map clicks when it is a map-click tool.
- * Switching tools drops the selection unless the tool opened is the one that
- * owns the selected feature.
+ * Opens a tool. A map-click tool replaces the open one — at most one of them
+ * owns map clicks — and drops the selection unless it owns the selected
+ * feature. A tool that only brings a toolbar joins the ones already open and
+ * leaves the selection alone.
  */
-export const setTool = createAction<Tool | null>('SET_TOOL');
+export const openTool = createAction<Tool>('OPEN_TOOL');
+
+/**
+ * Closes one named tool. There is no "close whatever is open": a reducer that
+ * clears its slice when its tool goes has to tell that from another tool being
+ * opened beside it.
+ */
+export const closeTool = createAction<Tool>('CLOSE_TOOL');
 
 export const setActiveModal = createAction<ActiveModal | null>(
   'SET_ACTIVE_MODAL',

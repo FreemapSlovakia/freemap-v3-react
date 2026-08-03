@@ -1,4 +1,4 @@
-import { setActiveModal, setTool, ToolSchema } from '@app/store/actions.js';
+import { openTool, setActiveModal, ToolSchema } from '@app/store/actions.js';
 import { openDrawToolSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -33,7 +33,7 @@ export default function DrawingMenu(): ReactElement | undefined {
           breakpoint="lg"
           name={m?.general.drawingTool}
           value={drawTool}
-          onSelect={(tool) => dispatch(setTool(ToolSchema.parse(tool)))}
+          onSelect={(tool) => dispatch(openTool(ToolSchema.parse(tool)))}
           options={toolDefinitions
             .filter((td) => td.draw)
             .map(({ tool, icon, msgKey: key, kbd }) => ({

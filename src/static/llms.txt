@@ -38,10 +38,10 @@ The highest-value parameters for building links:
 https://www.freemap.sk/#map=8/48.43/19.18&layers=X&point=48.14816/17.10674&point=48.72083/21.25808
 ```
 
-**Styling, labelling and opening the editor.** After the `lat/lon`, a `point` / `line` / `polygon` value may carry style fields, each a one-letter code, joined by the record-separator `%1E` (a leading `%1E` separates them from the coordinates). The useful codes are `L`abel, `C`olor (`%23` = `#`, RGBA hex), `S`hape (`s`quare / `r`ing, default pin), and `I`con spec — `poi:<name>` for a bundled POI icon or `fa:<name>` for a Font Awesome icon (`%3A` = `:`). The markers show on their own; `tool=draw-points` is optional and only additionally opens the drawing toolbar so the user can edit the points. E.g. a blue ring marker labelled "Ahoj!" with the animal-shelter icon:
+**Styling, labelling and opening the editor.** After the `lat/lon`, a `point` / `line` / `polygon` value may carry style fields, each a one-letter code, joined by the record-separator `%1E` (a leading `%1E` separates them from the coordinates). The useful codes are `L`abel, `C`olor (`%23` = `#`, RGBA hex), `S`hape (`s`quare / `r`ing, default pin), and `I`con spec — `poi:<name>` for a bundled POI icon or `fa:<name>` for a Font Awesome icon (`%3A` = `:`). The markers show on their own; `tools=draw-points` is optional and only additionally opens the drawing toolbar so the user can edit the points. E.g. a blue ring marker labelled "Ahoj!" with the animal-shelter icon:
 
 ```
-https://www.freemap.sk/#map=17/48.979457/21.169961&layers=X&tool=draw-points&point=48.979061/21.167738%1EC%230000ff%1ELAhoj!%1ESr%1EIpoi%3Aanimal_shelter
+https://www.freemap.sk/#map=17/48.979457/21.169961&layers=X&tools=draw-points&point=48.979061/21.167738%1EC%230000ff%1ELAhoj!%1ESr%1EIpoi%3Aanimal_shelter
 ```
 
 For every URL parameter and the full style codec, see [`doc/url-params.md`](https://github.com/FreemapSlovakia/freemap-v3-react/blob/main/doc/url-params.md).
@@ -155,11 +155,11 @@ Editing the contents of a loaded map (by hand or via browser back/forward) marks
 
 - Access: Main menu > Drawing and measurement
 - Keyboard shortcut:
-  - <kbd>g</kbd> <kbd>p</kbd> for drawing points (markers) / measuring coordinates and elevation; URL path: `/#tool=draw-points`
-  - <kbd>g</kbd> <kbd>l</kbd> for drawing lines / measuring distance and azimuth; URL path: `/#tool=draw-lines`
-  - <kbd>g</kbd> <kbd>n</kbd> for drawing polygons / measuring area; URL path: `/#tool=draw-polygons`
+  - <kbd>g</kbd> <kbd>p</kbd> for drawing points (markers) / measuring coordinates and elevation; URL path: `/#tools=draw-points`
+  - <kbd>g</kbd> <kbd>l</kbd> for drawing lines / measuring distance and azimuth; URL path: `/#tools=draw-lines`
+  - <kbd>g</kbd> <kbd>n</kbd> for drawing polygons / measuring area; URL path: `/#tools=draw-polygons`
 
-One tool is open at a time: opening another replaces it, and the `tool=` URL parameter names it (e.g. `/#tool=route-planner`). Some tools (route finder, drawing, map details) take clicks on the map, so while one of them is open a click no longer selects a feature. (The legacy `tools=` parameter is still read, but only its first tool opens.)
+Several tools can be open at once, each with its own toolbar, and the `tools=` URL parameter lists them (e.g. `/#tools=route-planner,tracking`; the older `tool=` spelling is read the same way). The exception is the tools that take clicks on the map — route finder, drawing, map details: only one of those is open at a time, opening another replaces it, and while one is open a click no longer selects a feature. Its toolbar is outlined in green to say so. Escape closes it; the other toolbars are closed by their own button.
 
 Toggles the drawing and measurement toolbar. The toolbar lets the user switch between Point / Line / Polygon and open **Style settings** (<kbd>e</kbd> <kbd>d</kbd>), the default drawing style (color, fill color, width, line cap, line join, dash style, shape) applied to new drawings.
 
@@ -187,7 +187,7 @@ Only one profile is shown at a time, and it stays with whatever opened it — a 
 
 - Access: Main menu > Route finder
 - Keyboard shortcut: <kbd>g</kbd> <kbd>r</kbd>
-- URL path: `/#tool=route-planner`
+- URL path: `/#tools=route-planner`
 
 Toggles the route finder toolbar, which has: a transport/router selector, a mode selector, **Start** and **Finish** point pickers, a swap-endpoints button, and a close button.
 
@@ -235,7 +235,7 @@ An isochrone result offers the same **Delete** button and a reduced ⋮ menu wit
 
 - Access: Main menu > Objects (POIs)
 - Keyboard shortcut: <kbd>g</kbd> <kbd>o</kbd>
-- URL path: `/#tool=objects`
+- URL path: `/#tools=objects`
 
 Toggles the objects toolbar.
 The toolbar contains a combo box to search for various POIs by type. Multiple types can be activated and will be visible interactively as markers with icons on the map.
@@ -245,7 +245,7 @@ A **Marker style** button opens a modal to set the marker shape (pin/ring/square
 
 - Access: Main menu > Tracks and data
 - Keyboard shortcut: <kbd>g</kbd> <kbd>g</kbd>
-- URL path: `/#tool=import-file` (the old `track-viewer` alias still works)
+- URL path: `/#tools=import-file` (the old `track-viewer` alias still works)
 
 Toggles the tracks and data toolbar. **Upload** opens the file import modal (URL path: `/#show=file-import`; legacy `/#show=upload-track` still works), which accepts GPX, KML, KMZ, TCX and GeoJSON files; several files can be picked or dropped at once and are merged into one view. Files can also be dropped anywhere on the map. When geodata is already shown, importing asks whether to **append** the new data or **replace** what's loaded. An external track can also be loaded directly by URL via `/#import-url=<URL>` (legacy `gpx-url=` and `load=` still work), supporting the same GPX, KML, KMZ, TCX and GeoJSON formats. Once a track is loaded, the toolbar offers:
 
@@ -265,7 +265,7 @@ Toggles the tracks and data toolbar. **Upload** opens the file import modal (URL
 
 - Access: Main menu > Map details
 - Keyboard shortcut: <kbd>g</kbd> <kbd>i</kbd>
-- URL path: `/#tool=map-details`
+- URL path: `/#tools=map-details`
 
 Toggles the map details toolbar. Clicking a location queries information about it, grouped by source (each toggleable via the **Sources** dropdown):
 
@@ -281,7 +281,7 @@ The geometry displayed for search and map-details results shares one style (colo
 
 - Access: Main menu > Map changes
 - Keyboard shortcut: <kbd>g</kbd> <kbd>x</kbd>
-- URL path: `/#tool=changesets`
+- URL path: `/#tools=changesets`
 
 Toggles the OSM changes toolbar, which contains: a dropdown to select the time window (changesets from the last 3, 7, 14, or 30 days), an "All authors" text input to filter by OSM username, a clear button, a button to download the changesets, and an edit button.
 OSM changes matching the selected parameters are displayed on the map as markers showing the mapper's name and changeset description.
@@ -327,7 +327,7 @@ Each watched device is added with a **Watch Device** form: Watch Token (required
 ### GPS recorder
 
 - Access: Main menu > GPS recorder (marked **experimental**)
-- URL path: `/#tool=gps-recorder`
+- URL path: `/#tools=gps-recorder`
 - **Android only**, and it needs a separate app: the *Freemap GPS Recorder*, a self-hosted APK the tool links to when it isn't installed. The tool is hidden entirely on other platforms.
 
 Records a GPS track with the Android app while the map shows it live, so the recording survives the browser being closed, backgrounded or killed — the phone does the recording, the page is a viewer and a remote control. The toolbar offers:

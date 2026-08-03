@@ -1,4 +1,4 @@
-import { setTool } from '@app/store/actions.js';
+import { openTool } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import {
@@ -112,7 +112,7 @@ export default function DataViewerResult({
   const dispatch = useDispatch();
 
   const setThisTool = () => {
-    dispatch(setTool('import-file'));
+    dispatch(openTool('import-file'));
   };
 
   // Clicking a line focuses the import tool and, when several tracks are

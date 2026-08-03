@@ -1,7 +1,7 @@
 import {
   clearMapFeatures,
+  openTool,
   selectFeature,
-  setTool,
 } from '@app/store/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
@@ -181,7 +181,7 @@ export const routePlannerReducer = createReducer(
       // Arm point-picking when route-planner is opened (or restored): fall back
       // to finishing an existing route, or starting a new one. Only when nothing
       // is already armed.
-      .addCase(setTool, (state, action) =>
+      .addCase(openTool, (state, action) =>
         action.payload === 'route-planner'
           ? {
               ...state,

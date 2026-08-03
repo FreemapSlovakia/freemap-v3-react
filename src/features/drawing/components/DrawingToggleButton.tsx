@@ -1,4 +1,4 @@
-import { setTool, type Tool } from '@app/store/actions.js';
+import { openTool, type Tool } from '@app/store/actions.js';
 import { openDrawToolSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -29,7 +29,7 @@ export function DrawingToggleButton({ tool }: Props): ReactElement {
           {...props}
           variant="dark"
           disabled={open}
-          onClick={() => dispatch(setTool(tool))}
+          onClick={() => dispatch(openTool(tool))}
         >
           <FaPencilRuler />
         </Button>

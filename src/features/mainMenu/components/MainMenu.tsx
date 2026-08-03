@@ -1,6 +1,6 @@
 import {
   hasClearableMapFeaturesSelector,
-  toolSelector,
+  openToolsSelector,
 } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
@@ -46,7 +46,7 @@ export function MainMenu(): ReactElement {
     state.map.layers.includes('I'),
   );
 
-  const tool = useAppSelector(toolSelector);
+  const openTools = useAppSelector(openToolsSelector);
 
   const unavailable = useAppSelector(unavailableToolsSelector);
 
@@ -103,7 +103,11 @@ export function MainMenu(): ReactElement {
         <FaRegMap /> {m?.tools.myMaps} <kbd>g</kbd> <kbd>m</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item as="button" eventKey="drawing" active={isDrawTool(tool)}>
+      <Dropdown.Item
+        as="button"
+        eventKey="drawing"
+        active={openTools.some(isDrawTool)}
+      >
         <FaPencilRuler /> {m?.tools.measurement}
       </Dropdown.Item>
 
@@ -113,10 +117,10 @@ export function MainMenu(): ReactElement {
           ({ tool: newTool, icon, msgKey, kbd, experimental }) =>
             newTool && (
               <Dropdown.Item
-                href={`#tool=${newTool}`}
+                href={`#tools=${newTool}`}
                 key={newTool}
                 eventKey={`tool-${newTool}`}
-                active={tool === newTool}
+                active={openTools.includes(newTool)}
               >
                 {icon} {m?.tools[msgKey]}{' '}
                 {experimental && (

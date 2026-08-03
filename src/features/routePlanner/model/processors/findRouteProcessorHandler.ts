@@ -50,7 +50,7 @@ import { updateRouteTypes } from './findRouteProcessor.js';
 const cancelTypes = [...updateRouteTypes, clearMapFeatures];
 
 const routePlannerClosed = (state: RootState) =>
-  state.main.tool !== 'route-planner';
+  state.main.mapTool !== 'route-planner';
 
 enum GraphhopperSign {
   UNKNOWN = -99,

@@ -6,6 +6,7 @@ import { serializeLatLon } from '@shared/urlSerialization.js';
 import { hash } from 'ohash';
 import { encodeActiveModal } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
+import { openToolsSelector } from '../store/selectors.js';
 import type { RootState } from '../store/store.js';
 import {
   getMapContentParts,
@@ -101,7 +102,8 @@ export const urlProcessor: Processor = {
       // way a map can claim or release it — a load that starts, opens, or is
       // given up on — without this list having to name them.
       mapId,
-      main.tool,
+      main.mapTool,
+      main.panelTools,
       objects.active,
       wiki.preview,
       wiki.loading,
@@ -147,8 +149,12 @@ export const urlProcessor: Processor = {
       queryParts.push(['shading', serializeShading(map.shading)]);
     }
 
-    if (main.tool) {
-      queryParts.push(['tool', main.tool]);
+    // The map-click tool first, so a link that names several of them still
+    // opens the right one when read back.
+    const tools = openToolsSelector(state);
+
+    if (tools.length > 0) {
+      queryParts.push(['tools', tools.join(',')]);
     }
 
     {

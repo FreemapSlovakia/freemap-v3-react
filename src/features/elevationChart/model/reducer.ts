@@ -1,5 +1,11 @@
-import { clearMapFeatures, setTool, type Tool } from '@app/store/actions.js';
+import {
+  clearMapFeatures,
+  closeTool,
+  openTool,
+  type Tool,
+} from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import { isMapClickTool } from '@shared/toolDefinitions.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
   type ElevationProvenance,
@@ -91,14 +97,25 @@ export const elevationChartReducer = createReducer(initialState, (builder) =>
 
       state.provenance = action.payload.provenance;
     })
-    // Clear the chart once the tool that owns its target is gone.
-    .addCase(setTool, (state, action) =>
-      state.target &&
-      targetTools[state.target.type] &&
-      action.payload !== targetTools[state.target.type]
+    // Clear the chart once the tool that owns its target is closed.
+    .addCase(closeTool, (state, action) =>
+      state.target && targetTools[state.target.type] === action.payload
         ? initialState
         : state,
     )
+    // Opening a map-click tool closes the one that had the slot, and does it
+    // without an action of its own — so the chart of a tool losing the slot goes
+    // here, as it would on that tool's own close button.
+    .addCase(openTool, (state, action) => {
+      const owner = state.target && targetTools[state.target.type];
+
+      return owner &&
+        owner !== action.payload &&
+        isMapClickTool(owner) &&
+        isMapClickTool(action.payload)
+        ? initialState
+        : state;
+    })
     .addCase(clearMapFeatures, setInitialState)
     .addCase(elevationChartClose, setInitialState),
 );

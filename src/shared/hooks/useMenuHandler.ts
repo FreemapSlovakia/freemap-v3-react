@@ -1,15 +1,17 @@
 import {
   clearMapFeatures,
+  closeTool,
   type ExternalTarget,
   openInExternalApp,
+  openTool,
   resetApp,
   saveSettings,
   setActiveModal,
-  setTool,
   type Tool,
   ToolSchema,
 } from '@app/store/actions.js';
 import { type ModalId, modalOf } from '@app/store/activeModal.js';
+import { openToolsSelector } from '@app/store/selectors.js';
 import {
   type Document,
   documentShow,
@@ -76,7 +78,7 @@ export function useMenuHandler({
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const openTool = useAppSelector((state) => state.main.tool);
+  const openTools = useAppSelector(openToolsSelector);
 
   const [menuShown, setShow] = useState(false);
 
@@ -177,17 +179,14 @@ export function useMenuHandler({
       const tool = afterPrefix(key, 'tool-');
 
       if (tool !== undefined) {
-        if (!tool) {
-          dispatch(setTool(null));
-        } else {
-          const parsed = ToolSchema.safeParse(tool);
+        const parsed = ToolSchema.safeParse(tool);
 
-          if (parsed.success) {
-            const t = parsed.data;
+        if (parsed.success) {
+          const t = parsed.data;
 
-            // Menu items toggle: close if it is the open one, otherwise open it.
-            dispatch(setTool(openTool === t ? null : t));
-          }
+          // Menu items toggle: close it if it is open, otherwise open it beside
+          // whatever else is.
+          dispatch(openTools.includes(t) ? closeTool(t) : openTool(t));
         }
 
         setShow(false);
@@ -198,7 +197,7 @@ export function useMenuHandler({
       if (key === 'drawing') {
         const parsed = ToolSchema.safeParse(storage.getItem('fm.drawingTool'));
 
-        dispatch(setTool(parsed.success ? parsed.data : 'draw-points'));
+        dispatch(openTool(parsed.success ? parsed.data : 'draw-points'));
 
         setShow(false);
 
@@ -303,7 +302,7 @@ export function useMenuHandler({
       pointTitle,
       zoom,
       layers,
-      openTool,
+      openTools,
       sendGalleryEmails,
     ],
   );

@@ -1,23 +1,35 @@
 import { isTrackLine } from '@features/dataViewer/trackSelection.js';
 import type { PickMode } from '@features/routePlanner/model/actions.js';
 import type { Track } from '@features/tracking/model/types.js';
-import { isDrawTool, isMapClickTool } from '@shared/toolDefinitions.js';
+import { isDrawTool } from '@shared/toolDefinitions.js';
 import { createSelector } from 'reselect';
 import marker from '@/images/cursors/marker.svg';
 import pencil from '@/images/cursors/pencil.svg';
 import type { Tool } from '../store/actions.js';
 import type { RootState } from '../store/store.js';
 
-export const toolSelector = (state: RootState): Tool | null => state.main.tool;
+// Whether a tool's toolbar is on the screen, whichever slot it is open in.
+export const isToolOpen = (state: RootState, tool: Tool): boolean =>
+  state.main.mapTool === tool || state.main.panelTools.includes(tool);
 
-// The open tool as far as map clicks go — i.e. the one that owns them; null for
-// a tool that only brings a toolbar.
+// Every open tool, the map-click one first — memoized, so subscribing to it
+// doesn't re-render on every unrelated action the way a fresh array would.
+export const openToolsSelector = createSelector(
+  (state: RootState) => state.main.mapTool,
+  (state: RootState) => state.main.panelTools,
+  (mapTool, panelTools): Tool[] =>
+    mapTool ? [mapTool, ...panelTools] : panelTools,
+);
+
+// The open tool as far as map clicks go — i.e. the one that owns them; null
+// while only toolbar-only tools are open.
 export const activeModeSelector = (state: RootState): Tool | null =>
-  isMapClickTool(state.main.tool) ? state.main.tool : null;
+  state.main.mapTool;
 
-// The open draw-* tool (the three of them share one menu).
+// The open draw-* tool (the three of them share one menu, and the map-click
+// slot they all take).
 export const openDrawToolSelector = (state: RootState): Tool | null =>
-  isDrawTool(state.main.tool) ? state.main.tool : null;
+  isDrawTool(state.main.mapTool) ? state.main.mapTool : null;
 
 export const mapLayersSelector = (state: RootState): string[] =>
   state.map.layers;
@@ -54,8 +66,8 @@ export const pickingModeSelector = (state: RootState): boolean =>
 
 // The active tool as far as map interaction is concerned: the open map-click
 // tool, but masked to null while a picking mode owns the map so it goes inert.
-// Map-interaction code should read this; menus/processors that want the open
-// tool should use toolSelector / activeModeSelector.
+// Map-interaction code should read this; menus/processors that want to know
+// whether a toolbar is up should use isToolOpen.
 export const activeMapToolSelector = (state: RootState): Tool | null =>
   pickingModeSelector(state) ? null : activeModeSelector(state);
 

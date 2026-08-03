@@ -1,4 +1,4 @@
-import { setActiveModal, setTool } from '@app/store/actions.js';
+import { openTool, setActiveModal } from '@app/store/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -72,7 +72,7 @@ export function useLoadDataFiles(): (files: File[]) => Promise<void> {
 
       dispatch(setActiveModal(null));
 
-      dispatch(setTool('import-file'));
+      dispatch(openTool('import-file'));
     },
     [dispatch, askMergeMode, existing],
   );

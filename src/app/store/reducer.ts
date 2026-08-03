@@ -20,25 +20,35 @@ import {
 } from '@features/routePlanner/model/actions.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { isMapClickTool } from '@shared/toolDefinitions.js';
 import {
   clearMapFeatures,
+  closeTool,
   convertToDrawing,
   deleteFeature,
   hideInfoBar,
   infoBarShown,
+  openTool,
   type Selection,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
   setErrorTicketId,
-  setTool,
   type Tool,
 } from './actions.js';
 import type { ActiveModal } from './activeModal.js';
 
 export interface MainState {
-  /** The open tool — at most one, and the owner of map clicks when it takes them. */
-  tool: Tool | null;
+  /**
+   * The open map-click tool — the owner of map clicks, and at most one of them,
+   * so which toolbar takes a click never has to be stored separately.
+   */
+  mapTool: Tool | null;
+  /**
+   * The open tools that only bring a toolbar, in the order they were opened —
+   * any number of them, alongside each other and alongside `mapTool`.
+   */
+  panelTools: Tool[];
   activeModal: ActiveModal | null;
   errorTicketId: string | undefined;
   embedFeatures: string[];
@@ -48,7 +58,8 @@ export interface MainState {
 }
 
 export const mainInitialState: MainState = {
-  tool: null,
+  mapTool: null,
+  panelTools: [],
   activeModal: null,
   errorTicketId: undefined,
   embedFeatures: [],
@@ -86,26 +97,61 @@ function ownsSelection(tool: Tool, selection: Selection | null): boolean {
   }
 }
 
+/**
+ * The tool a conversion to drawing was reached for from — its toolbar acted on
+ * features that are a drawing now, so it goes with them. A search result is
+ * converted from its selection toolbar, which belongs to no tool.
+ */
+const convertSourceTools: Record<
+  ReturnType<typeof convertToDrawing>['payload']['type'],
+  Tool | undefined
+> = {
+  objects: 'objects',
+  'objects-geometry': 'objects',
+  'planned-route': 'route-planner',
+  track: 'import-file',
+  changesets: 'changesets',
+  'search-result': undefined,
+};
+
 export const mainReducer = createReducer(mainInitialState, (builder) => {
   builder
-    .addCase(setTool, (state, action) => {
+    .addCase(openTool, (state, action) => {
       if (window.fmEmbedded) {
         return;
       }
 
       const tool = action.payload;
 
-      // Switching to another tool leaves the selected feature behind; closing
-      // the tool (or reopening the one the feature belongs to) keeps it.
-      if (
-        tool &&
-        tool !== state.tool &&
-        !ownsSelection(tool, state.selection)
-      ) {
+      if (!isMapClickTool(tool)) {
+        if (!state.panelTools.includes(tool)) {
+          state.panelTools.push(tool);
+        }
+
+        return;
+      }
+
+      // Taking the map-click slot from another tool leaves the selected feature
+      // behind; reopening the one the feature belongs to keeps it, so reaching
+      // for a feature's tool from its selection toolbar doesn't throw the
+      // selection away. Opening a toolbar-only tool says nothing about the
+      // selection at all.
+      if (tool !== state.mapTool && !ownsSelection(tool, state.selection)) {
         state.selection = null;
       }
 
-      state.tool = tool;
+      state.mapTool = tool;
+    })
+    .addCase(closeTool, (state, action) => {
+      const tool = action.payload;
+
+      if (state.mapTool === tool) {
+        state.mapTool = null;
+      }
+
+      if (state.panelTools.includes(tool)) {
+        state.panelTools = state.panelTools.filter((t) => t !== tool);
+      }
     })
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;
@@ -146,8 +192,16 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
 
       state.selection = action.payload;
     })
-    .addCase(convertToDrawing, (state) => {
-      state.tool = null;
+    .addCase(convertToDrawing, (state, action) => {
+      const source = convertSourceTools[action.payload.type];
+
+      if (state.mapTool === source) {
+        state.mapTool = null;
+      }
+
+      if (source && state.panelTools.includes(source)) {
+        state.panelTools = state.panelTools.filter((t) => t !== source);
+      }
     })
     .addCase(drawingLineJoinFinish, (state, { payload }) => {
       state.selection = payload.selection;

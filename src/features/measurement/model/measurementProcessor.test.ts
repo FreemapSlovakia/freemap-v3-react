@@ -11,14 +11,15 @@ import { cancelType, measurementStale } from './measurementProcessor.js';
 /**
  * The dismissal rules for the line/area measurement readout. `measurementStale`
  * decides when the readout is no longer relevant; `cancelType` lists the
- * actions that also dismiss it. Both only read `main.tool` / `main.selection`,
+ * actions that also dismiss it. Both only read `main.mapTool` /
+ * `main.selection`,
  * so a minimal cast state is enough.
  */
 
-const state = (tool: string | null, selectionType?: string): RootState =>
+const state = (mapTool: string | null, selectionType?: string): RootState =>
   ({
     main: {
-      tool,
+      mapTool,
       selection: selectionType ? { type: selectionType } : undefined,
     },
   }) as unknown as RootState;
@@ -40,7 +41,7 @@ describe('measurementStale', () => {
     expect(measurementStale(state(null))).toBe(true);
     expect(measurementStale(state(null, 'search'))).toBe(true);
     expect(measurementStale(state(null, 'draw-points'))).toBe(true);
-    expect(measurementStale(state('objects'))).toBe(true);
+    expect(measurementStale(state('route-planner'))).toBe(true);
   });
 });
 
