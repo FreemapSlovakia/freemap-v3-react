@@ -12,6 +12,7 @@ import {
   type SubmitEvent,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import {
@@ -27,6 +28,7 @@ import {
   FaDropbox,
   FaFileExport,
   FaGoogle,
+  FaShareAlt,
   FaTimes,
 } from 'react-icons/fa';
 import { SiGarmin } from 'react-icons/si';
@@ -42,6 +44,7 @@ import {
   ExportTypeSchema,
   exportMapFeatures,
 } from '../model/actions.js';
+import { type ExportFileType, exportShareMode } from '../model/fileTypes.js';
 import { useMapFeaturesExportMessages } from '../translations/useMapFeaturesExportMessages.js';
 import {
   ExportablesSelector,
@@ -103,7 +106,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     toExportType,
   );
 
-  const [target, , setTarget] = usePersistentState<ExportTarget>(
+  const [target, setTargetValue, setTarget] = usePersistentState<ExportTarget>(
     'fm.exportFeatures.target',
     String,
     toExportTarget,
@@ -120,6 +123,31 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const [description, setDescription] = useState('');
 
   const [activity, setActivity] = useState('');
+
+  // Sharing goes through the OS share sheet, which some browsers open for no
+  // file at all — so the target is offered per format, and a persisted choice
+  // falls back to the download once the current format can't be shared. A KML
+  // export packs into a KMZ when it carries marker images, so both have to hold
+  // for the answer shown here to match what the export ends up handing over.
+  const shareMode = useMemo(() => {
+    const outputs: ExportFileType[] = type === 'kml' ? ['kml', 'kmz'] : [type];
+
+    const modes = outputs.map((output) => exportShareMode(output));
+
+    return modes.includes(null)
+      ? null
+      : modes.includes('text')
+        ? 'text'
+        : 'native';
+  }, [type]);
+
+  const shareable = shareMode !== null;
+
+  useEffect(() => {
+    if (target === 'share' && !shareable) {
+      setTargetValue('download');
+    }
+  }, [target, shareable, setTargetValue]);
 
   // Elevation-fill capability of the current selection drives the control's
   // state: `canElevate` is false when nothing selected can carry elevation
@@ -206,6 +234,11 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
       confirm,
     ],
   );
+
+  // A share the browser will only take as plain text says so; one it takes as the file it is says
+  // nothing.
+  const shareNote =
+    target === 'share' && shareMode === 'text' ? em?.shareAsText : undefined;
 
   const isGarmin = target === 'garmin';
 
@@ -325,52 +358,67 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
             <div>
               <ButtonGroup>
-                {ExportTargetSchema.options.map((exportTarget) => (
-                  <ToggleButton
-                    id={exportTarget}
-                    key={exportTarget}
-                    type="radio"
-                    variant="outline-primary"
-                    checked={target === exportTarget}
-                    value={exportTarget}
-                    onChange={setTarget}
-                    disabled={!initExportables}
-                  >
-                    {
+                {ExportTargetSchema.options
+                  .filter(
+                    (exportTarget) => exportTarget !== 'share' || shareable,
+                  )
+                  .map((exportTarget) => (
+                    <ToggleButton
+                      id={exportTarget}
+                      key={exportTarget}
+                      type="radio"
+                      variant="outline-primary"
+                      checked={target === exportTarget}
+                      value={exportTarget}
+                      onChange={setTarget}
+                      disabled={!initExportables}
+                    >
                       {
-                        download: (
-                          <>
-                            <FaDownload /> {em?.download}
-                          </>
-                        ),
-                        gdrive: (
-                          <>
-                            <FaGoogle /> Google Drive
-                          </>
-                        ),
-                        dropbox: (
-                          <>
-                            <FaDropbox /> Dropbox
-                          </>
-                        ),
-                        garmin: (
-                          <>
-                            <SiGarmin
-                              style={{
-                                fontSize: '400%',
-                                marginBlock: '-24px',
-                              }}
-                            />
-                            &ensp;Garmin&ensp;
-                            <ExperimentalFunction />
-                          </>
-                        ),
-                      }[exportTarget]
-                    }
-                  </ToggleButton>
-                ))}
+                        {
+                          download: (
+                            <>
+                              <FaDownload /> {em?.download}
+                            </>
+                          ),
+                          share: (
+                            <>
+                              <FaShareAlt /> {em?.share}
+                            </>
+                          ),
+                          gdrive: (
+                            <>
+                              <FaGoogle /> Google Drive
+                            </>
+                          ),
+                          dropbox: (
+                            <>
+                              <FaDropbox /> Dropbox
+                            </>
+                          ),
+                          garmin: (
+                            <>
+                              <SiGarmin
+                                style={{
+                                  fontSize: '400%',
+                                  marginBlock: '-24px',
+                                }}
+                              />
+                              &ensp;Garmin&ensp;
+                              <ExperimentalFunction />
+                            </>
+                          ),
+                        }[exportTarget]
+                      }
+                    </ToggleButton>
+                  ))}
               </ButtonGroup>
             </div>
+
+            {shareNote && (
+              <Form.Text muted className="d-block mt-1">
+                {shareNote}
+              </Form.Text>
+            )}
           </Form.Group>
 
           {isGarmin ? (

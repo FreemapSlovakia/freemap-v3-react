@@ -5,6 +5,11 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Stiahnuť',
+  share: 'Zdieľať',
+  shareAsText:
+    'Váš prehliadač zdieľa iba textové súbory, preto súbor dostane príponu „.txt“. Cieľová aplikácia ju možno bude potrebovať odstrániť.',
+  sharedAsDownload:
+    'Dialóg zdieľania sa nepodarilo otvoriť, súbor sa preto stiahol.',
   format: 'Formát',
   target: 'Cieľ',
   elevation: {

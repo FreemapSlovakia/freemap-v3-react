@@ -43,6 +43,11 @@ const de: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
       'Du bist noch nicht bei Garmin angemeldet. Möchtest du dich jetzt anmelden?',
   },
   download: 'Download',
+  share: 'Teilen',
+  shareAsText:
+    'Ihr Browser teilt nur Textdateien, daher erhält die Datei die Endung „.txt“. Die empfangende App benötigt sie möglicherweise ohne diese Endung.',
+  sharedAsDownload:
+    'Der Teilen-Dialog ließ sich nicht öffnen, daher wurde die Datei heruntergeladen.',
   format: 'Format',
   target: 'Ziel',
   elevation: {

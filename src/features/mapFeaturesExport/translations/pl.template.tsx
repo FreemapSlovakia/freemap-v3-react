@@ -40,6 +40,11 @@ const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
       'Nie jesteś jeszcze zalogowany do Garmin. Chcesz się teraz zalogować?',
   },
   download: 'Pobierz',
+  share: 'Udostępnij',
+  shareAsText:
+    'Twoja przeglądarka udostępnia tylko pliki tekstowe, dlatego plik otrzyma rozszerzenie „.txt”. Aplikacja docelowa może wymagać jego usunięcia.',
+  sharedAsDownload:
+    'Nie udało się otworzyć okna udostępniania, więc plik został pobrany.',
   format: 'Format',
   target: 'Cel',
   elevation: {

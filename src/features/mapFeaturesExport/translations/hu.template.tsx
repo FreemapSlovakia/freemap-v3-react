@@ -5,6 +5,11 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Letöltés',
+  share: 'Megosztás',
+  shareAsText:
+    'A böngésződ csak szöveges fájlokat oszt meg, ezért a fájl „.txt” kiterjesztést kap. A fogadó alkalmazásnak lehet, hogy el kell távolítani.',
+  sharedAsDownload:
+    'A megosztási ablakot nem sikerült megnyitni, ezért a fájl letöltésre került.',
   exportError: ({ err }) =>
     addError(getMessages()!, 'Hiba a exportálásakor', err),
   what: {

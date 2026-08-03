@@ -5,6 +5,11 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Télécharger',
+  share: 'Partager',
+  shareAsText:
+    'Votre navigateur ne partage que des fichiers texte, le fichier reçoit donc l’extension « .txt ». L’application destinataire peut nécessiter sa suppression.',
+  sharedAsDownload:
+    'Le panneau de partage n’a pas pu être ouvert, le fichier a donc été téléchargé.',
   format: 'Format',
   target: 'Destination',
   elevation: {

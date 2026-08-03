@@ -1,5 +1,8 @@
 export type MapFeaturesExportMessages = {
   download: string;
+  share: string;
+  shareAsText: string;
+  sharedAsDownload: string;
   format: string;
   target: string;
   elevation: {

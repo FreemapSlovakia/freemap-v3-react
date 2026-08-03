@@ -4,6 +4,11 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const en: MapFeaturesExportMessages = {
   download: 'Download',
+  share: 'Share',
+  shareAsText:
+    'Your browser only shares plain-text files, so the file gets a “.txt” suffix. The receiving app may need it removed.',
+  sharedAsDownload:
+    'The share sheet could not be opened, so the file has been downloaded instead.',
   format: 'Format',
   target: 'Target',
   elevation: {

@@ -5,6 +5,11 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Download',
+  share: 'Condividi',
+  shareAsText:
+    'Il tuo browser condivide solo file di testo, quindi al file viene aggiunta l’estensione «.txt». L’app di destinazione potrebbe richiederne la rimozione.',
+  sharedAsDownload:
+    'Non è stato possibile aprire il pannello di condivisione, quindi il file è stato scaricato.',
   format: 'Formato',
   exportError: ({ err }) => addError(getMessages()!, 'Error exporting:', err),
   what: {

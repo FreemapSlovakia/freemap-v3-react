@@ -15,6 +15,7 @@ export type Exportable =
 
 export const ExportTargetSchema = z.enum([
   'download',
+  'share',
   'gdrive',
   'dropbox',
   'garmin',

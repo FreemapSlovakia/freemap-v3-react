@@ -5,6 +5,11 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Prenesi',
+  share: 'Deli',
+  shareAsText:
+    'Vaš brskalnik deli samo besedilne datoteke, zato datoteka dobi končnico ».txt«. Ciljna aplikacija jo bo morda treba odstraniti.',
+  sharedAsDownload:
+    'Pogovornega okna za deljenje ni bilo mogoče odpreti, zato se je datoteka prenesla.',
   format: 'Format',
   target: 'Cilj',
   elevation: {

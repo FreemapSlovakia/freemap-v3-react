@@ -7,20 +7,15 @@ import { hasProperty } from '@shared/types/typeUtils.js';
 import type { Dispatch } from 'redux';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
 import type { ExportTarget } from '../actions.js';
+import {
+  type ExportFileType,
+  exportFileName,
+  FILE_META,
+  shareFileMeta,
+} from '../fileTypes.js';
 
 export const licenseNotice =
   'Various licenses may apply - like OpenStreetMap (https://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';
-
-type ExportFileType = 'gpx' | 'geojson' | 'kml' | 'kmz';
-
-// MIME type + save-dialog extensions per export file type. The type string
-// doubles as the filename extension (`freemap-export-….<type>`).
-const FILE_META: Record<ExportFileType, { mime: string; exts: string[] }> = {
-  gpx: { mime: 'application/gpx+xml', exts: ['.gpx'] },
-  geojson: { mime: 'application/geo+json', exts: ['.geojson', '.json'] },
-  kml: { mime: 'application/vnd.google-earth.kml+xml', exts: ['.kml'] },
-  kmz: { mime: 'application/vnd.google-earth.kmz', exts: ['.kmz'] },
-};
 
 // Builds the export Blob with the right MIME, with one wrinkle centralized:
 // Dropbox rejects some typed MIMEs (e.g. `application/gpx+xml`), so that target
@@ -118,7 +113,7 @@ export async function upload(
           Authorization: `Bearer ${authToken}`,
           'Content-Type': 'application/octet-stream',
           'Dropbox-API-Arg': JSON.stringify({
-            path: `/freemap-export-${new Date().toISOString()}.${type}`,
+            path: `/${exportFileName(type)}`,
           }),
         },
         data,
@@ -211,7 +206,7 @@ export async function upload(
           new Blob(
             [
               JSON.stringify({
-                name: `freemap-export-${new Date().toISOString()}.${type}`,
+                name: exportFileName(type),
                 mimeType: FILE_META[type].mime,
                 parents: [folder.id],
               }),
@@ -256,13 +251,71 @@ export async function upload(
       }
 
       break;
+
+    case 'share': {
+      const meta = shareFileMeta(type);
+
+      // The modal offers this target only where a file can be shared; re-asking
+      // here keeps a browser that shares none from throwing an opaque platform
+      // error.
+      if (!meta) {
+        throw new Error('sharing files is not supported');
+      }
+
+      const file = new File([data], meta.name, { type: meta.mime });
+
+      try {
+        await navigator.share({ files: [file] });
+      } catch (e) {
+        // Dismissing the share sheet rejects with AbortError.
+        if (e instanceof DOMException && e.name === 'AbortError') {
+          return false;
+        }
+
+        // Opening the sheet spends the user activation of the Export click, and
+        // an export slow enough to outlive it (elevation filling, a photo-heavy
+        // KMZ) finds it gone. The file exists and the user asked for it, so it
+        // is saved instead — an outcome, rather than an error over a file that
+        // was successfully built.
+        if (e instanceof DOMException && e.name === 'NotAllowedError') {
+          try {
+            await saveFile(data, type);
+          } catch (saveError) {
+            if (
+              saveError instanceof DOMException &&
+              saveError.name === 'AbortError'
+            ) {
+              return false;
+            }
+
+            throw saveError;
+          }
+
+          dispatch(
+            toastsAdd({
+              id: 'mapFeaturesExport',
+              style: 'warning',
+              timeout: 5000,
+              messageKey: 'sharedAsDownload',
+              messageLoader: loadMapFeaturesExportMessages,
+            }),
+          );
+
+          break;
+        }
+
+        throw e;
+      }
+
+      break;
+    }
   }
 
   return true;
 }
 
 function saveFile(blob: Blob, type: ExportFileType) {
-  return saveBlob(blob, `freemap-export-${new Date().toISOString()}.${type}`, {
+  return saveBlob(blob, exportFileName(type), {
     [blob.type]: FILE_META[type].exts,
   });
 }
