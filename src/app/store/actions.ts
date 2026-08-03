@@ -199,7 +199,14 @@ export const openInExternalApp = createAction<{
   includePoint?: boolean;
   pointTitle?: string;
   pointDescription?: string;
+  /** The page this is about: opened in a window, or shared as a link. */
   url?: string;
+  /**
+   * The picture itself, for `image` — the one target that shares a file rather than an address, so
+   * it needs the bytes and not a page about them. Separate from `url` because the two differ:
+   * a Wikimedia photo's `url` is its Commons file page.
+   */
+  imageUrl?: string;
 }>('OPEN_IN_EXTERNAL');
 
 export { applyCookieConsent, setAnalyticCookiesAllowed };

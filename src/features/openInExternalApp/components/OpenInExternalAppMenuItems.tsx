@@ -34,6 +34,8 @@ interface Props extends LatLon {
   zoom: number;
   includePoint?: boolean;
   url?: string;
+  /** The picture itself, where there is one — what the `image` target shares as a file. */
+  imageUrl?: string;
   showKbdShortcut?: boolean;
   copy?: boolean;
 }
@@ -50,6 +52,7 @@ export function OpenInExternalAppDropdownItems({
   zoom,
   includePoint,
   url,
+  imageUrl,
   showKbdShortcut,
   copy = true,
 }: Props): ReactElement {
@@ -58,6 +61,11 @@ export function OpenInExternalAppDropdownItems({
   const oeam = useOpenInExternalAppMessages();
 
   const hasShare = 'share' in window.navigator;
+
+  // Sharing the picture itself needs both a browser that shares files and a picture to share — the
+  // item used to appear for any `url`, which on a drawing point meant offering to share a map link
+  // as a photo.
+  const canShareImage = Boolean(imageUrl) && 'canShare' in window.navigator;
 
   const hasClipboard = Boolean(window.navigator.clipboard?.writeText);
 
@@ -74,16 +82,16 @@ export function OpenInExternalAppDropdownItems({
               <FaLink /> {oeam?.url}
             </Dropdown.Item>
           )}
-
-          {'canShare' in window.navigator && (
-            <Dropdown.Item as="button" {...openMenuItemProps('image')}>
-              <FaShareAlt /> {oeam?.image}
-            </Dropdown.Item>
-          )}
-
-          <Dropdown.Divider />
         </>
       )}
+
+      {canShareImage && (
+        <Dropdown.Item as="button" {...openMenuItemProps('image')}>
+          <FaShareAlt /> {oeam?.image}
+        </Dropdown.Item>
+      )}
+
+      {(url || canShareImage) && <Dropdown.Divider />}
 
       {!url && hasClipboard && copy && (
         <Dropdown.Item as="button" {...openMenuItemProps('copy')}>

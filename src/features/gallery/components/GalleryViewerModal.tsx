@@ -133,6 +133,11 @@ const COMMONS_CACHE_MAX = 300;
 // one; fullscreen still rescales up to 3840.
 const WINDOWED_MAX_WIDTH = 1920;
 
+// Width asked for when the photo is shared as a file. The largest standard bucket, since a shared
+// photo outlives the screen it was shared from — but still a bucket rather than the Commons
+// original, which can be tens of megabytes over mobile data.
+const SHARED_IMAGE_WIDTH = 3840;
+
 // The modal content's CSS width by Bootstrap breakpoint (xl / lg / smaller),
 // shared by the image-fetch width, the display rescale, and the pano canvas.
 function modalContentWidth(): number {
@@ -619,6 +624,16 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   if (!isWikimedia && activeImageId === image?.id && image.hmac) {
     url += `?hmac=${encodeURIComponent(image.hmac)}`;
   }
+
+  // Sharing the photo as a file rather than as a link, at full size rather than at the size it
+  // happens to be displayed. A gallery photo's `url` is already the original; a Wikimedia one's is
+  // its Commons file page, so the picture comes from the metadata — asked for at a bucket wide
+  // enough to be worth keeping, which `wikimediaImageUrl` caps at the original's own width.
+  const shareImageUrl = isWikimedia
+    ? commonsMeta
+      ? wikimediaImageUrl(commonsMeta, SHARED_IMAGE_WIDTH)
+      : undefined
+    : url;
 
   const statusOverlay = commonsError ? (
     <div className="text-center text-body-secondary">
@@ -1164,6 +1179,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     pointTitle={displayTitle ?? undefined}
                     pointDescription={displayDescription ?? undefined}
                     url={url}
+                    imageUrl={shareImageUrl}
                     {...props}
                   >
                     <FaExternalLinkAlt />

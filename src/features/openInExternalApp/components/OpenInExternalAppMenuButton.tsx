@@ -16,6 +16,8 @@ interface Props extends LatLon {
   pointTitle?: string;
   pointDescription?: string;
   url?: string;
+  /** The picture itself, where there is one — what the `image` target shares as a file. */
+  imageUrl?: string;
   className?: string;
   children: JSX.Element | JSX.Element[];
 }
@@ -28,14 +30,19 @@ export function OpenInExternalAppMenuButton({
   pointTitle,
   pointDescription,
   url,
+  imageUrl,
   children,
   className,
 }: Props): ReactElement {
   const oeam = useOpenInExternalAppMessages();
 
+  // `url` deliberately stays out of this: it is what the "New window" item opens, which for a
+  // gallery photo is the picture's own address, `hmac` token and all. "Share location" shares the
+  // page the user is on instead, which is the address worth passing to someone else.
   const { handleSelect, menuShown, handleMenuToggle } = useMenuHandler({
     pointTitle,
     pointDescription,
+    imageUrl,
   });
 
   const zoom = useAppSelector((state) => state.map.zoom);
@@ -59,6 +66,7 @@ export function OpenInExternalAppMenuButton({
           zoom={zoom}
           includePoint={includePoint}
           url={url}
+          imageUrl={imageUrl}
         />
       </FmDropdownMenu>
     </Dropdown>

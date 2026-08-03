@@ -60,9 +60,12 @@ export function documentMenuItemProps(document: string) {
 export function useMenuHandler({
   pointTitle,
   pointDescription,
+  imageUrl,
 }: {
   pointTitle?: string;
   pointDescription?: string;
+  /** The picture the `image` target shares as a file; nothing else here needs an address. */
+  imageUrl?: string;
 } = {}) {
   const dispatch = useDispatch();
 
@@ -250,6 +253,7 @@ export function useMenuHandler({
             zoom,
             pointTitle,
             pointDescription,
+            imageUrl,
           }),
         );
 
@@ -300,6 +304,7 @@ export function useMenuHandler({
       lon,
       pointDescription,
       pointTitle,
+      imageUrl,
       zoom,
       layers,
       openTools,
