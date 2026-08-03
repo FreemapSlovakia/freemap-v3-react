@@ -86,10 +86,16 @@ const CUZK_ATTR: AttributionDef = {
   country: 'cz',
 };
 
+/**
+ * The radar server, which we host ourselves. Not a data credit — the data is
+ * credited to the sources below it — but an AGPL-3.0 §13 source offer: running
+ * it as a network service entitles the people using it to its source. Links to
+ * the repository rather than the project page for that reason.
+ */
 const LIBREWXR_ATTR: AttributionDef = {
   type: 'data',
   name: 'LibreWXR',
-  url: 'https://librewxr.net/',
+  url: 'https://github.com/JoshuaKimsey/LibreWXR',
 };
 
 /**

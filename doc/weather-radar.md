@@ -48,13 +48,19 @@ is the worst possible failure.
 
 ### Licence
 
-The radar data is **CC-BY-4.0** — free to use, share and adapt, commercial use
-included, provided LibreWXR is credited. **Except over Italy**, where the
-national composite is **CC-BY-SA-4.0** and asks to be credited as "Radar-DPC";
-that credit is a separate `country: 'it'` attribution entry, so it appears only
-when the view can actually contain such a tile. The AGPL-3.0 on the server binds
-anyone who *hosts* it — which we now do, so a link to the upstream source
-belongs with the credits, and any local patch would have to be published.
+Self-hosting moved which obligations apply. The **CC-BY-4.0 "credit LibreWXR"**
+term covers data served by *their* public instance — upstream is explicit that
+"you may choose your own data licensing terms for data served by your own
+LibreWXR instance" — so what binds us now are the sources: **EUMETNET OPERA**,
+and over Italy the national composite, which is **CC-BY-SA-4.0** and asks to be
+credited as "Radar-DPC" (a separate `country: 'it'` attribution entry, so it
+shows only when the view can contain such a tile).
+
+What *starts* applying on self-hosting is **AGPL-3.0 §13**: running it as a
+network service entitles the people using it to the Corresponding Source. So
+LibreWXR stays in the credits, pointing at the repository rather than the
+project page — as a source offer, not a data credit. We run it unmodified, for
+which a link upstream suffices; a local patch would have to be published.
 
 ### The vhost
 
