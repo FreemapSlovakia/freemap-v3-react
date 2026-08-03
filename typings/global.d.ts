@@ -72,3 +72,31 @@ declare module 'virtual/markdown-dict.js' {
 
   export default dict;
 }
+
+/**
+ * `Intl.DurationFormat` (ECMA-402), which turns `{ hours, minutes }` into a
+ * localized "5h 54m" / "5 h, 54 min" / "5 ó és 54 p" and drops zero-valued
+ * fields on its own. Recent enough — Chrome 129, Safari 18.4 — that callers
+ * still need a fallback, and not in TypeScript's lib yet.
+ */
+declare namespace Intl {
+  type DurationFormatStyle = 'long' | 'short' | 'narrow' | 'digital';
+
+  interface DurationInput {
+    years?: number;
+    months?: number;
+    weeks?: number;
+    days?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+  }
+
+  class DurationFormat {
+    constructor(
+      locales?: string | string[],
+      options?: { style?: DurationFormatStyle },
+    );
+    format(duration: DurationInput): string;
+  }
+}

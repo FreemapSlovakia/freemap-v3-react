@@ -8,7 +8,7 @@ Key facts:
 
 - Built on OpenStreetMap data; the map is continuously updated from the OSM database.
 - Displays marked hiking, biking, skiing and riding trails, and supports high-resolution (retina) displays.
-- Background and overlay layers include the NLC forest roads, aerial imagery, public transport, Wikipedia, and community photos.
+- Background and overlay layers include the NLC forest roads, aerial imagery, public transport, Wikipedia, community photos, and an animated weather radar.
 - Tools: search (by name or category), route planning (walking, cycling, stroller, wheelchair, car, skiing, etc.), map annotation (points, lines, polygons), measurement (distance, elevation, area, position), GPX track viewing, personal saved maps, live tracking, and export (GPX, GeoJSON, KML/KMZ, PDF, SVG, PNG, JPG).
 - Users can generate embed code to place the map on their own websites.
 - The application is a single-page application (SPA) and reflects its state in the URL.
@@ -607,7 +607,7 @@ Pre-defined map layers.
 - **name** (human-friendly; as shown in the UI)
 - **id** (internal type code; used in the `layers=` URL param)
 - **layer** (base | overlay) — overlays are drawn on top of a base layer
-- **technology** (tile | maplibre | wms | parametricShading | gallery | wikipedia | interactive)
+- **technology** (tile | maplibre | wms | parametricShading | gallery | wikipedia | interactive | radar)
 - **minZ / maxNativeZ** (minimum usable zoom / maximum native tile zoom; above maxNativeZ tiles are upscaled)
 - **premiumFromZ** (zoom level from which premium access is required, if any)
 - **creditsPerMTile** (offline-export price in credits per million tiles, if applicable)
@@ -653,6 +653,7 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 | Data layer                 | i   | interactive       |      |            |              |                 |              | ⇧d       |           | Interactive items of all tools (drawing, route, search, …) |
 | Photos                     | I   | gallery           |   10 |            |              |                 |              | ⇧f       |           | Own Creative-Commons photos (CC BY-SA 4.0 default; premium-only option) **and** geotagged Wikimedia Commons photos, in one layer; both shown from zoom 10 |
 | Wikipedia                  | w   | wikipedia         |    8 |            |              |                 |              | ⇧w       |           | Wikipedia                                                  |
+| Weather radar              | R   | radar             |      |         10 |              |                 |              | ⇧r       |           | Animated precipitation radar with a 1-hour nowcast; CC BY 4.0 © LibreWXR, EUMETNET OPERA — over Italy CC BY-SA 4.0 © Radar-DPC |
 | Forest tracks NLC (2017)   | l1  | tile              |   11 |         15 |              |            1000 | l2           |          | sk        | © NLC Zvolen (legacy)                                      |
 | Forest tracks NLC          | l2  | maplibre          |    9 |            |              |                 |              | ⇧n       | sk        | © NLC Zvolen                                               |
 | Parametric shading         | h   | parametricShading |      |         13 |              |                 |              | ⇧h       |           | Experimental; © Freemap, GEDTM30 (Europe)                  |
@@ -664,6 +665,7 @@ Notes:
 
 - The `i` (Data layer) overlay hosts every tool's interactive features; hiding it hides those features without disabling the tools.
 - The single `X` "Outdoor" base map renders hiking, bicycle, ski and riding trails together — there are no longer separate per-activity trail layers.
+- The `R` (Weather radar) overlay is animated: turning it on opens its own toolbar with play/pause, frame stepping, a timeline covering roughly the last six hours plus a one-hour nowcast, and settings for the colour scheme, smoothing, snow and whether the forecast frames are offered.
 
 ##### Internal layer codes
 

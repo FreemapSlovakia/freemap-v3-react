@@ -260,6 +260,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l1: 'Leśne drogi NLC (2017)',
       l2: 'Leśne drogi NLC',
       w: 'Wikipedia',
+      R: 'Radar opadów',
       '5': 'Cieniowanie terenu',
       '6': 'Cieniowanie powierzchni',
       '7': 'Szczegółowe cieniowanie terenu',

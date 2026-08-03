@@ -1,0 +1,41 @@
+/* The slider is a fixed strip in a toolbar that scrolls horizontally, so it
+   must not stretch with the toolbar's other buttons.
+
+   `input.` and not just `.timeline`: Bootstrap gives `.form-range` a
+   `width: 100%` at the same specificity, so which one wins would otherwise come
+   down to the order the stylesheets happen to land in — and that order differs
+   between the dev server and the extracted production CSS. At 100% the slider
+   eats the row and pushes the clock and the settings button out of sight. */
+input.timeline {
+  width: 9rem;
+  flex: none;
+}
+
+/* Where "now" falls on the track, so the forecast tail is told apart from the
+   measured frames without a second control. Specificity beats Bootstrap's own
+   track rule regardless of the order the stylesheets end up in. */
+input.timeline::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    var(--bs-tertiary-bg) 0 var(--fm-radar-split),
+    rgba(var(--bs-warning-rgb), 0.5) var(--fm-radar-split) 100%
+  );
+}
+
+input.timeline::-moz-range-track {
+  background: linear-gradient(
+    to right,
+    var(--bs-tertiary-bg) 0 var(--fm-radar-split),
+    rgba(var(--bs-warning-rgb), 0.5) var(--fm-radar-split) 100%
+  );
+}
+
+/* Fixed width, so the toolbar doesn't shift as the animation steps through
+   times of different lengths. The toolbar sets `white-space: nowrap`, so an
+   over-long value spills rather than wraps — the longest this has to hold is
+   the six-hour end in Hungarian, "5 ó és 54 p ezelőtt". */
+.label {
+  width: 8rem;
+  flex: none;
+  line-height: 1.1;
+}

@@ -306,6 +306,10 @@ const config: Configuration = {
         'https://overpass.freemap.sk/api/interpreter',
       OSM_API_URL:
         process.env['OSM_API_URL'] || 'https://api.openstreetmap.org',
+      // LibreWXR origin behind the weather radar layer: the caching vhost in
+      // front of our own LibreWXR instance — see
+      // etc/nginx/sites-available/weather.freemap.sk.
+      LIBREWXR_URL: process.env['LIBREWXR_URL'] || 'https://weather.freemap.sk',
       // Where single OSM element (node/way/relation) lookups are resolved:
       // 'overpass' (default, internal instance) or 'osm-api' (public OSM API).
       OSM_ELEMENT_SOURCE: process.env['OSM_ELEMENT_SOURCE'] || 'overpass',

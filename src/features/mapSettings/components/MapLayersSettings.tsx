@@ -7,6 +7,7 @@ import {
   type CustomLayerDef,
   integratedLayerDefMap,
   integratedLayerDefs,
+  resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
 import { type ReactElement, useState } from 'react';
@@ -58,7 +59,12 @@ export function MapLayersSettings({
         <Form.Range
           min={0}
           max={100}
-          value={(layersSettings[activeType]?.opacity ?? 1) * 100}
+          value={
+            resolveLayerOpacity(
+              integratedLayerDefMap[activeType],
+              layersSettings[activeType]?.opacity,
+            ) * 100
+          }
           onChange={(e) =>
             setLayersSettings({
               ...layersSettings,
@@ -203,7 +209,12 @@ export function MapLayersSettings({
                         <button
                           type="button"
                           style={{
-                            opacity: `${(layersSettings[type]?.opacity ?? 1) * 100}%`,
+                            opacity: `${
+                              resolveLayerOpacity(
+                                integratedLayerDefMap[type],
+                                layersSettings[type]?.opacity,
+                              ) * 100
+                            }%`,
                           }}
                           onClick={() => setActiveType(type)}
                         />

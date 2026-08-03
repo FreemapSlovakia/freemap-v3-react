@@ -268,6 +268,7 @@ const messages: Messages = {
       l1: 'Forest tracks NLC (2017)',
       l2: 'Forest tracks NLC',
       w: 'Wikipedia',
+      R: 'Weather radar',
       M: 'Wikimedia Commons photos',
       '5': 'Terrain shading',
       '6': 'Surface shading',

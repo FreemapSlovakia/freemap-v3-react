@@ -268,6 +268,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l1: 'Forststraßen NLC (2017)',
       l2: 'Forststraßen NLC',
       w: 'Wikipedia',
+      R: 'Wetterradar',
       '5': 'Geländeschattierung',
       '6': 'Oberflächenschattierung',
       '7': 'Detaillierte Geländeschattierung',

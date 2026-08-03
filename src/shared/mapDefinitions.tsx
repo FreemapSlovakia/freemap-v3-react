@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import {
   FaBus,
   FaCamera,
+  FaCloudShowersHeavy,
   FaHiking,
   FaMap,
   FaPencilAlt,
@@ -83,6 +84,35 @@ const CUZK_ATTR: AttributionDef = {
   name: '©\xa0ČÚZK',
   url: 'https://geoportal.cuzk.cz/',
   country: 'cz',
+};
+
+const LIBREWXR_ATTR: AttributionDef = {
+  type: 'data',
+  name: 'LibreWXR',
+  url: 'https://librewxr.net/',
+};
+
+/**
+ * The pan-European radar composite behind the weather layer. The national
+ * services that feed it — SHMÚ among them — are credited through the programme
+ * they contribute the data to.
+ */
+const OPERA_ATTR: AttributionDef = {
+  type: 'data',
+  name: 'EUMETNET OPERA',
+  url: 'https://www.eumetnet.eu/observations/weather-radar-network/',
+};
+
+/**
+ * The radar data is CC-BY-4.0 everywhere except over Italy, where the national
+ * composite is CC-BY-SA-4.0 and asks to be credited by this name — so it is
+ * credited on its own, only where a tile can carry it.
+ */
+const DPC_RADAR_ATTR: AttributionDef = {
+  type: 'data',
+  name: 'Radar-DPC (CC\xa0BY-SA\xa04.0)',
+  url: 'https://www.protezionecivile.gov.it/',
+  country: 'it',
 };
 
 const LLS_URL =
@@ -227,6 +257,11 @@ type HasZIndex = {
 
 export type IsIntegratedLayerDef = {
   layerPreview?: boolean;
+  /**
+   * Opacity this overlay is drawn at until the user sets one of their own.
+   * For a layer whose whole point is to be read against the map underneath.
+   */
+  defaultOpacity?: number;
   icon: ReactElement;
   premiumFromZoom?: number;
   experimental?: boolean;
@@ -272,6 +307,16 @@ type IsInteractiveLayerDef = {
   technology: 'interactive';
 };
 
+/**
+ * Animated precipitation radar. Its own technology because a frame's timestamp
+ * is part of the tile URL, so the layer is a series of tile layers the feature
+ * cross-fades rather than the one a `tile` def describes.
+ */
+type IsRadarLayerDef = HasMaxNativeZoom &
+  HasZIndex & {
+    technology: 'radar';
+  };
+
 export type IsWmsLayerDef = HasUrl &
   HasZIndex &
   HasMaxNativeZoom &
@@ -307,6 +352,19 @@ export type IsOverlayLayerDef = HasZIndex & {
 // The [west, south, east, north] extent a layer covers, or undefined. Cached
 // maps store their actual downloaded extent under `bounds`, which wins over any
 // `bbox` inherited from the source layer; declarative layers use `bbox`.
+/**
+ * The opacity an overlay is drawn at: the user's own setting if they have one,
+ * otherwise whatever the layer asks for, otherwise opaque.
+ */
+export const resolveLayerOpacity = (
+  def: object | undefined,
+  opacity: number | undefined,
+): number =>
+  opacity ??
+  (def && 'defaultOpacity' in def && typeof def.defaultOpacity === 'number'
+    ? def.defaultOpacity
+    : 1);
+
 export const getLayerBbox = (
   def: object,
 ): [number, number, number, number] | undefined => {
@@ -373,7 +431,8 @@ export type IsAllTechnologiesLayerDef =
   | IsParametricShadingLayerDef
   | IsGalleryLayerDef
   | IsInteractiveLayerDef
-  | IsWikipediaLayerDef;
+  | IsWikipediaLayerDef
+  | IsRadarLayerDef;
 
 export type IsCustomLayer = {
   name?: string;
@@ -1004,6 +1063,22 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     shortcut: { code: 'KeyW', shift: true },
     zIndex: 4,
     attribution: [],
+  },
+  {
+    layer: 'overlay',
+    type: 'R',
+    defaultInMenu: true,
+    technology: 'radar',
+    icon: <FaCloudShowersHeavy />,
+    shortcut: { code: 'KeyR', shift: true },
+    // The composite is a 2 km grid, so the server has nothing more to draw past
+    // this: stretching the tiles beats fetching four times as many per level.
+    maxNativeZoom: 10,
+    zIndex: 3,
+    // Precipitation is read against the map it falls on, so it starts
+    // translucent rather than hiding the ground.
+    defaultOpacity: 2 / 3,
+    attribution: [LIBREWXR_ATTR, OPERA_ATTR, DPC_RADAR_ATTR],
   },
   {
     layer: 'overlay',
