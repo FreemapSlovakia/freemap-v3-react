@@ -1,6 +1,6 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { TileLayer } from 'leaflet';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import transparent1x1 from '@/images/1x1-transparent.png';
@@ -85,7 +85,30 @@ export default function RadarLayer({
       ? (512 as const)
       : (256 as const);
 
-  useRadarPlayback();
+  /** The frame currently at full opacity. */
+  const shownRef = useRef<number>(undefined);
+
+  /**
+   * Frames that have finished trying: painted, or answered for with nothing.
+   * Playback paces itself off this rather than off a bare timer, so a frame
+   * gets its dwell from the moment it is actually on screen. It has to be
+   * "finished trying" and not "painted": a frame whose every tile 404s is never
+   * painted, its layer stays in the pool so Leaflet never re-fires `load`, and
+   * waiting for it would stall every single pass rather than once.
+   */
+  const [resolved, setResolved] = useState<ReadonlySet<number>>(
+    () => new Set(),
+  );
+
+  function markResolved(frameTime: number) {
+    setResolved((prev) =>
+      prev.has(frameTime) ? prev : new Set(prev).add(frameTime),
+    );
+  }
+
+  const frame = frames[index];
+
+  useRadarPlayback(frame !== undefined && resolved.has(frame.time));
 
   // Every frame's URL carries these, so a change invalidates the whole pool.
   const tileOptions = useMemo(
@@ -94,9 +117,6 @@ export default function RadarLayer({
   );
 
   const layersRef = useRef(new Map<number, FrameLayer>());
-
-  /** The frame currently at full opacity. */
-  const shownRef = useRef<number>(undefined);
 
   /** The frame asked for last — a load resolving after a newer ask is stale. */
   const wantedRef = useRef<number>(undefined);
@@ -179,12 +199,16 @@ export default function RadarLayer({
         // for a fresh one rather than leaving a dead frame on the timeline.
         refreshFramesRef.current();
 
+        markResolvedRef.current(frame.time);
+
         return;
       }
 
       entry.loaded = true;
 
       revealRef.current(frame.time);
+
+      markResolvedRef.current(frame.time);
     });
 
     layersRef.current.set(frame.time, entry);
@@ -202,6 +226,19 @@ export default function RadarLayer({
     if (shownRef.current === frameTime) {
       shownRef.current = undefined;
     }
+
+    // Its replacement has to earn this again.
+    setResolved((prev) => {
+      if (!prev.has(frameTime)) {
+        return prev;
+      }
+
+      const next = new Set(prev);
+
+      next.delete(frameTime);
+
+      return next;
+    });
   }
 
   function dropFrames(...keep: (number | undefined)[]) {
@@ -237,6 +274,10 @@ export default function RadarLayer({
 
   refreshFramesRef.current = refreshFrames;
 
+  const markResolvedRef = useRef(markResolved);
+
+  markResolvedRef.current = markResolved;
+
   const revealRef = useRef(reveal);
 
   revealRef.current = reveal;
@@ -252,8 +293,6 @@ export default function RadarLayer({
   const dropFrameRef = useRef(dropFrame);
 
   dropFrameRef.current = dropFrame;
-
-  const frame = frames[index];
 
   const cycleRef = useRef(cycle);
 

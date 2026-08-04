@@ -212,7 +212,18 @@ tile on a 2x screen is not, which is what the `size` switch above is for.
 
 Playback lives in `useRadarPlayback`, called from `RadarLayer` rather than from
 the toolbar, so the animation is tied to the layer that shows it and not to a
-menu that can be hidden.
+menu that can be hidden. It paces itself off **whether the frame has finished
+trying**, not off a bare timer: `RadarLayer` publishes the set of resolved
+frames and the dwell starts when the selected one is in it. Stepping on a timer
+alone let the index race ahead of the picture on a first pass — every second or
+third frame appearing, which reads as a stutter — because a frame is revealed
+only after every one of its tiles has settled.
+
+"Resolved" and not "painted", which is a distinction worth keeping: a frame
+whose every tile 404s is never painted, and its layer stays in the pool so
+Leaflet never re-fires `load`. Waiting for *that* stalls the loop for the full
+timeout on every pass rather than once. The timeout still covers the frame that
+is merely slow.
 
 ## The toolbar
 
