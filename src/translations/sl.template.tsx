@@ -150,6 +150,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tracking: 'Sledenje v živo',
     myMaps: 'Moji zemljevidi',
     myMap: 'Moj zemljevid',
+    gpsRecorder: 'GPS snemalnik',
   },
 
   mainMenu: {
@@ -373,6 +374,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settingsHelp:
       'Prvi dve nastavitvi popravljata model terena, zato veljata povsod, kjer se višina bere iz njega: pri načrtovanih poteh, narisanih črtah in meritvah ter pri uvoženih sledeh, ki ste jim višino nadomestili s strežnika. Zabeležena nadmorska višina — sledenje v živo ali sled, ki ste jo ohranili tako, kot je bila zabeležena — ostane nedotaknjena. Izvožene datoteke vedno ohranijo svojo višino.',
     windowOff: 'izklopljeno',
+    windowWholeLine: 'celotna črta',
     despike: 'Odstrani konice',
     despikeHelp:
       'Kadar je pot narisana nekaj metrov stran od ceste, ki jo opisuje, model terena vrne višino brežine ali skalne stene ob njej. Konice, ožje od polovice te vrednosti, se odstranijo in profil se rahlo zaokroži; širše se ohranijo, saj gre za resnični teren. Nič to izklopi.',

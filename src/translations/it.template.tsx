@@ -157,6 +157,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tracking: 'Tracciamento in tempo reale',
     myMaps: 'Le mie mappe',
     myMap: 'La mia mappa',
+    gpsRecorder: 'Registratore GPS',
   },
 
   mainMenu: {
@@ -381,6 +382,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settingsHelp:
       'Le prime due impostazioni correggono un modello del terreno, quindi valgono ovunque l’altitudine venga letta da esso: percorsi pianificati, linee disegnate e misurazioni, e tracce importate la cui altitudine è stata sostituita dal server. L’altitudine registrata — tracciamento in tempo reale o una traccia mantenuta così com’è stata registrata — resta intatta. I file esportati conservano sempre la propria altitudine.',
     windowOff: 'disattivato',
+    windowWholeLine: 'intera linea',
     despike: 'Rimuovi i picchi',
     despikeHelp:
       'Quando un percorso è disegnato a qualche metro dalla strada che descrive, il modello del terreno restituisce la scarpata o la parete rocciosa accanto. I picchi più stretti della metà di questo valore vengono eliminati e il profilo viene leggermente arrotondato; quelli più larghi si mantengono, perché sono terreno reale. Zero disattiva la funzione.',

@@ -90,6 +90,9 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium od ${date} za ${newPrice}\xa0€ na leto.`,
   priceIncreaseMore: 'več…',
+  youArePremiumRenews: (
+    <>Imate premium dostop. Naročnina se samodejno podaljšuje.</>
+  ),
 };
 
 export default sl;

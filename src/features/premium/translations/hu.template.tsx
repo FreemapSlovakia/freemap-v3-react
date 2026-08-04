@@ -90,6 +90,9 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   priceIncreaseMini: ({ date, newPrice }) =>
     `Prémium ${date} után évi ${newPrice}\xa0€.`,
   priceIncreaseMore: 'tovább…',
+  youArePremiumRenews: (
+    <>Prémium hozzáférésed van. Az előfizetés automatikusan megújul.</>
+  ),
 };
 
 export default hu;

@@ -149,6 +149,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tracking: 'Suivi en direct',
     myMaps: 'Mes cartes',
     myMap: 'Ma carte',
+    gpsRecorder: 'Enregistreur GPS',
   },
   mainMenu: {
     title: 'Menu principal',
@@ -368,6 +369,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settingsHelp:
       'Les deux premiers réglages corrigent un modèle de terrain et s’appliquent donc partout où l’altitude en est issue : itinéraires planifiés, lignes tracées et mesures, ainsi que traces importées dont vous avez remplacé l’altitude depuis le serveur. L’altitude enregistrée — suivi en direct, ou une trace conservée telle qu’enregistrée — reste intacte. Les fichiers exportés conservent toujours leur propre altitude.',
     windowOff: 'désactivé',
+    windowWholeLine: 'ligne entière',
     despike: 'Supprimer les pics',
     despikeHelp:
       'Lorsqu’un chemin est tracé à quelques mètres de la route qu’il décrit, le modèle de terrain renvoie le talus ou la paroi rocheuse voisine. Les pics plus étroits que la moitié de cette valeur sont supprimés et le profil est légèrement lissé ; les plus larges sont conservés, car il s’agit de terrain réel. Zéro désactive la fonction.',

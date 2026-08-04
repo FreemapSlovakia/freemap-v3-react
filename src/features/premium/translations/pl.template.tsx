@@ -90,6 +90,9 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   priceIncreaseMini: ({ date, newPrice }) =>
     `Premium od ${date} za ${newPrice}\xa0€ rocznie.`,
   priceIncreaseMore: 'więcej…',
+  youArePremiumRenews: (
+    <>Masz dostęp premium. Subskrypcja odnawia się automatycznie.</>
+  ),
 };
 
 export default pl;

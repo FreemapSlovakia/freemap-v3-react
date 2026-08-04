@@ -25,6 +25,9 @@ const hu: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   noPurchases: 'Nincsenek vásárlások',
   premium: 'Prémium',
   credits: (amount) => <>Kreditek ({amount})</>,
+  managePayments: 'Fizetések kezelése',
+  managePaymentsHint:
+    'Megnyitja a Polar fizetési szolgáltatónk ügyfélportálját, ahol lemondhatod az előfizetést, módosíthatod a fizetési módot és letöltheted a számlákat. Csak arra vonatkozik, amit a Polaron keresztül fizettél, a Rovason keresztül nem.',
 };
 
 export default hu;

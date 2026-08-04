@@ -152,6 +152,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tracking: 'Live-Tracking',
     myMaps: 'Meine Karten',
     myMap: 'Meine Karte',
+    gpsRecorder: 'GPS-Recorder',
   },
 
   mainMenu: {
@@ -375,6 +376,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settingsHelp:
       'Die ersten beiden Einstellungen korrigieren ein Geländemodell und gelten daher überall dort, wo die Höhe daraus gelesen wird: bei geplanten Routen, gezeichneten Linien und Messungen sowie bei importierten Tracks, deren Höhe Sie vom Server ersetzt haben. Aufgezeichnete Höhen — Live-Tracking oder ein Track, den Sie wie aufgezeichnet belassen haben — bleiben unangetastet. Exportierte Dateien behalten immer ihre eigene Höhe.',
     windowOff: 'aus',
+    windowWholeLine: 'ganze Linie',
     despike: 'Spitzen entfernen',
     despikeHelp:
       'Wenn ein Weg einige Meter neben der Straße gezeichnet ist, die er beschreibt, liefert das Geländemodell die Böschung oder Felswand daneben. Spitzen, die schmaler als die Hälfte dieses Werts sind, werden entfernt und das Profil leicht geglättet; breitere bleiben erhalten, da sie echtes Gelände sind. Null schaltet die Funktion ab.',

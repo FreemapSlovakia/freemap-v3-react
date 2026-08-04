@@ -146,6 +146,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tracking: 'Śledzenie na żywo',
     myMaps: 'Moje mapy',
     myMap: 'Moja mapa',
+    gpsRecorder: 'Rejestrator GPS',
   },
   mainMenu: {
     title: 'Menu główne',
@@ -364,6 +365,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settingsHelp:
       'Pierwsze dwa ustawienia korygują model terenu, więc obowiązują wszędzie tam, gdzie wysokość jest z niego odczytywana: przy planowanych trasach, narysowanych liniach i pomiarach oraz przy zaimportowanych śladach, w których zastąpiono wysokość danymi z serwera. Zarejestrowana wysokość — śledzenie na żywo lub ślad pozostawiony w zarejestrowanej postaci — pozostaje nietknięta. Eksportowane pliki zawsze zachowują własną wysokość.',
     windowOff: 'wyłączone',
+    windowWholeLine: 'cała linia',
     despike: 'Usuń piki',
     despikeHelp:
       'Gdy droga jest narysowana kilka metrów obok jezdni, którą opisuje, model terenu zwraca wysokość skarpy lub ściany skalnej obok niej. Piki węższe niż połowa tej wartości są usuwane, a profil jest lekko wygładzany; szersze pozostają, bo to rzeczywisty teren. Zero wyłącza tę funkcję.',

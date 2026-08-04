@@ -152,6 +152,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tracking: 'Élő követés',
     myMaps: 'Saját térképeim',
     myMap: 'Térképem',
+    gpsRecorder: 'GPS-rögzítő',
   },
 
   mainMenu: {
@@ -383,6 +384,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settingsHelp:
       'Az első két beállítás a terepmodellt korrigálja, ezért mindenhol érvényes, ahol a magasság abból származik: tervezett útvonalaknál, rajzolt vonalaknál és méréseknél, valamint olyan importált nyomvonalaknál, amelyek magasságát a kiszolgálóról cserélte le. A rögzített tengerszint feletti magasság — élő nyomkövetés, vagy rögzített formában megtartott nyomvonal — érintetlen marad. Az exportált fájlok mindig megtartják a saját magasságukat.',
     windowOff: 'ki',
+    windowWholeLine: 'teljes vonal',
     despike: 'Tüskék eltávolítása',
     despikeHelp:
       'Ha egy utat néhány méterrel az általa leírt úttest mellé rajzoltak, a terepmodell a mellette lévő rézsű vagy sziklafal magasságát adja vissza. Az ennek felénél keskenyebb tüskék eltűnnek, a profil pedig enyhén lekerekedik; a szélesebbek megmaradnak, mert valódi terepet jelentenek. A nulla kikapcsolja.',

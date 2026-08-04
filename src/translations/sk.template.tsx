@@ -151,6 +151,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tracking: 'Sledovanie',
     myMaps: 'Moje mapy',
     myMap: 'Moja mapa',
+    gpsRecorder: 'GPS zaznamenávač',
   },
 
   mainMenu: {
