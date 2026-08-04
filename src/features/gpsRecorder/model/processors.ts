@@ -6,6 +6,7 @@ import {
   gpsRecorderStart,
   gpsRecorderStop,
   gpsRecorderSync,
+  gpsRecorderUseBrowser,
 } from './actions.js';
 
 const handlers = () =>
@@ -21,6 +22,12 @@ export const gpsRecorderStartProcessor: Processor = {
   // can be done about each cause — so nothing here reaches the generic
   // processor-error toast.
   handle: async (...params) => (await handlers()).startHandler(...params),
+};
+
+export const gpsRecorderUseBrowserProcessor: Processor = {
+  actionCreator: gpsRecorderUseBrowser,
+  id: 'gpsRecorder.useBrowser',
+  handle: async (...params) => (await handlers()).useBrowserHandler(...params),
 };
 
 export const gpsRecorderPauseProcessor: Processor = {

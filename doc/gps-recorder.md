@@ -1,10 +1,22 @@
 # GPS recorder integration
 
-How the PWA drives the standalone **Freemap GPS recorder** — a native Android
-app (Kotlin, self-hosted APK) that records a track to its own storage and
-exposes a loopback HTTP API. The recorder owns the track; the PWA is a viewer
-and remote control that holds no authoritative copy and never asks the recorder
-to discard points.
+How the PWA records a track, from either of **two backends** behind one tool:
+
+- **`app`** — the standalone **Freemap GPS recorder**, a native Android app
+  (Kotlin, self-hosted APK) that records to its own storage and exposes a
+  loopback HTTP API. The recorder owns the track; the PWA is a viewer and remote
+  control that holds no authoritative copy and never asks the recorder to
+  discard points. Most of this document is about it.
+- **`browser`** — this page's own Geolocation API, which records only while the
+  tab is alive and the screen is on, and holds the only copy itself. See
+  [Recording in the browser](#recording-in-the-browser).
+
+[`backend.ts`](../src/features/gpsRecorder/backend.ts) is the seam. Both
+implementations answer in the recorder's own vocabulary — a `RecorderStatus` and
+`RecorderPoint`s under a monotonic `seq` — so the handlers, the reducer, the
+segment split, the statistics, the GeoJSON, the elevation chart and the
+hand-over to the track viewer are the code that already existed and never learn
+which one is running.
 
 Feature folder: `src/features/gpsRecorder/`.
 
@@ -15,15 +27,31 @@ Feature folder: `src/features/gpsRecorder/`.
 
 ## Availability
 
-Two gates, both in [`support.ts`](../src/features/gpsRecorder/support.ts):
+Both gates are in [`support.ts`](../src/features/gpsRecorder/support.ts), and
+the tool is offered when **either** passes:
 
-- **Platform** — Android, because the recorder is an Android APK. Deliberately
-  *not* narrowed to Chromium: the Chromium-specific pieces (`targetAddressSpace`,
-  the Local Network Access permission) degrade to no-ops elsewhere. Tested
-  against the userAgent string, not `navigator.userAgentData` — that one is both
-  Chromium-only and secure-context-only, so over plain http on a dev host it is
-  `undefined` and would hide the tool exactly where it is being developed. A
-  module constant: it cannot change within a page lifetime.
+- **`gpsRecorderPlatformSupported`** — Android, because the recorder is an
+  Android APK. Deliberately *not* narrowed to Chromium: the Chromium-specific
+  pieces (`targetAddressSpace`, the Local Network Access permission) degrade to
+  no-ops elsewhere. Tested against the userAgent string, not
+  `navigator.userAgentData` — that one is both Chromium-only and
+  secure-context-only, so over plain http on a dev host it is `undefined` and
+  would hide the tool exactly where it is being developed. A module constant: it
+  cannot change within a page lifetime. It no longer gates the tool on its own;
+  what it decides is whether the APK is **spoken of at all**.
+- **`browserRecordingSupported`** — a Geolocation API and a coarse pointer. The
+  pointer test stands in for "carried", and it is doing real work rather than
+  being fussy: browser recording needs the page open and the screen awake for the
+  length of a ride, which a phone in a pocket can do and a desktop browser has no
+  reason to. The same predicate gates `#tools=gps-recorder`, so this hides the
+  tool from a desktop URL as well — testing on a desktop means the devtools
+  device emulation, which reports the coarse pointer along with everything else.
+
+**Off Android the recorder app is never mentioned.** Not offered-and-disabled,
+not explained: the settings modal shows no backend choice, the readout shows no
+badge naming one, and the browser-recording notice carries no install link.
+Naming an APK that cannot be installed is worse than saying nothing.
+
 - **Nothing else.** It was behind the `layerPreview` role while it was being
   proven; it is now marked `experimental: true` in `toolDefinitions` instead, which
   puts `ExperimentalFunction`'s flask on the menu item and on the tool's own title.
@@ -639,7 +667,98 @@ watch. The feed
 lives with the tool rather than with the map layer, because fixes reach the page
 only while the tool holds the stream open.
 
+## Recording in the browser
+
+[`browser/engine.ts`](../src/features/gpsRecorder/browser/engine.ts) and
+[`browser/trackStore.ts`](../src/features/gpsRecorder/browser/trackStore.ts).
+The point of it is the platforms the APK cannot reach — iOS above all, where no
+equivalent is possible — and the ride not worth an install for. Its best case is
+the one where its cost is already sunk: the user is watching the map on the
+handlebar with **Locate me** on, so the screen, the high-accuracy watch and the
+foreground tab are all being paid for already, and recording is only a matter of
+keeping the fixes instead of discarding them.
+
+**The fixes come from [`geolocationWatch.ts`](../src/shared/geolocationWatch.ts),
+not from a watch of its own.** Android merges concurrent location requests at the
+highest rate anyone asked for, so a second watch is the same stream bought twice.
+One module-level `watchPosition` is ref-counted across every subscriber — the
+recorder, and whatever else comes to want fixes — and its options are fixed
+rather than negotiable per subscriber, because a merged request runs at the
+strictest of them anyway.
+
+That is also why the browser backend never claims `locationSetExternalSource`:
+there is no second source to displace. `feedLocation` is an app-backend question
+and the settings modal hides it, along with `source` and `priority`, which the
+web API has no equivalents for.
+
+**Ownership inverts, so durability moves to the front.** With the APK the
+recorder owns the track and a cold start refetches it; here this page holds the
+only copy, so every fix goes to IndexedDB as it arrives (batched on a 3 s
+debounce, brought forward on `visibilitychange`/`pagehide`) rather than at the
+end. `nextSeq` is persisted with the points, and written *after* them, so a crash
+between the two leaves points above the cursor — which the load recovers from —
+rather than handing out an id twice. A recording found running on load is
+**resumed**, not reported as stopped: the tab may have been reloaded mid-ride.
+
+**A starved watch is a real break, so it is recorded as one.** A hidden page or a
+locked screen simply stops delivering, and a straight line across that gap would
+claim a route nobody took. A silence longer than `max(intervalMs × 4, 30 s)`
+bumps `seg` — the same signal the recorder's own restarts produce, so
+`splitPointsIntoSegments` needs nothing new. This is a fact about the recording,
+unlike `splitGapS`, which is a display preference.
+
+**The screen wake lock stops being a preference.** `keepScreenAwake` decides
+nothing under this backend: a blanked screen does not hide a browser recording,
+it ends it, so the lock is held whenever a browser recording is running and the
+checkbox is hidden.
+
+**What it cannot do**, and what the UI says about it:
+
+- `altMsl` is always null. The W3C `altitude` is metres above the WGS84
+  ellipsoid — the same datum as `alt`, and *not* what GPX `<ele>` means, so an
+  exported browser recording is some 42 m out over Slovakia. `sat` is null too;
+  the web API has no such figure.
+- `intervalMs`, `minDistanceM` and `maxAccuracyM` become **client-side filters**
+  rather than instructions a recorder applies — the browser reports at a rate of
+  its own choosing. The interval test carries a tolerance
+  (`min(intervalMs / 4, 250 ms)`), or a fix arriving 20 ms early against a 1 s
+  interval would be dropped and the next one taken, halving the rate asked for.
+- The Android-only half of the synthesized `RecorderStatus` carries its
+  nothing-outstanding values, which is what it truthfully says here: no runtime
+  permission beyond the site's own, no battery optimisation, no vendor autostart
+  — so `useRecorderNotices` raises no setup checklist. The browser's own hazard
+  is not a setup step and is said where the user can act on it.
+- Two failures of its own: `location-denied` and `location-unavailable`. Neither
+  carries an action, for the same reason `not-persisted` doesn't — nothing this
+  app can offer changes the browser's mind about a permission the user refused.
+
+### How the choice reaches the user
+
+Not as a radio nobody opens. The order is:
+
+1. **Off Android** — no choice at all, and none shown. Browser backend, silently.
+2. **On Android, the APK answers** — use it. No question and no toast; it is
+   strictly better.
+3. **On Android, `unreachable`** — the failure toast already leads with *Open the
+   recorder* and offers the download; **Record in this browser**
+   (`gpsRecorderUseBrowser`) sits between them. That is the moment the fallback
+   is worth anything: the user has just asked to record and got nothing. The
+   action switches the setting *and* starts, in one gesture, and the choice
+   sticks — it is the same setting the modal shows.
+
+Then two ways of saying what it costs, neither of them a one-shot explainer up
+front. `browserWarning` is a `warning` toast raised once as the ride begins, with
+the install upsell attached on Android only; and the readout's detail line
+carries a badge naming the engine — but only on Android, where there is something
+to contrast it with. On a platform with one possible backend a badge that can
+only read one way is noise.
+
 ## Remaining work
+
+The browser backend is written but has **never been run in a browser**, and its
+handoff notes — what is done, what to do next, and which decisions are settled —
+are in
+[`src/features/gpsRecorder/browser/README.md`](../src/features/gpsRecorder/browser/README.md).
 
 The stage-2 list — a role of its own, an APK landing page, styling the live
 track like a displayed GPX track, and unflagging the tool — is in

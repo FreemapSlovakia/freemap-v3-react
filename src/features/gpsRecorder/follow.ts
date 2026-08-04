@@ -2,7 +2,7 @@ import { isToolOpen } from '@app/store/selectors.js';
 import type { MyStore } from '@app/store/store.js';
 import { gpsRecorderSync } from './model/actions.js';
 import { isRecorderStreamSuspect, suspectRecorderStream } from './stream.js';
-import { gpsRecorderPlatformSupported } from './support.js';
+import { gpsRecorderAvailableSelector } from './support.js';
 
 /**
  * Whether the recorder is worth following: it was recording, or holding a track,
@@ -55,7 +55,7 @@ export function setRecorderFollowed(followed: boolean): void {
  * marked as not to be believed until it has been replaced.
  */
 export function attachRecorderFollow(store: MyStore): void {
-  if (!gpsRecorderPlatformSupported) {
+  if (!gpsRecorderAvailableSelector()) {
     return;
   }
 
