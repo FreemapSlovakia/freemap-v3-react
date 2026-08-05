@@ -3,6 +3,7 @@ import type { Feature, LineString } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import { headingColorizer } from './modes/heading.js';
 import { speedColorizer } from './modes/speed.js';
+import { STEEPNESS_FULL_SCALE, steepnessColorizer } from './modes/steepness.js';
 import { timeColorizer } from './modes/time.js';
 
 // Builds a single-segment LineString feature with the given coordinates and
@@ -139,5 +140,49 @@ describe('timeColorizer', () => {
 
   it('is unavailable without any timestamps', () => {
     expect(timeColorizer.isAvailable?.([line(COORDS)])).toBe(false);
+  });
+});
+
+describe('steepnessColorizer', () => {
+  // A north-south line of `n` points `stepM` apart, at the given constant grade.
+  function slope(grade: number, n = 60, stepM = 10): Feature<LineString> {
+    return line(
+      Array.from({ length: n }, (_, i) => [
+        17.0,
+        48.0 + (i * stepM) / 111320,
+        1000 + grade * i * stepM,
+      ]),
+    );
+  }
+
+  // The grade a palette position stands for, the inverse of what the colorizer
+  // maps with — so a wrongly scaled mapping reads back as the wrong grade
+  // rather than merely as a different color.
+  function gradeOf(color: number): number {
+    return (color - 0.5) * 2 * STEEPNESS_FULL_SCALE;
+  }
+
+  it('reads a constant slope back at its own grade', () => {
+    for (const grade of [-0.3, -0.1, 0, 0.1, 0.3]) {
+      const [points] = steepnessColorizer.compute([slope(grade)]);
+
+      // The ends are measured over a window shifted inward, so only the middle
+      // is a clean centered reading.
+      for (const point of points!.slice(20, 40)) {
+        expect(gradeOf(point.color)).toBeCloseTo(grade, 3);
+      }
+    }
+  });
+
+  it('clamps beyond the scale ends', () => {
+    const [down] = steepnessColorizer.compute([
+      slope(-STEEPNESS_FULL_SCALE * 2),
+    ]);
+
+    const [up] = steepnessColorizer.compute([slope(STEEPNESS_FULL_SCALE * 2)]);
+
+    expect(down![30]!.color).toBe(0);
+
+    expect(up![30]!.color).toBe(1);
   });
 });
