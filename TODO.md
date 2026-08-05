@@ -239,6 +239,26 @@ engineering task, not a user-facing feature:
       from `LineSchema` so saved maps still parse), because an index is not an
       identity. `elevation-chart=` in the URL carries the target, naming a drawn
       line by position and resolving it to an id at that boundary.
+- [ ] **Let the user pick how much detail colorization keeps.** `SMOOTH_PX` in
+      `src/shared/colorizers/smoothing.ts` is the zoom-derived floor on every
+      mode's value smoothing — how many screen pixels of ground a wiggle must
+      cover to be worth drawing. It was halved from 32 to 16 because the line
+      generalized more than the scale called for, but that is one taste standing
+      in for everyone's. Expose it as a multiplier toggle beside `resolutionScale`
+      / `featureScale` in `MapPreferencesModal` ("less ↔ more detail",
+      `0.5× / 1× / 2×`), not as a pixel count — nobody has an opinion about 32 px.
+      It is a rendering knob, so it belongs with those two rather than with the
+      metre windows in the elevation section.
+- [ ] **Steepness colorization and the chart readout measure differently.** The
+      colored line takes its grade over a zoom-derived span with its own
+      elevation pre-smoothing (`steepnessColorizer`), while the readout takes it
+      over the user's `gradeWindow` via `gradeAt` — so hovering a stretch can
+      report a grade the color doesn't match. Threading `gradeWindow` into
+      `ColorizeOptions` was tried and reverted: it is plumbing through three call
+      sites for a difference visible only at high zoom, and it makes the two
+      *look* reconciled while they still compute independently. The worthwhile
+      version is to have both read one grade function over the same series, with
+      zoom affecting only the rendering's level of detail.
 
 ## Track viewer: generic geodata vs. recorded tracks
 
