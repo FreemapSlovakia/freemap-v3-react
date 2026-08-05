@@ -42,6 +42,10 @@ const ResSchema = z.array(
 export default function OutdoorMapLegend(): ReactElement {
   const activeObjects = useAppSelector((s) => s.objects.active);
 
+  // The map renders differently by zoom, so the legend is asked for the zoom
+  // the user is currently looking at.
+  const zoom = useAppSelector((s) => s.map.zoom);
+
   const [legend, setLegend] = useState<Item[]>([]);
 
   const dispatch = useDispatch();
@@ -59,7 +63,7 @@ export default function OutdoorMapLegend(): ReactElement {
       return;
     }
 
-    fetch(`${fmMapserverUrl}/legend`)
+    fetch(`${fmMapserverUrl}/legend?zoom=${zoom}`)
       .then((response) =>
         response.status === 200 ? response.json() : undefined,
       )
@@ -102,7 +106,7 @@ export default function OutdoorMapLegend(): ReactElement {
           }),
         );
       });
-  }, [dispatch, osmMapping]);
+  }, [dispatch, osmMapping, zoom]);
 
   const lm = useLegendMessages();
 
@@ -146,11 +150,11 @@ export default function OutdoorMapLegend(): ReactElement {
                 <div>
                   <img
                     alt={name_w_tags.map(({ name }) => name).join(', ')}
-                    src={`${fmMapserverUrl}/legend/${id}`}
+                    src={`${fmMapserverUrl}/legend/${id}?zoom=${zoom}`}
                     srcSet={[1, 2, 3]
                       .map(
                         (s) =>
-                          `${fmMapserverUrl}/legend/${id}?scale=${s}${
+                          `${fmMapserverUrl}/legend/${id}?zoom=${zoom}&scale=${s}${
                             s > 1 ? ` ${s}x` : ''
                           }`,
                       )
