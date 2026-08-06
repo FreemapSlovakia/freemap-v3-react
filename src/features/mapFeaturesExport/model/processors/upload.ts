@@ -4,6 +4,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadGapi, startGoogleAuth } from '@shared/gapiLoader.js';
 import { saveBlob } from '@shared/saveBlob.js';
 import { hasProperty } from '@shared/types/typeUtils.js';
+import { shareViaSheet } from '@shared/webShare.js';
 import type { Dispatch } from 'redux';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
 import type { ExportTarget } from '../actions.js';
@@ -264,47 +265,54 @@ export async function upload(
 
       const file = new File([data], meta.name, { type: meta.mime });
 
+      // Whether the file ends up saved rather than shared. Two ways to get
+      // there: the sheet is already up for an earlier export and the browser
+      // opens one at a time, or opening it spends the user activation of the
+      // Export click and an export slow enough to outlive it (elevation
+      // filling, a photo-heavy KMZ) finds it gone. Either way the file exists
+      // and the user asked for it, so it is saved — an outcome, rather than an
+      // error over a file that was built, or a silent drop of the export the
+      // last click asked for while the sheet holds an earlier one.
+      let saveInstead: boolean;
+
       try {
-        await navigator.share({ files: [file] });
+        saveInstead = !(await shareViaSheet({ files: [file] }));
       } catch (e) {
         // Dismissing the share sheet rejects with AbortError.
         if (e instanceof DOMException && e.name === 'AbortError') {
           return false;
         }
 
-        // Opening the sheet spends the user activation of the Export click, and
-        // an export slow enough to outlive it (elevation filling, a photo-heavy
-        // KMZ) finds it gone. The file exists and the user asked for it, so it
-        // is saved instead — an outcome, rather than an error over a file that
-        // was successfully built.
-        if (e instanceof DOMException && e.name === 'NotAllowedError') {
-          try {
-            await saveFile(data, type);
-          } catch (saveError) {
-            if (
-              saveError instanceof DOMException &&
-              saveError.name === 'AbortError'
-            ) {
-              return false;
-            }
-
-            throw saveError;
-          }
-
-          dispatch(
-            toastsAdd({
-              id: 'mapFeaturesExport',
-              style: 'warning',
-              timeout: 5000,
-              messageKey: 'sharedAsDownload',
-              messageLoader: loadMapFeaturesExportMessages,
-            }),
-          );
-
-          break;
+        if (!(e instanceof DOMException && e.name === 'NotAllowedError')) {
+          throw e;
         }
 
-        throw e;
+        saveInstead = true;
+      }
+
+      if (saveInstead) {
+        try {
+          await saveFile(data, type);
+        } catch (saveError) {
+          if (
+            saveError instanceof DOMException &&
+            saveError.name === 'AbortError'
+          ) {
+            return false;
+          }
+
+          throw saveError;
+        }
+
+        dispatch(
+          toastsAdd({
+            id: 'mapFeaturesExport',
+            style: 'warning',
+            timeout: 5000,
+            messageKey: 'sharedAsDownload',
+            messageLoader: loadMapFeaturesExportMessages,
+          }),
+        );
       }
 
       break;

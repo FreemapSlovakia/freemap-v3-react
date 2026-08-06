@@ -4,6 +4,7 @@ import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { shareViaSheet } from '@shared/webShare.js';
 import { bbox } from '@turf/bbox';
 import { buffer } from '@turf/buffer';
 import { point } from '@turf/helpers';
@@ -67,6 +68,25 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
     } = action.payload;
 
     trackMatomo(['trackEvent', 'Share', 'openExternal', where]);
+
+    // Both share targets hand their outcome here. Dismissing the sheet rejects
+    // with AbortError — closing what you just opened is not a failure to report
+    // — but anything else is, including a share that never got a sheet at all:
+    // the user tapped share, and silence is the one answer that leaves them
+    // with nothing to act on.
+    const reportShareProblem = (err: unknown) => {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      dispatch(
+        toastsAdd({
+          messageKey: 'general.operationError',
+          messageParams: { err },
+          style: 'danger',
+        }),
+      );
+    };
 
     switch (where) {
       case 'window':
@@ -230,21 +250,17 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
         const text = [pointDescription, geo].filter(Boolean).join('\n');
 
-        window.navigator
-          .share({
-            title: pointTitle,
-            text,
-            url: url || window.location.href,
+        shareViaSheet({
+          title: pointTitle,
+          text,
+          url: url || window.location.href,
+        })
+          .then((shared) => {
+            if (!shared) {
+              throw new Error('another share is already open');
+            }
           })
-          .catch((err: unknown) => {
-            dispatch(
-              toastsAdd({
-                messageKey: 'general.operationError',
-                messageParams: { err },
-                style: 'danger',
-              }),
-            );
-          });
+          .catch(reportShareProblem);
 
         break;
       }
@@ -280,22 +296,23 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
               throw new Error("can't share");
             }
 
-            await window.navigator.share({
-              files: filesArray,
-              title: pointTitle,
-              text: pointDescription,
-            });
+            // The picture is fetched first, so another share tapped meanwhile
+            // can reach the sheet ahead of this one — and by then the user may
+            // have swiped to a different picture entirely. Whatever is on that
+            // sheet, it is not what this asked for, so say so rather than
+            // vanish.
+            if (
+              !(await shareViaSheet({
+                files: filesArray,
+                title: pointTitle,
+                text: pointDescription,
+              }))
+            ) {
+              throw new Error('another share is already open');
+            }
           };
 
-          share().catch((err) => {
-            dispatch(
-              toastsAdd({
-                messageKey: 'general.operationError',
-                messageParams: { err },
-                style: 'danger',
-              }),
-            );
-          });
+          share().catch(reportShareProblem);
         }
 
         break;
