@@ -14,6 +14,14 @@ import { featureSmoothingSpan } from '../smoothing.js';
 // resolution.
 const BASELINE_METERS = DEM_RESOLUTION_METERS;
 
+/**
+ * The grade each end of the palette stands for, as a ratio — the scale runs
+ * from `-STEEPNESS_FULL_SCALE` to `+STEEPNESS_FULL_SCALE` and clamps beyond
+ * that. The legend labels itself from this, so the colored line and the labels
+ * can't drift apart.
+ */
+export const STEEPNESS_FULL_SCALE = 0.5;
+
 export const steepnessColorizer: Colorizer = {
   needsElevation: true,
   palette: [
@@ -85,7 +93,7 @@ export const steepnessColorizer: Colorizer = {
         const gap = !(coords[i]!.length >= 3 && Number.isFinite(coords[i]![2]));
 
         const color = Number.isFinite(angle)
-          ? Math.max(0, Math.min(1, angle / 0.5 + 0.5))
+          ? Math.max(0, Math.min(1, angle / (2 * STEEPNESS_FULL_SCALE) + 0.5))
           : 0.5;
 
         return { lat: lat!, lon: lon!, color, gap };

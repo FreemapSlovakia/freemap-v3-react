@@ -7,6 +7,7 @@ import { FaPalette } from 'react-icons/fa';
 import { readCoordTimes } from '../colorize.js';
 import type { ColorizingMode, HotlinePalette } from '../index.js';
 import { colorizers } from '../index.js';
+import { STEEPNESS_FULL_SCALE } from '../modes/steepness.js';
 import type { ColorizerMessages } from '../translations/ColorizerMessages.js';
 import { useColorizerMessages } from '../translations/useColorizerMessages.js';
 
@@ -83,10 +84,11 @@ function legendSpec(
     case 'steepness':
       return {
         unit: '%',
-        ticks: [-50, -25, 0, 25, 50].map((v, i) => ({
-          t: i / 4,
-          label: `${v > 0 ? '+' : ''}${v}`,
-        })),
+        ticks: [0, 0.25, 0.5, 0.75, 1].map((t) => {
+          const v = Math.round((2 * t - 1) * STEEPNESS_FULL_SCALE * 100);
+
+          return { t, label: `${v > 0 ? '+' : ''}${v}` };
+        }),
       };
     case 'battery':
     case 'gsmSignal':
