@@ -9,7 +9,14 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import {
+  Button,
+  Form,
+  InputGroup,
+  Modal,
+  ToggleButton,
+  ToggleButtonGroup,
+} from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { gpsRecorderSetSettings } from '../model/actions.js';
@@ -17,6 +24,7 @@ import {
   type GpsRecorderSettingsState,
   gpsRecorderSettingsInitialState,
 } from '../model/settingsReducer.js';
+import { gpsRecorderPlatformSupported } from '../support.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
 
 type Props = { show: boolean };
@@ -46,6 +54,18 @@ export default function GpsRecorderSettingsModal({
   // what stop it being submitted in that state.
   const [interval, setInterval] = useState(String(saved.intervalMs / 1000));
 
+  // Off Android there is nothing else it could be, whatever the stored value
+  // says — the same rule `recorderBackendKind` applies.
+  const browser = !gpsRecorderPlatformSupported || draft.backend === 'browser';
+
+  // Unlike everything else here, switching engines mid-ride is not merely
+  // ineffective until the next start: the engine that is running keeps its watch
+  // and keeps appending, while every handler starts addressing the other one. So
+  // this one field is locked for the duration rather than left to be ignored.
+  const recording = useAppSelector(
+    (state) => state.gpsRecorder.status?.recording ?? false,
+  );
+
   const set = useCallback(
     (patch: Partial<GpsRecorderSettingsState>) =>
       setDraft((current) => ({ ...current, ...patch })),
@@ -53,10 +73,17 @@ export default function GpsRecorderSettingsModal({
   );
 
   const resetDefaults = useCallback(() => {
-    setDraft(gpsRecorderSettingsInitialState);
+    setDraft((current) => ({
+      ...gpsRecorderSettingsInitialState,
+      // The defaults name a backend too, so a reset would switch engines by the
+      // back door — the one door the control above is closed against.
+      backend: recording
+        ? current.backend
+        : gpsRecorderSettingsInitialState.backend,
+    }));
 
     setInterval(String(gpsRecorderSettingsInitialState.intervalMs / 1000));
-  }, []);
+  }, [recording]);
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
@@ -87,10 +114,60 @@ export default function GpsRecorderSettingsModal({
         </Modal.Header>
 
         <Modal.Body>
+          {/* Only where both exist. Off Android the recorder app cannot be
+              installed at all, and offering — or even naming — it there would be
+              an option the user can do nothing with. */}
+          {gpsRecorderPlatformSupported && (
+            <>
+              <Form.Group className="mb-3">
+                <Form.Label className="d-block">
+                  {grm?.settingsModal.backend}
+                </Form.Label>
+
+                <ToggleButtonGroup
+                  type="radio"
+                  name="recorderBackend"
+                  value={draft.backend}
+                  onChange={(backend: GpsRecorderSettingsState['backend']) =>
+                    set({ backend })
+                  }
+                >
+                  <ToggleButton
+                    id="rb-app"
+                    value="app"
+                    variant="outline-primary"
+                    disabled={recording}
+                  >
+                    {grm?.settingsModal.backendApp}
+                  </ToggleButton>
+
+                  <ToggleButton
+                    id="rb-browser"
+                    value="browser"
+                    variant="outline-primary"
+                    disabled={recording}
+                  >
+                    {grm?.settingsModal.backendBrowser}
+                  </ToggleButton>
+                </ToggleButtonGroup>
+
+                <Form.Text className="d-block">
+                  {recording
+                    ? grm?.settingsModal.backendLockedHint
+                    : grm?.settingsModal.backendHint}
+                </Form.Text>
+              </Form.Group>
+
+              <hr />
+            </>
+          )}
+
           <h6>{grm?.settingsModal.recorderSection}</h6>
 
           <p className="text-body-secondary small">
-            {grm?.settingsModal.recorderIntro}
+            {browser
+              ? grm?.settingsModal.browserIntro
+              : grm?.settingsModal.recorderIntro}
           </p>
 
           <Form.Group className="mb-3">
@@ -167,54 +244,67 @@ export default function GpsRecorderSettingsModal({
             </InputGroup>
           </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>{grm?.settingsModal.source}</Form.Label>
+          {/* Neither has any meaning in the browser: the web API picks no
+              provider and offers no accuracy/battery trade-off. Hidden rather
+              than disabled — a control that could never do anything says
+              nothing by being greyed out. */}
+          {!browser && (
+            <>
+              <Form.Group className="mb-3">
+                <Form.Label>{grm?.settingsModal.source}</Form.Label>
 
-            <Form.Select
-              value={draft.source}
-              onChange={(e) =>
-                set({
-                  source: e.target.value as GpsRecorderSettingsState['source'],
-                })
-              }
-            >
-              <option value="gps">{grm?.settingsModal.sourceGps}</option>
+                <Form.Select
+                  value={draft.source}
+                  onChange={(e) =>
+                    set({
+                      source: e.target
+                        .value as GpsRecorderSettingsState['source'],
+                    })
+                  }
+                >
+                  <option value="gps">{grm?.settingsModal.sourceGps}</option>
 
-              <option value="fused">{grm?.settingsModal.sourceFused}</option>
-            </Form.Select>
+                  <option value="fused">
+                    {grm?.settingsModal.sourceFused}
+                  </option>
+                </Form.Select>
 
-            <Form.Text>{grm?.settingsModal.sourceHint}</Form.Text>
-          </Form.Group>
+                <Form.Text>{grm?.settingsModal.sourceHint}</Form.Text>
+              </Form.Group>
 
-          {/* Only the fused provider has modes to trade off, and the recorder
+              {/* Only the fused provider has modes to trade off, and the recorder
               ignores this under the other one — so the field says so rather than
               taking a choice that would go nowhere. */}
-          <Form.Group className="mb-3">
-            <Form.Label>{grm?.settingsModal.priority}</Form.Label>
+              <Form.Group className="mb-3">
+                <Form.Label>{grm?.settingsModal.priority}</Form.Label>
 
-            <Form.Select
-              disabled={draft.source === 'gps'}
-              value={draft.priority}
-              onChange={(e) =>
-                set({
-                  priority: e.target
-                    .value as GpsRecorderSettingsState['priority'],
-                })
-              }
-            >
-              <option value="high">{grm?.settingsModal.priorityHigh}</option>
+                <Form.Select
+                  disabled={draft.source === 'gps'}
+                  value={draft.priority}
+                  onChange={(e) =>
+                    set({
+                      priority: e.target
+                        .value as GpsRecorderSettingsState['priority'],
+                    })
+                  }
+                >
+                  <option value="high">
+                    {grm?.settingsModal.priorityHigh}
+                  </option>
 
-              <option value="balanced">
-                {grm?.settingsModal.priorityBalanced}
-              </option>
+                  <option value="balanced">
+                    {grm?.settingsModal.priorityBalanced}
+                  </option>
 
-              <option value="low">{grm?.settingsModal.priorityLow}</option>
-            </Form.Select>
+                  <option value="low">{grm?.settingsModal.priorityLow}</option>
+                </Form.Select>
 
-            {draft.source === 'gps' && (
-              <Form.Text>{grm?.settingsModal.priorityFusedOnly}</Form.Text>
-            )}
-          </Form.Group>
+                {draft.source === 'gps' && (
+                  <Form.Text>{grm?.settingsModal.priorityFusedOnly}</Form.Text>
+                )}
+              </Form.Group>
+            </>
+          )}
 
           <hr />
 
@@ -249,25 +339,38 @@ export default function GpsRecorderSettingsModal({
             <Form.Text>{grm?.settingsModal.splitGapHint}</Form.Text>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          {/* A question only the recorder app raises. Recording in the browser
+              feeds "Locate me" from the very same watch, so there is no second
+              source to choose between and nothing to save by choosing. */}
+          {!browser && (
+            <Form.Group className="mb-3">
+              <Form.Check
+                id="chkGpsRecorderFeedLocation"
+                type="checkbox"
+                label={grm?.settingsModal.feedLocation}
+                checked={draft.feedLocation}
+                onChange={(e) => set({ feedLocation: e.currentTarget.checked })}
+              />
+
+              <Form.Text>{grm?.settingsModal.feedLocationHint}</Form.Text>
+            </Form.Group>
+          )}
+
+          {/* Not a choice when this page is what records: a blanked screen ends
+              a browser recording rather than merely hiding it, so the lock is
+              held regardless and offering to turn it off would be offering to
+              lose rides. */}
+          {!browser && (
             <Form.Check
-              id="chkGpsRecorderFeedLocation"
+              id="chkGpsRecorderKeepAwake"
               type="checkbox"
-              label={grm?.settingsModal.feedLocation}
-              checked={draft.feedLocation}
-              onChange={(e) => set({ feedLocation: e.currentTarget.checked })}
+              label={grm?.settingsModal.keepScreenAwake}
+              checked={draft.keepScreenAwake}
+              onChange={(e) =>
+                set({ keepScreenAwake: e.currentTarget.checked })
+              }
             />
-
-            <Form.Text>{grm?.settingsModal.feedLocationHint}</Form.Text>
-          </Form.Group>
-
-          <Form.Check
-            id="chkGpsRecorderKeepAwake"
-            type="checkbox"
-            label={grm?.settingsModal.keepScreenAwake}
-            checked={draft.keepScreenAwake}
-            onChange={(e) => set({ keepScreenAwake: e.currentTarget.checked })}
-          />
+          )}
         </Modal.Body>
 
         <Modal.Footer>

@@ -7,13 +7,19 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Leaves } from '@shared/types/common.js';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { gpsRecorderSync } from '../model/actions.js';
+import { recorderBackendKind } from '../backend.js';
+import { isBrowserStorageUsable } from '../browser/engine.js';
+import { gpsRecorderSync, gpsRecorderUseBrowser } from '../model/actions.js';
 import {
   RECORDER_DOWNLOAD_URL,
   RECORDER_INTENT_URL,
   RECORDER_OPEN_INTENT_URL,
   type RecorderFailure,
 } from '../protocol.js';
+import {
+  browserRecordingSupported,
+  gpsRecorderPlatformSupported,
+} from '../support.js';
 import type { GpsRecorderMessages } from '../translations/GpsRecorderMessages.js';
 import { loadGpsRecorderMessages } from '../translations/loadGpsRecorderMessages.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
@@ -39,6 +45,8 @@ const ERROR_KEYS: Record<
   'not-stored': 'errors.notStored',
   incomplete: 'errors.incomplete',
   outdated: 'errors.outdated',
+  'location-denied': 'errors.locationDenied',
+  'location-unavailable': 'errors.locationUnavailable',
   http: 'errors.http',
   protocol: 'errors.protocol',
   unknown: 'errors.unknown',
@@ -80,6 +88,12 @@ export function useRecorderNotices(): void {
     // opening it and offers the download second. The launch intent carries
     // `browser_fallback_url`, so it lands on the download page anyway if the app
     // really isn't there.
+    //
+    // Nothing answering is also where the browser fallback is worth offering:
+    // the user has just asked to record and got nothing, and this is the one
+    // action that records anyway. It comes after opening the app they may
+    // already have — it records worse — but before the download, which is a
+    // detour for anyone who only wanted this ride.
     const actions: ToastAction[] =
       failure === 'unreachable'
         ? [
@@ -88,6 +102,15 @@ export function useRecorderNotices(): void {
               href: RECORDER_OPEN_INTENT_URL,
               variant: 'primary',
             },
+            ...(browserRecordingSupported
+              ? ([
+                  {
+                    name: m.recordInBrowser,
+                    action: gpsRecorderUseBrowser(),
+                    variant: 'secondary',
+                  },
+                ] as const)
+              : []),
             {
               name: m.install,
               href: RECORDER_DOWNLOAD_URL,
@@ -114,7 +137,13 @@ export function useRecorderNotices(): void {
                   variant: 'primary',
                 },
               ]
-            : failure === 'not-persisted' || failure === 'not-stored'
+            : // Nothing this app can offer changes the browser's mind about its
+              // own storage, or about a permission the user refused for this
+              // site — and a button that cannot help is worse than none.
+              failure === 'not-persisted' ||
+                failure === 'not-stored' ||
+                failure === 'location-denied' ||
+                failure === 'location-unavailable'
               ? []
               : [
                   {
@@ -146,9 +175,58 @@ export function useRecorderNotices(): void {
       dispatch(toastsRemove('gpsRecorder.failure'));
 
       dispatch(toastsRemove('gpsRecorder.setup'));
+
+      dispatch(toastsRemove('gpsRecorder.browser'));
     },
     [dispatch],
   );
+
+  const browserRecording = useAppSelector(
+    (state) =>
+      recorderBackendKind(state) === 'browser' &&
+      (state.gpsRecorder.status?.recording ?? false),
+  );
+
+  // Said once as the ride begins, and only then: what browser recording costs is
+  // a thing to know before pocketing the phone, not a condition to be nagged
+  // about for an hour. It times out like any other advisory, and the readout is
+  // what says which engine is running for the rest of the ride.
+  //
+  // The upsell rides along where there is something to upsell to — a `warning`
+  // in this app's vocabulary — and is simply absent where the recorder app
+  // cannot be installed at all.
+  //
+  // A store that will not take the ride replaces the message and drops the
+  // timeout. The ordinary caveat is a thing to know; this one is the difference
+  // between a ride that survives a reload and one that does not, and a reload is
+  // not how the user should find out. Read at the moment recording starts, by
+  // which time hydration — the first thing that touches the store — has settled.
+  useEffect(() => {
+    if (!browserRecording || !m) {
+      return;
+    }
+
+    const stored = isBrowserStorageUsable();
+
+    dispatch(
+      toastsAdd({
+        id: 'gpsRecorder.browser',
+        style: 'warning',
+        messageKey: stored ? 'browserWarning' : 'browserNoStorage',
+        messageLoader: loadGpsRecorderMessages,
+        ...(stored ? { timeout: 10_000 } : {}),
+        actions: gpsRecorderPlatformSupported
+          ? [
+              {
+                name: m.install,
+                href: RECORDER_DOWNLOAD_URL,
+                variant: 'secondary',
+              },
+            ]
+          : [],
+      }),
+    );
+  }, [dispatch, m, browserRecording]);
 
   // Only the recommended-but-missing steps: a hard gate is a failure and travels
   // as one. Keyed on the set of outstanding items, so resolving one re-states

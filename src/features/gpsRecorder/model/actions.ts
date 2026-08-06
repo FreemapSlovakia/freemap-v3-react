@@ -36,6 +36,17 @@ export interface GpsRecorderFailure {
 export const gpsRecorderStart = createAction('GPS_RECORDER_START');
 
 /**
+ * Switches to recording in this page and starts, in one gesture.
+ *
+ * Offered on the failure that means the recorder app did not answer, because
+ * that is the moment the fallback is worth anything: the user has just asked to
+ * record and got nothing. The choice sticks — it is the same setting the
+ * settings modal shows — so the next Record goes the same way until it is
+ * changed back.
+ */
+export const gpsRecorderUseBrowser = createAction('GPS_RECORDER_USE_BROWSER');
+
+/**
  * Suspends the recording. This is the recorder's own `POST /stop` — it keeps the
  * track, and the next start continues it in a new segment — so from the user's
  * side it is a pause, and {@link gpsRecorderStop} is what actually ends a ride.

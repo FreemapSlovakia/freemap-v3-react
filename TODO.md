@@ -369,6 +369,13 @@ There is deliberately no pause: for the track it is the same event as a stop, an
 what it adds — a Resume action in the notification, a restart Android cannot
 refuse — belongs to the recorder.
 
+A second backend records from the browser's own Geolocation API, for iOS and for
+the ride not worth an install — written, type-checking, and **not yet run in a
+browser**. Its remaining work, including the elevation datum and the untested fix
+filter, is listed in
+[`src/features/gpsRecorder/browser/README.md`](./src/features/gpsRecorder/browser/README.md)
+rather than here.
+
 - [ ] **A landing page for the APK.** `RECORDER_DOWNLOAD_URL` points straight at
       the APK, so the install fallback drops the user into a bare download with
       no explanation of the "install unknown apps" permission they will need.

@@ -10,6 +10,14 @@ const en: GpsRecorderMessages = {
   delete: 'Delete recording',
   settings: 'Recording settings',
   details: 'Recording details',
+  recordInBrowser: 'Record in this browser',
+  browserBadge: 'In this browser',
+  browserWarning:
+    'Recording in this browser. It stops when the screen locks or you leave ' +
+    'this page, so keep both open for the whole ride.',
+  browserNoStorage:
+    'Recording in this browser, but it will not store the ride — reloading or ' +
+    'closing this page loses it. Finish the recording to keep it.',
   state: {
     recording: 'Recording',
     stopped: 'Stopped',
@@ -100,16 +108,33 @@ const en: GpsRecorderMessages = {
       'and start there, or allow it to run without battery restrictions so it ' +
       'can be started from here.',
     outdated: 'The recorder is too old for this version of the map.',
+    locationDenied:
+      'This site is not allowed to use your location. Allow it in the browser ' +
+      'settings for this site, then start the recording again.',
+    locationUnavailable: 'This browser cannot report your location.',
     http: 'The recorder answered with an error.',
     protocol: 'The recorder answered with something unexpected.',
     unknown: 'Talking to the recorder failed.',
   },
   settingsModal: {
     title: 'Recording settings',
+    backend: 'Record with',
+    backendApp: 'The recorder app',
+    backendBrowser: 'This browser',
+    backendHint:
+      'The app records with the screen off and measures elevation for every ' +
+      'fix. This browser needs the page open and the screen on, but needs no ' +
+      'install.',
+    backendLockedHint:
+      'Cannot be changed while a recording is running. Pause or finish it first.',
     recorderSection: 'What gets recorded',
     recorderIntro:
       'Applied by the recorder when a recording starts, so changing them does ' +
       'not affect a recording already running.',
+    browserIntro:
+      'Applied when a recording starts, so changing them does not affect a ' +
+      'recording already running. The browser decides how often it reports a ' +
+      'position, so these are limits rather than instructions.',
     intervalMs: 'Time between fixes',
     minDistanceM: 'Minimum distance between fixes',
     maxAccuracyM: 'Discard fixes less accurate than',

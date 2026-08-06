@@ -11,6 +11,16 @@ const fr: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Supprimer l’enregistrement',
   settings: 'Paramètres d’enregistrement',
   details: 'Détails de l’enregistrement',
+  recordInBrowser: 'Enregistrer dans ce navigateur',
+  browserBadge: 'Dans ce navigateur',
+  browserWarning:
+    'Enregistrement dans ce navigateur. Il s’arrête lorsque l’écran se ' +
+    'verrouille ou que vous quittez cette page ; gardez donc la page ouverte ' +
+    'et l’écran allumé pendant tout le parcours.',
+  browserNoStorage:
+    'Enregistrement dans ce navigateur, mais celui-ci ne conservera pas le ' +
+    'parcours — recharger ou fermer cette page le perdra. Terminez ' +
+    'l’enregistrement pour le conserver.',
   state: {
     recording: 'Enregistrement',
     stopped: 'Arrêté',
@@ -104,16 +114,36 @@ const fr: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
       'Ouvrez-le et démarrez-y l’enregistrement, ou autorisez-le à fonctionner ' +
       'sans restrictions de batterie afin de pouvoir le lancer d’ici.',
     outdated: 'L’enregistreur est trop ancien pour cette version de la carte.',
+    locationDenied:
+      'Ce site n’est pas autorisé à utiliser votre position. Autorisez-le ' +
+      'dans les paramètres du navigateur pour ce site, puis relancez ' +
+      'l’enregistrement.',
+    locationUnavailable: 'Ce navigateur ne peut pas déterminer votre position.',
     http: 'L’enregistreur a répondu par une erreur.',
     protocol: 'L’enregistreur a répondu quelque chose d’inattendu.',
     unknown: 'La communication avec l’enregistreur a échoué.',
   },
   settingsModal: {
     title: 'Paramètres d’enregistrement',
+    backend: 'Enregistrer avec',
+    backendApp: 'L’enregistreur',
+    backendBrowser: 'Ce navigateur',
+    backendHint:
+      'L’application enregistre même écran éteint et mesure l’altitude à ' +
+      'chaque relevé. Ce navigateur exige que la page reste ouverte et ' +
+      'l’écran allumé, mais ne demande aucune installation.',
+    backendLockedHint:
+      'Non modifiable pendant un enregistrement en cours. Mettez-le d’abord ' +
+      'en pause ou terminez-le.',
     recorderSection: 'Ce qui est enregistré',
     recorderIntro:
       'L’enregistreur les applique au démarrage d’un enregistrement ; les ' +
       'modifier n’affecte donc pas un enregistrement déjà en cours.',
+    browserIntro:
+      'Appliqués au démarrage d’un enregistrement ; les modifier n’affecte ' +
+      'donc pas un enregistrement déjà en cours. C’est le navigateur qui ' +
+      'décide à quelle fréquence il communique une position : ce sont donc ' +
+      'des limites plutôt que des consignes.',
     intervalMs: 'Temps entre les relevés',
     minDistanceM: 'Distance minimale entre les relevés',
     maxAccuracyM: 'Écarter les relevés moins précis que',

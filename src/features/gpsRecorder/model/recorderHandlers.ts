@@ -9,31 +9,14 @@ import { storeTrackDurably } from '@features/dataViewer/trackStore.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import type { FeatureCollection } from 'geojson';
 import type { Dispatch } from 'redux';
+import { type RecorderBackend, recorderBackend } from '../backend.js';
 import { setRecorderFollowed } from '../follow.js';
 import {
-  missingPermissions,
-  RECORDER_INTENT_URL,
   RecorderError,
   type RecorderStatus,
   truncateDetail,
 } from '../protocol.js';
-import {
-  assertSupportedVersion,
-  clearTrack,
-  getStatus,
-  getTrackSince,
-  startRecording,
-  stopRecording,
-  waitForRecording,
-  waitForStatus,
-} from '../recorderClient.js';
-import {
-  closeRecorderStream,
-  isRecorderStreamUsable,
-  openRecorderStream,
-  recorderStreamGeneration,
-  reportRecorderStreamState,
-} from '../stream.js';
+import { assertSupportedVersion } from '../recorderClient.js';
 import { recorderSegmentsToFeatureCollection } from '../trackGeojson.js';
 import {
   gpsRecorderAddPoints,
@@ -41,13 +24,13 @@ import {
   gpsRecorderSetConnection,
   gpsRecorderSetError,
   gpsRecorderSetPending,
+  gpsRecorderSetSettings,
   gpsRecorderSetStatus,
   type gpsRecorderStop,
   type gpsRecorderSync,
   gpsRecorderTrackCleared,
 } from './actions.js';
 import { selectRecorderSegments } from './selectors.js';
-import { recorderConfigOf } from './settingsReducer.js';
 
 function reportFailure(dispatch: Dispatch, err: unknown): void {
   dispatch(
@@ -79,24 +62,6 @@ function forgetUnreachableStatus(dispatch: Dispatch, err: unknown): void {
   }
 }
 
-function assertReady(status: RecorderStatus): void {
-  assertSupportedVersion(status);
-
-  // `canRecord` is the recorder's own verdict and the only blocking gate.
-  // `setupComplete` covers recommended-but-optional steps (a vendor battery
-  // policy, say), which belong in a warning rather than a refusal to start.
-  if (!status.canRecord) {
-    const missing = missingPermissions(status);
-
-    throw new RecorderError(
-      'setup-needed',
-      missing.length > 0
-        ? `missing permissions: ${missing.join(', ')}`
-        : 'the recorder reports it cannot record',
-    );
-  }
-}
-
 /**
  * Reconciles a status — however it arrived — with the track held here, fetching
  * whatever the recorder has that this page hasn't. Returns the point column
@@ -104,6 +69,7 @@ function assertReady(status: RecorderStatus): void {
  */
 async function applyStatus(
   dispatch: Dispatch,
+  backend: RecorderBackend,
   status: RecorderStatus,
   held: { points: number; cursor: number; generation: number | null },
 ): Promise<readonly string[]> {
@@ -139,7 +105,7 @@ async function applyStatus(
   if (status.count > 0 && (fromZero || status.lastSeq > held.cursor)) {
     dispatch(gpsRecorderSetConnection('syncing'));
 
-    const page = await getTrackSince(fromZero ? 0 : held.cursor);
+    const page = await backend.getTrackSince(fromZero ? 0 : held.cursor);
 
     dispatch(gpsRecorderAddPoints(page.points));
 
@@ -167,20 +133,22 @@ async function runSync(
   // page's points were fetched under.
   const { points, cursor, generation } = getState().gpsRecorder;
 
+  const backend = recorderBackend(getState());
+
   // A stream held over from a hidden page is about to be replaced, so it counts
   // as no stream: the connection is being made again, not merely caught up.
-  if (!isRecorderStreamUsable()) {
+  if (!backend.isStreamUsable()) {
     dispatch(gpsRecorderSetConnection('connecting'));
   }
 
   // Captured before anything is awaited: the tool can be closed mid-sync, and
   // what follows must not resurrect the stream it just closed.
-  const since = recorderStreamGeneration();
+  const since = backend.streamGeneration();
 
   let fields: readonly string[];
 
   try {
-    fields = await applyStatus(dispatch, await getStatus(), {
+    fields = await applyStatus(dispatch, backend, await backend.getStatus(), {
       points: points.length,
       cursor,
       generation,
@@ -202,14 +170,14 @@ async function runSync(
       reportFailure(dispatch, err);
     }
 
-    reportRecorderStreamState(dispatch);
+    backend.reportStreamState(dispatch);
 
     return;
   }
 
   dispatch(gpsRecorderSetError(null));
 
-  openRecorderStream(dispatch, fields, since);
+  backend.attachStream(dispatch, fields, since);
 }
 
 /**
@@ -260,10 +228,12 @@ export const pushedStatusHandler: ProcessorHandler<
 > = async ({ dispatch, getState, action }) => {
   const { points, cursor, generation } = getState().gpsRecorder;
 
-  const since = recorderStreamGeneration();
+  const backend = recorderBackend(getState());
+
+  const since = backend.streamGeneration();
 
   try {
-    const fields = await applyStatus(dispatch, action.payload, {
+    const fields = await applyStatus(dispatch, backend, action.payload, {
       points: points.length,
       cursor,
       generation,
@@ -271,19 +241,23 @@ export const pushedStatusHandler: ProcessorHandler<
 
     // Idempotent for an already-open stream; this only refreshes the column
     // order and restores the connection state the catch-up moved off `live`.
-    openRecorderStream(dispatch, fields, since);
+    backend.attachStream(dispatch, fields, since);
   } catch (err) {
     reportFailure(dispatch, err);
 
-    reportRecorderStreamState(dispatch);
+    backend.reportStreamState(dispatch);
   }
 };
 
-/** Begins recording. */
+/**
+ * Begins recording. Everything about *how* — the launch intent, the Local
+ * Network Access prompt, the location permission — belongs to the backend; what
+ * is left here is the same either way.
+ */
 export const startHandler: ProcessorHandler = async (params) => {
   const { dispatch, getState } = params;
 
-  const config = recorderConfigOf(getState().gpsRecorderSettings);
+  const backend = recorderBackend(getState());
 
   dispatch(gpsRecorderSetError(null));
 
@@ -291,67 +265,16 @@ export const startHandler: ProcessorHandler = async (params) => {
 
   dispatch(gpsRecorderSetConnection('connecting'));
 
-  const fail = (err: unknown) => {
-    closeRecorderStream();
+  try {
+    await backend.start();
+  } catch (err) {
+    backend.closeStream();
 
     dispatch(gpsRecorderSetPending(false));
 
     dispatch(gpsRecorderSetConnection('idle'));
 
     reportFailure(dispatch, err);
-  };
-
-  let status: RecorderStatus;
-
-  try {
-    // First call of the flow, and it runs on the user's tap: this is what
-    // brings up the Local Network Access prompt at an understandable moment.
-    status = await getStatus();
-  } catch (err) {
-    if (!(err instanceof RecorderError) || err.failure !== 'unreachable') {
-      fail(err);
-
-      return;
-    }
-
-    // Nothing answered. An installed recorder handles the intent and hands
-    // focus back; a missing one lands the user on the download page.
-    window.location.href = RECORDER_INTENT_URL;
-
-    try {
-      status = await waitForStatus();
-    } catch (err2) {
-      fail(err2);
-
-      return;
-    }
-  }
-
-  try {
-    assertReady(status);
-
-    try {
-      await startRecording(config);
-    } catch (err) {
-      if (
-        !(err instanceof RecorderError) ||
-        err.failure !== 'needs-foreground'
-      ) {
-        throw err;
-      }
-
-      // Android refused the recorder's foreground-service start because the
-      // recorder is in the background — which it is whenever the page is what
-      // the user is looking at, and which only a battery-optimisation exemption
-      // lifts. So hand the job to the recorder's own activity, where the same
-      // call is allowed. The config asked for above is already saved on its
-      // side, so the recording it starts is the one that was requested.
-      window.location.href = RECORDER_INTENT_URL;
-
-      await waitForRecording();
-    }
-  } catch (err) {
-    fail(err);
 
     return;
   }
@@ -371,6 +294,20 @@ export const startHandler: ProcessorHandler = async (params) => {
 };
 
 /**
+ * Takes the browser fallback and records straight away.
+ *
+ * The settings change lands before the start reads them, so this begins the
+ * recording the user asked for rather than merely reconfiguring and waiting to
+ * be asked again — which, on the toast that says the recorder did not answer, is
+ * the whole point of the offer.
+ */
+export const useBrowserHandler: ProcessorHandler = async (params) => {
+  params.dispatch(gpsRecorderSetSettings({ backend: 'browser' }));
+
+  await startHandler(params);
+};
+
+/**
  * Suspends the recording — the recorder's own `POST /stop`, which keeps the track
  * and opens a new segment on the next start. Nothing has to be remembered about
  * where it stopped: the recorder bumps `seg`, and that is what splits the track.
@@ -379,17 +316,19 @@ export const pauseHandler: ProcessorHandler = async ({
   dispatch,
   getState,
 }) => {
+  const backend = recorderBackend(getState());
+
   dispatch(gpsRecorderSetPending(true));
 
   try {
-    await stopRecording();
+    await backend.stop();
 
     // Through `applyStatus`, not a raw dispatch: it is what compares
     // `generation` before storing it, so a track cleared while the stream was
     // down is noticed here rather than absorbed silently.
     const { points, cursor, generation } = getState().gpsRecorder;
 
-    await applyStatus(dispatch, await getStatus(), {
+    await applyStatus(dispatch, backend, await backend.getStatus(), {
       points: points.length,
       cursor,
       generation,
@@ -402,7 +341,7 @@ export const pauseHandler: ProcessorHandler = async ({
     // The catch-up above moves the connection to `syncing`, and only the stream
     // knows what it should read as afterwards. Without this the button spins for
     // good on a pause that worked perfectly.
-    reportRecorderStreamState(dispatch);
+    backend.reportStreamState(dispatch);
   }
 };
 
@@ -414,9 +353,14 @@ export const pauseHandler: ProcessorHandler = async ({
  * Only ever the recorder's copy. Once a ride has been finished it belongs to the
  * track viewer, and deleting it there is what throws it away.
  */
-export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
+export const clearHandler: ProcessorHandler = async ({
+  dispatch,
+  getState,
+}) => {
+  const backend = recorderBackend(getState());
+
   try {
-    await clearTrack();
+    await backend.clear();
   } catch (err) {
     reportFailure(dispatch, err);
 
@@ -428,7 +372,7 @@ export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
   dispatch(gpsRecorderSetError(null));
 
   try {
-    dispatch(gpsRecorderSetStatus(await getStatus()));
+    dispatch(gpsRecorderSetStatus(await backend.getStatus()));
   } catch (err) {
     reportFailure(dispatch, err);
   }
@@ -495,11 +439,13 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
   getState,
   action,
 }) => {
+  const backend = recorderBackend(getState());
+
   dispatch(gpsRecorderSetPending(true));
 
   try {
     if (getState().gpsRecorder.status?.recording) {
-      await stopRecording();
+      await backend.stop();
     }
 
     // Catch up *before* taking the track, and refuse to take it at all unless the
@@ -509,9 +455,9 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
     // the complete one is the one mistake this whole flow exists to avoid.
     const { points, cursor, generation } = getState().gpsRecorder;
 
-    const status = await getStatus();
+    const status = await backend.getStatus();
 
-    await applyStatus(dispatch, status, {
+    await applyStatus(dispatch, backend, status, {
       points: points.length,
       cursor,
       generation,
@@ -544,13 +490,13 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
       );
     }
 
-    await clearTrack();
+    await backend.clear();
 
     dispatch(gpsRecorderTrackCleared());
 
     // Safe as a raw dispatch: the track was just cleared here, so the generation
     // this reports is the one the empty local copy belongs to.
-    dispatch(gpsRecorderSetStatus(await getStatus()));
+    dispatch(gpsRecorderSetStatus(await backend.getStatus()));
   } catch (err) {
     reportFailure(dispatch, err);
   } finally {
@@ -558,6 +504,6 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
 
     // As in the pause: the catch-up left the connection reading as `syncing`,
     // which nothing else here undoes.
-    reportRecorderStreamState(dispatch);
+    backend.reportStreamState(dispatch);
   }
 };

@@ -305,6 +305,14 @@ export type RecorderFailure =
   /** Reachable, but older than `MIN_RECORDER_VERSION_CODE`. */
   | 'outdated'
   /**
+   * Recording in the browser: the site's location permission was refused. Only
+   * the browser's own settings can grant it back, so the notice carries no
+   * action — there is nothing this app can offer that would help.
+   */
+  | 'location-denied'
+  /** Recording in the browser: there is no Geolocation API to record from. */
+  | 'location-unavailable'
+  /**
    * The browser would not promise to keep its storage, so the recording was left
    * on the recorder rather than trusted to a copy it may evict.
    */

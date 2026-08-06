@@ -5,10 +5,12 @@ import clsx from 'clsx';
 import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { Dropdown, Spinner } from 'react-bootstrap';
 import { FaCircle } from 'react-icons/fa';
+import { recorderBackendKind } from '../backend.js';
 import {
   selectLatestRecorderPoint,
   selectRecorderStats,
 } from '../model/selectors.js';
+import { gpsRecorderPlatformSupported } from '../support.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
 import classes from './GpsRecorderReadout.module.css';
 
@@ -58,6 +60,14 @@ export function GpsRecorderReadout(): ReactElement {
   const stats = useAppSelector(selectRecorderStats);
 
   const latest = useAppSelector(selectLatestRecorderPoint);
+
+  // Only where the recorder app was an alternative. Off Android there is nothing
+  // to contrast it with, and a badge that can only ever read one way is noise —
+  // what browser recording costs is said when the ride starts instead.
+  const browserBadge = useAppSelector(
+    (state) =>
+      gpsRecorderPlatformSupported && recorderBackendKind(state) === 'browser',
+  );
 
   const speedFormat = useMemo(
     () =>
@@ -261,6 +271,13 @@ export function GpsRecorderReadout(): ReactElement {
                     : connection === 'reconnecting'
                       ? m?.connection.reconnecting
                       : m?.connection.offline}
+
+              {browserBadge && (
+                <>
+                  {' · '}
+                  {m?.browserBadge}
+                </>
+              )}
             </span>
           </div>
 

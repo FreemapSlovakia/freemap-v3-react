@@ -5,6 +5,7 @@ import {
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { recorderBackendKind } from '../backend.js';
 import { selectLatestRecorderPoint } from '../model/selectors.js';
 
 /**
@@ -40,10 +41,18 @@ export function useRecorderLocationFeed(): void {
 
   const latest = useAppSelector(selectLatestRecorderPoint);
 
+  // Only the recorder app is a second source. A browser recording draws its
+  // fixes from the very watch this would be displacing, so claiming the source
+  // would republish the same positions a filter later and gain nothing.
+  const separateSource = useAppSelector(
+    (state) => recorderBackendKind(state) === 'app',
+  );
+
   // Claimed only once there is a fix to publish. Taking the source earlier
   // stops the browser's watch and leaves the marker on the last position it
   // reported until the recorder's first fix — which on a cold start is a while.
-  const external = feedLocation && recording && latest !== null;
+  const external =
+    separateSource && feedLocation && recording && latest !== null;
 
   useEffect(() => {
     if (!external) {
