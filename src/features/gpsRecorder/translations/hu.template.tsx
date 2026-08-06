@@ -11,6 +11,16 @@ const hu: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Felvétel törlése',
   settings: 'Rögzítési beállítások',
   details: 'Felvétel részletei',
+  recordInBrowser: 'Rögzítés ebben a böngészőben',
+  browserBadge: 'Ebben a böngészőben',
+  browserWarning:
+    'A rögzítés ebben a böngészőben történik. Leáll, ha a képernyő lezáródik ' +
+    'vagy elhagyja ezt az oldalt, ezért az egész út alatt hagyja nyitva az ' +
+    'oldalt és bekapcsolva a képernyőt.',
+  browserNoStorage:
+    'A rögzítés ebben a böngészőben történik, de a felvételt nem menti el — ' +
+    'az oldal újratöltésével vagy bezárásával elveszíti. Ha meg szeretné ' +
+    'tartani, fejezze be a rögzítést.',
   state: {
     recording: 'Rögzítés folyamatban',
     stopped: 'Leállítva',
@@ -102,16 +112,33 @@ const hu: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
       'meg, és ott indítsa el a rögzítést, vagy engedélyezze neki az ' +
       'akkumulátoros korlátozások nélküli működést, hogy innen is elindítható legyen.',
     outdated: 'A rögzítő túl régi a térkép ehhez a verziójához.',
+    locationDenied:
+      'Ez az oldal nem használhatja a helyzetét. Engedélyezze a böngésző ' +
+      'beállításaiban ehhez az oldalhoz, majd indítsa újra a rögzítést.',
+    locationUnavailable: 'Ez a böngésző nem tudja megállapítani a helyzetét.',
     http: 'A rögzítő hibával válaszolt.',
     protocol: 'A rögzítő valami váratlannal válaszolt.',
     unknown: 'A rögzítővel való kommunikáció sikertelen volt.',
   },
   settingsModal: {
     title: 'Rögzítési beállítások',
+    backend: 'Mi rögzítsen',
+    backendApp: 'A rögzítő alkalmazás',
+    backendBrowser: 'Ez a böngésző',
+    backendHint:
+      'Az alkalmazás kikapcsolt képernyő mellett is rögzít, és minden ' +
+      'mérésnél megméri a magasságot. Ez a böngésző nyitott oldalt és ' +
+      'bekapcsolt képernyőt igényel, de nem kell telepíteni.',
+    backendLockedHint:
+      'Futó rögzítés közben nem módosítható. Előbb szüneteltesse vagy fejezze be.',
     recorderSection: 'Mi kerül rögzítésre',
     recorderIntro:
       'A rögzítő a felvétel indításakor alkalmazza őket, ezért módosításuk ' +
       'nem érinti a már futó felvételt.',
+    browserIntro:
+      'A felvétel indításakor lépnek életbe, ezért módosításuk nem érinti a ' +
+      'már futó felvételt. A böngésző maga dönti el, milyen gyakran jelenti a ' +
+      'pozíciót, így ezek inkább korlátok, mint utasítások.',
     intervalMs: 'Mérések közötti idő',
     minDistanceM: 'Mérések közötti legkisebb távolság',
     maxAccuracyM: 'Mérések eldobása, ha pontatlanabbak mint',

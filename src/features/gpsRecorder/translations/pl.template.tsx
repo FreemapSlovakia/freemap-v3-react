@@ -11,6 +11,16 @@ const pl: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Usuń nagranie',
   settings: 'Ustawienia nagrywania',
   details: 'Szczegóły nagrania',
+  recordInBrowser: 'Nagrywaj w tej przeglądarce',
+  browserBadge: 'W tej przeglądarce',
+  browserWarning:
+    'Nagrywanie w tej przeglądarce. Zatrzymuje się po zablokowaniu ekranu lub ' +
+    'opuszczeniu tej strony, więc przez całą trasę zostaw ją otwartą, a ekran ' +
+    'włączony.',
+  browserNoStorage:
+    'Nagrywanie w tej przeglądarce, ale nagranie nie zostanie w niej zapisane ' +
+    '— odświeżenie lub zamknięcie tej strony je utraci. Aby je zachować, ' +
+    'zakończ nagrywanie.',
   state: {
     recording: 'Nagrywanie',
     stopped: 'Zatrzymane',
@@ -102,16 +112,34 @@ const pl: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
       'zacznij nagrywanie w nim albo pozwól mu działać bez ograniczeń ' +
       'baterii, aby dało się go uruchomić stąd.',
     outdated: 'Rejestrator jest zbyt stary dla tej wersji mapy.',
+    locationDenied:
+      'Ta strona nie ma dostępu do Twojej lokalizacji. Zezwól na niego w ' +
+      'ustawieniach przeglądarki i uruchom nagrywanie ponownie.',
+    locationUnavailable:
+      'Ta przeglądarka nie potrafi określić Twojej lokalizacji.',
     http: 'Rejestrator odpowiedział błędem.',
     protocol: 'Rejestrator odpowiedział czymś nieoczekiwanym.',
     unknown: 'Komunikacja z rejestratorem nie powiodła się.',
   },
   settingsModal: {
     title: 'Ustawienia nagrywania',
+    backend: 'Nagrywaj za pomocą',
+    backendApp: 'Aplikacji rejestratora',
+    backendBrowser: 'Tej przeglądarki',
+    backendHint:
+      'Aplikacja nagrywa także przy wyłączonym ekranie i mierzy wysokość przy ' +
+      'każdym pomiarze. Ta przeglądarka wymaga otwartej strony i włączonego ' +
+      'ekranu, ale nie wymaga instalacji.',
+    backendLockedHint:
+      'Nie można zmienić podczas nagrywania. Najpierw je wstrzymaj lub zakończ.',
     recorderSection: 'Co jest rejestrowane',
     recorderIntro:
       'Rejestrator stosuje je przy rozpoczęciu nagrywania, więc ich zmiana ' +
       'nie wpływa na już trwające nagranie.',
+    browserIntro:
+      'Stosowane przy rozpoczęciu nagrywania, więc ich zmiana nie wpływa na ' +
+      'już trwające nagranie. Przeglądarka sama decyduje, jak często podaje ' +
+      'pozycję, więc są to raczej ograniczenia niż polecenia.',
     intervalMs: 'Czas między pomiarami',
     minDistanceM: 'Minimalna odległość między pomiarami',
     maxAccuracyM: 'Odrzuć pomiary mniej dokładne niż',

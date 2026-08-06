@@ -11,6 +11,16 @@ const it: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Elimina la registrazione',
   settings: 'Impostazioni di registrazione',
   details: 'Dettagli della registrazione',
+  recordInBrowser: 'Registra in questo browser',
+  browserBadge: 'In questo browser',
+  browserWarning:
+    'Registrazione in questo browser. Si interrompe quando lo schermo si ' +
+    'blocca o quando lasci questa pagina, quindi tienila aperta e lo schermo ' +
+    'acceso per tutto il percorso.',
+  browserNoStorage:
+    'Registrazione in questo browser, ma la registrazione non vi verrà ' +
+    'salvata — ricaricando o chiudendo questa pagina la perdi. Per ' +
+    'conservarla, termina la registrazione.',
   state: {
     recording: 'In registrazione',
     stopped: 'Fermato',
@@ -103,16 +113,37 @@ const it: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
       'restrizioni della batteria per poterlo avviare da qui.',
     outdated:
       'Il registratore è troppo vecchio per questa versione della mappa.',
+    locationDenied:
+      'Questo sito non è autorizzato a usare la tua posizione. Consentilo ' +
+      'nelle impostazioni del browser per questo sito, poi avvia di nuovo la ' +
+      'registrazione.',
+    locationUnavailable:
+      'Questo browser non è in grado di rilevare la tua posizione.',
     http: 'Il registratore ha risposto con un errore.',
     protocol: 'Il registratore ha risposto con qualcosa di inatteso.',
     unknown: 'La comunicazione con il registratore non è riuscita.',
   },
   settingsModal: {
     title: 'Impostazioni di registrazione',
+    backend: 'Registra con',
+    backendApp: 'L’app del registratore',
+    backendBrowser: 'Questo browser',
+    backendHint:
+      'L’app registra anche a schermo spento e misura la quota a ogni ' +
+      'rilevazione. Questo browser richiede la pagina aperta e lo schermo ' +
+      'acceso, ma non richiede alcuna installazione.',
+    backendLockedHint:
+      'Non modificabile mentre una registrazione è in corso. Prima sospendila ' +
+      'o terminala.',
     recorderSection: 'Cosa viene registrato',
     recorderIntro:
       'Il registratore le applica all’avvio di una registrazione, quindi ' +
       'modificarle non influisce su una registrazione già in corso.',
+    browserIntro:
+      'Vengono applicate all’avvio di una registrazione, quindi modificarle ' +
+      'non influisce su una registrazione già in corso. È il browser a ' +
+      'decidere ogni quanto comunica una posizione, perciò questi sono limiti ' +
+      'più che istruzioni.',
     intervalMs: 'Tempo tra le rilevazioni',
     minDistanceM: 'Distanza minima tra le rilevazioni',
     maxAccuracyM: 'Scarta le rilevazioni meno precise di',

@@ -11,6 +11,16 @@ const sl: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Izbriši posnetek',
   settings: 'Nastavitve snemanja',
   details: 'Podrobnosti posnetka',
+  recordInBrowser: 'Snemaj v tem brskalniku',
+  browserBadge: 'V tem brskalniku',
+  browserWarning:
+    'Snemanje poteka v tem brskalniku. Ustavi se, ko se zaslon zaklene ali ko ' +
+    'zapustite to stran, zato naj bo med celotno potjo stran odprta, zaslon ' +
+    'pa prižgan.',
+  browserNoStorage:
+    'Snemanje poteka v tem brskalniku, a posnetek v njem ne bo shranjen — z ' +
+    'osvežitvijo ali zaprtjem te strani ga izgubite. Če ga želite obdržati, ' +
+    'snemanje končajte.',
   state: {
     recording: 'Snemanje',
     stopped: 'Ustavljeno',
@@ -101,16 +111,37 @@ const sl: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
       'začnite v njem ali pa mu dovolite delovanje brez omejitev baterije, da ' +
       'ga bo mogoče zagnati od tu.',
     outdated: 'Snemalnik je za to različico zemljevida prestar.',
+    locationDenied:
+      'Ta stran nima dovoljenja za dostop do vaše lokacije. Dovolite ji ga v ' +
+      'nastavitvah brskalnika in znova začnite snemanje.',
+    locationUnavailable: 'Ta brskalnik ne more ugotoviti vaše lokacije.',
     http: 'Snemalnik je odgovoril z napako.',
     protocol: 'Snemalnik je odgovoril z nečim nepričakovanim.',
     unknown: 'Komunikacija s snemalnikom je spodletela.',
   },
   settingsModal: {
     title: 'Nastavitve snemanja',
+    // "Snemaj z/s" would need the preposition to change with the option
+    // ("z aplikacijo", "s tem brskalnikom"), which one shared label cannot do —
+    // so the label asks what records and the options answer in the nominative.
+    backend: 'Kaj snema',
+    backendApp: 'Aplikacija snemalnika',
+    backendBrowser: 'Ta brskalnik',
+    backendHint:
+      'Aplikacija snema tudi pri ugasnjenem zaslonu in pri vsaki meritvi ' +
+      'izmeri nadmorsko višino. Ta brskalnik potrebuje odprto stran in prižgan ' +
+      'zaslon, a ne zahteva namestitve.',
+    backendLockedHint:
+      'Med snemanjem tega ni mogoče spremeniti. Najprej ga začasno ustavite ' +
+      'ali končajte.',
     recorderSection: 'Kaj se snema',
     recorderIntro:
       'Snemalnik jih uporabi ob začetku snemanja, zato njihova sprememba ne ' +
       'vpliva na že tekoči posnetek.',
+    browserIntro:
+      'Uporabijo se ob začetku snemanja, zato njihova sprememba ne vpliva na ' +
+      'že tekoči posnetek. Brskalnik sam določa, kako pogosto sporoča položaj, ' +
+      'zato so to bolj omejitve kot navodila.',
     intervalMs: 'Čas med meritvami',
     minDistanceM: 'Najmanjša razdalja med meritvami',
     maxAccuracyM: 'Zavrzi meritve, manj natančne od',

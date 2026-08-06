@@ -11,6 +11,16 @@ const de: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Aufzeichnung löschen',
   settings: 'Aufzeichnungseinstellungen',
   details: 'Details der Aufzeichnung',
+  recordInBrowser: 'In diesem Browser aufzeichnen',
+  browserBadge: 'In diesem Browser',
+  browserWarning:
+    'Aufzeichnung in diesem Browser. Sie stoppt, sobald der Bildschirm ' +
+    'gesperrt wird oder Sie diese Seite verlassen — lassen Sie die Seite ' +
+    'geöffnet und den Bildschirm an, solange die Tour dauert.',
+  browserNoStorage:
+    'Aufzeichnung in diesem Browser, aber die Tour wird darin nicht ' +
+    'gespeichert — Neuladen oder Schließen dieser Seite verliert sie. Beenden ' +
+    'Sie die Aufzeichnung, um sie zu behalten.',
   state: {
     recording: 'Zeichnet auf',
     stopped: 'Gestoppt',
@@ -108,16 +118,36 @@ const de: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
       'Öffnen Sie ihn und starten Sie dort, oder erlauben Sie ihm, ohne ' +
       'Akkueinschränkungen zu laufen, damit er von hier gestartet werden kann.',
     outdated: 'Der Recorder ist für diese Version der Karte zu alt.',
+    locationDenied:
+      'Diese Website darf Ihren Standort nicht verwenden. Erlauben Sie es in ' +
+      'den Browsereinstellungen für diese Website und starten Sie die ' +
+      'Aufzeichnung erneut.',
+    locationUnavailable: 'Dieser Browser kann Ihren Standort nicht ermitteln.',
     http: 'Der Recorder hat mit einem Fehler geantwortet.',
     protocol: 'Der Recorder hat etwas Unerwartetes geantwortet.',
     unknown: 'Die Kommunikation mit dem Recorder ist fehlgeschlagen.',
   },
   settingsModal: {
     title: 'Aufzeichnungseinstellungen',
+    backend: 'Aufzeichnen mit',
+    backendApp: 'Der Recorder-App',
+    backendBrowser: 'Diesem Browser',
+    backendHint:
+      'Die App zeichnet auch bei ausgeschaltetem Bildschirm auf und misst die ' +
+      'Höhe bei jeder Messung. Dieser Browser braucht eine geöffnete Seite und ' +
+      'einen eingeschalteten Bildschirm, aber keine Installation.',
+    backendLockedHint:
+      'Während einer laufenden Aufzeichnung nicht änderbar. Pausieren oder ' +
+      'beenden Sie sie zuerst.',
     recorderSection: 'Was aufgezeichnet wird',
     recorderIntro:
       'Der Recorder wendet sie beim Start einer Aufzeichnung an, eine ' +
       'Änderung wirkt sich daher nicht auf eine bereits laufende Aufzeichnung aus.',
+    browserIntro:
+      'Werden beim Start einer Aufzeichnung angewendet, eine Änderung wirkt ' +
+      'sich daher nicht auf eine bereits laufende Aufzeichnung aus. Der ' +
+      'Browser bestimmt selbst, wie oft er eine Position meldet — dies sind ' +
+      'daher eher Grenzen als Vorgaben.',
     intervalMs: 'Zeit zwischen den Messungen',
     minDistanceM: 'Mindestabstand zwischen den Messungen',
     maxAccuracyM: 'Messungen verwerfen, die ungenauer sind als',
