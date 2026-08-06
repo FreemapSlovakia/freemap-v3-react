@@ -58,6 +58,14 @@ export default function GpsRecorderSettingsModal({
   // says — the same rule `recorderBackendKind` applies.
   const browser = !gpsRecorderPlatformSupported || draft.backend === 'browser';
 
+  // Unlike everything else here, switching engines mid-ride is not merely
+  // ineffective until the next start: the engine that is running keeps its watch
+  // and keeps appending, while every handler starts addressing the other one. So
+  // this one field is locked for the duration rather than left to be ignored.
+  const recording = useAppSelector(
+    (state) => state.gpsRecorder.status?.recording ?? false,
+  );
+
   const set = useCallback(
     (patch: Partial<GpsRecorderSettingsState>) =>
       setDraft((current) => ({ ...current, ...patch })),
@@ -65,10 +73,17 @@ export default function GpsRecorderSettingsModal({
   );
 
   const resetDefaults = useCallback(() => {
-    setDraft(gpsRecorderSettingsInitialState);
+    setDraft((current) => ({
+      ...gpsRecorderSettingsInitialState,
+      // The defaults name a backend too, so a reset would switch engines by the
+      // back door — the one door the control above is closed against.
+      backend: recording
+        ? current.backend
+        : gpsRecorderSettingsInitialState.backend,
+    }));
 
     setInterval(String(gpsRecorderSettingsInitialState.intervalMs / 1000));
-  }, []);
+  }, [recording]);
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
@@ -121,6 +136,7 @@ export default function GpsRecorderSettingsModal({
                     id="rb-app"
                     value="app"
                     variant="outline-primary"
+                    disabled={recording}
                   >
                     {grm?.settingsModal.backendApp}
                   </ToggleButton>
@@ -129,13 +145,16 @@ export default function GpsRecorderSettingsModal({
                     id="rb-browser"
                     value="browser"
                     variant="outline-primary"
+                    disabled={recording}
                   >
                     {grm?.settingsModal.backendBrowser}
                   </ToggleButton>
                 </ToggleButtonGroup>
 
                 <Form.Text className="d-block">
-                  {grm?.settingsModal.backendHint}
+                  {recording
+                    ? grm?.settingsModal.backendLockedHint
+                    : grm?.settingsModal.backendHint}
                 </Form.Text>
               </Form.Group>
 

@@ -5,13 +5,15 @@ import {
   browserRecorderTrackSince,
   clearBrowserRecording,
   isBrowserRecording,
-  setBrowserPointListener,
+  setBrowserRecorderListeners,
   startBrowserRecording,
   stopBrowserRecording,
 } from './browser/engine.js';
 import {
   gpsRecorderAddPoints,
   gpsRecorderSetConnection,
+  gpsRecorderSetError,
+  gpsRecorderSetStatus,
 } from './model/actions.js';
 import { recorderConfigOf } from './model/settingsReducer.js';
 import {
@@ -213,15 +215,37 @@ function browserBackend(state: RootState): RecorderBackend {
     clear: clearBrowserRecording,
 
     attachStream(dispatch) {
-      setBrowserPointListener((points) => {
-        dispatch(gpsRecorderAddPoints(points));
+      setBrowserRecorderListeners({
+        onPoints(points) {
+          dispatch(gpsRecorderAddPoints(points));
+        },
+
+        // The engine has already stopped the recording by the time this runs, so
+        // the status read here is the settled one. Dispatched raw rather than
+        // through a sync, which would immediately clear the error it just set —
+        // and safe as a raw dispatch for the same reason `clearHandler`'s is:
+        // nothing about the track changed, only whether it is still growing.
+        onFailure(failure) {
+          void browserRecorderStatus(config).then((status) => {
+            dispatch(gpsRecorderSetStatus(status));
+
+            dispatch(
+              gpsRecorderSetError({
+                failure: failure.failure,
+                detail: failure.message,
+              }),
+            );
+
+            dispatch(gpsRecorderSetConnection(connection()));
+          });
+        },
       });
 
       dispatch(gpsRecorderSetConnection(connection()));
     },
 
     closeStream() {
-      setBrowserPointListener(null);
+      setBrowserRecorderListeners(null);
     },
 
     // A constant, because there is no socket for a late sync to resurrect and

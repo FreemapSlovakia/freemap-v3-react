@@ -15,6 +15,9 @@ const en: GpsRecorderMessages = {
   browserWarning:
     'Recording in this browser. It stops when the screen locks or you leave ' +
     'this page, so keep both open for the whole ride.',
+  browserNoStorage:
+    'Recording in this browser, but it will not store the ride — reloading or ' +
+    'closing this page loses it. Finish the recording to keep it.',
   state: {
     recording: 'Recording',
     stopped: 'Stopped',
@@ -122,6 +125,8 @@ const en: GpsRecorderMessages = {
       'The app records with the screen off and measures elevation for every ' +
       'fix. This browser needs the page open and the screen on, but needs no ' +
       'install.',
+    backendLockedHint:
+      'Cannot be changed while a recording is running. Pause or finish it first.',
     recorderSection: 'What gets recorded',
     recorderIntro:
       'Applied by the recorder when a recording starts, so changing them does ' +

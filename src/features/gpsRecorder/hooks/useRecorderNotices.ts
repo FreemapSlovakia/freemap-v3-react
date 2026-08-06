@@ -8,6 +8,7 @@ import type { Leaves } from '@shared/types/common.js';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { recorderBackendKind } from '../backend.js';
+import { isBrowserStorageUsable } from '../browser/engine.js';
 import { gpsRecorderSync, gpsRecorderUseBrowser } from '../model/actions.js';
 import {
   RECORDER_DOWNLOAD_URL,
@@ -194,18 +195,26 @@ export function useRecorderNotices(): void {
   // The upsell rides along where there is something to upsell to — a `warning`
   // in this app's vocabulary — and is simply absent where the recorder app
   // cannot be installed at all.
+  //
+  // A store that will not take the ride replaces the message and drops the
+  // timeout. The ordinary caveat is a thing to know; this one is the difference
+  // between a ride that survives a reload and one that does not, and a reload is
+  // not how the user should find out. Read at the moment recording starts, by
+  // which time hydration — the first thing that touches the store — has settled.
   useEffect(() => {
     if (!browserRecording || !m) {
       return;
     }
 
+    const stored = isBrowserStorageUsable();
+
     dispatch(
       toastsAdd({
         id: 'gpsRecorder.browser',
         style: 'warning',
-        messageKey: 'browserWarning',
+        messageKey: stored ? 'browserWarning' : 'browserNoStorage',
         messageLoader: loadGpsRecorderMessages,
-        timeout: 10_000,
+        ...(stored ? { timeout: 10_000 } : {}),
         actions: gpsRecorderPlatformSupported
           ? [
               {

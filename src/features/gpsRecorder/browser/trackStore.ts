@@ -94,16 +94,25 @@ export async function loadBrowserTrack(
 
   points.sort((a, b) => a.seq - b.seq);
 
-  // A meta that would not read back leaves the points unusable rather than
-  // merely unlabelled: without `nextSeq` the next fix could reuse an id. Starting
-  // over above the highest seq on file is what keeps that impossible.
-  const meta = parsedMeta.success
+  const last = points.at(-1);
+
+  const base = parsedMeta.success
     ? parsedMeta.data
-    : {
-        ...initialBrowserMeta(fallbackConfig),
-        nextSeq: (points.at(-1)?.seq ?? 0) + 1,
-        seg: points.at(-1)?.seg ?? 0,
-      };
+    : // A meta that would not read back leaves the points unlabelled, so
+      // everything it carried starts over — except the seq floor below, which is
+      // what keeps an id from being handed out twice.
+      { ...initialBrowserMeta(fallbackConfig), seg: last?.seg ?? 0 };
+
+  // Applied whether or not the meta parsed, because the meta being *stale* is
+  // the ordinary case: `appendBrowserPoints` writes the points first, so a tab
+  // that died between the two writes leaves fixes on disk above the `nextSeq`
+  // that was recorded for them. Trusting that `nextSeq` would reissue live ids —
+  // overwriting the stored points, and having `mergePoints` drop the new fixes
+  // as ones it already holds.
+  const meta = {
+    ...base,
+    nextSeq: Math.max(base.nextSeq, (last?.seq ?? 0) + 1),
+  };
 
   return { meta, points };
 }
@@ -118,19 +127,35 @@ export async function saveBrowserMeta(
  * Appends fixes and records the meta they advanced, in that order: a crash
  * between the two leaves points above `nextSeq`, which {@link loadBrowserTrack}
  * recovers from, while the other order would hand out an id twice.
+ *
+ * The meta is written **even when the points could not be**, and the asymmetry
+ * is the whole reason: a `nextSeq` ahead of what is stored only leaves gaps,
+ * while a `recording: true` that never got written outlives the recording it
+ * describes and has the next load resume a ride that was stopped. Both failures
+ * still reach the caller.
  */
 export async function appendBrowserPoints(
   points: readonly RecorderPoint[],
   meta: BrowserRecorderMeta,
 ): Promise<void> {
+  let pointsError: unknown;
+
   if (points.length > 0) {
-    await setMany(
-      points.map((point) => [point.seq, point] as [number, RecorderPoint]),
-      pointStore,
-    );
+    try {
+      await setMany(
+        points.map((point) => [point.seq, point] as [number, RecorderPoint]),
+        pointStore,
+      );
+    } catch (err) {
+      pointsError = err;
+    }
   }
 
   await saveBrowserMeta(meta);
+
+  if (pointsError !== undefined) {
+    throw pointsError;
+  }
 }
 
 /** Discards every stored fix. The meta is the caller's to advance and save. */

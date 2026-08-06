@@ -14,6 +14,7 @@ import {
   appendBrowserPoints,
   type BrowserRecorderMeta,
   clearBrowserPoints,
+  initialBrowserMeta,
   loadBrowserTrack,
   saveBrowserMeta,
 } from './trackStore.js';
@@ -97,6 +98,24 @@ let unsubscribe: (() => void) | null = null;
 
 let onPoints: ((points: RecorderPoint[]) => void) | null = null;
 
+let onFailure: ((failure: RecorderError) => void) | null = null;
+
+/**
+ * Whether anything written here is expected to come back.
+ *
+ * False once IndexedDB has refused a read or a write — private browsing, a
+ * denied origin, a full quota. Recording carries on in memory, because a ride
+ * that survives only until the tab closes still beats no ride at all and can
+ * still be finished into the track viewer; but it is the one guarantee this
+ * backend is supposed to give, so the toolbar says so rather than letting a
+ * reload be the way the user finds out.
+ */
+let storageUsable = true;
+
+export function isBrowserStorageUsable(): boolean {
+  return storageUsable;
+}
+
 /**
  * The newest fix that was actually kept — what the interval, distance and
  * starvation tests are made against. Not simply `points.at(-1)`, which is the
@@ -113,17 +132,35 @@ let lastKept: RecorderPoint | null = null;
  * have been for there to be a recording to resume.
  */
 function ensureHydrated(fallbackConfig: RecorderConfig): Promise<void> {
-  hydration ??= loadBrowserTrack(fallbackConfig).then((loaded) => {
-    meta = loaded.meta;
+  hydration ??= loadBrowserTrack(fallbackConfig).then(
+    (loaded) => {
+      meta = loaded.meta;
 
-    points = loaded.points;
+      points = loaded.points;
 
-    lastKept = points.at(-1) ?? null;
+      lastKept = points.at(-1) ?? null;
 
-    if (meta.recording) {
-      watch();
-    }
-  });
+      if (meta.recording) {
+        watch();
+      }
+    },
+    // Deliberately handled rather than left to reject: `hydration` is memoized,
+    // so a rejection cached here would refuse every later call and brick browser
+    // recording for the life of the page — over a store the rest of this module
+    // treats as best-effort. An unreadable store starts an empty in-memory
+    // track instead, and `storageUsable` is what says so out loud.
+    (err) => {
+      console.warn('Could not read the stored recording:', err);
+
+      storageUsable = false;
+
+      meta = initialBrowserMeta(fallbackConfig);
+
+      points = [];
+
+      lastKept = null;
+    },
+  );
 
   return hydration;
 }
@@ -298,6 +335,8 @@ async function flush(): Promise<void> {
     await appendBrowserPoints(batch, meta);
   } catch (err) {
     console.warn('Could not store recorded fixes:', err);
+
+    storageUsable = false;
   }
 }
 
@@ -312,13 +351,43 @@ function onPageHidden(): void {
   }
 }
 
+/**
+ * Ends a recording the platform will not feed.
+ *
+ * Only a refusal is final. `POSITION_UNAVAILABLE` and `TIMEOUT` are ordinary
+ * signal loss — a tunnel, a valley, tree cover — and the watch recovers from
+ * them on its own, so stopping a ride over one would throw away the rest of it
+ * for a gap the segment split already draws honestly.
+ *
+ * A refusal, though, is silent otherwise: `startBrowserRecording` can only rule
+ * out a permission *already* denied, and the ordinary first run is a prompt
+ * raised by the watch itself and answered No. Without this the recording stands
+ * there marked live, holding the wake lock, never receiving a fix.
+ */
+function onWatchError(error: GeolocationPositionError): void {
+  if (error.code !== error.PERMISSION_DENIED) {
+    return;
+  }
+
+  // In-memory state settles synchronously here; only the write is awaited, so
+  // the status the listener goes on to read already says the ride has stopped.
+  void stopBrowserRecording();
+
+  onFailure?.(
+    new RecorderError(
+      'location-denied',
+      error.message || 'the location permission was refused',
+    ),
+  );
+}
+
 function watch(): void {
   unsubscribe ??= (() => {
     document.addEventListener('visibilitychange', onPageHidden);
 
     window.addEventListener('pagehide', onPageHidden);
 
-    const stop = subscribeGeolocation(acceptFix);
+    const stop = subscribeGeolocation(acceptFix, onWatchError);
 
     return () => {
       document.removeEventListener('visibilitychange', onPageHidden);
@@ -421,7 +490,17 @@ export async function startBrowserRecording(
   // measured against one from before the pause.
   lastKept = null;
 
-  await saveBrowserMeta(state);
+  // A store that will not take the meta does not stop the ride — it is the same
+  // best-effort store `flush` treats as one — but it must not leave the watch
+  // unstarted either, which is what throwing from here would do: the status
+  // would go on reporting a recording that nothing was feeding.
+  try {
+    await saveBrowserMeta(state);
+  } catch (err) {
+    console.warn('Could not store the recording state:', err);
+
+    storageUsable = false;
+  }
 
   watch();
 }
@@ -465,14 +544,19 @@ export async function clearBrowserRecording(): Promise<void> {
 }
 
 /**
- * Where fixes go as they arrive. The browser backend has no socket to attach, so
- * this is its whole stream: one listener, set when the feature starts following
- * the recording and cleared when it stops.
+ * Where fixes and refusals go as they arrive. The browser backend has no socket
+ * to attach, so this is its whole stream: two listeners, set when the feature
+ * starts following the recording and cleared when it stops.
  */
-export function setBrowserPointListener(
-  listener: ((points: RecorderPoint[]) => void) | null,
+export function setBrowserRecorderListeners(
+  listeners: {
+    onPoints: (points: RecorderPoint[]) => void;
+    onFailure: (failure: RecorderError) => void;
+  } | null,
 ): void {
-  onPoints = listener;
+  onPoints = listeners?.onPoints ?? null;
+
+  onFailure = listeners?.onFailure ?? null;
 }
 
 export function isBrowserRecording(): boolean {
@@ -494,4 +578,8 @@ export function resetBrowserRecorder(): void {
   lastKept = null;
 
   onPoints = null;
+
+  onFailure = null;
+
+  storageUsable = true;
 }

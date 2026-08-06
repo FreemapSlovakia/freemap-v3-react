@@ -1,6 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { subscribeGeolocation } from '@shared/geolocationWatch.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   locationSetExternalSource,
@@ -8,7 +9,8 @@ import {
   toggleLocate,
 } from './actions.js';
 
-let watch: number | undefined;
+/** Releases this feature's claim on the shared watch; undefined when it holds none. */
+let unwatch: (() => void) | undefined;
 
 // bumped on every toggle so stale async callbacks (the coarse fix in
 // particular) can detect that locating was turned off or restarted meanwhile
@@ -44,18 +46,18 @@ export const locateProcessor: Processor<
     const wanted = locate && !externalSource;
 
     if (!wanted) {
-      if (watch !== undefined) {
+      if (unwatch) {
         session++;
 
-        window.navigator.geolocation?.clearWatch(watch);
+        unwatch();
 
-        watch = undefined;
+        unwatch = undefined;
       }
 
       return;
     }
 
-    if (watch !== undefined) {
+    if (unwatch) {
       return;
     }
 
@@ -111,28 +113,27 @@ export const locateProcessor: Processor<
       { enableHighAccuracy: false, maximumAge: 600_000, timeout: 10_000 },
     );
 
-    // phase 2: accurate continuous tracking
-    watch = window.navigator.geolocation?.watchPosition(
-      applyFix,
-      (err) => {
-        if (err.code === err.PERMISSION_DENIED) {
-          dispatch(toggleLocate(false));
+    // phase 2: accurate continuous tracking, through the shared watch — the
+    // recorder and anything else wanting fixes subscribe to the same one, and
+    // Android would merge separate requests at the highest rate asked for
+    // anyway, so a second one is this stream bought twice.
+    unwatch = subscribeGeolocation(applyFix, (err) => {
+      if (err.code === err.PERMISSION_DENIED) {
+        dispatch(toggleLocate(false));
 
-          dispatch(
-            toastsAdd({
-              id: 'main.locationError',
-              messageKey: 'main.locationError',
-              // A denied permission is a user-controlled, self-explanatory
-              // condition, not an app error — warn briefly, don't stick.
-              style: 'warning',
-              timeout: 5000,
-            }),
-          );
-        }
-        // POSITION_UNAVAILABLE / TIMEOUT: transient signal loss — keep the
-        // watch running so tracking recovers on its own once GPS returns
-      },
-      { enableHighAccuracy: true, maximumAge: 0, timeout: 30_000 },
-    );
+        dispatch(
+          toastsAdd({
+            id: 'main.locationError',
+            messageKey: 'main.locationError',
+            // A denied permission is a user-controlled, self-explanatory
+            // condition, not an app error — warn briefly, don't stick.
+            style: 'warning',
+            timeout: 5000,
+          }),
+        );
+      }
+      // POSITION_UNAVAILABLE / TIMEOUT: transient signal loss — keep the
+      // watch running so tracking recovers on its own once GPS returns
+    });
   },
 };

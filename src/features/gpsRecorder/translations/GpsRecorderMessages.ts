@@ -19,6 +19,8 @@ export type GpsRecorderMessages = {
   browserBadge: string;
   /** What browser recording costs, said once at the start of a ride. */
   browserWarning: string;
+  /** Said instead when this browser will not store the ride at all. */
+  browserNoStorage: string;
   /** Opens the readout dropdown; the summary in it is the visible label. */
   details: string;
   state: {
@@ -94,6 +96,8 @@ export type GpsRecorderMessages = {
     backendApp: string;
     backendBrowser: string;
     backendHint: string;
+    /** Shown in its place while a recording is running and the choice is locked. */
+    backendLockedHint: string;
     recorderSection: string;
     recorderIntro: string;
     /** Replaces `recorderIntro` when this page is what records. */

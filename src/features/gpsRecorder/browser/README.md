@@ -18,8 +18,9 @@ Done:
 - `src/shared/geolocationWatch.ts` — one ref-counted `watchPosition` for the
   whole app. **Intended for the live-tracking work too**; subscribe to it rather
   than opening a second watch (Android merges concurrent requests at the highest
-  rate anyone asked for). `locateProcessor` still runs its own watch and has
-  *not* been migrated onto it — see below.
+  rate anyone asked for). `locateProcessor` is migrated onto it; its phase-1
+  coarse `getCurrentPosition` stays where it was, since that is a one-shot and
+  not a watch.
 - `backend.ts` — the `RecorderBackend` seam, with `app` (the APK, including the
   launch-intent and `needs-foreground` retry that used to live in `startHandler`)
   and `browser` implementations.
@@ -56,26 +57,22 @@ Done:
    module-stateful and IDB-backed, so none of it is reachable from a test.
    Extract the decision into a pure function (`shouldKeepFix(lastKept, candidate,
    config)` returning keep/drop/new-segment) and test it beside
-   `segments.test.ts`. Worth doing before trusting any of the thresholds.
-4. **`locateProcessor` migration.** It still calls `watchPosition` directly. With
-   browser recording *and* Locate on there are two watches asking for identical
-   options — near-zero extra cost, so this is tidiness rather than a bug, but it
-   is the reason `geolocationWatch.ts` exists and the live-tracking work will make
-   it three. Keep its phase-1 coarse `getCurrentPosition` where it is; only the
-   watch moves.
-5. **`positionSource` in Map preferences.** Agreed in design, not built: a
+   `segments.test.ts`. Worth doing before trusting any of the thresholds. The
+   same goes for `loadBrowserTrack`'s `nextSeq` floor, which is the recovery a
+   code review had to catch rather than a test.
+4. **`positionSource` in Map preferences.** Agreed in design, not built: a
    `locationSettings.positionSource` of `automatic | browser | recorder`, shown
    beside `headingSource` in `MapPreferencesModal`, **replacing**
    `gpsRecorderSettings.feedLocation` (which answers the same question in a
    narrower form — two settings for one question is the thing to avoid). Only
-   worth doing together with (6).
-6. **Recorder-app fixes for "Locate me" outside recording.** Deliberately
+   worth doing together with (5).
+5. **Recorder-app fixes for "Locate me" outside recording.** Deliberately
    deferred. Real benefits — no cold-GNSS re-acquire when returning to the tab,
    one permission instead of two, `sat`/`altMsl` in the readout — but the APK has
    no fixes to give when it is not recording, so it needs a new endpoint (a live
    fix stream independent of recording) and a `MIN_RECORDER_VERSION_CODE` bump.
    Lower value than everything above.
-7. **Translations** for the new keys (see Status).
+6. **Translations** for the new keys (see Status).
 
 ## Decisions already made — don't relitigate
 
@@ -100,6 +97,16 @@ Done:
   which stays a display preference.
 - **`seq` never restarts, not even after a delete** — same rationale as the APK's,
   and `generation` is what marks the break.
+- **Storage is best-effort, and its failure is said rather than fatal.** An
+  unreadable or unwritable IndexedDB (private browsing, quota, a denied origin)
+  leaves the ride recording in memory — it is still on the screen and can still
+  be finished into the track viewer — and `isBrowserStorageUsable()` swaps the
+  start-of-ride toast for one that says a reload will lose it. Refusing to record
+  was considered and rejected; so was staying quiet about it.
+- **The backend cannot be switched mid-recording.** Every other setting is merely
+  ineffective until the next start; this one would leave the running engine's
+  watch alive and appending while the handlers address the other engine, so the
+  control (and Reset to defaults) is locked for the duration.
 
 ## Gotchas
 
@@ -108,9 +115,19 @@ Done:
   second store. Hence two databases (`fm-gpsRecorder-points`,
   `fm-gpsRecorder-meta`).
 - `browser/engine.ts` holds module state. `resetBrowserRecorder()` exists as the
-  test seam; hydration is `ensureHydrated`, awaited by every entry point.
+  test seam; hydration is `ensureHydrated`, awaited by every entry point. It
+  **handles** its own rejection rather than letting one through — the promise is
+  memoized, so a cached rejection would refuse every later call for the life of
+  the page.
+- `appendBrowserPoints` writes the points first and the meta **regardless**. The
+  asymmetry is deliberate: a `nextSeq` ahead of the stored points only leaves
+  gaps, while a meta behind them reissues live ids, and a `recording: true` that
+  never got cleared has the next load resume a stopped ride.
 - The browser backend does **not** claim `locationSetExternalSource` — its fixes
   come from the very watch that would be displaced.
+- Only `PERMISSION_DENIED` ends a browser recording. `POSITION_UNAVAILABLE` and
+  `TIMEOUT` are signal loss that the watch recovers from, and the segment split
+  already draws the gap honestly.
 - `stream.ts` (`suspectRecorderStream` and friends) is app-backend only. `follow.ts`
   still calls it unconditionally; harmless, because it only touches state the
   browser backend never reads, but worth knowing before changing either.
