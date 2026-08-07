@@ -27,17 +27,20 @@ export async function fitMapToBbox(
   // can't quietly inherit the wrong behavior.
   markMapNavigation();
 
-  // `fitBounds` reaches `setView`, whose opening `_stop()` ends a running pan
-  // by completing it in place and firing `moveend` at that intermediate center.
-  // Left unmarked, the store would be refocused onto it and then dragged back
-  // there, off the extent being fitted.
-  duringProgrammaticMove(() =>
-    map.fitBounds(
-      [
-        [bbox[1], bbox[0]],
-        [bbox[3], bbox[2]],
-      ],
-      options,
-    ),
+  // `fitBounds` reaches `setView`, which opens by ending a running pan in place
+  // — firing `moveend` at an intermediate center the store must not be
+  // refocused onto, or the map would be dragged back there, off the extent
+  // being fitted. Ending that animation here is what the programmatic marker
+  // covers, so the fit itself stays outside it: a fit far enough that Leaflet
+  // skips the animation settles synchronously, and the `moveend` it fires from
+  // inside this call is the only word the store gets on where the map went.
+  duringProgrammaticMove(() => map.stop());
+
+  map.fitBounds(
+    [
+      [bbox[1], bbox[0]],
+      [bbox[3], bbox[2]],
+    ],
+    options,
   );
 }

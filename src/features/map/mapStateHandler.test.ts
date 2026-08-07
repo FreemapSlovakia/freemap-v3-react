@@ -1,6 +1,7 @@
 import type { MyStore } from '@app/store/store.js';
 import type { Map as LeafletMap } from 'leaflet';
 import { describe, expect, it } from 'vitest';
+import { fitMapToBbox } from './fitMapToBbox.js';
 import { setMapLeafletElement } from './hooks/leafletElementHolder.js';
 import { attachMapStateHandler } from './mapStateHandler.js';
 import { mapRefocus } from './model/actions.js';
@@ -30,6 +31,12 @@ function makeFakeMap(
 
   document.body.append(container);
 
+  function fire(event: string) {
+    for (const fn of handlers.get(event) ?? []) {
+      fn();
+    }
+  }
+
   const map = {
     getContainer: () => container,
     getCenter: () => center,
@@ -40,6 +47,31 @@ function makeFakeMap(
       getEast: () => center.lng + 1,
       getNorth: () => center.lat + 1,
     }),
+    // Ending a running pan completes it in place, at a center between where it
+    // started and where it was headed, and reports that as a settled move.
+    stop() {
+      center = { lat: center.lat + AWAY, lng: center.lng + AWAY };
+
+      fire('moveend');
+
+      return map;
+    },
+    // A fit far enough that Leaflet skips the animation: the view changes and
+    // settles inside the call.
+    fitBounds([[south, west], [north, east]]: [
+      [number, number],
+      [number, number],
+    ]) {
+      fire('zoomstart');
+
+      center = { lat: (south + north) / 2, lng: (west + east) / 2 };
+
+      zoom = FIT_ZOOM;
+
+      fire('moveend');
+
+      return map;
+    },
     on(event: string, fn: () => void) {
       const list = handlers.get(event) ?? [];
 
@@ -73,11 +105,7 @@ function makeFakeMap(
 
       container.dispatchEvent(event);
     },
-    fire(event: string) {
-      for (const fn of handlers.get(event) ?? []) {
-        fn();
-      }
-    },
+    fire,
   };
 }
 
@@ -87,6 +115,12 @@ const ZOOM = 17;
 
 // Comfortably past the handler's `5 / 2 ** zoom` threshold at ZOOM.
 const AWAY = 0.001;
+
+// The extent fitted below, and the zoom the map settles on to hold it — far
+// enough from CENTER that no animation could carry the map there.
+const ELSEWHERE = { lat: 49.06, lng: 20.14 };
+
+const FIT_ZOOM = 12;
 
 let mapState: MapState = mapInitialState;
 
@@ -344,5 +378,40 @@ describe('attachMapStateHandler — moveend while not following', () => {
     fire('moveend');
 
     expect(refocuses()).toHaveLength(0);
+  });
+});
+
+/**
+ * A fit is the one app-driven move the store doesn't already know about, so its
+ * settled view has to reach the slice — otherwise the next thing that refocuses
+ * from the store (the zoom buttons, an arrow key) takes the map back to where
+ * it was before the fit.
+ */
+describe('fitMapToBbox', () => {
+  it('syncs the store to a fit that settles inside the call', async () => {
+    const { refocuses } = setup(true);
+
+    await fitMapToBbox([
+      ELSEWHERE.lng - 0.1,
+      ELSEWHERE.lat - 0.1,
+      ELSEWHERE.lng + 0.1,
+      ELSEWHERE.lat + 0.1,
+    ]);
+
+    // One refocus, and it names the fitted extent: the `moveend` that ending
+    // the interrupted pan fired, at a center the map merely passed through, is
+    // not among them.
+    expect(refocuses()).toHaveLength(1);
+    expect(refocuses()[0].payload).toEqual({
+      lat: ELSEWHERE.lat,
+      lon: ELSEWHERE.lng,
+      zoom: FIT_ZOOM,
+    });
+    expect(mapState).toMatchObject({
+      lat: ELSEWHERE.lat,
+      lon: ELSEWHERE.lng,
+      zoom: FIT_ZOOM,
+      gpsTracked: false,
+    });
   });
 });
