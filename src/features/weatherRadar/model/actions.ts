@@ -1,17 +1,16 @@
 import { createAction } from '@reduxjs/toolkit';
-import type { ColorScheme, RadarFrame } from '../api.js';
+import type { FeedInfo, RadarFeed, RadarFrame } from '../api.js';
 import type { WeatherRadarSettingsState } from './settingsReducer.js';
 
-/** Asks for a fresh metadata document; the frame list ages out every few minutes. */
+/** Asks for both feeds' status again; the frame lists age out every few minutes. */
 export const weatherRadarRefresh = createAction('WEATHER_RADAR_REFRESH');
 
 export const weatherRadarSetFrames = createAction<{
   frames: RadarFrame[];
-  colorSchemes: ColorScheme[];
-  generated: number;
+  feeds: Partial<Record<RadarFeed, FeedInfo>>;
 }>('WEATHER_RADAR_SET_FRAMES');
 
-/** The frame to show, or `null` to keep following the newest observed one. */
+/** The frame to show, or `null` to keep following the newest measured one. */
 export const weatherRadarSetTime = createAction<number | null>(
   'WEATHER_RADAR_SET_TIME',
 );

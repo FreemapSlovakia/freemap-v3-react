@@ -13,10 +13,9 @@ const hu: DeepPartialWithRequiredObjects<WeatherRadarMessages> = {
   ahead: ({ duration }) => `${duration} múlva`,
   forecast: 'Előrejelzés',
   settings: 'Radarbeállítások',
-  colorScheme: 'Színskála',
-  smooth: 'Simítás',
-  snow: 'Hó megjelenítése',
   showNowcast: 'Előrejelzés megjelenítése',
+  lockedHistory: 'Hosszabb előzmény és az előrejelzés prémium hozzáféréssel',
+  lockedForecast: 'Az előrejelzés prémium hozzáféréssel',
 };
 
 export default hu;

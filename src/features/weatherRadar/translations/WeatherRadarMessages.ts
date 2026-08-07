@@ -15,9 +15,11 @@ export type WeatherRadarMessages = {
   /** Marks the frames extrapolated past "now" rather than measured. */
   forecast: string;
   settings: string;
-  colorScheme: string;
-  /** Interpolates between reflectivity steps instead of drawing them as bands. */
-  smooth: string;
-  snow: string;
+  /** Premium: also the upsell when the user hasn't got it. */
   showNowcast: string;
+  /** Offered when both ends of the timeline are locked — the usual case. */
+  lockedHistory: string;
+  /** Offered when only the forecast is locked, the feed being short enough
+   * that the measured frames already fit inside the free window. */
+  lockedForecast: string;
 };

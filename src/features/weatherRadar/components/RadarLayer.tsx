@@ -1,16 +1,40 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { TileLayer } from 'leaflet';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import transparent1x1 from '@/images/1x1-transparent.png';
-import { type RadarFrame, radarTileUrl } from '../api.js';
+import {
+  type FeedInfo,
+  feedOf,
+  type RadarFeed,
+  type RadarFrame,
+  radarTileUrl,
+} from '../api.js';
 import { useRadarPlayback } from '../hooks/useRadarPlayback.js';
 import { weatherRadarRefresh } from '../model/actions.js';
-import { radarFramesSelector, radarIndexSelector } from '../model/selectors.js';
+import {
+  radarAllowedSelector,
+  radarFramesSelector,
+  radarIndexSelector,
+} from '../model/selectors.js';
 
 /** Floor between two frame-list re-reads provoked by the list being behind. */
 const REFRESH_THROTTLE_MS = 5_000;
+
+/**
+ * Everything about a feed that is baked into its layers when they are built.
+ * A change invalidates that feed's layers, which is how the anticipated
+ * PNG->WebP switch — or a widened zoom band — reaches frames already built.
+ *
+ * Read per feed, and only while the feed is present: a failed poll drops a feed
+ * from the state entirely, and treating that as a change would throw away the
+ * *other* feed's layers too, blanking the map and re-fetching every tile for
+ * nothing. The frames of a feed that has gone are pruned by the frame-list rule
+ * instead.
+ */
+const buildOf = (feed?: FeedInfo) =>
+  feed && `${feed.format}/${feed.minZoom}-${feed.maxZoom}`;
 
 /** A frame's layer, and what it was built from. */
 type FrameLayer = {
@@ -24,7 +48,6 @@ type Props = {
   opacity: number;
   zIndex: number;
   maxZoom: number;
-  maxNativeZoom?: number;
 };
 
 /**
@@ -40,12 +63,7 @@ type Props = {
  * Playback lives here rather than in the toolbar, so the animation is tied to
  * the layer that shows it and not to a menu that can be hidden.
  */
-export default function RadarLayer({
-  opacity,
-  zIndex,
-  maxZoom,
-  maxNativeZoom,
-}: Props) {
+export default function RadarLayer({ opacity, zIndex, maxZoom }: Props) {
   const map = useMap();
 
   const dispatch = useDispatch();
@@ -56,34 +74,16 @@ export default function RadarLayer({
 
   const playing = useAppSelector((state) => state.weatherRadar.playing);
 
+  const { from, to } = useAppSelector(radarAllowedSelector);
+
   /**
-   * The newest observed frame, which is the layer's notion of a server cycle:
-   * it advances exactly once per composite, and its arrival is what re-computes
-   * the forecast. `generated` in the metadata looks like the same thing but
-   * ticks on every fetch, so keying on it would invalidate several times a
-   * cycle for nothing.
+   * Each feed's tile format and zoom band, straight from its status document —
+   * the two differ, the forecast being the narrower and the more expensive to
+   * compute. `updatedAt` doubles as the feed's cycle: it changes when the feed
+   * is regenerated and is stable between requests, so it versions the forecast
+   * tiles, whose content is recomputed under a fixed URL.
    */
-  const cycle = useAppSelector(
-    (state) => state.weatherRadar.frames.findLast((f) => !f.forecast)?.time,
-  );
-
-  const colorScheme = useAppSelector(
-    (state) => state.weatherRadarSettings.colorScheme,
-  );
-
-  const smooth = useAppSelector((state) => state.weatherRadarSettings.smooth);
-
-  const snow = useAppSelector((state) => state.weatherRadarSettings.snow);
-
-  const resolutionScale = useAppSelector((state) => state.map.resolutionScale);
-
-  // The server renders at 256 or 512 for the same tile, so the @2x version is
-  // a URL away. `resolutionScale` is the user's override of the screen's own
-  // ratio, the same input the other layers scale from.
-  const size =
-    (resolutionScale ?? window.devicePixelRatio ?? 1) > 1.4
-      ? (512 as const)
-      : (256 as const);
+  const feeds = useAppSelector((state) => state.weatherRadar.feeds);
 
   /** The frame currently at full opacity. */
   const shownRef = useRef<number>(undefined);
@@ -109,12 +109,6 @@ export default function RadarLayer({
   const frame = frames[index];
 
   useRadarPlayback(frame !== undefined && resolved.has(frame.time));
-
-  // Every frame's URL carries these, so a change invalidates the whole pool.
-  const tileOptions = useMemo(
-    () => ({ colorScheme, smooth, snow, size }),
-    [colorScheme, smooth, snow, size],
-  );
 
   const layersRef = useRef(new Map<number, FrameLayer>());
 
@@ -151,14 +145,31 @@ export default function RadarLayer({
       return;
     }
 
+    const feed = feeds[feedOf(frame)];
+
+    if (!feed) {
+      return;
+    }
+
     const layer = new TileLayer(
-      radarTileUrl(frame.path, tileOptions, frame.forecast ? cycle : undefined),
+      // Only the forecast is versioned: its frames are recomputed under a fixed
+      // URL, while a measured frame never changes.
+      radarTileUrl(frame, feed, frame.forecast ? feed.updatedAt : undefined),
       {
         opacity: 0,
         zIndex,
+        // The feed's own band, not the layer registry's: the two feeds cover
+        // different zooms, and asking outside one is a 404 rather than an
+        // upscale. Below and above, Leaflet scales the nearest level it has.
+        minNativeZoom: feed.minZoom,
+        maxNativeZoom: feed.maxZoom,
         maxZoom,
-        maxNativeZoom,
         errorTileUrl: transparent1x1,
+        // The app is served with `Referrer-Policy: no-referrer`, so without
+        // this a tile request carries no Referer — and the tile server
+        // identifies us by it. Per-request policy overrides the document's;
+        // `strict-origin-when-cross-origin` sends the origin and no path.
+        referrerPolicy: 'strict-origin-when-cross-origin',
         // A frame is one moment in time: tiles kept from the previous view
         // would be redrawn at a zoom this frame is no longer showing.
         keepBuffer: 0,
@@ -294,7 +305,9 @@ export default function RadarLayer({
 
   dropFrameRef.current = dropFrame;
 
-  const cycleRef = useRef(cycle);
+  const buildRef = useRef<Partial<Record<RadarFeed, string>>>({});
+
+  const forecastCycleRef = useRef(feeds.forecast?.updatedAt);
 
   // Everything the pool has to unlearn when a new frame list lands. Ahead of
   // the effect that shows a frame, so a layer dropped here is rebuilt in the
@@ -308,12 +321,33 @@ export default function RadarLayer({
     // the same URL, so the layer holding the previous version would never ask
     // for the new one. Observed composites don't change once published, and
     // they are the bulk of the pool.
-    const republished = cycleRef.current !== cycle;
+    const republished = forecastCycleRef.current !== feeds.forecast?.updatedAt;
 
-    cycleRef.current = cycle;
+    forecastCycleRef.current = feeds.forecast?.updatedAt;
+
+    const rebuilt = new Set<RadarFeed>();
+
+    for (const feed of ['radar', 'forecast'] as const) {
+      const built = buildOf(feeds[feed]);
+
+      if (built && buildRef.current[feed] && buildRef.current[feed] !== built) {
+        rebuilt.add(feed);
+      }
+
+      if (built) {
+        buildRef.current[feed] = built;
+      }
+    }
 
     for (const [frameTime, entry] of layersRef.current) {
       const frame = current.get(frameTime);
+
+      // Built from a feed that has since changed how its URLs are made.
+      if (frame && rebuilt.has(frame.forecast ? 'forecast' : 'radar')) {
+        dropFrameRef.current(frameTime);
+
+        continue;
+      }
 
       // Gone from the list: it can never be shown again.
       if (!frame) {
@@ -337,18 +371,9 @@ export default function RadarLayer({
         dropFrameRef.current(frameTime);
       }
     }
-  }, [frames, cycle]);
-
-  const optionsRef = useRef(tileOptions);
+  }, [frames, feeds]);
 
   useEffect(() => {
-    // The tile options are baked into every URL, so a change starts a new pool.
-    if (optionsRef.current !== tileOptions) {
-      optionsRef.current = tileOptions;
-
-      dropFramesRef.current();
-    }
-
     if (!frame) {
       return;
     }
@@ -358,17 +383,19 @@ export default function RadarLayer({
     ensureLayerRef.current(frame);
 
     revealRef.current(frame.time);
-  }, [frame, tileOptions]);
+  }, [frame]);
 
   // While playing, the next frame loads behind the current one, so a step lands
   // on tiles that are already there instead of stalling on the first pass.
   useEffect(() => {
-    const next = playing ? frames[(index + 1) % frames.length] : undefined;
+    // Wraps within the allowed stretch, matching playback — prefetching a
+    // locked frame would fetch tiles the user is never shown.
+    const next = playing ? frames[index >= to ? from : index + 1] : undefined;
 
     if (next) {
       ensureLayerRef.current(next);
     }
-  }, [playing, frames, index]);
+  }, [playing, frames, index, from, to]);
 
   // A forecast frame whose moment has passed means the list is behind the
   // server: an observed composite for it very likely exists by now.

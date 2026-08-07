@@ -27,6 +27,7 @@ const en: PremiumMessages = {
             high-resolution elevation data (many European countries)
           </HintTooltip>
         </li>
+        <li>longer weather radar history and its forecast</li>
       </ul>
       <p className="mb-0">Freemap stays free and open.</p>
     </>

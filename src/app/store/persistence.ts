@@ -218,12 +218,7 @@ export const PersistedGallerySettingsSchema = z
   .partial();
 
 export const PersistedWeatherRadarSettingsSchema = z
-  .object({
-    colorScheme: z.number(),
-    smooth: z.boolean(),
-    snow: z.boolean(),
-    showNowcast: z.boolean(),
-  })
+  .object({ showNowcast: z.boolean() })
   .partial();
 
 /**
@@ -471,12 +466,7 @@ const PERSIST: PersistEntry[] = [
     key: 'weatherRadarSettings',
     schema: PersistedWeatherRadarSettingsSchema,
     initial: weatherRadarSettingsInitialState,
-    persist: (r) => ({
-      colorScheme: r.colorScheme,
-      smooth: r.smooth,
-      snow: r.snow,
-      showNowcast: r.showNowcast,
-    }),
+    persist: (r) => ({ showNowcast: r.showNowcast }),
   }),
 ];
 

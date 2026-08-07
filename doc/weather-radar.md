@@ -1,157 +1,139 @@
 # Weather radar layer
 
-The `R` overlay is an animated precipitation radar fed by
-[LibreWXR](https://librewxr.net/) — an AGPL-3.0 server that re-implements the
-RainViewer v2 API over freely available composites. For us the relevant source
-is **EUMETNET OPERA**, the pan-European composite (~155 radars, 24 countries,
-2 km grid, 15-minute production cycle); SHMÚ contributes to it, so Slovakia and
-all its neighbours are covered. The nowcast frames past "now" come from the
-model layer LibreWXR blends in over the same area.
+The `R` overlay is an animated precipitation radar over the EUMETNET OPERA
+composite — the pan-European mosaic that SHMÚ contributes to, so Slovakia and
+all its neighbours are covered. Ten-minute steps; how far it reaches depends on
+entitlement (see Premium below).
 
-## Where it runs
+## Where it comes from
 
-We run **our own LibreWXR** rather than using the project's public instance.
-That instance serves from several workers whose frame lists disagree: the same
-`/public/weather-maps.json` answers `nowcast: 6` or `nowcast: 0` seconds apart,
-and tiles of a frame it has just advertised come back `404` about half the time.
-Single-worker mode is one process and one frame list, and the problem is gone.
+Two independent upstream services at `cache.bigware.sk`, `radar` (measured) and
+`forecast` (extrapolated), each with its own status document, its own
+regeneration cycle and — the part that reaches the layer — **its own zoom
+range**: 1–9 for the measured feed, 3–7 for the forecast, which is far more
+expensive to compute. Asking outside a feed's range is a 404, not an upscale.
 
-- **`~/librewxr` on fm5** — a `git clone` of the upstream repo plus a `.env`,
-  started with `docker compose up -d --build` in `single` mode, published on
-  `127.0.0.1:8080` only. Configured for Europe: `LIBREWXR_ENABLED_REGIONS=EUROPE`
-  (OPERA + the Italian DPC composite), NWP chain `[dmi_dini, icon_eu, ecmwf_ifs]`,
-  satellite off, alerts on, and every non-European model fetcher disabled.
-  `LIBREWXR_MAX_FRAMES=36` gives six hours of history; ~7 GB resident of a 12 GB
-  limit. A `docker-compose.override.yml` bind-mounts the cache onto `/fm/data4`
-  (1.6 TB free) rather than the root NVMe, since the frame memmaps live under
-  `LIBREWXR_CACHE_DIR` and grow with the frame count.
-- **`etc/nginx/sites-available/weather.freemap.sk`** on the same host, with its
-  `http`-level companion `etc/nginx/conf.d/weather-cache.conf`, terminates TLS
-  and caches in front of it. `LIBREWXR_URL` points at that hostname.
+The app talks to them **directly**; there is no proxy of ours in the path.
+That rests on one thing which is easy to break:
 
-`LIBREWXR_URL` (rspack `EnvironmentPlugin`) is the single origin for **both**
-metadata and tiles. The metadata document reports its own `host`; `api.ts`
-deliberately ignores it and rebuilds every URL from `LIBREWXR_URL`, which is why
-moving between the public instance and our own was a one-variable change.
+> **Both feeds authenticate by `Referer`, and the app is served with
+> `Referrer-Policy: no-referrer`.** Every request therefore has to set its own
+> `referrerPolicy` — the tile layer in `RadarLayer`, and the status fetch in the
+> processor. A per-request policy overrides the document's;
+> `strict-origin-when-cross-origin` sends the origin and no path, which is what
+> the server matches on. Drop either and the layer dies with a 401 that looks
+> like a server fault.
 
-Frame counts, the nowcast horizon and the zoom ceiling are all server config,
-which is the main dividend of self-hosting — the six-hour history is not
-something the public instance can offer.
+CORS is sent per allowed origin (`vary: Origin`), so the status `fetch()` works
+from `www.freemap.sk` and from `local.freemap.sk:9000` for dev builds. Origins
+have to be added upstream one at a time.
 
-**`LIBREWXR_NOWCAST_BLEND_MODE=radar`, not the default `blended`.** Blended fades
-from ~82% radar at T+10 to ~20% at T+60, and the model behind it over Slovakia is
-ICON-EU at ~7 km, which cannot resolve a convective cell. The visible result was
-storms dissolving within twenty minutes. Pure radar extrapolation keeps the cell
-and its track at the cost of no growth or decay — the right trade for "will that
-storm reach me before I get down", where a forecast that quietly deletes a storm
-is the worst possible failure.
+`WEATHER_RADAR_URL` (rspack `EnvironmentPlugin`) is the single origin for both
+feeds, and the only thing that would change to move them or to put a proxy back
+in front.
 
 ### Licence
 
-Self-hosting moved which obligations apply. The **CC-BY-4.0 "credit LibreWXR"**
-term covers data served by *their* public instance — upstream is explicit that
-"you may choose your own data licensing terms for data served by your own
-LibreWXR instance" — so what binds us now are the sources: **EUMETNET OPERA**,
-and over Italy the national composite, which is **CC-BY-SA-4.0** and asks to be
-credited as "Radar-DPC" (a separate `country: 'it'` attribution entry, so it
-shows only when the view can contain such a tile).
-
-What *starts* applying on self-hosting is **AGPL-3.0 §13**: running it as a
-network service entitles the people using it to the Corresponding Source. So
-LibreWXR stays in the credits, pointing at the repository rather than the
-project page — as a source offer, not a data credit. We run it unmodified, for
-which a link upstream suffices; a local patch would have to be published.
-
-### The vhost
-
-Things in it that look like omissions or over-caution and are neither:
-
-- **It clears the client-identifying headers** and keeps **no access log**. The
-  backend is ours, but it has an MCP endpoint that should never see a
-  credential, and nginx forwards the client's own headers unless told otherwise
-  — so *not* adding `X-Forwarded-For` would still pass a client-supplied one on.
-- **A tile is not immutable for its timestamp, and is cached for the origin's
-  five minutes.** The URL invites the opposite conclusion, and I acted on it:
-  a frame's `time` is the moment it is *valid for*, not a version, and the
-  forecast frames are re-computed every cycle as new radar arrives — same
-  timestamp, different picture. The same URL served 4274 bytes from a cache and
-  1598 bytes freshly rendered. Cached for hours, a frame becomes a mosaic of
-  whichever version each tile was first fetched at, visible as rectangular
-  blocks that don't line up with their neighbours. So no
-  `proxy_ignore_headers`: the origin's own lifetime is the correct one.
-- **`404` is not cached, and error responses get no `Cache-Control`.** A 404
-  means the frame has rolled off the list; `add_header ... always` would have
-  put an immutable hour on it, and a browser holding one could never load that
-  tile again — a passing failure made permanent.
-- **There is no `limit_req`.** An animation looks exactly like abuse — one pass
-  of 18 frames over a desktop viewport is ~430 requests in a couple of seconds,
-  from an address that may be a NAT shared by several people. A 30 r/s limit
-  rejected a third of them with 503s, which reach the browser as missing tiles.
-  No other vhost here rate-limits either.
-- **The upstream is an `upstream` block with `keepalive`.** A `proxy_pass`
-  naming a variable cannot pool connections.
-- **The cache is not redundant with the app's own.** LibreWXR renders every
-  tile on demand — there is no static pyramid. It is not serial about it
-  (each render is `asyncio.to_thread` onto a pool of `cpu_count-1`; the numpy
-  and WebP work releases the GIL, and the container runs ~450 threads), so the
-  cache exists because the cheapest render is the one not done, not to rescue a
-  bottleneck. Its in-process LRU reports zero entries precisely because nginx
-  absorbs the repeats first. Sized for that (`max_size=1g`, `inactive=30m`),
-  not for archiving: entries live five minutes.
-
-Paths we don't consume — `/docs`, `/openapi.json`, `/mcp/` — return 404 rather
-than being republished.
-
-It follows fm5's conventions: cache under `/fm/data4/nginx-proxy-cache/<name>`
-with an upper-case zone name, `$blocked_country` from `conf.d/geoip.conf`, and
-`gzip_types` set in the vhost because the global `gzip on` there comes with
-`gzip_types` commented out. Installing it needs the certificate first — the
-`# managed by Certbot` lines mean the vhost cannot load before one exists, so
-issue against a throwaway HTTP-only vhost and use `certonly`, which does not
-rewrite (and thereby reformat) the real file.
+Same OPERA data as before: **EUMETNET OPERA**, and over Italy the national
+composite under **CC-BY-SA-4.0** credited as "Radar-DPC" — a `country: 'it'`
+attribution entry, so it shows only when the view can contain such a tile.
 
 ## The wire contract
 
-Everything the app knows about the API lives in `src/features/weatherRadar/api.ts`:
+Everything the app knows about the API lives in
+`src/features/weatherRadar/api.ts`:
 
-- `GET /public/weather-maps.json` → `{ generated, radar: { past[], nowcast[], colorSchemes[] } }`.
-  Each frame is `{ time (unix seconds), path }`. Currently 12 past frames and 6
-  nowcast frames, ten minutes apart — but nothing in the code assumes those
-  counts.
-- Tiles: `{path}/{size}/{z}/{x}/{y}/{colorScheme}/{smooth}_{snow}.webp[?v=]`. WebP
-  because a radar tile is about half the size of the same frame as PNG, and the
-  animation fetches one per frame. `size` is 256 or 512 for the *same* ground —
-  512 is simply the @2x render, so it is what a HiDPI screen gets
-  (`resolutionScale ?? devicePixelRatio > 1.4`), displayed at Leaflet's usual
-  256 CSS px. Forecast tiles carry `?v=<newest observed frame time>`, because
-  their content changes under a fixed URL and the browser would otherwise answer
-  the re-fetch from its own five-minute cache. Observed tiles carry no version:
-  they never change, and churning their URLs would re-render six hours of
-  history every cycle. Note the version is **not** the metadata's `generated`,
-  which ticks on every fetch rather than every cycle.
+- `GET /{radar|forecast}/status` →
+  `{ updatedAt, zoomLevels: number[], format, times: string[] }`.
+  Times are unix seconds **as strings**; `zoomLevels` and `format` are read
+  rather than assumed, so the server can widen a range or move from PNG to WebP
+  with no app deploy at all.
+- Tiles: `/{feed}/tiles/{time}/{z}/{x}/{y}.{format}`, 512×512 on the **standard
+  slippy grid** — verified against a known-standard source — so they are @2x
+  renders that Leaflet displays at its usual 256 CSS px. There is no size
+  parameter, so a 1× screen pays for pixels it cannot use, and tiles run
+  70–210 KB rather than the ~10 KB a vector-ish overlay would.
+- `updatedAt` is the feed's regeneration stamp and is **stable between
+  requests**, which is what makes it usable as the forecast's cache key.
 
-`toFrames` merges the two lists into the single timeline the UI animates,
-tagging the nowcast half with `forecast: true`. That flag is what colours the
-slider's tail and what `showNowcast` filters on.
+`toFrames` merges the two feeds into the single timeline the UI animates,
+tagging the forecast half. That flag decides the slider's tint, the premium
+gate, and which feed a frame's tiles come from.
+
+## Premium
+
+Premium reaches **six hours** back and gets the forecast; everyone else may open
+**two hours** of measured frames. Both are ceilings rather than promises — the
+feed currently holds around three hours, so premium takes what is there and
+picks up more if the server starts publishing it.
+
+The locked frames stay **on the track**. `radarFramesSelector` returns
+everything within the six-hour ceiling regardless of entitlement, and
+`radarAllowedSelector` says which stretch of it this user may open. A timeline
+that simply stopped early would say nothing about what premium buys; a greyed
+band at each end says it without a word. So the track reads:
+
+    [ locked older ][ what you may watch ][ forecast, locked without premium ]
+
+- **The slider cannot reach a locked band at all.** Its `min`/`max` are the
+  openable frames, and the bands are painted on a wrapper behind it, so the
+  browser's own clamping does the work. That matters because a thumb is a
+  circle: clicking its left half makes the browser re-centre it on the pointer,
+  which walks the value backwards. Catching that after the fact — as an earlier
+  version did, by rejecting the change in `onChange` — meant undoing the ring's
+  centring, a click on the track, a fast drag and the arrow keys as four
+  separate cases, and a rejected change leaves the state untouched, so a
+  controlled range kept the thumb wherever the pointer had put it and fired the
+  handler again the whole way back out. With the range restricted there is
+  simply no value there to move to.
+
+  The offer is a plain click handler on that wrapper, which covers both ways of
+  asking for it: clicking a locked band, and a drag that ends over one — pointer
+  down and up share the wrapper, so the click lands there either way. A drag
+  towards a band can therefore raise the modal more than once across gestures.
+  That is accepted rather than worked around: the attempts to suppress it
+  (rejecting the change in `onChange`, then a once-per-gesture flag on
+  `pointermove`) each added machinery without changing what a user saw.
+
+  The alternative — serving those frames as the checkerboard `ScaledTileLayer`
+  uses for premium zooms — reads as broken data on a time axis rather than as a
+  teaser, and would spend most of a playback loop in mosaic.
+- **Playback and prefetch run over the allowed stretch only**, wrapping at its
+  ends, so the animation never stalls on a frame it cannot show and no tiles
+  are fetched for frames the user will not see.
+- **`radarIndexSelector` clamps into the range**, which matters when premium
+  expires mid-session or a pin the entitlement no longer covers is restored.
+
+The bands are drawn by the track's gradient in `RadarTimeline.module.css`, from
+three boundaries the component computes; each sits midway between two frames,
+since the thumb is at `index / (count - 1)`. Both locked bands use **warning**,
+the app's upsell colour, so a free user's track reads as a single statement at
+both ends: "this is the premium part". The tail's colour follows what it means
+rather than what it is — warning while locked, **info** once the user may open
+it, where it marks a forecast rather than an offer. Info because the neutral
+middle is already a grey (a muted grey tail would not be told apart from it) and
+primary on a track reads as a filled-in portion.
 
 ## State
 
-- **`weatherRadar`** (transient) — the frame list, the colour schemes the server
-  offers, and where the user is in the animation. The selection has three
-  states, all decided by `pinnedTime` in the reducer:
+- **`weatherRadar`** (transient) — the frame list, each feed's format and zoom
+  band (straight from its status document), and where the user is in the
+  animation. The selection has three states, all decided by `pinnedTime` in the
+  reducer:
   - **`null` is live** — follow the newest observed frame, so a refresh carries
     the view forward. Picking that frame *stores* `null`, rather than its
     timestamp, or playing to the end would silently freeze the layer until the
-    frame aged off the list — six hours, at the history we keep.
+    frame aged off the list, hours later.
   - **Any other frame pins** to its absolute time and stays there as the
     window advances.
   - **A pin that ceases to exist moves to the nearest frame that does.** The
     oldest ages off every ten minutes and forecast frames are republished on
     shifted timestamps, so this is routine; going to the nearest keeps a viewer
     of the old end at the old end instead of flinging them forward to live.
-- **`weatherRadarSettings`** (persisted) — colour scheme, smoothing, snow,
-  show-nowcast. A dedicated settings slice per the convention in the root agent
-  file, so the choices survive turning the layer off and on.
+- **`weatherRadarSettings`** (persisted) — only `showNowcast` now; the server
+  offers a single palette with no smoothing or snow variants. A dedicated
+  settings slice per the convention in the root agent file, so the choice
+  survives turning the layer off and on.
 
 `radarFramesSelector` / `radarIndexSelector` / `radarFrameSelector`
 (`model/selectors.ts`) are the only place the "which frame is on screen" rule is
@@ -167,7 +149,9 @@ stale list). It compares the layer's presence itself rather than using
 `stateChangePredicate`, because the layer can already be on at startup — from
 the URL hash or the saved layer set — and no state change announces that.
 
-`weatherRadarRefreshProcessor` awaits only the **first** fetch. A periodic
+Both feeds are asked for together, and a failure of one is left to the other
+rather than losing both — the forecast is the more fragile and the less
+essential. `weatherRadarRefreshProcessor` awaits only the **first** fetch. A periodic
 refresh is returned unawaited on purpose: the middleware raises the global
 progress spinner for any handler still pending after a tick, and a spinner every
 two minutes is noise. A failed refresh is likewise swallowed — the frames
@@ -205,10 +189,10 @@ work:
   it would strand the map on the previous frame (a pan or a zoom during the
   first load, or any `mapRefocus` while GPS following is on).
 
-`maxNativeZoom: 10` in the layer registry stops the client asking for levels the
-2 km composite has no more detail for. Some softness is inherent — at 2 km, a
-tile is an interpolation long before it is a photograph — but a stretched 256
-tile on a 2x screen is not, which is what the `size` switch above is for.
+Each frame's layer takes its `minNativeZoom`/`maxNativeZoom` from **its own
+feed**, not from the layer registry: the two bands differ, and asking outside
+one is a 404 rather than an upscale. The registry's `maxNativeZoom: 9` is only
+what it advertises to the offline export and the layer table.
 
 Playback lives in `useRadarPlayback`, called from `RadarLayer` rather than from
 the toolbar, so the animation is tied to the layer that shows it and not to a

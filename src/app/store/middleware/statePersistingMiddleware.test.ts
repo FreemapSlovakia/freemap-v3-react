@@ -92,12 +92,7 @@ function makeState(): RootState {
       premium: true,
     },
     mapDetails: { excludeSources: [] },
-    weatherRadarSettings: {
-      colorScheme: 6,
-      smooth: false,
-      snow: false,
-      showNowcast: false,
-    },
+    weatherRadarSettings: { showNowcast: false },
     elevationSettings: {
       despikeWindow: 25,
       ditchFillWindow: 25,
@@ -285,12 +280,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         feedLocation: false,
         keepScreenAwake: true,
       },
-      weatherRadarSettings: {
-        colorScheme: 6,
-        smooth: false,
-        snow: false,
-        showNowcast: false,
-      },
+      weatherRadarSettings: { showNowcast: false },
     });
   });
 
@@ -401,11 +391,8 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.gpsRecorderSettings?.maxAccuracyM).toBe(30);
     expect(initial.gpsRecorderSettings?.splitGapS).toBe(120);
     expect(initial.gpsRecorderSettings?.['feedLocation']).toBe(false);
-    // Every weatherRadarSettings value is non-default in the fixture, so a key
-    // dropped from the schema or the persist call shows up here as a default.
-    expect(initial.weatherRadarSettings?.colorScheme).toBe(6);
-    expect(initial.weatherRadarSettings?.smooth).toBe(false);
-    expect(initial.weatherRadarSettings?.snow).toBe(false);
+    // Non-default in the fixture, so a key dropped from the schema or the
+    // persist call shows up here as a default.
     expect(initial.weatherRadarSettings?.showNowcast).toBe(false);
 
     // premiumExpiration round-trips Date → ISO string → Date.

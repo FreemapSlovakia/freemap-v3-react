@@ -13,10 +13,9 @@ const sl: DeepPartialWithRequiredObjects<WeatherRadarMessages> = {
   ahead: ({ duration }) => `čez ${duration}`,
   forecast: 'Napoved',
   settings: 'Nastavitve radarja',
-  colorScheme: 'Barvna lestvica',
-  smooth: 'Glajenje',
-  snow: 'Prikaži sneg',
   showNowcast: 'Prikaži napoved',
+  lockedHistory: 'Daljša zgodovina in napoved s premium dostopom',
+  lockedForecast: 'Napoved s premium dostopom',
 };
 
 export default sl;

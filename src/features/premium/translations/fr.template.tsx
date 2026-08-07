@@ -28,6 +28,7 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
             des données d’altitude en haute résolution (nombreux pays européens)
           </HintTooltip>
         </li>
+        <li>un historique plus long du radar météo et sa prévision</li>
       </ul>
       <p className="mb-0">Freemap reste gratuit et ouvert.</p>
     </>

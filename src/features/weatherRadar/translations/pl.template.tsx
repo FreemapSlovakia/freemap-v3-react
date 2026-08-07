@@ -13,10 +13,9 @@ const pl: DeepPartialWithRequiredObjects<WeatherRadarMessages> = {
   ahead: ({ duration }) => `za ${duration}`,
   forecast: 'Prognoza',
   settings: 'Ustawienia radaru',
-  colorScheme: 'Skala barw',
-  smooth: 'Wygładzanie',
-  snow: 'Pokaż śnieg',
   showNowcast: 'Pokaż prognozę',
+  lockedHistory: 'Dłuższa historia i prognoza z dostępem premium',
+  lockedForecast: 'Prognoza z dostępem premium',
 };
 
 export default pl;

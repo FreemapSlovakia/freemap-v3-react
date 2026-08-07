@@ -87,18 +87,6 @@ const CUZK_ATTR: AttributionDef = {
 };
 
 /**
- * The radar server, which we host ourselves. Not a data credit — the data is
- * credited to the sources below it — but an AGPL-3.0 §13 source offer: running
- * it as a network service entitles the people using it to its source. Links to
- * the repository rather than the project page for that reason.
- */
-const LIBREWXR_ATTR: AttributionDef = {
-  type: 'data',
-  name: 'LibreWXR',
-  url: 'https://github.com/JoshuaKimsey/LibreWXR',
-};
-
-/**
  * The pan-European radar composite behind the weather layer. The national
  * services that feed it — SHMÚ among them — are credited through the programme
  * they contribute the data to.
@@ -1077,14 +1065,15 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'radar',
     icon: <FaCloudShowersHeavy />,
     shortcut: { code: 'KeyR', shift: true },
-    // The composite is a 2 km grid, so the server has nothing more to draw past
-    // this: stretching the tiles beats fetching four times as many per level.
-    maxNativeZoom: 10,
+    // The measured feed's ceiling. Each feed's real band comes from its own
+    // status document — the forecast is served over a narrower one — so this is
+    // only what the registry advertises (offline export, the layer table).
+    maxNativeZoom: 9,
     zIndex: 3,
     // Precipitation is read against the map it falls on, so it starts
     // translucent rather than hiding the ground.
     defaultOpacity: 2 / 3,
-    attribution: [LIBREWXR_ATTR, OPERA_ATTR, DPC_RADAR_ATTR],
+    attribution: [OPERA_ATTR, DPC_RADAR_ATTR],
   },
   {
     layer: 'overlay',

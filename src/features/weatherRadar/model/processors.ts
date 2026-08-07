@@ -5,10 +5,15 @@ import type {
 } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import {
-  LIBREWXR_URL,
+  type FeedInfo,
+  type FeedStatus,
+  FeedStatusSchema,
+  RADAR_FEEDS,
   RADAR_LAYER,
+  type RadarFeed,
+  toFeedInfo,
   toFrames,
-  WeatherMapsSchema,
+  WEATHER_RADAR_URL,
 } from '../api.js';
 import {
   weatherRadarClear,
@@ -17,7 +22,7 @@ import {
 } from './actions.js';
 
 /**
- * How often the frame list is re-read. A new composite lands every ten minutes,
+ * How often the frame lists are re-read. A composite lands every ten minutes,
  * so this catches one within a fraction of its life, and the proxy answers it
  * from cache for all but one client anyway.
  */
@@ -45,12 +50,15 @@ function stopPolling() {
 }
 
 /**
- * Polls the frame list for as long as the layer is on. The layer can already be
- * on at startup — from the URL hash or the saved layer set — and no state
+ * Polls the frame lists for as long as the layer is on. The layer can already
+ * be on at startup — from the URL hash or the saved layer set — and no state
  * change announces that, hence the initial run rather than a
  * `stateChangePredicate`.
  */
 let initial = true;
+
+/** Whether the frame lists have been asked for since the layer came on. */
+let attempted = false;
 
 export const weatherRadarLayerProcessor: Processor = {
   handle({ getState, prevState, dispatch }) {
@@ -63,6 +71,8 @@ export const weatherRadarLayerProcessor: Processor = {
     initial = false;
 
     stopPolling();
+
+    attempted = false;
 
     if (!active) {
       dispatch(weatherRadarClear());
@@ -90,23 +100,63 @@ export const weatherRadarLayerProcessor: Processor = {
 };
 
 const fetchFrames: ProcessorHandler = async ({ getState, dispatch }) => {
-  const res = await httpRequest({
-    getState,
-    url: `${LIBREWXR_URL}/public/weather-maps.json`,
-    expectedStatus: 200,
-    // Only the layer going away invalidates this fetch — not the unrelated map
-    // edits the default cancellation trips on.
-    cancelActions: [],
-    stateChangePredicate: radarActive,
-  });
+  // The two feeds are independent services: asked for together, and a failure
+  // of one left to the other rather than losing both. The forecast in
+  // particular is the more fragile of them and the less essential.
+  const statuses = await Promise.all(
+    RADAR_FEEDS.map(async (feed) => {
+      const res = await httpRequest({
+        getState,
+        url: `${WEATHER_RADAR_URL}/${feed}/status`,
+        expectedStatus: 200,
+        // The upstream authenticates by Referer, and the app is served with
+        // `Referrer-Policy: no-referrer` — so without this the request carries
+        // none and comes back 401. Per-request policy overrides the document's.
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        // Only the layer going away invalidates this — not the unrelated map
+        // edits the default cancellation trips on.
+        cancelActions: [],
+        stateChangePredicate: radarActive,
+      });
 
-  const { generated, radar } = WeatherMapsSchema.parse(await res.json());
+      return FeedStatusSchema.parse(await res.json());
+    }).map((promise) =>
+      promise.catch((err) => {
+        // A deliberate cancellation — the layer going away — must keep
+        // propagating: the middleware knows to treat it as benign, whereas
+        // swallowing it here turns switching the layer off into a red toast
+        // and a Sentry report.
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          throw err;
+        }
+
+        return undefined;
+      }),
+    ),
+  );
+
+  const byFeed = Object.fromEntries(
+    RADAR_FEEDS.map((feed, i) => [feed, statuses[i]]),
+  ) as Partial<Record<RadarFeed, FeedStatus>>;
+
+  if (!byFeed.radar && !byFeed.forecast) {
+    throw new Error('no weather radar feed answered');
+  }
+
+  const feeds: Partial<Record<RadarFeed, FeedInfo>> = {};
+
+  for (const feed of RADAR_FEEDS) {
+    const status = byFeed[feed];
+
+    if (status) {
+      feeds[feed] = toFeedInfo(status);
+    }
+  }
 
   dispatch(
     weatherRadarSetFrames({
-      frames: toFrames(radar),
-      colorSchemes: radar.colorSchemes,
-      generated,
+      frames: toFrames(byFeed.radar, byFeed.forecast),
+      feeds,
     }),
   );
 };
@@ -116,7 +166,13 @@ export const weatherRadarRefreshProcessor: Processor = {
   id: 'weatherRadar.refresh',
   errorKey: 'general.loadError',
   handle(params) {
-    const isFirst = params.getState().weatherRadar.generated === null;
+    // The first *attempt* since the layer came on, not the first success: a
+    // feed that keeps failing — a domain the upstream doesn't allow, say —
+    // would otherwise await every poll, raising the progress spinner and an
+    // error toast every couple of minutes for as long as the layer is up.
+    const isFirst = !attempted;
+
+    attempted = true;
 
     const promise = fetchFrames(params);
 

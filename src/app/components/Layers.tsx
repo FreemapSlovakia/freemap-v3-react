@@ -123,7 +123,6 @@ export function Layers(): ReactElement | null {
           opacity={opacity}
           zIndex={layerDef.zIndex ?? 1}
           maxZoom={maxZoom}
-          maxNativeZoom={layerDef.maxNativeZoom}
         />
       );
     }

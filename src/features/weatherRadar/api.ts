@@ -4,86 +4,114 @@ import z from 'zod';
 export const RADAR_LAYER = 'R';
 
 /**
- * LibreWXR origin. Everything — metadata and tiles alike — is addressed through
- * it rather than through the `host` the metadata reports, so pointing this at a
- * caching reverse proxy of ours moves the whole layer behind it in one step.
+ * Origin for both feeds — the upstream itself; nothing of ours sits in front.
+ * It authenticates by `Referer` and sends CORS for our origins, which is why
+ * every request here has to set its own `referrerPolicy`: the app is served
+ * with `Referrer-Policy: no-referrer`, so a request that doesn't override it
+ * carries no Referer and comes back 401.
  */
-export const LIBREWXR_URL = process.env['LIBREWXR_URL']!;
+export const WEATHER_RADAR_URL = process.env['WEATHER_RADAR_URL']!;
 
-const FrameSchema = z.object({
-  /** Unix second the composite is valid for. */
-  time: z.number(),
-  /** Tile path prefix, to be completed with size/z/x/y/color/flags. */
-  path: z.string(),
+/**
+ * The two feeds are separate services with separate status documents, separate
+ * regeneration cycles and — this is the part that reaches the layer — separate
+ * zoom ranges. The forecast is the more expensive to compute, so it is served
+ * over a narrower band.
+ */
+export const RADAR_FEEDS = ['radar', 'forecast'] as const;
+
+export type RadarFeed = (typeof RADAR_FEEDS)[number];
+
+export const FeedStatusSchema = z.object({
+  /** When the feed was last regenerated — stable between requests. */
+  updatedAt: z.string(),
+  zoomLevels: z.array(z.number()).nonempty(),
+  /** `png` today, `webp` once enough clients have updated. */
+  format: z.string(),
+  /** Unix seconds, delivered as strings. */
+  times: z.array(z.coerce.number()),
 });
 
-const ColorSchemeSchema = z.object({
-  id: z.number(),
-  /** Product name of the scheme; not translated, as each names a source. */
-  name: z.string(),
-});
+export type FeedStatus = z.infer<typeof FeedStatusSchema>;
 
-/** The RainViewer-v2-compatible metadata document, narrowed to the radar half. */
-export const WeatherMapsSchema = z.object({
-  generated: z.number(),
-  radar: z.object({
-    past: z.array(FrameSchema).default([]),
-    nowcast: z.array(FrameSchema).default([]),
-    colorSchemes: z.array(ColorSchemeSchema).default([]),
-  }),
-});
+/** What the layer needs from a feed to build a URL and bound its requests. */
+export type FeedInfo = {
+  format: string;
+  minZoom: number;
+  maxZoom: number;
+  updatedAt: string;
+};
 
-export type ColorScheme = z.infer<typeof ColorSchemeSchema>;
+export function toFeedInfo({
+  format,
+  zoomLevels,
+  updatedAt,
+}: FeedStatus): FeedInfo {
+  return {
+    format,
+    minZoom: Math.min(...zoomLevels),
+    maxZoom: Math.max(...zoomLevels),
+    updatedAt,
+  };
+}
 
-/** One frame of the animation, observed composite or model nowcast. */
+/** One frame of the animation, measured or extrapolated. */
 export type RadarFrame = {
   time: number;
-  path: string;
-  /** A nowcast (extrapolated forward) rather than an observed composite. */
+  /** A forecast, and so from the `forecast` feed rather than `radar`. */
   forecast: boolean;
 };
 
-export type RadarTileOptions = {
-  colorScheme: number;
-  smooth: boolean;
-  snow: boolean;
-  /**
-   * Pixels the server renders the tile at. The same `z/x/y` covers the same
-   * ground either way, so 512 is simply the @2x version — what a HiDPI screen
-   * needs to avoid displaying every tile stretched.
-   */
-  size: 256 | 512;
-};
+export const feedOf = (frame: RadarFrame): RadarFeed =>
+  frame.forecast ? 'forecast' : 'radar';
 
 /**
- * Leaflet URL template for one frame. WebP because a radar tile halves in size
- * against the PNG of the same frame, and the animation fetches a tile per frame.
+ * Leaflet URL template for one frame. The tiles are 512×512 on the standard
+ * slippy grid — a @2x render of the tile, so Leaflet displays them at its usual
+ * 256 CSS px. There is no size parameter, so a 1x screen pays for pixels it
+ * cannot use; nothing to be done about that from here.
  *
- * `version` is appended for frames whose content changes under a fixed URL —
- * the forecast half, re-computed from newer radar each cycle. Without it the
- * browser answers the re-fetch from its own five-minute cache and the new
- * forecast is invisible for up to that long. Observed frames pass no version:
- * they never change, and churning their URLs would re-render six hours of
- * history every cycle.
+ * `version` is appended for the forecast, whose frames are recomputed under a
+ * fixed URL each cycle — without it the browser answers a re-fetch from its own
+ * cache and the new forecast stays invisible. The measured frames pass none:
+ * they never change, and churning their URLs would refetch the whole history.
  */
 export function radarTileUrl(
-  path: string,
-  { colorScheme, smooth, snow, size }: RadarTileOptions,
-  version?: number,
+  frame: RadarFrame,
+  { format }: FeedInfo,
+  version?: string,
 ): string {
   return (
-    `${LIBREWXR_URL}${path}/${size}/{z}/{x}/{y}/${colorScheme}/${smooth ? 1 : 0}_${snow ? 1 : 0}.webp` +
-    (version === undefined ? '' : `?v=${version}`)
+    `${WEATHER_RADAR_URL}/${feedOf(frame)}/tiles/${frame.time}/{z}/{x}/{y}.${format}` +
+    (version === undefined ? '' : `?v=${encodeURIComponent(version)}`)
   );
 }
 
-/** Merges the two frame lists into the single timeline the UI animates. */
-export function toFrames({
-  past,
-  nowcast,
-}: z.infer<typeof WeatherMapsSchema>['radar']): RadarFrame[] {
+/**
+ * Merges the two feeds into the single timeline the UI animates.
+ *
+ * Forecast frames at or before the newest measured one are dropped. They are
+ * worthless on their own terms — a prediction for a moment we have since
+ * observed — and the feeds regenerate on independent cycles, so a measured feed
+ * running ahead of a stale forecast would otherwise interleave them. That would
+ * put forecast frames inside the measured stretch, where the timeline paints
+ * them wrongly and, worse, a non-premium user could open them.
+ */
+export function toFrames(
+  radar: FeedStatus | undefined,
+  forecast: FeedStatus | undefined,
+): RadarFrame[] {
+  const measured = (radar?.times ?? []).map((time) => ({
+    time,
+    forecast: false,
+  }));
+
+  const newest = measured.reduce((a, f) => Math.max(a, f.time), -Infinity);
+
   return [
-    ...past.map((f) => ({ ...f, forecast: false })),
-    ...nowcast.map((f) => ({ ...f, forecast: true })),
-  ];
+    ...measured,
+    ...(forecast?.times ?? [])
+      .filter((time) => time > newest)
+      .map((time) => ({ time, forecast: true })),
+  ].sort((a, b) => a.time - b.time);
 }

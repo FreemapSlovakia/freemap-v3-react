@@ -2,7 +2,11 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { weatherRadarSetTime } from '../model/actions.js';
-import { radarFramesSelector, radarIndexSelector } from '../model/selectors.js';
+import {
+  radarAllowedSelector,
+  radarFramesSelector,
+  radarIndexSelector,
+} from '../model/selectors.js';
 
 /** How long a frame stays on screen once it is actually on screen. */
 const STEP_MS = 450;
@@ -42,16 +46,20 @@ export function useRadarPlayback(resolved: boolean): void {
 
   const index = useAppSelector(radarIndexSelector);
 
+  // Locked frames stay on the track for the sake of the offer, but the loop
+  // runs only over what this user may actually watch.
+  const { from, to } = useAppSelector(radarAllowedSelector);
+
   useEffect(() => {
-    if (!playing || frames.length < 2) {
+    if (!playing || to - from < 1) {
       return;
     }
 
-    const last = index >= frames.length - 1;
+    const last = index >= to;
 
     const timer = window.setTimeout(
       () => {
-        const next = frames[last ? 0 : index + 1];
+        const next = frames[last ? from : index + 1];
 
         if (next) {
           dispatch(weatherRadarSetTime(next.time));
@@ -64,5 +72,5 @@ export function useRadarPlayback(resolved: boolean): void {
     // `resolved` going false mid-wait re-arms the timer, which is right: it
     // only does so when the frame's layer was dropped, and a dropped layer has
     // to fetch its tiles again.
-  }, [dispatch, playing, frames, index, resolved]);
+  }, [dispatch, playing, frames, index, from, to, resolved]);
 }

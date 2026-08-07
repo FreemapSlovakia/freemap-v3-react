@@ -29,6 +29,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
             hochauflösende Höhendaten (viele europäische Länder)
           </HintTooltip>
         </li>
+        <li>längerer Wetterradar-Verlauf und dessen Vorhersage</li>
       </ul>
       <p className="mb-0">Freemap bleibt kostenlos und offen.</p>
     </>

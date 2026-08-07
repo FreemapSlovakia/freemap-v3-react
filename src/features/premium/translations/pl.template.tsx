@@ -29,6 +29,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
             europejskich)
           </HintTooltip>
         </li>
+        <li>dłuższa historia radaru opadów i jego prognoza</li>
       </ul>
       <p className="mb-0">Freemap pozostaje bezpłatny i otwarty.</p>
     </>

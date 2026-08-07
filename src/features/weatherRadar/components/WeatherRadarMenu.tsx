@@ -1,3 +1,4 @@
+import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
@@ -13,6 +14,7 @@ import {
   FaAngleRight,
   FaCloudShowersHeavy,
   FaCog,
+  FaGem,
   FaPause,
   FaPlay,
   FaStepBackward,
@@ -26,7 +28,12 @@ import {
   weatherRadarSetSettings,
   weatherRadarSetTime,
 } from '../model/actions.js';
-import { radarFramesSelector, radarIndexSelector } from '../model/selectors.js';
+import {
+  radarAllowedSelector,
+  radarFramesSelector,
+  radarIndexSelector,
+  radarPremiumSelector,
+} from '../model/selectors.js';
 import { useWeatherRadarMessages } from '../translations/useWeatherRadarMessages.js';
 import { RadarTimeline } from './RadarTimeline.js';
 
@@ -45,18 +52,26 @@ export default function WeatherRadarMenu() {
 
   const playing = useAppSelector((state) => state.weatherRadar.playing);
 
-  const colorSchemes = useAppSelector(
-    (state) => state.weatherRadar.colorSchemes,
-  );
+  const { from, to } = useAppSelector(radarAllowedSelector);
 
   const settings = useAppSelector((state) => state.weatherRadarSettings);
+
+  const premium = useAppSelector(radarPremiumSelector);
 
   const [hidden, setHidden] = usePersistentBoolean(
     'fm.weatherRadarMenu.collapsed',
   );
 
   function step(delta: number) {
-    const next = frames[(index + delta + frames.length) % frames.length];
+    // Wraps within the stretch this user may open, matching playback. Wrapping
+    // over the whole track would step onto a locked frame, which the index
+    // selector clamps straight back — a button that silently does nothing.
+    const span = to - from + 1;
+
+    const next =
+      span > 0
+        ? frames[from + ((((index - from + delta) % span) + span) % span)]
+        : undefined;
 
     if (next) {
       dispatch(weatherRadarSetPlaying(false));
@@ -66,16 +81,16 @@ export default function WeatherRadarMenu() {
   }
 
   function handleSettingsSelect(eventKey: string | null) {
-    if (eventKey?.startsWith('cs:')) {
-      dispatch(
-        weatherRadarSetSettings({ colorScheme: Number(eventKey.slice(3)) }),
-      );
-    } else if (eventKey === 'smooth') {
-      dispatch(weatherRadarSetSettings({ smooth: !settings.smooth }));
-    } else if (eventKey === 'snow') {
-      dispatch(weatherRadarSetSettings({ snow: !settings.snow }));
-    } else if (eventKey === 'nowcast') {
+    if (eventKey !== 'nowcast') {
+      return;
+    }
+
+    // Without premium the item is an offer rather than a toggle, so it opens
+    // the pitch instead of flipping a setting that would do nothing.
+    if (premium) {
       dispatch(weatherRadarSetSettings({ showNowcast: !settings.showNowcast }));
+    } else {
+      dispatch(setActiveModal({ type: 'premium' }));
     }
   }
 
@@ -104,7 +119,7 @@ export default function WeatherRadarMenu() {
                   {({ props }) => (
                     <Button
                       variant="secondary"
-                      disabled={frames.length < 2}
+                      disabled={to - from < 1}
                       onClick={() => step(-1)}
                       {...props}
                     >
@@ -117,7 +132,7 @@ export default function WeatherRadarMenu() {
                   {({ props }) => (
                     <Button
                       variant="secondary"
-                      disabled={frames.length < 2}
+                      disabled={to - from < 1}
                       onClick={() => dispatch(weatherRadarSetPlaying(!playing))}
                       {...props}
                     >
@@ -130,7 +145,7 @@ export default function WeatherRadarMenu() {
                   {({ props }) => (
                     <Button
                       variant="secondary"
-                      disabled={frames.length < 2}
+                      disabled={to - from < 1}
                       onClick={() => step(1)}
                       {...props}
                     >
@@ -157,38 +172,13 @@ export default function WeatherRadarMenu() {
 
                 <FmDropdownMenu>
                   <Dropdown.Item as="button" eventKey="nowcast">
-                    <Checkbox value={settings.showNowcast} />{' '}
+                    {premium ? (
+                      <Checkbox value={settings.showNowcast} />
+                    ) : (
+                      <FaGem className="text-warning" />
+                    )}{' '}
                     {wm?.showNowcast ?? '…'}
                   </Dropdown.Item>
-
-                  <Dropdown.Item as="button" eventKey="smooth">
-                    <Checkbox value={settings.smooth} /> {wm?.smooth ?? '…'}
-                  </Dropdown.Item>
-
-                  <Dropdown.Item as="button" eventKey="snow">
-                    <Checkbox value={settings.snow} /> {wm?.snow ?? '…'}
-                  </Dropdown.Item>
-
-                  {colorSchemes.length > 0 && (
-                    <>
-                      <Dropdown.Divider />
-
-                      <Dropdown.Header>{wm?.colorScheme}</Dropdown.Header>
-
-                      {/* The scheme names are the products they reproduce
-                          (NEXRAD, Dark Sky, …), so they aren't translated. */}
-                      {colorSchemes.map(({ id, name }) => (
-                        <Dropdown.Item
-                          as="button"
-                          eventKey={`cs:${id}`}
-                          key={id}
-                          active={settings.colorScheme === id}
-                        >
-                          {name}
-                        </Dropdown.Item>
-                      ))}
-                    </>
-                  )}
                 </FmDropdownMenu>
               </Dropdown>
             </>

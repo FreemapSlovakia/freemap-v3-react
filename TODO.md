@@ -540,31 +540,25 @@ Deferred sub-items:
 
 ## Weather radar (`src/features/weatherRadar/`, see [`doc/weather-radar.md`](./doc/weather-radar.md))
 
-- [x] **Longer history.** `LIBREWXR_MAX_FRAMES=36` on fm5 — six hours, up from
-      two, with the cache bind-mounted onto `/fm/data4`. Watch whether the
-      slider wants coarser stepping now that a step is a smaller fraction of
-      its travel.
-- [ ] **Weather warnings layer.** `GET /v2/alerts?bbox=…` already returns CAP
-      warnings as GeoJSON — over central Europe roughly 190 features from
-      `sk-shmu-sk`, `cz-chmi-cs`, `at-zamg-en`, `pl-imgw-xx` — with `title`,
-      `description`, `severity`, `time`, `expires`, `regions`, `uri` and
-      Polygon/MultiPolygon geometry. Each issuing service writes in its own
-      language, so the text needs no translation from us. The vhost already
-      serves and caches the endpoint. Note the payload is ~270 KB at the default
-      `simplify=1000`, so it wants a tight bbox and a coarser `simplify`.
-- [ ] **Coverage mask.** `/v2/coverage/0/{size}/{z}/{x}/{y}/0/0_0.png` is a
-      static translucent overlay of where radar data exists at all (~3 KB/tile).
-      Cheap, and it removes a real misreading: without it "no echoes" and "no
-      radar here" look identical.
-- [ ] **Motion arrows / storm cells.** Radar tiles accept `?arrows=light|dark`
-      and `?cells=light|dark`. Two more checkboxes in the settings dropdown.
-- [ ] **Satellite layer.** `/v2/satellite/…` (NOAA GMGSI IR, hourly, 12 h) has
-      the same tile shape, so it would reuse `RadarLayer` almost verbatim —
-      currently disabled on our instance (`LIBREWXR_SATELLITE_ENABLED=false`)
-      because hourly IR is of little use for outdoor planning.
-- [ ] **A frame is not immutable for its timestamp.** Forecast frames are
-      re-computed each cycle under the same URL, which is why tiles are cached
-      for only five minutes and why a frame can still mix two versions at that
-      boundary. Fixing it properly needs a version in the URL, which the
-      RainViewer-compatible API has no room for — worth raising upstream if it
-      ever becomes visible again.
+- [ ] **Switch tiles to WebP.** The app reads `format` from each feed's status
+      document, so this needs nothing on our side — it happens when the upstream
+      flips it, once enough clients have updated. Worth chasing: the PNGs run
+      70-210 KB each, which is an order of magnitude above a normal map tile,
+      and one animation pass is every frame over the visible area.
+- [ ] **Nothing asks for 1x tiles.** Tiles are 512x512 with no size parameter,
+      so a non-retina screen downloads four times the pixels it can use. Only
+      fixable upstream.
+- [ ] **The old LibreWXR instance on fm5** (`~/librewxr`, `docker compose`) is
+      still running and no longer used, as is the `weather.freemap.sk` vhost and
+      its cert. Stop and remove both once this backend has proved itself.
+- [ ] **The feed holds ~3 h, but premium is allowed 6.** The cap is in
+      `radarFramesSelector`, so nothing here changes when the upstream extends
+      its `times` — premium just starts reaching further back. Worth asking for.
+- [ ] **`www.freemap.eu` and `www.freemap.cz` are not on the upstream's allowed
+      origins** — both answer 401, so the radar layer is dead on those domains.
+      Needs adding at `cache.bigware.sk`, not here.
+- [ ] **Tiles arrive with `Cache-Control: public, max-age=0`,** so the browser
+      revalidates every one of them on every replay and pan. They are 70-210 KB
+      apiece; a real `max-age` upstream would matter more than anything we can
+      do from this side. Measured frames are immutable for their timestamp, and
+      the forecast frames already carry a `?v=` so they can be cached long too.

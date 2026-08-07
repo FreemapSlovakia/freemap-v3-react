@@ -1,33 +1,57 @@
-/* The slider is a fixed strip in a toolbar that scrolls horizontally, so it
-   must not stretch with the toolbar's other buttons.
+/* The bands live here rather than on the slider's own track, because the
+   slider only spans the stretch this user may open. Painting them on the
+   wrapper is what lets the thumb be physically unable to enter a locked band,
+   instead of entering it and being corrected afterwards — which a native range
+   always makes visible, since any click on it is a jump request.
 
-   `input.` and not just `.timeline`: Bootstrap gives `.form-range` a
-   `width: 100%` at the same specificity, so which one wins would otherwise come
-   down to the order the stylesheets happen to land in — and that order differs
-   between the dev server and the extracted production CSS. At 100% the slider
-   eats the row and pushes the clock and the settings button out of sight. */
-input.timeline {
+   Warning is the app's upsell colour (see doc/ui-conventions.md), so both
+   locked bands take it and a free user's track reads as one statement at each
+   end: "this is the premium part". The tail's colour follows what it means —
+   warning while locked, info once the user may open it, where it marks a
+   forecast rather than an offer. Info because the neutral middle is already a
+   grey, so a muted grey tail would not be told apart from it, and primary on a
+   track reads as a filled-in portion.
+
+   Two boundaries suffice: a free user's trailing locked band starts exactly
+   where the forecast does, and a premium user has no locked band at all. */
+.track {
+  position: relative;
   width: 9rem;
+  height: 1.5rem;
   flex: none;
-}
-
-/* Where "now" falls on the track, so the forecast tail is told apart from the
-   measured frames without a second control. Specificity beats Bootstrap's own
-   track rule regardless of the order the stylesheets end up in. */
-input.timeline::-webkit-slider-runnable-track {
+  padding: 0;
+  border: 0;
+  border-radius: 1rem;
   background: linear-gradient(
     to right,
-    var(--bs-tertiary-bg) 0 var(--fm-radar-split),
-    rgba(var(--bs-warning-rgb), 0.5) var(--fm-radar-split) 100%
+    rgba(var(--bs-warning-rgb), 0.5) 0 var(--fm-radar-locked-until),
+    var(--bs-tertiary-bg) var(--fm-radar-locked-until)
+      var(--fm-radar-warning-from),
+    var(--fm-radar-tail) var(--fm-radar-warning-from) 100%
   );
+  background-repeat: no-repeat;
+  background-size: 100% 0.5rem;
+  background-position: center;
+}
+
+/* Laid over its own share of the wrapper. The thumb travels from half its own
+   width in from each end, so the input is stretched by that much at both ends
+   for the value extremes to line up with the band boundaries behind it. */
+input.timeline {
+  position: absolute;
+  top: 0;
+  left: calc(var(--fm-radar-open-from) - 0.5rem);
+  width: calc(var(--fm-radar-open-to) - var(--fm-radar-open-from) + 1rem);
+  margin: 0;
+}
+
+/* The wrapper carries the colours; the slider's own track must not cover them. */
+input.timeline::-webkit-slider-runnable-track {
+  background: transparent;
 }
 
 input.timeline::-moz-range-track {
-  background: linear-gradient(
-    to right,
-    var(--bs-tertiary-bg) 0 var(--fm-radar-split),
-    rgba(var(--bs-warning-rgb), 0.5) var(--fm-radar-split) 100%
-  );
+  background: transparent;
 }
 
 /* Fixed width, so the toolbar doesn't shift as the animation steps through

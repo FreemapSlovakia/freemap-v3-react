@@ -12,10 +12,9 @@ const en: WeatherRadarMessages = {
   ahead: ({ duration }) => `in ${duration}`,
   forecast: 'Forecast',
   settings: 'Radar settings',
-  colorScheme: 'Colour scheme',
-  smooth: 'Smoothing',
-  snow: 'Show snow',
   showNowcast: 'Show forecast',
+  lockedHistory: 'More history and the forecast with premium access',
+  lockedForecast: 'The forecast with premium access',
 };
 
 export default en;

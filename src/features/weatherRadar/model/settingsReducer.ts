@@ -4,24 +4,16 @@ import { weatherRadarSetSettings } from './actions.js';
 /**
  * Persisted radar preferences. A dedicated settings slice, so a choice survives
  * turning the layer off and on again — the transient slice is cleared then.
+ *
+ * There is only one now: the server offers a single palette, with no smoothing
+ * or snow variants to choose between.
  */
 export interface WeatherRadarSettingsState {
-  /** Id of a colour scheme the server offers; see `weatherRadar.colorSchemes`. */
-  colorScheme: number;
-  /** Interpolates between reflectivity steps instead of drawing them as bands. */
-  smooth: boolean;
-  /** Draws frozen precipitation in its own palette. */
-  snow: boolean;
-  /** Extends the timeline past "now" with the model nowcast frames. */
+  /** Extends the timeline past "now" with the forecast frames. Premium. */
   showNowcast: boolean;
 }
 
 export const weatherRadarSettingsInitialState: WeatherRadarSettingsState = {
-  // "Universal Blue" — the one scheme that reads as weather over a map rather
-  // than competing with it, and the closest to what other European radars show.
-  colorScheme: 2,
-  smooth: true,
-  snow: true,
   showNowcast: true,
 };
 

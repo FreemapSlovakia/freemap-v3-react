@@ -13,10 +13,9 @@ const cs: DeepPartialWithRequiredObjects<WeatherRadarMessages> = {
   ahead: ({ duration }) => `za ${duration}`,
   forecast: 'Předpověď',
   settings: 'Nastavení radaru',
-  colorScheme: 'Barevná škála',
-  smooth: 'Vyhlazování',
-  snow: 'Zobrazit sněžení',
   showNowcast: 'Zobrazit předpověď',
+  lockedHistory: 'Delší historie a předpověď s prémiovým přístupem',
+  lockedForecast: 'Předpověď s prémiovým přístupem',
 };
 
 export default cs;

@@ -28,6 +28,7 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
             výškové dáta vo vysokom rozlíšení (viaceré európske krajiny)
           </HintTooltip>
         </li>
+        <li>dlhšia história meteoradaru a jeho predpoveď</li>
       </ul>
       <p className="mb-0">Freemap zostáva bezplatný a otvorený.</p>
     </>

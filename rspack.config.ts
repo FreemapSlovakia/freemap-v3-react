@@ -306,10 +306,14 @@ const config: Configuration = {
         'https://overpass.freemap.sk/api/interpreter',
       OSM_API_URL:
         process.env['OSM_API_URL'] || 'https://api.openstreetmap.org',
-      // LibreWXR origin behind the weather radar layer: the caching vhost in
-      // front of our own LibreWXR instance — see
-      // etc/nginx/sites-available/weather.freemap.sk.
-      LIBREWXR_URL: process.env['LIBREWXR_URL'] || 'https://weather.freemap.sk',
+      // Origin for the weather radar layer. Addressed directly: the upstream
+      // authenticates by Referer and sends CORS for our origins, so nothing of
+      // ours needs to sit in the path. Note both depend on the request
+      // carrying a Referer — see the `referrerPolicy` in RadarLayer and in the
+      // status fetch, since the app is served with `Referrer-Policy:
+      // no-referrer`.
+      WEATHER_RADAR_URL:
+        process.env['WEATHER_RADAR_URL'] || 'https://cache.bigware.sk',
       // Where single OSM element (node/way/relation) lookups are resolved:
       // 'overpass' (default, internal instance) or 'osm-api' (public OSM API).
       OSM_ELEMENT_SOURCE: process.env['OSM_ELEMENT_SOURCE'] || 'overpass',

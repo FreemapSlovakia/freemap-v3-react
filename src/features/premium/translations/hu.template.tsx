@@ -28,6 +28,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
             nagy felbontású magassági adatok (számos európai ország)
           </HintTooltip>
         </li>
+        <li>hosszabb csapadékradar-előzmény és annak előrejelzése</li>
       </ul>
       <p className="mb-0">A Freemap ingyenes és nyílt marad.</p>
     </>

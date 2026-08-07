@@ -29,6 +29,7 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
             države)
           </HintTooltip>
         </li>
+        <li>daljša zgodovina vremenskega radarja in njegova napoved</li>
       </ul>
       <p className="mb-0">Freemap ostaja brezplačen in odprt.</p>
     </>

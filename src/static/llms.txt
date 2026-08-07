@@ -83,6 +83,7 @@ The Account modal has three collapsible sections (below); from the buttons at th
   - Removal of the ad banner
   - Access to premium photos (users can mark uploaded photos as premium-only)
   - Access to higher map zoom levels for specific map layers (see below)
+  - Weather radar: up to 6 hours of history instead of 2, plus the 1-hour forecast (the `R` overlay)
   - High-resolution elevation data in supported countries (used by the elevation API for the chart, colorizing, and elevation fill); currently Slovakia (DMR 5.0: ÚGKK SR), Czechia (DMR 5G: ČÚZK), Austria (ALS DTM: Geoland.at), Switzerland (swissALTI3D: © swisstopo), Italy (HR-DTM 5 m: IRPI-CNR), Slovenia (DMR: Ministrstvo za okolje in prostor), Spain (MDT05: IGN/CNIG), Sweden (Markhöjdmodell: Lantmäteriet), France (RGE ALTI: IGN), Poland (NMT: GUGiK), Finland (Korkeusmalli 2 m: Maanmittauslaitos), and Croatia (DMR: Državna geodetska uprava), with more countries being added; past their borders a premium read falls back to a global 30 m model (GEDTM30), while without premium the elevation API answers from SRTM everywhere
 
 #### Personal information
@@ -653,7 +654,7 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 | Data layer                 | i   | interactive       |      |            |              |                 |              | ⇧d       |           | Interactive items of all tools (drawing, route, search, …) |
 | Photos                     | I   | gallery           |   10 |            |              |                 |              | ⇧f       |           | Own Creative-Commons photos (CC BY-SA 4.0 default; premium-only option) **and** geotagged Wikimedia Commons photos, in one layer; both shown from zoom 10 |
 | Wikipedia                  | w   | wikipedia         |    8 |            |              |                 |              | ⇧w       |           | Wikipedia                                                  |
-| Weather radar              | R   | radar             |      |         10 |              |                 |              | ⇧r       |           | Animated precipitation radar with a 1-hour nowcast; self-hosted LibreWXR (AGPL-3.0); data © EUMETNET OPERA — over Italy CC BY-SA 4.0 © Radar-DPC |
+| Weather radar              | R   | radar             |      |          9 |              |                 |              | ⇧r       |           | Animated precipitation radar. Premium: up to 6 h of history plus a 1-hour forecast; otherwise 2 h and no forecast. Data © EUMETNET OPERA — over Italy CC BY-SA 4.0 © Radar-DPC |
 | Forest tracks NLC (2017)   | l1  | tile              |   11 |         15 |              |            1000 | l2           |          | sk        | © NLC Zvolen (legacy)                                      |
 | Forest tracks NLC          | l2  | maplibre          |    9 |            |              |                 |              | ⇧n       | sk        | © NLC Zvolen                                               |
 | Parametric shading         | h   | parametricShading |      |         13 |              |                 |              | ⇧h       |           | Experimental; © Freemap, GEDTM30 (Europe)                  |
@@ -665,7 +666,7 @@ Notes:
 
 - The `i` (Data layer) overlay hosts every tool's interactive features; hiding it hides those features without disabling the tools.
 - The single `X` "Outdoor" base map renders hiking, bicycle, ski and riding trails together — there are no longer separate per-activity trail layers.
-- The `R` (Weather radar) overlay is animated: turning it on opens its own toolbar with play/pause, frame stepping, a timeline covering roughly the last six hours plus a one-hour nowcast, and settings for the colour scheme, smoothing, snow and whether the forecast frames are offered.
+- The `R` (Weather radar) overlay is animated: turning it on opens its own toolbar with play/pause, frame stepping and a timeline. The timeline carries the same frames for everyone — the measured frames the server offers (about three hours at present) plus a one-hour forecast — but only part of it can be opened without premium: premium reaches up to six hours back and can open the forecast, everyone else two hours and no forecast. The locked stretches are painted in the upsell colour at each end and offer premium when clicked. The only setting is whether the forecast frames are shown at all, which is itself premium.
 
 ##### Internal layer codes
 
