@@ -4,6 +4,7 @@ import {
   setActiveModal,
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { DetailsToggle } from '@features/objects/components/DetailsToggle.js';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
@@ -36,6 +37,8 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
 
   return selectedResult && !window.fmEmbedded && !hidden ? (
     <Selection icon={<FaSearch />} label={m?.search.result} deletable>
+      <DetailsToggle />
+
       <ButtonGroup className="ms-1">
         <LongPressTooltip label={m?.search.routeFrom}>
           {({ props }) => (

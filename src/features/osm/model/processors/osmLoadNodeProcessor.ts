@@ -14,7 +14,7 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
   actionCreator: osmLoadNode,
   handle: async ({ dispatch, action, getState, toastError }) => {
     try {
-      const { id, focus, showToast } = action.payload;
+      const { id, focus } = action.payload;
 
       trackMatomo(['trackEvent', 'Osm', 'view', 'node']);
 
@@ -40,7 +40,6 @@ export const osmLoadNodeProcessor: Processor<typeof osmLoadNode> = {
             id: osmId,
             geojson: point(nodes[0], tags),
           },
-          showToast: showToast || window.isRobot,
           focus,
         }),
       );

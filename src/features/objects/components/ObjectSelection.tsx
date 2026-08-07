@@ -24,6 +24,7 @@ import {
 import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
+import { DetailsToggle } from './DetailsToggle.js';
 
 function ObjectsToggleButton(): ReactElement {
   const objectsOpen = useAppSelector((state) => isToolOpen(state, 'objects'));
@@ -80,6 +81,8 @@ export default function ObjectSelection(): ReactElement | null {
       label={m?.selections.objects}
       noLeftMargin
     >
+      <DetailsToggle />
+
       {!window.fmEmbedded && (
         <ButtonGroup className="ms-1">
           <LongPressTooltip label={m?.search.routeFrom}>
@@ -186,7 +189,6 @@ export default function ObjectSelection(): ReactElement | null {
                     ),
                     incomplete: true,
                   },
-                  showToast: true,
                 }),
               );
             }}

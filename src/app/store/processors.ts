@@ -79,6 +79,7 @@ import {
 import { mapsRestoreProcessor } from '@features/myMaps/model/processors/mapsRestoreProcessor.js';
 import { mapsSaveProcessor } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
 import { mapsWorkingCopyProcessor } from '@features/myMaps/model/processors/mapsWorkingCopyProcessor.js';
+import { objectDetailsProcessor } from '@features/objects/model/objectDetailsProcessor.js';
 import {
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
@@ -157,6 +158,7 @@ export const processors = [
   elevationChartPendingTargetProcessor,
   objectsFetchProcessor,
   objectsChangePredicateProcessor,
+  objectDetailsProcessor,
   osmLoadNodeProcessor,
   osmLoadWayProcessor,
   osmLoadRelationProcessor,

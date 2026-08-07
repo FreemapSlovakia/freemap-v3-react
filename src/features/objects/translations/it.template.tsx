@@ -18,6 +18,7 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
       editInJosmText="Modifica su JOSM"
     />
   ),
+  showDetails: 'Dettagli',
   type: 'Tipo',
   lowZoomAlert: {
     message: ({ minZoom }) =>

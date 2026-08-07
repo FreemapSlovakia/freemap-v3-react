@@ -35,6 +35,7 @@ const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Style de marqueur des objets',
   },
   source: 'Source',
+  showDetails: 'Détails',
   type: 'Type',
   markerShape: 'Forme du marqueur',
   convertAsPoint: 'En point',

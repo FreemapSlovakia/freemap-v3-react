@@ -1,24 +1,17 @@
-import {
-  clearMapFeatures,
-  convertToDrawing,
-  selectFeature,
-} from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
-import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import {
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
 } from '@features/osm/model/osmActions.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { integratedLayerDefs, isBaseLayerDef } from '@shared/mapDefinitions.js';
 import {
   featureIdsEqual,
   OsmFeatureIdSchema,
 } from '@shared/types/featureId.js';
 import bbox from '@turf/bbox';
-import { searchSelectResult, searchSetResults } from '../actions.js';
+import { searchSelectResult } from '../actions.js';
 
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
@@ -66,7 +59,6 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
             osmLoadNode({
               id: parsed.data.id,
               focus: Boolean(action.payload.focus),
-              showToast: action.payload.showToast,
             }),
           );
 
@@ -77,7 +69,6 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
             osmLoadWay({
               id: parsed.data.id,
               focus: Boolean(action.payload.focus),
-              showToast: action.payload.showToast,
             }),
           );
 
@@ -88,7 +79,6 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
             osmLoadRelation({
               id: parsed.data.id,
               focus: Boolean(action.payload.focus),
-              showToast: action.payload.showToast,
             }),
           );
 
@@ -121,27 +111,6 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           },
         );
       }
-    }
-
-    if (action.payload.showToast) {
-      dispatch(
-        toastsAdd({
-          id: 'mapDetails.tags',
-          messageKey: 'detail',
-          messageLoader: loadObjectsMessages,
-          messageParams: { result: action.payload.result },
-          cancelType: [
-            clearMapFeatures.type,
-            searchSetResults.type,
-            osmLoadNode.type,
-            osmLoadWay.type,
-            osmLoadRelation.type,
-            convertToDrawing.type,
-            selectFeature.type,
-          ],
-          style: 'info',
-        }),
-      );
     }
   },
 };

@@ -18,6 +18,7 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
       editInJosmText="Szerkesztés JOSM-ben"
     />
   ),
+  showDetails: 'Részletek',
   type: 'Típus',
   lowZoomAlert: {
     message: ({ minZoom }) =>

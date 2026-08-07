@@ -3,7 +3,6 @@ import { createAction } from '@reduxjs/toolkit';
 type Detail = {
   id: number;
   focus: boolean;
-  showToast?: boolean;
 };
 
 export const osmLoadNode = createAction<Detail>('OSM_LOAD_NODE');

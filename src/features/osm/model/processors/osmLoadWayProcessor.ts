@@ -15,7 +15,7 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   actionCreator: osmLoadWay,
   handle: async ({ dispatch, getState, action, toastError }) => {
     try {
-      const { id, focus, showToast } = action.payload;
+      const { id, focus } = action.payload;
 
       trackMatomo(['trackEvent', 'Osm', 'view', 'way']);
 
@@ -61,7 +61,6 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
                 ? polygon([coordinates], tags)
                 : lineString(coordinates, tags),
           },
-          showToast: showToast || window.isRobot,
           focus,
         }),
       );

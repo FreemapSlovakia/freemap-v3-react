@@ -28,3 +28,12 @@ export const objectsSetStyle = createAction<{
   selectedIcon: MarkerType;
   color: string;
 }>('OBJECTS_SET_STYLE');
+
+/**
+ * Whether the details toast accompanies the selected feature. The toast is a
+ * view of this preference and the current selection, so this is what both the
+ * selection toolbars' details toggle and the toast's own × switch.
+ */
+export const objectsSetShowDetails = createAction<boolean>(
+  'OBJECTS_SET_SHOW_DETAILS',
+);

@@ -13,6 +13,7 @@ const en: ObjectsMessages = {
       editInJosmText="Edit in JOSM"
     />
   ),
+  showDetails: 'Details',
   type: 'Type',
   lowZoomAlert: {
     message: ({ minZoom }) =>

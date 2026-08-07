@@ -13,6 +13,7 @@ import classes from './Toast.module.css';
 interface Props extends Pick<ResolvedToast, 'id' | 'style' | 'noClose'> {
   actions: (Omit<ToastAction, 'nameKey'> & { name: string })[];
   onAction: (id: string, action?: RootAction | RootAction[]) => void;
+  onClose: (id: string) => void;
   onTimeoutStop: (id: string) => void;
   onTimeoutRestart: (id: string) => void;
   message: ReactNode;
@@ -24,6 +25,7 @@ export function Toast({
   message,
   actions,
   onAction,
+  onClose,
   id,
   style,
   onTimeoutStop,
@@ -56,8 +58,8 @@ export function Toast({
   }, [onTimeoutRestart, id, timeout]);
 
   const handleAlertDismiss = useCallback(() => {
-    onAction(id);
-  }, [onAction, id]);
+    onClose(id);
+  }, [onClose, id]);
 
   const defaultAction = actions.find(({ name }) => !name);
 

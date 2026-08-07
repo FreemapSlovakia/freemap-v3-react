@@ -158,9 +158,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       );
 
       if (result) {
-        // Show the detail toast right away, matching a click on the object on
-        // the map — not only for the WMS results that carry `showToast`.
-        dispatch(searchSelectResult({ result, showToast: true }));
+        dispatch(searchSelectResult({ result }));
       }
 
       setOpen(false);

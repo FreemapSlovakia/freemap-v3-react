@@ -32,6 +32,7 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   convertWithGeometry: 'Mit voller Geometrie',
   showAsLookup: 'Als Fund anzeigen',
   convertAll: 'Alle sichtbaren Objekte in Zeichnung umwandeln',
+  showDetails: 'Details',
   type: 'Typ',
   tooManyPoints: ({ limit }) =>
     `Das Ergebnis wurde auf ${limit} Objekte begrenzt.`,

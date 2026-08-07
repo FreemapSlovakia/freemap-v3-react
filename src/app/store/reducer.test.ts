@@ -169,6 +169,16 @@ describe('selecting a feature', () => {
     expect(s.selection).toEqual({ type: 'search' });
     expect(s.mapTool).toBe('map-details');
   });
+
+  it('clearing the result leaves the selection to whoever cleared it', () => {
+    const s = run(
+      searchSelectResult({ result: {} as SearchResult }),
+      selectFeature(null),
+      searchSelectResult(null),
+    );
+
+    expect(s.selection).toBeNull();
+  });
 });
 
 describe('convertToDrawing', () => {

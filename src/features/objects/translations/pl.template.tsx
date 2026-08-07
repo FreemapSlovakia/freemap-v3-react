@@ -28,6 +28,7 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Pierścień',
     square: 'Kwadrat',
   },
+  showDetails: 'Szczegóły',
   type: 'Typ',
   tooManyPoints: ({ limit }) =>
     `Wynik został ograniczony do ${limit} obiektów.`,

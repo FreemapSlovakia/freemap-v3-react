@@ -37,6 +37,18 @@ export type Toast<T = Messages> = {
     | 'light'
     | 'dark';
   actions?: ToastAction[];
+  /**
+   * Dispatched when the user dismisses the toast with its × — not when it goes
+   * away on `cancelType`, a predicate, or a timeout. A toast that some other
+   * state owns (a preference, a selection) needs the × to reach that owner;
+   * `toastsRemove` can't, being what every automatic dismissal dispatches too.
+   *
+   * Typed as `UnknownAction` rather than `RootAction`: `RootAction` is derived
+   * from every action creator, `toastsAdd` among them, so naming it here from a
+   * plain (non-deferred) property of `Toast` closes the loop and collapses the
+   * whole union to `any`.
+   */
+  onClose?: UnknownAction | UnknownAction[];
   id?: string;
   // Dismissal conditions, combined per `predicatesOperation` (default OR). The
   // `cancelType` action-type match mirrors `cancelActions` on httpRequest.

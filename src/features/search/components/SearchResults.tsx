@@ -161,7 +161,6 @@ export function SearchResults(): ReactElement | null {
       dispatch(
         searchSelectResult({
           result: selectedResult,
-          showToast: true,
           focus: false,
         }),
       );

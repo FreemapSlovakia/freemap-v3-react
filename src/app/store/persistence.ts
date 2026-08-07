@@ -118,6 +118,7 @@ export const PersistedObjectsSettingsSchema = z
   .object({
     selectedIcon: MarkerTypeSchema,
     color: z.string(),
+    showDetails: z.boolean(),
   })
   .partial();
 
@@ -338,7 +339,11 @@ const PERSIST: PersistEntry[] = [
     key: 'objectsSettings',
     schema: PersistedObjectsSettingsSchema,
     initial: objectsSettingsInitialState,
-    persist: (o) => ({ selectedIcon: o.selectedIcon, color: o.color }),
+    persist: (o) => ({
+      selectedIcon: o.selectedIcon,
+      color: o.color,
+      showDetails: o.showDetails,
+    }),
   }),
   defineEntry({
     key: 'routePlanner',

@@ -2,7 +2,7 @@ import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
 import {
   LEGEND_ITEM,
@@ -55,7 +55,10 @@ import {
   dataViewerSetSelectedTrack,
   dataViewerToggleElevationChart,
 } from '../model/actions.js';
-import { trackInfoToast } from '../model/trackInfoToast.js';
+import {
+  TRACK_INFO_TOAST_ID,
+  trackInfoToast,
+} from '../model/trackInfoToast.js';
 import { featureKind } from '../provenance.js';
 import { resolveActiveTrack, trackLineFeatures } from '../trackSelection.js';
 import { loadDataViewerMessages } from '../translations/loadDataViewerMessages.js';
@@ -124,6 +127,12 @@ export function DataViewerMenu(): ReactElement {
 
   const elevationChartActive = useAppSelector(
     (state) => state.elevationChart.target?.type === 'track-viewer',
+  );
+
+  // Read off the toast itself rather than a setting: the info panel is about
+  // the track currently loaded, so wanting it is not a lasting preference.
+  const trackInfoActive = useAppSelector(
+    (state) => TRACK_INFO_TOAST_ID in state.toasts.toasts,
   );
 
   const colorizeTrackBy = useAppSelector(
@@ -426,10 +435,14 @@ export function DataViewerMenu(): ReactElement {
               <Button
                 className="ms-1"
                 variant="secondary"
+                active={trackInfoActive}
+                aria-pressed={trackInfoActive}
                 onClick={() => {
-                  // The info stats depend on elevation, so settle it first when
-                  // some is missing and the user hasn't decided yet.
-                  if (needsElevationDecision) {
+                  if (trackInfoActive) {
+                    dispatch(toastsRemove(TRACK_INFO_TOAST_ID));
+                  } else if (needsElevationDecision) {
+                    // The info stats depend on elevation, so settle it first
+                    // when some is missing and the user hasn't decided yet.
                     dispatch(dataViewerSetElevationPrompt({ type: 'info' }));
                   } else {
                     dispatch(trackInfoToast);

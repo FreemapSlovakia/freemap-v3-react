@@ -55,6 +55,5 @@ export const searchClear = createAction('SEARCH_CLEAR');
 
 export const searchSelectResult = createAction<{
   result: SearchResult;
-  showToast?: boolean;
   focus?: boolean;
 } | null>('SEARCH_SELECT_RESULT');

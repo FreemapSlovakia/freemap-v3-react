@@ -16,7 +16,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   actionCreator: osmLoadRelation,
   handle: async ({ dispatch, getState, action, toastError }) => {
     try {
-      const { id, focus, showToast } = action.payload;
+      const { id, focus } = action.payload;
 
       trackMatomo(['trackEvent', 'Osm', 'view', 'relation']);
 
@@ -110,7 +110,6 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
               properties: tags,
             },
           },
-          showToast: showToast || window.isRobot,
           focus,
         }),
       );

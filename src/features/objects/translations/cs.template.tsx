@@ -18,6 +18,7 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
       editInJosmText="Editovat v JOSM"
     />
   ),
+  showDetails: 'Podrobnosti',
   type: 'Typ',
   lowZoomAlert: {
     message: ({ minZoom }) =>

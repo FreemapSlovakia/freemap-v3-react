@@ -176,10 +176,14 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         id: action.payload.lineIndex,
       };
     })
-    .addCase(searchSelectResult, (state) => {
-      state.selection = {
-        type: 'search',
-      };
+    // Only a result selects: clearing one leaves the selection to whoever
+    // cleared it, so a `search` selection can't outlive the result behind it.
+    .addCase(searchSelectResult, (state, action) => {
+      if (action.payload) {
+        state.selection = {
+          type: 'search',
+        };
+      }
     })
     .addCase(selectFeature, (state, action) => {
       if (

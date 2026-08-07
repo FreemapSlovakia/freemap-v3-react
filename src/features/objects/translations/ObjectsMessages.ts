@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 export type ObjectsMessages = {
   source: string;
   detail: (props: { result: SearchResult }) => JSX.Element;
+  showDetails: string;
   type: string;
   lowZoomAlert: {
     message: (props: { minZoom: number }) => string;

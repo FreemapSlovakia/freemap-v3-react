@@ -151,6 +151,24 @@ export function Toasts(): ReactElement {
     [dispatch],
   );
 
+  const handleClose = useCallback(
+    (id: string) => {
+      const { onClose } = toasts[id] ?? {};
+
+      // Before the removal: an `onClose` that invalidates whatever the toast
+      // was derived from gets to take it down itself, rather than racing a
+      // producer that would see the removal and put it straight back.
+      if (onClose) {
+        for (const a of Array.isArray(onClose) ? onClose : [onClose]) {
+          dispatch(a);
+        }
+      }
+
+      dispatch(toastsRemove(id));
+    },
+    [dispatch, toasts],
+  );
+
   return (
     <div className={classes.toasts}>
       {items.map(
@@ -163,6 +181,7 @@ export function Toasts(): ReactElement {
               style={style}
               noClose={noClose}
               onAction={handleAction}
+              onClose={handleClose}
               actions={actions.map((action) => ({
                 ...action,
                 name: tx(m, action),

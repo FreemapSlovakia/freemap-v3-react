@@ -14,6 +14,7 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
       editInJosmText="Uredi v JOSM"
     />
   ),
+  showDetails: 'Podrobnosti',
   type: 'Tip',
   lowZoomAlert: {
     message: ({ minZoom }) =>

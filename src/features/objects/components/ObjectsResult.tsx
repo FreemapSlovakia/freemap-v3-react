@@ -1,17 +1,6 @@
-import {
-  clearMapFeatures,
-  convertToDrawing,
-  selectFeature,
-} from '@app/store/actions.js';
+import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import {
-  osmLoadNode,
-  osmLoadRelation,
-  osmLoadWay,
-} from '@features/osm/model/osmActions.js';
-import { searchSetResults } from '@features/search/model/actions.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
@@ -30,11 +19,9 @@ import {
   OsmFeatureIdSchema,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
-import { point } from '@turf/helpers';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 
 export function ObjectsResult(): ReactElement | ReactElement[] | null {
   const m = useMessages();
@@ -112,31 +99,6 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
             eventHandlers={{
               click() {
                 dispatch(selectFeature({ type: 'objects', id }));
-
-                dispatch(
-                  toastsAdd({
-                    id: 'mapDetails.tags',
-                    messageKey: 'detail',
-                    messageLoader: loadObjectsMessages,
-                    messageParams: {
-                      result: {
-                        id,
-                        source: 'osm',
-                        geojson: point([coords.lon, coords.lat], tags),
-                      },
-                    },
-                    cancelType: [
-                      clearMapFeatures.type,
-                      searchSetResults.type,
-                      osmLoadNode.type,
-                      osmLoadWay.type,
-                      osmLoadRelation.type,
-                      convertToDrawing.type,
-                      selectFeature.type,
-                    ],
-                    style: 'info',
-                  }),
-                );
               },
             }}
           >
