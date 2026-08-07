@@ -4,9 +4,13 @@ import { mapFitBbox } from '../actions.js';
 
 export const mapFitBboxProcessor: Processor<typeof mapFitBbox> = {
   actionCreator: mapFitBbox,
-  handle: async ({ action }) => {
+  handle: async ({ action, dispatch }) => {
     const { bbox, maxZoom } = action.payload;
 
-    await fitMapToBbox(bbox, maxZoom === undefined ? undefined : { maxZoom });
+    await fitMapToBbox(
+      dispatch,
+      bbox,
+      maxZoom === undefined ? undefined : { maxZoom },
+    );
   },
 };

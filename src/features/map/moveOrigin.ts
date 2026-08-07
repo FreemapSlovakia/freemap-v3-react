@@ -2,7 +2,7 @@
  * Leaflet's `moveend` says the view settled, never who moved it, and the map's
  * center alone can't tell the cases apart — after a user gesture the map is
  * fresh and the store is stale, while mid-animation it is the other way round.
- * These markers give the `moveend` handler the missing half.
+ * This marker gives the `moveend` handler the missing half.
  */
 
 /**
@@ -32,25 +32,4 @@ export function duringProgrammaticMove<T>(fn: () => T): T {
 
 export function isProgrammaticMove(): boolean {
   return programmaticDepth > 0;
-}
-
-/**
- * Marks a move that deliberately takes the user somewhere else — fitting to a
- * search result, a loaded track, a cached map's extent. Unlike the marker
- * above, this one outlives the call that sets it, because `fitBounds` settles
- * asynchronously; the `moveend` handler consumes it. Such a move ends GPS
- * following, which is the one thing an ordinary viewport sync must not do.
- */
-let navigating = false;
-
-export function markMapNavigation(): void {
-  navigating = true;
-}
-
-export function takeMapNavigation(): boolean {
-  const was = navigating;
-
-  navigating = false;
-
-  return was;
 }

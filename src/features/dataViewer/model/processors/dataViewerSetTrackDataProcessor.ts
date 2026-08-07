@@ -7,7 +7,7 @@ export const dataViewerSetTrackDataProcessor: Processor<
   typeof dataViewerSetData
 > = {
   actionCreator: dataViewerSetData,
-  transform: ({ action }) => {
+  transform: ({ action, dispatch }) => {
     const { focus, trackGeojson } = action.payload;
 
     if (focus && trackGeojson) {
@@ -18,7 +18,7 @@ export const dataViewerSetTrackDataProcessor: Processor<
       } catch {}
 
       if (bounds) {
-        fitMapToBbox([bounds[0], bounds[1], bounds[2], bounds[3]]);
+        fitMapToBbox(dispatch, [bounds[0], bounds[1], bounds[2], bounds[3]]);
       }
     }
 

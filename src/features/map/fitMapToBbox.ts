@@ -1,16 +1,31 @@
-import type { FitBoundsOptions } from 'leaflet';
+import type { Dispatch } from '@reduxjs/toolkit';
+import { latLngBounds, point } from 'leaflet';
 import { mapPromise } from './hooks/leafletElementHolder.js';
-import { duringProgrammaticMove, markMapNavigation } from './moveOrigin.js';
+import { mapRefocus } from './model/actions.js';
+
+export interface FitOptions {
+  /** Free space to leave around the extent, in pixels on every side. */
+  padding?: number;
+  maxZoom?: number;
+}
 
 /**
- * Fit the map to a [west, south, east, north] bbox. No-op for a non-finite
- * bbox (empty/invalid geometry yields Infinity/NaN, which makes Leaflet throw
- * "Invalid LatLng") or when the map has been unmounted while awaiting it (its
- * container detached, panes removed — touching it would throw on `_mapPane`).
+ * Point the map at a [west, south, east, north] bbox, through the store: the
+ * view lives there and the map is refocused from it, so a fit that told the map
+ * alone would leave the two disagreeing — the map on the extent, the store and
+ * the URL still on the place before it, ready to pull the map back the next
+ * time anything refocuses.
+ *
+ * No-op for a non-finite bbox (empty/invalid geometry yields Infinity/NaN,
+ * which makes Leaflet throw "Invalid LatLng") or when the map has been
+ * unmounted while awaiting it: a detached container measures zero, and a
+ * viewport of no size fits an extent at no sensible zoom — the answer comes
+ * back as the map's maximum, having passed through a NaN.
  */
 export async function fitMapToBbox(
+  dispatch: Dispatch,
   bbox: [number, number, number, number],
-  options?: FitBoundsOptions,
+  options?: FitOptions,
 ): Promise<void> {
   if (!bbox.every((n) => Number.isFinite(n))) {
     return;
@@ -22,25 +37,30 @@ export async function fitMapToBbox(
     return;
   }
 
-  // Fitting is a jump to something the user asked to see, so it ends GPS
-  // following — marked here rather than at each call site so a new caller
-  // can't quietly inherit the wrong behavior.
-  markMapNavigation();
+  const bounds = latLngBounds([bbox[1], bbox[0]], [bbox[3], bbox[2]]);
 
-  // `fitBounds` reaches `setView`, which opens by ending a running pan in place
-  // — firing `moveend` at an intermediate center the store must not be
-  // refocused onto, or the map would be dragged back there, off the extent
-  // being fitted. Ending that animation here is what the programmatic marker
-  // covers, so the fit itself stays outside it: a fit far enough that Leaflet
-  // skips the animation settles synchronously, and the `moveend` it fires from
-  // inside this call is the only word the store gets on where the map went.
-  duringProgrammaticMove(() => map.stop());
+  // What `fitBounds` works out before handing the view to `setView`: the
+  // largest zoom at which the extent still fits the viewport less the padding
+  // it must keep free on each side, and the middle of the extent measured in
+  // projected pixels at that zoom rather than in degrees, which Mercator would
+  // place a little off center.
+  const padding = options?.padding ?? 0;
 
-  map.fitBounds(
-    [
-      [bbox[1], bbox[0]],
-      [bbox[3], bbox[2]],
-    ],
-    options,
+  const zoom = Math.min(
+    map.getBoundsZoom(bounds, false, point(padding * 2, padding * 2)),
+    options?.maxZoom ?? Number.POSITIVE_INFINITY,
   );
+
+  const { lat, lng } = map.unproject(
+    map
+      .project(bounds.getSouthWest(), zoom)
+      .add(map.project(bounds.getNorthEast(), zoom))
+      .divideBy(2),
+    zoom,
+  );
+
+  // Fitting is a jump to something the user asked to see, so it ends GPS
+  // following — decided here rather than at each call site so a new caller
+  // can't quietly inherit the wrong behavior.
+  dispatch(mapRefocus({ lat, lon: lng, zoom, gpsTracked: false }));
 }

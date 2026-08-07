@@ -44,7 +44,7 @@ export function useMapAreaSelection() {
     // meanwhile, leaving drawing mode with no handle to grab — bring it in view
     // instead of dropping the selection
     if (areaBbox && !hasVisibleHandle(areaBbox, bounds)) {
-      fitMapToBbox(areaBbox, { padding: [40, 40] });
+      fitMapToBbox(dispatch, areaBbox, { padding: 40 });
     }
 
     dispatch(mapAreaSelectStart(areaBbox ?? insetBbox(bounds)));

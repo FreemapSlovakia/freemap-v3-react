@@ -39,10 +39,17 @@ export const mapRefocusProcessor: Processor = {
     ) {
       const fixing = lon !== fixedLon;
 
+      // Only the wrap fix names an animation, to suppress one: it would spin
+      // the map the long way around the world to arrive where it already is.
+      // Everywhere else Leaflet decides, and it declines for anything more than
+      // a screen away — a jump to a searched place or a loaded track lands at
+      // once instead of sliding the whole map pane across the continent.
       duringProgrammaticMove(() =>
-        map.setView([lat, fixedLon], zoom, {
-          animate: !fixing,
-        }),
+        map.setView(
+          [lat, fixedLon],
+          zoom,
+          fixing ? { animate: false } : undefined,
+        ),
       );
 
       if (fixing) {

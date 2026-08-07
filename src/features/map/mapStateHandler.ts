@@ -1,15 +1,11 @@
 import type { MyStore } from '@app/store/store.js';
 import { onMap } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus, mapSetBounds } from './model/actions.js';
-import { isProgrammaticMove, takeMapNavigation } from './moveOrigin.js';
+import { isProgrammaticMove } from './moveOrigin.js';
 
 export function attachMapStateHandler(store: MyStore) {
   // re-binds to every map instance; a max-zoom change recreates the map
   onMap((map) => {
-    // A navigation marked against a torn-down map can never be settled by this
-    // one, and left standing it would be claimed by an unrelated later move.
-    takeMapNavigation();
-
     // Where the map was centered when its current zoom began, so a zoom that
     // shifted the center can be told from one that kept it. Measured against
     // the map's own past rather than the store's center, which while following
@@ -30,10 +26,6 @@ export function attachMapStateHandler(store: MyStore) {
       // the event lands; reading the center would throw on the missing
       // `_mapPane`.
       if (!map.getContainer().isConnected) {
-        // Nothing will settle on a dead map, so a pending marker dies with it
-        // rather than waiting to be claimed by some later move.
-        takeMapNavigation();
-
         return;
       }
 
@@ -49,9 +41,6 @@ export function attachMapStateHandler(store: MyStore) {
       const { lat: newLat, lng: newLon } = map.getCenter();
 
       const newZoom = map.getZoom();
-
-      // Consume these either way — they belong to this settled move.
-      const navigated = takeMapNavigation();
 
       const before = centerBeforeZoom;
 
@@ -80,7 +69,7 @@ export function attachMapStateHandler(store: MyStore) {
           before.lng - delta > newLon ||
           before.lng + delta < newLon);
 
-      if (gpsTracked && !navigated && !zoomedToPoint) {
+      if (gpsTracked && !zoomedToPoint) {
         // GPS owns the center while following, so a map center that disagrees
         // with the store is an app-driven move still on its way there: Leaflet
         // drops a `setView` issued mid zoom-animation, then ends that
@@ -92,7 +81,7 @@ export function attachMapStateHandler(store: MyStore) {
         return;
       }
 
-      if (navigated || zoomChanged || centerMoved) {
+      if (zoomChanged || centerMoved) {
         store.dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
       }
     }

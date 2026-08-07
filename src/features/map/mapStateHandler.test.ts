@@ -1,12 +1,12 @@
 import type { MyStore } from '@app/store/store.js';
-import type { Map as LeafletMap } from 'leaflet';
+import { CRS, type LatLng, type Map as LeafletMap, type Point } from 'leaflet';
 import { describe, expect, it } from 'vitest';
 import { fitMapToBbox } from './fitMapToBbox.js';
 import { setMapLeafletElement } from './hooks/leafletElementHolder.js';
 import { attachMapStateHandler } from './mapStateHandler.js';
 import { mapRefocus } from './model/actions.js';
 import { type MapState, mapInitialState, mapReducer } from './model/reducer.js';
-import { duringProgrammaticMove, markMapNavigation } from './moveOrigin.js';
+import { duringProgrammaticMove } from './moveOrigin.js';
 
 /**
  * Exercises `attachMapStateHandler` against a stand-in for the Leaflet map —
@@ -47,31 +47,13 @@ function makeFakeMap(
       getEast: () => center.lng + 1,
       getNorth: () => center.lat + 1,
     }),
-    // Ending a running pan completes it in place, at a center between where it
-    // started and where it was headed, and reports that as a settled move.
-    stop() {
-      center = { lat: center.lat + AWAY, lng: center.lng + AWAY };
-
-      fire('moveend');
-
-      return map;
-    },
-    // A fit far enough that Leaflet skips the animation: the view changes and
-    // settles inside the call.
-    fitBounds([[south, west], [north, east]]: [
-      [number, number],
-      [number, number],
-    ]) {
-      fire('zoomstart');
-
-      center = { lat: (south + north) / 2, lng: (west + east) / 2 };
-
-      zoom = FIT_ZOOM;
-
-      fire('moveend');
-
-      return map;
-    },
+    // The zoom an extent fits at depends on the viewport, which jsdom gives no
+    // size; the projection either side of it is the real thing.
+    getBoundsZoom: () => FIT_ZOOM,
+    project: (latlng: LatLng, atZoom: number) =>
+      CRS.EPSG3857.latLngToPoint(latlng, atZoom),
+    unproject: (pt: Point, atZoom: number) =>
+      CRS.EPSG3857.pointToLatLng(pt, atZoom),
     on(event: string, fn: () => void) {
       const list = handlers.get(event) ?? [];
 
@@ -116,8 +98,7 @@ const ZOOM = 17;
 // Comfortably past the handler's `5 / 2 ** zoom` threshold at ZOOM.
 const AWAY = 0.001;
 
-// The extent fitted below, and the zoom the map settles on to hold it — far
-// enough from CENTER that no animation could carry the map there.
+// The middle of the extent fitted below, and the zoom it fits at.
 const ELSEWHERE = { lat: 49.06, lng: 20.14 };
 
 const FIT_ZOOM = 12;
@@ -152,9 +133,6 @@ function setup(gpsTracked = false) {
 
   dispatched.length = 0;
 
-  // No `takeMapNavigation()` here on purpose — attaching the map is what has to
-  // clear a marker left over from the previous one, and a test below relies on
-  // that being this function's doing rather than the harness's.
   const fake = makeFakeMap({ ...CENTER }, ZOOM);
 
   setMapLeafletElement(null);
@@ -294,65 +272,24 @@ describe('attachMapStateHandler — moveend while GPS following', () => {
 
     expect(mapState.gpsTracked).toBe(true);
   });
-
-  it('stops following when the app navigates elsewhere', () => {
-    const { moveTo, fire, refocuses } = setup(true);
-
-    // What `fitMapToBbox` marks before handing the map a new extent.
-    markMapNavigation();
-
-    moveTo(CENTER.lat + AWAY, CENTER.lng + AWAY);
-
-    fire('moveend');
-
-    expect(refocuses()[0].payload).toEqual({
-      lat: CENTER.lat + AWAY,
-      lon: CENTER.lng + AWAY,
-      zoom: ZOOM,
-    });
-    expect(mapState.gpsTracked).toBe(false);
-  });
 });
 
 /**
- * The navigation marker outlives the call that sets it, so what it must never
- * do is sit around waiting to be claimed by some unrelated later move — which
- * would end GPS following at an arbitrary moment.
+ * A `moveend` can land after the map is gone: Leaflet debounces the one a
+ * container resize produces by 200 ms, and by then an unmount has detached the
+ * container and removed the panes, so reading the center would throw.
  */
-describe('attachMapStateHandler — a navigation that never settles', () => {
-  it('dies with the map it was marked against', () => {
-    const { setConnected, moveTo, fire } = setup(true);
+describe('attachMapStateHandler — moveend on a map that is gone', () => {
+  it('ignores it instead of reading the dead map', () => {
+    const { setConnected, moveTo, fire, refocuses } = setup();
 
-    markMapNavigation();
-
-    // Leaflet debounces a resize `moveend` by 200 ms, so it can land after the
-    // map is gone — the one path that returns without settling anything.
     setConnected(false);
 
-    fire('moveend');
-
-    setConnected(true);
-
     moveTo(CENTER.lat + AWAY, CENTER.lng + AWAY);
 
     fire('moveend');
 
-    expect(mapState.gpsTracked).toBe(true);
-  });
-
-  it('does not carry over to the next map instance', () => {
-    setup(true);
-
-    markMapNavigation();
-
-    // A max-zoom change recreates the map, stranding the marker on the old one.
-    const { moveTo, fire } = setup(true);
-
-    moveTo(CENTER.lat + AWAY, CENTER.lng + AWAY);
-
-    fire('moveend');
-
-    expect(mapState.gpsTracked).toBe(true);
+    expect(refocuses()).toHaveLength(0);
   });
 });
 
@@ -382,36 +319,56 @@ describe('attachMapStateHandler — moveend while not following', () => {
 });
 
 /**
- * A fit is the one app-driven move the store doesn't already know about, so its
- * settled view has to reach the slice — otherwise the next thing that refocuses
- * from the store (the zoom buttons, an arrow key) takes the map back to where
- * it was before the fit.
+ * A fit points the map at an extent through the store, so what it must leave
+ * behind is a slice that names that extent — anything that refocuses from the
+ * store afterwards (the zoom buttons, an arrow key, the URL) reads it back.
  */
 describe('fitMapToBbox', () => {
-  it('syncs the store to a fit that settles inside the call', async () => {
+  it('refocuses the store onto the fitted extent', async () => {
     const { refocuses } = setup(true);
 
-    await fitMapToBbox([
+    await fitMapToBbox(store.dispatch, [
       ELSEWHERE.lng - 0.1,
       ELSEWHERE.lat - 0.1,
       ELSEWHERE.lng + 0.1,
       ELSEWHERE.lat + 0.1,
     ]);
 
-    // One refocus, and it names the fitted extent: the `moveend` that ending
-    // the interrupted pan fired, at a center the map merely passed through, is
-    // not among them.
     expect(refocuses()).toHaveLength(1);
-    expect(refocuses()[0].payload).toEqual({
-      lat: ELSEWHERE.lat,
-      lon: ELSEWHERE.lng,
-      zoom: FIT_ZOOM,
-    });
-    expect(mapState).toMatchObject({
-      lat: ELSEWHERE.lat,
-      lon: ELSEWHERE.lng,
-      zoom: FIT_ZOOM,
-      gpsTracked: false,
-    });
+
+    const { lat, lon, zoom, gpsTracked } = refocuses()[0].payload as {
+      lat: number;
+      lon: number;
+      zoom: number;
+      gpsTracked: boolean;
+    };
+
+    expect(lon).toBeCloseTo(ELSEWHERE.lng, 9);
+    // The middle of the extent in projected pixels, which Mercator puts a few
+    // metres poleward of the middle of its latitudes.
+    expect(lat).toBeCloseTo(ELSEWHERE.lat, 3);
+    expect(zoom).toBe(FIT_ZOOM);
+    // A fit is a jump to something the user asked to see, so it ends following.
+    expect(gpsTracked).toBe(false);
+    expect(mapState.gpsTracked).toBe(false);
+  });
+
+  it('holds the fit to the zoom ceiling the caller named', async () => {
+    const { refocuses } = setup();
+
+    await fitMapToBbox(
+      store.dispatch,
+      [
+        ELSEWHERE.lng - 0.001,
+        ELSEWHERE.lat - 0.001,
+        ELSEWHERE.lng + 0.001,
+        ELSEWHERE.lat + 0.001,
+      ],
+      { maxZoom: FIT_ZOOM - 3 },
+    );
+
+    expect((refocuses()[0].payload as { zoom: number }).zoom).toBe(
+      FIT_ZOOM - 3,
+    );
   });
 });

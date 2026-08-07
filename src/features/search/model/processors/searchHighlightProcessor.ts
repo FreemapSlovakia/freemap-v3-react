@@ -108,14 +108,18 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       if (bounds) {
         const { layers } = getState().map;
 
-        await fitMapToBbox([bounds[0], bounds[1], bounds[2], bounds[3]], {
-          maxZoom: Math.min(
-            action.payload.result.zoom ?? 18,
-            integratedLayerDefs
-              .filter(isBaseLayerDef)
-              .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
-          ),
-        });
+        await fitMapToBbox(
+          dispatch,
+          [bounds[0], bounds[1], bounds[2], bounds[3]],
+          {
+            maxZoom: Math.min(
+              action.payload.result.zoom ?? 18,
+              integratedLayerDefs
+                .filter(isBaseLayerDef)
+                .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
+            ),
+          },
+        );
       }
     }
 
