@@ -16,6 +16,7 @@ import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Radio } from '@shared/components/Radio.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -53,8 +54,6 @@ import {
   FaGem,
   FaHistory,
   FaLayerGroup,
-  FaRegCheckCircle,
-  FaRegCircle,
   FaRegMap,
   FaSearchPlus,
 } from 'react-icons/fa';
@@ -434,12 +433,12 @@ export function MapSwitchButton(): ReactElement {
               active={active}
               // className={clsx(showInMenu || 'text-secondary')}
             >
+              {/* base layers are mutually exclusive (radio), overlays stack
+                  (checkbox) */}
               {def.layer === 'base' ? (
-                <Checkbox value={active} />
-              ) : active ? (
-                <FaRegCheckCircle />
+                <Radio value={active} />
               ) : (
-                <FaRegCircle />
+                <Checkbox value={active} />
               )}
 
               <span className="px-2">
