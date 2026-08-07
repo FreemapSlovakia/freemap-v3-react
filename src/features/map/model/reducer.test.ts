@@ -119,14 +119,25 @@ describe('mapReducer — mapRefocus', () => {
     expect(next.layers).toEqual(mapInitialState.layers);
   });
 
-  it('ignores zoom 0 (falsy guard) but accepts lat/lon 0', () => {
+  it('accepts zoom 0 along with lat/lon 0', () => {
     const state = { ...mapInitialState, zoom: 8 };
 
     const next = mapReducer(state, mapRefocus({ lat: 0, lon: 0, zoom: 0 }));
 
-    expect(next.zoom).toBe(8); // zoom 0 skipped by `if (zoom)`
-    expect(next.lat).toBe(0); // lat/lon use `!== undefined`
+    // The whole world at once: layers that go down to zoom 0 make it a view
+    // the `-` button and a fit to a world-spanning extent can both land on.
+    expect(next.zoom).toBe(0);
+    expect(next.lat).toBe(0);
     expect(next.lon).toBe(0);
+  });
+
+  it('keeps the zoom when asked for one that is not a number', () => {
+    const state = { ...mapInitialState, zoom: 8 };
+
+    // What a missing or malformed `data-refocus-zoom` reads back as.
+    const next = mapReducer(state, mapRefocus({ zoom: Number(undefined) }));
+
+    expect(next.zoom).toBe(8);
   });
 
   it('coerces gpsTracked to false when lat+lon are given without the flag', () => {

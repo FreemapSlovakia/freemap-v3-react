@@ -150,7 +150,11 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(
       mapRefocus,
       (state, { payload: { zoom, lat, lon, layers, gpsTracked } }) => {
-        if (zoom) {
+        // Zoom 0 is a zoom like any other — the world layers go down to it, so
+        // the `-` button, the `-` key and a fit to a world-spanning extent all
+        // ask for it. Finite, because one caller reads its zoom off a DOM
+        // dataset attribute.
+        if (zoom !== undefined && Number.isFinite(zoom)) {
           state.zoom = zoom;
         }
 
