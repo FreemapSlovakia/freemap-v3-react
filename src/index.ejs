@@ -181,12 +181,60 @@
         const u = '//matomo.freemap.sk/';
         _paq.push(['setTrackerUrl', u + 'matomo.php']);
         _paq.push(['setSiteId', '<%= process.env["MATOMO_SITE_ID"] %>']);
-        const d = document,
-          g = d.createElement('script'),
-          s = d.getElementsByTagName('script')[0];
-        g.async = true;
-        g.src = u + 'matomo.js';
-        s.parentNode.insertBefore(g, s);
+
+        /*
+         * The tracker is fetched only once the visit looks human: on the first
+         * real input, or after DWELL_SECONDS with the page visible. Until then
+         * `_paq` is a plain array, so every command pushed meanwhile is queued
+         * and replayed in order the moment the tracker loads — no call site
+         * needs to know about the gate, and nothing is lost.
+         *
+         * What this drops is the drive-by that renders the page, emits a
+         * pageview plus a few events and leaves within seconds without ever
+         * touching it: no request reaches Matomo at all, so it costs no visit,
+         * no goal conversion and no ad impression.
+         *
+         * The dwell fallback keeps the visitor who only reads the map, at the
+         * price of being bypassable by simply waiting — hence a threshold far
+         * above how long such traffic currently stays.
+         */
+        const DWELL_SECONDS = 60;
+
+        const inputs = [
+          'pointerdown',
+          'pointermove',
+          'touchstart',
+          'keydown',
+          'wheel',
+          'scroll',
+        ];
+
+        let dwell = 0;
+
+        const ticker = window.setInterval(function () {
+          if (document.visibilityState === 'visible' && ++dwell >= DWELL_SECONDS) {
+            load();
+          }
+        }, 1000);
+
+        function load() {
+          window.clearInterval(ticker);
+
+          for (const input of inputs) {
+            window.removeEventListener(input, load, true);
+          }
+
+          const d = document,
+            g = d.createElement('script'),
+            s = d.getElementsByTagName('script')[0];
+          g.async = true;
+          g.src = u + 'matomo.js';
+          s.parentNode.insertBefore(g, s);
+        }
+
+        for (const input of inputs) {
+          window.addEventListener(input, load, { capture: true, passive: true });
+        }
       })();
     </script>
     <% } else { %>
