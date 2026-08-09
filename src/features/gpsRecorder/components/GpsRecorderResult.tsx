@@ -1,7 +1,8 @@
 import { openTool } from '@app/store/actions.js';
+import { useMap } from '@features/map/hooks/useMap.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback, useMemo } from 'react';
-import { CircleMarker, Polyline } from 'react-leaflet';
+import { type ReactElement, useCallback, useEffect, useMemo } from 'react';
+import { CircleMarker, Pane, Polyline } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { useRecorderLocationFeed } from '../hooks/useRecorderLocationFeed.js';
 import { useRecorderWakeLock } from '../hooks/useRecorderWakeLock.js';
@@ -9,6 +10,9 @@ import {
   selectLatestRecorderPoint,
   selectRecorderSegments,
 } from '../model/selectors.js';
+
+// Above every other path pane (400–450), below `markerPane` (600).
+const paneName = 'fm-gps-recorder';
 
 /**
  * The recording's presence on this page: the live track, and the two things that
@@ -54,12 +58,27 @@ export default function GpsRecorderResult(): ReactElement | null {
 
   const handlers = useMemo(() => ({ click: handleClick }), [handleClick]);
 
+  const map = useMap();
+
+  // The interactive-overlay opacity dims the default panes; ours needs it too.
+  const opacity = useAppSelector(
+    (state) => state.map.layersSettings['i']?.opacity ?? 1,
+  );
+
+  useEffect(() => {
+    const pane = map?.getPane(paneName);
+
+    if (pane) {
+      pane.style.opacity = String(opacity);
+    }
+  }, [map, opacity]);
+
   if (positions.length === 0 && !latest) {
     return null;
   }
 
   return (
-    <>
+    <Pane name={paneName} style={{ zIndex: 500, opacity }}>
       {positions.map((segment, i) => (
         <Polyline
           key={i}
@@ -81,6 +100,6 @@ export default function GpsRecorderResult(): ReactElement | null {
           eventHandlers={handlers}
         />
       )}
-    </>
+    </Pane>
   );
 }
