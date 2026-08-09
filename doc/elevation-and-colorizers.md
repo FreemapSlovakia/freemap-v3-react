@@ -254,10 +254,18 @@ feature being charted knows what sampled it:
   measurement no terrain model answered for, credited to nobody.
 
 `useElevationSources(provenance, reported)` turns the two together into the defs the chart
-links under its toolbar (with a `PremiumGem` for non-premium users) and `ElevationInfo`
-names in its gem's tooltip. A point readout is always `terrain-model` — which is why
+links under its toolbar (with a `PremiumGem` for non-premium users) and `ElevationValue`
+names in its ⓘ tooltip. A point readout is always `terrain-model` — which is why
 `measurementProcessor` reads it through `fetchElevations` rather than its own request, so
 the model the tooltip credits is the one that answered.
+
+`ElevationValue` (`src/features/elevationChart/components/`) is that readout — spinner,
+em dash for no data, or the value with its source tooltip and premium gem. Two toasts show
+it: `ElevationInfo` (the measurement readout, which adds coordinates and tile links) and
+the search/objects details toast, whose `objectDetailsProcessor` reads one point of the
+selected feature once the details are already on screen — a line at its midpoint, anything
+else at the centre of its geometry — and drops the line rather than raising an error when
+the read fails or the feature carries no geometry at all.
 
 #### The `?sources=1` contract
 

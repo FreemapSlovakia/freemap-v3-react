@@ -10,14 +10,15 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Styl značky objektu',
   },
   source: 'Zdroj',
-  detail: ({ result }) => (
+  detail: (props) => (
     <ObjectDetails
-      result={result}
+      {...props}
       openText="Otevřít na OpenStreetMap.org"
       historyText="historie"
       editInJosmText="Editovat v JOSM"
     />
   ),
+  elevation: 'Nadmořská výška',
   showDetails: 'Podrobnosti',
   type: 'Typ',
   lowZoomAlert: {

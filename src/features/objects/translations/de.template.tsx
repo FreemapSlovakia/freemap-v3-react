@@ -10,14 +10,15 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Markierungsstil der Objekte',
   },
   source: 'Quelle',
-  detail: ({ result }) => (
+  detail: (props) => (
     <ObjectDetails
-      result={result}
+      {...props}
       openText="Öffnen auf OpenStreetMap.org"
       historyText="Verlauf"
       editInJosmText="Bearbeiten in JOSM"
     />
   ),
+  elevation: 'Höhe',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Um Objekte nach Typ anzuzeigen, müssen Sie mindestens auf Zoomstufe ${minZoom} heranzoomen.`,

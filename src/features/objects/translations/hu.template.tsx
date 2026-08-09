@@ -10,14 +10,15 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Objektum jelölőjének stílusa',
   },
   source: 'Forrás',
-  detail: ({ result }) => (
+  detail: (props) => (
     <ObjectDetails
-      result={result}
+      {...props}
       openText="Megnyitás az OpenStreetMap.org oldalon"
       historyText="előzmények"
       editInJosmText="Szerkesztés JOSM-ben"
     />
   ),
+  elevation: 'Magasság',
   showDetails: 'Részletek',
   type: 'Típus',
   lowZoomAlert: {

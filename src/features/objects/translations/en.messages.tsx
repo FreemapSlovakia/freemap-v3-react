@@ -5,14 +5,15 @@ import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const en: ObjectsMessages = {
   source: 'Source',
-  detail: ({ result }) => (
+  detail: (props) => (
     <ObjectDetails
-      result={result}
+      {...props}
       openText="Open at OpenStreetMap.org"
       historyText="history"
       editInJosmText="Edit in JOSM"
     />
   ),
+  elevation: 'Elevation',
   showDetails: 'Details',
   type: 'Type',
   lowZoomAlert: {

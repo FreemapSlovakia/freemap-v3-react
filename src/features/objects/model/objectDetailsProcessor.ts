@@ -1,12 +1,24 @@
+import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import type { SearchResult } from '@features/search/model/actions.js';
+import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
+import {
+  type SearchResult,
+  searchSelectResult,
+} from '@features/search/model/actions.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
+import { fetchElevations } from '@shared/elevation.js';
+import { lineSegments } from '@shared/geoutils.js';
+import type { LatLon } from '@shared/types/common.js';
 import {
   featureIdsEqual,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
-import { point } from '@turf/helpers';
+import { along } from '@turf/along';
+import { center } from '@turf/center';
+import { lineString, point } from '@turf/helpers';
+import { length } from '@turf/length';
+import type { Feature, Point } from 'geojson';
 import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 import { objectsSetShowDetails } from './actions.js';
 
@@ -22,6 +34,46 @@ type DetailsTarget = {
   key: string;
   result: SearchResult;
 };
+
+/**
+ * Where a result's elevation is read: the midpoint of its longest segment for a
+ * line, whose bbox centre can sit well off it (a bend, a horseshoe), and the
+ * centre of the geometry otherwise. `null` for a result carrying no geometry to
+ * read at — a Nominatim hit without one, an empty collection — which turf
+ * answers with a throw rather than a value.
+ */
+function resultCoords(result: SearchResult): LatLon | null {
+  const geometry =
+    result.geojson.type === 'Feature' ? result.geojson.geometry : null;
+
+  let p: Feature<Point>;
+
+  try {
+    if (
+      geometry?.type === 'LineString' ||
+      geometry?.type === 'MultiLineString'
+    ) {
+      const line = lineSegments(geometry)
+        .filter((coords) => coords.length > 1)
+        .map((coords) => lineString(coords))
+        .reduce((longest, candidate) =>
+          length(candidate) > length(longest) ? candidate : longest,
+        );
+
+      p = along(line, length(line) / 2);
+    } else {
+      p = center(result.geojson);
+    }
+  } catch {
+    return null;
+  }
+
+  const [lon, lat] = p.geometry.coordinates;
+
+  return Number.isFinite(lon) && Number.isFinite(lat)
+    ? { lat: lat!, lon: lon! }
+    : null;
+}
 
 /** What the details toast is about, or `null` if the selection has no details. */
 function detailsTarget(state: RootState): DetailsTarget | null {
@@ -90,17 +142,66 @@ export const objectDetailsProcessor: Processor = {
       return;
     }
 
-    dispatch(
-      toastsAdd({
-        id: TOAST_ID,
-        messageKey: 'detail',
-        messageLoader: loadObjectsMessages,
-        messageParams: { result: target.result },
-        // An embed has no selection toolbar, so nothing there could switch the
-        // preference back on — its × dismisses the toast and no more.
-        onClose: window.fmEmbedded ? undefined : objectsSetShowDetails(false),
-        style: 'info',
-      }),
-    );
+    const show = (elevation: ElevationReading) =>
+      dispatch(
+        toastsAdd({
+          id: TOAST_ID,
+          messageKey: 'detail',
+          messageLoader: loadObjectsMessages,
+          messageParams: { result: target.result, elevation },
+          // An embed has no selection toolbar, so nothing there could switch the
+          // preference back on — its × dismisses the toast and no more.
+          onClose: window.fmEmbedded ? undefined : objectsSetShowDetails(false),
+          style: 'info',
+        }),
+      );
+
+    // Only once the subject is known to have changed — walking the geometry of
+    // every selected feature on every dispatched action would be work for
+    // nothing.
+    const coords = resultCoords(target.result);
+
+    // The details show at once; the elevation reads separately and lands in the
+    // same toast, so a slow API doesn't hold the tags back.
+    show({ elevation: undefined, loading: coords !== null, sources: [] });
+
+    if (!coords) {
+      return;
+    }
+
+    const sources = new Set<string>();
+
+    let elevation: number | null | undefined;
+
+    try {
+      [elevation] = await fetchElevations(
+        [[coords.lat, coords.lon]],
+        getState,
+        [clearMapFeatures, selectFeature, searchSelectResult],
+        sources,
+      );
+    } catch (err) {
+      // An abort means something newer is already on its way (or the features
+      // were cleared) — leave the toast to whatever caused it.
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+
+      // The details themselves stand without it, so a failed read just drops
+      // the line instead of toasting an error over them.
+      elevation = undefined;
+    }
+
+    // The subject can have moved on — or the toast be dismissed — while the read
+    // was in flight; re-adding it then would describe something else, or bring
+    // back what the user just closed.
+    if (
+      wantedTarget(getState())?.key !== target.key ||
+      !getState().toasts.toasts[TOAST_ID]
+    ) {
+      return;
+    }
+
+    show({ elevation, loading: false, sources: [...sources] });
   },
 };

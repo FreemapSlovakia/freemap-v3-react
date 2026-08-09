@@ -10,14 +10,15 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Stile marcatore oggetto',
   },
   source: 'Fonte',
-  detail: ({ result }) => (
+  detail: (props) => (
     <ObjectDetails
-      result={result}
+      {...props}
       openText="Apri su OpenStreetMap.org"
       historyText="storia"
       editInJosmText="Modifica su JOSM"
     />
   ),
+  elevation: 'Elevazione',
   showDetails: 'Dettagli',
   type: 'Tipo',
   lowZoomAlert: {

@@ -5,14 +5,15 @@ import { ObjectDetails } from '../components/ObjectDetails.js';
 import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
-  detail: ({ result }) => (
+  detail: (props) => (
     <ObjectDetails
-      result={result}
+      {...props}
       openText="Ouvrir sur OpenStreetMap.org"
       historyText="historique"
       editInJosmText="Modifier dans JOSM"
     />
   ),
+  elevation: 'Altitude',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Pour voir les objets par type, vous devez zoomer jusqu’au niveau ${minZoom} au moins.`,

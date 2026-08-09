@@ -6,14 +6,15 @@ import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Zdroj',
-  detail: ({ result }) => (
+  detail: (props) => (
     <ObjectDetails
-      result={result}
+      {...props}
       openText="Otvoriť na OpenStreetMap.org"
       historyText="história"
       editInJosmText="Editovať v JOSM"
     />
   ),
+  elevation: 'Nadmorská výška',
   showDetails: 'Podrobnosti',
   type: 'Typ',
   lowZoomAlert: {

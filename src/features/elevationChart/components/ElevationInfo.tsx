@@ -1,14 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { PremiumGem } from '@features/premium/components/PremiumGem.js';
-import { isPremium } from '@features/premium/premium.js';
-import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { pointToTile } from '@mapbox/tilebelt';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
-import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import {
   type IsTileLayerDef,
@@ -17,26 +12,13 @@ import {
 } from '@shared/mapDefinitions.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Fragment, useCallback, useMemo } from 'react';
-import { Alert, Button, Form, InputGroup, Spinner } from 'react-bootstrap';
-import { FaInfoCircle } from 'react-icons/fa';
+import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
-import {
-  elevationSourceNames,
-  useElevationSources,
-} from '../hooks/useElevationSources.js';
-import { useElevationChartMessages } from '../translations/useElevationChartMessages.js';
+import { type ElevationReading, ElevationValue } from './ElevationValue.js';
 
-export type ElevationInfoBaseProps = {
-  elevation: number | null | undefined;
+export type ElevationInfoBaseProps = ElevationReading & {
   point: LatLon;
-  loading: boolean;
-  /**
-   * Terrain-model tokens the elevation API reported for this point — see
-   * `elevationSourcesFromTokens`. Empty until the readout arrives, or when the
-   * API names none.
-   */
-  sources: string[];
 };
 
 export type ElevationInfoProps = ElevationInfoBaseProps & {
@@ -59,11 +41,6 @@ export function ElevationInfo({
   tileMessage,
   maslMessage,
 }: ElevationInfoProps) {
-  const nf01 = useNumberFormat({
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 1,
-  });
-
   const zoom = useAppSelector((state) => state.map.zoom);
 
   const [x, y] = pointToTile(point.lon, point.lat, zoom);
@@ -94,23 +71,6 @@ export function ElevationInfo({
   }
 
   const m = useMessages();
-
-  const ecm = useElevationChartMessages();
-
-  const prm = usePremiumMessages();
-
-  const premium = useAppSelector((state) => isPremium(state.auth.user));
-
-  // A point readout always comes from the elevation API, so it names the terrain
-  // model behind the number. Its own icon, not the gem's tooltip: the two say
-  // different things — what this reading came from, and what premium would read
-  // it from instead.
-  const sources = useElevationSources('terrain-model', reportedSources);
-
-  const sourceNames = elevationSourceNames(sources);
-
-  const sourceHint =
-    ecm && sourceNames ? `${ecm.elevationSource}: ${sourceNames}` : undefined;
 
   const layers = useAppSelector((state) => state.map.layers);
 
@@ -153,35 +113,12 @@ export function ElevationInfo({
 
   return (
     <>
-      {loading ? (
-        <div>
-          {maslMessage}: <Spinner animation="border" size="sm" />
-        </div>
-      ) : elevation === undefined ? null : elevation === null ? (
-        <div>
-          {maslMessage}: <span className="text-muted">—</span>
-        </div>
-      ) : (
-        <div>
-          {maslMessage}: <b>{nf01.format(elevation)}</b>&nbsp;{m?.general.masl}
-          {sourceHint && (
-            <LongPressTooltip label={sourceHint}>
-              {({ props }) => (
-                <span
-                  className="ms-1 text-body-secondary fm-cursor-help"
-                  {...props}
-                >
-                  <FaInfoCircle />
-                </span>
-              )}
-            </LongPressTooltip>
-          )}
-          <PremiumGem
-            className="ms-1"
-            hint={premium ? undefined : prm?.higherPrecisionElevation}
-          />
-        </div>
-      )}
+      <ElevationValue
+        elevation={elevation}
+        loading={loading}
+        sources={reportedSources}
+        label={maslMessage}
+      />
 
       <InputGroup size="sm" className="my-2">
         <Form.Control readOnly className="fm-fs-content" value={coordinates} />

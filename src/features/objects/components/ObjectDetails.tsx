@@ -1,3 +1,7 @@
+import {
+  type ElevationReading,
+  ElevationValue,
+} from '@features/elevationChart/components/ElevationValue.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
@@ -17,6 +21,7 @@ import { SourceName } from './SourceName.js';
 
 type Props = {
   result: SearchResult;
+  elevation: ElevationReading;
   openText: string;
   historyText: string;
   editInJosmText: string;
@@ -24,6 +29,7 @@ type Props = {
 
 export function ObjectDetails({
   result,
+  elevation,
   openText,
   historyText,
   editInJosmText,
@@ -159,6 +165,8 @@ export function ObjectDetails({
         ))}
         {genericName} {displayName && <i>{displayName}</i>}
       </p>
+
+      <ElevationValue {...elevation} label={om?.elevation} className="mb-3" />
 
       {parsedId.success && (
         <p>

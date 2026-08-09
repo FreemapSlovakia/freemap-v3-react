@@ -1,9 +1,14 @@
+import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import type { JSX } from 'react';
 
 export type ObjectsMessages = {
   source: string;
-  detail: (props: { result: SearchResult }) => JSX.Element;
+  detail: (props: {
+    result: SearchResult;
+    elevation: ElevationReading;
+  }) => JSX.Element;
+  elevation: string;
   showDetails: string;
   type: string;
   lowZoomAlert: {
