@@ -11,6 +11,16 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Zmazať záznam',
   settings: 'Nastavenia záznamu',
   details: 'Podrobnosti záznamu',
+  recordInBrowser: 'Nahrávať v tomto prehliadači',
+  browserBadge: 'V tomto prehliadači',
+  browserWarning:
+    'Nahráva sa v tomto prehliadači. Nahrávanie sa zastaví, keď sa uzamkne ' +
+    'obrazovka alebo opustíte túto stránku, takže ich nechajte otvorené počas ' +
+    'celej cesty.',
+  browserNoStorage:
+    'Nahráva sa v tomto prehliadači, ale záznam sa v ňom neuloží — obnovením ' +
+    'alebo zatvorením tejto stránky oň prídete. Ak si ho chcete ponechať, ' +
+    'ukončite nahrávanie.',
   state: {
     recording: 'Nahráva sa',
     stopped: 'Zastavené',
@@ -101,16 +111,33 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
       'spustite nahrávanie v ňom, alebo mu povoľte bežať bez obmedzení ' +
       'batérie, aby sa dal spustiť odtiaľto.',
     outdated: 'Zaznamenávač je pre túto verziu mapy príliš starý.',
+    locationDenied:
+      'Táto stránka nemá povolený prístup k vašej polohe. Povoľte jej ho v ' +
+      'nastaveniach prehliadača a spustite nahrávanie znova.',
+    locationUnavailable: 'Tento prehliadač nedokáže zistiť vašu polohu.',
     http: 'Zaznamenávač odpovedal chybou.',
     protocol: 'Zaznamenávač odpovedal niečím neočakávaným.',
     unknown: 'Komunikácia so zaznamenávačom zlyhala.',
   },
   settingsModal: {
     title: 'Nastavenia záznamu',
+    backend: 'Nahrávať pomocou',
+    backendApp: 'Aplikácie zaznamenávača',
+    backendBrowser: 'Tohto prehliadača',
+    backendHint:
+      'Aplikácia nahráva aj pri vypnutej obrazovke a pri každom meraní zisťuje ' +
+      'nadmorskú výšku. Tento prehliadač potrebuje otvorenú stránku a zapnutú ' +
+      'obrazovku, nevyžaduje však inštaláciu.',
+    backendLockedHint:
+      'Počas nahrávania sa nedá zmeniť. Najprv ho pozastavte alebo ukončite.',
     recorderSection: 'Čo sa zaznamenáva',
     recorderIntro:
       'Zaznamenávač ich uplatní pri spustení nahrávania, takže ich zmena ' +
       'neovplyvní už bežiaci záznam.',
+    browserIntro:
+      'Uplatnia sa pri spustení nahrávania, takže ich zmena neovplyvní už ' +
+      'bežiaci záznam. Prehliadač si sám určuje, ako často hlási polohu, takže ' +
+      'sú to skôr obmedzenia než pokyny.',
     intervalMs: 'Čas medzi meraniami',
     minDistanceM: 'Minimálna vzdialenosť medzi meraniami',
     maxAccuracyM: 'Zahodiť merania s presnosťou horšou ako',

@@ -178,6 +178,7 @@ export const PersistedTrackingSettingsSchema = z
 export const PersistedGpsRecorderSettingsSchema = z
   .object({
     ...RecorderConfigSchema.shape,
+    backend: z.enum(['app', 'browser']),
     splitGapS: z.number().nonnegative(),
     feedLocation: z.boolean(),
     keepScreenAwake: z.boolean(),
@@ -410,6 +411,7 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedGpsRecorderSettingsSchema,
     initial: gpsRecorderSettingsInitialState,
     persist: (g) => ({
+      backend: g.backend,
       intervalMs: g.intervalMs,
       minDistanceM: g.minDistanceM,
       maxAccuracyM: g.maxAccuracyM,

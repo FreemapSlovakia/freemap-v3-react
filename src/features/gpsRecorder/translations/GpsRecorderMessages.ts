@@ -13,6 +13,14 @@ export type GpsRecorderMessages = {
   update: string;
   delete: string;
   settings: string;
+  /** Falls back to recording in this page, offered when the app didn't answer. */
+  recordInBrowser: string;
+  /** Says which engine is recording, where both were possible. */
+  browserBadge: string;
+  /** What browser recording costs, said once at the start of a ride. */
+  browserWarning: string;
+  /** Said instead when this browser will not store the ride at all. */
+  browserNoStorage: string;
   /** Opens the readout dropdown; the summary in it is the visible label. */
   details: string;
   state: {
@@ -75,14 +83,25 @@ export type GpsRecorderMessages = {
     notStored: string;
     incomplete: string;
     outdated: string;
+    locationDenied: string;
+    locationUnavailable: string;
     http: string;
     protocol: string;
     unknown: string;
   };
   settingsModal: {
     title: string;
+    /** The engine choice; shown only where the recorder app could be installed. */
+    backend: string;
+    backendApp: string;
+    backendBrowser: string;
+    backendHint: string;
+    /** Shown in its place while a recording is running and the choice is locked. */
+    backendLockedHint: string;
     recorderSection: string;
     recorderIntro: string;
+    /** Replaces `recorderIntro` when this page is what records. */
+    browserIntro: string;
     intervalMs: string;
     minDistanceM: string;
     maxAccuracyM: string;

@@ -1,6 +1,6 @@
 import type { ProfileResolver } from '@features/elevationChart/model/resolve.js';
 import { selectRecorderSegments } from './model/selectors.js';
-import { gpsRecorderPlatformSupported } from './support.js';
+import { gpsRecorderAvailableSelector } from './support.js';
 import { recorderSegmentsToProfileFeature } from './trackGeojson.js';
 
 /**
@@ -30,10 +30,14 @@ const resolve: ProfileResolver = async (getState) => {
     // reload restores this target from the URL while the whole track is still
     // being refetched — may all yet supply one. Only an empty track the
     // recorder has already reported on has been deleted or handed over, and on
-    // a platform the recorder cannot run on nothing is coming either.
+    // a platform that can record by neither route nothing is coming either.
+    //
+    // The gate is the tool's own availability, not the recorder app's platform:
+    // where the browser records, a reload with this chart open reaches here with
+    // no status yet and is exactly the case the branch exists for.
     return state.gpsRecorder.points.length > 0 ||
       state.gpsRecorder.status?.recording ||
-      (state.gpsRecorder.status === null && gpsRecorderPlatformSupported)
+      (state.gpsRecorder.status === null && gpsRecorderAvailableSelector())
       ? { status: 'pending' }
       : { status: 'gone' };
   }
