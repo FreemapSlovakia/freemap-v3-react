@@ -34,7 +34,7 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   start: 'Štart',
   finish: 'Cieľ',
-  stop: 'Zasávka',
+  stop: 'Zastávka',
   swap: 'Prehodiť štart a cieľ',
   point: {
     point: 'Bod trasy',
