@@ -22,6 +22,21 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Eliminazione mappa',
+  mapCreated: ({ name }) => (
+    <>
+      La mappa <i>{name}</i> è stata salvata nelle tue mappe.
+    </>
+  ),
+  mapUpdated: ({ name }) => (
+    <>
+      Le modifiche alla mappa <i>{name}</i> sono state salvate.
+    </>
+  ),
+  mapDeleted: ({ name }) => (
+    <>
+      La mappa <i>{name}</i> è stata eliminata dalle tue mappe.
+    </>
+  ),
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Errore caricando la mappa:', err),
   fetchListError: ({ err }) =>

@@ -21,6 +21,21 @@ const cs: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Smazání mapy',
+  mapCreated: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> byla uložena mezi vaše mapy.
+    </>
+  ),
+  mapUpdated: ({ name }) => (
+    <>
+      Změny v mapě <i>{name}</i> byly uloženy.
+    </>
+  ),
+  mapDeleted: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> byla smazána z vašich map.
+    </>
+  ),
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při nahrávání mapy', err),
   fetchListError: ({ err }) =>

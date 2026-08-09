@@ -20,6 +20,21 @@ const en: MyMapsMessages = {
     </>
   ),
   deleteTitle: 'Map deletion',
+  mapCreated: ({ name }) => (
+    <>
+      Map <i>{name}</i> has been saved to your maps.
+    </>
+  ),
+  mapUpdated: ({ name }) => (
+    <>
+      Changes to map <i>{name}</i> have been saved.
+    </>
+  ),
+  mapDeleted: ({ name }) => (
+    <>
+      Map <i>{name}</i> has been deleted from your maps.
+    </>
+  ),
   fetchError: ({ err }) => addError(getMessages()!, 'Error loading map', err),
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Error loading maps', err),

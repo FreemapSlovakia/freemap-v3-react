@@ -9,6 +9,21 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
       Voulez-vous vraiment supprimer la carte <i>{name}</i> ?
     </>
   ),
+  mapCreated: ({ name }) => (
+    <>
+      La carte <i>{name}</i> a été enregistrée dans vos cartes.
+    </>
+  ),
+  mapUpdated: ({ name }) => (
+    <>
+      Les modifications de la carte <i>{name}</i> ont été enregistrées.
+    </>
+  ),
+  mapDeleted: ({ name }) => (
+    <>
+      La carte <i>{name}</i> a été supprimée de vos cartes.
+    </>
+  ),
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Erreur lors du chargement de la carte', err),
   fetchListError: ({ err }) =>

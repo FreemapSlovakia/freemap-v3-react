@@ -21,6 +21,21 @@ const sk: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Vymazanie mapy',
+  mapCreated: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> bola uložená medzi vaše mapy.
+    </>
+  ),
+  mapUpdated: ({ name }) => (
+    <>
+      Zmeny v mape <i>{name}</i> boli uložené.
+    </>
+  ),
+  mapDeleted: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> bola vymazaná z vašich máp.
+    </>
+  ),
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri načítavaní mapy', err),
   fetchListError: ({ err }) =>

@@ -23,6 +23,21 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Löschen der Karte',
+  mapCreated: ({ name }) => (
+    <>
+      Die Karte <i>{name}</i> wurde in Ihren Karten gespeichert.
+    </>
+  ),
+  mapUpdated: ({ name }) => (
+    <>
+      Die Änderungen an der Karte <i>{name}</i> wurden gespeichert.
+    </>
+  ),
+  mapDeleted: ({ name }) => (
+    <>
+      Die Karte <i>{name}</i> wurde aus Ihren Karten gelöscht.
+    </>
+  ),
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Karte', err),
   fetchListError: ({ err }) =>

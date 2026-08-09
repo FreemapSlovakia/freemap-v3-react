@@ -23,6 +23,21 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Térkép törlése',
+  mapCreated: ({ name }) => (
+    <>
+      A(z) <i>{name}</i> térkép mentve lett a térképei közé.
+    </>
+  ),
+  mapUpdated: ({ name }) => (
+    <>
+      A(z) <i>{name}</i> térkép módosításai mentve lettek.
+    </>
+  ),
+  mapDeleted: ({ name }) => (
+    <>
+      A(z) <i>{name}</i> térkép törölve lett a térképei közül.
+    </>
+  ),
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a térkép betöltéskor', err),
   fetchListError: ({ err }) =>

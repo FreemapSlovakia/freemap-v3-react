@@ -22,6 +22,21 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Usunięcie mapy',
+  mapCreated: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> została zapisana w Twoich mapach.
+    </>
+  ),
+  mapUpdated: ({ name }) => (
+    <>
+      Zmiany w mapie <i>{name}</i> zostały zapisane.
+    </>
+  ),
+  mapDeleted: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> została usunięta z Twoich map.
+    </>
+  ),
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas wczytywania mapy', err),
   fetchListError: ({ err }) =>

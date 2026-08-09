@@ -66,17 +66,23 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
         return;
       }
 
+      const meta = MapMetaSchema.parse(await res.json());
+
       dispatch(
         toastsAdd({
           style: 'success',
           timeout: 5000,
-          messageKey: 'general.saved',
+          // The name comes from the response, so saving an existing map without
+          // retyping its name still names it in the toast.
+          messageKey: patchExisting ? 'mapUpdated' : 'mapCreated',
+          messageParams: { name: meta.name },
+          messageLoader: loadMyMapsMessages,
         }),
       );
 
       dispatch(mapsLoadList());
 
-      dispatch(mapsSetMeta(MapMetaSchema.parse(await res.json())));
+      dispatch(mapsSetMeta(meta));
 
       dispatch(mapsSetSavedFingerprint(sentFingerprint));
     } catch (err) {

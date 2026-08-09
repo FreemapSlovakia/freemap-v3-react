@@ -16,6 +16,9 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
   }) => {
     trackMatomo(['trackEvent', 'MyMaps', 'delete']);
 
+    // Read before the request; the list is reloaded once the map is gone.
+    const name = getState().myMaps.maps.find((map) => map.id === id)?.name;
+
     try {
       await httpRequest({
         getState,
@@ -44,11 +47,19 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
     dispatch(mapsLoadList());
 
     dispatch(
-      toastsAdd({
-        style: 'success',
-        timeout: 5000,
-        messageKey: 'general.deleted',
-      }),
+      name === undefined
+        ? toastsAdd({
+            style: 'success',
+            timeout: 5000,
+            messageKey: 'general.deleted',
+          })
+        : toastsAdd({
+            style: 'success',
+            timeout: 5000,
+            messageKey: 'mapDeleted',
+            messageParams: { name },
+            messageLoader: loadMyMapsMessages,
+          }),
     );
   },
 };

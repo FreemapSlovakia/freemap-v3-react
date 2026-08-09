@@ -22,6 +22,21 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Brisanje zemljevida',
+  mapCreated: ({ name }) => (
+    <>
+      Zemljevid <i>{name}</i> je bil shranjen med vaše zemljevide.
+    </>
+  ),
+  mapUpdated: ({ name }) => (
+    <>
+      Spremembe zemljevida <i>{name}</i> so bile shranjene.
+    </>
+  ),
+  mapDeleted: ({ name }) => (
+    <>
+      Zemljevid <i>{name}</i> je bil izbrisan iz vaših zemljevidov.
+    </>
+  ),
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri nalaganju zemljevida', err),
   fetchListError: ({ err }) =>

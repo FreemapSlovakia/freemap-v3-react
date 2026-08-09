@@ -13,6 +13,9 @@ export type MyMapsMessages = {
   disconnectAndClear: string;
   deleteConfirm: (name: string) => JSX.Element;
   deleteTitle: string;
+  mapCreated: (props: { name: string }) => JSX.Element;
+  mapUpdated: (props: { name: string }) => JSX.Element;
+  mapDeleted: (props: { name: string }) => JSX.Element;
   fetchError: (props: { err: unknown }) => string;
   fetchListError: (props: { err: unknown }) => string;
   deleteError: (props: { err: unknown }) => string;

@@ -191,7 +191,9 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
           toastsAdd({
             style: 'success',
             timeout: 5000,
-            messageKey: 'general.saved',
+            messageKey: 'mapUpdated',
+            messageParams: { name },
+            messageLoader: loadMyMapsMessages,
           }),
         );
 
