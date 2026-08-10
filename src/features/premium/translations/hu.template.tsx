@@ -69,8 +69,9 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   alreadySubscribed: 'Már van aktív előfizetésed.',
   premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
   payOnce: 'Egyszeri fizetés egy évre',
+  payOnceWithPrices: ({ oldPrice, newPrice }) =>
+    `Egyszeri fizetés egy évre — ${oldPrice}\xa0€; jövő évi ár ${newPrice}\xa0€`,
   paySubscription: 'Éves előfizetés (automatikus megújítás)',
-  subscribe: 'Előfizetés',
   payWithChrons: 'Fizetés chronnal',
   chronsHint: (
     <>
@@ -79,17 +80,27 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       történő fizetést.
     </>
   ),
-  priceIncrease: ({ date, oldPrice, newPrice }) =>
-    `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz. Ha előbb fizet elő, az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív. Az egyszeri vásárlás csak arra az egy évre szól ${oldPrice}\xa0€-ért — a következőt az akkor érvényes áron veheti meg.`,
+  priceIncreaseHeading: ({ date, newPrice }) =>
+    `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz.`,
+  compareNow: 'Most',
+  compareNextYear: 'Jövő évi ár',
+  compareSubscription: 'Éves előfizetés',
+  compareOnce: 'Egyszeri vásárlás',
+  compareNoSwitch: 'Váltás nélkül',
+  subscriptionReassurance: ({ oldPrice }) =>
+    `Az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív. Bármikor lemondhatja — a prémium hozzáférés ilyenkor a kifizetett év végéig tart.`,
+  payOnceConfirmTitle: 'Így nem tartja meg a jelenlegi árat',
+  payOnceConfirmBody: ({ date, oldPrice, newPrice }) =>
+    `Az egyszeri vásárlás egy évre szól ${oldPrice}\xa0€-ért. A következőt az akkor érvényes áron veheti meg — ${date} után évi ${newPrice}\xa0€. A most indított előfizetés az évi ${oldPrice}\xa0€-s árat mindaddig megtartja, amíg aktív, és bármikor lemondhatja.`,
+  payOnceConfirmSubscribe: 'Inkább előfizetek',
+  payOnceConfirmContinue: 'Mégis egyszeri fizetés',
   priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
     `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz. Ha előbb fizet elő, az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
-    `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz. Ha addig éves előfizetésre vált, az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív. A terhelés csak a már kifizetett év letelte után indul, így semmit sem fizet kétszer.`,
+    `${date} után a prémium hozzáférés évi ${newPrice}\xa0€. Ha addig előfizetésre vált, önnek marad az évi ${oldPrice}\xa0€-s ár — a terhelés csak a már kifizetett év letelte után indul.`,
   switchTitle: 'Tartsa meg a jelenlegi árat',
   switchStatus: ({ expiration }) =>
     `A prémium hozzáférése eddig érvényes: ${expiration} — ez nem előfizetés.`,
-  switchOffer: ({ date, oldPrice, newPrice }) =>
-    `${date} után a prémium hozzáférés évi ${newPrice}\xa0€ lesz. Ha addig éves előfizetésre vált, az évi ${oldPrice}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív.`,
   switchNoDoubleCharge: ({ expiration }) =>
     `A váltással semmit sem veszít: az előfizetés ingyenes időszakkal indul eddig: ${expiration}, és az első terhelés csak ekkor történik.`,
   switchAction: 'Váltás éves előfizetésre',

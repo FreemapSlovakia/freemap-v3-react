@@ -4,6 +4,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import {
+  PREMIUM_NEW_PRICE_EUR,
   PREMIUM_PRICE_EUR,
   PREMIUM_PRICE_INCREASE_AT,
 } from '@shared/premiumPricing.js';
@@ -13,6 +14,7 @@ import { FaGem, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { canSwitchToSubscription } from '../premium.js';
 import { usePremiumMessages } from '../translations/usePremiumMessages.js';
+import { PriceComparison } from './PriceComparison.js';
 
 type Props = { show: boolean };
 
@@ -86,12 +88,30 @@ export default function PremiumSwitchModal({
       <Modal.Body>
         <p>{prm?.switchStatus({ expiration })}</p>
 
-        <p>
-          {prm?.switchOffer({
+        <p className="fw-semibold mb-2">
+          {prm?.priceIncreaseHeading({
             date: dateFormat.format(PREMIUM_PRICE_INCREASE_AT),
-            oldPrice: PREMIUM_PRICE_EUR,
-            newPrice: 15,
+            newPrice: PREMIUM_NEW_PRICE_EUR,
           })}
+        </p>
+
+        <PriceComparison
+          columns={[prm?.compareNextYear]}
+          rows={[
+            {
+              label: prm?.switchAction,
+              values: [`${PREMIUM_PRICE_EUR}\xa0€`],
+              recommended: true,
+            },
+            {
+              label: prm?.compareNoSwitch,
+              values: [`${PREMIUM_NEW_PRICE_EUR}\xa0€`],
+            },
+          ]}
+        />
+
+        <p className="mt-3 mb-2 text-body-secondary">
+          {prm?.subscriptionReassurance({ oldPrice: PREMIUM_PRICE_EUR })}
         </p>
 
         <p className="mb-0 text-body-secondary">

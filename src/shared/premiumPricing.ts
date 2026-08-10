@@ -11,6 +11,9 @@
 /** What premium is sold for right now. */
 export const PREMIUM_PRICE_EUR = 8;
 
+/** What it will cost from `PREMIUM_PRICE_INCREASE_AT`; only announced, not charged. */
+export const PREMIUM_NEW_PRICE_EUR = 15;
+
 /**
  * A subscription starts as a trial covering the premium the user already has,
  * so that switching early costs nothing — but Polar validates the trial length

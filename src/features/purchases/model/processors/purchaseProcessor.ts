@@ -68,11 +68,23 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       return;
     }
 
+    // Which premium option was picked is the whole point of the breakdown —
+    // during the price lock a one-time year costs the buyer more than a
+    // subscription, and without this there is no way to see how often it wins.
+    const variant =
+      action.payload.type === 'credits'
+        ? 'credits'
+        : action.payload.via === 'rovas'
+          ? 'premium-chrons'
+          : action.payload.recurring
+            ? 'premium-subscription'
+            : 'premium-once';
+
     trackMatomo([
       'trackEvent',
       'Purchase',
       'start',
-      action.payload.type,
+      variant,
       action.payload.type === 'credits' ? action.payload.amount : undefined,
     ]);
 
@@ -177,7 +189,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
         'trackEvent',
         'Purchase',
         'success',
-        action.payload.type,
+        variant,
         action.payload.type === 'credits' ? action.payload.amount : undefined,
       ]);
 
@@ -307,7 +319,7 @@ export const purchaseProcessor: Processor<typeof purchase> = {
         'trackEvent',
         'Purchase',
         'success',
-        action.payload.type,
+        variant,
         action.payload.type === 'credits' ? action.payload.amount : undefined,
       ]);
 

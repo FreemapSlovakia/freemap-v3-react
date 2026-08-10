@@ -69,8 +69,9 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
   alreadySubscribed: 'Vous avez déjà un abonnement actif.',
   premiumUser: 'Utilisateur avec accès premium',
   payOnce: 'Payer une fois pour un an',
+  payOnceWithPrices: ({ oldPrice, newPrice }) =>
+    `Payer une fois pour un an — ${oldPrice}\xa0€ ; prix l’an prochain ${newPrice}\xa0€`,
   paySubscription: 'Abonnement annuel (renouvellement automatique)',
-  subscribe: 'S’abonner',
   payWithChrons: 'Payer avec des Chrons',
   chronsHint: (
     <>
@@ -78,17 +79,27 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
       dans <RovasLink>Rovas</RovasLink>, choisissez de payer avec des Chrons.
     </>
   ),
-  priceIncrease: ({ date, oldPrice, newPrice }) =>
-    `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an. Si vous vous abonnez avant, le prix de ${oldPrice}\xa0€ par an vous reste acquis tant que l’abonnement est actif. Un achat unique coûte ${oldPrice}\xa0€ pour cette seule année — la suivante sera au prix en vigueur à ce moment-là.`,
+  priceIncreaseHeading: ({ date, newPrice }) =>
+    `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an.`,
+  compareNow: 'Maintenant',
+  compareNextYear: 'Prix l’an prochain',
+  compareSubscription: 'Abonnement annuel',
+  compareOnce: 'Achat unique',
+  compareNoSwitch: 'Sans changement',
+  subscriptionReassurance: ({ oldPrice }) =>
+    `Le prix de ${oldPrice}\xa0€ par an vous reste acquis tant que l’abonnement est actif. Vous pouvez le résilier à tout moment — l’accès premium court alors jusqu’à la fin de l’année payée.`,
+  payOnceConfirmTitle: 'Cela ne conserve pas le prix actuel',
+  payOnceConfirmBody: ({ date, oldPrice, newPrice }) =>
+    `Un achat unique couvre un an pour ${oldPrice}\xa0€. Le suivant sera au prix en vigueur à ce moment-là — ${newPrice}\xa0€ par an à partir du ${date}. Un abonnement souscrit maintenant conserve le prix de ${oldPrice}\xa0€ par an tant qu’il est actif, et vous pouvez le résilier à tout moment.`,
+  payOnceConfirmSubscribe: 'S’abonner plutôt',
+  payOnceConfirmContinue: 'Payer une fois quand même',
   priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
     `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an. Si vous vous abonnez avant, le prix de ${oldPrice}\xa0€ par an vous reste acquis tant que l’abonnement est actif.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
-    `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an. Si vous passez à un abonnement annuel avant cette date, le prix annuel de ${oldPrice}\xa0€ vous reste acquis tant que l’abonnement est actif. Le prélèvement ne commence qu’à l’expiration de l’année déjà payée, vous ne payez donc rien deux fois.`,
+    `À partir du ${date}, l’accès premium coûte ${newPrice}\xa0€ par an. Si vous passez à un abonnement avant, votre prix reste à ${oldPrice}\xa0€ — rien n’est prélevé avant la fin de l’année déjà payée.`,
   switchTitle: 'Conservez votre prix actuel',
   switchStatus: ({ expiration }) =>
     `Vous avez l’accès premium jusqu’au ${expiration} — ce n’est pas un abonnement.`,
-  switchOffer: ({ date, oldPrice, newPrice }) =>
-    `À partir du ${date}, l’accès premium coûtera ${newPrice}\xa0€ par an. Si vous passez à un abonnement annuel avant cette date, le prix annuel de ${oldPrice}\xa0€ vous reste acquis tant que l’abonnement est actif.`,
   switchNoDoubleCharge: ({ expiration }) =>
     `Vous ne perdez rien en changeant maintenant : l’abonnement commence par une période gratuite jusqu’au ${expiration}, et le premier prélèvement n’a lieu qu’à ce moment-là.`,
   switchAction: 'Passer à l’abonnement annuel',

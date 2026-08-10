@@ -17,21 +17,35 @@ export type PremiumMessages = {
   alreadyPremium: string;
   alreadySubscribed: string;
   premiumUser: string;
+  /** Plain label; during the price lock the buy menu uses `payOnceWithPrices`. */
   payOnce: string;
+  /** `payOnce` while the old price still lasts — the option carries its own cost. */
+  payOnceWithPrices: (params: { oldPrice: number; newPrice: number }) => string;
   paySubscription: string;
-  /**
-   * Short call to action for the price-increase info bar; the modal's buy
-   * button uses the fuller `paySubscription`.
-   */
-  subscribe: string;
   payWithChrons: string;
   chronsHint: ReactNode;
-  priceIncrease: (params: {
+  /** Heads the price comparison; the comparison itself says what to do about it. */
+  priceIncreaseHeading: (params: { date: string; newPrice: number }) => string;
+  /** Column headings of the price comparison. */
+  compareNow: string;
+  compareNextYear: string;
+  /** Row labels of the price comparison. */
+  compareSubscription: string;
+  compareOnce: string;
+  /** The do-nothing row, for a user who already holds a one-time year. */
+  compareNoSwitch: string;
+  /** Answers the two fears about subscribing: the price and the lock-in. */
+  subscriptionReassurance: (params: { oldPrice: number }) => string;
+  /** Shown when the one-time option is picked while subscribing is the better deal. */
+  payOnceConfirmTitle: string;
+  payOnceConfirmBody: (params: {
     date: string;
     oldPrice: number;
     newPrice: number;
   }) => string;
-  /** Shorter variant of `priceIncrease` for the info bar. */
+  payOnceConfirmSubscribe: string;
+  payOnceConfirmContinue: string;
+  /** Announcement for the info bar. */
   priceIncreaseShort: (params: {
     date: string;
     oldPrice: number;
@@ -43,14 +57,12 @@ export type PremiumMessages = {
     oldPrice: number;
     newPrice: number;
   }) => string;
-  /** The modal offering that user the switch, while the current price lasts. */
+  /**
+   * The modal offering that user the switch, while the current price lasts;
+   * also the info bar's link to it, so it names the outcome, not the action.
+   */
   switchTitle: string;
   switchStatus: (params: { expiration: string }) => string;
-  switchOffer: (params: {
-    date: string;
-    oldPrice: number;
-    newPrice: number;
-  }) => string;
   switchNoDoubleCharge: (params: { expiration: string }) => string;
   switchAction: string;
   /** Headline for the info bar on a phone, paired with `priceIncreaseMore`. */

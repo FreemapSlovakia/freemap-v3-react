@@ -2,6 +2,7 @@ import { ShowModalLink } from '@shared/components/ShowModalLink.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import {
+  PREMIUM_NEW_PRICE_EUR,
   PREMIUM_PRICE_EUR,
   PREMIUM_PRICE_INCREASE_AT,
 } from '@shared/premiumPricing.js';
@@ -47,7 +48,7 @@ export function usePremiumPriceIncreaseInfo(): ReactNode {
   const params = {
     date: dateFormat.format(PREMIUM_PRICE_INCREASE_AT),
     oldPrice: PREMIUM_PRICE_EUR,
-    newPrice: 15,
+    newPrice: PREMIUM_NEW_PRICE_EUR,
   };
 
   const full = (
@@ -56,7 +57,7 @@ export function usePremiumPriceIncreaseInfo(): ReactNode {
         ? prm.priceIncreaseSwitch(params)
         : prm.priceIncreaseShort(params)}{' '}
       <ShowModalLink modal={switching ? 'premium-switch' : 'premium'}>
-        {switching ? prm.subscribe : prm.becomePremium}
+        {switching ? prm.switchTitle : prm.becomePremium}
         {'\xa0›'}
       </ShowModalLink>
     </>
@@ -69,7 +70,7 @@ export function usePremiumPriceIncreaseInfo(): ReactNode {
       <span className="d-md-none">
         {prm.priceIncreaseMini({
           date: shortDateFormat.format(PREMIUM_PRICE_INCREASE_AT),
-          newPrice: 15,
+          newPrice: PREMIUM_NEW_PRICE_EUR,
         })}{' '}
         <Anchor onClick={() => setExpanded(true)}>
           {prm.priceIncreaseMore}

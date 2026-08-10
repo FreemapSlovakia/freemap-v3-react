@@ -69,8 +69,9 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   alreadySubscribed: 'Masz już aktywną subskrypcję.',
   premiumUser: 'Użytkownik z dostępem premium',
   payOnce: 'Zapłać jednorazowo za jeden rok',
+  payOnceWithPrices: ({ oldPrice, newPrice }) =>
+    `Zapłać jednorazowo za jeden rok — ${oldPrice}\xa0€; cena w przyszłym roku ${newPrice}\xa0€`,
   paySubscription: 'Subskrypcja roczna (odnawia się automatycznie)',
-  subscribe: 'Subskrybuj',
   payWithChrons: 'Zapłać chronami',
   chronsHint: (
     <>
@@ -78,17 +79,27 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <RovasLink>Rovas</RovasLink>, wybierz płatność chronami.
     </>
   ),
-  priceIncrease: ({ date, oldPrice, newPrice }) =>
-    `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie. Jeśli wykupisz subskrypcję wcześniej, cena ${oldPrice}\xa0€ za rok pozostanie tak długo, jak subskrypcja będzie aktywna. Płatność jednorazowa obowiązuje w cenie ${oldPrice}\xa0€ tylko na ten jeden rok — kolejny kupisz po cenie obowiązującej w tamtym czasie.`,
+  priceIncreaseHeading: ({ date, newPrice }) =>
+    `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie.`,
+  compareNow: 'Teraz',
+  compareNextYear: 'Cena w przyszłym roku',
+  compareSubscription: 'Subskrypcja roczna',
+  compareOnce: 'Zakup jednorazowy',
+  compareNoSwitch: 'Bez przejścia',
+  subscriptionReassurance: ({ oldPrice }) =>
+    `Cena ${oldPrice}\xa0€ rocznie pozostanie tak długo, jak subskrypcja będzie aktywna. Możesz ją anulować w każdej chwili — dostęp premium działa wtedy do końca opłaconego roku.`,
+  payOnceConfirmTitle: 'To nie zachowa obecnej ceny',
+  payOnceConfirmBody: ({ date, oldPrice, newPrice }) =>
+    `Płatność jednorazowa obejmuje jeden rok za ${oldPrice}\xa0€. Kolejny kupisz po cenie obowiązującej w tamtym czasie — od ${date} to ${newPrice}\xa0€ rocznie. Subskrypcja wykupiona teraz utrzymuje cenę ${oldPrice}\xa0€ rocznie tak długo, jak jest aktywna, i możesz ją anulować w każdej chwili.`,
+  payOnceConfirmSubscribe: 'Wykup subskrypcję',
+  payOnceConfirmContinue: 'Mimo to zapłać jednorazowo',
   priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
     `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie. Jeśli wykupisz subskrypcję wcześniej, cena ${oldPrice}\xa0€ za rok pozostanie tak długo, jak subskrypcja będzie aktywna.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
-    `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie. Jeśli do tego czasu przejdziesz na subskrypcję roczną, roczna cena ${oldPrice}\xa0€ pozostanie tak długo, jak subskrypcja będzie aktywna. Naliczanie zacznie się dopiero po wykorzystaniu już opłaconego roku, więc niczego nie płacisz dwa razy.`,
+    `Od ${date} dostęp premium kosztuje ${newPrice}\xa0€ rocznie. Jeśli do tego czasu przejdziesz na subskrypcję, twoja cena pozostanie ${oldPrice}\xa0€ — nic nie zostanie pobrane, dopóki nie skończy się już opłacony rok.`,
   switchTitle: 'Zachowaj obecną cenę',
   switchStatus: ({ expiration }) =>
     `Masz dostęp premium do ${expiration} — to nie jest subskrypcja.`,
-  switchOffer: ({ date, oldPrice, newPrice }) =>
-    `Od ${date} dostęp premium będzie kosztować ${newPrice}\xa0€ rocznie. Jeśli do tego czasu przejdziesz na subskrypcję roczną, roczna cena ${oldPrice}\xa0€ pozostanie tak długo, jak subskrypcja będzie aktywna.`,
   switchNoDoubleCharge: ({ expiration }) =>
     `Przechodząc teraz, nic nie tracisz: subskrypcja zacznie się bezpłatnym okresem do ${expiration}, a pierwsza płatność zostanie pobrana dopiero wtedy.`,
   switchAction: 'Przejdź na subskrypcję roczną',

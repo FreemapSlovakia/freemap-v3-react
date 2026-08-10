@@ -120,7 +120,8 @@ from both the old and new identities.
 | `MyMaps` | `load` | `replace` or `merge` (only user-initiated, not auth re-validation reloads) | *(added 2026-06)* | [`mapsLoadProcessor.ts`](../src/features/myMaps/model/processors/mapsLoadProcessor.ts) |
 | `MyMaps` | `delete` | — | *(added 2026-06)* | [`mapsDeleteProcessor.ts`](../src/features/myMaps/model/processors/mapsDeleteProcessor.ts) |
 | `MapSettings` | `create` / `update` / `delete` | `customMap` | `CustomMap`/`create`,`edit`,`delete` *(added 2026-06)* | [`CustomMapsModal.tsx`](../src/features/mapSettings/components/CustomMapsModal.tsx) |
-| `Purchase` | `start` / `success` | name = `premium` or `credits`; **value** = credit amount | `Purchase`/`purchaseStart`, `purchaseSuccess` — *was JSON payload* | [`purchaseProcessor.ts`](../src/features/purchases/model/processors/purchaseProcessor.ts) |
+| `Purchase` | `start` / `success` | name = `premium-subscription` / `premium-once` / `premium-chrons` / `credits`; **value** = credit amount | `Purchase`/`purchaseStart`, `purchaseSuccess` — *was JSON payload*; name was a bare `premium` until 2026-08, so premium totals spanning that date must sum all three variants plus `premium` | [`purchaseProcessor.ts`](../src/features/purchases/model/processors/purchaseProcessor.ts) |
+| `Purchase` | `confirmPayOnce` | `shown` / `subscribed` / `continued` — the dialog shown when a one-time year is picked while a subscription would lock the lower price | *(added 2026-08)* | [`PremiumActivationModal.tsx`](../src/features/premium/components/PremiumActivationModal.tsx) |
 
 ## Data quality / known issues
 
@@ -204,7 +205,9 @@ Standardize on this so the scheme doesn't drift again:
   distinction or the user gesture only exists at the call site and isn't carried
   by a dedicated action: `MapSettings`/`customMap` (funnels through generic
   `saveSettings`), `Tracking`/`watchedDevice`, `HomeLocation`/`save`,
-  `MapShading`/`add`, and `Ad`/`impression`+`click` (the rendered ad id and the
+  `MapShading`/`add`, `Purchase`/`confirmPayOnce` (the dialog and which button
+  ended it exist only in the modal — the `purchase` action carries no trace of
+  it), and `Ad`/`impression`+`click` (the rendered ad id and the
   outbound-link gesture only exist in `Ad.tsx`; the `click` is caught via
   `onClickCapture` so it covers the translation-rendered ad variants too).
 - Because `_paq` is a typed queue, adding a new event only requires pushing a

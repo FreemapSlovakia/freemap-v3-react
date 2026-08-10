@@ -69,8 +69,9 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
   alreadySubscribed: 'Už máte aktívne predplatné.',
   premiumUser: 'Používateľ s prémiovým prístupom',
   payOnce: 'Zaplatiť jednorazovo na jeden rok',
+  payOnceWithPrices: ({ oldPrice, newPrice }) =>
+    `Zaplatiť jednorazovo na jeden rok — ${oldPrice}\xa0€; cena budúci rok ${newPrice}\xa0€`,
   paySubscription: 'Ročné predplatné (automatické obnovenie)',
-  subscribe: 'Predplatiť',
   payWithChrons: 'Zaplatiť chronmi',
   chronsHint: (
     <>
@@ -78,17 +79,27 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <RovasLink>Rováši</RovasLink>, zvoľte platbu chronmi.
     </>
   ),
-  priceIncrease: ({ date, oldPrice, newPrice }) =>
-    `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne. Ak si ho predplatíte skôr, cena ${oldPrice}\xa0€ za rok vám zostane, pokiaľ bude predplatné aktívne. Jednorazová platba platí za ${oldPrice}\xa0€ len na daný jeden rok — ďalší rok si kúpite za cenu platnú v tom čase.`,
+  priceIncreaseHeading: ({ date, newPrice }) =>
+    `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne.`,
+  compareNow: 'Teraz',
+  compareNextYear: 'Cena budúci rok',
+  compareSubscription: 'Ročné predplatné',
+  compareOnce: 'Jednorazový nákup',
+  compareNoSwitch: 'Bez prechodu',
+  subscriptionReassurance: ({ oldPrice }) =>
+    `Cena ${oldPrice}\xa0€ ročne vám zostane, pokiaľ bude predplatné aktívne. Zrušiť ho môžete kedykoľvek — prémiový prístup potom platí do konca zaplateného roka.`,
+  payOnceConfirmTitle: 'Takto si súčasnú cenu nezachováte',
+  payOnceConfirmBody: ({ date, oldPrice, newPrice }) =>
+    `Jednorazová platba pokrýva jeden rok za ${oldPrice}\xa0€. Ďalší rok si kúpite za cenu platnú v tom čase — od ${date} je to ${newPrice}\xa0€ ročne. Predplatné uzavreté teraz vám drží cenu ${oldPrice}\xa0€ ročne, pokiaľ bude aktívne, a kedykoľvek ho môžete zrušiť.`,
+  payOnceConfirmSubscribe: 'Radšej si predplatiť',
+  payOnceConfirmContinue: 'Aj tak zaplatiť jednorazovo',
   priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
     `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne. Ak si ho predplatíte skôr, cena ${oldPrice}\xa0€ za rok vám zostane, pokiaľ bude predplatné aktívne.`,
   priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
-    `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne. Ak dovtedy prejdete na ročné predplatné, ročná cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude predplatné aktívne. Účtovať sa začne až po vyčerpaní už zaplateného roka, takže nič neplatíte dvakrát.`,
+    `Od ${date} stojí prémiový prístup ${newPrice}\xa0€ ročne. Ak dovtedy prejdete na predplatné, zostane vám cena ${oldPrice}\xa0€ — účtovať sa začne až po vyčerpaní už zaplateného roka.`,
   switchTitle: 'Zachovajte si súčasnú cenu',
   switchStatus: ({ expiration }) =>
     `Prémiový prístup máte do ${expiration} — nie je to predplatné.`,
-  switchOffer: ({ date, oldPrice, newPrice }) =>
-    `Od ${date} bude prémiový prístup stáť ${newPrice}\xa0€ ročne. Ak dovtedy prejdete na ročné predplatné, ročná cena ${oldPrice}\xa0€ vám zostane, pokiaľ bude predplatné aktívne.`,
   switchNoDoubleCharge: ({ expiration }) =>
     `Prechodom teraz nič nestrácate: predplatné začne bezplatným obdobím do ${expiration} a prvá platba sa strhne až vtedy.`,
   switchAction: 'Prejsť na ročné predplatné',
