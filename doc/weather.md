@@ -48,6 +48,14 @@ display. A `?size=256` (or a parallel path) would let those clients ask for what
 they can use. Combined with WebP this is the difference between a ~50 KB and a
 ~5 KB tile for a large share of visitors.
 
+To be explicit, the ask is only for a *smaller* option: **@3x or @4x renders
+would be worthless.** At maximum zoom a tile is already close to a pure upscale
+of the zoom below it (comparing z9 against z8 resampled ×2 gives an RMSE of 3,
+against 83 for two unrelated tiles), so the pixels are ahead of the ~2 km
+composite grid rather than behind it — one data cell already covers ~20 device
+pixels at @2x. More detail at deep zoom would have to come from a
+higher-resolution source, not from more pixels over the same grid.
+
 ### 3. A long `Cache-Control` on forecast tiles too
 
 Measured tiles are `max-age=10800, immutable`, but forecast tiles still come
