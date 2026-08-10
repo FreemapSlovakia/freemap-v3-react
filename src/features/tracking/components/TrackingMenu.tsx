@@ -9,11 +9,13 @@ import {
   LEGEND_ITEM,
   legendToggleOption,
 } from '@shared/colorizers/components/legendToggleOption.js';
+import { usePremiumColorizeLock } from '@shared/colorizers/components/usePremiumColorizeLock.js';
 import {
   ColorizingModeSchema,
   colorizers,
   colorizingModes,
 } from '@shared/colorizers/index.js';
+import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
@@ -25,7 +27,6 @@ import { Button } from 'react-bootstrap';
 import {
   FaBullseye,
   FaChartArea,
-  FaGem,
   FaMobileAlt,
   FaPalette,
   FaRegEye,
@@ -53,9 +54,11 @@ export function TrackingMenu(): ReactElement {
 
   const showLine = useAppSelector((state) => state.trackingSettings.showLine);
 
-  const colorizeBy = useAppSelector(
-    (state) => state.trackingSettings.colorizeBy,
+  const colorizeBy = useUnlockedColorizingMode(
+    useAppSelector((state) => state.trackingSettings.colorizeBy),
   );
+
+  const premiumColorize = usePremiumColorizeLock();
 
   const colorizeLegend = useAppSelector(
     (state) => state.trackingSettings.colorizeLegend,
@@ -176,23 +179,17 @@ export function TrackingMenu(): ReactElement {
           }}
           options={[
             ...legendToggleOption(colorizeBy, colorizeLegend, cm?.legend),
-            ...[undefined, ...colorizingModes].map((mode) => ({
-              value: mode ?? 'none',
-              label: cm?.mode[mode ?? 'none'],
-              disabled: mode !== undefined && !isModeAvailable(mode),
-              // Launch badge: every mode except the free trio is premium, shown
-              // free for now. Tracked by hand — drop when the launch ends.
-              extra:
-                mode &&
-                mode !== 'elevation' &&
-                mode !== 'speed' &&
-                mode !== 'time' ? (
-                  <FaGem
-                    className="ms-1 text-info"
-                    title={cm?.premiumDuringLaunch}
-                  />
-                ) : undefined,
-            })),
+            ...[undefined, ...colorizingModes].map((mode) => {
+              const { locked, gem } = premiumColorize(mode);
+
+              return {
+                value: mode ?? 'none',
+                label: cm?.mode[mode ?? 'none'],
+                disabled:
+                  locked || (mode !== undefined && !isModeAvailable(mode)),
+                extra: gem,
+              };
+            }),
           ]}
         />
 

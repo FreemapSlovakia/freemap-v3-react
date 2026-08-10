@@ -83,6 +83,9 @@ The Account modal has three collapsible sections (below); from the buttons at th
   - Removal of the ad banner
   - Access to premium photos (users can mark uploaded photos as premium-only)
   - Access to higher map zoom levels for specific map layers (see below)
+  - Multimodal routing (combining several transport modes in one route)
+  - "Optimize order" in the route planner (reordering the waypoints to minimize travel time)
+  - Colorizing routes and tracks in every mode except Elevation, Speed and Time — those three are free, the rest carry a gem and are locked (the option is disabled, the gem opens the purchase flow)
   - Weather radar: up to 6 hours of history instead of 2, plus the 1-hour forecast (the `R` overlay)
   - High-resolution elevation data in supported countries (used by the elevation API for the chart, colorizing, and elevation fill); currently Slovakia (DMR 5.0: ÚGKK SR), Czechia (DMR 5G: ČÚZK), Austria (ALS DTM: Geoland.at), Switzerland (swissALTI3D: © swisstopo), Italy (HR-DTM 5 m: IRPI-CNR), Slovenia (DMR: Ministrstvo za okolje in prostor), Spain (MDT05: IGN/CNIG), Sweden (Markhöjdmodell: Lantmäteriet), France (RGE ALTI: IGN), Poland (NMT: GUGiK), Finland (Korkeusmalli 2 m: Maanmittauslaitos), and Croatia (DMR: Državna geodetska uprava), with more countries being added; past their borders a premium read falls back to a global 30 m model (GEDTM30), while without premium the elevation API answers from SRTM everywhere
 
@@ -226,7 +229,7 @@ Routing modes:
 
 Once a route is found the toolbar also offers:
 
-- **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Heading (only modes the route has data for are shown); for the elevation profile and elevation/steepness colorize, premium users get every point sampled from the terrain model (high-resolution where available), while others keep the router's own elevation and only have missing values filled on demand. While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
+- **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Heading (only modes the route has data for are shown; every mode except Elevation, Speed and Time is premium — badged with a gem and disabled without premium access); for the elevation profile and elevation/steepness colorize, premium users get every point sampled from the terrain model (high-resolution where available), while others keep the router's own elevation and only have missing values filled on demand. While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
 - **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing (the route becomes one drawing line in its transport-mode color, plus a point per start/finish/stop), **Route style…** (opens a modal with sliders for line width, line opacity, and marker opacity; saved in local storage), kilometre/percent milestone toggles, and (premium; GraphHopper "Ordered" mode with 3+ points, single transport) **Optimize order** — reorders the waypoints to minimize total travel time, with variants: keep start fixed, keep start and finish fixed, round trip (return to start), or free (reorder all)
 - **Delete** (🗑) — removes the result together with its start/finish/stop points. It appears as soon as the first point is placed, so a half-built route can be dropped as well
 
@@ -253,7 +256,7 @@ Toggles the tracks and data toolbar. **Upload** opens the file import modal (URL
 
 - **Track** (dropdown) — shown only when several lines are loaded; picks which one the elevation profile and "More info" describe (a line can also be picked by clicking it on the map; the active one is highlighted)
 - **Elevation profile** — chart of elevation along the active track (with total climb/descent); recorded waypoints are marked along it with their name and elevation and their distance ticked on the x-axis (toggleable), and a toolbar below the chart can download it as SVG (not in an embedded map, where the browser forbids downloads)
-- **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled). While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
+- **Colorize by** (dropdown) — Inactive, Elevation, Steepness, Speed, Heart rate, Cadence, Power, Temperature, Time, Heading (entries with no data in the track are disabled; every mode except Elevation, Speed and Time is premium — badged with a gem and disabled without premium access). While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
 - **More info** — a popup with the track's distance, min/max elevation, total climb and total descent
 - a warning icon while the loaded track isn't part of a saved map — unlike drawing, a track isn't carried in the URL, so it exists only in this browser until saved via **Save to my maps**. It does survive a page reload: the track you have open is kept in the browser (IndexedDB) and put back when you reload the page you were on. That copy goes with the browser's storage, which is why the warning stays.
 - **More** (⋮ menu) — gathers the remaining actions:
@@ -303,7 +306,7 @@ Live tracking lets a user register their own devices (so others can follow their
 
 - **Watched devices** and **My tracked devices** — open the two managers (also reachable directly via <kbd>g</kbd> <kbd>w</kbd> and <kbd>g</kbd> <kbd>d</kbd>)
 - **Visual** — what to draw for tracks: points, line, or line + points
-- **Colorize by** — color the watched tracks by a per-point value; modes are shown only when the tracks carry the data: Elevation, Steepness, Speed, Time, Heading, Battery, GSM signal (Inactive = solid track color). While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
+- **Colorize by** — color the watched tracks by a per-point value; modes are shown only when the tracks carry the data: Elevation, Steepness, Speed, Time, Heading, Battery, GSM signal (Inactive = solid track color). Every mode except Elevation, Speed and Time is premium — badged with a gem and disabled without premium access. While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar
 - **Elevation profile** — a chart of the selected (or first) track that reports altitude; uses the recorded altitudes as-is
 
 #### My tracked devices

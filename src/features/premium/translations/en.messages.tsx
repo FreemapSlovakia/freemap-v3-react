@@ -22,12 +22,14 @@ const en: PremiumMessages = {
         </li>
         <li>premium photos</li>
         <li>multimodal routing</li>
+        <li>optimizing the order of route points</li>
         <li>
           <HintTooltip hint={dtmCountries}>
             high-resolution elevation data (many European countries)
           </HintTooltip>
         </li>
         <li>longer weather radar history and its forecast</li>
+        <li>colorizing routes and tracks (some modes are premium only)</li>
       </ul>
       <p className="mb-0">Freemap stays free and open.</p>
     </>

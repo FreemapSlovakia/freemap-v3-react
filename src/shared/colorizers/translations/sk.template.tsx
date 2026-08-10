@@ -3,7 +3,6 @@ import type { ColorizerMessages } from './ColorizerMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Vyfarbiť podľa',
-  premiumDuringLaunch: 'Prémiové — počas uvedenia zadarmo',
   legend: 'Legenda',
   compass: {
     n: 'S',

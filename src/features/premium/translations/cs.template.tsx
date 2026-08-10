@@ -23,12 +23,14 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>prémiové fotky</li>
         <li>multimodální plánování trasy</li>
+        <li>optimalizace pořadí bodů trasy</li>
         <li>
           <HintTooltip hint={dtmCountries}>
             výšková data ve vysokém rozlišení (řada evropských zemí)
           </HintTooltip>
         </li>
         <li>delší historie meteoradaru a jeho předpověď</li>
+        <li>obarvení tras a záznamů (některé režimy jsou jen prémiové)</li>
       </ul>
       <p className="mb-0">Freemap zůstává bezplatný a otevřený.</p>
     </>

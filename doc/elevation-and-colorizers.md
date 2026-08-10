@@ -55,7 +55,10 @@ real geometry, and is never serialized:
   overrides every vertex from our DEM, then `densifyAlong` adds DEM points. Everyone else
   keeps GraphHopper's elevation, fills only what lacks it, and isn't densified — so the
   free tier never loads the elevation service. `alternatives` keep GraphHopper's
-  elevation so export and the drawn route/distances are untouched.
+  elevation so export and the drawn route/distances are untouched. Because the two
+  variants differ, `authSetUser` drops the cache and re-runs
+  `routePlannerColorizeProcessor` — signing in or buying premium in the same session
+  otherwise keeps the line built for the previous status.
 
 Consumers read `renderTrackGeojson ?? trackGeojson` (`Results.tsx`,
 `DataViewerDetails.tsx`). Chart paths `await ensureRenderGeojson` first.
@@ -432,6 +435,15 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   same thing across tracks. Battery/GSM use a fixed 0–100 % scale.
 - Colorize-mode labels live in `src/shared/colorizers/translations/`
   (`useColorizerMessages`), not the global message blob.
+- **Premium gate** — `premiumColorize.ts` names the free modes (elevation, speed, time);
+  every other mode needs premium access. It is enforced twice: `usePremiumColorizeLock`
+  (`components/`) disables the option and badges it with a clickable `PremiumGem` in the
+  three "Colorize by" dropdowns, and `useUnlockedColorizingMode` resolves the stored mode
+  to `null` wherever it is read — the three menus and the three `*Result` renderers, plus
+  `unlockedColorizingMode` in `routePlannerColorizeProcessor`. The second layer is what
+  stops a mode that came from persisted settings, a saved map or the URL from colorizing
+  after premium lapses; the stored value is left alone, so buying premium restores the
+  user's choice.
 
 ## Track file formats — import/export
 

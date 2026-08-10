@@ -3,6 +3,7 @@ import {
   openTool,
   selectFeature,
 } from '@app/store/actions.js';
+import { authSetUser } from '@features/auth/model/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
@@ -378,6 +379,12 @@ export const routePlannerReducer = createReducer(
       }))
       .addCase(routePlannerSetRenderGeojson, (state, action) => {
         state.renderGeojson = action.payload;
+      })
+      .addCase(authSetUser, (state) => {
+        // The render line is sampled differently for premium (every vertex from
+        // the terrain model, then densified), so it belongs to the user it was
+        // built for.
+        state.renderGeojson = null;
       })
       .addCase(elevationSetSettings, (state, { payload }) => {
         // The render line is derived from the smoothing windows, and from

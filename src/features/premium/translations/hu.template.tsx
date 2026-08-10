@@ -23,12 +23,17 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>prémium fényképek</li>
         <li>multimodális útvonaltervezés</li>
+        <li>az útvonalpontok sorrendjének optimalizálása</li>
         <li>
           <HintTooltip hint={dtmCountries}>
             nagy felbontású magassági adatok (számos európai ország)
           </HintTooltip>
         </li>
         <li>hosszabb csapadékradar-előzmény és annak előrejelzése</li>
+        <li>
+          útvonalak és nyomvonalak színezése (egyes módok csak prémiummal
+          érhetők el)
+        </li>
       </ul>
       <p className="mb-0">A Freemap ingyenes és nyílt marad.</p>
     </>

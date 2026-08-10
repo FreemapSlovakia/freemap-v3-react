@@ -11,6 +11,7 @@ import {
   splitOnGaps,
 } from '@shared/colorizers/colorize.js';
 import { colorizers } from '@shared/colorizers/index.js';
+import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
@@ -97,8 +98,8 @@ export function RoutePlannerResult(): ReactElement {
 
   const mode = useAppSelector((state) => state.routePlanner.mode);
 
-  const colorizeBy = useAppSelector(
-    (state) => state.routePlannerSettings.colorizeBy,
+  const colorizeBy = useUnlockedColorizingMode(
+    useAppSelector((state) => state.routePlannerSettings.colorizeBy),
   );
 
   const lineWidth = useAppSelector(

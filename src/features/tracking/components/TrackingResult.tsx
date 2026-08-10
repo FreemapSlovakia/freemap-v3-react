@@ -8,6 +8,7 @@ import {
   splitOnGaps,
 } from '@shared/colorizers/colorize.js';
 import { colorizers, type HotlinePalette } from '@shared/colorizers/index.js';
+import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { toLatLng, toLatLngArr } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -89,8 +90,8 @@ export function TrackingResult(): ReactElement {
 
   const tracks = useAppSelector((state) => state.tracking.tracks);
 
-  const colorizeBy = useAppSelector(
-    (state) => state.trackingSettings.colorizeBy,
+  const colorizeBy = useUnlockedColorizingMode(
+    useAppSelector((state) => state.trackingSettings.colorizeBy),
   );
 
   const zoom = useAppSelector((state) => state.map.zoom);

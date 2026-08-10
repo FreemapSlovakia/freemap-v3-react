@@ -23,6 +23,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>zdjęcia premium</li>
         <li>multimodalne wyznaczanie trasy</li>
+        <li>optymalizacja kolejności punktów trasy</li>
         <li>
           <HintTooltip hint={dtmCountries}>
             dane o wysokości w wysokiej rozdzielczości (wiele krajów
@@ -30,6 +31,9 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
           </HintTooltip>
         </li>
         <li>dłuższa historia radaru opadów i jego prognoza</li>
+        <li>
+          kolorowanie tras i śladów (niektóre tryby są tylko w wersji premium)
+        </li>
       </ul>
       <p className="mb-0">Freemap pozostaje bezpłatny i otwarty.</p>
     </>

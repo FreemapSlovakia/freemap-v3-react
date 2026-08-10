@@ -8,11 +8,13 @@ import {
   LEGEND_ITEM,
   legendToggleOption,
 } from '@shared/colorizers/components/legendToggleOption.js';
+import { usePremiumColorizeLock } from '@shared/colorizers/components/usePremiumColorizeLock.js';
 import {
   colorizerNeedsElevation,
   colorizers,
   colorizingModes,
 } from '@shared/colorizers/index.js';
+import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import {
   useConfirm,
@@ -33,7 +35,6 @@ import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaEllipsisV,
-  FaGem,
   FaInfoCircle,
   FaMountain,
   FaPaintBrush,
@@ -135,9 +136,11 @@ export function DataViewerMenu(): ReactElement {
     (state) => TRACK_INFO_TOAST_ID in state.toasts.toasts,
   );
 
-  const colorizeTrackBy = useAppSelector(
-    (state) => state.trackViewerSettings.colorizeTrackBy,
+  const colorizeTrackBy = useUnlockedColorizingMode(
+    useAppSelector((state) => state.trackViewerSettings.colorizeTrackBy),
   );
+
+  const premiumColorize = usePremiumColorizeLock();
 
   const colorizeLegend = useAppSelector(
     (state) => state.trackViewerSettings.colorizeLegend,
@@ -408,23 +411,17 @@ export function DataViewerMenu(): ReactElement {
                 colorizeLegend,
                 cm?.legend,
               ),
-              ...[undefined, ...colorizingModes].map((mode) => ({
-                value: mode ?? 'none',
-                label: cm?.mode[mode ?? 'none'],
-                disabled: mode !== undefined && !isModeAvailable(mode),
-                // Launch badge: every mode except the free trio is premium,
-                // shown free for now. Tracked by hand — drop when launch ends.
-                extra:
-                  mode &&
-                  mode !== 'elevation' &&
-                  mode !== 'speed' &&
-                  mode !== 'time' ? (
-                    <FaGem
-                      className="ms-1 text-info"
-                      title={cm?.premiumDuringLaunch}
-                    />
-                  ) : undefined,
-              })),
+              ...[undefined, ...colorizingModes].map((mode) => {
+                const { locked, gem } = premiumColorize(mode);
+
+                return {
+                  value: mode ?? 'none',
+                  label: cm?.mode[mode ?? 'none'],
+                  disabled:
+                    locked || (mode !== undefined && !isModeAvailable(mode)),
+                  extra: gem,
+                };
+              }),
             ]}
           />
         )}

@@ -18,6 +18,10 @@ Freemap.sk is an open web and mobile mapping application for outdoor and everyda
 - **Premium map layers** — hi-res detailed shading of Slovakia and Czechia, the highest zoom levels of the Outdoor Map and of the orthophoto maps of Slovakia and Czechia, and various WMS-based maps.
 - **Premium photos** — access to premium photographs shown on the map.
 - **Multimodal routing** — route planning combining multiple modes of transport.
+- **Route point order optimization** — reordering the waypoints of a planned route to minimize the total travel time.
+- **High-resolution elevation data** — detailed national terrain models in many European countries, used for the elevation profile, for colorizing and for filling in elevation; elsewhere elevation comes from a global model.
+- **Weather radar history and forecast** — up to 6 hours of precipitation history instead of 2, plus the one-hour forecast.
+- **Route and track colorizing** — all colorizing modes except elevation, speed and time, which are free for everyone.
 
 ## Price
 

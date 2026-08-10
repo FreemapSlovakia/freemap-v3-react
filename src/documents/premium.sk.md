@@ -16,6 +16,10 @@ Na podporu ďalšieho vývoja a pokrytie prevádzkových nákladov služby ponú
 - **Prémiové mapové vrstvy** — podrobné tieňovanie Slovenska a Česka vo vysokom rozlíšení, najvyššie úrovne priblíženia Outdoor mapy a ortofotomáp Slovenska a Česka a rôzne mapy založené na WMS.
 - **Prémiové fotografie** — prístup k prémiovým fotografiám zobrazeným na mape.
 - **Multimodálne plánovanie trás** — plánovanie trasy kombinujúce viacero druhov dopravy.
+- **Optimalizácia poradia bodov trasy** — preusporiadanie bodov naplánovanej trasy tak, aby bol celkový čas cesty čo najkratší.
+- **Výškové dáta vo vysokom rozlíšení** — podrobné národné výškové modely vo viacerých európskych krajinách, používané pre výškový profil, vyfarbenie a doplnenie nadmorskej výšky; inde sa výška berie z globálneho modelu.
+- **Dlhšia história meteoradaru a predpoveď** — až 6 hodín histórie zrážok namiesto 2 a hodinová predpoveď.
+- **Vyfarbenie trás a záznamov** — všetky režimy vyfarbenia okrem nadmorskej výšky, rýchlosti a času, ktoré sú bezplatné pre každého.
 
 ## Cena
 

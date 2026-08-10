@@ -3,7 +3,6 @@ import type { ColorizerMessages } from './ColorizerMessages.js';
 
 const de: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Einfärben nach',
-  premiumDuringLaunch: 'Premium — kostenlos während der Einführung',
   legend: 'Legende',
   compass: {
     n: 'N',

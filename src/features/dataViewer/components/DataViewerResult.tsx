@@ -8,6 +8,7 @@ import {
   splitOnGaps,
 } from '@shared/colorizers/colorize.js';
 import { colorizers } from '@shared/colorizers/index.js';
+import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
@@ -55,8 +56,8 @@ export default function DataViewerResult({
     Boolean(state.elevationChart.elevationProfilePoints),
   );
 
-  const colorizeTrackBy = useAppSelector(
-    (state) => state.trackViewerSettings.colorizeTrackBy,
+  const colorizeTrackBy = useUnlockedColorizingMode(
+    useAppSelector((state) => state.trackViewerSettings.colorizeTrackBy),
   );
 
   // Style applied to imported features that carry no style of their own. Its own

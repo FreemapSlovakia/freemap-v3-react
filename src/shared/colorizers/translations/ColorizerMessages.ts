@@ -1,6 +1,5 @@
 export type ColorizerMessages = {
   colorizeBy: string;
-  premiumDuringLaunch: string;
   legend: string;
   compass: {
     n: string;

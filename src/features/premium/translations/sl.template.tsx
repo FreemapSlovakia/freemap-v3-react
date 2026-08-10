@@ -23,6 +23,7 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>premium fotografije</li>
         <li>multimodalno načrtovanje poti</li>
+        <li>optimizacijo vrstnega reda točk poti</li>
         <li>
           <HintTooltip hint={dtmCountries}>
             podatke o nadmorski višini v visoki ločljivosti (številne evropske
@@ -30,6 +31,9 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
           </HintTooltip>
         </li>
         <li>daljša zgodovina vremenskega radarja in njegova napoved</li>
+        <li>
+          obarvanje poti in sledi (nekateri načini so na voljo le s premiumom)
+        </li>
       </ul>
       <p className="mb-0">Freemap ostaja brezplačen in odprt.</p>
     </>

@@ -23,12 +23,17 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>des photos premium</li>
         <li>un calcul d’itinéraire multimodal</li>
+        <li>l’optimisation de l’ordre des points de l’itinéraire</li>
         <li>
           <HintTooltip hint={dtmCountries}>
             des données d’altitude en haute résolution (nombreux pays européens)
           </HintTooltip>
         </li>
         <li>un historique plus long du radar météo et sa prévision</li>
+        <li>
+          la coloration des itinéraires et des traces (certains modes sont
+          réservés au premium)
+        </li>
       </ul>
       <p className="mb-0">Freemap reste gratuit et ouvert.</p>
     </>
