@@ -32,6 +32,10 @@ have to be added upstream one at a time.
 feeds, and the only thing that would change to move them or to put a proxy back
 in front.
 
+What we would like the feed itself to change — tile format, tile size, cache
+headers — is collected in [`weather.md`](./weather.md), written to be forwarded
+upstream.
+
 ### Licence
 
 Same OPERA data as before: **EUMETNET OPERA**, and over Italy the national
