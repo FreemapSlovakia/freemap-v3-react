@@ -30,10 +30,12 @@ const en: ObjectsMessages = {
     ring: 'Ring',
     square: 'Square',
   },
-  convertAsPoint: 'As point',
   convertWithGeometry: 'With full geometry',
+  tooManyForLookup: ({ count, limit }) =>
+    `Too many objects to show as lookups (${count}, at most ${limit}). Zoom in or narrow the filter.`,
   showAsLookup: 'Show as Lookup',
-  convertAll: 'Convert all visible objects to drawing',
+  allVisible: 'All visible',
+  thisObject: 'This object',
   style: {
     button: 'Marker style',
     title: 'Object marker style',

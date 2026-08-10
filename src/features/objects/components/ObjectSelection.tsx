@@ -1,30 +1,21 @@
-import { convertToDrawing, openTool } from '@app/store/actions.js';
+import { openTool } from '@app/store/actions.js';
 import { isToolOpen } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
 } from '@features/routePlanner/model/actions.js';
-import { searchSelectResult } from '@features/search/model/actions.js';
-import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
-import { point } from '@turf/helpers';
 import type { ReactElement } from 'react';
-import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
-import {
-  FaMapMarkerAlt,
-  FaPencilAlt,
-  FaPlay,
-  FaSearch,
-  FaStop,
-} from 'react-icons/fa';
+import { Button, ButtonGroup } from 'react-bootstrap';
+import { FaMapMarkerAlt, FaPlay, FaStop } from 'react-icons/fa';
 import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
-import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { DetailsToggle } from './DetailsToggle.js';
+import { ObjectsConvertMenu } from './ObjectsConvertMenu.js';
 
 function ObjectsToggleButton(): ReactElement {
   const objectsOpen = useAppSelector((state) => isToolOpen(state, 'objects'));
@@ -54,8 +45,6 @@ export default function ObjectSelection(): ReactElement | null {
 
   const m = useMessages();
 
-  const om = useObjectsMessages();
-
   const object = useAppSelector((state) => {
     const sel = state.main.selection;
 
@@ -67,8 +56,6 @@ export default function ObjectSelection(): ReactElement | null {
   if (!object) {
     return null;
   }
-
-  const hasGeometry = object.id.elementType !== 'node';
 
   return (
     <Selection
@@ -129,74 +116,7 @@ export default function ObjectSelection(): ReactElement | null {
         </ButtonGroup>
       )}
 
-      <Dropdown as={ButtonGroup} className="ms-1">
-        <LongPressTooltip breakpoint="lg" label={m?.general.convertToDrawing}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                dispatch(convertToDrawing({ type: 'objects', id: object.id }));
-              }}
-              {...props}
-            >
-              <FaPencilAlt />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-
-        <Dropdown.Toggle split variant="secondary" id="object-convert-split" />
-
-        <FmDropdownMenu>
-          <Dropdown.Item
-            as="button"
-            onClick={() => {
-              dispatch(convertToDrawing({ type: 'objects', id: object.id }));
-            }}
-          >
-            <FaPencilAlt /> {om?.convertAsPoint}
-          </Dropdown.Item>
-
-          {hasGeometry && (
-            <Dropdown.Item
-              as="button"
-              onClick={() => {
-                dispatch(
-                  convertToDrawing({
-                    type: 'objects-geometry',
-                    id: object.id,
-                  }),
-                );
-              }}
-            >
-              <FaPencilAlt /> {om?.convertWithGeometry}
-            </Dropdown.Item>
-          )}
-
-          <Dropdown.Divider />
-
-          <Dropdown.Item
-            as="button"
-            onClick={() => {
-              dispatch(
-                searchSelectResult({
-                  result: {
-                    source: 'osm',
-                    id: object.id,
-                    geojson: point(
-                      [object.coords.lon, object.coords.lat],
-                      object.tags,
-                    ),
-                    incomplete: true,
-                  },
-                }),
-              );
-            }}
-          >
-            <FaSearch /> {om?.showAsLookup}
-          </Dropdown.Item>
-        </FmDropdownMenu>
-      </Dropdown>
+      <ObjectsConvertMenu object={object} />
     </Selection>
   );
 }

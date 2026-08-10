@@ -37,10 +37,12 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Gyűrű',
     square: 'Négyzet',
   },
-  convertAsPoint: 'Pontként',
   convertWithGeometry: 'Teljes geometriával',
+  tooManyForLookup: ({ count, limit }) =>
+    `Túl sok objektum a találatként való megjelenítéshez (${count}, legfeljebb ${limit}). Nagyítson rá, vagy szűkítse a szűrőt.`,
   showAsLookup: 'Megjelenítés találatként',
-  convertAll: 'Minden látható objektum átalakítása rajzzá',
+  allVisible: 'Minden látható',
+  thisObject: 'Ez az objektum',
   tooManyPoints: ({ limit }) =>
     `Az eredmény ${limit} objektumra lett korlátozva.`,
   markerShape: 'Jelölő alakja',

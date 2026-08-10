@@ -35,10 +35,12 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     `Wynik został ograniczony do ${limit} obiektów.`,
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas pobierania obiektów (POI)', err),
-  convertAsPoint: 'Jako punkt',
   convertWithGeometry: 'Z pełną geometrią',
+  tooManyForLookup: ({ count, limit }) =>
+    `Zbyt wiele obiektów, aby pokazać je jako wyniki (${count}, najwyżej ${limit}). Przybliż mapę lub zawęź filtr.`,
   showAsLookup: 'Pokaż jako Wynik',
-  convertAll: 'Przekształć wszystkie widoczne obiekty na rysunek',
+  allVisible: 'Wszystkie widoczne',
+  thisObject: 'Ten obiekt',
   markerShape: 'Kształt znacznika',
 };
 

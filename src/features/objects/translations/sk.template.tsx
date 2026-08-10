@@ -31,10 +31,12 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Okrúhla',
     square: 'Štvorcová',
   },
-  convertAsPoint: 'Ako bod',
   convertWithGeometry: 'S celou geometriou',
+  tooManyForLookup: ({ count, limit }) =>
+    `Priveľa objektov na zobrazenie ako nálezy (${count}, najviac ${limit}). Priblížte mapu alebo zúžte filter.`,
   showAsLookup: 'Zobraziť ako Nález',
-  convertAll: 'Skonvertovať všetky viditeľné objekty na kreslenie',
+  allVisible: 'Všetky viditeľné',
+  thisObject: 'Tento objekt',
   style: {
     button: 'Štýl značky',
     title: 'Štýl značky objektu',

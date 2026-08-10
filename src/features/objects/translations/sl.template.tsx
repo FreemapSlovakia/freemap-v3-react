@@ -31,10 +31,12 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Obroč',
     square: 'Kvadrat',
   },
-  convertAsPoint: 'Kot točka',
   convertWithGeometry: 'S celotno geometrijo',
+  tooManyForLookup: ({ count, limit }) =>
+    `Preveč objektov za prikaz kot najdbe (${count}, največ ${limit}). Približajte ali zožite filter.`,
   showAsLookup: 'Prikaži kot Najdba',
-  convertAll: 'Pretvori vse vidne objekte v risbo',
+  allVisible: 'Vsi vidni',
+  thisObject: 'Ta objekt',
   style: {
     button: 'Slog oznake',
     title: 'Slog oznake objekta',

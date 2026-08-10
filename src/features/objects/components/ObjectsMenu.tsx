@@ -1,4 +1,4 @@
-import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
+import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HideArrow } from '@features/search/components/SearchMenu.js';
 import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
@@ -22,10 +22,11 @@ import {
   useState,
 } from 'react';
 import { Button, Dropdown, type DropdownProps, Form } from 'react-bootstrap';
-import { FaPaintBrush, FaPencilAlt, FaTrash } from 'react-icons/fa';
+import { FaPaintBrush, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { objectsSetFilter } from '../model/actions.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
+import { ObjectsConvertMenu } from './ObjectsConvertMenu.js';
 
 export default function ObjectsMenu(): ReactElement {
   const m = useMessages();
@@ -275,22 +276,7 @@ export default function ObjectsMenu(): ReactElement {
         )}
       </LongPressTooltip>
 
-      {hasObjects && (
-        <LongPressTooltip label={om?.convertAll}>
-          {({ props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => {
-                dispatch(convertToDrawing({ type: 'objects' }));
-              }}
-              {...props}
-            >
-              <FaPencilAlt />
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+      {hasObjects && <ObjectsConvertMenu />}
 
       {active.length > 0 && (
         <LongPressTooltip label={m?.general.delete} kbd="Del">

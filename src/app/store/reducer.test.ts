@@ -5,6 +5,7 @@ import {
   selectFeature,
 } from '@app/store/actions.js';
 import { drawingLineStopDrawing } from '@features/drawing/model/actions/drawingLineActions.js';
+import { objectsSetResult } from '@features/objects/model/actions.js';
 import {
   type SearchResult,
   searchSelectResult,
@@ -228,6 +229,19 @@ describe('convertToDrawing', () => {
     expect(s.panelTools).toEqual(['tracking']);
   });
 
+  it('leaves the tool open when one object of many is converted', () => {
+    // The other objects are still there for its toolbar to act on.
+    const s = run(
+      openTool('objects'),
+      convertToDrawing({
+        type: 'objects',
+        id: { type: 'osm', elementType: 'node', id: 1 },
+      }),
+    );
+
+    expect(s.panelTools).toEqual(['objects']);
+  });
+
   it('leaves the tools alone when converting from a selection toolbar', () => {
     const s = run(
       openTool('objects'),
@@ -235,6 +249,38 @@ describe('convertToDrawing', () => {
     );
 
     expect(s.panelTools).toEqual(['objects']);
+  });
+});
+
+describe('objectsSetResult', () => {
+  const anObject = { type: 'osm', elementType: 'node', id: 1 } as const;
+
+  it('deselects an object that is no longer among the found ones', () => {
+    // Nothing renders a toolbar for it, so the selection could be neither
+    // reached nor let go of.
+    const s = run(
+      selectFeature({ type: 'objects', id: anObject }),
+      objectsSetResult([]),
+    );
+
+    expect(s.selection).toBeNull();
+  });
+
+  it('keeps the selection while the object is still found', () => {
+    const s = run(
+      selectFeature({ type: 'objects', id: anObject }),
+      objectsSetResult([
+        { id: anObject, coords: { lat: 48, lon: 17 }, tags: {} },
+      ]),
+    );
+
+    expect(s.selection).toEqual({ type: 'objects', id: anObject });
+  });
+
+  it('leaves another kind of selection alone', () => {
+    const s = run(selectFeature(aLine), objectsSetResult([]));
+
+    expect(s.selection).toEqual(aLine);
   });
 });
 

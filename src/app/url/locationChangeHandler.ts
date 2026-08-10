@@ -1052,7 +1052,7 @@ function handleOsmElements(
   const { previewId } = getState().search;
 
   if (previewId && wanted.some((w) => featureIdsEqual(w, previewId))) {
-    dispatch(searchKeepResult({ id: previewId, keep: true }));
+    dispatch(searchKeepResult(previewId));
   }
 
   const [first] = wanted;

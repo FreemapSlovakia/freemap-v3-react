@@ -13,6 +13,7 @@ import {
   drawingLineSetLines,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import { objectsSetResult } from '@features/objects/model/actions.js';
 import {
   routePlannerAddPoint,
   routePlannerDelete,
@@ -214,7 +215,15 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       state.selection = action.payload;
     })
     .addCase(convertToDrawing, (state, action) => {
-      const source = convertSourceTools[action.payload.type];
+      const { payload } = action;
+
+      // Converting one feature leaves the tool it came from with the rest of
+      // them; only converting everything it holds takes the tool with it.
+      if ('id' in payload && payload.id !== undefined) {
+        return;
+      }
+
+      const source = convertSourceTools[payload.type];
 
       if (state.mapTool === source) {
         state.mapTool = null;
@@ -222,6 +231,23 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
 
       if (source && state.panelTools.includes(source)) {
         state.panelTools = state.panelTools.filter((t) => t !== source);
+      }
+    })
+    // An object that is no longer among the found ones can't be the selected
+    // feature: nothing would render its toolbar, so the selection would sit
+    // there with no way to reach it and no way to let it go. Reached by the
+    // filter being cleared, by the objects being handed to another feature, and
+    // by panning until the object drops out of what Overpass answers.
+    .addCase(objectsSetResult, (state, action) => {
+      const { selection } = state;
+
+      if (
+        selection?.type === 'objects' &&
+        !action.payload.some((object) =>
+          featureIdsEqual(object.id, selection.id),
+        )
+      ) {
+        state.selection = null;
       }
     })
     .addCase(drawingLineJoinFinish, (state, { payload }) => {

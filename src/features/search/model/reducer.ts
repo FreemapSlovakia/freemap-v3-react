@@ -14,6 +14,7 @@ import {
   type SearchResult,
   searchClear,
   searchKeepResult,
+  searchKeepResults,
   searchSelectResult,
   searchSetHover,
   searchSetQuery,
@@ -44,13 +45,6 @@ export interface SearchState {
    * in the URL.
    */
   hoverResult: SearchResult | null;
-  searchSeq: number;
-  /**
-   * Bumped whenever `selectedResults` changes. The map layers are keyed on it:
-   * react-leaflet builds its layers from the data it was first given, so a
-   * result whose geometry arrives later reaches the map only through a remount.
-   */
-  searchResultSeq: number;
   query: string;
 }
 
@@ -59,8 +53,6 @@ export const searchInitialState: SearchState = {
   selectedResults: [],
   previewId: null,
   hoverResult: null,
-  searchSeq: 0,
-  searchResultSeq: 0,
   query: '',
 };
 
@@ -115,8 +107,6 @@ function addLoading(
   if (!pin) {
     takePreview(state, id);
   }
-
-  state.searchResultSeq += 1;
 }
 
 export const searchReducer = createReducer(searchInitialState, (builder) =>
@@ -131,8 +121,6 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
 
       // The pointer rests on a row of the list that is being replaced.
       state.hoverResult = null;
-
-      state.searchSeq = state.searchSeq + 1;
     })
     .addCase(searchSetHover, (state, action) => {
       state.hoverResult = action.payload;
@@ -167,8 +155,6 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
       );
     })
     .addCase(searchSelectResult, (state, action) => {
-      state.searchResultSeq = state.searchResultSeq + 1;
-
       // Picking is done with the pointer on the row, and closes the list under
       // it — no leave event follows.
       state.hoverResult = null;
@@ -205,21 +191,30 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
       }
     })
     .addCase(searchUnselectResult, (state, action) => {
-      if (removeResult(state, action.payload)) {
-        state.searchResultSeq = state.searchResultSeq + 1;
+      removeResult(state, action.payload);
+    })
+    .addCase(searchKeepResults, (state, { payload }) => {
+      for (const result of payload) {
+        if (indexOfResult(state, result.id) === -1) {
+          state.selectedResults.push(result);
+        } else if (
+          state.previewId &&
+          featureIdsEqual(state.previewId, result.id)
+        ) {
+          // Already on the map, and it keeps whatever it holds — its geometry
+          // may have been loaded since, and the batch carries points. Only its
+          // being transient goes.
+          state.previewId = null;
+        }
       }
     })
     .addCase(searchKeepResult, (state, { payload }) => {
-      if (indexOfResult(state, payload.id) === -1) {
-        return;
-      }
-
-      if (payload.keep) {
-        if (state.previewId && featureIdsEqual(state.previewId, payload.id)) {
-          state.previewId = null;
-        }
-      } else {
-        takePreview(state, payload.id);
+      if (
+        state.previewId &&
+        featureIdsEqual(state.previewId, payload) &&
+        indexOfResult(state, payload) !== -1
+      ) {
+        state.previewId = null;
       }
     }),
 );

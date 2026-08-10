@@ -10,6 +10,7 @@ import {
   type SearchResult,
   searchClear,
   searchKeepResult,
+  searchKeepResults,
   searchSelectResult,
   searchSetHover,
   searchSetQuery,
@@ -50,14 +51,13 @@ describe('searchReducer — query & results', () => {
     expect(next.query).toBe('pub');
   });
 
-  it('setResults stores results and bumps searchSeq', () => {
+  it('setResults stores the results', () => {
     const next = searchReducer(
       searchInitialState,
       searchSetResults([result(osmId('node', 1))]),
     );
 
     expect(next.results).toHaveLength(1);
-    expect(next.searchSeq).toBe(searchInitialState.searchSeq + 1);
   });
 
   it('searchClear / clearMapFeatures reset to initial', () => {
@@ -85,7 +85,6 @@ describe('searchReducer — osm load actions', () => {
     expect(next.selectedResults[0].id).toEqual(osmId('node', 1));
     expect(hasGeometry(next.selectedResults[0])).toBe(false);
     expect(next.previewId).toEqual(osmId('node', 1));
-    expect(next.searchResultSeq).toBe(searchInitialState.searchResultSeq + 1);
   });
 
   it('keeps an element the URL asks for rather than previewing it', () => {
@@ -137,7 +136,6 @@ describe('searchReducer — osm load actions', () => {
     );
 
     expect(next.selectedResults).toEqual([shown]);
-    expect(next.searchResultSeq).toBe(searchInitialState.searchResultSeq);
   });
 });
 
@@ -194,7 +192,7 @@ describe('searchReducer — pointing at a result', () => {
 });
 
 describe('searchReducer — selecting results', () => {
-  it('shows the result and bumps searchResultSeq', () => {
+  it('shows the result', () => {
     const r = result(osmId('way', 7));
 
     const next = searchReducer(
@@ -203,7 +201,6 @@ describe('searchReducer — selecting results', () => {
     );
 
     expect(next.selectedResults).toEqual([r]);
-    expect(next.searchResultSeq).toBe(searchInitialState.searchResultSeq + 1);
   });
 
   it('previews one result at a time, replacing the previous preview', () => {
@@ -232,7 +229,7 @@ describe('searchReducer — selecting results', () => {
       searchSelectResult({ result: kept }),
     );
 
-    state = searchReducer(state, searchKeepResult({ id: kept.id, keep: true }));
+    state = searchReducer(state, searchKeepResult(kept.id));
 
     state = searchReducer(state, searchSelectResult({ result: previewed }));
 
@@ -248,7 +245,7 @@ describe('searchReducer — selecting results', () => {
       searchSelectResult({ result: r }),
     );
 
-    state = searchReducer(state, searchKeepResult({ id: r.id, keep: true }));
+    state = searchReducer(state, searchKeepResult(r.id));
 
     state = searchReducer(state, searchSelectResult({ result: r }));
 
@@ -268,7 +265,7 @@ describe('searchReducer — selecting results', () => {
       searchSelectResult({ result: kept }),
     );
 
-    state = searchReducer(state, searchKeepResult({ id: kept.id, keep: true }));
+    state = searchReducer(state, searchKeepResult(kept.id));
 
     state = searchReducer(state, searchSelectResult({ result: previewed }));
 
@@ -309,26 +306,38 @@ describe('searchReducer — selecting results', () => {
 
     expect(next.selectedResults).toEqual([second]);
     expect(next.previewId).toBeNull();
-    expect(next.searchResultSeq).toBe(searchInitialState.searchResultSeq + 1);
   });
 
-  it('hands a result no longer kept back to the preview place', () => {
-    const kept = result(osmId('way', 7));
-
-    let state = searchReducer(
+  it('takes a batch of results, all of them kept', () => {
+    const state = searchReducer(
       searchInitialState,
-      searchSelectResult({ result: kept }),
+      searchKeepResults([result(osmId('way', 7)), result(osmId('node', 8))]),
     );
 
-    state = searchReducer(state, searchKeepResult({ id: kept.id, keep: true }));
+    expect(state.selectedResults.map(({ id }) => id)).toEqual([
+      osmId('way', 7),
+      osmId('node', 8),
+    ]);
 
-    state = searchReducer(
-      state,
-      searchKeepResult({ id: kept.id, keep: false }),
+    expect(state.previewId).toBeNull();
+    // The batch is not the result list; that holds whatever it held.
+    expect(state.results).toEqual([]);
+  });
+
+  it('leaves a result the batch names alone, but stops it being transient', () => {
+    const loaded = { ...result(osmId('way', 7)), displayName: 'loaded' };
+
+    const state = searchReducer(
+      {
+        ...searchInitialState,
+        selectedResults: [loaded],
+        previewId: osmId('way', 7),
+      },
+      searchKeepResults([result(osmId('way', 7))]),
     );
 
-    expect(state.selectedResults).toEqual([kept]);
-    expect(state.previewId).toEqual(osmId('way', 7));
+    expect(state.selectedResults).toEqual([loaded]);
+    expect(state.previewId).toBeNull();
   });
 
   it('keeping the previewed result stops it being transient', () => {
@@ -341,7 +350,7 @@ describe('searchReducer — selecting results', () => {
 
     expect(state.previewId).toEqual(osmId('way', 7));
 
-    state = searchReducer(state, searchKeepResult({ id: r.id, keep: true }));
+    state = searchReducer(state, searchKeepResult(r.id));
 
     expect(state.selectedResults).toEqual([r]);
     expect(state.previewId).toBeNull();
@@ -349,10 +358,7 @@ describe('searchReducer — selecting results', () => {
 
   it('ignores keeping a result that is not shown', () => {
     expect(
-      searchReducer(
-        searchInitialState,
-        searchKeepResult({ id: osmId('way', 7), keep: true }),
-      ),
+      searchReducer(searchInitialState, searchKeepResult(osmId('way', 7))),
     ).toEqual(searchInitialState);
   });
 

@@ -34,10 +34,12 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: "Dell'anello",
     square: 'Quadrata',
   },
-  convertAsPoint: 'Come punto',
   convertWithGeometry: 'Con la geometria completa',
+  tooManyForLookup: ({ count, limit }) =>
+    `Troppi oggetti da mostrare come risultati (${count}, al massimo ${limit}). Ingrandisci o restringi il filtro.`,
   showAsLookup: 'Mostra come Risultato',
-  convertAll: 'Converti tutti gli oggetti visibili in disegno',
+  allVisible: 'Tutti i visibili',
+  thisObject: 'Questo oggetto',
   markerShape: 'Forma del marcatore',
 };
 

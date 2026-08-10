@@ -22,8 +22,8 @@ export function DetailsToggle(): ReactElement {
   );
 
   return (
-    <LongPressTooltip breakpoint="md" label={om?.showDetails}>
-      {({ label, labelClassName, props }) => (
+    <LongPressTooltip label={om?.showDetails}>
+      {({ props }) => (
         <Button
           className="ms-1"
           variant="secondary"
@@ -33,7 +33,6 @@ export function DetailsToggle(): ReactElement {
           {...props}
         >
           <FaInfoCircle />
-          <span className={labelClassName}> {label}</span>
         </Button>
       )}
     </LongPressTooltip>

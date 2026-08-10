@@ -30,6 +30,15 @@ export const objectsSetStyle = createAction<{
 }>('OBJECTS_SET_STYLE');
 
 /**
+ * Shows an object as a lookup result — or, with no `id`, every visible one at
+ * once, which hands them over for good: they are taken off as objects, the way
+ * converting them to a drawing takes them off.
+ */
+export const objectsShowAsLookup = createAction<{ id?: OsmFeatureId }>(
+  'OBJECTS_SHOW_AS_LOOKUP',
+);
+
+/**
  * Whether the details toast accompanies the selected feature. The toast is a
  * view of this preference and the current selection, so this is what both the
  * selection toolbars' details toggle and the toast's own × switch.

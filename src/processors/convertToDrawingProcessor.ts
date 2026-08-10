@@ -8,6 +8,7 @@ import {
   type Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
@@ -345,6 +346,14 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         );
       }
 
+      if (!payload.id) {
+        // Every visible object is a drawing now, so the predicate that fetched
+        // them goes with them: left set, it would fetch them again on the next
+        // pan and draw them over what they became. The tool goes too, through
+        // `convertSourceTools` in the main reducer.
+        dispatch(objectsSetFilter([]));
+      }
+
       if (targets.length === 1) {
         dispatch(
           selectFeature({
@@ -496,6 +505,12 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
       selectAfterConvert(dispatch, getState, lineCount, pointCount);
     }
+
+    // The conversion is done here, but the action still has to reach the
+    // reducers: closing the tool it was reached for from is theirs to do
+    // (`convertSourceTools` in the main reducer). A transform that answers
+    // nothing drops the action instead.
+    return action;
   },
   handle: async ({ getState, dispatch, action }) => {
     if (action.payload.type === 'planned-route') {

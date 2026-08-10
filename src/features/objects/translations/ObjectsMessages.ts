@@ -23,10 +23,11 @@ export type ObjectsMessages = {
     ring: string;
     square: string;
   };
-  convertAsPoint: string;
   convertWithGeometry: string;
   showAsLookup: string;
-  convertAll: string;
+  tooManyForLookup: (props: { count: number; limit: number }) => string;
+  allVisible: string;
+  thisObject: string;
   style: {
     button: string;
     title: string;

@@ -42,41 +42,20 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
 
   const selectedResult = useAppSelector(activeSearchResultSelector);
 
-  // Off for every freshly picked result: it is on the map because it is being
-  // looked at, and goes when that stops. Switching it on keeps it there.
+  // False for every freshly picked result: it is on the map because it is being
+  // looked at, and goes when that stops.
   const kept = useAppSelector(activeSearchResultKeptSelector);
 
   return selectedResult &&
     !selectedResult.loading &&
     !window.fmEmbedded &&
     !hidden ? (
-    // No delete button: a search result is an element that exists whether it is
-    // looked at or not, so there is nothing of the user's to destroy — the same
-    // reason objects and route legs offer none. The two controls are presence
-    // (the toggle below) and attention (the × in the toolbar); taking a result
-    // off the map is the two of them together, and Del is the shortcut for it.
-    <Selection icon={<FaSearch />} label={m?.search.result}>
+    // One button says what can be done about the result being on the map, and
+    // which one it is says what it is doing there: a result being looked at can
+    // be kept, and a kept one can be taken off. They share the slot the delete
+    // button holds on every other selection toolbar, right before the ×.
+    <Selection icon={<FaSearch />} label={m?.search.result} deletable={kept}>
       <DetailsToggle />
-
-      <LongPressTooltip breakpoint="md" label={m?.search.keepOnMap}>
-        {({ label, labelClassName, props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            active={kept}
-            aria-pressed={kept}
-            onClick={() => {
-              dispatch(
-                searchKeepResult({ id: selectedResult.id, keep: !kept }),
-              );
-            }}
-            {...props}
-          >
-            <FaThumbtack />
-            <span className={labelClassName}> {label}</span>
-          </Button>
-        )}
-      </LongPressTooltip>
 
       <ButtonGroup className="ms-1">
         <LongPressTooltip label={m?.search.routeFrom}>
@@ -159,6 +138,23 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
           </Button>
         )}
       </LongPressTooltip>
+
+      {!kept && (
+        <LongPressTooltip label={m?.search.keepOnMap}>
+          {({ props }) => (
+            <Button
+              className="ms-1"
+              variant="secondary"
+              onClick={() => {
+                dispatch(searchKeepResult(selectedResult.id));
+              }}
+              {...props}
+            >
+              <FaThumbtack />
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
     </Selection>
   ) : null;
 }

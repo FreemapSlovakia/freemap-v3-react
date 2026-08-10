@@ -43,10 +43,6 @@ export function SearchResults(): ReactElement | null {
     (state) => state.search.selectedResults,
   );
 
-  const selectedResultSeq = useAppSelector(
-    (state) => state.search.searchResultSeq,
-  );
-
   const language = useAppSelector((state) => state.l10n.language);
 
   // The user-overridable result style. `window.fmHeadless.searchResultStyle`
@@ -93,14 +89,10 @@ export function SearchResults(): ReactElement | null {
         );
 
         return (
-          // Remount on style change too: react-leaflet keeps `pointToLayer`
-          // markers from their initial render, so a style edit — or the
-          // selection moving to another result — wouldn't reach them otherwise.
           <ResultGeometry
             key={
-              stringifyFeatureId(result.id) +
+              resultKey(result) +
               language +
-              selectedResultSeq +
               markerColor +
               resultStyle.markerType +
               JSON.stringify(pathStyle) +
@@ -127,7 +119,7 @@ export function SearchResults(): ReactElement | null {
 
       {hovered && (
         <ResultGeometry
-          key={`hover:${stringifyFeatureId(hovered.id)}${language}${markerColor}${resultStyle.markerType}`}
+          key={`hover:${resultKey(hovered)}${language}${markerColor}${resultStyle.markerType}`}
           result={hovered}
           markerColor={markerColor}
           pathStyle={pathStyle}
@@ -136,6 +128,28 @@ export function SearchResults(): ReactElement | null {
       )}
     </>
   );
+}
+
+/**
+ * What a result's layers are built from. React-leaflet hands its data to
+ * Leaflet once, so geometry arriving later — an incomplete result upgraded to
+ * the element itself — reaches the map only through a remount, and the key has
+ * to say when that happens.
+ *
+ * It says nothing about the other results, so picking one doesn't rebuild the
+ * layers of every result on the map: a screenful of markers redrawing at once
+ * is visible as a flash.
+ */
+function resultKey(result: SearchResult): string {
+  const { geojson } = result;
+
+  return [
+    stringifyFeatureId(result.id),
+    result.incomplete ? 'incomplete' : 'complete',
+    geojson.type === 'Feature'
+      ? (geojson.geometry?.type ?? 'none')
+      : `collection:${geojson.features.length}`,
+  ].join('|');
 }
 
 type Props = {

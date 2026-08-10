@@ -7,6 +7,7 @@ import {
   drawingLineDeletePoint,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointDelete } from '@features/drawing/model/actions/drawingPointActions.js';
+import { objectsSetFilter } from '@features/objects/model/actions.js';
 import {
   routePlannerDelete,
   routePlannerRemovePoint,
@@ -44,10 +45,11 @@ export const deleteProcessor: Processor = {
 
       dispatch(routePlannerRemovePoint(state.main.selection.id));
     } else if (state.main.selection?.type === 'search') {
-      // Only the result acted upon goes; the others stay on the map. The search
-      // toolbar carries no delete button — a result is taken off it by not
-      // being kept and being looked away from — so this is the shortcut for
-      // doing both at once.
+      // Only the result acted upon goes; the others stay on the map. This is
+      // the shortcut for the toolbar's delete button, and for a result being
+      // looked at rather than kept — which has no such button, going as it
+      // does the moment it stops being looked at — it is the way to say so
+      // outright.
       dispatch(searchUnselectResult(state.main.selection.id));
     } else if (state.main.selection === null) {
       // Nothing is selected, so Del means "delete all of the open tool's" — of
@@ -63,6 +65,12 @@ export const deleteProcessor: Processor = {
         dispatch(routePlannerDelete());
       } else if (isToolOpen(state, 'import-file')) {
         dispatch(dataViewerDelete());
+      } else if (isToolOpen(state, 'objects')) {
+        // Taking the predicate away is what takes the objects off the map —
+        // they are fetched for as long as it is set. Last of the tools, so no
+        // other toolbar's Del changes meaning for having this one open beside
+        // it.
+        dispatch(objectsSetFilter([]));
       }
     }
   },

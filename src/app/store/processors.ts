@@ -84,6 +84,7 @@ import {
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
 } from '@features/objects/model/objectsFetchProcessor.js';
+import { objectsLookupProcessor } from '@features/objects/model/objectsLookupProcessor.js';
 import { downloadMapProcessor } from '@features/offlineMapExport/model/downloadMapProcessor.js';
 import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
 import { osmLoadNodeProcessor } from '@features/osm/model/processors/osmLoadNodeProcessor.js';
@@ -161,6 +162,7 @@ export const processors = [
   objectsFetchProcessor,
   objectsChangePredicateProcessor,
   objectDetailsProcessor,
+  objectsLookupProcessor,
   osmLoadNodeProcessor,
   osmLoadWayProcessor,
   osmLoadRelationProcessor,

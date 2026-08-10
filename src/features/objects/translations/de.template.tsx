@@ -29,10 +29,12 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Ring',
     square: 'Quadrat',
   },
-  convertAsPoint: 'Als Punkt',
   convertWithGeometry: 'Mit voller Geometrie',
+  tooManyForLookup: ({ count, limit }) =>
+    `Zu viele Objekte, um sie als Funde anzuzeigen (${count}, höchstens ${limit}). Zoomen Sie hinein oder schränken Sie den Filter ein.`,
   showAsLookup: 'Als Fund anzeigen',
-  convertAll: 'Alle sichtbaren Objekte in Zeichnung umwandeln',
+  allVisible: 'Alle sichtbaren',
+  thisObject: 'Dieses Objekt',
   showDetails: 'Details',
   type: 'Typ',
   tooManyPoints: ({ limit }) =>

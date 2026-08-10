@@ -111,6 +111,15 @@ export const searchSetHover = createAction<SearchResult | null>(
 );
 
 /**
+ * Puts a batch of results on the map, kept — the whole of what another feature
+ * has to show, handed over at once rather than as a run of picks. It says
+ * nothing about the result list, and nothing about which feature is selected.
+ */
+export const searchKeepResults = createAction<SearchResult[]>(
+  'SEARCH_KEEP_RESULTS',
+);
+
+/**
  * Lets go of the row the pointer or the focus has left — unless another row has
  * taken over since, the two of them being able to rest on different rows and
  * hand over in either order.
@@ -118,10 +127,8 @@ export const searchSetHover = createAction<SearchResult | null>(
 export const searchUnsetHover = createAction<FeatureId>('SEARCH_UNSET_HOVER');
 
 /**
- * Keeps a result on the map for good, or hands it back to the preview place it
- * came from — where it lasts only as long as it is the one being looked at.
+ * Keeps a result that is on the map — it stops being the transient one, and
+ * stays until it is taken off. Nothing hands it back: a result being looked at
+ * that shouldn't stay is one to remove, which `searchUnselectResult` does.
  */
-export const searchKeepResult = createAction<{
-  id: FeatureId;
-  keep: boolean;
-}>('SEARCH_KEEP_RESULT');
+export const searchKeepResult = createAction<FeatureId>('SEARCH_KEEP_RESULT');

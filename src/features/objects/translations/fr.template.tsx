@@ -39,10 +39,12 @@ const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   showDetails: 'Détails',
   type: 'Type',
   markerShape: 'Forme du marqueur',
-  convertAsPoint: 'En point',
   convertWithGeometry: 'Avec la géométrie complète',
+  tooManyForLookup: ({ count, limit }) =>
+    `Trop d'objets à afficher comme résultats (${count}, au maximum ${limit}). Zoomez ou restreignez le filtre.`,
   showAsLookup: 'Afficher comme Résultat',
-  convertAll: 'Convertir tous les objets visibles en dessin',
+  allVisible: 'Tous les visibles',
+  thisObject: 'Cet objet',
 };
 
 export default fr;
