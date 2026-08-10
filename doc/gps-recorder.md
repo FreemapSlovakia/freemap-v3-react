@@ -101,20 +101,20 @@ point of it, and the live view stops on a column nothing here even reads.
 `/stream` sends bare rows with **no `fields` header** of their own, so the column
 order comes from `/status`, from the status frame the stream opens with, or from
 the last `/track` page. The sync reads a status before it ever opens a stream, so
-the order is always known by then and `openRecorderStream` takes it as a required
-argument.
+the order is always known by then, and a sync says which columns it read as part
+of reporting that it succeeded.
 
 **The stream carries state, not just points.** A named `status` event arrives on
 connect and thereafter whenever the recorder's state genuinely changed — start,
 stop, `DELETE /track`, and a permission or battery change the next time the
-recorder's own screen resumes. `stream.ts` reconciles it through the
+recorder's own screen resumes. `connection.ts` reconciles it through the
 same `applyStatus` a polled status goes through, so a cleared `generation` or a
 stopped recording lands the moment it happens.
 
 **So nothing polls `/status`.** A sync runs at boot, when the page returns to the
 foreground — a frozen page hears no events, so that catch-up is what fills the gap
-— when the tool is opened, and when `stream.ts` revives a stream the browser gave
-up on. A timer would only ask again for what the stream already said.
+— when the tool is opened, and when a failed connection's retry comes due. A timer
+would only ask again for what the stream already said.
 
 **`POST /stop` is a pause, so that is what the button says.** The recorder keeps
 its track across a stop and opens a new segment on the next start, so stopping it
@@ -201,6 +201,14 @@ exemption fixes). `recorderFetch` reads that body and maps both to
 - **`EventSource` cannot pass it.** The stream therefore only works once an
   earlier gestured fetch has been granted the permission — which is why the
   start flow calls `/status` first.
+- **Every request carries a deadline** (`recorderClient.ts`: 3 s for `/status`,
+  8 s for a transport command, 20 s for a whole track). Nothing here crosses a
+  network, so a request still unanswered is not slow but gone — and a fetch the
+  browser froze along with the page can otherwise stay pending for the rest of
+  that page's life, with every later sync coalescing onto it and the live view
+  reading as `connecting` until a reload. An expired deadline is reported as
+  `unreachable`: a Local Network Access block is refused at once, so it can never
+  be what ran out the clock.
 - **A Local Network Access *prompt* needs a real user gesture.** Once the
   permission is granted, nothing else does — so the tool syncs on mount and on a
   timer, and only offers a gestured "Connect" button (on the failure toast)
@@ -286,32 +294,73 @@ been seen, which shows up as the page flickering and nothing else.
 
 ## Track sync
 
-`syncHandler` runs at boot, on `visibilitychange` back to `visible`, when the tool
-is opened, after a stream the browser gave up on, and at the end of the start flow
-— never on a timer, because the stream says when something changed.
+### One owner, reconciling a desired state
+
+[`connection.ts`](../src/features/gpsRecorder/connection.ts) holds the stream, the
+sync in flight, the retry and the follow flag, and nothing else holds any of them.
+Everything that could change the answer — the page coming and going, the tool
+opening or closing, a stream the browser dropped, a sync that failed, a retry
+coming due — calls **`reconcileRecorderConnection`**, which compares what should be
+connected against what is and fixes the difference. So there is one place that
+decides whether to connect, one backoff, and one answer for what the toolbar says.
+
+**Nothing else may hold a handle, a timer or a flag of its own.** Each one is a
+second opinion on whether there is a connection, and separate opinions drift: a
+stream believed open, a retry believed pending and a sync believed in flight are
+three answers to one question, and only one of them can be what the toolbar shows.
+
+**Wanted** is: the platform supports the recorder, the page is visible, and either
+the follow flag is set or the tool is open. `applyStatus` sets that flag from the
+recorder's own answer — recording, or holding points — which is why *every* status
+goes through it and none is dispatched raw: a Finish or a Delete that stored its
+status directly would leave the page following a recorder it had just emptied, this
+session and on the next load. It lives in
+`localStorage` rather than the store, because the question outlives the page: a
+recording carries on in the phone's own app while the browser is closed, and on the
+next load nothing else would know to go looking.
+
+**Hidden means disconnected**, which is the rule that removes a whole class of
+trouble. A page that is hidden may be frozen the next moment, and an `EventSource`
+frozen with it comes back reporting `OPEN` while nothing arrives on it — loopback
+delivers no reset for the browser to notice, so it believes in the socket for tens
+of seconds, then replays every fix above its last event id in one burst: a
+screenful of dispatches and a page that locks up. Until then the live view is dead
+while reading as `Live`. So going away closes the stream *and aborts the sync in
+flight*; coming back opens a fresh one, which carries no `Last-Event-ID` and
+therefore replays nothing, and the `/track?since=` catch-up fills the gap. Nothing
+is lost either way: the recorder owns the track.
+
+Aborting on the way out is also what keeps a returning page from waiting on a
+request that was frozen with it — the failure such a request eventually reports
+describes the page being away, not the recorder being gone, and on a quiet sync
+that would read as a recorder to stop following.
 
 **Concurrent asks share one run.** Returning to the page with the tool open raises
-both the `visibilitychange` sync and the menu's own, which on a stale cursor would
-be two full `/track?since=0` downloads for the same answer, so `syncHandler`
-coalesces onto the sync already in flight. A joiner's `quiet` is folded into it —
-one caller who asked out loud is enough for a failure to be reported out loud. The
-start flow is the exception and calls `runSync` directly: it needs a status newer
-than its own `POST /start`, which a run already in flight might predate.
+both the reconcile's sync and the menu's own, which on a stale cursor would be two
+full `/track?since=0` downloads for the same answer, so `runRecorderSync` coalesces
+onto the sync already in flight. A joiner's `quiet` is folded into it — one caller
+who asked out loud is enough for a failure to be reported out loud. The start flow
+is the exception and asks for `restart`, which abandons the run in flight and
+begins one of its own: it needs a status newer than its own `POST /start`, and the
+return from the launch intent raises a `visibilitychange` — so there is routinely a
+run in flight that predates the recording it is meant to report.
 
-**The connection does not belong to the toolbar.** A recording carries on whichever
-toolbar the user has open, and on the phone even while the browser is closed — so
-[`follow.ts`](../src/features/gpsRecorder/follow.ts) owns it instead:
-`attachRecorderFollow` is installed at boot next to the app's other attach helpers,
-and syncs whenever `isRecorderFollowed()` (or the tool being open) says there is
-something to follow. `applyStatus` sets that flag from the recorder's own answer —
-recording, or holding points — and it lives in `localStorage` rather than the store,
-because the question outlives the page. Nothing detaches the stream on the way out:
-closing the toolbar says nothing about whether the phone is still recording, and the
-follow flag going false is what ends the following.
+**A pushed status takes the same route**, through `runRecorderSync` rather than
+beside it, so it is aborted by a teardown like anything else and says nothing about
+a failure nobody asked for. Joining a sync already in flight loses nothing: that
+run reads a status of its own, which is at least as new as the pushed one.
 
-Syncs from the follow path are **quiet**: nobody asked for them, so a recorder that
-has since been killed or uninstalled must not greet the user with an error. The
-failure is swallowed, following stops, and opening the tool is what tries again.
+Syncs nobody asked for are **quiet**, with one exception: a live view that was
+working and stopped. A recorder killed or uninstalled while the page was away must
+not greet the user with an error they did nothing to provoke — but a ride whose
+distance and clock have just stopped advancing is news, so a reconnect after a
+stream that was carrying fixes reports out loud. Either way, whether it is the end
+of following is decided by the retries below rather than by one failure.
+
+**The connection does not belong to the toolbar.** `attachRecorderConnection` is
+installed at boot next to the app's other attach helpers, and closing the tool only
+asks for a reconcile — which, mid-recording, changes nothing, because the follow
+flag still says there is something to follow.
 
 Two more things follow the recording rather than the toolbar, and so live in
 `GpsRecorderResult` — which `Results` mounts whenever there are fixes **or** a
@@ -340,43 +389,52 @@ mounts it on its own. And `useRecorderNotices` lives as long as the recording
 rather than as long as the panel — which is the point: a recorder that stops
 answering mid-ride is worth a toast whether or not its toolbar is open.
 
+A sync itself is three steps:
+
 1. `GET /status` — always, because it is what carries `recording`, `generation`
    and the setup flags.
 2. `GET /track?since=<cursor>` **only when the recorder says there is something
    to fetch**: `lastSeq > cursor`, or nothing is held here yet. One comparison
    against a status that had to be read anyway.
-3. Attach `/stream` — only if not already attached, so a resync never drops a
-   working stream. **Reconnection is the browser's job** (`Last-Event-ID`) while
-   it still believes in the connection; once it reports `CLOSED`, `stream.ts`
-   drops the handle and re-dispatches `gpsRecorderSync` on a widening backoff
-   (1 s → 30 s). It re-runs the whole sync rather than just reopening the
-   socket, because whatever killed the stream may equally have stopped the
-   recording or cleared the track.
+3. Report the outcome — `recorderSyncSettled`, carrying either the column order
+   or the failure. Success attaches `/stream` if nothing is attached, so a resync
+   never drops a working stream; failure goes to the backoff.
 
-There is no Reconnect button: the above covers every case one would answer.
+**One backoff covers everything that can drop the connection.** While the browser
+still believes in the socket, **reconnection is its job** (`Last-Event-ID`); once
+it reports `CLOSED` the handle goes and the retry starts. A sync that failed feeds
+the same retry, which matters more than it sounds: reviving through a sync that
+could not reach the recorder either is exactly where a chain ends silently, with
+the connection reading `idle` and nothing left that would ever ask again. Each
+attempt re-runs the whole sync rather than just reopening the socket, because
+whatever killed the stream may equally have stopped the recording or cleared the
+track — and the catch-up is what notices.
 
-**A stream that spanned a hidden page is not a working stream**, and step 3's
-"already attached" test would otherwise keep it. The page comes back to an
-`EventSource` the browser still reports as `OPEN` while nothing arrives on it —
-loopback delivers no reset for it to notice, so it goes on believing in the
-socket for tens of seconds — and the reconnect it eventually makes replays every
-fix above its last event id in one burst, which is a screenful of dispatches and
-a page that locks up for a moment. Until then the live view is frozen while
-reading as `Live`.
+The wait widens 1 s → 30 s over five attempts and then stops — which is also what
+finally stops the page following a recording, and only then: one failure is
+routinely a page that was frozen mid-request, and dropping the flag for that leaves
+a ride still being recorded with nothing watching it. **With the tool open it never
+gives up**, and goes on asking every 30 s: somebody is looking at a panel that
+would otherwise stay dead until it was closed and opened again. Two failures skip
+the wait entirely, because waiting cannot fix them: `lna-denied` and `outdated`.
 
-So `follow.ts` calls `suspectRecorderStream()` on the way out (the `hidden`
-half of the same `visibilitychange` it already listens to), and
-`openRecorderStream` **replaces** a suspect stream instead of keeping it. A
-fresh `EventSource` carries no `Last-Event-ID`, so it replays nothing, and the
-`/track?since=` catch-up that has just run is what fills the gap — with the new
-stream's own status frame covering whatever arrived in between. A stream opened
-while the page is *already* hidden is born suspect for the same reason, which is
-also why the replacement waits for the page to be visible: every connection
-opens with a status frame, that frame is dispatched and reconciled, and the
-reconcile calls `openRecorderStream` again — so replacing while still hidden
-would hand out a stream that is instantly suspect again and loop.
-`isRecorderStreamUsable()` reports a suspect stream as no stream at all, so the
-connection reads `reconnecting` rather than `live` for as long as one is held.
+**A stream in hand disarms the backoff.** A `/status` that failed beside a working
+stream says nothing about the live view — the stream is what carries the fixes, and
+the browser owns reconnecting it — so the attempts are not spent on a connection
+that is not broken. The stream's own `onerror` is what starts the chain.
+
+There is no Reconnect button: the above covers every case one would answer, and
+the failure toast carries one for the case it doesn't.
+
+**The connection state is derived, never assigned.** `connectionState()` reads the
+handles — a catch-up downloading is `syncing`, an open stream is `live`, an attempt
+under way (a sync in flight, or a stream not open yet) is `connecting`, the wait
+before the next attempt is `reconnecting`, and nothing at all is `idle` — and every
+transition publishes it. A
+catch-up is *bracketed* by `whileCatchingUp` rather than announcing itself on the
+way in, so no early return can leave the toolbar spinning on a wait that has
+finished — which is otherwise a line of undo in every handler that catches up, and
+one forgotten line away from a Record button that spins for good.
 
 **Anything but `live` or `idle` is said with a spinner**, in both places the
 toolbar has to say it: the readout's status dot becomes one, and the Record
@@ -391,6 +449,16 @@ Catch-up and the stream overlap by design, so batches arrive duplicated and
 briefly out of order. `mergePoints` in the reducer merges by `seq` — appending
 when the batch simply follows the track, and filling gaps below the cursor
 otherwise.
+
+**Fixes that arrive together are dispatched together.** Every
+`gpsRecorderAddPoints` costs a pass over the whole track — the merge, the segment
+split, the polyline Leaflet reprojects, the statistics fold, and the elevation
+profile when its chart is open — so one dispatch per SSE event is fine at a fix a
+second and a visible stall when a burst arrives (a recorder that had been
+buffering, a phone whose screen has just come back on). `connection.ts` therefore
+collects incoming rows for 250 ms and dispatches the batch. Nothing is at risk in
+the queue: those points have not been merged, so the cursor does not claim them
+and the next sync fetches them again.
 
 **The cursor is not persisted.** `statePersistingMiddleware` re-serializes the
 whole persisted subset on every action, so a persisted cursor would cost a full

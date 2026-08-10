@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { startRecorderSpan } from './perfProbe.js';
 import {
   decodePoints,
   MIN_RECORDER_VERSION_CODE,
@@ -30,8 +31,32 @@ async function isLocalNetworkAccessDenied(): Promise<boolean> {
   }
 }
 
+/**
+ * Deadlines for the loopback API. Nothing here crosses a network, so a request
+ * still unanswered after seconds is not slow but gone — a recorder Android
+ * killed, or a socket the browser froze with the page and never picked up
+ * again. Without a deadline such a fetch stays pending for as long as the page
+ * does, every later sync coalesces onto it, and the live view reads as
+ * `connecting` until the page is reloaded.
+ */
+const STATUS_TIMEOUT_MS = 3000;
+
+/** Transport commands, where the recorder starts or stops a service first. */
+const COMMAND_TIMEOUT_MS = 8000;
+
+/** A whole track is megabytes of body, so this is a transfer budget. */
+const TRACK_TIMEOUT_MS = 20_000;
+
+/** The caller's cancellation and the deadline, whichever comes first. */
+function deadline(timeoutMs: number, signal?: AbortSignal): AbortSignal {
+  const timeout = AbortSignal.timeout(timeoutMs);
+
+  return signal ? AbortSignal.any([signal, timeout]) : timeout;
+}
+
 async function recorderFetch(
   path: string,
+  timeoutMs: number,
   init?: RequestInit,
 ): Promise<Response> {
   let response: Response;
@@ -39,6 +64,7 @@ async function recorderFetch(
   try {
     response = await fetch(`${RECORDER_ORIGIN}${path}`, {
       ...init,
+      signal: deadline(timeoutMs, init?.signal ?? undefined),
       // Declares the target up front so Chrome's Local Network Access check
       // resolves to the loopback space and prompts, instead of blocking.
       targetAddressSpace: 'loopback',
@@ -50,6 +76,15 @@ async function recorderFetch(
     // as a silent cancel rather than a failure.
     if (err instanceof DOMException && err.name === 'AbortError') {
       throw err;
+    }
+
+    // An expired deadline is silence, and only silence: a Local Network Access
+    // block is refused at once, so it can never be what ran out the clock.
+    if (err instanceof DOMException && err.name === 'TimeoutError') {
+      throw new RecorderError(
+        'unreachable',
+        `${init?.method ?? 'GET'} ${path}: no answer in ${timeoutMs} ms`,
+      );
     }
 
     throw new RecorderError(
@@ -138,13 +173,22 @@ function describeZodError(error: z.ZodError): string {
 
 async function recorderJson(
   path: string,
+  timeoutMs: number,
   init?: RequestInit,
 ): Promise<unknown> {
-  const response = await recorderFetch(path, init);
+  const response = await recorderFetch(path, timeoutMs, init);
 
   try {
     return await response.json();
   } catch (err) {
+    // The deadline can expire while the body is still arriving. That is the
+    // same silence the fetch itself would have reported, not a malformed answer.
+    if (err instanceof DOMException) {
+      throw err.name === 'AbortError'
+        ? err
+        : new RecorderError('unreachable', `${path}: ${err.name}`);
+    }
+
     throw new RecorderError('protocol', `${path}: invalid JSON: ${err}`);
   }
 }
@@ -160,7 +204,7 @@ const RecorderVersionProbeSchema = z.looseObject({
 });
 
 export async function getStatus(signal?: AbortSignal): Promise<RecorderStatus> {
-  const body = await recorderJson('/status', { signal });
+  const body = await recorderJson('/status', STATUS_TIMEOUT_MS, { signal });
 
   const result = RecorderStatusSchema.safeParse(body);
 
@@ -278,7 +322,7 @@ export async function startRecording(
   config: RecorderConfig,
   signal?: AbortSignal,
 ): Promise<void> {
-  await recorderFetch('/start', {
+  await recorderFetch('/start', COMMAND_TIMEOUT_MS, {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json' },
@@ -287,7 +331,7 @@ export async function startRecording(
 }
 
 export async function stopRecording(signal?: AbortSignal): Promise<void> {
-  await recorderFetch('/stop', { method: 'POST', signal });
+  await recorderFetch('/stop', COMMAND_TIMEOUT_MS, { method: 'POST', signal });
 }
 
 /**
@@ -298,7 +342,10 @@ export async function stopRecording(signal?: AbortSignal): Promise<void> {
  * `seq` does not restart afterwards; `generation` is what marks the break.
  */
 export async function clearTrack(signal?: AbortSignal): Promise<void> {
-  await recorderFetch('/track', { method: 'DELETE', signal });
+  await recorderFetch('/track', COMMAND_TIMEOUT_MS, {
+    method: 'DELETE',
+    signal,
+  });
 }
 
 /**
@@ -310,9 +357,19 @@ export async function getTrackSince(
   since: number,
   signal?: AbortSignal,
 ): Promise<{ points: RecorderPoint[]; fields: string[] }> {
-  const result = RecorderTrackPageSchema.safeParse(
-    await recorderJson(`/track?since=${since}`, { signal }),
-  );
+  // Timed apart, because they fail differently: the transfer is a wait, while
+  // the parse below is a pass over every cell of every row and blocks.
+  const fetched = startRecorderSpan('track-fetch', 1000);
+
+  const body = await recorderJson(`/track?since=${since}`, TRACK_TIMEOUT_MS, {
+    signal,
+  });
+
+  fetched();
+
+  const parsed = startRecorderSpan('track-parse');
+
+  const result = RecorderTrackPageSchema.safeParse(body);
 
   if (!result.success) {
     throw new RecorderError(
@@ -323,5 +380,9 @@ export async function getTrackSince(
 
   const { fields, points } = result.data;
 
-  return { points: decodePoints(fields, points), fields };
+  const decoded = decodePoints(fields, points);
+
+  parsed(decoded.length);
+
+  return { points: decoded, fields };
 }

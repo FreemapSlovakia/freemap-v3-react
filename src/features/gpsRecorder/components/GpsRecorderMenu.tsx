@@ -21,6 +21,7 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { reconcileRecorderConnection } from '../connection.js';
 import { useRecorderNotices } from '../hooks/useRecorderNotices.js';
 import {
   gpsRecorderClear,
@@ -94,25 +95,27 @@ export default function GpsRecorderMenu(): ReactElement {
 
   // Connecting on open rather than behind a button: a recording begun on an
   // earlier page load, or a stream the browser gave up on, would otherwise leave
-  // the panel blank until something was pressed. The Local Network Access prompt
-  // still needs a gesture, so the panel offers one when this fails.
+  // the panel blank until something was pressed. The sync is loud, because
+  // opening the tool is the gesture a user makes when the live view has gone
+  // quiet — and the Local Network Access prompt needs a gesture anyway, so the
+  // panel offers one when this fails.
   //
   // Keyed on the panel being open rather than on this component mounting, which a
-  // recording does on its own: opening the tool is the gesture a user makes when
-  // the live view has gone quiet.
+  // recording does on its own.
   //
-  // Opening the tool is all this does. The connection itself belongs to
-  // `attachRecorderFollow`, which keeps it for as long as there is a recording to
-  // follow — closing this toolbar says nothing about whether the phone is still
-  // recording.
+  // The connection itself is not the toolbar's: `connection.ts` keeps it for as
+  // long as there is a recording to follow, so closing this only asks it to
+  // reconsider — which, mid-recording, changes nothing.
   //
   // There is no polling either: the stream pushes a status whenever the recorder's
   // state changes, returning to the foreground catches up on what a frozen tab
-  // missed, and a stream the browser gave up on schedules its own retry.
+  // missed, and a connection that failed retries on its own backoff.
   useEffect(() => {
     if (open) {
       dispatch(gpsRecorderSync());
     }
+
+    return reconcileRecorderConnection;
   }, [open, dispatch]);
 
   // Asked only while the recorder is still running: that tap ends a ride that

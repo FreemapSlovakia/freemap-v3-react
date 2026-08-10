@@ -60,7 +60,7 @@ export const gpsRecorderStop = createAction<'replace' | 'append'>(
  * `quiet` is for the syncs nobody asked for: following a recording at boot or on
  * returning to the page. A recorder that has since been killed or uninstalled
  * should not greet the user with an error they did nothing to provoke, so the
- * failure is swallowed and the following stops instead.
+ * failure is swallowed and the retries decide whether to stop following.
  */
 export const gpsRecorderSync = createAction<{ quiet?: boolean } | undefined>(
   'GPS_RECORDER_SYNC',
