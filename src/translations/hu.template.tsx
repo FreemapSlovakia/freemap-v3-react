@@ -130,6 +130,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Pont',
     drawLines: 'Vonal',
     drawPolygons: 'Sokszög',
+    drawPolygonHole: 'Lyuk a sokszögben',
     tracking: 'Követés',
 
     linePoint: 'Vonal pontja',

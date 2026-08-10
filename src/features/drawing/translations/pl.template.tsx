@@ -45,6 +45,10 @@ const pl: DeepPartialWithRequiredObjects<DrawingMessages> = {
   selectPointToJoin: 'Wybierz punkt do połączenia linii',
   reverse: 'Odwróć kierunek',
   simplify: 'Uprość',
+  cutHole: 'Wytnij otwór',
+  cutHoleHint: 'Narysuj otwór wewnątrz tego wielokąta.',
+  makeHole: 'Zamień na otwór w otaczającym wielokącie',
+  detachHole: 'Odłącz otwór',
 };
 
 export default pl;

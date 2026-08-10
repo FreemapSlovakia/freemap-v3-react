@@ -45,6 +45,10 @@ const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
   },
   reverse: 'Obrni smer',
   simplify: 'Poenostavi',
+  cutHole: 'Izreži luknjo',
+  cutHoleHint: 'Narišite luknjo znotraj tega poligona.',
+  makeHole: 'Spremeni v luknjo v obdajajočem poligonu',
+  detachHole: 'Loči luknjo',
 };
 
 export default sl;

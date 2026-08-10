@@ -49,6 +49,10 @@ const de: DeepPartialWithRequiredObjects<DrawingMessages> = {
   selectPointToJoin: 'Punkt zum Verbinden der Linien wählen',
   reverse: 'Richtung umkehren',
   simplify: 'Vereinfachen',
+  cutHole: 'Loch ausschneiden',
+  cutHoleHint: 'Zeichnen Sie das Loch innerhalb dieses Polygons.',
+  makeHole: 'In ein Loch des umschließenden Polygons umwandeln',
+  detachHole: 'Loch ablösen',
 };
 
 export default de;

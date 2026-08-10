@@ -130,6 +130,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Point',
     drawLines: 'Ligne',
     drawPolygons: 'Polygone',
+    drawPolygonHole: 'Trou dans le polygone',
     tracking: 'Suivi',
     linePoint: 'Point de la ligne',
     polygonPoint: 'Point du polygone',

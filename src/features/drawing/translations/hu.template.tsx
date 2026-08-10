@@ -35,6 +35,10 @@ const hu: DeepPartialWithRequiredObjects<DrawingMessages> = {
   selectPointToJoin: 'Válasszon pontot a vonalak összekapcsolásához',
   reverse: 'Irány megfordítása',
   simplify: 'Egyszerűsítés',
+  cutHole: 'Lyuk kivágása',
+  cutHoleHint: 'Rajzolja meg a lyukat ezen a sokszögön belül.',
+  makeHole: 'Átalakítás a befoglaló sokszög lyukává',
+  detachHole: 'Lyuk leválasztása',
   defProps: {
     menuItem: 'Stílusbeállítások',
     title: 'Rajzolási stílus beállításai',

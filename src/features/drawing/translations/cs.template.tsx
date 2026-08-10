@@ -45,6 +45,10 @@ const cs: DeepPartialWithRequiredObjects<DrawingMessages> = {
   },
   reverse: 'Obrátit směr',
   simplify: 'Zjednodušit',
+  cutHole: 'Vyříznout díru',
+  cutHoleHint: 'Nakreslete díru uvnitř tohoto polygonu.',
+  makeHole: 'Změnit na díru v obklopujícím polygonu',
+  detachHole: 'Oddělit díru',
 };
 
 export default cs;

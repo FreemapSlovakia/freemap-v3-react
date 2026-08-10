@@ -131,6 +131,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Bod',
     drawLines: 'Čára',
     drawPolygons: 'Polygón',
+    drawPolygonHole: 'Díra v polygonu',
     tracking: 'Sledování',
     linePoint: 'Bod čáry',
     polygonPoint: 'Bod polygonu',

@@ -137,6 +137,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Punto',
     drawLines: 'Linea',
     drawPolygons: 'Poligono',
+    drawPolygonHole: 'Buco nel poligono',
     tracking: 'Tracciamento',
     linePoint: 'Punto della linea',
     polygonPoint: 'Punto del poligono',

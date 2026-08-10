@@ -35,6 +35,10 @@ const it: DeepPartialWithRequiredObjects<DrawingMessages> = {
   selectPointToJoin: 'Seleziona un punto per unire le linee',
   reverse: 'Inverti direzione',
   simplify: 'Semplifica',
+  cutHole: 'Ritaglia un buco',
+  cutHoleHint: 'Disegna il buco all’interno di questo poligono.',
+  makeHole: 'Trasforma in un buco del poligono che lo racchiude',
+  detachHole: 'Stacca il buco',
   defProps: {
     menuItem: 'Impostazioni stile',
     title: 'Impostazioni dello stile di disegno',

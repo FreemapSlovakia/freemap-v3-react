@@ -130,6 +130,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Točka',
     drawLines: 'Črta',
     drawPolygons: 'Poligon',
+    drawPolygonHole: 'Luknja v poligonu',
     tracking: 'Sledenje',
     linePoint: 'Točka črte',
     polygonPoint: 'Točka poligona',

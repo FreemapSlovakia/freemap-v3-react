@@ -45,6 +45,10 @@ const fr: DeepPartialWithRequiredObjects<DrawingMessages> = {
   },
   reverse: 'Inverser le sens',
   simplify: 'Simplifier',
+  cutHole: 'Découper un trou',
+  cutHoleHint: 'Dessinez le trou à l’intérieur de ce polygone.',
+  makeHole: 'Transformer en trou du polygone englobant',
+  detachHole: 'Détacher le trou',
 };
 
 export default fr;
