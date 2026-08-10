@@ -93,6 +93,7 @@ export type Messages = {
     drawPoints: string;
     drawLines: string;
     drawPolygons: string;
+    drawPolygonHole: string;
     tracking: string;
     linePoint: string;
     polygonPoint: string;

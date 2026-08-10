@@ -16,6 +16,7 @@ import {
   type Line,
   type LineCap,
   type LineJoin,
+  toWireHoleIndexes,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
@@ -468,6 +469,11 @@ export function handleLocationChange(store: MyStore): void {
         .map(([lat, lon], id) => ({ lat, lon, id }));
 
       if (points.length > 0) {
+        // `H` is geometry-only (the index of the polygon this ring is a hole
+        // of), so it stays out of the style-field codec the point params share.
+        // biome-ignore lint/suspicious/noControlCharactersInRegex: the field separator
+        const holeOf = /\x1eH(\d+)/.exec(m[2] ?? '');
+
         lines.push({
           type:
             key === 'distance-measurement-points' || key === 'line'
@@ -475,14 +481,21 @@ export function handleLocationChange(store: MyStore): void {
               : 'polygon',
           points,
           ...parseColorAndLabel(m[2] ?? ''),
+          holeOf: holeOf ? Number(holeOf[1]) : undefined,
         });
       }
     }
   }
 
+  const stateLines = getState().drawingLines.lines;
+
+  const stateHoleIndexes = toWireHoleIndexes(stateLines);
+
   if (
-    lines.map(serializePoints).join(';') !==
-    getState().drawingLines.lines.map(serializePoints).join(';')
+    lines.map((line) => serializePoints(line, line.holeOf)).join(';') !==
+    stateLines
+      .map((line, i) => serializePoints(line, stateHoleIndexes[i]))
+      .join(';')
   ) {
     dispatch(drawingLineSetLines(lines));
   }
@@ -1460,8 +1473,8 @@ function parseDate(value: unknown): Date | undefined {
   return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
-function serializePoints(line: Line): string {
-  return `${line.type}:${line.color ?? ''}:${line.fillColor ?? ''}:${line.points
+function serializePoints(line: Line, holeOf: number | undefined): string {
+  return `${line.type}:${line.color ?? ''}:${line.fillColor ?? ''}:${holeOf ?? ''}:${line.points
     .map((point) => serializePoint(point))
     .join(',')}`;
 }

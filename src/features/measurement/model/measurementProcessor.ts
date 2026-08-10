@@ -148,33 +148,37 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         selection.type === 'draw-line-poly' ||
         selection.type === 'line-point'
       ) {
-        const { points, type } = getState().drawingLines.lines[id];
+        const { lines } = getState().drawingLines;
+
+        const line = lines[id];
+
+        const { points, type } = line;
 
         if (type === 'polygon' && points.length > 2) {
+          // The holes belong to the shape, so they come off its area and their
+          // outlines count towards its perimeter. A hole measured on its own is
+          // just its own ring.
+          const rings = [
+            points,
+            ...(line.holeOfId === undefined
+              ? lines
+                  .filter((l) => l.holeOfId === line.id && l.points.length > 2)
+                  .map((l) => l.points)
+              : []),
+          ].map((ring) =>
+            [...ring, ring[0]!].map((point) => [point.lon, point.lat]),
+          );
+
           dispatch(
             toastsAdd({
               style: 'info',
               messageKey: 'areaInfo',
               messageLoader: loadMeasurementMessages,
               messageParams: {
-                area: area(
-                  polygon(
-                    [
-                      [...points, points[0]].map((point) => [
-                        point.lon,
-                        point.lat,
-                      ]),
-                    ],
-                    {},
-                  ),
-                ),
-                perimeter: length(
-                  lineString(
-                    [...points, points[0]].map((point) => [
-                      point.lon,
-                      point.lat,
-                    ]),
-                  ),
+                area: area(polygon(rings, {})),
+                perimeter: rings.reduce(
+                  (sum, ring) => sum + length(lineString(ring)),
+                  0,
                 ),
               },
               id: 'measurementInfo',

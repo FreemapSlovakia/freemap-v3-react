@@ -41,6 +41,12 @@ export const LineSchema = z.object({
   dashArray: z.array(z.number()).optional(),
   lineCap: LineCapSchema.optional(),
   lineJoin: LineJoinSchema.optional(),
+  /**
+   * Position, in the same list, of the polygon this ring is a hole of. The wire
+   * form of {@link DrawnLine.holeOfId} — neither the URL nor a saved document
+   * carries line ids, so out here a hole names its parent by index.
+   */
+  holeOf: z.number().int().nonnegative().optional(),
 });
 
 export type Line = z.infer<typeof LineSchema>;
@@ -55,7 +61,31 @@ export type Line = z.infer<typeof LineSchema>;
  * It exists because an array index is not an identity: deleting, splitting and
  * joining renumber the lines under anything that remembered one.
  */
-export type DrawnLine = Line & { id: number };
+export type DrawnLine = Omit<Line, 'holeOf'> & {
+  id: number;
+  /**
+   * The `id` of the polygon this ring is a hole of. A hole is fully
+   * subordinate: it is drawn, styled and measured as part of its parent, and
+   * dies with it. Keyed by id rather than by the wire form's index for the same
+   * reason `id` exists at all — every edit renumbers the lines.
+   */
+  holeOfId?: number;
+};
+
+/**
+ * Each line's parent as the wire forms address it: a position in the same list.
+ * Both the URL and a saved document carry hole membership this way, and both
+ * must agree, or a map restored from its URL reads as changed.
+ */
+export function toWireHoleIndexes(
+  lines: readonly DrawnLine[],
+): (number | undefined)[] {
+  const indexById = new Map(lines.map((line, i) => [line.id, i]));
+
+  return lines.map((line) =>
+    line.holeOfId === undefined ? undefined : indexById.get(line.holeOfId),
+  );
+}
 
 // Wire form for persisted maps: legacy `area` / `distance` line types
 // are renamed to the current `polygon` / `line`.
@@ -73,7 +103,11 @@ export const LineCompatSchema = z.preprocess((v) => {
   return v;
 }, LineSchema);
 
-export const drawingLineAdd = createAction<Line>('DRAWING_LINE_ADD');
+/**
+ * Appends one line, or a batch whose `holeOf` indexes address the batch itself
+ * — how an imported polygon arrives with its holes attached.
+ */
+export const drawingLineAdd = createAction<Line | Line[]>('DRAWING_LINE_ADD');
 
 export const drawingLineAddPoint = createAction<
   {
@@ -153,6 +187,21 @@ export const drawingLineContinue = createAction<{
 }>('DRAWING_LINE_CONTINUE');
 
 export const drawingLineStopDrawing = createAction('DRAWING_LINE_STOP_DRAWING');
+
+/**
+ * Arms hole mode: the next polygon drawn becomes a hole of this one. Dispatch
+ * it *after* opening the draw tool — opening a map-click tool disarms it, the
+ * same way it drops a line being drawn.
+ */
+export const drawingLineCutHole = createAction<{
+  parentLineIndex: number;
+}>('DRAWING_LINE_CUT_HOLE');
+
+/** Attaches an existing polygon to a parent as a hole, or (`undefined`) frees it. */
+export const drawingLineSetHoleOf = createAction<{
+  lineIndex: number;
+  parentLineIndex: number | undefined;
+}>('DRAWING_LINE_SET_HOLE_OF');
 
 export const drawingLineDelete = createAction<{
   lineIndex: number;

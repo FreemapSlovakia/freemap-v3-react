@@ -42,4 +42,8 @@ export type DrawingMessages = {
   };
   reverse: string;
   simplify: string;
+  cutHole: string;
+  cutHoleHint: string;
+  makeHole: string;
+  detachHole: string;
 };

@@ -29,7 +29,12 @@ export function serializeDrawingPoint(point: DrawingPoint): string {
   }${point.icon ? `\x1eI${point.icon}` : ''}`;
 }
 
-export function serializeDrawingLine(line: Line): string {
+/**
+ * `holeOf` is passed separately rather than read off the line because the store
+ * keys hole membership by the parent's id, and only the caller knows what
+ * position that parent takes in the list being written.
+ */
+export function serializeDrawingLine(line: Line, holeOf?: number): string {
   return `${line.points.map((point: Point) => serializeLatLon(point)).join(',')}${
     line.width ? `\x1eW${line.width}` : ''
   }${line.color ? `\x1eC${line.color}` : ''}${
@@ -48,5 +53,5 @@ export function serializeDrawingLine(line: Line): string {
       : line.lineJoin === 'bevel'
         ? '\x1eJb'
         : ''
-  }`;
+  }${holeOf === undefined ? '' : `\x1eH${holeOf}`}`;
 }

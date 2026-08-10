@@ -479,28 +479,79 @@ function addDrawingLines(
   type: DrawingLineType,
   only: Selection | undefined,
 ) {
+  const indexById = new Map(lines.map((line, i) => [line.id, i]));
+
   for (const [index, line] of lines.entries()) {
-    if (line.type !== type || !keepDrawingLine(only, index)) {
+    if (line.type !== type) {
       continue;
     }
 
-    addStyledTrk(doc, line);
+    const parentIndex =
+      line.holeOfId === undefined ? undefined : indexById.get(line.holeOfId);
+
+    // A hole is part of its parent's shape, so picking either one writes both.
+    const kept =
+      keepDrawingLine(only, index) ||
+      (parentIndex !== undefined && keepDrawingLine(only, parentIndex)) ||
+      lines.some(
+        (other, i) => other.holeOfId === line.id && keepDrawingLine(only, i),
+      );
+
+    if (!kept) {
+      continue;
+    }
+
+    // GPX has no polygon type and so no interior rings either: a hole goes out
+    // as its own track, tied to its parent by a shared id. Positional would be
+    // fragile — tracks are written in several passes, and other producers'
+    // files interleave their own.
+    addStyledTrk(
+      doc,
+      line,
+      parentIndex === undefined
+        ? lines.some((other) => other.holeOfId === line.id)
+          ? { polygonId: String(index) }
+          : undefined
+        : { holeOf: String(parentIndex), style: lines[parentIndex]! },
+    );
   }
 }
 
-// Writes one line/polygon as a `<trk>` carrying its full styling: gpx_style for
-// generic consumers, Locus and OsmAnd extensions for those apps, and the
-// freemap-private `fm:*` shadows for a lossless round-trip through our own
-// importer. A polygon's ring is closed here, since drawing polygons are stored
-// open.
-function addStyledTrk(doc: Document, line: Line) {
+/**
+ * Writes one line/polygon as a `<trk>` carrying its full styling: gpx_style for
+ * generic consumers, Locus and OsmAnd extensions for those apps, and the
+ * freemap-private `fm:*` shadows for a lossless round-trip through our own
+ * importer. A polygon's ring is closed here, since drawing polygons are stored
+ * open.
+ *
+ * A hole borrows its parent's styling, since that is what it is drawn with —
+ * consumers that know nothing of `fm:holeOf` then at least outline it to match.
+ */
+function addStyledTrk(
+  doc: Document,
+  line: Line,
+  hole?: { polygonId: string } | { holeOf: string; style: Line },
+) {
   const trkEle = createElement(doc.documentElement, 'trk');
 
-  if (line.label) {
+  if (line.label && (!hole || 'polygonId' in hole)) {
     createElement(trkEle, 'name', line.label);
   }
 
-  writeTrkStyle(trkEle, line);
+  const extEle = writeTrkStyle(
+    trkEle,
+    hole && 'style' in hole ? hole.style : line,
+    hole !== undefined && 'style' in hole,
+  );
+
+  if (hole) {
+    appendNs(
+      extEle,
+      FM_NS,
+      'polygonId' in hole ? 'fm:polygonId' : 'fm:holeOf',
+      'polygonId' in hole ? hole.polygonId : hole.holeOf,
+    );
+  }
 
   const trksegEle = createElement(trkEle, 'trkseg');
 
@@ -512,10 +563,16 @@ function addStyledTrk(doc: Document, line: Line) {
   }
 }
 
-// Writes a track's `<extensions>` styling block. Split out of
-// {@link addStyledTrk} so the planned route can carry the same styling while
-// writing its own trackpoints (which additionally hold elevation).
-function writeTrkStyle(trkEle: Element, line: Omit<Line, 'points'>) {
+// Writes a track's `<extensions>` styling block and hands it back for callers
+// with more to add. Split out of {@link addStyledTrk} so the planned route can
+// carry the same styling while writing its own trackpoints (which additionally
+// hold elevation). `noFill` keeps a hole's ring transparent for consumers that
+// don't understand `fm:holeOf`, so they outline it instead of painting it in.
+function writeTrkStyle(
+  trkEle: Element,
+  line: Omit<Line, 'points'>,
+  noFill = false,
+): Element {
   const type = line.type;
 
   const extEle = createElement(trkEle, 'extensions');
@@ -527,7 +584,7 @@ function writeTrkStyle(trkEle: Element, line: Omit<Line, 'points'>) {
   const fillRaw = splitColorAlpha(fillSrc);
   const fill = {
     color: fillRaw.color,
-    opacity: line.fillColor ? fillRaw.opacity : 0.33,
+    opacity: noFill ? 0 : line.fillColor ? fillRaw.opacity : 0.33,
   };
   const fillRgb = fill.color.slice(1);
 
@@ -634,9 +691,13 @@ function writeTrkStyle(trkEle: Element, line: Omit<Line, 'points'>) {
     appendNs(extEle, OSMAND_NS, 'osmand:width', String(line.width));
   }
 
-  if (type === 'polygon') {
+  // OsmAnd has no opacity to zero out — the presence of a fill colour is what
+  // makes it fill a closed track — so a hole's is left out entirely.
+  if (type === 'polygon' && !noFill) {
     appendNs(extEle, OSMAND_NS, 'osmand:fill_color', fill.color);
   }
+
+  return extEle;
 }
 
 async function addDrawingPoints(

@@ -85,7 +85,13 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       return drawingLineJoinStart(undefined);
     }
 
-    if (state.drawingLines.drawing) {
+    // Waiting for a hole to be drawn is a mode of its own — no line is being
+    // drawn yet — so leaving it must not fall through to clearing the
+    // selection, which would drop the polygon the hole was meant for.
+    if (
+      state.drawingLines.drawing ||
+      state.drawingLines.holeFor !== undefined
+    ) {
       return drawingLineStopDrawing();
     }
 

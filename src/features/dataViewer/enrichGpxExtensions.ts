@@ -106,6 +106,10 @@ function enrichTracksWithExtensions(
       'lineJoin',
       'dashArray',
       'width',
+      // GPX has no interior rings, so a polygon and its holes travel as
+      // separate tracks sharing an id.
+      'polygonId',
+      'holeOf',
     ] as const) {
       const value = trk
         .getElementsByTagNameNS(FM_NS, tag)[0]

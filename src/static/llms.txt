@@ -172,10 +172,13 @@ Toggles the drawing and measurement toolbar. The toolbar lets the user switch be
 **Editing a selected geometry** — a context toolbar offers **Properties** plus, via a "⋮" menu:
 
 - Lines: Elevation profile, Project point, Simplify, Reverse direction
-- Polygons: Simplify, Reverse direction
+- Polygons: Cut out a hole, Simplify, Reverse direction
+- Polygon holes: Detach hole, Simplify, Reverse direction
 - Points: Project point, and Open in… (new window, share location, or an external app)
 
 While drawing, individual nodes can be edited: a line point can **Join** another line, **Continue** drawing, **Split** the line, or be deleted; a polygon point can be deleted.
+
+**Holes in polygons.** A polygon can have holes (an island in a lake is just a further hole, since rings alternate filled/empty). **Cut out a hole** on a selected polygon switches to polygon drawing and turns the next ring drawn into a hole of it; a polygon drawn entirely inside another one instead offers **Make a hole of the enclosing polygon** (the smallest one containing it). A hole is fully subordinate — it has no label or style of its own, is drawn and measured as part of its parent (the area readout subtracts it, the perimeter counts its outline), is not clickable inside, and is deleted with it. **Detach hole** turns it back into a polygon of its own. In the URL a hole carries the extra style-field code `H` naming its parent polygon's position among the `line=`/`polygon=` params.
 
 **Properties modal:** Label, Color, Shape, Icon (searchable picker), and Text (up to 2 characters shown inside the marker); lines/polygons additionally expose fill color, width, line cap/join and dash style.
 
@@ -233,7 +236,7 @@ Once a route is found the toolbar also offers:
 - **More** (⋮ menu) — Elevation profile (chart with total climb/descent), Convert to drawing (the route becomes one drawing line in its transport-mode color, plus a point per start/finish/stop), **Route style…** (opens a modal with sliders for line width, line opacity, and marker opacity; saved in local storage), kilometre/percent milestone toggles, and (premium; GraphHopper "Ordered" mode with 3+ points, single transport) **Optimize order** — reorders the waypoints to minimize total travel time, with variants: keep start fixed, keep start and finish fixed, round trip (return to start), or free (reorder all)
 - **Delete** (🗑) — removes the result together with its start/finish/stop points. It appears as soon as the first point is placed, so a half-built route can be dropped as well
 
-An isochrone result offers the same **Delete** button and a reduced ⋮ menu with only Convert to drawing (one drawing polygon per reachability ring) and **Route style…** (the line width and opacity apply to the rings). It also counts as the "found route" source in the map data export and the map-to-document export, which always carry the route's start/finish/stop markers (named Start/Finish/Stop N in the data formats; on a rendered document the marker glyph speaks for itself, so no text label is drawn) and paint the route in the same transport-mode colors, width and opacity the map uses. Each ring is named after the limit it reaches — "Isochrone 30 min", or "Isochrone 5.000 km" for a distance-limited one — in the drawing, in the exported files, and as the label drawn on an exported document.
+An isochrone result offers the same **Delete** button and a reduced ⋮ menu with only Convert to drawing (one drawing polygon per reachability band, keeping any inner rings it has as holes) and **Route style…** (the line width and opacity apply to the rings). It also counts as the "found route" source in the map data export and the map-to-document export, which always carry the route's start/finish/stop markers (named Start/Finish/Stop N in the data formats; on a rendered document the marker glyph speaks for itself, so no text label is drawn) and paint the route in the same transport-mode colors, width and opacity the map uses. Each ring is named after the limit it reaches — "Isochrone 30 min", or "Isochrone 5.000 km" for a distance-limited one — in the drawing, in the exported files, and as the label drawn on an exported document.
 
 ### Objects (POIs)
 
@@ -420,7 +423,7 @@ While the export runs the modal stays open with its controls disabled and a spin
 - Keyboard shortcut: <kbd>e</kbd> <kbd>g</kbd>
 - URL path: `/#show=map-features-export`
 
-Opens a modal to export the user's own map data as a GPX, GeoJSON or KML file. The KML option emits a self-contained KMZ (zipped KML plus packaged PNG marker icons) when point icons are present, and a plain KML otherwise. Exported drawing features round-trip losslessly back into Freemap — style, icon, label and the line/polygon distinction are preserved — and for other apps the marker icons and styles are additionally mapped to their nearest Garmin (BaseCamp), OsmAnd and Locus equivalents so they still render sensibly. Only the data types that actually have something on the map are selectable:
+Opens a modal to export the user's own map data as a GPX, GeoJSON or KML file. The KML option emits a self-contained KMZ (zipped KML plus packaged PNG marker icons) when point icons are present, and a plain KML otherwise. Exported drawing features round-trip losslessly back into Freemap — style, icon, label, the line/polygon distinction and polygon holes are preserved (GeoJSON and KML carry holes as interior rings natively; GPX, which has no polygon type, carries them as sibling tracks linked by a private extension) — and for other apps the marker icons and styles are additionally mapped to their nearest Garmin (BaseCamp), OsmAnd and Locus equivalents so they still render sensibly. Only the data types that actually have something on the map are selectable:
 
 - found (planned) route, optionally including stops
 - objects (POIs)

@@ -38,8 +38,9 @@ import {
   useMapEvent,
   useMapEvents,
 } from 'react-leaflet';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
 import {
+  type DrawnLine,
   drawingLineAddPoint,
   drawingLineJoinFinish,
   drawingLineUpdatePoint,
@@ -81,6 +82,12 @@ const VERTEX_VIEWPORT_LIMIT = 250;
 // threshold doesn't flicker them on and off.
 const HANDLE_HYSTERESIS = 1.3;
 
+// Stable reference so the hole selector doesn't hand back a fresh array on
+// every call for the lines that can't have any.
+const NO_HOLES: DrawnLine[] = [];
+
+const toLatLng = ({ lat, lon }: LatLon) => ({ lat, lng: lon });
+
 type HandleTier = 'all' | 'vertices' | 'none';
 
 type VisibleHandle = {
@@ -105,6 +112,28 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
   const line = useAppSelector((state) => state.drawingLines.lines[lineIndex]);
 
+  // A hole is fully subordinate: it draws no shape of its own and takes its
+  // whole style from the polygon it belongs to.
+  const parent = useAppSelector((state) =>
+    line.holeOfId === undefined
+      ? undefined
+      : state.drawingLines.lines.find((l) => l.id === line.holeOfId),
+  );
+
+  // Compared by element, so a parent only re-renders when its own holes change
+  // — not on every edit anywhere in the drawing.
+  const holes = useAppSelector(
+    (state) =>
+      line.holeOfId === undefined && line.type === 'polygon'
+        ? state.drawingLines.lines.filter((l) => l.holeOfId === line.id)
+        : NO_HOLES,
+    shallowEqual,
+  );
+
+  const isHole = parent !== undefined;
+
+  const style = parent ?? line;
+
   const selected = useAppSelector(
     (state) =>
       state.main.selection?.type === 'draw-line-poly' &&
@@ -118,7 +147,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
       : undefined,
   );
 
-  const color = line.color || COLORS.normal;
+  const color = style.color || COLORS.normal;
 
   const stroke = splitColorAlpha(color);
 
@@ -126,15 +155,15 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     ? Color(stroke.color).lighten(0.75).hex()
     : stroke.color;
 
-  const fillRaw = splitColorAlpha(line.fillColor ?? color);
+  const fillRaw = splitColorAlpha(style.fillColor ?? color);
 
   const renderFillColor = selected
     ? Color(fillRaw.color).lighten(0.75).hex()
     : fillRaw.color;
 
-  const renderFillOpacity = line.fillColor ? fillRaw.opacity : undefined;
+  const renderFillOpacity = style.fillColor ? fillRaw.opacity : undefined;
 
-  const width = line.width || 4;
+  const width = style.width || 4;
 
   const joinWith = useAppSelector((state) => state.drawingLines.joinWith);
 
@@ -506,6 +535,16 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     }
   }, [showHandles, handleTier]);
 
+  // A ring being drawn isn't a ring yet; leaving it out keeps the parent from
+  // rendering a degenerate hole while the first points go down.
+  const holeRings = useMemo(
+    () =>
+      holes
+        .filter((hole) => hole.points.length > 2)
+        .map((hole) => hole.points.map(toLatLng)),
+    [holes],
+  );
+
   const joinPoint =
     joinWith?.lineIndex === lineIndex
       ? points.find((pt) => pt.id === joinWith.pointId)
@@ -616,10 +655,10 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     <Fragment
       key={[
         line.type,
-        line.width,
-        line.dashArray,
-        line.lineCap,
-        line.lineJoin,
+        style.width,
+        style.dashArray,
+        style.lineCap,
+        style.lineJoin,
         lineIndex,
       ].join(',')}
     >
@@ -644,9 +683,9 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             pathOptions={{
               color: renderColor,
               opacity: stroke.opacity,
-              dashArray: line.dashArray,
-              lineCap: line.lineCap ?? 'round',
-              lineJoin: line.lineJoin ?? 'round',
+              dashArray: style.dashArray,
+              lineCap: style.lineCap ?? 'round',
+              lineJoin: style.lineJoin ?? 'round',
             }}
             interactive={false}
             positions={ps
@@ -662,7 +701,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
         </Fragment>
       )}
 
-      {ps.length > 1 && line.type === 'polygon' && (
+      {ps.length > 1 && line.type === 'polygon' && !isHole && (
         <Polygon
           key={`polygon-${interactiveLine ? 'a' : 'b'}`}
           pane="fm-drawing-polygons"
@@ -672,18 +711,22 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             opacity: stroke.opacity,
             fillColor: renderFillColor,
             fillOpacity: renderFillOpacity,
-            dashArray: line.dashArray,
-            lineCap: line.lineCap ?? 'round',
-            lineJoin: line.lineJoin ?? 'round',
+            dashArray: style.dashArray,
+            lineCap: style.lineCap ?? 'round',
+            lineJoin: style.lineJoin ?? 'round',
           }}
           interactive={interactiveLine}
           bubblingMouseEvents={false}
           eventHandlers={{
             click: handleSelect,
           }}
-          positions={ps
-            .filter((_, i) => i % 2 === 0)
-            .map(({ lat, lon }) => ({ lat, lng: lon }))}
+          // The holes ride along as further rings of the same shape, so the
+          // default `evenodd` fill rule punches them out — and takes the click
+          // through them to whatever is underneath.
+          positions={[
+            ps.filter((_, i) => i % 2 === 0).map(toLatLng),
+            ...holeRings,
+          ]}
         >
           {line.label && ps.length > 4 && (
             <Tooltip
@@ -698,14 +741,48 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
         </Polygon>
       )}
 
+      {/* The parent strokes the hole's ring along with its own, so all this
+          adds is something to click and, while it's picked, a highlight. */}
+      {ps.length > 1 && isHole && (
+        <Fragment key={`hole-${interactiveLine ? 'a' : 'b'}`}>
+          <Polyline
+            pane="fm-drawing-polygons"
+            weight={width + 8}
+            opacity={0}
+            interactive={interactiveLine}
+            bubblingMouseEvents={false}
+            eventHandlers={{
+              click: handleSelect,
+            }}
+            positions={[...points, points[0]!].map(toLatLng)}
+          />
+
+          {selected && (
+            <Polyline
+              pane="fm-drawing-polygons"
+              weight={width}
+              pathOptions={{
+                color: renderColor,
+                opacity: stroke.opacity,
+                dashArray: style.dashArray,
+                lineCap: style.lineCap ?? 'round',
+                lineJoin: style.lineJoin ?? 'round',
+              }}
+              interactive={false}
+              positions={[...points, points[0]!].map(toLatLng)}
+            />
+          )}
+        </Fragment>
+      )}
+
       {futureLinePositions && (
         <Polyline
           pathOptions={{
             color: Color(stroke.color).lighten(0.75).hex(),
             opacity: stroke.opacity,
-            dashArray: line.dashArray,
-            lineCap: line.lineCap ?? 'round',
-            lineJoin: line.lineJoin ?? 'round',
+            dashArray: style.dashArray,
+            lineCap: style.lineCap ?? 'round',
+            lineJoin: style.lineJoin ?? 'round',
             weight: width,
           }}
           interactive={false}

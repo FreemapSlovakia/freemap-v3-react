@@ -5,6 +5,7 @@ import { changesetsSet } from '@features/changesets/model/actions.js';
 import { dataViewerDelete } from '@features/dataViewer/model/actions.js';
 import {
   drawingLineAdd,
+  type Line,
   type Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
@@ -55,6 +56,88 @@ function ringToPoints(ring: Position[], dropClosing: boolean): Point[] {
   }));
 }
 
+/**
+ * The line/polygon features of an import as one drawing batch.
+ *
+ * Holes reach us two ways and both land as a `holeOf` index into the batch: a
+ * GeoJSON polygon carries them as its own interior rings, while GPX has no
+ * polygon type, so our writer emits them as sibling tracks tied together by
+ * `fm:polygonId` / `fm:holeOf`.
+ */
+function featuresToLines(
+  features: Feature[],
+  base: Partial<Line>,
+  labelLinesToo: boolean,
+): Line[] {
+  const lines: Line[] = [];
+
+  const polygonAt = new Map<string, number>();
+
+  const holeRefs: { at: number; of: string }[] = [];
+
+  for (const feature of features) {
+    const { geometry } = feature;
+
+    if (geometry?.type !== 'LineString' && geometry?.type !== 'Polygon') {
+      continue;
+    }
+
+    const isGeoJsonPolygon = geometry.type === 'Polygon';
+
+    const rings: Position[][] = isGeoJsonPolygon
+      ? geometry.coordinates
+      : [geometry.coordinates];
+
+    const start = lines.length;
+
+    for (const [i, ring] of rings.entries()) {
+      const closed =
+        !isGeoJsonPolygon &&
+        ring.length > 2 &&
+        ring[0][0] === ring[ring.length - 1][0] &&
+        ring[0][1] === ring[ring.length - 1][1];
+
+      const style = lineStyleFromProperties(feature.properties, closed);
+
+      const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
+
+      lines.push({
+        ...base,
+        ...style,
+        type: isPolygon ? 'polygon' : 'line',
+        label:
+          isPolygon || labelLinesToo
+            ? feature.properties?.['name']
+            : undefined /* ignore street names */,
+        points: ringToPoints(ring, isGeoJsonPolygon || (isPolygon && closed)),
+        holeOf: isGeoJsonPolygon && i > 0 ? start : undefined,
+      });
+    }
+
+    const polygonId = feature.properties?.['freemap:polygonId'];
+
+    if (typeof polygonId === 'string' && !polygonAt.has(polygonId)) {
+      polygonAt.set(polygonId, start);
+    }
+
+    const holeOf = feature.properties?.['freemap:holeOf'];
+
+    if (typeof holeOf === 'string') {
+      holeRefs.push({ at: start, of: holeOf });
+    }
+  }
+
+  for (const { at, of } of holeRefs) {
+    const parent = polygonAt.get(of);
+
+    if (parent !== undefined && parent !== at) {
+      lines[at] = { ...lines[at]!, holeOf: parent };
+    }
+  }
+
+  return lines;
+}
+
 // Convert an arbitrary GeoJSON Feature/FeatureCollection into drawing points
 // and lines/polygons. Returns counts so callers can decide what to select.
 // Shared between the `search-result` and `objects-geometry` branches.
@@ -98,50 +181,19 @@ function geojsonToDrawing(
       );
 
       pointCount++;
-    } else if (
-      geometry?.type === 'LineString' ||
-      geometry?.type === 'Polygon'
-    ) {
-      // Drawing can't represent holes, so emit every ring (outer + holes) as
-      // its own polygon.
-      const isGeoJsonPolygon = geometry.type === 'Polygon';
-
-      const rings: Position[][] =
-        geometry.type === 'Polygon'
-          ? geometry.coordinates
-          : [geometry.coordinates];
-
-      for (const ring of rings) {
-        const closed =
-          !isGeoJsonPolygon &&
-          ring.length > 2 &&
-          ring[0][0] === ring[ring.length - 1][0] &&
-          ring[0][1] === ring[ring.length - 1][1];
-
-        const style = lineStyleFromProperties(feature.properties, closed);
-
-        const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
-
-        const points = ringToPoints(
-          ring,
-          isGeoJsonPolygon || (isPolygon && closed),
-        );
-
-        const state = getState();
-
-        dispatch(
-          drawingLineAdd({
-            ...state.drawingSettings.style,
-            ...style,
-            type: isPolygon ? 'polygon' : 'line',
-            label: isPolygon ? feature.properties?.['name'] : undefined, // ignore street names
-            points,
-          }),
-        );
-
-        lineCount++;
-      }
     }
+  }
+
+  const lines = featuresToLines(
+    features,
+    getState().drawingSettings.style,
+    false,
+  );
+
+  if (lines.length) {
+    dispatch(drawingLineAdd(lines));
+
+    lineCount += lines.length;
   }
 
   return { lineCount, pointCount };
@@ -211,41 +263,41 @@ async function convertPlannedRoute(
   let lineCount = 0;
 
   if (isochrones?.length) {
-    // Every ring (outer and holes alike) becomes its own polygon, since drawing
-    // has no hole representation.
+    // A band is one polygon with its inner rings as holes, exactly as it draws
+    // on the map.
+    const lines: Line[] = [];
+
     for (const isochrone of isochrones) {
       const bucket = isochrone.properties?.['bucket'] ?? 0;
 
       const color = isochroneColor(bucket, isochrones.length);
 
-      for (const ring of isochrone.geometry.coordinates) {
-        dispatch(
-          drawingLineAdd({
-            ...state.drawingSettings.style,
-            type: 'polygon',
-            label: isochroneLabel(
-              isochrone,
-              bucket,
-              rpm.isochroneRing,
-              language,
-            ),
-            color: joinColorAlpha(color, lineOpacity),
-            width,
-            // Only the outermost ring is filled, as on the map; the inner ones
-            // keep a transparent fill so their interior stays clickable.
-            fillColor: joinColorAlpha(
-              color,
-              bucket === isochrones.length - 1
-                ? ISOCHRONE_FILL_OPACITY * lineOpacity
-                : 0,
-            ),
-            points: ringToPoints(ring, true),
-          }),
-        );
+      const start = lines.length;
 
-        lineCount++;
+      for (const [i, ring] of isochrone.geometry.coordinates.entries()) {
+        lines.push({
+          ...state.drawingSettings.style,
+          type: 'polygon',
+          label: isochroneLabel(isochrone, bucket, rpm.isochroneRing, language),
+          color: joinColorAlpha(color, lineOpacity),
+          width,
+          // Only the outermost band is filled, as on the map; the inner ones
+          // keep a transparent fill so their interior stays clickable.
+          fillColor: joinColorAlpha(
+            color,
+            bucket === isochrones.length - 1
+              ? ISOCHRONE_FILL_OPACITY * lineOpacity
+              : 0,
+          ),
+          points: ringToPoints(ring, true),
+          holeOf: i > 0 ? start : undefined,
+        });
       }
     }
+
+    dispatch(drawingLineAdd(lines));
+
+    lineCount += lines.length;
   } else if (alternative) {
     // Each leg/step shares its endpoint with the next one's start, so drop
     // consecutive duplicate coordinates to avoid stacked nodes at the joints.
@@ -374,16 +426,19 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
       let pointCount = 0;
 
-      const { features } = turfFlatten(state.trackViewer.trackGeojson);
+      const features = turfFlatten(state.trackViewer.trackGeojson).features.map(
+        (feature) =>
+          payload.tolerance
+            ? simplify(feature, {
+                mutate: false,
+                highQuality: true,
+                tolerance: payload.tolerance,
+              })
+            : feature,
+      );
 
       for (const feature of features) {
-        const { geometry } = payload.tolerance
-          ? simplify(feature, {
-              mutate: false,
-              highQuality: true,
-              tolerance: payload.tolerance,
-            })
-          : feature;
+        const { geometry } = feature;
 
         if (geometry?.type === 'Point') {
           const style = pointStyleFromProperties(feature.properties);
@@ -404,50 +459,21 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           );
 
           pointCount++;
-        } else if (
-          geometry?.type === 'LineString' ||
-          geometry?.type === 'Polygon'
-        ) {
-          // GPX tracks arrive as LineStrings; imported GeoJSON may carry native
-          // Polygon geometry (MultiPolygon is split by `turfFlatten`). Drawing
-          // can't represent holes, so emit every ring (outer + holes) as its
-          // own polygon.
-          const isGeoJsonPolygon = geometry.type === 'Polygon';
-
-          const rings: Position[][] =
-            geometry.type === 'Polygon'
-              ? geometry.coordinates
-              : [geometry.coordinates];
-
-          for (const ring of rings) {
-            const closed =
-              !isGeoJsonPolygon &&
-              ring.length > 2 &&
-              ring[0][0] === ring[ring.length - 1][0] &&
-              ring[0][1] === ring[ring.length - 1][1];
-
-            const style = lineStyleFromProperties(feature.properties, closed);
-
-            const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
-
-            const points = ringToPoints(
-              ring,
-              isGeoJsonPolygon || (isPolygon && closed),
-            );
-
-            dispatch(
-              drawingLineAdd({
-                ...state.drawingSettings.style,
-                ...style,
-                type: isPolygon ? 'polygon' : 'line',
-                label: feature.properties?.['name'],
-                points,
-              }),
-            );
-
-            lineCount++;
-          }
         }
+      }
+
+      // GPX tracks arrive as LineStrings; imported GeoJSON may carry native
+      // Polygon geometry (MultiPolygon is split by `turfFlatten`).
+      const lines = featuresToLines(
+        features,
+        state.drawingSettings.style,
+        true,
+      );
+
+      if (lines.length) {
+        dispatch(drawingLineAdd(lines));
+
+        lineCount += lines.length;
       }
 
       // The drawing is a lossy editable copy (per-vertex elevation/heart-rate/

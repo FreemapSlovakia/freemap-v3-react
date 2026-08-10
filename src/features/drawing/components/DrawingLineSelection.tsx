@@ -1,4 +1,4 @@
-import { setActiveModal } from '@app/store/actions.js';
+import { openTool, setActiveModal } from '@app/store/actions.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -8,8 +8,11 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { area } from '@turf/area';
+import { booleanContains } from '@turf/boolean-contains';
 import { destination } from '@turf/destination';
-import { type ReactElement, useCallback, useState } from 'react';
+import { polygon } from '@turf/helpers';
+import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
@@ -17,20 +20,34 @@ import {
   FaDrawPolygon,
   FaEllipsisV,
   FaExchangeAlt,
+  FaObjectGroup,
+  FaObjectUngroup,
   FaRegStopCircle,
   FaTag,
+  FaTimes,
 } from 'react-icons/fa';
+import { RiScissorsFill } from 'react-icons/ri';
 import { TbAngle, TbTimeline } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import {
+  type DrawnLine,
   drawingLineAddPoint,
+  drawingLineCutHole,
   drawingLineReverse,
+  drawingLineSetHoleOf,
   drawingLineSimplify,
   drawingLineStopDrawing,
 } from '../model/actions/drawingLineActions.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import { DrawingToggleButton } from './DrawingToggleButton.js';
 import { ProjectPointModal } from './ProjectPointModal.js';
+
+// Drawing rings are stored open; turf needs them closed.
+function toTurfPolygon(line: DrawnLine) {
+  return polygon([
+    [...line.points, line.points[0]!].map((p) => [p.lon, p.lat]),
+  ]);
+}
 
 export default function DrawingLineSelection(): ReactElement | null {
   const dispatch = useDispatch();
@@ -52,6 +69,68 @@ export default function DrawingLineSelection(): ReactElement | null {
       ? state.drawingLines.lines[state.main.selection.id]
       : undefined,
   );
+
+  const lines = useAppSelector((state) => state.drawingLines.lines);
+
+  const cuttingHole = useAppSelector(
+    (state) => line !== undefined && state.drawingLines.holeFor === line.id,
+  );
+
+  const isHole = line?.holeOfId !== undefined;
+
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  // The polygon a "make this a hole" would attach to: the smallest one that
+  // fully contains this ring, so a ring inside nested polygons joins the one it
+  // visually sits in.
+  //
+  // Only while the menu offering it is open: `lines` changes on every mousemove
+  // of a vertex drag, and a containment test against every polygon on each of
+  // those would be felt on a drawing of any size.
+  const enclosingIndex = useMemo(() => {
+    if (
+      !moreOpen ||
+      lineIndex === undefined ||
+      line?.type !== 'polygon' ||
+      isHole ||
+      line.points.length < 3
+    ) {
+      return undefined;
+    }
+
+    const inner = toTurfPolygon(line);
+
+    let best: number | undefined;
+
+    let bestArea = Number.POSITIVE_INFINITY;
+
+    for (const [i, other] of lines.entries()) {
+      if (
+        i === lineIndex ||
+        other.type !== 'polygon' ||
+        other.holeOfId !== undefined ||
+        other.points.length < 3
+      ) {
+        continue;
+      }
+
+      const outer = toTurfPolygon(other);
+
+      if (!booleanContains(outer, inner)) {
+        continue;
+      }
+
+      const a = area(outer);
+
+      if (a < bestArea) {
+        bestArea = a;
+
+        best = i;
+      }
+    }
+
+    return best;
+  }, [isHole, line, lineIndex, lines, moreOpen]);
 
   // The chart is of this line by id, so it stays with the line once the
   // selection goes — and lights this button only for the line it is of.
@@ -112,6 +191,32 @@ export default function DrawingLineSelection(): ReactElement | null {
       }
 
       switch (eventKey) {
+        case 'cut-hole':
+          // Opening a map-click tool disarms hole mode the same way it drops a
+          // line being drawn, so arm it only once the tool is open.
+          dispatch(openTool('draw-polygons'));
+
+          dispatch(drawingLineCutHole({ parentLineIndex: lineIndex }));
+
+          break;
+
+        case 'make-hole':
+          dispatch(
+            drawingLineSetHoleOf({
+              lineIndex,
+              parentLineIndex: enclosingIndex,
+            }),
+          );
+
+          break;
+
+        case 'detach-hole':
+          dispatch(
+            drawingLineSetHoleOf({ lineIndex, parentLineIndex: undefined }),
+          );
+
+          break;
+
         case 'project-point':
           setProjectPointDialogVisible(true);
 
@@ -143,7 +248,7 @@ export default function DrawingLineSelection(): ReactElement | null {
         }
       }
     },
-    [dispatch, lineIndex, m, toggleElevationChart],
+    [dispatch, enclosingIndex, lineIndex, m, toggleElevationChart],
   );
 
   if (!line) {
@@ -173,10 +278,40 @@ export default function DrawingLineSelection(): ReactElement | null {
             )}
           </>
         }
-        label={isLine ? m?.selections.drawLines : m?.selections.drawPolygons}
+        label={
+          isHole
+            ? m?.selections.drawPolygonHole
+            : isLine
+              ? m?.selections.drawLines
+              : m?.selections.drawPolygons
+        }
         deletable
         noLeftMargin
       >
+        {cuttingHole && (
+          <>
+            <span className="ms-2 me-1">{dm?.cutHoleHint}</span>
+
+            <LongPressTooltip
+              breakpoint="sm"
+              label={m?.general.cancel}
+              kbd="Esc"
+            >
+              {({ label, labelClassName, props }) => (
+                <Button
+                  className="ms-1"
+                  variant="secondary"
+                  onClick={() => dispatch(drawingLineStopDrawing())}
+                  {...props}
+                >
+                  <FaTimes />
+                  <span className={labelClassName}> {label}</span>
+                </Button>
+              )}
+            </LongPressTooltip>
+          </>
+        )}
+
         {drawing && (
           <LongPressTooltip breakpoint="sm" label={dm?.stopDrawing} kbd="Esc">
             {({ label, labelClassName, props }) => (
@@ -193,28 +328,64 @@ export default function DrawingLineSelection(): ReactElement | null {
           </LongPressTooltip>
         )}
 
-        <LongPressTooltip breakpoint="sm" label={dm?.modify}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() =>
-                dispatch(setActiveModal({ type: 'current-drawing-properties' }))
-              }
-              {...props}
-            >
-              <FaTag />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        {/* A hole carries no label or style of its own — it is drawn as part of
+            its parent — so there is nothing here to edit. */}
+        {!isHole && (
+          <LongPressTooltip breakpoint="sm" label={dm?.modify}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() =>
+                  dispatch(
+                    setActiveModal({ type: 'current-drawing-properties' }),
+                  )
+                }
+                {...props}
+              >
+                <FaTag />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
 
-        <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
+        <Dropdown
+          className="ms-1"
+          id="more"
+          onSelect={handleMoreSelect}
+          onToggle={setMoreOpen}
+        >
           <Dropdown.Toggle variant="secondary">
             <FaEllipsisV />
           </Dropdown.Toggle>
 
           <FmDropdownMenu>
+            {!isLine && !isHole && line.points.length > 2 && (
+              <Dropdown.Item
+                as="button"
+                eventKey="cut-hole"
+                active={cuttingHole}
+              >
+                <RiScissorsFill />
+                &nbsp;{dm?.cutHole ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            {enclosingIndex !== undefined && (
+              <Dropdown.Item as="button" eventKey="make-hole">
+                <FaObjectGroup />
+                &nbsp;{dm?.makeHole ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            {isHole && (
+              <Dropdown.Item as="button" eventKey="detach-hole">
+                <FaObjectUngroup />
+                &nbsp;{dm?.detachHole ?? '…'}
+              </Dropdown.Item>
+            )}
+
             {isLine && line.points.length > 1 && (
               <Dropdown.Item
                 as="button"

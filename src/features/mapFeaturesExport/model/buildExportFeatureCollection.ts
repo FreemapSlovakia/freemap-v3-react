@@ -635,12 +635,34 @@ export async function buildExportFeatureCollection({
     addPictures(features, await fetchPictures(getState));
   }
 
+  // A hole has no meaning apart from the polygon it belongs to: it is written
+  // as one of its interior rings, and picking either one exports the shape.
+  const holeIndexes = new Map<number, number[]>();
+
+  for (const [i, line] of drawingLines.lines.entries()) {
+    if (line.holeOfId !== undefined) {
+      const bucket = holeIndexes.get(line.holeOfId);
+
+      if (bucket) {
+        bucket.push(i);
+      } else {
+        holeIndexes.set(line.holeOfId, [i]);
+      }
+    }
+  }
+
   for (const [lineIndex, line] of drawingLines.lines.entries()) {
     if (line.type === 'line' ? !include.drawingLines : !include.drawingAreas) {
       continue;
     }
 
-    if (!keepDrawingLine(only, lineIndex)) {
+    if (line.holeOfId !== undefined) {
+      continue;
+    }
+
+    const holes = holeIndexes.get(line.id) ?? [];
+
+    if (![lineIndex, ...holes].some((i) => keepDrawingLine(only, i))) {
       continue;
     }
 
@@ -674,7 +696,19 @@ export async function buildExportFeatureCollection({
       properties: props,
       geometry:
         line.type === 'polygon'
-          ? { type: 'Polygon', coordinates: [positions] }
+          ? {
+              type: 'Polygon',
+              coordinates: [
+                positions,
+                ...holes.map((i) => {
+                  const { points } = drawingLines.lines[i]!;
+
+                  return [...points, points[0]!].map(
+                    (p) => [p.lon, p.lat] as Position,
+                  );
+                }),
+              ],
+            }
           : { type: 'LineString', coordinates: positions },
     });
   }

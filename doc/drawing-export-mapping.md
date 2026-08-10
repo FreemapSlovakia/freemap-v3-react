@@ -81,6 +81,14 @@ by `<fm:type>` for lossless round-trip, with `gpx_style:fill` presence on
 a closed ring as the heuristic fallback for other consumers / external
 files.
 
+A polygon's holes are separate lines in the store (`holeOfId`), so GPX
+writes each as its own `<trk>` and ties it to its parent with a shared id
+rather than a position — tracks are written in several passes, and other
+producers' files interleave their own. A hole borrows its parent's
+styling, since that is what it is drawn with, but with a fully
+transparent fill so consumers that ignore `fm:holeOf` outline it instead
+of painting over the shape.
+
 ### GPX export (per `<trk>`)
 
 | State field           | GPX element(s)                                   | Notes                                         |
@@ -103,12 +111,15 @@ files.
 | `lineCap`             | `<gpx_style:line><linecap>` + `<fm:lineCap>`     |                                               |
 | `lineJoin`            | `<gpx_style:line><linejoin>` + `<fm:lineJoin>`   |                                               |
 | `dashArray`           | `<gpx_style:line><dasharray>` + `<fm:dashArray>` | Space-separated numbers                       |
+| `holeOfId` (parent)   | `<fm:polygonId>`                                 | Only on a polygon that has holes              |
+| `holeOfId` (hole)     | `<fm:holeOf>`                                    | Matches its parent's `<fm:polygonId>`         |
 
 ### GeoJSON export (per LineString / Polygon feature)
 
 | State field | GeoJSON property            | Notes                                                                                        |
 | ----------- | --------------------------- | -------------------------------------------------------------------------------------------- |
 | `type`      | Geometry type               | Native (`LineString` vs `Polygon`) — no shadow; no `freemap:type` (that's a GPX-only signal) |
+| `holeOfId`  | Interior rings              | Native — a polygon and its holes are one `Polygon` feature; no shadow needed                 |
 | `label`     | `title`                     |                                                                                              |
 | `color`     | `stroke` + `stroke-opacity` | Simplestyle (lossy alpha)                                                                    |
 | `color`     | `freemap:color`             | **Lossless**                                                                                 |
@@ -138,6 +149,14 @@ GeoJSON, `convertToDrawingProcessor` recognises native `Polygon`/`MultiPolygon`
 geometry directly, so no shadow is needed. The closed-ring + `gpx_style:hasFill`
 heuristic is what lets us correctly classify polygons from third-party GPX
 producers that don't write `fm:type`.
+
+Holes come back the same two ways: a GeoJSON polygon's interior rings become
+hole lines of the ring-0 line, and GPX tracks are grouped by
+`freemap:polygonId` / `freemap:holeOf`. `featuresToLines` emits the whole
+import as one batch whose `holeOf` values are indexes into it, and the reducer
+resolves those to parent ids on the way into the store. A hole that names a
+missing, non-polygon or itself-a-hole parent is simply kept as a polygon of its
+own — rings stay flat, so there is no chain to walk and no cycle to guard.
 
 ## Curated icon dictionaries
 
@@ -192,7 +211,11 @@ If you add a new persisted field to a drawing point/line, the full
 checklist is:
 
 1. Add it to the Zod schema (`DrawingPointSchema` /
-   `LineSchema`) and the action payloads.
+   `LineSchema`) and the action payloads. If the field can't be carried
+   verbatim (like `holeOf`, an index out here but a parent id in the
+   store), the URL (`serializeDrawingLine` / `locationChangeHandler`) and
+   the map document (`mapDocument.ts`) must agree on the wire form, or a
+   map restored from its URL reads as having unsaved changes.
 2. **GPX writer** (`addDrawingPoints` / `addDrawingLines`):
    emit it as `<fm:fieldName>` always; emit it in foreign namespaces
    (osmand/locus/gpx_style) wherever a sensible counterpart exists.

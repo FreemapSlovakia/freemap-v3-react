@@ -45,6 +45,10 @@ const sk: DeepPartialWithRequiredObjects<DrawingMessages> = {
   },
   reverse: 'Obrátiť smer',
   simplify: 'Zjednodušiť',
+  cutHole: 'Vyrezať dieru',
+  cutHoleHint: 'Nakreslite dieru vo vnútri tohto polygónu.',
+  makeHole: 'Zmeniť na dieru v obklopujúcom polygóne',
+  detachHole: 'Oddeliť dieru',
 };
 
 export default sk;

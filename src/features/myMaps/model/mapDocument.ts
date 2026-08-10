@@ -3,6 +3,11 @@ import {
   getMapContentParts,
   serializeQuery,
 } from '@app/url/mapContentParts.js';
+import {
+  type DrawnLine,
+  type Line,
+  toWireHoleIndexes,
+} from '@features/drawing/model/actions/drawingLineActions.js';
 import { routePlannerFromMapData } from '@features/routePlanner/model/reducer.js';
 import { hash } from 'ohash';
 import { createSelector } from 'reselect';
@@ -25,10 +30,18 @@ export function getMapDataFromState(state: RootState): MapData {
     map,
   } = state;
 
+  const holeIndexes = toWireHoleIndexes(drawingLines.lines);
+
   return {
     // Without the store-only `id`: a document carries no line identity, and
-    // reading one back assigns fresh ids anyway.
-    lines: drawingLines.lines.map(({ id: _id, ...line }) => line),
+    // reading one back assigns fresh ids anyway, so a hole names its parent by
+    // position instead.
+    lines: drawingLines.lines.map(
+      ({ id: _id, holeOfId: _holeOfId, ...line }, i) => ({
+        ...line,
+        holeOf: holeIndexes[i],
+      }),
+    ),
     points: drawingPoints.points,
     tracking: {
       trackedDevices: tracking.trackedDevices,
@@ -125,6 +138,20 @@ function fingerprint(state: RootState): string {
 }
 
 /**
+ * A document's lines in store shape, so the shared serialization sees what it
+ * would on screen. Giving each line its index as its id makes the `holeOf`
+ * index and the store's `holeOfId` the same number, and the serializer maps it
+ * straight back.
+ */
+function linesAsState(lines: Line[]): DrawnLine[] {
+  return lines.map(({ holeOf, ...line }, id) => ({
+    ...line,
+    id,
+    holeOfId: holeOf,
+  }));
+}
+
+/**
  * The digest a map document would produce if it were on screen, for deciding
  * whether restored content actually differs from the stored map when no working
  * copy is available.
@@ -137,7 +164,10 @@ function fingerprint(state: RootState): string {
 export function fingerprintDocument(data: MapData, base: RootState): string {
   return fingerprint({
     ...base,
-    drawingLines: { ...base.drawingLines, lines: data.lines ?? [] },
+    drawingLines: {
+      ...base.drawingLines,
+      lines: linesAsState(data.lines ?? []),
+    },
     drawingPoints: { ...base.drawingPoints, points: data.points ?? [] },
     // Built by the same function the load uses, so the two can't disagree about
     // what a document puts on screen. Slice defaults, not live state, stand in

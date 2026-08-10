@@ -125,6 +125,7 @@ const messages: Messages = {
     drawPoints: 'Point',
     drawLines: 'Line',
     drawPolygons: 'Polygon',
+    drawPolygonHole: 'Hole in polygon',
     tracking: 'Tracking',
     linePoint: 'Line point',
     polygonPoint: 'Polygon point',

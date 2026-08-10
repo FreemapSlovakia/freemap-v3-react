@@ -17,12 +17,14 @@ import {
   drawingLineAddPoint,
   drawingLineChangeProperties,
   drawingLineContinue,
+  drawingLineCutHole,
   drawingLineDelete,
   drawingLineDeletePoint,
   drawingLineJoinFinish,
   drawingLineJoinStart,
   drawingLineRemovePoint,
   drawingLineReverse,
+  drawingLineSetHoleOf,
   drawingLineSetLines,
   drawingLineSimplify,
   drawingLineSplit,
@@ -36,12 +38,15 @@ export interface DrawingLinesState {
   drawing: boolean;
   lines: DrawnLine[];
   joinWith: undefined | { lineIndex: number; pointId: number };
+  /** `id` of the polygon the next drawn ring becomes a hole of, when armed. */
+  holeFor: undefined | number;
 }
 
 export const initialState: DrawingLinesState = {
   drawing: false,
   lines: [],
   joinWith: undefined,
+  holeFor: undefined,
 };
 
 // Line ids are handed out here because the reducer is the one funnel every
@@ -51,14 +56,58 @@ export const initialState: DrawingLinesState = {
 // holding one (the elevation chart) can't be silently re-pointed.
 let nextLineId = 0;
 
-function withId(line: Line): DrawnLine {
+function withId({ holeOf: _holeOf, ...line }: Line): DrawnLine {
   return { ...line, id: ++nextLineId };
 }
 
 // Everything a `Line` is, minus its id: `serializeDrawingLine` covers every
-// field except `type`, which the URL carries as the param name instead.
-function lineIdentity(line: Line): string {
-  return `${line.type}\x1f${serializeDrawingLine(line)}`;
+// field except `type`, which the URL carries as the param name instead, and
+// hole membership, which the two sides address differently (index vs. parent
+// id) and so is reduced to the flag that matters — whether it is a hole at all.
+function lineIdentity(line: Line, isHole: boolean): string {
+  return `${isHole ? 'H' : ''}${line.type}\x1f${serializeDrawingLine(line)}`;
+}
+
+/**
+ * Resolves each wire line's `holeOf` index against the store lines just made
+ * from it. Rings stay flat: a hole hangs off a top-level polygon, never off
+ * another hole, so there is no chain to walk and no cycle to guard against.
+ */
+function linkHoles(wire: Line[], lines: DrawnLine[]): DrawnLine[] {
+  return lines.map((line, i) => {
+    const at = wire[i]!.holeOf;
+
+    const parent = at === undefined ? undefined : wire[at];
+
+    const holeOfId =
+      at !== undefined &&
+      parent !== undefined &&
+      parent !== wire[i] &&
+      wire[i]!.type === 'polygon' &&
+      parent.type === 'polygon' &&
+      parent.holeOf === undefined
+        ? lines[at]!.id
+        : undefined;
+
+    return line.holeOfId === holeOfId ? line : { ...line, holeOfId };
+  });
+}
+
+function ingest(wire: Line[]): DrawnLine[] {
+  return linkHoles(wire, wire.map(withId));
+}
+
+/** A hole whose parent is gone reverts to a polygon of its own. */
+function dropDanglingHoles(lines: DrawnLine[]): DrawnLine[] {
+  const parents = new Set(
+    lines.filter((line) => line.holeOfId === undefined).map((line) => line.id),
+  );
+
+  return lines.map((line) =>
+    line.holeOfId === undefined || parents.has(line.holeOfId)
+      ? line
+      : { ...line, holeOfId: undefined },
+  );
 }
 
 export const drawingLinesReducer = createReducer(initialState, (builder) =>
@@ -66,15 +115,63 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
     .addCase(clearMapFeatures, () => initialState)
     .addCase(drawingLineAdd, (state, { payload }) => ({
       ...state,
-      lines: [...state.lines, withId(payload)],
+      lines: [
+        ...state.lines,
+        ...ingest(Array.isArray(payload) ? payload : [payload]),
+      ],
     }))
     .addCase(drawingLineChangeProperties, (state, { payload }) => {
-      Object.assign(state.lines[payload.index], payload.properties);
+      const line = state.lines[payload.index];
+
+      Object.assign(line, payload.properties);
+
+      // Only a polygon can be a hole or hold one, so turning this ring into a
+      // line frees both it and its own holes.
+      if (payload.properties.type === 'line') {
+        line.holeOfId = undefined;
+
+        freeHolesOf(state.lines, line.id);
+      }
     })
-    .addCase(drawingLineDelete, (state, { payload }) => ({
-      ...state,
-      lines: state.lines.filter((_, i) => i !== payload.lineIndex),
-    }))
+    .addCase(drawingLineDelete, (state, { payload }) => {
+      // The index can already be stale: `deleteProcessor` clears the selection
+      // first, and that drops a line too short to keep — so there may be
+      // nothing here to take holes from.
+      const id = state.lines[payload.lineIndex]?.id;
+
+      return {
+        ...state,
+        lines: state.lines.filter(
+          (line, i) =>
+            i !== payload.lineIndex &&
+            // A hole is part of its parent, so deleting the parent takes it
+            // along.
+            (id === undefined || line.holeOfId !== id),
+        ),
+      };
+    })
+    .addCase(drawingLineSetHoleOf, (state, { payload }) => {
+      const line = state.lines[payload.lineIndex];
+
+      const parent =
+        payload.parentLineIndex === undefined
+          ? undefined
+          : state.lines[payload.parentLineIndex];
+
+      line.holeOfId = !parent || parent === line ? undefined : parent.id;
+
+      // Rings stay flat, so a polygon taking a parent gives up its own holes.
+      if (line.holeOfId !== undefined) {
+        freeHolesOf(state.lines, line.id);
+      }
+    })
+    .addCase(drawingLineCutHole, (state, { payload }) => {
+      state.holeFor = state.lines[payload.parentLineIndex]?.id;
+
+      state.drawing = false;
+
+      state.joinWith = undefined;
+    })
     .addCase(drawingLineDeletePoint, (state, { payload }) => {
       const line = state.lines[payload.lineIndex];
 
@@ -82,9 +179,10 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
     })
     .addCase(selectFeature, (state) => ({
       ...state,
-      lines: state.lines.filter(linefilter),
+      lines: dropDanglingHoles(state.lines.filter(linefilter)),
       drawing: false,
       joinWith: undefined,
+      holeFor: undefined,
     }))
     .addCase(applySettings, (state, { payload }) => {
       if (!payload.drawingApplyAll) {
@@ -113,6 +211,19 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
           lineJoin: lineProps.lineJoin,
           points: [],
         });
+
+        // Hole mode is spent on the ring it starts; the rest of that ring's
+        // points arrive through the `lineIndex` branch below.
+        if (
+          lineProps.type === 'polygon' &&
+          state.lines.some(
+            (l) => l.id === state.holeFor && l.holeOfId === undefined,
+          )
+        ) {
+          line.holeOfId = state.holeFor;
+        }
+
+        state.holeFor = undefined;
 
         state.lines.push(line);
       } else {
@@ -190,9 +301,13 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
         ],
       };
     })
+    // Filtering after ingesting, so the dropped lines still occupy the
+    // positions the surviving `holeOf` indexes were written against.
     .addCase(drawingLineSetLines, (state, action) => ({
       ...state,
-      lines: action.payload.filter(linefilter).map(withId),
+      lines: dropDanglingHoles(
+        ingest(action.payload).filter((_, i) => linefilter(action.payload[i]!)),
+      ),
     }))
     .addCase(
       drawingLineContinue,
@@ -207,7 +322,7 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       },
     )
     .addCase(mapsLoaded, (state, { payload }) => {
-      const incoming = (payload.data.lines ?? initialState.lines).map(
+      const incoming: Line[] = (payload.data.lines ?? initialState.lines).map(
         (line) => ({
           ...line,
           type:
@@ -235,7 +350,7 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       const reusable = new Map<string, DrawnLine[]>();
 
       for (const line of payload.merge ? [] : state.lines) {
-        const key = lineIdentity(line);
+        const key = lineIdentity(line, line.holeOfId !== undefined);
 
         const bucket = reusable.get(key);
 
@@ -246,16 +361,24 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
         }
       }
 
+      // Hole membership is resolved after the matching, since a reused line
+      // carries the id the incoming one's `holeOf` index has to land on.
+      const adopted = incoming.map(
+        (line) =>
+          reusable
+            .get(lineIdentity(line, line.holeOf !== undefined))
+            ?.shift() ?? withId(line),
+      );
+
       return {
         ...state,
         joinWith: undefined,
+        holeFor: undefined,
         drawing: false,
-        lines: [
+        lines: dropDanglingHoles([
           ...(payload.merge ? state.lines : []),
-          ...incoming.map(
-            (line) => reusable.get(lineIdentity(line))?.shift() ?? withId(line),
-          ),
-        ],
+          ...linkHoles(incoming, adopted),
+        ]),
       };
     })
     .addCase(drawingLineJoinStart, (state, action) => ({
@@ -306,6 +429,7 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
         ...state,
         drawing: false,
         joinWith: undefined,
+        holeFor: undefined,
       }),
     ),
 );
@@ -315,6 +439,14 @@ function linefilter(line: Line) {
     (line.type === 'line' && line.points.length > 1) ||
     (line.type === 'polygon' && line.points.length > 2)
   );
+}
+
+function freeHolesOf(lines: DrawnLine[], parentId: number) {
+  for (const line of lines) {
+    if (line.holeOfId === parentId) {
+      line.holeOfId = undefined;
+    }
+  }
 }
 
 function reverse(points: Point[]) {

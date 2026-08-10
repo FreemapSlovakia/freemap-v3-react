@@ -44,6 +44,10 @@ const en: DrawingMessages = {
   },
   reverse: 'Reverse direction',
   simplify: 'Simplify',
+  cutHole: 'Cut out a hole',
+  cutHoleHint: 'Draw the hole inside this polygon.',
+  makeHole: 'Make a hole of the enclosing polygon',
+  detachHole: 'Detach hole',
 };
 
 export default en;

@@ -10,7 +10,9 @@ import {
   type DrawnLine,
   drawingLineAdd,
   drawingLineAddPoint,
+  drawingLineChangeProperties,
   drawingLineContinue,
+  drawingLineCutHole,
   drawingLineDelete,
   drawingLineDeletePoint,
   drawingLineJoinFinish,
@@ -44,7 +46,7 @@ let nextTestLineId = 1;
 const line = (
   type: Line['type'],
   points: Point[],
-  extra?: Partial<Line>,
+  extra?: Partial<DrawnLine>,
 ): DrawnLine => ({
   id: nextTestLineId++,
   type,
@@ -85,6 +87,21 @@ describe('drawingLinesReducer — basic CRUD', () => {
 
     expect(next.lines).toHaveLength(1);
     expect(next.lines[0].points[0].id).toBe(1);
+  });
+
+  // `deleteProcessor` clears the selection first, and that drops a line too
+  // short to keep — so the index the delete carries can already be gone.
+  it('delete tolerates an index the selection change already dropped', () => {
+    const state = drawingLinesReducer(
+      withLines([line('polygon', [p(0)])]),
+      selectFeature(null),
+    );
+
+    expect(state.lines).toHaveLength(0);
+
+    expect(() =>
+      drawingLinesReducer(state, drawingLineDelete({ lineIndex: 0 })),
+    ).not.toThrow();
   });
 
   it('deletePoint removes a point by id within a line', () => {
@@ -271,6 +288,7 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
     const state: DrawingLinesState = {
       drawing: true,
       joinWith: { lineIndex: 0, pointId: 1 },
+      holeFor: undefined,
       lines: [],
     };
 
@@ -291,6 +309,7 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
     const state: DrawingLinesState = {
       drawing: true,
       joinWith: { lineIndex: 0, pointId: 1 },
+      holeFor: undefined,
       lines: [],
     };
 
@@ -404,5 +423,151 @@ describe('mapsLoaded line identity', () => {
     expect(next.lines[0]?.id).toBe(a.id);
 
     expect(next.lines[1]?.id).not.toBe(a.id);
+  });
+});
+
+describe('polygon holes', () => {
+  const ring = (n: number) => [p(n), p(n + 1), p(n + 2)];
+
+  it('resolves a batch `holeOf` index to the parent line id', () => {
+    const next = drawingLinesReducer(
+      initialState,
+      drawingLineAdd([
+        { type: 'polygon', points: ring(0) },
+        { type: 'polygon', points: ring(10), holeOf: 0 },
+      ]),
+    );
+
+    expect(next.lines[1].holeOfId).toBe(next.lines[0].id);
+  });
+
+  it('refuses a hole of a hole, of a line, and of itself', () => {
+    const next = drawingLinesReducer(
+      initialState,
+      drawingLineAdd([
+        { type: 'polygon', points: ring(0) },
+        { type: 'polygon', points: ring(10), holeOf: 0 },
+        { type: 'polygon', points: ring(20), holeOf: 1 },
+        { type: 'polygon', points: ring(30), holeOf: 3 },
+        { type: 'line', points: ring(40) },
+        { type: 'polygon', points: ring(50), holeOf: 4 },
+      ]),
+    );
+
+    expect(next.lines.map(({ holeOfId }) => holeOfId)).toEqual([
+      undefined,
+      next.lines[0].id,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    ]);
+  });
+
+  it('deleting a polygon deletes its holes', () => {
+    const parent = line('polygon', ring(0));
+
+    const state = withLines([
+      parent,
+      line('polygon', ring(10), { holeOfId: parent.id }),
+      line('polygon', ring(20)),
+    ]);
+
+    const next = drawingLinesReducer(
+      state,
+      drawingLineDelete({ lineIndex: 0 }),
+    );
+
+    expect(next.lines).toHaveLength(1);
+    expect(next.lines[0].points[0].id).toBe(20);
+  });
+
+  it('a hole left without a parent becomes a polygon of its own', () => {
+    const state = withLines([
+      line('polygon', [p(0), p(1)]),
+      line('polygon', ring(10)),
+    ]);
+
+    state.lines[1].holeOfId = state.lines[0].id;
+
+    // The two-point parent doesn't survive the selection-time filter.
+    const next = drawingLinesReducer(state, selectFeature(null));
+
+    expect(next.lines).toHaveLength(1);
+    expect(next.lines[0].holeOfId).toBeUndefined();
+  });
+
+  it('turning a polygon into a line frees it and its holes', () => {
+    const parent = line('polygon', ring(0));
+
+    const state = withLines([parent, line('polygon', ring(10))]);
+
+    state.lines[1].holeOfId = parent.id;
+
+    const next = drawingLinesReducer(
+      state,
+      drawingLineChangeProperties({
+        index: 0,
+        properties: {
+          type: 'line',
+          label: undefined,
+          color: undefined,
+          fillColor: undefined,
+          width: undefined,
+          dashArray: undefined,
+          lineCap: undefined,
+          lineJoin: undefined,
+        },
+      }),
+    );
+
+    expect(next.lines[1].holeOfId).toBeUndefined();
+  });
+
+  it('the ring drawn after arming hole mode becomes the hole, and only it', () => {
+    const parent = line('polygon', ring(0));
+
+    const armed = drawingLinesReducer(
+      withLines([parent]),
+      drawingLineCutHole({ parentLineIndex: 0 }),
+    );
+
+    expect(armed.holeFor).toBe(parent.id);
+
+    const started = drawingLinesReducer(
+      armed,
+      drawingLineAddPoint({
+        lineProps: { type: 'polygon' },
+        point: p(10),
+        indexOfLineToSelect: 1,
+        drawing: true,
+      }),
+    );
+
+    expect(started.lines[1].holeOfId).toBe(parent.id);
+    expect(started.holeFor).toBeUndefined();
+
+    const next = drawingLinesReducer(
+      started,
+      drawingLineAddPoint({
+        lineProps: { type: 'polygon' },
+        point: p(20),
+        indexOfLineToSelect: 2,
+        drawing: true,
+      }),
+    );
+
+    expect(next.lines[2].holeOfId).toBeUndefined();
+  });
+
+  it('opening a map-click tool disarms hole mode', () => {
+    const state = drawingLinesReducer(
+      withLines([line('polygon', ring(0))]),
+      drawingLineCutHole({ parentLineIndex: 0 }),
+    );
+
+    expect(
+      drawingLinesReducer(state, openTool('draw-polygons')).holeFor,
+    ).toBeUndefined();
   });
 });

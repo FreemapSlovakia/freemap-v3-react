@@ -1,3 +1,4 @@
+import { toWireHoleIndexes } from '@features/drawing/model/actions/drawingLineActions.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import {
   serializeDrawingLine,
@@ -127,8 +128,10 @@ export function getMapContentParts(state: RootState): QueryPart[] {
     parts.push(['point', serializeDrawingPoint(point)]);
   }
 
-  for (const line of drawingLines.lines) {
-    parts.push([line.type, serializeDrawingLine(line)]);
+  const holeIndexes = toWireHoleIndexes(drawingLines.lines);
+
+  for (const [i, line] of drawingLines.lines.entries()) {
+    parts.push([line.type, serializeDrawingLine(line, holeIndexes[i])]);
   }
 
   if (galleryFilter.userId) {

@@ -161,6 +161,66 @@ licensing mean safe premium = our own compute/infra or power-user limits; avoid
 third-party data (license risk — see Strava) and community content (CC-BY-SA
 can't be made exclusive + optics). Keep the free/open core intact.
 
+## Drawing (`src/features/drawing/`, see [`doc/drawing-export-mapping.md`](./doc/drawing-export-mapping.md))
+
+- [x] **Holes in polygons.** A hole is its own `DrawnLine` pointing at its parent
+      by `holeOfId`, not a nested ring inside `points` — so every existing edit
+      (vertex drag, midpoint insert, simplify, reverse) works on it unchanged,
+      and the URL, the elevation chart and the `{lineIndex, pointId}` selection
+      needed no ring index. The parent renders `[outer, ...holes]` as one
+      `<Polygon>`, whose default `evenodd` fill rule punches the holes out and
+      takes clicks through them. Holes are fully subordinate: no label or style
+      of their own, measured as part of the parent, deleted with it. Rings stay
+      flat — an island in a lake is a further hole of the same parent — so there
+      is no chain to walk and no cycle to guard. Out on the wire a hole names
+      its parent by *position* (`holeOf`), since neither the URL (`\x1eH<i>`)
+      nor a saved document carries line ids; both must keep agreeing, or a map
+      restored from its URL reads as having unsaved changes.
+- [ ] **A hole isn't required to lie inside its parent.** Nothing stops a ring
+      being drawn outside the polygon, or dragged across its boundary
+      afterwards — deliberately, since editing has to pass through invalid
+      states, and the tool already permits self-intersecting rings. But the
+      consequences are silent: turf's `area` subtracts a stray ring's *whole*
+      area from the parent (a large enough one drives the readout negative), and
+      RFC 7946 / KML both require interior rings to be inside the exterior one,
+      so the export is invalid. Cheapest honest fix: keep the geometry
+      permissive but stop trusting it — `booleanContains` each hole when
+      measuring, subtract only the contained ones, and say so in the readout.
+      The *Make a hole of the enclosing polygon* command is already guarded;
+      only the draw-a-hole path and later vertex drags can produce one.
+- [ ] **No coverage for the hole wire formats.** The reducer's linking, cascade
+      delete and stale-index tolerance are tested, but nothing exercises the
+      round-trips the design leans on: URL `H` field ↔ store, document
+      `holeOf` ↔ `holeOfId` (and the my-maps fingerprint agreeing across both),
+      the GeoJSON interior rings, the GPX `fm:polygonId` / `fm:holeOf` pairing,
+      and KML `innerBoundaryIs`. These are pure functions over small fixtures —
+      cheap to pin, and the place a regression would go unnoticed longest.
+- [ ] **A GPX-imported polygon shows no hole in the track viewer.** The linkage
+      survives the round-trip — *Convert to drawing* rebuilds the hole — but
+      `fm:polygonId` / `fm:holeOf` are read in exactly one place,
+      `featuresToLines`, on the convert path. `DataViewerResult` renders each
+      `<trk>` as its own single-ring polygon, so the parent's fill shows through
+      where the hole should be (the hole itself outlines correctly, thanks to
+      the transparent fill written for foreign consumers). The same shape
+      imported as `.geojson` does render its hole, through the native `Polygon`
+      branch that already takes `[outer, ...holes]`. Fix by merging at parse
+      time — fold `fm:holeOf` tracks into their parent as a real `Polygon`
+      beside `enrichGpxExtensions`, so the viewer uses the branch that works and
+      the GPX grouping in `featuresToLines` becomes redundant. Matches this
+      file's track-viewer principle: tag at parse time, don't re-derive
+      downstream. Watch what else keys off `LineString`/`MultiLineString` —
+      elevation-chart suitability, start/finish markers, distance labels,
+      `mergeLines` — which an area would drop out of (arguably correct; the GPX
+      exporter already skips elevation on polygon tracks).
+- [ ] **Isochrone bands as donuts.** *Convert to drawing* keeps whatever inner
+      rings a band has, but GraphHopper's `buckets` response is nested *filled*
+      polygons — each bucket is the complete area up to its limit, one exterior
+      ring each — so in practice no holes appear, and only the outermost band
+      can be filled without the fills stacking. Subtracting bucket *k-1* from
+      bucket *k* would make each band a real donut, letting every one carry its
+      own fill. Wanted in the map rendering too, though, or the drawing would
+      stop mirroring what it was converted from.
+
 ## Track viewer: generic geodata vs. recorded tracks
 
 The track viewer began as a GPX recording viewer and grew into a general geodata
