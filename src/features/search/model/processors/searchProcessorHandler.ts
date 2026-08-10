@@ -6,6 +6,7 @@ import { tileToGeoJSON } from '@mapbox/tilebelt';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import type { LatLon } from '@shared/types/common.js';
+import { syntheticFeatureId } from '@shared/types/featureId.js';
 import { NominatimResultSchema } from '@shared/types/nominatimResult.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { feature, point } from '@turf/helpers';
@@ -43,7 +44,7 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
       searchSetResults([
         {
           source: 'geojson',
-          id: { type: 'other' },
+          id: syntheticFeatureId(),
           geojson,
         },
       ]),
@@ -71,7 +72,7 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
       searchSetResults([
         {
           source: 'bbox',
-          id: { type: 'other' },
+          id: syntheticFeatureId(),
           geojson: bboxPolygon(
             parts.some((p) => Math.abs(p) > 180) ? reproj() : (parts as BBox),
           ),
@@ -95,7 +96,7 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
         searchSetResults([
           {
             source: 'tile',
-            id: { type: 'other' },
+            id: syntheticFeatureId(),
             geojson: feature(poly),
             zoom: Number(m[1]),
             displayName: query.trim(),
@@ -122,7 +123,7 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
       searchSetResults([
         {
           source: 'coords',
-          id: { type: 'other' },
+          id: syntheticFeatureId(),
           geojson: point([coords.lon, coords.lat]),
           displayName: query.toUpperCase(),
         },
@@ -158,13 +159,13 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
   const results = z
     .array(NominatimResultSchema)
     .parse(await res.json())
-    .map((item, i): SearchResult => {
+    .map((item): SearchResult => {
       return {
         source: 'nominatim-forward',
         id:
           item.osm_type !== undefined && item.osm_id !== undefined
             ? { type: 'osm', elementType: item.osm_type, id: item.osm_id }
-            : { type: 'other', id: i },
+            : syntheticFeatureId(),
         incomplete: true,
         displayName: item.display_name,
         geojson: feature(

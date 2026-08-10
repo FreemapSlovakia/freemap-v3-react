@@ -33,6 +33,24 @@ export type FeatureId =
     ))
   | GenericFeatureId;
 
+let syntheticSeq = 0;
+
+/**
+ * An id for a result with nothing to be identified by: raw coordinates, a
+ * bounding box, a tile, pasted GeoJSON, a geocoding hit that came without an
+ * OSM element. Every call answers a different one, because results sharing an
+ * id are the same result to everything that keeps them — one takes the other's
+ * place on the map when it is picked.
+ *
+ * It only has to hold for as long as the page does. Nothing outside the session
+ * reads one: the URL carries OSM elements and nothing else.
+ */
+export function syntheticFeatureId(): GenericFeatureId {
+  syntheticSeq += 1;
+
+  return { type: 'other', id: syntheticSeq };
+}
+
 export function stringifyFeatureId(id: FeatureId): string {
   switch (id.type) {
     case 'osm':

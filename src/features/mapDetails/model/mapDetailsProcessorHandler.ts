@@ -21,7 +21,7 @@ import {
 } from '@shared/mapDefinitions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import type { FeatureId } from '@shared/types/featureId.js';
+import { type FeatureId, syntheticFeatureId } from '@shared/types/featureId.js';
 import { NominatimResultSchema } from '@shared/types/nominatimResult.js';
 import {
   type OverpassBounds,
@@ -263,7 +263,7 @@ export async function handle(
               elementType: reverseGeocodingElement.osm_type,
               id: reverseGeocodingElement.osm_id,
             }
-          : { type: 'other' },
+          : syntheticFeatureId(),
       incomplete: true,
       displayName: reverseGeocodingElement.display_name,
       geojson: feature(
