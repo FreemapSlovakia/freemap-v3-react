@@ -6,6 +6,7 @@ import {
   type SearchResult,
   searchSelectResult,
 } from '@features/search/model/actions.js';
+import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { fetchElevations } from '@shared/elevation.js';
 import { lineSegments } from '@shared/geoutils.js';
@@ -80,12 +81,16 @@ function detailsTarget(state: RootState): DetailsTarget | null {
   const { selection } = state.main;
 
   if (selection?.type === 'search') {
-    const result = state.search.selectedResult;
+    const result = activeSearchResultSelector(state);
 
-    // Every `searchSelectResult` bumps the sequence, so the toast follows the
-    // incomplete → fully-loaded upgrade of one and the same result.
-    return result
-      ? { key: `search:${state.search.searchResultSeq}`, result }
+    // The `incomplete` flag is part of the key, so the toast follows one and the
+    // same result through its upgrade to the fully loaded element. An element
+    // whose fetch is in flight has nothing to describe yet.
+    return result && !result.loading
+      ? {
+          key: `search:${stringifyFeatureId(result.id)}:${result.incomplete ? 'incomplete' : 'complete'}`,
+          result,
+        }
       : null;
   }
 

@@ -100,6 +100,7 @@ import {
   searchHighlightProcessor,
   searchHighlightTrafo,
 } from '@features/search/model/processors/searchHighlightProcessor.js';
+import { searchPreviewProcessor } from '@features/search/model/processors/searchPreviewProcessor.js';
 import { searchProcessor } from '@features/search/model/processors/searchProcessor.js';
 import { toastsAddProcessor } from '@features/toasts/model/processors/toastsAddProcessor.js';
 import { toastsCancelTypeProcessor } from '@features/toasts/model/processors/toastsCancelTypeProcessor.js';
@@ -144,6 +145,7 @@ export const processors = [
   searchProcessor,
   searchHighlightTrafo,
   searchHighlightProcessor,
+  searchPreviewProcessor,
   locateProcessor,
   followLocationProcessor,
   saveSettingsProcessor,

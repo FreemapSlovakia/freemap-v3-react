@@ -1,3 +1,4 @@
+import { hasGeometry } from '@features/search/model/resultUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
@@ -61,7 +62,7 @@ export function useAvailableExportables(): string {
   return useAppSelector((state) => {
     const exportables: Exportable[] = [];
 
-    if (state.search.selectedResult) {
+    if (state.search.selectedResults.some(hasGeometry)) {
       exportables.push('search');
     }
 
@@ -161,7 +162,7 @@ export function useSelectedExportable(): Exportable | null {
         return state.routePlanner.alternatives.length ? 'plannedRoute' : null;
 
       case 'search':
-        return state.search.selectedResult ? 'search' : null;
+        return state.search.selectedResults.some(hasGeometry) ? 'search' : null;
 
       default:
         return null;

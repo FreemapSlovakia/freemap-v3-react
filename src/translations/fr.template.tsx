@@ -222,6 +222,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
   search: {
     fetchingError: ({ err }) => addError(messages, 'Erreur de recherche', err),
+    keepOnMap: 'Conserver sur la carte',
     sources: {
       bbox: 'Cadre de délimitation',
       geojson: 'GeoJSON',

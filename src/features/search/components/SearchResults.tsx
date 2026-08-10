@@ -6,6 +6,7 @@ import {
   resolveGenericName,
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
+import { COLORS } from '@shared/colors.js';
 import {
   MarkerIcon,
   MarkerLeafletIcon,
@@ -13,6 +14,10 @@ import {
 } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { escapeHtml } from '@shared/stringUtils.js';
+import {
+  featureIdsEqual,
+  stringifyFeatureId,
+} from '@shared/types/featureId.js';
 import type { Feature } from 'geojson';
 import {
   DomEvent,
@@ -22,17 +27,25 @@ import {
   marker,
   Path,
   type PathOptions,
-  Polygon,
 } from 'leaflet';
-import { Fragment, type ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { type SearchSource, searchSelectResult } from '../model/actions.js';
+import {
+  type SearchResult,
+  type SearchSource,
+  searchSelectResult,
+} from '../model/actions.js';
+import { hasGeometry } from '../model/resultUtils.js';
 
 export function SearchResults(): ReactElement | null {
-  const selectedResult = useAppSelector((state) => state.search.selectedResult);
+  const selectedResults = useAppSelector(
+    (state) => state.search.selectedResults,
+  );
 
-  const isOsm = selectedResult?.id.type === 'osm';
+  const selectedResultSeq = useAppSelector(
+    (state) => state.search.searchResultSeq,
+  );
 
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -45,6 +58,85 @@ export function SearchResults(): ReactElement | null {
   const markerColor =
     window.fmHeadless?.searchResultStyle?.color ?? resultStyle.color;
 
+  // Derived from the RGBA style, unless the headless renderer supplies its own.
+  const pathStyle: PathOptions =
+    window.fmHeadless?.searchResultStyle ??
+    drawingStyleToPathOptions(resultStyle);
+
+  const activeId = useAppSelector((state) =>
+    state.main.selection?.type === 'search' ? state.main.selection.id : null,
+  );
+
+  const shown = selectedResults.filter(hasGeometry);
+
+  // The selected result is marked whether or not others are shown beside it:
+  // the map holds drawings, route points and POIs too, so whether the result is
+  // the selected feature is a question even when it is the only one. The
+  // headless renderer asks for a style outright, and gets it whatever happens.
+  const marksActive = !window.fmHeadless?.searchResultStyle;
+
+  return (
+    <>
+      {shown.map((result) => {
+        const active = Boolean(
+          marksActive && activeId && featureIdsEqual(result.id, activeId),
+        );
+
+        return (
+          // Remount on style change too: react-leaflet keeps `pointToLayer`
+          // markers from their initial render, so a style edit — or the
+          // selection moving to another result — wouldn't reach them otherwise.
+          <ResultGeometry
+            key={
+              stringifyFeatureId(result.id) +
+              language +
+              selectedResultSeq +
+              markerColor +
+              resultStyle.markerType +
+              JSON.stringify(pathStyle) +
+              active
+            }
+            result={result}
+            markerColor={active ? COLORS.selected : markerColor}
+            // Stroke and fill both take the selection color; their opacities
+            // are the ones the style was given (`drawingStyleToPathOptions`
+            // splits the RGBA into color + opacity), so an area stays as solid
+            // or as faint as it was set to be.
+            pathStyle={
+              active
+                ? {
+                    ...pathStyle,
+                    color: COLORS.selected,
+                    fillColor: COLORS.selected,
+                  }
+                : pathStyle
+            }
+          />
+        );
+      })}
+    </>
+  );
+}
+
+type Props = {
+  result: SearchResult;
+  markerColor: string;
+  pathStyle: PathOptions;
+};
+
+function ResultGeometry({
+  result,
+  markerColor,
+  pathStyle,
+}: Props): ReactElement {
+  const isOsm = result.id.type === 'osm';
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const markerType = useAppSelector(
+    (state) => state.searchSettings.resultStyle.markerType,
+  );
+
   const pointToLayer = useCallback(
     (feature: Feature, latLng: LatLng) => {
       const img = isOsm
@@ -53,9 +145,7 @@ export function SearchResults(): ReactElement | null {
 
       // Ring/square markers are centered glyphs, so they anchor at their middle
       // rather than the pin's tip (matches RichMarker).
-      const compact =
-        resultStyle.markerType === 'ring' ||
-        resultStyle.markerType === 'square';
+      const compact = markerType === 'ring' || markerType === 'square';
 
       return marker(latLng, {
         icon: new MarkerLeafletIcon({
@@ -64,7 +154,7 @@ export function SearchResults(): ReactElement | null {
           icon: (
             <MarkerIcon
               color={markerColor}
-              markerType={resultStyle.markerType}
+              markerType={markerType}
               imageOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
               image={img[0]}
             />
@@ -72,11 +162,11 @@ export function SearchResults(): ReactElement | null {
         }),
       });
     },
-    [isOsm, markerColor, resultStyle.markerType],
+    [isOsm, markerColor, markerType],
   );
 
   const annotateFeature = useCallback(
-    async (feature: Feature, layer: Layer, isBg: boolean) => {
+    async (feature: Feature, layer: Layer) => {
       const genericName: string =
         feature.properties?.['__fm_genericName'] ||
         (isOsm
@@ -99,102 +189,65 @@ export function SearchResults(): ReactElement | null {
           : '') ||
         '';
 
-      const isPoi = !(layer instanceof Path || layer instanceof Polygon);
+      const isPoi = !(layer instanceof Path);
 
       if (displayName || genericName) {
         layer.bindTooltip(
           escapeHtml(genericName) +
             (displayName ? ` <i>${escapeHtml(displayName)}</i>` : ''),
-          {
-            direction: layer instanceof Polygon ? 'center' : 'top',
-            offset: isPoi ? [0, -36] : [0, 0],
-          },
+          isPoi
+            ? // Clear of the pin, whose tip is the position.
+              { direction: 'top', offset: [0, -36] }
+            : // A line or an area labels itself at the pointer. Anchored at the
+              // shape's centre instead, the tooltip covers the very thing it
+              // names once the shape is smaller than the label — a building,
+              // say — and for a shape large enough that its centre is off the
+              // screen, it is drawn where nobody can see it.
+              { direction: 'top', sticky: true },
         );
       }
-
-      layer.addEventListener('mouseover', () => {
-        if (layer instanceof Path) {
-          layer.setStyle({ opacity: 0.5, fillOpacity: 0.125 });
-        }
-      });
-
-      layer.addEventListener('mouseout', () => {
-        if (layer instanceof Path) {
-          layer.setStyle({ opacity: isBg ? 0 : 1, fillOpacity: 0.25 });
-        }
-      });
     },
     [isOsm, language],
   );
 
-  const selectedResultSeq = useAppSelector(
-    (state) => state.search.searchResultSeq,
-  );
-
   const dispatch = useDispatch();
-
-  const cachedAnnotateFeatureBg = useCallback(
-    (feature: Feature, layer: Layer) => annotateFeature(feature, layer, true),
-    [annotateFeature],
-  );
-
-  const cachedAnnotateFeature = useCallback(
-    (feature: Feature, layer: Layer) => annotateFeature(feature, layer, false),
-    [annotateFeature],
-  );
 
   const m = useMessages();
 
-  if (!selectedResult?.geojson) {
-    return null;
-  }
-
-  // Derived from the RGBA style, unless the headless renderer supplies its own.
-  const pathStyle: PathOptions =
-    window.fmHeadless?.searchResultStyle ??
-    drawingStyleToPathOptions(resultStyle);
-
+  // Clicking a result makes it the one being looked at, and changes nothing
+  // else: the others stay on the map, and a kept one stays kept.
   const eventHandlers: LeafletEventHandlerFnMap = {
     click(e) {
       DomEvent.stopPropagation(e);
 
       dispatch(
         searchSelectResult({
-          result: selectedResult,
+          result,
           focus: false,
+          tier: 'keep',
         }),
       );
     },
   };
 
   const geojson =
-    selectedResult.geojson.type === 'Feature'
+    result.geojson.type === 'Feature'
       ? {
-          ...selectedResult.geojson,
+          ...result.geojson,
           properties: deleteNonstringValues({
-            ...selectedResult.geojson.properties,
+            ...result.geojson.properties,
             __fm_genericName: (
               ['bbox', 'coords', 'tile', 'geojson'] as SearchSource[]
-            ).includes(selectedResult.source)
-              ? m?.search.sources[selectedResult.source]
-              : selectedResult.genericName,
-            __fm_displayName: selectedResult.displayName,
+            ).includes(result.source)
+              ? m?.search.sources[result.source]
+              : result.genericName,
+            __fm_displayName: result.displayName,
           }),
         }
-      : selectedResult.geojson;
+      : result.geojson;
 
   return (
-    // Remount on style change too: react-leaflet keeps `pointToLayer` markers
-    // from their initial render, so a style edit wouldn't reach them otherwise.
-    <Fragment
-      key={
-        language +
-        selectedResultSeq +
-        markerColor +
-        resultStyle.markerType +
-        JSON.stringify(pathStyle)
-      }
-    >
+    <>
       <GeoJSON
         interactive={false}
         data={geojson}
@@ -206,7 +259,7 @@ export function SearchResults(): ReactElement | null {
         interactive
         data={geojson}
         style={{ weight: 15, opacity: 0, color: '#fff' }}
-        onEachFeature={cachedAnnotateFeatureBg}
+        onEachFeature={annotateFeature}
         filter={(feature) => feature.geometry?.type === 'LineString'}
         eventHandlers={eventHandlers}
       />
@@ -216,11 +269,11 @@ export function SearchResults(): ReactElement | null {
         data={geojson}
         style={pathStyle}
         pointToLayer={pointToLayer}
-        onEachFeature={cachedAnnotateFeature}
+        onEachFeature={annotateFeature}
         filter={(feature) => feature.geometry?.type !== 'LineString'}
         eventHandlers={eventHandlers}
       />
-    </Fragment>
+    </>
   );
 }
 

@@ -240,6 +240,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Cerca',
     placeholder: 'Cerca sulla mappa',
     result: 'Risultato',
+    keepOnMap: 'Mantieni sulla mappa',
     sources: {
       'nominatim-reverse': 'Geocodifica inversa',
       'overpass-nearby': 'Oggetti vicini',

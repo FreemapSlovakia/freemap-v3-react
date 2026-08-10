@@ -107,7 +107,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const results = useAppSelector((state) => state.search.results);
 
-  const selectedResult = useAppSelector((state) => state.search.selectedResult);
+  const selection = useAppSelector((state) => state.main.selection);
 
   const query = useAppSelector((state) => state.search.query);
 
@@ -335,8 +335,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                       }
                     : ({ as: 'button', type: 'button' } as const))}
                   active={
-                    selectedResult !== null &&
-                    featureIdsEqual(result.id, selectedResult.id)
+                    selection?.type === 'search' &&
+                    featureIdsEqual(result.id, selection.id)
                   }
                 >
                   <Result value={result} />

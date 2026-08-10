@@ -22,6 +22,7 @@ import {
 import type { RoutePlannerSettingsState } from '@features/routePlanner/model/settingsReducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
+import { hasGeometry } from '@features/search/model/resultUtils.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { resolveGenericName } from '@osm/osmNameResolver.js';
@@ -796,14 +797,11 @@ export async function buildExportFeatureCollection({
   }
 
   if (include.search) {
-    const geojson = search.selectedResult?.geojson;
-
-    const searchFeatures =
-      geojson?.type === 'FeatureCollection'
-        ? geojson.features
-        : geojson?.type === 'Feature'
-          ? [geojson]
-          : [];
+    const searchFeatures = search.selectedResults
+      .filter(hasGeometry)
+      .flatMap(({ geojson }) =>
+        geojson.type === 'FeatureCollection' ? geojson.features : [geojson],
+      );
 
     if (markerMode) {
       features.push(

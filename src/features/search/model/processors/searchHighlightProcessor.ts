@@ -12,31 +12,31 @@ import {
 } from '@shared/types/featureId.js';
 import bbox from '@turf/bbox';
 import { searchSelectResult } from '../actions.js';
+import { hasGeometry } from '../resultUtils.js';
 
+/**
+ * Keeps a result that is already on the map from being taken back to the
+ * geometry-less form the list holds it in — picking a geocoding hit a second
+ * time would otherwise drop the element loaded for it and fetch it again. The
+ * pick still goes through, so it makes its result the active one; only the
+ * result itself is swapped for the one already shown.
+ */
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
   transform({ action, getState }) {
-    if (
-      !action.payload ||
-      action.payload.result.geojson.type === 'FeatureCollection' ||
-      action.payload.result.geojson.geometry
-    ) {
+    if (!action.payload || hasGeometry(action.payload.result)) {
       return action;
     }
 
     const { id } = action.payload.result;
 
-    const sr = getState().search.selectedResult;
+    const shown = getState().search.selectedResults.find((result) =>
+      featureIdsEqual(id, result.id),
+    );
 
-    if (
-      sr &&
-      featureIdsEqual(id, sr.id) &&
-      (sr.geojson.type === 'FeatureCollection' || sr.geojson.geometry)
-    ) {
-      return;
-    }
-
-    return action;
+    return shown && hasGeometry(shown)
+      ? { ...action, payload: { ...action.payload, result: shown } }
+      : action;
   },
 };
 
@@ -86,7 +86,17 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       }
     }
 
-    if (action.payload.focus !== false && geojson) {
+    // The fit belongs to the result being looked at. An element kept on the map
+    // while its fetch ran lands after the user has moved on to another one, and
+    // would otherwise yank the map back to itself.
+    const { selection } = getState().main;
+
+    if (
+      action.payload.focus !== false &&
+      geojson &&
+      selection?.type === 'search' &&
+      featureIdsEqual(selection.id, id)
+    ) {
       let bounds;
 
       try {

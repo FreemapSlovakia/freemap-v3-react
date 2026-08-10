@@ -236,6 +236,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Suchen',
     placeholder: 'In der Karte suchen',
     result: 'Fund',
+    keepOnMap: 'Auf der Karte behalten',
     sources: {
       'nominatim-reverse': 'Reverse-Geokodierung',
       'overpass-nearby': 'Nahegelegene Objekte',

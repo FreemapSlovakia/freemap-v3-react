@@ -30,6 +30,7 @@ import {
 import type { RoutePlannerSettingsState } from '@features/routePlanner/model/settingsReducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
+import { hasGeometry } from '@features/search/model/resultUtils.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
@@ -207,9 +208,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('search')) {
-    const geojson = search.selectedResult?.geojson;
-
-    if (geojson) {
+    for (const { geojson } of search.selectedResults.filter(hasGeometry)) {
       addGeojson(doc, geojson);
     }
   }

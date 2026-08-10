@@ -174,6 +174,7 @@ export type Messages = {
     buttonTitle: string;
     placeholder: string;
     result: string;
+    keepOnMap: string;
     sources: Record<SearchSource, string>;
   };
   mapLayers: {

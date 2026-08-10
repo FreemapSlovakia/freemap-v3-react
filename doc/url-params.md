@@ -79,12 +79,14 @@ Params are read from `document.location.hash || document.location.search` (so `?
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `osm-node`, `osm-way`, `osm-relation` | Load/highlight an OSM element | r/w | integer id |
+| `osm-node`, `osm-way`, `osm-relation` | Load/highlight a **kept** OSM element; repeatable | r/w | integer id |
 | `changesets-days` | Changesets time window | r/w | integer days |
 | `changesets-author` | Changesets author filter | r/w | username |
 | `gallery-user-id`, `gallery-tag`, `gallery-rating-from`/`-to`, `gallery-taken-at-from`/`-to`, `gallery-created-at-from`/`-to`, `gallery-pano`, `gallery-premium` | Gallery filters | r/w | see source |
 | `track` | Live-tracking device + props | r/w | `token[/prop:value…]` |
 | `follow` | Followed live device | r/w | token or id |
+
+A search / map-details result the user merely picked is *previewed*: it is on the map only for as long as it is the selected feature, and it is not written to the URL. The selection toolbar's **Keep on the map** toggle keeps it, and only then does it get an `osm-*` param. Elements read from these params come back kept, and the first of them is selected.
 
 ## Drawing geometry
 

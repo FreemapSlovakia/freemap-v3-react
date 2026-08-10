@@ -2,6 +2,7 @@ import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
 import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import { featureIdsEqual } from '@shared/types/featureId.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
 import { hash } from 'ohash';
 import { encodeActiveModal } from '../store/activeModal.js';
@@ -192,9 +193,8 @@ function updateUrl(state: RootState, forced: boolean): void {
     tracking.trackedDevices,
     trackViewerSettings.colorizeTrackBy,
     trackViewer.gpxUrl,
-    search.osmNodeId,
-    search.osmRelationId,
-    search.osmWayId,
+    search.selectedResults,
+    search.previewId,
     trackViewer.trackUID,
     // The derived id itself, not the fields behind it: the URL follows every
     // way a map can claim or release it — a load that starts, opens, or is
@@ -301,16 +301,20 @@ function updateUrl(state: RootState, forced: boolean): void {
   // unsaved-changes comparison so the two can't disagree.
   historyParts.push(...getMapContentParts(state));
 
-  if (search.osmNodeId && search.osmNodeId > 0) {
-    historyParts.push(['osm-node', search.osmNodeId]);
-  }
-
-  if (search.osmWayId && search.osmWayId > 0) {
-    historyParts.push(['osm-way', search.osmWayId]);
-  }
-
-  if (search.osmRelationId && search.osmRelationId > 0) {
-    historyParts.push(['osm-relation', search.osmRelationId]);
+  // One param per kept result — the map holds any number of them. The previewed
+  // one is left out: it lasts only as long as it is being looked at, so a URL
+  // naming it would promise something a reload can't keep. Only OSM elements
+  // can be named at all; a WMS or a plain-coordinates result has no id to read
+  // back, so it lives no longer than the page. Negative ids belong to elements
+  // that exist in an editor and nowhere else.
+  for (const { id } of search.selectedResults) {
+    if (
+      id.type === 'osm' &&
+      id.id > 0 &&
+      !(search.previewId && featureIdsEqual(search.previewId, id))
+    ) {
+      historyParts.push([`osm-${id.elementType}`, id.id]);
+    }
   }
 
   if (trackViewerSettings.colorizeTrackBy) {

@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import { hasGeometry } from '@features/search/model/resultUtils.js';
 import { mergeLines } from '@shared/geoutils.js';
 import type { LineString, Position } from 'geojson';
 import type { Exportable } from './model/actions.js';
@@ -26,38 +27,32 @@ export function getExportables(): Partial<
   >
 > {
   return {
+    // A course is a single line, so the results shown are pooled and the one
+    // line among them is the course — anything else is a refusal.
     search({ search }: RootState) {
-      const geojson = search.selectedResult?.geojson;
+      const shown = search.selectedResults.filter(hasGeometry);
 
-      if (!geojson) {
+      if (shown.length === 0) {
         return null;
       }
 
-      switch (geojson.type) {
-        case 'FeatureCollection': {
-          const features = structuredClone(geojson.features);
+      const features = structuredClone(
+        shown.flatMap(({ geojson }) =>
+          geojson.type === 'FeatureCollection' ? geojson.features : [geojson],
+        ),
+      );
 
-          mergeLines(features);
+      mergeLines(features);
 
-          const lines = features
-            .map((f) => f.geometry)
-            .filter((g): g is LineString => g.type === 'LineString');
+      const lines = features
+        .map((f) => f.geometry)
+        .filter((g): g is LineString => g.type === 'LineString');
 
-          return lines.length === 1
-            ? { coordinates: lines[0].coordinates }
-            : lines.length > 1
-              ? 'garmin.multipleLineStrings'
-              : 'garmin.noLineString';
-        }
-
-        case 'Feature': {
-          const { geometry } = geojson;
-
-          return geometry.type === 'LineString'
-            ? { coordinates: geometry.coordinates }
-            : 'garmin.noLineString';
-        }
-      }
+      return lines.length === 1
+        ? { coordinates: lines[0].coordinates }
+        : lines.length > 1
+          ? 'garmin.multipleLineStrings'
+          : 'garmin.noLineString';
     },
 
     import({ trackViewer }: RootState) {

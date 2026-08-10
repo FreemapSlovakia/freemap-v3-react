@@ -18,9 +18,13 @@ import {
   routePlannerDelete,
   routePlannerSetPoint,
 } from '@features/routePlanner/model/actions.js';
-import { searchSelectResult } from '@features/search/model/actions.js';
+import {
+  searchSelectResult,
+  searchUnselectResult,
+} from '@features/search/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import { isMapClickTool } from '@shared/toolDefinitions.js';
+import { featureIdsEqual } from '@shared/types/featureId.js';
 import {
   clearMapFeatures,
   closeTool,
@@ -179,10 +183,23 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     // Only a result selects: clearing one leaves the selection to whoever
     // cleared it, so a `search` selection can't outlive the result behind it.
     .addCase(searchSelectResult, (state, action) => {
-      if (action.payload) {
+      const { payload } = action;
+
+      if (payload && (payload.select ?? true)) {
         state.selection = {
           type: 'search',
+          id: payload.result.id,
         };
+      }
+    })
+    // The other shown results stay, but nothing is acted upon until one of them
+    // is picked again — which one would be a guess.
+    .addCase(searchUnselectResult, (state, action) => {
+      if (
+        state.selection?.type === 'search' &&
+        featureIdsEqual(state.selection.id, action.payload)
+      ) {
+        state.selection = null;
       }
     })
     .addCase(selectFeature, (state, action) => {

@@ -1,9 +1,13 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { searchSelectResult } from '@features/search/model/actions.js';
+import {
+  searchSelectResult,
+  searchUnselectResult,
+} from '@features/search/model/actions.js';
+import { isResultLoadingSelector } from '@features/search/model/selectors.js';
 import { mergeLines } from '@shared/geoutils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import type { FeatureId } from '@shared/types/featureId.js';
+import { type FeatureId, featureIdsEqual } from '@shared/types/featureId.js';
 import { featureCollection, lineString, point } from '@turf/helpers';
 import type { Feature, LineString, Point, Polygon } from 'geojson';
 import { loadOsmMessages } from '../../translations/loadOsmMessages.js';
@@ -15,14 +19,22 @@ import { copyDisplayName } from './copyDisplayName.js';
 export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
   actionCreator: osmLoadRelation,
   handle: async ({ dispatch, getState, action, toastError }) => {
-    try {
-      const { id, focus } = action.payload;
+    const { id, focus } = action.payload;
 
+    const osmId: FeatureId = { type: 'osm', elementType: 'relation', id };
+
+    try {
       trackMatomo(['trackEvent', 'Osm', 'view', 'relation']);
 
       const data = await fetchOsmElements('relation', id, {
         getState,
-        cancelActions: [clearMapFeatures, searchSelectResult],
+        cancelActions: [clearMapFeatures],
+        // Only this element going off the map invalidates its own fetch —
+        // other results coming and going alongside it don't.
+        stateChangePredicate: (state) =>
+          state.search.selectedResults.some((result) =>
+            featureIdsEqual(result.id, osmId),
+          ),
       });
 
       const nodes: Record<number, OsmNode> = {};
@@ -96,9 +108,7 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
 
       mergeLines<LineString | Point | Polygon>(polyFeatures, tags);
 
-      const osmId: FeatureId = { type: 'osm', elementType: 'relation', id };
-
-      copyDisplayName(getState().search.selectedResult, osmId, tags);
+      copyDisplayName(getState().search.selectedResults, osmId, tags);
 
       dispatch(
         searchSelectResult({
@@ -111,9 +121,19 @@ export const osmLoadRelationProcessor: Processor<typeof osmLoadRelation> = {
             },
           },
           focus,
+          tier: 'keep',
+          select: false,
         }),
       );
     } catch (err) {
+      // Only a placeholder goes: it is nothing but an id, and would sit on the
+      // map as an empty result and in the URL as a promise that reloading can't
+      // keep. A result that arrived from the list with geometry of its own
+      // stays — a failed upgrade is no reason to take away what was picked.
+      if (isResultLoadingSelector(getState(), osmId)) {
+        dispatch(searchUnselectResult(osmId));
+      }
+
       await toastError(err, loadOsmMessages, 'fetchingError');
     }
   },

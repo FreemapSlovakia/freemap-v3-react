@@ -228,6 +228,7 @@ const messages: Messages = {
     buttonTitle: 'Search',
     placeholder: 'Search in the map',
     result: 'Lookup',
+    keepOnMap: 'Keep on the map',
     sources: {
       bbox: 'Bounding Box',
       geojson: 'GeoJSON',

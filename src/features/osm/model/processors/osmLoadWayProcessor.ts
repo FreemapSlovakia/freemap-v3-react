@@ -1,9 +1,13 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { searchSelectResult } from '@features/search/model/actions.js';
+import {
+  searchSelectResult,
+  searchUnselectResult,
+} from '@features/search/model/actions.js';
+import { isResultLoadingSelector } from '@features/search/model/selectors.js';
 import { positionsEqual, shouldBeArea } from '@shared/geoutils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import type { FeatureId } from '@shared/types/featureId.js';
+import { type FeatureId, featureIdsEqual } from '@shared/types/featureId.js';
 import { lineString, polygon } from '@turf/helpers';
 import { loadOsmMessages } from '../../translations/loadOsmMessages.js';
 import { fetchOsmElements } from '../fetchOsmElements.js';
@@ -14,14 +18,22 @@ import { copyDisplayName } from './copyDisplayName.js';
 export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
   actionCreator: osmLoadWay,
   handle: async ({ dispatch, getState, action, toastError }) => {
-    try {
-      const { id, focus } = action.payload;
+    const { id, focus } = action.payload;
 
+    const osmId: FeatureId = { type: 'osm', elementType: 'way', id };
+
+    try {
       trackMatomo(['trackEvent', 'Osm', 'view', 'way']);
 
       const { elements } = await fetchOsmElements('way', id, {
         getState,
-        cancelActions: [clearMapFeatures, searchSelectResult],
+        cancelActions: [clearMapFeatures],
+        // Only this element going off the map invalidates its own fetch —
+        // other results coming and going alongside it don't.
+        stateChangePredicate: (state) =>
+          state.search.selectedResults.some((result) =>
+            featureIdsEqual(result.id, osmId),
+          ),
       });
 
       const nodes: Record<string, [number, number]> = {};
@@ -44,11 +56,9 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
 
       const coordinates = way.nodes.map((ref) => nodes[ref]);
 
-      const osmId: FeatureId = { type: 'osm', elementType: 'way', id };
-
       const tags = way.tags ?? {};
 
-      copyDisplayName(getState().search.selectedResult, osmId, tags);
+      copyDisplayName(getState().search.selectedResults, osmId, tags);
 
       dispatch(
         searchSelectResult({
@@ -62,9 +72,19 @@ export const osmLoadWayProcessor: Processor<typeof osmLoadWay> = {
                 : lineString(coordinates, tags),
           },
           focus,
+          tier: 'keep',
+          select: false,
         }),
       );
     } catch (err) {
+      // Only a placeholder goes: it is nothing but an id, and would sit on the
+      // map as an empty result and in the URL as a promise that reloading can't
+      // keep. A result that arrived from the list with geometry of its own
+      // stays — a failed upgrade is no reason to take away what was picked.
+      if (isResultLoadingSelector(getState(), osmId)) {
+        dispatch(searchUnselectResult(osmId));
+      }
+
       await toastError(err, loadOsmMessages, 'fetchingError');
     }
   },

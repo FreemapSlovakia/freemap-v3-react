@@ -21,8 +21,15 @@ import {
   FaPlay,
   FaSearch,
   FaStop,
+  FaThumbtack,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { searchKeepResult } from '../model/actions.js';
+import { hasGeometry } from '../model/resultUtils.js';
+import {
+  activeSearchResultKeptSelector,
+  activeSearchResultSelector,
+} from '../model/selectors.js';
 
 type Props = {
   hidden?: boolean;
@@ -33,11 +40,43 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const selectedResult = useAppSelector((state) => state.search.selectedResult);
+  const selectedResult = useAppSelector(activeSearchResultSelector);
 
-  return selectedResult && !window.fmEmbedded && !hidden ? (
-    <Selection icon={<FaSearch />} label={m?.search.result} deletable>
+  // Off for every freshly picked result: it is on the map because it is being
+  // looked at, and goes when that stops. Switching it on keeps it there.
+  const kept = useAppSelector(activeSearchResultKeptSelector);
+
+  return selectedResult &&
+    !selectedResult.loading &&
+    !window.fmEmbedded &&
+    !hidden ? (
+    // No delete button: a search result is an element that exists whether it is
+    // looked at or not, so there is nothing of the user's to destroy — the same
+    // reason objects and route legs offer none. The two controls are presence
+    // (the toggle below) and attention (the × in the toolbar); taking a result
+    // off the map is the two of them together, and Del is the shortcut for it.
+    <Selection icon={<FaSearch />} label={m?.search.result}>
       <DetailsToggle />
+
+      <LongPressTooltip breakpoint="md" label={m?.search.keepOnMap}>
+        {({ label, labelClassName, props }) => (
+          <Button
+            className="ms-1"
+            variant="secondary"
+            active={kept}
+            aria-pressed={kept}
+            onClick={() => {
+              dispatch(
+                searchKeepResult({ id: selectedResult.id, keep: !kept }),
+              );
+            }}
+            {...props}
+          >
+            <FaThumbtack />
+            <span className={labelClassName}> {label}</span>
+          </Button>
+        )}
+      </LongPressTooltip>
 
       <ButtonGroup className="ms-1">
         <LongPressTooltip label={m?.search.routeFrom}>
@@ -48,7 +87,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
               onClick={() => {
                 dispatch(openTool('route-planner'));
 
-                if (selectedResult.geojson) {
+                if (hasGeometry(selectedResult)) {
                   const c = center(selectedResult.geojson).geometry.coordinates;
 
                   dispatch(
@@ -72,7 +111,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
               onClick={() => {
                 dispatch(openTool('route-planner'));
 
-                if (selectedResult.geojson) {
+                if (hasGeometry(selectedResult)) {
                   const c = center(selectedResult.geojson).geometry.coordinates;
 
                   dispatch(

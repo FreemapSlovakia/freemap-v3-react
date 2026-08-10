@@ -26,7 +26,9 @@ import {
   waypointKind,
 } from '@features/routePlanner/model/routeColors.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
-import { searchClear } from '@features/search/model/actions.js';
+import { searchUnselectResult } from '@features/search/model/actions.js';
+import { hasGeometry } from '@features/search/model/resultUtils.js';
+import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
@@ -476,18 +478,21 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         ),
       );
     } else if (payload.type === 'search-result') {
-      if (!state.search.selectedResult?.geojson) {
+      // The result acted upon becomes a drawing; the others stay results.
+      const result = activeSearchResultSelector(state);
+
+      if (!result || !hasGeometry(result)) {
         return;
       }
 
       const { lineCount, pointCount } = geojsonToDrawing(
-        state.search.selectedResult.geojson,
+        result.geojson,
 
         getState,
         dispatch,
       );
 
-      dispatch(searchClear());
+      dispatch(searchUnselectResult(result.id));
 
       selectAfterConvert(dispatch, getState, lineCount, pointCount);
     }

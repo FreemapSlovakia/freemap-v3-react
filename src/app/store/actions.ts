@@ -17,7 +17,7 @@ import {
 import type { LayerSettings } from '@features/map/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
-import type { OsmFeatureId } from '@shared/types/featureId.js';
+import type { FeatureId, OsmFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
 import type { ActiveModal } from './activeModal.js';
 
@@ -147,6 +147,8 @@ export interface RouteSegmentSelection {
 
 export interface SearchSelection {
   type: 'search';
+  /** Which of the shown results this is — the map can hold several at once. */
+  id: FeatureId;
 }
 
 export type Selection =

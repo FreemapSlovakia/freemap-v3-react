@@ -8,6 +8,7 @@ import { drawingLineStopDrawing } from '@features/drawing/model/actions/drawingL
 import {
   type SearchResult,
   searchSelectResult,
+  searchUnselectResult,
 } from '@features/search/model/actions.js';
 import type { Action } from '@reduxjs/toolkit';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -24,6 +25,14 @@ const run = (...actions: Action[]): MainState =>
   actions.reduce(mainReducer, mainInitialState);
 
 const aLine = { type: 'draw-line-poly', id: 0 } as const;
+
+const aResult = {
+  id: { type: 'osm', elementType: 'node', id: 1 },
+} as SearchResult;
+
+const anotherResult = {
+  id: { type: 'osm', elementType: 'way', id: 2 },
+} as SearchResult;
 
 beforeEach(() => {
   window.fmEmbedded = false;
@@ -163,21 +172,48 @@ describe('selecting a feature', () => {
     // The selection toolbar renders alongside the tool's own toolbar.
     const s = run(
       openTool('map-details'),
-      searchSelectResult({ result: {} as SearchResult }),
+      searchSelectResult({ result: aResult }),
     );
 
-    expect(s.selection).toEqual({ type: 'search' });
+    expect(s.selection).toEqual({ type: 'search', id: aResult.id });
     expect(s.mapTool).toBe('map-details');
   });
 
   it('clearing the result leaves the selection to whoever cleared it', () => {
     const s = run(
-      searchSelectResult({ result: {} as SearchResult }),
+      searchSelectResult({ result: aResult }),
       selectFeature(null),
       searchSelectResult(null),
     );
 
     expect(s.selection).toBeNull();
+  });
+
+  it('the last result picked is the one acted upon', () => {
+    const s = run(
+      searchSelectResult({ result: aResult }),
+      searchSelectResult({ result: anotherResult }),
+    );
+
+    expect(s.selection).toEqual({ type: 'search', id: anotherResult.id });
+  });
+
+  it('taking the acted-upon result off the map deselects it', () => {
+    const s = run(
+      searchSelectResult({ result: aResult }),
+      searchUnselectResult(aResult.id),
+    );
+
+    expect(s.selection).toBeNull();
+  });
+
+  it('leaves the selection alone when another shown result goes', () => {
+    const s = run(
+      searchSelectResult({ result: aResult }),
+      searchUnselectResult(anotherResult.id),
+    );
+
+    expect(s.selection).toEqual({ type: 'search', id: aResult.id });
   });
 });
 

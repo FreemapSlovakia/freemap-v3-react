@@ -54,7 +54,7 @@ The main menu is under a button with a "hamburger" icon at the top left of the p
 
 - Access: the search box at the top of the page ("Search in the map")
 
-Searches the map by place name, category, or coordinates. Results may come from several sources — place-name (Nominatim forward) and reverse geocoding, nearby and surrounding POIs (Overpass), raw coordinates, OSM elements, and WMS feature info. A selected result is highlighted on the map and can be used as the start or destination of a route.
+Searches the map by place name, category, or coordinates. Results may come from several sources — place-name (Nominatim forward) and reverse geocoding, nearby and surrounding POIs (Overpass), raw coordinates, OSM elements, and WMS feature info. Picking a result from the list goes to it and shows it on the map for as long as it stays selected — closing its selection toolbar (× or <kbd>Esc</kbd>), picking the next result, or selecting anything else takes it off again. A 📌 **Keep on the map** toggle on that toolbar (off for every freshly picked result) makes it stay instead: kept results remain on the map beside one another and beside whatever is being looked at, so several can be compared at once. Clicking one on the map picks it out of them. The selected result is drawn in the selection color instead of the configured result color, the same way a selected POI is; the selection toolbar and the details popup act on it, and it can be used as the start or destination of a route. There is no delete button — a result goes by not being kept and being looked away from, and <kbd>Del</kbd> is the shortcut for doing both at once. Only kept OSM elements go into the URL, each with its own `osm-node=` / `osm-way=` / `osm-relation=` param, so a link restores all of them.
 
 ### UI Language switcher
 
@@ -268,7 +268,7 @@ Toggles the tracks and data toolbar. **Upload** opens the file import modal (URL
 - Keyboard shortcut: <kbd>g</kbd> <kbd>i</kbd>
 - URL path: `/#tools=map-details`
 
-Toggles the map details toolbar. Clicking a location queries information about it, grouped by source (each toggleable via the **Sources** dropdown):
+Toggles the map details toolbar. Clicking a location queries information about it, grouped by source (each toggleable via the **Sources** dropdown); the results are listed in the search box's dropdown and are displayed the same way search results are — the picked one for as long as it is selected, plus any kept through the selection toolbar's **Keep on the map** toggle:
 
 - **Reverse geocoding** — the locality / address of the point
 - **Nearby** — features near the clicked point

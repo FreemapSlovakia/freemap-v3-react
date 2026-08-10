@@ -55,7 +55,6 @@ import {
   objectsSetStyle,
 } from '@features/objects/model/actions.js';
 import {
-  osmClear,
   osmLoadNode,
   osmLoadRelation,
   osmLoadWay,
@@ -71,8 +70,10 @@ import {
   routePlannerSetParams,
 } from '@features/routePlanner/model/actions.js';
 import {
+  searchKeepResult,
   searchSetQuery,
   searchSetResultStyle,
+  searchUnselectResult,
 } from '@features/search/model/actions.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
 import type { TrackedDevice } from '@features/tracking/model/types.js';
@@ -97,6 +98,7 @@ import {
   TransportTypeSchema,
 } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
+import { featureIdsEqual, type OsmFeatureId } from '@shared/types/featureId.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
@@ -500,42 +502,7 @@ export function handleLocationChange(store: MyStore): void {
 
   const focus = !parsedQuery['map'];
 
-  const osmNode = query['osm-node'];
-
-  const osmNodeId = typeof osmNode === 'string' && parseInt(osmNode, 10);
-
-  if (osmNodeId) {
-    if (osmNodeId !== getState().search.osmNodeId) {
-      dispatch(osmLoadNode({ id: osmNodeId, focus }));
-    }
-  } else if (getState().search.osmNodeId) {
-    dispatch(osmClear());
-  }
-
-  const osmWay = query['osm-way'];
-
-  const osmWayId = typeof osmWay === 'string' && parseInt(osmWay, 10);
-
-  if (osmWayId) {
-    if (osmWayId !== getState().search.osmWayId) {
-      dispatch(osmLoadWay({ id: osmWayId, focus }));
-    }
-  } else if (getState().search.osmWayId) {
-    dispatch(osmClear());
-  }
-
-  const osmRelation = query['osm-relation'];
-
-  const osmRelationId =
-    typeof osmRelation === 'string' && parseInt(osmRelation, 10);
-
-  if (osmRelationId) {
-    if (osmRelationId !== getState().search.osmRelationId) {
-      dispatch(osmLoadRelation({ id: osmRelationId, focus }));
-    }
-  } else if (getState().search.osmRelationId) {
-    dispatch(osmClear());
-  }
+  handleOsmElements(getState, dispatch, query, focus);
 
   handleGallery(getState, dispatch, query);
 
@@ -1021,6 +988,78 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
     td1.maxCount === td2.maxCount &&
     td1.label === td2.label
   );
+}
+
+const OSM_ELEMENT_TYPES = ['node', 'way', 'relation'] as const;
+
+const osmLoadActions = {
+  node: osmLoadNode,
+  way: osmLoadWay,
+  relation: osmLoadRelation,
+};
+
+/**
+ * Brings the shown OSM elements in line with the `osm-node` / `osm-way` /
+ * `osm-relation` params, each of which can appear any number of times.
+ *
+ * The URL is what a map holds after it is closed, so what it names is kept
+ * rather than previewed, and the first of them is selected — a link to an
+ * element is a link to looking at it. A previewed result is named by nothing
+ * here, so a location change takes it off, which is what leaving the page it
+ * was picked on means.
+ *
+ * A load that is already in flight has its element among the shown results
+ * (as a placeholder), so it isn't started again by a second location change
+ * arriving before it lands. Shown results the URL can't name — a WMS or a
+ * plain-coordinates one — are left alone: they are no more contradicted by
+ * these params than they are described by them.
+ */
+function handleOsmElements(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  query: Record<string, string | string[]>,
+  focus: boolean,
+) {
+  const wanted = OSM_ELEMENT_TYPES.flatMap((elementType) => {
+    const param = query[`osm-${elementType}`];
+
+    return (param === undefined ? [] : Array.isArray(param) ? param : [param])
+      .map((value) => parseInt(value, 10))
+      .filter((id) => id > 0)
+      .map((id): OsmFeatureId => ({ type: 'osm', elementType, id }));
+  });
+
+  const shown = getState()
+    .search.selectedResults.map(({ id }) => id)
+    .filter((id): id is OsmFeatureId => id.type === 'osm' && id.id > 0);
+
+  for (const id of shown) {
+    if (!wanted.some((w) => featureIdsEqual(w, id))) {
+      dispatch(searchUnselectResult(id));
+    }
+  }
+
+  for (const id of wanted) {
+    if (!shown.some((s) => featureIdsEqual(s, id))) {
+      dispatch(osmLoadActions[id.elementType]({ id: id.id, focus, pin: true }));
+    }
+  }
+
+  // An element the URL names that is currently the previewed one is neither
+  // loaded (it is already shown) nor taken off (it is wanted), so it is
+  // promoted here: the URL carries kept results, and one left transient would
+  // be dropped from the very entry it was just restored from.
+  const { previewId } = getState().search;
+
+  if (previewId && wanted.some((w) => featureIdsEqual(w, previewId))) {
+    dispatch(searchKeepResult({ id: previewId, keep: true }));
+  }
+
+  const [first] = wanted;
+
+  if (first && getState().main.selection === null) {
+    dispatch(selectFeature({ type: 'search', id: first }));
+  }
 }
 
 function handleGallery(

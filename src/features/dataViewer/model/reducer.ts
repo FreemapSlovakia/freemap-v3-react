@@ -2,7 +2,6 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import { osmClear } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { FeatureCollection } from 'geojson';
 import {
@@ -130,7 +129,6 @@ export const dataViewerReducer = createReducer(
       .addCase(dataViewerGpxLoad, (state, action) => {
         state.gpxUrl = action.payload;
       })
-      .addCase(osmClear, () => dataViewerInitialState)
       .addCase(
         mapsLoaded,
         (

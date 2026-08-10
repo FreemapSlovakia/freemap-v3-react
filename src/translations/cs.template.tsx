@@ -239,6 +239,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Hledat',
     placeholder: 'Hledat v mapě',
     result: 'Nález',
+    keepOnMap: 'Ponechat v mapě',
     sources: {
       'nominatim-reverse': 'Reverzní geokódování',
       'overpass-nearby': 'Blízké objekty',

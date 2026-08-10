@@ -239,6 +239,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Keresés',
     placeholder: 'Keresés a térképen',
     result: 'Találat',
+    keepOnMap: 'Megtartás a térképen',
     sources: {
       'nominatim-reverse': 'Fordított geokódolás',
       'overpass-nearby': 'Közeli objektumok',

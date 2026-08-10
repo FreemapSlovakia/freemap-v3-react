@@ -3,11 +3,13 @@ import { type FeatureId, featureIdsEqual } from '@shared/types/featureId.js';
 
 // keep display_name from nominatim
 export function copyDisplayName(
-  sr: SearchResult | null,
+  shown: SearchResult[],
   osmId: FeatureId,
   tags: Record<string, string>,
 ) {
-  if (sr && featureIdsEqual(sr.id, osmId)) {
+  const sr = shown.find((result) => featureIdsEqual(result.id, osmId));
+
+  if (sr) {
     const { geojson } = sr;
 
     if (geojson.type === 'Feature' && geojson.properties?.['display_name']) {

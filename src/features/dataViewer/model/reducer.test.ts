@@ -1,5 +1,4 @@
 import { clearMapFeatures } from '@app/store/actions.js';
-import { osmClear } from '@features/osm/model/osmActions.js';
 import type { FeatureCollection } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import {
@@ -71,17 +70,6 @@ describe('dataViewerReducer — reset actions', () => {
     const state = { ...dataViewerInitialState, trackGeojson: fc };
 
     expect(dataViewerReducer(state, clearMapFeatures())).toEqual(
-      dataViewerInitialState,
-    );
-  });
-
-  it('osmClear resets everything to initial', () => {
-    const state = {
-      ...dataViewerInitialState,
-      trackGeojson: fc,
-    };
-
-    expect(dataViewerReducer(state, osmClear())).toEqual(
       dataViewerInitialState,
     );
   });

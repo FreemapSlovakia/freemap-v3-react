@@ -233,6 +233,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Išči',
     placeholder: 'Iskanje po zemljevidu',
     result: 'Zadetek',
+    keepOnMap: 'Ohrani na zemljevidu',
     sources: {
       bbox: 'Omejevalni okvir',
       geojson: 'GeoJSON',

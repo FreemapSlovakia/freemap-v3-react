@@ -37,22 +37,20 @@ const anObject = (
 const state = ({
   selection,
   objects = [],
-  selectedResult = null,
-  searchResultSeq = 0,
+  selectedResults = [],
   showDetails = true,
   toasted = false,
 }: {
-  selection?: { type: string; id?: OsmFeatureId };
+  selection?: { type: string; id?: unknown };
   objects?: ReturnType<typeof anObject>[];
-  selectedResult?: SearchResult | null;
-  searchResultSeq?: number;
+  selectedResults?: SearchResult[];
   showDetails?: boolean;
   toasted?: boolean;
 }): RootState =>
   ({
     main: { selection },
     objects: { objects },
-    search: { selectedResult, searchResultSeq },
+    search: { selectedResults },
     objectsSettings: { showDetails },
     toasts: { toasts: toasted ? { 'mapDetails.tags': {} } : {} },
   }) as unknown as RootState;
@@ -86,10 +84,11 @@ describe('wantedTarget', () => {
   });
 
   it('follows a search result through its incomplete → loaded upgrade', () => {
-    const selection = { type: 'search' };
+    const selection = { type: 'search', id: { type: 'other' } };
 
     const incomplete = {
       id: { type: 'other' },
+      incomplete: true,
       geojson: point([17, 48]),
     } as unknown as SearchResult;
 
@@ -99,14 +98,41 @@ describe('wantedTarget', () => {
     } as unknown as SearchResult;
 
     expect(
-      wantedTarget(
-        state({ selection, selectedResult: incomplete, searchResultSeq: 3 }),
-      )?.key,
+      wantedTarget(state({ selection, selectedResults: [incomplete] }))?.key,
     ).not.toBe(
-      wantedTarget(
-        state({ selection, selectedResult: loaded, searchResultSeq: 4 }),
-      )?.key,
+      wantedTarget(state({ selection, selectedResults: [loaded] }))?.key,
     );
+  });
+
+  it('wants nothing of an element whose fetch is still in flight', () => {
+    const selection = { type: 'search', id: { type: 'other' } };
+
+    const loading = {
+      id: { type: 'other' },
+      incomplete: true,
+      loading: true,
+      geojson: { type: 'Feature', properties: {}, geometry: null },
+    } as unknown as SearchResult;
+
+    expect(
+      wantedTarget(state({ selection, selectedResults: [loading] })),
+    ).toBeNull();
+  });
+
+  it('wants nothing of a result that is shown but not the active one', () => {
+    const shown = {
+      id: { type: 'other', id: 'a' },
+      geojson: point([17, 48]),
+    } as unknown as SearchResult;
+
+    expect(
+      wantedTarget(
+        state({
+          selection: { type: 'search', id: { type: 'other', id: 'b' } },
+          selectedResults: [shown],
+        }),
+      ),
+    ).toBeNull();
   });
 
   it('wants nothing while the preference is off, or with no selection', () => {
@@ -273,7 +299,11 @@ describe('objectDetailsProcessor', () => {
 
     const { dispatch, done } = run(
       state({}),
-      state({ selection: { type: 'search' }, selectedResult, toasted: true }),
+      state({
+        selection: { type: 'search', id: { type: 'other' } },
+        selectedResults: [selectedResult],
+        toasted: true,
+      }),
     );
 
     await done;
@@ -302,7 +332,11 @@ describe('objectDetailsProcessor', () => {
 
     const { done } = run(
       state({}),
-      state({ selection: { type: 'search' }, selectedResult, toasted: true }),
+      state({
+        selection: { type: 'search', id: { type: 'other' } },
+        selectedResults: [selectedResult],
+        toasted: true,
+      }),
     );
 
     await done;

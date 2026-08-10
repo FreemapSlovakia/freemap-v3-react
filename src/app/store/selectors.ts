@@ -227,6 +227,6 @@ export const hasClearableMapFeaturesSelector = (state: RootState): boolean =>
   state.routePlanner.points.length > 0 ||
   state.objects.objects.length > 0 ||
   state.changesets.changesets.length > 0 ||
-  state.search.selectedResult !== null ||
+  state.search.selectedResults.length > 0 ||
   state.trackViewer.trackGeojson !== null ||
   state.tracking.trackedDevices.length > 0;
