@@ -15,9 +15,11 @@ import {
   searchClear,
   searchKeepResult,
   searchSelectResult,
+  searchSetHover,
   searchSetQuery,
   searchSetResults,
   searchUnselectResult,
+  searchUnsetHover,
 } from './actions.js';
 import { loadingResult } from './resultUtils.js';
 
@@ -36,6 +38,12 @@ export interface SearchState {
    * kept deliberately and stay until taken off.
    */
   previewId: FeatureId | null;
+  /**
+   * The result the pointer rests on in the list, if any. Drawn beside the shown
+   * ones and part of nothing else — it is not selected, not exported, and not
+   * in the URL.
+   */
+  hoverResult: SearchResult | null;
   searchSeq: number;
   /**
    * Bumped whenever `selectedResults` changes. The map layers are keyed on it:
@@ -50,6 +58,7 @@ export const searchInitialState: SearchState = {
   results: [],
   selectedResults: [],
   previewId: null,
+  hoverResult: null,
   searchSeq: 0,
   searchResultSeq: 0,
   query: '',
@@ -120,7 +129,21 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
     .addCase(searchSetResults, (state, action) => {
       state.results = action.payload;
 
+      // The pointer rests on a row of the list that is being replaced.
+      state.hoverResult = null;
+
       state.searchSeq = state.searchSeq + 1;
+    })
+    .addCase(searchSetHover, (state, action) => {
+      state.hoverResult = action.payload;
+    })
+    .addCase(searchUnsetHover, (state, action) => {
+      if (
+        state.hoverResult &&
+        featureIdsEqual(state.hoverResult.id, action.payload)
+      ) {
+        state.hoverResult = null;
+      }
     })
     .addCase(osmLoadNode, (state, action) => {
       addLoading(
@@ -145,6 +168,10 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
     })
     .addCase(searchSelectResult, (state, action) => {
       state.searchResultSeq = state.searchResultSeq + 1;
+
+      // Picking is done with the pointer on the row, and closes the list under
+      // it — no leave event follows.
+      state.hoverResult = null;
 
       const { payload } = action;
 

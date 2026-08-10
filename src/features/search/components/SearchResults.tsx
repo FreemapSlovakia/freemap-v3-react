@@ -69,6 +69,16 @@ export function SearchResults(): ReactElement | null {
 
   const shown = selectedResults.filter(hasGeometry);
 
+  // A result already on the map is not drawn twice for being pointed at.
+  const hoverResult = useAppSelector((state) => state.search.hoverResult);
+
+  const hovered =
+    hoverResult &&
+    hasGeometry(hoverResult) &&
+    !shown.some((result) => featureIdsEqual(result.id, hoverResult.id))
+      ? hoverResult
+      : null;
+
   // The selected result is marked whether or not others are shown beside it:
   // the map holds drawings, route points and POIs too, so whether the result is
   // the selected feature is a question even when it is the only one. The
@@ -114,6 +124,16 @@ export function SearchResults(): ReactElement | null {
           />
         );
       })}
+
+      {hovered && (
+        <ResultGeometry
+          key={`hover:${stringifyFeatureId(hovered.id)}${language}${markerColor}${resultStyle.markerType}`}
+          result={hovered}
+          markerColor={markerColor}
+          pathStyle={pathStyle}
+          preview
+        />
+      )}
     </>
   );
 }
@@ -122,12 +142,19 @@ type Props = {
   result: SearchResult;
   markerColor: string;
   pathStyle: PathOptions;
+  /**
+   * The result is only being pointed at in the list, so it takes neither clicks
+   * nor tooltips: the pointer is over the list, and the row under it already
+   * says what this is.
+   */
+  preview?: boolean;
 };
 
 function ResultGeometry({
   result,
   markerColor,
   pathStyle,
+  preview,
 }: Props): ReactElement {
   const isOsm = result.id.type === 'osm';
 
@@ -148,6 +175,7 @@ function ResultGeometry({
       const compact = markerType === 'ring' || markerType === 'square';
 
       return marker(latLng, {
+        interactive: !preview,
         icon: new MarkerLeafletIcon({
           ...markerIconOptions,
           iconAnchor: compact ? [12, 12] : markerIconOptions.iconAnchor,
@@ -162,7 +190,7 @@ function ResultGeometry({
         }),
       });
     },
-    [isOsm, markerColor, markerType],
+    [isOsm, markerColor, markerType, preview],
   );
 
   const annotateFeature = useCallback(
@@ -255,23 +283,27 @@ function ResultGeometry({
         filter={(feature) => feature.geometry?.type === 'LineString'}
       />
 
-      <GeoJSON
-        interactive
-        data={geojson}
-        style={{ weight: 15, opacity: 0, color: '#fff' }}
-        onEachFeature={annotateFeature}
-        filter={(feature) => feature.geometry?.type === 'LineString'}
-        eventHandlers={eventHandlers}
-      />
+      {/* The fat transparent line is what makes a thin one clickable, so a
+          preview — which takes no clicks — does without it. */}
+      {!preview && (
+        <GeoJSON
+          interactive
+          data={geojson}
+          style={{ weight: 15, opacity: 0, color: '#fff' }}
+          onEachFeature={annotateFeature}
+          filter={(feature) => feature.geometry?.type === 'LineString'}
+          eventHandlers={eventHandlers}
+        />
+      )}
 
       <GeoJSON
-        interactive
+        interactive={!preview}
         data={geojson}
         style={pathStyle}
         pointToLayer={pointToLayer}
-        onEachFeature={annotateFeature}
+        onEachFeature={preview ? undefined : annotateFeature}
         filter={(feature) => feature.geometry?.type !== 'LineString'}
-        eventHandlers={eventHandlers}
+        eventHandlers={preview ? undefined : eventHandlers}
       />
     </>
   );

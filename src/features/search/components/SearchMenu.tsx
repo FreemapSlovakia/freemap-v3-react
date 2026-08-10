@@ -49,8 +49,10 @@ import {
   type SearchResult,
   type SearchSource,
   searchSelectResult,
+  searchSetHover,
   searchSetQuery,
   searchSetResults,
+  searchUnsetHover,
 } from '../model/actions.js';
 import classes from './SearchMenu.module.css';
 
@@ -216,6 +218,14 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     };
   }, [hidden, preventShortcut, open]);
 
+  // A row's mouse-leave doesn't fire when the list closes under the pointer —
+  // by Escape, by a click on the map, or by the caret.
+  useEffect(() => {
+    if (!open) {
+      dispatch(searchSetHover(null));
+    }
+  }, [open, dispatch]);
+
   const handleInputFocus = useCallback(() => {
     setOpen(results.length > 0);
   }, [results]);
@@ -329,6 +339,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 <Dropdown.Item
                   eventKey={id}
                   onClick={preventDefault}
+                  onMouseEnter={() => dispatch(searchSetHover(result))}
+                  onMouseLeave={() => dispatch(searchUnsetHover(result.id))}
+                  // Arrowing through the list previews too, the focus being
+                  // where the pointer would be.
+                  onFocus={() => dispatch(searchSetHover(result))}
+                  onBlur={() => dispatch(searchUnsetHover(result.id))}
                   {...(result.id.type === 'osm'
                     ? {
                         href: `#osm-${result.id.elementType}=${result.id.id}`,

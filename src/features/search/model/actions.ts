@@ -100,6 +100,24 @@ export const searchUnselectResult = createAction<FeatureId>(
 );
 
 /**
+ * The result the pointer rests on in the list, drawn on the map so it can be
+ * found without being picked. It is a sight of a result and nothing else: it
+ * selects nothing, loads nothing, moves the map nowhere, and stays out of the
+ * URL — everything a pick does hangs off `searchSelectResult`, which this is
+ * not.
+ */
+export const searchSetHover = createAction<SearchResult | null>(
+  'SEARCH_SET_HOVER',
+);
+
+/**
+ * Lets go of the row the pointer or the focus has left — unless another row has
+ * taken over since, the two of them being able to rest on different rows and
+ * hand over in either order.
+ */
+export const searchUnsetHover = createAction<FeatureId>('SEARCH_UNSET_HOVER');
+
+/**
  * Keeps a result on the map for good, or hands it back to the preview place it
  * came from — where it lasts only as long as it is the one being looked at.
  */

@@ -11,9 +11,11 @@ import {
   searchClear,
   searchKeepResult,
   searchSelectResult,
+  searchSetHover,
   searchSetQuery,
   searchSetResults,
   searchUnselectResult,
+  searchUnsetHover,
 } from './actions.js';
 import { searchInitialState, searchReducer } from './reducer.js';
 import { hasGeometry } from './resultUtils.js';
@@ -136,6 +138,58 @@ describe('searchReducer — osm load actions', () => {
 
     expect(next.selectedResults).toEqual([shown]);
     expect(next.searchResultSeq).toBe(searchInitialState.searchResultSeq);
+  });
+});
+
+describe('searchReducer — pointing at a result', () => {
+  it('holds the result the pointer rests on, and lets it go', () => {
+    const r = result(osmId('way', 7));
+
+    const state = searchReducer(searchInitialState, searchSetHover(r));
+
+    expect(state.hoverResult).toBe(r);
+    // Pointing at a result shows it and says nothing else about it.
+    expect(state.selectedResults).toEqual([]);
+    expect(state.previewId).toBeNull();
+
+    expect(searchReducer(state, searchSetHover(null)).hoverResult).toBeNull();
+  });
+
+  it('leaves the shown row alone when another is let go of', () => {
+    // The pointer and the keyboard focus rest on different rows and hand over
+    // in either order, so a row leaving says nothing about the one shown.
+    const pointed = result(osmId('way', 7));
+
+    const state = searchReducer(
+      { ...searchInitialState, hoverResult: pointed },
+      searchUnsetHover(osmId('node', 8)),
+    );
+
+    expect(state.hoverResult).toBe(pointed);
+
+    expect(
+      searchReducer(state, searchUnsetHover(osmId('way', 7))).hoverResult,
+    ).toBeNull();
+  });
+
+  it('lets go when the list it points into is replaced', () => {
+    const state = searchReducer(
+      { ...searchInitialState, hoverResult: result(osmId('way', 7)) },
+      searchSetResults([]),
+    );
+
+    expect(state.hoverResult).toBeNull();
+  });
+
+  it('lets go when a result is picked — the list closes under the pointer', () => {
+    const r = result(osmId('way', 7));
+
+    const state = searchReducer(
+      { ...searchInitialState, hoverResult: r },
+      searchSelectResult({ result: r }),
+    );
+
+    expect(state.hoverResult).toBeNull();
   });
 });
 
