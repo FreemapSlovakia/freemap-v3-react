@@ -69,6 +69,10 @@ let followed = readFollowed();
  * looking at.
  */
 export function setRecorderFollowed(value: boolean): void {
+  if (value === followed) {
+    return;
+  }
+
   followed = value;
 
   try {
@@ -81,6 +85,13 @@ export function setRecorderFollowed(value: boolean): void {
     // Storage denied (private mode, a blocked origin); following then lasts only
     // as long as the page does, which is no worse than not trying.
   }
+
+  // Following is an input to the desired state, so changing it goes through the
+  // one owner like every other input. This is what closes the stream when a
+  // finished ride leaves nothing to follow — the menu is gone by then, so no
+  // unmount is coming to do it — and what resets the backoff when the chain
+  // gives up, so the next look starts fresh.
+  reconcileRecorderConnection();
 }
 
 /** The store, held so every transition can publish what it changed. */
@@ -158,8 +169,8 @@ let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * What the connection is doing, as one derived answer. `connecting` is an attempt
- * under way — a sync in flight, or a stream not open yet, including one the
- * browser is retrying by itself; `reconnecting` is the wait before the next one.
+ * under way — a sync in flight, or a stream not open yet; `reconnecting` is the
+ * wait before the next one.
  */
 function connectionState(): GpsRecorderConnection {
   if (catchingUp > 0) {
@@ -280,10 +291,10 @@ export function reconcileRecorderConnection(): void {
  * opened again — and keeps asking at the longest interval instead.
  */
 function retry(): void {
-  // A stream in hand is the live view, however the sync that ran beside it went:
-  // while one is attached the browser owns reconnecting it, and its `onerror` is
-  // what starts this chain when it finally goes. Arming here would spend the
-  // attempts on a connection that is not broken.
+  // A stream in hand is a live view that is working, however a sync that ran
+  // beside it went; its own `onerror` drops it and starts this chain if it
+  // breaks. Arming here would spend the attempts on a connection that is not
+  // broken.
   if (retryTimer !== null || source !== null || !wanted()) {
     return;
   }
@@ -319,8 +330,9 @@ function retry(): void {
  * reported out loud.
  *
  * `restart` is for the caller that cannot be answered by a run already in
- * flight: the start flow, which needs a status newer than its own `POST /start`.
- * It abandons whatever is running and asks again.
+ * flight: the start flow needs a status newer than its own `POST /start`, and a
+ * pushed status carries a change the running sync read too early to see. It
+ * abandons whatever is running and asks again.
  *
  * `start` is the sync itself, which lives in the lazily loaded handlers: this
  * owns when it runs and when it is abandoned, not what it does.
@@ -337,6 +349,10 @@ export function runRecorderSync(
 
       return run.promise;
     }
+
+    // The weakest claim survives the restart: the replaced run may have been
+    // somebody's loud ask, and this run is what answers it now.
+    quiet &&= run.quiet;
 
     run.controller.abort();
 
@@ -486,16 +502,20 @@ function attachStream(): void {
   });
 
   es.onerror = () => {
-    // While the browser is still retrying, the stream is only interrupted —
-    // reconnecting is its job, not ours. Once it has given up, the handle goes
-    // and the whole sync is retried on the backoff above.
-    if (es.readyState === EventSource.CLOSED && source === es) {
-      es.close();
-
-      source = null;
-
-      retry();
+    if (source !== es) {
+      return;
     }
+
+    // Any error drops the handle and feeds the backoff above — deliberately not
+    // left to the browser's own reconnection, which retries a dead loopback
+    // forever with the toolbar reading `connecting` and never gives up. The
+    // retry re-runs the whole sync, which also has the deadline and the
+    // catch-up that the bare socket lacks.
+    es.close();
+
+    source = null;
+
+    retry();
 
     publish();
   };

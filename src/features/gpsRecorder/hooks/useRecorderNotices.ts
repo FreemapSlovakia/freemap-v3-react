@@ -138,9 +138,9 @@ export function useRecorderNotices(): void {
     );
   }, [dispatch, failure, m]);
 
-  // Both toasts go with the tool. Their actions reconnect to the recorder, and a
-  // toast that outlived the panel would open a stream with nothing left to close
-  // it — which `stream.ts`'s revive timer would then keep alive indefinitely.
+  // Both toasts go with the recording, like this hook: they speak for a ride the
+  // user is watching, and an offer to reconnect or to finish setup means nothing
+  // once there is no longer anything to follow.
   useEffect(
     () => () => {
       dispatch(toastsRemove('gpsRecorder.failure'));

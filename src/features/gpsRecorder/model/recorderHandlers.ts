@@ -260,13 +260,14 @@ export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = (params) =>
  * same abort on the way out and the same silence about a failure nobody asked
  * for.
  *
- * Joining a sync already in flight loses nothing: that run reads a status of its
- * own, which is at least as new as this one.
+ * `restart`, because a run already in flight read its status before this one
+ * arrived: joining it would drop the very change — a stop, a clear — the push
+ * exists to deliver.
  */
 export const pushedStatusHandler: ProcessorHandler<
   typeof gpsRecorderPushedStatus
 > = (params) =>
-  runRecorderSync({ quiet: true }, (signal, isQuiet) =>
+  runRecorderSync({ quiet: true, restart: true }, (signal, isQuiet) =>
     runSync(params, isQuiet, signal, () =>
       Promise.resolve(params.action.payload),
     ),

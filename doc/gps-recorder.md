@@ -314,7 +314,9 @@ the follow flag is set or the tool is open. `applyStatus` sets that flag from th
 recorder's own answer — recording, or holding points — which is why *every* status
 goes through it and none is dispatched raw: a Finish or a Delete that stored its
 status directly would leave the page following a recorder it had just emptied, this
-session and on the next load. It lives in
+session and on the next load. Changing the flag calls the reconcile itself, being
+an input to the desired state like any other — a finished ride closes the stream
+this way, with the menu already unmounted. It lives in
 `localStorage` rather than the store, because the question outlives the page: a
 recording carries on in the phone's own app while the browser is closed, and on the
 next load nothing else would know to go looking.
@@ -339,16 +341,19 @@ that would read as a recorder to stop following.
 both the reconcile's sync and the menu's own, which on a stale cursor would be two
 full `/track?since=0` downloads for the same answer, so `runRecorderSync` coalesces
 onto the sync already in flight. A joiner's `quiet` is folded into it — one caller
-who asked out loud is enough for a failure to be reported out loud. The start flow
-is the exception and asks for `restart`, which abandons the run in flight and
-begins one of its own: it needs a status newer than its own `POST /start`, and the
-return from the launch intent raises a `visibilitychange` — so there is routinely a
-run in flight that predates the recording it is meant to report.
+who asked out loud is enough for a failure to be reported out loud. The exception
+is the caller a run already in flight cannot answer, which asks for `restart` —
+abandoning the run and beginning one of its own, with the abandoned run's loudness
+folded in. The start flow is one: it needs a status newer than its own
+`POST /start`, and the return from the launch intent raises a `visibilitychange` —
+so there is routinely a run in flight that predates the recording it is meant to
+report.
 
 **A pushed status takes the same route**, through `runRecorderSync` rather than
 beside it, so it is aborted by a teardown like anything else and says nothing about
-a failure nobody asked for. Joining a sync already in flight loses nothing: that
-run reads a status of its own, which is at least as new as the pushed one.
+a failure nobody asked for. It is the other `restart` caller: a run already in
+flight read its status before the push arrived, and joining it would drop the very
+change — a stop, a clear — the push exists to deliver.
 
 Syncs nobody asked for are **quiet**, with one exception: a live view that was
 working and stopped. A recorder killed or uninstalled while the page was away must
@@ -400,15 +405,16 @@ A sync itself is three steps:
    or the failure. Success attaches `/stream` if nothing is attached, so a resync
    never drops a working stream; failure goes to the backoff.
 
-**One backoff covers everything that can drop the connection.** While the browser
-still believes in the socket, **reconnection is its job** (`Last-Event-ID`); once
-it reports `CLOSED` the handle goes and the retry starts. A sync that failed feeds
-the same retry, which matters more than it sounds: reviving through a sync that
-could not reach the recorder either is exactly where a chain ends silently, with
-the connection reading `idle` and nothing left that would ever ask again. Each
-attempt re-runs the whole sync rather than just reopening the socket, because
-whatever killed the stream may equally have stopped the recording or cleared the
-track — and the catch-up is what notices.
+**One backoff covers everything that can drop the connection.** Any error on the
+stream drops the handle and starts the retry — deliberately not left to the
+browser's own reconnection, which retries a dead loopback forever with the state
+reading `connecting` and never gives up. A sync that failed feeds the same retry,
+which matters more than it sounds: reviving through a sync that could not reach
+the recorder either is exactly where a chain ends silently, with the connection
+reading `idle` and nothing left that would ever ask again. Each attempt re-runs
+the whole sync rather than just reopening the socket, because whatever killed the
+stream may equally have stopped the recording or cleared the track — and the
+catch-up is what notices.
 
 The wait widens 1 s → 30 s over five attempts and then stops — which is also what
 finally stops the page following a recording, and only then: one failure is
@@ -419,9 +425,9 @@ would otherwise stay dead until it was closed and opened again. Two failures ski
 the wait entirely, because waiting cannot fix them: `lna-denied` and `outdated`.
 
 **A stream in hand disarms the backoff.** A `/status` that failed beside a working
-stream says nothing about the live view — the stream is what carries the fixes, and
-the browser owns reconnecting it — so the attempts are not spent on a connection
-that is not broken. The stream's own `onerror` is what starts the chain.
+stream says nothing about the live view — the stream is what carries the fixes —
+so the attempts are not spent on a connection that is not broken. The stream's own
+`onerror` is what drops it and starts the chain.
 
 There is no Reconnect button: the above covers every case one would answer, and
 the failure toast carries one for the case it doesn't.
