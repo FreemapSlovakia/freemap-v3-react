@@ -109,6 +109,12 @@ const gpsRecorderMenuFactory = () =>
     '@features/gpsRecorder/components/GpsRecorderMenu.js'
   );
 
+const gpsRecorderNoticesFactory = () =>
+  import(
+    /* webpackChunkName: "gps-recorder-notices" */
+    '@features/gpsRecorder/components/GpsRecorderNotices.js'
+  );
+
 const drawingMenuFactory = () =>
   import(
     /* webpackChunkName: "drawing-menu" */
@@ -382,6 +388,10 @@ export function Main(): ReactElement {
 
   const gpsRecorderRecording = useAppSelector(
     (state) => state.gpsRecorder.status?.recording ?? false,
+  );
+
+  const gpsRecorderFailure = useAppSelector(
+    (state) => state.gpsRecorder.error !== null,
   );
 
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
@@ -699,6 +709,18 @@ export function Main(): ReactElement {
                 (openTools.includes('gps-recorder') ||
                   gpsRecorderRecording) && (
                   <AsyncComponent factory={gpsRecorderMenuFactory} />
+                )}
+
+              {/* The recorder's toasts, apart from its menu: a failure can null
+                  the status and unmount the menu in the same commit that should
+                  announce it, so the announcer is mounted on there being
+                  anything to announce — including the failure itself. */}
+              {gpsRecorderAvailable &&
+                !window.fmEmbedded &&
+                (openTools.includes('gps-recorder') ||
+                  gpsRecorderRecording ||
+                  gpsRecorderFailure) && (
+                  <AsyncComponent factory={gpsRecorderNoticesFactory} />
                 )}
 
               {/* every open tool's menu, the map-click one first and the rest in

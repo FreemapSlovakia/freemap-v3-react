@@ -296,13 +296,22 @@ been seen, which shows up as the page flickering and nothing else.
 
 ### One owner, reconciling a desired state
 
-[`connection.ts`](../src/features/gpsRecorder/connection.ts) holds the stream, the
-sync in flight, the retry and the follow flag, and nothing else holds any of them.
-Everything that could change the answer — the page coming and going, the tool
-opening or closing, a stream the browser dropped, a sync that failed, a retry
-coming due — calls **`reconcileRecorderConnection`**, which compares what should be
-connected against what is and fixes the difference. So there is one place that
-decides whether to connect, one backoff, and one answer for what the toolbar says.
+[`connectionCore.ts`](../src/features/gpsRecorder/connectionCore.ts) holds the
+stream, the sync in flight, the retry and the follow flag, and nothing else holds
+any of them. Everything that could change the answer — the page coming and going,
+the tool opening or closing, a stream that broke, a sync that failed, a retry
+coming due — calls its **`reconcile`**, which compares what should be connected
+against what is and fixes the difference. So there is one place that decides
+whether to connect, one backoff, and one answer for what the toolbar says.
+
+The core is a state machine over injected effects — storage, the stream, timers,
+the dispatches — with no browser globals of its own.
+[`connection.ts`](../src/features/gpsRecorder/connection.ts) is the shell that
+supplies the real `EventSource`, `localStorage`, store and point batching; the
+fake-timer tests in
+[`connectionCore.test.ts`](../src/features/gpsRecorder/connectionCore.test.ts)
+supply fakes and drive the clock. Every retry/give-up/coalescing rule below is
+pinned by a test there — change the rule, change its test.
 
 **Nothing else may hold a handle, a timer or a flag of its own.** Each one is a
 second opinion on whether there is a connection, and separate opinions drift: a
@@ -315,11 +324,14 @@ recorder's own answer — recording, or holding points — which is why *every* 
 goes through it and none is dispatched raw: a Finish or a Delete that stored its
 status directly would leave the page following a recorder it had just emptied, this
 session and on the next load. Changing the flag calls the reconcile itself, being
-an input to the desired state like any other — a finished ride closes the stream
-this way, with the menu already unmounted. It lives in
+an input to the desired state like any other — a finished ride ends the following
+this way, and the stream then closes with the tool (which stays open through the
+finish: `openTool('import-file')` only adds a panel). It lives in
 `localStorage` rather than the store, because the question outlives the page: a
 recording carries on in the phone's own app while the browser is closed, and on the
-next load nothing else would know to go looking.
+next load nothing else would know to go looking. A persist the browser refused
+(private mode, storage pressure) is retried on the next set, even an unchanged
+one — one refused write must not cost the next page load the ride.
 
 **Hidden means disconnected**, which is the rule that removes a whole class of
 trouble. A page that is hidden may be frozen the next moment, and an `EventSource`
@@ -344,16 +356,23 @@ onto the sync already in flight. A joiner's `quiet` is folded into it — one ca
 who asked out loud is enough for a failure to be reported out loud. The exception
 is the caller a run already in flight cannot answer, which asks for `restart` —
 abandoning the run and beginning one of its own, with the abandoned run's loudness
-folded in. The start flow is one: it needs a status newer than its own
-`POST /start`, and the return from the launch intent raises a `visibilitychange` —
-so there is routinely a run in flight that predates the recording it is meant to
-report.
+folded in. Every command flow is one — start, pause and clear all need a status
+newer than the `POST` they just made, and the start flow's return from the launch
+intent raises a `visibilitychange`, so there is routinely a run in flight that
+predates the recording it is meant to report. Routing the command flows through
+the run also means a reconcile they provoke mid-flow joins them instead of racing
+them.
 
-**A pushed status takes the same route**, through `runRecorderSync` rather than
-beside it, so it is aborted by a teardown like anything else and says nothing about
-a failure nobody asked for. It is the other `restart` caller: a run already in
-flight read its status before the push arrived, and joining it would drop the very
-change — a stop, a clear — the push exists to deliver.
+**A pushed status is a doorbell, not a payload.** Its handler re-reads `/status`
+and reconciles that, rather than applying the pushed frame: a frame is composed
+at the recorder's own moment and can be older than what a sync in flight has
+already read, and applying it blind would move `recording`, `count` and `lastSeq`
+backwards with nothing to correct them until the next push. It takes the same
+route through `runRecorderSync` — aborted by a teardown like anything else, quiet
+about failures nobody asked for — and it is the other `restart` caller: a run
+already in flight read its status before the push arrived, and joining it would
+drop the very change — a stop, a clear — the push exists to deliver. The re-read
+costs one loopback round trip, and pushes are rare, discrete events.
 
 Syncs nobody asked for are **quiet**, with one exception: a live view that was
 working and stopped. A recorder killed or uninstalled while the page was away must
@@ -375,7 +394,7 @@ wake lock's: it belongs to the ride, and a screen that blanks between pressing
 Record and the first fix is the case it exists for. In the menu, closing it would hand "Locate
 me" back to the browser's own GPS watch mid-ride, which is the second watch the
 feed exists to avoid. What stays in the menu is what belongs to the tool: its
-buttons, and the failure and setup toasts.
+buttons.
 
 **The toolbar follows the recording as well, collapsed.** `Main` mounts
 `GpsRecorderMenu` outside the chain that renders the open tools, on the recorder
@@ -390,9 +409,12 @@ looks the same, but that state is the toolbar's own.)
 
 Two consequences worth knowing. The sync that opening the tool raises is keyed on
 the tool being open rather than on the component mounting, because a recording
-mounts it on its own. And `useRecorderNotices` lives as long as the recording
-rather than as long as the panel — which is the point: a recorder that stops
-answering mid-ride is worth a toast whether or not its toolbar is open.
+mounts it on its own. And the failure and setup toasts live in their own
+null-rendering `GpsRecorderNotices`, which `Main` mounts while there is anything
+to announce — the tool, a recording, **or the failure itself**. The last part is
+what keeps the announcer alive for the very failure it exists for: a recorder
+that stops answering nulls the status, which unmounts the menu in the same
+commit, so a hook living there would be destroyed before its toast ever showed.
 
 A sync itself is three steps:
 
@@ -401,9 +423,13 @@ A sync itself is three steps:
 2. `GET /track?since=<cursor>` **only when the recorder says there is something
    to fetch**: `lastSeq > cursor`, or nothing is held here yet. One comparison
    against a status that had to be read anyway.
-3. Report the outcome — `recorderSyncSettled`, carrying either the column order
-   or the failure. Success attaches `/stream` if nothing is attached, so a resync
-   never drops a working stream; failure goes to the backoff.
+3. Report the outcome through the run's own `settle`, carrying either the column
+   order or the failure. Success attaches `/stream` if nothing is attached, so a
+   resync never drops a working stream; failure goes to the backoff. The settle
+   is bound to its run: one from a run that has been restarted or torn down is
+   ignored, so an abandoned run can never attach a stream or arm a retry on the
+   connection's behalf — and the handler checks its signal after the last await
+   too, so a dead run does not clear an error either.
 
 **One backoff covers everything that can drop the connection.** Any error on the
 stream drops the handle and starts the retry — deliberately not left to the
@@ -416,15 +442,26 @@ the whole sync rather than just reopening the socket, because whatever killed th
 stream may equally have stopped the recording or cleared the track — and the
 catch-up is what notices.
 
-The wait widens 1 s → 30 s over five attempts and then stops — and only the
-stream *opening* rewinds it, not a sync succeeding, since `/status` answering
-says nothing about the stream the backoff guards. Running out is also what
-finally stops the page following a recording, and only then: one failure is
-routinely a page that was frozen mid-request, and dropping the flag for that leaves
-a ride still being recorded with nothing watching it. **With the tool open it never
-gives up**, and goes on asking every 30 s: somebody is looking at a panel that
-would otherwise stay dead until it was closed and opened again. Two failures skip
-the wait entirely, because waiting cannot fix them: `lna-denied` and `outdated`.
+The wait widens 1 s → 30 s over five attempts, and two things rewind it: the
+stream delivering its connect **status frame** — not `onopen`, whose headers only
+say a socket was accepted, and a server killed right after accepting one would
+otherwise reset the wait on every cycle and keep it from ever widening — and the
+wanted-configuration changing, because a user opening the tool or a page coming
+back is a fresh look that deserves the fast delays rather than a widened wait
+inherited from a configuration nobody is in any more. A sync succeeding
+deliberately rewinds nothing: it proves only `/status`, and rewinding on it held
+the wait at its first step forever when `/stream` alone was broken.
+
+**Giving up — unfollowing — takes more than exhausted delays: the syncs
+themselves must be failing, with nobody watching.** Delays that ran out while
+syncs succeed mean the recorder is reachable and still reporting a ride, and a
+page must not abandon a ride the recorder itself claims — the cadence just holds
+at 30 s until the recorder's own status ends the following. **With the tool open
+it never gives up either**: somebody is looking at a panel that would otherwise
+stay dead until it was closed and opened again. What remains — syncs failing,
+tool closed — is a recorder that has stopped answering with nobody watching, and
+only that drops the follow flag. Two failures skip the retries entirely, because
+waiting cannot fix them: `lna-denied` and `outdated`.
 
 **A stream in hand disarms the backoff.** A `/status` that failed beside a working
 stream says nothing about the live view — the stream is what carries the fixes —

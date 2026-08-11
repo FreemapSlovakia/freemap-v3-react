@@ -22,7 +22,6 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { reconcileRecorderConnection } from '../connection.js';
-import { useRecorderNotices } from '../hooks/useRecorderNotices.js';
 import {
   gpsRecorderClear,
   gpsRecorderPause,
@@ -48,8 +47,6 @@ export default function GpsRecorderMenu(): ReactElement {
   const confirm = useConfirm();
 
   const askMergeMode = useDataMergeMode();
-
-  useRecorderNotices();
 
   const status = useAppSelector((state) => state.gpsRecorder.status);
 
@@ -80,9 +77,9 @@ export default function GpsRecorderMenu(): ReactElement {
   const open = useAppSelector((state) => isToolOpen(state, 'gps-recorder'));
 
   // The spinner covers any wait, but only a command the user gave blocks the
-  // transport: the background poll passes through `connecting` every few
-  // seconds, and disabling Record for it would fight the user on exactly the
-  // recorder that isn't answering.
+  // transport: the connection's own retries pass through `connecting`, and
+  // disabling Record for them would fight the user on exactly the recorder
+  // that isn't answering.
   //
   // `reconnecting` is a wait like the others, and the one worth showing most: the
   // figures beside the button have stopped advancing, and without the spinner
@@ -111,6 +108,11 @@ export default function GpsRecorderMenu(): ReactElement {
   // state changes, returning to the foreground catches up on what a frozen tab
   // missed, and a connection that failed retries on its own backoff.
   useEffect(() => {
+    // Reconciled first — opening the tool is a fresh look, which re-baselines
+    // the retry budget — and then asked loudly, joining whatever the reconcile
+    // may have started.
+    reconcileRecorderConnection();
+
     if (open) {
       dispatch(gpsRecorderSync());
     }

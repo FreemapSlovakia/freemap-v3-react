@@ -138,9 +138,9 @@ export function useRecorderNotices(): void {
     );
   }, [dispatch, failure, m]);
 
-  // Both toasts go with the recording, like this hook: they speak for a ride the
-  // user is watching, and an offer to reconnect or to finish setup means nothing
-  // once there is no longer anything to follow.
+  // Removed on unmount, which `Main` only allows once there is nothing left to
+  // announce — no tool, no recording, and no failure — so this only tidies up
+  // what the predicates have not already cleared.
   useEffect(
     () => () => {
       dispatch(toastsRemove('gpsRecorder.failure'));
