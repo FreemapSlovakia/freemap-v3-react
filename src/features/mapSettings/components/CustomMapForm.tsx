@@ -43,6 +43,7 @@ type Model = {
   extraScales: string[];
   technology: 'tile' | 'maplibre' | 'wms' | 'parametricShading';
   layers: string[];
+  tiled: boolean;
 };
 
 function valueToModel(value?: CustomLayerDef) {
@@ -68,6 +69,7 @@ function valueToModel(value?: CustomLayerDef) {
         ? value.extraScales.map((a) => a.toString())
         : [],
     layers: value && 'layers' in value && value.layers ? value.layers : [],
+    tiled: value && 'tiled' in value && value.tiled ? value.tiled : false,
     technology: value?.technology ?? 'tile',
   };
 }
@@ -108,6 +110,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         model.scaleWithDpi !== newModel.scaleWithDpi ||
         model.extraScales.join('|') !== newModel.extraScales.join('|') ||
         model.technology !== newModel.technology ||
+        model.tiled !== newModel.tiled ||
         model.layer !== newModel.layer;
 
       if (changed) {
@@ -176,8 +179,8 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           url: model.url,
           minZoom,
           maxNativeZoom,
-          scaleWithDpi: model.scaleWithDpi,
           layers: model.layers,
+          tiled: model.tiled,
         });
 
         break;
@@ -475,13 +478,29 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
             </div>
           )}
 
-          <Form.Check
-            className="mt-3"
-            id="chk-scale-dpi"
-            label={m?.mapLayers.scaleWithDpi}
-            checked={model.scaleWithDpi}
-            onChange={handlers.scaleWithDpi}
-          />
+          {/* A WMS is always asked for the display's own density. */}
+          {model.technology !== 'wms' && (
+            <Form.Check
+              className="mt-3"
+              id="chk-scale-dpi"
+              label={m?.mapLayers.scaleWithDpi}
+              checked={model.scaleWithDpi}
+              onChange={handlers.scaleWithDpi}
+            />
+          )}
+
+          {model.technology === 'wms' && (
+            <div className="mt-3">
+              <Form.Check
+                id="chk-tiled"
+                label={m?.mapLayers.tiled}
+                checked={model.tiled}
+                onChange={handlers.tiled}
+              />
+
+              <Form.Text>{m?.mapLayers.tiledHelp}</Form.Text>
+            </div>
+          )}
         </>
       )}
 

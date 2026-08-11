@@ -331,6 +331,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maxNativeZoom: 'Največja naravna povečava',
     extraScales: 'Dodatne ločljivosti',
     scaleWithDpi: 'Prilagodi z DPI',
+    tiled: 'Naloži po ploščicah',
+    tiledHelp:
+      'WMS se privzeto zahteva kot ena sama slika celotnega pogleda: ena zahteva namesto več deset, napisi pa niso prerezani na robovih ploščic. Ploščice vklopite za strežnik, ki omejuje velikost slike ali ki ploščice shranjuje v predpomnilnik — za ceno vala zahtev ob vsakem pogledu.',
     layer: {
       layer: 'Sloj',
       base: 'Osnovni',

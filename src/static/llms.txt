@@ -581,8 +581,9 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 - name
 - type (technology): Image tiles (TMS, XYZ), Vector (MapLibre), or WMS
 - URL (tile template for TMS/XYZ, server URL for WMS, or style URL for MapLibre)
-- min zoom / max native zoom
-- extra resolutions and "scale with DPI"
+- min zoom / max native zoom (for a WMS the latter caps the requested image resolution instead of the zoom drawn at)
+- extra resolutions and "scale with DPI" (not for WMS, which always matches the display density)
+- for WMS: "load in tiles" — off by default, since a WMS is asked for one GetMap covering the whole view per pan/zoom; switch it on for a server that limits image size or caches tiles (premium-gated zooms use tiles either way)
 - layer: base or overlay
 - show in menu / show in toolbar
 

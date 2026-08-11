@@ -15,6 +15,7 @@ import missingTile from '@/images/missing-tile-256x256.png';
 import { setActiveModal } from '../store/actions.js';
 import { AsyncComponent } from './AsyncComponent.js';
 import { ScaledTileLayer } from './ScaledTileLayer.js';
+import { WmsImageLayer } from './WmsImageLayer.js';
 import { WmsTileLayer } from './WmsTileLayer.js';
 
 const galleryLayerFactory = () =>
@@ -141,14 +142,45 @@ export function Layers(): ReactElement | null {
     }
 
     if (layerDef.technology === 'wms') {
-      const wmsHdpi =
-        effectiveDpr / featureScale > 1.4 && (scaleWithDpi || featureScale < 1);
+      // A WMS renders whatever pixel count it is asked for and is told to scale
+      // its symbology to match, so density needs no per-layer opt-in the way a
+      // tile layer's deeper-zoom trick does. `maxNativeZoom` is what bounds it
+      // where the source itself runs out of detail.
+      const wmsHdpi = effectiveDpr / featureScale > 1.4;
 
       const effPremiumFromZoom = isPremium(user)
         ? undefined
         : wmsHdpi
           ? 14
           : 15;
+
+      // The premium checkerboard works by not fetching every second tile, which
+      // an untiled view has no equivalent of — masking one would still ship the
+      // pixels — so a premium-gated zoom stays on tiles.
+      if (
+        !layerDef.tiled &&
+        (effPremiumFromZoom === undefined || zoom < effPremiumFromZoom)
+      ) {
+        return (
+          <WmsImageLayer
+            key={[
+              type,
+              layerDef.layers.join(','),
+              wmsHdpi ? 'hdpi' : 'ldpi',
+            ].join('-')}
+            url={layerDef.url}
+            layers={layerDef.layers.join(',')}
+            version="1.3.0"
+            transparent={layerDef.layer === 'overlay'}
+            format={layerDef.layer === 'overlay' ? 'image/png' : 'image/jpeg'}
+            opacity={opacity}
+            zIndex={layerDef.zIndex}
+            minZoom={layerDef.minZoom}
+            maxNativeZoom={layerDef.maxNativeZoom}
+            dpiScale={wmsHdpi ? 2 : 1}
+          />
+        );
+      }
 
       return (
         <WmsTileLayer
@@ -163,18 +195,22 @@ export function Layers(): ReactElement | null {
           url={layerDef.url}
           layers={layerDef.layers.join(',')}
           maxNativeZoom={layerDef.maxNativeZoom}
-          maxZoom={maxZoom}
+          // `detectRetina` makes Leaflet drop a zoom off `maxZoom`, and a grid
+          // layer whose `maxZoom` the view passes stops drawing entirely — so
+          // the ceiling is raised by the level it is about to take away.
+          maxZoom={wmsHdpi ? maxZoom + 1 : maxZoom}
           minZoom={layerDef.minZoom}
           detectRetina={wmsHdpi}
           version="1.3.0"
           transparent={layerDef.layer === 'overlay'}
           format={layerDef.layer === 'overlay' ? 'image/png' : 'image/jpeg'}
+          opacity={opacity}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={prm?.premiumOnly}
           onPremiumClick={
             effPremiumFromZoom === undefined ? undefined : handlePremiumClick
           }
-          zIndex={layerDef.zIndex}
+          zIndex={layerDef.zIndex ?? 1}
         />
       );
     }

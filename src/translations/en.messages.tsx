@@ -326,6 +326,9 @@ const messages: Messages = {
     maxNativeZoom: 'Max Native Zoom',
     extraScales: 'Extra resolutions',
     scaleWithDpi: 'Scale with DPI',
+    tiled: 'Load in tiles',
+    tiledHelp:
+      'A WMS is asked for a single image of the whole view by default: one request instead of dozens, and labels placed without being cut at tile edges. Switch to tiles for a server that limits the image size or that caches tiles, at the cost of a burst of requests per view.',
     layer: {
       layer: 'Layer',
       base: 'Base',

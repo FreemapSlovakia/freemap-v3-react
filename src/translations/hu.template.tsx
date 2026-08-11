@@ -337,6 +337,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maxNativeZoom: 'Maximális natív nagyítás',
     extraScales: 'Extra felbontások',
     scaleWithDpi: 'Méretezés DPI alapján',
+    tiled: 'Betöltés csempékben',
+    tiledHelp:
+      'A WMS alapértelmezés szerint a teljes nézetről egyetlen képként töltődik be: egy kérés több tucat helyett, és a feliratokat nem vágja el a csempék határa. A csempéket olyan kiszolgálóhoz kapcsolja be, amely korlátozza a kép méretét vagy gyorsítótárazza a csempéket — cserébe nézetenként sok kérés indul.',
     zIndex: 'Z-index',
     preferences: 'Beállítások',
     maxZoom: 'Maximális nagyítás',

@@ -313,10 +313,16 @@ type IsRadarLayerDef = HasMaxNativeZoom &
 
 export type IsWmsLayerDef = HasUrl &
   HasZIndex &
-  HasMaxNativeZoom &
-  HasScaleWithDpi & {
+  HasMaxNativeZoom & {
     technology: 'wms';
     layers: string[];
+    /**
+     * Go back to a grid of tiles instead of one image per settled view. Needed
+     * for a server that caps the image size below what a viewport asks for, or
+     * one behind a tile cache that only repeated tile URLs can hit; the price is
+     * a burst of requests per view and labels clipped at the tile seams.
+     */
+    tiled?: boolean;
   };
 
 type IsMapLibreLayerDef = HasUrl & {
@@ -480,7 +486,7 @@ export const IsWmsLayerDefSchema = z.object({
   layers: z.array(z.string()),
   maxNativeZoom: z.number().optional(),
   zIndex: z.number().optional(),
-  scaleWithDpi: z.boolean().optional(),
+  tiled: z.boolean().optional(),
 });
 
 export const IsMapLibreLayerDefSchema = z.object({

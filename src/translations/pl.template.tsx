@@ -321,6 +321,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maxNativeZoom: 'Maksymalne natywne powiększenie',
     extraScales: 'Dodatkowe rozdzielczości',
     scaleWithDpi: 'Skaluj z DPI',
+    tiled: 'Ładuj w płytkach',
+    tiledHelp:
+      'Domyślnie WMS jest pobierany jako jeden obraz całego widoku: jedno żądanie zamiast dziesiątek, a etykiety nie są przycinane na granicach płytek. Płytki włącz dla serwera, który ogranicza rozmiar obrazu lub który je buforuje — kosztem serii żądań na każdy widok.',
     zIndex: 'Z-indeks',
     preferences: 'Preferencje',
     maxZoom: 'Maksymalne powiększenie',

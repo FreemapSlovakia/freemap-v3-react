@@ -339,6 +339,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maxNativeZoom: 'Zoom natif max.',
     extraScales: 'Résolutions supplémentaires',
     scaleWithDpi: 'Mettre à l’échelle avec le DPI',
+    tiled: 'Charger en tuiles',
+    tiledHelp:
+      'Par défaut, un WMS est demandé sous la forme d’une seule image de toute la vue : une requête au lieu de dizaines, et des étiquettes qui ne sont pas coupées aux bords des tuiles. Activez les tuiles pour un serveur qui limite la taille de l’image ou qui met les tuiles en cache, au prix d’une rafale de requêtes par vue.',
     zIndex: 'Z-Index',
     preferences: 'Préférences',
     maxZoom: 'Zoom max.',

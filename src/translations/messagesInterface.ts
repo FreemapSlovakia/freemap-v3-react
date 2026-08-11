@@ -217,6 +217,8 @@ export type Messages = {
     maxNativeZoom: string;
     extraScales: string;
     scaleWithDpi: string;
+    tiled: string;
+    tiledHelp: string;
     layer: {
       layer: string;
       base: string;

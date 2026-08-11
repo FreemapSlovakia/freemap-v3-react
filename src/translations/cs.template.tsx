@@ -333,6 +333,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maxNativeZoom: 'Maximální přirozené přiblížení',
     extraScales: 'Další rozlišení',
     scaleWithDpi: 'Škálovat podle DPI',
+    tiled: 'Načítat po dlaždicích',
+    tiledHelp:
+      'WMS se ve výchozím nastavení vyžádá jako jeden obrázek celého výřezu: jeden požadavek místo desítek a popisky nepřeříznuté na hranicích dlaždic. Dlaždice zapněte pro server, který omezuje velikost obrázku nebo který dlaždice ukládá do mezipaměti — za cenu dávky požadavků na každý výřez.',
     zIndex: 'Z-Index',
     preferences: 'Předvolby',
     maxZoom: 'Maximální přiblížení',
