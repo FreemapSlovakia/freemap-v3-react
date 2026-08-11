@@ -306,6 +306,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
+          <p className="fw-bold mb-3">{m?.mapLayers.mapSection}</p>
+
           <Form.Group controlId="maxZoom">
             <Form.Label>{m?.mapLayers.maxZoom}</Form.Label>
 

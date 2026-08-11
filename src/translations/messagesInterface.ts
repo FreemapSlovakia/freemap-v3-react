@@ -226,6 +226,7 @@ export type Messages = {
     };
     zIndex: string;
     preferences: string;
+    mapSection: string;
     maxZoom: string;
     zoomSnap: string;
     zoomSnapFree: string;

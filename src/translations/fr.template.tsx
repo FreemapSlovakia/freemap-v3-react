@@ -344,6 +344,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Par défaut, un WMS est demandé sous la forme d’une seule image de toute la vue : une requête au lieu de dizaines, et des étiquettes qui ne sont pas coupées aux bords des tuiles. Activez les tuiles pour un serveur qui limite la taille de l’image ou qui met les tuiles en cache, au prix d’une rafale de requêtes par vue.',
     zIndex: 'Z-Index',
     preferences: 'Préférences',
+    mapSection: 'Carte',
     maxZoom: 'Zoom max.',
     zoomSnap: 'Pas du zoom',
     zoomSnapFree: 'Libre',
@@ -374,7 +375,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         err,
       ),
     distance: 'Distance [km]',
-    settings: 'Profil altimétrique',
+    settings: 'Altitude',
     settingsHelp:
       'Les deux premiers réglages corrigent un modèle de terrain et s’appliquent donc partout où l’altitude en est issue : itinéraires planifiés, lignes tracées et mesures, ainsi que traces importées dont vous avez remplacé l’altitude depuis le serveur. L’altitude enregistrée — suivi en direct, ou une trace conservée telle qu’enregistrée — reste intacte. Les fichiers exportés conservent toujours leur propre altitude.',
     windowOff: 'désactivé',

@@ -338,6 +338,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Ein WMS wird standardmäßig als ein einziges Bild des gesamten Ausschnitts angefordert: eine Anfrage statt Dutzender, und Beschriftungen werden nicht an Kachelrändern abgeschnitten. Kacheln lohnen sich für einen Server, der die Bildgröße begrenzt oder Kacheln zwischenspeichert — um den Preis vieler Anfragen pro Ansicht.',
     zIndex: 'Z-Index',
     preferences: 'Einstellungen',
+    mapSection: 'Karte',
     maxZoom: 'Maximale Zoomstufe',
     zoomSnap: 'Zoomschritt',
     zoomSnapFree: 'Stufenlos',
@@ -381,7 +382,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ele: `Höhe [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Fehler beim Abrufen des Höhenprofils', err),
-    settings: 'Höhenprofil',
+    settings: 'Höhe',
     settingsHelp:
       'Die ersten beiden Einstellungen korrigieren ein Geländemodell und gelten daher überall dort, wo die Höhe daraus gelesen wird: bei geplanten Routen, gezeichneten Linien und Messungen sowie bei importierten Tracks, deren Höhe Sie vom Server ersetzt haben. Aufgezeichnete Höhen — Live-Tracking oder ein Track, den Sie wie aufgezeichnet belassen haben — bleiben unangetastet. Exportierte Dateien behalten immer ihre eigene Höhe.',
     windowOff: 'aus',

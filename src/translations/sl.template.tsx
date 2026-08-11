@@ -341,6 +341,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     zIndex: 'Z-Index',
     preferences: 'Nastavitve',
+    mapSection: 'Zemljevid',
     maxZoom: 'Največja povečava',
     zoomSnap: 'Korak povečave',
     zoomSnapFree: 'Prosto',
@@ -379,7 +380,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Napaka pri pridobivanju podatkov višinskega profila',
         err,
       ),
-    settings: 'Višinski profil',
+    settings: 'Nadmorska višina',
     settingsHelp:
       'Prvi dve nastavitvi popravljata model terena, zato veljata povsod, kjer se višina bere iz njega: pri načrtovanih poteh, narisanih črtah in meritvah ter pri uvoženih sledeh, ki ste jim višino nadomestili s strežnika. Zabeležena nadmorska višina — sledenje v živo ali sled, ki ste jo ohranili tako, kot je bila zabeležena — ostane nedotaknjena. Izvožene datoteke vedno ohranijo svojo višino.',
     windowOff: 'izklopljeno',

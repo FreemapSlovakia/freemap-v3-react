@@ -326,6 +326,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Domyślnie WMS jest pobierany jako jeden obraz całego widoku: jedno żądanie zamiast dziesiątek, a etykiety nie są przycinane na granicach płytek. Płytki włącz dla serwera, który ogranicza rozmiar obrazu lub który je buforuje — kosztem serii żądań na każdy widok.',
     zIndex: 'Z-indeks',
     preferences: 'Preferencje',
+    mapSection: 'Mapa',
     maxZoom: 'Maksymalne powiększenie',
     zoomSnap: 'Krok powiększenia',
     zoomSnapFree: 'Swobodnie',
@@ -370,7 +371,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ele: `Wysokość [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Błąd podczas pobierania profilu wysokościowego', err),
-    settings: 'Profil wysokościowy',
+    settings: 'Wysokość',
     settingsHelp:
       'Pierwsze dwa ustawienia korygują model terenu, więc obowiązują wszędzie tam, gdzie wysokość jest z niego odczytywana: przy planowanych trasach, narysowanych liniach i pomiarach oraz przy zaimportowanych śladach, w których zastąpiono wysokość danymi z serwera. Zarejestrowana wysokość — śledzenie na żywo lub ślad pozostawiony w zarejestrowanej postaci — pozostaje nietknięta. Eksportowane pliki zawsze zachowują własną wysokość.',
     windowOff: 'wyłączone',
