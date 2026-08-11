@@ -57,6 +57,7 @@ import {
   gpsRecorderStartProcessor,
   gpsRecorderStopProcessor,
   gpsRecorderSyncProcessor,
+  gpsRecorderToolProcessor,
 } from '@features/gpsRecorder/model/processors.js';
 import { l10nSetLanguageProcessor } from '@features/l10n/model/processor.js';
 import { legendProcessor } from '@features/legend/model/legendProcessor.js';
@@ -210,6 +211,7 @@ export const processors = [
   gpsRecorderSyncProcessor,
   gpsRecorderPushedStatusProcessor,
   gpsRecorderClearProcessor,
+  gpsRecorderToolProcessor,
   setActiveModalTransformer,
   mapsLoadListProcessor,
   mapsLoadProcessor,

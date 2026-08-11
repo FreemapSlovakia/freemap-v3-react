@@ -344,3 +344,38 @@ export class RecorderError extends Error {
     this.failure = failure;
   }
 }
+
+/**
+ * Causes that asking again cannot fix: a refusal will not turn into a grant,
+ * and an old APK will not update itself. Named here beside the failures
+ * themselves, so a new terminal cause is classified where it is declared
+ * rather than in each retry loop that has to know.
+ */
+const HOPELESS: ReadonlySet<RecorderFailure> = new Set<RecorderFailure>([
+  'lna-denied',
+  'outdated',
+]);
+
+export function isHopelessFailure(err: unknown): boolean {
+  return err instanceof RecorderError && HOPELESS.has(err.failure);
+}
+
+/**
+ * Reads an SSE frame's `data:` as JSON. A frame this app cannot parse is not
+ * an error to report — the stream is a feed, and the next frame is along in a
+ * moment — so everything that goes wrong reads as "not for us".
+ */
+export function parseFrameJson(data: string): unknown {
+  try {
+    return JSON.parse(data);
+  } catch {
+    return undefined;
+  }
+}
+
+/** A `status` frame, or `null` if it is not one this app understands. */
+export function parseStatusFrame(data: string): RecorderStatus | null {
+  const result = RecorderStatusSchema.safeParse(parseFrameJson(data));
+
+  return result.success ? result.data : null;
+}

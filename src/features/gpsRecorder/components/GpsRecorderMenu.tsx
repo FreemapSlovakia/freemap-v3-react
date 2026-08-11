@@ -21,7 +21,6 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { reconcileRecorderConnection } from '../connection.js';
 import {
   gpsRecorderClear,
   gpsRecorderPause,
@@ -100,24 +99,18 @@ export default function GpsRecorderMenu(): ReactElement {
   // Keyed on the panel being open rather than on this component mounting, which a
   // recording does on its own.
   //
-  // The connection itself is not the toolbar's: `connection.ts` keeps it for as
-  // long as there is a recording to follow, so closing this only asks it to
-  // reconsider — which, mid-recording, changes nothing.
+  // Only the loud ask lives here. Whether there should be a connection at all is
+  // the store's answer, not this component's: `gpsRecorderToolProcessor` tells
+  // the connection when the tool opens or closes, so a menu that is unmounted
+  // for a map-pick mode cannot swallow the transition.
   //
   // There is no polling either: the stream pushes a status whenever the recorder's
   // state changes, returning to the foreground catches up on what a frozen tab
   // missed, and a connection that failed retries on its own backoff.
   useEffect(() => {
-    // Reconciled first — opening the tool is a fresh look, which re-baselines
-    // the retry budget — and then asked loudly, joining whatever the reconcile
-    // may have started.
-    reconcileRecorderConnection();
-
     if (open) {
       dispatch(gpsRecorderSync());
     }
-
-    return reconcileRecorderConnection;
   }, [open, dispatch]);
 
   // Asked only while the recorder is still running: that tap ends a ride that

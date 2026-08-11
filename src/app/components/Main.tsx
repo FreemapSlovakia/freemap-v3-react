@@ -109,9 +109,12 @@ const gpsRecorderMenuFactory = () =>
     '@features/gpsRecorder/components/GpsRecorderMenu.js'
   );
 
+// The menu's chunk deliberately: the two mount on nearly the same condition, so
+// a chunk of their own would be a second request for a component that renders
+// nothing.
 const gpsRecorderNoticesFactory = () =>
   import(
-    /* webpackChunkName: "gps-recorder-notices" */
+    /* webpackChunkName: "gps-recorder-menu" */
     '@features/gpsRecorder/components/GpsRecorderNotices.js'
   );
 
@@ -393,6 +396,14 @@ export function Main(): ReactElement {
   const gpsRecorderFailure = useAppSelector(
     (state) => state.gpsRecorder.error !== null,
   );
+
+  // The recorder's UI belongs on the screen while its tool is open or a
+  // recording is running. Named once: the menu and the notices below differ
+  // only in what else keeps the notices alive.
+  const gpsRecorderWanted =
+    gpsRecorderAvailable &&
+    !window.fmEmbedded &&
+    (openTools.includes('gps-recorder') || gpsRecorderRecording);
 
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
@@ -703,25 +714,20 @@ export function Main(): ReactElement {
                   recorder can't run on. Not in an embedded map: `openTool` is a
                   no-op there, so the strip could never be expanded — and the
                   recording belongs to the full app that started it. */}
-              {showMenu &&
-                gpsRecorderAvailable &&
-                !window.fmEmbedded &&
-                (openTools.includes('gps-recorder') ||
-                  gpsRecorderRecording) && (
-                  <AsyncComponent factory={gpsRecorderMenuFactory} />
-                )}
+              {showMenu && gpsRecorderWanted && (
+                <AsyncComponent factory={gpsRecorderMenuFactory} />
+              )}
 
               {/* The recorder's toasts, apart from its menu: a failure can null
                   the status and unmount the menu in the same commit that should
-                  announce it, so the announcer is mounted on there being
-                  anything to announce — including the failure itself. */}
-              {gpsRecorderAvailable &&
-                !window.fmEmbedded &&
-                (openTools.includes('gps-recorder') ||
-                  gpsRecorderRecording ||
-                  gpsRecorderFailure) && (
-                  <AsyncComponent factory={gpsRecorderNoticesFactory} />
-                )}
+                  announce it, so the announcer outlives it — mounted on there
+                  being anything to announce, the failure itself included. */}
+              {(gpsRecorderWanted ||
+                (gpsRecorderAvailable &&
+                  !window.fmEmbedded &&
+                  gpsRecorderFailure)) && (
+                <AsyncComponent factory={gpsRecorderNoticesFactory} />
+              )}
 
               {/* every open tool's menu, the map-click one first and the rest in
                   the order they were opened, so opening another toolbar-only

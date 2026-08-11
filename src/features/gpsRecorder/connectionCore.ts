@@ -18,10 +18,8 @@ export type StreamCallbacks = {
   onOpen(): void;
 
   /**
-   * The connect status frame arrived. This — not `onOpen` — is what proves the
-   * stream end to end: headers say only that a socket was accepted, and a
-   * server killed right after accepting one would otherwise reset the backoff
-   * on every cycle and keep it from ever widening.
+   * The connect status frame arrived — the server composed and delivered
+   * something, which headers alone do not prove.
    */
   onStatusFrame(): void;
 
@@ -36,8 +34,7 @@ export type RecorderConnectionDeps = {
 
   readFollowed(): boolean;
 
-  /** Persists the follow flag; returns whether the write took. */
-  writeFollowed(value: boolean): boolean;
+  writeFollowed(value: boolean): void;
 
   /** Opens the SSE stream and wires its events to the given callbacks. */
   openStream(callbacks: StreamCallbacks): StreamHandle;
@@ -76,14 +73,37 @@ export const RETRY_DELAYS = [1000, 2000, 5000, 10_000, 30_000];
 
 /**
  * How long a dispatched sync may go unclaimed by its lazily loaded handler
- * before the ask is written off as a failed attempt — a hashed chunk a deploy
- * has moved, or a network that dropped mid-import.
+ * before the ask is written off — a hashed chunk a deploy has moved, or a
+ * network that dropped mid-import.
  */
 export const SYNC_CLAIM_MS = 10_000;
+
+/**
+ * How long a stream must keep running, past the frame that proved it works,
+ * before the backoff is rewound. Proof has to be a duration rather than an
+ * event: every instant a stream can reach — headers, the first frame — is one
+ * a recorder dying immediately afterwards also reaches, and rewinding on any
+ * of them lets such a recorder be retried at the shortest delay forever.
+ */
+export const STREAM_PROVEN_MS = RETRY_DELAYS[RETRY_DELAYS.length - 1];
 
 export type RecorderConnectionCore = ReturnType<
   typeof createRecorderConnectionCore
 >;
+
+type Slot = {
+  handle: StreamHandle | null;
+  open: boolean;
+  dropped: boolean;
+};
+
+type Run = {
+  quiet: boolean;
+  settled: boolean;
+  controller: AbortController;
+  promise: Promise<void>;
+  resolve: (value?: void | PromiseLike<void>) => void;
+};
 
 export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
   /**
@@ -95,27 +115,14 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
   let followed = deps.readFollowed();
 
   /**
-   * Whether the last attempt to persist the flag failed (storage denied or
-   * full). Remembered so the next set retries the write even when the value
-   * itself has not changed — otherwise one refused write would leave storage
-   * wrong for the rest of the session, and the next page load would not go
-   * looking for a ride that is still being recorded.
+   * The stream, when one is attached. The handle and whether it is open live
+   * together, so dropping one cannot leave the other behind — a toolbar stuck
+   * on `live` with no connection under it.
    */
-  let followWriteFailed = false;
-
-  /** The stream, when one is attached. */
-  let stream: StreamHandle | null = null;
-
-  /** Headers arrived: the browser considers it open, the toolbar reads live. */
-  let streamOpen = false;
+  let stream: Slot | null = null;
 
   /** The sync in flight, if any; aborting it is how a teardown stops one. */
-  let run: {
-    quiet: boolean;
-    settled: boolean;
-    controller: AbortController;
-    promise: Promise<void>;
-  } | null = null;
+  let run: Run | null = null;
 
   /** Catch-ups downloading right now, for what the toolbar says. */
   let catchingUp = 0;
@@ -127,24 +134,26 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
 
   let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
+  let provenTimer: ReturnType<typeof setTimeout> | null = null;
+
   /**
-   * Which delay the next retry waits. Rewound only by the stream proving
-   * itself (its connect status frame) or by the wanted-configuration changing
-   * (see `reconcile`) — deliberately not by a sync succeeding, which proves
-   * only `/status` and would keep the wait at its first step forever when
-   * `/stream` alone is broken.
+   * Which delay the next retry waits. Rewound by a stream that has proven
+   * itself (see {@link STREAM_PROVEN_MS}) or by the wanted-configuration
+   * changing — deliberately not by a sync succeeding, which proves only
+   * `/status` and would hold the wait at its first step forever when `/stream`
+   * alone is broken.
    */
   let delayIndex = 0;
 
   /**
-   * Whether the most recent sync failed. Giving up — unfollowing — is gated on
-   * this, not on the delays running out alone: exhausted delays with syncs
-   * still succeeding mean the recorder is reachable and reporting a ride, and
-   * a page must not abandon a ride the recorder itself still claims. The
-   * cadence just holds at the longest delay until the recorder's own status
-   * ends the following.
+   * Whether the recorder itself is failing to answer. Giving up — unfollowing
+   * — is gated on this, not on the delays running out alone: exhausted delays
+   * with syncs still succeeding mean the recorder is reachable and reporting a
+   * ride, and a page must not abandon a ride the recorder itself claims. An
+   * ask this app never managed to make (a chunk that would not load) is not
+   * the recorder failing either, and must never cost the following.
    */
-  let lastSyncFailed = false;
+  let recorderFailing = false;
 
   /**
    * Whether the live view was working before the attempt now under way — it
@@ -174,7 +183,7 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       return 'syncing';
     }
 
-    if (streamOpen) {
+    if (stream?.open) {
       return 'live';
     }
 
@@ -204,6 +213,14 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
     }
   }
 
+  function cancelProven(): void {
+    if (provenTimer !== null) {
+      clearTimeout(provenTimer);
+
+      provenTimer = null;
+    }
+  }
+
   function clearSyncPending(): void {
     syncPending = false;
 
@@ -214,13 +231,25 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
     }
   }
 
+  function dropStream(): void {
+    cancelProven();
+
+    if (stream !== null) {
+      stream.dropped = true;
+
+      stream.handle?.close();
+
+      stream = null;
+    }
+  }
+
   /** Drops everything: the stream, the sync in flight, the retry, the queue. */
   function teardown(): void {
     cancelRetry();
 
     delayIndex = 0;
 
-    lastSyncFailed = false;
+    recorderFailing = false;
 
     clearSyncPending();
 
@@ -232,11 +261,7 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
 
     run = null;
 
-    stream?.close();
-
-    stream = null;
-
-    streamOpen = false;
+    dropStream();
   }
 
   /**
@@ -246,15 +271,17 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
    */
   function reconcile(): void {
     // The retry budget belongs to the configuration that spent it: a user
-    // opening the tool, or a page coming back, is a fresh look and deserves
-    // the fast delays again rather than inheriting a widened wait from a
-    // configuration nobody is in any more.
+    // opening the tool, or a page coming back, is a fresh look that deserves
+    // the fast delays again — and an immediate attempt, rather than waiting
+    // out a widened delay armed for a configuration nobody is in any more.
     const config = configOf();
 
     if (config !== lastConfig) {
       lastConfig = config;
 
       delayIndex = 0;
+
+      cancelRetry();
     }
 
     if (!wanted()) {
@@ -276,8 +303,10 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       syncClaimTimer = setTimeout(() => {
         clearSyncPending();
 
-        lastSyncFailed = true;
-
+        // Deliberately not `recorderFailing`: nothing ever reached the
+        // recorder, so this says nothing about it. The chain widens and keeps
+        // asking, but a chunk that will not load must never unfollow a ride
+        // that is still being recorded.
         retry();
 
         publish();
@@ -295,12 +324,11 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
   /**
    * Schedules the next attempt, or ends the chain.
    *
-   * The chain ends — the page stops following — only when the syncs themselves
-   * are failing with nobody watching: the recorder is not answering at all,
-   * and a page left open for a week must not go on asking every half minute.
-   * With the tool open somebody is looking, so it keeps asking at the longest
-   * interval; with syncs succeeding the recorder is reachable and still
-   * reporting a ride, so likewise.
+   * The chain ends — the page stops following — only when the recorder itself
+   * is failing to answer with nobody watching: a page left open for a week
+   * must not go on asking every half minute. With the tool open somebody is
+   * looking, so it keeps asking at the longest interval; with syncs succeeding
+   * the recorder is reachable and still reporting a ride, so likewise.
    */
   function retry(): void {
     // A stream in hand carries the live view whatever a sync beside it did;
@@ -311,7 +339,7 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
 
     const delay = RETRY_DELAYS[delayIndex];
 
-    if (delay === undefined && lastSyncFailed && !deps.isToolOpen()) {
+    if (delay === undefined && recorderFailing && !deps.isToolOpen()) {
       setFollowed(false);
 
       return;
@@ -321,26 +349,28 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       delayIndex++;
     }
 
-    retryTimer = setTimeout(() => {
-      retryTimer = null;
+    retryTimer = setTimeout(
+      () => {
+        retryTimer = null;
 
-      reconcile();
-    }, delay ?? RETRY_DELAYS.at(-1));
+        reconcile();
+      },
+      delay ?? RETRY_DELAYS[RETRY_DELAYS.length - 1],
+    );
   }
 
   /**
    * Sets the follow flag. Following is an input to the desired state, so a
-   * change goes through the reconcile like every other input; an unchanged
-   * value only retries a persist that previously failed.
+   * change goes through the reconcile like every other input. The persist is
+   * unconditional, which also repairs a value another tab changed underneath
+   * this one.
    */
   function setFollowed(value: boolean): void {
     const changed = value !== followed;
 
     followed = value;
 
-    if (changed || followWriteFailed) {
-      followWriteFailed = !deps.writeFollowed(value);
-    }
+    deps.writeFollowed(value);
 
     if (changed) {
       reconcile();
@@ -348,35 +378,49 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
   }
 
   function attachStream(): void {
+    // Installed before the stream is opened, so a transport that reports
+    // synchronously — a fake in a test, a polyfill that fails inline — is not
+    // answering about a stream the core does not yet believe in.
+    const slot: Slot = { handle: null, open: false, dropped: false };
+
+    stream = slot;
+
     const handle = deps.openStream({
       onOpen: () => {
-        if (stream !== handle) {
+        if (stream !== slot) {
           return;
         }
 
-        streamOpen = true;
+        slot.open = true;
 
         publish();
       },
 
       onStatusFrame: () => {
-        if (stream !== handle) {
+        if (stream !== slot) {
           return;
         }
 
-        // End-to-end proof: the server composed and delivered a frame. Only
-        // now is the backoff rewound and the view considered live enough that
-        // losing it is worth saying out loud.
-        delayIndex = 0;
-
+        // Enough of a live view that losing it is worth saying out loud — but
+        // not yet enough to rewind the backoff, which waits for the stream to
+        // keep running (a recorder that dies right after its frame would
+        // otherwise be retried at the shortest delay forever).
         wasLive = true;
+
+        if (provenTimer === null) {
+          provenTimer = setTimeout(() => {
+            provenTimer = null;
+
+            delayIndex = 0;
+          }, STREAM_PROVEN_MS);
+        }
 
         publish();
       },
 
       onError: () => {
         // A stale handle's late error must not touch its replacement.
-        if (stream !== handle) {
+        if (stream !== slot) {
           return;
         }
 
@@ -384,11 +428,7 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
         // left to the browser's own reconnection, which retries a dead
         // loopback forever and never gives up; the retry re-runs the whole
         // sync, whose catch-up notices what changed while the stream was down.
-        handle.close();
-
-        stream = null;
-
-        streamOpen = false;
+        dropStream();
 
         retry();
 
@@ -396,7 +436,12 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       },
     });
 
-    stream = handle;
+    slot.handle = handle;
+
+    // Reported dead while it was being opened.
+    if (slot.dropped) {
+      handle.close();
+    }
   }
 
   /**
@@ -405,19 +450,25 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
    * for a failure to be reported out loud.
    *
    * `restart` is for the caller a run already in flight cannot answer — one
-   * that needs a status newer than what that run read. It abandons the run
-   * (whose loudness the fold above carries over) and asks again.
+   * that needs a status newer than what that run read. It abandons the run and
+   * asks again; the abandoned run's callers are answered by the replacement,
+   * both in loudness and in when they are told it is done, so awaiting a sync
+   * means the same thing whether or not it was restarted along the way.
    *
-   * `start` is the sync itself, which lives in the lazily loaded handlers;
-   * it reports back through its own `settle`, which is bound to this run —
-   * a settle from a run that has been abandoned is ignored, so an abandoned
-   * run can never attach a stream or arm a retry on the module's behalf.
+   * `start` is the sync itself, which lives in the lazily loaded handlers; it
+   * reports through its own `settle`, which is bound to this run — a settle
+   * from a run that has been abandoned is ignored, so an abandoned run can
+   * never attach a stream or arm a retry on the module's behalf.
    */
   function runSync(
-    { quiet, restart = false }: { quiet: boolean; restart?: boolean },
+    opts: { quiet: boolean; restart?: boolean },
     start: SyncStart,
   ): Promise<void> {
     clearSyncPending();
+
+    let quiet = opts.quiet;
+
+    let abandoned: Run | null = null;
 
     if (run) {
       // The weakest claim survives whichever way this goes: a joiner folds
@@ -425,25 +476,36 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       // its replacement, which is what answers those callers now.
       quiet &&= run.quiet;
 
-      if (!restart) {
+      if (!opts.restart) {
         run.quiet = quiet;
 
         return run.promise;
       }
+
+      abandoned = run;
 
       run.controller.abort();
 
       run = null;
     }
 
-    const entry = {
+    const entry: Run = {
       quiet,
       settled: false,
       controller: new AbortController(),
       promise: Promise.resolve(),
+      resolve: () => {},
     };
 
+    entry.promise = new Promise<void>((resolve) => {
+      entry.resolve = resolve;
+    });
+
     run = entry;
+
+    // Whoever awaited the run this one replaced is waiting for an answer about
+    // the recorder, not about a particular request; they get this one's.
+    abandoned?.resolve(entry.promise);
 
     const settle = (outcome: SyncOutcome): void => {
       if (entry.settled || run !== entry) {
@@ -453,7 +515,7 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       entry.settled = true;
 
       if (outcome.ok) {
-        lastSyncFailed = false;
+        recorderFailing = false;
 
         cancelRetry();
 
@@ -465,7 +527,7 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
           attachStream();
         }
       } else {
-        lastSyncFailed = true;
+        recorderFailing = true;
 
         if (outcome.hopeless) {
           // A refusal will not turn into a grant, and an old APK will not
@@ -479,17 +541,30 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       publish();
     };
 
-    entry.promise = start(
-      entry.controller.signal,
-      () => entry.quiet,
-      settle,
-    ).finally(() => {
-      if (run === entry) {
-        run = null;
-      }
+    let started: Promise<void>;
 
-      publish();
-    });
+    try {
+      started = start(entry.controller.signal, () => entry.quiet, settle);
+    } catch (err) {
+      started = Promise.reject(err);
+    }
+
+    started
+      .catch(() => {
+        // A sync that broke without reporting is still a failed attempt: left
+        // unsettled it would arm no retry, and the chain would end silently
+        // with nothing that would ever ask again.
+        settle({ ok: false, hopeless: false });
+      })
+      .finally(() => {
+        if (run === entry) {
+          run = null;
+        }
+
+        entry.resolve();
+
+        publish();
+      });
 
     publish();
 
@@ -515,11 +590,5 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
     }
   }
 
-  return {
-    reconcile,
-    setFollowed,
-    runSync,
-    whileCatchingUp,
-    isFollowed: () => followed,
-  };
+  return { reconcile, setFollowed, runSync, whileCatchingUp };
 }

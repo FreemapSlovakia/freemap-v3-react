@@ -1,5 +1,6 @@
 import { isToolOpen } from '@app/store/selectors.js';
 import type { MyStore } from '@app/store/store.js';
+import storage from 'local-storage-fallback';
 import {
   createRecorderConnectionCore,
   type RecorderConnectionCore,
@@ -14,10 +15,10 @@ import {
 import { startRecorderSpan, watchRecorderFrame } from './perfProbe.js';
 import {
   decodePoints,
+  parseFrameJson,
+  parseStatusFrame,
   RECORDER_ORIGIN,
-  RecorderError,
   type RecorderPoint,
-  RecorderStatusSchema,
   streamPayloadToRows,
 } from './protocol.js';
 import { gpsRecorderPlatformSupported } from './support.js';
@@ -44,11 +45,11 @@ import { gpsRecorderPlatformSupported } from './support.js';
  */
 
 /**
- * The follow flag's key. In `localStorage` rather than in the store, because
- * the question outlives the page — a recording carries on in the phone's own
- * app while the browser is closed, and on the next load nothing else knows
- * there is anything to fetch. Deliberately not in `persistence.ts`: that subset
- * is re-serialized on every action, and this changes when a recording starts or
+ * The follow flag's key. In storage rather than in the store, because the
+ * question outlives the page — a recording carries on in the phone's own app
+ * while the browser is closed, and on the next load nothing else knows there is
+ * anything to fetch. Deliberately not in `persistence.ts`: that subset is
+ * re-serialized on every action, and this changes when a recording starts or
  * ends.
  */
 const KEY = 'fm.gpsRecorder.follow';
@@ -60,20 +61,12 @@ let store: MyStore | null = null;
 let core: RecorderConnectionCore | null = null;
 
 /**
- * Column order for the bare rows the stream sends. Set before the stream is
- * ever opened — `/status` names it, and the status frame on connect names it
- * again.
+ * Column order for the bare rows the stream sends, owned by the stream that
+ * decodes them: a `status` frame arrives before any point on every connection,
+ * so the order is always known by the first row, and no sync can install a
+ * stale one over the live stream's own.
  */
 let fields: readonly string[] = [];
-
-/**
- * How a sync ended, and the only thing its handler has to say. Success carries
- * the column order the stream needs to decode its bare rows; failure carries
- * what went wrong, since two causes are worth no retry at all.
- */
-export type RecorderSyncOutcome =
-  | { fields: readonly string[] }
-  | { error: unknown };
 
 /**
  * See the core's `runSync`: coalesces concurrent asks onto one run, restarts
@@ -82,36 +75,9 @@ export type RecorderSyncOutcome =
  */
 export function runRecorderSync(
   opts: { quiet: boolean; restart?: boolean },
-  start: (
-    signal: AbortSignal,
-    isQuiet: () => boolean,
-    settle: (outcome: RecorderSyncOutcome) => void,
-  ) => Promise<void>,
+  start: SyncStart,
 ): Promise<void> {
-  if (!core) {
-    return Promise.resolve();
-  }
-
-  const wrapped: SyncStart = (signal, isQuiet, settle) =>
-    start(signal, isQuiet, (outcome) => {
-      if ('fields' in outcome) {
-        // Kept current even for an already-open stream: a resync may have read
-        // a newer column order than the one the stream opened with.
-        fields = outcome.fields;
-
-        settle({ ok: true });
-      } else {
-        settle({
-          ok: false,
-          hopeless:
-            outcome.error instanceof RecorderError &&
-            (outcome.error.failure === 'lna-denied' ||
-              outcome.error.failure === 'outdated'),
-        });
-      }
-    });
-
-  return core.runSync(opts, wrapped);
+  return core ? core.runSync(opts, start) : Promise.resolve();
 }
 
 export function reconcileRecorderConnection(): void {
@@ -120,8 +86,8 @@ export function reconcileRecorderConnection(): void {
 
 /**
  * Set from the recorder's own answer — recording, or holding points — by
- * `applyStatus`, and cleared when a chain of failed syncs gives up on a
- * recorder nobody is looking at.
+ * `applyStatus`, and cleared when a recorder nobody is looking at stops
+ * answering for good.
  */
 export function setRecorderFollowed(value: boolean): void {
   core?.setFollowed(value);
@@ -189,13 +155,7 @@ export function discardQueuedRecorderPoints(): void {
 }
 
 function parsePoints(data: string): RecorderPoint[] | null {
-  let json: unknown;
-
-  try {
-    json = JSON.parse(data);
-  } catch {
-    return null;
-  }
+  const json = parseFrameJson(data);
 
   // A row, or a batch of them; anything else is not a point event.
   if (!Array.isArray(json)) {
@@ -226,28 +186,13 @@ export function attachRecorderConnection(newStore: MyStore): void {
     isToolOpen: () =>
       store !== null && isToolOpen(store.getState(), 'gps-recorder'),
 
-    readFollowed: () => {
-      try {
-        return localStorage.getItem(KEY) === 'true';
-      } catch {
-        return false;
-      }
-    },
+    readFollowed: () => storage.getItem(KEY) === 'true',
 
     writeFollowed: (value) => {
-      try {
-        if (value) {
-          localStorage.setItem(KEY, 'true');
-        } else {
-          localStorage.removeItem(KEY);
-        }
-
-        return true;
-      } catch {
-        // Storage denied (private mode, a blocked origin); the core retries on
-        // the next set, and until one takes, following lasts only as long as
-        // the page — which is no worse than not trying.
-        return false;
+      if (value) {
+        storage.setItem(KEY, 'true');
+      } else {
+        storage.removeItem(KEY);
       }
     },
 
@@ -269,31 +214,33 @@ export function attachRecorderConnection(newStore: MyStore): void {
         }
       };
 
-      // Arrives before any point on every connection, and names the columns as
-      // well as the state — so a stream that outlives a `/status` read still
-      // decodes the rows that follow it. Also the core's proof that the stream
-      // works end to end, and the trigger for the sync that reconciles what
-      // the frame announced.
+      // The connect frame is this stream's own news: it names the columns the
+      // rows below are decoded with, and tells the core the stream works.
+      let connecting = true;
+
+      // Arrives before any point on every connection, and names the state as
+      // well as the columns.
       es.addEventListener('status', (event) => {
-        let json: unknown;
+        const status = parseStatusFrame(event.data);
 
-        try {
-          json = JSON.parse(event.data);
-        } catch {
+        if (!status) {
           return;
         }
 
-        const result = RecorderStatusSchema.safeParse(json);
-
-        if (!result.success) {
-          return;
-        }
-
-        fields = result.data.fields;
+        fields = status.fields;
 
         callbacks.onStatusFrame();
 
-        store?.dispatch(gpsRecorderPushedStatus(result.data));
+        if (connecting) {
+          // The sync that attached this stream read a status moments ago, so
+          // ringing the doorbell for the connect frame would only fetch the
+          // same answer again.
+          connecting = false;
+
+          return;
+        }
+
+        store?.dispatch(gpsRecorderPushedStatus());
       });
 
       return { close: () => es.close() };

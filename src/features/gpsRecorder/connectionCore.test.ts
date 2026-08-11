@@ -3,6 +3,7 @@ import {
   createRecorderConnectionCore,
   RETRY_DELAYS,
   type RecorderConnectionCore,
+  STREAM_PROVEN_MS,
   type StreamCallbacks,
   SYNC_CLAIM_MS,
 } from './connectionCore.js';
@@ -25,12 +26,13 @@ function makeHarness({
     visible,
     toolOpen,
     stored: followed,
-    writeOk: true,
-    writeAttempts: [] as boolean[],
+    writes: [] as boolean[],
     published: [] as string[],
     syncs: [] as boolean[],
     streams: [] as { callbacks: StreamCallbacks; closed: boolean }[],
     teardowns: 0,
+    /** Makes the next `openStream` report an error before it returns. */
+    failStreamSynchronously: false,
     core: null as unknown as RecorderConnectionCore,
   };
 
@@ -39,18 +41,20 @@ function makeHarness({
     isToolOpen: () => h.toolOpen,
     readFollowed: () => h.stored,
     writeFollowed: (value) => {
-      h.writeAttempts.push(value);
+      h.writes.push(value);
 
-      if (h.writeOk) {
-        h.stored = value;
-      }
-
-      return h.writeOk;
+      h.stored = value;
     },
     openStream: (callbacks) => {
       const stream = { callbacks, closed: false };
 
       h.streams.push(stream);
+
+      if (h.failStreamSynchronously) {
+        h.failStreamSynchronously = false;
+
+        callbacks.onError();
+      }
 
       return {
         close: () => {
@@ -74,18 +78,21 @@ function makeHarness({
 
 type Harness = ReturnType<typeof makeHarness>;
 
+type Run = {
+  signal: AbortSignal;
+  isQuiet: () => boolean;
+  settle: (outcome: { ok: true } | { ok: false; hopeless: boolean }) => void;
+  finish: () => void;
+  fail: (err: unknown) => void;
+  promise: Promise<void>;
+};
+
 /** Claims a dispatched sync, handing the test the run's controls. */
 function beginRun(
   h: Harness,
   opts: { quiet: boolean; restart?: boolean } = { quiet: true },
-) {
-  const run = {} as {
-    signal: AbortSignal;
-    isQuiet: () => boolean;
-    settle: (outcome: { ok: true } | { ok: false; hopeless: boolean }) => void;
-    finish: () => void;
-    promise: Promise<void>;
-  };
+): Run {
+  const run = {} as Run;
 
   run.promise = h.core.runSync(opts, (signal, isQuiet, settle) => {
     run.signal = signal;
@@ -94,15 +101,17 @@ function beginRun(
 
     run.settle = settle;
 
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
       run.finish = resolve;
+
+      run.fail = reject;
     });
   });
 
   return run;
 }
 
-async function completeOk(run: ReturnType<typeof beginRun>) {
+async function completeOk(run: Run) {
   run.settle({ ok: true });
 
   run.finish();
@@ -110,10 +119,7 @@ async function completeOk(run: ReturnType<typeof beginRun>) {
   await run.promise;
 }
 
-async function completeFail(
-  run: ReturnType<typeof beginRun>,
-  hopeless = false,
-) {
+async function completeFail(run: Run, hopeless = false) {
   run.settle({ ok: false, hopeless });
 
   run.finish();
@@ -123,11 +129,22 @@ async function completeFail(
 
 /** One sync-fails cycle: claim the pending ask, fail it. */
 async function failPendingSync(h: Harness) {
-  const before = h.syncs.length;
-
   await completeFail(beginRun(h));
+}
 
-  return before;
+/** One cycle where the sync works but the stream never proves itself. */
+async function okSyncBrokenStream(h: Harness, { frame = false } = {}) {
+  await completeOk(beginRun(h));
+
+  const stream = openStream(h);
+
+  stream.callbacks.onOpen();
+
+  if (frame) {
+    stream.callbacks.onStatusFrame();
+  }
+
+  stream.callbacks.onError();
 }
 
 const last = (h: Harness) => h.published.at(-1);
@@ -143,7 +160,7 @@ afterEach(() => {
 });
 
 describe('wanting a connection', () => {
-  it('follows the flag: reconcile syncs, success attaches, the frame goes live', async () => {
+  it('follows the flag: reconcile syncs, success attaches, the stream goes live', async () => {
     const h = makeHarness({ followed: true });
 
     h.core.reconcile();
@@ -227,11 +244,11 @@ describe('the backoff', () => {
 
       expect(last(h)).toBe('reconnecting');
 
+      const before = h.syncs.length;
+
       vi.advanceTimersByTime(delay - 1);
 
-      expect(h.syncs).toHaveLength(h.syncs.length); // still waiting
-
-      const before = h.syncs.length;
+      expect(h.syncs).toHaveLength(before); // the wait is the whole delay
 
       vi.advanceTimersByTime(1);
 
@@ -255,11 +272,8 @@ describe('the backoff', () => {
 
     h.core.reconcile();
 
-    // Sync OK, stream errors before its frame — over and over.
     for (let i = 0; i < 10; i++) {
-      await completeOk(beginRun(h));
-
-      openStream(h).callbacks.onError();
+      await okSyncBrokenStream(h);
 
       vi.advanceTimersByTime(30_000);
     }
@@ -269,9 +283,7 @@ describe('the backoff', () => {
     // And the cadence held at the longest delay rather than looping fast.
     const before = h.syncs.length;
 
-    await completeOk(beginRun(h));
-
-    openStream(h).callbacks.onError();
+    await okSyncBrokenStream(h);
 
     vi.advanceTimersByTime(29_999);
 
@@ -282,29 +294,61 @@ describe('the backoff', () => {
     expect(h.syncs).toHaveLength(before + 1);
   });
 
-  it('a sync succeeding does not rewind the wait; the stream frame does', async () => {
+  it('a sync succeeding does not rewind the wait', async () => {
     const h = makeHarness({ followed: true });
 
     h.core.reconcile();
 
-    // Two broken-stream cycles: waits should widen 1 s, then 2 s.
-    await completeOk(beginRun(h));
-
-    openStream(h).callbacks.onError();
+    await okSyncBrokenStream(h);
 
     vi.advanceTimersByTime(RETRY_DELAYS[0]);
 
-    await completeOk(beginRun(h));
+    await okSyncBrokenStream(h);
 
-    openStream(h).callbacks.onError();
+    const before = h.syncs.length;
 
     vi.advanceTimersByTime(RETRY_DELAYS[1] - 1);
 
-    expect(last(h)).toBe('reconnecting'); // still the widened wait
+    expect(h.syncs).toHaveLength(before); // widened despite the good syncs
 
     vi.advanceTimersByTime(1);
 
-    // Now a cycle where the stream delivers its frame: proof end to end.
+    expect(h.syncs).toHaveLength(before + 1);
+  });
+
+  it('a stream that dies right after its frame still widens', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    // Headers and the connect frame, then gone — every cycle.
+    await okSyncBrokenStream(h, { frame: true });
+
+    vi.advanceTimersByTime(RETRY_DELAYS[0]);
+
+    await okSyncBrokenStream(h, { frame: true });
+
+    const before = h.syncs.length;
+
+    vi.advanceTimersByTime(RETRY_DELAYS[1] - 1);
+
+    expect(h.syncs).toHaveLength(before); // not pinned at the first delay
+
+    vi.advanceTimersByTime(1);
+
+    expect(h.syncs).toHaveLength(before + 1);
+  });
+
+  it('a stream that keeps running rewinds the wait', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    await okSyncBrokenStream(h);
+
+    vi.advanceTimersByTime(RETRY_DELAYS[0]);
+
+    // This one delivers its frame and survives long enough to prove itself.
     await completeOk(beginRun(h));
 
     openStream(h).callbacks.onOpen();
@@ -313,73 +357,22 @@ describe('the backoff', () => {
 
     expect(last(h)).toBe('live');
 
-    // The next drop starts over at the first delay.
+    vi.advanceTimersByTime(STREAM_PROVEN_MS);
+
     openStream(h).callbacks.onError();
 
     const before = h.syncs.length;
 
     vi.advanceTimersByTime(RETRY_DELAYS[0]);
 
-    expect(h.syncs).toHaveLength(before + 1);
+    expect(h.syncs).toHaveLength(before + 1); // back to the first delay
   });
 
-  it('headers alone do not rewind: accept-then-drop still widens to give-up', async () => {
-    const h = makeHarness({ followed: true });
-
-    h.core.reconcile();
-
-    for (const delay of RETRY_DELAYS) {
-      await completeOk(beginRun(h));
-
-      openStream(h).callbacks.onOpen(); // headers, but never a frame
-
-      openStream(h).callbacks.onError();
-
-      vi.advanceTimersByTime(delay);
-    }
-
-    // Exhausted — but the syncs succeed, so it holds at 30 s instead of
-    // unfollowing a recorder that answers.
-    expect(h.stored).toBe(true);
-
-    expect(last(h)).toBe('connecting'); // the sync the last wait dispatched
-  });
-
-  it('failures then one success then a stream blip does not unfollow', async () => {
-    const h = makeHarness({ followed: true });
-
-    h.core.reconcile();
-
-    for (const delay of RETRY_DELAYS.slice(0, 4)) {
-      await failPendingSync(h);
-
-      vi.advanceTimersByTime(delay);
-    }
-
-    // The recorder is back: sync succeeds, stream blips once before opening.
-    await completeOk(beginRun(h));
-
-    openStream(h).callbacks.onError();
-
-    expect(h.stored).toBe(true); // one blip after a success is not the end
-
-    vi.advanceTimersByTime(30_000);
-
-    await completeOk(beginRun(h));
-
-    openStream(h).callbacks.onOpen();
-
-    openStream(h).callbacks.onStatusFrame();
-
-    expect(last(h)).toBe('live');
-  });
-
-  it('a changed configuration re-baselines the budget', async () => {
+  it('a changed configuration re-baselines the budget and looks at once', async () => {
     const h = makeHarness({ followed: true, toolOpen: true });
 
     h.core.reconcile();
 
-    // Exhaust the delays with the tool open: parked, never giving up.
     for (const delay of RETRY_DELAYS) {
       await failPendingSync(h);
 
@@ -392,24 +385,23 @@ describe('the backoff', () => {
 
     expect(last(h)).toBe('reconnecting'); // parked at the longest wait
 
-    // Closing the tool is a fresh look: the pending wait still runs out, but
-    // the next chain starts at the first delay, and gets the whole budget
-    // before giving up.
+    // Closing the tool is a fresh look: it does not wait out the inherited 30 s.
+    const before = h.syncs.length;
+
     h.toolOpen = false;
 
     h.core.reconcile();
 
-    vi.advanceTimersByTime(30_000);
+    expect(h.syncs).toHaveLength(before + 1);
 
+    // And the budget starts over rather than giving up on the next failure.
     await failPendingSync(h);
 
     expect(h.stored).toBe(true);
 
-    const before = h.syncs.length;
-
     vi.advanceTimersByTime(RETRY_DELAYS[0]);
 
-    expect(h.syncs).toHaveLength(before + 1);
+    expect(h.syncs).toHaveLength(before + 2);
   });
 
   it('a hopeless failure arms no retry', async () => {
@@ -426,20 +418,26 @@ describe('the backoff', () => {
     expect(h.syncs).toHaveLength(1);
   });
 
-  it('a sync nothing claims is written off as a failed attempt', () => {
+  it('a sync nothing claims retries but never unfollows', () => {
     const h = makeHarness({ followed: true });
 
     h.core.reconcile();
 
     expect(last(h)).toBe('connecting');
 
-    vi.advanceTimersByTime(SYNC_CLAIM_MS);
+    // Enough unclaimed rounds to exhaust the delays several times over: an
+    // app-side failure must not cost a ride that is still being recorded.
+    for (let i = 0; i < RETRY_DELAYS.length + 3; i++) {
+      vi.advanceTimersByTime(SYNC_CLAIM_MS);
 
-    expect(last(h)).toBe('reconnecting');
+      expect(last(h)).toBe('reconnecting');
 
-    vi.advanceTimersByTime(RETRY_DELAYS[0]);
+      vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+    }
 
-    expect(h.syncs).toHaveLength(2);
+    expect(h.stored).toBe(true);
+
+    expect(h.syncs.length).toBeGreaterThan(RETRY_DELAYS.length);
   });
 });
 
@@ -478,6 +476,34 @@ describe('runs', () => {
     await completeOk(restarted);
   });
 
+  it('a restarted run answers its caller only when the replacement is done', async () => {
+    const h = makeHarness({ followed: true });
+
+    const first = beginRun(h, { quiet: false });
+
+    let firstDone = false;
+
+    const awaited = first.promise.then(() => {
+      firstDone = true;
+    });
+
+    const second = beginRun(h, { quiet: true, restart: true });
+
+    first.finish();
+
+    await Promise.resolve();
+
+    await Promise.resolve();
+
+    expect(firstDone).toBe(false); // the answer is the replacement's
+
+    await completeOk(second);
+
+    await awaited;
+
+    expect(firstDone).toBe(true);
+  });
+
   it('an abandoned run cannot settle on the connection', async () => {
     const h = makeHarness({ followed: true });
 
@@ -491,9 +517,48 @@ describe('runs', () => {
 
     abandoned.finish();
 
-    await abandoned.promise;
-
     await completeOk(owner);
+
+    expect(h.streams).toHaveLength(1);
+  });
+
+  it('a sync that breaks without settling still feeds the backoff', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    const run = beginRun(h);
+
+    run.fail(new Error('the handler threw'));
+
+    await run.promise;
+
+    expect(last(h)).toBe('reconnecting');
+
+    const before = h.syncs.length;
+
+    vi.advanceTimersByTime(RETRY_DELAYS[0]);
+
+    expect(h.syncs).toHaveLength(before + 1);
+  });
+
+  it('a start that throws on the spot leaves no run behind', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    await h.core.runSync({ quiet: true }, () => {
+      throw new Error('thrown before any promise');
+    });
+
+    expect(last(h)).toBe('reconnecting');
+
+    // The jammed-run failure: a leftover `run` would block every later sync.
+    vi.advanceTimersByTime(RETRY_DELAYS[0]);
+
+    const run = beginRun(h);
+
+    await completeOk(run);
 
     expect(h.streams).toHaveLength(1);
   });
@@ -519,39 +584,82 @@ describe('runs', () => {
   });
 });
 
-describe('the follow flag', () => {
-  it('retries a persist that failed, even for an unchanged value', () => {
-    const h = makeHarness();
-
-    h.writeOk = false;
-
-    h.core.setFollowed(true);
-
-    expect(h.writeAttempts).toEqual([true]);
-
-    expect(h.stored).toBe(false); // the write was refused
-
-    h.writeOk = true;
-
-    h.core.setFollowed(true); // unchanged, but the persist is owed
-
-    expect(h.writeAttempts).toEqual([true, true]);
-
-    expect(h.stored).toBe(true);
-  });
-
-  it('an unchanged, persisted value does nothing', () => {
+describe('the stream handle', () => {
+  it('an error raised while opening leaves nothing attached', async () => {
     const h = makeHarness({ followed: true });
 
     h.core.reconcile();
 
-    const syncsBefore = h.syncs.length;
+    h.failStreamSynchronously = true;
+
+    await completeOk(beginRun(h));
+
+    expect(openStream(h).closed).toBe(true);
+
+    expect(last(h)).toBe('reconnecting');
+
+    // Not stuck on a dead handle: the chain carries on.
+    const before = h.syncs.length;
+
+    vi.advanceTimersByTime(RETRY_DELAYS[0]);
+
+    expect(h.syncs).toHaveLength(before + 1);
+  });
+
+  it('a stale handle cannot speak for its replacement', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    await completeOk(beginRun(h));
+
+    const stale = openStream(h);
+
+    stale.callbacks.onError(); // drops it, arms the retry
+
+    vi.advanceTimersByTime(RETRY_DELAYS[0]);
+
+    await completeOk(beginRun(h));
+
+    const fresh = openStream(h);
+
+    fresh.callbacks.onOpen();
+
+    expect(last(h)).toBe('live');
+
+    stale.callbacks.onError(); // a late error from the dead one
+
+    expect(last(h)).toBe('live');
+
+    expect(fresh.closed).toBe(false);
+  });
+});
+
+describe('the follow flag', () => {
+  it('persists every set, so another tab cannot leave it wrong', () => {
+    const h = makeHarness();
 
     h.core.setFollowed(true);
 
-    expect(h.writeAttempts).toEqual([]);
+    h.stored = false; // another tab cleared it
 
-    expect(h.syncs).toHaveLength(syncsBefore);
+    h.core.setFollowed(true);
+
+    expect(h.writes).toEqual([true, true]);
+
+    expect(h.stored).toBe(true);
+  });
+
+  it('an unchanged value does not reconcile', () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    const before = h.syncs.length;
+
+    h.core.setFollowed(true);
+
+    expect(h.syncs).toHaveLength(before);
   });
 });
 
@@ -561,7 +669,7 @@ describe('publishing', () => {
 
     h.core.reconcile();
 
-    await completeFail(beginRun(h));
+    await failPendingSync(h);
 
     vi.advanceTimersByTime(RETRY_DELAYS[0]);
 

@@ -67,12 +67,14 @@ export const gpsRecorderSync = createAction<{ quiet?: boolean } | undefined>(
 );
 
 /**
- * The stream pushed a status of its own accord — on connect, and thereafter
- * whenever the recorder's state genuinely changed. Reconciled exactly like a
- * polled one, so a clear, a stop or a permission withdrawn arrives when it
- * happens instead of on the next poll.
+ * The stream announced that the recorder's state changed. A doorbell, not a
+ * payload: what the frame said is deliberately dropped and the status re-read,
+ * because a frame is composed at the recorder's moment and can be older than
+ * what a sync in flight has already applied. So a clear, a stop or a permission
+ * withdrawn is reconciled when it happens instead of on the next poll, without
+ * anything being moved backwards to do it.
  */
-export const gpsRecorderPushedStatus = createAction<RecorderStatus>(
+export const gpsRecorderPushedStatus = createAction(
   'GPS_RECORDER_PUSHED_STATUS',
 );
 

@@ -11,13 +11,14 @@ import type { FeatureCollection } from 'geojson';
 import type { Dispatch } from 'redux';
 import {
   discardQueuedRecorderPoints,
-  type RecorderSyncOutcome,
   runRecorderSync,
   setRecorderFollowed,
   whileCatchingUp,
 } from '../connection.js';
+import type { SyncOutcome } from '../connectionCore.js';
 import { startRecorderSpan, watchRecorderFrame } from '../perfProbe.js';
 import {
+  isHopelessFailure,
   missingPermissions,
   RECORDER_INTENT_URL,
   RecorderError,
@@ -122,16 +123,15 @@ function heldTrack(getState: () => RootState): {
 }
 
 /**
- * Reconciles a status — however it arrived — with the track held here, fetching
- * whatever the recorder has that this page hasn't. Returns the point column
- * order it learned, for the stream to decode its bare rows with.
+ * Reconciles a status with the track held here, fetching whatever the recorder
+ * has that this page hasn't.
  */
 async function applyStatus(
   dispatch: Dispatch,
   status: RecorderStatus,
   held: { points: number; cursor: number; generation: number | null },
   signal?: AbortSignal,
-): Promise<readonly string[]> {
+): Promise<void> {
   // Checked wherever a status lands, not only on the way into a recording: a
   // recorder too old for these endpoints is told so as soon as the tool is
   // opened, with the update link the failure carries.
@@ -178,11 +178,7 @@ async function applyStatus(
     merged(page.points.length);
 
     watchRecorderFrame('catchup-frame', page.points.length);
-
-    return page.fields;
   }
-
-  return status.fields;
 }
 
 /**
@@ -204,7 +200,7 @@ async function runSync(
   { dispatch, getState }: { dispatch: Dispatch; getState: () => RootState },
   isQuiet: () => boolean,
   signal: AbortSignal | undefined,
-  settle: (outcome: RecorderSyncOutcome) => void,
+  settle: (outcome: SyncOutcome) => void,
 ): Promise<void> {
   // Read before the fresh status lands, so the generation compared below is the
   // one this page's points were fetched under.
@@ -215,10 +211,8 @@ async function runSync(
   // only a sync that took long enough for the user to notice is worth a line.
   const synced = startRecorderSpan('sync', 4000);
 
-  let fields: readonly string[];
-
   try {
-    fields = await applyStatus(dispatch, await getStatus(signal), held, signal);
+    await applyStatus(dispatch, await getStatus(signal), held, signal);
   } catch (err) {
     synced();
 
@@ -238,24 +232,21 @@ async function runSync(
       reportFailure(dispatch, err);
     }
 
-    settle({ error: err });
-
-    return;
-  }
-
-  // Abandoned in the window after the last await resolved: the settle would be
-  // ignored anyway, but a dead run must not clear an error either.
-  if (signal?.aborted) {
-    synced();
+    settle({ ok: false, hopeless: isHopelessFailure(err) });
 
     return;
   }
 
   synced(getState().gpsRecorder.points.length);
 
+  // Cleared whatever became of this run: the recorder answered, so a failure
+  // still on screen is describing something that is no longer true. A run can
+  // abandon itself here — `applyStatus` unfollowing an emptied recorder tears
+  // the connection down — and that is exactly the case where nothing else is
+  // coming to clear it.
   dispatch(gpsRecorderSetError(null));
 
-  settle({ fields });
+  settle({ ok: true });
 }
 
 /** Runs the shared sync through the connection under the given claim. */
