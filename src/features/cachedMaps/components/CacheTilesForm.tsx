@@ -37,6 +37,8 @@ import {
   InputGroup,
   Modal,
   Spinner,
+  ToggleButton,
+  ToggleButtonGroup,
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaChevronLeft, FaSave } from 'react-icons/fa';
@@ -126,6 +128,8 @@ export function CacheTilesForm(): ReactElement {
 
   const [maxZoom, setMaxZoom] = useState('0');
 
+  const [scale, setScale] = useState('1');
+
   const { area, setArea, bbox, startSelecting } = useMapAreaSelection();
 
   const [showInMenu, setShowInMenu] = useState(true);
@@ -138,6 +142,9 @@ export function CacheTilesForm(): ReactElement {
     if (!mapDef) {
       return;
     }
+
+    // scales are per-layer; default to what this screen would display
+    setScale(String(pickTileScale(mapDef.extraScales)));
 
     setMinZoom(String(mapDef.minZoom ?? 0));
 
@@ -193,17 +200,23 @@ export function CacheTilesForm(): ReactElement {
     mapDef?.maxNativeZoom,
   );
 
-  // the caching download picks the hi-DPI variant for this screen, so the
-  // estimate must sample that same variant
-  const scale = pickTileScale(mapDef?.extraScales);
+  // a custom layer may well declare 1 among its extra resolutions, or the same
+  // scale twice; a lone 1× is no choice at all, so it hides the picker
+  const layerScales = [...new Set([1, ...(mapDef?.extraScales ?? [])])].sort(
+    (a, b) => a - b,
+  );
 
+  const scales = layerScales.length > 1 ? layerScales : undefined;
+
+  // sample the very variant the download will fetch — the scale is the biggest
+  // single lever on the size
   const { bytes: estimatedSize, sampling } = useTilesSizeEstimate({
     urlTemplate: mapDef?.url,
     bbox,
     minZoom: Number(minZoom),
     maxZoom: Number(maxZoom),
     tileCount,
-    scale,
+    scale: Number(scale),
     enabled: !invalidMinZoom && !invalidMaxZoom,
   });
 
@@ -261,6 +274,7 @@ export function CacheTilesForm(): ReactElement {
         cacheName: `tiles-${type}`,
         createdAt: new Date().toISOString(),
         sizeBytes: 0,
+        tileScale: Number(scale),
       } as CachedTileMapDef;
 
       dispatch(cacheTilesStart(meta));
@@ -287,6 +301,7 @@ export function CacheTilesForm(): ReactElement {
       mapDef,
       minZoom,
       maxZoom,
+      scale,
       bbox,
       tileCount,
       layersSettings,
@@ -380,6 +395,31 @@ export function CacheTilesForm(): ReactElement {
                 onChange={(e) => setMaxZoom(e.currentTarget.value)}
               />
             </InputGroup>
+          </Form.Group>
+        )}
+
+        {scales && (
+          <Form.Group controlId="scale" className="mb-3">
+            <Form.Label>{ome?.scale}</Form.Label>
+
+            <ToggleButtonGroup
+              type="radio"
+              name="scale"
+              value={scale}
+              onChange={setScale}
+              className="d-flex"
+            >
+              {scales.map((s) => (
+                <ToggleButton
+                  key={s}
+                  id={`scale-${s}`}
+                  value={String(s)}
+                  variant="outline-primary"
+                >
+                  {s}×
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
           </Form.Group>
         )}
 

@@ -3,7 +3,7 @@ import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
 import { enumerateTilesInBbox } from '@shared/tileEnumeration.js';
-import { buildTileUrl, pickTileScale, withTileScale } from '@shared/tileUrl.js';
+import { buildTileUrl, withTileScale } from '@shared/tileUrl.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Dispatch } from 'redux';
 import {
@@ -11,7 +11,10 @@ import {
   getCachedTileMaps,
   saveCachedTileMap,
 } from '../cache.js';
-import type { CachedTileMapDef } from '../cachedTileMaps.js';
+import {
+  type CachedTileMapDef,
+  getCachedTileScale,
+} from '../cachedTileMaps.js';
 import { toCachedLayerUrl } from '../cachedTileUrl.js';
 import { loadCachedMapsMessages } from '../translations/loadCachedMapsMessages.js';
 import {
@@ -31,6 +34,10 @@ import {
 const BATCH_SIZE = 6;
 
 const PROGRESS_INTERVAL = 50;
+
+// leading tiles probed to find the scale a map without a recorded one holds;
+// more than one because a tile the server refused is simply not there
+const SCALE_PROBE_TILES = 8;
 
 interface DownloadState {
   abortController: AbortController;
@@ -53,12 +60,42 @@ function updateMeta(
   };
 }
 
-async function downloadTiles(
+/**
+ * The scale a partly-downloaded map already holds, or `undefined` when none of
+ * the probed tiles is cached at any scale. Only the leading tiles are probed —
+ * the download walks the enumeration in order.
+ */
+async function detectCachedScale(
+  cache: Cache,
   meta: CachedTileMapDef,
+  tileArray: [number, number, number][],
+): Promise<number | undefined> {
+  const scales = new Set(
+    meta.technology === 'tile' ? [1, ...(meta.extraScales ?? [])] : [1],
+  );
+
+  for (const [x, y, z] of tileArray.slice(0, SCALE_PROBE_TILES)) {
+    for (const scale of scales) {
+      const url = toCachedLayerUrl(
+        withTileScale(buildTileUrl(meta.url, x, y, z), scale),
+        meta.type,
+      );
+
+      if (await cache.match(url)) {
+        return scale;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+async function downloadTiles(
+  def: CachedTileMapDef,
   dispatch: Dispatch,
   language: string,
 ) {
-  const id = meta.type;
+  const id = def.type;
 
   const abortController = new AbortController();
 
@@ -71,16 +108,16 @@ async function downloadTiles(
 
   activeDownloads.set(id, state);
 
-  const cache = await caches.open(meta.cacheName);
+  const cache = await caches.open(def.cacheName);
 
-  const minZoom = meta.minZoom ?? 0;
+  const minZoom = def.minZoom ?? 0;
 
-  const maxZoom = meta.maxNativeZoom ?? 18;
+  const maxZoom = def.maxNativeZoom ?? 18;
 
-  const tiles = enumerateTilesInBbox(meta.bounds, minZoom, maxZoom);
+  const tiles = enumerateTilesInBbox(def.bounds, minZoom, maxZoom);
 
   let downloaded = 0;
-  let sizeBytes = meta.sizeBytes;
+  let sizeBytes = def.sizeBytes;
   let lastProgressAt = 0;
 
   const tileArray: [number, number, number][] = [];
@@ -89,10 +126,16 @@ async function downloadTiles(
     tileArray.push(tile);
   }
 
-  const extraScales = meta.technology === 'tile' ? meta.extraScales : undefined;
-
-  // pick the scale matching this screen's DPI
-  const bestScale = pickTileScale(extraScales);
+  // Pin the scale into the metadata: the render side reads it back to ask for
+  // exactly the variant that is stored, and resuming must continue the variant
+  // the cache already holds even if the screen's DPI says otherwise.
+  const meta: CachedTileMapDef = {
+    ...def,
+    tileScale:
+      def.tileScale ??
+      (await detectCachedScale(cache, def, tileArray)) ??
+      getCachedTileScale(def),
+  };
 
   for (let i = 0; i < tileArray.length; i += BATCH_SIZE) {
     if (abortController.signal.aborted) {
@@ -113,7 +156,7 @@ async function downloadTiles(
       batch.map(async ([x, y, z]) => {
         const fetchUrl = withTileScale(
           buildTileUrl(meta.url, x, y, z),
-          bestScale,
+          meta.tileScale,
         );
 
         const cacheKey = toCachedLayerUrl(fetchUrl, id);

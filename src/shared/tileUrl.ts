@@ -12,19 +12,23 @@ export function buildTileUrl(
 }
 
 /**
- * The `@Nx` variant that a screen of the given DPI gets, or `undefined` when the
- * layer has no hi-DPI variants and plain 1× tiles are fetched.
+ * The `@Nx` variant that a screen of the given DPI gets, or `1` when the layer
+ * has no hi-DPI variant that fits and plain tiles are fetched.
  */
 export function pickTileScale(
   extraScales: number[] | undefined,
   dpr: number = window.devicePixelRatio || 1,
-): number | undefined {
-  return extraScales
-    ?.filter((s) => s <= Math.ceil(dpr))
-    .sort((a, b) => b - a)[0];
+): number {
+  return (
+    extraScales?.filter((s) => s <= Math.ceil(dpr)).sort((a, b) => b - a)[0] ??
+    1
+  );
 }
 
-/** Appends the `@Nx` suffix that `ScaledTileLayer` uses for hi-DPI tiles. */
+/**
+ * Appends the `@Nx` suffix that `ScaledTileLayer` uses for hi-DPI tiles. Scale 1
+ * is the plain URL — there is no `@1x` variant.
+ */
 export function withTileScale(url: string, scale: number | undefined): string {
-  return scale === undefined ? url : `${url}@${scale}x`;
+  return scale === undefined || scale === 1 ? url : `${url}@${scale}x`;
 }

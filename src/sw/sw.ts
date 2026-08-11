@@ -17,6 +17,11 @@ const FALLBACK_LOGO_URL = '/freemap-logo.jpg';
 
 const TILE_CACHE_PREFIX = 'tiles-';
 
+const SCALE_SUFFIX_RE = /@\d+(?:\.\d+)?x$/;
+
+// the scales any layer offers, cheapest lookup first
+const TILE_SCALES = [1, 2, 3, 4];
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
@@ -99,7 +104,30 @@ async function serveCachedTile(event: FetchEvent): Promise<Response> {
   // request's headers.
   const cached = await cache.match(event.request, { ignoreVary: true });
 
-  return cached ?? new Response(null, { status: 404 });
+  if (cached) {
+    return cached;
+  }
+
+  // A map holds exactly one `@Nx` variant. Should the request ask for another
+  // one — a map whose metadata records no scale, viewed on a screen of a
+  // different DPI — serve the variant that is there instead of an error tile.
+  const url = event.request.url.replace(SCALE_SUFFIX_RE, '');
+
+  for (const scale of TILE_SCALES) {
+    const alt = scale === 1 ? url : `${url}@${scale}x`;
+
+    if (alt === event.request.url) {
+      continue;
+    }
+
+    const altCached = await cache.match(alt, { ignoreVary: true });
+
+    if (altCached) {
+      return altCached;
+    }
+  }
+
+  return new Response(null, { status: 404 });
 }
 
 async function serveFallback(event: FetchEvent) {

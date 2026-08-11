@@ -1,4 +1,5 @@
 import { hasRole } from '@features/auth/model/types.js';
+import { getCachedTileScale } from '@features/cachedMaps/cachedTileMaps.js';
 import { toCachedLayerUrl } from '@features/cachedMaps/cachedTileUrl.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { isPremium } from '@features/premium/premium.js';
@@ -85,7 +86,10 @@ export function Layers(): ReactElement | null {
     dispatch(setActiveModal({ type: 'premium' }));
   }, [dispatch]);
 
-  function getLayer(layerDef: LayerDef) {
+  // `fixedScale` pins a tile layer to one `@Nx` variant — a cached map holds
+  // exactly one, so the screen's DPI and the resolution/feature-scale
+  // preferences must not be allowed to ask for another.
+  function getLayer(layerDef: LayerDef, fixedScale?: number) {
     const { type, minZoom } = layerDef;
 
     const opacity = resolveLayerOpacity(
@@ -278,7 +282,9 @@ export function Layers(): ReactElement | null {
 
       let effForcedScale: number | undefined;
 
-      if (resolutionScale === null && effFeatureScale === 1) {
+      if (fixedScale !== undefined) {
+        effForcedScale = fixedScale;
+      } else if (resolutionScale === null && effFeatureScale === 1) {
         effForcedScale = undefined;
       } else {
         const requested = resolutionScale ?? autoTileScale;
@@ -366,6 +372,7 @@ export function Layers(): ReactElement | null {
             cm.technology === 'tile'
               ? { ...cm, url, cors: false }
               : { ...cm, url },
+            getCachedTileScale(cm),
           );
         })}
     </>

@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
+import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import {
   Action,
   ActionDivider,
@@ -38,6 +39,8 @@ export function CachedMapsList(): ReactElement {
   const m = useMessages();
 
   const cmm = useCachedMapsMessages();
+
+  const ome = useOfflineMapExportMessages();
 
   const dispatch = useDispatch();
 
@@ -106,6 +109,14 @@ export function CachedMapsList(): ReactElement {
                             <strong>{nf.format(cm.tileCount)}</strong>
                             {' · '}
                           </span>{' '}
+                          {/* only maps that recorded their scale can state it;
+                              for the rest it would be a guess from this screen */}
+                          {cm.tileScale !== undefined && (
+                            <span className="text-nowrap">
+                              {ome?.scale}: <strong>{cm.tileScale}×</strong>
+                              {' · '}
+                            </span>
+                          )}{' '}
                           <span className="text-nowrap">
                             {cmm?.size}:{' '}
                             <strong>
