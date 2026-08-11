@@ -132,8 +132,8 @@ export const GEDTM30_ATTR: AttributionDef = {
 /**
  * Every national elevation/relief source the outdoor renderer blends in;
  * countries missing from this list fall back to GEDTM30. The elevation API
- * answers from the same models, for a subset of these countries — see
- * `ELEVATION_API_DTM_COUNTRIES`.
+ * answers from the same models, for the countries in
+ * `ELEVATION_API_DTM_COUNTRIES` — its own list, which need not match this one.
  */
 export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
   country: string;
@@ -189,7 +189,7 @@ export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
   {
     type: 'data',
     country: 'no',
-    name: 'DTM: Kartverket (Høydedata)',
+    name: 'DTM: Kartverket (NLOD\xa02.0)',
     url: 'https://hoydedata.no/',
   },
   {
@@ -219,9 +219,9 @@ export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
 ];
 
 /**
- * Countries the outdoor renderer shades from a national elevation model. Not
- * the same set as `ELEVATION_API_DTM_COUNTRIES` — the elevation API has its own
- * models.
+ * Countries the outdoor renderer shades from a national elevation model. The
+ * elevation API keeps its own list, `ELEVATION_API_DTM_COUNTRIES`, which need
+ * not hold the same countries.
  */
 const OUTDOOR_NATIONAL_DTM_COUNTRIES = OUTDOOR_NATIONAL_DTM_ATTRIBUTION.map(
   (a) => a.country,

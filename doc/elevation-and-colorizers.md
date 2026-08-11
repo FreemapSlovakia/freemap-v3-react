@@ -214,9 +214,9 @@ the elevation chart's own toolbar.
 
 The elevation API answers from the same national models the outdoor renderer shades with,
 so both credit one set of attribution defs: `OUTDOOR_NATIONAL_DTM_ATTRIBUTION`
-(`mapDefinitions.tsx`), of which `ELEVATION_API_DTM_ATTRIBUTION` is the subset the API
-holds — `ELEVATION_API_DTM_COUNTRIES` stays the authority on which those are, since the
-renderer also shades Norway.
+(`mapDefinitions.tsx`), of which `ELEVATION_API_DTM_ATTRIBUTION` is the part the API
+holds — `ELEVATION_API_DTM_COUNTRIES` stays the authority on which those are, since either
+side can gain a model the other doesn't hold.
 
 Which model answers depends on the read, not only on the place: a **premium** read gets the
 national models and GEDTM30 past their borders, while a **non-premium** one is answered from

@@ -12,10 +12,10 @@ import {
  *
  * A non-premium read gets none of these: it is answered from SRTM everywhere.
  *
- * A subset of the outdoor renderer's shading sources
- * (`OUTDOOR_NATIONAL_DTM_ATTRIBUTION` in `mapDefinitions.tsx`): the models are
- * the same ones, but the renderer also shades Norway, which the elevation API
- * has no model for.
+ * Drawn from the outdoor renderer's shading sources
+ * (`OUTDOOR_NATIONAL_DTM_ATTRIBUTION` in `mapDefinitions.tsx`) — the same
+ * models, and at the moment the same countries, but the two lists stay separate
+ * because either side can gain a model the other doesn't hold.
  */
 export const ELEVATION_API_DTM_COUNTRIES = [
   'at',
@@ -26,6 +26,7 @@ export const ELEVATION_API_DTM_COUNTRIES = [
   'fr',
   'hr',
   'it',
+  'no',
   'pl',
   'se',
   'si',
