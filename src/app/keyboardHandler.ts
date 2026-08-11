@@ -15,6 +15,7 @@ import {
 } from '@features/gallery/model/actions.js';
 import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
+import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
@@ -397,7 +398,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
   return undefined;
 }
 
-const zoomKeyDeltas: Record<string, number> = {
+const zoomKeyDirections: Record<string, 1 | -1> = {
   '+': 1,
   '=': 1,
   '-': -1,
@@ -420,8 +421,8 @@ const panKeyOffsets: Record<string, [number, number]> = {
  * map container, which only receives keys once the map has been clicked; going
  * through the store instead makes them work anywhere and matches what the
  * on-screen controls do. Holding shift triples an arrow step, as Leaflet does;
- * a zoom step is always one level, because on most layouts `+` is typed as
- * shift-`=` and there is no telling that shift from a deliberate one.
+ * a zoom step ignores shift, because on most layouts `+` is typed as shift-`=`
+ * and there is no telling that shift from a deliberate one.
  *
  * Routing a zoom through the store also means the store learns it before the
  * map does, which is what keeps GPS following alive across a zoom — whereas an
@@ -429,12 +430,12 @@ const panKeyOffsets: Record<string, [number, number]> = {
  * away from the located position.
  */
 export function handleMapKey(event: KeyboardEvent, state: RootState) {
-  const zoomDelta = zoomKeyDeltas[event.key];
+  const zoomDirection = zoomKeyDirections[event.key];
 
   const panOffset = panKeyOffsets[event.key];
 
   if (
-    (!zoomDelta && !panOffset) ||
+    (!zoomDirection && !panOffset) ||
     event.ctrlKey ||
     event.altKey ||
     event.metaKey ||
@@ -501,7 +502,7 @@ export function handleMapKey(event: KeyboardEvent, state: RootState) {
 
   const zoom = Math.min(
     map.getMaxZoom(),
-    Math.max(map.getMinZoom(), state.map.zoom + zoomDelta),
+    Math.max(map.getMinZoom(), steppedZoom(state.map.zoom, zoomDirection)),
   );
 
   return zoom === state.map.zoom ? undefined : mapRefocus({ zoom });

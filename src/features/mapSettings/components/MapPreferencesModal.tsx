@@ -37,6 +37,17 @@ import {
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
+// The zoom grid a gesture can settle on, as Leaflet's `zoomSnap`. Finer than a
+// quarter is not offered: the zoom is shared to two decimals, and the labels
+// stop being readable as fractions.
+const ZOOM_SNAPS = [
+  { value: '1', label: '1' },
+  { value: '0.5', label: '½' },
+  { value: '0.25', label: '¼' },
+  // No grid at all, so it is worded rather than numbered.
+  { value: '0', label: undefined },
+] as const;
+
 const GRADE_WINDOW_STEP_M = 5;
 
 const GRADE_WINDOW_MAX_M = 200;
@@ -71,6 +82,10 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   );
 
   const [featureScale, setFeatureScale] = useState(initialFeatureScale);
+
+  const initialZoomSnap = useAppSelector((state) => String(state.map.zoomSnap));
+
+  const [zoomSnap, setZoomSnap] = useState(initialZoomSnap);
 
   const initialHeadingSource = useAppSelector(
     (state) => state.locationSettings.headingSource,
@@ -127,6 +142,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
     setFeatureScale(String(mapInitialState.featureScale));
 
+    setZoomSnap(String(mapInitialState.zoomSnap));
+
     setHeadingSource(locationSettingsInitialState.headingSource);
 
     setShowBearingLine(locationSettingsInitialState.showBearingLine);
@@ -151,13 +168,15 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
     if (
       resolutionScale !== initialResolutionScale ||
-      featureScale !== initialFeatureScale
+      featureScale !== initialFeatureScale ||
+      zoomSnap !== initialZoomSnap
     ) {
       dispatch(
         mapSetLocalPrefs({
           resolutionScale:
             resolutionScale === '' ? null : Number(resolutionScale),
           featureScale: Number(featureScale),
+          zoomSnap: Number(zoomSnap),
         }),
       );
     }
@@ -251,6 +270,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     maxZoom !== initialMaxZoom ||
     resolutionScale !== initialResolutionScale ||
     featureScale !== initialFeatureScale ||
+    zoomSnap !== initialZoomSnap ||
     headingSource !== initialHeadingSource ||
     showBearingLine !== initialShowBearingLine ||
     despikeWindow !== initialDespikeWindow ||
@@ -264,6 +284,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
         ? ''
         : String(mapInitialState.resolutionScale)) &&
     featureScale === String(mapInitialState.featureScale) &&
+    zoomSnap === String(mapInitialState.zoomSnap) &&
     headingSource === locationSettingsInitialState.headingSource &&
     showBearingLine === locationSettingsInitialState.showBearingLine &&
     despikeWindow === String(elevationSettingsInitialState.despikeWindow) &&
@@ -296,6 +317,32 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               isInvalid={invalidMaxZoom}
               onChange={handleMaxZoomChange}
             />
+          </Form.Group>
+
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">{m?.mapLayers.zoomSnap}</Form.Label>
+
+            <ToggleButtonGroup
+              type="radio"
+              name="zoomSnap"
+              value={zoomSnap}
+              onChange={setZoomSnap}
+            >
+              {ZOOM_SNAPS.map(({ value, label }) => (
+                <ToggleButton
+                  key={value}
+                  id={`zs-${value}`}
+                  value={value}
+                  variant="outline-primary"
+                >
+                  {label ?? m?.mapLayers.zoomSnapFree}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+
+            <Form.Text muted className="d-block">
+              {m?.mapLayers.zoomSnapHelp}
+            </Form.Text>
           </Form.Group>
 
           <Form.Group className="mt-3">

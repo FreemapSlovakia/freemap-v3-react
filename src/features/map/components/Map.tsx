@@ -2,6 +2,7 @@ import { useMouseCursor } from '@app/hooks/useMouseCursor.js';
 import { pickingModeSelector } from '@app/store/selectors.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { useMap } from '@features/map/hooks/useMap.js';
+import { initialWheelPxPerZoomLevel } from '@features/map/wheelZoomCalibration.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import 'leaflet/dist/leaflet.css';
 import { type ReactElement, type ReactNode, useEffect } from 'react';
@@ -25,6 +26,8 @@ export function TheMap({ children }: Props): ReactElement {
 
   const maxZoom = useAppSelector((state) => state.map.maxZoom);
 
+  const zoomSnap = useAppSelector((state) => state.map.zoomSnap);
+
   // While a dedicated map mode is active (picking a home/photo location, showing
   // a photo location, or drawing an export/cache rectangle), all other map
   // features stay visible but become non-interactive (see leaflet.css) so clicks
@@ -37,6 +40,16 @@ export function TheMap({ children }: Props): ReactElement {
       .classList.toggle('fm-features-noninteractive', featuresNonInteractive);
   }, [map, featuresNonInteractive]);
 
+  // Leaflet consults `zoomSnap` on each gesture rather than at construction, so
+  // the live map can be retuned in place. Only react-leaflet's own props are
+  // fixed at creation, and remounting to change one would refetch every tile and
+  // rebuild the vector and radar layers.
+  useEffect(() => {
+    if (map) {
+      map.options.zoomSnap = zoomSnap;
+    }
+  }, [map, zoomSnap]);
+
   return (
     <MapContainer
       zoomControl={false}
@@ -46,7 +59,13 @@ export function TheMap({ children }: Props): ReactElement {
       ref={setMapLeafletElement}
       center={{ lat, lng: lon }}
       zoom={zoom}
-      wheelPxPerZoomLevel={100}
+      // The grid the wheel, pinch and box gestures settle on: 1 is a whole zoom
+      // level, as Leaflet does by default, and 0 lets them stop anywhere. Only
+      // the starting value — the effect above carries later changes.
+      zoomSnap={zoomSnap}
+      // Only where the wheel starts out: `attachWheelZoomCalibration` measures
+      // the device and corrects this from the first gesture on.
+      wheelPxPerZoomLevel={initialWheelPxPerZoomLevel(zoomSnap)}
     >
       <ScaleControl imperial={false} position="bottomleft" />
 

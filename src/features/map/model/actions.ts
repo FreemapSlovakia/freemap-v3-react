@@ -72,6 +72,7 @@ export const mapSetShading = createAction<Shading>('MAP_SET_SHADING');
 export const mapSetLocalPrefs = createAction<{
   resolutionScale?: number | null;
   featureScale?: number;
+  zoomSnap?: number;
 }>('MAP_SET_LOCAL_PREFS');
 
 export const mapSetBounds =

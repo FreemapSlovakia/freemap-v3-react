@@ -83,6 +83,7 @@ function makeState(): RootState {
       maxZoom: 20,
       resolutionScale: null,
       featureScale: 1,
+      zoomSnap: 0.5,
     },
     gallerySettings: {
       colorizeBy: null,
@@ -226,6 +227,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         maxZoom: 20,
         resolutionScale: null,
         featureScale: 1,
+        zoomSnap: 0.5,
       },
       locationSettings: { headingSource: 'compass', showBearingLine: false },
       gallerySettings: {
@@ -376,6 +378,7 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.routePlanner?.transportType).toBe('hiking');
     expect(initial.map?.layers).toEqual(['X']);
     expect(initial.map?.zoom).toBe(8);
+    expect(initial.map?.zoomSnap).toBe(0.5);
     expect(initial.gallerySettings?.recentTags).toEqual(['x']);
     // trackViewerSettings.colorizeTrackBy round-trips through save → rehydrate.
     expect(initial.trackViewerSettings?.colorizeTrackBy).toBe('heartRate');

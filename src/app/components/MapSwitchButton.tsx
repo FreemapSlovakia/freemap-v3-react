@@ -69,7 +69,10 @@ function getKbdShortcut(shortcut?: Shortcut | null) {
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
 
-  const zoom = useAppSelector((state) => state.map.zoom);
+  // Both questions asked of it below — is the layer in range, are its tiles
+  // premium here — are about the tiles the layer would request, and Leaflet
+  // requests them at the rounded map zoom.
+  const zoom = useAppSelector((state) => Math.round(state.map.zoom));
 
   const lat = useAppSelector((state) => state.map.lat);
 

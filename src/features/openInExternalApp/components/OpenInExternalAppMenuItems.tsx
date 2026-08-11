@@ -50,13 +50,20 @@ export function openMenuItemProps(externalTarget: ExternalTarget) {
 export function OpenInExternalAppDropdownItems({
   lat,
   lon,
-  zoom,
+  zoom: rawZoom,
   includePoint,
   url,
   imageUrl,
   showKbdShortcut,
   copy = true,
 }: Props): ReactElement {
+  // Whole levels only: several of the targets below — ZBGIS, hiking.sk,
+  // Geocaching — take the zoom as an integer and make nothing of a fraction.
+  // The items are plain links, so this is the only thing standing between a
+  // fractional map zoom and their URLs; the targets reached by dispatching
+  // `openInExternalApp` instead are rounded in its processor.
+  const zoom = Math.round(rawZoom);
+
   const m = useMessages();
 
   const oeam = useOpenInExternalAppMessages();

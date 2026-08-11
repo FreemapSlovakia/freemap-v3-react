@@ -43,8 +43,9 @@ export default function OutdoorMapLegend(): ReactElement {
   const activeObjects = useAppSelector((s) => s.objects.active);
 
   // The map renders differently by zoom, so the legend is asked for the zoom
-  // the user is currently looking at.
-  const zoom = useAppSelector((s) => s.map.zoom);
+  // the user is currently looking at — rounded, because the renderer styles by
+  // whole zoom levels and the endpoint rejects anything else outright.
+  const zoom = useAppSelector((s) => Math.round(s.map.zoom));
 
   const [legend, setLegend] = useState<Item[]>([]);
 

@@ -101,7 +101,8 @@ export async function exportMapToDocument({
     signal,
     body: JSON.stringify({
       bbox,
-      zoom: getState().map.zoom,
+      // The renderer picks tiles by this, so it has to name a tile zoom
+      zoom: Math.round(getState().map.zoom),
       format,
       scale,
       decorations: {

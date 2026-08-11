@@ -104,6 +104,23 @@ describe('getInitialState — legacy map migration { mapType, overlays } → { l
   });
 });
 
+describe('getInitialState — map zoom snapping', () => {
+  it('pulls a rehydrated zoom onto the stored zoomSnap grid', () => {
+    // Rehydration writes the slice directly, so this is the reducer's snapping
+    // done again on the way in — a stored zoom that disagrees with the stored
+    // grid would otherwise leave the map off what the store and the URL claim.
+    seed({ map: { layers: ['X'], zoom: 12.47, zoomSnap: 0.5 } });
+
+    expect(getInitialState().map?.zoom).toBe(12.5);
+  });
+
+  it('leaves a rehydrated zoom alone when no grid is stored', () => {
+    seed({ map: { layers: ['X'], zoom: 12.47, zoomSnap: 0 } });
+
+    expect(getInitialState().map?.zoom).toBe(12.47);
+  });
+});
+
 describe('getInitialState — parseWithFallback (slices once stored under `main`)', () => {
   it('reads cookieConsent from its own top-level key', () => {
     seed({

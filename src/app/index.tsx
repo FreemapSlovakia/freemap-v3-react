@@ -8,6 +8,7 @@ import { invokeGeoip } from '@features/geoip/model/actions.js';
 import { attachRecorderFollow } from '@features/gpsRecorder/follow.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { attachMapStateHandler } from '@features/map/mapStateHandler.js';
+import { attachWheelZoomCalibration } from '@features/map/wheelZoomCalibration.js';
 import { mapsOfflineIdsLoaded } from '@features/myMaps/model/actions.js';
 import {
   getOfflineMapCount,
@@ -142,6 +143,8 @@ attachAuthSync(store);
 attachGarminLoginMessageHandler(store);
 
 attachMapStateHandler(store);
+
+attachWheelZoomCalibration(store);
 
 setUrlUpdatingEnabled(true);
 

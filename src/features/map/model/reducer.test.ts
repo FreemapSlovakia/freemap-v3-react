@@ -5,6 +5,7 @@ import {
   mapReplaceLayer,
   mapSetCountries,
   mapSetEsriAttribution,
+  mapSetLocalPrefs,
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
 } from './actions.js';
@@ -131,6 +132,20 @@ describe('mapReducer — mapRefocus', () => {
     expect(next.lon).toBe(0);
   });
 
+  it('pulls an off-grid zoom onto the zoomSnap grid', () => {
+    // What a link shared from a browser set to a finer step carries.
+    const snapped = (zoomSnap: number, zoom: number) =>
+      mapReducer({ ...mapInitialState, zoomSnap }, mapRefocus({ zoom })).zoom;
+
+    expect(snapped(1, 13.75)).toBe(14);
+    expect(snapped(0.5, 13.75)).toBe(14);
+    expect(snapped(0.5, 13.7)).toBe(13.5);
+    expect(snapped(0.25, 13.7)).toBe(13.75);
+
+    // No grid: taken as it comes.
+    expect(snapped(0, 13.7)).toBe(13.7);
+  });
+
   it('keeps the zoom when asked for one that is not a number', () => {
     const state = { ...mapInitialState, zoom: 8 };
 
@@ -214,5 +229,20 @@ describe('mapReducer — misc setters', () => {
 
     const c = mapReducer(mapInitialState, mapSetCountries(['sk', 'cz']));
     expect(c.countries).toEqual(['sk', 'cz']);
+  });
+
+  it('mapSetLocalPrefs pulls the standing zoom onto a coarser grid', () => {
+    const state = { ...mapInitialState, zoomSnap: 0.25, zoom: 13.75 };
+
+    expect(mapReducer(state, mapSetLocalPrefs({ zoomSnap: 1 })).zoom).toBe(14);
+
+    expect(mapReducer(state, mapSetLocalPrefs({ zoomSnap: 0.5 })).zoom).toBe(
+      14,
+    );
+
+    // A finer grid, or none, leaves the view exactly where it is.
+    expect(mapReducer(state, mapSetLocalPrefs({ zoomSnap: 0 })).zoom).toBe(
+      13.75,
+    );
   });
 });

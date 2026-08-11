@@ -96,8 +96,13 @@ export function useAttributionInfo() {
 
   const bounds = useAppSelector((state) => state.map.bounds);
 
-  const zoom = useAppSelector((state) =>
-    state.map.zoom + (window.devicePixelRatio || 1) > 1.4 ? 1 : 0,
+  // The zoom the coverage areas below are matched against: the tile zoom, plus
+  // the level a high-density display adds by fetching one deeper (as the tile
+  // layers' own `zoomOffset` does).
+  const zoom = useAppSelector(
+    (state) =>
+      Math.round(state.map.zoom) +
+      ((window.devicePixelRatio || 1) > 1.4 ? 1 : 0),
   );
 
   useEffect(() => {

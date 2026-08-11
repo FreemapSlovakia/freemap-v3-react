@@ -337,6 +337,10 @@ const messages: Messages = {
     zIndex: 'Z-Index',
     preferences: 'Preferences',
     maxZoom: 'Max zoom',
+    zoomSnap: 'Zoom step',
+    zoomSnapFree: 'Free',
+    zoomSnapHelp:
+      'The smallest zoom change scroll-wheel, pinch and box zoom can settle on. 1 keeps the map on whole zoom levels; a fraction lets it stop between them, and Free lets it stop anywhere. The + and – buttons and keys always go to the next whole level.',
     forcedScale: 'Forced scale',
     resolutionScale: 'Resolution scale',
     resolutionScaleAuto: 'Auto (device default)',

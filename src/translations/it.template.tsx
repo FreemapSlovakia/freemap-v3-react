@@ -341,6 +341,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Preferenze',
     maxZoom: 'Zoom massimo',
+    zoomSnap: 'Passo dello zoom',
+    zoomSnapFree: 'Libero',
+    zoomSnapHelp:
+      'La variazione di zoom più piccola su cui possono fermarsi lo zoom con rotellina, pizzico e rettangolo. 1 tiene la mappa sui livelli interi, una frazione le permette di fermarsi anche tra due di essi e Libero in qualsiasi punto. I pulsanti e i tasti + e – vanno sempre al livello intero successivo.',
     forcedScale: 'Risoluzione forzata',
     resolutionScale: 'Scala di risoluzione',
     resolutionScaleAuto: 'Automatica (predefinita del dispositivo)',

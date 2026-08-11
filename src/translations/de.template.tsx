@@ -339,6 +339,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Einstellungen',
     maxZoom: 'Maximale Zoomstufe',
+    zoomSnap: 'Zoomschritt',
+    zoomSnapFree: 'Stufenlos',
+    zoomSnapHelp:
+      'Die kleinste Zoomänderung, auf der Mausrad-, Pinch- und Rahmenzoom stehen bleiben können. 1 hält die Karte auf ganzen Zoomstufen, ein Bruchteil lässt sie auch dazwischen halten, und Stufenlos überall. Die Tasten und Schaltflächen + und – gehen immer zur nächsten ganzen Stufe.',
     forcedScale: 'Erzwungene Auflösung',
     resolutionScale: 'Auflösungsskala',
     resolutionScaleAuto: 'Automatisch (Gerätestandard)',

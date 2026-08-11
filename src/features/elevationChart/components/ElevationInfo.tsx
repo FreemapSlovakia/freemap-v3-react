@@ -41,7 +41,10 @@ export function ElevationInfo({
   tileMessage,
   maslMessage,
 }: ElevationInfoProps) {
-  const zoom = useAppSelector((state) => state.map.zoom);
+  // Everything below asks a tile-grid question — which tile holds the point,
+  // which layers reach it, the `z/x/y` shown and searched for — and a tile zoom
+  // is a whole one.
+  const zoom = useAppSelector((state) => Math.round(state.map.zoom));
 
   const [x, y] = pointToTile(point.lon, point.lat, zoom);
 

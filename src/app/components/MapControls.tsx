@@ -2,6 +2,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ensureCompassPermission } from '@features/location/ensureCompassPermission.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { type MapViewState, mapRefocus } from '@features/map/model/actions.js';
+import { steppedZoom } from '@features/map/zoomStep.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -107,7 +108,7 @@ export function MapControls(): ReactElement | null {
             <Button
               variant="secondary"
               onClick={() => {
-                onMapRefocus({ zoom: zoom + 1 });
+                onMapRefocus({ zoom: steppedZoom(zoom, 1) });
               }}
               disabled={zoom >= map.getMaxZoom()}
               {...props}
@@ -122,7 +123,7 @@ export function MapControls(): ReactElement | null {
             <Button
               variant="secondary"
               onClick={() => {
-                onMapRefocus({ zoom: zoom - 1 });
+                onMapRefocus({ zoom: steppedZoom(zoom, -1) });
               }}
               disabled={zoom <= map.getMinZoom()}
               {...props}

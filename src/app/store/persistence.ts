@@ -71,6 +71,7 @@ export const PersistedMapSchema = z
     maxZoom: z.number(),
     resolutionScale: z.number().nullable(),
     featureScale: z.number(),
+    zoomSnap: z.number(),
   })
   .partial();
 
@@ -255,6 +256,21 @@ const PERSIST: PersistEntry[] = [
     key: 'map',
     schema: PersistedMapCompatSchema,
     initial: mapInitialState,
+    // Rehydration writes the slice directly, so the zoom bypasses the reducer's
+    // own snapping. A stored zoom can disagree with the stored `zoomSnap` when
+    // the grid was coarsened by something other than the preference — a rebuilt
+    // default, or one browser's storage read by another build — and the map
+    // would then sit a fraction off what the store and the URL claim.
+    rehydrate: (initial, data) => {
+      const merged = { ...initial, ...data };
+
+      return {
+        ...merged,
+        zoom: merged.zoomSnap
+          ? Math.round(merged.zoom / merged.zoomSnap) * merged.zoomSnap
+          : merged.zoom,
+      };
+    },
     persist: (m) => ({
       layersSettings: m.layersSettings,
       lat: m.lat,
@@ -267,6 +283,7 @@ const PERSIST: PersistEntry[] = [
       maxZoom: m.maxZoom,
       resolutionScale: m.resolutionScale,
       featureScale: m.featureScale,
+      zoomSnap: m.zoomSnap,
     }),
   }),
   defineEntry({

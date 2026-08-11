@@ -14,6 +14,7 @@ import {
   type QueryPart,
   serializeQuery,
 } from './mapContentParts.js';
+import { serializeZoom } from './urlMapUtils.js';
 import { isUrlUpdatingEnabled } from './urlUpdating.js';
 
 // Browser-history policy for map viewport changes (pan/zoom): a contiguous run
@@ -234,7 +235,10 @@ function updateUrl(state: RootState, forced: boolean): void {
     .join('~');
 
   const queryParts: QueryPart[] = [
-    ['map', `${map.zoom}/${serializeLatLon({ lat: map.lat, lon: map.lon })}`],
+    [
+      'map',
+      `${serializeZoom(map.zoom)}/${serializeLatLon({ lat: map.lat, lon: map.lon })}`,
+    ],
   ];
 
   if (layers) {

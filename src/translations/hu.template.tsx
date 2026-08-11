@@ -343,6 +343,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-index',
     preferences: 'Beállítások',
     maxZoom: 'Maximális nagyítás',
+    zoomSnap: 'Nagyítási lépték',
+    zoomSnapFree: 'Szabad',
+    zoomSnapHelp:
+      'A legkisebb nagyításváltozás, amelyen az egérgörgővel, csippentéssel és területkijelöléssel végzett nagyítás megállhat. Az 1 egész nagyítási szinteken tartja a térképet, a törtérték engedi köztük is megállni, a Szabad pedig bárhol. A + és – gombok és billentyűk mindig a következő egész szintre lépnek.',
     forcedScale: 'Kényszerített felbontás',
     resolutionScale: 'Felbontás skála',
     resolutionScaleAuto: 'Automatikus (eszköz alapértelmezett)',

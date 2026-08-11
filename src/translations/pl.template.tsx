@@ -327,6 +327,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-indeks',
     preferences: 'Preferencje',
     maxZoom: 'Maksymalne powiększenie',
+    zoomSnap: 'Krok powiększenia',
+    zoomSnapFree: 'Swobodnie',
+    zoomSnapHelp:
+      'Najmniejsza zmiana powiększenia, na której może zatrzymać się powiększanie kółkiem, gestem i prostokątem. 1 utrzymuje mapę na pełnych poziomach, ułamek pozwala jej zatrzymać się także pomiędzy nimi, a Swobodnie w dowolnym miejscu. Przyciski i klawisze + oraz – zawsze przechodzą do następnego pełnego poziomu.',
     forcedScale: 'Wymuszona rozdzielczość',
     resolutionScale: 'Skala rozdzielczości',
     resolutionScaleAuto: 'Automatycznie (domyślna urządzenia)',

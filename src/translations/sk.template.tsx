@@ -368,6 +368,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Predvoľby',
     maxZoom: 'Maximálne priblíženie',
+    zoomSnap: 'Krok priblíženia',
+    zoomSnapFree: 'Voľne',
+    zoomSnapHelp:
+      'Najmenšia zmena priblíženia, na ktorej môže skončiť priblíženie kolieskom, gestom a výberom obdĺžnika. 1 drží mapu na celých úrovniach, zlomok jej dovolí zastaviť aj medzi nimi a Voľne kdekoľvek. Tlačidlá a klávesy + a – idú vždy na najbližšiu celú úroveň.',
     forcedScale: 'Vynútené rozlíšenie',
     resolutionScale: 'Škála rozlíšenia',
     resolutionScaleAuto: 'Automaticky (podľa zariadenia)',

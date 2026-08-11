@@ -59,13 +59,17 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       where,
       lat = getState().map.lat,
       lon = getState().map.lon,
-      zoom = getState().map.zoom,
+      zoom: rawZoom = getState().map.zoom,
       includePoint,
       pointTitle,
       pointDescription,
       url,
       imageUrl,
     } = action.payload;
+
+    // Whole levels only: several of the targets below — `geo:`, ZBGIS,
+    // hiking.sk — take the zoom as an integer and make nothing of a fraction.
+    const zoom = Math.round(rawZoom);
 
     trackMatomo(['trackEvent', 'Share', 'openExternal', where]);
 

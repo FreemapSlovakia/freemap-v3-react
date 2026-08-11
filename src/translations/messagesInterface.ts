@@ -227,6 +227,9 @@ export type Messages = {
     zIndex: string;
     preferences: string;
     maxZoom: string;
+    zoomSnap: string;
+    zoomSnapFree: string;
+    zoomSnapHelp: string;
     forcedScale: string;
     resolutionScale: string;
     resolutionScaleAuto: string;

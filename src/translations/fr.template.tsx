@@ -345,6 +345,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Préférences',
     maxZoom: 'Zoom max.',
+    zoomSnap: 'Pas du zoom',
+    zoomSnapFree: 'Libre',
+    zoomSnapHelp:
+      'Le plus petit changement de zoom sur lequel le zoom à la molette, au pincement et au rectangle peut s’arrêter. 1 maintient la carte sur des niveaux entiers, une fraction lui permet de s’arrêter aussi entre deux d’entre eux, et Libre n’importe où. Les boutons et les touches + et – vont toujours au niveau entier suivant.',
     forcedScale: 'Résolution forcée',
     resolutionScale: 'Échelle de résolution',
     resolutionScaleAuto: 'Auto (valeur par défaut de l’appareil)',

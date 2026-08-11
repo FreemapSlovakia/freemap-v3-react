@@ -23,7 +23,7 @@ Parameters live in the URL **hash** (`#name=value&name2=value2…`); a query str
 
 The highest-value parameters for building links:
 
-- `map=zoom/lat/lon` — viewport, e.g. `map=13/48.7483/19.1480` (coordinates to 6 decimals).
+- `map=zoom/lat/lon` — viewport, e.g. `map=13/48.7483/19.1480` (coordinates to 6 decimals). With a fractional **Zoom step**, the zoom can be fractional too, to 2 decimals (`map=13.75/…`).
 - `layers=codes` — base layer + overlays by their id code (see the Layer registry below), e.g. `layers=X` (Outdoor) or `layers=X~I` (Outdoor + Photos).
 - **`point=lat/lon` — put a marker on the map. This is the parameter for "a map with points / markers". It is repeatable: add one `point=` per marker.**
 - `line=lat/lon,lat/lon,…` and `polygon=lat/lon,lat/lon,…` — draw a line or a filled area (each repeatable).
@@ -592,6 +592,7 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 - Keyboard shortcut: <kbd>m</kbd> <kbd>p</kbd>
 
 - **Max zoom** — global maximum zoom level
+- **Zoom step** — the smallest zoom change scroll-wheel, pinch and box zoom can settle on: `1` (whole zoom levels, the default), `½`, `¼`, or *Free* (no snapping at all). The <kbd>+</kbd>/<kbd>−</kbd> buttons and keys always go to the next whole level whatever this says
 - **Resolution scale** — simulates display pixel density and affects which tile variant is fetched (Auto by default)
 - **Feature size** — enlarges rendered labels and lines (no effect on satellite, shading, WMS, or vector (MapLibre) layers)
 - **Direction indicator** — source of the direction beam on the located position: *Hidden*, *Direction of travel* (GPS course over ground, visible only while moving) or *Device compass* (magnetometer, works standing still, offered only where orientation sensors exist). Defaults to the compass except on iOS, where enabling it costs a permission prompt, so direction of travel is the default there
@@ -603,7 +604,7 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 Which terrain model answers is not a setting: premium reads get the detailed national models where they exist and GEDTM30 past their borders, everyone else gets SRTM everywhere, for profiles and exports alike.
 
 The first two sliders correct a terrain model, so they apply wherever elevation is read from one — planned routes, drawn lines and measurements, and imported tracks whose elevation was replaced from the server — and never to recorded altitude (live tracking, or a track kept as recorded).
-- **Reset to default** — fills this modal's fields (max zoom, resolution scale, feature size, direction indicator, distance and bearing, spike removal, ditch filling, steepness window) with their defaults; apply with Save or close without saving
+- **Reset to default** — fills this modal's fields (max zoom, zoom step, resolution scale, feature size, direction indicator, distance and bearing, spike removal, ditch filling, steepness window) with their defaults; apply with Save or close without saving
 
 Modals that edit a persisted default style or settings (Map preferences, Configure layers, drawing **Default properties**, objects **Marker style**, track-viewer **Default style**, **Search result style**) also carry a **Reset to default** button that refills the form with default values (applied with Save, not immediately).
 

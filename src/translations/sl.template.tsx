@@ -342,6 +342,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     zIndex: 'Z-Index',
     preferences: 'Nastavitve',
     maxZoom: 'Največja povečava',
+    zoomSnap: 'Korak povečave',
+    zoomSnapFree: 'Prosto',
+    zoomSnapHelp:
+      'Najmanjša sprememba povečave, na kateri se lahko ustavi povečevanje s kolescem, ščipom in pravokotnikom. 1 ohranja zemljevid na celih stopnjah, ulomek mu dovoli, da se ustavi tudi med njima, Prosto pa kjer koli. Gumba in tipki + in – vedno preskočita na naslednjo celo stopnjo.',
     forcedScale: 'Vsiljena ločljivost',
     resolutionScale: 'Lestvica ločljivosti',
     resolutionScaleAuto: 'Samodejno (privzeto za napravo)',

@@ -111,7 +111,8 @@ export async function handle(
               format: 'json',
               polygon_geojson: 1,
               extratags: 1,
-              zoom: getState().map.zoom,
+              // Nominatim reads this as an address-detail level, not a scale
+              zoom: Math.round(getState().map.zoom),
               namedetails: 0, // TODO maybe use some more details
               limit: 20,
               'accept-language': getState().l10n.language,

@@ -21,9 +21,9 @@ export function useZoomColorize(
     [colorizer, features],
   );
 
-  // Round so a transient fractional zoom (e.g. mid-gesture, or a future
-  // zoomSnap < 1) can't spawn an unbounded set of near-duplicate cache entries
-  // that never hit; smoothing at the nearest integer zoom is indistinguishable.
+  // Round so a fractional zoom (mid-gesture, or a `zoomSnap` under 1) can't
+  // spawn an unbounded set of near-duplicate cache entries that never hit;
+  // smoothing at the nearest whole zoom is indistinguishable.
   const z = Math.round(zoom);
 
   return useMemo(() => {
