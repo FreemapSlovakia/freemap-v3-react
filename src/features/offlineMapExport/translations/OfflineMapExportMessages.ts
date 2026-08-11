@@ -12,6 +12,7 @@ export type OfflineMapExportMessages = {
   emailInfo: string;
   success: string;
   summaryTiles: string;
+  summarySize: string;
   summaryPrice: (amount: ReactNode) => JSX.Element;
   usageIntro: string;
   usageDesktop: string;

@@ -14,6 +14,7 @@ const pl: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   success:
     'Mapa jest przygotowywana. Po zakończeniu otrzymasz link do pobrania na podany e-mail.',
   summaryTiles: 'Płytki',
+  summarySize: 'Szacowany rozmiar',
   summaryPrice: (amount) => <>Łączna cena: {amount} kredytów</>,
   usageIntro: 'Gdzie możesz używać pobranych map MBTiles:',
   usageDesktop: 'Komputer:',

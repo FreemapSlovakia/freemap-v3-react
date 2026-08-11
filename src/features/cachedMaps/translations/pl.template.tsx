@@ -19,6 +19,12 @@ const pl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
       Duże pobieranie: {tiles} płytek (~{size}). Może to chwilę potrwać.
     </>
   ),
+  notEnoughSpace: ({ size, free }) => (
+    <>
+      Za mało miejsca: pobieranie wymaga około {size}, a w tej przeglądarce
+      dostępne jest tylko {free}. Zatrzymałoby się w połowie.
+    </>
+  ),
   estSize: 'Szacowany rozmiar',
   startCaching: 'Rozpocznij pobieranie',
   cachedSuccess: ({ name }) => `Mapa „${name}” została pomyślnie pobrana.`,

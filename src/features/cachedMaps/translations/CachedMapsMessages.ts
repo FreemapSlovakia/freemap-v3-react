@@ -13,6 +13,7 @@ export type CachedMapsMessages = {
   resume: string;
   total: string;
   largeDownload: (props: { tiles: ReactNode; size: ReactNode }) => JSX.Element;
+  notEnoughSpace: (props: { size: ReactNode; free: ReactNode }) => JSX.Element;
   estSize: string;
   startCaching: string;
   cachedSuccess: (props: { name: string }) => string;

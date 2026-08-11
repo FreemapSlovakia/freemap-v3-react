@@ -10,8 +10,10 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
+import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
 import {
   type IntegratedLayerDef,
   type IsTileLayerDef,
@@ -36,6 +38,7 @@ import {
   Form,
   InputGroup,
   Modal,
+  Spinner,
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';
@@ -147,6 +150,10 @@ export default function OfflineMapExportModal({
       return;
     }
 
+    // scales are per-layer; keeping the previous one would ask for `@3x` tiles
+    // the new layer doesn't serve
+    setScale('1');
+
     setMinZoom(String(mapDef.minZoom ?? 0));
 
     setMaxZoom(
@@ -188,6 +195,22 @@ export default function OfflineMapExportModal({
     Math.max(parseInt(minZoom, 10) || 0, mapDef?.minZoom ?? 0),
     mapDef?.maxNativeZoom,
   );
+
+  // the export is rendered server-side at the scale picked here, not at this
+  // screen's DPR; `1` means the plain tile URL
+  const exportScale = parseInt(scale, 10) || 1;
+
+  const { bytes: estimatedSize, sampling } = useTilesSizeEstimate({
+    // the server gets the `http:` form, but sampling from this page must stay
+    // on https or the browser blocks it as mixed content
+    urlTemplate: mapDef?.url.replace(/^http:/, 'https:'),
+    bbox,
+    minZoom: Number(minZoom),
+    maxZoom: Number(maxZoom),
+    tileCount,
+    scale: exportScale === 1 ? undefined : exportScale,
+    enabled: show && !invalidMinZoom && !invalidMaxZoom,
+  });
 
   const handleSubmit = useCallback(
     (event: SubmitEvent<HTMLFormElement>) => {
@@ -520,7 +543,19 @@ export default function OfflineMapExportModal({
         <Modal.Footer className="flex-wrap">
           {tileCount !== undefined && mapDef && (
             <div className="w-100 text-end">
-              {ome?.summaryTiles}: <b>{cnf.format(tileCount)}</b> ｜{' '}
+              {ome?.summaryTiles}: <b>{cnf.format(tileCount)}</b>
+              {estimatedSize !== undefined && (
+                <>
+                  {' '}
+                  ｜ {ome?.summarySize}:{' '}
+                  {sampling ? (
+                    <Spinner animation="border" size="sm" />
+                  ) : (
+                    <b>{formatSize(estimatedSize)}</b>
+                  )}
+                </>
+              )}{' '}
+              ｜{' '}
               <span
                 className={
                   price >= Math.floor(user?.credits ?? 0) ? 'text-danger' : ''

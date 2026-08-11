@@ -14,6 +14,7 @@ const hu: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   success:
     'A térkép előkészítése folyamatban van. A letöltési hivatkozást e-mailben kapja meg, miután elkészült.',
   summaryTiles: 'Csempe',
+  summarySize: 'Becsült méret',
   summaryPrice: (amount) => <>Teljes ár: {amount} kredit</>,
   usageIntro: 'Hol használhatja a letöltött MBTiles térképeket:',
   usageDesktop: 'Számítógép:',

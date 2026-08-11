@@ -19,6 +19,12 @@ const cs: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
       Velké stahování: {tiles} dlaždic (~{size}). Může to chvíli trvat.
     </>
   ),
+  notEnoughSpace: ({ size, free }) => (
+    <>
+      Nedostatek místa: stahování potřebuje přibližně {size}, ale v tomto
+      prohlížeči je dostupných jen {free}. Zastavilo by se v polovině.
+    </>
+  ),
   estSize: 'Odhadovaná velikost',
   startCaching: 'Spustit stahování',
   cachedSuccess: ({ name }) => `Mapa „${name}“ byla úspěšně stažena.`,

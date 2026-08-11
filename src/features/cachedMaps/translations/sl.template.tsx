@@ -19,6 +19,12 @@ const sl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
       Veliko prenašanje: {tiles} ploščic (~{size}). To lahko traja nekaj časa.
     </>
   ),
+  notEnoughSpace: ({ size, free }) => (
+    <>
+      Premalo prostora: prenos potrebuje približno {size}, v tem brskalniku pa
+      je na voljo le {free}. Ustavil bi se na pol poti.
+    </>
+  ),
   estSize: 'Ocenjena velikost',
   startCaching: 'Začni prenašanje',
   cachedSuccess: ({ name }) => `Zemljevid »${name}« je bil uspešno prenesen.`,

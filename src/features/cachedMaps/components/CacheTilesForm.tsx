@@ -8,8 +8,11 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
+import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useFreeStorage } from '@shared/hooks/useFreeStorage.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
 import {
   type IntegratedLayerDef,
   type IsTileLayerDef,
@@ -17,6 +20,7 @@ import {
 } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { countTilesInBbox } from '@shared/tileEnumeration.js';
+import { pickTileScale } from '@shared/tileUrl.js';
 import {
   type ReactElement,
   type SubmitEvent,
@@ -32,6 +36,7 @@ import {
   Form,
   InputGroup,
   Modal,
+  Spinner,
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaChevronLeft, FaSave } from 'react-icons/fa';
@@ -44,10 +49,23 @@ type CacheableLayerDef = IntegratedLayerDef<IsTileLayerDef> & {
   url: string;
 };
 
-const AVG_TILE_SIZE = 20_000;
-
 // pre-filled upper bound; the layer's own `maxNativeZoom` still caps it
 const DEFAULT_MAX_ZOOM = 16;
+
+// warn once the download would claim this share of the free storage
+const QUOTA_HEADROOM = 0.9;
+
+// Rough cost model behind the "this may take a while" warning: every tile costs
+// one request (latency, spread over the batches the download runs in) and its
+// bytes cost bandwidth. Neither term alone catches both a million tiny tiles and
+// a handful of hi-DPI ones.
+const REQUEST_SECONDS = 0.15;
+
+const CONCURRENT_REQUESTS = 6; // BATCH_SIZE in cacheTilesProcessor
+
+const BYTES_PER_SECOND = 1_250_000; // ~10 Mbps
+
+const LARGE_DOWNLOAD_SECONDS = 5 * 60;
 
 export function CacheTilesForm(): ReactElement {
   const m = useMessages();
@@ -175,10 +193,33 @@ export function CacheTilesForm(): ReactElement {
     mapDef?.maxNativeZoom,
   );
 
-  const estimatedSize =
-    tileCount !== undefined && tileCount !== Infinity
-      ? tileCount * AVG_TILE_SIZE
-      : undefined;
+  // the caching download picks the hi-DPI variant for this screen, so the
+  // estimate must sample that same variant
+  const scale = pickTileScale(mapDef?.extraScales);
+
+  const { bytes: estimatedSize, sampling } = useTilesSizeEstimate({
+    urlTemplate: mapDef?.url,
+    bbox,
+    minZoom: Number(minZoom),
+    maxZoom: Number(maxZoom),
+    tileCount,
+    scale,
+    enabled: !invalidMinZoom && !invalidMaxZoom,
+  });
+
+  const freeSpace = useFreeStorage();
+
+  const overQuota =
+    estimatedSize !== undefined &&
+    freeSpace !== undefined &&
+    estimatedSize > freeSpace * QUOTA_HEADROOM;
+
+  const largeDownload =
+    estimatedSize !== undefined &&
+    tileCount !== undefined &&
+    (tileCount * REQUEST_SECONDS) / CONCURRENT_REQUESTS +
+      estimatedSize / BYTES_PER_SECOND >
+      LARGE_DOWNLOAD_SECONDS;
 
   const handleSubmit = useCallback(
     (event: SubmitEvent<HTMLFormElement>) => {
@@ -356,15 +397,32 @@ export function CacheTilesForm(): ReactElement {
         {tileCount !== undefined &&
           tileCount !== Infinity &&
           !invalidMinZoom &&
-          !invalidMaxZoom &&
-          tileCount > 50_000 && (
-            <Alert variant="warning" className="mt-3 mb-0">
-              {cm?.largeDownload({
-                tiles: cnf.format(tileCount),
-                size:
-                  estimatedSize !== undefined ? formatSize(estimatedSize) : '?',
-              })}
-            </Alert>
+          !invalidMaxZoom && (
+            <>
+              {/* the quota alert says the same thing more urgently */}
+              {largeDownload && !overQuota && (
+                <Alert variant="warning" className="mt-3 mb-0">
+                  {cm?.largeDownload({
+                    tiles: cnf.format(tileCount),
+                    size: sampling ? (
+                      <Spinner animation="border" size="sm" />
+                    ) : (
+                      formatSize(estimatedSize!)
+                    ),
+                  })}
+                </Alert>
+              )}
+
+              {/* only once measured — the fallback is too crude to alarm with */}
+              {overQuota && !sampling && (
+                <Alert variant="danger" className="mt-3 mb-0">
+                  {cm?.notEnoughSpace({
+                    size: formatSize(estimatedSize!),
+                    free: formatSize(freeSpace!),
+                  })}
+                </Alert>
+              )}
+            </>
           )}
       </Modal.Body>
 
@@ -375,7 +433,12 @@ export function CacheTilesForm(): ReactElement {
             {estimatedSize !== undefined && (
               <>
                 {' '}
-                | {cm?.estSize}: <b>{formatSize(estimatedSize)}</b>
+                | {cm?.estSize}:{' '}
+                {sampling ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  <b>{formatSize(estimatedSize)}</b>
+                )}
               </>
             )}
           </div>
@@ -404,20 +467,4 @@ export function CacheTilesForm(): ReactElement {
       </Modal.Footer>
     </form>
   );
-}
-
-function formatSize(bytes: number): string {
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  }
-
-  if (bytes < 1024 * 1024 * 1024) {
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  }
-
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
 }

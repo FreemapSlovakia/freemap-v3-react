@@ -3,6 +3,7 @@ import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
 import { enumerateTilesInBbox } from '@shared/tileEnumeration.js';
+import { buildTileUrl, pickTileScale, withTileScale } from '@shared/tileUrl.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Dispatch } from 'redux';
 import {
@@ -39,19 +40,6 @@ interface DownloadState {
 }
 
 const activeDownloads = new Map<string, DownloadState>();
-
-function buildTileUrl(
-  urlTemplate: string,
-  x: number,
-  y: number,
-  z: number,
-): string {
-  return urlTemplate
-    .replace('{x}', String(x))
-    .replace('{y}', String(y))
-    .replace('{z}', String(z))
-    .replace('{s}', 'a');
-}
 
 function updateMeta(
   meta: CachedTileMapDef,
@@ -104,11 +92,7 @@ async function downloadTiles(
   const extraScales = meta.technology === 'tile' ? meta.extraScales : undefined;
 
   // pick the scale matching this screen's DPI
-  const dpr = window.devicePixelRatio || 1;
-
-  const bestScale = extraScales
-    ?.filter((s) => s <= Math.ceil(dpr))
-    .sort((a, b) => b - a)[0];
+  const bestScale = pickTileScale(extraScales);
 
   for (let i = 0; i < tileArray.length; i += BATCH_SIZE) {
     if (abortController.signal.aborted) {
@@ -127,10 +111,10 @@ async function downloadTiles(
 
     const results = await Promise.allSettled(
       batch.map(async ([x, y, z]) => {
-        const baseUrl = buildTileUrl(meta.url, x, y, z);
-
-        const fetchUrl =
-          bestScale !== undefined ? `${baseUrl}@${bestScale}x` : baseUrl;
+        const fetchUrl = withTileScale(
+          buildTileUrl(meta.url, x, y, z),
+          bestScale,
+        );
 
         const cacheKey = toCachedLayerUrl(fetchUrl, id);
 

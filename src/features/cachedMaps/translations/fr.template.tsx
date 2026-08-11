@@ -9,6 +9,13 @@ const fr: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
       moment.
     </>
   ),
+  notEnoughSpace: ({ size, free }) => (
+    <>
+      Espace insuffisant : le téléchargement nécessite environ {size}, mais
+      seuls {free} sont disponibles dans ce navigateur. Il s’arrêterait en cours
+      de route.
+    </>
+  ),
   cachedSuccess: ({ name }) => `Carte « ${name} » mise en cache avec succès.`,
   cacheOfflineMap: 'Mettre la carte en cache pour un usage hors ligne',
   addOfflineMap: 'Ajouter une carte hors ligne',

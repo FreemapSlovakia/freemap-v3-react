@@ -368,7 +368,7 @@ The "Cache map for offline use" form lets the user choose:
 - the zoom range
 - whether to show the cached map in the menu and/or toolbar
 
-It shows the estimated tile count and size before caching starts.
+It shows the estimated tile count and size before caching starts; the size is estimated by fetching a few real tiles of the selected layer, area and zoom range (at the same hi-DPI scale the download will use). It warns about very large downloads and about downloads that would not fit in the browser's free storage.
 
 Picking the rectangle option (in this form and in the map/document exports below) hides the modal and lets the user drag the rectangle's corner, edge, and center handles on the map, confirming with **OK** or discarding with **Cancel** (<kbd>Esc</kbd>). The confirmed rectangle is remembered for the other export/cache forms until the page is reloaded; if it lies outside the current view, the map jumps to it.
 
@@ -462,7 +462,8 @@ Opens a modal with instructions to get various maps for GPS devices:
 Opens a modal to download a map in offline formats (MBTiles or SQLiteDB).
 Selection can be the current visible map area or a rectangle drawn on the map.
 Multiple tile-based maps are supported for download.
-Users can select the desired zoom range.
+Users can select the desired zoom range and, for maps offering hi-DPI variants, the tile scale.
+The modal summarizes the tile count, the estimated file size (sampled from real tiles of the selected map, area, zoom range and scale) and the price in credits.
 Link to the map prepared for download will be emailed to the provided email address.
 
 ### Embed map

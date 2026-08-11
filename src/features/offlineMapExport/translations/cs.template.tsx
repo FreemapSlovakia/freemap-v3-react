@@ -14,6 +14,7 @@ const cs: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   success:
     'Mapa se připravuje. Po dokončení vám bude e-mailem doručen odkaz ke stažení.',
   summaryTiles: 'Dlaždic',
+  summarySize: 'Odhadovaná velikost',
   summaryPrice: (amount) => <>Celková cena: {amount} kreditů</>,
   usageIntro: 'Kde můžete používat stažené mapy MBTiles:',
   usageDesktop: 'Počítač:',

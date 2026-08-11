@@ -20,6 +20,12 @@ const it: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
       tempo.
     </>
   ),
+  notEnoughSpace: ({ size, free }) => (
+    <>
+      Spazio insufficiente: il download richiede circa {size}, ma in questo
+      browser sono disponibili solo {free}. Si interromperebbe a metà.
+    </>
+  ),
   estSize: 'Dimensione stimata',
   startCaching: 'Avvia salvataggio',
   cachedSuccess: ({ name }) => `Mappa «${name}» salvata con successo.`,

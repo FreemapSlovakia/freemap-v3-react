@@ -14,6 +14,7 @@ const it: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   success:
     'La mappa è in preparazione. Al termine, riceverai via email un link per scaricarla.',
   summaryTiles: 'Riquadri',
+  summarySize: 'Dimensione stimata',
   summaryPrice: (amount) => <>Prezzo totale: {amount} crediti</>,
   usageIntro: 'Dove puoi usare le mappe MBTiles scaricate:',
   usageDesktop: 'Desktop:',

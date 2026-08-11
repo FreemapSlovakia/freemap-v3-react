@@ -18,6 +18,12 @@ const en: CachedMapsMessages = {
       Large download: {tiles} tiles (~{size}). This may take a while.
     </>
   ),
+  notEnoughSpace: ({ size, free }) => (
+    <>
+      Not enough space: the download needs about {size}, but only {free} is
+      available in this browser. It would stop partway through.
+    </>
+  ),
   estSize: 'Est. size',
   startCaching: 'Start caching',
   cachedSuccess: ({ name }) => `Map "${name}" cached successfully.`,

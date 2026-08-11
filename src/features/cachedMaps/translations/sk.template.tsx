@@ -19,6 +19,12 @@ const sk: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
       Veľké sťahovanie: {tiles} dlaždíc (~{size}). Môže to chvíľu trvať.
     </>
   ),
+  notEnoughSpace: ({ size, free }) => (
+    <>
+      Nedostatok miesta: sťahovanie potrebuje približne {size}, no v tomto
+      prehliadači je dostupných len {free}. Zastavilo by sa v polovici.
+    </>
+  ),
   estSize: 'Odhadovaná veľkosť',
   startCaching: 'Spustiť sťahovanie',
   cachedSuccess: ({ name }) => `Mapa „${name}“ bola úspešne stiahnutá.`,

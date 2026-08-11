@@ -19,6 +19,12 @@ const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
       Nagy letöltés: {tiles} csempe (~{size}). Ez eltarthat egy ideig.
     </>
   ),
+  notEnoughSpace: ({ size, free }) => (
+    <>
+      Nincs elég hely: a letöltéshez körülbelül {size} szükséges, de ebben a
+      böngészőben csak {free} érhető el. Félúton megállna.
+    </>
+  ),
   estSize: 'Becsült méret',
   startCaching: 'Letöltés indítása',
   cachedSuccess: ({ name }) => `A(z) „${name}” térkép sikeresen letöltődött.`,

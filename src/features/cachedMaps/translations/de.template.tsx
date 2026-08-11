@@ -19,6 +19,12 @@ const de: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
       Großer Download: {tiles} Kacheln (~{size}). Dies kann eine Weile dauern.
     </>
   ),
+  notEnoughSpace: ({ size, free }) => (
+    <>
+      Nicht genug Speicherplatz: Der Download benötigt etwa {size}, in diesem
+      Browser sind aber nur {free} verfügbar. Er würde vorzeitig abbrechen.
+    </>
+  ),
   estSize: 'Geschätzte Größe',
   startCaching: 'Speicherung starten',
   cachedSuccess: ({ name }) => `Karte „${name}“ wurde erfolgreich gespeichert.`,
