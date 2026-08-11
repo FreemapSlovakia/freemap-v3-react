@@ -416,7 +416,9 @@ the whole sync rather than just reopening the socket, because whatever killed th
 stream may equally have stopped the recording or cleared the track — and the
 catch-up is what notices.
 
-The wait widens 1 s → 30 s over five attempts and then stops — which is also what
+The wait widens 1 s → 30 s over five attempts and then stops — and only the
+stream *opening* rewinds it, not a sync succeeding, since `/status` answering
+says nothing about the stream the backoff guards. Running out is also what
 finally stops the page following a recording, and only then: one failure is
 routinely a page that was frozen mid-request, and dropping the flag for that leaves
 a ride still being recorded with nothing watching it. **With the tool open it never

@@ -437,8 +437,11 @@ export function recorderSyncSettled(
 
   cancelRetry();
 
-  retryAttempt = 0;
-
+  // `retryAttempt` is deliberately not reset here: a sync succeeding proves only
+  // `/status`, and the backoff guards the stream. Resetting on it would let a
+  // recorder whose `/stream` alone is broken hold the chain at the first delay
+  // forever — sync OK, attach, error, retry — instead of widening and giving up.
+  // The stream coming up is what proves the connection, so `onopen` is the reset.
   if (!wanted()) {
     // The page went away while the sync was finishing. Attaching now would only
     // hand out a stream that is frozen from birth.

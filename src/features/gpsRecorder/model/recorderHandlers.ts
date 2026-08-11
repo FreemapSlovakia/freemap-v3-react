@@ -263,6 +263,12 @@ export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = (params) =>
  * `restart`, because a run already in flight read its status before this one
  * arrived: joining it would drop the very change — a stop, a clear — the push
  * exists to deliver.
+ *
+ * Aborting a catch-up mid-download costs nothing worth guarding against: a push
+ * implies an open stream, a stream only attaches after a sync settled, so the
+ * cursor is warm and any refetch is small — even a pushed `generation` bump
+ * refetches only the near-empty track that replaced the cleared one. And pushes
+ * are rare, discrete events, never per fix.
  */
 export const pushedStatusHandler: ProcessorHandler<
   typeof gpsRecorderPushedStatus
