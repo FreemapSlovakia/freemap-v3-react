@@ -46,6 +46,8 @@ type Model = {
   technology: 'tile' | 'maplibre' | 'wms' | 'parametricShading';
   layers: string[];
   tiled: boolean;
+  /** Read from the capabilities rather than typed, so it has no field. */
+  bbox?: [number, number, number, number];
 };
 
 /** Ground resolution of zoom 0 at the equator, in metres per pixel. */
@@ -53,6 +55,10 @@ const ZOOM_0_RESOLUTION = 156543.03392804097;
 
 /** The pixel size a WMS scale denominator is defined against, in metres. */
 const WMS_PIXEL_SIZE = 0.00028;
+
+function flatten(layers: Layer[]): Layer[] {
+  return layers.flatMap((layer) => [layer, ...flatten(layer.children)]);
+}
 
 /**
  * The smallest zoom at which a layer is still drawn: a WMS declares the widest
@@ -66,17 +72,7 @@ function minZoomForSelection(
   selected: string[],
   lat: number,
 ): number {
-  const flat: Layer[] = [];
-
-  const collect = (list: Layer[]) => {
-    for (const layer of list) {
-      flat.push(layer);
-
-      collect(layer.children);
-    }
-  };
-
-  collect(layers);
+  const flat = flatten(layers);
 
   const resolution = ZOOM_0_RESOLUTION * Math.cos((lat * Math.PI) / 180);
 
@@ -95,6 +91,33 @@ function minZoomForSelection(
 
   // The map is only blank while every one of the chosen layers is.
   return zooms.length ? Math.min(...zooms) : 0;
+}
+
+/** The area the chosen layers cover between them, as [west, south, east, north]. */
+function bboxForSelection(
+  layers: Layer[],
+  selected: string[],
+): [number, number, number, number] | undefined {
+  const matched = flatten(layers).filter(
+    (layer) => layer.name && selected.includes(layer.name) && layer.bbox,
+  );
+
+  const boxes = matched.flatMap((layer) => (layer.bbox ? [layer.bbox] : []));
+
+  // Only when every one of them declares an area: a layer that doesn't may
+  // cover ground the others leave out, and a box short of the coverage would
+  // have the map offer to fly away from a layer that is drawing. Counted by
+  // name, since one may appear at more than one place in the tree.
+  const covered = new Set(matched.map((layer) => layer.name));
+
+  return boxes.length && covered.size === selected.length
+    ? [
+        Math.min(...boxes.map((b) => b[0])),
+        Math.min(...boxes.map((b) => b[1])),
+        Math.max(...boxes.map((b) => b[2])),
+        Math.max(...boxes.map((b) => b[3])),
+      ]
+    : undefined;
 }
 
 function valueToModel(value?: CustomLayerDef) {
@@ -121,6 +144,7 @@ function valueToModel(value?: CustomLayerDef) {
         : [],
     layers: value && 'layers' in value && value.layers ? value.layers : [],
     tiled: value && 'tiled' in value && value.tiled ? value.tiled : false,
+    bbox: value?.bbox,
     technology: value?.technology ?? 'tile',
   };
 }
@@ -162,6 +186,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         model.extraScales.join('|') !== newModel.extraScales.join('|') ||
         model.technology !== newModel.technology ||
         model.tiled !== newModel.tiled ||
+        model.bbox?.join(',') !== newModel.bbox?.join(',') ||
         model.layer !== newModel.layer;
 
       if (changed) {
@@ -232,6 +257,10 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           maxNativeZoom,
           layers: model.layers,
           tiled: model.tiled,
+          // Read from the capabilities, so it goes no further than the
+          // technology that has any: switching to another must not leave a
+          // WMS's coverage describing a worldwide tile layer.
+          bbox: model.bbox,
         });
 
         break;
@@ -296,14 +325,29 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         ({ layersTree, title }) => {
           setLayersTree(layersTree);
 
-          setModel({ ...model, name: model.name || title });
+          // What the capabilities decide — the coverage, and the zoom below
+          // which nothing is drawn — is taken for the layers already chosen
+          // too. A map saved before the server was ever asked would otherwise
+          // keep neither until its layers were picked over again.
+          const zoom = minZoomForSelection(layersTree, model.layers, lat);
+
+          setModel({
+            ...model,
+            name: model.name || title,
+            bbox: bboxForSelection(layersTree, model.layers),
+            minZoom: minZoomTouched.current
+              ? model.minZoom
+              : zoom
+                ? String(zoom)
+                : '',
+          });
         },
         (err) => setWmsLayersFetchError(String(err)),
       )
       .finally(() => {
         setLoadingLayers(false);
       });
-  }, [model]);
+  }, [model, lat]);
 
   useEffect(() => {
     setLayersTree(undefined);
@@ -330,6 +374,8 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
         const zoom = minZoomForSelection(layersTree ?? [], next, lat);
 
+        const bbox = bboxForSelection(layersTree ?? [], next);
+
         // Offered rather than imposed: the suggestion follows the selection —
         // dropping the layer that produced it must not leave the next one
         // hidden below a limit it never had — but a field the user has been at,
@@ -337,6 +383,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         return {
           ...model,
           layers: next,
+          bbox,
           minZoom: minZoomTouched.current
             ? model.minZoom
             : zoom

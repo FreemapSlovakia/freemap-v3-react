@@ -191,6 +191,92 @@ test('inherits the scale range from the parent layer', async () => {
   ]);
 });
 
+test('reads the coverage a layer declares, inheriting it where it does not', async () => {
+  serve(`<?xml version="1.0"?>
+<WMS_Capabilities xmlns="http://www.opengis.net/wms" version="1.3.0">
+  <Service><Title>Covered</Title></Service>
+  <Capability>
+    <Layer>
+      <Title>Root</Title>
+      <CRS>EPSG:3857</CRS>
+      <EX_GeographicBoundingBox>
+        <westBoundLongitude>6.6</westBoundLongitude>
+        <eastBoundLongitude>18.7</eastBoundLongitude>
+        <southBoundLatitude>35.5</southBoundLatitude>
+        <northBoundLatitude>47.2</northBoundLatitude>
+      </EX_GeographicBoundingBox>
+      <Layer><Name>inherits</Name><Title>Inherits</Title></Layer>
+      <Layer>
+        <Name>own</Name><Title>Own</Title>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>12</westBoundLongitude>
+          <eastBoundLongitude>13</eastBoundLongitude>
+          <southBoundLatitude>41</southBoundLatitude>
+          <northBoundLatitude>42</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMS_Capabilities>`);
+
+  const { layersTree } = await wms('https://example.org/wms');
+
+  expect(layersTree.map((l) => [l.name, l.bbox])).toEqual([
+    ['inherits', [6.6, 35.5, 18.7, 47.2]],
+    ['own', [12, 41, 13, 42]],
+  ]);
+});
+
+test('reads the coverage a 1.1.1 document puts in attributes', async () => {
+  serve(`<?xml version="1.0"?>
+<WMT_MS_Capabilities version="1.1.1">
+  <Service><Title>Old</Title></Service>
+  <Capability>
+    <Layer>
+      <Title>Root</Title>
+      <SRS>EPSG:4326</SRS>
+      <Layer>
+        <Name>old</Name><Title>Old</Title>
+        <LatLonBoundingBox minx="6.6" miny="35.5" maxx="18.7" maxy="47.2"/>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMT_MS_Capabilities>`);
+
+  const { layersTree } = await wms('https://example.org/wms');
+
+  expect(layersTree[0].bbox).toEqual([6.6, 35.5, 18.7, 47.2]);
+});
+
+test('ignores an extent that does not read as degrees', async () => {
+  serve(`<?xml version="1.0"?>
+<WMS_Capabilities xmlns="http://www.opengis.net/wms" version="1.3.0">
+  <Service><Title>Projected</Title></Service>
+  <Capability>
+    <Layer>
+      <Title>Root</Title>
+      <CRS>EPSG:3857</CRS>
+      <Layer>
+        <Name>metres</Name><Title>Metres</Title>
+        <LatLonBoundingBox minx="1900000" miny="6100000" maxx="2000000" maxy="6200000"/>
+      </Layer>
+      <Layer>
+        <Name>backwards</Name><Title>Backwards</Title>
+        <LatLonBoundingBox minx="19" miny="49" maxx="17" maxy="47"/>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMS_Capabilities>`);
+
+  const { layersTree } = await wms('https://example.org/wms');
+
+  // Kept as layers, but with no extent to fly the map to.
+  expect(layersTree.map((l) => [l.name, l.bbox])).toEqual([
+    ['metres', null],
+    ['backwards', null],
+  ]);
+});
+
 test('strips a request the service URL carries, keeping what identifies it', () => {
   // What the reporter pasted: the GetCapabilities URL, kept as the layer's
   // server URL, so every GetMap asked for GetCapabilities as well.

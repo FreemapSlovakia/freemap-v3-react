@@ -5,6 +5,8 @@ export type Layer = {
   transparent: boolean;
   minScale: number | null;
   maxScale: number | null;
+  /** The area the layer covers, as [west, south, east, north]. */
+  bbox: [number, number, number, number] | null;
   children: Layer[];
   legendUrl: string | null;
 };
@@ -157,6 +159,67 @@ export async function wms(urlString: string) {
     );
   }
 
+  /**
+   * Both elements are defined in degrees, so anything outside them — a server
+   * putting projected metres in one, or naming the corners the wrong way round
+   * — is not an extent this can use. Taken at face value it would place the
+   * layer somewhere off the earth and offer to fly there.
+   */
+  function asDegrees(box: number[]): [number, number, number, number] | null {
+    const [west, south, east, north] = box;
+
+    return box.every((n) => !Number.isNaN(n)) &&
+      west >= -180 &&
+      east <= 180 &&
+      south >= -90 &&
+      north <= 90 &&
+      west < east &&
+      south < north
+      ? [west, south, east, north]
+      : null;
+  }
+
+  /**
+   * The area a layer declares, which 1.3.0 spells out in child elements and
+   * 1.1.1 in attributes of one.
+   */
+  function getBbox(node: Element): [number, number, number, number] | null {
+    const geographic = elements(node, `./${el('EX_GeographicBoundingBox')}`)[0];
+
+    if (geographic) {
+      const box = asDegrees(
+        (
+          [
+            'westBoundLongitude',
+            'southBoundLatitude',
+            'eastBoundLongitude',
+            'northBoundLatitude',
+          ] as const
+        ).map((side) => parseFloat(getText(geographic, side) || '')),
+      );
+
+      if (box) {
+        return box;
+      }
+    }
+
+    const latLon = elements(node, `./${el('LatLonBoundingBox')}`)[0];
+
+    if (latLon) {
+      const box = asDegrees(
+        (['minx', 'miny', 'maxx', 'maxy'] as const).map((side) =>
+          parseFloat(latLon.getAttribute(side) || ''),
+        ),
+      );
+
+      if (box) {
+        return box;
+      }
+    }
+
+    return null;
+  }
+
   function getLegendUrl(node: Node): string | null {
     const onlineResource = elements(
       node,
@@ -174,9 +237,9 @@ export async function wms(urlString: string) {
   }
 
   /**
-   * Projections and scale range are inheritable properties: a layer that
-   * declares neither takes its parent's. Support is therefore carried down the
-   * tree, and a layer supporting none is kept only for the sake of the
+   * Projections, scale range and extent are inheritable properties: a layer
+   * that declares none takes its parent's. Support is therefore carried down
+   * the tree, and a layer supporting none is kept only for the sake of the
    * supported ones below it.
    */
   function parseLayer(
@@ -185,6 +248,7 @@ export async function wms(urlString: string) {
       crs: boolean;
       minScale: number | null;
       maxScale: number | null;
+      bbox: [number, number, number, number] | null;
     },
   ): Layer | null {
     const crs = inherited.crs || hasSupportedCrs(node);
@@ -197,8 +261,10 @@ export async function wms(urlString: string) {
       parseFloat(getText(node, 'MaxScaleDenominator') || '') ||
       inherited.maxScale;
 
+    const bbox = getBbox(node) ?? inherited.bbox;
+
     const children = elements(node, `./${el('Layer')}`).flatMap((child) => {
-      const layer = parseLayer(child, { crs, minScale, maxScale });
+      const layer = parseLayer(child, { crs, minScale, maxScale, bbox });
 
       return layer ? [layer] : [];
     });
@@ -214,6 +280,7 @@ export async function wms(urlString: string) {
       transparent: node.getAttribute('opaque') !== '1',
       minScale,
       maxScale,
+      bbox,
       legendUrl: getLegendUrl(node),
       children,
     };
@@ -230,6 +297,7 @@ export async function wms(urlString: string) {
       crs: false,
       minScale: null,
       maxScale: null,
+      bbox: null,
     });
 
     return !layer ? [] : layer.name ? [layer] : layer.children;
