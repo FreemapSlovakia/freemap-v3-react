@@ -7,7 +7,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
 import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
@@ -24,6 +24,8 @@ export function MapControls(): ReactElement | null {
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
   const locate = useAppSelector((state) => state.location.locate);
+
+  const locating = useAppSelector((state) => state.location.locating);
 
   const gpsTracked = useAppSelector((state) => state.map.gpsTracked);
 
@@ -144,7 +146,11 @@ export function MapControls(): ReactElement | null {
               variant={gpsTracked ? 'warning' : 'secondary'}
               {...props}
             >
-              <FaRegDotCircle />
+              {locating ? (
+                <Spinner animation="border" size="sm" />
+              ) : (
+                <FaRegDotCircle />
+              )}
             </Button>
           )}
         </LongPressTooltip>

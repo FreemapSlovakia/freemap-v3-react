@@ -186,6 +186,7 @@ const messages: Messages = {
     closeTool: 'Close tool',
     locateMe: 'Locate me',
     locationError: 'Error getting location.',
+    locationNoSignal: 'No GPS signal yet.',
     headingSource: 'Direction indicator',
     headingSources: {
       none: 'Hidden',

@@ -151,6 +151,7 @@ export type Messages = {
     closeTool: string;
     locateMe: string;
     locationError: string;
+    locationNoSignal: string;
     headingSource: string;
     headingSources: Record<'none' | 'gps' | 'compass', string>;
     headingSourceHelp: string;
