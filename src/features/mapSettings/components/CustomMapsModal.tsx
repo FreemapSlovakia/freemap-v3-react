@@ -11,6 +11,7 @@ import {
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import { makeLabelComparator } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, ListGroup, Modal } from 'react-bootstrap';
@@ -52,6 +53,14 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
   const activeLayers = useAppSelector((state) => state.map.layers);
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const byName = makeLabelComparator(language);
+
+  const sortedLayers = [...customLayers].sort((a, b) =>
+    byName(a.name || undefined, b.name || undefined),
+  );
 
   const [view, setView] = useState<View>({ mode: 'list' });
 
@@ -205,7 +214,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
               </p>
             ) : (
               <ListGroup>
-                {customLayers.map((def) => (
+                {sortedLayers.map((def) => (
                   <ListGroup.Item
                     key={def.type}
                     className="d-flex align-items-center gap-2"

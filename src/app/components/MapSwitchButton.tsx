@@ -29,7 +29,7 @@ import {
   getLayerBbox,
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
-import { removeAccents } from '@shared/stringUtils.js';
+import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import type { Shortcut } from '@shared/types/common.js';
 import clsx from 'clsx';
 import {
@@ -55,12 +55,61 @@ import {
   FaHistory,
   FaLayerGroup,
   FaRegMap,
+  FaSearchLocation,
   FaSearchPlus,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { setActiveModal } from '../store/actions.js';
+
+/**
+ * Fills an acting badge with as much icon as its 24px will hold: the glyph is
+ * `1em` of the button's own size, which `btn-sm` would keep at 14px, so it is
+ * set here and the padding gives back what it takes — 18 + 2×2 + 2×1 of border.
+ */
+const actionBadgeStyle = { fontSize: '1.125rem', padding: '0.125rem' };
+
+/**
+ * A badge on a menu item, explained by the same tooltip the toolbar uses.
+ *
+ * `action` gives it Bootstrap's button clothes: the item is an anchor, so a
+ * real `<button>` inside it would not be valid markup, and the span carries
+ * `data-*` naming what to do instead — which the item's own click handler reads
+ * (see `handlePossibleBadgeClick`). It is therefore a mouse affordance only.
+ */
+function Badge({
+  label,
+  action,
+  data,
+  children,
+}: {
+  label: ReactNode;
+  action?: boolean;
+  data?: Record<string, string | number | undefined>;
+  children: ReactNode;
+}) {
+  return (
+    <LongPressTooltip label={label}>
+      {({ props }) => (
+        <span
+          {...props}
+          {...data}
+          style={action ? actionBadgeStyle : undefined}
+          className={clsx(
+            action
+              ? // Square, at the height of the row's own line — any taller and
+                // it opens up every row it appears in.
+                'btn btn-sm btn-outline-warning ms-2 lh-1'
+              : 'text-warning ms-1',
+          )}
+        >
+          {children}
+        </span>
+      )}
+    </LongPressTooltip>
+  );
+}
 
 function getKbdShortcut(shortcut?: Shortcut | null) {
   return shortcut && <kbd className="ms-1">{formatShortcut(shortcut)}</kbd>;
@@ -143,13 +192,31 @@ export function MapSwitchButton(): ReactElement {
           break;
         }
 
-        if (x instanceof SVGElement && x.dataset['filter']) {
+        if (
+          (x instanceof HTMLElement || x instanceof SVGElement) &&
+          x.dataset['filter']
+        ) {
           dispatch(setActiveModal({ type: 'gallery-filter' }));
 
           return true;
         }
 
-        if (x instanceof SVGElement && x.dataset['focusBbox']) {
+        // A badge saying the layer cannot be seen here is a request to see
+        // it, so it is switched on as well. Never off: the layer button is
+        // what toggles.
+        if (
+          (x instanceof HTMLElement || x instanceof SVGElement) &&
+          x.dataset['activateType']
+        ) {
+          dispatch(
+            mapToggleLayer({ type: x.dataset['activateType'], enable: true }),
+          );
+        }
+
+        if (
+          (x instanceof HTMLElement || x instanceof SVGElement) &&
+          x.dataset['focusBbox']
+        ) {
           const bbox = x.dataset['focusBbox'].split(',').map(Number) as [
             number,
             number,
@@ -159,17 +226,23 @@ export function MapSwitchButton(): ReactElement {
 
           const maxZoom = x.dataset['focusMaxZoom'];
 
+          const minZoom = x.dataset['focusMinZoom'];
+
           dispatch(
             mapFitBbox({
               bbox,
               maxZoom: maxZoom ? Number(maxZoom) : undefined,
+              minZoom: minZoom ? Number(minZoom) : undefined,
             }),
           );
 
           return true;
         }
 
-        if (x instanceof SVGElement && x.dataset['refocusZoom']) {
+        if (
+          (x instanceof HTMLElement || x instanceof SVGElement) &&
+          x.dataset['refocusZoom']
+        ) {
           dispatch(mapRefocus({ zoom: Number(x.dataset['refocusZoom']) }));
 
           return true;
@@ -242,6 +315,8 @@ export function MapSwitchButton(): ReactElement {
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
+  const language = useAppSelector((state) => state.l10n.language);
+
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
   const cachedMapsTotalSize = cachedMaps.reduce(
@@ -253,11 +328,20 @@ export function MapSwitchButton(): ReactElement {
 
   const countriesSet = countries && new Set(countries);
 
+  // The built-in layers keep the order the registry gives them, which is a
+  // considered one; the user's own are sorted, each kind among itself. Merging
+  // the two kinds would put an offline copy beside the layer it was made from,
+  // told apart only by a badge, and would move one kind about as the other grows.
+  const byName = makeLabelComparator(language);
+
   const layerDefs = [
     ...integratedLayerDefs.map((def) => ({ ...def, custom: false as const })),
-    ...customLayerDefs.map((def) => ({ ...def, custom: true as const })),
+    ...[...customLayerDefs]
+      .sort((a, b) => byName(a.name || undefined, b.name || undefined))
+      .map((def) => ({ ...def, custom: true as const })),
     ...cachedMaps
       .filter((cm) => cm.downloadedCount === cm.tileCount)
+      .sort((a, b) => byName(a.name || undefined, b.name || undefined))
       .map((cm) => ({ ...cm, custom: true as const })),
   ].map((def) => ({
     scaleWithDpi: false,
@@ -291,6 +375,11 @@ export function MapSwitchButton(): ReactElement {
       : undefined;
   };
 
+  /** Both warnings in one line, or nothing while the messages are loading. */
+  const findLabel = (minZoom: number) =>
+    m &&
+    `${m.mapLayers.minZoomWarning(minZoom)} · ${m.mapLayers.outsideViewWarning}`;
+
   function commonBadges(
     def: (typeof layerDefs)[number],
     place: 'menu' | 'toolbar' | 'tooltip',
@@ -321,58 +410,75 @@ export function MapSwitchButton(): ReactElement {
         ) : null}
 
         {place !== 'toolbar' && !def.custom && def.superseededBy && (
-          <FaHistory
-            className="text-warning ms-1"
-            title={m?.mapLayers.legacy}
-          />
+          <Badge label={m?.mapLayers.legacy}>
+            <FaHistory />
+          </Badge>
         )}
 
         {place !== 'toolbar' && !def.custom && def.experimental && (
           <ExperimentalFunction data-interactive="1" className="ms-1" />
         )}
 
-        {place === 'menu' && !def.zoomOk && (
-          <FaSearchPlus
-            data-refocus-zoom={def.minZoom}
-            title={m?.mapLayers.minZoomWarning(def.minZoom!)}
-            className="text-warning ms-1"
-            style={{ cursor: 'pointer' }}
-          />
-        )}
-
         {place === 'menu' &&
           (() => {
             const box = getOutOfCoverageBbox(def);
 
-            return box ? (
-              <BiWorld
-                data-focus-bbox={box.join(',')}
-                data-focus-max-zoom={
-                  'maxNativeZoom' in def ? def.maxNativeZoom : undefined
-                }
-                title={m?.mapLayers.outsideViewWarning}
-                className="text-warning ms-1"
-                style={{ cursor: 'pointer' }}
-              />
-            ) : null;
+            // Away from the layer either way: the fit carries the zoom it needs,
+            // so both are one thing to put right and so one badge.
+            if (box) {
+              return (
+                <Badge
+                  action
+                  label={
+                    def.zoomOk
+                      ? m?.mapLayers.outsideViewWarning
+                      : findLabel(def.minZoom!)
+                  }
+                  data={{
+                    'data-activate-type': def.type,
+                    'data-focus-bbox': box.join(','),
+                    'data-focus-max-zoom':
+                      'maxNativeZoom' in def ? def.maxNativeZoom : undefined,
+                    'data-focus-min-zoom': def.minZoom,
+                  }}
+                >
+                  {def.zoomOk ? <BiWorld /> : <FaSearchLocation />}
+                </Badge>
+              );
+            }
+
+            return def.zoomOk ? null : (
+              <Badge
+                action
+                label={m?.mapLayers.minZoomWarning(def.minZoom!)}
+                data={{
+                  'data-activate-type': def.type,
+                  'data-refocus-zoom': def.minZoom,
+                }}
+              >
+                <FaSearchPlus />
+              </Badge>
+            );
           })()}
 
         {place !== 'tooltip' && def.type === 'I' && pictureFilterIsActive && (
-          <FaFilter
-            data-filter="1"
-            title={m?.mapLayers.photoFilterWarning}
-            className="text-warning ms-1"
-          />
+          <Badge
+            label={m?.mapLayers.photoFilterWarning}
+            data={{ 'data-filter': '1' }}
+          >
+            <FaFilter />
+          </Badge>
         )}
 
         {place !== 'tooltip' &&
           activeLayers.includes('i') &&
           def.type === 'i' && (
-            <FaEyeSlash
-              data-interactive="1"
-              title={m?.mapLayers.interactiveLayerWarning}
-              className="text-warning ms-1"
-            />
+            <Badge
+              label={m?.mapLayers.interactiveLayerWarning}
+              data={{ 'data-interactive': '1' }}
+            >
+              <FaEyeSlash />
+            </Badge>
           )}
       </>
     );
@@ -414,8 +520,7 @@ export function MapSwitchButton(): ReactElement {
         } else if (
           expand !== 'all' &&
           !activeLayers.includes(type) &&
-          (!(expand === false && !isWide ? showInToolbar : showInMenu) ||
-            !def.zoomOk)
+          !(expand === false && !isWide ? showInToolbar : showInMenu)
         ) {
           return null;
         }
@@ -475,10 +580,12 @@ export function MapSwitchButton(): ReactElement {
             layersSettings[def.type]?.showInToolbar ??
             (!def.custom && Boolean(def.defaultInToolbar));
 
+          // Being below a layer's `minZoom` does not hide it, the way being
+          // away from its coverage does not: both are offered as something to
+          // fix, through the accessories below.
           if (
             !activeLayers.includes(def.type) &&
-            (!def.zoomOk ||
-              !showInToolbar ||
+            (!showInToolbar ||
               (type === 'S' &&
                 showsOfm &&
                 countries?.every(
@@ -504,32 +611,45 @@ export function MapSwitchButton(): ReactElement {
             onClick: (e: MouseEvent<HTMLButtonElement>) => void;
           }[] = [];
 
-          if (!def.zoomOk) {
-            accessories.push({
-              key: 'zoom',
-              icon: <FaSearchPlus className="text-warning" />,
-              tooltip: m?.mapLayers.minZoomWarning(def.minZoom!),
-              onClick: () => dispatch(mapRefocus({ zoom: def.minZoom })),
-            });
-          }
-
           // a layer whose tiles aren't in view gets a button that zooms to its
-          // coverage
+          // coverage, at the zoom the layer needs when that is further in than
+          // the extent would fit
           const outOfCoverageBbox = getOutOfCoverageBbox(def);
 
           if (outOfCoverageBbox) {
             accessories.push({
               key: 'coverage',
-              icon: <BiWorld className="text-warning" />,
-              tooltip: m?.mapLayers.outsideViewWarning,
-              onClick: () =>
+              icon: def.zoomOk ? (
+                <BiWorld className="text-warning" />
+              ) : (
+                <FaSearchLocation className="text-warning" />
+              ),
+              tooltip: def.zoomOk
+                ? m?.mapLayers.outsideViewWarning
+                : findLabel(def.minZoom!),
+              onClick: () => {
+                dispatch(mapToggleLayer({ type, enable: true }));
+
                 dispatch(
                   mapFitBbox({
                     bbox: outOfCoverageBbox,
                     maxZoom:
                       'maxNativeZoom' in def ? def.maxNativeZoom : undefined,
+                    minZoom: def.minZoom,
                   }),
-                ),
+                );
+              },
+            });
+          } else if (!def.zoomOk) {
+            accessories.push({
+              key: 'zoom',
+              icon: <FaSearchPlus className="text-warning" />,
+              tooltip: m?.mapLayers.minZoomWarning(def.minZoom!),
+              onClick: () => {
+                dispatch(mapToggleLayer({ type, enable: true }));
+
+                dispatch(mapRefocus({ zoom: def.minZoom }));
+              },
             });
           }
 

@@ -550,6 +550,7 @@ Freemap provides numerous raster, vector, and WMS map layers with different cont
 Each layer includes attributes describing its purpose, availability, and data sources.
 The map-layer switching toolbar is available at the middle bottom of the screen.
 Featured or user-configured maps are directly accessible as buttons in this toolbar.
+A map that cannot be shown where the view currently is stays listed rather than disappearing, marked with a button that puts it right: a magnifier when the view is zoomed out past the map's minimum zoom, a globe when the view is away from the map's area, and a magnifier-with-marker when both — pressing it switches the map on and moves the view to where the map draws. Custom maps and offline maps are each listed in alphabetical order, after the built-in ones.
 
 The toolbar also contains the following buttons:
 

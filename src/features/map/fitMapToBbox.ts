@@ -7,6 +7,11 @@ export interface FitOptions {
   /** Free space to leave around the extent, in pixels on every side. */
   padding?: number;
   maxZoom?: number;
+  /**
+   * Zoom to keep even where the extent will not fit in it — for a layer that
+   * draws nothing further out, arriving at its area is no use below this.
+   */
+  minZoom?: number;
 }
 
 /**
@@ -46,9 +51,12 @@ export async function fitMapToBbox(
   // place a little off center.
   const padding = options?.padding ?? 0;
 
-  const zoom = Math.min(
-    map.getBoundsZoom(bounds, false, point(padding * 2, padding * 2)),
-    options?.maxZoom ?? Number.POSITIVE_INFINITY,
+  const zoom = Math.max(
+    Math.min(
+      map.getBoundsZoom(bounds, false, point(padding * 2, padding * 2)),
+      options?.maxZoom ?? Number.POSITIVE_INFINITY,
+    ),
+    options?.minZoom ?? Number.NEGATIVE_INFINITY,
   );
 
   const { lat, lng } = map.unproject(

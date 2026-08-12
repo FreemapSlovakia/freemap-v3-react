@@ -9,6 +9,7 @@ import {
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { makeLabelComparator } from '@shared/stringUtils.js';
 import type { ReactElement } from 'react';
 import { Button, ListGroup, Modal, ProgressBar } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
@@ -53,6 +54,14 @@ export function CachedMapsList(): ReactElement {
     maximumFractionDigits: 0,
   });
 
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const byName = makeLabelComparator(language);
+
+  const sortedMaps = [...cachedMaps].sort((a, b) =>
+    byName(a.name || undefined, b.name || undefined),
+  );
+
   const totalSize = cachedMaps.reduce((sum, cm) => sum + cm.sizeBytes, 0);
 
   return (
@@ -69,7 +78,7 @@ export function CachedMapsList(): ReactElement {
         ) : (
           <>
             <ListGroup>
-              {cachedMaps.map((cm) => {
+              {sortedMaps.map((cm) => {
                 const dl = activeDownloads[cm.type];
 
                 const isComplete = cm.downloadedCount === cm.tileCount;
@@ -163,6 +172,7 @@ export function CachedMapsList(): ReactElement {
                                 mapFitBbox({
                                   bbox: cm.bounds,
                                   maxZoom: cm.maxNativeZoom,
+                                  minZoom: cm.minZoom,
                                 }),
                               );
                             }}
@@ -177,6 +187,7 @@ export function CachedMapsList(): ReactElement {
                                 mapFitBbox({
                                   bbox: cm.bounds,
                                   maxZoom: cm.maxNativeZoom,
+                                  minZoom: cm.minZoom,
                                 }),
                               )
                             }

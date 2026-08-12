@@ -39,3 +39,14 @@ export function objectToURLSearchParams(query: Record<string, unknown>) {
 
   return new URLSearchParams(res);
 }
+
+/**
+ * Orders by a label the way the current language reads it, putting anything
+ * unnamed last rather than wherever its placeholder happens to collate.
+ */
+export function makeLabelComparator(language: string) {
+  const collator = new Intl.Collator(language, { sensitivity: 'base' });
+
+  return (a: string | undefined, b: string | undefined) =>
+    a && b ? collator.compare(a, b) : a ? -1 : b ? 1 : 0;
+}
