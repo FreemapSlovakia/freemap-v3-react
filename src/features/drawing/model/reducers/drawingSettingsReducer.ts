@@ -4,6 +4,7 @@ import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import z from 'zod';
 import {
   drawingLineChangeProperties,
+  drawingPreventCutHoleHint,
   LineCapSchema,
   LineJoinSchema,
 } from '../actions/drawingLineActions.js';
@@ -63,6 +64,7 @@ export function drawingStyleEquals(a: DrawingStyle, b: DrawingStyle): boolean {
 export const DrawingSettingsSchema = z.object({
   style: DrawingStyleSchema,
   recentColors: z.array(z.string()),
+  preventCutHoleHint: z.boolean(),
 });
 
 export type DrawingSettings = z.infer<typeof DrawingSettingsSchema>;
@@ -114,12 +116,14 @@ export const DrawingSettingsCompatSchema = z.preprocess(
   z.object({
     style: DrawingStyleSchema.partial(),
     recentColors: z.array(z.string()).optional(),
+    preventCutHoleHint: z.boolean().optional(),
   }),
 );
 
 export const drawingSettingsInitialState: DrawingSettings = {
   style: makeDrawingStyle('#0000ff', 4),
   recentColors: [],
+  preventCutHoleHint: false,
 };
 
 export const drawingSettingsReducer = createReducer(
@@ -168,6 +172,9 @@ export const drawingSettingsReducer = createReducer(
         if (fillColor) {
           updateRecentDrawingColors(state, fillColor);
         }
+      })
+      .addCase(drawingPreventCutHoleHint, (state) => {
+        state.preventCutHoleHint = true;
       })
       .addMatcher(
         isAnyOf(drawingLineChangeProperties, drawingPointChangeProperties),

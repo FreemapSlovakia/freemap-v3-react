@@ -4,6 +4,7 @@ import {
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
@@ -37,7 +38,9 @@ import {
   drawingLineSetHoleOf,
   drawingLineSimplify,
   drawingLineStopDrawing,
+  drawingPreventCutHoleHint,
 } from '../model/actions/drawingLineActions.js';
+import { loadDrawingMessages } from '../translations/loadDrawingMessages.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import { DrawingToggleButton } from './DrawingToggleButton.js';
 import { ProjectPointModal } from './ProjectPointModal.js';
@@ -74,6 +77,15 @@ export default function DrawingLineSelection(): ReactElement | null {
 
   const cuttingHole = useAppSelector(
     (state) => line !== undefined && state.drawingLines.holeFor === line.id,
+  );
+
+  const preventCutHoleHint = useAppSelector(
+    (state) => state.drawingSettings.preventCutHoleHint,
+  );
+
+  // Offering "don't show next time" only once the pref can outlive the session.
+  const canRememberHintPref = useAppSelector(
+    (state) => state.cookieConsent.cookieConsentResult !== null,
   );
 
   const isHole = line?.holeOfId !== undefined;
@@ -191,14 +203,41 @@ export default function DrawingLineSelection(): ReactElement | null {
       }
 
       switch (eventKey) {
-        case 'cut-hole':
+        case 'cut-hole': {
           // Opening a map-click tool disarms hole mode the same way it drops a
           // line being drawn, so arm it only once the tool is open.
           dispatch(openTool('draw-polygons'));
 
           dispatch(drawingLineCutHole({ parentLineIndex: lineIndex }));
 
+          if (!preventCutHoleHint) {
+            const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
+
+            if (canRememberHintPref) {
+              actions.push({
+                nameKey: 'general.preventShowingAgain',
+                action: drawingPreventCutHoleHint(),
+                variant: 'dark',
+              });
+            }
+
+            dispatch(
+              toastsAdd({
+                id: 'drawing.cutHoleHint',
+                messageKey: 'cutHoleHint',
+                messageLoader: loadDrawingMessages,
+                style: 'info',
+                actions,
+                // Hole mode is spent once the hole's first point lands, and
+                // dropped when it is cancelled — either way the hint is done.
+                statePredicate: (state) =>
+                  state.drawingLines.holeFor === undefined,
+              }),
+            );
+          }
+
           break;
+        }
 
         case 'make-hole':
           dispatch(
@@ -248,7 +287,15 @@ export default function DrawingLineSelection(): ReactElement | null {
         }
       }
     },
-    [dispatch, enclosingIndex, lineIndex, m, toggleElevationChart],
+    [
+      canRememberHintPref,
+      dispatch,
+      enclosingIndex,
+      lineIndex,
+      m,
+      preventCutHoleHint,
+      toggleElevationChart,
+    ],
   );
 
   if (!line) {
@@ -289,27 +336,19 @@ export default function DrawingLineSelection(): ReactElement | null {
         noLeftMargin
       >
         {cuttingHole && (
-          <>
-            <span className="ms-2 me-1">{dm?.cutHoleHint}</span>
-
-            <LongPressTooltip
-              breakpoint="sm"
-              label={m?.general.cancel}
-              kbd="Esc"
-            >
-              {({ label, labelClassName, props }) => (
-                <Button
-                  className="ms-1"
-                  variant="secondary"
-                  onClick={() => dispatch(drawingLineStopDrawing())}
-                  {...props}
-                >
-                  <FaTimes />
-                  <span className={labelClassName}> {label}</span>
-                </Button>
-              )}
-            </LongPressTooltip>
-          </>
+          <LongPressTooltip breakpoint="sm" label={m?.general.cancel} kbd="Esc">
+            {({ label, labelClassName, props }) => (
+              <Button
+                className="ms-1"
+                variant="secondary"
+                onClick={() => dispatch(drawingLineStopDrawing())}
+                {...props}
+              >
+                <FaTimes />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
         )}
 
         {drawing && (
