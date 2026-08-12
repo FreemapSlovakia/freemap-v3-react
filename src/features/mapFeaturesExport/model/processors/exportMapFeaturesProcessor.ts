@@ -1,10 +1,19 @@
+import { sendError } from '@app/store/middleware/globalErrorHandler.js';
 import type {
   Processor,
   ProcessorHandler,
 } from '@app/store/middleware/processorMiddleware.js';
+import {
+  startProgress,
+  stopProgress,
+} from '@features/progress/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
-import { type ExportType, exportMapFeatures } from '../actions.js';
+import {
+  EXPORT_PROGRESS_ID,
+  type ExportType,
+  exportMapFeatures,
+} from '../actions.js';
 
 type HandlerModule = { default: ProcessorHandler<typeof exportMapFeatures> };
 
@@ -33,7 +42,7 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
   actionCreator: exportMapFeatures,
   id: 'mapFeaturesExport',
   handle: async (...params) => {
-    const { toastError } = params[0];
+    const { toastError, dispatch } = params[0];
 
     const { type, target, exportables } = params[0].action.payload;
 
@@ -48,6 +57,13 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
       }).toString(),
     ]);
 
+    dispatch(startProgress(EXPORT_PROGRESS_ID));
+
+    // A handler chunk that won't load — offline, or hashes from a past deploy —
+    // is the app failing to deliver itself rather than an export fault, and
+    // reporting it would add a ticket-id toast to a plain "reload me".
+    let loaded = false;
+
     try {
       const module =
         target === 'garmin'
@@ -57,9 +73,23 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
             )
           : await formatHandlers[type]();
 
-      return module.default(...params);
+      loaded = true;
+
+      return await module.default(...params);
     } catch (err) {
+      // `toastError` replaces the middleware's generic processor toast with the
+      // export's own, so the reporting the middleware would have done is done
+      // here. A cancelled export is not a failure.
+      if (
+        loaded &&
+        !(err instanceof DOMException && err.name === 'AbortError')
+      ) {
+        sendError({ kind: 'processor', error: err, action: params[0].action });
+      }
+
       await toastError(err, loadMapFeaturesExportMessages, 'exportError');
+    } finally {
+      dispatch(stopProgress(EXPORT_PROGRESS_ID));
     }
   },
 };
