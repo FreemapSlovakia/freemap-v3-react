@@ -1,14 +1,28 @@
+/**
+ * The subdomain a fetched tile is asked from. `{s}` exists to spread a map view
+ * over several hosts, which a fetch one tile at a time has no use for — but the
+ * name still has to resolve, and not every layer's subdomains are letters.
+ */
+export function pickSubdomain(
+  subdomains: string | string[] | undefined,
+): string {
+  return (
+    (typeof subdomains === 'string' ? subdomains[0] : subdomains?.[0]) ?? 'a'
+  );
+}
+
 export function buildTileUrl(
   urlTemplate: string,
   x: number,
   y: number,
   z: number,
+  subdomain = 'a',
 ): string {
   return urlTemplate
     .replace('{x}', String(x))
     .replace('{y}', String(y))
     .replace('{z}', String(z))
-    .replace('{s}', 'a');
+    .replace('{s}', subdomain);
 }
 
 /**

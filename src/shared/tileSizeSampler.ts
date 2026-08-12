@@ -39,6 +39,8 @@ export type TileSizeEstimate = {
 
 export type SampleTilesSizeParams = {
   urlTemplate: string;
+  /** The `{s}` host to sample from; see `pickSubdomain`. */
+  subdomain?: string;
   bbox: [number, number, number, number];
   minZoom: number;
   maxZoom: number;
@@ -54,6 +56,7 @@ export type SampleTilesSizeParams = {
  */
 export async function sampleTilesSize({
   urlTemplate,
+  subdomain,
   bbox,
   minZoom,
   maxZoom,
@@ -72,7 +75,7 @@ export async function sampleTilesSize({
             : SAMPLES_AT_OTHER_ZOOMS,
         ).map(async ([x, y]) => {
           const url = withTileScale(
-            buildTileUrl(urlTemplate, x, y, range.zoom),
+            buildTileUrl(urlTemplate, x, y, range.zoom, subdomain),
             scale,
           );
 
