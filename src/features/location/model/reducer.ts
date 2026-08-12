@@ -1,6 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import type { LatLon } from '@shared/types/common.js';
 import {
+  locateFailed,
   locationSetExternalSource,
   setLocation,
   toggleLocate,
@@ -19,6 +20,8 @@ interface GpsLocation extends LatLon {
 export interface LocationState {
   location: GpsLocation | null;
   locate: boolean;
+  /** Locating is on and the first fix has neither arrived nor failed yet. */
+  locating: boolean;
   /** Something other than the browser is supplying the fixes; see the action. */
   externalSource: boolean;
 }
@@ -26,6 +29,7 @@ export interface LocationState {
 export const locationInitialState: LocationState = {
   location: null,
   locate: false,
+  locating: false,
   externalSource: false,
 };
 
@@ -40,10 +44,16 @@ export const locationReducer = createReducer(locationInitialState, (builder) =>
         speed: action.payload.speed,
         at: action.payload.at,
       };
+
+      state.locating = false;
     })
     .addCase(toggleLocate, (state, action) => {
       state.locate = action.payload ?? !state.locate;
       state.location = null;
+      state.locating = state.locate;
+    })
+    .addCase(locateFailed, (state) => {
+      state.locating = false;
     })
     .addCase(locationSetExternalSource, (state, action) => {
       state.externalSource = action.payload;

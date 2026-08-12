@@ -191,6 +191,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Zapri orodje',
     locateMe: 'Kje sem?',
     locationError: 'Napaka pri pridobivanju lokacije.',
+    locationNoSignal: 'Signala GPS še ni.',
     headingSource: 'Kazalnik smeri',
     headingSources: {
       none: 'Skrit',

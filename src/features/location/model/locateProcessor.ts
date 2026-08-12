@@ -3,6 +3,7 @@ import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
+  locateFailed,
   locationSetExternalSource,
   setLocation,
   toggleLocate,
@@ -61,6 +62,9 @@ export const locateProcessor: Processor<
 
     const mySession = ++session;
 
+    // scoped to this watch, so each locate start may warn about a slow fix once
+    let warned = false;
+
     const applyFix = ({
       coords: { latitude, longitude, accuracy, heading, speed },
       timestamp,
@@ -115,6 +119,10 @@ export const locateProcessor: Processor<
     watch = window.navigator.geolocation?.watchPosition(
       applyFix,
       (err) => {
+        if (mySession !== session) {
+          return;
+        }
+
         if (err.code === err.PERMISSION_DENIED) {
           dispatch(toggleLocate(false));
 
@@ -128,11 +136,67 @@ export const locateProcessor: Processor<
               timeout: 5000,
             }),
           );
+
+          return;
         }
-        // POSITION_UNAVAILABLE / TIMEOUT: transient signal loss — keep the
-        // watch running so tracking recovers on its own once GPS returns
+
+        // Both remaining codes keep the watch running. A signal lost
+        // mid-tracking needs no word — the fading marker is the word.
+        const { locating } = getState().location;
+
+        if (err.code === err.TIMEOUT) {
+          // Still trying, so the wait stands; the code repeats every timeout,
+          // the warning doesn't.
+          if (locating && !warned) {
+            warned = true;
+
+            dispatch(
+              toastsAdd({
+                id: 'main.locationError',
+                messageKey: 'main.locationNoSignal',
+                style: 'warning',
+                // No timeout: the search it reports has none either. A fix
+                // dismisses it, as does the user.
+                statePredicate: (state) => state.location.location !== null,
+              }),
+            );
+          }
+
+          return;
+        }
+
+        // POSITION_UNAVAILABLE: nothing is acquiring at all — location services
+        // off, or no provider on a desktop.
+        dispatch(locateFailed());
+
+        if (locating) {
+          dispatch(
+            toastsAdd({
+              id: 'main.locationError',
+              messageKey: 'main.locationError',
+              style: 'warning',
+              timeout: 5000,
+              statePredicate: (state) => state.location.location !== null,
+            }),
+          );
+        }
       },
       { enableHighAccuracy: true, maximumAge: 0, timeout: 30_000 },
     );
+
+    if (watch === undefined) {
+      // No geolocation at all — nothing will ever call back, so don't leave the
+      // button on waiting for it.
+      dispatch(toggleLocate(false));
+
+      dispatch(
+        toastsAdd({
+          id: 'main.locationError',
+          messageKey: 'main.locationError',
+          style: 'warning',
+          timeout: 5000,
+        }),
+      );
+    }
   },
 };

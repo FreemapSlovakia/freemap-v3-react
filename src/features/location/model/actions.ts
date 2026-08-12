@@ -16,6 +16,12 @@ export const setLocation = createAction<{
 export const toggleLocate = createAction<boolean | undefined>('LOCATE');
 
 /**
+ * No fix could be obtained. Locating itself stays on, so one arriving later is
+ * still taken; this only ends the wait for the first one.
+ */
+export const locateFailed = createAction('LOCATE_FAILED');
+
+/**
  * Whether something other than the browser is supplying fixes — the GPS
  * recorder, while it is recording and set to feed them here.
  *

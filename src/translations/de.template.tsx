@@ -194,6 +194,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Werkzeug schließen',
     locateMe: 'Standort ermitteln',
     locationError: 'Fehler beim Abrufen des Standorts.',
+    locationNoSignal: 'Noch kein GPS-Signal.',
     headingSource: 'Richtungsanzeige',
     headingSources: {
       none: 'Ausgeblendet',

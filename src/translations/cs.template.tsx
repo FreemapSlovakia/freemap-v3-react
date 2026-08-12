@@ -192,6 +192,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Zavřít nástroj',
     locateMe: 'Kde jsem?',
     locationError: 'Nepodařilo se získat pozici.',
+    locationNoSignal: 'Zatím bez signálu GPS.',
     headingSource: 'Ukazatel směru',
     headingSources: {
       none: 'Skrytý',

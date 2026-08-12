@@ -186,6 +186,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeTool: 'Zamknij narzędzie',
     locateMe: 'Pokaż moją pozycję',
     locationError: 'Błąd pobierania pozycji.',
+    locationNoSignal: 'Nadal brak sygnału GPS.',
     headingSource: 'Wskaźnik kierunku',
     headingSources: {
       none: 'Ukryty',
