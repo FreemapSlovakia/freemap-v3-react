@@ -32,9 +32,8 @@ have to be added upstream one at a time.
 feeds, and the only thing that would change to move them or to put a proxy back
 in front.
 
-What we would like the feed itself to change — tile format, tile size, cache
-headers — is collected in [`weather.md`](./weather.md), written to be forwarded
-upstream.
+[`weather.md`](./weather.md) records what was asked of the feed itself — tile
+format, tile size, cache headers, history depth — and what the answers were.
 
 ### Licence
 
@@ -50,13 +49,14 @@ Everything the app knows about the API lives in
 - `GET /{radar|forecast}/status` →
   `{ updatedAt, zoomLevels: number[], format, times: string[] }`.
   Times are unix seconds **as strings**; `zoomLevels` and `format` are read
-  rather than assumed, so the server can widen a range or move from PNG to WebP
-  with no app deploy at all.
-- Tiles: `/{feed}/tiles/{time}/{z}/{x}/{y}.{format}`, 512×512 on the **standard
-  slippy grid** — verified against a known-standard source — so they are @2x
-  renders that Leaflet displays at its usual 256 CSS px. There is no size
-  parameter, so a 1× screen pays for pixels it cannot use, and tiles run
-  70–210 KB rather than the ~10 KB a vector-ish overlay would.
+  rather than assumed, so the server can widen a zoom range or change the tile
+  format with no app deploy at all. `format` is `webp`; PNG is served too.
+- Tiles: `/{feed}/tiles/{time}/{z}/{x}/{y}.{format}`, on the **standard slippy
+  grid** — verified against a known-standard source. They default to 512×512,
+  @2x renders that Leaflet displays at its usual 256 CSS px; `?size=256` asks
+  for the 1× render instead, and `radarTileUrl` sends it whenever
+  `devicePixelRatio < 2`. That is worth about half the bytes, which matters
+  because an animation pass fetches every frame over the visible area.
 - `updatedAt` is the feed's regeneration stamp and is **stable between
   requests**, which is what makes it usable as the forecast's cache key.
 

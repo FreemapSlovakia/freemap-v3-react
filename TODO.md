@@ -348,11 +348,9 @@ Open items are issues under `area: infra`.
 
 ## Weather radar (`src/features/weatherRadar/`, see [`doc/weather-radar.md`](./doc/weather-radar.md))
 
-What we'd like the upstream feed to change (WebP tiles, 1× tiles, cache headers
-on forecast tiles) is written up in [`doc/weather.md`](./doc/weather.md) for
-forwarding. Nothing there needs client work: the app reads `format`,
-`zoomLevels` and `times` from each status document.
+[`doc/weather.md`](./doc/weather.md) records what was asked of the upstream feed
+and what landed. Nothing is outstanding there.
 
-- [ ] **The old LibreWXR instance on fm5** (`~/librewxr`, `docker compose`) is
-      still running and no longer used, as is the `weather.freemap.sk` vhost and
-      its cert. Stop and remove both once this backend has proved itself.
+- [ ] **Leftovers of the old LibreWXR instance on fm5.** The container is gone,
+      but the `weather.freemap.sk` vhost and its cert still point at the dead
+      upstream, and `/fm/data4/librewxr` still holds ~3 GB of its tiles.

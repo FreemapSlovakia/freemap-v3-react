@@ -26,7 +26,7 @@ export const FeedStatusSchema = z.object({
   /** When the feed was last regenerated — stable between requests. */
   updatedAt: z.string(),
   zoomLevels: z.array(z.number()).nonempty(),
-  /** `png` today, `webp` once enough clients have updated. */
+  /** `webp`; PNG is still served, so this is read rather than assumed. */
   format: z.string(),
   /** Unix seconds, delivered as strings. */
   times: z.array(z.coerce.number()),
@@ -66,10 +66,15 @@ export const feedOf = (frame: RadarFrame): RadarFeed =>
   frame.forecast ? 'forecast' : 'radar';
 
 /**
- * Leaflet URL template for one frame. The tiles are 512×512 on the standard
- * slippy grid — a @2x render of the tile, so Leaflet displays them at its usual
- * 256 CSS px. There is no size parameter, so a 1x screen pays for pixels it
- * cannot use; nothing to be done about that from here.
+ * Leaflet URL template for one frame. The tiles sit on the standard slippy grid
+ * — verified against a known-standard source — and default to 512×512, a @2x
+ * render that Leaflet displays at its usual 256 CSS px.
+ *
+ * `size=256` asks for the 1× render instead, worth about half the bytes: an
+ * animation pass fetches every frame over the visible area, so a screen that
+ * cannot show the extra pixels pays for them once per frame. Read at call time
+ * rather than module load, so a window moved to a different monitor is picked
+ * up by the frames built after it.
  *
  * `version` is appended for the forecast, whose frames are recomputed under a
  * fixed URL each cycle — without it the browser answers a re-fetch from its own
@@ -81,9 +86,21 @@ export function radarTileUrl(
   { format }: FeedInfo,
   version?: string,
 ): string {
+  const params = new URLSearchParams();
+
+  if (window.devicePixelRatio < 2) {
+    params.set('size', '256');
+  }
+
+  if (version !== undefined) {
+    params.set('v', version);
+  }
+
+  const query = params.toString();
+
   return (
     `${WEATHER_RADAR_URL}/${feedOf(frame)}/tiles/${frame.time}/{z}/{x}/{y}.${format}` +
-    (version === undefined ? '' : `?v=${encodeURIComponent(version)}`)
+    (query === '' ? '' : `?${query}`)
   );
 }
 
