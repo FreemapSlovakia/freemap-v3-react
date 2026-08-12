@@ -8,12 +8,10 @@ import {
 import { authLogoutProcessor } from '@features/auth/model/processors/authLogoutProcessor.js';
 import {
   cachedMapDeletedProcessor,
-  cachedMapRenamedProcessor,
-  cacheTilesCancelProcessor,
-  cacheTilesPauseProcessor,
+  cachedMapEditedProcessor,
   cacheTilesRestartProcessor,
-  cacheTilesResumeProcessor,
   cacheTilesStartProcessor,
+  cacheTilesStopProcessor,
 } from '@features/cachedMaps/model/cacheTilesProcessor.js';
 import {
   changesetsProcessor,
@@ -234,10 +232,8 @@ export const processors = [
   purchaseProcessor,
   cacheTilesStartProcessor,
   cacheTilesRestartProcessor,
-  cacheTilesPauseProcessor,
-  cacheTilesResumeProcessor,
-  cacheTilesCancelProcessor,
+  cacheTilesStopProcessor,
   cachedMapDeletedProcessor,
-  cachedMapRenamedProcessor,
+  cachedMapEditedProcessor,
   urlProcessor,
 ];

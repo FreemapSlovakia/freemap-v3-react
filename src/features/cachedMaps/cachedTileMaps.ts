@@ -26,6 +26,21 @@ export type CachedTileMapDef = CustomLayerDef<
 };
 
 /**
+ * Whether two versions of a map cover the same tiles — an edit that changed
+ * only the name has nothing to download or prune.
+ */
+export function sameCoverage(
+  a: CachedTileMapDef,
+  b: CachedTileMapDef,
+): boolean {
+  return (
+    a.minZoom === b.minZoom &&
+    a.maxNativeZoom === b.maxNativeZoom &&
+    a.bounds.every((v, i) => v === b.bounds[i])
+  );
+}
+
+/**
  * The scale a cached map holds. Maps whose metadata carries no scale are
  * guessed at with the rule their download used — what this screen's DPI picks.
  */

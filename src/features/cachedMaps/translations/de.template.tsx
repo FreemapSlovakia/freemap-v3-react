@@ -3,6 +3,8 @@ import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const de: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   cacheOfflineMap: 'Karte für Offline-Nutzung speichern',
+  modifyOfflineMap: 'Offline-Karte bearbeiten',
+  toDownload: 'Herunterzuladen',
   addOfflineMap: 'Offline-Karte hinzufügen',
   emptyMessage:
     'Noch keine Offline-Karten gespeichert. Fügen Sie eine hinzu, um Karten ohne Internetverbindung zu nutzen.',
@@ -11,8 +13,8 @@ const de: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   size: 'Größe',
   ready: 'Bereit',
   incomplete: ({ pct }) => <>Unvollständig ({pct} %)</>,
-  pause: 'Pausieren',
   resume: 'Fortsetzen',
+  stop: 'Anhalten',
   total: 'Gesamt',
   largeDownload: ({ tiles, size }) => (
     <>

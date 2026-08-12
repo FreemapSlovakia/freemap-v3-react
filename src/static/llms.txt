@@ -358,7 +358,7 @@ The recording is also shown as a red line on the map with its newest fix marked;
 
 Caches selected map areas (tiles) in the browser for offline use. (This is different from "Offline maps export", which produces a downloadable MBTiles/SQLiteDB file.)
 
-The manager modal lists already-cached offline maps with their zoom range, tile count, scale, size and status (Ready, or incomplete with pause/resume), and has buttons to edit, delete, and **Add offline map**. A ready map has an **Activate** button that switches the map layer on and zooms to its area; a map that is still downloading offers **Zoom to area** instead.
+The manager modal lists already-cached offline maps with their zoom range, tile count, scale, size and status (Ready, or incomplete with a percentage), and has buttons to modify, delete, and **Add offline map**. A ready map has an **Activate** button that switches the map layer on and zooms to its area; a map that is still downloading offers **Zoom to area** instead. A running download can be **Stop**ped, which halts it and keeps whatever has been cached so far; an incomplete map then offers **Resume**, which fetches only the tiles it is missing. **Delete** discards the map altogether and is available whether or not it is downloading.
 
 The "Cache map for offline use" form lets the user choose:
 
@@ -370,6 +370,8 @@ The "Cache map for offline use" form lets the user choose:
 - whether to show the cached map in the menu and/or toolbar
 
 It shows the estimated tile count and size before caching starts; the size is estimated by fetching a few real tiles of the selected layer, area, zoom range and scale. It warns about very large downloads and about downloads that would not fit in the browser's free storage.
+
+**Modify** opens the same form seeded from an existing offline map, to change its name, area, zoom range and menu/toolbar visibility. The map (layer) and the scale are fixed, since changing either would invalidate every stored tile. Widening the area or the zoom range downloads only the tiles that are missing; narrowing it deletes the tiles that fall outside. The form then shows both the map's total tile count and how many of them still have to be downloaded. Changing only the name touches no tiles.
 
 Picking the rectangle option (in this form and in the map/document exports below) hides the modal and lets the user drag the rectangle's corner, edge, and center handles on the map, confirming with **OK** or discarding with **Cancel** (<kbd>Esc</kbd>). The confirmed rectangle is remembered for the other export/cache forms until the page is reloaded; if it lies outside the current view, the map jumps to it.
 

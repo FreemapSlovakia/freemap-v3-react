@@ -19,7 +19,7 @@ import {
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import { countTilesInBbox } from '@shared/tileEnumeration.js';
+import { countCachedOf, countTilesInBbox } from '@shared/tileEnumeration.js';
 import { pickTileScale } from '@shared/tileUrl.js';
 import {
   type ReactElement,
@@ -43,8 +43,15 @@ import {
 import { BiWifiOff } from 'react-icons/bi';
 import { FaChevronLeft, FaSave } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import type { CachedTileMapDef } from '../cachedTileMaps.js';
-import { cachedMapsSetView, cacheTilesStart } from '../model/actions.js';
+import {
+  type CachedTileMapDef,
+  getCachedTileScale,
+} from '../cachedTileMaps.js';
+import {
+  cachedMapEdited,
+  cachedMapsSetView,
+  cacheTilesStart,
+} from '../model/actions.js';
 import { useCachedMapsMessages } from '../translations/useCachedMapsMessages.js';
 
 type CacheableLayerDef = IntegratedLayerDef<IsTileLayerDef> & {
@@ -69,7 +76,12 @@ const BYTES_PER_SECOND = 1_250_000; // ~10 Mbps
 
 const LARGE_DOWNLOAD_SECONDS = 5 * 60;
 
-export function CacheTilesForm(): ReactElement {
+type Props = {
+  /** The map being modified; absent when a new one is being added. */
+  editing?: CachedTileMapDef;
+};
+
+export function CacheTilesForm({ editing }: Props): ReactElement {
   const m = useMessages();
 
   const ome = useOfflineMapExportMessages();
@@ -79,6 +91,8 @@ export function CacheTilesForm(): ReactElement {
   const dispatch = useDispatch();
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
+
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
   const mapDefs = useMemo(() => {
     const integrated = integratedLayerDefs
@@ -110,7 +124,8 @@ export function CacheTilesForm(): ReactElement {
   const layers = useAppSelector((state) => state.map.layers);
 
   const [mapType, setMapType] = useState(
-    mapDefs.find((def) => layers.includes(def.type))?.type ??
+    editing?.sourceType ??
+      mapDefs.find((def) => layers.includes(def.type))?.type ??
       mapDefs[0]?.type ??
       '',
   );
@@ -120,26 +135,47 @@ export function CacheTilesForm(): ReactElement {
     [mapType, mapDefs],
   );
 
-  const [name, setName] = useState('');
+  // Editing keeps the layer and the scale as they were downloaded — changing
+  // either invalidates every stored tile. The source layer can meanwhile have
+  // been removed from the registry (a deleted custom layer), so the map's own
+  // metadata stands in for it; the zoom range then can't be grown past what is
+  // already cached, there being nothing left to say how deep the source goes.
+  const urlTemplate = editing?.url ?? mapDef?.url;
 
-  const [nameChanged, setNameChanged] = useState(false);
+  const limitMinZoom = editing && !mapDef ? editing.minZoom : mapDef?.minZoom;
 
-  const [minZoom, setMinZoom] = useState('0');
+  const limitMaxZoom =
+    editing && !mapDef ? editing.maxNativeZoom : mapDef?.maxNativeZoom;
 
-  const [maxZoom, setMaxZoom] = useState('0');
+  const [name, setName] = useState(editing?.name ?? '');
 
-  const [scale, setScale] = useState('1');
+  const [nameChanged, setNameChanged] = useState(editing !== undefined);
 
-  const { area, setArea, bbox, startSelecting } = useMapAreaSelection();
+  const [minZoom, setMinZoom] = useState(String(editing?.minZoom ?? 0));
 
-  const [showInMenu, setShowInMenu] = useState(true);
+  const [maxZoom, setMaxZoom] = useState(String(editing?.maxNativeZoom ?? 0));
 
-  const [showInToolbar, setShowInToolbar] = useState(false);
+  // A map that recorded no scale still holds one, and the estimate has to
+  // sample that variant or be off by its area. The same guess the download
+  // falls back to when probing the cache turns nothing up.
+  const [scale, setScale] = useState(
+    String(editing ? getCachedTileScale(editing) : 1),
+  );
 
-  const layersSettings = useAppSelector((state) => state.map.layersSettings);
+  const { area, setArea, bbox, startSelecting } = useMapAreaSelection(
+    editing?.bounds,
+  );
+
+  const [showInMenu, setShowInMenu] = useState(
+    editing ? (layersSettings[editing.type]?.showInMenu ?? true) : true,
+  );
+
+  const [showInToolbar, setShowInToolbar] = useState(
+    editing ? (layersSettings[editing.type]?.showInToolbar ?? false) : false,
+  );
 
   useEffect(() => {
-    if (!mapDef) {
+    if (editing || !mapDef) {
       return;
     }
 
@@ -156,7 +192,7 @@ export function CacheTilesForm(): ReactElement {
         ),
       ),
     );
-  }, [mapDef]);
+  }, [mapDef, editing]);
 
   useEffect(() => {
     setName((prev) => {
@@ -178,6 +214,28 @@ export function CacheTilesForm(): ReactElement {
     return countTilesInBbox(bbox, Number(minZoom), Number(maxZoom));
   }, [bbox, minZoom, maxZoom]);
 
+  // What caching will actually fetch: everything for a new map, for an edited
+  // one everything the previous download didn't already get to. Where it got to
+  // matters as much as how far — moving the area onto tiles a stopped download
+  // never reached leaves them all to fetch.
+  const tilesToAdd = useMemo(() => {
+    if (tileCount === undefined || !bbox || !editing) {
+      return tileCount;
+    }
+
+    const held = countCachedOf(
+      {
+        bounds: editing.bounds,
+        minZoom: editing.minZoom ?? 0,
+        maxZoom: editing.maxNativeZoom ?? 18,
+      },
+      { bounds: bbox, minZoom: Number(minZoom), maxZoom: Number(maxZoom) },
+      editing.downloadedCount,
+    );
+
+    return Math.max(0, tileCount - held);
+  }, [bbox, minZoom, maxZoom, editing, tileCount]);
+
   const cnf = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -186,18 +244,15 @@ export function CacheTilesForm(): ReactElement {
   const invalidMinZoom = isInvalidInt(
     minZoom,
     true,
-    mapDef?.minZoom ?? 0,
-    Math.min(
-      mapDef?.maxNativeZoom ?? Infinity,
-      parseInt(maxZoom, 10) || Infinity,
-    ),
+    limitMinZoom ?? 0,
+    Math.min(limitMaxZoom ?? Infinity, parseInt(maxZoom, 10) || Infinity),
   );
 
   const invalidMaxZoom = isInvalidInt(
     maxZoom,
     true,
-    Math.max(parseInt(minZoom, 10) || 0, mapDef?.minZoom ?? 0),
-    mapDef?.maxNativeZoom,
+    Math.max(parseInt(minZoom, 10) || 0, limitMinZoom ?? 0),
+    limitMaxZoom,
   );
 
   // a custom layer may well declare 1 among its extra resolutions, or the same
@@ -211,11 +266,12 @@ export function CacheTilesForm(): ReactElement {
   // sample the very variant the download will fetch — the scale is the biggest
   // single lever on the size
   const { bytes: estimatedSize, sampling } = useTilesSizeEstimate({
-    urlTemplate: mapDef?.url,
+    urlTemplate,
     bbox,
     minZoom: Number(minZoom),
     maxZoom: Number(maxZoom),
     tileCount,
+    estimateForCount: tilesToAdd,
     scale: Number(scale),
     enabled: !invalidMinZoom && !invalidMaxZoom,
   });
@@ -229,8 +285,8 @@ export function CacheTilesForm(): ReactElement {
 
   const largeDownload =
     estimatedSize !== undefined &&
-    tileCount !== undefined &&
-    (tileCount * REQUEST_SECONDS) / CONCURRENT_REQUESTS +
+    tilesToAdd !== undefined &&
+    (tilesToAdd * REQUEST_SECONDS) / CONCURRENT_REQUESTS +
       estimatedSize / BYTES_PER_SECOND >
       LARGE_DOWNLOAD_SECONDS;
 
@@ -238,46 +294,70 @@ export function CacheTilesForm(): ReactElement {
     (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      if (!mapDef || !bbox) {
+      if (!bbox) {
         return;
       }
 
-      const type = Math.random().toString(36).slice(2);
+      let type: string;
 
-      // strip integrated-only / non-serializable fields (icon, shortcut, etc.);
-      // `bbox` is the source layer's declared coverage — a cached map's real
-      // extent is its `bounds`, set below
-      const {
-        icon: _icon,
-        shortcut: _shortcut,
-        defaultInToolbar: _dt,
-        defaultInMenu: _dm,
-        countries: _countries,
-        superseededBy: _s,
-        experimental: _e,
-        layerPreview: _lp,
-        premiumFromZoom: _p,
-        bbox: _bbox,
-        ...rest
-      } = mapDef as Record<string, unknown> & typeof mapDef;
+      if (editing) {
+        type = editing.type;
 
-      const meta = {
-        ...rest,
-        type,
-        name,
-        sourceType: mapDef.type,
-        minZoom: parseInt(minZoom, 10),
-        maxNativeZoom: parseInt(maxZoom, 10),
-        bounds: bbox,
-        tileCount: tileCount ?? 0,
-        downloadedCount: 0,
-        cacheName: `tiles-${type}`,
-        createdAt: new Date().toISOString(),
-        sizeBytes: 0,
-        tileScale: Number(scale),
-      } as CachedTileMapDef;
+        dispatch(
+          cachedMapEdited({
+            prev: editing,
+            next: {
+              ...editing,
+              name,
+              minZoom: parseInt(minZoom, 10),
+              maxNativeZoom: parseInt(maxZoom, 10),
+              bounds: bbox,
+              tileCount: tileCount ?? 0,
+            },
+          }),
+        );
+      } else {
+        if (!mapDef) {
+          return;
+        }
 
-      dispatch(cacheTilesStart(meta));
+        type = Math.random().toString(36).slice(2);
+
+        // strip integrated-only / non-serializable fields (icon, shortcut, etc.);
+        // `bbox` is the source layer's declared coverage — a cached map's real
+        // extent is its `bounds`, set below
+        const {
+          icon: _icon,
+          shortcut: _shortcut,
+          defaultInToolbar: _dt,
+          defaultInMenu: _dm,
+          countries: _countries,
+          superseededBy: _s,
+          experimental: _e,
+          layerPreview: _lp,
+          premiumFromZoom: _p,
+          bbox: _bbox,
+          ...rest
+        } = mapDef as Record<string, unknown> & typeof mapDef;
+
+        const meta = {
+          ...rest,
+          type,
+          name,
+          sourceType: mapDef.type,
+          minZoom: parseInt(minZoom, 10),
+          maxNativeZoom: parseInt(maxZoom, 10),
+          bounds: bbox,
+          tileCount: tileCount ?? 0,
+          downloadedCount: 0,
+          cacheName: `tiles-${type}`,
+          createdAt: new Date().toISOString(),
+          sizeBytes: 0,
+          tileScale: Number(scale),
+        } as CachedTileMapDef;
+
+        dispatch(cacheTilesStart(meta));
+      }
 
       dispatch(
         saveSettings({
@@ -297,6 +377,7 @@ export function CacheTilesForm(): ReactElement {
     },
     [
       dispatch,
+      editing,
       name,
       mapDef,
       minZoom,
@@ -318,7 +399,7 @@ export function CacheTilesForm(): ReactElement {
     <form onSubmit={handleSubmit} className="d-contents">
       <Modal.Header closeButton>
         <Modal.Title>
-          <BiWifiOff /> {cm?.cacheOfflineMap}
+          <BiWifiOff /> {editing ? cm?.modifyOfflineMap : cm?.cacheOfflineMap}
         </Modal.Title>
       </Modal.Header>
 
@@ -326,24 +407,40 @@ export function CacheTilesForm(): ReactElement {
         <Form.Group controlId="mapType">
           <Form.Label>{ome?.map}</Form.Label>
 
-          <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
-            <Dropdown.Toggle as={SelectToggle} className="w-100">
-              {mapDef ? getItem(mapDef) : '???'}
-            </Dropdown.Toggle>
+          {editing ? (
+            <div className="form-control-plaintext mb-3">
+              {mapDef ? (
+                getItem(mapDef)
+              ) : (
+                <MapLayerItem
+                  def={{
+                    type: editing.sourceType,
+                    layer: editing.layer,
+                    name: editing.name,
+                  }}
+                />
+              )}
+            </div>
+          ) : (
+            <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
+              <Dropdown.Toggle as={SelectToggle} className="w-100">
+                {mapDef ? getItem(mapDef) : '???'}
+              </Dropdown.Toggle>
 
-            <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
-              {mapDefs.map((def) => (
-                <Dropdown.Item
-                  as="button"
-                  type="button"
-                  key={def.type}
-                  eventKey={def.type}
-                >
-                  {getItem(def)}
-                </Dropdown.Item>
-              ))}
-            </FmDropdownMenu>
-          </Dropdown>
+              <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
+                {mapDefs.map((def) => (
+                  <Dropdown.Item
+                    as="button"
+                    type="button"
+                    key={def.type}
+                    eventKey={def.type}
+                  >
+                    {getItem(def)}
+                  </Dropdown.Item>
+                ))}
+              </FmDropdownMenu>
+            </Dropdown>
+          )}
         </Form.Group>
 
         <Form.Group controlId="downloadArea">
@@ -370,15 +467,15 @@ export function CacheTilesForm(): ReactElement {
           />
         </Form.Group>
 
-        {mapDef && (
+        {urlTemplate && (
           <Form.Group controlId="zoomRange" className="mb-3">
             <Form.Label className="required">{ome?.zoomRange}</Form.Label>
 
             <InputGroup>
               <Form.Control
                 type="number"
-                min={mapDef.minZoom ?? 0}
-                max={mapDef.maxNativeZoom ?? 18}
+                min={limitMinZoom ?? 0}
+                max={limitMaxZoom ?? 18}
                 value={minZoom}
                 isInvalid={invalidMinZoom}
                 onChange={(e) => setMinZoom(e.currentTarget.value)}
@@ -388,8 +485,8 @@ export function CacheTilesForm(): ReactElement {
 
               <Form.Control
                 type="number"
-                min={mapDef.minZoom ?? 0}
-                max={mapDef.maxNativeZoom ?? 18}
+                min={limitMinZoom ?? 0}
+                max={limitMaxZoom ?? 18}
                 value={maxZoom}
                 isInvalid={invalidMaxZoom}
                 onChange={(e) => setMaxZoom(e.currentTarget.value)}
@@ -398,30 +495,40 @@ export function CacheTilesForm(): ReactElement {
           </Form.Group>
         )}
 
-        {scales && (
-          <Form.Group controlId="scale" className="mb-3">
-            <Form.Label>{ome?.scale}</Form.Label>
+        {editing
+          ? editing.tileScale !== undefined && (
+              <Form.Group className="mb-3">
+                <Form.Label>{ome?.scale}</Form.Label>
 
-            <ToggleButtonGroup
-              type="radio"
-              name="scale"
-              value={scale}
-              onChange={setScale}
-              className="d-flex"
-            >
-              {scales.map((s) => (
-                <ToggleButton
-                  key={s}
-                  id={`scale-${s}`}
-                  value={String(s)}
-                  variant="outline-primary"
+                <div className="form-control-plaintext">
+                  {editing.tileScale}×
+                </div>
+              </Form.Group>
+            )
+          : scales && (
+              <Form.Group controlId="scale" className="mb-3">
+                <Form.Label>{ome?.scale}</Form.Label>
+
+                <ToggleButtonGroup
+                  type="radio"
+                  name="scale"
+                  value={scale}
+                  onChange={setScale}
+                  className="d-flex"
                 >
-                  {s}×
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Form.Group>
-        )}
+                  {scales.map((s) => (
+                    <ToggleButton
+                      key={s}
+                      id={`scale-${s}`}
+                      value={String(s)}
+                      variant="outline-primary"
+                    >
+                      {s}×
+                    </ToggleButton>
+                  ))}
+                </ToggleButtonGroup>
+              </Form.Group>
+            )}
 
         <Form.Group>
           <LayerVisibilityFields
@@ -434,8 +541,8 @@ export function CacheTilesForm(): ReactElement {
           />
         </Form.Group>
 
-        {tileCount !== undefined &&
-          tileCount !== Infinity &&
+        {tilesToAdd !== undefined &&
+          tilesToAdd !== Infinity &&
           !invalidMinZoom &&
           !invalidMaxZoom && (
             <>
@@ -443,7 +550,7 @@ export function CacheTilesForm(): ReactElement {
               {largeDownload && !overQuota && (
                 <Alert variant="warning" className="mt-3 mb-0">
                   {cm?.largeDownload({
-                    tiles: cnf.format(tileCount),
+                    tiles: cnf.format(tilesToAdd),
                     size: sampling ? (
                       <Spinner animation="border" size="sm" />
                     ) : (
@@ -470,6 +577,12 @@ export function CacheTilesForm(): ReactElement {
         {tileCount !== undefined && (
           <div className="w-100 text-end">
             {cm?.tiles}: <b>{cnf.format(tileCount)}</b>
+            {editing && tilesToAdd !== undefined && (
+              <>
+                {' '}
+                | {cm?.toDownload}: <b>{cnf.format(tilesToAdd)}</b>
+              </>
+            )}
             {estimatedSize !== undefined && (
               <>
                 {' '}
@@ -495,7 +608,8 @@ export function CacheTilesForm(): ReactElement {
             !name.trim()
           }
         >
-          <FaSave /> {cm?.startCaching} <kbd>Enter</kbd>
+          <FaSave /> {editing ? m?.general.save : cm?.startCaching}{' '}
+          <kbd>Enter</kbd>
         </Button>
 
         <Button

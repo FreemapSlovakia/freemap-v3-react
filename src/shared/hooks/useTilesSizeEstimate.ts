@@ -9,6 +9,12 @@ export type TilesSizeEstimateParams = {
   minZoom: number;
   maxZoom: number;
   tileCount: number | undefined;
+  /**
+   * How many tiles to price, when that isn't the whole `tileCount` — extending
+   * a cached map only fetches the tiles it doesn't already hold. The sample is
+   * still normalized by `tileCount`, since it extrapolates the whole range.
+   */
+  estimateForCount?: number;
   /** The `@Nx` variant that will really be downloaded; see `pickTileScale`. */
   scale?: number;
   enabled?: boolean;
@@ -32,6 +38,7 @@ export function useTilesSizeEstimate({
   minZoom,
   maxZoom,
   tileCount,
+  estimateForCount,
   scale,
   enabled = true,
 }: TilesSizeEstimateParams): TilesSizeEstimate {
@@ -110,14 +117,18 @@ export function useTilesSizeEstimate({
 
   const bytesPerTile = sample?.key === key ? sample.bytesPerTile : undefined;
 
+  const pricedCount = estimateForCount ?? tileCount;
+
   return {
     bytes:
-      tileCount === undefined || !Number.isFinite(tileCount)
+      pricedCount === undefined ||
+      tileCount === undefined ||
+      !Number.isFinite(pricedCount)
         ? undefined
         : bytesPerTile === undefined
-          ? fallbackTilesSize(tileCount, scale ?? 1)
+          ? fallbackTilesSize(pricedCount, scale ?? 1)
           : // the sampled average is fractional; bytes are not
-            Math.round(bytesPerTile * tileCount),
+            Math.round(bytesPerTile * pricedCount),
     sampled: bytesPerTile !== undefined,
     sampling,
   };

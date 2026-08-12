@@ -2,10 +2,8 @@ import { applySettings } from '@app/store/actions.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import {
   cachedMapDeleted,
-  cachedMapRenamed,
+  cachedMapEdited,
   cachedMapsLoaded,
-  cacheTilesCancel,
-  cacheTilesComplete,
   cacheTilesProgress,
   cacheTilesStart,
 } from '@features/cachedMaps/model/actions.js';
@@ -281,33 +279,22 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       state.cachedMaps.push(payload);
     })
     .addCase(cacheTilesProgress, (state, { payload }) => {
-      const map = state.cachedMaps.find((m) => m.type === payload.id);
+      const i = state.cachedMaps.findIndex((m) => m.type === payload.type);
 
-      if (map) {
-        map.downloadedCount = payload.downloaded;
-        map.sizeBytes = payload.sizeBytes;
+      if (i >= 0) {
+        state.cachedMaps[i] = payload;
       }
-    })
-    .addCase(cacheTilesComplete, (state, { payload }) => {
-      const map = state.cachedMaps.find((m) => m.type === payload.id);
-
-      if (map) {
-        map.downloadedCount = map.tileCount;
-      }
-    })
-    .addCase(cacheTilesCancel, (state, { payload }) => {
-      state.cachedMaps = state.cachedMaps.filter((m) => m.type !== payload.id);
     })
     .addCase(cachedMapDeleted, (state, { payload }) => {
       state.cachedMaps = state.cachedMaps.filter((m) => m.type !== payload.id);
 
       state.layers = state.layers.filter((l) => l !== payload.id);
     })
-    .addCase(cachedMapRenamed, (state, { payload }) => {
-      const map = state.cachedMaps.find((m) => m.type === payload.id);
+    .addCase(cachedMapEdited, (state, { payload }) => {
+      const i = state.cachedMaps.findIndex((m) => m.type === payload.next.type);
 
-      if (map) {
-        map.name = payload.name;
+      if (i >= 0) {
+        state.cachedMaps[i] = payload.next;
       }
     }),
 );

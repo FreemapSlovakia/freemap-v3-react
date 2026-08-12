@@ -13,6 +13,12 @@ export default function CachedMapsModal({ show }: Props): ReactElement {
 
   const view = useAppSelector((state) => state.cachedMaps.view);
 
+  const editing = useAppSelector((state) =>
+    state.cachedMaps.editId === null
+      ? undefined
+      : state.map.cachedMaps.find((m) => m.type === state.cachedMaps.editId),
+  );
+
   const selectingArea = useAppSelector(
     (state) => state.mapArea.selecting !== null,
   );
@@ -28,7 +34,12 @@ export default function CachedMapsModal({ show }: Props): ReactElement {
       backdropClassName={selectingArea ? 'd-none' : undefined}
       enforceFocus={!selectingArea}
     >
-      {view === 'list' ? <CachedMapsList /> : <CacheTilesForm />}
+      {/* a map deleted while its edit form was open falls back to the list */}
+      {view === 'list' || (view === 'edit' && !editing) ? (
+        <CachedMapsList />
+      ) : (
+        <CacheTilesForm editing={editing} />
+      )}
     </Modal>
   );
 }

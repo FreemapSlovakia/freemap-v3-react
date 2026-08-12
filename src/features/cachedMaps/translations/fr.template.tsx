@@ -18,6 +18,8 @@ const fr: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   ),
   cachedSuccess: ({ name }) => `Carte « ${name} » mise en cache avec succès.`,
   cacheOfflineMap: 'Mettre la carte en cache pour un usage hors ligne',
+  modifyOfflineMap: 'Modifier la carte hors ligne',
+  toDownload: 'À télécharger',
   addOfflineMap: 'Ajouter une carte hors ligne',
   emptyMessage:
     'Aucune carte hors ligne enregistrée pour le moment. Ajoutez-en une pour utiliser les cartes sans connexion Internet.',
@@ -25,8 +27,8 @@ const fr: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   tiles: 'Tuiles',
   size: 'Taille',
   ready: 'Prête',
-  pause: 'Suspendre',
   resume: 'Reprendre',
+  stop: 'Arrêter',
   total: 'Total',
   estSize: 'Taille estimée',
   startCaching: 'Démarrer le téléchargement',

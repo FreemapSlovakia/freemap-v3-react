@@ -328,6 +328,20 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
       bytes have started, so `loadPass` retries a transient drop by restarting the
       whole pass — up to 75 GB re-downloaded because a connection blinked.
 
+## Offline maps (`src/features/cachedMaps/`)
+
+- [ ] **Make the shrink prune resumable.** Narrowing a cached map's area or zoom
+      range deletes the tiles that fall outside, walking the previous coverage
+      once. That walk is neither resumable nor recorded, so interrupting it —
+      Stop, or closing the tab — leaves the dropped tiles in Cache Storage with
+      nothing that will ever collect them, and the map's `sizeBytes` describing
+      storage the coverage no longer accounts for. Nothing re-walks the old
+      coverage afterwards, and only deleting the whole map frees them.
+      Fix by recording the coverage still to prune in `CachedTileMapDef` (set
+      before the walk, cleared after) and having `cacheTilesRestart` finish it
+      before downloading. Needs a big shrink interrupted mid-flight to matter,
+      hence deferred.
+
 ## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
 
 Open items are issues under `area: infra`.

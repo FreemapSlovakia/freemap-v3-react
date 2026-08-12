@@ -1,19 +1,19 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { sameCoverage } from '../cachedTileMaps.js';
 import {
   cachedMapDeleted,
+  cachedMapEdited,
   cachedMapsSetView,
-  cacheTilesCancel,
   cacheTilesComplete,
   cacheTilesError,
-  cacheTilesPause,
   cacheTilesProgress,
   cacheTilesRestart,
-  cacheTilesResume,
   cacheTilesStart,
+  cacheTilesStop,
 } from './actions.js';
 
 export interface ActiveDownload {
-  status: 'downloading' | 'paused' | 'error';
+  status: 'downloading' | 'error';
   downloaded: number;
   total: number;
   sizeBytes: number;
@@ -22,12 +22,15 @@ export interface ActiveDownload {
 
 export interface CachedMapsState {
   activeDownloads: Record<string, ActiveDownload>;
-  view: 'list' | 'add';
+  view: 'list' | 'add' | 'edit';
+  /** The map the `edit` view is showing. */
+  editId: string | null;
 }
 
 export const cachedMapsInitialState: CachedMapsState = {
   activeDownloads: {},
   view: 'list',
+  editId: null,
 };
 
 export const cachedMapsReducer = createReducer(
@@ -45,39 +48,44 @@ export const cachedMapsReducer = createReducer(
         state.view = 'list';
       })
       .addCase(cacheTilesProgress, (state, { payload }) => {
-        const dl = state.activeDownloads[payload.id];
+        const dl = state.activeDownloads[payload.type];
 
         if (dl) {
-          dl.downloaded = payload.downloaded;
+          dl.downloaded = payload.downloadedCount;
+          dl.total = payload.tileCount;
           dl.sizeBytes = payload.sizeBytes;
         }
       })
       .addCase(cacheTilesRestart, (state, { payload }) => {
         state.activeDownloads[payload.id] = {
           status: 'downloading',
-          downloaded: 0,
-          total: 0,
-          sizeBytes: 0,
+          downloaded: payload.downloaded,
+          total: payload.total,
+          sizeBytes: payload.sizeBytes,
         };
+      })
+      .addCase(cachedMapEdited, (state, { payload }) => {
+        if (!sameCoverage(payload.prev, payload.next)) {
+          state.activeDownloads[payload.next.type] = {
+            status: 'downloading',
+            // the pruning correction arrives as the first progress; until then
+            // a shrunk map still carries the count of its wider self
+            downloaded: Math.min(
+              payload.next.downloadedCount,
+              payload.next.tileCount,
+            ),
+            total: payload.next.tileCount,
+            sizeBytes: payload.next.sizeBytes,
+          };
+        }
+
+        state.view = 'list';
+        state.editId = null;
       })
       .addCase(cacheTilesComplete, (state, { payload }) => {
         delete state.activeDownloads[payload.id];
       })
-      .addCase(cacheTilesPause, (state, { payload }) => {
-        const dl = state.activeDownloads[payload.id];
-
-        if (dl) {
-          dl.status = 'paused';
-        }
-      })
-      .addCase(cacheTilesResume, (state, { payload }) => {
-        const dl = state.activeDownloads[payload.id];
-
-        if (dl) {
-          dl.status = 'downloading';
-        }
-      })
-      .addCase(cacheTilesCancel, (state, { payload }) => {
+      .addCase(cacheTilesStop, (state, { payload }) => {
         delete state.activeDownloads[payload.id];
       })
       .addCase(cacheTilesError, (state, { payload }) => {
@@ -91,7 +99,13 @@ export const cachedMapsReducer = createReducer(
       .addCase(cachedMapDeleted, (state, { payload }) => {
         delete state.activeDownloads[payload.id];
       })
-      .addCase(cachedMapsSetView, (state, action) => {
-        state.view = action.payload;
+      .addCase(cachedMapsSetView, (state, { payload }) => {
+        if (typeof payload === 'string') {
+          state.view = payload;
+          state.editId = null;
+        } else {
+          state.view = 'edit';
+          state.editId = payload.edit;
+        }
       }),
 );

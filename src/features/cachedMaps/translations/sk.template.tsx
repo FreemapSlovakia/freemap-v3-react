@@ -3,6 +3,8 @@ import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   cacheOfflineMap: 'Uložiť mapu pre offline použitie',
+  modifyOfflineMap: 'Upraviť offline mapu',
+  toDownload: 'Na stiahnutie',
   addOfflineMap: 'Pridať offline mapu',
   emptyMessage:
     'Zatiaľ nie sú uložené žiadne offline mapy. Pridajte si jednu na používanie máp bez pripojenia k internetu.',
@@ -11,8 +13,8 @@ const sk: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   size: 'Veľkosť',
   ready: 'Pripravená',
   incomplete: ({ pct }) => <>Nekompletná ({pct} %)</>,
-  pause: 'Pozastaviť',
   resume: 'Pokračovať',
+  stop: 'Zastaviť',
   total: 'Spolu',
   largeDownload: ({ tiles, size }) => (
     <>

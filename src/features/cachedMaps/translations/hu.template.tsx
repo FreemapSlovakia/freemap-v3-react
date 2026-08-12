@@ -3,6 +3,8 @@ import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   cacheOfflineMap: 'Térkép mentése offline használatra',
+  modifyOfflineMap: 'Offline térkép módosítása',
+  toDownload: 'Letöltendő',
   addOfflineMap: 'Offline térkép hozzáadása',
   emptyMessage:
     'Még nincsenek offline térképek mentve. Adj hozzá egyet, hogy internetkapcsolat nélkül is használhasd a térképeket.',
@@ -11,8 +13,8 @@ const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   size: 'Méret',
   ready: 'Kész',
   incomplete: ({ pct }) => <>Hiányos ({pct} %)</>,
-  pause: 'Szünet',
   resume: 'Folytatás',
+  stop: 'Leállítás',
   total: 'Összesen',
   largeDownload: ({ tiles, size }) => (
     <>

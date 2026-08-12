@@ -3,6 +3,8 @@ import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   cacheOfflineMap: 'Shrani zemljevid za uporabo brez povezave',
+  modifyOfflineMap: 'Uredi zemljevid brez povezave',
+  toDownload: 'Za prenos',
   addOfflineMap: 'Dodaj zemljevid brez povezave',
   emptyMessage:
     'Zaenkrat ni shranjenih zemljevidov brez povezave. Dodajte enega za uporabo zemljevidov brez internetne povezave.',
@@ -11,8 +13,8 @@ const sl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   size: 'Velikost',
   ready: 'Pripravljen',
   incomplete: ({ pct }) => <>Nepopoln ({pct} %)</>,
-  pause: 'Zaustavi',
   resume: 'Nadaljuj',
+  stop: 'Ustavi',
   total: 'Skupaj',
   largeDownload: ({ tiles, size }) => (
     <>

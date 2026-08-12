@@ -4,7 +4,6 @@ import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import {
   Action,
-  ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { formatSize } from '@shared/formatSize.js';
@@ -16,22 +15,19 @@ import { BiWifiOff } from 'react-icons/bi';
 import {
   FaCrosshairs,
   FaEye,
-  FaPause,
   FaPencilAlt,
   FaPlay,
   FaPlus,
+  FaStop,
   FaTimes,
   FaTrash,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   cachedMapDeleted,
-  cachedMapRenamed,
   cachedMapsSetView,
-  cacheTilesCancel,
-  cacheTilesPause,
   cacheTilesRestart,
-  cacheTilesResume,
+  cacheTilesStop,
 } from '../model/actions.js';
 import { useCachedMapsMessages } from '../translations/useCachedMapsMessages.js';
 
@@ -188,35 +184,14 @@ export function CachedMapsList(): ReactElement {
                           />
                         )}
 
-                        {dl && dl.status === 'downloading' && (
-                          <Action
-                            icon={<FaPause />}
-                            label={cmm?.pause}
-                            onClick={() =>
-                              dispatch(cacheTilesPause({ id: cm.type }))
-                            }
-                            showFrom="sm"
-                          />
-                        )}
-
-                        {dl && dl.status === 'paused' && (
-                          <Action
-                            icon={<FaPlay />}
-                            label={cmm?.resume}
-                            onClick={() =>
-                              dispatch(cacheTilesResume({ id: cm.type }))
-                            }
-                            showFrom="sm"
-                          />
-                        )}
-
+                        {/* halts the caching and keeps what it got; discarding
+                            the map altogether is what Delete is for */}
                         {dl && (
                           <Action
-                            icon={<FaTimes />}
-                            label={m?.general.cancel}
-                            variant="danger"
+                            icon={<FaStop />}
+                            label={cmm?.stop}
                             onClick={() =>
-                              dispatch(cacheTilesCancel({ id: cm.type }))
+                              dispatch(cacheTilesStop({ id: cm.type }))
                             }
                             showFrom="sm"
                           />
@@ -227,48 +202,39 @@ export function CachedMapsList(): ReactElement {
                             icon={<FaPlay />}
                             label={cmm?.resume}
                             onClick={() =>
-                              dispatch(cacheTilesRestart({ id: cm.type }))
+                              dispatch(
+                                cacheTilesRestart({
+                                  id: cm.type,
+                                  downloaded: cm.downloadedCount,
+                                  total: cm.tileCount,
+                                  sizeBytes: cm.sizeBytes,
+                                }),
+                              )
                             }
                             showFrom="sm"
                           />
                         )}
 
-                        {!dl && <ActionDivider />}
-
                         {!dl && (
                           <Action
                             icon={<FaPencilAlt />}
                             label={m?.general.modify}
-                            onClick={() => {
-                              const next = window.prompt(
-                                m?.general.name,
-                                cm.name,
-                              );
-
-                              if (next?.trim() && next !== cm.name) {
-                                dispatch(
-                                  cachedMapRenamed({
-                                    id: cm.type,
-                                    name: next.trim(),
-                                  }),
-                                );
-                              }
-                            }}
-                            showFrom="sm"
-                          />
-                        )}
-
-                        {!dl && (
-                          <Action
-                            icon={<FaTrash />}
-                            label={m?.general.delete}
-                            variant="danger"
                             onClick={() =>
-                              dispatch(cachedMapDeleted({ id: cm.type }))
+                              dispatch(cachedMapsSetView({ edit: cm.type }))
                             }
                             showFrom="sm"
                           />
                         )}
+
+                        <Action
+                          icon={<FaTrash />}
+                          label={m?.general.delete}
+                          variant="danger"
+                          onClick={() =>
+                            dispatch(cachedMapDeleted({ id: cm.type }))
+                          }
+                          showFrom="sm"
+                        />
                       </ResponsiveActions>
                     </div>
                   </ListGroup.Item>

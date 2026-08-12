@@ -312,6 +312,10 @@ export function Layers(): ReactElement | null {
             effForcedScale ?? 'auto',
             effFeatureScale,
             layerDef.url,
+            // a grid layer takes its zoom bounds at construction, so an edited
+            // cached (or custom) map needs a remount to widen or narrow them
+            minZoom ?? 'auto',
+            layerDef.maxNativeZoom ?? 'auto',
           ].join('-')}
           url={layerDef.url}
           minZoom={minZoom}

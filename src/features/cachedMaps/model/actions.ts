@@ -5,31 +5,36 @@ import type { CachedTileMapDef } from '../cachedTileMaps.js';
 export const cacheTilesStart =
   createAction<CachedTileMapDef>('CACHE_TILES_START');
 
-export const cacheTilesProgress = createAction<{
-  id: string;
-  downloaded: number;
-  sizeBytes: number;
-}>('CACHE_TILES_PROGRESS');
+/**
+ * The map's metadata as caching has it now — the same object that goes to
+ * IndexedDB, so the store can't drift from it. Carries the counters the
+ * progress bar reads, and the `@Nx` variant that had to be resolved for a map
+ * whose metadata recorded none.
+ */
+export const cacheTilesProgress = createAction<CachedTileMapDef>(
+  'CACHE_TILES_PROGRESS',
+);
 
 export const cacheTilesComplete = createAction<{ id: string }>(
   'CACHE_TILES_COMPLETE',
 );
 
-export const cacheTilesPause = createAction<{ id: string }>(
-  'CACHE_TILES_PAUSE',
-);
+/**
+ * Halts the caching pass, keeping the map and whatever it has cached so far.
+ * Discarding it altogether is what {@link cachedMapDeleted} is for.
+ */
+export const cacheTilesStop = createAction<{ id: string }>('CACHE_TILES_STOP');
 
-export const cacheTilesResume = createAction<{ id: string }>(
-  'CACHE_TILES_RESUME',
-);
-
-export const cacheTilesCancel = createAction<{ id: string }>(
-  'CACHE_TILES_CANCEL',
-);
-
-export const cacheTilesRestart = createAction<{ id: string }>(
-  'CACHE_TILES_RESTART',
-);
+/**
+ * Resumes a map left incomplete by an interrupted pass. The counters come along
+ * so the progress bar starts from what the map already holds.
+ */
+export const cacheTilesRestart = createAction<{
+  id: string;
+  downloaded: number;
+  total: number;
+  sizeBytes: number;
+}>('CACHE_TILES_RESTART');
 
 export const cacheTilesError = createAction<{ id: string; error: string }>(
   'CACHE_TILES_ERROR',
@@ -42,10 +47,15 @@ export const cachedMapDeleted = createAction<{ id: string }>(
   'CACHED_MAP_DELETED',
 );
 
-export const cachedMapRenamed = createAction<{ id: string; name: string }>(
-  'CACHED_MAP_RENAMED',
-);
+/**
+ * A changed area / zoom range / name. `prev` is what the map covered before, so
+ * the tiles that fall outside `next` can be enumerated and dropped.
+ */
+export const cachedMapEdited = createAction<{
+  prev: CachedTileMapDef;
+  next: CachedTileMapDef;
+}>('CACHED_MAP_EDITED');
 
-export const cachedMapsSetView = createAction<'list' | 'add'>(
-  'CACHED_MAPS_SET_VIEW',
-);
+export const cachedMapsSetView = createAction<
+  'list' | 'add' | { edit: string }
+>('CACHED_MAPS_SET_VIEW');

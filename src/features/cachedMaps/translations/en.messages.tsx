@@ -2,6 +2,8 @@ import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const en: CachedMapsMessages = {
   cacheOfflineMap: 'Cache map for offline use',
+  modifyOfflineMap: 'Modify offline map',
+  toDownload: 'To download',
   addOfflineMap: 'Add offline map',
   emptyMessage:
     'No offline maps cached yet. Add one to use maps without internet connection.',
@@ -10,8 +12,8 @@ const en: CachedMapsMessages = {
   size: 'Size',
   ready: 'Ready',
   incomplete: ({ pct }) => <>Incomplete ({pct}%)</>,
-  pause: 'Pause',
   resume: 'Resume',
+  stop: 'Stop',
   total: 'Total',
   largeDownload: ({ tiles, size }) => (
     <>
