@@ -1,11 +1,13 @@
 /* eslint-disable react/jsx-handler-names */
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBreakpointMatches } from '@shared/breakpoints.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Layer, wms } from '@shared/wms.js';
 import clsx from 'clsx';
 import {
+  type ChangeEvent,
   Fragment,
   type ReactElement,
   useCallback,
@@ -45,6 +47,55 @@ type Model = {
   layers: string[];
   tiled: boolean;
 };
+
+/** Ground resolution of zoom 0 at the equator, in metres per pixel. */
+const ZOOM_0_RESOLUTION = 156543.03392804097;
+
+/** The pixel size a WMS scale denominator is defined against, in metres. */
+const WMS_PIXEL_SIZE = 0.00028;
+
+/**
+ * The smallest zoom at which a layer is still drawn: a WMS declares the widest
+ * scale it renders at as `MaxScaleDenominator`, and asking for anything wider
+ * returns an empty image, which is indistinguishable from a broken layer. The
+ * scale a zoom level works out to depends on the latitude it is read at, so the
+ * answer holds for where the map currently is rather than for the equator.
+ */
+function minZoomForSelection(
+  layers: Layer[],
+  selected: string[],
+  lat: number,
+): number {
+  const flat: Layer[] = [];
+
+  const collect = (list: Layer[]) => {
+    for (const layer of list) {
+      flat.push(layer);
+
+      collect(layer.children);
+    }
+  };
+
+  collect(layers);
+
+  const resolution = ZOOM_0_RESOLUTION * Math.cos((lat * Math.PI) / 180);
+
+  const zooms = flat
+    .filter((layer) => layer.name && selected.includes(layer.name))
+    .map((layer) =>
+      layer.maxScale
+        ? Math.max(
+            0,
+            Math.ceil(
+              Math.log2(resolution / (WMS_PIXEL_SIZE * layer.maxScale)),
+            ),
+          )
+        : 0,
+    );
+
+  // The map is only blank while every one of the chosen layers is.
+  return zooms.length ? Math.min(...zooms) : 0;
+}
 
 function valueToModel(value?: CustomLayerDef) {
   return {
@@ -221,6 +272,20 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   const [layersTree, setLayersTree] = useState<Layer[]>();
 
+  const lat = useAppSelector((state) => state.map.lat);
+
+  /** Whether Min Zoom is the user's to keep rather than the form's to fill. */
+  const minZoomTouched = useRef(model.minZoom !== '');
+
+  const handleMinZoomChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      minZoomTouched.current = true;
+
+      handlers.minZoom(e);
+    },
+    [handlers],
+  );
+
   const [loadingLayers, setLoadingLayers] = useState(false);
 
   const handleLoadLayersClick = useCallback(() => {
@@ -244,27 +309,44 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     setLayersTree(undefined);
   }, []);
 
-  const handleLayerSelect = useCallback((name: string | null) => {
-    if (name === null) {
-      return;
-    }
-
-    setModel((model) => {
-      let found = false;
-
-      const next = model.layers.filter((n) => {
-        found ||= n === name;
-
-        return n !== name;
-      });
-
-      if (!found) {
-        next.push(name);
+  const handleLayerSelect = useCallback(
+    (name: string | null) => {
+      if (name === null) {
+        return;
       }
 
-      return { ...model, layers: next };
-    });
-  }, []);
+      setModel((model) => {
+        let found = false;
+
+        const next = model.layers.filter((n) => {
+          found ||= n === name;
+
+          return n !== name;
+        });
+
+        if (!found) {
+          next.push(name);
+        }
+
+        const zoom = minZoomForSelection(layersTree ?? [], next, lat);
+
+        // Offered rather than imposed: the suggestion follows the selection —
+        // dropping the layer that produced it must not leave the next one
+        // hidden below a limit it never had — but a field the user has been at,
+        // including one they cleared on purpose, is theirs from then on.
+        return {
+          ...model,
+          layers: next,
+          minZoom: minZoomTouched.current
+            ? model.minZoom
+            : zoom
+              ? String(zoom)
+              : '',
+        };
+      });
+    },
+    [layersTree, lat],
+  );
 
   const [expanded, setExpanded] = useState<string[]>([]);
 
@@ -434,7 +516,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
               type="number"
               min={0}
               value={model.minZoom}
-              onChange={handlers.minZoom}
+              onChange={handleMinZoomChange}
             />
           </Form.Group>
 

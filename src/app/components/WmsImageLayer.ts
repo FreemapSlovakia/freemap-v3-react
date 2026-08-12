@@ -1,4 +1,5 @@
 import { createLayerComponent, type LayerProps } from '@react-leaflet/core';
+import { wmsBaseUrl } from '@shared/wms.js';
 import {
   ImageOverlay,
   type LatLngBounds,
@@ -31,14 +32,15 @@ export type WmsImageLayerProps = LayerProps & {
 const SETTLE_DELAY = 250;
 
 /**
- * Where the requested image size starts out — ArcGIS Server's default `GetMap`
- * ceiling. Servers answer an oversized request with a ServiceException rather
- * than an image, so the real ceiling is learned from failures instead.
+ * The image-size ceilings to try, largest first: ArcGIS Server defaults to
+ * 4096 and MapServer to 2048. Servers answer an oversized request with a
+ * ServiceException rather than an image, so which one applies is learned from
+ * failures — stepping to the next of these rather than merely halving, which
+ * would settle below a ceiling the server would have granted.
  */
-const MAX_IMAGE_SIZE = 4096;
+const SIZE_STEPS = [4096, 2048, 1024];
 
-/** The size below which a failure is no longer read as the server's ceiling. */
-const MIN_IMAGE_SIZE = 1024;
+const MAX_IMAGE_SIZE = SIZE_STEPS[0];
 
 /**
  * The largest image each endpoint has been seen to serve, lowered whenever one
@@ -229,15 +231,17 @@ class LWmsImageLayer extends Layer {
       // An `<img>` error carries no status, so the two causes are told apart by
       // whether they repeat: a size refusal fails again at the same size, while
       // a dropped request usually doesn't. Only the second failure lowers what
-      // this endpoint is asked for (MapServer stops at 2048, ArcGIS at 4096).
+      // this endpoint is asked for.
+      const smaller = SIZE_STEPS.find((size) => size < this.lastMaxSide);
+
       if (!this.retried) {
         this.retried = true;
-      } else if (this.lastMaxSide > MIN_IMAGE_SIZE) {
-        sizeCaps.set(
-          this.props.url,
-          Math.max(MIN_IMAGE_SIZE, Math.floor(this.lastMaxSide / 2)),
-        );
+      } else if (smaller !== undefined) {
+        sizeCaps.set(this.props.url, smaller);
       } else {
+        // Nothing left to try at this size. What is already drawn stays: it
+        // keeps the bounds it was fetched for, so it is still in the right
+        // place, and the next move asks again.
         return;
       }
 
@@ -292,11 +296,14 @@ class LWmsImageLayer extends Layer {
 
     this.lastMaxSide = Math.round(Math.max(width, height) * fit);
 
+    const resolution = resolutionParams(scale * fit);
+
     const params = {
       service: 'WMS',
       request: 'GetMap',
       version,
-      layers,
+      // Omitted when empty so that a `LAYERS` on the URL is not overridden.
+      ...(layers ? { layers } : {}),
       styles: '',
       format,
       transparent,
@@ -306,10 +313,18 @@ class LWmsImageLayer extends Layer {
       ),
       width: Math.max(1, Math.round(width * fit)),
       height: Math.max(1, Math.round(height * fit)),
-      ...resolutionParams(scale * fit),
+      ...resolution,
     };
 
-    return url + Util.getParamString(params, url);
+    // Only what this request sets is taken off the URL, so that a URL tuned by
+    // hand keeps the rest — its `LAYERS` above all, which is what names the
+    // layers to draw when none were picked from the capabilities.
+    const base = wmsBaseUrl(url, [
+      ...(layers ? ['layers'] : []),
+      ...(resolution ? ['dpi', 'map_resolution', 'format_options'] : []),
+    ]);
+
+    return base + Util.getParamString(params, base);
   }
 
   private clear() {

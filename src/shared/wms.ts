@@ -9,8 +9,74 @@ export type Layer = {
   legendUrl: string | null;
 };
 
+/**
+ * Projections the map can draw. `CRS:84` and the Google-Mercator aliases count
+ * as the two standard codes they are equivalent to.
+ */
+const SUPPORTED_CRS = new Set([
+  'EPSG:3857',
+  'EPSG:900913',
+  'EPSG:102100',
+  'EPSG:102113',
+  'EPSG:4326',
+  'CRS:84',
+]);
+
+/**
+ * Parameters that describe one request rather than the service, and that every
+ * request sets for itself. A URL pasted from a server's own example carries
+ * some of them already — a `REQUEST=GetCapabilities` left beside the
+ * `request=GetMap` a tile asks for makes the server answer with neither, since
+ * the names are case-insensitive but `URLSearchParams` keys are not. What
+ * identifies the service, MapServer's `map=` above all, is kept.
+ */
+const REQUEST_PARAMS = [
+  'service',
+  'request',
+  'version',
+  'styles',
+  'format',
+  'transparent',
+  'crs',
+  'srs',
+  'bbox',
+  'width',
+  'height',
+];
+
+/**
+ * The service's own URL, with any request's parameters stripped off it. Pass
+ * `alsoStrip` for the ones a particular request sets on top of those — the
+ * rendering hints, the feature-info parameters and `layers` are left in place
+ * otherwise, so that a URL tuned by hand keeps them. `layers` matters most: a
+ * layer whose layer list is empty has nothing of its own to ask for, and the
+ * pasted URL is then the only thing naming what to draw.
+ */
+export function wmsBaseUrl(
+  urlString: string,
+  alsoStrip: string[] = [],
+): string {
+  let url: URL;
+
+  try {
+    url = new URL(urlString);
+  } catch {
+    return urlString;
+  }
+
+  const strip = [...REQUEST_PARAMS, ...alsoStrip.map((k) => k.toLowerCase())];
+
+  for (const key of [...url.searchParams.keys()]) {
+    if (strip.includes(key.toLowerCase())) {
+      url.searchParams.delete(key);
+    }
+  }
+
+  return url.toString();
+}
+
 export async function wms(urlString: string) {
-  const url = new URL(urlString);
+  const url = new URL(wmsBaseUrl(urlString));
 
   url.searchParams.set('request', 'GetCapabilities');
   url.searchParams.set('service', 'WMS');
@@ -22,127 +88,157 @@ export async function wms(urlString: string) {
     throw new Error(await res.text());
   }
 
-  const text = await res.text();
+  const dom = new DOMParser().parseFromString(await res.text(), 'text/xml');
 
-  const dom = new DOMParser().parseFromString(text, 'text/xml');
+  const root = dom.documentElement;
 
-  const namespaces: Record<string, string> = {
-    wms: 'http://www.opengis.net/wms',
-  };
-
-  // Helper to extract text via XPath
-  function getText(node: Node, xpath: string): string | null {
-    return (
-      dom.evaluate(
-        xpath,
-        node,
-        (p) => p && namespaces[p],
-        XPathResult.STRING_TYPE,
-      ).stringValue || null
-    );
+  // Searched from the document rather than from the root, which is itself the
+  // `parsererror` element when the response was not XML at all.
+  if (!root?.localName || dom.getElementsByTagName('parsererror').length) {
+    throw new Error("The server's response is not XML.");
   }
 
-  // Get available image formats (global)
-  function getGlobalFormats(): string[] {
-    const iterator = dom.evaluate(
-      '/wms:WMS_Capabilities/wms:Capability/wms:Request/wms:GetMap/wms:Format',
-      dom,
-      (p) => p && namespaces[p],
-      XPathResult.ORDERED_NODE_ITERATOR_TYPE,
-    );
-
-    const result: string[] = [];
-
-    for (let n = iterator.iterateNext(); n; n = iterator.iterateNext()) {
-      if (n.textContent) {
-        result.push(n.textContent);
-      }
-    }
-
-    return result;
+  // Both are answered with 200 by servers that report failure in the body, so
+  // without this the layer list would just come up empty and unexplained.
+  if (root.localName.startsWith('ServiceException')) {
+    throw new Error(root.textContent?.trim() || 'WMS service exception');
   }
 
-  const globalFormats = getGlobalFormats();
+  /**
+   * Elements are matched by local name, ignoring the namespace they are in: a
+   * proxy that rewrites every `http://` in the document to `https://` rewrites
+   * the namespace declarations too, though those are identifiers and not
+   * addresses, and a 1.1.1 document is DTD-based with no namespace at all — a
+   * server capping at 1.1.1 answers a 1.3.0 request with one, so that shape has
+   * to parse as well. `local-name(.)` rather than `local-name()`: the argument
+   * is redundant to the spec but required by some implementations.
+   */
+  const el = (name: string) => `*[local-name(.)='${name}']`;
 
-  // Collect child layers supporting EPSG:3857 or EPSG:4326
-  function getChildren(node: Node): Element[] {
+  function elements(node: Node, xpath: string): Element[] {
     const iterator = dom.evaluate(
-      './wms:Layer[wms:CRS="EPSG:3857" or .//wms:CRS="EPSG:3857" or wms:CRS="EPSG:4326" or .//wms:CRS="EPSG:4326"]',
+      xpath,
       node,
-      (p) => p && namespaces[p],
+      null,
       XPathResult.ORDERED_NODE_ITERATOR_TYPE,
     );
 
     const result: Element[] = [];
 
-    for (
-      let child = iterator.iterateNext();
-      child;
-      child = iterator.iterateNext()
-    ) {
-      if (child instanceof Element) {
-        result.push(child);
+    for (let n = iterator.iterateNext(); n; n = iterator.iterateNext()) {
+      if (n instanceof Element) {
+        result.push(n);
       }
     }
 
     return result;
   }
 
-  function getLegendUrl(node: Node): string | null {
-    const onlineResource = dom.evaluate(
-      './/wms:Style/wms:LegendURL/wms:OnlineResource',
-      node,
-      (p) => p && namespaces[p],
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-    ).singleNodeValue as Element | null;
+  function getText(node: Node, name: string): string | null {
+    return elements(node, `./${el(name)}`)[0]?.textContent?.trim() || null;
+  }
 
+  const globalFormats = elements(
+    root,
+    `./${el('Capability')}/${el('Request')}/${el('GetMap')}/${el('Format')}`,
+  ).flatMap((n) => (n.textContent ? [n.textContent] : []));
+
+  /** Whether a layer declares a projection of its own that the map can draw. */
+  function hasSupportedCrs(node: Element): boolean {
+    return [
+      ...elements(node, `./${el('CRS')}`),
+      ...elements(node, `./${el('SRS')}`),
+    ].some((n) =>
+      // 1.1.1 allows several codes in one `SRS` element, space separated.
+      (n.textContent ?? '')
+        .trim()
+        .split(/\s+/)
+        .some((code) => SUPPORTED_CRS.has(code.toUpperCase())),
+    );
+  }
+
+  function getLegendUrl(node: Node): string | null {
+    const onlineResource = elements(
+      node,
+      `.//${el('Style')}/${el('LegendURL')}/${el('OnlineResource')}`,
+    )[0];
+
+    // The xlink namespace gets rewritten by the same kind of proxy, so the
+    // qualified name is the last resort.
     return (
       onlineResource?.getAttributeNS('http://www.w3.org/1999/xlink', 'href') ??
+      onlineResource?.getAttributeNS('https://www.w3.org/1999/xlink', 'href') ??
+      onlineResource?.getAttribute('xlink:href') ??
       null
     );
   }
 
-  function parseLayer(node: Node): Layer {
-    const elem = node as Element;
+  /**
+   * Projections and scale range are inheritable properties: a layer that
+   * declares neither takes its parent's. Support is therefore carried down the
+   * tree, and a layer supporting none is kept only for the sake of the
+   * supported ones below it.
+   */
+  function parseLayer(
+    node: Element,
+    inherited: {
+      crs: boolean;
+      minScale: number | null;
+      maxScale: number | null;
+    },
+  ): Layer | null {
+    const crs = inherited.crs || hasSupportedCrs(node);
+
+    const minScale =
+      parseFloat(getText(node, 'MinScaleDenominator') || '') ||
+      inherited.minScale;
+
+    const maxScale =
+      parseFloat(getText(node, 'MaxScaleDenominator') || '') ||
+      inherited.maxScale;
+
+    const children = elements(node, `./${el('Layer')}`).flatMap((child) => {
+      const layer = parseLayer(child, { crs, minScale, maxScale });
+
+      return layer ? [layer] : [];
+    });
+
+    if (!crs && children.length === 0) {
+      return null;
+    }
 
     return {
-      title: getText(node, './wms:Title'),
-      name: getText(node, './wms:Name') || null,
-      queryable: elem.getAttribute('queryable') === '1',
-      transparent: elem.getAttribute('opaque') !== '1',
-      minScale:
-        parseFloat(getText(node, './wms:MinScaleDenominator') || '') || null,
-      maxScale:
-        parseFloat(getText(node, './wms:MaxScaleDenominator') || '') || null,
+      title: getText(node, 'Title'),
+      name: getText(node, 'Name'),
+      queryable: node.getAttribute('queryable') === '1',
+      transparent: node.getAttribute('opaque') !== '1',
+      minScale,
+      maxScale,
       legendUrl: getLegendUrl(node),
-      children: getChildren(node).map(parseLayer),
+      children,
     };
   }
 
-  // Root-level layers
-  const rootLayers = dom.evaluate(
-    '/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:CRS="EPSG:3857" or wms:CRS="EPSG:4326"]',
-    dom,
-    (p) => p && namespaces[p],
-    XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+  // The root layer is offered itself when it is requestable — a service whose
+  // whole map is one layer has nothing below it — and is otherwise just the
+  // container its children are listed from.
+  const layersTree = elements(
+    root,
+    `./${el('Capability')}/${el('Layer')}`,
+  ).flatMap((node) => {
+    const layer = parseLayer(node, {
+      crs: false,
+      minScale: null,
+      maxScale: null,
+    });
+
+    return !layer ? [] : layer.name ? [layer] : layer.children;
+  });
+
+  const title = getText(
+    elements(root, `./${el('Service')}`)[0] ?? root,
+    'Title',
   );
 
-  const layersTree: Layer[] = [];
-
-  for (
-    let node = rootLayers.iterateNext();
-    node;
-    node = rootLayers.iterateNext()
-  ) {
-    layersTree.push(parseLayer(node));
-  }
-
-  const title = dom.evaluate(
-    '/wms:WMS_Capabilities/wms:Service/wms:Title',
-    dom,
-    (p) => p && namespaces[p],
-    XPathResult.STRING_TYPE,
-  ).stringValue;
-
-  return { title, globalFormats, layersTree };
+  return { title: title ?? '', globalFormats, layersTree };
 }

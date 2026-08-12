@@ -12,6 +12,7 @@ import {
   type LayerDef,
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
+import { wmsBaseUrl } from '@shared/wms.js';
 import { type ReactElement, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import missingTile from '@/images/missing-tile-256x256.png';
@@ -200,7 +201,13 @@ export function Layers(): ReactElement | null {
             layerDef.layers.join(','),
             wmsHdpi ? 'hdpi' : 'ldpi',
           ].join('-')}
-          url={layerDef.url}
+          // Leaflet appends its own parameters, so a `REQUEST` the stored URL
+          // already carries would end up beside the tile's own. Its `LAYERS`
+          // stays when no layers were picked, since nothing else names them.
+          url={wmsBaseUrl(
+            layerDef.url,
+            layerDef.layers.length ? ['layers'] : [],
+          )}
           layers={layerDef.layers.join(',')}
           maxNativeZoom={layerDef.maxNativeZoom}
           // `detectRetina` makes Leaflet drop a zoom off `maxZoom`, and a grid

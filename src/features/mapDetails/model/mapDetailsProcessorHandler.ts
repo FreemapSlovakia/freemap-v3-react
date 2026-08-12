@@ -28,6 +28,7 @@ import {
   OverpassBoundsExtraSchema,
   overpassResultSchema,
 } from '@shared/types/overpass.js';
+import { wmsBaseUrl } from '@shared/wms.js';
 import { distance } from '@turf/distance';
 import { feature, point } from '@turf/helpers';
 import { toWgs84 } from '@turf/projection';
@@ -145,13 +146,24 @@ export async function handle(
           const a = CRS.EPSG3857.project(bounds.getSouthWest());
           const b = CRS.EPSG3857.project(bounds.getNorthEast());
 
-          const url = new URL(def.url);
+          const url = new URL(
+            wmsBaseUrl(def.url, [
+              ...(def.layers.length ? ['layers'] : []),
+              'query_layers',
+              'info_format',
+              'i',
+              'j',
+              'feature_count',
+            ]),
+          );
 
           url.searchParams.set('request', 'GetFeatureInfo');
           url.searchParams.set('service', 'WMS');
           url.searchParams.set('version', '1.3.0');
           url.searchParams.set('LAYERS', def.layers.join(','));
           url.searchParams.set('QUERY_LAYERS', def.layers.join(','));
+          // Part of the map request GetFeatureInfo copies, and mandatory there.
+          url.searchParams.set('STYLES', '');
           url.searchParams.set('INFO_FORMAT', 'application/geo+json'); // TODO
           url.searchParams.set('CRS', 'EPSG:3857'); // TODO
           url.searchParams.set('I', point.x.toFixed());
