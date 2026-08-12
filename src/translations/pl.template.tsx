@@ -356,6 +356,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     technology: 'Typ',
     loadWmsLayers: 'Wczytaj warstwy',
+    serverNotResponding: ({ name }) => (
+      <>
+        Serwer mapy <b>{name}</b> nie odpowiada.
+      </>
+    ),
     offlineMaps: 'Mapy offline',
     legacy: 'przestarzała',
     legacyMapWarning: ({ from, to }) => (

@@ -26,10 +26,25 @@ export type WmsImageLayerProps = LayerProps & {
   maxNativeZoom?: number;
   /** Pixel-size multiplier of the requested image, for hi-DPI displays. */
   dpiScale?: number;
+  /** Called once a view has been given up on, retries included. */
+  onError?: () => void;
 };
 
 /** Coalesces a burst of move/zoom events into one request. */
 const SETTLE_DELAY = 250;
+
+/** A 1×1 transparent GIF, for pointing an image away from a request. */
+const BLANK_IMAGE =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+/**
+ * How long a view is fetched for before the wait is worth showing. Long enough
+ * that a server answering promptly never flashes anything at all.
+ */
+const PULSE_DELAY = 3000;
+
+/** Must match the animation period of `.fm-wms-pulse` in `leaflet.css`. */
+const PULSE_PERIOD = 1000;
 
 /**
  * The image-size ceilings to try, largest first: ArcGIS Server defaults to
@@ -91,6 +106,11 @@ class LWmsImageLayer extends Layer {
   /** Whether the URL that just failed has already been tried a second time. */
   private retried = false;
 
+  /** Marks the view being waited for, once the wait is long enough to show. */
+  private pulse?: ImageOverlay;
+  private pulseTimer?: ReturnType<typeof setTimeout>;
+  private pulseBounds?: LatLngBounds;
+
   constructor(props: WmsImageLayerProps) {
     super();
 
@@ -149,6 +169,83 @@ class LWmsImageLayer extends Layer {
     }
   }
 
+  /**
+   * Gives up on a request in flight. Detaching the element does not stop the
+   * download; pointing it elsewhere does — at a data URI rather than at an
+   * empty string, which some browsers resolve against the page and fetch. Its
+   * handlers go first, since the swap reads as an error to them.
+   */
+  private abort(overlay: ImageOverlay) {
+    overlay.off();
+
+    const image = overlay.getElement();
+
+    overlay.remove();
+
+    if (image) {
+      image.src = BLANK_IMAGE;
+    }
+  }
+
+  /**
+   * A blank image stretched over the view being fetched, coloured and animated
+   * by its class. Leaflet then keeps it in place through pans and zooms exactly
+   * as it would the real one.
+   */
+  private startPulse(bounds: LatLngBounds) {
+    // A wait already under way carries on — a retry asks for the same view
+    // again, and restarting the clock would only postpone the sign of it — but
+    // it follows the view, which a failure during a pan can move out from
+    // under it.
+    this.pulseBounds = bounds;
+
+    if (this.pulse) {
+      this.pulse.setBounds(bounds);
+
+      return;
+    }
+
+    if (this.pulseTimer) {
+      return;
+    }
+
+    // Held back to the next turn of a clock every layer shares, so the
+    // animation begins at its first frame — appearing already darkened is what
+    // starting it mid-cycle would look like — and so two layers waiting at once
+    // breathe together rather than each on its own beat.
+    const wait =
+      PULSE_DELAY +
+      (((-(Date.now() + PULSE_DELAY) % PULSE_PERIOD) + PULSE_PERIOD) %
+        PULSE_PERIOD);
+
+    this.pulseTimer = setTimeout(() => {
+      const map = this._map;
+
+      if (!map || !this.pulseBounds) {
+        return;
+      }
+
+      this.pulse = new ImageOverlay(BLANK_IMAGE, this.pulseBounds, {
+        pane: 'tilePane',
+        zIndex: this.props.zIndex ?? 1,
+        className: 'fm-wms-pulse',
+        interactive: false,
+      }).addTo(map);
+    }, wait);
+  }
+
+  private stopPulse() {
+    clearTimeout(this.pulseTimer);
+
+    this.pulseTimer = undefined;
+
+    this.pulse?.remove();
+
+    this.pulse = undefined;
+
+    this.pulseBounds = undefined;
+  }
+
   private scheduleUpdate = () => {
     // A different view is a fresh attempt, not a repeat of the failed one.
     this.retried = false;
@@ -183,7 +280,13 @@ class LWmsImageLayer extends Layer {
 
     this.lastUrl = url;
 
-    this.pending?.remove();
+    // Panning away from a view the server is still drawing leaves a request
+    // nobody is waiting for, and a slow WMS is exactly where those pile up.
+    if (this.pending) {
+      this.abort(this.pending);
+
+      this.stopPulse();
+    }
 
     // Starts invisible and replaces the previous image only once it has loaded,
     // so panning doesn't blank the map while the request is in flight.
@@ -214,6 +317,8 @@ class LWmsImageLayer extends Layer {
       this.current = image;
 
       this.pending = undefined;
+
+      this.stopPulse();
     });
 
     image.once('error', () => {
@@ -242,6 +347,10 @@ class LWmsImageLayer extends Layer {
         // Nothing left to try at this size. What is already drawn stays: it
         // keeps the bounds it was fetched for, so it is still in the right
         // place, and the next move asks again.
+        this.stopPulse();
+
+        this.props.onError?.();
+
         return;
       }
 
@@ -249,6 +358,8 @@ class LWmsImageLayer extends Layer {
     });
 
     this.pending = image;
+
+    this.startPulse(bounds);
 
     image.addTo(map);
   }
@@ -328,7 +439,11 @@ class LWmsImageLayer extends Layer {
   }
 
   private clear() {
-    this.pending?.remove();
+    this.stopPulse();
+
+    if (this.pending) {
+      this.abort(this.pending);
+    }
 
     this.current?.remove();
 

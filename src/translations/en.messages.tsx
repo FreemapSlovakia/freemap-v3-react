@@ -356,6 +356,11 @@ const messages: Messages = {
     resetAppConfirm:
       'Reset all application settings to their defaults and reload the page? You will be signed out.',
     loadWmsLayers: 'Load layers',
+    serverNotResponding: ({ name }) => (
+      <>
+        No answer from the server of the map <b>{name}</b>.
+      </>
+    ),
     offlineMaps: 'Offline maps',
     legacy: 'legacy',
     legacyMapWarning: ({ from, to }) => (

@@ -242,6 +242,7 @@ export type Messages = {
     resetApp: string;
     resetAppConfirm: string;
     loadWmsLayers: string;
+    serverNotResponding: (props: { name: string }) => JSX.Element;
     offlineMaps: string;
     legacy: string;
     legacyMapWarning: (props: { from: string; to: string }) => JSX.Element;

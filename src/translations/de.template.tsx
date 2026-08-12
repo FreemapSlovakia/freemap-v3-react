@@ -368,6 +368,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     technology: 'Typ',
     loadWmsLayers: 'Layer laden',
+    serverNotResponding: ({ name }) => (
+      <>
+        Der Server der Karte <b>{name}</b> antwortet nicht.
+      </>
+    ),
     offlineMaps: 'Offline-Karten',
     legacy: 'veraltet',
     legacyMapWarning: ({ from, to }) => (

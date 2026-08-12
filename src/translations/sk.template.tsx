@@ -392,6 +392,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Prekryvná',
     },
     loadWmsLayers: 'Načítať vrstvy',
+    serverNotResponding: ({ name }) => (
+      <>
+        Server mapy <b>{name}</b> neodpovedá.
+      </>
+    ),
     offlineMaps: 'Offline mapy',
     legacy: 'zastaralá',
     legacyMapWarning: ({ from, to }) => (

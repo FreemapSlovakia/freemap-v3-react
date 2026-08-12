@@ -361,6 +361,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resetAppConfirm:
       'Ponastavim vse nastavitve aplikacije na privzete in znova naložim stran? Odjavljeni boste.',
     loadWmsLayers: 'Naloži sloje',
+    serverNotResponding: ({ name }) => (
+      <>
+        Strežnik zemljevida <b>{name}</b> se ne odziva.
+      </>
+    ),
     offlineMaps: 'Zemljevidi brez povezave',
     legacy: 'zastarela',
     legacyMapWarning: ({ from, to }) => (

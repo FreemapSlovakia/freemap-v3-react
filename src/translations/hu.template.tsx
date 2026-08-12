@@ -372,6 +372,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     technology: 'Típus',
     loadWmsLayers: 'Rétegek betöltése',
+    serverNotResponding: ({ name }) => (
+      <>
+        A(z) <b>{name}</b> térkép kiszolgálója nem válaszol.
+      </>
+    ),
     offlineMaps: 'Offline térképek',
     legacy: 'elavult',
     legacyMapWarning: ({ from, to }) => (

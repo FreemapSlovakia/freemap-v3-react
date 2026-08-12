@@ -367,6 +367,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       parametricShading: 'Parametrické stínování',
     },
     loadWmsLayers: 'Načíst vrstvy',
+    serverNotResponding: ({ name }) => (
+      <>
+        Server mapy <b>{name}</b> neodpovídá.
+      </>
+    ),
     offlineMaps: 'Offline mapy',
     legacy: 'zastaralá',
     legacyMapWarning: ({ from, to }) => (

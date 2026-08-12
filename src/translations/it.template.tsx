@@ -370,6 +370,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     technology: 'Tipo',
     loadWmsLayers: 'Carica livelli',
+    serverNotResponding: ({ name }) => (
+      <>
+        Il server della mappa <b>{name}</b> non risponde.
+      </>
+    ),
     offlineMaps: 'Mappe offline',
     legacy: 'legacy',
     legacyMapWarning: ({ from, to }) => (

@@ -364,6 +364,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resetAppConfirm:
       'Réinitialiser tous les paramètres de l’application à leurs valeurs par défaut et recharger la page ? Vous serez déconnecté.',
     loadWmsLayers: 'Charger les couches',
+    serverNotResponding: ({ name }) => (
+      <>
+        Le serveur de la carte <b>{name}</b> ne répond pas.
+      </>
+    ),
     offlineMaps: 'Cartes hors ligne',
     legacy: 'obsolète',
   },

@@ -5,6 +5,7 @@ import { sourceLayerEnvelope } from '@features/cachedMaps/sourceLayer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import {
@@ -187,6 +188,26 @@ export function Layers(): ReactElement | null {
             minZoom={layerDef.minZoom}
             maxNativeZoom={layerDef.maxNativeZoom}
             dpiScale={wmsHdpi ? 2 : 1}
+            onError={() => {
+              dispatch(
+                toastsAdd({
+                  // Per layer, so a flaky one replaces its own notice rather
+                  // than stacking a new one on every failed view.
+                  id: `wms-${type}`,
+                  style: 'warning',
+                  timeout: 5000,
+                  messageKey: 'mapLayers.serverNotResponding',
+                  messageParams: {
+                    // `||`: a custom map saves an empty name when the field is
+                    // left blank, which has to fall through like a missing one.
+                    name:
+                      ('name' in layerDef ? layerDef.name : undefined) ||
+                      m?.mapLayers.letters[type] ||
+                      `{${type}}`,
+                  },
+                }),
+              );
+            }}
           />
         );
       }

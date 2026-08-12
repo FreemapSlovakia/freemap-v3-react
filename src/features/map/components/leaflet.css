@@ -117,3 +117,35 @@ a.leaflet-control-layers-toggle {
     text-align: center;
   }
 }
+
+/*
+ * A WMS asked for one image per view shows nothing at all while it renders, so
+ * a request still running after a few seconds makes the area it covers breathe.
+ * The period is shared with `WmsImageLayer`, which holds each element back to
+ * the next turn of it — so one appears at the first frame rather than part-way
+ * through, and several waiting at once pulse together instead of each on its
+ * own beat.
+ */
+.fm-wms-pulse {
+  background-color: #808080;
+  animation: fm-wms-pulse 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes fm-wms-pulse {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fm-wms-pulse {
+    animation: none;
+    opacity: 0.08;
+  }
+}
