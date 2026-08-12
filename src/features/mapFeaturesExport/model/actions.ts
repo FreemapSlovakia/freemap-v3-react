@@ -44,6 +44,12 @@ export const ExportElevationSchema = z.enum(['none', 'missing', 'all']);
 
 export type ExportElevation = z.infer<typeof ExportElevationSchema>;
 
+/**
+ * Progress id the export processor holds for as long as the export runs. The
+ * export modal watches it to show its busy state.
+ */
+export const EXPORT_PROGRESS_ID = 'mapFeaturesExport';
+
 export const exportMapFeatures = createAction<{
   exportables: Exportable[];
   type: ExportType;

@@ -442,6 +442,8 @@ When a single map feature is selected (a drawing point/line/polygon, an object, 
 
 For the file/share/Google Drive/Dropbox targets an **Elevation** control chooses whether to fill elevation from the elevation API into exported points, lines and the planned route: *Keep recorded* (leave as-is), *Fill missing* (only coordinates lacking elevation), or *Override all* (replace every elevation). Polygons are always skipped.
 
+While the export runs its controls are disabled and a spinner replaces the icon on the export button. **Close** stays active: it gives up on the export — one that is filling elevation is abandoned outright, while one that is not carries on and downloads its file with the modal already gone.
+
 The target can be a downloaded file, the device share sheet, Google Drive, Dropbox, or Garmin Connect. **Share** hands the exported file to the operating system's share sheet (send it to a messenger, mail app, or a hiking app); it is offered only in browsers that let a page share files at all. Chromium-based browsers share no geo formats, so there the file travels as plain text with a `.txt` suffix appended to its name (`freemap-export-….gpx.txt`), which a note under the target explains. If the browser refuses to open the share sheet at all — an export slow enough to lose the click that asked for it — the file is downloaded instead and a message says so. Exporting a planned route to Garmin Connect as a course (experimental) requires a connected Garmin account and lets the user choose a course name and activity type (running, hiking, mountain biking, trail running, road/gravel cycling, other).
 
 ### Maps for GPS devices
