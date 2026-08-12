@@ -64,15 +64,33 @@ So a bot hitting `/?tool=route-planner&lang=en` is served `sitemap/tool=route-pl
 
 **Canonical is not set in nginx** — each prerender file carries its own `<link rel="canonical">` (cross-domain, from `appUrl`), so a page served on the "wrong" host still points Google at its home domain. (There is no per-domain canonical `Link` header; the old hardcoded-SK one was removed.)
 
-## 3. rspack — language index variants
+Humans fall through to a `try_files` in the same block that picks the entry document for the domain and the browser's language:
 
-`rspack.config.ts` emits `index-<lang>.html` with localized `<title>`/`<meta description>` from the `*-shared.ts` files.
+```nginx
+try_files /index-sk-$ui_lang.html /index-sk-sk.html;   # freemap.sk
+try_files /index-eu-$ui_lang.html /index-eu-en.html;   # freemap.eu
+```
+
+`$ui_lang` comes from the `map` in `etc/nginx/conf.d/ui-language.conf`, which captures the **first tag** of `Accept-Language` (nginx cannot weigh q-values) if it is two lowercase letters, else `""`. It deliberately does not enumerate the built languages — an unbuilt tag finds no file and drops to the fallback on its own, so nginx has no language list to keep in sync — and the `[a-z]{2}` shape is what makes the value safe to interpolate into the path. The block sends `Vary: Accept-Language`.
+
+## 3. rspack — entry-document variants
+
+The two domains are served from one directory, so `rspack.config.ts` emits one entry document per **site × language** — `index-<site>-<lang>.html`, site being `sk` or `eu` — from a single `entryDocs` table. `<title>`/`<meta description>` come from the `*-shared.ts` files; the `{site}` placeholder in each title is expanded to that site's portal name, which also fills `og:site_name` and `application-name`, while `og:url`/`og:image` get the site's own base URL.
+
+The portal name follows the **domain**, never the language: every language on freemap.sk says Freemap Slovakia, every language on freemap.eu says Freemap Europe. `src/shared/sites.ts` is the single source of truth for both names and both base URLs; the sitemap generator derives them from the page language (which implies its home domain via `langBase`) and the running SPA derives them from `location.hostname` in `useHtmlMeta`, which re-expands the title once the app boots.
+
+Plain `index.html` is still emitted (English copy, Slovak name): it is what the dev server serves and what the service worker keeps as the offline shell (`src/sw/sw.ts`, `src/shared/offlineStaticCache.ts` pin that exact name).
+
+The web manifest is emitted over the same matrix — `manifest-<site>-<lang>.webmanifest`, rendered by `RspackWebManifestPlugin` from the single base document `src/manifest.webmanifest` (kept out of `static/`, which is copied verbatim). The base holds everything site- and language-independent — icons, `share_target`, `protocol_handlers`, `file_handlers`, the shortcut URLs; the variant supplies `name` (from the site), and `lang`, `description` plus the shortcut labels (from the `entryDocs` row). Shortcut labels are matched **positionally** to the base's `shortcuts`, and the plugin throws if the counts disagree, so adding a shortcut fails the build rather than shipping an unlabeled one.
+
+Each entry document links its own manifest, which is what makes the install prompt and the home-screen icon's context menu follow the browser language: nginx already picked the language when it picked the entry document. `id` and `start_url` stay `/`, so an already-installed app keeps its identity and only its copy changes — Chrome refreshes it on its own manifest-update schedule, not immediately.
 
 ## Invariants & deployment
 
 - **All artifacts live under `/sitemap/`** so a normal app deploy (which only writes the compiled assets) never wipes them. The root copies were lost once exactly because they sat at `/`.
 - **`robots.txt` (`src/static/`) lists both indexes** — `https://www.freemap.sk/sitemap/sitemap-index.xml` and `https://www.freemap.eu/sitemap/sitemap-index-eu.xml`. `index.ejs`'s sitemap `<link>` and the generator's `<loc>`s must stay consistent with these paths.
 - **GSC:** submit `sitemap-index.xml` under the `freemap.sk` property and `sitemap-index-eu.xml` under a `freemap.eu` property (add it if missing).
+- **The entry-document `no-store` rule matches by name** — `location ~ ^/(index(-(sk|eu)-\w\w)?\.html|assets-manifest\.json)$` in both vhosts. Renaming the variants without widening that regex drops them to heuristic caching, which strands clients on a previous build's asset hashes.
 - **Regenerate with `pnpm gen-sitemap`.** It first wipes the local `sitemap/` dir, so the output is always exactly the current set — POIs deleted from OSM since the last run do not linger. It exits non-zero on a failed Overpass crawl, so chain any deploy step with `&&` to avoid shipping a partial crawl.
 - **Deployment is manual and serves both domains at once** (both vhosts share `root /home/freemap/www`): rsync the local `sitemap/` into `freemap-fm6:www/sitemap/` with `--delete` (the live dir must end up _replaced_, not merged, or stale pages survive).
 - `nginx -t` before reloading after editing a vhost.
@@ -80,3 +98,5 @@ So a bot hitting `/?tool=route-planner&lang=en` is served `sitemap/tool=route-pl
 ## Keeping it in sync
 
 `seo.ts` hub copy is hand-maintained and distilled from `src/static/llms.txt` and the layer registry (`src/shared/mapDefinitions.tsx`). **When layers or tools change, update `seo.ts` hubs in the same change set** — the same drift discipline that applies to `llms.txt` itself (see [CLAUDE.md](../CLAUDE.md)).
+
+**Adding a UI language** also means an `entryDocs` row in `rspack.config.ts` — the bootstrap copy for the no-JS / error / loading states, plus the manifest's `appDescription` and shortcut labels. Miss it and that language falls back to the domain's default entry document with no error anywhere; `rspack.config.ts` is outside `tsconfig.json`, so `tsc` cannot help. A build-time guard against `translation-manager/templates.json` covers it, which is how `sl` and `fr` stopped being missing. nginx needs no change — its language map is generic.

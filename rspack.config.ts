@@ -13,14 +13,30 @@ import TerserPlugin from 'terser-webpack-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import { RspackMarkdownDictPlugin } from './RspackMarkdownDictPlugin.js';
 import { RspackSyncLanguagesPlugin } from './RspackSyncLanguagesPlugin.js';
-
+import {
+  RspackWebManifestPlugin,
+  type WebManifestVariant,
+} from './RspackWebManifestPlugin.js';
+import type { Language } from './src/shared/langUtils.js';
+import {
+  expandSite,
+  type Site,
+  siteNames,
+  siteUrls,
+} from './src/shared/sites.js';
 import csMessages from './src/translations/cs-shared.js';
 import deMessages from './src/translations/de-shared.js';
 import enMessages from './src/translations/en-shared.js';
+import frMessages from './src/translations/fr-shared.js';
 import huMessages from './src/translations/hu-shared.js';
 import itMessages from './src/translations/it-shared.js';
 import plMessages from './src/translations/pl-shared.js';
+import type { SharedMessages } from './src/translations/sharedMessagesInterface.js';
 import skMessages from './src/translations/sk-shared.js';
+import slMessages from './src/translations/sl-shared.js';
+import templatesConfig from './translation-manager/templates.json' with {
+  type: 'json',
+};
 
 const __dirname = import.meta.dirname;
 
@@ -52,22 +68,191 @@ const cssTargets = [
   'not dead',
 ];
 
-const htmlPluginProps = {
-  filename: 'index.html',
-  template: 'index.ejs',
-  inject: false,
-  templateParameters: {
-    lang: 'en',
-    title: enMessages.title,
-    description: enMessages.description,
-    errorHtml:
-      '<h1>Problem starting application</h1>' +
-      '<p>Please make sure you are using recent version of a modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
-    nojsMessage:
-      'JavaScript enabled browser is required to run this application.',
-    loadingMessage: 'Loading…',
-  },
+// Both domains are served from the same directory, so each entry document is
+// emitted once per site with that site's portal name baked in.
+const sites: Site[] = ['sk', 'eu'];
+
+// The bootstrap copy of an entry document. The rest of its parameters (the
+// title, the site name, the base URL) follow from the language and the site.
+type EntryDoc = {
+  lang: Language;
+  shared: SharedMessages;
+  errorHtml: string;
+  nojsMessage: string;
+  loadingMessage: string;
+  /** Web-manifest copy. Site-neutral — the portal name is added per site. */
+  appDescription: string;
+  /** Labels for the base manifest's `shortcuts`, in order. */
+  shortcutNames: string[];
 };
+
+const enDoc: EntryDoc = {
+  lang: 'en',
+  shared: enMessages,
+  errorHtml:
+    '<h1>Problem starting application</h1>' +
+    '<p>Please make sure you are using recent version of a modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+  nojsMessage:
+    'JavaScript enabled browser is required to run this application.',
+  loadingMessage: 'Loading…',
+  appDescription:
+    'Freemap is a free online outdoor map based on OpenStreetMap data',
+  shortcutNames: ['My maps', 'Route finder', 'Objects'],
+};
+
+const entryDocs: EntryDoc[] = [
+  enDoc,
+  {
+    lang: 'sk',
+    shared: skMessages,
+    errorHtml:
+      '<h1>Aplikáciu sa nepodarilo spustiť</h1>' +
+      '<p>Uistite sa, že používate aktuálnu verziu niektorého zo súčasných prehliadačov (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).<p>',
+    nojsMessage:
+      'Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.',
+    loadingMessage: 'Načítavam…',
+    appDescription:
+      'Freemap je voľne dostupná online outdoorová mapa založená na dátach z OpenStreetMap',
+    shortcutNames: ['Moje mapy', 'Vyhľadávač trás', 'Objekty'],
+  },
+  {
+    lang: 'cs',
+    shared: csMessages,
+    errorHtml:
+      '<h1>Aplikaci se nepodařilo spustit</h1>' +
+      '<p>Ujistěte se, že používáte aktuální verzi některého ze současných prohlížečů (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).<p>',
+    nojsMessage:
+      'Aplikace vyžaduje prohlížeč se zapnutou podporou JavaScriptu.',
+    loadingMessage: 'Načítám…',
+    appDescription:
+      'Freemap je volně dostupná online outdoorová mapa založená na datech z OpenStreetMap',
+    shortcutNames: ['Moje mapy', 'Vyhledávač tras', 'Objekty'],
+  },
+  {
+    lang: 'hu',
+    shared: huMessages,
+    errorHtml:
+      '<h1>Hiba történt az alkalmazás elindításánál</h1>' +
+      '<p>Győződjék meg arról, hogy egy modern böngésző (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …) friss verzióját használja.</p>',
+    nojsMessage:
+      'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
+    loadingMessage: 'Betöltés…',
+    appDescription:
+      'A Freemap szabadon elérhető online szabadidős térkép az OpenStreetMap adatai alapján',
+    shortcutNames: ['Saját térképeim', 'Útvonaltervező', 'Objektumok'],
+  },
+  {
+    lang: 'it',
+    shared: itMessages,
+    errorHtml:
+      "<h1>Problema nell'avvio dell'applicazione</h1>" +
+      '<p>Per favore assicurati di utilizzare una versione recente di un browser moderno (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+    nojsMessage:
+      "E' richiesto un browser con JavaScript abilitato per avviare questa applicazione.",
+    loadingMessage: 'Caricamento…',
+    appDescription:
+      'Freemap è una mappa outdoor online gratuita basata sui dati di OpenStreetMap',
+    shortcutNames: ['Le mie mappe', 'Cerca percorso', 'Oggetti'],
+  },
+  {
+    lang: 'de',
+    shared: deMessages,
+    errorHtml:
+      '<h1>Fehler beim Starten der Anwendung</h1>' +
+      '<p>Bitte stellen Sie sicher, dass Sie eine aktuelle Version eines modernen Browsers verwenden (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+    nojsMessage:
+      'Zum Ausführen dieser Anwendung ist ein Browser mit aktiviertem JavaScript erforderlich.',
+    loadingMessage: 'Lade…',
+    appDescription:
+      'Freemap ist eine frei zugängliche Outdoor-Onlinekarte auf Basis von OpenStreetMap-Daten',
+    shortcutNames: ['Meine Karten', 'Routenplaner', 'Objekte'],
+  },
+  {
+    lang: 'pl',
+    shared: plMessages,
+    errorHtml:
+      '<h1>Nie udało się uruchomić aplikacji</h1>' +
+      '<p>Upewnij się, że używasz aktualnej wersji jednej ze współczesnych przeglądarek (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+    nojsMessage: 'Aplikacja wymaga przeglądarki z włączoną obsługą JavaScript.',
+    loadingMessage: 'Ładowanie…',
+    appDescription:
+      'Freemap to bezpłatna mapa outdoorowa online oparta na danych OpenStreetMap',
+    shortcutNames: ['Moje mapy', 'Wyszukiwarka tras', 'Obiekty'],
+  },
+  {
+    lang: 'sl',
+    shared: slMessages,
+    errorHtml:
+      '<h1>Aplikacije ni bilo mogoče zagnati</h1>' +
+      '<p>Prepričajte se, da uporabljate najnovejšo različico sodobnega brskalnika (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+    nojsMessage:
+      'Za zagon te aplikacije potrebujete brskalnik z omogočenim JavaScriptom.',
+    loadingMessage: 'Nalaganje…',
+    appDescription:
+      'Freemap je prosto dostopen spletni zemljevid za dejavnosti v naravi, ki temelji na podatkih OpenStreetMap',
+    shortcutNames: ['Moji zemljevidi', 'Iskalnik poti', 'Objekti'],
+  },
+  {
+    lang: 'fr',
+    shared: frMessages,
+    errorHtml:
+      "<h1>Impossible de démarrer l'application</h1>" +
+      "<p>Veuillez vous assurer d'utiliser une version récente d'un navigateur moderne (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>",
+    nojsMessage:
+      'Un navigateur avec JavaScript activé est nécessaire pour exécuter cette application.',
+    loadingMessage: 'Chargement…',
+    appDescription:
+      'Freemap est une carte outdoor en ligne gratuite basée sur les données OpenStreetMap',
+    shortcutNames: ['Mes cartes', 'Planificateur d’itinéraire', 'Objets'],
+  },
+];
+
+// A language with no row here gets no entry document and no web manifest, and
+// silently falls back to the domain's default ones. This config is not
+// type-checked, so nothing but this guard catches the omission.
+const missingDocs = ['en', ...templatesConfig.langs].filter(
+  (lang) => !entryDocs.some((doc) => doc.lang === lang),
+);
+
+if (missingDocs.length > 0) {
+  throw new Error(`entryDocs has no entry for: ${missingDocs.join(', ')}`);
+}
+
+// The installable app carries the portal name of the domain it was installed
+// from and the copy of the language its entry document was served in.
+// `id`/`start_url` stay `/`, so an already-installed app keeps its identity.
+const webManifestVariants: WebManifestVariant[] = entryDocs.flatMap((doc) =>
+  sites.map((site) => ({
+    filename: `manifest-${site}-${doc.lang}.webmanifest`,
+    name: siteNames[site],
+    lang: doc.lang,
+    description: doc.appDescription,
+    shortcutNames: doc.shortcutNames,
+  })),
+);
+
+const baseUrlOf = (site: Site) =>
+  ({ www: siteUrls[site] })[process.env['DEPLOYMENT']!] ??
+  'https://local.freemap.sk:9000';
+
+function htmlPluginProps(doc: EntryDoc, site: Site, filename: string) {
+  return {
+    filename,
+    template: 'index.ejs',
+    inject: false,
+    templateParameters: {
+      lang: doc.lang,
+      site,
+      title: expandSite(doc.shared.title, site),
+      description: doc.shared.description,
+      siteName: siteNames[site],
+      baseUrl: baseUrlOf(site),
+      errorHtml: doc.errorHtml,
+      nojsMessage: doc.nojsMessage,
+      loadingMessage: doc.loadingMessage,
+    },
+  };
+}
 
 const config: Configuration = {
   mode: prod ? 'production' : 'development',
@@ -336,100 +521,20 @@ const config: Configuration = {
           www: 'https://graphhopper.freemap.sk',
         }[process.env['DEPLOYMENT']!] || 'https://graphhopper.freemap.sk', //'http://localhost:8989',
     }),
-    new HtmlRspackPlugin(htmlPluginProps), // fallback for dev
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-en.html',
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-sk.html',
-      templateParameters: {
-        lang: 'sk',
-        title: skMessages.title,
-        description: skMessages.description,
-        errorHtml:
-          '<h1>Aplikáciu sa nepodarilo spustiť</h1>' +
-          '<p>Uistite sa, že používate aktuálnu verziu niektorého zo súčasných prehliadačov (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).<p>',
-        nojsMessage:
-          'Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.',
-        loadingMessage: 'Načítavam…',
-      },
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-cs.html',
-      templateParameters: {
-        lang: 'cs',
-        title: csMessages.title,
-        description: csMessages.description,
-        errorHtml:
-          '<h1>Aplikaci se nepodařilo spustit</h1>' +
-          '<p>Ujistěte se, že používáte aktuální verzi některého ze současných prohlížečů (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).<p>',
-        nojsMessage:
-          'Aplikace vyžaduje prohlížeč se zapnutou podporou JavaScriptu.',
-        loadingMessage: 'Načítám…',
-      },
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-hu.html',
-      templateParameters: {
-        lang: 'hu',
-        title: huMessages.title,
-        description: huMessages.description,
-        errorHtml:
-          '<h1>Hiba történt az alkalmazás elindításánál</h1>' +
-          '<p>Győződjék meg arról, hogy egy modern böngésző (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …) friss verzióját használja.</p>',
-        nojsMessage:
-          'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
-        loadingMessage: 'Betöltés…',
-      },
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-it.html',
-      templateParameters: {
-        lang: 'it',
-        title: itMessages.title,
-        description: itMessages.description,
-        errorHtml:
-          "<h1>Problema nell'avvio dell'applicazione</h1>" +
-          '<p>Per favore assicurati di utilizzare una versione recente di un browser moderno (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
-        nojsMessage:
-          "E' richiesto un browser con JavaScript abilitato per avviare questa applicazione.",
-        loadingMessage: 'Caricamento…',
-      },
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-de.html',
-      templateParameters: {
-        lang: 'de',
-        title: deMessages.title,
-        description: deMessages.description,
-        errorHtml:
-          '<h1>Fehler beim Starten der Anwendung</h1>' +
-          '<p>Bitte stellen Sie sicher, dass Sie eine aktuelle Version eines modernen Browsers verwenden (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
-        nojsMessage:
-          'Zum Ausführen dieser Anwendung ist ein Browser mit aktiviertem JavaScript erforderlich.',
-        loadingMessage: 'Lade…',
-      },
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-pl.html',
-      templateParameters: {
-        lang: 'pl',
-        title: plMessages.title,
-        description: plMessages.description,
-        errorHtml:
-          '<h1>Nie udało się uruchomić aplikacji</h1>' +
-          '<p>Upewnij się, że używasz aktualnej wersji jednej ze współczesnych przeglądarek (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
-        nojsMessage:
-          'Aplikacja wymaga przeglądarki z włączoną obsługą JavaScript.',
-        loadingMessage: 'Ładowanie…',
-      },
+    // Entry documents: one per site × language, plus the plain `index.html`
+    // that dev serves and the service worker keeps as the offline shell.
+    new HtmlRspackPlugin(htmlPluginProps(enDoc, 'sk', 'index.html')),
+    ...entryDocs.flatMap((doc) =>
+      sites.map(
+        (site) =>
+          new HtmlRspackPlugin(
+            htmlPluginProps(doc, site, `index-${site}-${doc.lang}.html`),
+          ),
+      ),
+    ),
+    new RspackWebManifestPlugin({
+      base: 'manifest.webmanifest',
+      variants: webManifestVariants,
     }),
     new rspack.CopyRspackPlugin({
       patterns: [

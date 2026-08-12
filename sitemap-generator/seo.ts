@@ -1,5 +1,6 @@
 import htm from 'htm';
 import vhtml from 'vhtml';
+import { type Site, siteNames, siteUrls } from '../src/shared/sites.js';
 import csShared from '../src/translations/cs-shared.js';
 import deShared from '../src/translations/de-shared.js';
 import enShared from '../src/translations/en-shared.js';
@@ -13,10 +14,10 @@ import slShared from '../src/translations/sl-shared.js';
 const html = htm.bind(vhtml);
 
 /** The Slovak home domain — canonical for Slovak and Czech pages. */
-export const BASE_SK = 'https://www.freemap.sk';
+export const BASE_SK = siteUrls.sk;
 
 /** The international domain — canonical for every other language. */
-export const BASE_EU = 'https://www.freemap.eu';
+export const BASE_EU = siteUrls.eu;
 
 /** Default base (the Slovak home domain), used for freemap.sk-only artifacts. */
 export const BASE = BASE_SK;
@@ -44,9 +45,14 @@ export const HUB_LANGS: HubLang[] = ['sk', 'en'];
 /** Languages canonical on {@link BASE_SK}; every other language on {@link BASE_EU}. */
 const SK_LANGS: Lang[] = ['sk', 'cs'];
 
+/** The site a language's pages are canonical on. */
+function langSite(lang: Lang): Site {
+  return SK_LANGS.includes(lang) ? 'sk' : 'eu';
+}
+
 /** The home (canonical) domain hosting a language's pages. */
 export function langBase(lang: Lang): string {
-  return SK_LANGS.includes(lang) ? BASE_SK : BASE_EU;
+  return siteUrls[langSite(lang)];
 }
 
 /**
@@ -62,7 +68,7 @@ export function brand(lang: Lang): string {
  * {@link BASE_EU} carry the international brand.
  */
 export function siteName(lang: Lang): string {
-  return SK_LANGS.includes(lang) ? 'Freemap Slovakia' : 'Freemap Europe';
+  return siteNames[langSite(lang)];
 }
 
 /**
@@ -75,7 +81,11 @@ export function expandNames(text: string, lang: Lang): string {
     .replace(/\{site\}/g, siteName(lang));
 }
 
-/** Per-language <title>/<meta description>, reused from the SPA's SEO strings. */
+/**
+ * Per-language <title>/<meta description>, reused from the SPA's SEO strings.
+ * The titles carry the `{site}` placeholder — run them through
+ * {@link expandNames} before rendering.
+ */
 export const homeMeta: Record<Lang, { title: string; description: string }> = {
   sk: skShared,
   en: enShared,
@@ -424,7 +434,9 @@ export function renderHub(hub: Hub, lang: HubLang): string {
 
 /** Render the homepage for one language. */
 export function renderHome(lang: Lang): string {
-  const { title, description } = homeMeta[lang];
+  const { description } = homeMeta[lang];
+
+  const title = expandNames(homeMeta[lang].title, lang);
 
   const url = appUrl('layers=X', lang);
 
