@@ -1,4 +1,5 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { User } from '@features/auth/model/types.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
@@ -10,7 +11,7 @@ import {
   type TileCoord,
   tileRangeIndex,
 } from '@shared/tileEnumeration.js';
-import { buildTileUrl, withTileScale } from '@shared/tileUrl.js';
+import { buildTileUrl, pickSubdomain, withTileScale } from '@shared/tileUrl.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Dispatch } from 'redux';
 import {
@@ -25,6 +26,7 @@ import {
   sameCoverage,
 } from '../cachedTileMaps.js';
 import { toCachedLayerUrl } from '../cachedTileUrl.js';
+import { premiumZoomLimit } from '../sourceLayer.js';
 import { loadCachedMapsMessages } from '../translations/loadCachedMapsMessages.js';
 import {
   cachedMapDeleted,
@@ -107,13 +109,18 @@ function updateMeta(
   };
 }
 
+/** The `{s}` host a tile of this map is fetched from; see `pickSubdomain`. */
+function tileSubdomain(meta: CachedTileMapDef): string {
+  return pickSubdomain('subdomains' in meta ? meta.subdomains : undefined);
+}
+
 function tileCacheKey(
   meta: CachedTileMapDef,
   [x, y, z]: TileCoord,
   scale: number | undefined,
 ): string {
   return toCachedLayerUrl(
-    withTileScale(buildTileUrl(meta.url, x, y, z), scale),
+    withTileScale(buildTileUrl(meta.url, x, y, z, tileSubdomain(meta)), scale),
     meta.type,
   );
 }
@@ -245,6 +252,7 @@ async function downloadTiles(
   def: CachedTileMapDef,
   dispatch: Dispatch,
   language: string,
+  user: Pick<User, 'premiumExpiration'> | null,
   abortController: AbortController = beginDownload(def.type),
 ) {
   const id = def.type;
@@ -253,7 +261,18 @@ async function downloadTiles(
 
   const { bounds, minZoom, maxZoom } = coverageOf(def);
 
-  const tiles = enumerateTilesInBbox(bounds, minZoom, maxZoom);
+  // The one place premium zooms are kept out of the cache, whichever path got
+  // here: a map carries the range it was given while the premium access lasted,
+  // and a resume or an edit of it answers to the form's cap no more than a
+  // hand-edited database entry would. A map gated this way stays incomplete —
+  // it is missing tiles, and saying otherwise would be a lie.
+  const premiumLimit = premiumZoomLimit(def.sourceType, user) ?? Infinity;
+
+  const gatedMaxZoom = Math.min(maxZoom, premiumLimit);
+
+  const gated = gatedMaxZoom < maxZoom;
+
+  const tiles = enumerateTilesInBbox(bounds, minZoom, gatedMaxZoom);
 
   let visited = 0;
   let sizeBytes = def.sizeBytes;
@@ -299,7 +318,7 @@ async function downloadTiles(
     const results = await Promise.allSettled(
       batch.map(async ([x, y, z]) => {
         const fetchUrl = withTileScale(
-          buildTileUrl(meta.url, x, y, z),
+          buildTileUrl(meta.url, x, y, z, tileSubdomain(meta)),
           meta.tileScale,
         );
 
@@ -365,10 +384,33 @@ async function downloadTiles(
   // them as present and would never add their size again.
   await commitMeta(
     dispatch,
-    updateMeta(meta, stopped ? cachedCount() : meta.tileCount, sizeBytes),
+    updateMeta(
+      meta,
+      stopped || gated ? cachedCount() : meta.tileCount,
+      sizeBytes,
+    ),
   );
 
-  if (!stopped) {
+  if (stopped) {
+    return;
+  }
+
+  // Ends the row's download whether or not every tile was allowed: it is what
+  // clears `activeDownloads`, and a gated pass has nothing left to do either.
+  dispatch(cacheTilesComplete({ id }));
+
+  if (gated) {
+    // Say why the map stops short of the range it was given, or a Resume that
+    // fetches nothing more looks like a failure.
+    dispatch(
+      toastsAdd({
+        style: 'warning',
+        timeout: 10_000,
+        messageKey: 'premiumSkipped',
+        messageLoader: loadCachedMapsMessages,
+      }),
+    );
+  } else {
     // auto-cache static assets on first completed map
     const allMaps = await getCachedTileMaps();
 
@@ -383,8 +425,6 @@ async function downloadTiles(
         // not critical
       }
     }
-
-    dispatch(cacheTilesComplete({ id }));
 
     const cm = await loadCachedMapsMessages(language);
 
@@ -441,6 +481,7 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
           action.payload,
           dispatch,
           getState().l10n.language,
+          getState().auth.user,
           abortController,
         );
       })
@@ -566,6 +607,7 @@ export const cachedMapEditedProcessor: Processor<typeof cachedMapEdited> = {
       pruned,
       dispatch,
       getState().l10n.language,
+      getState().auth.user,
       abortController,
     ).catch((err: unknown) => {
       if (err instanceof DOMException && err.name === 'AbortError') {
@@ -594,7 +636,12 @@ export const cacheTilesRestartProcessor: Processor<typeof cacheTilesRestart> = {
       return;
     }
 
-    downloadTiles(meta, dispatch, getState().l10n.language).catch((err) => {
+    downloadTiles(
+      meta,
+      dispatch,
+      getState().l10n.language,
+      getState().auth.user,
+    ).catch((err) => {
       if (err instanceof DOMException && err.name === 'AbortError') {
         return;
       }

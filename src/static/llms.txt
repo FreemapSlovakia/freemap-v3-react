@@ -358,6 +358,8 @@ The recording is also shown as a red line on the map with its newest fix marked;
 
 Caches selected map areas (tiles) in the browser for offline use. (This is different from "Offline maps export", which produces a downloadable MBTiles/SQLiteDB file.)
 
+A cached map is not limited to what it holds. While there is a connection it behaves as the layer it was made from: it takes that layer's zoom range and its premium gate, and any tile it doesn't have — outside its area, deeper than it was downloaded, or not downloaded yet — is fetched from that layer's own server. Such tiles are only displayed, never added to the cached map. Without a connection the map falls back to being just what was downloaded: its own area and zoom range, with the deepest cached level scaled up beyond it.
+
 The manager modal lists already-cached offline maps with their zoom range, tile count, scale, size and status (Ready, or incomplete with a percentage), and has buttons to modify, delete, and **Add offline map**. A ready map has an **Activate** button that switches the map layer on and zooms to its area; a map that is still downloading offers **Zoom to area** instead. A running download can be **Stop**ped, which halts it and keeps whatever has been cached so far; an incomplete map then offers **Resume**, which fetches only the tiles it is missing. **Delete** discards the map altogether and is available whether or not it is downloading.
 
 The "Cache map for offline use" form lets the user choose:
@@ -365,7 +367,7 @@ The "Cache map for offline use" form lets the user choose:
 - the map (layer) to cache — tile layers only; WMS layers cannot be cached
 - the area: current visible area, or a rectangle drawn on the map
 - a name
-- the zoom range
+- the zoom range. For a layer whose deepest zooms are premium, a non-premium user's range stops just short of them and a gem beside the field says why: cached tiles are kept for good and are shown with no connection, where no checkerboard applies, so downloading those levels needs premium access. Browsing them online is unaffected — the cached map shows the same checkerboard there as the source layer does.
 - the scale (1×, 2×, … — only for layers that offer hi-DPI tiles; defaults to what the current screen displays). A cached map holds exactly one scale and is always drawn at it, regardless of the screen and of the resolution/feature-size preferences.
 - whether to show the cached map in the menu and/or toolbar
 

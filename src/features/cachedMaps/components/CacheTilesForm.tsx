@@ -4,6 +4,7 @@ import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
@@ -19,8 +20,12 @@ import {
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import { countCachedOf, countTilesInBbox } from '@shared/tileEnumeration.js';
-import { pickTileScale } from '@shared/tileUrl.js';
+import {
+  countCachedOf,
+  countTilesInBbox,
+  coverageIncludes,
+} from '@shared/tileEnumeration.js';
+import { pickSubdomain, pickTileScale } from '@shared/tileUrl.js';
 import {
   type ReactElement,
   type SubmitEvent,
@@ -52,6 +57,7 @@ import {
   cachedMapsSetView,
   cacheTilesStart,
 } from '../model/actions.js';
+import { premiumZoomLimit } from '../sourceLayer.js';
 import { useCachedMapsMessages } from '../translations/useCachedMapsMessages.js';
 
 type CacheableLayerDef = IntegratedLayerDef<IsTileLayerDef> & {
@@ -144,8 +150,24 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
   const limitMinZoom = editing && !mapDef ? editing.minZoom : mapDef?.minZoom;
 
-  const limitMaxZoom =
+  const user = useAppSelector((state) => state.auth.user);
+
+  const premiumLimit = premiumZoomLimit(editing?.sourceType ?? mapType, user);
+
+  // The field keeps the range a map was given while premium: capping it below
+  // what is already downloaded would make even a rename delete tiles. Growing it
+  // is another matter — see `premiumWiden` — and fetching those zooms is refused
+  // outright by the download itself.
+  const sourceMaxZoom =
     editing && !mapDef ? editing.maxNativeZoom : mapDef?.maxNativeZoom;
+
+  const limitMaxZoom =
+    premiumLimit === undefined
+      ? sourceMaxZoom
+      : Math.min(
+          sourceMaxZoom ?? Infinity,
+          Math.max(premiumLimit, editing?.maxNativeZoom ?? 0),
+        );
 
   const [name, setName] = useState(editing?.name ?? '');
 
@@ -188,11 +210,11 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       String(
         Math.max(
           mapDef.minZoom ?? 0,
-          Math.min(mapDef.maxNativeZoom ?? Infinity, DEFAULT_MAX_ZOOM),
+          Math.min(limitMaxZoom ?? Infinity, DEFAULT_MAX_ZOOM),
         ),
       ),
     );
-  }, [mapDef, editing]);
+  }, [mapDef, editing, limitMaxZoom]);
 
   useEffect(() => {
     setName((prev) => {
@@ -236,6 +258,28 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     return Math.max(0, tileCount - held);
   }, [bbox, minZoom, maxZoom, editing, tileCount]);
 
+  // A map is allowed to keep premium zooms it already downloaded, but not to
+  // take them over ground it didn't cover — that would fetch premium tiles
+  // afresh. Only the part of the range past the limit is pinned this way, so
+  // the free zooms can still be widened. Where the new range stops short of the
+  // limit there is nothing to compare, and `coverageIncludes` says so.
+  const premiumWiden =
+    premiumLimit !== undefined &&
+    editing !== undefined &&
+    bbox !== undefined &&
+    !coverageIncludes(
+      {
+        bounds: editing.bounds,
+        minZoom: Math.max(editing.minZoom ?? 0, premiumLimit + 1),
+        maxZoom: editing.maxNativeZoom ?? 18,
+      },
+      {
+        bounds: bbox,
+        minZoom: Math.max(Number(minZoom), premiumLimit + 1),
+        maxZoom: Number(maxZoom),
+      },
+    );
+
   const cnf = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -267,6 +311,10 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
   // single lever on the size
   const { bytes: estimatedSize, sampling } = useTilesSizeEstimate({
     urlTemplate,
+    subdomain: pickSubdomain(
+      (editing && 'subdomains' in editing ? editing.subdomains : undefined) ??
+        mapDef?.subdomains,
+    ),
     bbox,
     minZoom: Number(minZoom),
     maxZoom: Number(maxZoom),
@@ -469,7 +517,15 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
         {urlTemplate && (
           <Form.Group controlId="zoomRange" className="mb-3">
-            <Form.Label className="required">{ome?.zoomRange}</Form.Label>
+            <Form.Label className="required">
+              {ome?.zoomRange}
+
+              {/* the range stops short of the layer's premium zooms; the gem
+                  says why, there being no checkerboard on a cached map */}
+              {premiumLimit !== undefined && (
+                <PremiumGem className="ms-1" hint={cm?.premiumZoomHint} />
+              )}
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -571,6 +627,12 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
               )}
             </>
           )}
+
+        {premiumWiden && (
+          <Alert variant="warning" className="mt-3 mb-0">
+            {cm?.premiumWiden}
+          </Alert>
+        )}
       </Modal.Body>
 
       <Modal.Footer className="flex-wrap">
@@ -603,6 +665,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
           disabled={
             invalidMinZoom ||
             invalidMaxZoom ||
+            premiumWiden ||
             !tileCount ||
             tileCount === Infinity ||
             !name.trim()

@@ -33,6 +33,12 @@ const sk: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   activate: 'Aktivovať',
   focus: 'Priblížiť na oblasť',
   namePrefix: 'Offline',
+  premiumZoomHint:
+    'Najpodrobnejšie priblíženia tejto vrstvy sú prémiové. Offline mapa si dlaždice ponecháva natrvalo a zobrazuje ich aj bez pripojenia, takže na ich stiahnutie je potrebný prémiový prístup.',
+  premiumWiden:
+    'Táto mapa siaha do prémiových priblížení. Bez prémiového prístupu ju možno zmenšiť, nie však zväčšiť — zväčšením by sa nanovo stiahli prémiové dlaždice.',
+  premiumSkipped:
+    'Najpodrobnejšie priblíženia tejto mapy sú prémiové a nestiahli sa, takže mapa zostáva označená ako nekompletná.',
 };
 
 export default sk;

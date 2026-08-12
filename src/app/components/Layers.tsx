@@ -1,10 +1,12 @@
 import { hasRole } from '@features/auth/model/types.js';
 import { getCachedTileScale } from '@features/cachedMaps/cachedTileMaps.js';
 import { toCachedLayerUrl } from '@features/cachedMaps/cachedTileUrl.js';
+import { sourceLayerEnvelope } from '@features/cachedMaps/sourceLayer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   integratedLayerDefs,
   type LayerDef,
@@ -63,6 +65,8 @@ export function Layers(): ReactElement | null {
   const galleryDirtySeq = useAppSelector((state) => state.gallery.dirtySeq);
 
   const user = useAppSelector((state) => state.auth.user);
+
+  const online = useOnline();
 
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -312,8 +316,9 @@ export function Layers(): ReactElement | null {
             effForcedScale ?? 'auto',
             effFeatureScale,
             layerDef.url,
-            // a grid layer takes its zoom bounds at construction, so an edited
-            // cached (or custom) map needs a remount to widen or narrow them
+            // a grid layer takes its zoom bounds at construction, so anything
+            // that moves them — an edit, or a cached map losing the connection
+            // it was borrowing its source layer's range from — needs a remount
             minZoom ?? 'auto',
             layerDef.maxNativeZoom ?? 'auto',
           ].join('-')}
@@ -369,13 +374,22 @@ export function Layers(): ReactElement | null {
         .map((cm) => {
           const url = toCachedLayerUrl(cm.url, cm.type);
 
+          // Online the map wears its source layer's zoom range and premium gate:
+          // the service worker fetches whatever the cache lacks, so it behaves
+          // as the layer itself would, checkerboard included. Offline it is only
+          // what was downloaded — its own range, upscaled past the deepest zoom
+          // it holds rather than left blank.
+          const envelope = online
+            ? sourceLayerEnvelope(cm.sourceType, customLayerDefs)
+            : undefined;
+
           // cors: false — cached tiles are served same-origin by the service
           // worker, so `crossOrigin` buys nothing, and the CORS-mode request it
           // produces makes Chrome's `cache.match` miss the stored entry.
           return getLayer(
             cm.technology === 'tile'
-              ? { ...cm, url, cors: false }
-              : { ...cm, url },
+              ? { ...cm, url, ...envelope, cors: false }
+              : { ...cm, url, ...envelope },
             getCachedTileScale(cm),
           );
         })}
