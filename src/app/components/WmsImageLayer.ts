@@ -174,9 +174,14 @@ class LWmsImageLayer extends Layer {
    * download; pointing it elsewhere does — at a data URI rather than at an
    * empty string, which some browsers resolve against the page and fetch. Its
    * handlers go first, since the swap reads as an error to them.
+   *
+   * Only those two: Leaflet keeps its own `remove` listener on a layer, which
+   * is what takes the layer's handlers back off the map, and a blanket `off()`
+   * would drop it — leaving a removed overlay to answer the map's `zoom` with
+   * no map of its own.
    */
   private abort(overlay: ImageOverlay) {
-    overlay.off();
+    overlay.off('load error');
 
     const image = overlay.getElement();
 
