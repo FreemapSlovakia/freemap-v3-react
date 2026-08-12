@@ -67,6 +67,9 @@ server {
 	# the current hashed assets, so they must never be cached — not even
 	# heuristically, which nginx does for responses that lack Cache-Control.
 	location ~ ^/(index(-(sk|eu)-\w\w)?\.html|assets-manifest\.json)$ {
+		# Only direct hits land here — `/` serves its entry document from within
+		# `location = /`, so the homepage keeps its own headers and stays indexable.
+		add_header X-Robots-Tag 'noindex' always;
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
@@ -89,7 +92,7 @@ server {
 	#	}
 
 	location /mbtiles {
-		alias /fm/storage/backend.freemap.sk-data/user-mbtiles;
+		alias /fm/storage1/backend.freemap.sk-data/user-mbtiles;
 	}
 
 	http2 on;
