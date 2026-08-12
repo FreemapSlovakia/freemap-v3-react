@@ -186,13 +186,13 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     })
     .addCase(galleryConfirmPickedPosition, (state) => {
       if (state.pickingPositionForId === -1) {
-        if (!state.editModel) {
-          throw new Error('editModel is null');
+        // the edit form can be dropped mid-picking (a newly loaded image resets
+        // it) — then there is nothing to write the position into
+        if (state.editModel) {
+          state.editModel.dirtyPosition = state.pickingPosition
+            ? latLonToString(state.pickingPosition, state.language)
+            : state.editModel.dirtyPosition; // TODO language
         }
-
-        state.editModel.dirtyPosition = state.pickingPosition
-          ? latLonToString(state.pickingPosition, state.language)
-          : state.editModel.dirtyPosition; // TODO language
       } else {
         const item = state.items.find(
           (item) => item.id === state.pickingPositionForId,
