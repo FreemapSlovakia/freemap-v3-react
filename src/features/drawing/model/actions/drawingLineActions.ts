@@ -197,6 +197,11 @@ export const drawingLineCutHole = createAction<{
   parentLineIndex: number;
 }>('DRAWING_LINE_CUT_HOLE');
 
+/** Stops the "draw the hole inside this polygon" hint from being shown again. */
+export const drawingPreventCutHoleHint = createAction(
+  'DRAWING_PREVENT_CUT_HOLE_HINT',
+);
+
 /** Attaches an existing polygon to a parent as a hole, or (`undefined`) frees it. */
 export const drawingLineSetHoleOf = createAction<{
   lineIndex: number;
