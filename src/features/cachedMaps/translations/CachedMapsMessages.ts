@@ -22,4 +22,7 @@ export type CachedMapsMessages = {
   activate: string;
   focus: string;
   namePrefix: string;
+  premiumZoomHint: string;
+  premiumWiden: string;
+  premiumSkipped: string;
 };

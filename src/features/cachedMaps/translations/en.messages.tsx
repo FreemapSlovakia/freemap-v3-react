@@ -32,6 +32,12 @@ const en: CachedMapsMessages = {
   activate: 'Activate',
   focus: 'Zoom to area',
   namePrefix: 'Offline',
+  premiumZoomHint:
+    "This layer's deepest zoom levels are premium. An offline map keeps its tiles for good and shows them with no connection, so downloading those levels needs premium access.",
+  premiumWiden:
+    'This map reaches premium zoom levels. Without premium access it can be made smaller, but not larger — enlarging it would download premium tiles anew.',
+  premiumSkipped:
+    'The deepest zoom levels of this map are premium and were not downloaded, so it stays marked incomplete.',
 };
 
 export default en;

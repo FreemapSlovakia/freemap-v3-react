@@ -5,6 +5,8 @@ const DEBOUNCE = 700;
 
 export type TilesSizeEstimateParams = {
   urlTemplate: string | undefined;
+  /** The `{s}` host to sample from; see `pickSubdomain`. */
+  subdomain?: string;
   bbox: [number, number, number, number] | undefined;
   minZoom: number;
   maxZoom: number;
@@ -34,6 +36,7 @@ export type TilesSizeEstimate = {
  */
 export function useTilesSizeEstimate({
   urlTemplate,
+  subdomain,
   bbox,
   minZoom,
   maxZoom,
@@ -77,6 +80,7 @@ export function useTilesSizeEstimate({
     const timeout = setTimeout(() => {
       sampleTilesSize({
         urlTemplate,
+        subdomain,
         bbox: bboxKey.split(',').map(Number) as [
           number,
           number,
@@ -113,7 +117,7 @@ export function useTilesSizeEstimate({
 
       abortController.abort();
     };
-  }, [enabled, urlTemplate, bboxKey, minZoom, maxZoom, scale, key]);
+  }, [enabled, urlTemplate, subdomain, bboxKey, minZoom, maxZoom, scale, key]);
 
   const bytesPerTile = sample?.key === key ? sample.bytesPerTile : undefined;
 

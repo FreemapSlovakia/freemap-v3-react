@@ -10,6 +10,7 @@ import {
   integratedLayerDefs,
   isTileLayerDef,
 } from '@shared/mapDefinitions.js';
+import { pickSubdomain } from '@shared/tileUrl.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Fragment, useCallback, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
@@ -52,6 +53,7 @@ export function ElevationInfo({
     url,
     maxNativeZoom,
     extraScales = [],
+    subdomains,
   }: IsTileLayerDef) {
     const [scale] = [1, ...extraScales]
       .map((scale) => [scale, Math.abs(devicePixelRatio - scale)] as const)
@@ -69,7 +71,8 @@ export function ElevationInfo({
         .replace('{x}', String(x))
         .replace('{y}', String(y))
         .replace('{z}', String(z))
-        .replace('{s}', 'a') + (scale !== 1 ? `@${scale}x` : '')
+        .replace('{s}', pickSubdomain(subdomains)) +
+      (scale !== 1 ? `@${scale}x` : '')
     );
   }
 
