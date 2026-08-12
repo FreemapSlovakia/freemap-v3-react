@@ -85,6 +85,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     name: 'Název',
+    icon: 'Ikona',
+    iconChoose: 'Vybrat ikonu…',
+    iconNone: 'Bez ikony',
+    iconSearch: 'Hledat ikony',
     load: 'Načíst',
     unnamed: 'Bez názvu',
     enablePopup: 'Prosím, povolte v prohlížeči pop-up okna pro tuto stránku.',

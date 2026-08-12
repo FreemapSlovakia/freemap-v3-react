@@ -1,6 +1,5 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
-import { IconPicker } from '@features/drawing/components/IconPicker.js';
 import {
   type DrawingLineType,
   drawingLineChangeProperties,
@@ -9,6 +8,7 @@ import { drawingPointChangeProperties } from '@features/drawing/model/actions/dr
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { COLORS } from '@shared/colors.js';
+import { IconPicker } from '@shared/components/IconPicker.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
@@ -481,11 +481,12 @@ export default function CurrentDrawingPropertiesModal({
               <Form.Group className="mt-3">
                 <div className={classes.iconTextGrid}>
                   <Form.Label htmlFor="icon" className={classes.iconLabel}>
-                    {dm?.edit.icon}
+                    {m?.general.icon}
                   </Form.Label>
 
                   <div className={classes.icon}>
                     <IconPicker
+                      id="icon"
                       selected={
                         editedIconSpec?.kind === 'fa' ||
                         editedIconSpec?.kind === 'poi'

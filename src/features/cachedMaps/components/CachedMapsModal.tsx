@@ -32,7 +32,9 @@ export default function CachedMapsModal({ show }: Props): ReactElement {
       contentClassName="bg-body-tertiary"
       className={selectingArea ? 'd-none' : undefined}
       backdropClassName={selectingArea ? 'd-none' : undefined}
-      enforceFocus={!selectingArea}
+      // The icon picker's popover portals outside the modal; the focus trap
+      // would take focus away from its search field.
+      enforceFocus={false}
     >
       {/* a map deleted while its edit form was open falls back to the list */}
       {view === 'list' || (view === 'edit' && !editing) ? (

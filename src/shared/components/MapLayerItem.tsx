@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import type { ReactElement } from 'react';
 import { FaHistory } from 'react-icons/fa';
 import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
@@ -9,6 +10,8 @@ type MapLayerItemDef = {
   type: string;
   layer: 'base' | 'overlay';
   icon?: ReactElement;
+  /** A custom layer's picked icon, used when there is no built-in `icon`. */
+  iconSpec?: string;
   name?: string;
   countries?: string[];
   superseededBy?: string;
@@ -26,7 +29,9 @@ export function MapLayerItem({ def }: { def: MapLayerItemDef }): ReactElement {
         <TbLayersSelectedBottom className="opacity-50" />
       )}
 
-      <span className="px-2">{def.icon}</span>
+      <span className="px-2">
+        {def.icon ?? <IconSpecGlyph spec={def.iconSpec} />}
+      </span>
 
       {m?.mapLayers.letters[def.type] ?? def.name ?? def.type}
 

@@ -15,6 +15,7 @@ import { Checkbox } from '@shared/components/Checkbox.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Radio } from '@shared/components/Radio.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
@@ -550,7 +551,14 @@ export function MapSwitchButton(): ReactElement {
               )}
 
               <span className="px-2">
-                {def.custom ? <MdDashboardCustomize /> : def.icon}
+                {def.custom ? (
+                  <IconSpecGlyph
+                    spec={def.iconSpec}
+                    fallback={<MdDashboardCustomize />}
+                  />
+                ) : (
+                  def.icon
+                )}
               </span>
 
               <span>
@@ -697,7 +705,14 @@ export function MapSwitchButton(): ReactElement {
                       joined ? 'pe-1 border-end-0 fm-btn-joined' : undefined
                     }
                   >
-                    {def.custom ? <MdDashboardCustomize /> : def.icon}
+                    {def.custom ? (
+                      <IconSpecGlyph
+                        spec={def.iconSpec}
+                        fallback={<MdDashboardCustomize />}
+                      />
+                    ) : (
+                      def.icon
+                    )}
 
                     {commonBadges(def, 'toolbar')}
                   </Button>

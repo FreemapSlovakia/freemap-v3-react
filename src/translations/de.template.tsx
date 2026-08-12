@@ -85,6 +85,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     name: 'Name',
+    icon: 'Symbol',
+    iconChoose: 'Symbol auswählen…',
+    iconNone: 'Kein Symbol',
+    iconSearch: 'Symbole suchen',
     load: 'Laden',
     unnamed: 'Kein Name',
     enablePopup:

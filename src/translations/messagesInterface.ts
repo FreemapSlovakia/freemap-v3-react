@@ -55,6 +55,10 @@ export type Messages = {
     copyOk: string;
     noCookies: () => JSX.Element;
     name: string;
+    icon: string;
+    iconChoose: string;
+    iconNone: string;
+    iconSearch: string;
     load: string;
     unnamed: string;
     enablePopup: string;

@@ -4,6 +4,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import {
   Action,
   ActionDivider,
@@ -198,6 +199,9 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
       onHide={close}
       size={view.mode === 'list' ? 'lg' : undefined}
       contentClassName="bg-body-tertiary"
+      // The icon picker's popover portals outside the modal; the focus trap
+      // would take focus away from its search field.
+      enforceFocus={false}
     >
       <Modal.Header closeButton>
         <Modal.Title>
@@ -219,6 +223,11 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
                     key={def.type}
                     className="d-flex align-items-center gap-2"
                   >
+                    <IconSpecGlyph
+                      spec={def.iconSpec}
+                      fallback={<MdDashboardCustomize />}
+                    />
+
                     <div className="flex-grow-1 me-2 min-w-0">
                       <div>{def.name || `{${def.type}}`}</div>
 

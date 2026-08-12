@@ -436,6 +436,12 @@ export type IsAllTechnologiesLayerDef =
 
 export type IsCustomLayer = {
   name?: string;
+  /**
+   * The layer's icon as a `drawingIcons` spec (`fa:<name>` / `poi:<name>`).
+   * A string rather than the integrated registry's `ReactElement` so it can be
+   * persisted; missing means the generic custom-map glyph.
+   */
+  iconSpec?: string;
 };
 
 export type IsCustomLayerTechnologiesDef =
@@ -465,6 +471,7 @@ const IsCommonLayerDefSchema = z.object({
 
 const IsCustomLayerSchema = z.object({
   name: z.string().optional(),
+  iconSpec: z.string().optional(),
 });
 
 export const IsTileLayerDefSchema = z.object({

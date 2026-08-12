@@ -92,6 +92,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     name: 'Nome',
+    icon: 'Icona',
+    iconChoose: 'Scegli icona…',
+    iconNone: 'Nessuna icona',
+    iconSearch: 'Cerca icone',
     load: 'Carica',
     unnamed: 'Nessun nome',
     enablePopup: 'Per favore abilita i popup nel tuo browser per questo sito.',

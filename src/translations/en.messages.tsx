@@ -82,6 +82,10 @@ const messages: Messages = {
       </>
     ),
     name: 'Name',
+    icon: 'Icon',
+    iconChoose: 'Choose icon…',
+    iconNone: 'No icon',
+    iconSearch: 'Search icons',
     load: 'Load',
     unnamed: 'No name',
     enablePopup: 'Please enable pop-up windows for this site in you browser.',

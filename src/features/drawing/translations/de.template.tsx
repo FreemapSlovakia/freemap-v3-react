@@ -10,10 +10,6 @@ const de: DeepPartialWithRequiredObjects<DrawingMessages> = {
     width: 'Breite',
     hint: 'Um die Beschriftung zu entfernen, lassen Sie das Feld leer.',
     shape: 'Form',
-    icon: 'Symbol',
-    iconChoose: 'Symbol auswählen…',
-    iconNone: 'Kein Symbol',
-    iconSearch: 'Symbole suchen',
     text: 'Text',
     textHint:
       'Symbol oder maximal 2 Zeichen werden in der Markierung angezeigt.',

@@ -1,0 +1,15 @@
+.glyph {
+  width: 1em;
+  height: 1em;
+}
+
+/*
+  A bundled poi icon is an external SVG drawn as an <image>, so `currentColor`
+  cannot reach inside it — it comes in its own artwork colours, which are black
+  bar a few. That reads on a light background; on a dark one it is flattened to
+  a silhouette in the body colour instead (`brightness(0)` blackens every hue,
+  `invert(1)` then whitens it; transparency is untouched).
+*/
+[data-bs-theme="dark"] .poiGlyph {
+  filter: brightness(0) invert(1);
+}

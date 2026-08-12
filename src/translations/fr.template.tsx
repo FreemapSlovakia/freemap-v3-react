@@ -89,6 +89,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawingTool: 'Outil de dessin',
     copyOk: 'Copié dans le presse-papiers.',
     name: 'Nom',
+    icon: 'Icône',
+    iconChoose: 'Choisir une icône…',
+    iconNone: 'Aucune icône',
+    iconSearch: 'Rechercher des icônes',
     load: 'Charger',
     unnamed: 'Sans nom',
     enablePopup:

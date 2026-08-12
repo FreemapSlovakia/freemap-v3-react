@@ -90,6 +90,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     name: 'Név',
+    icon: 'Ikon',
+    iconChoose: 'Ikon kiválasztása…',
+    iconNone: 'Nincs ikon',
+    iconSearch: 'Ikonok keresése',
     load: 'Betöltés',
     unnamed: 'Névtelen',
     componentLoadingError:

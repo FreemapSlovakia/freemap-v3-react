@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBreakpointMatches } from '@shared/breakpoints.js';
+import { IconPicker } from '@shared/components/IconPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
@@ -26,6 +27,7 @@ import {
   ToggleButton,
 } from 'react-bootstrap';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa';
+import { MdDashboardCustomize } from 'react-icons/md';
 import classes from './CustomMapForm.module.css';
 
 type Props = {
@@ -36,6 +38,7 @@ type Props = {
 
 type Model = {
   name: string;
+  iconSpec?: string;
   url: string;
   minZoom: string;
   maxNativeZoom: string;
@@ -124,6 +127,7 @@ function valueToModel(value?: CustomLayerDef) {
   return {
     url: value?.url ?? '',
     name: value?.name ?? '',
+    iconSpec: value?.iconSpec,
     minZoom: value?.minZoom === undefined ? '' : value.minZoom.toString(),
     maxNativeZoom:
       value && 'maxNativeZoom' in value && value.maxNativeZoom !== undefined
@@ -168,6 +172,13 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   const handlers = useModelChangeHandlers(setModelWithVersion);
 
+  const handleIconSelect = useCallback(
+    (iconSpec: string | undefined) => {
+      setModelWithVersion((model) => ({ ...model, iconSpec }));
+    },
+    [setModelWithVersion],
+  );
+
   useEffect(() => {
     if (!value || externalVersion.current < localVersion.current) {
       return;
@@ -178,6 +189,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     setModel((model) => {
       const changed =
         model.name !== newModel.name ||
+        model.iconSpec !== newModel.iconSpec ||
         model.url !== newModel.url ||
         model.minZoom !== newModel.minZoom ||
         model.maxNativeZoom !== newModel.maxNativeZoom ||
@@ -229,6 +241,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     const common = {
       type,
       name: model.name,
+      iconSpec: model.iconSpec,
       layer: model.layer,
       zIndex,
     };
@@ -470,20 +483,35 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   return (
     <div>
-      <Form.Group controlId="name">
-        <Form.Label
-          className={clsx('d-flex', 'align-items-end', classes.gridSpan)}
-        >
-          {m?.general.name}
-        </Form.Label>
+      <div className="d-flex gap-3 align-items-end">
+        <Form.Group controlId="name" className="flex-grow-1 min-w-0">
+          <Form.Label
+            className={clsx('d-flex', 'align-items-end', classes.gridSpan)}
+          >
+            {m?.general.name}
+          </Form.Label>
 
-        <Form.Control
-          className={classes.gridSpan}
-          type="text"
-          value={model.name}
-          onChange={handlers.name}
-        />
-      </Form.Group>
+          <Form.Control
+            className={classes.gridSpan}
+            type="text"
+            value={model.name}
+            onChange={handlers.name}
+          />
+        </Form.Group>
+
+        <Form.Group>
+          <Form.Label className="d-block" htmlFor="customMapIcon">
+            {m?.general.icon}
+          </Form.Label>
+
+          <IconPicker
+            id="customMapIcon"
+            selected={model.iconSpec}
+            onSelect={handleIconSelect}
+            placeholder={<MdDashboardCustomize />}
+          />
+        </Form.Group>
+      </div>
 
       <Form.Group className="mt-3">
         <Form.Label className="d-block">{m?.mapLayers.technology}</Form.Label>

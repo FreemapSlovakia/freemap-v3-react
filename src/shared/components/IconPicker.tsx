@@ -1,7 +1,7 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
+import { IconGlyph } from '@shared/components/IconGlyph.js';
 import {
-  faIconToSvg,
   faSpec,
   loadAllIcons,
   parseIconSpec,
@@ -9,10 +9,9 @@ import {
   poiSpec,
   useFaIcon,
 } from '@shared/drawingIcons.js';
-import classes from '@shared/poiIcon.module.css';
-import { poiIconGlyphRect } from '@shared/poiIconGlyph.js';
 import {
   type ReactElement,
+  type ReactNode,
   type UIEvent,
   useEffect,
   useMemo,
@@ -21,60 +20,8 @@ import {
 } from 'react';
 import { Button, Form, Overlay, Popover, Spinner } from 'react-bootstrap';
 import { FaXmark } from 'react-icons/fa6';
-import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 const PAGE = 120;
-
-// The glyph drawing box, in user units — the same intrinsic-scale RichMarker
-// uses (so e.g. `peak` stays small instead of filling the cell, and fa icons
-// scale to the box). Some fa paths have ink reaching outside their declared
-// viewBox (e.g. person-hiking's head sits at y=-32); the marker doesn't clip it
-// because it draws into a much larger canvas, so the svg here is `overflow:
-// visible` to match (the button padding leaves room for the spill).
-const GLYPH_BOX = 160;
-
-// Renders a single icon the way the marker glyph does, so the picker preview is
-// faithful: the glyph centered in a fixed square viewBox, black-filled.
-function IconGlyph(
-  props: { url: string; def?: never } | { def: IconDefinition; url?: never },
-): ReactElement {
-  const c = GLYPH_BOX / 2;
-
-  return (
-    <svg
-      viewBox={`0 0 ${GLYPH_BOX} ${GLYPH_BOX}`}
-      overflow="visible"
-      className={classes.icon}
-      aria-hidden="true"
-    >
-      {props.def
-        ? (() => {
-            const { width, height, path } = faIconToSvg(props.def);
-
-            const scale = GLYPH_BOX / Math.max(width, height);
-
-            return (
-              <path
-                d={path}
-                fill="black"
-                transform={`translate(${c - (width * scale) / 2} ${
-                  c - (height * scale) / 2
-                }) scale(${scale})`}
-              />
-            );
-          })()
-        : (() => {
-            const bbox = poiIconBBoxes[props.url];
-
-            const rect = bbox
-              ? poiIconGlyphRect(bbox, c, c, GLYPH_BOX)
-              : { x: 0, y: 0, width: GLYPH_BOX, height: GLYPH_BOX };
-
-            return <image {...rect} href={props.url} />;
-          })()}
-    </svg>
-  );
-}
 
 type PoiEntry = { kind: 'poi'; name: string; url: string };
 
@@ -90,10 +37,19 @@ type Props = {
   /** Currently selected icon spec (`fa:<name>` or `poi:<name>`), or undefined. */
   selected?: string;
   onSelect: (spec: string | undefined) => void;
+  /** What the button shows with nothing picked; defaults to a "choose" label. */
+  placeholder?: ReactNode;
+  /** Goes on the button that opens the picker, for a `<label>` to point at. */
+  id?: string;
 };
 
-export function IconPicker({ selected, onSelect }: Props): ReactElement {
-  const dm = useDrawingMessages();
+export function IconPicker({
+  selected,
+  onSelect,
+  placeholder,
+  id,
+}: Props): ReactElement {
+  const m = useMessages();
 
   const [open, setOpen] = useState(false);
 
@@ -157,7 +113,9 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
     <div className="d-flex gap-1 align-items-center">
       <Button
         ref={targetRef}
+        id={id}
         variant="outline-secondary"
+        title={m?.general.iconChoose}
         onClick={() => setOpen((o) => !o)}
       >
         {selectedFa ? (
@@ -167,7 +125,7 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
         ) : selectedSpec?.kind === 'fa' ? (
           <Spinner size="sm" />
         ) : (
-          (dm?.edit.iconChoose ?? '')
+          (placeholder ?? m?.general.iconChoose ?? '')
         )}
       </Button>
 
@@ -175,7 +133,7 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
         <Button
           variant="outline-secondary"
           onClick={() => onSelect(undefined)}
-          title={dm?.edit.iconNone}
+          title={m?.general.iconNone}
         >
           <FaXmark />
         </Button>
@@ -185,7 +143,7 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
         The popover portals to <body> (react-bootstrap's default with no
         `container`) so it escapes the surrounding modal's `scrollable` body
         overflow instead of being clipped by it. This requires the enclosing
-        modal to set `enforceFocus={false}` (both current consumers do), else
+        modal to set `enforceFocus={false}` (every current consumer does), else
         the modal's focus trap would steal focus from the search input.
       */}
       <Overlay
@@ -201,7 +159,7 @@ export function IconPicker({ selected, onSelect }: Props): ReactElement {
               autoFocus
               type="search"
               value={query}
-              placeholder={dm?.edit.iconSearch}
+              placeholder={m?.general.iconSearch}
               onChange={(e) => {
                 setQuery(e.currentTarget.value);
 

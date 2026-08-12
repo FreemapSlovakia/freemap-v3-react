@@ -2,6 +2,7 @@ import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
+import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import {
   type CustomLayerDef,
@@ -89,7 +90,12 @@ export function MapLayersSettings({
       ...def,
       countries: [],
       layerPreview: false,
-      icon: <MdDashboardCustomize />,
+      icon: (
+        <IconSpecGlyph
+          spec={def.iconSpec}
+          fallback={<MdDashboardCustomize />}
+        />
+      ),
       defaultInToolbar: false,
       defaultInMenu: false,
       superseededBy: undefined,
@@ -100,7 +106,7 @@ export function MapLayersSettings({
       .map((cm) => ({
         ...cm,
         countries: [] as string[],
-        icon: <BiWifiOff />,
+        icon: <IconSpecGlyph spec={cm.iconSpec} fallback={<BiWifiOff />} />,
         defaultInToolbar: false,
         defaultInMenu: false,
         superseededBy: undefined,

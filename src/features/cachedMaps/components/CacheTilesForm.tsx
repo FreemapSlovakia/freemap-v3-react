@@ -6,6 +6,7 @@ import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVis
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { IconPicker } from '@shared/components/IconPicker.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
@@ -32,6 +33,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -47,6 +49,7 @@ import {
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaChevronLeft, FaSave } from 'react-icons/fa';
+import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   type CachedTileMapDef,
@@ -173,6 +176,11 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
   const [nameChanged, setNameChanged] = useState(editing !== undefined);
 
+  const [iconSpec, setIconSpec] = useState(editing?.iconSpec);
+
+  /** Whether the icon is the user's to keep rather than the source layer's. */
+  const iconChanged = useRef(editing !== undefined);
+
   const [minZoom, setMinZoom] = useState(String(editing?.minZoom ?? 0));
 
   const [maxZoom, setMaxZoom] = useState(String(editing?.maxNativeZoom ?? 0));
@@ -215,6 +223,14 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       ),
     );
   }, [mapDef, editing, limitMaxZoom]);
+
+  // A copy of a custom map starts out with that map's own icon, so the offline
+  // one is recognizable the same way.
+  useEffect(() => {
+    if (!iconChanged.current) {
+      setIconSpec(mapDef && 'iconSpec' in mapDef ? mapDef.iconSpec : undefined);
+    }
+  }, [mapDef]);
 
   useEffect(() => {
     setName((prev) => {
@@ -357,6 +373,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
             next: {
               ...editing,
               name,
+              iconSpec,
               minZoom: parseInt(minZoom, 10),
               maxNativeZoom: parseInt(maxZoom, 10),
               bounds: bbox,
@@ -392,6 +409,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
           ...rest,
           type,
           name,
+          iconSpec,
           sourceType: mapDef.type,
           minZoom: parseInt(minZoom, 10),
           maxNativeZoom: parseInt(maxZoom, 10),
@@ -427,6 +445,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       dispatch,
       editing,
       name,
+      iconSpec,
       mapDef,
       minZoom,
       maxZoom,
@@ -502,18 +521,37 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
           />
         </Form.Group>
 
-        <Form.Group controlId="name" className="mb-3">
-          <Form.Label>{m?.general.name}</Form.Label>
+        <div className="d-flex gap-3 align-items-end mb-3">
+          <Form.Group controlId="name" className="flex-grow-1 min-w-0">
+            <Form.Label>{m?.general.name}</Form.Label>
 
-          <Form.Control
-            type="text"
-            value={name}
-            onChange={(e) => {
-              setNameChanged(true);
-              setName(e.currentTarget.value);
-            }}
-          />
-        </Form.Group>
+            <Form.Control
+              type="text"
+              value={name}
+              onChange={(e) => {
+                setNameChanged(true);
+                setName(e.currentTarget.value);
+              }}
+            />
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label className="d-block" htmlFor="cachedMapIcon">
+              {m?.general.icon}
+            </Form.Label>
+
+            <IconPicker
+              id="cachedMapIcon"
+              selected={iconSpec}
+              placeholder={<MdDashboardCustomize />}
+              onSelect={(spec) => {
+                iconChanged.current = true;
+
+                setIconSpec(spec);
+              }}
+            />
+          </Form.Group>
+        </div>
 
         {urlTemplate && (
           <Form.Group controlId="zoomRange" className="mb-3">
