@@ -386,8 +386,9 @@
         var target = document.getElementById('app') || document.body;
 
         if (target) {
-          target.innerHTML =
-            '<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;"><%= errorHtml %></div>';
+          // JSON.stringify, not a quoted literal: the message carries
+          // apostrophes in some languages, which would break the script
+          target.innerHTML = <%= JSON.stringify('<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;">' + errorHtml + '</div>') %>;
         }
       }
     </script>
