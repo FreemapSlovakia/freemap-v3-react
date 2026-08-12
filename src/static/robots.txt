@@ -4,5 +4,10 @@
 User-agent: *
 Allow: /
 
+# The entry documents are an implementation detail of serving `/` — nothing
+# links to them, and indexing them would duplicate the homepage.
+Disallow: /index.html
+Disallow: /index-
+
 Sitemap: https://www.freemap.sk/sitemap/sitemap-index.xml
 Sitemap: https://www.freemap.eu/sitemap/sitemap-index-eu.xml
