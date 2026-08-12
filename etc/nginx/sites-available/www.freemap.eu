@@ -86,7 +86,7 @@ if ($blocked_country) {
 	}
 
 	location /mbtiles {
-		alias /fm/storage/user-mbtiles;
+		alias /fm/storage1/backend.freemap.sk-data/user-mbtiles;
 	}
 
 	location / {
