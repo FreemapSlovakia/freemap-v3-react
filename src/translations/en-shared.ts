@@ -1,7 +1,7 @@
 import type { SharedMessages } from './sharedMessagesInterface.js';
 
 export default {
-  title: 'Freemap Europe, digital map',
+  title: '{site}, digital map',
   description:
     'Detailed cycling, hiking, cross-country skiing and equestrian map of Central Europe (Slovakia, the Czech Republic, Hungary, Croatia, Slovenia, Romania, Bulgaria, Bosnia and Herzegovina, Austria, Switzerland in northern Italy and Carpathian Ruthenia). The map contains marked hiking, biking, cross-country and riding trails. It is based on the OpenStreetMap database and is therefore constantly updated. Various backgrounds such as NLC forest roads, aerial imagery, public transportation, wikipedia, photos. Functions such as search (by name or POI by category), route planning (walking, cycling, pram, trolley, ...), map annotation (drawing, points / markers on the map), measurement (distance, height, area, position), GPX records viewer, own maps, live tracking, export to  or GeoJSON, PDF map export for printing. Insert a map into your own page. An alternative to maps such as hiking.sk, mapy.com or maps.google.com.',
 } satisfies SharedMessages;

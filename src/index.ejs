@@ -25,15 +25,13 @@
 
     <meta property="fb:app_id" content="171410630094006" />
 
+    <meta property="og:site_name" content="<%= siteName %>" />
     <meta property="og:title" content="<%= title %>" />
-    <meta
-      property="og:image"
-      content="<%= process.env['BASE_URL'] + '/logo.jpg' %>"
-    />
+    <meta property="og:image" content="<%= baseUrl + '/logo.jpg' %>" />
     <meta property="og:image:width" content="600" />
     <meta property="og:image:height" content="600" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="<%= process.env['BASE_URL'] + '/' %>" />
+    <meta property="og:url" content="<%= baseUrl + '/' %>" />
     <meta property="og:description" content="<%= description %>" />
     <meta
       property="og:see_also"
@@ -60,7 +58,7 @@
       media="(prefers-color-scheme: dark)"
     />
 
-    <meta name="application-name" content="Freemap Slovakia" />
+    <meta name="application-name" content="<%= siteName %>" />
 
     <link
       rel="sitemap"
@@ -76,7 +74,10 @@
       href="/llms.txt"
     />
 
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link
+      rel="manifest"
+      href="/manifest-<%= site %>-<%= lang %>.webmanifest"
+    />
 
     <link rel="shortcut icon" href="/favicon.ico" />
 

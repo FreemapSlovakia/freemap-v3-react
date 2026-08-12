@@ -47,6 +47,12 @@ server {
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
+		add_header Vary 'Accept-Language';
+
+		# Humans: the entry document carrying this domain's portal name, in the
+		# browser's language where we have one. $ui_lang is empty for languages
+		# we do not build, so the fallback applies.
+		try_files /index-sk-$ui_lang.html /index-sk-sk.html;
 	}
 
 	# Crawler prerender: serve /sitemap/<full query string> if it exists, else the
@@ -60,7 +66,7 @@ server {
 	# Entry documents and the build manifest change on every deploy and point at
 	# the current hashed assets, so they must never be cached — not even
 	# heuristically, which nginx does for responses that lack Cache-Control.
-	location ~ ^/(index(-\w\w)?\.html|assets-manifest\.json)$ {
+	location ~ ^/(index(-(sk|eu)-\w\w)?\.html|assets-manifest\.json)$ {
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
