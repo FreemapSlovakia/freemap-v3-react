@@ -10,6 +10,7 @@ import {
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { makeLabelComparator } from '@shared/stringUtils.js';
 import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import {
   Badge,
@@ -64,13 +65,15 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
   const myUserId = useAppSelector((state) => state.auth.user?.id);
 
-  const sortedMaps = useMemo(
-    () =>
-      [...maps].sort((a, b) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
-      ),
-    [maps],
-  );
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const sortedMaps = useMemo(() => {
+    const byName = makeLabelComparator(language);
+
+    return [...maps].sort((a, b) =>
+      byName(a.name || undefined, b.name || undefined),
+    );
+  }, [maps, language]);
 
   const dateFormat = useDateTimeFormat({
     year: 'numeric',

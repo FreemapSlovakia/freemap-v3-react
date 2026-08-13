@@ -1,5 +1,6 @@
 import { ELEVATION_API_DTM_COUNTRIES } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { makeLabelComparator } from '@shared/stringUtils.js';
 import { useMemo } from 'react';
 
 /**
@@ -15,7 +16,7 @@ export function useDtmCountryNames(): string {
 
     const names = ELEVATION_API_DTM_COUNTRIES.map(
       (country) => regionNames.of(country.toUpperCase()) ?? country,
-    ).sort(new Intl.Collator(language).compare);
+    ).sort(makeLabelComparator(language));
 
     return new Intl.ListFormat(language, { type: 'conjunction' }).format(names);
   }, [language]);

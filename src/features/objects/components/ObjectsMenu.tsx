@@ -10,7 +10,7 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import classes from '@shared/poiIcon.module.css';
-import { removeAccents } from '@shared/stringUtils.js';
+import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import {
   type ChangeEvent,
   type KeyboardEvent,
@@ -167,6 +167,8 @@ export default function ObjectsMenu(): ReactElement {
 
   const normalizedFilter = removeAccents(filter.trim().toLowerCase());
 
+  const byName = makeLabelComparator(lang);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const activeSnapshot = useMemo(() => active, [active]);
 
@@ -188,7 +190,7 @@ export default function ObjectsMenu(): ReactElement {
             !normalizedFilter ||
             removeAccents(item.name.toLowerCase()).includes(normalizedFilter)),
       )
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort((a, b) => byName(a.name, b.name))
       .map(({ key, name, tags }) => {
         const img = resolveGenericName(
           osmTagToIconMapping,
