@@ -1,4 +1,5 @@
 import { clearMapFeatures } from '@app/store/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import {
   osmLoadNode,
   osmLoadRelation,
@@ -371,5 +372,93 @@ describe('searchReducer — selecting results', () => {
     expect(
       searchReducer(state, searchUnselectResult(osmId('node', 8))),
     ).toEqual(state);
+  });
+});
+
+describe('searchReducer — a map opening', () => {
+  const loaded = (results: SearchResult[], merge?: boolean) =>
+    mapsLoaded({
+      merge,
+      meta: {} as never,
+      data: { search: { results: results as never } },
+    });
+
+  it('shows the results the map carries', () => {
+    const state = searchReducer(
+      searchInitialState,
+      loaded([result(osmId('node', 1))]),
+    );
+
+    expect(state.selectedResults).toEqual([result(osmId('node', 1))]);
+    expect(state.previewId).toBeNull();
+  });
+
+  it('replaces what the map before it was showing', () => {
+    const before = {
+      ...searchInitialState,
+      selectedResults: [result(osmId('way', 7))],
+      previewId: osmId('way', 7),
+    };
+
+    const state = searchReducer(before, loaded([result(osmId('node', 1))]));
+
+    expect(state.selectedResults).toEqual([result(osmId('node', 1))]);
+    expect(state.previewId).toBeNull();
+  });
+
+  it('a map carrying an empty list takes the pins off', () => {
+    const before = {
+      ...searchInitialState,
+      selectedResults: [result(osmId('way', 7))],
+    };
+
+    expect(searchReducer(before, loaded([])).selectedResults).toEqual([]);
+  });
+
+  // A map saved before pins were stored says nothing about them, so it must not
+  // take off what the URL restored — the loads it started land after this.
+  it('a map that says nothing about pins leaves them alone', () => {
+    const before = {
+      ...searchInitialState,
+      selectedResults: [result(osmId('way', 7))],
+      previewId: osmId('way', 7),
+    };
+
+    expect(
+      searchReducer(before, mapsLoaded({ meta: {} as never, data: {} })),
+    ).toEqual(before);
+  });
+
+  // A map carries no previewed result, so one it names is kept — leaving it
+  // transient would have the next thing looked at take it off again.
+  it('merging keeps a result it names that was only being looked at', () => {
+    const shown = result(osmId('way', 7));
+
+    const before = {
+      ...searchInitialState,
+      selectedResults: [shown],
+      previewId: osmId('way', 7),
+    };
+
+    const state = searchReducer(
+      before,
+      loaded([result(osmId('way', 7))], true),
+    );
+
+    expect(state.selectedResults).toEqual([shown]);
+    expect(state.previewId).toBeNull();
+  });
+
+  it('merging adds what is not shown and leaves the rest alone', () => {
+    const shown = result(osmId('way', 7));
+
+    const before = { ...searchInitialState, selectedResults: [shown] };
+
+    const state = searchReducer(
+      before,
+      loaded([result(osmId('way', 7)), result(osmId('node', 1))], true),
+    );
+
+    expect(state.selectedResults).toEqual([shown, result(osmId('node', 1))]);
   });
 });

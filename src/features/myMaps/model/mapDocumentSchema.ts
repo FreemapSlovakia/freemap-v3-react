@@ -8,6 +8,7 @@ import {
   RoutingModeSchema,
   SavedRouteSchema,
 } from '@features/routePlanner/model/actions.js';
+import { SavedSearchResultSchema } from '@features/search/model/actions.js';
 import { TrackedDeviceSchema } from '@features/tracking/model/types.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
@@ -124,5 +125,22 @@ export const MapsLoadResponseSchema = z.object({
     trackViewer: DataViewerMapDataSchema.optional(),
     map: MapMapDataCompatSchema.optional(),
     objectsV2: z.object({ active: z.array(z.string()) }).optional(),
+    // The results pinned to the map. A pin that won't parse is dropped on its
+    // own: they are a cache of what the map holds, so one odd result may cost
+    // neither the others nor the map, which taking the document down with it
+    // would leave unopenable, offline copy included. The `catch` covers a
+    // `search` that isn't of the right shape at all.
+    search: z
+      .object({
+        results: z.array(z.unknown()).transform((results) =>
+          results.flatMap((result) => {
+            const parsed = SavedSearchResultSchema.safeParse(result);
+
+            return parsed.success ? [parsed.data] : [];
+          }),
+        ),
+      })
+      .optional()
+      .catch(undefined),
   }),
 });

@@ -4,6 +4,7 @@ import type { DrawingPoint } from '@features/drawing/model/actions/drawingPointA
 import type { GalleryFilter } from '@features/gallery/model/actions.js';
 import type { MapState } from '@features/map/model/reducer.js';
 import type { RoutePlannerMapData } from '@features/routePlanner/model/reducer.js';
+import type { SavedSearchResult } from '@features/search/model/actions.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
 import { createAction } from '@reduxjs/toolkit';
 import { IsoDateSchema } from '@shared/types/common.js';
@@ -37,6 +38,9 @@ export interface MapData<LT = Line, PT = DrawingPoint> {
   >;
   objectsV2?: {
     active: string[];
+  };
+  search?: {
+    results: SavedSearchResult[];
   };
 }
 

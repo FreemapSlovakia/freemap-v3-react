@@ -10,6 +10,7 @@ import {
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { routePlannerFromMapData } from '@features/routePlanner/model/reducer.js';
 import { savedRouteFromState } from '@features/routePlanner/model/savedRoute.js';
+import { savedSearchResultsFromState } from '@features/search/model/savedSearchResults.js';
 import { hash } from 'ohash';
 import { createSelector } from 'reselect';
 import type { MapData } from './actions.js';
@@ -29,6 +30,7 @@ export function getMapDataFromState(state: RootState): MapData {
     gallery,
     trackViewer,
     map,
+    search,
   } = state;
 
   const holeIndexes = toWireHoleIndexes(drawingLines.lines);
@@ -64,6 +66,11 @@ export function getMapDataFromState(state: RootState): MapData {
     },
     objectsV2: {
       active: objects.active,
+    },
+    // The pinned results themselves, so the map draws them without fetching
+    // each element again — and draws the ones the URL can't name at all.
+    search: {
+      results: savedSearchResultsFromState(search),
     },
     galleryFilter: gallery.filter,
     // Only the fields the loader reads back; the rest of the slice is transient
@@ -182,6 +189,18 @@ export function fingerprintDocument(data: MapData, base: RootState): string {
     // map read as saved.
     routePlanner: routePlannerFromMapData(data.routePlanner),
     objects: { ...base.objects, active: data.objectsV2?.active ?? [] },
+    // Nothing is previewed in a document: a stored result was kept, or it
+    // wouldn't have been stored. A document written before pins were stored
+    // says nothing about them and so is read as holding whatever is on screen —
+    // the same as the load, which takes none off such a map. Answering `[]` for
+    // it would report every one of them as changed forever.
+    search: data.search
+      ? {
+          ...base.search,
+          selectedResults: data.search.results,
+          previewId: null,
+        }
+      : base.search,
     gallery: { ...base.gallery, filter: data.galleryFilter ?? {} },
     tracking: {
       ...base.tracking,
@@ -216,6 +235,8 @@ export const fingerprintState = createSelector(
     (state: RootState) => state.trackViewer.trackGeojson,
     (state: RootState) => state.trackViewer.trackUID,
     (state: RootState) => state.trackViewer.gpxUrl,
+    (state: RootState) => state.search.selectedResults,
+    (state: RootState) => state.search.previewId,
   ],
   (
     lines,
@@ -227,6 +248,8 @@ export const fingerprintState = createSelector(
     trackGeojson,
     trackUID,
     gpxUrl,
+    selectedResults,
+    previewId,
   ) =>
     // Only the slices the serialization reads are rebuilt, so anything it starts
     // reading without being listed above fails here rather than silently
@@ -239,5 +262,6 @@ export const fingerprintState = createSelector(
       objects: { active },
       gallery: { filter },
       trackViewer: { trackGeojson, trackUID, gpxUrl },
+      search: { selectedResults, previewId },
     } as RootState),
 );

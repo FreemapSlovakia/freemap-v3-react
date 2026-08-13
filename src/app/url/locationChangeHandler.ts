@@ -99,7 +99,11 @@ import {
   TransportTypeSchema,
 } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
-import { featureIdsEqual, type OsmFeatureId } from '@shared/types/featureId.js';
+import {
+  featureIdsEqual,
+  type OsmFeatureId,
+  osmElementTypes,
+} from '@shared/types/featureId.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
@@ -1004,8 +1008,6 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
   );
 }
 
-const OSM_ELEMENT_TYPES = ['node', 'way', 'relation'] as const;
-
 const osmLoadActions = {
   node: osmLoadNode,
   way: osmLoadWay,
@@ -1034,7 +1036,7 @@ function handleOsmElements(
   query: Record<string, string | string[]>,
   focus: boolean,
 ) {
-  const wanted = OSM_ELEMENT_TYPES.flatMap((elementType) => {
+  const wanted = osmElementTypes.flatMap((elementType) => {
     const param = query[`osm-${elementType}`];
 
     return (param === undefined ? [] : Array.isArray(param) ? param : [param])

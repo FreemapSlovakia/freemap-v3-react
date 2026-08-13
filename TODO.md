@@ -243,6 +243,24 @@ can't be made exclusive + optics). Keep the free/open core intact.
       is affected. Fix by putting `savedRoute` in the working-copy record beside
       the track (needs a record-schema bump).
 
+- [ ] **A pinned result is stored whole, however big it is.** A pin carries the
+      geometry it was loaded with, so pinning a large relation — a national
+      boundary, a long route relation — embeds its whole assembled collection in
+      every save body and every offline copy, with nothing on the path capping
+      it. `objectsLookupProcessor` caps how *many* pins arrive at once
+      (`MAX_LOOKUPS`) but nothing caps how *large* one is. Same exposure as the
+      stored track and route, so a size guard would belong to all three rather
+      than to pins alone.
+
+- [ ] **A map with unsaved changes has only its OSM pins offline.** The same
+      path, for the same reason: the pinned results a document carries reach the
+      screen through `mapsLoaded`, which a dirty reload never gets to. What the
+      URL names (`osm-node=` & co.) is re-fetched and so is there online but not
+      off; a pin the URL can't name — a geocoding hit without an OSM element, a
+      WMS feature — is gone either way until the map is saved again. The fix is
+      the record-schema bump above: store the pins in the working copy beside
+      the route and the track.
+
 ## Track viewer: generic geodata vs. recorded tracks
 
 The track viewer began as a GPX recording viewer and grew into a general geodata

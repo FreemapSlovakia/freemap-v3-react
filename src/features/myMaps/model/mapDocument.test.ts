@@ -23,6 +23,7 @@ function state(over: Record<string, unknown> = {}): RootState {
     tracking: { trackedDevices: [] },
     routePlanner: { points: [], transportType: 'car', mode: 'route' },
     objects: { active: [] },
+    search: { selectedResults: [], previewId: null },
     gallery: { filter: {} },
     trackViewer: { trackGeojson: null, trackUID: null, gpxUrl: null },
     // Saved with the document but deliberately outside the comparison, so the
@@ -309,5 +310,129 @@ describe('mapContentString — a date that is not one', () => {
     expect(mapContentString(withDevice(invalid))).toBe(
       mapContentString(withDevice(undefined)),
     );
+  });
+});
+
+// Pinned results are stored with the map, so pinning one is an edit. What the
+// digest can see of them is what the URL round-trips, which is their OSM ids —
+// the payload is a cache, and a restore rebuilds it from the network.
+describe('the results pinned to a map', () => {
+  const pin = (
+    id: Record<string, unknown>,
+    over: Record<string, unknown> = {},
+  ) => ({
+    source: 'osm',
+    id,
+    geojson: {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [17, 48] },
+      properties: {},
+    },
+    ...over,
+  });
+
+  const osmPin = (id: number, elementType = 'node') =>
+    pin({ type: 'osm', elementType, id });
+
+  const withPins = (results: Record<string, unknown>[]) =>
+    state({
+      search: { selectedResults: results, previewId: null },
+      routePlanner: routePlanner(),
+    });
+
+  it('stores them in the document', () => {
+    expect(getMapDataFromState(withPins([osmPin(1)])).search?.results).toEqual([
+      osmPin(1),
+    ]);
+  });
+
+  it('counts pinning one as a change', () => {
+    expect(fingerprintState(withPins([osmPin(1)]))).not.toBe(
+      fingerprintState(withPins([])),
+    );
+  });
+
+  it('reads a document as the state it restores to', () => {
+    const data = getMapDataFromState(withPins([osmPin(1), osmPin(2)]));
+
+    expect(fingerprintDocument(data, withPins([]))).toBe(
+      fingerprintState(withPins([osmPin(1), osmPin(2)])),
+    );
+  });
+
+  it('leaves the previewed one out, as the URL does', () => {
+    const previewed = state({
+      routePlanner: routePlanner(),
+      search: {
+        selectedResults: [osmPin(1), osmPin(2)],
+        previewId: { type: 'osm', elementType: 'node', id: 2 },
+      },
+    });
+
+    expect(fingerprintState(previewed)).toBe(
+      fingerprintState(withPins([osmPin(1)])),
+    );
+  });
+
+  // A restore reads the pins back grouped by element type, so a map pinned in
+  // any other order has to digest the same as the one it comes back as — or it
+  // reads as changed forever and is never re-read from the backend.
+  it('reads pins the same whichever order the map holds them in', () => {
+    const wayFirst = withPins([osmPin(7, 'way'), osmPin(1)]);
+
+    const asRestored = withPins([osmPin(1), osmPin(7, 'way')]);
+
+    expect(fingerprintState(wayFirst)).toBe(fingerprintState(asRestored));
+
+    expect(fingerprintDocument(getMapDataFromState(wayFirst), state())).toBe(
+      fingerprintState(asRestored),
+    );
+  });
+
+  // A map saved before pins were stored says nothing about them, so it is read
+  // as holding whatever the URL put on screen — exactly as the load treats it.
+  it('does not read a map saved before pins as having lost them', () => {
+    const restored = withPins([osmPin(1)]);
+
+    expect(fingerprintDocument({ objectsV2: { active: [] } }, restored)).toBe(
+      fingerprintState(restored),
+    );
+  });
+
+  // A restore starts the fetches for the elements the URL names before the map
+  // is read, so the comparison that decides whether to re-read it runs while
+  // they are still standing in for their elements. Counting those differently
+  // would make a clean map read as changed on every reload, and it would never
+  // be re-read from the backend.
+  it('reads a pin whose fetch is in flight as the pin it becomes', () => {
+    const placeholder = {
+      source: 'osm',
+      id: { type: 'osm', elementType: 'node', id: 1 },
+      incomplete: true,
+      loading: true,
+      geojson: { type: 'Feature', geometry: null, properties: {} },
+    };
+
+    expect(fingerprintState(withPins([placeholder]))).toBe(
+      fingerprintState(withPins([osmPin(1)])),
+    );
+  });
+
+  // Only OSM elements are named in the URL, so only they survive a restore —
+  // and only what survives a restore may count towards the digest, or a map
+  // holding one would read as changed forever.
+  it('does not count one the URL cannot name', () => {
+    const nominatim = pin(
+      { type: 'other', id: 7 },
+      { source: 'nominatim-forward', displayName: 'Ganek' },
+    );
+
+    expect(fingerprintState(withPins([nominatim]))).toBe(
+      fingerprintState(withPins([])),
+    );
+
+    expect(
+      getMapDataFromState(withPins([nominatim])).search?.results,
+    ).toHaveLength(1);
   });
 });

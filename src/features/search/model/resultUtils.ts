@@ -19,6 +19,12 @@ export function hasGeometry(result: SearchResult): boolean {
  * A stand-in for an OSM element whose fetch is in flight, held among the shown
  * results so the element is in the URL — and off the list of loads still to
  * start — from the moment it is asked for rather than once it arrives.
+ *
+ * A map document can't store one, having no geometry to store, so a save made
+ * while the fetch is in flight leaves that pin out of the document while the URL
+ * goes on naming it: it comes back on the next online open, exactly as the map
+ * that was saved before pins were stored does. `savedRouteFromState` leaves a
+ * route in flight out for the same reason.
  */
 export function loadingResult(id: OsmFeatureId): SearchResult {
   return {

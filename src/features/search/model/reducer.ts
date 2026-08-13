@@ -1,4 +1,5 @@
 import { clearMapFeatures } from '@app/store/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import {
   osmLoadNode,
   osmLoadRelation,
@@ -204,6 +205,40 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
           // Already on the map, and it keeps whatever it holds — its geometry
           // may have been loaded since, and the batch carries points. Only its
           // being transient goes.
+          state.previewId = null;
+        }
+      }
+    })
+    .addCase(mapsLoaded, (state, { payload: { merge, data } }) => {
+      const results = data.search?.results;
+
+      // A document written before pins were stored says nothing about them, so
+      // it takes none off: what the URL named and the loads it started are all
+      // such a map has.
+      if (!results) {
+        return;
+      }
+
+      if (!merge) {
+        state.selectedResults = results;
+
+        // A map's results are all kept, so nothing is left being looked at —
+        // including anything the map before it was showing.
+        state.previewId = null;
+
+        return;
+      }
+
+      for (const result of results) {
+        if (indexOfResult(state, result.id) === -1) {
+          state.selectedResults.push(result);
+        } else if (
+          state.previewId &&
+          featureIdsEqual(state.previewId, result.id)
+        ) {
+          // Already on the map, and it keeps what it holds. Only its being
+          // transient goes: a map carries no previewed result, so one it names
+          // is kept rather than dropped by the next thing looked at.
           state.previewId = null;
         }
       }

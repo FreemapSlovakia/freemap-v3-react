@@ -18,6 +18,20 @@ export function urlMapIdSelector(state: RootState): string | undefined {
 }
 
 /**
+ * Whether a map is on its way in, and so is about to say what the map holds.
+ *
+ * A document carries its own pinned results, so an element fetch that fails
+ * while one is opening is answered by the map itself — offline that is every
+ * such fetch, and reporting them would put an error over results that are about
+ * to appear.
+ */
+export function mapOpeningSelector(state: RootState): boolean {
+  const { loadMeta, restoring } = state.myMaps;
+
+  return Boolean(loadMeta || restoring);
+}
+
+/**
  * Whether the active map differs from the copy that was last loaded or saved.
  *
  * Derived rather than tracked: there is no flag to keep in step with loads,

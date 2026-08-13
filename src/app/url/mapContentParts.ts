@@ -1,6 +1,11 @@
 import { toWireHoleIndexes } from '@features/drawing/model/actions/drawingLineActions.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import {
+  featureIdsEqual,
+  type OsmFeatureId,
+  osmElementTypes,
+} from '@shared/types/featureId.js';
+import {
   serializeDrawingLine,
   serializeDrawingPoint,
   serializeLatLon,
@@ -61,6 +66,7 @@ export function getMapContentParts(state: RootState): QueryPart[] {
     gallery: { filter: galleryFilter },
     tracking,
     objects,
+    search,
   } = state;
 
   const parts: QueryPart[] = [];
@@ -178,6 +184,41 @@ export function getMapContentParts(state: RootState): QueryPart[] {
 
   if (objects.active.length) {
     parts.push(['objects', objects.active.join(';')]);
+  }
+
+  // One param per kept result — the map holds any number of them. The previewed
+  // one is left out: it lasts only as long as it is being looked at, so a URL
+  // naming it would promise something a reload can't keep. Only OSM elements can
+  // be named at all; a WMS or a plain-coordinates result has no id to read back,
+  // so the URL says nothing of it and neither does the digest — the map document
+  // is the only thing that carries it. Negative ids belong to elements that
+  // exist in an editor and nowhere else.
+  //
+  // A result whose fetch is still in flight counts exactly as the loaded one it
+  // becomes: a restore starts those fetches before the map is even read, so a
+  // digest that waited for them would never match the one the map was saved
+  // with, and every reload would take the has-unsaved-changes path.
+  //
+  // Written in a fixed order rather than the one the map happens to hold them
+  // in, because a restore reads them back grouped by element type — so a map
+  // pinned way-then-node would come back node-then-way and read as changed
+  // forever.
+  const osmPins = search.selectedResults
+    .map(({ id }) => id)
+    .filter(
+      (id): id is OsmFeatureId =>
+        id.type === 'osm' &&
+        id.id > 0 &&
+        !(search.previewId && featureIdsEqual(search.previewId, id)),
+    )
+    .sort(
+      (a, b) =>
+        osmElementTypes.indexOf(a.elementType) -
+          osmElementTypes.indexOf(b.elementType) || a.id - b.id,
+    );
+
+  for (const id of osmPins) {
+    parts.push([`osm-${id.elementType}`, id.id]);
   }
 
   for (const {
