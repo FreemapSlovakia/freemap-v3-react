@@ -101,9 +101,11 @@ point of it, and the live view stops on a column nothing here even reads.
 `/stream` sends bare rows with **no `fields` header** of their own, so the column
 order comes from the `status` frame the stream opens with — which the contract
 puts before any point on every connection, so the order is always known by the
-first row. The stream that decodes the rows is therefore the only thing that
-writes the order: a sync settling late cannot install a stale one over the live
-stream's own.
+first row. The stream that decodes the rows owns the order: a sync settling late
+cannot install a stale one over the live stream's own. A sync only ever *seeds*
+it (`seedRecorderFields`), and only while no stream has named one — a connect
+frame this app could not read would otherwise leave every row undecodable, under
+a toolbar that reads `Live`, with no sync armed to repair it.
 
 **The stream carries state, not just points.** A named `status` event arrives on
 connect and thereafter whenever the recorder's state genuinely changed — start,
@@ -210,6 +212,11 @@ exemption fixes). `recorderFetch` reads that body and maps both to
   reading as `connecting` until a reload. An expired deadline is reported as
   `unreachable`: a Local Network Access block is refused at once, so it can never
   be what ran out the clock.
+- **The stream carries one too** (`STREAM_OPEN_MS`, 5 s), because `EventSource`
+  has none of its own. A socket the kernel accepted for a recorder that never got
+  to answer on it reports neither open nor error, and a handle in hand is what
+  disarms the backoff — so a silent stream would park the connection on
+  `connecting` until the page went away. It is dropped like one that failed.
 - **A Local Network Access *prompt* needs a real user gesture.** Once the
   permission is granted, nothing else does — so the tool syncs on mount and on a
   timer, and only offers a gestured "Connect" button (on the failure toast)
@@ -381,7 +388,10 @@ events.
 connection, and the sync that attached the stream read a status moments earlier,
 so ringing would only fetch the same answer again — doubling the `/status` reads
 of every reconnect. What the connect frame is for is the other two things it
-carries: the column order, and the news that this stream works.
+carries: the column order, and the news that this stream works. A frame that does
+not parse still counts as both the connect frame and that news — the recorder
+composed and delivered one — so an unreadable connect frame cannot leave the
+doorbell waiting to be rung by a frame that has already been.
 
 Syncs nobody asked for are **quiet**, with one exception: a live view that was
 working and stopped. A recorder killed or uninstalled while the page was away must
@@ -491,7 +501,11 @@ open it never gives up either**: somebody is looking at a panel that would
 otherwise stay dead until it was closed and opened again. And an ask this app
 never managed to make does not count: a sync whose lazily loaded handler never
 claimed it (a hashed chunk a deploy has moved) widens the wait and keeps asking,
-but must never cost a ride that is still being recorded. What remains — the
+but must never cost a ride that is still being recorded. Neither does a failure
+that came *after* the recorder answered — a track too big for the 20 s transfer
+budget fails identically on every retry, and a body this app could not read is
+its own complaint — so the sync reports `recorderFailed` alongside `hopeless`,
+set from whether `/status` had returned before it went wrong. What remains — the
 recorder not answering, tool closed — is the only thing that drops the follow
 flag. Two failures skip the retries entirely, because waiting cannot fix them:
 `lna-denied` and `outdated`, classified by `isHopelessFailure` beside the

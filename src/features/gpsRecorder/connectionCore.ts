@@ -52,9 +52,16 @@ export type RecorderConnectionDeps = {
 export type SyncOutcome =
   | { ok: true }
   | {
-      /** Whether retrying could help: a refused permission or an old APK won't. */
       ok: false;
+      /** Whether retrying could help: a refused permission or an old APK won't. */
       hopeless: boolean;
+      /**
+       * Whether this is the recorder failing to answer, which is what giving up
+       * is gated on. False for a failure that came after it answered — a track
+       * too big for the transfer budget, a body this app could not read — which
+       * says nothing about whether a ride is still being recorded.
+       */
+      recorderFailed: boolean;
     };
 
 export type SyncStart = (
@@ -86,6 +93,15 @@ export const SYNC_CLAIM_MS = 10_000;
  * of them lets such a recorder be retried at the shortest delay forever.
  */
 export const STREAM_PROVEN_MS = RETRY_DELAYS[RETRY_DELAYS.length - 1];
+
+/**
+ * How long a stream may take to report anything before it is written off.
+ * Nothing here crosses a network, so this is not slowness but a socket the
+ * kernel accepted for a recorder that never got to answer on it — and such a
+ * stream reports neither open nor error, so without a deadline the connection
+ * would hold a handle nothing can retry behind.
+ */
+export const STREAM_OPEN_MS = 5000;
 
 export type RecorderConnectionCore = ReturnType<
   typeof createRecorderConnectionCore
@@ -135,6 +151,8 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
   let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
   let provenTimer: ReturnType<typeof setTimeout> | null = null;
+
+  let openTimer: ReturnType<typeof setTimeout> | null = null;
 
   /**
    * Which delay the next retry waits. Rewound by a stream that has proven
@@ -231,8 +249,18 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
     }
   }
 
+  function cancelOpen(): void {
+    if (openTimer !== null) {
+      clearTimeout(openTimer);
+
+      openTimer = null;
+    }
+  }
+
   function dropStream(): void {
     cancelProven();
+
+    cancelOpen();
 
     if (stream !== null) {
       stream.dropped = true;
@@ -385,11 +413,26 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
 
     stream = slot;
 
+    // A stream that says nothing at all is dropped like one that failed: with a
+    // handle in hand no retry is armed and no sync is dispatched, so a silent
+    // one would park the connection until the page went away.
+    openTimer = setTimeout(() => {
+      openTimer = null;
+
+      dropStream();
+
+      retry();
+
+      publish();
+    }, STREAM_OPEN_MS);
+
     const handle = deps.openStream({
       onOpen: () => {
         if (stream !== slot) {
           return;
         }
+
+        cancelOpen();
 
         slot.open = true;
 
@@ -400,6 +443,8 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
         if (stream !== slot) {
           return;
         }
+
+        cancelOpen();
 
         // Enough of a live view that losing it is worth saying out loud — but
         // not yet enough to rewind the backoff, which waits for the stream to
@@ -527,7 +572,7 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
           attachStream();
         }
       } else {
-        recorderFailing = true;
+        recorderFailing = outcome.recorderFailed;
 
         if (outcome.hopeless) {
           // A refusal will not turn into a grant, and an old APK will not
@@ -553,8 +598,10 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       .catch(() => {
         // A sync that broke without reporting is still a failed attempt: left
         // unsettled it would arm no retry, and the chain would end silently
-        // with nothing that would ever ask again.
-        settle({ ok: false, hopeless: false });
+        // with nothing that would ever ask again. Not the recorder failing,
+        // though — the handler never got as far as reporting about it, so like
+        // an ask nothing ever claimed it must not cost the following.
+        settle({ ok: false, hopeless: false, recorderFailed: false });
       })
       .finally(() => {
         if (run === entry) {

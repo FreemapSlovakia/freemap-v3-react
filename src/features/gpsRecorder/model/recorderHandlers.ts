@@ -12,6 +12,7 @@ import type { Dispatch } from 'redux';
 import {
   discardQueuedRecorderPoints,
   runRecorderSync,
+  seedRecorderFields,
   setRecorderFollowed,
   whileCatchingUp,
 } from '../connection.js';
@@ -137,6 +138,11 @@ async function applyStatus(
   // opened, with the update link the failure carries.
   assertSupportedVersion(status);
 
+  // Before any stream is attached — this run may be the one that attaches it,
+  // and a stream whose own connect frame does not parse has nothing else to
+  // decode its rows with.
+  seedRecorderFields(status.fields);
+
   // `seq` never restarts, so a cleared track is indistinguishable from one that
   // simply hasn't grown — a bumped `generation` is the only reliable signal that
   // what we hold is gone. Asking for everything after a stale cursor would leave
@@ -211,8 +217,17 @@ async function runSync(
   // only a sync that took long enough for the user to notice is worth a line.
   const synced = startRecorderSpan('sync', 4000);
 
+  // Whether the recorder answered at all, which decides whether a failure below
+  // counts against it: everything after the status — the catch-up transfer, the
+  // page this app could not read — failed with the recorder demonstrably there.
+  let answered = false;
+
   try {
-    await applyStatus(dispatch, await getStatus(signal), held, signal);
+    const status = await getStatus(signal);
+
+    answered = true;
+
+    await applyStatus(dispatch, status, held, signal);
   } catch (err) {
     synced();
 
@@ -232,7 +247,11 @@ async function runSync(
       reportFailure(dispatch, err);
     }
 
-    settle({ ok: false, hopeless: isHopelessFailure(err) });
+    settle({
+      ok: false,
+      hopeless: isHopelessFailure(err),
+      recorderFailed: !answered,
+    });
 
     return;
   }

@@ -69,6 +69,18 @@ let core: RecorderConnectionCore | null = null;
 let fields: readonly string[] = [];
 
 /**
+ * Fills the column order in from a status a sync read, for as long as no stream
+ * has named one. The stream stays the owner — this never overwrites an order a
+ * live stream installed — but a first connect frame this app cannot read would
+ * otherwise leave every row undecodable with nothing arriving to repair it.
+ */
+export function seedRecorderFields(next: readonly string[]): void {
+  if (fields.length === 0) {
+    fields = next;
+  }
+}
+
+/**
  * See the core's `runSync`: coalesces concurrent asks onto one run, restarts
  * for the caller a running sync cannot answer, and binds each run's `settle`
  * to itself so an abandoned run cannot drive the connection.
@@ -221,26 +233,28 @@ export function attachRecorderConnection(newStore: MyStore): void {
       // Arrives before any point on every connection, and names the state as
       // well as the columns.
       es.addEventListener('status', (event) => {
-        const status = parseStatusFrame(event.data);
-
-        if (!status) {
-          return;
-        }
-
-        fields = status.fields;
-
+        // A frame this app cannot read is still the recorder composing and
+        // delivering one, so it counts as proof the stream works and as the
+        // connect frame it is — swallowing it would leave the doorbell below
+        // waiting to be rung by a frame that has already been.
         callbacks.onStatusFrame();
 
-        if (connecting) {
-          // The sync that attached this stream read a status moments ago, so
-          // ringing the doorbell for the connect frame would only fetch the
-          // same answer again.
-          connecting = false;
+        // The sync that attached this stream read a status moments ago, so
+        // ringing the doorbell for the connect frame would only fetch the same
+        // answer again.
+        const isConnect = connecting;
 
-          return;
+        connecting = false;
+
+        const status = parseStatusFrame(event.data);
+
+        if (status) {
+          fields = status.fields;
         }
 
-        store?.dispatch(gpsRecorderPushedStatus());
+        if (!isConnect) {
+          store?.dispatch(gpsRecorderPushedStatus());
+        }
       });
 
       return { close: () => es.close() };

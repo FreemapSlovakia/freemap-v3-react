@@ -3,9 +3,11 @@ import {
   createRecorderConnectionCore,
   RETRY_DELAYS,
   type RecorderConnectionCore,
+  STREAM_OPEN_MS,
   STREAM_PROVEN_MS,
   type StreamCallbacks,
   SYNC_CLAIM_MS,
+  type SyncOutcome,
 } from './connectionCore.js';
 
 /**
@@ -81,7 +83,7 @@ type Harness = ReturnType<typeof makeHarness>;
 type Run = {
   signal: AbortSignal;
   isQuiet: () => boolean;
-  settle: (outcome: { ok: true } | { ok: false; hopeless: boolean }) => void;
+  settle: (outcome: SyncOutcome) => void;
   finish: () => void;
   fail: (err: unknown) => void;
   promise: Promise<void>;
@@ -119,8 +121,11 @@ async function completeOk(run: Run) {
   await run.promise;
 }
 
-async function completeFail(run: Run, hopeless = false) {
-  run.settle({ ok: false, hopeless });
+async function completeFail(
+  run: Run,
+  { hopeless = false, recorderFailed = true } = {},
+) {
+  run.settle({ ok: false, hopeless, recorderFailed });
 
   run.finish();
 
@@ -128,8 +133,11 @@ async function completeFail(run: Run, hopeless = false) {
 }
 
 /** One sync-fails cycle: claim the pending ask, fail it. */
-async function failPendingSync(h: Harness) {
-  await completeFail(beginRun(h));
+async function failPendingSync(
+  h: Harness,
+  opts?: { recorderFailed?: boolean },
+) {
+  await completeFail(beginRun(h), opts);
 }
 
 /** One cycle where the sync works but the stream never proves itself. */
@@ -404,12 +412,42 @@ describe('the backoff', () => {
     expect(h.syncs).toHaveLength(before + 2);
   });
 
+  it('never gives up on failures the recorder answered', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    // A track too big for the transfer budget fails the same way every time:
+    // the recorder is there and reporting a ride, so the delays running out
+    // must not end it.
+    for (const delay of RETRY_DELAYS) {
+      await failPendingSync(h, { recorderFailed: false });
+
+      vi.advanceTimersByTime(delay);
+    }
+
+    await failPendingSync(h, { recorderFailed: false });
+
+    expect(h.stored).toBe(true);
+
+    expect(last(h)).toBe('reconnecting'); // parked at the longest wait
+
+    // Once the recorder itself stops answering, the chain ends as before.
+    vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+
+    await failPendingSync(h);
+
+    expect(h.stored).toBe(false);
+
+    expect(last(h)).toBe('idle');
+  });
+
   it('a hopeless failure arms no retry', async () => {
     const h = makeHarness({ followed: true });
 
     h.core.reconcile();
 
-    await completeFail(beginRun(h), true);
+    await completeFail(beginRun(h), { hopeless: true });
 
     expect(last(h)).toBe('idle');
 
@@ -438,6 +476,70 @@ describe('the backoff', () => {
     expect(h.stored).toBe(true);
 
     expect(h.syncs.length).toBeGreaterThan(RETRY_DELAYS.length);
+  });
+});
+
+describe('the stream deadline', () => {
+  it('a stream that reports nothing is dropped and retried', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    await completeOk(beginRun(h));
+
+    expect(last(h)).toBe('connecting');
+
+    vi.advanceTimersByTime(STREAM_OPEN_MS - 1);
+
+    expect(openStream(h).closed).toBe(false);
+
+    expect(last(h)).toBe('connecting'); // the wait is the whole deadline
+
+    vi.advanceTimersByTime(1);
+
+    expect(openStream(h).closed).toBe(true);
+
+    expect(last(h)).toBe('reconnecting');
+
+    const before = h.syncs.length;
+
+    vi.advanceTimersByTime(RETRY_DELAYS[0]);
+
+    expect(h.syncs).toHaveLength(before + 1);
+  });
+
+  it('a stream that opened is left to run', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    await completeOk(beginRun(h));
+
+    openStream(h).callbacks.onOpen();
+
+    vi.advanceTimersByTime(STREAM_OPEN_MS * 10);
+
+    expect(openStream(h).closed).toBe(false);
+
+    expect(last(h)).toBe('live');
+  });
+
+  it('a silent stream never unfollows: the recorder is answering', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    for (let i = 0; i < RETRY_DELAYS.length + 3; i++) {
+      await completeOk(beginRun(h));
+
+      vi.advanceTimersByTime(STREAM_OPEN_MS);
+
+      expect(last(h)).toBe('reconnecting');
+
+      vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+    }
+
+    expect(h.stored).toBe(true);
   });
 });
 
