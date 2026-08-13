@@ -84,7 +84,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     deleteTitle: 'Eliminazione foto',
     modify: 'Modifica',
     premiumOnly:
-      'Questa foto è stata resa disponibile dall''autore ai soli utenti con accesso premium.',
+      "Questa foto è stata resa disponibile dall'autore ai soli utenti con accesso premium.",
     noComments: 'Nessun commento',
   },
 

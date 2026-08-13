@@ -46,7 +46,7 @@ type Row = { id: string; label: string | undefined; value: string };
  * from the recorder beyond the fixes themselves — it stays correct even when the
  * live view is gone.
  */
-export function GpsRecorderReadout(): ReactElement {
+export function GpsRecorderReadout(): ReactElement | null {
   const m = useGpsRecorderMessages();
 
   const language = useAppSelector((state) => state.l10n.language);
@@ -109,9 +109,7 @@ export function GpsRecorderReadout(): ReactElement {
   // Nothing recorded yet: there are no figures to summarize, so the row carries
   // whatever there is to say — often nothing at all.
   if (stats.points === 0) {
-    return notice === null ? (
-      <></>
-    ) : (
+    return notice === null ? null : (
       <span className="align-self-center ms-2 text-nowrap small">{notice}</span>
     );
   }
