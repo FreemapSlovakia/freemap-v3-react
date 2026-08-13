@@ -11,6 +11,7 @@ const de: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Aufzeichnung löschen',
   settings: 'Aufzeichnungseinstellungen',
   details: 'Details der Aufzeichnung',
+  pinHint: 'Angehakte Werte erscheinen auch in der Werkzeugleiste.',
   state: {
     recording: 'Zeichnet auf',
     stopped: 'Gestoppt',
@@ -38,11 +39,18 @@ const de: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   },
   stopModal: {
     title: 'Aufzeichnung beenden?',
-    message: ({ tool }) => (
+    runningMessage: ({ tool }) => (
       <>
         Die Aufzeichnung läuft noch. Beenden stoppt sie und verschiebt die Spur
         in das Werkzeug <b>{tool}</b>. Im Recorder bleibt nichts zurück, die
         nächste Aufzeichnung beginnt also eine neue Spur.
+      </>
+    ),
+    stoppedMessage: ({ tool }) => (
+      <>
+        Die Spur wird in das Werkzeug <b>{tool}</b> verschoben und im Recorder
+        bleibt nichts zurück, die nächste Aufzeichnung beginnt also eine neue
+        Spur.
       </>
     ),
     confirm: 'Beenden',

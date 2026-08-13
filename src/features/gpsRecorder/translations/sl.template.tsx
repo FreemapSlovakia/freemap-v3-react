@@ -11,6 +11,7 @@ const sl: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Izbriši posnetek',
   settings: 'Nastavitve snemanja',
   details: 'Podrobnosti posnetka',
+  pinHint: 'Označene vrednosti se prikažejo tudi v orodni vrstici.',
   state: {
     recording: 'Snemanje',
     stopped: 'Ustavljeno',
@@ -38,11 +39,17 @@ const sl: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   },
   stopModal: {
     title: 'Končati snemanje?',
-    message: ({ tool }) => (
+    runningMessage: ({ tool }) => (
       <>
         Snemanje še vedno teče. Z zaključkom se ustavi in sled se prenese v
         orodje <b>{tool}</b>. V snemalniku ne ostane nič, zato bo naslednje
         snemanje začelo novo sled.
+      </>
+    ),
+    stoppedMessage: ({ tool }) => (
+      <>
+        Sled se prenese v orodje <b>{tool}</b> in v snemalniku ne ostane nič,
+        zato bo naslednje snemanje začelo novo sled.
       </>
     ),
     confirm: 'Končaj',

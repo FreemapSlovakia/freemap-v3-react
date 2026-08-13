@@ -5,9 +5,10 @@ import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import clsx from 'clsx';
-import { type ReactElement, type ReactNode, useState } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import {
   FaAngleLeft,
@@ -23,26 +24,29 @@ type Props = {
   /** The tool's controls — dropped while the toolbar is collapsed to a strip. */
   children?: ReactNode;
   /**
-   * What the strip keeps: a readout that is worth a glance while the controls
-   * are put away. Rendered after `children` in the expanded toolbar.
-   */
-  stripChildren?: ReactNode;
-  /**
-   * Offers a collapse button. Only for a toolbar whose strip still says
-   * something worth the room — a tool with nothing to leave behind is closed
+   * Offers a collapse button, leaving a strip of the tool's icon and the button
+   * that brings the controls back. Only for a toolbar that has a reason to stay
+   * up with nothing on it — a running recording, say; anything else is closed
    * instead.
    */
   collapsible?: boolean;
   /** Decorates the header icon, e.g. to say the tool is doing something. */
   iconClassName?: string;
+  /**
+   * Turns the collapsed strip's icon into a button, for a tool that can still
+   * answer for itself with its controls put away. Given the icon the strip would
+   * otherwise show, so the wrapper only has to say what pressing it does; the
+   * tool's name stays beside it either way.
+   */
+  wrapCollapsedIcon?: (icon: ReactNode) => ReactNode;
 };
 
 export function ToolMenu({
   tool,
   children,
-  stripChildren,
   collapsible,
   iconClassName,
+  wrapCollapsedIcon,
 }: Props): ReactElement {
   const sc = useScrollClasses('horizontal');
 
@@ -52,26 +56,19 @@ export function ToolMenu({
 
   const toolDef = toolDefinitions.find((td) => td.tool === tool);
 
-  const [userCollapsed, setUserCollapsed] = useState(false);
+  // A standing preference, not a per-session one: it outlives both a reload and
+  // the tool being closed, and only the expand button clears it. Nothing here
+  // may reset it on open — the tool is closed by a store update that unmounts
+  // this component in the same commit, so a toolbar can never tell being opened
+  // from a page that loaded with it already open.
+  const [userCollapsed, setUserCollapsed] = usePersistentBoolean(
+    `fm.toolMenu.collapsed.${tool}`,
+  );
 
   // A toolbar can be up for a reason of its own while its tool is closed (a
   // running GPS recording), and is a strip whatever the user chose: being open
   // is what the full set of controls belongs to.
   const open = useAppSelector((state) => isToolOpen(state, tool));
-
-  // Opening the tool asks for its controls, whichever way it was opened — so a
-  // collapse the user made before it was closed doesn't outlive it and leave
-  // the menu item looking like it did nothing. Adjusted while rendering rather
-  // than in an effect, so there is no frame of the wrong state.
-  const [wasOpen, setWasOpen] = useState(open);
-
-  if (open !== wasOpen) {
-    setWasOpen(open);
-
-    if (open) {
-      setUserCollapsed(false);
-    }
-  }
 
   const collapsed = !open || (collapsible && userCollapsed);
 
@@ -80,6 +77,14 @@ export function ToolMenu({
   const ownsMapClicks = useAppSelector(
     (state) => activeMapToolSelector(state) === tool,
   );
+
+  const icon = toolDef && (
+    <span className={iconClassName}>
+      {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}
+    </span>
+  );
+
+  const buttonIcon = collapsed && wrapCollapsedIcon !== undefined;
 
   return (
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
@@ -98,10 +103,16 @@ export function ToolMenu({
                 }
               >
                 {({ label, labelClassName, props }) => (
-                  <span className="align-self-center mx-1" {...props}>
-                    <span className={iconClassName}>
-                      {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}
-                    </span>{' '}
+                  <span
+                    // A button brings its own room, so the margin a bare icon
+                    // needs would double up beside it.
+                    className={clsx(
+                      'align-self-center',
+                      buttonIcon ? 'mx-0' : 'mx-1',
+                    )}
+                    {...props}
+                  >
+                    {buttonIcon ? wrapCollapsedIcon(icon) : icon}{' '}
                     <span className={labelClassName}> {label}</span>
                   </span>
                 )}
@@ -116,8 +127,6 @@ export function ToolMenu({
           )}
 
           {!collapsed && children}
-
-          {stripChildren}
 
           {collapsed ? (
             <LongPressTooltip label={m?.general.expand}>

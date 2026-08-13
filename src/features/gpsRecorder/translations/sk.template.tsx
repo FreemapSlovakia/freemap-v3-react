@@ -11,6 +11,7 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Zmazať záznam',
   settings: 'Nastavenia záznamu',
   details: 'Podrobnosti záznamu',
+  pinHint: 'Zaškrtnuté hodnoty sa zobrazia aj v nástrojovej lište.',
   state: {
     recording: 'Nahráva sa',
     stopped: 'Zastavené',
@@ -38,11 +39,17 @@ const sk: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   },
   stopModal: {
     title: 'Ukončiť záznam?',
-    message: ({ tool }) => (
+    runningMessage: ({ tool }) => (
       <>
         Nahrávanie stále beží. Ukončením sa zastaví a trasa sa presunie do
         nástroja <b>{tool}</b>. V zaznamenávači nezostane nič, takže ďalšie
         nahrávanie začne novú trasu.
+      </>
+    ),
+    stoppedMessage: ({ tool }) => (
+      <>
+        Trasa sa presunie do nástroja <b>{tool}</b> a v zaznamenávači nezostane
+        nič, takže ďalšie nahrávanie začne novú trasu.
       </>
     ),
     confirm: 'Ukončiť',

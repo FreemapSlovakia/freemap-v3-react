@@ -11,6 +11,7 @@ const it: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Elimina la registrazione',
   settings: 'Impostazioni di registrazione',
   details: 'Dettagli della registrazione',
+  pinHint: 'I valori selezionati compaiono anche nella barra degli strumenti.',
   state: {
     recording: 'In registrazione',
     stopped: 'Fermato',
@@ -38,11 +39,17 @@ const it: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   },
   stopModal: {
     title: 'Terminare la registrazione?',
-    message: ({ tool }) => (
+    runningMessage: ({ tool }) => (
       <>
         La registrazione è ancora in corso. Terminandola si ferma e la traccia
         passa allo strumento <b>{tool}</b>. Nel registratore non resta nulla,
         quindi la prossima registrazione inizia una nuova traccia.
+      </>
+    ),
+    stoppedMessage: ({ tool }) => (
+      <>
+        La traccia passa allo strumento <b>{tool}</b> e nel registratore non
+        resta nulla, quindi la prossima registrazione inizia una nuova traccia.
       </>
     ),
     confirm: 'Termina',

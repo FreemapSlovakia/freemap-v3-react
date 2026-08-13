@@ -457,10 +457,17 @@ being open **or** a recording in progress, so a closed toolbar still leaves a
 strip for as long as the phone is recording — the only thing on the screen that
 says it is. The tool being open is then no longer what mounts the toolbar but
 what gives it its controls: `ToolMenu` renders the strip — the tool's icon,
-blinking red through the `iconClassName` the menu hands it, its name, and the
-`stripChildren` readout — whenever its tool is closed, and turns the button into
-one that opens it again. (Being merely put away by the user's collapse button
-looks the same, but that state is the toolbar's own.)
+blinking red through the `iconClassName` the menu hands it, and its name —
+whenever its tool is closed, and turns the button into one that opens it again.
+(Being merely put away by the user's collapse button looks the same, but that
+state is the toolbar's own.) The readout is a control like the buttons and goes
+with them: the figures take as much of the map as the buttons do, so a strip that
+kept them would not be the small thing collapsing asks for. What the strip does
+instead is turn its icon into a button — `wrapCollapsedIcon` hands the icon to
+`GpsRecorderReadout`, which carries it as its dropdown's toggle, so the figures
+stay one tap away without occupying the toolbar. Read-only there: with the
+toolbar put away there is no inline summary to pin anything to, so the rows carry
+no checkboxes.
 
 Two consequences worth knowing. The sync that opening the tool raises is keyed on
 the tool being open rather than on the component mounting, because a recording
@@ -766,8 +773,8 @@ a reload restores this target from the URL while the whole track is still being
 refetched. `gone` is only for a track the recorder has reported on and that holds
 nothing, which covers a delete and the hand-over alike, and for a platform the
 recorder cannot run on. Closing the tool closes the chart, as it
-does for every other target — the strip a recording leaves behind carries the
-readout, not the controls.
+does for every other target — the strip a recording leaves behind carries no
+controls.
 
 `trackGeojson.ts` emits **one `Feature<LineString>` per segment**, not a single
 `MultiLineString`. The colorizers require a per-point array exactly as long as

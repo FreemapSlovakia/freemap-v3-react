@@ -15,6 +15,8 @@ export type GpsRecorderMessages = {
   settings: string;
   /** Opens the readout dropdown; the summary in it is the visible label. */
   details: string;
+  /** Says what ticking a row in the readout dropdown does. */
+  pinHint: string;
   state: {
     recording: string;
     stopped: string;
@@ -42,11 +44,15 @@ export type GpsRecorderMessages = {
     segments: string;
     lastFix: string;
   };
-  /** Asked before a Finish that would cut a recording still in progress. */
+  /** Asked before every Finish — it empties the recorder either way. */
   stopModal: {
     title: string;
-    /** `tool` is the localized name of the tool the track lands in. */
-    message: (props: { tool: ReactNode }) => ReactNode;
+    /**
+     * `tool` is the localized name of the tool the track lands in. The running
+     * variant leads with the recording being cut, which cannot be undone.
+     */
+    runningMessage: (props: { tool: ReactNode }) => ReactNode;
+    stoppedMessage: (props: { tool: ReactNode }) => ReactNode;
     confirm: string;
   };
   deleteModal: {

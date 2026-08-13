@@ -11,6 +11,7 @@ const hu: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   delete: 'Felvétel törlése',
   settings: 'Rögzítési beállítások',
   details: 'Felvétel részletei',
+  pinHint: 'A bejelölt értékek az eszköztáron is megjelennek.',
   state: {
     recording: 'Rögzítés folyamatban',
     stopped: 'Leállítva',
@@ -38,11 +39,17 @@ const hu: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
   },
   stopModal: {
     title: 'Befejezi a felvételt?',
-    message: ({ tool }) => (
+    runningMessage: ({ tool }) => (
       <>
         A rögzítés még fut. A befejezés leállítja, a nyomvonal pedig átkerül
         a(z) <b>{tool}</b> eszközbe. A rögzítőben semmi sem marad, így a
         következő felvétel új nyomvonalat kezd.
+      </>
+    ),
+    stoppedMessage: ({ tool }) => (
+      <>
+        A nyomvonal átkerül a(z) <b>{tool}</b> eszközbe, a rögzítőben pedig
+        semmi sem marad, így a következő felvétel új nyomvonalat kezd.
       </>
     ),
     confirm: 'Befejezés',

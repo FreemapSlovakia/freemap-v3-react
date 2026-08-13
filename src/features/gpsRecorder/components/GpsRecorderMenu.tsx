@@ -113,16 +113,16 @@ export default function GpsRecorderMenu(): ReactElement {
     }
   }, [open, dispatch]);
 
-  // Asked only while the recorder is still running: that tap ends a ride that
-  // cannot be resumed — the recorder's track is taken and deleted, so a start
-  // afterwards begins a new one. Finishing an already stopped recording only
-  // collects what is sitting there, and the merge question below covers the rest.
+  // Always asked: the tap empties the recorder either way — its track is taken
+  // and deleted, so a start afterwards begins a new one. Running, it also ends a
+  // ride that cannot be resumed, which is what the message leads with.
   const handleStop = useCallback(async () => {
     if (
-      recording &&
       !(await confirm({
         title: grm?.stopModal.title,
-        message: grm?.stopModal.message({ tool: m?.tools.dataViewer }),
+        message: recording
+          ? grm?.stopModal.runningMessage({ tool: m?.tools.dataViewer })
+          : grm?.stopModal.stoppedMessage({ tool: m?.tools.dataViewer }),
         confirmLabel: grm?.stopModal.confirm,
       }))
     ) {
@@ -150,37 +150,46 @@ export default function GpsRecorderMenu(): ReactElement {
   }, [confirm, dispatch, grm]);
 
   return (
-    // The strip keeps the readout — distance and time are what the glance is for
-    // — and nothing that acts on the recording: reaching Pause or Finish is what
-    // expanding is for.
+    // Collapsing leaves the icon and nothing else: the figures are as much of the
+    // map as the buttons are, so putting the controls away puts them away too.
+    // The icon then opens them itself, which is the whole of what a strip that
+    // only says a recording is running can still be asked.
     <ToolMenu
       tool="gps-recorder"
-      stripChildren={<GpsRecorderReadout />}
       collapsible
       iconClassName={recording ? classes.recording : undefined}
+      wrapCollapsedIcon={(icon) => <GpsRecorderReadout collapsedIcon={icon} />}
     >
       {/* Record and Pause are one button, because they are one thing: the
               recorder keeps its track across a `POST /stop`, so stopping it is a
               pause and the next start continues the same ride. */}
-      <Button
-        className="ms-1"
-        variant="primary"
-        disabled={pending}
-        // Must stay a direct gesture handler: this tap is what allows the
-        // Local Network Access prompt and the launch intent.
-        onClick={() =>
-          dispatch(recording ? gpsRecorderPause() : gpsRecorderStart())
-        }
+      <LongPressTooltip
+        breakpoint="sm"
+        label={recording ? grm?.pause : grm?.record}
       >
-        {busy ? (
-          <Spinner animation="border" size="sm" />
-        ) : recording ? (
-          <FaPause />
-        ) : (
-          <FaCircle />
-        )}{' '}
-        {recording ? grm?.pause : grm?.record}
-      </Button>
+        {({ label, labelClassName, props }) => (
+          <Button
+            className="ms-1"
+            variant="primary"
+            disabled={pending}
+            // Must stay a direct gesture handler: this tap is what allows the
+            // Local Network Access prompt and the launch intent.
+            onClick={() =>
+              dispatch(recording ? gpsRecorderPause() : gpsRecorderStart())
+            }
+            {...props}
+          >
+            {busy ? (
+              <Spinner animation="border" size="sm" />
+            ) : recording ? (
+              <FaPause />
+            ) : (
+              <FaCircle />
+            )}
+            <span className={labelClassName}> {label}</span>
+          </Button>
+        )}
+      </LongPressTooltip>
 
       {/* Ending the ride: the track leaves the recorder for the app. Offered
               whenever there is something to take, recording or not — there is no
@@ -219,6 +228,8 @@ export default function GpsRecorderMenu(): ReactElement {
           )}
         </LongPressTooltip>
       )}
+
+      <GpsRecorderReadout />
 
       {chartable && (
         <LongPressTooltip label={m?.general.elevationProfile}>

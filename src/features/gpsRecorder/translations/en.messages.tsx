@@ -10,6 +10,7 @@ const en: GpsRecorderMessages = {
   delete: 'Delete recording',
   settings: 'Recording settings',
   details: 'Recording details',
+  pinHint: 'Ticked values also show in the toolbar.',
   state: {
     recording: 'Recording',
     stopped: 'Stopped',
@@ -37,11 +38,17 @@ const en: GpsRecorderMessages = {
   },
   stopModal: {
     title: 'Finish the recording?',
-    message: ({ tool }) => (
+    runningMessage: ({ tool }) => (
       <>
         Recording is still running. Finishing stops it and moves the track to{' '}
         <b>{tool}</b>. The recorder keeps nothing, so the next recording starts
         a new track.
+      </>
+    ),
+    stoppedMessage: ({ tool }) => (
+      <>
+        The track moves to <b>{tool}</b> and the recorder keeps nothing, so the
+        next recording starts a new track.
       </>
     ),
     confirm: 'Finish',

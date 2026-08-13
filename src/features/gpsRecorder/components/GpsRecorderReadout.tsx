@@ -1,10 +1,12 @@
+import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import clsx from 'clsx';
-import { type ReactElement, type ReactNode, useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { Dropdown, Spinner } from 'react-bootstrap';
-import { FaCircle } from 'react-icons/fa';
+import { FaCircle, FaInfoCircle } from 'react-icons/fa';
 import {
   selectLatestRecorderPoint,
   selectRecorderStats,
@@ -28,26 +30,70 @@ function formatDuration(ms: number): string {
     : `${minutes}:${seconds}`;
 }
 
+const metricIds = [
+  'distance',
+  'duration',
+  'elevation',
+  'ascent',
+  'speed',
+  'avgSpeed',
+  'accuracy',
+  'satellites',
+  'points',
+  'segments',
+  'lastFix',
+] as const;
+
+type MetricId = (typeof metricIds)[number];
+
 // `id` rather than the label: the labels come from a lazily loaded bundle and are
 // all `undefined` until it lands, which would make them the same React key.
-type Row = { id: string; label: string | undefined; value: string };
+type Row = { id: MetricId; label: string | undefined; value: string };
+
+const PINNED_KEY = 'fm.gpsRecorder.pinnedMetrics';
+
+function serializePinned(pinned: MetricId[]): string {
+  return pinned.join(',');
+}
+
+function deserializePinned(value: string | null): MetricId[] {
+  return value === null
+    ? ['distance', 'duration']
+    : value
+        .split(',')
+        .filter((id): id is MetricId => metricIds.includes(id as MetricId));
+}
+
+type Props = {
+  /**
+   * The collapsed strip's icon, turning this into the button that carries it:
+   * with the toolbar put away there is no inline summary to pin anything to, so
+   * the rows are read-only.
+   */
+  collapsedIcon?: ReactNode;
+};
 
 /**
- * The live readout: distance and time in the toolbar, everything else a tap
- * away.
+ * The live readout: a chosen few metrics in the toolbar, all of them a tap away.
  *
  * The toolbar is a single row of controls in every other tool, so the metrics
  * cannot all sit in it — seven of them wrap onto three lines on a phone and push
- * the toolbar down over the map. Only the two worth a glance stay inline; the
- * rest live in a dropdown, which keeps updating while it is open because it
- * reads the same state.
+ * the toolbar down over the map. The dropdown therefore holds the full set, and
+ * ticking a row pins it to the inline summary; it keeps updating while open
+ * because it reads the same state.
  *
  * Everything here is derived from the points already held, so it needs nothing
  * from the recorder beyond the fixes themselves — it stays correct even when the
  * live view is gone.
  */
-export function GpsRecorderReadout(): ReactElement | null {
+export function GpsRecorderReadout({ collapsedIcon }: Props): ReactNode {
   const m = useGpsRecorderMessages();
+
+  const [pinned, setPinned] = usePersistentState<MetricId[]>(
+    PINNED_KEY,
+    serializePinned,
+    deserializePinned,
+  );
 
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -106,9 +152,12 @@ export function GpsRecorderReadout(): ReactElement | null {
             ? m?.connection.offline
             : null;
 
+  const pinnable = collapsedIcon === undefined;
+
   // Nothing recorded yet: there are no figures to summarize, so the row carries
-  // whatever there is to say — often nothing at all.
-  if (stats.points === 0) {
+  // whatever there is to say — often nothing at all. The strip carries the icon
+  // regardless, and its dropdown still has the state and the live view to report.
+  if (pinnable && stats.points === 0) {
     return notice === null ? null : (
       <span className="align-self-center ms-2 text-nowrap small">{notice}</span>
     );
@@ -206,47 +255,93 @@ export function GpsRecorderReadout(): ReactElement | null {
     });
   }
 
-  return (
-    <Dropdown align="start" className="ms-1">
-      {/* The summary must never wrap — it is what keeps the toolbar one row tall. */}
-      <Dropdown.Toggle
-        variant="secondary"
-        className="text-nowrap"
-        aria-label={m?.details}
-      >
-        {/* Says how the live view is doing without spending words on it; the
-            dropdown spells the same thing out. A dot for the two settled states,
-            and a spinner for the ones in between — the figures next to it have
-            stopped advancing then, and a still dot over frozen numbers reads as a
-            live recording that has merely stood still. */}
-        {connection === 'live' || connection === 'idle' ? (
-          <FaCircle
-            size={8}
-            className={clsx(
-              'align-middle',
-              connection === 'live' ? 'text-success' : 'text-body-secondary',
-            )}
-            aria-hidden
-          />
-        ) : (
-          <Spinner
-            animation="border"
-            size="sm"
-            className={clsx('align-middle', classes.connectingSpinner)}
-            aria-hidden
-          />
-        )}{' '}
-        {formatDistance(stats.distance, language)}
-        {' · '}
-        {formatDuration(stats.recordedDuration)}
-      </Dropdown.Toggle>
+  // A pinned metric the fixes cannot answer for right now has no row, so it
+  // simply drops out of the summary while staying ticked for when it returns.
+  const summary = rows
+    .filter((row) => pinned.includes(row.id))
+    .map((row) => row.value)
+    .join(' · ');
 
-      <FmDropdownMenu>
-        {/* A minimum width so the box doesn't twitch as the numbers change. */}
-        <div className="px-3 py-1" style={{ minWidth: '15rem' }}>
+  return (
+    <Dropdown
+      align="start"
+      className={pinnable ? 'ms-1' : 'd-inline-block'}
+      autoClose={pinnable ? 'outside' : true}
+      onSelect={(selection, e) => {
+        e?.preventDefault();
+
+        if (!selection) {
+          return;
+        }
+
+        const id = selection as MetricId;
+
+        setPinned((pinned) =>
+          pinned.includes(id)
+            ? pinned.filter((pin) => pin !== id)
+            : [...pinned, id],
+        );
+      }}
+    >
+      {pinnable ? (
+        // The summary must never wrap — it is what keeps the toolbar one row tall.
+        <Dropdown.Toggle
+          variant="secondary"
+          className="text-nowrap"
+          aria-label={m?.details}
+        >
+          {summary ? (
+            <>
+              {/* Says how the live view is doing without spending words on it; the
+                  dropdown spells the same thing out. A dot for the two settled
+                  states, and a spinner for the ones in between — the figures next
+                  to it have stopped advancing then, and a still dot over frozen
+                  numbers reads as a live recording that has merely stood still. */}
+              {connection === 'live' || connection === 'idle' ? (
+                <FaCircle
+                  size={8}
+                  className={clsx(
+                    'align-middle',
+                    connection === 'live'
+                      ? 'text-success'
+                      : 'text-body-secondary',
+                  )}
+                  aria-hidden
+                />
+              ) : (
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  className={clsx('align-middle', classes.connectingSpinner)}
+                  aria-hidden
+                />
+              )}{' '}
+              {summary}
+            </>
+          ) : (
+            // Nothing ticked, so there is nothing for the dot to qualify — the
+            // button says what it opens instead of decorating a blank.
+            <FaInfoCircle />
+          )}
+        </Dropdown.Toggle>
+      ) : (
+        // The strip's own icon, as a button: the strip is a toolbar like any
+        // other, so what can be pressed on it should look pressable.
+        <Dropdown.Toggle
+          bsPrefix="fm-dropdown-toggle-nocaret"
+          variant="dark"
+          aria-label={m?.details}
+        >
+          {collapsedIcon}
+        </Dropdown.Toggle>
+      )}
+
+      {/* A minimum width so the box doesn't twitch as the numbers change. */}
+      <FmDropdownMenu style={{ minWidth: '17rem' }}>
+        <div className="px-3 py-1 mb-1">
           {/* The details view is where spelling it out belongs, so the state and
               the live view are named here even when they are nominal. */}
-          <div className="mb-2">
+          <div>
             {status?.recording ? m?.state.recording : m?.state.stopped}
             <span className="text-body-secondary">
               {' · '}
@@ -262,14 +357,36 @@ export function GpsRecorderReadout(): ReactElement | null {
             </span>
           </div>
 
-          {rows.map((row) => (
-            <div key={row.id} className="d-flex justify-content-between gap-4">
+          {pinnable && (
+            <div className="small text-body-secondary">{m?.pinHint}</div>
+          )}
+        </div>
+
+        {rows.map((row) =>
+          pinnable ? (
+            <Dropdown.Item
+              as="button"
+              key={row.id}
+              eventKey={row.id}
+              className="d-flex justify-content-between gap-4"
+            >
+              <span className="text-body-secondary">
+                <Checkbox value={pinned.includes(row.id)} /> {row.label}
+              </span>
+
+              <strong>{row.value}</strong>
+            </Dropdown.Item>
+          ) : (
+            <div
+              key={row.id}
+              className="px-3 d-flex justify-content-between gap-4"
+            >
               <span className="text-body-secondary">{row.label}</span>
 
               <strong>{row.value}</strong>
             </div>
-          ))}
-        </div>
+          ),
+        )}
       </FmDropdownMenu>
     </Dropdown>
   );
