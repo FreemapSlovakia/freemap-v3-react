@@ -101,8 +101,10 @@ groups.google.com/g/osm_sk · en.osm.town/@FreemapSlovakia (Mastodon) · faceboo
 
 ## Outreach log
 
-Version-controlled record of intro/announcement posts (replaces the old Google Doc).
+Version-controlled record of market-intro posts (replaces the old Google Doc).
 Add a row per post; keep `—` where the date is unknown rather than guessing.
+"Here is what's new" feature announcements go in
+[`announcement-log.md`](./announcement-log.md) instead.
 
 | Date | Market | Channel | Lang | Status | Link |
 |------|--------|---------|------|--------|------|
