@@ -19,7 +19,7 @@ import {
   useState,
 } from 'react';
 import { Button, CloseButton } from 'react-bootstrap';
-import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaArrowsAlt, FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
 import { LuMoveDiagonal2 } from 'react-icons/lu';
 import { useDispatch } from 'react-redux';
 import { downloadChartSvg } from '../downloadChartSvg.js';
@@ -371,6 +371,8 @@ export default function ElevationChart(): ReactElement | null {
 
   const svgRef = useRef<SVGSVGElement>(null);
 
+  const moveHandleRef = useRef<HTMLDivElement>(null);
+
   const startPosRef = useRef<[number, number]>(undefined);
 
   const posRef = useRef([initialBox.left, initialBox.top]);
@@ -577,9 +579,12 @@ export default function ElevationChart(): ReactElement | null {
     let moved = false;
 
     const handleWindowPointerDown = (e: PointerEvent) => {
-      // Drag only from within the chart itself — not from the toolbar buttons,
-      // whose icons are their own <svg> elements.
-      if (e.target instanceof Node && svgRef.current?.contains(e.target)) {
+      // Only the grip drags the window: a press anywhere on the plot reads a
+      // value off it, which is how a finger does what a mouse does by hovering.
+      if (
+        e.target instanceof Node &&
+        moveHandleRef.current?.contains(e.target)
+      ) {
         startPosRef.current = [e.clientX, e.clientY];
 
         moved = false;
@@ -655,6 +660,12 @@ export default function ElevationChart(): ReactElement | null {
       ref={setRef}
       style={pos}
     >
+      {/* The window's only move grip, mirroring the resize one in the opposite
+          corner. The plot itself is left to scrubbing the profile. */}
+      <div className={classes.moveHandle} ref={moveHandleRef}>
+        <FaArrowsAlt />
+      </div>
+
       <CloseButton onClick={() => dispatch(elevationChartClose())} />
 
       <svg ref={svgRef} width={width} height={height}>

@@ -16,7 +16,6 @@
   }
 
   & > svg {
-    cursor: move;
     user-select: none;
     font-size: 12px;
   }
@@ -28,6 +27,24 @@
    own right edge, which its margin and the box's padding already inset. */
 .footer {
   padding-right: 1rem;
+}
+
+/* A finger-sized grip in the top-left corner, over the empty corner of the axis
+   margins. The only way to move the window — pressing the plot scrubs the
+   profile instead, which is the only way a finger can read values off it. */
+.move-handle {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.25rem;
+  cursor: move;
+  touch-action: none;
+  color: var(--bs-secondary-color);
 }
 
 /* A finger-sized grip in the bottom-right corner: the native `resize: both`
