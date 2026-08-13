@@ -272,6 +272,16 @@ changes and delete whatever the new contract makes unnecessary.
 
 Open items are issues under `area: gps-recorder`.
 
+- [ ] **Delete `perfProbe.ts` once the recording freeze is confirmed gone.** It
+      is field instrumentation, not a feature: it times the recorder's four
+      candidate passes (catch-up page, parse, dispatch, frame) so a stall report
+      says which one was underneath. The batching that should fix the freeze and
+      the probe that measures it shipped together and have not met a real ride
+      yet, which is why it is still here. It costs a static import from
+      `perfWatchdog.ts` (so it is in the main bundle) and a `console.warn` per
+      slow pass. `perfWatchdog.ts` itself stays — that one is app-wide and not
+      about the recorder.
+
 ## Photo layer: gallery + Wikimedia Commons merge
 
 Shipped on both sides. The gallery layer (`I`) renders own + Wikimedia Commons

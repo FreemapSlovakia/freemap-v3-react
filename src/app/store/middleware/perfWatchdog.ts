@@ -1,3 +1,4 @@
+import { recorderSpans } from '@features/gpsRecorder/perfProbe.js';
 import type { Middleware, UnknownAction } from '@reduxjs/toolkit';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { RootState } from '../store.js';
@@ -115,7 +116,14 @@ function report(
     pageAgeMs,
     visibility,
     topActions: topActionTypes(),
-    recentActions: recentActions.map((a) => a.type).join(' → '),
+    // A list rather than one joined line: Sentry's scrubbing replaces a whole
+    // value it dislikes, and `AUTH_SET_USER` or `TRACKING_SET_ACCESS_TOKENS`
+    // passing through was enough to lose the entire trace as `[Filtered]`. Per
+    // element, at worst the offending one goes and the rest still read.
+    recentActions: recentActions.map((a) => a.type),
+    // What the GPS recorder was doing, when it was doing anything slow — see
+    // `gpsRecorder/perfProbe.ts`. Temporary, with it.
+    recorderSpans: recorderSpans(),
     jsHeapMB: jsHeapMB(),
   };
 

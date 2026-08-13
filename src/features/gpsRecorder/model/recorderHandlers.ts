@@ -9,8 +9,18 @@ import { storeTrackDurably } from '@features/dataViewer/trackStore.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import type { FeatureCollection } from 'geojson';
 import type { Dispatch } from 'redux';
-import { setRecorderFollowed } from '../follow.js';
 import {
+  discardQueuedRecorderPoints,
+  runRecorderSync,
+  seedRecorderFields,
+  setRecorderFollowed,
+  whileCatchingUp,
+} from '../connection.js';
+import type { SyncOutcome } from '../connectionCore.js';
+import { startRecorderSpan, watchRecorderFrame } from '../perfProbe.js';
+import {
+  isHopelessFailure,
+  isSilentFailure,
   missingPermissions,
   RECORDER_INTENT_URL,
   RecorderError,
@@ -27,18 +37,10 @@ import {
   waitForRecording,
   waitForStatus,
 } from '../recorderClient.js';
-import {
-  closeRecorderStream,
-  isRecorderStreamUsable,
-  openRecorderStream,
-  recorderStreamGeneration,
-  reportRecorderStreamState,
-} from '../stream.js';
 import { recorderSegmentsToFeatureCollection } from '../trackGeojson.js';
 import {
   gpsRecorderAddPoints,
   type gpsRecorderPushedStatus,
-  gpsRecorderSetConnection,
   gpsRecorderSetError,
   gpsRecorderSetPending,
   gpsRecorderSetStatus,
@@ -71,12 +73,23 @@ function reportFailure(dispatch: Dispatch, err: unknown): void {
  * give, and it is not giving any.
  */
 function forgetUnreachableStatus(dispatch: Dispatch, err: unknown): void {
-  if (
-    err instanceof RecorderError &&
-    (err.failure === 'unreachable' || err.failure === 'lna-denied')
-  ) {
+  if (isSilentFailure(err)) {
     dispatch(gpsRecorderSetStatus(null));
   }
+}
+
+/**
+ * Drops the copy of a track the recorder no longer has — deleted here, deleted
+ * from elsewhere, or handed over.
+ *
+ * The queued fixes go with it. They belong to the track that is going, and a
+ * batch flushing after the reducer has emptied the points would put deleted
+ * fixes back on the map until the next status corrected it.
+ */
+function clearHeldTrack(dispatch: Dispatch): void {
+  discardQueuedRecorderPoints();
+
+  dispatch(gpsRecorderTrackCleared());
 }
 
 function assertReady(status: RecorderStatus): void {
@@ -97,20 +110,36 @@ function assertReady(status: RecorderStatus): void {
   }
 }
 
+/** What this page holds, in the terms {@link applyStatus} compares against. */
+function heldTrack(getState: () => RootState): {
+  points: number;
+  cursor: number;
+  generation: number | null;
+} {
+  const { points, cursor, generation } = getState().gpsRecorder;
+
+  return { points: points.length, cursor, generation };
+}
+
 /**
- * Reconciles a status — however it arrived — with the track held here, fetching
- * whatever the recorder has that this page hasn't. Returns the point column
- * order it learned, for the stream to decode its bare rows with.
+ * Reconciles a status with the track held here, fetching whatever the recorder
+ * has that this page hasn't.
  */
 async function applyStatus(
   dispatch: Dispatch,
   status: RecorderStatus,
   held: { points: number; cursor: number; generation: number | null },
-): Promise<readonly string[]> {
+  signal?: AbortSignal,
+): Promise<void> {
   // Checked wherever a status lands, not only on the way into a recording: a
   // recorder too old for these endpoints is told so as soon as the tool is
   // opened, with the update link the failure carries.
   assertSupportedVersion(status);
+
+  // Before any stream is attached — this run may be the one that attaches it,
+  // and a stream whose own connect frame does not parse has nothing else to
+  // decode its rows with.
+  seedRecorderFields(status.fields);
 
   // `seq` never restarts, so a cleared track is indistinguishable from one that
   // simply hasn't grown — a bumped `generation` is the only reliable signal that
@@ -120,7 +149,7 @@ async function applyStatus(
     held.generation !== null && status.generation !== held.generation;
 
   if (cleared) {
-    dispatch(gpsRecorderTrackCleared());
+    clearHeldTrack(dispatch);
   }
 
   dispatch(gpsRecorderSetStatus(status));
@@ -137,146 +166,164 @@ async function applyStatus(
   // frozen in the background, or the stream is not attached at all. Both are
   // single comparisons against a status that has to be read anyway.
   if (status.count > 0 && (fromZero || status.lastSeq > held.cursor)) {
-    dispatch(gpsRecorderSetConnection('syncing'));
+    // Bracketed, so the connection reads as `syncing` for exactly as long as the
+    // download takes however this returns.
+    const page = await whileCatchingUp(() =>
+      getTrackSince(fromZero ? 0 : held.cursor, signal),
+    );
 
-    const page = await getTrackSince(fromZero ? 0 : held.cursor);
+    // The catch-up is the biggest single batch this feature ever merges — a page
+    // that has been away for an hour comes back to every fix at once — so it is
+    // measured apart from the stream's own.
+    const merged = startRecorderSpan('catchup-dispatch');
 
     dispatch(gpsRecorderAddPoints(page.points));
 
-    return page.fields;
-  }
+    merged(page.points.length);
 
-  return status.fields;
+    watchRecorderFrame('catchup-frame', page.points.length);
+  }
 }
 
 /**
- * Catches up over `/track?since=` and leaves the live stream attached. Runs when
- * the tool opens, when the page returns to the foreground, after the stream has
- * been given up on, and at the end of the start flow. Never on a timer: the
- * stream pushes a status whenever the recorder's state changes.
+ * Reconciles a fresh `/status` read and catches up on whatever it says is
+ * missing, then reports the outcome through `settle`, which the connection
+ * binds to this run — it decides what to do with it: attach the stream, or
+ * retry.
+ *
+ * Runs when the tool opens, when the page returns to the foreground, when a
+ * retry comes due, whenever the stream pushes a status, and at the end of the
+ * start, pause and clear flows. Never on a timer: the stream says when
+ * something changed.
  *
  * `isQuiet` is read at the moment a failure happens rather than on the way in,
  * because callers may have joined this run since it started — see
- * {@link syncHandler}.
+ * `runRecorderSync`.
  */
 async function runSync(
   { dispatch, getState }: { dispatch: Dispatch; getState: () => RootState },
   isQuiet: () => boolean,
+  signal: AbortSignal | undefined,
+  settle: (outcome: SyncOutcome) => void,
 ): Promise<void> {
-  // Read before the fresh status lands, so the generation below is the one this
-  // page's points were fetched under.
-  const { points, cursor, generation } = getState().gpsRecorder;
+  // Read before the fresh status lands, so the generation compared below is the
+  // one this page's points were fetched under.
+  const held = heldTrack(getState);
 
-  // A stream held over from a hidden page is about to be replaced, so it counts
-  // as no stream: the connection is being made again, not merely caught up.
-  if (!isRecorderStreamUsable()) {
-    dispatch(gpsRecorderSetConnection('connecting'));
-  }
+  // How long the live view takes to come back, which is the other half of what
+  // is being chased here. Mostly a wait rather than work, so the bar is high:
+  // only a sync that took long enough for the user to notice is worth a line.
+  const synced = startRecorderSpan('sync', 4000);
 
-  // Captured before anything is awaited: the tool can be closed mid-sync, and
-  // what follows must not resurrect the stream it just closed.
-  const since = recorderStreamGeneration();
-
-  let fields: readonly string[];
+  // Whether the recorder answered, which decides whether a failure below counts
+  // against it: everything after the status — the catch-up transfer, the page
+  // this app could not read — failed with the recorder demonstrably there.
+  let answered = false;
 
   try {
-    fields = await applyStatus(dispatch, await getStatus(), {
-      points: points.length,
-      cursor,
-      generation,
-    });
-  } catch (err) {
-    // A failed catch-up says nothing about an already-working stream, so it is
-    // only reported — the browser keeps the stream and its retries alive. The
-    // connection goes back to whatever the stream is actually doing, so a `syncing`
-    // that never completed doesn't spin forever with the transport disabled.
-    //
-    // A quiet sync is one nobody asked for, so it says nothing and stops
-    // following instead: the recorder has been killed, uninstalled, or is simply
-    // not there any more, and opening the tool is what tries again.
-    if (isQuiet()) {
-      setRecorderFollowed(false);
+    const status = await getStatus(signal);
 
+    answered = true;
+
+    await applyStatus(dispatch, status, held, signal);
+  } catch (err) {
+    synced();
+
+    // Abandoned by a teardown or a restart — the page went away, or a newer
+    // caller took over. Nothing is reported and nothing is retried: whatever
+    // abandoned this run owns what happens next.
+    if (signal?.aborted) {
+      return;
+    }
+
+    // A quiet sync is one nobody asked for, so it says nothing: the recorder has
+    // been killed, uninstalled, or is simply not there any more, and telling the
+    // user about a request they did not make helps nobody.
+    if (isQuiet()) {
       forgetUnreachableStatus(dispatch, err);
     } else {
       reportFailure(dispatch, err);
     }
 
-    reportRecorderStreamState(dispatch);
+    settle({
+      ok: false,
+      hopeless: isHopelessFailure(err),
+      // Both clauses are needed: a status that came back an error or a shape
+      // this app cannot read is still the recorder talking, and the catch-up
+      // running out of transfer budget reads as silence though it followed a
+      // status that answered.
+      recorderFailed: !answered && isSilentFailure(err),
+    });
 
     return;
   }
 
+  synced(getState().gpsRecorder.points.length);
+
+  // Cleared whatever became of this run: the recorder answered, so a failure
+  // still on screen is describing something that is no longer true. A run can
+  // abandon itself here — `applyStatus` unfollowing an emptied recorder tears
+  // the connection down — and that is exactly the case where nothing else is
+  // coming to clear it.
   dispatch(gpsRecorderSetError(null));
 
-  openRecorderStream(dispatch, fields, since);
+  settle({ ok: true });
+}
+
+/** Runs the shared sync through the connection under the given claim. */
+function requestSync(
+  params: { dispatch: Dispatch; getState: () => RootState },
+  opts: { quiet: boolean; restart?: boolean },
+): Promise<SyncOutcome | null> {
+  return runRecorderSync(opts, (signal, isQuiet, settle) =>
+    runSync(params, isQuiet, signal, settle),
+  );
 }
 
 /**
- * The sync in flight, if any. Several things ask for one at nearly the same
- * moment — returning to the page with the tool open raises both the
- * `visibilitychange` sync and the menu's own — and they all want the same
- * answer, so the later ones wait instead of fetching the whole track again.
+ * A sync whose caller has to know it worked, answering whether it did.
  *
- * `quiet` is the weakest claim any waiter made: one caller who asked out loud is
- * enough for a failure to be reported out loud.
+ * Same run as any other — so the pushed status a command of its own provokes is
+ * abandoned rather than left racing it — but a failure here is not only said out
+ * loud, it is answered: a flow that is about to delete a ride must not go on
+ * with a status that turns out to be the one it already had. A run this one was
+ * itself restarted into answers for it, its status being the newer of the two;
+ * only a run nothing ever settled — a teardown, the page going away mid-flow —
+ * answers `false` without anything having been said.
  */
-let inFlightSync: { promise: Promise<void>; quiet: boolean } | null = null;
+async function requestSyncStrictly(params: {
+  dispatch: Dispatch;
+  getState: () => RootState;
+}): Promise<boolean> {
+  const outcome = await requestSync(params, { quiet: false, restart: true });
 
-export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = (
+  return outcome?.ok === true;
+}
+
+export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = async (
   params,
 ) => {
-  const quiet = params.action.payload?.quiet ?? false;
-
-  if (inFlightSync) {
-    inFlightSync.quiet &&= quiet;
-
-    return inFlightSync.promise;
-  }
-
-  const entry: { promise: Promise<void>; quiet: boolean } = {
-    quiet,
-    promise: Promise.resolve(),
-  };
-
-  inFlightSync = entry;
-
-  entry.promise = runSync(params, () => entry.quiet).finally(() => {
-    if (inFlightSync === entry) {
-      inFlightSync = null;
-    }
-  });
-
-  return entry.promise;
+  await requestSync(params, { quiet: params.action.payload?.quiet ?? false });
 };
 
 /**
- * A status the stream pushed. Same reconciliation as a polled one — the point of
- * the push is that it arrives at the moment the recorder's state changed, not
- * that it means anything different.
+ * A status the stream pushed. The push is a doorbell, not a payload: this
+ * re-reads `/status` and reconciles that, rather than applying the pushed
+ * frame — a frame is composed at the recorder's own moment and can be older
+ * than what a sync in flight has already read, and applying it blind would
+ * move `recording`, `count` and `lastSeq` backwards with nothing to correct
+ * them until the next push. A fresh read is one loopback round trip, and
+ * pushes are rare, discrete events.
+ *
+ * `restart`, because a run already in flight read its status before the push
+ * arrived: joining it would drop the very change — a stop, a clear — the push
+ * exists to deliver. Quiet, except for the loudness it inherits from a run it
+ * restarted.
  */
 export const pushedStatusHandler: ProcessorHandler<
   typeof gpsRecorderPushedStatus
-> = async ({ dispatch, getState, action }) => {
-  const { points, cursor, generation } = getState().gpsRecorder;
-
-  const since = recorderStreamGeneration();
-
-  try {
-    const fields = await applyStatus(dispatch, action.payload, {
-      points: points.length,
-      cursor,
-      generation,
-    });
-
-    // Idempotent for an already-open stream; this only refreshes the column
-    // order and restores the connection state the catch-up moved off `live`.
-    openRecorderStream(dispatch, fields, since);
-  } catch (err) {
-    reportFailure(dispatch, err);
-
-    reportRecorderStreamState(dispatch);
-  }
+> = async (params) => {
+  await requestSync(params, { quiet: true, restart: true });
 };
 
 /** Begins recording. */
@@ -287,16 +334,17 @@ export const startHandler: ProcessorHandler = async (params) => {
 
   dispatch(gpsRecorderSetError(null));
 
+  // The spinner over the Record button is this, not the connection: what the
+  // user is waiting for is the command they gave.
   dispatch(gpsRecorderSetPending(true));
 
-  dispatch(gpsRecorderSetConnection('connecting'));
-
+  // Deliberately touches nothing but the failure: this flow changes what the
+  // recorder is doing, not what the page is connected to, so there is no
+  // connection state to put back. Asking for a reconcile here would raise a sync
+  // that succeeds — the recorder answers `/status` perfectly well while refusing
+  // to record — and clearing the error takes the toast that says why with it.
   const fail = (err: unknown) => {
-    closeRecorderStream();
-
     dispatch(gpsRecorderSetPending(false));
-
-    dispatch(gpsRecorderSetConnection('idle'));
 
     reportFailure(dispatch, err);
   };
@@ -364,10 +412,11 @@ export const startHandler: ProcessorHandler = async (params) => {
   // a `DELETE /track` that happened while the stream was down would then pass
   // unnoticed — leaving the deleted points merged into the new recording.
   //
-  // `runSync` rather than `syncHandler`: this needs a status newer than the
-  // `POST /start` above, and joining a sync already in flight could answer with
-  // one read before it. Never quiet — the user asked for this recording.
-  await runSync(params, () => false);
+  // `restart`, because this needs a status newer than the `POST /start` above and
+  // a run already in flight could answer with one read before it — the flow
+  // returns from the launch intent through a `visibilitychange`, which raises one.
+  // Never quiet: the user asked for this recording.
+  await requestSync(params, { quiet: false, restart: true });
 };
 
 /**
@@ -375,34 +424,24 @@ export const startHandler: ProcessorHandler = async (params) => {
  * and opens a new segment on the next start. Nothing has to be remembered about
  * where it stopped: the recorder bumps `seg`, and that is what splits the track.
  */
-export const pauseHandler: ProcessorHandler = async ({
-  dispatch,
-  getState,
-}) => {
+export const pauseHandler: ProcessorHandler = async (params) => {
+  const { dispatch } = params;
+
   dispatch(gpsRecorderSetPending(true));
 
   try {
     await stopRecording();
 
-    // Through `applyStatus`, not a raw dispatch: it is what compares
-    // `generation` before storing it, so a track cleared while the stream was
-    // down is noticed here rather than absorbed silently.
-    const { points, cursor, generation } = getState().gpsRecorder;
-
-    await applyStatus(dispatch, await getStatus(), {
-      points: points.length,
-      cursor,
-      generation,
-    });
+    // Through the sync rather than a direct status read: it coalesces with
+    // anything else asking, and any reconcile it provokes joins this run
+    // instead of racing it. `restart` guarantees a status newer than the
+    // `POST /stop` above; loud, because the user asked — the sync reports its
+    // own failures.
+    await requestSync(params, { quiet: false, restart: true });
   } catch (err) {
     reportFailure(dispatch, err);
   } finally {
     dispatch(gpsRecorderSetPending(false));
-
-    // The catch-up above moves the connection to `syncing`, and only the stream
-    // knows what it should read as afterwards. Without this the button spins for
-    // good on a pause that worked perfectly.
-    reportRecorderStreamState(dispatch);
   }
 };
 
@@ -414,7 +453,9 @@ export const pauseHandler: ProcessorHandler = async ({
  * Only ever the recorder's copy. Once a ride has been finished it belongs to the
  * track viewer, and deleting it there is what throws it away.
  */
-export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
+export const clearHandler: ProcessorHandler = async (params) => {
+  const { dispatch } = params;
+
   try {
     await clearTrack();
   } catch (err) {
@@ -423,15 +464,14 @@ export const clearHandler: ProcessorHandler = async ({ dispatch }) => {
     return;
   }
 
-  dispatch(gpsRecorderTrackCleared());
+  clearHeldTrack(dispatch);
 
   dispatch(gpsRecorderSetError(null));
 
-  try {
-    dispatch(gpsRecorderSetStatus(await getStatus()));
-  } catch (err) {
-    reportFailure(dispatch, err);
-  }
+  // Through the sync rather than a direct status read: it reconciles the
+  // emptied recorder — which is also what tells the connection there is
+  // nothing left to follow — and reports its own failures.
+  await requestSync(params, { quiet: false, restart: true });
 };
 
 /**
@@ -490,11 +530,11 @@ function handOverTrack(
  * recording stays where it is, with the reason said out loud. Deleting the only
  * copy of a ride is not something to be optimistic about.
  */
-export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
-  dispatch,
-  getState,
-  action,
-}) => {
+export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async (
+  params,
+) => {
+  const { dispatch, getState, action } = params;
+
   dispatch(gpsRecorderSetPending(true));
 
   try {
@@ -507,20 +547,30 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
     // reached it: a tab that was frozen in the background, or whose stream died,
     // is routinely behind — and handing over a truncated ride and then deleting
     // the complete one is the one mistake this whole flow exists to avoid.
-    const { points, cursor, generation } = getState().gpsRecorder;
+    //
+    // Through the sync rather than a direct status read, like pause and clear:
+    // the `POST /stop` above provokes a pushed status of its own, and that run's
+    // catch-up must not be left racing a track this flow is about to take and
+    // delete — its page would land on an emptied track as fixes nothing would
+    // ever clear. `restart` abandons it; loud, because the user asked.
+    //
+    // A sync that did not work ends the flow where it stands, with what it
+    // already said out loud: everything below reads the status it left behind,
+    // and the one it left behind may be the one this page already had.
+    if (!(await requestSyncStrictly(params))) {
+      return;
+    }
 
-    const status = await getStatus();
+    const { status, cursor } = getState().gpsRecorder;
 
-    await applyStatus(dispatch, status, {
-      points: points.length,
-      cursor,
-      generation,
-    });
+    if (!status) {
+      return;
+    }
 
-    if (getState().gpsRecorder.cursor !== status.lastSeq) {
+    if (cursor !== status.lastSeq) {
       throw new RecorderError(
         'incomplete',
-        `page holds up to ${getState().gpsRecorder.cursor}, recorder has ${status.lastSeq}`,
+        `page holds up to ${cursor}, recorder has ${status.lastSeq}`,
       );
     }
 
@@ -546,18 +596,16 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
 
     await clearTrack();
 
-    dispatch(gpsRecorderTrackCleared());
+    clearHeldTrack(dispatch);
 
-    // Safe as a raw dispatch: the track was just cleared here, so the generation
-    // this reports is the one the empty local copy belongs to.
-    dispatch(gpsRecorderSetStatus(await getStatus()));
+    // Through the sync like every other status: it is what tells the connection
+    // the ride is over and there is nothing left to follow. A raw dispatch would
+    // leave the page following a recorder it has just emptied, this session and
+    // on the next load.
+    await requestSync(params, { quiet: false, restart: true });
   } catch (err) {
     reportFailure(dispatch, err);
   } finally {
     dispatch(gpsRecorderSetPending(false));
-
-    // As in the pause: the catch-up left the connection reading as `syncing`,
-    // which nothing else here undoes.
-    reportRecorderStreamState(dispatch);
   }
 };

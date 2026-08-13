@@ -1,4 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { isToolOpen } from '@app/store/selectors.js';
+import { reconcileRecorderConnection } from '../connection.js';
 import {
   gpsRecorderClear,
   gpsRecorderPause,
@@ -54,4 +56,19 @@ export const gpsRecorderClearProcessor: Processor = {
   actionCreator: gpsRecorderClear,
   id: 'gpsRecorder.clear',
   handle: async (...params) => (await handlers()).clearHandler(...params),
+};
+
+/**
+ * Whether the tool is open decides whether there should be a connection, so
+ * the connection has to hear about it — from the store rather than from the
+ * menu's lifecycle, which is not the same thing: the menu is unmounted while
+ * the map is being used to pick a place, and a tool closed from the URL hash
+ * in that state would otherwise reach nobody and leave the stream running.
+ */
+export const gpsRecorderToolProcessor: Processor = {
+  stateChangePredicate: (state) => isToolOpen(state, 'gps-recorder'),
+  id: 'gpsRecorder.tool',
+  handle: async () => {
+    reconcileRecorderConnection();
+  },
 };

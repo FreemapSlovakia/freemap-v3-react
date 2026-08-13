@@ -5,7 +5,7 @@ import { attachOAuthLoginMessageHandler } from '@features/auth/oauthLoginMessage
 import { getCachedTileMaps } from '@features/cachedMaps/cache.js';
 import { cachedMapsLoaded } from '@features/cachedMaps/model/actions.js';
 import { invokeGeoip } from '@features/geoip/model/actions.js';
-import { attachRecorderFollow } from '@features/gpsRecorder/follow.js';
+import { attachRecorderConnection } from '@features/gpsRecorder/connection.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { attachMapStateHandler } from '@features/map/mapStateHandler.js';
 import { attachWheelZoomCalibration } from '@features/map/wheelZoomCalibration.js';
@@ -134,7 +134,7 @@ window.addEventListener('popstate', () => {
 
 handleLocationChange(store);
 
-attachRecorderFollow(store);
+attachRecorderConnection(store);
 
 attachOAuthLoginMessageHandler(store);
 

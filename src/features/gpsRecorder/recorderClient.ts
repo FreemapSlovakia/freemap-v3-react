@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { startRecorderSpan } from './perfProbe.js';
 import {
   decodePoints,
   MIN_RECORDER_VERSION_CODE,
@@ -30,15 +31,59 @@ async function isLocalNetworkAccessDenied(): Promise<boolean> {
   }
 }
 
+/**
+ * Deadlines for the loopback API, each of them on the *answer* rather than on
+ * the whole request. Nothing here crosses a network, so a recorder that has not
+ * begun answering after seconds is not slow but gone — Android killed it, or the
+ * browser froze the socket with the page and never picked it up again. Without a
+ * deadline such a fetch stays pending for as long as the page does, every later
+ * sync coalesces onto it, and the live view reads as `connecting` until the page
+ * is reloaded.
+ */
+const STATUS_TIMEOUT_MS = 3000;
+
+/** Transport commands, where the recorder starts or stops a service first. */
+const COMMAND_TIMEOUT_MS = 8000;
+
+/**
+ * A whole track is composed before a byte of it is sent, and how long that takes
+ * belongs to the ride's length rather than to the recorder's health.
+ */
+const TRACK_TIMEOUT_MS = 20_000;
+
+/**
+ * How long a body that has begun arriving may go silent. Deliberately not a
+ * budget for the transfer: a track is megabytes and a long ride legitimately
+ * takes its time, and a page that gave up on one at a fixed duration would fail
+ * at exactly the same point on every retry, download it from the beginning each
+ * time, and never finish. What is not survivable is a body that stopped coming,
+ * so that is what is measured — and the clock starts over on every chunk.
+ */
+const BODY_STALL_MS = 10_000;
+
 async function recorderFetch(
   path: string,
+  timeoutMs: number,
   init?: RequestInit,
 ): Promise<Response> {
   let response: Response;
 
+  // Armed for the answer only and disarmed as soon as one arrives, so the body
+  // that follows is left to its own stall deadline rather than to a clock that
+  // would cut off a long track mid-download. The caller's own signal stays on
+  // the request throughout, so a teardown still stops a transfer in flight.
+  const controller = new AbortController();
+
+  const overdue = setTimeout(() => {
+    controller.abort(new DOMException('deadline expired', 'TimeoutError'));
+  }, timeoutMs);
+
   try {
     response = await fetch(`${RECORDER_ORIGIN}${path}`, {
       ...init,
+      signal: init?.signal
+        ? AbortSignal.any([init.signal, controller.signal])
+        : controller.signal,
       // Declares the target up front so Chrome's Local Network Access check
       // resolves to the loopback space and prompts, instead of blocking.
       targetAddressSpace: 'loopback',
@@ -52,10 +97,21 @@ async function recorderFetch(
       throw err;
     }
 
+    // An expired deadline is silence, and only silence: a Local Network Access
+    // block is refused at once, so it can never be what ran out the clock.
+    if (err instanceof DOMException && err.name === 'TimeoutError') {
+      throw new RecorderError(
+        'unreachable',
+        `${init?.method ?? 'GET'} ${path}: no answer in ${timeoutMs} ms`,
+      );
+    }
+
     throw new RecorderError(
       (await isLocalNetworkAccessDenied()) ? 'lna-denied' : 'unreachable',
       String(err),
     );
+  } finally {
+    clearTimeout(overdue);
   }
 
   if (!response.ok) {
@@ -64,7 +120,7 @@ async function recorderFetch(
     // `canRecord` gate, while 409 is either a delete refused mid-recording or
     // Android refusing a backgrounded foreground-service start (which the
     // battery-optimisation exemption fixes).
-    const reason = await readErrorReason(response);
+    const reason = await readErrorReason(path, response);
 
     throw new RecorderError(
       classifyHttpFailure(response.status, reason),
@@ -101,9 +157,19 @@ function classifyHttpFailure(
   return 'http';
 }
 
-async function readErrorReason(response: Response): Promise<string | null> {
+async function readErrorReason(
+  path: string,
+  response: Response,
+): Promise<string | null> {
   try {
-    const body: unknown = await response.json();
+    // Through the same stall clock as any other body. The header deadline is
+    // disarmed by the time an error status is in hand, so a reason that starts
+    // arriving and stops would hold the whole request open behind it — the
+    // pending-forever fetch the deadlines exist to prevent. Losing it costs the
+    // detail text; the status code is what classifies the failure.
+    const body: unknown = JSON.parse(
+      await readBody(response, path, BODY_STALL_MS),
+    );
 
     const reason =
       typeof body === 'object' && body !== null
@@ -136,15 +202,106 @@ function describeZodError(error: z.ZodError): string {
   );
 }
 
-async function recorderJson(
+/**
+ * The body, given up on only once it stops arriving. The read itself is what
+ * carries the clock: `fetch` has no per-chunk deadline, and the request-wide one
+ * it does have cannot tell a track that is still coming from a recorder that
+ * died halfway through sending one.
+ */
+async function readBody(
+  response: Response,
   path: string,
-  init?: RequestInit,
-): Promise<unknown> {
-  const response = await recorderFetch(path, init);
+  stallMs: number,
+): Promise<string> {
+  if (!response.body) {
+    return response.text();
+  }
+
+  const reader = response.body.getReader();
+
+  const decoder = new TextDecoder();
+
+  let text = '';
 
   try {
-    return await response.json();
+    for (;;) {
+      let overdue: ReturnType<typeof setTimeout> | undefined;
+
+      const stalled = new Promise<never>((_, reject) => {
+        overdue = setTimeout(() => {
+          reject(
+            new RecorderError(
+              'unreachable',
+              `${path}: nothing arrived for ${stallMs} ms`,
+            ),
+          );
+        }, stallMs);
+      });
+
+      const read = reader.read();
+
+      // The stall clock can win the race below and leave this read pending. It
+      // usually settles as done once the reader is cancelled, but a connection
+      // that broke at the same moment rejects it instead — with the race long
+      // since decided and nothing left to hear it, which the browser reports as
+      // an unhandled rejection. Claiming it here answers that and nothing else:
+      // the race still sees the rejection, and the `catch` below still handles
+      // it.
+      read.catch(() => {});
+
+      try {
+        const { done, value } = await Promise.race([read, stalled]);
+
+        if (done) {
+          break;
+        }
+
+        text += decoder.decode(value, { stream: true });
+      } finally {
+        clearTimeout(overdue);
+      }
+    }
   } catch (err) {
+    // The response is going nowhere; letting it drain would hold the connection
+    // open behind a page that has already given up on it.
+    await reader.cancel().catch(() => {});
+
+    throw err;
+  }
+
+  return text + decoder.decode();
+}
+
+async function recorderJson(
+  path: string,
+  timeoutMs: number,
+  init?: RequestInit,
+): Promise<unknown> {
+  const response = await recorderFetch(path, timeoutMs, init);
+
+  try {
+    return JSON.parse(await readBody(response, path, BODY_STALL_MS));
+  } catch (err) {
+    // Already classified by the read: a body that stopped arriving.
+    if (err instanceof RecorderError) {
+      throw err;
+    }
+
+    // A caller that cancelled mid-body, which must stay an AbortError: the
+    // processor middleware treats it as a silent cancel rather than a failure.
+    if (err instanceof DOMException) {
+      throw err.name === 'AbortError'
+        ? err
+        : new RecorderError('unreachable', `${path}: ${err.name}`);
+    }
+
+    // A recorder Android killed mid-body drops the connection, which the body
+    // read reports as a `TypeError` — silence again, and told apart from the
+    // `SyntaxError` of an answer that arrived whole and made no sense.
+    if (err instanceof TypeError) {
+      throw new RecorderError('unreachable', `${path}: ${err.message}`);
+    }
+
     throw new RecorderError('protocol', `${path}: invalid JSON: ${err}`);
   }
 }
@@ -160,7 +317,7 @@ const RecorderVersionProbeSchema = z.looseObject({
 });
 
 export async function getStatus(signal?: AbortSignal): Promise<RecorderStatus> {
-  const body = await recorderJson('/status', { signal });
+  const body = await recorderJson('/status', STATUS_TIMEOUT_MS, { signal });
 
   const result = RecorderStatusSchema.safeParse(body);
 
@@ -278,7 +435,7 @@ export async function startRecording(
   config: RecorderConfig,
   signal?: AbortSignal,
 ): Promise<void> {
-  await recorderFetch('/start', {
+  await recorderFetch('/start', COMMAND_TIMEOUT_MS, {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json' },
@@ -287,7 +444,7 @@ export async function startRecording(
 }
 
 export async function stopRecording(signal?: AbortSignal): Promise<void> {
-  await recorderFetch('/stop', { method: 'POST', signal });
+  await recorderFetch('/stop', COMMAND_TIMEOUT_MS, { method: 'POST', signal });
 }
 
 /**
@@ -298,7 +455,10 @@ export async function stopRecording(signal?: AbortSignal): Promise<void> {
  * `seq` does not restart afterwards; `generation` is what marks the break.
  */
 export async function clearTrack(signal?: AbortSignal): Promise<void> {
-  await recorderFetch('/track', { method: 'DELETE', signal });
+  await recorderFetch('/track', COMMAND_TIMEOUT_MS, {
+    method: 'DELETE',
+    signal,
+  });
 }
 
 /**
@@ -310,9 +470,19 @@ export async function getTrackSince(
   since: number,
   signal?: AbortSignal,
 ): Promise<{ points: RecorderPoint[]; fields: string[] }> {
-  const result = RecorderTrackPageSchema.safeParse(
-    await recorderJson(`/track?since=${since}`, { signal }),
-  );
+  // Timed apart, because they fail differently: the transfer is a wait, while
+  // the parse below is a pass over every cell of every row and blocks.
+  const fetched = startRecorderSpan('track-fetch', 1000);
+
+  const body = await recorderJson(`/track?since=${since}`, TRACK_TIMEOUT_MS, {
+    signal,
+  });
+
+  fetched();
+
+  const parsed = startRecorderSpan('track-parse');
+
+  const result = RecorderTrackPageSchema.safeParse(body);
 
   if (!result.success) {
     throw new RecorderError(
@@ -323,5 +493,9 @@ export async function getTrackSince(
 
   const { fields, points } = result.data;
 
-  return { points: decodePoints(fields, points), fields };
+  const decoded = decodePoints(fields, points);
+
+  parsed(decoded.length);
+
+  return { points: decoded, fields };
 }

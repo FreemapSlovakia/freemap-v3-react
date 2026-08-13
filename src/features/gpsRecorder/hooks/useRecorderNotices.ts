@@ -133,14 +133,20 @@ export function useRecorderNotices(): void {
         actions,
         // Gone the moment the recorder answers again, without the user having to
         // dismiss a warning about something that has already fixed itself.
+        //
+        // Closing the tool is deliberately not one of those moments. With the
+        // tool closed and nothing to follow, no sync runs to clear the error, so
+        // this outlives the tool and waits to be dismissed: what it reports —
+        // a ride not taken, a recorder that stopped answering — is the user's
+        // to see whether or not the panel that raised it is still open.
         statePredicate: (state) => state.gpsRecorder.error === null,
       }),
     );
   }, [dispatch, failure, m]);
 
-  // Both toasts go with the tool. Their actions reconnect to the recorder, and a
-  // toast that outlived the panel would open a stream with nothing left to close
-  // it — which `stream.ts`'s revive timer would then keep alive indefinitely.
+  // Removed on unmount, which `Main` only allows once there is nothing left to
+  // announce — no tool, no recording, and no failure — so this only tidies up
+  // what the predicates have not already cleared.
   useEffect(
     () => () => {
       dispatch(toastsRemove('gpsRecorder.failure'));

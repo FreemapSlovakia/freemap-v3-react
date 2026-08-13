@@ -54,8 +54,8 @@ export const gpsRecorderInitialState: GpsRecorderState = {
 /**
  * Merges a batch into a `seq`-ordered list, dropping seqs already held.
  *
- * Catch-up and the stream overlap by design — a sync refetches from the cursor
- * while the reconnected stream replays from its Last-Event-ID — so
+ * Catch-up and the stream overlap by design — a resync refetches from the
+ * cursor while the attached stream keeps delivering the same fixes live — so
  * batches arrive duplicated and, briefly, out of order.
  */
 export function mergePoints(

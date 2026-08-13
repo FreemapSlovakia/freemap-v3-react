@@ -60,19 +60,21 @@ export const gpsRecorderStop = createAction<'replace' | 'append'>(
  * `quiet` is for the syncs nobody asked for: following a recording at boot or on
  * returning to the page. A recorder that has since been killed or uninstalled
  * should not greet the user with an error they did nothing to provoke, so the
- * failure is swallowed and the following stops instead.
+ * failure is swallowed and the retries decide whether to stop following.
  */
 export const gpsRecorderSync = createAction<{ quiet?: boolean } | undefined>(
   'GPS_RECORDER_SYNC',
 );
 
 /**
- * The stream pushed a status of its own accord — on connect, and thereafter
- * whenever the recorder's state genuinely changed. Reconciled exactly like a
- * polled one, so a clear, a stop or a permission withdrawn arrives when it
- * happens instead of on the next poll.
+ * The stream announced that the recorder's state changed. A doorbell, not a
+ * payload: what the frame said is deliberately dropped and the status re-read,
+ * because a frame is composed at the recorder's moment and can be older than
+ * what a sync in flight has already applied. So a clear, a stop or a permission
+ * withdrawn is reconciled when it happens instead of on the next poll, without
+ * anything being moved backwards to do it.
  */
-export const gpsRecorderPushedStatus = createAction<RecorderStatus>(
+export const gpsRecorderPushedStatus = createAction(
   'GPS_RECORDER_PUSHED_STATUS',
 );
 
