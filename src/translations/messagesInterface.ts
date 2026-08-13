@@ -243,7 +243,7 @@ export type Messages = {
     resolutionScaleHelp: string;
     featureScale: string;
     featureScaleHelp: string;
-    searchResultStyle: string;
+    lookupStyle: string;
     resetApp: string;
     resetAppConfirm: string;
     loadWmsLayers: string;

@@ -387,7 +387,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Veľkosť prvkov',
     featureScaleHelp:
       'Zväčšuje vykreslené popisy a čiary. Nemá vplyv na satelitné, tieňované, WMS ani vektorové (MapLibre) vrstvy.',
-    searchResultStyle: 'Štýl výsledku vyhľadávania',
+    lookupStyle: 'Štýl nálezu',
     resetApp: 'Obnoviť aplikáciu',
     resetAppConfirm:
       'Obnoviť všetky nastavenia aplikácie na predvolené a znovu načítať stránku? Budete odhlásení.',

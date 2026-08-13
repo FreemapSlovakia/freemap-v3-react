@@ -137,7 +137,11 @@ export function MyDevice({ device }: Props): ReactElement {
           </Overlay>
         )}
 
-        <ResponsiveActions align="end" toggleLabel={m?.general.actions}>
+        <ResponsiveActions
+          size="sm"
+          align="end"
+          toggleLabel={m?.general.actions}
+        >
           <Action
             icon={<FaEdit />}
             label={m?.general.modify}

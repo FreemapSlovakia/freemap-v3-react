@@ -261,7 +261,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapLayers: {
-    searchResultStyle: 'Styl výsledku hledání',
+    lookupStyle: 'Styl nálezu',
     resetApp: 'Obnovit aplikaci',
     resetAppConfirm:
       'Obnovit všechna nastavení aplikace na výchozí a znovu načíst stránku? Budete odhlášeni.',

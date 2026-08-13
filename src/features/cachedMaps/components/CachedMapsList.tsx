@@ -161,6 +161,7 @@ export function CachedMapsList(): ReactElement {
 
                     <div className="flex-shrink-0">
                       <ResponsiveActions
+                        size="sm"
                         align="end"
                         toggleLabel={m?.general.actions}
                       >

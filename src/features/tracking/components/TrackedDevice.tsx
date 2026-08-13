@@ -121,7 +121,11 @@ export function TrackedDevice({ device }: Props): ReactElement {
       </div>
 
       <div className="flex-shrink-0">
-        <ResponsiveActions align="end" toggleLabel={m?.general.actions}>
+        <ResponsiveActions
+          size="sm"
+          align="end"
+          toggleLabel={m?.general.actions}
+        >
           <Action
             icon={<FaEdit />}
             label={m?.general.modify}

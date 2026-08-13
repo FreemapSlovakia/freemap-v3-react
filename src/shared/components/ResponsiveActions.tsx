@@ -22,6 +22,11 @@ export type ActionProps = {
    * priority — the action collapses sooner.
    */
   showFrom?: Breakpoint | 'never';
+  /**
+   * Also print the label next to the icon of the inline button from this
+   * breakpoint up. Omit to keep the inline button icon-only.
+   */
+  showLabelFrom?: Breakpoint;
 } & Pick<
   ButtonProps,
   // `variant="danger"` also turns the packed dropdown item red.
@@ -50,6 +55,8 @@ type Props = {
   /** Dropdown alignment for the packed menu. */
   align?: 'start' | 'end';
   size?: ButtonProps['size'];
+  /** Bootstrap spacing step between the inline buttons and the toggle. */
+  gap?: 0 | 1 | 2 | 3;
   /** Variant for inline buttons that don't set their own, and for the toggle. */
   variant?: ButtonProps['variant'];
   toggle?: ReactNode;
@@ -61,7 +68,8 @@ type Props = {
 export function ResponsiveActions({
   children,
   align = 'end',
-  size = 'sm',
+  size,
+  gap = 2,
   variant = 'secondary',
   toggle = <FaEllipsisV />,
   toggleLabel,
@@ -100,12 +108,16 @@ export function ResponsiveActions({
   });
 
   // Collapsing a single action into a dropdown costs more chrome than it saves,
-  // so promote a lone packed action back to an inline button.
+  // so promote a lone packed action back to an inline button — unless it asked
+  // for the menu with `never`, which is a decision, not a lack of room.
   const packedActions = entries.filter(
     (e): e is Extract<Entry, { divider: false }> => !e.divider && !e.inline,
   );
 
-  if (packedActions.length === 1) {
+  if (
+    packedActions.length === 1 &&
+    packedActions[0].props.showFrom !== 'never'
+  ) {
     packedActions[0].inline = true;
   }
 
@@ -128,13 +140,21 @@ export function ResponsiveActions({
   });
 
   const renderButton = (
-    { label, icon, showFrom, variant: ownVariant, ...rest }: ActionProps,
+    {
+      label,
+      icon,
+      showFrom,
+      showLabelFrom,
+      variant: ownVariant,
+      ...rest
+    }: ActionProps,
     key: number,
   ) => {
-    // Inline actions are icon-only; the label moves into the tooltip.
+    // An inline action is icon-only unless `showLabelFrom` prints the label
+    // beside the icon; where the label is hidden it shows in the tooltip.
     return icon ? (
-      <LongPressTooltip key={key} label={label}>
-        {({ props: tipProps }) => (
+      <LongPressTooltip key={key} label={label} breakpoint={showLabelFrom}>
+        {({ label: tipLabel, labelClassName, props: tipProps }) => (
           <Button
             variant={ownVariant ?? variant}
             size={size}
@@ -146,6 +166,9 @@ export function ResponsiveActions({
             }
           >
             {icon}
+            {showLabelFrom && (
+              <span className={labelClassName}> {tipLabel}</span>
+            )}
           </Button>
         )}
       </LongPressTooltip>
@@ -167,7 +190,8 @@ export function ResponsiveActions({
   return (
     <div
       className={clsx(
-        'd-inline-flex flex-wrap align-items-center gap-2',
+        'd-inline-flex flex-nowrap align-items-center',
+        `gap-${gap}`,
         className,
       )}
     >

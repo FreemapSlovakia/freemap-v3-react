@@ -250,7 +250,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapLayers: {
-    searchResultStyle: 'Styl wyniku wyszukiwania',
+    lookupStyle: 'Styl wyniku',
     resetApp: 'Zresetuj aplikację',
     resetAppConfirm:
       'Przywrócić wszystkie ustawienia aplikacji do wartości domyślnych i ponownie załadować stronę? Nastąpi wylogowanie.',

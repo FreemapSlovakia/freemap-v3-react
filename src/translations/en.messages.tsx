@@ -356,7 +356,7 @@ const messages: Messages = {
     featureScale: 'Feature size',
     featureScaleHelp:
       'Enlarges rendered labels and lines. Has no effect on satellite, shading, WMS, or vector (MapLibre) layers.',
-    searchResultStyle: 'Search result style',
+    lookupStyle: 'Lookup style',
     resetApp: 'Reset application',
     resetAppConfirm:
       'Reset all application settings to their defaults and reload the page? You will be signed out.',

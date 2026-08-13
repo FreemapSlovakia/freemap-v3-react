@@ -10,6 +10,10 @@ import {
   routePlannerSetStart,
 } from '@features/routePlanner/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { center } from '@turf/center';
@@ -109,39 +113,35 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
         </LongPressTooltip>
       </ButtonGroup>
 
-      <LongPressTooltip label={m?.general.convertToDrawing}>
-        {({ props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() => {
-              dispatch(convertToDrawing({ type: 'search-result' }));
-            }}
-            {...props}
-          >
-            <FaPencilAlt />
-          </Button>
-        )}
-      </LongPressTooltip>
+      <ResponsiveActions
+        className="ms-1"
+        gap={1}
+        align="start"
+        toggleLabel={m?.general.actions}
+      >
+        <Action
+          icon={<FaPencilAlt />}
+          label={m?.general.convertToDrawing}
+          onClick={() => {
+            dispatch(convertToDrawing({ type: 'search-result' }));
+          }}
+          showFrom="sm"
+          showLabelFrom="md"
+        />
 
-      <LongPressTooltip label={m?.mapLayers.searchResultStyle}>
-        {({ props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() => {
-              dispatch(setActiveModal({ type: 'search-result-style' }));
-            }}
-            {...props}
-          >
-            <FaPaintBrush />
-          </Button>
-        )}
-      </LongPressTooltip>
+        <Action
+          icon={<FaPaintBrush />}
+          label={m?.mapLayers.lookupStyle}
+          onClick={() => {
+            dispatch(setActiveModal({ type: 'search-result-style' }));
+          }}
+          showFrom="never"
+        />
+      </ResponsiveActions>
 
       {!kept && (
-        <LongPressTooltip label={m?.search.keepOnMap}>
-          {({ props }) => (
+        <LongPressTooltip breakpoint="sm" label={m?.search.keepOnMap}>
+          {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"
               variant="secondary"
@@ -151,6 +151,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
               {...props}
             >
               <FaThumbtack />
+              <span className={labelClassName}> {label}</span>
             </Button>
           )}
         </LongPressTooltip>

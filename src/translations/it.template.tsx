@@ -262,7 +262,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mapLayers: {
-    searchResultStyle: 'Stile del risultato di ricerca',
+    lookupStyle: 'Stile del risultato',
     resetApp: 'Reimposta applicazione',
     resetAppConfirm:
       'Ripristinare tutte le impostazioni dell’applicazione ai valori predefiniti e ricaricare la pagina? Verrai disconnesso.',

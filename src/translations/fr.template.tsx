@@ -364,7 +364,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Taille des éléments',
     featureScaleHelp:
       'Agrandit les étiquettes et les lignes affichées. N’a aucun effet sur les couches satellite, d’ombrage, WMS ou vectorielles (MapLibre).',
-    searchResultStyle: 'Style du résultat de recherche',
+    lookupStyle: 'Style du résultat',
     resetApp: 'Réinitialiser l’application',
     resetAppConfirm:
       'Réinitialiser tous les paramètres de l’application à leurs valeurs par défaut et recharger la page ? Vous serez déconnecté.',

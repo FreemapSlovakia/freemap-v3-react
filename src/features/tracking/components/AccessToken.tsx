@@ -154,7 +154,11 @@ export function AccessToken({ accessToken }: Props): ReactElement {
       </div>
 
       <div className="flex-shrink-0">
-        <ResponsiveActions align="end" toggleLabel={m?.general.actions}>
+        <ResponsiveActions
+          size="sm"
+          align="end"
+          toggleLabel={m?.general.actions}
+        >
           <Action
             icon={<FaRegEye />}
             label={tm?.devices.watch}
