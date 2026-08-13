@@ -86,7 +86,7 @@ type Run = {
   settle: (outcome: SyncOutcome) => void;
   finish: () => void;
   fail: (err: unknown) => void;
-  promise: Promise<void>;
+  promise: Promise<SyncOutcome | null>;
 };
 
 /** Claims a dispatched sync, handing the test the run's controls. */
@@ -604,6 +604,42 @@ describe('runs', () => {
     await awaited;
 
     expect(firstDone).toBe(true);
+  });
+
+  it('a restarted run is told how the replacement went, not that it was cut off', async () => {
+    const h = makeHarness({ followed: true });
+
+    const first = beginRun(h, { quiet: false });
+
+    const second = beginRun(h, { quiet: true, restart: true });
+
+    first.finish();
+
+    await completeOk(second);
+
+    // The caller asked about the recorder, and the replacement read a newer
+    // status than the run it replaced — so it answers for both. A flow that
+    // acts on the answer (taking a ride off the recorder) must not read a
+    // restart as a failure.
+    expect(await first.promise).toEqual({ ok: true });
+  });
+
+  it('a run nothing settled answers with no outcome at all', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    const run = beginRun(h);
+
+    // A teardown: the page went away mid-sync, which is not the sync saying
+    // anything about the recorder.
+    h.visible = false;
+
+    h.core.reconcile();
+
+    run.finish();
+
+    expect(await run.promise).toBeNull();
   });
 
   it('an abandoned run cannot settle on the connection', async () => {

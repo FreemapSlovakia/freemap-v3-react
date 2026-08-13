@@ -133,6 +133,12 @@ export function useRecorderNotices(): void {
         actions,
         // Gone the moment the recorder answers again, without the user having to
         // dismiss a warning about something that has already fixed itself.
+        //
+        // Closing the tool is deliberately not one of those moments. With the
+        // tool closed and nothing to follow, no sync runs to clear the error, so
+        // this outlives the tool and waits to be dismissed: what it reports —
+        // a ride not taken, a recorder that stopped answering — is the user's
+        // to see whether or not the panel that raised it is still open.
         statePredicate: (state) => state.gpsRecorder.error === null,
       }),
     );

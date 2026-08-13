@@ -116,9 +116,13 @@ type Slot = {
 type Run = {
   quiet: boolean;
   settled: boolean;
+  /** How it went, or null for a run that was abandoned before it said. */
+  outcome: SyncOutcome | null;
   controller: AbortController;
-  promise: Promise<void>;
-  resolve: (value?: void | PromiseLike<void>) => void;
+  promise: Promise<SyncOutcome | null>;
+  resolve: (
+    value: SyncOutcome | null | PromiseLike<SyncOutcome | null>,
+  ) => void;
 };
 
 export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
@@ -496,9 +500,17 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
    *
    * `restart` is for the caller a run already in flight cannot answer — one
    * that needs a status newer than what that run read. It abandons the run and
-   * asks again; the abandoned run's callers are answered by the replacement,
-   * both in loudness and in when they are told it is done, so awaiting a sync
-   * means the same thing whether or not it was restarted along the way.
+   * asks again; the abandoned run's callers are answered by the replacement, in
+   * loudness, in when they are told it is done, and in what they are told — so
+   * awaiting a sync means the same thing whether or not it was restarted along
+   * the way. That last one matters to a caller that acts on the answer: a
+   * replacement read its status later than the run it replaced, so it answers
+   * the question just as well, and treating a restart as no answer at all would
+   * abandon a flow for a reason that was never a failure.
+   *
+   * The answer is the outcome the run settled on, or null for one that never
+   * settled — a teardown, which is the page going away rather than a sync
+   * saying anything.
    *
    * `start` is the sync itself, which lives in the lazily loaded handlers; it
    * reports through its own `settle`, which is bound to this run — a settle
@@ -508,7 +520,7 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
   function runSync(
     opts: { quiet: boolean; restart?: boolean },
     start: SyncStart,
-  ): Promise<void> {
+  ): Promise<SyncOutcome | null> {
     clearSyncPending();
 
     let quiet = opts.quiet;
@@ -537,12 +549,13 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
     const entry: Run = {
       quiet,
       settled: false,
+      outcome: null,
       controller: new AbortController(),
-      promise: Promise.resolve(),
+      promise: Promise.resolve(null),
       resolve: () => {},
     };
 
-    entry.promise = new Promise<void>((resolve) => {
+    entry.promise = new Promise<SyncOutcome | null>((resolve) => {
       entry.resolve = resolve;
     });
 
@@ -558,6 +571,8 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       }
 
       entry.settled = true;
+
+      entry.outcome = outcome;
 
       if (outcome.ok) {
         recorderFailing = false;
@@ -608,7 +623,10 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
           run = null;
         }
 
-        entry.resolve();
+        // A no-op for a run already answered by the replacement that abandoned
+        // it; what is left is the outcome of a run that answered for itself, or
+        // null for one that never got to.
+        entry.resolve(entry.outcome);
 
         publish();
       });

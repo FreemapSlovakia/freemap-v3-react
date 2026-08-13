@@ -376,6 +376,16 @@ predates the recording it is meant to report. Routing the command flows through
 the run also means a reconcile they provoke mid-flow joins them instead of racing
 them.
 
+**An abandoned run's caller is answered by the replacement** — in loudness, in
+when it is told, and in *what* it is told. A restart is not a failure and must
+not read as one: the replacement's status is the newer of the two, so it answers
+the question at least as well, and a caller that acts on the answer (the
+take-the-track flow) would otherwise give up whenever a doorbell it rang itself
+landed mid-sync. Awaiting a sync therefore yields the outcome it settled on
+whoever ended up settling it, and `null` only for a run nothing ever settled —
+a teardown, which is the page going away rather than the recorder saying
+anything.
+
 **A pushed status is a doorbell, not a payload.** The action carries nothing and
 its handler re-reads `/status`, rather than applying the pushed frame: a frame is
 composed at the recorder's own moment and can be older than what a sync in flight
@@ -669,7 +679,10 @@ pessimistic:
    `requestSyncStrictly` is that sync, and it answers whether it worked: a run
    that failed — or one a teardown abandoned, which reports nothing at all —
    ends the flow where it stands, because everything below reads the status the
-   sync left behind, and that may be the one this page already had.
+   sync left behind, and that may be the one this page already had. The `POST
+   /stop` above rings a doorbell of its own, which routinely lands mid-sync and
+   restarts it; that is not a failure and does not end the flow, because an
+   abandoned run is answered by its replacement.
 3. Hand it to the track viewer.
 4. `storeTrackDurably` — which requests `navigator.storage.persist()` — and **stop
    here unless it answers `durable`**. `evictable` means the browser may reclaim

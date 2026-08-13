@@ -274,7 +274,7 @@ async function runSync(
 function requestSync(
   params: { dispatch: Dispatch; getState: () => RootState },
   opts: { quiet: boolean; restart?: boolean },
-): Promise<void> {
+): Promise<SyncOutcome | null> {
   return runRecorderSync(opts, (signal, isQuiet, settle) =>
     runSync(params, isQuiet, signal, settle),
   );
@@ -286,30 +286,25 @@ function requestSync(
  * Same run as any other — so the pushed status a command of its own provokes is
  * abandoned rather than left racing it — but a failure here is not only said out
  * loud, it is answered: a flow that is about to delete a ride must not go on
- * with a status that turns out to be the one it already had. A run abandoned
- * mid-way (a teardown, a restart) reports nothing and so answers `false` too.
+ * with a status that turns out to be the one it already had. A run this one was
+ * itself restarted into answers for it, its status being the newer of the two;
+ * only a run nothing ever settled — a teardown, the page going away mid-flow —
+ * answers `false` without anything having been said.
  */
 async function requestSyncStrictly(params: {
   dispatch: Dispatch;
   getState: () => RootState;
 }): Promise<boolean> {
-  let ok = false;
+  const outcome = await requestSync(params, { quiet: false, restart: true });
 
-  await runRecorderSync(
-    { quiet: false, restart: true },
-    (signal, isQuiet, settle) =>
-      runSync(params, isQuiet, signal, (outcome) => {
-        ok = outcome.ok;
-
-        settle(outcome);
-      }),
-  );
-
-  return ok;
+  return outcome?.ok === true;
 }
 
-export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = (params) =>
-  requestSync(params, { quiet: params.action.payload?.quiet ?? false });
+export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = async (
+  params,
+) => {
+  await requestSync(params, { quiet: params.action.payload?.quiet ?? false });
+};
 
 /**
  * A status the stream pushed. The push is a doorbell, not a payload: this
@@ -327,7 +322,9 @@ export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = (params) =>
  */
 export const pushedStatusHandler: ProcessorHandler<
   typeof gpsRecorderPushedStatus
-> = (params) => requestSync(params, { quiet: true, restart: true });
+> = async (params) => {
+  await requestSync(params, { quiet: true, restart: true });
+};
 
 /** Begins recording. */
 export const startHandler: ProcessorHandler = async (params) => {

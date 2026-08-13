@@ -4,6 +4,7 @@ import storage from 'local-storage-fallback';
 import {
   createRecorderConnectionCore,
   type RecorderConnectionCore,
+  type SyncOutcome,
   type SyncStart,
 } from './connectionCore.js';
 import {
@@ -89,8 +90,8 @@ export function seedRecorderFields(next: readonly string[]): void {
 export function runRecorderSync(
   opts: { quiet: boolean; restart?: boolean },
   start: SyncStart,
-): Promise<void> {
-  return core ? core.runSync(opts, start) : Promise.resolve();
+): Promise<SyncOutcome | null> {
+  return core ? core.runSync(opts, start) : Promise.resolve(null);
 }
 
 export function reconcileRecorderConnection(): void {
