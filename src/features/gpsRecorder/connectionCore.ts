@@ -168,14 +168,15 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
   let delayIndex = 0;
 
   /**
-   * Whether the recorder itself is failing to answer. Giving up — unfollowing
-   * — is gated on this, not on the delays running out alone: exhausted delays
-   * with syncs still succeeding mean the recorder is reachable and reporting a
-   * ride, and a page must not abandon a ride the recorder itself claims. An
-   * ask this app never managed to make (a chunk that would not load) is not
-   * the recorder failing either, and must never cost the following.
+   * How many times in a row the recorder itself has failed to answer. Giving up
+   * — unfollowing — is gated on this rather than on the delays running out:
+   * those are spent by anything that drops the connection, a stream that will
+   * not stay up while `/status` answers perfectly included, and a page must not
+   * abandon a ride over a live view it could not keep. An ask this app never
+   * managed to make (a chunk that would not load) is not the recorder failing
+   * either, and must never cost the following.
    */
-  let recorderFailing = false;
+  let recorderFailures = 0;
 
   /**
    * Whether the live view was working before the attempt now under way — it
@@ -281,7 +282,7 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
 
     delayIndex = 0;
 
-    recorderFailing = false;
+    recorderFailures = 0;
 
     clearSyncPending();
 
@@ -313,6 +314,10 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
 
       delayIndex = 0;
 
+      // The whole budget starts over, giving up included: a fresh look is
+      // entitled to find out for itself whether the recorder is there.
+      recorderFailures = 0;
+
       cancelRetry();
     }
 
@@ -335,10 +340,10 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       syncClaimTimer = setTimeout(() => {
         clearSyncPending();
 
-        // Deliberately not `recorderFailing`: nothing ever reached the
-        // recorder, so this says nothing about it. The chain widens and keeps
-        // asking, but a chunk that will not load must never unfollow a ride
-        // that is still being recorded.
+        // Deliberately not counted as a recorder failure: nothing ever reached
+        // the recorder, so this says nothing about it. The chain widens and
+        // keeps asking, but a chunk that will not load must never unfollow a
+        // ride that is still being recorded.
         retry();
 
         publish();
@@ -371,7 +376,11 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
 
     const delay = RETRY_DELAYS[delayIndex];
 
-    if (delay === undefined && recorderFailing && !deps.isToolOpen()) {
+    if (
+      delay === undefined &&
+      recorderFailures >= RETRY_DELAYS.length &&
+      !deps.isToolOpen()
+    ) {
       setFollowed(false);
 
       return;
@@ -575,7 +584,7 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       entry.outcome = outcome;
 
       if (outcome.ok) {
-        recorderFailing = false;
+        recorderFailures = 0;
 
         cancelRetry();
 
@@ -587,7 +596,11 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
           attachStream();
         }
       } else {
-        recorderFailing = outcome.recorderFailed;
+        if (outcome.recorderFailed) {
+          recorderFailures++;
+        } else {
+          recorderFailures = 0;
+        }
 
         if (outcome.hopeless) {
           // A refusal will not turn into a grant, and an old APK will not

@@ -204,14 +204,24 @@ exemption fixes). `recorderFetch` reads that body and maps both to
 - **`EventSource` cannot pass it.** The stream therefore only works once an
   earlier gestured fetch has been granted the permission — which is why the
   start flow calls `/status` first.
-- **Every request carries a deadline** (`recorderClient.ts`: 3 s for `/status`,
-  8 s for a transport command, 20 s for a whole track). Nothing here crosses a
-  network, so a request still unanswered is not slow but gone — and a fetch the
-  browser froze along with the page can otherwise stay pending for the rest of
-  that page's life, with every later sync coalescing onto it and the live view
-  reading as `connecting` until a reload. An expired deadline is reported as
-  `unreachable`: a Local Network Access block is refused at once, so it can never
-  be what ran out the clock.
+- **Every request carries a deadline on the *answer*** (`recorderClient.ts`: 3 s
+  for `/status`, 8 s for a transport command, 20 s for a track, which the
+  recorder composes whole before sending a byte of it). Nothing here crosses a
+  network, so a recorder that has not begun answering is not slow but gone — and
+  a fetch the browser froze along with the page can otherwise stay pending for
+  the rest of that page's life, with every later sync coalescing onto it and the
+  live view reading as `connecting` until a reload. The clock is disarmed the
+  moment a response arrives, so it can never cut a body short.
+- **A body that has begun arriving is given a stall deadline instead**
+  (`BODY_STALL_MS`, 10 s), restarted on every chunk. How long a track takes
+  belongs to the length of the ride, not to the recorder's health: a fixed
+  transfer budget fails at the same point on every retry, and since nothing was
+  merged each retry starts from `since=0` again — a download that can never
+  finish, reported as a recorder that is not there. What is not survivable is a
+  body that *stopped* coming, so that is what is measured.
+- An expired deadline of either kind is reported as `unreachable`: a Local
+  Network Access block is refused at once, so it can never be what ran out the
+  clock.
 - **The stream carries one too** (`STREAM_OPEN_MS`, 5 s), because `EventSource`
   has none of its own. A socket the kernel accepted for a recorder that never got
   to answer on it reports neither open nor error, and a handle in hand is what
@@ -398,22 +408,26 @@ joining it would drop the very change — a stop, a clear — the push exists to
 deliver. The re-read costs one loopback round trip, and pushes are rare, discrete
 events.
 
-**The connect frame usually rings no doorbell.** It arrives on every connection,
-and the sync that attached the stream read a status moments earlier, so ringing
-would only fetch the same answer again — doubling the `/status` reads of every
-reconnect. What the connect frame is for is the other two things it carries: the
-column order, and the news that this stream works.
+**A frame rings only if it says something this page does not know.** One rule
+for every frame, the one a connection opens with included: the frame is compared
+against the status held here on everything but `count` and `lastSeq`, which move
+on with every fix and are news the stream is already delivering. Ringing is not
+free — it re-reads `/status` and restarts the run in flight, so a frame with
+nothing to say costs a round trip and can abandon a catch-up that would then
+start over from the beginning.
 
-*Usually*, because that sync catches up **before** it attaches anything: a stop
-or a clear during a download that took seconds arrives in the connect frame
-first, and nothing else is coming to notice it — a stream in hand is what
-disarms the retries. So the frame is compared against the status held here, on
-the two things the stream cannot deliver by itself (`recording` and
-`generation`; `count` and `lastSeq` move on with every fix and are not news),
-and it rings when they differ. A frame that does not parse rings too — it could
-be saying anything — and counts as the connect frame and as the news that this
-stream works, so an unreadable one cannot leave the doorbell waiting to be rung
-by a frame that has already been.
+The connect frame is the one that usually says nothing: the sync that attached
+the stream read the same status moments earlier. *Usually*, though — that sync
+catches up **before** it attaches anything, so a stop or a clear during a
+download that took seconds arrives in the connect frame first, with nothing else
+coming to notice it, because a stream in hand is what disarms the retries. What
+the connect frame is always for is the other two things it carries: the column
+order, and the news that this stream works. A frame that does not parse rings —
+it could be saying anything — and still counts as that news.
+
+The comparison is made on the serialized status rather than field by field: a
+field forgotten in a hand-written comparison swallows a doorbell, while a field
+order that happens to differ only rings one that had nothing to say.
 
 Syncs nobody asked for are **quiet**, with one exception: a live view that was
 working and stopped. A recorder killed or uninstalled while the page was away must
@@ -514,24 +528,30 @@ coming back is a fresh look: it deserves the fast delays rather than a widened
 wait inherited from a configuration nobody is in any more, and it cancels the
 pending wait so the look happens now rather than up to 30 s later.
 
-**Giving up — unfollowing — takes more than exhausted delays: the recorder
-itself must be failing to answer, with nobody watching.** Delays that ran out
-while syncs succeed mean the recorder is reachable and still reporting a ride,
-and a page must not abandon a ride the recorder itself claims — the cadence just
-holds at 30 s until the recorder's own status ends the following. **With the tool
-open it never gives up either**: somebody is looking at a panel that would
-otherwise stay dead until it was closed and opened again. And an ask this app
-never managed to make does not count: a sync whose lazily loaded handler never
-claimed it (a hashed chunk a deploy has moved) widens the wait and keeps asking,
-but must never cost a ride that is still being recorded. Neither does a failure
-the recorder answered, which takes both halves of the question and is what the
-sync reports as `recorderFailed` beside `hopeless`: **when** it failed, since a
-track too big for the 20 s transfer budget fails identically on every retry and
-follows a `/status` that answered; and **how**, since an error status or a body
-this app could not read is the recorder talking, and only silence —
-`unreachable`, `lna-denied`, classified by `isSilentFailure` beside the failures
-themselves — says it is not there. What remains — the recorder not answering,
-tool closed — is the only thing that drops the follow flag. Two failures skip
+**Giving up — unfollowing — has a budget of its own: a run of failures where
+the recorder was the thing that failed, with nobody watching.** It is counted
+rather than read off the retry ladder, because the ladder is spent by anything
+that drops the connection: a recorder whose `/stream` will not stay up while
+`/status` answers perfectly empties it in a couple of minutes, and one timeout
+after that would otherwise end a ride the recorder is still recording. Delays
+that ran out while syncs succeed mean the recorder is reachable and still
+reporting a ride — the cadence just holds at 30 s until the recorder's own
+status ends the following. **With the tool open it never gives up either**:
+somebody is looking at a panel that would otherwise stay dead until it was
+closed and opened again. And an ask this app never managed to make does not
+count: a sync whose lazily loaded handler never claimed it (a hashed chunk a
+deploy has moved) widens the wait and keeps asking, but must never cost a ride
+that is still being recorded. Neither does a failure the recorder answered,
+which takes both halves of the question and is what the sync reports as
+`recorderFailed` beside `hopeless`: **when** it failed, since everything after
+the status — the catch-up, a page this app could not read — went wrong with the
+recorder demonstrably there; and **how**, since an error status or an
+unreadable body is the recorder talking, and only silence — `unreachable`,
+`lna-denied`, classified by `isSilentFailure` beside the failures themselves —
+says it is not there. What remains — the recorder not answering, over and over,
+tool closed — is the only thing that drops the follow flag. A configuration
+change starts that budget over with the ladder, since a fresh look is entitled
+to find out for itself. Two failures skip
 the retries entirely, because waiting cannot fix them: `lna-denied` and
 `outdated`, classified by `isHopelessFailure` next to it.
 

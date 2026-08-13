@@ -412,14 +412,45 @@ describe('the backoff', () => {
     expect(h.syncs).toHaveLength(before + 2);
   });
 
+  it('a stream that spends the ladder does not spend the giving-up', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    // A recorder that answers `/status` but cannot keep a stream up: every
+    // cycle spends a rung, and the ladder is soon gone.
+    for (let i = 0; i < RETRY_DELAYS.length + 2; i++) {
+      await okSyncBrokenStream(h);
+
+      vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+    }
+
+    // One `/status` that timed out must not end a ride on its own, whatever the
+    // stream has spent — giving up is about the recorder, not the live view.
+    await failPendingSync(h);
+
+    expect(h.stored).toBe(true);
+
+    expect(last(h)).toBe('reconnecting');
+
+    // It takes as many recorder failures as it would have from the start.
+    for (let i = 0; i < RETRY_DELAYS.length; i++) {
+      vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+
+      await failPendingSync(h);
+    }
+
+    expect(h.stored).toBe(false);
+  });
+
   it('never gives up on failures the recorder answered', async () => {
     const h = makeHarness({ followed: true });
 
     h.core.reconcile();
 
-    // A track too big for the transfer budget fails the same way every time:
-    // the recorder is there and reporting a ride, so the delays running out
-    // must not end it.
+    // A page this app could not read fails the same way every time: the
+    // recorder is there and reporting a ride, so the delays running out must
+    // not end it, however many times it happens.
     for (const delay of RETRY_DELAYS) {
       await failPendingSync(h, { recorderFailed: false });
 
@@ -432,10 +463,15 @@ describe('the backoff', () => {
 
     expect(last(h)).toBe('reconnecting'); // parked at the longest wait
 
-    // Once the recorder itself stops answering, the chain ends as before.
-    vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+    // Once the recorder itself stops answering, the chain does end — after a
+    // run of its own failures, none of which the answered ones paid for.
+    for (let i = 0; i < RETRY_DELAYS.length; i++) {
+      expect(h.stored).toBe(true);
 
-    await failPendingSync(h);
+      vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+
+      await failPendingSync(h);
+    }
 
     expect(h.stored).toBe(false);
 

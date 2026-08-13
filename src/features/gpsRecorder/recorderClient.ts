@@ -32,27 +32,34 @@ async function isLocalNetworkAccessDenied(): Promise<boolean> {
 }
 
 /**
- * Deadlines for the loopback API. Nothing here crosses a network, so a request
- * still unanswered after seconds is not slow but gone — a recorder Android
- * killed, or a socket the browser froze with the page and never picked up
- * again. Without a deadline such a fetch stays pending for as long as the page
- * does, every later sync coalesces onto it, and the live view reads as
- * `connecting` until the page is reloaded.
+ * Deadlines for the loopback API, each of them on the *answer* rather than on
+ * the whole request. Nothing here crosses a network, so a recorder that has not
+ * begun answering after seconds is not slow but gone — Android killed it, or the
+ * browser froze the socket with the page and never picked it up again. Without a
+ * deadline such a fetch stays pending for as long as the page does, every later
+ * sync coalesces onto it, and the live view reads as `connecting` until the page
+ * is reloaded.
  */
 const STATUS_TIMEOUT_MS = 3000;
 
 /** Transport commands, where the recorder starts or stops a service first. */
 const COMMAND_TIMEOUT_MS = 8000;
 
-/** A whole track is megabytes of body, so this is a transfer budget. */
+/**
+ * A whole track is composed before a byte of it is sent, and how long that takes
+ * belongs to the ride's length rather than to the recorder's health.
+ */
 const TRACK_TIMEOUT_MS = 20_000;
 
-/** The caller's cancellation and the deadline, whichever comes first. */
-function deadline(timeoutMs: number, signal?: AbortSignal): AbortSignal {
-  const timeout = AbortSignal.timeout(timeoutMs);
-
-  return signal ? AbortSignal.any([signal, timeout]) : timeout;
-}
+/**
+ * How long a body that has begun arriving may go silent. Deliberately not a
+ * budget for the transfer: a track is megabytes and a long ride legitimately
+ * takes its time, and a page that gave up on one at a fixed duration would fail
+ * at exactly the same point on every retry, download it from the beginning each
+ * time, and never finish. What is not survivable is a body that stopped coming,
+ * so that is what is measured — and the clock starts over on every chunk.
+ */
+const BODY_STALL_MS = 10_000;
 
 async function recorderFetch(
   path: string,
@@ -61,10 +68,22 @@ async function recorderFetch(
 ): Promise<Response> {
   let response: Response;
 
+  // Armed for the answer only and disarmed as soon as one arrives, so the body
+  // that follows is left to its own stall deadline rather than to a clock that
+  // would cut off a long track mid-download. The caller's own signal stays on
+  // the request throughout, so a teardown still stops a transfer in flight.
+  const controller = new AbortController();
+
+  const overdue = setTimeout(() => {
+    controller.abort(new DOMException('deadline expired', 'TimeoutError'));
+  }, timeoutMs);
+
   try {
     response = await fetch(`${RECORDER_ORIGIN}${path}`, {
       ...init,
-      signal: deadline(timeoutMs, init?.signal ?? undefined),
+      signal: init?.signal
+        ? AbortSignal.any([init.signal, controller.signal])
+        : controller.signal,
       // Declares the target up front so Chrome's Local Network Access check
       // resolves to the loopback space and prompts, instead of blocking.
       targetAddressSpace: 'loopback',
@@ -91,6 +110,8 @@ async function recorderFetch(
       (await isLocalNetworkAccessDenied()) ? 'lna-denied' : 'unreachable',
       String(err),
     );
+  } finally {
+    clearTimeout(overdue);
   }
 
   if (!response.ok) {
@@ -99,7 +120,7 @@ async function recorderFetch(
     // `canRecord` gate, while 409 is either a delete refused mid-recording or
     // Android refusing a backgrounded foreground-service start (which the
     // battery-optimisation exemption fixes).
-    const reason = await readErrorReason(response);
+    const reason = await readErrorReason(path, response);
 
     throw new RecorderError(
       classifyHttpFailure(response.status, reason),
@@ -136,9 +157,19 @@ function classifyHttpFailure(
   return 'http';
 }
 
-async function readErrorReason(response: Response): Promise<string | null> {
+async function readErrorReason(
+  path: string,
+  response: Response,
+): Promise<string | null> {
   try {
-    const body: unknown = await response.json();
+    // Through the same stall clock as any other body. The header deadline is
+    // disarmed by the time an error status is in hand, so a reason that starts
+    // arriving and stops would hold the whole request open behind it — the
+    // pending-forever fetch the deadlines exist to prevent. Losing it costs the
+    // detail text; the status code is what classifies the failure.
+    const body: unknown = JSON.parse(
+      await readBody(response, path, BODY_STALL_MS),
+    );
 
     const reason =
       typeof body === 'object' && body !== null
@@ -171,6 +202,76 @@ function describeZodError(error: z.ZodError): string {
   );
 }
 
+/**
+ * The body, given up on only once it stops arriving. The read itself is what
+ * carries the clock: `fetch` has no per-chunk deadline, and the request-wide one
+ * it does have cannot tell a track that is still coming from a recorder that
+ * died halfway through sending one.
+ */
+async function readBody(
+  response: Response,
+  path: string,
+  stallMs: number,
+): Promise<string> {
+  if (!response.body) {
+    return response.text();
+  }
+
+  const reader = response.body.getReader();
+
+  const decoder = new TextDecoder();
+
+  let text = '';
+
+  try {
+    for (;;) {
+      let overdue: ReturnType<typeof setTimeout> | undefined;
+
+      const stalled = new Promise<never>((_, reject) => {
+        overdue = setTimeout(() => {
+          reject(
+            new RecorderError(
+              'unreachable',
+              `${path}: nothing arrived for ${stallMs} ms`,
+            ),
+          );
+        }, stallMs);
+      });
+
+      const read = reader.read();
+
+      // The stall clock can win the race below and leave this read pending. It
+      // usually settles as done once the reader is cancelled, but a connection
+      // that broke at the same moment rejects it instead — with the race long
+      // since decided and nothing left to hear it, which the browser reports as
+      // an unhandled rejection. Claiming it here answers that and nothing else:
+      // the race still sees the rejection, and the `catch` below still handles
+      // it.
+      read.catch(() => {});
+
+      try {
+        const { done, value } = await Promise.race([read, stalled]);
+
+        if (done) {
+          break;
+        }
+
+        text += decoder.decode(value, { stream: true });
+      } finally {
+        clearTimeout(overdue);
+      }
+    }
+  } catch (err) {
+    // The response is going nowhere; letting it drain would hold the connection
+    // open behind a page that has already given up on it.
+    await reader.cancel().catch(() => {});
+
+    throw err;
+  }
+
+  return text + decoder.decode();
+}
+
 async function recorderJson(
   path: string,
   timeoutMs: number,
@@ -179,10 +280,15 @@ async function recorderJson(
   const response = await recorderFetch(path, timeoutMs, init);
 
   try {
-    return await response.json();
+    return JSON.parse(await readBody(response, path, BODY_STALL_MS));
   } catch (err) {
-    // The deadline can expire while the body is still arriving. That is the
-    // same silence the fetch itself would have reported, not a malformed answer.
+    // Already classified by the read: a body that stopped arriving.
+    if (err instanceof RecorderError) {
+      throw err;
+    }
+
+    // A caller that cancelled mid-body, which must stay an AbortError: the
+    // processor middleware treats it as a silent cancel rather than a failure.
     if (err instanceof DOMException) {
       throw err.name === 'AbortError'
         ? err

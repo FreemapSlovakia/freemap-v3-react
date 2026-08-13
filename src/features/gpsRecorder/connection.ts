@@ -169,20 +169,25 @@ export function discardQueuedRecorderPoints(): void {
 }
 
 /**
- * Whether a status frame says something the status already held here does not.
+ * Whether a status frame says anything the status already held here does not.
  *
- * Only the two things the stream cannot deliver by itself: fixes arrive on the
- * stream, so `count` and `lastSeq` moving on is expected rather than news, while
- * a stopped recording and a discarded track are exactly what a doorbell is for.
+ * Everything is compared but the two the stream delivers by itself: `count` and
+ * `lastSeq` move on with every fix, and a doorbell rung for those would re-read
+ * `/status` — and abandon whatever catch-up is downloading — for news already on
+ * its way over the stream. Compared as text rather than field by field, because
+ * a field forgotten here swallows a doorbell, while a field order that differs
+ * only rings one that had nothing to say.
  */
 function saysSomethingNew(status: RecorderStatus): boolean {
   const held = store?.getState().gpsRecorder.status;
 
-  return (
-    !held ||
-    held.recording !== status.recording ||
-    held.generation !== status.generation
-  );
+  if (!held) {
+    return true;
+  }
+
+  const strip = ({ count, lastSeq, ...rest }: RecorderStatus) => rest;
+
+  return JSON.stringify(strip(held)) !== JSON.stringify(strip(status));
 }
 
 function parsePoints(data: string): RecorderPoint[] | null {
@@ -245,22 +250,13 @@ export function attachRecorderConnection(newStore: MyStore): void {
         }
       };
 
-      // The connect frame is this stream's own news: it names the columns the
-      // rows below are decoded with, and tells the core the stream works.
-      let connecting = true;
-
       // Arrives before any point on every connection, and names the state as
       // well as the columns.
       es.addEventListener('status', (event) => {
         // A frame this app cannot read is still the recorder composing and
-        // delivering one, so it counts as proof the stream works and as the
-        // connect frame it is — swallowing it would leave the doorbell below
-        // waiting to be rung by a frame that has already been.
+        // delivering one, so it counts as proof the stream works whatever is
+        // made of it below.
         callbacks.onStatusFrame();
-
-        const isConnect = connecting;
-
-        connecting = false;
 
         const status = parseStatusFrame(event.data);
 
@@ -268,13 +264,14 @@ export function attachRecorderConnection(newStore: MyStore): void {
           fields = status.fields;
         }
 
-        // The connect frame is usually the answer the sync that attached this
-        // stream has just read, and ringing for it would double the `/status`
-        // reads of every reconnect. Usually: that sync catches up before it
-        // attaches anything, and a stop or a clear during a download that took
-        // seconds arrives here first — with nothing else coming to notice it,
-        // because a stream in hand is what disarms the retries.
-        if (isConnect && status && !saysSomethingNew(status)) {
+        // One rule for every frame, the connect one included: ring only for a
+        // frame that says something this page does not already know. Ringing
+        // re-reads `/status` and restarts whatever run is in flight, so a frame
+        // with nothing to say costs a round trip and can abandon a catch-up
+        // that would then start over from the beginning — while the connect
+        // frame does have something to say whenever the sync that attached this
+        // stream spent seconds catching up and the ride ended meanwhile.
+        if (status && !saysSomethingNew(status)) {
           return;
         }
 
