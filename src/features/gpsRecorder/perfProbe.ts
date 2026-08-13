@@ -30,7 +30,13 @@ const KEEP = 12;
 /** Below this a pass is not what anyone felt, whatever else was going on. */
 const SLOW_MS = 150;
 
-/** A pass this long is the freeze, and worth a report by itself. */
+/**
+ * A pass this long is the freeze, and worth a report by itself — a pass that
+ * blocks, that is. A wait is kept in the ring for whoever reports a real stall
+ * and never sent on its own: it did not block anything, and being the longest
+ * measurement by far it would take the session's whole report budget and say
+ * something untrue with it.
+ */
 const REPORT_MS = 800;
 
 const REPORT_THROTTLE_MS = 20_000;
@@ -70,7 +76,12 @@ function measurable(at: number): boolean {
   return document.visibilityState === 'visible' && at >= becameVisibleAt;
 }
 
-function recordSpan(phase: string, ms: number, n: number | undefined): void {
+function recordSpan(
+  phase: string,
+  ms: number,
+  n: number | undefined,
+  blocking: boolean,
+): void {
   const span: RecorderSpan = { phase, ms: Math.round(ms), n };
 
   spans.push(span);
@@ -86,6 +97,7 @@ function recordSpan(phase: string, ms: number, n: number | undefined): void {
   const now = Date.now();
 
   if (
+    !blocking ||
     span.ms < REPORT_MS ||
     now - lastReportAt < REPORT_THROTTLE_MS ||
     reportCount >= MAX_REPORTS
@@ -117,21 +129,22 @@ function recordSpan(phase: string, ms: number, n: number | undefined): void {
  * Starts timing a pass; the returned function ends it, taking the size the pass
  * turned out to have. Works for a synchronous block and an awaited one alike.
  *
- * `slowMs` raises the bar for a phase that is mostly waiting rather than working
- * — a sync spends its time on the wire, and recording every one of those would
- * bury the passes that actually blocked something.
+ * `waitMs` marks a phase that is mostly waiting rather than working — a sync
+ * spends its time on the wire — and raises the bar to it, because recording
+ * every one of those would bury the passes that actually blocked something.
+ * Such a pass is never reported as a stall on its own; see {@link REPORT_MS}.
  */
 export function startRecorderSpan(
   phase: string,
-  slowMs = SLOW_MS,
+  waitMs?: number,
 ): (n?: number) => void {
   const at = performance.now();
 
   return (n) => {
     const ms = performance.now() - at;
 
-    if (ms >= slowMs && measurable(at)) {
-      recordSpan(phase, ms, n);
+    if (ms >= (waitMs ?? SLOW_MS) && measurable(at)) {
+      recordSpan(phase, ms, n, waitMs === undefined);
     }
   };
 }
@@ -148,7 +161,9 @@ export function watchRecorderFrame(phase: string, n: number): void {
     const ms = performance.now() - at;
 
     if (ms >= SLOW_MS && measurable(at)) {
-      recordSpan(phase, ms, n);
+      // The frame is the freeze as the user meets it, so it reports like any
+      // other pass that blocked.
+      recordSpan(phase, ms, n, true);
     }
   });
 }

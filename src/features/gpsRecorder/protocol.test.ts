@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   decodePoints,
+  isHopelessFailure,
+  isSilentFailure,
   missingPermissions,
+  RecorderError,
+  type RecorderFailure,
   RecorderStatusSchema,
   RecorderTrackPageSchema,
   streamPayloadToRows,
@@ -159,6 +163,39 @@ describe('RecorderStatusSchema', () => {
         }),
       ),
     ).toEqual(['background', 'notifications']);
+  });
+});
+
+describe('classifying failures', () => {
+  const err = (failure: RecorderFailure) => new RecorderError(failure, 'x');
+
+  it('only silence says the recorder is not there', () => {
+    expect(isSilentFailure(err('unreachable'))).toBe(true);
+
+    expect(isSilentFailure(err('lna-denied'))).toBe(true);
+
+    // Answers, however unusable: the recorder is demonstrably talking, which is
+    // what decides whether a page gives up on following a ride.
+    const answers: RecorderFailure[] = [
+      'http',
+      'protocol',
+      'setup-needed',
+      'outdated',
+    ];
+
+    for (const failure of answers) {
+      expect(isSilentFailure(err(failure))).toBe(false);
+    }
+
+    expect(isSilentFailure(new Error('not a recorder failure'))).toBe(false);
+  });
+
+  it('only a refusal and an old APK are hopeless', () => {
+    expect(isHopelessFailure(err('lna-denied'))).toBe(true);
+
+    expect(isHopelessFailure(err('outdated'))).toBe(true);
+
+    expect(isHopelessFailure(err('unreachable'))).toBe(false);
   });
 });
 

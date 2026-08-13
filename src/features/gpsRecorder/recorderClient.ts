@@ -189,6 +189,13 @@ async function recorderJson(
         : new RecorderError('unreachable', `${path}: ${err.name}`);
     }
 
+    // A recorder Android killed mid-body drops the connection, which the body
+    // read reports as a `TypeError` — silence again, and told apart from the
+    // `SyntaxError` of an answer that arrived whole and made no sense.
+    if (err instanceof TypeError) {
+      throw new RecorderError('unreachable', `${path}: ${err.message}`);
+    }
+
     throw new RecorderError('protocol', `${path}: invalid JSON: ${err}`);
   }
 }

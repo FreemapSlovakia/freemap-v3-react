@@ -20,6 +20,7 @@ import type { SyncOutcome } from '../connectionCore.js';
 import { startRecorderSpan, watchRecorderFrame } from '../perfProbe.js';
 import {
   isHopelessFailure,
+  isSilentFailure,
   missingPermissions,
   RECORDER_INTENT_URL,
   RecorderError,
@@ -72,10 +73,7 @@ function reportFailure(dispatch: Dispatch, err: unknown): void {
  * give, and it is not giving any.
  */
 function forgetUnreachableStatus(dispatch: Dispatch, err: unknown): void {
-  if (
-    err instanceof RecorderError &&
-    (err.failure === 'unreachable' || err.failure === 'lna-denied')
-  ) {
+  if (isSilentFailure(err)) {
     dispatch(gpsRecorderSetStatus(null));
   }
 }
@@ -217,9 +215,9 @@ async function runSync(
   // only a sync that took long enough for the user to notice is worth a line.
   const synced = startRecorderSpan('sync', 4000);
 
-  // Whether the recorder answered at all, which decides whether a failure below
-  // counts against it: everything after the status — the catch-up transfer, the
-  // page this app could not read — failed with the recorder demonstrably there.
+  // Whether the recorder answered, which decides whether a failure below counts
+  // against it: everything after the status — the catch-up transfer, the page
+  // this app could not read — failed with the recorder demonstrably there.
   let answered = false;
 
   try {
@@ -250,7 +248,11 @@ async function runSync(
     settle({
       ok: false,
       hopeless: isHopelessFailure(err),
-      recorderFailed: !answered,
+      // Both clauses are needed: a status that came back an error or a shape
+      // this app cannot read is still the recorder talking, and the catch-up
+      // running out of transfer budget reads as silence though it followed a
+      // status that answered.
+      recorderFailed: !answered && isSilentFailure(err),
     });
 
     return;
@@ -276,6 +278,34 @@ function requestSync(
   return runRecorderSync(opts, (signal, isQuiet, settle) =>
     runSync(params, isQuiet, signal, settle),
   );
+}
+
+/**
+ * A sync whose caller has to know it worked, answering whether it did.
+ *
+ * Same run as any other — so the pushed status a command of its own provokes is
+ * abandoned rather than left racing it — but a failure here is not only said out
+ * loud, it is answered: a flow that is about to delete a ride must not go on
+ * with a status that turns out to be the one it already had. A run abandoned
+ * mid-way (a teardown, a restart) reports nothing and so answers `false` too.
+ */
+async function requestSyncStrictly(params: {
+  dispatch: Dispatch;
+  getState: () => RootState;
+}): Promise<boolean> {
+  let ok = false;
+
+  await runRecorderSync(
+    { quiet: false, restart: true },
+    (signal, isQuiet, settle) =>
+      runSync(params, isQuiet, signal, (outcome) => {
+        ok = outcome.ok;
+
+        settle(outcome);
+      }),
+  );
+
+  return ok;
 }
 
 export const syncHandler: ProcessorHandler<typeof gpsRecorderSync> = (params) =>
@@ -503,11 +533,11 @@ function handOverTrack(
  * recording stays where it is, with the reason said out loud. Deleting the only
  * copy of a ride is not something to be optimistic about.
  */
-export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
-  dispatch,
-  getState,
-  action,
-}) => {
+export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async (
+  params,
+) => {
+  const { dispatch, getState, action } = params;
+
   dispatch(gpsRecorderSetPending(true));
 
   try {
@@ -520,16 +550,30 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
     // reached it: a tab that was frozen in the background, or whose stream died,
     // is routinely behind — and handing over a truncated ride and then deleting
     // the complete one is the one mistake this whole flow exists to avoid.
-    const held = heldTrack(getState);
+    //
+    // Through the sync rather than a direct status read, like pause and clear:
+    // the `POST /stop` above provokes a pushed status of its own, and that run's
+    // catch-up must not be left racing a track this flow is about to take and
+    // delete — its page would land on an emptied track as fixes nothing would
+    // ever clear. `restart` abandons it; loud, because the user asked.
+    //
+    // A sync that did not work ends the flow where it stands, with what it
+    // already said out loud: everything below reads the status it left behind,
+    // and the one it left behind may be the one this page already had.
+    if (!(await requestSyncStrictly(params))) {
+      return;
+    }
 
-    const status = await getStatus();
+    const { status, cursor } = getState().gpsRecorder;
 
-    await applyStatus(dispatch, status, held);
+    if (!status) {
+      return;
+    }
 
-    if (getState().gpsRecorder.cursor !== status.lastSeq) {
+    if (cursor !== status.lastSeq) {
       throw new RecorderError(
         'incomplete',
-        `page holds up to ${getState().gpsRecorder.cursor}, recorder has ${status.lastSeq}`,
+        `page holds up to ${cursor}, recorder has ${status.lastSeq}`,
       );
     }
 
@@ -557,11 +601,11 @@ export const stopHandler: ProcessorHandler<typeof gpsRecorderStop> = async ({
 
     clearHeldTrack(dispatch);
 
-    // Through `applyStatus` like every other status: it is what tells the
-    // connection the ride is over and there is nothing left to follow. A raw
-    // dispatch would leave the page following a recorder it has just emptied,
-    // this session and on the next load.
-    await applyStatus(dispatch, await getStatus(), heldTrack(getState));
+    // Through the sync like every other status: it is what tells the connection
+    // the ride is over and there is nothing left to follow. A raw dispatch would
+    // leave the page following a recorder it has just emptied, this session and
+    // on the next load.
+    await requestSync(params, { quiet: false, restart: true });
   } catch (err) {
     reportFailure(dispatch, err);
   } finally {

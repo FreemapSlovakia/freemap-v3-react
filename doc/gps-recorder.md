@@ -280,7 +280,11 @@ business and not this app's.
 - **`unreachable`** — nothing answered, which does *not* mean nothing is
   installed: a recorder that was killed or swiped off the task list answers
   exactly the same way, and telling that user to install what they already have
-  is both wrong and no help. The toast leads with **Open the recorder**
+  is both wrong and no help. A recorder killed *mid-body* counts as silence too:
+  the connection drops and the body read reports a `TypeError`, told apart from
+  the `SyntaxError` of an answer that arrived whole and made no sense (which is
+  `protocol`, and says the recorder is there and talking).
+  The toast leads with **Open the recorder**
   (`RECORDER_OPEN_INTENT_URL` — the `open` authority launches the app, and its
   process is what serves the API, without deciding that a recording should begin)
   and offers the download second. The intent carries `browser_fallback_url`, so it
@@ -384,14 +388,22 @@ joining it would drop the very change — a stop, a clear — the push exists to
 deliver. The re-read costs one loopback round trip, and pushes are rare, discrete
 events.
 
-**The connect frame is the exception and rings no doorbell.** It arrives on every
-connection, and the sync that attached the stream read a status moments earlier,
-so ringing would only fetch the same answer again — doubling the `/status` reads
-of every reconnect. What the connect frame is for is the other two things it
-carries: the column order, and the news that this stream works. A frame that does
-not parse still counts as both the connect frame and that news — the recorder
-composed and delivered one — so an unreadable connect frame cannot leave the
-doorbell waiting to be rung by a frame that has already been.
+**The connect frame usually rings no doorbell.** It arrives on every connection,
+and the sync that attached the stream read a status moments earlier, so ringing
+would only fetch the same answer again — doubling the `/status` reads of every
+reconnect. What the connect frame is for is the other two things it carries: the
+column order, and the news that this stream works.
+
+*Usually*, because that sync catches up **before** it attaches anything: a stop
+or a clear during a download that took seconds arrives in the connect frame
+first, and nothing else is coming to notice it — a stream in hand is what
+disarms the retries. So the frame is compared against the status held here, on
+the two things the stream cannot deliver by itself (`recording` and
+`generation`; `count` and `lastSeq` move on with every fix and are not news),
+and it rings when they differ. A frame that does not parse rings too — it could
+be saying anything — and counts as the connect frame and as the news that this
+stream works, so an unreadable one cannot leave the doorbell waiting to be rung
+by a frame that has already been.
 
 Syncs nobody asked for are **quiet**, with one exception: a live view that was
 working and stopped. A recorder killed or uninstalled while the page was away must
@@ -502,14 +514,16 @@ otherwise stay dead until it was closed and opened again. And an ask this app
 never managed to make does not count: a sync whose lazily loaded handler never
 claimed it (a hashed chunk a deploy has moved) widens the wait and keeps asking,
 but must never cost a ride that is still being recorded. Neither does a failure
-that came *after* the recorder answered — a track too big for the 20 s transfer
-budget fails identically on every retry, and a body this app could not read is
-its own complaint — so the sync reports `recorderFailed` alongside `hopeless`,
-set from whether `/status` had returned before it went wrong. What remains — the
-recorder not answering, tool closed — is the only thing that drops the follow
-flag. Two failures skip the retries entirely, because waiting cannot fix them:
-`lna-denied` and `outdated`, classified by `isHopelessFailure` beside the
-failures themselves.
+the recorder answered, which takes both halves of the question and is what the
+sync reports as `recorderFailed` beside `hopeless`: **when** it failed, since a
+track too big for the 20 s transfer budget fails identically on every retry and
+follows a `/status` that answered; and **how**, since an error status or a body
+this app could not read is the recorder talking, and only silence —
+`unreachable`, `lna-denied`, classified by `isSilentFailure` beside the failures
+themselves — says it is not there. What remains — the recorder not answering,
+tool closed — is the only thing that drops the follow flag. Two failures skip
+the retries entirely, because waiting cannot fix them: `lna-denied` and
+`outdated`, classified by `isHopelessFailure` next to it.
 
 **A stream in hand disarms the backoff.** A `/status` that failed beside a working
 stream says nothing about the live view — the stream is what carries the fixes —
@@ -642,11 +656,20 @@ pessimistic:
 
 1. `POST /stop`, so the track is not moving under us.
 2. **Catch up, and refuse to go on unless the page holds every fix the recorder
-   does** — `cursor === lastSeq` after `applyStatus`. What this page holds is only
+   does** — `cursor === lastSeq` after the sync. What this page holds is only
    what reached it, and a tab that was frozen in the background or whose stream
    died is routinely behind. Handing over a truncated ride and then deleting the
    complete one is the exact mistake this flow exists to prevent, so a short page
-   ends it here (`errors.incomplete`) with nothing taken and nothing deleted.
+   ends it here (`errors.incomplete`) with nothing taken and nothing deleted. The
+   catch-up goes **through `requestSync` with `restart`**, like pause and clear:
+   the `POST /stop` above provokes a pushed status of its own, and that run must
+   not be left racing this flow — its `/track` page would otherwise land after
+   the delete, as fixes on an emptied track that no later sync clears (`count`
+   is 0 by then, so nothing catches up, and the generation already matches).
+   `requestSyncStrictly` is that sync, and it answers whether it worked: a run
+   that failed — or one a teardown abandoned, which reports nothing at all —
+   ends the flow where it stands, because everything below reads the status the
+   sync left behind, and that may be the one this page already had.
 3. Hand it to the track viewer.
 4. `storeTrackDurably` — which requests `navigator.storage.persist()` — and **stop
    here unless it answers `durable`**. `evictable` means the browser may reclaim

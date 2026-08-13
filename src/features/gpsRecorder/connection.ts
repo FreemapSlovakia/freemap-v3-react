@@ -19,6 +19,7 @@ import {
   parseStatusFrame,
   RECORDER_ORIGIN,
   type RecorderPoint,
+  type RecorderStatus,
   streamPayloadToRows,
 } from './protocol.js';
 import { gpsRecorderPlatformSupported } from './support.js';
@@ -166,6 +167,23 @@ export function discardQueuedRecorderPoints(): void {
   batch = [];
 }
 
+/**
+ * Whether a status frame says something the status already held here does not.
+ *
+ * Only the two things the stream cannot deliver by itself: fixes arrive on the
+ * stream, so `count` and `lastSeq` moving on is expected rather than news, while
+ * a stopped recording and a discarded track are exactly what a doorbell is for.
+ */
+function saysSomethingNew(status: RecorderStatus): boolean {
+  const held = store?.getState().gpsRecorder.status;
+
+  return (
+    !held ||
+    held.recording !== status.recording ||
+    held.generation !== status.generation
+  );
+}
+
 function parsePoints(data: string): RecorderPoint[] | null {
   const json = parseFrameJson(data);
 
@@ -239,9 +257,6 @@ export function attachRecorderConnection(newStore: MyStore): void {
         // waiting to be rung by a frame that has already been.
         callbacks.onStatusFrame();
 
-        // The sync that attached this stream read a status moments ago, so
-        // ringing the doorbell for the connect frame would only fetch the same
-        // answer again.
         const isConnect = connecting;
 
         connecting = false;
@@ -252,9 +267,17 @@ export function attachRecorderConnection(newStore: MyStore): void {
           fields = status.fields;
         }
 
-        if (!isConnect) {
-          store?.dispatch(gpsRecorderPushedStatus());
+        // The connect frame is usually the answer the sync that attached this
+        // stream has just read, and ringing for it would double the `/status`
+        // reads of every reconnect. Usually: that sync catches up before it
+        // attaches anything, and a stop or a clear during a download that took
+        // seconds arrives here first — with nothing else coming to notice it,
+        // because a stream in hand is what disarms the retries.
+        if (isConnect && status && !saysSomethingNew(status)) {
+          return;
         }
+
+        store?.dispatch(gpsRecorderPushedStatus());
       });
 
       return { close: () => es.close() };

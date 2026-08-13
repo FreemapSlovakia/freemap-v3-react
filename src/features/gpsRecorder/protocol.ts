@@ -361,6 +361,22 @@ export function isHopelessFailure(err: unknown): boolean {
 }
 
 /**
+ * Causes where nothing answered at all. Everything else — an error status, a
+ * body this app could not read — is the recorder answering with something
+ * unusable, which says it is there. The difference decides what a status read
+ * describes once it fails (an app that may be gone, or one that is talking) and
+ * whether a page gives up on following a ride.
+ */
+const SILENT: ReadonlySet<RecorderFailure> = new Set<RecorderFailure>([
+  'unreachable',
+  'lna-denied',
+]);
+
+export function isSilentFailure(err: unknown): boolean {
+  return err instanceof RecorderError && SILENT.has(err.failure);
+}
+
+/**
  * Reads an SSE frame's `data:` as JSON. A frame this app cannot parse is not
  * an error to report — the stream is a feed, and the next frame is along in a
  * moment — so everything that goes wrong reads as "not for us".
