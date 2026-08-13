@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { putOfflineMap } from '../../offlineStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
@@ -83,10 +84,7 @@ export const mapsLoadProcessor: Processor = {
       // actually open would stay blocked. An abort is something else taking
       // over deliberately — a newer load, or the auth check this processor
       // re-runs on — and what is pending is then that owner's to say.
-      if (
-        !(err instanceof DOMException && err.name === 'AbortError') &&
-        getState().myMaps.loadMeta === loadMeta
-      ) {
+      if (!isAbortError(err) && getState().myMaps.loadMeta === loadMeta) {
         dispatch(mapsLoadFailed());
       }
 

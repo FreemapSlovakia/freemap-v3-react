@@ -1,3 +1,4 @@
+import { isAbortError } from '@shared/isAbortError.js';
 import { z } from 'zod';
 import { startRecorderSpan } from './perfProbe.js';
 import {
@@ -93,7 +94,7 @@ async function recorderFetch(
   } catch (err) {
     // Cancellation must stay an AbortError: the processor middleware treats it
     // as a silent cancel rather than a failure.
-    if (err instanceof DOMException && err.name === 'AbortError') {
+    if (isAbortError(err)) {
       throw err;
     }
 
@@ -289,10 +290,12 @@ async function recorderJson(
 
     // A caller that cancelled mid-body, which must stay an AbortError: the
     // processor middleware treats it as a silent cancel rather than a failure.
+    if (isAbortError(err)) {
+      throw err;
+    }
+
     if (err instanceof DOMException) {
-      throw err.name === 'AbortError'
-        ? err
-        : new RecorderError('unreachable', `${path}: ${err.name}`);
+      throw new RecorderError('unreachable', `${path}: ${err.name}`);
     }
 
     // A recorder Android killed mid-body drops the connection, which the body
@@ -364,7 +367,7 @@ async function pollStatus(
 
       last = unmet();
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
+      if (isAbortError(err)) {
         throw err;
       }
 

@@ -3,6 +3,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { shareViaSheet } from '@shared/webShare.js';
 import { bbox } from '@turf/bbox';
@@ -79,7 +80,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
     // the user tapped share, and silence is the one answer that leaves them
     // with nothing to act on.
     const reportShareProblem = (err: unknown) => {
-      if (err instanceof DOMException && err.name === 'AbortError') {
+      if (isAbortError(err)) {
         return;
       }
 

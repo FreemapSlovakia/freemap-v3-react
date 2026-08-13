@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadGapi, startGoogleAuth } from '@shared/gapiLoader.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { saveBlob } from '@shared/saveBlob.js';
 import { hasProperty } from '@shared/types/typeUtils.js';
 import { shareViaSheet } from '@shared/webShare.js';
@@ -244,7 +245,7 @@ export async function upload(
       try {
         await saveFile(data, type);
       } catch (e) {
-        if (e instanceof DOMException && e.name === 'AbortError') {
+        if (isAbortError(e)) {
           return false;
         }
 
@@ -279,7 +280,7 @@ export async function upload(
         saveInstead = !(await shareViaSheet({ files: [file] }));
       } catch (e) {
         // Dismissing the share sheet rejects with AbortError.
-        if (e instanceof DOMException && e.name === 'AbortError') {
+        if (isAbortError(e)) {
           return false;
         }
 
@@ -294,10 +295,7 @@ export async function upload(
         try {
           await saveFile(data, type);
         } catch (saveError) {
-          if (
-            saveError instanceof DOMException &&
-            saveError.name === 'AbortError'
-          ) {
+          if (isAbortError(saveError)) {
             return false;
           }
 

@@ -2,6 +2,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { User } from '@features/auth/model/types.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
 import {
   countCachedOf,
@@ -486,7 +487,7 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
         );
       })
       .catch((err: unknown) => {
-        if (err instanceof DOMException && err.name === 'AbortError') {
+        if (isAbortError(err)) {
           return;
         }
 
@@ -610,7 +611,7 @@ export const cachedMapEditedProcessor: Processor<typeof cachedMapEdited> = {
       getState().auth.user,
       abortController,
     ).catch((err: unknown) => {
-      if (err instanceof DOMException && err.name === 'AbortError') {
+      if (isAbortError(err)) {
         return;
       }
 
@@ -642,7 +643,7 @@ export const cacheTilesRestartProcessor: Processor<typeof cacheTilesRestart> = {
       getState().l10n.language,
       getState().auth.user,
     ).catch((err) => {
-      if (err instanceof DOMException && err.name === 'AbortError') {
+      if (isAbortError(err)) {
         return;
       }
 

@@ -10,6 +10,7 @@ import { activeSearchResultSelector } from '@features/search/model/selectors.js'
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { fetchElevations } from '@shared/elevation.js';
 import { lineSegments } from '@shared/geoutils.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
   featureIdsEqual,
@@ -188,7 +189,7 @@ export const objectDetailsProcessor: Processor = {
     } catch (err) {
       // An abort means something newer is already on its way (or the features
       // were cleared) — leave the toast to whatever caused it.
-      if (err instanceof DOMException && err.name === 'AbortError') {
+      if (isAbortError(err)) {
         return;
       }
 

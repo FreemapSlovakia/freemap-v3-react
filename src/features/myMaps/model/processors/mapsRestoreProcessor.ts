@@ -12,6 +12,7 @@ import {
   routePlannerFindRoute,
   routePlannerSetSavedRoute,
 } from '@features/routePlanner/model/actions.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import type { FeatureCollection } from 'geojson';
 import { getMapRecord } from '../../mapStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
@@ -195,7 +196,7 @@ export const mapsRestoreProcessor: Processor = {
         // auth check this processor re-runs on, which a second tab can trigger at
         // any moment. That is not a map that failed to open, so nothing below may
         // treat it as one and disconnect; the run it belongs to decides.
-        if (err instanceof DOMException && err.name === 'AbortError') {
+        if (isAbortError(err)) {
           handedOver = true;
 
           return;

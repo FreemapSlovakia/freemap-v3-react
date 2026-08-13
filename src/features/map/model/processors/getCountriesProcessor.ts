@@ -1,4 +1,5 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { mapSetBounds, mapSetCountries } from '../actions.js';
 import { fetchCoveredCountries } from '../fetchCoveredCountries.js';
 
@@ -21,7 +22,7 @@ export const getCountriesProcessor: Processor = {
           ),
         );
       })().catch((err) => {
-        if (err instanceof DOMException && err.name === 'AbortError') {
+        if (isAbortError(err)) {
           return;
         }
 

@@ -35,6 +35,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
 import { mergeLines } from '@shared/geoutils.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import {
   lineStyleFromProperties,
   pointStyleFromProperties,
@@ -567,7 +568,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
       selectAfterConvert(dispatch, getState, lineCount, pointCount);
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
+      if (isAbortError(err)) {
         return;
       }
 

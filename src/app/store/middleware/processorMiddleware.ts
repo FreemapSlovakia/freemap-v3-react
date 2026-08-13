@@ -4,6 +4,7 @@ import {
 } from '@features/progress/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import { isAbortError } from '@shared/isAbortError.js';
 import type { Leaves, MessagePaths } from '@shared/types/common.js';
 import type { Action, Dispatch, Middleware } from 'redux';
 import type { RootState } from '../store.js';
@@ -156,7 +157,7 @@ export function createProcessorMiddleware() {
                 (!actionPredicate || actionPredicate(action as any)))
           ) {
             const handleError = (err: unknown) => {
-              if (err instanceof DOMException && err.name === 'AbortError') {
+              if (isAbortError(err)) {
                 console.log(`Canceled: ${errorKey}; Reason: `, err.message);
               } else {
                 console.log('Error key: ', errorKey);
@@ -182,7 +183,7 @@ export function createProcessorMiddleware() {
               messageKey,
               toastId,
             ) => {
-              if (err instanceof DOMException && err.name === 'AbortError') {
+              if (isAbortError(err)) {
                 return;
               }
 
@@ -262,7 +263,7 @@ export function createProcessorMiddleware() {
             // whose in-flight fetch was aborted by a newer action) is benign —
             // skip it here just as `handleError` and `toastError` do, so it
             // doesn't surface as a spurious generic processor-error toast.
-            if (error instanceof DOMException && error.name === 'AbortError') {
+            if (isAbortError(error)) {
               console.log('Canceled processor; Reason: ', error.message);
 
               return;

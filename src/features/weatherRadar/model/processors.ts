@@ -4,6 +4,7 @@ import type {
   ProcessorHandler,
 } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import {
   type FeedInfo,
   type FeedStatus,
@@ -126,7 +127,7 @@ const fetchFrames: ProcessorHandler = async ({ getState, dispatch }) => {
         // propagating: the middleware knows to treat it as benign, whereas
         // swallowing it here turns switching the layer off into a red toast
         // and a Sentry report.
-        if (err instanceof DOMException && err.name === 'AbortError') {
+        if (isAbortError(err)) {
           throw err;
         }
 

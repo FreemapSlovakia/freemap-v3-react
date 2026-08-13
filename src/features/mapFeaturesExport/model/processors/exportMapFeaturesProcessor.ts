@@ -7,6 +7,7 @@ import {
   startProgress,
   stopProgress,
 } from '@features/progress/model/actions.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
 import {
@@ -80,10 +81,7 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
       // `toastError` replaces the middleware's generic processor toast with the
       // export's own, so the reporting the middleware would have done is done
       // here. A cancelled export is not a failure.
-      if (
-        loaded &&
-        !(err instanceof DOMException && err.name === 'AbortError')
-      ) {
+      if (loaded && !isAbortError(err)) {
         sendError({ kind: 'processor', error: err, action: params[0].action });
       }
 

@@ -1,3 +1,4 @@
+import { isAbortError } from '@shared/isAbortError.js';
 import { saveBlob } from '@shared/saveBlob.js';
 
 // Bootstrap theme custom properties referenced by the chart's SVG. They resolve
@@ -81,7 +82,7 @@ export async function downloadChartSvg(
     await saveBlob(blob, 'elevation-chart.svg', { 'image/svg+xml': ['.svg'] });
   } catch (err) {
     // Swallow the user cancelling the save dialog; surface anything else.
-    if (!(err instanceof DOMException && err.name === 'AbortError')) {
+    if (!isAbortError(err)) {
       throw err;
     }
   }

@@ -6,6 +6,7 @@ import { isPremium } from '@features/premium/premium.js';
 import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
 import { positionsEqual } from '@shared/geoutils.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
@@ -271,7 +272,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   // before anything can cancel it.
   if (
     failure &&
-    ((failure instanceof DOMException && failure.name === 'AbortError') ||
+    (isAbortError(failure) ||
       getState().myMaps.loadMeta ||
       getState().myMaps.restoring)
   ) {
