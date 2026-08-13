@@ -144,7 +144,8 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
     const isEditingActive = target && target.id === activeMap?.id;
 
     if (!target) {
-      dispatch(mapsSave({ name, writers, asCopy: true }));
+      // The save owns the flag here: the map has no id to flag until it exists.
+      dispatch(mapsSave({ name, writers, asCopy: true, offline }));
       onDone();
       return;
     }
@@ -261,18 +262,16 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
             </Form.Group>
           )}
 
-          {target && (
-            <Form.Group controlId="offline" className="mb-3">
-              <Form.Check
-                type="checkbox"
-                label={mm?.availableOffline}
-                checked={offline}
-                onChange={(e) => setOffline(e.currentTarget.checked)}
-              />
+          <Form.Group controlId="offline" className="mb-3">
+            <Form.Check
+              type="checkbox"
+              label={mm?.availableOffline}
+              checked={offline}
+              onChange={(e) => setOffline(e.currentTarget.checked)}
+            />
 
-              <Form.Text muted>{mm?.availableOfflineHint}</Form.Text>
-            </Form.Group>
-          )}
+            <Form.Text muted>{mm?.availableOfflineHint}</Form.Text>
+          </Form.Group>
         </Form>
       </Modal.Body>
 

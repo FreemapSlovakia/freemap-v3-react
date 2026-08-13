@@ -19,6 +19,8 @@ export type RoutePlannerMessages = {
     distanceLimit: string;
   };
   milestones: string;
+  /** Discards the route a saved map carried and asks the router again. */
+  recompute: string;
   style: {
     menuItem: string;
     title: string;

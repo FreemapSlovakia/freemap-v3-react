@@ -2,11 +2,13 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { isPremium } from '@features/premium/premium.js';
 import { colorizerNeedsElevation } from '@shared/colorizers/index.js';
 import { unlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import {
   routePlannerColorizeBy,
+  routePlannerRestoreSavedRoute,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetResult,
 } from '../actions.js';
@@ -18,12 +20,17 @@ export const routePlannerColorizeProcessor: Processor<
   | typeof routePlannerSetActiveAlternativeIndex
   | typeof elevationSetSettings
   | typeof authSetUser
+  | typeof mapsLoaded
+  | typeof routePlannerRestoreSavedRoute
 > = {
   actionCreator: [
     routePlannerColorizeBy,
     routePlannerSetResult,
     routePlannerSetActiveAlternativeIndex,
     elevationSetSettings,
+    // A route the map had stored arrives by neither of the above.
+    mapsLoaded,
+    routePlannerRestoreSavedRoute,
     // Signing in or out drops the render line (it's sampled per premium status)
     // and can unlock a premium mode, so rebuild it right away.
     authSetUser,

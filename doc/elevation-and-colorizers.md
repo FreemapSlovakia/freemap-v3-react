@@ -60,6 +60,14 @@ real geometry, and is never serialized:
   `routePlannerColorizeProcessor` — signing in or buying premium in the same session
   otherwise keeps the line built for the previous status.
 
+  It is cached in **two steps**. `sampledGeojson` is what the requests above buy;
+  `renderGeojson` is that line with structure levelling and `smoothElevation` applied,
+  which are pure. So `elevationSetSettings` drops only the second and re-derives without
+  a request, and `authSetUser` drops only a line this session sampled — one carrying
+  `saved: true` came with a map document and stands for whoever opens that map. That is
+  what a saved map stores (see `savedRoute.ts`), so a route opened offline has a full
+  profile and still follows the live smoothing preferences.
+
 Consumers read `renderTrackGeojson ?? trackGeojson` (`Results.tsx`,
 `DataViewerDetails.tsx`). Chart paths `await ensureRenderGeojson` first.
 
@@ -191,8 +199,9 @@ derived from it, rather than a pref per consumer:
 Which terrain model answers is not among them: every read presents the account, so premium
 decides it (see *Crediting the terrain model* below), for profiles and exports alike.
 
-The first two invalidate the derived caches (`routePlanner.renderGeojson`,
-`trackViewer.renderTrackGeojson` clear on `elevationSetSettings`). `routePlannerColorizeProcessor`
+The first two invalidate the derived caches (`routePlanner.renderGeojson` —
+but not the `sampledGeojson` under it, so a route re-derives without a request —
+and `trackViewer.renderTrackGeojson` clear on `elevationSetSettings`). `routePlannerColorizeProcessor`
 and `dataViewerDensifyProcessor` rebuild them, which has to happen whether or not the
 chart is open — an active elevation/steepness colorize reads the same cache. An open chart
 additionally redraws through `elevationChartProcessor` (see *What the chart shows* below).

@@ -1,5 +1,7 @@
 import type { RootState } from '@app/store/store.js';
+import { routeKey } from '@features/routePlanner/model/actions.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
+import { alternative } from '@features/routePlanner/model/routeFixtures.js';
 import { describe, expect, it } from 'vitest';
 import {
   fingerprintDocument,
@@ -213,6 +215,45 @@ describe('fingerprintDocument — a saved map matches its own document', () => {
         isochroneParams: { buckets: 4, distanceLimit: 0, timeLimit: 1800 },
       }),
     });
+  });
+
+  // The route the document stores is a cache, built lazily once the map is on
+  // screen and rebuilt from the URL on every restore. Digesting it would report
+  // a map as changed for merely having been opened.
+  it('is blind to the computed route the document carries', () => {
+    const routePoints = [
+      { lat: 48, lon: 17 },
+      { lat: 49, lon: 18 },
+    ];
+
+    const routed = state({
+      routePlanner: routePlanner({
+        points: routePoints,
+        timestamp: 1000,
+        resultKey: routeKey({
+          points: routePoints,
+          mode: routePlannerInitialState.mode,
+          transportType: routePlannerInitialState.transportType,
+          roundtripParams: routePlannerInitialState.roundtripParams,
+        }),
+        alternatives: [
+          alternative([
+            [17, 48],
+            [18, 49],
+          ]),
+        ],
+      }),
+    });
+
+    const unrouted = state({
+      routePlanner: routePlanner({ points: routePoints }),
+    });
+
+    expect(getMapDataFromState(routed).routePlanner?.result).toBeDefined();
+
+    expect(fingerprintState(routed)).toBe(fingerprintState(unrouted));
+
+    matchesItsDocument({ routePlanner: routed.routePlanner });
   });
 
   it('notices a roundtrip parameter that really did change', () => {

@@ -72,6 +72,7 @@ import {
   FaRegSquare,
   FaRoute,
   FaStop,
+  FaSync,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { PiGraph } from 'react-icons/pi';
@@ -82,6 +83,7 @@ import {
   routePlannerColorizeBy,
   routePlannerDelete,
   routePlannerOptimizeOrder,
+  routePlannerRecompute,
   routePlannerSetColorizeLegend,
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
@@ -99,6 +101,7 @@ import {
   getStart,
   routePlannerHasTransportOverride,
   routePlannerOptimizeApplicable,
+  storedRouteIsShowingSelector,
 } from '../model/reducer.js';
 import { loadRoutePlannerMessages } from '../translations/loadRoutePlannerMessages.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
@@ -430,6 +433,10 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.alternatives.length > 0,
   );
 
+  // The route on screen is the one the open map has stored, rather than one the
+  // router was just asked for.
+  const storedRouteShowing = useAppSelector(storedRouteIsShowingSelector);
+
   // Isochrones replace the route alternatives, so the result-dependent controls
   // key off either. Most of them (colorize, elevation profile, milestones,
   // optimization) only make sense for a route and stay route-only.
@@ -552,6 +559,11 @@ export default function RoutePlannerMenu(): ReactElement {
 
       case 'route-style':
         dispatch(setActiveModal({ type: 'route-planner-style' }));
+
+        break;
+
+      case 'recompute':
+        dispatch(routePlannerRecompute());
 
         break;
 
@@ -949,6 +961,15 @@ export default function RoutePlannerMenu(): ReactElement {
                 <FaPaintBrush />
                 &nbsp;{rpm?.style.menuItem ?? '…'}
               </Dropdown.Item>
+
+              {/* Only a route that came with the map has anything to recompute
+                  — every other one is as fresh as the router can make it. */}
+              {storedRouteShowing && (
+                <Dropdown.Item as="button" eventKey="recompute">
+                  <FaSync />
+                  &nbsp;{rpm?.recompute ?? '…'}
+                </Dropdown.Item>
+              )}
 
               {routeFound && (
                 <>

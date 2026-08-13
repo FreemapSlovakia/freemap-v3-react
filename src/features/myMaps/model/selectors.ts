@@ -27,11 +27,12 @@ export function urlMapIdSelector(state: RootState): string | undefined {
  * to call on every render.
  */
 export function mapDirtySelector(state: RootState): boolean {
-  const { activeMap, savedFingerprint } = state.myMaps;
+  const { activeMap, savedFingerprint, routeRecomputed } = state.myMaps;
 
   return (
     activeMap !== undefined &&
     savedFingerprint !== null &&
-    fingerprintState(state) !== savedFingerprint
+    // The one change the digest can't see, so it is recorded rather than derived.
+    (routeRecomputed || fingerprintState(state) !== savedFingerprint)
   );
 }

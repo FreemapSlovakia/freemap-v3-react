@@ -13,7 +13,6 @@ import {
   transportTypeDefs,
 } from '@shared/transportTypeDefs.js';
 import distance from '@turf/distance';
-import { hash } from 'ohash';
 import z from 'zod';
 import {
   GeoJSONFeatureGenericSchema,
@@ -25,19 +24,25 @@ import {
 import { loadRoutePlannerMessages } from '../../translations/loadRoutePlannerMessages.js';
 import {
   type Alternative,
+  AlternativeSchema,
   type Leg,
   type RoutePoint,
+  routeKey,
   routePlannerAddPoint,
   routePlannerPreventHint,
+  routePlannerRecompute,
+  routePlannerRestoreSavedRoute,
   routePlannerSetFinish,
   routePlannerSetIsochrones,
   routePlannerSetResult,
   routePlannerSetStart,
+  routePlannerSupersedeSavedRoute,
   type Step,
   type StepCoordinate,
   type StepMode,
   type StepStructure,
   type Waypoint,
+  WaypointSchema,
 } from '../actions.js';
 import {
   GraphhopperPathCostSchema,
@@ -45,6 +50,7 @@ import {
   graphhopperRouteUrl,
 } from '../graphhopperRoute.js';
 import { withIsochroneLimits } from '../isochrones.js';
+import { standingSavedRoute, storedRouteIsShowing } from '../reducer.js';
 import { updateRouteTypes } from './findRouteProcessor.js';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures];
@@ -132,89 +138,6 @@ const IsochroneResponseSchema = z.object({
   ),
 });
 
-const StepModeSchema = z.enum([
-  'foot',
-  'walking',
-  'cycling',
-  'driving',
-  'ferry',
-  'train',
-  'pushing bike',
-  'manual',
-  'error',
-]);
-
-const ManeuverModifierSchema = z.enum([
-  'uturn',
-  'sharp right',
-  'slight right',
-  'right',
-  'sharp left',
-  'slight left',
-  'left',
-  'straight',
-]);
-
-const RouteStepExtraSchema = z.object({
-  type: z.enum(['foot', 'bicycle']),
-  destination: z.string(),
-  departure: z.number().optional(),
-  duration: z.number().optional(),
-  number: z.number().optional(),
-});
-
-const StepSchema = z.object({
-  maneuver: z.object({
-    type: z.enum([
-      'turn',
-      'new name',
-      'depart',
-      'arrive',
-      'merge',
-      'on ramp',
-      'off ramp',
-      'fork',
-      'end of road',
-      'continue',
-      'roundabout',
-      'rotary',
-      'roundabout turn',
-      'exit rotary',
-      'exit roundabout',
-      'notification',
-    ]),
-    modifier: ManeuverModifierSchema.optional(),
-  }),
-  distance: z.number(),
-  duration: z.number(),
-  name: z.string(),
-  mode: StepModeSchema,
-  geometry: z.object({
-    coordinates: z.array(z.tuple([z.number(), z.number()])),
-  }),
-  extra: RouteStepExtraSchema.optional(),
-});
-
-const LegSchema = z.object({
-  steps: z.array(StepSchema),
-  distance: z.number(),
-  duration: z.number(),
-});
-
-const AlternativeSchema = z.object({
-  legs: z.array(LegSchema),
-  distance: z.number(),
-  duration: z.number(),
-});
-
-const WaypointSchema = z.object({
-  name: z.string(),
-  location: z.tuple([z.number(), z.number()]),
-  distance: z.number().optional(),
-  waypoint_index: z.number().optional(),
-  trips_index: z.number().optional(),
-});
-
 const OsrmResultSchema = z.object({
   code: z.string(),
   trips: z.array(AlternativeSchema).optional(),
@@ -232,9 +155,26 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     isochroneParams,
   } = getState().routePlanner;
 
+  // Getting past the stored route is what a recompute is for.
+  const recomputing = routePlannerRecompute.match(action);
+
+  // The open map already has this very route stored — putting it back costs no
+  // request and works offline, so an edit and its undo come home to the route
+  // that was planned.
+  if (!recomputing && standingSavedRoute(getState().routePlanner)) {
+    dispatch(routePlannerRestoreSavedRoute());
+
+    return;
+  }
+
+  // What is about to be routed, recorded with the result so a save can tell
+  // whether the waypoints have moved past it since.
+  const key = routeKey({ points, mode, transportType, roundtripParams });
+
   const clearResultAction = routePlannerSetResult({
     timestamp: Date.now(),
     transportType,
+    key,
     alternatives: [],
     waypoints: [],
   });
@@ -304,8 +244,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
   const segments =
     mode === 'route' &&
-    (isPremium(getState().auth.user) ||
-      hash([points, mode, transportType]) === getState().routePlanner.hash)
+    (isPremium(getState().auth.user) || key === getState().routePlanner.hash)
       ? segmentize(points, transportType)
       : [{ transport: transportType, points }];
 
@@ -320,6 +259,31 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     dispatch(clearResultAction);
 
     throw err;
+  }
+
+  const failure = datas.find((data) => data.status === 'rejected')?.reason;
+
+  // A failure that is nobody's to report: cancelled by something newer, or a map
+  // on its way in that will say what the route is. Deferred rather than dropped —
+  // whichever way that map ends, `mapsLoaded` / `mapsLoadFailed` / the restore's
+  // own trigger asks again, and the error surfaces then. Reloading a saved map
+  // applies its URL before the map arrives, and offline that request fails long
+  // before anything can cancel it.
+  if (
+    failure &&
+    ((failure instanceof DOMException && failure.name === 'AbortError') ||
+      getState().myMaps.loadMeta ||
+      getState().myMaps.restoring)
+  ) {
+    return;
+  }
+
+  // A map landed while this was in flight and its stored route answers for these
+  // waypoints. Cancelling can't be relied on to have stopped this — a response
+  // already on its way in isn't undone by an abort — so drop what came back
+  // rather than draw it over the route that was planned.
+  if (storedRouteIsShowing(getState().routePlanner)) {
+    return;
   }
 
   const alternativeSets: Alternative[][] = [];
@@ -369,14 +333,34 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     }
   }
 
+  // Nothing came back, and the map's own route stands for these very waypoints:
+  // put it back rather than draw straight `error` legs over it. A recompute that
+  // fails then costs nothing instead of losing the route it meant to refresh.
+  if (errored.some(Boolean) && standingSavedRoute(getState().routePlanner)) {
+    dispatch(routePlannerRestoreSavedRoute());
+
+    return;
+  }
+
   let alternatives: Alternative[];
 
   if (alternativeSets.length === 1 && alternativeSets[0]!.length > 1) {
     alternatives = alternativeSets[0]!;
   } else {
+    const routedDistance = alternativeSets.reduce(
+      (a, c) => a + (c[0]?.distance ?? 0),
+      0,
+    );
+
+    // Seconds per metre, for the straight legs below. Nothing routed — a
+    // straight-line transport, or every segment failing — leaves nothing to
+    // derive it from, and dividing by zero would put `NaN` into every duration:
+    // shown as `NaN h NaN m`, and stored as `null`, which no longer parses.
     const tpd =
-      alternativeSets.reduce((a, c) => a + (c[0]?.duration ?? 0), 0) /
-      alternativeSets.reduce((a, c) => a + (c[0]?.distance ?? 0), 0);
+      routedDistance > 0
+        ? alternativeSets.reduce((a, c) => a + (c[0]?.duration ?? 0), 0) /
+          routedDistance
+        : 0;
 
     const legs: Leg[] = [];
 
@@ -497,10 +481,17 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     routePlannerSetResult({
       timestamp: Date.now(),
       transportType,
+      key,
       alternatives,
       waypoints,
     }),
   );
+
+  // The route the map stored is no longer what's on screen — but only now that
+  // one actually came back to replace it.
+  if (recomputing) {
+    dispatch(routePlannerSupersedeSavedRoute());
+  }
 
   const isStartOrFinishAction = isAnyOf(
     routePlannerSetStart,

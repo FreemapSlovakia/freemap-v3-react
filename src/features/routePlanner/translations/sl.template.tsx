@@ -18,6 +18,7 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Omejitev razdalje',
   },
   milestones: 'Kilometrski kažipoti',
+  recompute: 'Preračunaj pot',
   style: {
     menuItem: 'Slog poti',
     title: 'Slog poti',

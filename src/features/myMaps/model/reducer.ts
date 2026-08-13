@@ -1,4 +1,5 @@
 import { authLogout } from '@features/auth/model/actions.js';
+import { routePlannerSupersedeSavedRoute } from '@features/routePlanner/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type MapLoadMeta,
@@ -27,6 +28,13 @@ export interface MapsState {
    */
   savedFingerprint: string | null;
   /**
+   * A recompute replaced the map's stored route. The digest can't see that — a
+   * restore rebuilds the route from the URL, where a stored one has nowhere to
+   * come from — so it is recorded outright. Cleared whenever a baseline is
+   * established, which is what a load and a save both end on.
+   */
+  routeRecomputed: boolean;
+  /**
    * The restore currently opening a map. Kept apart from `loadMeta`, which asks
    * `mapsLoadProcessor` to read the map from the backend — a restore may decide
    * not to. Held in full so the restore can resume once the auth check lands,
@@ -41,6 +49,7 @@ const initialState: MapsState = {
   activeMap: undefined,
   offlineIds: [],
   savedFingerprint: null,
+  routeRecomputed: false,
   restoring: undefined,
 };
 
@@ -78,6 +87,8 @@ export const mapsReducer = createReducer(initialState, (builder) =>
 
       state.savedFingerprint = null;
 
+      state.routeRecomputed = false;
+
       state.restoring = undefined;
     })
     .addCase(mapsSetMeta, (state, { payload }) => {
@@ -103,6 +114,8 @@ export const mapsReducer = createReducer(initialState, (builder) =>
     })
     .addCase(mapsSetSavedFingerprint, (state, { payload }) => {
       state.savedFingerprint = payload;
+
+      state.routeRecomputed = false;
     })
     // Only the restore this belongs to: a save setting a digest while a restore
     // waits on the network would otherwise abandon it, leaving the map that was
@@ -116,6 +129,9 @@ export const mapsReducer = createReducer(initialState, (builder) =>
     .addCase(mapsOfflineIdsLoaded, (state, { payload }) => {
       state.offlineIds = payload;
     })
+    .addCase(routePlannerSupersedeSavedRoute, (state) => {
+      state.routeRecomputed = true;
+    })
     .addCase(authLogout, (state) => ({
       ...initialState,
       activeMap: state.activeMap?.public
@@ -128,5 +144,6 @@ export const mapsReducer = createReducer(initialState, (builder) =>
       // Logging out saves nothing: while the map and its edited content stay on
       // screen, so does the comparison that reports them as unsaved.
       savedFingerprint: state.activeMap?.public ? state.savedFingerprint : null,
+      routeRecomputed: state.activeMap?.public ? state.routeRecomputed : false,
     })),
 );

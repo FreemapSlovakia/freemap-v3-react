@@ -18,6 +18,7 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Limite de distance',
   },
   milestones: 'Bornes kilométriques',
+  recompute: 'Recalculer l’itinéraire',
   style: {
     menuItem: 'Style de l’itinéraire',
     title: 'Style de l’itinéraire',

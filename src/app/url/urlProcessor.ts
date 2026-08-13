@@ -1,10 +1,10 @@
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
 import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
+import { routeKey } from '@features/routePlanner/model/actions.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
-import { hash } from 'ohash';
 import { encodeActiveModal } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
 import { openToolsSelector } from '../store/selectors.js';
@@ -291,14 +291,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     routePlanner.points.some((p) => p?.transport)
   ) {
     // for sharing "premium" route
-    historyParts.push([
-      'route-params-hash',
-      hash([
-        routePlanner.points,
-        routePlanner.mode,
-        routePlanner.transportType,
-      ]),
-    ]);
+    historyParts.push(['route-params-hash', routeKey(routePlanner)]);
   }
 
   // Everything describing what the map holds; shared with the my-maps

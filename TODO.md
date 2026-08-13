@@ -221,6 +221,28 @@ can't be made exclusive + optics). Keep the free/open core intact.
       own fill. Wanted in the map rendering too, though, or the drawing would
       stop mirroring what it was converted from.
 
+- [ ] **A stored route is invisible to the unsaved-changes comparison.** A saved
+      map carries its computed route (`savedRoute.ts`), but `fingerprintState`
+      deliberately ignores it: the digest has to match what a *restore* produces,
+      and a restore rebuilds the route from the URL, where a stored one has
+      nowhere to come from — so digesting it would report every restored map as
+      changed forever. Consequences: **Recompute route** has to say so outright
+      (`myMaps.routeRecomputed`, the one tracked flag in a slice that otherwise
+      derives everything), and switching to another alternative changes what a
+      save would store without the map reading as changed. Fixing it properly
+      means the restore knowing the stored result — e.g. keeping it in the
+      working copy beside the track, which would also close the entry below.
+
+- [ ] **A map with unsaved changes has no route offline.** The browser's working
+      copy (`mapStore.ts`) holds the track and the digest but not the route, so
+      reloading a *dirty* saved map takes `mapsRestoreProcessor`'s
+      record-exists-and-differs path: no document is read, nothing supplies
+      `savedRoute`, and the route is asked for from the URL — which offline
+      fails to a straight dotted line. A clean map reloads through `mapsLoad`
+      and gets its stored route from the cached document, so only unsaved work
+      is affected. Fix by putting `savedRoute` in the working-copy record beside
+      the track (needs a record-schema bump).
+
 ## Track viewer: generic geodata vs. recorded tracks
 
 The track viewer began as a GPX recording viewer and grew into a general geodata

@@ -1,18 +1,32 @@
+import { authSetUser } from '@features/auth/model/actions.js';
+import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { describe, expect, it } from 'vitest';
 import {
+  routeKey,
   routePlannerAddPoint,
   routePlannerDelete,
+  routePlannerRecompute,
   routePlannerRemovePoint,
+  routePlannerRestoreSavedRoute,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetMode,
   routePlannerSetPoint,
+  routePlannerSetResult,
   routePlannerSetRoundtripParams,
   routePlannerSetTransportType,
+  routePlannerSupersedeSavedRoute,
   routePlannerSwapEnds,
   routePlannerToggleItineraryVisibility,
   routePlannerToggleMilestones,
 } from './actions.js';
-import { routePlannerInitialState, routePlannerReducer } from './reducer.js';
+import {
+  routePlannerInitialState,
+  routePlannerReducer,
+  standingSavedRoute,
+  storedRouteIsShowing,
+} from './reducer.js';
+import { alternative, sampledLine } from './routeFixtures.js';
 
 /**
  * Pure reducer tests for the route-planner slice. Transport-type APIs (see
@@ -238,5 +252,200 @@ describe('routePlannerReducer — reset & misc', () => {
       ...routePlannerInitialState.roundtripParams,
       distance: 12000,
     });
+  });
+});
+
+// The sampled line costs elevation requests and is what a saved map carries, so
+// what does and doesn't drop it decides both when the service is asked again and
+// whether a map still has a profile offline.
+describe('routePlannerReducer — the sampled elevation line', () => {
+  const sampled = (saved: boolean) => ({
+    line: sampledLine([
+      [17.1, 48.1, 100],
+      [17.2, 48.2, 200],
+    ]),
+    saved,
+  });
+
+  const withLine = (saved: boolean) => ({
+    ...routePlannerInitialState,
+    sampledGeojson: sampled(saved),
+    renderGeojson: sampled(saved).line,
+  });
+
+  it('drops both lines with the result', () => {
+    const next = routePlannerReducer(
+      withLine(true),
+      routePlannerSetResult({
+        timestamp: 1,
+        transportType: 'hiking',
+        key: 'k',
+        alternatives: [],
+        waypoints: [],
+      }),
+    );
+
+    expect(next.sampledGeojson).toBeNull();
+    expect(next.renderGeojson).toBeNull();
+  });
+
+  it('drops both lines when another alternative is picked', () => {
+    const next = routePlannerReducer(
+      withLine(true),
+      routePlannerSetActiveAlternativeIndex(1),
+    );
+
+    expect(next.sampledGeojson).toBeNull();
+    expect(next.renderGeojson).toBeNull();
+  });
+
+  it('re-derives only the render line when smoothing changes', () => {
+    const next = routePlannerReducer(
+      withLine(false),
+      elevationSetSettings({ despikeWindow: 50 }),
+    );
+
+    // Kept, so the chart follows the new preference without a single request.
+    expect(next.sampledGeojson).not.toBeNull();
+    expect(next.renderGeojson).toBeNull();
+  });
+
+  it('re-samples for the tier the user signs in as', () => {
+    const next = routePlannerReducer(
+      withLine(false),
+      authSetUser(null as never),
+    );
+
+    expect(next.sampledGeojson).toBeNull();
+  });
+
+  it('keeps a line that came with a saved map when the tier changes', () => {
+    const next = routePlannerReducer(
+      withLine(true),
+      authSetUser(null as never),
+    );
+
+    expect(next.sampledGeojson).not.toBeNull();
+    expect(next.renderGeojson).toBeNull();
+  });
+});
+
+// The map's stored route outlives the live result, so an edit — or a request
+// that failed offline — can't lose it. Coming back to the waypoints it names
+// puts it on screen again without asking the router.
+describe('routePlannerReducer — the map’s stored route', () => {
+  const points = [
+    { lat: 48.1, lon: 17.1 },
+    { lat: 48.2, lon: 17.2 },
+  ] as never[];
+
+  const route = alternative([
+    [17.1, 48.1],
+    [17.2, 48.2],
+  ]);
+
+  const loaded = routePlannerReducer(
+    routePlannerInitialState,
+    mapsLoaded({
+      meta: {} as never,
+      data: {
+        routePlanner: {
+          points,
+          result: {
+            key: routeKey({
+              points,
+              mode: 'route',
+              transportType: 'hiking',
+              roundtripParams: routePlannerInitialState.roundtripParams,
+            }),
+            timestamp: 1000,
+            alternative: route,
+            waypoints: [],
+          },
+        },
+      },
+    }),
+  );
+
+  it('draws the stored route on load, and says so', () => {
+    expect(loaded.alternatives).toEqual([route]);
+    expect(storedRouteIsShowing(loaded)).toBe(true);
+  });
+
+  it('survives a transport switched away, and comes back with it', () => {
+    const away = routePlannerReducer(
+      loaded,
+      routePlannerSetTransportType('car'),
+    );
+
+    // The result is gone but the map's own answer is not.
+    expect(away.alternatives).toEqual([]);
+    expect(away.savedRoute).not.toBeNull();
+    expect(standingSavedRoute(away)).toBeUndefined();
+
+    const back = routePlannerReducer(
+      away,
+      routePlannerSetTransportType('hiking'),
+    );
+
+    expect(standingSavedRoute(back)).toBeDefined();
+
+    // Which is what the processor acts on, since it isn't on screen yet.
+    expect(storedRouteIsShowing(back)).toBe(false);
+
+    const restored = routePlannerReducer(back, routePlannerRestoreSavedRoute());
+
+    expect(restored.alternatives).toEqual([route]);
+    expect(storedRouteIsShowing(restored)).toBe(true);
+  });
+
+  it('is not showing once a waypoint has moved, so the route is asked for', () => {
+    const moved = routePlannerReducer(
+      loaded,
+      routePlannerSetPoint({ position: 1, point: { lat: 48.5, lon: 17.5 } }),
+    );
+
+    expect(storedRouteIsShowing(moved)).toBe(false);
+  });
+
+  it('refuses to restore a route that names other waypoints', () => {
+    const moved = routePlannerReducer(
+      loaded,
+      routePlannerSetPoint({ position: 1, point: { lat: 48.5, lon: 17.5 } }),
+    );
+
+    const next = routePlannerReducer(moved, routePlannerRestoreSavedRoute());
+
+    expect(next).toBe(moved);
+  });
+
+  // A recompute that fails — offline, or a router that won't answer — must leave
+  // the map with the route it had, so the stored one is given up only once
+  // another has actually arrived to replace it.
+  it('steps aside for a recompute without being given up', () => {
+    const next = routePlannerReducer(loaded, routePlannerRecompute());
+
+    // Off screen, so nothing short-circuits the request…
+    expect(next.alternatives).toEqual([]);
+    expect(storedRouteIsShowing(next)).toBe(false);
+
+    // …but still there, ready to be put back if nothing comes.
+    expect(next.savedRoute).not.toBeNull();
+    expect(standingSavedRoute(next)).toBeDefined();
+  });
+
+  it('is given up once a route arrives to replace it', () => {
+    const next = routePlannerReducer(
+      routePlannerReducer(loaded, routePlannerRecompute()),
+      routePlannerSupersedeSavedRoute(),
+    );
+
+    expect(next.savedRoute).toBeNull();
+  });
+
+  it('is given up with the route itself', () => {
+    expect(routePlannerReducer(loaded, routePlannerDelete()).savedRoute).toBe(
+      null,
+    );
   });
 });

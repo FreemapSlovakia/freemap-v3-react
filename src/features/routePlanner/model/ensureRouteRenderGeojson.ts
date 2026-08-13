@@ -9,12 +9,15 @@ import {
 } from '@shared/elevation.js';
 import { smoothElevation } from '@shared/elevationSmoothing.js';
 import { lineString } from '@turf/helpers';
+import type { Feature, LineString, Position } from 'geojson';
 import type { Dispatch } from 'redux';
+import type { Alternative } from './actions.js';
 import {
   routePlannerDelete,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetRenderGeojson,
   routePlannerSetResult,
+  routePlannerSetSampledGeojson,
 } from './actions.js';
 import {
   flattenWithStructures,
@@ -31,6 +34,13 @@ const cancelActions = [
 /**
  * Lazily builds the render-only elevation line for the active alternative and
  * caches it via {@link routePlannerSetRenderGeojson}.
+ *
+ * It is built in two steps, cached separately: the sampled line, which costs
+ * requests, and the levelling and smoothing on top of it, which are pure. That
+ * way changing the smoothing preferences re-derives without asking the
+ * elevation service again — and a route that came with a saved map carries its
+ * sampled line, so the profile is there offline and still follows those
+ * preferences.
  *
  * For premium users every vertex is overridden from our terrain model — which
  * serves a high-resolution DEM where available — and long segments are then
@@ -58,8 +68,12 @@ export async function ensureRouteRenderGeojson(
   getState: () => RootState,
   dispatch: Dispatch<RootAction>,
 ): Promise<void> {
-  const { alternatives, activeAlternativeIndex, renderGeojson } =
-    getState().routePlanner;
+  const {
+    alternatives,
+    activeAlternativeIndex,
+    renderGeojson,
+    sampledGeojson,
+  } = getState().routePlanner;
 
   if (renderGeojson) {
     return;
@@ -77,18 +91,50 @@ export async function ensureRouteRenderGeojson(
     return;
   }
 
-  const line = lineString(coordinates);
+  const sampled =
+    sampledGeojson?.line ??
+    (await sample(coordinates, alternative, getState, dispatch));
 
+  if (!sampled) {
+    return;
+  }
+
+  // Levelling comes after densifying: the inserted points are sampled from the
+  // terrain model too, so they'd put the artifact straight back inside a long
+  // bridge.
+  const render = smoothElevation(
+    straightenStructures(sampled, structures),
+    getState().elevationSettings,
+  );
+
+  if (getState().routePlanner.renderGeojson) {
+    return;
+  }
+
+  dispatch(routePlannerSetRenderGeojson(render));
+}
+
+/**
+ * The step that costs requests: elevation for every coordinate, densified for
+ * premium. Caches what it builds, and returns nothing if the route moved on
+ * while it was sampling.
+ */
+async function sample(
+  coordinates: Position[],
+  alternative: Alternative,
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+): Promise<Feature<LineString> | undefined> {
   const premium = isPremium(getState().auth.user);
 
-  // What answered across both reads below, stamped onto the render line so the
+  // What answered across both reads below, stamped onto the sampled line so the
   // chart credits the models this very profile was sampled from.
   const sources = new Set<string>();
 
   // Premium overrides every vertex from the terrain model; everyone else keeps
   // the router's own elevation and only fills coordinates that lack it.
   const [enriched] = await enrichElevations(
-    [line],
+    [lineString(coordinates)],
     premium ? 'all' : 'missing',
     getState,
     cancelActions,
@@ -101,22 +147,20 @@ export async function ensureRouteRenderGeojson(
     ? await densifyAlong(enriched!, getState, cancelActions, sources)
     : enriched!;
 
-  // After densifying: the inserted points are sampled from the terrain model
-  // too, so they'd put the artifact straight back inside a long bridge.
-  const render = smoothElevation(
-    straightenStructures(densified, structures),
-    getState().elevationSettings,
-  );
-
   // The route may have changed (or a concurrent call won) while sampling.
   const after = getState().routePlanner;
 
-  if (
-    after.renderGeojson ||
-    after.alternatives[after.activeAlternativeIndex] !== alternative
-  ) {
-    return;
+  if (after.alternatives[after.activeAlternativeIndex] !== alternative) {
+    return undefined;
   }
 
-  dispatch(routePlannerSetRenderGeojson(withElevationSources(render, sources)));
+  if (after.sampledGeojson) {
+    return after.sampledGeojson.line;
+  }
+
+  const sampled = withElevationSources(densified, sources);
+
+  dispatch(routePlannerSetSampledGeojson(sampled));
+
+  return sampled;
 }

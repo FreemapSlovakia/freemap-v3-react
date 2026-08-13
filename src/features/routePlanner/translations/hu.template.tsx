@@ -15,6 +15,7 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Távolságkorlát',
   },
   milestones: 'Távolságszelvények',
+  recompute: 'Útvonal újraszámítása',
   style: {
     menuItem: 'Útvonal stílusa',
     title: 'Útvonal stílusa',

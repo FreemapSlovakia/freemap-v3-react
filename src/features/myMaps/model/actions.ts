@@ -56,7 +56,17 @@ export const mapsLoadList = createAction('MAPS_LOAD_LIST');
 export const mapsSetList = createAction<MapMeta[]>('MAPS_SET_LIST');
 
 export const mapsSave = createAction<
-  { name?: string; writers?: number[]; asCopy?: boolean } | undefined
+  | {
+      name?: string;
+      writers?: number[];
+      asCopy?: boolean;
+      /**
+       * Flag the map for offline use once it exists. A map being created has no
+       * id yet, so it can't be flagged before the save answers with one.
+       */
+      offline?: boolean;
+    }
+  | undefined
 >('MAPS_SAVE');
 
 export const mapsDelete = createAction<string>('MAPS_DELETE');

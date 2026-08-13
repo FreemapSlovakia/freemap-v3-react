@@ -354,6 +354,7 @@ export function handleLocationChange(store: MyStore): void {
               buckets: Number(query['iso-buckets']) || 1,
             },
             hash: String(query['route-params-hash']),
+            deferRouting: restore !== null,
           }),
         );
       }

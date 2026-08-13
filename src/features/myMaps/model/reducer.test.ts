@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import { routePlannerSupersedeSavedRoute } from '@features/routePlanner/model/actions.js';
 import { describe, expect, it } from 'vitest';
 import {
   type MapMeta,
@@ -8,6 +9,7 @@ import {
   mapsLoadFailed,
   mapsRestore,
   mapsSetMeta,
+  mapsSetSavedFingerprint,
 } from './actions.js';
 import { type MapsState, mapsReducer } from './reducer.js';
 import { urlMapIdSelector } from './selectors.js';
@@ -137,5 +139,33 @@ describe('mapsReducer — what is pending', () => {
     );
 
     expect(mapsReducer(restoring, mapsDisconnect()).restoring).toBeUndefined();
+  });
+});
+
+// The route a map stores can't be seen by the digest — a restore rebuilds it
+// from the URL, where a stored one has nowhere to come from — so a route that
+// supersedes it says outright that the screen no longer matches the stored copy.
+describe('mapsReducer — superseding a stored route', () => {
+  it('reports the map as unsaved', () => {
+    const next = mapsReducer(
+      { ...initial, activeMap: meta('A'), savedFingerprint: 'fpA' },
+      routePlannerSupersedeSavedRoute(),
+    );
+
+    expect(next.routeRecomputed).toBe(true);
+
+    // The digest — and with it the browser's working copy of the track — stands.
+    expect(next.savedFingerprint).toBe('fpA');
+  });
+
+  it('is forgotten once a baseline is established again', () => {
+    const recomputed = mapsReducer(
+      { ...initial, activeMap: meta('A'), savedFingerprint: 'fpA' },
+      routePlannerSupersedeSavedRoute(),
+    );
+
+    expect(
+      mapsReducer(recomputed, mapsSetSavedFingerprint('fpB')).routeRecomputed,
+    ).toBe(false);
   });
 });

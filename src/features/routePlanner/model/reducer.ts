@@ -3,16 +3,18 @@ import {
   openTool,
   selectFeature,
 } from '@app/store/actions.js';
+import type { RootState } from '@app/store/store.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
-import { mapsLoaded } from '@features/myMaps/model/actions.js';
+import { mapsDisconnect, mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type TransportType,
   transportTypeDefs,
 } from '@shared/transportTypeDefs.js';
 import type { Feature, LineString, Polygon } from 'geojson';
+import { createSelector } from 'reselect';
 import {
   type Alternative,
   type IsochroneParams,
@@ -20,9 +22,12 @@ import {
   type RoundtripParams,
   type RoutePoint,
   type RoutingMode,
+  routeKey,
   routePlannerAddPoint,
   routePlannerDelete,
+  routePlannerRecompute,
   routePlannerRemovePoint,
+  routePlannerRestoreSavedRoute,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetFinish,
   routePlannerSetIsochroneParams,
@@ -35,29 +40,60 @@ import {
   routePlannerSetRenderGeojson,
   routePlannerSetResult,
   routePlannerSetRoundtripParams,
+  routePlannerSetSampledGeojson,
+  routePlannerSetSavedRoute,
   routePlannerSetStart,
   routePlannerSetTransportType,
+  routePlannerSupersedeSavedRoute,
   routePlannerSwapEnds,
   routePlannerToggleItineraryVisibility,
   routePlannerToggleMilestones,
+  type SavedRoute,
   type Waypoint,
 } from './actions.js';
+
+export interface SampledRouteLine {
+  line: Feature<LineString>;
+  /**
+   * Came with a saved map rather than being sampled here, so it stands for
+   * whoever opens that map — a sampled line belongs to the tier it was built
+   * for and is dropped when that changes.
+   */
+  saved: boolean;
+}
 
 export interface RoutePlannerCleanResultState {
   alternatives: Alternative[];
   waypoints: Waypoint[];
   activeAlternativeIndex: number;
   timestamp: number | null;
+  /**
+   * {@link routeKey} of what the result on screen was computed for. An edit
+   * doesn't clear the result while the next route is in flight, so this is the
+   * only thing that says which waypoints the drawn line actually joins.
+   */
+  resultKey: string | null;
   isochrones: Feature<Polygon>[] | null;
-  // Render-only line for the active alternative: every elevation from our DEM
-  // (router elevation ignored), long segments densified. A cache for the chart
-  // and elevation colorize; `null` falls back to the alternative's own
-  // coordinates. Never exported. Cleared with the result or on alternative
-  // switch.
+  // DEM-sampled line for the active alternative: every elevation from our DEM
+  // (router elevation ignored), long segments densified. What a saved map
+  // stores, and what the render line below is built from. Cleared with the
+  // result or on alternative switch.
+  sampledGeojson: SampledRouteLine | null;
+  // Render-only line: the sampled one with bridges/tunnels levelled and
+  // elevation smoothed to the live preferences. A cache for the chart and
+  // elevation colorize; `null` falls back to the alternative's own coordinates.
+  // Never exported.
   renderGeojson: Feature<LineString> | null;
 }
 
 export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
+  /**
+   * The route the open map has stored. Deliberately outside `clearResult`: an
+   * edit, or a request that failed, must not lose the map's own answer — coming
+   * back to the waypoints it names puts it on screen again, with no request.
+   * Only deleting the route, or asking for a recompute, gives it up.
+   */
+  savedRoute: SavedRoute | null;
   points: RoutePoint[];
   finishOnly: boolean;
   pickMode: PickMode | null;
@@ -72,11 +108,14 @@ const clearResult: RoutePlannerCleanResultState = {
   waypoints: [],
   activeAlternativeIndex: 0,
   timestamp: null,
+  resultKey: null,
   isochrones: null,
+  sampledGeojson: null,
   renderGeojson: null,
 };
 
 export const cleanState: RoutePlannerCleanState = {
+  savedRoute: null,
   points: [],
   finishOnly: false,
   pickMode: null,
@@ -119,10 +158,14 @@ export type RoutePlannerMapData = Partial<
     | 'roundtripParams'
     | 'isochroneParams'
   >
->;
+> & {
+  /** The computed route, so opening the map needn't ask the router again. */
+  result?: SavedRoute;
+};
 
 /**
- * A map document's route on top of the slice defaults, with the results cleared.
+ * A map document's route on top of the slice defaults, carrying the stored
+ * result where the document has one that still describes its own waypoints.
  *
  * Shared by the load and by the my-maps unsaved-changes comparison, which needs
  * to know what a document *would* put on screen: if the two disagreed on a
@@ -132,8 +175,9 @@ export type RoutePlannerMapData = Partial<
 export function routePlannerFromMapData(
   data: RoutePlannerMapData | undefined,
 ): RoutePlannerState {
-  return {
+  const state: RoutePlannerState = {
     ...routePlannerInitialState,
+    savedRoute: data?.result ?? null,
     transportType:
       data?.transportType ?? routePlannerInitialState.transportType,
     points: data?.points ?? routePlannerInitialState.points,
@@ -145,6 +189,63 @@ export function routePlannerFromMapData(
       data?.roundtripParams ?? routePlannerInitialState.roundtripParams,
     isochroneParams:
       data?.isochroneParams ?? routePlannerInitialState.isochroneParams,
+  };
+
+  // A stored route that names other waypoints was left behind by an edit that
+  // never reached it. It is kept all the same — putting it on screen is gated on
+  // the waypoints it names, so it simply waits for them.
+  const route = standingSavedRoute(state);
+
+  return route ? showSavedRoute(state, route) : state;
+}
+
+/** The map's stored route, when it answers for the route as it now stands. */
+export function standingSavedRoute(
+  state: RoutePlannerState,
+): SavedRoute | undefined {
+  const { savedRoute } = state;
+
+  return savedRoute && savedRoute.key === routeKey(state)
+    ? savedRoute
+    : undefined;
+}
+
+/**
+ * Whether the map's stored route is the result on screen, so nothing has to put
+ * it there. A route whose result is still the stored one but whose waypoints have
+ * since moved is not showing it — that line is merely the last one drawn. The
+ * timestamp is compared first, rejecting that case without hashing.
+ */
+export function storedRouteIsShowing(state: RoutePlannerState): boolean {
+  return (
+    state.savedRoute?.timestamp === state.timestamp &&
+    standingSavedRoute(state) !== undefined
+  );
+}
+
+/**
+ * {@link storedRouteIsShowing} for a component. Memoized on the slice: an inline
+ * selector re-runs on every dispatch, and this one hashes the waypoints.
+ */
+export const storedRouteIsShowingSelector = createSelector(
+  [(state: RootState) => state.routePlanner],
+  storedRouteIsShowing,
+);
+
+function showSavedRoute(
+  state: RoutePlannerState,
+  route: SavedRoute,
+): RoutePlannerState {
+  return {
+    ...state,
+    ...clearResult,
+    alternatives: [route.alternative],
+    waypoints: route.waypoints,
+    timestamp: route.timestamp,
+    resultKey: route.key,
+    sampledGeojson: route.geometry
+      ? { line: route.geometry, saved: true }
+      : null,
   };
 }
 
@@ -352,12 +453,13 @@ export const routePlannerReducer = createReducer(
       }))
       .addCase(
         routePlannerSetResult,
-        (state, { payload: { alternatives, waypoints, timestamp } }) => ({
+        (state, { payload: { alternatives, waypoints, timestamp, key } }) => ({
           ...state,
           ...clearResult,
           alternatives,
           waypoints,
           timestamp,
+          resultKey: key,
           activeAlternativeIndex: 0,
         }),
       )
@@ -374,22 +476,53 @@ export const routePlannerReducer = createReducer(
       .addCase(routePlannerSetActiveAlternativeIndex, (state, action) => ({
         ...state,
         activeAlternativeIndex: action.payload,
-        // A different alternative needs its own render line.
+        // A different alternative needs its own elevation line.
+        sampledGeojson: null,
         renderGeojson: null,
       }))
+      .addCase(routePlannerSetSampledGeojson, (state, action) => {
+        state.sampledGeojson = { line: action.payload, saved: false };
+      })
+      .addCase(routePlannerSetSavedRoute, (state, action) => {
+        state.savedRoute = action.payload;
+      })
+      .addCase(routePlannerRestoreSavedRoute, (state) => {
+        const route = standingSavedRoute(state);
+
+        return route ? showSavedRoute(state, route) : state;
+      })
+      // Clearing the result is what lets the request through: the stored route is
+      // no longer on screen, so nothing short-circuits it. The route itself is
+      // kept — a recompute that fails puts it straight back.
+      .addCase(routePlannerRecompute, (state) => ({
+        ...state,
+        ...clearResult,
+      }))
+      .addCase(routePlannerSupersedeSavedRoute, (state) => {
+        state.savedRoute = null;
+      })
+      // The map it belongs to is gone.
+      .addCase(mapsDisconnect, (state) => {
+        state.savedRoute = null;
+      })
       .addCase(routePlannerSetRenderGeojson, (state, action) => {
         state.renderGeojson = action.payload;
       })
       .addCase(authSetUser, (state) => {
-        // The render line is sampled differently for premium (every vertex from
-        // the terrain model, then densified), so it belongs to the user it was
-        // built for.
+        // The line is sampled differently for premium (every vertex from the
+        // terrain model, then densified), so it belongs to the user it was
+        // built for. One that came with a saved map belongs to the map instead.
+        if (!state.sampledGeojson?.saved) {
+          state.sampledGeojson = null;
+        }
+
         state.renderGeojson = null;
       })
       .addCase(elevationSetSettings, (state, { payload }) => {
         // The render line is derived from the smoothing windows, and from
         // nothing else in the slice — the steepness window is read off the
         // drawn points, so dropping the cache for it would resample for nothing.
+        // The sampled line it is built from stands, so this costs no request.
         if (affectsElevationSmoothing(payload)) {
           state.renderGeojson = null;
         }

@@ -9,6 +9,7 @@ import {
   toWireHoleIndexes,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { routePlannerFromMapData } from '@features/routePlanner/model/reducer.js';
+import { savedRouteFromState } from '@features/routePlanner/model/savedRoute.js';
 import { hash } from 'ohash';
 import { createSelector } from 'reselect';
 import type { MapData } from './actions.js';
@@ -55,6 +56,11 @@ export function getMapDataFromState(state: RootState): MapData {
       milestones: routePlanner.milestones,
       roundtripParams: routePlanner.roundtripParams,
       isochroneParams: routePlanner.isochroneParams,
+      // The computed route, so the map opens without a routing request — and
+      // opens at all offline. Deliberately outside the fingerprint below: it is
+      // built lazily after the map is on screen, so digesting it would report a
+      // map as changed for merely having been looked at.
+      result: savedRouteFromState(routePlanner),
     },
     objectsV2: {
       active: objects.active,

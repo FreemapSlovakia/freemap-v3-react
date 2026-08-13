@@ -17,6 +17,7 @@ const en: RoutePlannerMessages = {
     distanceLimit: 'Distance limit',
   },
   milestones: 'Milestones',
+  recompute: 'Recompute route',
   style: {
     menuItem: 'Route style',
     title: 'Route style',

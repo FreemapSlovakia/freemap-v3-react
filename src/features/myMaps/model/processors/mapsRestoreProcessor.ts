@@ -8,6 +8,10 @@ import {
   dataViewerSetGpxUrl,
   dataViewerSetTrackUID,
 } from '@features/dataViewer/model/actions.js';
+import {
+  routePlannerFindRoute,
+  routePlannerSetSavedRoute,
+} from '@features/routePlanner/model/actions.js';
 import type { FeatureCollection } from 'geojson';
 import { getMapRecord } from '../../mapStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
@@ -70,6 +74,10 @@ export const mapsRestoreProcessor: Processor = {
     // user has moved on from, so none of them may be applied.
     const superseded = () => getState().myMaps.restoring?.mapId !== mapId;
 
+    // Something newer owns this restore — most often the auth re-run of this very
+    // processor, which claims the same map and so can't be told apart by id.
+    let handedOver = false;
+
     const load = () => {
       dispatch(mapsLoad({ id: mapId, ignoreMap, ignoreLayers }));
     };
@@ -118,112 +126,137 @@ export const mapsRestoreProcessor: Processor = {
       }
     };
 
-    // The history entry carries the content; the browser copy is per-tab and
-    // says nothing about what a fresh tab is showing.
-    if (!hasRestoredContent) {
-      load();
-
-      // `handleLocationChange` deferred the track the URL names to this
-      // processor, so it has to be started here or it never loads at all.
-      if (trackUID !== undefined) {
-        dispatch(dataViewerDownloadTrack(trackUID));
-      }
-
-      if (gpxUrl !== undefined) {
-        dispatch(dataViewerGpxLoad(gpxUrl));
-      }
-
-      return;
-    }
-
-    let record;
-
     try {
-      record = await getMapRecord(mapId);
-    } catch (err) {
-      console.warn('Error reading map working copy:', err);
-    }
-
-    if (superseded()) {
-      return;
-    }
-
-    if (record) {
-      dispatch(mapsSetMeta(record.meta));
-
-      restoreTrack(record.track, record.trackUID, record.gpxUrl);
-
-      dispatch(mapsSetSavedFingerprint(record.savedFingerprint));
-
-      // Nothing unsaved to protect, so take a fresh copy from the backend.
-      if (fingerprintState(getState()) === record.savedFingerprint) {
+      // The history entry carries the content; the browser copy is per-tab and
+      // says nothing about what a fresh tab is showing.
+      if (!hasRestoredContent) {
         load();
-      }
 
-      return;
-    }
+        // `handleLocationChange` deferred the track the URL names to this
+        // processor, so it has to be started here or it never loads at all.
+        if (trackUID !== undefined) {
+          dispatch(dataViewerDownloadTrack(trackUID));
+        }
 
-    // Content was restored but there is no copy to compare it against — pruned,
-    // cleared, or storage unavailable. A plain load would silently discard that
-    // content, so read the stored document only to learn what the map holds and
-    // let the comparison decide whether what's on screen differs from it.
-    let document;
+        if (gpxUrl !== undefined) {
+          dispatch(dataViewerGpxLoad(gpxUrl));
+        }
 
-    try {
-      document = await readMapDocument(mapId, getState, [
-        mapsRestore,
-        mapsLoad,
-        mapsDisconnect,
-        authSetUser,
-        authLogout,
-      ]);
-    } catch (err) {
-      // An abort is something else taking over — a newer restore or load, or the
-      // auth check this processor re-runs on, which a second tab can trigger at
-      // any moment. That is not a map that failed to open, so nothing below may
-      // treat it as one and disconnect; the run it belongs to decides.
-      if (err instanceof DOMException && err.name === 'AbortError') {
         return;
       }
 
-      await toastError(err, loadMyMapsMessages, 'fetchError');
-    }
+      let record;
 
-    if (superseded()) {
-      return;
-    }
-
-    if (!document) {
-      restoreTrack(null, null, null);
-
-      if (getState().myMaps.activeMap?.id === mapId) {
-        // A reload of the map that is already connected: it stays, but nothing
-        // establishes a baseline, so it can't be reported as saved. An explicit
-        // Reload re-establishes one. The only path that opens no map and so has
-        // to release itself; every other ends on a meta, a load or a disconnect.
-        dispatch(mapsSetSavedFingerprint(UNKNOWN_FINGERPRINT));
-
-        dispatch(mapsRestoreEnded(mapId));
-      } else {
-        // The map couldn't be opened, so leave none connected. Staying connected
-        // to the map that was open before would attribute this content to it —
-        // and Save would then write it over that map.
-        dispatch(mapsDisconnect());
+      try {
+        record = await getMapRecord(mapId);
+      } catch (err) {
+        console.warn('Error reading map working copy:', err);
       }
 
-      return;
+      if (superseded()) {
+        return;
+      }
+
+      if (record) {
+        dispatch(mapsSetMeta(record.meta));
+
+        restoreTrack(record.track, record.trackUID, record.gpxUrl);
+
+        dispatch(mapsSetSavedFingerprint(record.savedFingerprint));
+
+        // The working copy holds no route, so this map has none until the load
+        // below reads one — and the map being left must not lend it its own.
+        dispatch(routePlannerSetSavedRoute(null));
+
+        // Nothing unsaved to protect, so take a fresh copy from the backend.
+        if (fingerprintState(getState()) === record.savedFingerprint) {
+          load();
+        }
+
+        return;
+      }
+
+      // Content was restored but there is no copy to compare it against — pruned,
+      // cleared, or storage unavailable. A plain load would silently discard that
+      // content, so read the stored document only to learn what the map holds and
+      // let the comparison decide whether what's on screen differs from it.
+      let document;
+
+      try {
+        document = await readMapDocument(mapId, getState, [
+          mapsRestore,
+          mapsLoad,
+          mapsDisconnect,
+          authSetUser,
+          authLogout,
+        ]);
+      } catch (err) {
+        // An abort is something else taking over — a newer restore or load, or the
+        // auth check this processor re-runs on, which a second tab can trigger at
+        // any moment. That is not a map that failed to open, so nothing below may
+        // treat it as one and disconnect; the run it belongs to decides.
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          handedOver = true;
+
+          return;
+        }
+
+        await toastError(err, loadMyMapsMessages, 'fetchError');
+      }
+
+      if (superseded()) {
+        return;
+      }
+
+      if (!document) {
+        restoreTrack(null, null, null);
+
+        if (getState().myMaps.activeMap?.id === mapId) {
+          // A reload of the map that is already connected: it stays, but nothing
+          // establishes a baseline, so it can't be reported as saved. An explicit
+          // Reload re-establishes one. The only path that opens no map and so has
+          // to release itself; every other ends on a meta, a load or a disconnect.
+          dispatch(mapsSetSavedFingerprint(UNKNOWN_FINGERPRINT));
+
+          dispatch(mapsRestoreEnded(mapId));
+        } else {
+          // The map couldn't be opened, so leave none connected. Staying connected
+          // to the map that was open before would attribute this content to it —
+          // and Save would then write it over that map.
+          dispatch(mapsDisconnect());
+        }
+
+        return;
+      }
+
+      dispatch(mapsSetMeta(document.meta));
+
+      // The document was read only to compare against, but it says what route
+      // this map holds all the same — so the routing below draws it rather than
+      // asking for it, whenever the waypoints on screen are still its own.
+      dispatch(
+        routePlannerSetSavedRoute(document.data.routePlanner?.result ?? null),
+      );
+
+      restoreTrack(
+        document.data.trackViewer?.trackGeojson ?? null,
+        document.data.trackViewer?.trackUID ?? null,
+        document.data.trackViewer?.gpxUrl ?? null,
+      );
+
+      dispatch(
+        mapsSetSavedFingerprint(fingerprintDocument(document.data, getState())),
+      );
+    } finally {
+      // No map is opening to say what the route is, so the route the URL asked
+      // for is the route — `handleLocationChange` deliberately left it unrouted
+      // for this to decide. `loadMeta` covers `load()` above, which sets it
+      // synchronously, as well as a load that has taken over meanwhile.
+      const { loadMeta, restoring: pending } = getState().myMaps;
+
+      if (!handedOver && !loadMeta && (!pending || pending.mapId === mapId)) {
+        dispatch(routePlannerFindRoute());
+      }
     }
-
-    dispatch(mapsSetMeta(document.meta));
-
-    restoreTrack(
-      document.data.trackViewer?.trackGeojson ?? null,
-      document.data.trackViewer?.trackUID ?? null,
-      document.data.trackViewer?.gpxUrl ?? null,
-    );
-
-    dispatch(
-      mapsSetSavedFingerprint(fingerprintDocument(document.data, getState())),
-    );
   },
 };

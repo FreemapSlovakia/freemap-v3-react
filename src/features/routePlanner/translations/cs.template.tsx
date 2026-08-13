@@ -15,6 +15,7 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Limit vzdálenosti',
   },
   milestones: 'Kilometrovník',
+  recompute: 'Přepočítat trasu',
   style: {
     menuItem: 'Styl trasy',
     title: 'Styl trasy',

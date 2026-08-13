@@ -15,6 +15,7 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     distanceLimit: 'Limite distanza',
   },
   milestones: 'Marcatori',
+  recompute: 'Ricalcola il percorso',
   style: {
     menuItem: 'Stile del percorso',
     title: 'Stile del percorso',
