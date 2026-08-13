@@ -24,7 +24,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
   legend: 'Legenda',
   filter: 'Filtro',
   showPhotosFrom: 'Vedi le foto',
-  excludesWikimedia: 'Non include le foto da Wikimedia',
+  excludesWikimedia: 'Non includere le foto da Wikimedia',
   showLayer: 'Mostra il livello',
   upload: 'Carica',
 
@@ -72,7 +72,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
       </>
     ),
     uploadedOn: (createdAt) => <>Caricata il {createdAt}</>,
-    captured: (takenAt) => <>Captured on {takenAt}</>,
+    captured: (takenAt) => <>Scattata il {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
         <>
@@ -84,7 +84,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     deleteTitle: 'Eliminazione foto',
     modify: 'Modifica',
     premiumOnly:
-      'Questa foto è stata resa disponibile dal suo autore solo agli utenti con accesso premium.',
+      'Questa foto è stata resa disponibile dall''autore ai soli utenti con accesso premium.',
     noComments: 'Nessun commento',
   },
 
@@ -112,10 +112,10 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     },
     rules: `
       <ul>
-        <li>Non caricare foto troppo piccole (diapositive). Le dimensioni massime non sono limitate. La dimensione massima del file è limitata a 10 MB. I file più grandi saranno respinti.</li>
+        <li>Non caricare foto troppo piccole (diapositive). La risoluzione massima non è limitata. La dimensione massima del file è limitata a 10 MB. I file più grandi saranno respinti.</li>
         <li>Carica soltanto foto di panorami o di documentazione. I ritratti e le macro non sono accettate e saranno eliminate senza preavviso.</li>
         <li>Carica soltanto foto scattate da te e di tua proprietà.</li>
-        <li>Didascalie o commenti che non si riferiscono direttamente al contenuto delle foto caricate o che contraddicono i principi generalmente accettati di convivenza civile verranno rimossi. I trasgressori di questa regola saranno avvisati e, in caso di ripetute violazioni, il loro account nell'applicazione potrebbe essere cancellato.</li>
+        <li>Didascalie o commenti che non si riferiscono direttamente al contenuto delle foto caricate o che contraddicono i principi generalmente accettati di convivenza civile verranno rimossi. I trasgressori di questa regola saranno avvisati e, in caso di ripetute violazioni, il loro account nell'applicazione potrà essere cancellato.</li>
         <li>Caricando le foto, accetti che esse saranno distribuite secondo i termini della licenza che scegli per ciascuna di esse (CC BY-SA 4.0 per impostazione predefinita).</li>
         <li>L'operatore (Freemap.sk) declina ogni responsabilità e non risponde per danni diretti o indiretti derivanti dalla pubblicazione di una foto in galleria. La persona che ha caricato l'immagine sul server è pienamente responsabile della foto.</li>
         <li>L'operatore si riserva il diritto di modificare la descrizione, il nome, la posizione e i tag della foto, o di eliminare la foto se il contenuto è inappropriato (in violazione di queste regole).</li>
@@ -156,7 +156,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
 
   locationPicking: {
-    title: "Selezione l'ubicazione della foto",
+    title: "Seleziona l'ubicazione della foto",
   },
 
   deletingError: ({ err }) =>
