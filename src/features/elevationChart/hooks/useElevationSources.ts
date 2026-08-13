@@ -1,6 +1,6 @@
 import {
   elevationSourcesFromTokens,
-  SRTM_TOKEN,
+  SONNY_TOKEN,
 } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
@@ -26,10 +26,10 @@ export function useElevationSources(
       return [];
     }
 
-    // The router's own elevation is the same SRTM data the API falls back to, so
-    // it joins the reported tokens rather than being credited separately — and
-    // collapses into one entry where the API reported it too.
-    const tokens = provenance === 'srtm' ? [...reported, SRTM_TOKEN] : reported;
+    // The router's own elevation joins the reported tokens rather than being
+    // credited separately, so both resolve through one table.
+    const tokens =
+      provenance === 'sonny' ? [...reported, SONNY_TOKEN] : reported;
 
     const regionNames = new Intl.DisplayNames(language, { type: 'region' });
 

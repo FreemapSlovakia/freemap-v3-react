@@ -305,6 +305,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       map: 'zemljevid',
       data: 'podatki',
       photos: 'slike',
+      routing: 'iskanje poti',
     },
     attr: {
       osmData: '©\xa0sodelavci OpenStreetMap',

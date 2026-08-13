@@ -65,14 +65,15 @@ describe('elevationSourcesFromTokens', () => {
     expect(tokenNames(['eudem'])).toEqual(['eudem']);
   });
 
-  it('credits SRTM once when both the router and the API report it', () => {
-    expect(tokenNames(['srtm', 'srtm'])).toEqual(['SRTM']);
+  it('credits the router’s own model, which the API never reports', () => {
+    expect(tokenNames(['sonny'])).toEqual(["Sonny's LiDAR DTM"]);
   });
 
-  it('credits both global models, in registry order, after the national ones', () => {
-    expect(tokenNames(['srtm', 'gedtm30', 'sk'])).toEqual([
+  it('credits every global model, in registry order, after the national ones', () => {
+    expect(tokenNames(['srtm', 'sonny', 'gedtm30', 'sk'])).toEqual([
       'DMR 5.0: ÚGKK SR',
       'GEDTM30',
+      "Sonny's LiDAR DTM",
       'SRTM',
     ]);
   });

@@ -51,6 +51,7 @@ import {
   graphhopperRouteUrl,
 } from '../graphhopperRoute.js';
 import { withIsochroneLimits } from '../isochrones.js';
+import { legTransports } from '../legTransports.js';
 import { standingSavedRoute, storedRouteIsShowing } from '../reducer.js';
 import { updateRouteTypes } from './findRouteProcessor.js';
 
@@ -656,27 +657,15 @@ type Segment = {
 function segmentize(points: RoutePoint[], defaultTransport: TransportType) {
   const segments: Segment[] = [];
 
-  let prevPoint: RoutePoint | undefined;
-
-  for (const point of points) {
-    if (!prevPoint) {
-      prevPoint = point;
-
-      continue;
+  // Consecutive legs sharing a transport are routed as one request, so each
+  // change of transport opens a segment that starts at the leg's own point.
+  legTransports(points, defaultTransport).forEach((transport, i) => {
+    if (segments.at(-1)?.transport !== transport) {
+      segments.push({ transport, points: [points[i]!] });
     }
 
-    const prevTransport = prevPoint.transport ?? defaultTransport;
-
-    if (segments.length === 0) {
-      segments.push({ transport: prevTransport, points: [prevPoint] });
-    } else if (prevTransport !== segments.at(-1)?.transport) {
-      segments.push({ transport: prevTransport, points: [prevPoint] });
-    }
-
-    segments.at(-1)?.points.push(point);
-
-    prevPoint = point;
-  }
+    segments.at(-1)!.points.push(points[i + 1]!);
+  });
 
   return segments;
 }

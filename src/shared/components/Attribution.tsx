@@ -3,7 +3,10 @@ import {
   documentShow,
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { legTransports } from '@features/routePlanner/model/legTransports.js';
+import { SONNY_ROUTING_ATTR } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, type ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import { type AttributionDef, integratedLayerDefs } from '../mapDefinitions.js';
@@ -67,12 +70,48 @@ export function Attribution({ unknown }: Props): ReactElement {
   );
 }
 
-function useCategorizedAttribution(layers: string[], countries?: string[]) {
+/**
+ * Whether a GraphHopper result stands. Its graph is weighted by Sonny's terrain
+ * model, so the model is credited for any route or isochrone it produced — the
+ * elevation chart credits only what the drawn profile displays, which past the
+ * free tier is our own terrain model instead.
+ *
+ * A multimodal route is asked of both routers leg by leg, so one GraphHopper leg
+ * under an OSRM default is enough. The free tier ignores the per-leg overrides,
+ * which this doesn't model: crediting a source that didn't answer is the lesser
+ * error, dropping one that did is the licence breach.
+ */
+function useHasGraphhopperResult(): boolean {
+  return useAppSelector((state) => {
+    const { alternatives, isochrones, mode, points, transportType } =
+      state.routePlanner;
+
+    if (alternatives.length === 0 && !isochrones?.length) {
+      return false;
+    }
+
+    // Only an ordered route is planned leg by leg; every other mode — and a
+    // result with no legs to read, an isochrone above all — goes by the default.
+    const legs = mode === 'route' ? legTransports(points, transportType) : [];
+
+    return (legs.length > 0 ? legs : [transportType]).some(
+      (transport) => transportTypeDefs[transport]?.api === 'gh',
+    );
+  });
+}
+
+function useCategorizedAttribution(
+  layers: string[],
+  countries?: string[],
+  creditRouting = true,
+) {
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
   const cachedAttrs = cachedMaps
     .filter((cm) => layers.includes(cm.type) && cm.attribution)
     .flatMap((cm) => cm.attribution!);
+
+  const graphhopperResult = useHasGraphhopperResult();
 
   const categorized = categorize(
     [
@@ -80,6 +119,7 @@ function useCategorizedAttribution(layers: string[], countries?: string[]) {
         .filter(({ type }) => layers.includes(type))
         .flatMap((def) => def.attribution),
       ...cachedAttrs,
+      ...(creditRouting && graphhopperResult ? [SONNY_ROUTING_ATTR] : []),
     ].filter((def) => coversCountries(def, countries)),
   );
 
@@ -92,16 +132,21 @@ function useCategorizedAttribution(layers: string[], countries?: string[]) {
  * Plain-text attribution for the given layers and covered countries, suitable
  * for baking into an exported map. Mirrors {@link useResolvedAttribution} but
  * flattens to a string and skips attributions whose label is not plain text.
+ *
+ * `creditRouting` is what the caller says about the route: an export that leaves
+ * it out must not carry the routers' credit either.
  */
 export function useResolvedAttributionText(
   layers: string[],
   countries?: string[],
+  creditRouting = true,
 ): string | null {
   const m = useMessages();
 
   const { categorized, esriAttribution } = useCategorizedAttribution(
     layers,
     countries,
+    creditRouting,
   );
 
   if (categorized.length === 0) {
@@ -132,12 +177,14 @@ export function useResolvedAttributionText(
 export function useResolvedAttribution(
   layers: string[],
   countries?: string[],
+  creditRouting = true,
 ): [string, ReactElement][] | null {
   const m = useMessages();
 
   const { categorized, esriAttribution } = useCategorizedAttribution(
     layers,
     countries,
+    creditRouting,
   );
 
   const dispatch = useDispatch();

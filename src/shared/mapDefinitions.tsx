@@ -22,7 +22,7 @@ import transparent1x1 from '@/images/1x1-transparent.png';
 import white1x1 from '@/images/1x1-white.png';
 
 export interface AttributionDef {
-  type: 'map' | 'data' | 'photos';
+  type: 'map' | 'data' | 'photos' | 'routing';
   name?: string;
   nameKey?:
     | 'osmData'

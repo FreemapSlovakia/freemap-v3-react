@@ -292,6 +292,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       map: 'mapa',
       data: 'dane',
       photos: 'zdjęcia',
+      routing: 'wyszukiwanie tras',
     },
     attr: {
       osmData: '© współtwórcy OpenStreetMap',

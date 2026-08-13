@@ -201,6 +201,7 @@ export type Messages = {
       map: string;
       data: string;
       photos: string;
+      routing: string;
     };
     attr: Record<string, ReactNode>;
     configureLayers: string;

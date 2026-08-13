@@ -11,6 +11,7 @@ import {
  * advertises, so it must track the models the API actually holds.
  *
  * A non-premium read gets none of these: it is answered from SRTM everywhere.
+ * Neither is what GraphHopper returns from its own graph — that is Sonny's.
  *
  * Drawn from the outdoor renderer's shading sources
  * (`OUTDOOR_NATIONAL_DTM_ATTRIBUTION` in `mapDefinitions.tsx`) — the same
@@ -42,29 +43,48 @@ export const ELEVATION_API_DTM_ATTRIBUTION =
     ELEVATION_API_DTM_COUNTRIES.includes(attr.country),
   );
 
-/**
- * The near-global model behind two unrelated things: what the elevation API
- * answers a non-premium read with, and what GraphHopper serves its own elevation
- * from (`graph.elevation.provider: srtm`), which a route's profile keeps on the
- * free tier. Being one dataset, it is credited once either way.
- */
+/** The near-global model the elevation API answers a non-premium read with. */
 export const SRTM_ATTR: AttributionDef = {
   type: 'data',
   name: 'SRTM',
   url: 'https://www.earthdata.nasa.gov/data/instruments/srtm',
 };
 
-/** The token for GraphHopper's own elevation, which is the same SRTM data. */
 export const SRTM_TOKEN = 'srtm';
 
 /**
- * The models the elevation API falls back to outside the national ones, by the
- * token it reports them under — the sources that aren't scoped to a country, so
- * they can't be named by a country code. GEDTM30 answers a premium read past the
- * national borders, SRTM answers a non-premium one everywhere.
+ * The LiDAR-derived terrain model GraphHopper is built on: it serves its own
+ * elevation from it, which a route's profile keeps on the free tier, and weighs
+ * every route by it — so a premium route, whose profile is re-read from the
+ * national models, is still shaped by this one. Its open licence asks to be
+ * credited, so {@link SONNY_ROUTING_ATTR} credits it beside the router too.
+ */
+export const SONNY_ATTR: AttributionDef = {
+  type: 'data',
+  name: "Sonny's LiDAR DTM",
+  url: 'https://sonny.4lima.de/',
+};
+
+export const SONNY_TOKEN = 'sonny';
+
+/**
+ * The same model credited as the router's, for the map's attribution list: it
+ * shapes every GraphHopper route, not only the profiles that display its values.
+ */
+export const SONNY_ROUTING_ATTR: AttributionDef = {
+  ...SONNY_ATTR,
+  type: 'routing',
+};
+
+/**
+ * The models that aren't scoped to a country, by the token they're reported
+ * under, so they can't be named by a country code: GEDTM30 answers a premium
+ * read past the national borders, SRTM a non-premium one everywhere, and Sonny
+ * is what GraphHopper returned itself.
  */
 const GLOBAL_MODELS: Record<string, AttributionDef> = {
   gedtm30: GEDTM30_ATTR,
+  [SONNY_TOKEN]: SONNY_ATTR,
   [SRTM_TOKEN]: SRTM_ATTR,
 };
 
@@ -80,8 +100,7 @@ const COUNTRY_TOKEN = /^[a-z]{2}$/;
  * Resolves the source tokens the elevation API reports (`?sources=1`) to the
  * attribution entries to credit, ordered as the map's own attribution orders
  * them: the national models first, the global ones last. Duplicates collapse, so
- * a source reported twice — or SRTM arriving both from the router and from the
- * API — is credited once.
+ * a source reported twice is credited once.
  *
  * A token is an ISO 3166-1 alpha-2 country code (that country's national model)
  * or a model id for one that isn't country-scoped (see {@link GLOBAL_MODELS}).

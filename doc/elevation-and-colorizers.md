@@ -235,14 +235,27 @@ credit, known without waiting on coverage, and the upsell gem always applies to 
 **The API reports what answered** (see the request contract below), and
 `elevationSourcesFromTokens` resolves its tokens against that table: a 2-letter token is
 that country's national model, anything else is looked up in `GLOBAL_MODELS` (`gedtm30`,
-`srtm`). A country the table has no entry for is still credited, under its
+`sonny`, `srtm`). A country the table has no entry for is still credited, under its
 `Intl.DisplayNames` name and without a link — dropping a model the API gained would
 under-credit it, which is the worse direction. The order is the table's own, global models
 last, so the list doesn't reshuffle between requests.
 
-GraphHopper's `srtm` is the same dataset as the API's non-premium answer, so the `srtm`
-provenance is expressed by *appending `SRTM_TOKEN` to the reported tokens* rather than
-crediting it separately — reported twice, it collapses to one entry.
+GraphHopper serves its own elevation from **Sonny's LiDAR DTM** — a different dataset from
+the API's non-premium SRTM, so the two are separate tokens. The `sonny` provenance is
+expressed by *appending `SONNY_TOKEN` to the reported tokens* rather than crediting it
+separately, so one table resolves both.
+
+That model also weights the graph, so it shapes **every** GraphHopper route — including a
+premium one, whose profile is re-read from the national models and so never names it. Its
+open licence is met the other way round: `SONNY_ROUTING_ATTR` (`type: 'routing'`) joins the
+map's attribution list in `Attribution.tsx` whenever a GraphHopper route or isochrone
+stands, which is also what `useResolvedAttributionText` bakes into an exported map — there
+only when the route is among the exportables, since that credit belongs to the drawn route.
+
+A multimodal route is asked of both routers leg by leg, so one GraphHopper leg earns the
+credit whatever the default transport is. `legTransports` is the single reading of that rule
+— the find-route handler segments its requests by it — because two copies of it would drift
+into crediting the wrong router.
 
 **Nothing is derived from the viewport.** With no tokens the credit is empty and the line is
 simply absent: `state.map.countries` is only a proxy for where the samples were (it
@@ -259,9 +272,8 @@ feature being charted knows what sampled it:
   (every vertex overridden), a manual/OSRM route (the router returns no elevation, so
   `enrichElevations` fills all of it), or a track the user had **overridden**
   (`elevationDecision === 'all'`, via `elevationCredit` in dataViewer).
-- **`srtm`** — GraphHopper's own elevation, kept on the free tier
-  (`graph.elevation.provider: srtm`), which is the same data the API answers a non-premium
-  read with.
+- **`sonny`** — GraphHopper's own elevation, kept on the free tier, read from Sonny's
+  LiDAR DTM.
 - **`recorded`** — a GPS recording, an imported file, or a track merely gap-filled: a
   measurement no terrain model answered for, credited to nobody.
 

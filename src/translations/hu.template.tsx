@@ -311,6 +311,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       map: 'térkép',
       data: 'adatok',
       photos: 'képek',
+      routing: 'útvonaltervezés',
     },
 
     attr: {

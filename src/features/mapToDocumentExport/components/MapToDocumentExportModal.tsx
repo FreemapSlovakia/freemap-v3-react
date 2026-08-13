@@ -195,11 +195,20 @@ export default function MapToDocumentExportModal({
   const attributionCountries =
     area === 'area' ? areaCountries : toAttributionCountries(countries);
 
-  const attribution = useResolvedAttribution(MAP_LAYERS, attributionCountries);
+  // The routers' credit belongs to the drawn route, so it rides on that
+  // exportable rather than on the document merely being made from this map.
+  const exportsRoute = exportables.split('|').includes('plannedRoute');
+
+  const attribution = useResolvedAttribution(
+    MAP_LAYERS,
+    attributionCountries,
+    exportsRoute,
+  );
 
   const attributionText = useResolvedAttributionText(
     MAP_LAYERS,
     attributionCountries,
+    exportsRoute,
   );
 
   const handleExport = useCallback(async () => {

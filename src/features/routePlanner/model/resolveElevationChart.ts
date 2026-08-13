@@ -43,13 +43,13 @@ const resolve: ProfileResolver = async (getState, dispatch) => {
   // Which model the profile's elevation belongs to: premium overrides every
   // vertex from our terrain model, and a router that returns none at all
   // (manual, OSRM) has its coordinates filled from it too — only GraphHopper's
-  // own values, kept on the free tier, are SRTM. The sources ride on the render
-  // line, so they survive its cache being reused.
+  // own values, kept on the free tier, are Sonny's. The sources ride on the
+  // render line, so they survive its cache being reused.
   const provenance =
     isPremium(getState().auth.user) ||
     transportTypeDefs[getState().routePlanner.transportType].api !== 'gh'
       ? 'terrain-model'
-      : 'srtm';
+      : 'sonny';
 
   return {
     status: 'ok',

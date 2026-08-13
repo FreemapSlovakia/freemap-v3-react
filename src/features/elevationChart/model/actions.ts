@@ -22,11 +22,11 @@ export interface ElevationWaypoint {
  * - `terrain-model` — sampled from our elevation API (a drawn line, a route
  *   whose vertices were overridden, a track the user had filled from the
  *   server), so it carries the national high-resolution models or GEDTM30.
- * - `srtm` — GraphHopper's own elevation, kept as the router returned it.
+ * - `sonny` — GraphHopper's own elevation, kept as the router returned it.
  * - `recorded` — the feature's own measured values (a GPS recording, an imported
  *   file), which no terrain model can be credited for.
  */
-export type ElevationProvenance = 'terrain-model' | 'srtm' | 'recorded';
+export type ElevationProvenance = 'terrain-model' | 'sonny' | 'recorded';
 
 /**
  * What the chart may credit a profile's elevation to: where it came from, plus —

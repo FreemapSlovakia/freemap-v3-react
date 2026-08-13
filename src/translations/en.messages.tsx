@@ -300,6 +300,7 @@ const messages: Messages = {
       map: 'map',
       data: 'data',
       photos: 'pictures',
+      routing: 'routing',
     },
     attr: {
       osmData: '©\xa0OpenStreetMap contributors',

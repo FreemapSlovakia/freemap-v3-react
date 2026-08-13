@@ -301,6 +301,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       map: 'Karte',
       data: 'Daten',
       photos: 'Bilder',
+      routing: 'Routing',
     },
 
     attr: {
