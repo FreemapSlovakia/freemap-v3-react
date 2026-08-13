@@ -8,7 +8,6 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaSave, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, type Tag } from 'react-tag-autocomplete';
-import 'react-tag-autocomplete/example/src/styles.css';
 import z from 'zod';
 import {
   type MapMeta,

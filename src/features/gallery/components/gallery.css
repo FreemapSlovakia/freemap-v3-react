@@ -112,7 +112,3 @@ button:is(.carousel-control-prev, .carousel-control-next).carousel-control-short
     background-color: hsla(0, 0%, 0%, 0.7);
   }
 }
-
-.react-tags__suggestions {
-  z-index: 10;
-}
