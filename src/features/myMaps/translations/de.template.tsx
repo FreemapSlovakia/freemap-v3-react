@@ -46,7 +46,13 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Fehler beim Löschen der Karte', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Speichern der Karte', err),
-  loadToEmpty: 'In leere Karte',
+  loadMergeModal: {
+    title: 'Karte ist nicht leer',
+    message:
+      'Auf der Karte wird bereits Inhalt angezeigt. Die geladene Karte anhängen oder den Inhalt ersetzen?',
+    append: 'Anhängen',
+    replace: 'Ersetzen',
+  },
   loadInclMapAndPosition: 'Mit gespeicherter Hintergrundkarte und Position',
   writers: 'Bearbeiter',
   addWriter: 'Editor hinzufügen',

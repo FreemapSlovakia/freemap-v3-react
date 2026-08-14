@@ -45,7 +45,13 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Errore eliminando la mappa:', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Errore salvando la mappa:', err),
-  loadToEmpty: 'Su mappa vuota',
+  loadMergeModal: {
+    title: 'La mappa non è vuota',
+    message:
+      'La mappa mostra già dei contenuti. Aggiungere la mappa caricata o sostituire i contenuti?',
+    append: 'Aggiungi',
+    replace: 'Sostituisci',
+  },
   loadInclMapAndPosition: 'Inclusa la mappa di sfondo salvata e posizione',
   writers: 'Editori',
   addWriter: 'Aggiungi editor',

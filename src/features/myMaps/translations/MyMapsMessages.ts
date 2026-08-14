@@ -20,7 +20,12 @@ export type MyMapsMessages = {
   fetchListError: (props: { err: unknown }) => string;
   deleteError: (props: { err: unknown }) => string;
   saveError: (props: { err: unknown }) => string;
-  loadToEmpty: string;
+  loadMergeModal: {
+    title: string;
+    message: string;
+    append: string;
+    replace: string;
+  };
   loadInclMapAndPosition: string;
   writers: string;
   addWriter: string;

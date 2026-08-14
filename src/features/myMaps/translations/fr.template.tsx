@@ -60,7 +60,13 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   disconnect: 'Déconnecter',
   disconnectAndClear: 'Déconnecter et vider',
   deleteTitle: 'Suppression de la carte',
-  loadToEmpty: 'Dans une carte vide',
+  loadMergeModal: {
+    title: 'La carte n’est pas vide',
+    message:
+      'La carte affiche déjà du contenu. Y ajouter la carte chargée, ou le remplacer ?',
+    append: 'Ajouter',
+    replace: 'Remplacer',
+  },
   loadInclMapAndPosition:
     'Inclure la carte de fond et la position enregistrées',
   writers: 'Éditeurs',

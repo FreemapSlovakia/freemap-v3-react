@@ -46,7 +46,13 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Hiba történt a térkép törlésekor', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a térkép mentésekor', err),
-  loadToEmpty: 'Üres térképre',
+  loadMergeModal: {
+    title: 'A térkép nem üres',
+    message:
+      'A térképen már látható tartalom. Hozzáfűzi a betöltött térképet, vagy lecseréli vele a tartalmat?',
+    append: 'Hozzáfűzés',
+    replace: 'Csere',
+  },
   loadInclMapAndPosition: 'A mentett alaptérképpel és pozíciójával',
   writers: 'Szerkesztők',
   addWriter: 'Szerkesztő hozzáadása',

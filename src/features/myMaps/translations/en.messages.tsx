@@ -40,7 +40,13 @@ const en: MyMapsMessages = {
     addError(getMessages()!, 'Error loading maps', err),
   deleteError: ({ err }) => addError(getMessages()!, 'Error deleting map', err),
   saveError: ({ err }) => addError(getMessages()!, 'Error saving map', err),
-  loadToEmpty: 'To empty map',
+  loadMergeModal: {
+    title: 'Map is not empty',
+    message:
+      'The map already shows some content. Append the loaded map to it, or replace it?',
+    append: 'Append',
+    replace: 'Replace',
+  },
   loadInclMapAndPosition: 'Include saved background map and position',
   writers: 'Editors',
   addWriter: 'Add an editor',

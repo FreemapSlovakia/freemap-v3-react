@@ -1,6 +1,9 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import {
+  useConfirm,
+  useConfirmChoice,
+} from '@shared/components/ConfirmProvider.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
@@ -55,6 +58,7 @@ import {
   mapsSetAllOffline,
   mapsSyncOutbox,
 } from '../model/actions.js';
+import { mapHasContentSelector } from '../model/selectors.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 import { MapSyncStatus } from './MapSyncStatus.js';
 
@@ -96,8 +100,6 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
   const [filter, setFilter] = useState('');
 
-  const [clear, setClear] = useState(true);
-
   const [inclPosition, setInclPosition] = useState(true);
 
   const m = useMessages();
@@ -105,6 +107,44 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
   const mm = useMyMapsMessages();
 
   const confirm = useConfirm();
+
+  const confirmChoice = useConfirmChoice();
+
+  const hasContent = useAppSelector(mapHasContentSelector);
+
+  // Asked rather than set beforehand: a load either merges into what's on the
+  // map or replaces it, and on an empty map both do the same thing.
+  const handleLoad = useCallback(
+    async (id: string) => {
+      let merge = false;
+
+      if (hasContent) {
+        const choice = await confirmChoice({
+          title: mm?.loadMergeModal.title,
+          message: mm?.loadMergeModal.message,
+          confirmLabel: mm?.loadMergeModal.append,
+          extraLabel: mm?.loadMergeModal.replace,
+          extraStyle: 'danger',
+        });
+
+        if (choice === 'cancel') {
+          return;
+        }
+
+        merge = choice === 'confirm';
+      }
+
+      dispatch(
+        mapsLoad({
+          id,
+          merge,
+          ignoreLayers: !inclPosition,
+          ignoreMap: !inclPosition,
+        }),
+      );
+    },
+    [hasContent, inclPosition, confirmChoice, mm, dispatch],
+  );
 
   const filteredMaps = sortedMaps.filter(
     (map) =>
@@ -211,11 +251,6 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
             <FmDropdownMenu>
               <Dropdown.Header>{m?.general.load}</Dropdown.Header>
 
-              <Dropdown.Item as="button" onClick={() => setClear((b) => !b)}>
-                {clear ? <FaRegCheckSquare /> : <FaRegSquare />}{' '}
-                {mm?.loadToEmpty}
-              </Dropdown.Item>
-
               <Dropdown.Item
                 as="button"
                 onClick={() => setInclPosition((b) => !b)}
@@ -319,16 +354,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                           !isOffline &&
                           !(pending && canStandInForMap(pending.blocked))
                         }
-                        onClick={() =>
-                          dispatch(
-                            mapsLoad({
-                              id: map.id,
-                              merge: !clear,
-                              ignoreLayers: !inclPosition,
-                              ignoreMap: !inclPosition,
-                            }),
-                          )
-                        }
+                        onClick={() => handleLoad(map.id)}
                         showFrom="sm"
                       />
 

@@ -45,7 +45,13 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Błąd podczas usuwania mapy', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas zapisywania mapy', err),
-  loadToEmpty: 'Do pustej mapy',
+  loadMergeModal: {
+    title: 'Mapa nie jest pusta',
+    message:
+      'Na mapie są już wyświetlane dane. Dołączyć do nich wczytaną mapę, czy zastąpić zawartość?',
+    append: 'Dołącz',
+    replace: 'Zastąp',
+  },
   loadInclMapAndPosition: 'Wraz z zapisaną mapą tła i pozycją',
   writers: 'Edytorzy',
   addWriter: 'Dodaj edytora',

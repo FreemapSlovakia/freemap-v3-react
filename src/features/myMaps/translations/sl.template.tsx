@@ -45,7 +45,13 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Napaka pri brisanju zemljevida', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri shranjevanju zemljevida', err),
-  loadToEmpty: 'V prazen zemljevid',
+  loadMergeModal: {
+    title: 'Zemljevid ni prazen',
+    message:
+      'Na zemljevidu je že prikazana vsebina. Ali naloženi zemljevid pripnete k njej ali vsebino nadomestite?',
+    append: 'Pripni',
+    replace: 'Nadomesti',
+  },
   loadInclMapAndPosition: 'Vključno s shranjenim podložnim zemljevidom in lego',
   writers: 'Uredniki',
   addWriter: 'Dodaj urednika',

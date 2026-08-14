@@ -151,12 +151,11 @@ The planned route is saved with the computed route itself — the line, the itin
 
 The modal lists saved maps with their created/modified dates and a filter box. A gear menu sets load options:
 
-- **To empty map** — clear the current map before loading
 - **Include saved background map and position** — also restore the saved base/overlay layers and viewport
 - **Make all available offline** / **Remove all from offline** — flag every listed map for offline use, or clear the flag
 - **Send unsent changes** — push saves that are still waiting in the browser (see below); enabled only while something is waiting
 
-Each map has a per-item menu with **Load**, **Modify**, and **Delete**. Modify edits the map **Name** and its **Editors** — other users can be added as editors to collaborate on the same saved map, and has an **Available offline** checkbox. There is also an option to add a new (empty) saved map.
+Each map has a per-item menu with **Load**, **Modify**, and **Delete**. Loading onto a map that already holds something asks first, offering **Append** (add the loaded map to what's there) or **Replace**; an empty map loads straight away. Modify edits the map **Name** and its **Editors** — other users can be added as editors to collaborate on the same saved map, and has an **Available offline** checkbox. There is also an option to add a new (empty) saved map.
 
 Maps flagged **Available offline** keep a copy of the saved map document in the browser (IndexedDB), so they appear in the list and can be **Load**ed even with no connection; an "Offline" badge marks them and they refresh automatically when their server copy is newer. A planned route opens complete offline — line, itinerary and elevation profile — because the document carries the computed route (which is saved for every map, offline-flagged or not), and pinned search results open with it for the same reason. This caches only the map document — the background tiles are cached separately via **Offline maps**. The app logo shows a small red dot while the app is offline.
 

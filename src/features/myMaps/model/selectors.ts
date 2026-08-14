@@ -1,6 +1,21 @@
 import type { RootState } from '@app/store/store.js';
+import { getMapContentParts } from '@app/url/mapContentParts.js';
 import type { BlockedReason } from './actions.js';
 import { fingerprintState } from './mapDocument.js';
+
+/**
+ * Whether the map holds anything that replacing it would take off the screen:
+ * the content the URL carries, plus the track it can't.
+ *
+ * Asked before a load, which either merges into what's there or replaces it —
+ * on an empty map the two are the same, so there is nothing to ask.
+ */
+export function mapHasContentSelector(state: RootState): boolean {
+  return (
+    getMapContentParts(state).length > 0 ||
+    Boolean(state.trackViewer.trackGeojson)
+  );
+}
 
 /**
  * The map the URL names in `id=`: one on its way in, or failing that the one

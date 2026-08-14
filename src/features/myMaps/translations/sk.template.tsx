@@ -44,7 +44,13 @@ const sk: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Nastala chyba pri mazaní mapy', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri ukladaní mapy', err),
-  loadToEmpty: 'Do čistej mapy',
+  loadMergeModal: {
+    title: 'Mapa nie je prázdna',
+    message:
+      'Na mape sa už niečo nachádza. Pripojiť k tomu načítanú mapu, alebo obsah nahradiť?',
+    append: 'Pripojiť',
+    replace: 'Nahradiť',
+  },
   loadInclMapAndPosition: 'Vrátane uloženej podkladovej mapy a pozície',
   writers: 'Editori',
   addWriter: 'Pridať editora',
