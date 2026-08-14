@@ -210,15 +210,25 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
       }
 
       for (const result of results) {
-        if (indexOfResult(state, result.id) === -1) {
+        const at = indexOfResult(state, result.id);
+
+        if (at === -1) {
           state.selectedResults.push(result);
-        } else if (
-          state.previewId &&
-          featureIdsEqual(state.previewId, result.id)
-        ) {
-          // Already on the map, and it keeps what it holds. Only its being
-          // transient goes: a map carries no previewed result, so one it names
-          // is kept rather than dropped by the next thing looked at.
+
+          continue;
+        }
+
+        // Already on the map, and it keeps what it holds — unless that is a
+        // stand-in for a fetch, which is nothing but an id where the map
+        // carries the element itself.
+        if (state.selectedResults[at].loading) {
+          state.selectedResults[at] = result;
+        }
+
+        // Its being transient goes either way: a map carries no previewed
+        // result, so one it names is kept rather than dropped by the next thing
+        // looked at.
+        if (state.previewId && featureIdsEqual(state.previewId, result.id)) {
           state.previewId = null;
         }
       }

@@ -40,7 +40,7 @@ const nodeElements = (...ids: number[]): OsmResult => ({
 });
 
 /** The shown results, mutable so a dispatch can be played back into them. */
-function harness(initial: SearchResult[]) {
+function harness(initial: SearchResult[], myMaps: object = {}) {
   let shown = initial;
 
   const dispatch = vi.fn((action) => {
@@ -56,7 +56,7 @@ function harness(initial: SearchResult[]) {
   const getState = () =>
     ({
       search: { selectedResults: shown },
-      myMaps: {},
+      myMaps,
     }) as unknown as RootState;
 
   return {
@@ -182,6 +182,55 @@ describe('osmLoadProcessor', () => {
         .map(([action]) => action)
         .filter(searchUnselectResult.match),
     ).toHaveLength(2);
+
+    expect(h.toastError).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the placeholders of a map on its way in when the fetch fails', async () => {
+    // Reloading a saved map offline: every pinned element fails, and the map is
+    // the only thing that can supply them. Taking the placeholders off would
+    // take the elements out of the URL too, and the map would then read as
+    // changed and never be loaded at all.
+    const ids = [nodeId(1), nodeId(2)];
+
+    fetchMock.mockRejectedValue(new Error('offline'));
+
+    const h = harness(ids.map(loadingResult), { restoring: { mapId: 'A' } });
+
+    await run(h, ids);
+
+    expect(
+      h.dispatch.mock.calls
+        .map(([action]) => action)
+        .filter(searchUnselectResult.match),
+    ).toHaveLength(0);
+
+    expect(h.toastError).not.toHaveBeenCalled();
+  });
+
+  it('takes the placeholders off when no map answers for them', async () => {
+    // The same failure for elements the user asked for themselves, with a map
+    // opening: that map carries only what the URL names, so these are theirs to
+    // hear about.
+    const ids = [nodeId(1)] as const;
+
+    fetchMock.mockRejectedValue(new Error('nope'));
+
+    const h = harness(ids.map(loadingResult), { restoring: { mapId: 'A' } });
+
+    await osmLoadProcessor.handle?.({
+      action: osmLoad({ ids: [ids[0]], focus: false }),
+      prevState: h.getState(),
+      getState: h.getState,
+      dispatch: h.dispatch,
+      toastError: h.toastError,
+    });
+
+    expect(
+      h.dispatch.mock.calls
+        .map(([action]) => action)
+        .filter(searchUnselectResult.match),
+    ).toHaveLength(1);
 
     expect(h.toastError).toHaveBeenCalledTimes(1);
   });
