@@ -40,7 +40,9 @@ export function serializeDrawingLine(line: Line, holeOf?: number): string {
   }${line.color ? `\x1eC${line.color}` : ''}${
     line.fillColor ? `\x1eF${line.fillColor}` : ''
   }${line.label ? `\x1eL${line.label}` : ''}${
-    line.dashArray ? `\x1eD${line.dashArray}` : ''
+    // An empty array means no dashes, same as no array at all — writing `D` with
+    // no value would read back as unset and so make the round trip lossy.
+    line.dashArray?.length ? `\x1eD${line.dashArray}` : ''
   }${
     line.lineCap === 'butt'
       ? '\x1eKb'

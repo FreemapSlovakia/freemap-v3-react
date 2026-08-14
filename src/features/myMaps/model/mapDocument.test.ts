@@ -90,6 +90,26 @@ describe('mapContentString — what counts as a change', () => {
     expect(mapContentString(restored)).toBe(mapContentString(explicit));
   });
 
+  it('ignores an empty dash array, which means the same as none', () => {
+    // A drawn line carries `dashArray: []`; the URL writes no `D` field for it,
+    // so a restore comes back without one.
+    expect(
+      mapContentString(
+        state({
+          drawingLines: {
+            lines: [line([{ lat: 48, lon: 17, id: 1 }], { dashArray: [] })],
+          },
+        }),
+      ),
+    ).toBe(
+      mapContentString(
+        state({
+          drawingLines: { lines: [line([{ lat: 48, lon: 17, id: 1 }])] },
+        }),
+      ),
+    );
+  });
+
   it('ignores an unset gallery filter however it is spelled', () => {
     expect(
       mapContentString(state({ gallery: { filter: { tag: undefined } } })),

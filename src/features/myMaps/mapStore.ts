@@ -50,7 +50,16 @@ async function storedKeys(): Promise<StoredKey[]> {
 // Enough to cover realistic map-hopping without growing without bound.
 export const KEEP = 5;
 
+// Bump when the digest changes shape: a baseline an older build computed can no
+// longer be compared against, and keeping it would report an untouched map as
+// having unsaved changes on every reload. Such a record is still read — its
+// track is the one part of a map nothing else holds offline — but it is reported
+// as not comparable, and the restore lets the stored document decide instead.
+const VERSION = 1;
+
 const RecordSchema = z.object({
+  // Absent in copies written before the digest carried a version.
+  version: z.number().optional(),
   meta: MapMetaSchema,
   /** Digest of the map as last loaded or saved (see `fingerprintState`). */
   savedFingerprint: z.string(),
@@ -61,19 +70,24 @@ const RecordSchema = z.object({
   gpxUrl: z.string().nullable(),
 });
 
-export type MapRecord = z.infer<typeof RecordSchema>;
+/** The version is the store's own bookkeeping, so callers neither set nor read it. */
+export type MapRecord = Omit<z.infer<typeof RecordSchema>, 'version'>;
 
 /**
  * What a reload needs to put a map back exactly as it was: its meta, the digest
  * that says whether it has unsaved changes, and the track. Everything else is
  * restored from the URL.
  *
+ * `comparable` says whether `savedFingerprint` was written by a build that
+ * digests the map the way this one does; when it is false only the meta and the
+ * track can be used.
+ *
  * Validated on read, so a record from an older build reads as absent rather than
  * restoring garbage.
  */
 export async function getMapRecord(
   mapId: string,
-): Promise<MapRecord | undefined> {
+): Promise<{ record: MapRecord; comparable: boolean } | undefined> {
   const entries = (await storedKeys()).filter((entry) => entry.mapId === mapId);
 
   if (entries.length === 0) {
@@ -92,12 +106,19 @@ export async function getMapRecord(
     return undefined;
   }
 
-  return parsed.data;
+  return {
+    record: parsed.data,
+    comparable: parsed.data.version === VERSION,
+  };
 }
 
 export function putMapRecord(record: MapRecord, now: number): Promise<void> {
   return enqueue(async () => {
-    await set(keyOf(record.meta.id, now), record, store);
+    await set(
+      keyOf(record.meta.id, now),
+      { ...record, version: VERSION },
+      store,
+    );
 
     // After the write, so an interruption leaves a superseded key rather than no
     // record at all; the next prune reclaims it.

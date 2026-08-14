@@ -146,10 +146,10 @@ export const mapsRestoreProcessor: Processor = {
         return;
       }
 
-      let record;
+      let stored;
 
       try {
-        record = await getMapRecord(mapId);
+        stored = await getMapRecord(mapId);
       } catch (err) {
         console.warn('Error reading map working copy:', err);
       }
@@ -158,7 +158,12 @@ export const mapsRestoreProcessor: Processor = {
         return;
       }
 
-      if (record) {
+      const record = stored?.record;
+
+      // A copy from a build that digested the map differently can't say whether
+      // there are unsaved changes, so the stored document decides — but the copy
+      // still holds the track, and stands in below if the document can't be read.
+      if (record && stored?.comparable) {
         dispatch(mapsSetMeta(record.meta));
 
         restoreTrack(record.track, record.trackUID, record.gpxUrl);
@@ -178,9 +183,10 @@ export const mapsRestoreProcessor: Processor = {
       }
 
       // Content was restored but there is no copy to compare it against — pruned,
-      // cleared, or storage unavailable. A plain load would silently discard that
-      // content, so read the stored document only to learn what the map holds and
-      // let the comparison decide whether what's on screen differs from it.
+      // cleared, storage unavailable, or a digest this build can't compare. A
+      // plain load would silently discard that content, so read the stored
+      // document only to learn what the map holds and let the comparison decide
+      // whether what's on screen differs from it.
       let document;
 
       try {
@@ -210,6 +216,24 @@ export const mapsRestoreProcessor: Processor = {
       }
 
       if (!document) {
+        // Only the connection stopped the read, and a copy of this map is right
+        // here: keep the map on its track rather than losing the one part of it
+        // the URL can't bring back. Its digest still can't be trusted, so the
+        // map reads as unsaved until a read establishes a baseline.
+        if (record && !navigator.onLine) {
+          dispatch(mapsSetMeta(record.meta));
+
+          restoreTrack(record.track, record.trackUID, record.gpxUrl);
+
+          dispatch(routePlannerSetSavedRoute(null));
+
+          dispatch(mapsSetSavedFingerprint(UNKNOWN_FINGERPRINT));
+
+          dispatch(mapsRestoreEnded(mapId));
+
+          return;
+        }
+
         restoreTrack(null, null, null);
 
         if (getState().myMaps.activeMap?.id === mapId) {
