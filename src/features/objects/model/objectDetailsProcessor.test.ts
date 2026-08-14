@@ -243,8 +243,12 @@ describe('objectDetailsProcessor', () => {
     });
   });
 
-  it('stops the elevation spinner when the read fails', async () => {
-    fetchElevationsMock.mockRejectedValue(new Error('nope'));
+  it('answers a failed read in the elevation line, not with a spinner', async () => {
+    // The tags stand without an elevation, so the failure — being offline, most
+    // of all — is reported where the value would be.
+    const err = new Error('nope');
+
+    fetchElevationsMock.mockRejectedValue(err);
 
     const { dispatch, done } = run(
       state({}),
@@ -256,6 +260,7 @@ describe('objectDetailsProcessor', () => {
     expect(dispatch.mock.calls[1][0].payload.messageParams.elevation).toEqual({
       elevation: undefined,
       loading: false,
+      error: err,
       sources: [],
     });
   });

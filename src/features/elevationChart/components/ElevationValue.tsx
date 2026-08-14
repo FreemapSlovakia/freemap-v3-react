@@ -7,7 +7,8 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';
 import { Spinner } from 'react-bootstrap';
-import { FaInfoCircle } from 'react-icons/fa';
+import { FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
+import { addError } from '@/translations/messagesInterface.js';
 import {
   elevationSourceNames,
   useElevationSources,
@@ -24,6 +25,12 @@ export type ElevationReading = {
    * API names none.
    */
   sources: string[];
+  /**
+   * Why the read failed. Shown in place of the value, so a failure that the
+   * rest of the toast survives (being offline, most of all) is answered here
+   * instead of by a danger toast beside it.
+   */
+  error?: unknown;
 };
 
 export type ElevationValueProps = ElevationReading & {
@@ -32,14 +39,16 @@ export type ElevationValueProps = ElevationReading & {
 };
 
 /**
- * The single-point elevation line: a spinner while it is read, an em dash where
- * the API has no data, otherwise the value with the terrain model behind it and
- * the premium offer of a finer one.
+ * The single-point elevation line: a spinner while it is read, a warning
+ * carrying the reason where the read failed, an em dash where the API has no
+ * data, otherwise the value with the terrain model behind it and the premium
+ * offer of a finer one.
  */
 export function ElevationValue({
   elevation,
   loading,
   sources: reportedSources,
+  error,
   label,
   className,
 }: ElevationValueProps): ReactElement | null {
@@ -67,7 +76,7 @@ export function ElevationValue({
   const sourceHint =
     ecm && sourceNames ? `${ecm.elevationSource}: ${sourceNames}` : undefined;
 
-  if (!loading && elevation === undefined) {
+  if (!loading && elevation === undefined && error === undefined) {
     return null;
   }
 
@@ -76,6 +85,18 @@ export function ElevationValue({
       {label}:{' '}
       {loading ? (
         <Spinner animation="border" size="sm" />
+      ) : error !== undefined ? (
+        <LongPressTooltip
+          label={
+            m && ecm ? addError(m, ecm.fetchError, error) : String(error ?? '')
+          }
+        >
+          {({ props }) => (
+            <span className="text-danger fm-cursor-help" {...props}>
+              <FaExclamationTriangle />
+            </span>
+          )}
+        </LongPressTooltip>
       ) : elevation == null ? (
         <span className="text-muted">—</span>
       ) : (

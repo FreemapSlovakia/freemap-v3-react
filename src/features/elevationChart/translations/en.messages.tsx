@@ -7,6 +7,7 @@ const en: ElevationChartMessages = {
   showWaypoints: 'Show waypoints',
   settings: 'Elevation settings',
   elevationSource: 'Elevation data',
+  fetchError: 'Elevation could not be read',
 };
 
 export default en;

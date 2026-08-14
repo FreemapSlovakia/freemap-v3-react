@@ -5,4 +5,5 @@ export type ElevationChartMessages = {
   showWaypoints: string;
   settings: string;
   elevationSource: string;
+  fetchError: string;
 };

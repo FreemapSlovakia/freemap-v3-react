@@ -175,6 +175,8 @@ export const objectDetailsProcessor: Processor = {
 
     let elevation: number | null | undefined;
 
+    let error: unknown;
+
     try {
       [elevation] = await fetchElevations(
         [[coords.lat, coords.lon]],
@@ -195,9 +197,9 @@ export const objectDetailsProcessor: Processor = {
         return;
       }
 
-      // The details themselves stand without it, so a failed read just drops
-      // the line instead of toasting an error over them.
-      elevation = undefined;
+      // The details themselves stand without it, so the failure is answered in
+      // the elevation's own line instead of toasting an error over them.
+      error = err;
     }
 
     // The subject can have moved on — or the toast be dismissed — while the read
@@ -210,6 +212,6 @@ export const objectDetailsProcessor: Processor = {
       return;
     }
 
-    show({ elevation, loading: false, sources: [...sources] });
+    show({ elevation, loading: false, error, sources: [...sources] });
   },
 };
