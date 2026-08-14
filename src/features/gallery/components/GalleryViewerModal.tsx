@@ -218,6 +218,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const [activeImageId, setActiveImageId] = useState<number | null>(null);
 
+  // Gates the "the author won't be notified" hint on Wikimedia photos.
+  const [commentFocused, setCommentFocused] = useState(false);
+
   const fullscreenElement = useRef<HTMLDivElement | null>(null);
 
   const becomePremium = useBecomePremium();
@@ -226,6 +229,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     setLoading(true);
 
     setActiveImageId(reduxActiveImageId);
+
+    setCommentFocused(false);
   }
 
   // Wikimedia photos have a negative id (internal `-pageId`). Deriving this from
@@ -1025,6 +1030,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                                 gallerySetComment(e.currentTarget.value),
                               );
                             }}
+                            onFocus={() => {
+                              setCommentFocused(true);
+                            }}
                             maxLength={4096}
                             disabled={disabledPremium}
                           />
@@ -1037,6 +1045,13 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                             {gm?.viewer.addComment}
                           </Button>
                         </InputGroup>
+
+                        {isWikimedia && commentFocused && (
+                          <Alert variant="warning" className="mt-2 mb-0">
+                            <SiWikimediacommons />{' '}
+                            {gm?.viewer.wikimediaCommentNotNotified}
+                          </Alert>
+                        )}
                       </Form.Group>
                     </Form>
                   )}

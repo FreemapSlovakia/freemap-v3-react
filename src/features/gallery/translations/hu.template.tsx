@@ -84,6 +84,8 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumOnly:
       'Ezt a fényképet a szerzője csak prémium hozzáféréssel rendelkező felhasználók számára tette elérhetővé.',
     noComments: 'Nincs hozzászólás',
+    wikimediaCommentNotNotified:
+      'Ez a fénykép a Wikimedia Commonsról származik. A szerzője nem kap értesítést a hozzászólásáról – csak a Freemapra feltöltött fényképek szerzőit értesítjük.',
   },
 
   editForm: {

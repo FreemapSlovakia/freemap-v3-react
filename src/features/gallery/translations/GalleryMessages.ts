@@ -65,6 +65,9 @@ export type GalleryMessages = {
     modify: string;
     premiumOnly: string;
     noComments: string;
+    // Shown when commenting a Wikimedia photo: only own-gallery authors get
+    // notified.
+    wikimediaCommentNotNotified: string;
   };
   editForm: {
     name: string;

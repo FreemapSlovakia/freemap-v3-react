@@ -80,6 +80,8 @@ const en: GalleryMessages = {
     premiumOnly:
       'This photo has been made available by its author only to users with premium access.',
     noComments: 'No comments',
+    wikimediaCommentNotNotified:
+      'This photo comes from Wikimedia Commons. Its author will not be notified of your comment — we only notify authors of photos uploaded to Freemap.',
   },
   editForm: {
     name: 'Name',

@@ -82,6 +82,8 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumOnly:
       'Túto fotografiu sprístupnil jej autor len používateľom s prémiovým prístupom.',
     noComments: 'Bez komentára',
+    wikimediaCommentNotNotified:
+      'Táto fotografia pochádza z Wikimedia Commons. Jej autor nebude o vašom komentári upovedomený – upozorňujeme len autorov fotografií nahratých na Freemap.',
   },
   editForm: {
     name: 'Názov',
