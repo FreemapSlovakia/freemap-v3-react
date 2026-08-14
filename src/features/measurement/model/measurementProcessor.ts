@@ -10,6 +10,7 @@ import type { ElevationInfoBaseProps } from '@features/elevationChart/components
 import { loadMeasurementMessages } from '@features/measurement/translations/loadMeasurementMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { fetchElevations } from '@shared/elevation.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -84,6 +85,8 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
           sources: [],
         };
 
+        let error: unknown;
+
         if (action.payload.elevation !== false) {
           dispatch(
             toastsAdd({
@@ -96,15 +99,26 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             }),
           );
 
-          // Through the shared fetch, so a single point is read the same way a
-          // profile is — and the readout's tooltip credits the model that
-          // actually answered.
-          [elevation] = await fetchElevations(
-            [[point.lat, point.lon]],
-            getState,
-            [drawingMeasure, clearMapFeatures],
-            sources,
-          );
+          try {
+            // Through the shared fetch, so a single point is read the same way a
+            // profile is — and the readout's tooltip credits the model that
+            // actually answered.
+            [elevation] = await fetchElevations(
+              [[point.lat, point.lon]],
+              getState,
+              [drawingMeasure, clearMapFeatures],
+              sources,
+            );
+          } catch (err) {
+            // The coordinates and the tile links stand without an elevation, so
+            // the failure is answered in the readout's own line rather than
+            // thrown at a danger toast beside a spinner that never stops.
+            if (isAbortError(err)) {
+              throw err;
+            }
+
+            error = err;
+          }
         }
 
         dispatch(
@@ -116,6 +130,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             messageParams: {
               ...toastParams,
               elevation,
+              error,
               sources: [...sources],
             },
             cancelType,
