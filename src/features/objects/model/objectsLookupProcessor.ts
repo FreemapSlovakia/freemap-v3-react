@@ -16,20 +16,19 @@ import {
 } from './actions.js';
 
 /**
- * How many objects can be handed over at once. Each becomes a kept result,
- * which the URL names one by one and reloads one by one — a screenful of them
- * (Overpass answers up to some four hundred) would be a hash of several
- * kilobytes and a request per object for whoever opens the link.
+ * How many objects can be handed over at once. Each becomes a kept result the
+ * URL names separately, so what limits this is the length of the link — the
+ * reload behind it is one batched Overpass query however many there are.
  */
-const MAX_LOOKUPS = 50;
+const MAX_LOOKUPS = 500;
 
 function toResult(object: ObjectsResult): SearchResult {
   return {
     source: 'osm',
     id: object.id,
-    // The point the marker sits at, so the element behind it is fetched when it
-    // is looked at and not before: for a whole screenful that would be an OSM
-    // request per object, and there can be hundreds.
+    // The point the marker sits at, so the geometry behind it is fetched when it
+    // is looked at and not before — a screenful of objects would otherwise be
+    // hundreds of ways and relations resolved down to their nodes for nothing.
     geojson: point([object.coords.lon, object.coords.lat], object.tags),
     incomplete: true,
   };

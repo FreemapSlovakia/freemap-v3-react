@@ -55,11 +55,7 @@ import {
   objectsSetFilter,
   objectsSetStyle,
 } from '@features/objects/model/actions.js';
-import {
-  osmLoadNode,
-  osmLoadRelation,
-  osmLoadWay,
-} from '@features/osm/model/osmActions.js';
+import { osmLoad } from '@features/osm/model/osmActions.js';
 import {
   type ColorStop,
   type Color as ColorType,
@@ -1008,12 +1004,6 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
   );
 }
 
-const osmLoadActions = {
-  node: osmLoadNode,
-  way: osmLoadWay,
-  relation: osmLoadRelation,
-};
-
 /**
  * Brings the shown OSM elements in line with the `osm-node` / `osm-way` /
  * `osm-relation` params, each of which can appear any number of times.
@@ -1055,10 +1045,14 @@ function handleOsmElements(
     }
   }
 
-  for (const id of wanted) {
-    if (!shown.some((s) => featureIdsEqual(s, id))) {
-      dispatch(osmLoadActions[id.elementType]({ id: id.id, focus, pin: true }));
-    }
+  // In one go, so a link naming many elements is one Overpass query rather
+  // than a query per element.
+  const toLoad = wanted.filter(
+    (id) => !shown.some((s) => featureIdsEqual(s, id)),
+  );
+
+  if (toLoad.length > 0) {
+    dispatch(osmLoad({ ids: toLoad, focus, pin: true }));
   }
 
   // An element the URL names that is currently the previewed one is neither

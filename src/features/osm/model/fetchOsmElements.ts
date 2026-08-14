@@ -1,28 +1,34 @@
-import { httpRequest } from '@app/httpRequest.js';
+import { HttpError, httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
+import { type OsmFeatureId, osmElementTypes } from '@shared/types/featureId.js';
 import { type OsmResult, OsmResultSchema } from './types.js';
-
-type OsmElementType = 'node' | 'way' | 'relation';
 
 // OSM_ELEMENT_SOURCE selects where by-id element lookups go: the internal
 // Overpass instance (OVERPASS_URL) or the public OSM API (OSM_API_URL).
 const useOverpass = process.env['OSM_ELEMENT_SOURCE'] !== 'osm-api';
 
-// Overpass QL equivalent of the OSM API `/full.json`: a node on its own, or a
-// way/relation together with the nodes (and member ways) it references, so the
-// caller can assemble geometry. `(._;>;)` recurses down to those members.
-function overpassBody(elementType: OsmElementType, id: number): string {
-  if (elementType === 'node') {
-    return `[out:json];node(${id});out;`;
-  }
+const overpassSets = { node: 'node', way: 'way', relation: 'rel' } as const;
 
-  const set = elementType === 'way' ? 'way' : 'rel';
+// Overpass QL equivalent of the OSM API `/full.json`, for any number of
+// elements at once: one `(id:…)` filter per element type, then `(._;>;)` to
+// recurse down to the nodes (and member ways) the caller assembles geometry
+// from.
+function overpassBody(ids: readonly OsmFeatureId[]): string {
+  const sets = osmElementTypes
+    .map((elementType) => {
+      const of = ids.filter((id) => id.elementType === elementType);
 
-  return `[out:json];${set}(${id});(._;>;);out;`;
+      return of.length === 0
+        ? ''
+        : `${overpassSets[elementType]}(id:${of.map(({ id }) => id).join(',')});`;
+    })
+    .join('');
+
+  return `[out:json];(${sets});(._;>;);out;`;
 }
 
-function osmApiUrl(elementType: OsmElementType, id: number): string {
+function osmApiUrl({ elementType, id }: OsmFeatureId): string {
   const base = process.env['OSM_API_URL'];
 
   return elementType === 'node'
@@ -31,41 +37,72 @@ function osmApiUrl(elementType: OsmElementType, id: number): string {
 }
 
 /**
- * Fetches an OSM element with its dependencies (member nodes/ways) and returns
- * the parsed `elements` array. The Overpass and OSM API responses share the
- * same element shape, so `OsmResultSchema` parses either unchanged.
+ * Fetches OSM elements with their dependencies (member nodes/ways) and returns
+ * the parsed `elements` array of them all. Overpass answers any number of
+ * elements in one query, which is what makes opening a link naming fifty of
+ * them a single request; the OSM API has no such endpoint, so there it stays a
+ * request per element and the answers are concatenated. Both share the same
+ * element shape, so `OsmResultSchema` parses either unchanged.
+ *
+ * An element that doesn't exist is simply left out of the result — telling
+ * which of a batch came back is `assembleOsmGeojson`'s job, since only the
+ * caller knows what a missing one means for it.
  */
 export async function fetchOsmElements(
-  elementType: OsmElementType,
-  id: number,
+  ids: readonly OsmFeatureId[],
   options: { getState: () => RootState } & CancelTriggers,
 ): Promise<OsmResult> {
-  const res = await httpRequest(
-    useOverpass
-      ? {
-          ...options,
-          method: 'POST',
-          url: process.env['OVERPASS_URL']!,
-          headers: { 'Content-Type': 'text/plain' },
-          body: overpassBody(elementType, id),
-          expectedStatus: 200,
-        }
-      : {
-          ...options,
-          url: osmApiUrl(elementType, id),
-          expectedStatus: 200,
-        },
-  );
-
-  const result = OsmResultSchema.parse(await res.json());
-
-  // The OSM API answers a missing element with 404 (which httpRequest turns
-  // into a throw); Overpass answers with 200 and an empty set. Normalize the
-  // latter to a throw so every caller surfaces the same "not found" error
-  // instead of silently rendering nothing.
-  if (result.elements.length === 0) {
-    throw new Error(`OSM ${elementType} ${id} not found`);
+  if (ids.length === 0) {
+    return { elements: [] };
   }
 
-  return result;
+  if (useOverpass) {
+    const res = await httpRequest({
+      ...options,
+      method: 'POST',
+      url: process.env['OVERPASS_URL']!,
+      headers: { 'Content-Type': 'text/plain' },
+      body: overpassBody(ids),
+      expectedStatus: 200,
+    });
+
+    return OsmResultSchema.parse(await res.json());
+  }
+
+  const results = await Promise.allSettled(
+    ids.map(async (id) =>
+      OsmResultSchema.parse(
+        await (
+          await httpRequest({
+            ...options,
+            url: osmApiUrl(id),
+            expectedStatus: 200,
+          })
+        ).json(),
+      ),
+    ),
+  );
+
+  // 404 and 410 are how the OSM API says an element never existed or is
+  // deleted, which is a missing element rather than a failed fetch — anything
+  // else is one, and fails the whole batch. Otherwise one request going wrong
+  // (or being aborted) would read as its element having been deleted, and take
+  // the pin off the map.
+  for (const result of results) {
+    if (
+      result.status === 'rejected' &&
+      !(
+        result.reason instanceof HttpError &&
+        (result.reason.status === 404 || result.reason.status === 410)
+      )
+    ) {
+      throw result.reason;
+    }
+  }
+
+  return {
+    elements: results.flatMap((result) =>
+      result.status === 'fulfilled' ? result.value.elements : [],
+    ),
+  };
 }

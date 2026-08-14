@@ -1,10 +1,6 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import {
-  osmLoadNode,
-  osmLoadRelation,
-  osmLoadWay,
-} from '@features/osm/model/osmActions.js';
+import { osmLoad } from '@features/osm/model/osmActions.js';
 import type { FeatureId } from '@shared/types/featureId.js';
 import { describe, expect, it } from 'vitest';
 import {
@@ -79,7 +75,7 @@ describe('searchReducer — osm load actions', () => {
   it('shows a geometry-less placeholder for the element being loaded', () => {
     const next = searchReducer(
       searchInitialState,
-      osmLoadNode({ id: 1, focus: true }),
+      osmLoad({ ids: [osmId('node', 1)], focus: true }),
     );
 
     expect(next.selectedResults).toHaveLength(1);
@@ -91,37 +87,41 @@ describe('searchReducer — osm load actions', () => {
   it('keeps an element the URL asks for rather than previewing it', () => {
     const next = searchReducer(
       searchInitialState,
-      osmLoadNode({ id: 1, focus: true, pin: true }),
+      osmLoad({ ids: [osmId('node', 1)], focus: true, pin: true }),
     );
 
     expect(next.selectedResults).toHaveLength(1);
     expect(next.previewId).toBeNull();
   });
 
-  it('loads several kept elements side by side', () => {
-    let state = searchReducer(
+  it('loads several kept elements side by side, in one go', () => {
+    const state = searchReducer(
       searchInitialState,
-      osmLoadWay({ id: 2, focus: true, pin: true }),
-    );
-
-    state = searchReducer(
-      state,
-      osmLoadRelation({ id: 3, focus: true, pin: true }),
+      osmLoad({
+        ids: [osmId('way', 2), osmId('relation', 3)],
+        focus: true,
+        pin: true,
+      }),
     );
 
     expect(state.selectedResults.map(({ id }) => id)).toEqual([
       osmId('way', 2),
       osmId('relation', 3),
     ]);
+
+    expect(state.previewId).toBeNull();
   });
 
   it('a second previewed element takes the place of the first', () => {
     let state = searchReducer(
       searchInitialState,
-      osmLoadWay({ id: 2, focus: true }),
+      osmLoad({ ids: [osmId('way', 2)], focus: true }),
     );
 
-    state = searchReducer(state, osmLoadRelation({ id: 3, focus: true }));
+    state = searchReducer(
+      state,
+      osmLoad({ ids: [osmId('relation', 3)], focus: true }),
+    );
 
     expect(state.selectedResults.map(({ id }) => id)).toEqual([
       osmId('relation', 3),
@@ -133,7 +133,7 @@ describe('searchReducer — osm load actions', () => {
 
     const next = searchReducer(
       { ...searchInitialState, selectedResults: [shown] },
-      osmLoadWay({ id: 2, focus: true }),
+      osmLoad({ ids: [osmId('way', 2)], focus: true }),
     );
 
     expect(next.selectedResults).toEqual([shown]);

@@ -1,10 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
-import {
-  osmLoadNode,
-  osmLoadRelation,
-  osmLoadWay,
-} from '@features/osm/model/osmActions.js';
+import { osmLoad } from '@features/osm/model/osmActions.js';
 import { integratedLayerDefs, isBaseLayerDef } from '@shared/mapDefinitions.js';
 import {
   featureIdsEqual,
@@ -53,37 +49,12 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
     const parsed = incomplete ? OsmFeatureIdSchema.safeParse(id) : undefined;
 
     if (parsed?.success) {
-      switch (parsed.data.elementType) {
-        case 'node':
-          dispatch(
-            osmLoadNode({
-              id: parsed.data.id,
-              focus: Boolean(action.payload.focus),
-            }),
-          );
-
-          break;
-
-        case 'way':
-          dispatch(
-            osmLoadWay({
-              id: parsed.data.id,
-              focus: Boolean(action.payload.focus),
-            }),
-          );
-
-          break;
-
-        case 'relation':
-          dispatch(
-            osmLoadRelation({
-              id: parsed.data.id,
-              focus: Boolean(action.payload.focus),
-            }),
-          );
-
-          break;
-      }
+      dispatch(
+        osmLoad({
+          ids: [parsed.data],
+          focus: Boolean(action.payload.focus),
+        }),
+      );
     }
 
     // The fit belongs to the result being looked at. An element kept on the map

@@ -1,10 +1,6 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import {
-  osmLoadNode,
-  osmLoadRelation,
-  osmLoadWay,
-} from '@features/osm/model/osmActions.js';
+import { osmLoad } from '@features/osm/model/osmActions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type FeatureId,
@@ -134,26 +130,10 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
         state.hoverResult = null;
       }
     })
-    .addCase(osmLoadNode, (state, action) => {
-      addLoading(
-        state,
-        { type: 'osm', elementType: 'node', id: action.payload.id },
-        action.payload.pin,
-      );
-    })
-    .addCase(osmLoadWay, (state, action) => {
-      addLoading(
-        state,
-        { type: 'osm', elementType: 'way', id: action.payload.id },
-        action.payload.pin,
-      );
-    })
-    .addCase(osmLoadRelation, (state, action) => {
-      addLoading(
-        state,
-        { type: 'osm', elementType: 'relation', id: action.payload.id },
-        action.payload.pin,
-      );
+    .addCase(osmLoad, (state, action) => {
+      for (const id of action.payload.ids) {
+        addLoading(state, id, action.payload.pin);
+      }
     })
     .addCase(searchSelectResult, (state, action) => {
       // Picking is done with the pointer on the row, and closes the list under

@@ -86,9 +86,7 @@ import {
 import { objectsLookupProcessor } from '@features/objects/model/objectsLookupProcessor.js';
 import { downloadMapProcessor } from '@features/offlineMapExport/model/downloadMapProcessor.js';
 import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
-import { osmLoadNodeProcessor } from '@features/osm/model/processors/osmLoadNodeProcessor.js';
-import { osmLoadRelationProcessor } from '@features/osm/model/processors/osmLoadRelationProcessor.js';
-import { osmLoadWayProcessor } from '@features/osm/model/processors/osmLoadWayProcessor.js';
+import { osmLoadProcessor } from '@features/osm/model/processors/osmLoadProcessor.js';
 import { purchaseProcessor } from '@features/purchases/model/processors/purchaseProcessor.js';
 import { routePlannerColorizeProcessor } from '@features/routePlanner/model/processors/colorizeProcessor.js';
 import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/processors/findRouteProcessor.js';
@@ -162,9 +160,7 @@ export const processors = [
   objectsChangePredicateProcessor,
   objectDetailsProcessor,
   objectsLookupProcessor,
-  osmLoadNodeProcessor,
-  osmLoadWayProcessor,
-  osmLoadRelationProcessor,
+  osmLoadProcessor,
   mapTypeGaProcessor,
   toastsAddProcessor,
   toastsRemoveProcessor,

@@ -555,10 +555,6 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
     try {
       const geojson = await fetchOsmFullGeojson(id, getState);
 
-      if (!geojson) {
-        return;
-      }
-
       const { lineCount, pointCount } = geojsonToDrawing(
         geojson,
 
