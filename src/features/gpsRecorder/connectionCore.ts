@@ -95,6 +95,19 @@ export const SYNC_CLAIM_MS = 10_000;
 export const STREAM_PROVEN_MS = RETRY_DELAYS[RETRY_DELAYS.length - 1];
 
 /**
+ * How often the connection looks at itself when nothing is expected to speak
+ * for it.
+ *
+ * Every other edge arrives as an event, and `visibilitychange` is the one a
+ * phone does not reliably deliver: a page frozen with the screen can come back
+ * without it, leaving the connection torn down, `idle`, and with no stream, run
+ * or retry left that would ever ask again — a contradiction nothing else here
+ * can notice. The recorder is asked nothing; this only calls the reconcile,
+ * which is a no-op unless there is genuinely nothing connected.
+ */
+export const WATCHDOG_MS = 30_000;
+
+/**
  * How long a stream may take to report anything before it is written off.
  * Nothing here crosses a network, so this is not slowness but a socket the
  * kernel accepted for a recorder that never got to answer on it — and such a
@@ -158,6 +171,8 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
 
   let openTimer: ReturnType<typeof setTimeout> | null = null;
 
+  let watchdogTimer: ReturnType<typeof setTimeout> | null = null;
+
   /**
    * Which delay the next retry waits. Rewound by a stream that has proven
    * itself (see {@link STREAM_PROVEN_MS}) or by the wanted-configuration
@@ -179,8 +194,20 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
   let recorderFailures = 0;
 
   /**
-   * Whether the live view was working before the attempt now under way — it
-   * decides whether a failure is worth saying out loud.
+   * Whether the last failure was one waiting cannot fix. Such a failure parks
+   * the connection at `idle` on purpose, so the self-check leaves it there —
+   * asking again every half minute could not turn a refusal into a grant, and
+   * would keep raising the toast that carries the gesture which can, after the
+   * user had put it away. Cleared by a fresh look, like the rest of the budget.
+   */
+  let hopeless = false;
+
+  /**
+   * Whether a stream has carried fixes to this page — it decides whether a
+   * failure is worth saying out loud. Deliberately not cleared by a teardown:
+   * the page going away is not the live view failing, and a ride whose figures
+   * have stopped advancing while the user was looking elsewhere is exactly the
+   * news this exists to tell.
    */
   let wasLive = false;
 
@@ -254,6 +281,31 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
     }
   }
 
+  /**
+   * Arms the self-check, which re-arms itself through the reconcile it calls.
+   * Never shortened by a later call, so the reconciles a busy page makes cannot
+   * push the check away.
+   */
+  function armWatchdog(): void {
+    if (watchdogTimer !== null) {
+      return;
+    }
+
+    watchdogTimer = setTimeout(() => {
+      watchdogTimer = null;
+
+      reconcile();
+    }, WATCHDOG_MS);
+  }
+
+  function cancelWatchdog(): void {
+    if (watchdogTimer !== null) {
+      clearTimeout(watchdogTimer);
+
+      watchdogTimer = null;
+    }
+  }
+
   function cancelOpen(): void {
     if (openTimer !== null) {
       clearTimeout(openTimer);
@@ -286,8 +338,6 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
 
     clearSyncPending();
 
-    wasLive = false;
-
     deps.onTeardown();
 
     run?.controller.abort();
@@ -318,7 +368,21 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       // entitled to find out for itself whether the recorder is there.
       recorderFailures = 0;
 
+      hopeless = false;
+
       cancelRetry();
+    }
+
+    // Armed on there being something to connect *for* rather than on `wanted()`,
+    // and so deliberately kept running while the page is hidden: what it covers
+    // is a `visibilitychange` that never arrives, which a check the hidden page
+    // had disarmed could not notice. The browser throttles it away to nearly
+    // nothing meanwhile, and that first late tick after the page comes back is
+    // exactly the one worth having.
+    if ((followed || deps.isToolOpen()) && !hopeless) {
+      armWatchdog();
+    } else {
+      cancelWatchdog();
     }
 
     if (!wanted()) {
@@ -333,7 +397,8 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       stream === null &&
       run === null &&
       retryTimer === null &&
-      !syncPending
+      !syncPending &&
+      !hopeless
     ) {
       syncPending = true;
 
@@ -582,6 +647,8 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       entry.settled = true;
 
       entry.outcome = outcome;
+
+      hopeless = !outcome.ok && outcome.hopeless;
 
       if (outcome.ok) {
         recorderFailures = 0;

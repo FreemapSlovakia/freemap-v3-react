@@ -294,5 +294,17 @@ export function attachRecorderConnection(newStore: MyStore): void {
 
   document.addEventListener('visibilitychange', reconcileRecorderConnection);
 
+  // Every other way the page can come back, because `visibilitychange` is not
+  // dependable on a phone: a page frozen with the screen has been seen to
+  // return without one, which leaves the connection torn down with nothing that
+  // would ask again until the tool was closed and opened. The reconcile is
+  // idempotent and cheap, so a redundant edge costs nothing and a missing one
+  // costs the ride.
+  window.addEventListener('focus', reconcileRecorderConnection);
+
+  window.addEventListener('pageshow', reconcileRecorderConnection);
+
+  document.addEventListener('resume', reconcileRecorderConnection);
+
   reconcileRecorderConnection();
 }

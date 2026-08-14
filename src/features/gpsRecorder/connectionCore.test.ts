@@ -8,6 +8,7 @@ import {
   type StreamCallbacks,
   SYNC_CLAIM_MS,
   type SyncOutcome,
+  WATCHDOG_MS,
 } from './connectionCore.js';
 
 /**
@@ -222,6 +223,30 @@ describe('wanting a connection', () => {
     expect(h.syncs).toHaveLength(2);
   });
 
+  it('says a reconnect out loud when the page left a live view behind', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    await completeOk(beginRun(h));
+
+    openStream(h).callbacks.onOpen();
+
+    openStream(h).callbacks.onStatusFrame();
+
+    h.visible = false;
+
+    h.core.reconcile();
+
+    h.visible = true;
+
+    h.core.reconcile();
+
+    // Going away is not the live view failing, so what the stream had carried
+    // still stands: a ride whose figures stopped advancing is news.
+    expect(h.syncs.at(-1)).toBe(false);
+  });
+
   it('dropping the follow flag closes a live stream', async () => {
     const h = makeHarness({ followed: true });
 
@@ -238,6 +263,68 @@ describe('wanting a connection', () => {
     expect(last(h)).toBe('idle');
 
     expect(h.stored).toBe(false);
+  });
+});
+
+describe('the self-check', () => {
+  it('reconnects a page that came back without a visibility event', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    await completeOk(beginRun(h));
+
+    openStream(h).callbacks.onOpen();
+
+    h.visible = false;
+
+    h.core.reconcile();
+
+    expect(last(h)).toBe('idle');
+
+    const before = h.syncs.length;
+
+    // The page comes back with no event to say so — a phone whose screen was
+    // off, which is where this was found. Nothing else would ever ask again.
+    h.visible = true;
+
+    vi.advanceTimersByTime(WATCHDOG_MS);
+
+    expect(h.syncs).toHaveLength(before + 1);
+
+    expect(last(h)).toBe('connecting');
+  });
+
+  it('leaves a working connection alone', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    await completeOk(beginRun(h));
+
+    openStream(h).callbacks.onOpen();
+
+    const before = h.syncs.length;
+
+    vi.advanceTimersByTime(10 * WATCHDOG_MS);
+
+    expect(h.syncs).toHaveLength(before);
+
+    expect(last(h)).toBe('live');
+  });
+
+  it('stops with nothing left to follow', async () => {
+    const h = makeHarness({ followed: true });
+
+    h.core.reconcile();
+
+    await failPendingSync(h);
+
+    h.core.setFollowed(false);
+
+    vi.advanceTimersByTime(10 * WATCHDOG_MS);
+
+    expect(h.syncs).toHaveLength(1);
   });
 });
 
@@ -478,7 +565,7 @@ describe('the backoff', () => {
     expect(last(h)).toBe('idle');
   });
 
-  it('a hopeless failure arms no retry', async () => {
+  it('a hopeless failure arms no retry, and the self-check honours it', async () => {
     const h = makeHarness({ followed: true });
 
     h.core.reconcile();
@@ -490,6 +577,14 @@ describe('the backoff', () => {
     vi.advanceTimersByTime(120_000);
 
     expect(h.syncs).toHaveLength(1);
+
+    // A fresh look is entitled to find out for itself, so the verdict does not
+    // outlive the configuration that earned it.
+    h.toolOpen = true;
+
+    h.core.reconcile();
+
+    expect(h.syncs).toHaveLength(2);
   });
 
   it('a sync nothing claims retries but never unfollows', () => {

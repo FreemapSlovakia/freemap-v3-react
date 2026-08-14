@@ -238,8 +238,11 @@ async function runSync(
 
     // A quiet sync is one nobody asked for, so it says nothing: the recorder has
     // been killed, uninstalled, or is simply not there any more, and telling the
-    // user about a request they did not make helps nobody.
-    if (isQuiet()) {
+    // user about a request they did not make helps nobody. Quiet leaves the
+    // verdict to the retries — which is why a hopeless failure is said out loud
+    // whoever asked: it arms none, so nothing is coming to correct it, and the
+    // toast carries the gesture that can.
+    if (isQuiet() && !isHopelessFailure(err)) {
       forgetUnreachableStatus(dispatch, err);
     } else {
       reportFailure(dispatch, err);

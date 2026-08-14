@@ -429,12 +429,16 @@ The comparison is made on the serialized status rather than field by field: a
 field forgotten in a hand-written comparison swallows a doorbell, while a field
 order that happens to differ only rings one that had nothing to say.
 
-Syncs nobody asked for are **quiet**, with one exception: a live view that was
-working and stopped. A recorder killed or uninstalled while the page was away must
-not greet the user with an error they did nothing to provoke — but a ride whose
-distance and clock have just stopped advancing is news, so a reconnect after a
-stream that was carrying fixes reports out loud. Either way, whether it is the end
-of following is decided by the retries below rather than by one failure.
+Syncs nobody asked for are **quiet**, with two exceptions. The first is a live
+view that was working and stopped. A recorder killed or uninstalled while the page
+was away must not greet the user with an error they did nothing to provoke — but a
+ride whose distance and clock have just stopped advancing is news, so a reconnect
+after a stream that has carried fixes reports out loud. A teardown deliberately
+does **not** take that back: the page going away is not the live view failing, and
+a screen switched off and on again is the commonest way to arrive at exactly the
+frozen figures the rule exists for. The second is a *hopeless* failure, whoever
+asked — see the backoff below. Otherwise, whether a failure is the end of
+following is decided by the retries rather than by one of them.
 
 **The connection does not belong to the toolbar.** `attachRecorderConnection` is
 installed at boot next to the app's other attach helpers, and closing the tool only
@@ -558,14 +562,44 @@ unreadable body is the recorder talking, and only silence — `unreachable`,
 says it is not there. What remains — the recorder not answering, over and over,
 tool closed — is the only thing that drops the follow flag. A configuration
 change starts that budget over with the ladder, since a fresh look is entitled
-to find out for itself. Two failures skip
-the retries entirely, because waiting cannot fix them: `lna-denied` and
-`outdated`, classified by `isHopelessFailure` next to it.
+to find out for itself.
+
+**Two failures skip the retries entirely, because waiting cannot fix them**:
+`lna-denied` and `outdated`, classified by `isHopelessFailure` next to the
+failures themselves. Such a failure parks the connection at `idle` on purpose,
+which makes it the one kind that is **always said out loud, quiet sync or not**:
+with nothing armed, nothing is coming to correct it, and the toast is what
+carries the gesture that can — the "Connect" button, which is also what
+re-prompts for Local Network Access. A quiet one would leave a dead live view
+with nothing on screen to say so and no way back short of closing and reopening
+the tool. The verdict is remembered for as long as the configuration that earned
+it, so the self-check below leaves it alone rather than asking every half minute
+and raising a toast the user has put away.
 
 **A stream in hand disarms the backoff.** A `/status` that failed beside a working
 stream says nothing about the live view — the stream is what carries the fixes —
 so the attempts are not spent on a connection that is not broken. The stream's own
 `onerror` is what drops it and starts the chain.
+
+**A self-check covers the edge that never arrives.** Everything above assumes
+each edge reaches the reconcile as an event, and `visibilitychange` is the one a
+phone does not dependably deliver: a page frozen with the screen has been seen to
+come back without one, leaving the connection torn down by the `hidden` that *did*
+arrive and `idle` with no stream, run or retry left that would ever ask again.
+Nothing else here can notice that, because wanting a connection and having none is
+a contradiction only the reconcile is in a position to see. So `WATCHDOG_MS`
+(30 s) re-runs it, and `connection.ts` listens on `focus`, `pageshow` and the Page
+Lifecycle `resume` besides — the reconcile is idempotent, so a redundant edge
+costs nothing and a missing one costs the ride. The recorder is asked nothing by
+any of it: a reconcile with a stream, a run, a retry or a pending sync in hand
+does nothing at all, so this is a check on the state machine rather than a poll.
+
+The timer is armed on there being something to connect *for* — the follow flag or
+the tool — rather than on the connection being wanted, and so keeps running while
+the page is hidden. That is the point: a timer the hidden page had disarmed could
+not notice the event it went missing. The browser throttles it to almost nothing
+meanwhile, and the first late tick after the page comes back is exactly the one
+worth having.
 
 There is no Reconnect button: the above covers every case one would answer, and
 the failure toast carries one for the case it doesn't.
