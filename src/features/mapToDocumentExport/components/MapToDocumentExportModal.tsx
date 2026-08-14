@@ -16,7 +16,9 @@ import {
   useResolvedAttributionText,
 } from '@shared/components/Attribution.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   type ChangeEvent,
@@ -62,6 +64,8 @@ export default function MapToDocumentExportModal({
   show,
 }: Props): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const mtde = useMapToDocumentExportMessages();
 
@@ -339,6 +343,8 @@ export default function MapToDocumentExportModal({
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         <fieldset disabled={exporting}>
           <Alert variant="warning">
             {mtde?.alert(
@@ -449,6 +455,7 @@ export default function MapToDocumentExportModal({
       <Modal.Footer>
         <Button
           disabled={
+            !online ||
             exporting ||
             invalidScale ||
             invalidGlowWidth ||

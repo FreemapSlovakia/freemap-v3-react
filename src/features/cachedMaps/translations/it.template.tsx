@@ -34,6 +34,8 @@ const it: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   activate: 'Attiva',
   focus: 'Zooma sull’area',
   namePrefix: 'Offline',
+  offlineWiden:
+    'Senza connessione questa mappa può essere ridotta, ma non ingrandita — per ingrandirla servirebbe scaricare tasselli che non contiene.',
 };
 
 export default it;

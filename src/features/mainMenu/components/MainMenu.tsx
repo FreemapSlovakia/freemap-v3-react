@@ -6,6 +6,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   documentMenuItemProps,
@@ -71,13 +72,13 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       {user ? (
-        <Dropdown.Item {...modalMenuItemProps('account')}>
+        <OnlineOnlyItem {...modalMenuItemProps('account')}>
           <FaUser /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
-        </Dropdown.Item>
+        </OnlineOnlyItem>
       ) : (
-        <Dropdown.Item {...modalMenuItemProps('login')}>
+        <OnlineOnlyItem {...modalMenuItemProps('login')}>
           <FaSignInAlt /> {m?.mainMenu.logIn}
-        </Dropdown.Item>
+        </OnlineOnlyItem>
       )}
 
       <Dropdown.Divider />
@@ -90,6 +91,8 @@ export function MainMenu(): ReactElement {
         <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
       </Dropdown.Item>
 
+      {/* Only a layer toggle, so it works offline; the layer menu is where the
+          layer that draws nothing is marked. */}
       <Dropdown.Item
         href="#layers=I"
         key="gallery"
@@ -113,8 +116,8 @@ export function MainMenu(): ReactElement {
 
       {toolDefinitions
         .filter(({ draw, tool }) => !draw && isToolAvailable(unavailable, tool))
-        .map(
-          ({ tool: newTool, icon, msgKey, kbd, experimental }) =>
+        .map(({ tool: newTool, icon, msgKey, kbd, experimental }) => {
+          return (
             newTool && (
               <Dropdown.Item
                 href={`#tools=${newTool}`}
@@ -135,8 +138,9 @@ export function MainMenu(): ReactElement {
                   </>
                 )}
               </Dropdown.Item>
-            ),
-        )}
+            )
+          );
+        })}
 
       <Dropdown.Divider />
 
@@ -149,13 +153,13 @@ export function MainMenu(): ReactElement {
         <kbd>g</kbd>
       </Dropdown.Item>
 
-      <Dropdown.Item {...modalMenuItemProps('map-to-document-export')}>
+      <OnlineOnlyItem {...modalMenuItemProps('map-to-document-export')}>
         <FaPrint /> {m?.mainMenu.mapToDocumentExport} <kbd>e</kbd> <kbd>p</kbd>
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item {...modalMenuItemProps('offline-map-export')}>
+      <OnlineOnlyItem {...modalMenuItemProps('offline-map-export')}>
         <FaDatabase /> {m?.mainMenu.offlineMapExport} <kbd>e</kbd> <kbd>m</kbd>
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
       <Dropdown.Item {...documentMenuItemProps('exports')}>
         <FaMobileAlt /> {m?.mainMenu.gpsDevicesMapExports}
@@ -171,9 +175,9 @@ export function MainMenu(): ReactElement {
         <FaBook /> {m?.mainMenu.help} <FaChevronRight />
       </Dropdown.Item>
 
-      <Dropdown.Item {...modalMenuItemProps('support-us')}>
+      <OnlineOnlyItem {...modalMenuItemProps('support-us')}>
         <FaHeart color="red" /> {m?.mainMenu.supportUs} <FaHeart color="red" />
-      </Dropdown.Item>
+      </OnlineOnlyItem>
     </>
   );
 }

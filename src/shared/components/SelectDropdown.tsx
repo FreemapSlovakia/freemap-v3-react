@@ -49,6 +49,8 @@ type Props = {
   kbd?: string;
   /** Render the toggle as a native-like `<select>` with an always-visible label. */
   asSelect?: boolean;
+  /** Dims the whole control, for when none of the options can be acted on. */
+  disabled?: boolean;
   className?: string;
   id?: string;
 };
@@ -68,6 +70,7 @@ export function SelectDropdown({
   breakpoint,
   kbd,
   asSelect,
+  disabled,
   className,
   id,
 }: Props): ReactElement {
@@ -123,7 +126,7 @@ export function SelectDropdown({
   return (
     <Dropdown className={className} onSelect={(key) => onSelect(key)}>
       {asSelect ? (
-        <Dropdown.Toggle as={SelectToggle} id={id}>
+        <Dropdown.Toggle as={SelectToggle} id={id} disabled={disabled}>
           {icon}
           {icon && label != null ? ' ' : null}
           {label}
@@ -136,7 +139,12 @@ export function SelectDropdown({
           kbd={kbd}
         >
           {({ label: tipLabel, labelClassName, props }) => (
-            <Dropdown.Toggle variant="secondary" id={id} {...props}>
+            <Dropdown.Toggle
+              variant="secondary"
+              id={id}
+              disabled={disabled}
+              {...props}
+            >
               {icon}
               <span className={labelClassName}>
                 {icon ? ' ' : null}

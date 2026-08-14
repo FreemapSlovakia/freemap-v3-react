@@ -162,6 +162,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           <Action
             icon={<FaRegEye />}
             label={tm?.devices.watch}
+            requiresOnline
             onClick={handleView}
             showFrom="lg"
           />
@@ -169,6 +170,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           <Action
             icon={<FaEdit />}
             label={m?.general.modify}
+            requiresOnline
             onClick={handleModify}
             showFrom="md"
           />
@@ -179,6 +181,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
             icon={<FaTrash />}
             label={m?.general.delete}
             variant="danger"
+            requiresOnline
             onClick={handleDelete}
             showFrom="md"
           />

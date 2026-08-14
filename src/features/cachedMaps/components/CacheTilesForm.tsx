@@ -12,8 +12,10 @@ import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useFreeStorage } from '@shared/hooks/useFreeStorage.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
 import {
   type IntegratedLayerDef,
@@ -204,6 +206,11 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     editing ? (layersSettings[editing.type]?.showInToolbar ?? false) : false,
   );
 
+  // Where the two toggles started, so a save can tell whether they were touched:
+  // they are the only part of this form kept on the server, and everything else
+  // about a cached map — its name, icon, area, zoom range — is the browser's own.
+  const initialVisibility = useRef({ showInMenu, showInToolbar }).current;
+
   useEffect(() => {
     if (editing || !mapDef) {
       return;
@@ -252,6 +259,12 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     return countTilesInBbox(bbox, Number(minZoom), Number(maxZoom));
   }, [bbox, minZoom, maxZoom]);
 
+  const online = useOnline();
+
+  // The visibility toggles below are settings, which a signed-in account keeps
+  // on the server; the rest of this form is the browser's own.
+  const canSaveSettings = useCanSaveSettings();
+
   // What caching will actually fetch: everything for a new map, for an edited
   // one everything the previous download didn't already get to. Where it got to
   // matters as much as how far — moving the area onto tiles a stopped download
@@ -295,6 +308,27 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
         maxZoom: Number(maxZoom),
       },
     );
+
+  // Offline a map can only be narrowed: reaching past what it covers would have
+  // to fetch. Asked of the coverage, not of the tiles still missing — a stopped
+  // or premium-skipped download leaves those behind, and renaming such a map
+  // needs no connection.
+  const offlineWiden =
+    !online &&
+    (editing === undefined ||
+      bbox === undefined ||
+      !coverageIncludes(
+        {
+          bounds: editing.bounds,
+          minZoom: editing.minZoom ?? 0,
+          maxZoom: editing.maxNativeZoom ?? 18,
+        },
+        {
+          bounds: bbox,
+          minZoom: Number(minZoom),
+          maxZoom: Number(maxZoom),
+        },
+      ));
 
   const cnf = useNumberFormat({
     minimumFractionDigits: 0,
@@ -358,7 +392,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      if (!bbox) {
+      if (!bbox || premiumWiden || offlineWiden) {
         return;
       }
 
@@ -425,25 +459,36 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
         dispatch(cacheTilesStart(meta));
       }
 
-      dispatch(
-        saveSettings({
-          settings: {
-            layersSettings: {
-              ...layersSettings,
-              [type]: {
-                ...(layersSettings[type] ?? {}),
-                showInMenu,
-                showInToolbar,
+      // A new map has no entry yet, so it always writes one; an edit writes only
+      // when the toggles moved. Without this an offline rename would fail on a
+      // settings request it never needed.
+      if (
+        !editing ||
+        showInMenu !== initialVisibility.showInMenu ||
+        showInToolbar !== initialVisibility.showInToolbar
+      ) {
+        dispatch(
+          saveSettings({
+            settings: {
+              layersSettings: {
+                ...layersSettings,
+                [type]: {
+                  ...(layersSettings[type] ?? {}),
+                  showInMenu,
+                  showInToolbar,
+                },
               },
             },
-          },
-          keepOpen: true,
-        }),
-      );
+            keepOpen: true,
+          }),
+        );
+      }
     },
     [
       dispatch,
       editing,
+      premiumWiden,
+      offlineWiden,
       name,
       iconSpec,
       mapDef,
@@ -455,6 +500,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       layersSettings,
       showInMenu,
       showInToolbar,
+      initialVisibility,
     ],
   );
 
@@ -626,6 +672,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
         <Form.Group>
           <LayerVisibilityFields
+            disabled={!canSaveSettings}
             showInMenu={showInMenu}
             showInToolbar={showInToolbar}
             onChange={(v) => {
@@ -671,6 +718,15 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
             {cm?.premiumWiden}
           </Alert>
         )}
+
+        {offlineWiden && (
+          <Alert variant="warning" className="mt-3 mb-0">
+            {/* A new map is nothing but a download, so the narrowing advice
+                the edit form gives would make no sense here. */}
+            <BiWifiOff />{' '}
+            {editing ? cm?.offlineWiden : m?.general.offlineNotice}
+          </Alert>
+        )}
       </Modal.Body>
 
       <Modal.Footer className="flex-wrap">
@@ -704,6 +760,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
             invalidMinZoom ||
             invalidMaxZoom ||
             premiumWiden ||
+            offlineWiden ||
             !tileCount ||
             tileCount === Infinity ||
             !name.trim()

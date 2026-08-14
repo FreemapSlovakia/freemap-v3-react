@@ -98,6 +98,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     componentLoadingError:
       'Fehler beim Laden der Komponente. Bitte überprüfen Sie Ihre Internetverbindung.',
     offline: 'Sie sind nicht mit dem Internet verbunden.',
+    offlineUnavailable: 'Ohne Internetverbindung nicht verfügbar.',
+    offlineToolUnavailable:
+      'Dieses Werkzeug kann ohne Internetverbindung nichts laden.',
+    offlineNotice:
+      'Sie sind nicht mit dem Internet verbunden, daher kann hier nichts geladen oder gesendet werden.',
     connectionError: 'Fehler beim Verbinden mit dem Server.',
     experimentalFunction: 'Experimentelle Funktion',
     attribution: () => (
@@ -233,6 +238,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    offlineHint:
+      'Ohne Internetverbindung können nur Koordinaten gefunden werden.',
     inProgress: 'Suche…',
     noResults: 'Keine Ergebnisse gefunden',
     prompt: 'Ort eingeben',
@@ -326,6 +333,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoomWarning: (minZoom) => `Verfügbar ab Zoomstufe ${minZoom}`,
     outsideViewWarning:
       'Der aktuelle Kartenausschnitt liegt außerhalb dieser Karte',
+    offlineWarning: 'Diese Karte ist nicht für die Offline-Nutzung gespeichert',
     customBase: 'Benutzerdefinierte Karte',
     customMaps: 'Benutzerdefinierte Karten',
     addCustomMap: 'Benutzerdefinierte Karte hinzufügen',

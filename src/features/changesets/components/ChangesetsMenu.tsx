@@ -4,6 +4,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useState } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
 import { FaDownload, FaEraser, FaHistory, FaPencilAlt } from 'react-icons/fa';
@@ -30,7 +31,10 @@ export default function ChangesetsMenu(): ReactElement {
     (state) => state.changesets.lastFetchedBBox,
   );
 
-  const canRefresh = currentBBox !== null && currentBBox !== lastFetchedBBox;
+  const online = useOnline();
+
+  const canRefresh =
+    online && currentBBox !== null && currentBBox !== lastFetchedBBox;
 
   const hasChangesets = useAppSelector(
     (state) => state.changesets.changesets.length > 0,
@@ -44,6 +48,7 @@ export default function ChangesetsMenu(): ReactElement {
         className="ms-1"
         id="days"
         breakpoint="lg"
+        disabled={!online}
         toggleIcon={<FaHistory />}
         name={cm?.timeWindow}
         value={String(days)}
@@ -67,6 +72,7 @@ export default function ChangesetsMenu(): ReactElement {
         <InputGroup className="flex-nowrap">
           <Form.Control
             type="text"
+            disabled={!online}
             placeholder={cm?.allAuthors}
             onChange={(e) => {
               setAuthorName(e.target.value || null);
@@ -77,7 +83,7 @@ export default function ChangesetsMenu(): ReactElement {
 
           <Button
             variant="secondary"
-            disabled={!authorName}
+            disabled={!authorName || !online}
             onClick={() => {
               setAuthorName(null);
 

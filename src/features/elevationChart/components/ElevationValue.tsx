@@ -1,8 +1,10 @@
+import { isNetworkError } from '@app/httpRequest.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';
@@ -73,6 +75,9 @@ export function ElevationValue({
 
   const sourceNames = elevationSourceNames(sources);
 
+  const errorText =
+    m && ecm ? addError(m, ecm.fetchError, error) : String(error ?? '');
+
   const sourceHint =
     ecm && sourceNames ? `${ecm.elevationSource}: ${sourceNames}` : undefined;
 
@@ -86,17 +91,19 @@ export function ElevationValue({
       {loading ? (
         <Spinner animation="border" size="sm" />
       ) : error !== undefined ? (
-        <LongPressTooltip
-          label={
-            m && ecm ? addError(m, ecm.fetchError, error) : String(error ?? '')
-          }
-        >
-          {({ props }) => (
-            <span className="text-danger fm-cursor-help" {...props}>
-              <FaExclamationTriangle />
-            </span>
-          )}
-        </LongPressTooltip>
+        // A read that never reached the server wears the app's offline mark, so
+        // it reads as the same thing everywhere; anything else is an error.
+        isNetworkError(error) ? (
+          <OfflineBadge offline hint={errorText} />
+        ) : (
+          <LongPressTooltip label={errorText}>
+            {({ props }) => (
+              <span className="text-danger fm-cursor-help" {...props}>
+                <FaExclamationTriangle />
+              </span>
+            )}
+          </LongPressTooltip>
+        )
       ) : elevation == null ? (
         <span className="text-muted">—</span>
       ) : (

@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { clsx } from 'clsx';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
@@ -133,6 +134,8 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className={clsx('d-flex', 'flex-column', classes.body)}>
+        <OfflineAlert />
+
         <Alert variant="info" className="py-2">
           <FaInfoCircle /> {gm?.excludesWikimedia}
         </Alert>

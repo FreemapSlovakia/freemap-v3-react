@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { type ReactElement, type SubmitEvent, useCallback } from 'react';
@@ -11,6 +12,8 @@ import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 export function MyDeviceForm(): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const tm = useTrackingMessages();
 
@@ -42,6 +45,11 @@ export function MyDeviceForm(): ReactElement {
     (e: SubmitEvent) => {
       e.preventDefault();
 
+      // Enter in a field submits the form whatever the Save button says.
+      if (!online) {
+        return;
+      }
+
       dispatch(
         trackingActions.saveDevice({
           name: name.trim(),
@@ -51,7 +59,7 @@ export function MyDeviceForm(): ReactElement {
         }),
       );
     },
-    [dispatch, name, maxCount, maxAge, token],
+    [online, dispatch, name, maxCount, maxAge, token],
   );
 
   const invalidMaxCount = isInvalidInt(maxCount, false, 0);
@@ -133,7 +141,7 @@ export function MyDeviceForm(): ReactElement {
       <Modal.Footer>
         <Button
           type="submit"
-          disabled={invalidName || invalidMaxCount || invalidMaxAge}
+          disabled={!online || invalidName || invalidMaxCount || invalidMaxAge}
         >
           <FaCheck /> {m?.general.save}
         </Button>

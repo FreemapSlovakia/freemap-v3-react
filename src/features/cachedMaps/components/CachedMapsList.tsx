@@ -3,6 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
   Action,
   ResponsiveActions,
@@ -10,6 +11,7 @@ import {
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
 import type { ReactElement } from 'react';
 import { Button, ListGroup, Modal, ProgressBar } from 'react-bootstrap';
@@ -35,6 +37,8 @@ import { useCachedMapsMessages } from '../translations/useCachedMapsMessages.js'
 
 export function CachedMapsList(): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const cmm = useCachedMapsMessages();
 
@@ -219,6 +223,7 @@ export function CachedMapsList(): ReactElement {
                           <Action
                             icon={<FaPlay />}
                             label={cmm?.resume}
+                            requiresOnline
                             onClick={() =>
                               dispatch(
                                 cacheTilesRestart({
@@ -270,10 +275,13 @@ export function CachedMapsList(): ReactElement {
       <Modal.Footer>
         <Button
           variant="primary"
+          disabled={!online}
           onClick={() => dispatch(cachedMapsSetView('add'))}
         >
           <FaPlus /> {cmm?.addOfflineMap}
         </Button>
+
+        <OfflineBadge className="align-self-center" />
 
         <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>

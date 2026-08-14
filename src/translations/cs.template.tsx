@@ -97,6 +97,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     componentLoadingError:
       'Komponent se nepodařilo načíst. Zkontrolujte své připonění na internet.',
     offline: 'Nejste připojen k internetu.',
+    offlineUnavailable: 'Nedostupné bez připojení k internetu.',
+    offlineToolUnavailable:
+      'Tento nástroj nedokáže bez připojení k internetu nic načíst.',
+    offlineNotice:
+      'Nejste připojen k internetu, takže zde nelze nic načíst ani odeslat.',
     connectionError: 'Chyba spojení se serverem.',
     experimentalFunction: 'Experimentální funkce',
     attribution: () => (
@@ -246,6 +251,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     placeholder: 'Hledat v mapě',
     result: 'Nález',
     keepOnMap: 'Ponechat v mapě',
+    offlineHint: 'Bez připojení k internetu lze najít pouze souřadnice.',
     sources: {
       'nominatim-reverse': 'Reverzní geokódování',
       'overpass-nearby': 'Blízké objekty',
@@ -275,6 +281,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Datová vrstva je skryta',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
     outsideViewWarning: 'Aktuální výřez je mimo tuto mapu',
+    offlineWarning: 'Tato mapa není uložena pro offline použití',
     letters: {
       S: 'Letecká',
       Z: 'Letecká',

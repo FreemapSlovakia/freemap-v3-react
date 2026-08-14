@@ -14,7 +14,9 @@ import { PurchasesSection } from '@features/purchases/components/PurchasesSectio
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useCallback, useEffect } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import {
@@ -34,6 +36,8 @@ type Props = { show: boolean };
 
 export default function AccountModal({ show }: Props): ReactElement | null {
   const dispatch = useDispatch();
+
+  const online = useOnline();
 
   useEffect(() => {
     dispatch(authInit());
@@ -129,6 +133,8 @@ export default function AccountModal({ show }: Props): ReactElement | null {
       </Modal.Header>
 
       <Modal.Body className="bg-body-tertiary">
+        <OfflineAlert />
+
         <Accordion defaultActiveKey="payments">
           <Accordion.Item eventKey="payments">
             <Accordion.Header>
@@ -169,11 +175,18 @@ export default function AccountModal({ show }: Props): ReactElement | null {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleLogoutClick}>
+        {/* Logging out clears what the account left in this browser — offline
+            maps, queued saves, the cached app shell — and the server has to
+            answer for the session to end at all, so it waits for a connection. */}
+        <Button
+          variant="secondary"
+          disabled={!online}
+          onClick={handleLogoutClick}
+        >
           <FaSignOutAlt /> {m?.mainMenu.logOut}
         </Button>
 
-        <Button variant="danger" onClick={handleDeleteClick}>
+        <Button variant="danger" disabled={!online} onClick={handleDeleteClick}>
           <FaEraser /> {am?.account.delete}
         </Button>
 

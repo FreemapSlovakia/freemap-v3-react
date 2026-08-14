@@ -94,6 +94,11 @@ const messages: Messages = {
     componentLoadingError:
       'Component loading error. Please check your internet connection.',
     offline: 'You are not connected to the internet.',
+    offlineUnavailable: 'Unavailable without an internet connection.',
+    offlineToolUnavailable:
+      'This tool can’t load anything without an internet connection.',
+    offlineNotice:
+      'You are not connected to the internet, so nothing here can be loaded or sent.',
     connectionError: 'Error connecting the server.',
     experimentalFunction: 'Experimental function',
     attribution: () => <Attribution unknown="Map licence is not specified" />,
@@ -235,6 +240,8 @@ const messages: Messages = {
     placeholder: 'Search in the map',
     result: 'Lookup',
     keepOnMap: 'Keep on the map',
+    offlineHint:
+      'Without an internet connection only coordinates can be found.',
     sources: {
       bbox: 'Bounding Box',
       geojson: 'GeoJSON',
@@ -261,6 +268,7 @@ const messages: Messages = {
     interactiveLayerWarning: 'Map items layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     outsideViewWarning: 'The current view is outside this map',
+    offlineWarning: 'This map is not saved for offline use',
     letters: {
       S: 'Aerial',
       Z: 'Aerial',

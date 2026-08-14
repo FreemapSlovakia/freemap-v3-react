@@ -33,6 +33,8 @@ const de: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   activate: 'Aktivieren',
   focus: 'Auf Bereich zoomen',
   namePrefix: 'Offline',
+  offlineWiden:
+    'Ohne Verbindung kann diese Karte verkleinert, aber nicht vergrößert werden — beim Vergrößern müssten Kacheln heruntergeladen werden, die sie nicht enthält.',
 };
 
 export default de;

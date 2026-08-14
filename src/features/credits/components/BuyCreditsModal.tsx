@@ -1,7 +1,9 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   type ReactElement,
@@ -53,6 +55,8 @@ export default function CurrentDrawingPropertiesModal({
 
   const m = useMessages();
 
+  const online = useOnline();
+
   const cm = useCreditsMessages();
 
   const nf = useNumberFormat({
@@ -77,6 +81,8 @@ export default function CurrentDrawingPropertiesModal({
         </Modal.Header>
 
         <Modal.Body>
+          <OfflineAlert />
+
           <CreditsAlert explainCredits />
 
           <Form.Group controlId="amount">
@@ -107,7 +113,7 @@ export default function CurrentDrawingPropertiesModal({
           <Dropdown as={ButtonGroup}>
             <Button
               variant="primary"
-              disabled={invalidCredits}
+              disabled={invalidCredits || !online}
               onClick={buyPolar}
             >
               <FaCheck /> {cm?.buy}
@@ -117,7 +123,7 @@ export default function CurrentDrawingPropertiesModal({
               split
               variant="primary"
               id="credits-buy"
-              disabled={invalidCredits}
+              disabled={invalidCredits || !online}
             />
 
             <FmDropdownMenu renderOnMount>
@@ -125,7 +131,7 @@ export default function CurrentDrawingPropertiesModal({
                 as="button"
                 type="button"
                 className="text-nowrap"
-                disabled={invalidCredits}
+                disabled={invalidCredits || !online}
                 onClick={buyWithChrons}
               >
                 <FaStopwatch /> {cm?.payWithChrons}

@@ -1,6 +1,7 @@
 import type { ExternalTarget } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import type { LatLon } from '@shared/types/common.js';
 import { canShareFile } from '@shared/webShare.js';
 import type { ReactElement } from 'react';
@@ -123,7 +124,7 @@ export function OpenInExternalAppDropdownItems({
 
       {!url && ((hasClipboard && copy) || hasShare) && <Dropdown.Divider />}
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getOsmUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
@@ -135,9 +136,9 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>o</kbd>
           </>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getMapyCzUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
@@ -149,9 +150,9 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>m</kbd>
           </>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getGoogleUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
@@ -163,17 +164,17 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>g</kbd>
           </>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getGeocachingUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
       >
         Geocaching
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getF4mapUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
@@ -185,9 +186,9 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>4</kbd>
           </>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getPeakfinderUrl(lat, lon)}
         target="_blank"
         eventKey="url"
@@ -199,9 +200,9 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>p</kbd>
           </>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getMapillaryUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
@@ -213,41 +214,41 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>l</kbd>
           </>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getOpenStreetCamUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
       >
         OpenStreetCam
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getStravaUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
       >
         Strava
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getWazeUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
       >
         Waze
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getOmaUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
       >
         {oeam?.oma} <Emoji>🇸🇰</Emoji>
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getHikingSkUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
@@ -259,9 +260,9 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>h</kbd>
           </>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getZbgisUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
@@ -273,7 +274,7 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>z</kbd>
           </>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
       <Dropdown.Divider />
 
@@ -287,7 +288,7 @@ export function OpenInExternalAppDropdownItems({
         )}
       </Dropdown.Item>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getIdUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
@@ -299,7 +300,7 @@ export function OpenInExternalAppDropdownItems({
             <kbd>j</kbd> <kbd>i</kbd>
           </>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
     </>
   );
 }

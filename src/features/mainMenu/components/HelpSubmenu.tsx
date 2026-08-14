@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   documentMenuItemProps,
@@ -35,28 +36,32 @@ export function HelpSubmenu(): JSX.Element {
       <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
 
       {layers.some((layer) => legendLayers.has(layer)) && (
-        <Dropdown.Item {...modalMenuItemProps('legend')}>
+        <OnlineOnlyItem {...modalMenuItemProps('legend')}>
           <FaList /> {m?.mainMenu.mapLegend}
-        </Dropdown.Item>
+        </OnlineOnlyItem>
       )}
 
       <Dropdown.Item {...modalMenuItemProps('about')}>
         <FaRegAddressCard /> {m?.mainMenu.contacts}
       </Dropdown.Item>
 
-      <Dropdown.Item href={m?.mainMenu.wikiLink} eventKey="url" target="_blank">
+      <OnlineOnlyItem
+        href={m?.mainMenu.wikiLink}
+        eventKey="url"
+        target="_blank"
+      >
         <FaBook /> {m?.mainMenu.osmWiki}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
       {skCs && (
         <>
-          <Dropdown.Item
+          <OnlineOnlyItem
             href="https://groups.google.com/forum/#!forum/osm_sk"
             eventKey="url"
             target="_blank"
           >
             <FaUsers /> Fórum slovenskej OSM komunity
-          </Dropdown.Item>
+          </OnlineOnlyItem>
 
           <Dropdown.Divider />
         </>

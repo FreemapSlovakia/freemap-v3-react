@@ -2,6 +2,7 @@ import { documentShow } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { modalMenuItemProps } from '@shared/hooks/useMenuHandler.js';
@@ -77,7 +78,7 @@ export function CopyrightButton(): ReactElement {
           </Dropdown.Item>
 
           {showLegendButton && (
-            <Dropdown.Item
+            <OnlineOnlyItem
               {...modalMenuItemProps('legend')}
               onClick={(e) => {
                 e.preventDefault();
@@ -86,7 +87,7 @@ export function CopyrightButton(): ReactElement {
               }}
             >
               <FaList /> {m?.mainMenu.mapLegend} <kbd>m</kbd> <kbd>l</kbd>
-            </Dropdown.Item>
+            </OnlineOnlyItem>
           )}
 
           <Dropdown.Item

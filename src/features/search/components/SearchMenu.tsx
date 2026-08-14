@@ -8,8 +8,10 @@ import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   featureIdsEqual,
   type OsmFeatureId,
@@ -104,6 +106,8 @@ HideArrow.displayName = 'HideArrow';
 
 export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const dispatch = useDispatch();
 
@@ -290,6 +294,15 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               ref={inputRef}
               onFocus={handleInputFocus}
             />
+
+            {/* Coordinates, a bounding box and pasted GeoJSON are all parsed
+                here, so the box stays usable offline; only geocoding needs the
+                server, which is what the badge says. */}
+            {!online && (
+              <InputGroup.Text>
+                <OfflineBadge hint={m?.search.offlineHint} />
+              </InputGroup.Text>
+            )}
 
             {results.length ? (
               <Button variant="secondary" onClick={handleCaretClick}>

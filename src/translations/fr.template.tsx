@@ -102,6 +102,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     componentLoadingError:
       'Erreur de chargement du composant. Veuillez vérifier votre connexion Internet.',
     offline: 'Vous n’êtes pas connecté à Internet.',
+    offlineUnavailable: 'Indisponible sans connexion Internet.',
+    offlineToolUnavailable:
+      'Cet outil ne peut rien charger sans connexion Internet.',
+    offlineNotice:
+      'Vous n’êtes pas connecté à Internet, rien ne peut donc être chargé ni envoyé ici.',
     connectionError: 'Erreur de connexion au serveur.',
     experimentalFunction: 'Fonction expérimentale',
     unauthenticatedError:
@@ -227,6 +232,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     copyright: 'Droits d’auteur',
   },
   search: {
+    offlineHint:
+      'Sans connexion Internet, seules les coordonnées peuvent être trouvées.',
     fetchingError: ({ err }) => addError(messages, 'Erreur de recherche', err),
     keepOnMap: 'Conserver sur la carte',
     sources: {
@@ -330,6 +337,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'Le filtrage des photos est actif',
     interactiveLayerWarning: 'La couche des éléments de la carte est masquée',
     outsideViewWarning: 'La vue actuelle est en dehors de cette carte',
+    offlineWarning:
+      'Cette carte n’est pas enregistrée pour une utilisation hors ligne',
     customBase: 'Carte personnalisée',
     configureLayers: 'Configurer les couches',
     customMaps: 'Cartes personnalisées',

@@ -24,5 +24,6 @@ export type CachedMapsMessages = {
   namePrefix: string;
   premiumZoomHint: string;
   premiumWiden: string;
+  offlineWiden: string;
   premiumSkipped: string;
 };

@@ -13,6 +13,7 @@ import { usePurchasesMessages } from '@features/purchases/translations/usePurcha
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   type JSX,
   type ReactElement,
@@ -37,6 +38,8 @@ export function PurchasesSection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const online = useOnline();
 
   const prm = usePremiumMessages();
 
@@ -284,7 +287,11 @@ export function PurchasesSection(): ReactElement | null {
               : pm?.notPremiumYet}
           </span>
 
-          <Button className="m-n2 ms-0" onClick={becomePremium}>
+          <Button
+            className="m-n2 ms-0"
+            disabled={!online}
+            onClick={becomePremium}
+          >
             <FaGem /> {prm?.becomePremium}
           </Button>
         </Alert>
@@ -368,7 +375,7 @@ export function PurchasesSection(): ReactElement | null {
                   <div className="d-flex flex-column align-items-start gap-1">
                     <Button
                       variant="secondary"
-                      disabled={openingPortal}
+                      disabled={openingPortal || !online}
                       onClick={openPortal}
                     >
                       {openingPortal ? (

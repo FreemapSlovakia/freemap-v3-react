@@ -2,8 +2,10 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import {
   type ReactElement,
   type SubmitEvent,
@@ -23,6 +25,8 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
   );
 
   const m = useMessages();
+
+  const canSaveSettings = useCanSaveSettings();
 
   const [layersSettings, setLayersSettings] = useState(initLayersSettings);
 
@@ -73,10 +77,15 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
           <Button
             variant="primary"
             type="submit"
-            disabled={layersSettings === initLayersSettings}
+            disabled={layersSettings === initLayersSettings || !canSaveSettings}
           >
             <FaCheck /> {m?.general.save}
           </Button>
+
+          <OfflineBadge
+            className="align-self-center"
+            offline={!canSaveSettings}
+          />
 
           <ResetToDefaultsButton
             onClick={handleReset}

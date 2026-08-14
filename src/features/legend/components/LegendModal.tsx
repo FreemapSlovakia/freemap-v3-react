@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   type IsWmsLayerDef,
@@ -84,6 +85,8 @@ export default function LegendModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         {activeLegendLayers.length === 1 ? (
           <>
             <div className="mb-3">

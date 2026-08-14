@@ -2,8 +2,10 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   PREMIUM_NEW_PRICE_EUR,
   PREMIUM_PRICE_EUR,
@@ -36,6 +38,8 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const online = useOnline();
 
   const prm = usePremiumMessages();
 
@@ -129,6 +133,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
           <Modal.Footer>
             <Button
               variant="primary"
+              disabled={!online}
               onClick={() => {
                 trackMatomo([
                   'trackEvent',
@@ -145,6 +150,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
 
             <Button
               variant="secondary"
+              disabled={!online}
               onClick={() => {
                 trackMatomo([
                   'trackEvent',
@@ -167,6 +173,8 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
       ) : (
         <>
           <Modal.Body>
+            <OfflineAlert />
+
             {prm?.commonHeader(PREMIUM_PRICE_EUR, dtmCountries)}
 
             {premiumExpiration && !switching ? (
@@ -237,16 +245,23 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
               <Dropdown as={ButtonGroup}>
                 <Button
                   variant="primary"
+                  disabled={!online}
                   onClick={() => buy({ recurring: true })}
                 >
                   <FaGem /> {prm?.paySubscription}
                 </Button>
 
-                <Dropdown.Toggle split variant="primary" id="premium-buy" />
+                <Dropdown.Toggle
+                  split
+                  variant="primary"
+                  id="premium-buy"
+                  disabled={!online}
+                />
 
                 <FmDropdownMenu renderOnMount>
                   <Dropdown.Item
                     as="button"
+                    disabled={!online}
                     className={priceLockApplies ? undefined : 'text-nowrap'}
                     onClick={() => {
                       if (!priceLockApplies) {
@@ -276,6 +291,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
 
                   <Dropdown.Item
                     as="button"
+                    disabled={!online}
                     className="text-nowrap"
                     onClick={() => buy({ via: 'rovas' })}
                   >

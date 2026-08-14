@@ -8,6 +8,7 @@ import {
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
@@ -43,6 +44,8 @@ function ObjectsToggleButton(): ReactElement {
 export default function ObjectSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
+  const online = useOnline();
+
   const m = useMessages();
 
   const object = useAppSelector((state) => {
@@ -76,6 +79,7 @@ export default function ObjectSelection(): ReactElement | null {
             {({ props }) => (
               <Button
                 variant="secondary"
+                disabled={!online}
                 onClick={() => {
                   dispatch(openTool('route-planner'));
 
@@ -97,6 +101,7 @@ export default function ObjectSelection(): ReactElement | null {
             {({ props }) => (
               <Button
                 variant="secondary"
+                disabled={!online}
                 onClick={() => {
                   dispatch(openTool('route-planner'));
 

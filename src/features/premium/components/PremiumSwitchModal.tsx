@@ -1,8 +1,10 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   PREMIUM_NEW_PRICE_EUR,
   PREMIUM_PRICE_EUR,
@@ -34,6 +36,8 @@ export default function PremiumSwitchModal({
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const online = useOnline();
 
   const prm = usePremiumMessages();
 
@@ -86,6 +90,8 @@ export default function PremiumSwitchModal({
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         <p>{prm?.switchStatus({ expiration })}</p>
 
         <p className="fw-semibold mb-2">
@@ -122,6 +128,7 @@ export default function PremiumSwitchModal({
       <Modal.Footer>
         <Button
           variant="primary"
+          disabled={!online}
           onClick={() => {
             close();
 

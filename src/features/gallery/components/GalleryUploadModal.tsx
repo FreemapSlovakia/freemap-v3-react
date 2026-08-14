@@ -2,8 +2,10 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import clsx from 'clsx';
 import {
   type DragEvent as ReactDragEvent,
@@ -41,6 +43,8 @@ type Props = { show: boolean };
 
 export default function GalleryUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const gm = useGalleryMessages();
 
@@ -246,6 +250,8 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         {items.length > 0 && (
           <div className={classes.uploadItems}>
             {items.map(
@@ -361,7 +367,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
           onClick={() => {
             dispatch(galleryUpload());
           }}
-          disabled={uploading}
+          disabled={uploading || !online}
         >
           <FaUpload />{' '}
           {uploading

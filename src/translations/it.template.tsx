@@ -104,6 +104,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     componentLoadingError:
       'Errore di caricamento. Per favore verifica la tua connessione internet.',
     offline: 'Non sei connesso a internet.',
+    offlineUnavailable: 'Non disponibile senza una connessione a internet.',
+    offlineToolUnavailable:
+      'Senza una connessione a internet questo strumento non può caricare nulla.',
+    offlineNotice:
+      'Non sei connesso a internet, quindi qui non è possibile caricare né inviare nulla.',
     connectionError: 'Errore di collegamento al server.',
     experimentalFunction: 'Funzione sperimentale',
     attribution: () => (
@@ -237,6 +242,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    offlineHint:
+      'Senza una connessione a internet è possibile trovare solo le coordinate.',
     inProgress: 'Ricerca in corso…',
     noResults: 'Nessun risultato trovato',
     prompt: 'Inserisci il luogo',
@@ -276,6 +283,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Il livello dati è nascosto',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     outsideViewWarning: 'La vista corrente è al di fuori di questa mappa',
+    offlineWarning: 'Questa mappa non è salvata per l’uso offline',
     letters: {
       S: 'Aereo',
       Z: 'Aereo',

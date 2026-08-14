@@ -9,6 +9,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import classes from '@shared/poiIcon.module.css';
 import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import {
@@ -34,6 +35,8 @@ export default function ObjectsMenu(): ReactElement {
   const om = useObjectsMessages();
 
   const dispatch = useDispatch();
+
+  const online = useOnline();
 
   const [filter, setFilter] = useState('');
 
@@ -203,6 +206,10 @@ export default function ObjectsMenu(): ReactElement {
             key={key}
             eventKey={key}
             active={active.includes(key)}
+            // Every change to the set re-runs the Overpass query — dropping
+            // one category included — so offline the list only shows what is
+            // active; the trash button clears the lot without asking anyone.
+            disabled={!online}
           >
             {img.length > 0 ? (
               <img src={img[0]} className={classes.icon} alt="" />

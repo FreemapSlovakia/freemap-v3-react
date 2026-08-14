@@ -1,5 +1,6 @@
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import type { ReactElement } from 'react';
 import { type CSSProperties, type ReactNode, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
@@ -119,6 +120,8 @@ type Props = { mode: 'login' | 'connect' | 'disconnect' };
 export function AuthProviders({ mode }: Props): ReactElement {
   const confirm = useConfirm();
 
+  const online = useOnline();
+
   const dispatch = useDispatch();
 
   const authProviders = useAppSelector(
@@ -153,6 +156,12 @@ export function AuthProviders({ mode }: Props): ReactElement {
   }
 
   function disabled(provider: AuthProvider) {
+    // Every mode here — logging in, connecting, disconnecting — is a request to
+    // the server.
+    if (!online) {
+      return true;
+    }
+
     if (mode === 'login') {
       return cookieConsentResult === null;
     }

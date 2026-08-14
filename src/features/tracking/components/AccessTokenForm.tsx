@@ -2,6 +2,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DateTime } from '@shared/components/DateTime.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
@@ -12,6 +13,8 @@ import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 
 export function AccessTokenForm(): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const tm = useTrackingMessages();
 
@@ -51,6 +54,11 @@ export function AccessTokenForm(): ReactElement {
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
+
+    // Enter in a field submits the form whatever the Save button says.
+    if (!online) {
+      return;
+    }
 
     dispatch(
       trackingActions.saveAccessToken({
@@ -106,7 +114,7 @@ export function AccessTokenForm(): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button type="submit">
+        <Button type="submit" disabled={!online}>
           <FaCheck /> {m?.general.save} <kbd>Enter</kbd>
         </Button>
 

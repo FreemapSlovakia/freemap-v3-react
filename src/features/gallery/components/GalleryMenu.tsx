@@ -7,8 +7,11 @@ import { Checkbox } from '@shared/components/Checkbox.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useCallback, useEffect, useState } from 'react';
@@ -83,6 +86,8 @@ export default function GalleryMenu() {
   const sc = useScrollClasses('horizontal');
 
   const m = useMessages();
+
+  const online = useOnline();
 
   const gm = useGalleryMessages();
 
@@ -220,6 +225,8 @@ export default function GalleryMenu() {
               )}
             </LongPressTooltip>
 
+            <OfflineBadge className="align-self-center" />
+
             {!hidden && (
               <>
                 <LongPressTooltip label={gm?.upload} kbd="p u" breakpoint="md">
@@ -227,6 +234,7 @@ export default function GalleryMenu() {
                     <Button
                       variant="secondary"
                       className="ms-1"
+                      disabled={!online}
                       onClick={() =>
                         dispatch(setActiveModal({ type: 'gallery-upload' }))
                       }
@@ -336,7 +344,11 @@ export default function GalleryMenu() {
                 >
                   <LongPressTooltip label={gm?.showPhotosFrom} breakpoint="md">
                     {({ props, label, labelClassName }) => (
-                      <Dropdown.Toggle variant="secondary" {...props}>
+                      <Dropdown.Toggle
+                        variant="secondary"
+                        disabled={!online}
+                        {...props}
+                      >
                         <FaBook />{' '}
                         <span className={labelClassName}>{label}</span>
                       </Dropdown.Toggle>
@@ -372,6 +384,7 @@ export default function GalleryMenu() {
                     <Button
                       className="ms-1"
                       variant="secondary"
+                      disabled={!online}
                       onClick={() =>
                         dispatch(
                           setActiveModal({ type: 'gallery-leaderboard' }),
@@ -406,14 +419,14 @@ export default function GalleryMenu() {
                         />
 
                         {PHOTO_LICENSES.map(({ id }) => (
-                          <Dropdown.Item
+                          <OnlineOnlyItem
                             as="button"
                             eventKey={`lic:${id}`}
                             key={id}
                           >
                             <LicenseBadge licenseId={id} />{' '}
                             {gm?.license.names[id] ?? id}
-                          </Dropdown.Item>
+                          </OnlineOnlyItem>
                         ))}
                       </>
                     ) : (
@@ -425,28 +438,28 @@ export default function GalleryMenu() {
 
                         {sendGalleryEmails !== undefined && (
                           <>
-                            <Dropdown.Item as="button" eventKey="emails">
+                            <OnlineOnlyItem as="button" eventKey="emails">
                               <Checkbox value={sendGalleryEmails} />{' '}
                               <FaEnvelope /> {gm?.sendGalleryEmails}
-                            </Dropdown.Item>
+                            </OnlineOnlyItem>
 
                             <Dropdown.Divider />
 
-                            <Dropdown.Item as="button" eventKey="all-premium">
+                            <OnlineOnlyItem as="button" eventKey="all-premium">
                               <FaGem /> {gm?.allMyPhotos.premium}
-                            </Dropdown.Item>
+                            </OnlineOnlyItem>
 
-                            <Dropdown.Item as="button" eventKey="all-free">
+                            <OnlineOnlyItem as="button" eventKey="all-free">
                               <FaDove /> {gm?.allMyPhotos.free}
-                            </Dropdown.Item>
+                            </OnlineOnlyItem>
 
-                            <Dropdown.Item
+                            <OnlineOnlyItem
                               as="button"
                               eventKey="submenu-license"
                             >
                               <FaCreativeCommons /> {gm?.license.chooseForAll}{' '}
                               <FaChevronRight />
-                            </Dropdown.Item>
+                            </OnlineOnlyItem>
                           </>
                         )}
                       </>

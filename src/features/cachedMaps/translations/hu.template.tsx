@@ -33,6 +33,8 @@ const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   activate: 'Aktiválás',
   focus: 'Nagyítás a területre',
   namePrefix: 'Offline',
+  offlineWiden:
+    'Kapcsolat nélkül ez a térkép csak kisebbé tehető, nagyobbá nem — a nagyításhoz olyan csempéket kellene letölteni, amelyeket nem tartalmaz.',
 };
 
 export default hu;

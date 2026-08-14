@@ -1,4 +1,5 @@
 import { hasGeometry } from '@features/search/model/resultUtils.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
@@ -209,6 +210,7 @@ export function ExportablesSelector({
           onChange={() => toggle(type)}
         >
           <Icon /> {em?.what[type]}
+          {type === 'pictures' && <OfflineBadge className="ms-1" />}
         </ToggleButton>
       ))}
     </div>

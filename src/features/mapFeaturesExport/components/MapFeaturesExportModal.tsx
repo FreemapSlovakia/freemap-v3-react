@@ -5,7 +5,9 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import type { Position } from 'geojson';
 import {
@@ -81,6 +83,8 @@ const toExportElevation = (value: string | null) =>
 export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const m = useMessages();
 
+  const online = useOnline();
+
   const em = useMapFeaturesExportMessages();
 
   useDocumentTitle(show ? m?.mainMenu.mapFeaturesExport : undefined);
@@ -93,6 +97,9 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   // they stack instead of pushing the modal wider than the viewport.
   const { sm } = useBreakpointMatches();
 
+  // Seeded from what the map holds, never from the connection: folding that in
+  // would re-seed the checkboxes — losing the user's picks — the moment it
+  // changed while the dialog is open.
   const initExportables = useAvailableExportables();
 
   const selectedExportable = useSelectedExportable();
@@ -171,6 +178,14 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     }
   }, [target, shareable, setTargetValue]);
 
+  // The same for a cloud target the connection has taken away: the file can
+  // still be handed to the device, so offer that instead of a dead form.
+  useEffect(() => {
+    if (!online && target !== 'download' && target !== 'share') {
+      setTargetValue('download');
+    }
+  }, [online, target, setTargetValue]);
+
   // Elevation-fill capability of the current selection drives the control's
   // state: `canElevate` is false when nothing selected can carry elevation
   // (empty or polygon-only), `hasRecorded` is true when a source may arrive
@@ -191,17 +206,34 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   // clobbering the persisted preference: no elevation at all when nothing can
   // carry it, and "Override all" collapses to "Fill missing" with nothing
   // recorded to override.
-  const effectiveElevation: ExportElevation = !canElevate
-    ? 'none'
-    : !hasRecorded && elevation === 'all'
-      ? 'missing'
-      : elevation;
+  // Filling elevation asks the elevation API for it, so offline the export can
+  // only carry what the features already have.
+  const effectiveElevation: ExportElevation =
+    !canElevate || !online
+      ? 'none'
+      : !hasRecorded && elevation === 'all'
+        ? 'missing'
+        : elevation;
+
+  // A download or a share hands the file to the device, so both work offline;
+  // the cloud targets upload it.
+  const targetOk = (exportTarget: ExportTarget) =>
+    online || exportTarget === 'download' || exportTarget === 'share';
+
+  const chosenTargetOk = targetOk(target);
+
+  // The photos of the area are fetched from the gallery as the file is built,
+  // so offline that source has nothing to contribute and is left out.
+  const pickedExportables = exportables
+    .split('|')
+    .filter((a) => a && (online || a !== 'pictures')) as Exportable[];
 
   const runExport = useCallback(
     async (e: SubmitEvent) => {
       e.preventDefault();
 
-      if (!exportables) {
+      // Enter in a field submits the form whatever the button says.
+      if (!pickedExportables.length || !chosenTargetOk) {
         return;
       }
 
@@ -209,7 +241,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
       const exportAction = exportMapFeatures({
         type,
-        exportables: exportables.split('|').filter((a) => a) as Exportable[],
+        exportables: pickedExportables,
         target,
         name: name || undefined,
         description: description || undefined,
@@ -244,7 +276,8 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     [
       dispatch,
       type,
-      exportables,
+      pickedExportables,
+      chosenTargetOk,
       target,
       name,
       description,
@@ -396,7 +429,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                         checked={target === exportTarget}
                         value={exportTarget}
                         onChange={setTarget}
-                        disabled={!initExportables}
+                        disabled={!initExportables || !targetOk(exportTarget)}
                       >
                         {
                           {
@@ -413,11 +446,13 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                             gdrive: (
                               <>
                                 <FaGoogle /> Google Drive
+                                <OfflineBadge className="ms-1" />
                               </>
                             ),
                             dropbox: (
                               <>
                                 <FaDropbox /> Dropbox
+                                <OfflineBadge className="ms-1" />
                               </>
                             ),
                             garmin: (
@@ -435,6 +470,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                                 />
                                 &ensp;
                                 <ExperimentalFunction />
+                                <OfflineBadge className="ms-1" />
                               </>
                             ),
                           }[exportTarget]
@@ -590,7 +626,11 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                   {!effectiveOnlySelected && (
                     <ExportablesSelector
                       value={exportables}
-                      available={initExportables}
+                      available={
+                        online
+                          ? initExportables
+                          : initExportables.replace('pictures|', '')
+                      }
                       onChange={setExportables}
                     />
                   )}
@@ -623,7 +663,9 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                         // elevation; "Override all" is off when nothing recorded
                         // can be overridden (it would equal "Fill missing").
                         disabled={
-                          !canElevate || (option === 'all' && !hasRecorded)
+                          !canElevate ||
+                          (option !== 'none' && !online) ||
+                          (option === 'all' && !hasRecorded)
                         }
                       >
                         {em?.elevation[option]}
@@ -642,7 +684,8 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
             variant="primary"
             disabled={
               exporting ||
-              !exportables.length ||
+              !chosenTargetOk ||
+              !pickedExportables.length ||
               garminSelectedError ||
               (target === 'garmin' && (!name.trim() || !activity))
             }

@@ -3,6 +3,7 @@ import { activeMapToolSelector, isToolOpen } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
@@ -122,6 +123,13 @@ export function ToolMenu({
                 <span className="align-self-center mx-1">
                   <ExperimentalFunction />
                 </span>
+              )}
+
+              {toolDef.requiresOnline && !collapsed && (
+                <OfflineBadge
+                  className="align-self-center mx-1"
+                  hint={m?.general.offlineToolUnavailable}
+                />
               )}
             </>
           )}

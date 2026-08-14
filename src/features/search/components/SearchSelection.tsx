@@ -16,6 +16,7 @@ import {
 } from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { center } from '@turf/center';
 import type { ReactElement } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
@@ -44,6 +45,8 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
 
   const dispatch = useDispatch();
 
+  const online = useOnline();
+
   const selectedResult = useAppSelector(activeSearchResultSelector);
 
   // False for every freshly picked result: it is on the map because it is being
@@ -66,6 +69,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
           {({ props }) => (
             <Button
               variant="secondary"
+              disabled={!online}
               {...props}
               onClick={() => {
                 dispatch(openTool('route-planner'));
@@ -91,6 +95,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
           {({ props }) => (
             <Button
               variant="secondary"
+              disabled={!online}
               onClick={() => {
                 dispatch(openTool('route-planner'));
 

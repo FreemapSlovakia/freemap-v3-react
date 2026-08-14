@@ -1,5 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useEffect } from 'react';
 import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaChevronLeft, FaPlus } from 'react-icons/fa';
@@ -10,6 +12,8 @@ import { AccessToken } from './AccessToken.js';
 
 export function AccessTokens(): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const tm = useTrackingMessages();
 
@@ -39,6 +43,8 @@ export function AccessTokens(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         <Alert variant="secondary">{tm?.accessTokens.desc(deviceName)}</Alert>
 
         {accessTokens.length > 0 && (
@@ -52,6 +58,7 @@ export function AccessTokens(): ReactElement {
 
       <Modal.Footer>
         <Button
+          disabled={!online}
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(null));
           }}

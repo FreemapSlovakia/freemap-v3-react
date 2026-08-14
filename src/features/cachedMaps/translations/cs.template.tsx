@@ -33,6 +33,8 @@ const cs: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   activate: 'Aktivovat',
   focus: 'Přiblížit na oblast',
   namePrefix: 'Offline',
+  offlineWiden:
+    'Bez připojení lze tuto mapu jen zmenšit, nikoli zvětšit — zvětšením by bylo potřeba stáhnout dlaždice, které neobsahuje.',
 };
 
 export default cs;

@@ -3,8 +3,10 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { ShowModalLink } from '@shared/components/ShowModalLink.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useCallback } from 'react';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
@@ -22,6 +24,8 @@ export default function SupportUsModal({ show }: Props): ReactElement {
   const lm = useSupportUsMessages();
 
   const m = useMessages();
+
+  const online = useOnline();
 
   const prm = usePremiumMessages();
 
@@ -43,6 +47,8 @@ export default function SupportUsModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         {lm?.explanation}
 
         <hr />
@@ -50,7 +56,11 @@ export default function SupportUsModal({ show }: Props): ReactElement {
         {becomePremium && (
           <Alert variant="warning">
             <span dangerouslySetInnerHTML={{ __html: lm?.alert.line1 ?? '' }} />
-            <Button onClick={becomePremium} className="my-3 mx-auto d-block">
+            <Button
+              onClick={becomePremium}
+              disabled={!online}
+              className="my-3 mx-auto d-block"
+            >
               <FaGem /> {prm?.becomePremium}
             </Button>
             {lm?.alert.line2}
@@ -84,7 +94,7 @@ export default function SupportUsModal({ show }: Props): ReactElement {
                 type="hidden"
               />
 
-              <Button type="submit">
+              <Button type="submit" disabled={!online}>
                 <FaPaypal /> {lm?.paypal}
               </Button>
             </Form>

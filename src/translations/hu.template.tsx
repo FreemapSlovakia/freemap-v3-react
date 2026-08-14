@@ -99,6 +99,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     componentLoadingError:
       'Nem sikerült betölteni a komponenst. Kérlek, ellenőrizd az internetkapcsolatodat.',
     offline: 'Nincs internetkapcsolatod.',
+    offlineUnavailable: 'Internetkapcsolat nélkül nem érhető el.',
+    offlineToolUnavailable:
+      'Ez az eszköz internetkapcsolat nélkül semmit sem tud betölteni.',
+    offlineNotice:
+      'Nincs internetkapcsolatod, ezért itt semmit sem lehet betölteni vagy elküldeni.',
     connectionError: 'Hiba a szerverhez való csatlakozáskor.',
     experimentalFunction: 'Kísérleti funkció',
     attribution: () => (
@@ -236,6 +241,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    offlineHint: 'Internetkapcsolat nélkül csak koordináták találhatók meg.',
     inProgress: 'Keresés…',
     noResults: 'Nincs találat',
     prompt: 'Adja meg a helyet',
@@ -269,6 +275,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'A fényképszűrés aktív',
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
     outsideViewWarning: 'A jelenlegi nézet ezen a térképen kívül esik',
+    offlineWarning: 'Ez a térkép nincs elmentve offline használatra',
 
     letters: {
       S: 'Légifelvétel',

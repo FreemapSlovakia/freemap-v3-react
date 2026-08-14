@@ -97,6 +97,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     componentLoadingError:
       'Błąd ładowania komponentu. Sprawdź swoje połączenie z internetem.',
     offline: 'Brak połączenia z internetem.',
+    offlineUnavailable: 'Niedostępne bez połączenia z internetem.',
+    offlineToolUnavailable:
+      'To narzędzie nie może niczego wczytać bez połączenia z internetem.',
+    offlineNotice:
+      'Brak połączenia z internetem, więc nie można tu niczego wczytać ani wysłać.',
     connectionError: 'Błąd połączenia z serwerem.',
     experimentalFunction: 'Funkcja eksperymentalna',
     attribution: () => (
@@ -224,6 +229,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    offlineHint: 'Bez połączenia z internetem można znaleźć tylko współrzędne.',
     inProgress: 'Wyszukiwanie…',
     noResults: 'Brak wyników',
     prompt: 'Wprowadź miejsce',
@@ -314,6 +320,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Warstwa danych jest ukryta',
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
     outsideViewWarning: 'Bieżący widok znajduje się poza tą mapą',
+    offlineWarning: 'Ta mapa nie jest zapisana do użytku offline',
     customBase: 'Własna mapa',
     customMaps: 'Mapy własne',
     addCustomMap: 'Dodaj własną mapę',

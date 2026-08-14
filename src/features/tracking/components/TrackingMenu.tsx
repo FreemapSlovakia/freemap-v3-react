@@ -21,6 +21,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useMemo } from 'react';
 import { Button } from 'react-bootstrap';
@@ -47,6 +48,8 @@ export function TrackingMenu(): ReactElement {
   const cm = useColorizerMessages();
 
   const dispatch = useDispatch();
+
+  const online = useOnline();
 
   const showPoints = useAppSelector(
     (state) => state.trackingSettings.showPoints,
@@ -118,11 +121,14 @@ export function TrackingMenu(): ReactElement {
           )}
         </LongPressTooltip>
 
+        {/* Watched devices are kept in the browser, so that list is edited
+            offline too; a device of one's own lives on the server. */}
         <LongPressTooltip breakpoint="md" label={tm?.devices.button} kbd="g d">
           {({ label, labelClassName, props }) => (
             <Button
               className="ms-1"
               variant="secondary"
+              disabled={!online}
               onClick={() => dispatch(setActiveModal({ type: 'tracking-my' }))}
               {...props}
             >

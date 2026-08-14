@@ -9,6 +9,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import 'pannellum';
 import 'pannellum/build/pannellum.css';
 import { hasRole } from '@features/auth/model/types.js';
@@ -173,6 +174,8 @@ function cachePut(
 
 export default function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const prm = usePremiumMessages();
 
@@ -428,7 +431,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
         // nothing
       } else if (e.code === 'KeyF') {
         handleFullscreen();
-      } else if (e.code === 'Delete') {
+      } else if (e.code === 'Delete' && online) {
         handleDelete();
       }
     }
@@ -436,7 +439,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     window.addEventListener('keydown', handler);
 
     return () => window.removeEventListener('keydown', handler);
-  }, [handleDelete, handleFullscreen]);
+  }, [handleDelete, handleFullscreen, online]);
 
   // fullscreen of pano fails when traversing from non-pano picture
   useEffect(() => {
@@ -511,9 +514,14 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     (e: SubmitEvent<HTMLFormElement>) => {
       e.preventDefault();
 
+      // Enter in a field submits the form whatever the Save button says.
+      if (!online) {
+        return;
+      }
+
       dispatch(gallerySavePicture());
     },
-    [dispatch],
+    [dispatch, online],
   );
 
   const index =
@@ -988,13 +996,15 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
                   <h5>{gm?.viewer.modify}</h5>
 
-                  <GalleryEditForm
-                    model={editModel}
-                    allTags={allTags}
-                    errors={saveErrors}
-                    onPositionPick={handlePositionPick}
-                    onModelChange={handleEditModelChange}
-                  />
+                  <fieldset disabled={!online}>
+                    <GalleryEditForm
+                      model={editModel}
+                      allTags={allTags}
+                      errors={saveErrors}
+                      onPositionPick={handlePositionPick}
+                      onModelChange={handleEditModelChange}
+                    />
+                  </fieldset>
                 </Form>
               )}
 
@@ -1034,13 +1044,15 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                               setCommentFocused(true);
                             }}
                             maxLength={4096}
-                            disabled={disabledPremium}
+                            disabled={disabledPremium || !online}
                           />
 
                           <Button
                             variant="secondary"
                             type="submit"
-                            disabled={comment.length < 1 || disabledPremium}
+                            disabled={
+                              comment.length < 1 || disabledPremium || !online
+                            }
                           >
                             {gm?.viewer.addComment}
                           </Button>
@@ -1072,11 +1084,14 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                           size={22}
                           allowFraction={false}
                           initialValue={myStars ?? 0}
+                          // Offline it only shows what the user gave the photo:
+                          // a new rating has nowhere to go.
+                          readonly={!online}
                           onClick={handleStarsChange}
                         />
                       )}
 
-                      {editModel === null && tags && canEdit && (
+                      {editModel === null && tags && canEdit && online && (
                         <RecentTags
                           existingTags={tags}
                           onAdd={handleTagAdd}
@@ -1091,6 +1106,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                             id="chk-fast-premium"
                             label={gm?.uploadModal.premium}
                             checked={premium}
+                            disabled={!online}
                             onChange={handlePremiumChange}
                           />
                         </>
@@ -1107,7 +1123,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       <Modal.Footer>
         {canEdit &&
           (editModel ? (
-            <Button variant="primary" type="submit" form="gallery-edit-form">
+            <Button
+              variant="primary"
+              type="submit"
+              form="gallery-edit-form"
+              disabled={!online}
+            >
               <FaSave /> {m?.general.save}
             </Button>
           ) : (
@@ -1115,6 +1136,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               {({ label, labelClassName, props }) => (
                 <Button
                   variant="secondary"
+                  disabled={!online}
                   onClick={() => {
                     dispatch(galleryEditPicture());
                   }}
@@ -1131,7 +1153,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
         {canEdit && (
           <LongPressTooltip breakpoint="sm" label={m?.general.delete}>
             {({ label, labelClassName, props }) => (
-              <Button onClick={handleDelete} variant="danger" {...props}>
+              <Button
+                onClick={handleDelete}
+                variant="danger"
+                disabled={!online}
+                {...props}
+              >
                 <FaTrash />
                 <span className={labelClassName}> {label}</span> <kbd>Del</kbd>
               </Button>

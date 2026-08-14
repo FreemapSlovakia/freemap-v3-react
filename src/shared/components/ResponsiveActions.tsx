@@ -10,7 +10,9 @@ import {
 } from 'react';
 import { Button, type ButtonProps, Dropdown } from 'react-bootstrap';
 import { FaEllipsisV } from 'react-icons/fa';
+import { useOnline } from '../hooks/useOnline.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { OfflineBadge } from './OfflineBadge.js';
 
 export type ActionProps = {
   label: ReactNode;
@@ -27,6 +29,15 @@ export type ActionProps = {
    * breakpoint up. Omit to keep the inline button icon-only.
    */
   showLabelFrom?: Breakpoint;
+  /**
+   * The action goes to the server: offline it is disabled, and in the packed
+   * menu — where it has a label to sit beside — it is badged with the reason.
+   * A condition rather than a flag, for an action that needs the network only
+   * in some states (a map with no offline copy, say); it must be false wherever
+   * something else is what stands in the way, or the badge stops meaning
+   * "the connection".
+   */
+  requiresOnline?: boolean;
 } & Pick<
   ButtonProps,
   // `variant="danger"` also turns the packed dropdown item red.
@@ -77,6 +88,11 @@ export function ResponsiveActions({
   className,
 }: Props): ReactElement {
   const matches = useBreakpointMatches();
+
+  const online = useOnline();
+
+  const isOff = (props: Pick<ActionProps, 'disabled' | 'requiresOnline'>) =>
+    props.disabled || (props.requiresOnline && !online);
 
   const isInline = (showFrom: NonNullable<ActionProps['showFrom']> = 'xs') => {
     return showFrom !== 'never' && (showFrom === 'xs' || matches[showFrom]);
@@ -146,10 +162,14 @@ export function ResponsiveActions({
       showFrom,
       showLabelFrom,
       variant: ownVariant,
+      requiresOnline,
+      disabled,
       ...rest
     }: ActionProps,
     key: number,
   ) => {
+    const off = isOff({ disabled, requiresOnline });
+
     // An inline action is icon-only unless `showLabelFrom` prints the label
     // beside the icon; where the label is hidden it shows in the tooltip.
     return icon ? (
@@ -158,6 +178,7 @@ export function ResponsiveActions({
           <Button
             variant={ownVariant ?? variant}
             size={size}
+            disabled={off}
             {...rest}
             {...tipProps}
             aria-label={
@@ -173,7 +194,13 @@ export function ResponsiveActions({
         )}
       </LongPressTooltip>
     ) : (
-      <Button key={key} variant={ownVariant ?? variant} size={size} {...rest}>
+      <Button
+        key={key}
+        variant={ownVariant ?? variant}
+        size={size}
+        disabled={off}
+        {...rest}
+      >
         {label}
       </Button>
     );
@@ -219,7 +246,7 @@ export function ResponsiveActions({
                     ? { href: entry.props.href }
                     : ({ as: 'button', type: 'button' } as const))}
                   onClick={entry.props.onClick}
-                  disabled={entry.props.disabled}
+                  disabled={isOff(entry.props)}
                   active={entry.props.active}
                   className={clsx(
                     entry.props.variant === 'danger' && 'text-danger',
@@ -234,6 +261,10 @@ export function ResponsiveActions({
                     </>
                   ) : (
                     entry.props.label
+                  )}
+
+                  {entry.props.requiresOnline && (
+                    <OfflineBadge className="ms-1" />
                   )}
                 </Dropdown.Item>
               ),

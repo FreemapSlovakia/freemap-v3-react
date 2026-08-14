@@ -1,6 +1,8 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useEffect } from 'react';
 import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
 import { FaMobileAlt, FaPlus, FaTimes } from 'react-icons/fa';
@@ -11,6 +13,8 @@ import { MyDevice } from './MyDevice.js';
 
 export function MyDevices(): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const tm = useTrackingMessages();
 
@@ -31,6 +35,8 @@ export function MyDevices(): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         <Alert variant="secondary">{tm?.devices.desc()}</Alert>
 
         {devices.length > 0 && (
@@ -43,7 +49,10 @@ export function MyDevices(): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button onClick={() => dispatch(trackingActions.modifyDevice(null))}>
+        <Button
+          disabled={!online}
+          onClick={() => dispatch(trackingActions.modifyDevice(null))}
+        >
           <FaPlus /> {m?.general.add}
         </Button>
 

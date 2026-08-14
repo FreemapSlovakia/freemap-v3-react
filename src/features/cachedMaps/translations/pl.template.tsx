@@ -33,6 +33,8 @@ const pl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   activate: 'Aktywuj',
   focus: 'Przybliż do obszaru',
   namePrefix: 'Offline',
+  offlineWiden:
+    'Bez połączenia tę mapę można zmniejszyć, ale nie powiększyć — powiększenie wymagałoby pobrania kafelków, których nie zawiera.',
 };
 
 export default pl;

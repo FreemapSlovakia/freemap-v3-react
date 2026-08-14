@@ -35,6 +35,8 @@ const fr: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   activate: 'Activer',
   focus: 'Zoomer sur la zone',
   namePrefix: 'Hors ligne',
+  offlineWiden:
+    'Sans connexion, cette carte peut être réduite mais pas agrandie — l’agrandir nécessiterait de télécharger des tuiles qu’elle ne contient pas.',
 };
 
 export default fr;

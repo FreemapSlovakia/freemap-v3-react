@@ -99,6 +99,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     componentLoadingError:
       'Komponente ni bilo mogoče naložiti. Preverite svojo internetno povezavo.',
     offline: 'Niste povezani z internetom.',
+    offlineUnavailable: 'Ni na voljo brez internetne povezave.',
+    offlineToolUnavailable:
+      'To orodje brez internetne povezave ne more ničesar naložiti.',
+    offlineNotice:
+      'Niste povezani z internetom, zato tukaj ni mogoče ničesar naložiti ali poslati.',
     connectionError: 'Napaka pri povezovanju s strežnikom.',
     experimentalFunction: 'Poskusna funkcija',
     attribution: () => <Attribution unknown="Licenca zemljevida ni določena" />,
@@ -230,6 +235,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    offlineHint: 'Brez internetne povezave je mogoče najti samo koordinate.',
     inProgress: 'Iščem…',
     noResults: 'Ni najdenih rezultatov',
     prompt: 'Vnesite kraj',
@@ -266,6 +272,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     interactiveLayerWarning: 'Podatkovni sloj je skrit',
     minZoomWarning: (minZoom) => `Dostopno od povečave ${minZoom}`,
     outsideViewWarning: 'Trenutni pogled je zunaj tega zemljevida',
+    offlineWarning: 'Ta zemljevid ni shranjen za uporabo brez povezave',
     letters: {
       S: 'Letalska',
       Z: 'Letalska',

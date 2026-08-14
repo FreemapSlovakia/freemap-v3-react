@@ -5,12 +5,14 @@ import { mapToggleLayer } from '@features/map/model/actions.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
   Action,
   ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -42,6 +44,12 @@ function makeType() {
 
 export default function CustomMapsModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  // A custom map is nothing but an entry in the account's settings, so offline
+  // a signed-in user can neither add, change nor remove one.
+  const canSaveSettings = useCanSaveSettings();
+
+  const signedIn = useAppSelector((state) => Boolean(state.auth.user));
 
   const mm = useMyMapsMessages();
 
@@ -263,6 +271,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
                         <Action
                           icon={<FaPencilAlt />}
                           label={m?.general.modify}
+                          requiresOnline={signedIn}
                           onClick={() => handleEditClick(def.type)}
                           showFrom="sm"
                         />
@@ -273,6 +282,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
                           icon={<FaTrash />}
                           label={m?.general.delete}
                           variant="danger"
+                          requiresOnline={signedIn}
                           onClick={() => handleDeleteClick(def)}
                           showFrom="sm"
                         />
@@ -285,9 +295,18 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button variant="primary" onClick={handleAddClick}>
+            <Button
+              variant="primary"
+              disabled={!canSaveSettings}
+              onClick={handleAddClick}
+            >
               <FaPlus /> {m?.mapLayers.addCustomMap}
             </Button>
+
+            <OfflineBadge
+              className="align-self-center"
+              offline={!canSaveSettings}
+            />
 
             <Button variant="dark" onClick={close}>
               <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
@@ -306,6 +325,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
             <div className="mt-3">
               <LayerVisibilityFields
+                disabled={!canSaveSettings}
                 showInMenu={showInMenu}
                 showInToolbar={showInToolbar}
                 onChange={(v) => {
@@ -317,9 +337,18 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button variant="primary" onClick={handleSave} disabled={!draft}>
+            <Button
+              variant="primary"
+              onClick={handleSave}
+              disabled={!draft || !canSaveSettings}
+            >
               <FaCheck /> {m?.general.save}
             </Button>
+
+            <OfflineBadge
+              className="align-self-center"
+              offline={!canSaveSettings}
+            />
 
             <Button variant="dark" onClick={goToList}>
               <FaTimes /> {m?.general.cancel}

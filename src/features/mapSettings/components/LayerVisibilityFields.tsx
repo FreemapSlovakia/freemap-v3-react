@@ -1,3 +1,4 @@
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
@@ -5,12 +6,18 @@ import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.j
 type Props = {
   showInMenu: boolean;
   showInToolbar: boolean;
+  /**
+   * Both are settings, so a form that can't write them switches them off — and
+   * each says why, the connection being the only thing that stops them.
+   */
+  disabled?: boolean;
   onChange: (next: { showInMenu: boolean; showInToolbar: boolean }) => void;
 };
 
 export function LayerVisibilityFields({
   showInMenu,
   showInToolbar,
+  disabled,
   onChange,
 }: Props): ReactElement {
   const msm = useMapSettingsMessages();
@@ -19,7 +26,13 @@ export function LayerVisibilityFields({
     <div className="d-flex flex-wrap gap-3">
       <Form.Check
         id="layer-show-in-menu"
-        label={msm?.showInMenu}
+        label={
+          <>
+            {msm?.showInMenu}
+            <OfflineBadge className="ms-1" offline={disabled} />
+          </>
+        }
+        disabled={disabled}
         checked={showInMenu}
         onChange={(e) =>
           onChange({
@@ -31,7 +44,13 @@ export function LayerVisibilityFields({
 
       <Form.Check
         id="layer-show-in-toolbar"
-        label={msm?.showInToolbar}
+        label={
+          <>
+            {msm?.showInToolbar}
+            <OfflineBadge className="ms-1" offline={disabled} />
+          </>
+        }
+        disabled={disabled}
         checked={showInToolbar}
         onChange={(e) =>
           onChange({

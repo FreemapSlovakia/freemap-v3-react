@@ -3,6 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useDtmCountryNames } from '@features/premium/hooks/useDtmCountryNames.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { PREMIUM_PRICE_EUR } from '@shared/premiumPricing.js';
 import { type ReactElement, useCallback } from 'react';
@@ -54,6 +55,8 @@ export default function LoginModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         {cookieConsentResult === null && (
           <Alert variant="warning">
             <FaExclamationTriangle /> {m?.general.noCookies()}

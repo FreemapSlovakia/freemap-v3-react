@@ -17,8 +17,10 @@ import { ensureCompassPermission } from '@features/location/ensureCompassPermiss
 import { locationSettingsInitialState } from '@features/location/model/settingsReducer.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   type ChangeEvent,
@@ -62,6 +64,8 @@ type Props = { show: boolean };
 
 export default function MapPreferencesModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const canSaveSettings = useCanSaveSettings();
 
   const dispatch = useDispatch();
 
@@ -132,7 +136,11 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   // Fills the form fields with defaults; the user then applies them with Save
   // (or closes without saving).
   const handleResetDefaults = useCallback(() => {
-    setMaxZoom(String(mapInitialState.maxZoom));
+    // Leave out the one field the form can't write: resetting it would only
+    // put back a value Save then fails on.
+    if (canSaveSettings) {
+      setMaxZoom(String(mapInitialState.maxZoom));
+    }
 
     setResolutionScale(
       mapInitialState.resolutionScale === null
@@ -153,14 +161,14 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     setDitchFillWindow(String(elevationSettingsInitialState.ditchFillWindow));
 
     setGradeWindow(String(elevationSettingsInitialState.gradeWindow));
-  }, []);
+  }, [canSaveSettings]);
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
     const settings: Parameters<typeof saveSettings>[0]['settings'] = {};
 
-    if (maxZoom !== initialMaxZoom) {
+    if (canSaveSettings && maxZoom !== initialMaxZoom) {
       const maxZoomValue = parseInt(maxZoom, 10);
 
       settings.maxZoom = Number.isNaN(maxZoomValue) ? 20 : maxZoomValue;
@@ -277,8 +285,10 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     ditchFillWindow !== initialDitchFillWindow ||
     gradeWindow !== initialGradeWindow;
 
+  // `maxZoom` counts only while it can be written; left out, a signed-in offline
+  // user's non-default value would keep the reset button alive forever.
   const atDefault =
-    maxZoom === String(mapInitialState.maxZoom) &&
+    (!canSaveSettings || maxZoom === String(mapInitialState.maxZoom)) &&
     resolutionScale ===
       (mapInitialState.resolutionScale === null
         ? ''
@@ -308,14 +318,20 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
         <Modal.Body>
           <p className="fw-bold mb-3">{m?.mapLayers.mapSection}</p>
 
+          {/* The one preference here kept in the account's settings; the rest
+              are this browser's own and save with no connection. */}
           <Form.Group controlId="maxZoom">
-            <Form.Label>{m?.mapLayers.maxZoom}</Form.Label>
+            <Form.Label>
+              {m?.mapLayers.maxZoom}
+              <OfflineBadge className="ms-1" offline={!canSaveSettings} />
+            </Form.Label>
 
             <Form.Control
               type="number"
               min={0}
               max={99}
               value={maxZoom}
+              disabled={!canSaveSettings}
               isInvalid={invalidMaxZoom}
               onChange={handleMaxZoomChange}
             />

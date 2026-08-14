@@ -65,6 +65,9 @@ export type Messages = {
     broadcastChannelUnsupported: string;
     componentLoadingError: string;
     offline: string;
+    offlineUnavailable: string;
+    offlineToolUnavailable: string;
+    offlineNotice: string;
     connectionError: string;
     experimentalFunction: string;
     attribution: () => JSX.Element;
@@ -181,6 +184,7 @@ export type Messages = {
     placeholder: string;
     result: string;
     keepOnMap: string;
+    offlineHint: string;
     sources: Record<SearchSource, string>;
   };
   mapLayers: {
@@ -195,6 +199,7 @@ export type Messages = {
     interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
     outsideViewWarning: string;
+    offlineWarning: string;
     letters: Record<string, string>;
     customBase: string;
     type: {

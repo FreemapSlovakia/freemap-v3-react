@@ -8,11 +8,13 @@ import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
 import {
   type IntegratedLayerDef,
@@ -56,6 +58,8 @@ export default function OfflineMapExportModal({
   show,
 }: Props): ReactElement | null {
   const m = useMessages();
+
+  const online = useOnline();
 
   const ome = useOfflineMapExportMessages();
 
@@ -216,6 +220,11 @@ export default function OfflineMapExportModal({
     (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
 
+      // Enter in a field submits the form whatever the button says.
+      if (!online) {
+        return;
+      }
+
       dispatch(
         downloadMap({
           email,
@@ -229,7 +238,18 @@ export default function OfflineMapExportModal({
         }),
       );
     },
-    [dispatch, email, name, mapType, format, maxZoom, minZoom, scale, bbox],
+    [
+      dispatch,
+      online,
+      email,
+      name,
+      mapType,
+      format,
+      maxZoom,
+      minZoom,
+      scale,
+      bbox,
+    ],
   );
 
   // refresh user (credits)
@@ -277,6 +297,8 @@ export default function OfflineMapExportModal({
         </Modal.Header>
 
         <Modal.Body>
+          <OfflineAlert />
+
           <div>
             <p>
               <strong>{ome?.usageIntro}</strong>
@@ -571,6 +593,7 @@ export default function OfflineMapExportModal({
             onClick={close}
             type="submit"
             disabled={
+              !online ||
               invalidEmail ||
               invalidMinZoom ||
               invalidMaxZoom ||

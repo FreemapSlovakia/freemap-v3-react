@@ -2,6 +2,8 @@ import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import {
   Action,
   ActionDivider,
@@ -124,7 +126,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
             key="copy"
             icon={<FaCopy />}
             label={mm?.outboxResolveCopy}
-            disabled={!online}
+            requiresOnline
             onClick={() =>
               dispatch(mapsResolveOutbox({ mapId, resolution: 'copy' }))
             }
@@ -140,7 +142,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
             label={mm?.outboxResolveOverwrite}
             // Irreversibly drops whatever the map gained meanwhile.
             variant="danger"
-            disabled={!online}
+            requiresOnline
             onClick={() =>
               dispatch(mapsResolveOutbox({ mapId, resolution: 'overwrite' }))
             }
@@ -155,7 +157,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
       variant="danger"
       // Discarding replaces the local copy with the server's, which has to be
       // read first — unless the map is gone, and there is none to read.
-      disabled={!online && blocked !== 'gone'}
+      requiresOnline={blocked !== 'gone'}
       onClick={async () => {
         // The unsent changes exist nowhere else, so this is as final as
         // deleting the map.
@@ -226,13 +228,13 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
               <Dropdown.Header>{mm?.offline}</Dropdown.Header>
 
-              <Dropdown.Item
+              <OnlineOnlyItem
                 as="button"
-                disabled={!online || maps.length === 0}
+                disabled={maps.length === 0}
                 onClick={() => dispatch(mapsSetAllOffline(true))}
               >
                 <BiWifiOff /> {mm?.makeAllOffline}
-              </Dropdown.Item>
+              </OnlineOnlyItem>
 
               <Dropdown.Item
                 as="button"
@@ -313,8 +315,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                         // A queued save holds the whole document, so it opens
                         // the map offline even without an offline copy — as
                         // long as it is one the read will actually answer with.
-                        disabled={
-                          !online &&
+                        requiresOnline={
                           !isOffline &&
                           !(pending && canStandInForMap(pending.blocked))
                         }
@@ -373,7 +374,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                         <Action
                           icon={<FaEdit />}
                           label={m?.general.modify}
-                          disabled={!online}
+                          requiresOnline
                           onClick={() => onEdit(map)}
                           showFrom="lg"
                         />
@@ -384,7 +385,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                           icon={<FaTrash />}
                           label={m?.general.delete}
                           variant="danger"
-                          disabled={!online}
+                          requiresOnline
                           onClick={async () => {
                             if (
                               await confirm({
@@ -438,6 +439,10 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
         <Button onClick={onAdd} disabled={!online}>
           <FaPlus /> {mm?.addNew}
         </Button>
+
+        {/* Beside the button, not in it: a disabled one takes no pointer
+            events, so a badge inside could never be asked what it means. */}
+        <OfflineBadge className="align-self-center" />
 
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close}

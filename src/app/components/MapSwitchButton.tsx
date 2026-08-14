@@ -17,14 +17,18 @@ import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { Radio } from '@shared/components/Radio.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import {
   modalMenuItemProps,
   useMenuHandler,
 } from '@shared/hooks/useMenuHandler.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   getCountriesBbox,
   getLayerBbox,
@@ -118,6 +122,10 @@ function getKbdShortcut(shortcut?: Shortcut | null) {
 
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
+
+  const canSaveSettings = useCanSaveSettings();
 
   // Both questions asked of it below — is the layer in range, are its tiles
   // premium here — are about the tiles the layer would request, and Leaflet
@@ -336,14 +344,18 @@ export function MapSwitchButton(): ReactElement {
   const byName = makeLabelComparator(language);
 
   const layerDefs = [
-    ...integratedLayerDefs.map((def) => ({ ...def, custom: false as const })),
+    ...integratedLayerDefs.map((def) => ({
+      ...def,
+      custom: false as const,
+      cached: false,
+    })),
     ...[...customLayerDefs]
       .sort((a, b) => byName(a.name || undefined, b.name || undefined))
-      .map((def) => ({ ...def, custom: true as const })),
+      .map((def) => ({ ...def, custom: true as const, cached: false })),
     ...cachedMaps
       .filter((cm) => cm.downloadedCount === cm.tileCount)
       .sort((a, b) => byName(a.name || undefined, b.name || undefined))
-      .map((cm) => ({ ...cm, custom: true as const })),
+      .map((cm) => ({ ...cm, custom: true as const, cached: true })),
   ].map((def) => ({
     scaleWithDpi: false,
     ...def,
@@ -409,6 +421,21 @@ export function MapSwitchButton(): ReactElement {
         zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
           <PremiumGem className="ms-1" capture nested />
         ) : null}
+
+        {/* Everything but a downloaded map draws nothing while offline. The
+            toolbar says it through the button's own tooltip, as premium does —
+            and inside that tooltip a bare glyph, since a badge there would open
+            a tooltip of its own. */}
+        {place === 'menu' &&
+          !def.cached &&
+          def.technology !== 'interactive' && (
+            <OfflineBadge className="ms-1" hint={m?.mapLayers.offlineWarning} />
+          )}
+
+        {place === 'tooltip' &&
+          !def.cached &&
+          def.technology !== 'interactive' &&
+          !online && <BiWifiOff className="ms-1 text-warning" />}
 
         {place !== 'toolbar' && !def.custom && def.superseededBy && (
           <Badge label={m?.mapLayers.legacy}>
@@ -765,16 +792,25 @@ export function MapSwitchButton(): ReactElement {
               <>
                 <SubmenuHeader icon={<FaCog />} title={m?.mapLayers.settings} />
 
-                <Dropdown.Item {...modalMenuItemProps('map-layers-config')}>
+                <OnlineOnlyItem
+                  offline={!canSaveSettings}
+                  {...modalMenuItemProps('map-layers-config')}
+                >
                   <FaLayerGroup /> {m?.mapLayers.configureLayers} <kbd>m</kbd>{' '}
                   <kbd>y</kbd>
-                </Dropdown.Item>
+                </OnlineOnlyItem>
 
-                <Dropdown.Item {...modalMenuItemProps('custom-maps')}>
+                {/* A custom map lives only in the account's settings, so
+                    offline there is nothing here to add, change or remove —
+                    unless the settings are the browser's own. */}
+                <OnlineOnlyItem
+                  offline={!canSaveSettings}
+                  {...modalMenuItemProps('custom-maps')}
+                >
                   <MdDashboardCustomize /> {m?.mapLayers.customMaps}
                   {customLayerDefs.length > 0 && ` · ${customLayerDefs.length}`}{' '}
                   <kbd>m</kbd> <kbd>c</kbd>
-                </Dropdown.Item>
+                </OnlineOnlyItem>
 
                 <Dropdown.Item as="button" eventKey="offlineMaps">
                   <BiWifiOff /> {m?.mapLayers.offlineMaps}

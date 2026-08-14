@@ -33,6 +33,8 @@ const sl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   activate: 'Aktiviraj',
   focus: 'Približaj na območje',
   namePrefix: 'Brez povezave',
+  offlineWiden:
+    'Brez povezave je ta zemljevid mogoče le zmanjšati, ne pa povečati — pri povečanju bi bilo treba prenesti ploščice, ki jih ne vsebuje.',
 };
 
 export default sl;

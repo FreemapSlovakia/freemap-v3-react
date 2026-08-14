@@ -32,6 +32,13 @@ export interface ToolDefinition {
    * before something surprises them.
    */
   experimental?: true;
+  /**
+   * The tool asks the server for what it shows, so offline its toolbar carries
+   * the offline mark. Nothing about opening it is blocked — the panel is local,
+   * a selection toolbar opens the same tool without the menu at all, and what
+   * it already holds stays usable; only the controls that fetch go dead.
+   */
+  requiresOnline?: true;
 }
 
 /**
@@ -77,12 +84,14 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <FaRoute />,
     msgKey: 'routePlanner',
     kbd: 'KeyR',
+    requiresOnline: true,
   },
   {
     tool: 'objects',
     icon: <TbMapPins />,
     msgKey: 'objects',
     kbd: 'KeyO',
+    requiresOnline: true,
   },
   {
     tool: 'draw-points',
@@ -116,18 +125,21 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <FaInfo />,
     msgKey: 'mapDetails',
     kbd: 'KeyI',
+    requiresOnline: true,
   },
   {
     tool: 'changesets',
     icon: <FaPencilAlt />,
     msgKey: 'changesets',
     kbd: 'KeyX',
+    requiresOnline: true,
   },
   {
     tool: 'tracking',
     icon: <FaBullseye />,
     msgKey: 'tracking',
     kbd: 'KeyT',
+    requiresOnline: true,
   },
   {
     tool: 'gps-recorder',

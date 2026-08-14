@@ -16,6 +16,7 @@ import {
 import { searchSetQuery } from '@features/search/model/actions.js';
 import type { Modifier, Obj } from '@popperjs/core';
 import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
@@ -424,16 +425,16 @@ export function MapContextMenu(): ReactElement {
               </Dropdown.Item>
 
               {(!window.fmEmbedded || embedFeatures.includes('search')) && (
-                <Dropdown.Item as="button" eventKey="details">
+                <OnlineOnlyItem as="button" eventKey="details">
                   <FaInfo /> {m?.mapCtxMenu.queryFeatures}
-                </Dropdown.Item>
+                </OnlineOnlyItem>
               )}
 
               {(!window.fmEmbedded ||
                 !embedFeatures.includes('noMapSwitch')) && (
-                <Dropdown.Item as="button" eventKey="photos">
+                <OnlineOnlyItem as="button" eventKey="photos">
                   <FaCamera /> {m?.mapCtxMenu.showPhotos}
-                </Dropdown.Item>
+                </OnlineOnlyItem>
               )}
 
               {!window.fmEmbedded && (
@@ -455,13 +456,13 @@ export function MapContextMenu(): ReactElement {
 
                   <Dropdown.Divider />
 
-                  <Dropdown.Item as="button" eventKey="startRoute">
+                  <OnlineOnlyItem as="button" eventKey="startRoute">
                     <FaPlay color="#409a40" /> {m?.mapCtxMenu.startRoute}
-                  </Dropdown.Item>
+                  </OnlineOnlyItem>
 
-                  <Dropdown.Item as="button" eventKey="finishRoute">
+                  <OnlineOnlyItem as="button" eventKey="finishRoute">
                     <FaStop color="#d9534f" /> {m?.mapCtxMenu.finishRoute}
-                  </Dropdown.Item>
+                  </OnlineOnlyItem>
                 </>
               )}
             </>
