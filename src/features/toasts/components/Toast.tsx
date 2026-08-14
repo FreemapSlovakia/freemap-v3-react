@@ -94,13 +94,15 @@ export function Toast({
 
       <span>{message}</span>
 
+      {/* `gap` rather than a margin per button: the toolbar wraps, and a margin
+          would indent whichever button starts the second row and leave the rows
+          touching. */}
       {buttonActions.length > 0 && (
-        <ButtonToolbar className="mt-2">
+        <ButtonToolbar className="mt-2 gap-2">
           {buttonActions.map(
             ({ name, action, href, variant: buttonStyle }, i) => (
               <Button
                 size="sm"
-                className={i > 0 ? 'ms-2' : ''}
                 key={i}
                 variant={buttonStyle}
                 // A link still dismisses: the toast has been acted on, and one

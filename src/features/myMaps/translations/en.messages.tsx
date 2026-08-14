@@ -56,6 +56,64 @@ const en: MyMapsMessages = {
   offlineCachedAll: ({ count }) => `${count} map(s) are now available offline.`,
   offlineCachedPartial: ({ count, failed }) =>
     `${count} map(s) cached offline, ${failed} failed.`,
+  savedToOutbox: ({ name }) => (
+    <>
+      Map <i>{name}</i> has been saved in this browser and will be sent as soon
+      as the connection allows.
+    </>
+  ),
+  unsent: 'Unsent',
+  unsentTooltip:
+    'This map has changes saved in this browser that have not reached the server yet. They are sent automatically as soon as the connection allows.',
+  syncing: 'Sending…',
+  syncNow: 'Send unsent changes',
+  outboxEmpty: 'There are no unsent changes.',
+  outboxOffline: 'No connection — the unsent changes stay queued.',
+  outboxSynced: ({ count }) => `Changes to ${count} map(s) have been sent.`,
+  outboxRetryLater: ({ count }) =>
+    `Changes to ${count} map(s) could not be sent and will be retried later.`,
+  outboxError: ({ err }) =>
+    addError(getMessages()!, 'Error sending unsent map changes', err),
+  outboxConflict: ({ name }) => (
+    <>
+      Map <i>{name}</i> has been modified elsewhere since your unsent changes
+      were made, so they can't be sent. Choose what to do with them.
+    </>
+  ),
+  outboxForbidden: ({ name }) => (
+    <>
+      You no longer have permission to write to map <i>{name}</i>, so your
+      unsent changes can't be sent. Choose what to do with them.
+    </>
+  ),
+  outboxGone: ({ name }) => (
+    <>
+      Map <i>{name}</i> no longer exists, so your unsent changes can't be sent.
+      Choose what to do with them.
+    </>
+  ),
+  outboxUnreadable: ({ name }) => (
+    <>
+      The unsent changes to map <i>{name}</i> can't be read back from this
+      browser, so they can't be sent.
+    </>
+  ),
+  outboxConflictBadge: 'Conflict',
+  outboxBlockedBadge: 'Cannot send',
+  outboxResolveCopy: 'Save as a copy',
+  outboxResolveOverwrite: 'Overwrite the server version',
+  outboxResolveDiscard: 'Discard my changes',
+  outboxDiscardTitle: 'Discard unsent changes',
+  outboxDiscardConfirm: (name) => (
+    <>
+      Discard the unsent changes to map <i>{name}</i>? They exist only in this
+      browser and cannot be recovered.
+    </>
+  ),
+  outboxCopyName: (name) => `${name} (copy)`,
+  logoutUnsentTitle: 'Unsent map changes',
+  logoutUnsentWarning: ({ count }) =>
+    `${count} map(s) have changes that have not reached the server yet. Logging out discards them. Log out anyway?`,
 };
 
 export default en;

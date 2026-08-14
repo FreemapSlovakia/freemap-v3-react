@@ -10,12 +10,39 @@ import {
   mapsLoaded,
   mapsLoadFailed,
   mapsOfflineIdsLoaded,
+  mapsOutboxLoaded,
+  mapsOutboxSyncing,
+  mapsRefreshMeta,
   mapsRestore,
   mapsRestoreEnded,
   mapsSetList,
   mapsSetMeta,
   mapsSetSavedFingerprint,
+  type OutboxEntry,
 } from './actions.js';
+
+/**
+ * Folds a fresh answer about the map already open into what is held, never
+ * moving `modifiedAt` backwards. A read that was in flight when a queued save
+ * reached the server answers with the version from before it, and the
+ * precondition the next save sends has to be the newest the server has given us
+ * or that save is refused as a conflict with this one.
+ *
+ * A different map replaces outright, or optional fields of the old one —
+ * `writers` — would be carried into a map they don't belong to.
+ */
+function mergeMeta(current: MapMeta | undefined, next: MapMeta): MapMeta {
+  return current?.id !== next.id
+    ? next
+    : {
+        ...current,
+        ...next,
+        modifiedAt:
+          current.modifiedAt > next.modifiedAt
+            ? current.modifiedAt
+            : next.modifiedAt,
+      };
+}
 
 export interface MapsState {
   loadMeta: MapLoadMeta | undefined;
@@ -41,6 +68,10 @@ export interface MapsState {
    * exactly as `loadMeta` lets a load resume.
    */
   restoring: MapRestore | undefined;
+  /** Saves waiting to reach the server, mirrored from IndexedDB. */
+  outbox: OutboxEntry[];
+  /** Ids being pushed right now — transient, so it lives only here. */
+  syncingIds: string[];
 }
 
 const initialState: MapsState = {
@@ -51,6 +82,8 @@ const initialState: MapsState = {
   savedFingerprint: null,
   routeRecomputed: false,
   restoring: undefined,
+  outbox: [],
+  syncingIds: [],
 };
 
 export const mapsReducer = createReducer(initialState, (builder) =>
@@ -59,7 +92,7 @@ export const mapsReducer = createReducer(initialState, (builder) =>
       state.maps = payload;
     })
     .addCase(mapsLoaded, (state, { payload }) => {
-      state.activeMap = payload.meta;
+      state.activeMap = mergeMeta(state.activeMap, payload.meta);
 
       state.loadMeta = undefined;
 
@@ -92,13 +125,7 @@ export const mapsReducer = createReducer(initialState, (builder) =>
       state.restoring = undefined;
     })
     .addCase(mapsSetMeta, (state, { payload }) => {
-      // Merging refreshes the meta of the map already open; switching to another
-      // map replaces it, or optional fields of the old one — `writers` — would
-      // be carried over into a map they don't belong to.
-      state.activeMap =
-        state.activeMap?.id === payload.id
-          ? { ...state.activeMap, ...payload }
-          : payload;
+      state.activeMap = mergeMeta(state.activeMap, payload);
 
       // This map is active now, so nothing is pending for it — but only for it.
       // A save refreshes the meta of the map already open, and clearing whatever
@@ -110,6 +137,14 @@ export const mapsReducer = createReducer(initialState, (builder) =>
 
       if (state.restoring?.mapId === payload.id) {
         state.restoring = undefined;
+      }
+    })
+    // Only the map already open, and only its meta: nothing is claimed and
+    // nothing pending is released, so a load or restore under way still decides
+    // what opens.
+    .addCase(mapsRefreshMeta, (state, { payload }) => {
+      if (state.activeMap?.id === payload.id) {
+        state.activeMap = mergeMeta(state.activeMap, payload);
       }
     })
     .addCase(mapsSetSavedFingerprint, (state, { payload }) => {
@@ -128,6 +163,17 @@ export const mapsReducer = createReducer(initialState, (builder) =>
     })
     .addCase(mapsOfflineIdsLoaded, (state, { payload }) => {
       state.offlineIds = payload;
+    })
+    .addCase(mapsOutboxLoaded, (state, { payload }) => {
+      state.outbox = payload;
+
+      // Nothing can still be pushing a save that is no longer queued.
+      state.syncingIds = state.syncingIds.filter((id) =>
+        payload.some((entry) => entry.mapId === id),
+      );
+    })
+    .addCase(mapsOutboxSyncing, (state, { payload }) => {
+      state.syncingIds = payload;
     })
     .addCase(routePlannerSupersedeSavedRoute, (state) => {
       state.routeRecomputed = true;

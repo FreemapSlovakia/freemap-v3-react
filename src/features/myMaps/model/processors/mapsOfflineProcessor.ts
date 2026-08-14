@@ -14,10 +14,13 @@ import {
   getOfflineMapMeta,
   putOfflineMap,
 } from '../../offlineStore.js';
+import { clearOutbox, getPendingSave, pendingMeta } from '../../outboxStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import type { MapMeta } from '../actions.js';
 import {
+  canStandInForMap,
   mapsOfflineIdsLoaded,
+  mapsOutboxLoaded,
   mapsSetAllOffline,
   mapsSetMapOffline,
 } from '../actions.js';
@@ -30,7 +33,16 @@ async function cacheMapOffline(
   id: string,
   getState: () => RootState,
 ): Promise<void> {
-  await putOfflineMap(await loadMapDocument(id, getState, [authLogout]));
+  // A save waiting in the outbox is newer than what the server can answer with,
+  // so it is what the offline copy has to hold — fetching over it would put the
+  // superseded version back and make the edit look lost until the replay lands.
+  const pending = await getPendingSave(id);
+
+  await putOfflineMap(
+    pending && canStandInForMap(pending.blocked)
+      ? { meta: pendingMeta(pending), data: pending.data }
+      : await loadMapDocument(id, getState, [authLogout]),
+  );
 }
 
 async function pool<T>(
@@ -128,15 +140,25 @@ export const mapsSetAllOfflineProcessor: Processor<typeof mapsSetAllOffline> = {
   },
 };
 
-/** Drops all offline maps when the user logs out. */
+/**
+ * Drops everything the departing account left in the browser: the offline
+ * copies and the queued saves alike. Both in one processor, so the static-cache
+ * check below them runs once, after both — two processors on `authLogout` would
+ * race, and the one that got there first would see the other's content and keep
+ * the shell of an account that has gone.
+ */
 export const mapsOfflinePurgeProcessor: Processor = {
   actionCreator: authLogout,
   async handle({ dispatch }) {
     await clearOfflineMaps();
 
+    await clearOutbox();
+
     await maybeClearStaticCache();
 
     dispatch(mapsOfflineIdsLoaded([]));
+
+    dispatch(mapsOutboxLoaded([]));
   },
 };
 

@@ -3,8 +3,10 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { deleteMapRecord } from '../../mapStore.js';
+import { deletePendingSave } from '../../outboxStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import { mapsDelete, mapsDisconnect, mapsLoadList } from '../actions.js';
+import { refreshOutbox } from './mapsOutboxProcessor.js';
 
 export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
   actionCreator: mapsDelete,
@@ -43,6 +45,17 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
     deleteMapRecord(id).catch((err) => {
       console.warn('Error clearing map working copy:', err);
     });
+
+    // Along with a save the outbox still holds for it: it would answer
+    // `readMapDocument` for a map that no longer exists, count towards the
+    // logout warning, and keep the app shell cached on its own.
+    try {
+      await deletePendingSave(id);
+
+      await refreshOutbox(dispatch);
+    } catch (err) {
+      console.warn('Error clearing queued save:', err);
+    }
 
     dispatch(mapsLoadList());
 

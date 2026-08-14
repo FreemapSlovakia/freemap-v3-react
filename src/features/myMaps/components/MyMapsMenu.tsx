@@ -22,10 +22,19 @@ import {
   FaUnlink,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { mapsDisconnect, mapsLoad, mapsSave } from '../model/actions.js';
-import { mapDirtySelector } from '../model/selectors.js';
+import {
+  mapsDisconnect,
+  mapsLoad,
+  mapsResolveOutbox,
+  mapsSave,
+} from '../model/actions.js';
+import {
+  activeMapBlockedSelector,
+  mapDirtySelector,
+} from '../model/selectors.js';
 import { loadMyMapsMessages } from '../translations/loadMyMapsMessages.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
+import { MapSyncStatus } from './MapSyncStatus.js';
 import classes from './MyMapsMenu.module.css';
 
 export function MyMapsMenu(): ReactElement {
@@ -36,6 +45,8 @@ export function MyMapsMenu(): ReactElement {
   const activeMap = useAppSelector((state) => state.myMaps.activeMap);
 
   const dirty = useAppSelector(mapDirtySelector);
+
+  const blocked = useAppSelector(activeMapBlockedSelector);
 
   const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
 
@@ -52,6 +63,18 @@ export function MyMapsMenu(): ReactElement {
         confirmLabel: mm?.reload,
       }))
     ) {
+      if (blocked) {
+        // A refused save answers a read in place of the map, so a plain load
+        // would hand the local content straight back. Discarding it is what
+        // getting to the stored map means while one is queued — and this
+        // confirm is the one the destructive choice needs.
+        dispatch(
+          mapsResolveOutbox({ mapId: activeMap.id, resolution: 'discard' }),
+        );
+
+        return;
+      }
+
       // Re-read the saved map from the backend, discarding the local edits. The
       // viewport and background layer aren't part of what counts as a change, so
       // they stay as they are.
@@ -59,7 +82,7 @@ export function MyMapsMenu(): ReactElement {
         mapsLoad({ id: activeMap.id, ignoreMap: true, ignoreLayers: true }),
       );
     }
-  }, [activeMap, confirm, mm, dispatch]);
+  }, [activeMap, blocked, confirm, mm, dispatch]);
 
   const handleSave = useCallback(() => {
     if (activeMap?.canWrite) {
@@ -151,11 +174,12 @@ export function MyMapsMenu(): ReactElement {
 
           {dirty && (
             <UnsavedWarningIcon
-              className="mx-1"
               label={mm?.unsaved}
               tooltip={mm?.unsavedTooltip}
             />
           )}
+
+          {activeMap && <MapSyncStatus mapId={activeMap.id} as="icon" />}
 
           {!hidden && (
             <LongPressTooltip breakpoint="xl" label={mm?.save}>

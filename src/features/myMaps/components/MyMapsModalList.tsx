@@ -24,7 +24,9 @@ import {
 import { BiWifiOff } from 'react-icons/bi';
 import {
   FaCloudDownloadAlt,
+  FaCloudUploadAlt,
   FaCog,
+  FaCopy,
   FaEdit,
   FaEraser,
   FaFilter,
@@ -38,14 +40,21 @@ import {
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
+  type BlockedReason,
+  canCopy,
+  canOverwrite,
+  canStandInForMap,
   type MapMeta,
   mapsDelete,
   mapsDisconnect,
   mapsLoad,
+  mapsResolveOutbox,
   mapsSave,
   mapsSetAllOffline,
+  mapsSyncOutbox,
 } from '../model/actions.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
+import { MapSyncStatus } from './MapSyncStatus.js';
 
 type Props = {
   onAdd: () => void;
@@ -59,7 +68,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const { maps, activeMap, offlineIds } = useAppSelector(
+  const { maps, activeMap, offlineIds, outbox } = useAppSelector(
     (state) => state.myMaps,
   );
 
@@ -101,6 +110,81 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
   );
 
   const online = useOnline();
+
+  // The ways out of a refused save. Shared, so the row a map gets when it is no
+  // longer listed offers exactly what a listed one does.
+  const resolveActions = (
+    mapId: string,
+    name: string,
+    blocked: BlockedReason,
+  ) => [
+    ...(canCopy(blocked)
+      ? [
+          <Action
+            key="copy"
+            icon={<FaCopy />}
+            label={mm?.outboxResolveCopy}
+            disabled={!online}
+            onClick={() =>
+              dispatch(mapsResolveOutbox({ mapId, resolution: 'copy' }))
+            }
+            showFrom="never"
+          />,
+        ]
+      : []),
+    ...(canOverwrite(blocked)
+      ? [
+          <Action
+            key="overwrite"
+            icon={<FaCloudUploadAlt />}
+            label={mm?.outboxResolveOverwrite}
+            // Irreversibly drops whatever the map gained meanwhile.
+            variant="danger"
+            disabled={!online}
+            onClick={() =>
+              dispatch(mapsResolveOutbox({ mapId, resolution: 'overwrite' }))
+            }
+            showFrom="never"
+          />,
+        ]
+      : []),
+    <Action
+      key="discard"
+      icon={<FaEraser />}
+      label={mm?.outboxResolveDiscard}
+      variant="danger"
+      // Discarding replaces the local copy with the server's, which has to be
+      // read first — unless the map is gone, and there is none to read.
+      disabled={!online && blocked !== 'gone'}
+      onClick={async () => {
+        // The unsent changes exist nowhere else, so this is as final as
+        // deleting the map.
+        if (
+          await confirm({
+            title: mm?.outboxDiscardTitle,
+            message: mm?.outboxDiscardConfirm(name),
+            confirmLabel: mm?.outboxResolveDiscard,
+            confirmStyle: 'danger',
+          })
+        ) {
+          dispatch(mapsResolveOutbox({ mapId, resolution: 'discard' }));
+        }
+      }}
+      showFrom="never"
+    />,
+  ];
+
+  // A refused save whose map is no longer among the listed ones — deleted on the
+  // server, or no longer shared. Its row is the only place left to settle it,
+  // and without one it would sit in the outbox forever: never replayed, still
+  // counted in the logout warning, still keeping the app shell cached.
+  const orphans = outbox.filter(
+    (entry): entry is typeof entry & { blocked: BlockedReason } =>
+      entry.blocked !== undefined &&
+      !maps.some((map) => map.id === entry.mapId) &&
+      (!filter ||
+        entry.name.toLowerCase().includes(filter.toLowerCase().trim())),
+  );
 
   return (
     <>
@@ -157,11 +241,21 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
               >
                 <FaTimes /> {mm?.removeAllOffline}
               </Dropdown.Item>
+
+              <Dropdown.Item
+                as="button"
+                // A blocked save is waiting for a decision, not for a push, so
+                // it doesn't count towards there being anything to send.
+                disabled={!outbox.some((entry) => !entry.blocked)}
+                onClick={() => dispatch(mapsSyncOutbox({ manual: true }))}
+              >
+                <FaCloudUploadAlt /> {mm?.syncNow}
+              </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>
         </div>
 
-        {filteredMaps.length === 0 ? (
+        {filteredMaps.length === 0 && orphans.length === 0 ? (
           <p className="text-muted mb-0">{mm?.noMapFound}</p>
         ) : (
           <ListGroup>
@@ -172,6 +266,10 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
               const isOffline = offlineIds.includes(map.id);
 
+              const pending = outbox.find((entry) => entry.mapId === map.id);
+
+              const blocked = pending?.blocked;
+
               return (
                 <ListGroup.Item
                   key={map.id}
@@ -180,12 +278,13 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 >
                   <div className="flex-grow-1 me-2 min-w-0">
                     <div>
-                      {map.name}{' '}
+                      {map.name}
                       {isOffline && (
-                        <Badge bg="secondary">
+                        <Badge bg="secondary" className="ms-1">
                           <BiWifiOff /> {mm?.offline}
                         </Badge>
                       )}
+                      <MapSyncStatus mapId={map.id} className="ms-1" />
                     </div>
 
                     <small className="text-muted">
@@ -211,7 +310,14 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                         icon={<FaCloudDownloadAlt />}
                         variant="primary"
                         label={m?.general.load}
-                        disabled={!online && !isOffline}
+                        // A queued save holds the whole document, so it opens
+                        // the map offline even without an offline copy — as
+                        // long as it is one the read will actually answer with.
+                        disabled={
+                          !online &&
+                          !isOffline &&
+                          !(pending && canStandInForMap(pending.blocked))
+                        }
                         onClick={() =>
                           dispatch(
                             mapsLoad({
@@ -231,7 +337,6 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                         <Action
                           icon={<FaSave />}
                           label={mm?.save}
-                          disabled={!online}
                           onClick={() => dispatch(mapsSave(undefined))}
                           showFrom="never"
                         />
@@ -257,6 +362,10 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                           showFrom="never"
                         />
                       )}
+
+                      {blocked && <ActionDivider />}
+
+                      {blocked && resolveActions(map.id, map.name, blocked)}
 
                       {isOwn && <ActionDivider />}
 
@@ -296,6 +405,31 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 </ListGroup.Item>
               );
             })}
+
+            {orphans.map((entry) => (
+              <ListGroup.Item
+                key={entry.mapId}
+                className="d-flex align-items-center gap-2"
+              >
+                <div className="flex-grow-1 me-2 min-w-0">
+                  <div>
+                    {entry.name}
+
+                    <MapSyncStatus mapId={entry.mapId} className="ms-1" />
+                  </div>
+                </div>
+
+                <div className="flex-shrink-0">
+                  <ResponsiveActions
+                    size="sm"
+                    align="end"
+                    toggleLabel={m?.general.actions}
+                  >
+                    {resolveActions(entry.mapId, entry.name, entry.blocked)}
+                  </ResponsiveActions>
+                </div>
+              </ListGroup.Item>
+            ))}
           </ListGroup>
         )}
       </Modal.Body>

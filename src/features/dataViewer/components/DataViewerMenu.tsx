@@ -301,7 +301,6 @@ export function DataViewerMenu(): ReactElement {
       <ToolMenu tool="import-file">
         {unsaved && (
           <UnsavedWarningIcon
-            className="mx-1"
             label={tvm?.unsaved}
             tooltip={tvm?.unsavedTooltip}
           />

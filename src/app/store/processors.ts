@@ -75,6 +75,10 @@ import {
   mapsSetAllOfflineProcessor,
   mapsSetMapOfflineProcessor,
 } from '@features/myMaps/model/processors/mapsOfflineProcessor.js';
+import {
+  mapsOutboxProcessor,
+  mapsResolveOutboxProcessor,
+} from '@features/myMaps/model/processors/mapsOutboxProcessor.js';
 import { mapsRestoreProcessor } from '@features/myMaps/model/processors/mapsRestoreProcessor.js';
 import { mapsSaveProcessor } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
 import { mapsWorkingCopyProcessor } from '@features/myMaps/model/processors/mapsWorkingCopyProcessor.js';
@@ -216,6 +220,8 @@ export const processors = [
   mapsSetMapOfflineProcessor,
   mapsSetAllOfflineProcessor,
   mapsOfflinePurgeProcessor,
+  mapsOutboxProcessor,
+  mapsResolveOutboxProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
   weatherRadarLayerProcessor,

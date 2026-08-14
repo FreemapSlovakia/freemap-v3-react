@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import type { BlockedReason } from './actions.js';
 import { fingerprintState } from './mapDocument.js';
 
 /**
@@ -31,6 +32,17 @@ export function mapOpeningSelector(state: RootState): boolean {
   return Boolean(loadMeta || restoring);
 }
 
+/** Why the active map's queued save was refused, if one was. */
+export function activeMapBlockedSelector(
+  state: RootState,
+): BlockedReason | undefined {
+  const { activeMap, outbox } = state.myMaps;
+
+  return activeMap
+    ? outbox.find((entry) => entry.mapId === activeMap.id)?.blocked
+    : undefined;
+}
+
 /**
  * Whether the active map differs from the copy that was last loaded or saved.
  *
@@ -43,8 +55,19 @@ export function mapOpeningSelector(state: RootState): boolean {
 export function mapDirtySelector(state: RootState): boolean {
   const { activeMap, savedFingerprint, routeRecomputed } = state.myMaps;
 
+  if (activeMap === undefined) {
+    return false;
+  }
+
+  // A queued save the server refused is durable but going nowhere until the
+  // user settles it, so the map still holds changes the saved map doesn't. The
+  // digest can't see this: filing the save made the screen match what was
+  // filed, which is what says "saved" for one that is merely waiting to be sent.
+  if (activeMapBlockedSelector(state) !== undefined) {
+    return true;
+  }
+
   return (
-    activeMap !== undefined &&
     savedFingerprint !== null &&
     // The one change the digest can't see, so it is recorded rather than derived.
     (routeRecomputed || fingerprintState(state) !== savedFingerprint)

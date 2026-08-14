@@ -92,6 +92,15 @@ export const mapsLoadFailed = createAction('MAPS_LOAD_FAILED');
 export const mapsSetMeta = createAction<MapMeta>('MAPS_SET_META');
 
 /**
+ * Brings the meta of the map already open up to date without claiming it, so a
+ * load or restore in flight is left to finish. `mapsSetMeta` says "this map is
+ * the one now" and releases whatever was opening; this says only "here is a
+ * newer answer from the server about it", which is what a save that lands while
+ * a read is under way has to say.
+ */
+export const mapsRefreshMeta = createAction<MapMeta>('MAPS_REFRESH_META');
+
+/**
  * Records the digest of the map as last loaded or saved. Everything about
  * unsaved changes is derived by comparing it with what's on screen — see
  * `mapDirtySelector`.
@@ -133,6 +142,91 @@ export const mapsRestoreEnded = createAction<string>('MAPS_RESTORE_ENDED');
 export const mapsOfflineIdsLoaded = createAction<string[]>(
   'MAPS_OFFLINE_IDS_LOADED',
 );
+
+/**
+ * Why a queued save stopped replaying and needs the user to decide: the map
+ * moved on (`conflict`), write access was withdrawn (`forbidden`), the map is no
+ * longer there (`gone`), or the queued document itself can't be read back
+ * (`unreadable`, the one case with nothing left to send or copy).
+ */
+export type BlockedReason = 'conflict' | 'forbidden' | 'gone' | 'unreadable';
+
+/**
+ * What a refused whole-document save means for it, or `undefined` when the
+ * answer says nothing about what to do with the save and it is worth retrying.
+ * Shared by the direct save and the replay, so the two can't disagree about
+ * which refusals the user has to settle.
+ */
+export function blockedReasonFor(status: number): BlockedReason | undefined {
+  return status === 412
+    ? 'conflict'
+    : status === 403
+      ? 'forbidden'
+      : status === 404 || status === 410
+        ? 'gone'
+        : undefined;
+}
+
+/** What each reason is explained by, shared by the toast and the badge tooltip. */
+export const BLOCKED_MESSAGE_KEYS = {
+  conflict: 'outboxConflict',
+  forbidden: 'outboxForbidden',
+  gone: 'outboxGone',
+  unreadable: 'outboxUnreadable',
+} as const satisfies Record<BlockedReason, string>;
+
+/** Saving the local version under a new name needs a local version to save. */
+export function canCopy(blocked: BlockedReason): boolean {
+  return blocked !== 'unreadable';
+}
+
+/** Only a map that still exists and still accepts writes can be written over. */
+export function canOverwrite(blocked: BlockedReason): boolean {
+  return blocked === 'conflict';
+}
+
+/**
+ * Whether a queued save can stand in for the map when it is read. A save for a
+ * map that is gone is not a newer version of anything, and one whose document
+ * won't read back has nothing to answer with.
+ */
+export function canStandInForMap(blocked: BlockedReason | undefined): boolean {
+  return blocked !== 'gone' && blocked !== 'unreadable';
+}
+
+/** A save waiting to be pushed, as the UI sees it. */
+export type OutboxEntry = {
+  mapId: string;
+  /** The map's name when the save was queued, for toasts about a map not listed. */
+  name: string;
+  queuedAt: number;
+  /** Set when the replay hit something only the user can settle. */
+  blocked?: BlockedReason;
+};
+
+/** The outbox as it stands in IndexedDB, mirrored for the UI. */
+export const mapsOutboxLoaded =
+  createAction<OutboxEntry[]>('MAPS_OUTBOX_LOADED');
+
+/** Ids of maps being pushed right now. */
+export const mapsOutboxSyncing = createAction<string[]>('MAPS_OUTBOX_SYNCING');
+
+/**
+ * Push the queued saves. Fires when the connection returns, once the session is
+ * validated at app start, and on an explicit "sync now".
+ */
+export const mapsSyncOutbox = createAction<{ manual: boolean } | undefined>(
+  'MAPS_SYNC_OUTBOX',
+);
+
+/**
+ * How to settle a queued save the server refused: keep both by saving the local
+ * one as a new map, let the local one win, or let the server's win.
+ */
+export const mapsResolveOutbox = createAction<{
+  mapId: string;
+  resolution: 'copy' | 'overwrite' | 'discard';
+}>('MAPS_RESOLVE_OUTBOX');
 
 /** Flag/unflag a single map for offline use. */
 export const mapsSetMapOffline = createAction<{

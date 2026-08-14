@@ -1,4 +1,4 @@
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { StatusIcon } from '@shared/components/StatusIcon.js';
 import type { ReactElement, ReactNode } from 'react';
 import { FaExclamationTriangle } from 'react-icons/fa';
 
@@ -12,8 +12,8 @@ type Props = {
 
 /**
  * Marks content that would be lost as it stands — a map with unsaved changes, a
- * track in no saved map. Shared so the toolbars that show it can't drift apart
- * in appearance or in what a screen reader announces.
+ * track in no saved map. The triangle is this state's alone, so a toolbar that
+ * also reports how a save is getting to the server stays readable at a glance.
  */
 export function UnsavedWarningIcon({
   label,
@@ -21,19 +21,11 @@ export function UnsavedWarningIcon({
   className,
 }: Props): ReactElement {
   return (
-    <LongPressTooltip label={tooltip}>
-      {({ props }) => (
-        <span
-          role="img"
-          className={`align-self-center text-warning d-inline-flex${
-            className ? ` ${className}` : ''
-          }`}
-          aria-label={label}
-          {...props}
-        >
-          <FaExclamationTriangle />
-        </span>
-      )}
-    </LongPressTooltip>
+    <StatusIcon
+      icon={<FaExclamationTriangle />}
+      label={label}
+      tooltip={tooltip}
+      className={className}
+    />
   );
 }

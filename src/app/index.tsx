@@ -10,10 +10,13 @@ import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { attachMapStateHandler } from '@features/map/mapStateHandler.js';
 import { attachWheelZoomCalibration } from '@features/map/wheelZoomCalibration.js';
 import { mapsOfflineIdsLoaded } from '@features/myMaps/model/actions.js';
+import { refreshOutbox } from '@features/myMaps/model/processors/mapsOutboxProcessor.js';
 import {
   getOfflineMapCount,
   getOfflineMapIds,
 } from '@features/myMaps/offlineStore.js';
+import { getPendingCount } from '@features/myMaps/outboxStore.js';
+import { attachOutboxSync } from '@features/myMaps/outboxSync.js';
 import { ConfirmProvider } from '@shared/components/ConfirmProvider.js';
 import {
   registerOfflineContentProvider,
@@ -114,6 +117,10 @@ registerOfflineContentProvider(() =>
 
 registerOfflineContentProvider(() => getOfflineMapCount().then((c) => c > 0));
 
+// A queued save is work the user is waiting to have pushed, so the shell stays
+// cached for as long as one exists — even with nothing else kept offline.
+registerOfflineContentProvider(() => getPendingCount().then((c) => c > 0));
+
 getOfflineMapIds()
   .then((ids) => {
     if (ids.length > 0) {
@@ -123,6 +130,10 @@ getOfflineMapIds()
   .catch((err) => {
     console.warn('Reading offline My Maps failed:', err);
   });
+
+refreshOutbox(store.dispatch).catch((err) => {
+  console.warn('Reading queued My Maps saves failed:', err);
+});
 
 syncStaticCache().catch((err) => {
   console.warn('Static cache sync failed:', err);
@@ -145,6 +156,8 @@ attachGarminLoginMessageHandler(store);
 attachMapStateHandler(store);
 
 attachWheelZoomCalibration(store);
+
+attachOutboxSync(store);
 
 setUrlUpdatingEnabled(true);
 
