@@ -34,9 +34,9 @@ import { RADAR_LAYER } from '@features/weatherRadar/api.js';
 import { WikiLayer } from '@features/wiki/components/WikiLayer.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useOnline } from '@shared/hooks/useOnline.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
@@ -547,8 +547,6 @@ export function Main(): ReactElement {
 
   const scMapControls = useScrollClasses('horizontal');
 
-  const online = useOnline();
-
   const elevationChartTarget = useAppSelector(
     (state) => state.elevationChart.target?.type,
   );
@@ -623,11 +621,16 @@ export function Main(): ReactElement {
                 <Toolbar className="mt-2">
                   <button
                     id="freemap-logo"
-                    className={`${progress ? 'in-progress' : 'idle'}${
-                      online ? '' : ' offline'
-                    }`}
-                    title={online ? undefined : m?.general.offline}
+                    className={progress ? 'in-progress' : 'idle'}
                     onClick={handleLogoClick}
+                  />
+
+                  {/* The app's standing offline mark. The search box shows one
+                      only for a query it can't answer itself, so this is what
+                      says the connection is gone at all. */}
+                  <OfflineBadge
+                    className="align-self-center ms-1 me-2 fs-4"
+                    hint={m?.general.offline}
                   />
 
                   {!window.fmEmbedded && showMenu && <MainMenuButton />}

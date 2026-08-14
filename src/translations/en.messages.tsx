@@ -241,7 +241,7 @@ const messages: Messages = {
     result: 'Lookup',
     keepOnMap: 'Keep on the map',
     offlineHint:
-      'Without an internet connection only coordinates can be found.',
+      'Without an internet connection only coordinates, a bounding box, tile numbers (z/x/y) or pasted GeoJSON can be found.',
     sources: {
       bbox: 'Bounding Box',
       geojson: 'GeoJSON',

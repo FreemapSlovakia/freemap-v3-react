@@ -241,7 +241,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
-    offlineHint: 'Internetkapcsolat nélkül csak koordináták találhatók meg.',
+    offlineHint:
+      'Internetkapcsolat nélkül csak koordináták, határoló keret, csempeszámok (z/x/y) vagy beillesztett GeoJSON találhatók meg.',
     inProgress: 'Keresés…',
     noResults: 'Nincs találat',
     prompt: 'Adja meg a helyet',

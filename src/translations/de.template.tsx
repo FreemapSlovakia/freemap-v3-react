@@ -239,7 +239,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   search: {
     offlineHint:
-      'Ohne Internetverbindung können nur Koordinaten gefunden werden.',
+      'Ohne Internetverbindung können nur Koordinaten, ein Begrenzungsrahmen, Kachelnummern (z/x/y) oder eingefügtes GeoJSON gefunden werden.',
     inProgress: 'Suche…',
     noResults: 'Keine Ergebnisse gefunden',
     prompt: 'Ort eingeben',

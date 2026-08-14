@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SourceName } from '@features/objects/components/SourceName.js';
+import { isLocalSearchQuery } from '@features/search/localQuery.js';
 import {
   getNameFromOsmElement,
   resolveGenericName,
@@ -269,6 +270,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     }
   }, [open]);
 
+  // Offline the box still finds what the query itself carries; anything else
+  // has to be asked of the geocoder, and only that goes dead.
+  const needsGeocoder = !online && Boolean(value) && !isLocalSearchQuery(value);
+
   let prevSource: SearchSource | undefined;
 
   return (
@@ -295,19 +300,18 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               onFocus={handleInputFocus}
             />
 
-            {/* Coordinates, a bounding box and pasted GeoJSON are all parsed
-                here, so the box stays usable offline; only geocoding needs the
-                server, which is what the badge says. */}
-            {!online && (
-              <InputGroup.Text>
-                <OfflineBadge hint={m?.search.offlineHint} />
-              </InputGroup.Text>
-            )}
-
             {results.length ? (
               <Button variant="secondary" onClick={handleCaretClick}>
                 {open ? <FaCaretUp /> : <FaCaretDown />}
               </Button>
+            ) : needsGeocoder ? (
+              // Coordinates, a bounding box, tile numbers and pasted GeoJSON are
+              // all read here, so the box works offline; a query only the
+              // geocoder could answer takes the mark in place of the button —
+              // which is also what stops it being submitted.
+              <InputGroup.Text>
+                <OfflineBadge hint={m?.search.offlineHint} />
+              </InputGroup.Text>
             ) : (
               <LongPressTooltip label={m?.search.buttonTitle}>
                 {({ props }) => (

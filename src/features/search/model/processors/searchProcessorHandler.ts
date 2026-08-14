@@ -27,6 +27,10 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
 }) => {
   const { query } = action.payload;
 
+  // None of the four attempts below needs a server; `isLocalSearchQuery` says
+  // which queries they cover, and the search box reads it to know what it can
+  // still offer offline — keep the two in step.
+
   // try GeoJSON
 
   try {

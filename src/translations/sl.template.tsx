@@ -235,7 +235,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
-    offlineHint: 'Brez internetne povezave je mogoče najti samo koordinate.',
+    offlineHint:
+      'Brez internetne povezave je mogoče najti samo koordinate, omejevalni okvir, številke ploščic (z/x/y) ali prilepljen GeoJSON.',
     inProgress: 'Iščem…',
     noResults: 'Ni najdenih rezultatov',
     prompt: 'Vnesite kraj',

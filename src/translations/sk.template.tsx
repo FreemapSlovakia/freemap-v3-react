@@ -276,7 +276,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     placeholder: 'Hľadať v mape',
     result: 'Nález',
     keepOnMap: 'Ponechať na mape',
-    offlineHint: 'Bez pripojenia na internet možno nájsť iba súradnice.',
+    offlineHint:
+      'Bez pripojenia na internet možno nájsť iba súradnice, ohraničujúci box, čísla dlaždíc (z/x/y) alebo vložený GeoJSON.',
     sources: {
       'nominatim-reverse': 'Reverzné geokódovanie',
       'overpass-nearby': 'Blízke objekty',

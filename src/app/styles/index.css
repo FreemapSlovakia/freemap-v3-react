@@ -52,17 +52,6 @@ button#freemap-logo {
     animation: pulse 1s infinite;
   }
 
-  &.offline::after {
-    content: "";
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background-color: var(--bs-danger);
-  }
-
   &:hover {
     cursor: pointer;
     -webkit-transform: scale(1.05);

@@ -229,7 +229,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
-    offlineHint: 'Bez połączenia z internetem można znaleźć tylko współrzędne.',
+    offlineHint:
+      'Bez połączenia z internetem można znaleźć tylko współrzędne, obszar ograniczający, numery kafelków (z/x/y) lub wklejony GeoJSON.',
     inProgress: 'Wyszukiwanie…',
     noResults: 'Brak wyników',
     prompt: 'Wprowadź miejsce',
