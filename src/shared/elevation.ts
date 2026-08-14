@@ -1,6 +1,9 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
-import type { ActionCreatorMatchable } from '@shared/cancelRegister.js';
+import type {
+  ActionCreatorMatchable,
+  CancelTriggers,
+} from '@shared/cancelRegister.js';
 import { lineSegments } from '@shared/geoutils.js';
 import { along } from '@turf/along';
 import { distance } from '@turf/distance';
@@ -14,6 +17,18 @@ import type {
   Position,
 } from 'geojson';
 import z from 'zod';
+
+/**
+ * What invalidates an elevation read: the actions that cancel it, or the full
+ * trigger set where "no longer wanted" isn't a list of actions — a subject that
+ * can be re-announced unchanged needs a state comparison instead, or the read
+ * dies to an action that starts nothing in its place.
+ */
+export type ElevationCancel = ActionCreatorMatchable[] | CancelTriggers;
+
+function cancelTriggers(cancel?: ElevationCancel): CancelTriggers {
+  return Array.isArray(cancel) ? { cancelActions: cancel } : (cancel ?? {});
+}
 
 const ElevationsSchema = z.array(z.number().nullable());
 
@@ -94,7 +109,7 @@ const FINEST_DEM_METERS = 1;
 export async function fetchElevations(
   latLons: [number, number][],
   getState: () => RootState,
-  cancelActions?: ActionCreatorMatchable[],
+  cancel?: ElevationCancel,
   sources?: Set<string>,
 ): Promise<(number | null)[]> {
   if (latLons.length === 0) {
@@ -107,7 +122,7 @@ export async function fetchElevations(
     url: `/geotools/elevation${sources ? '?sources=1' : ''}`,
     data: latLons,
     expectedStatus: 200,
-    cancelActions,
+    ...cancelTriggers(cancel),
   });
 
   const parsed = ElevationsResponseCompatSchema.parse(await res.json());
@@ -151,7 +166,7 @@ export async function enrichElevations<G extends LineString | MultiLineString>(
   features: Feature<G>[],
   mode: 'missing' | 'all',
   getState: () => RootState,
-  cancelActions?: ActionCreatorMatchable[],
+  cancel?: ElevationCancel,
   sources?: Set<string>,
 ): Promise<Feature<G>[]> {
   const enriched = features.map((feature) => ({
@@ -176,7 +191,7 @@ export async function enrichElevations<G extends LineString | MultiLineString>(
   const eles = await fetchElevations(
     targets.map((coord) => [coord[1]!, coord[0]!]),
     getState,
-    cancelActions,
+    cancel,
     sources,
   );
 
@@ -211,7 +226,7 @@ export async function enrichElevations<G extends LineString | MultiLineString>(
 export async function densifyAlong<G extends LineString | MultiLineString>(
   feature: Feature<G>,
   getState: () => RootState,
-  cancelActions?: ActionCreatorMatchable[],
+  cancel?: ElevationCancel,
   sources?: Set<string>,
 ): Promise<Feature<G>> {
   const segments = lineSegments(feature.geometry);
@@ -285,7 +300,7 @@ export async function densifyAlong<G extends LineString | MultiLineString>(
   const eles = await fetchElevations(
     inserts.map(({ lat, lon }) => [lat, lon]),
     getState,
-    cancelActions,
+    cancel,
     sources,
   );
 
