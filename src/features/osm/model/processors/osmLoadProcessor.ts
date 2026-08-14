@@ -41,37 +41,38 @@ export const osmLoadProcessor: Processor<typeof osmLoad> = {
      * failure unless every one of them is a load a map answers for.
      */
     async function fail(failed: OsmFeatureId[], err: unknown) {
-      const opening = mapOpeningSelector(getState());
+      // A map on its way in answers for the elements the URL named (`pin`),
+      // which are the ones it carries: it is about to supply them from its own
+      // document, and offline that document is the only thing that can. An
+      // element the user asked for themselves is theirs to hear about, whatever
+      // else happens to be loading at the time.
+      const answeredByMap = pin && mapOpeningSelector(getState());
 
       let report = false;
 
       for (const id of failed) {
+        const placeholder = isResultLoadingSelector(getState(), id);
+
         // Only a placeholder goes: it is nothing but an id, and would sit on the
         // map as an empty result and in the URL as a promise that reloading
         // can't keep. A result that arrived from the list with geometry of its
         // own stays — a failed upgrade is no reason to take away what was
         // picked.
-        const placeholder = isResultLoadingSelector(getState(), id);
-
-        if (placeholder) {
+        //
+        // One a map answers for stays too, for the map to replace: it is in the
+        // URL, and so in the digest the map is compared against, so taking it
+        // off would report the map as changed — and the load that was going to
+        // supply the element is only started when it reads as saved.
+        if (placeholder && !answeredByMap) {
           dispatch(searchUnselectResult(id));
         }
 
-        // Nothing to report where a map answers for the element: one on its way
-        // in is about to supply it from its document, and one that landed while
-        // the fetch was failing already has — which is why a placeholder that
-        // stopped being one counts too. Offline that document is the only thing
-        // that can.
-        //
-        // Only for the elements the URL named (`pin`), which are the ones a map
-        // being opened carries: an element the user asked for themselves is
-        // theirs to hear about, whatever else happens to be loading at the time.
+        // Nothing to report where a map answers for the element, nor where one
+        // landed while the fetch was failing and already has — which is why a
+        // placeholder that stopped being one counts too.
         if (
-          !pin ||
-          !(
-            opening ||
-            (wasPlaceholder.has(stringifyFeatureId(id)) && !placeholder)
-          )
+          !answeredByMap &&
+          !(pin && wasPlaceholder.has(stringifyFeatureId(id)) && !placeholder)
         ) {
           report = true;
         }
