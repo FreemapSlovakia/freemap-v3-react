@@ -119,6 +119,14 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
 
             error = err;
           }
+
+          // A selection change takes this toast with it (`cancelType`) without
+          // touching the read, which outlives it. Re-adding it then would put
+          // the point just left — its coordinates, its tile links — beside
+          // whatever is selected now, where nothing is about to replace it.
+          if (!getState().toasts.toasts['measurementInfo']) {
+            return;
+          }
         }
 
         dispatch(
