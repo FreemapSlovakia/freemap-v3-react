@@ -1,11 +1,7 @@
-import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
-import {
-  type SearchResult,
-  searchSelectResult,
-} from '@features/search/model/actions.js';
+import type { SearchResult } from '@features/search/model/actions.js';
 import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { fetchElevations } from '@shared/elevation.js';
@@ -183,7 +179,13 @@ export const objectDetailsProcessor: Processor = {
       [elevation] = await fetchElevations(
         [[coords.lat, coords.lon]],
         getState,
-        [clearMapFeatures, selectFeature, searchSelectResult],
+        // Invalidated by the subject changing, not by the actions that can
+        // change it: a reload restores the same pin twice (the URL's element
+        // load and the map document), and the second one announces a subject
+        // identical to the first. Cancelling on the action would abort the read
+        // while this handler, edge-triggered on that same subject, starts
+        // nothing in its place — leaving the spinner up for good.
+        { stateChangePredicate: (state) => wantedTarget(state)?.key },
         sources,
       );
     } catch (err) {

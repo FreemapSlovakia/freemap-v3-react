@@ -271,10 +271,38 @@ describe('objectDetailsProcessor', () => {
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
+  it('cancels the read on a changed subject, not on the same one announced again', async () => {
+    // A reload restores the same pin twice — once from the element the URL
+    // names, once from the map document — so the second announcement carries a
+    // subject identical to the first. Aborting on it would leave the spinner up
+    // for good: this handler is edge-triggered on the subject, so nothing would
+    // start another read.
+    const { done } = run(
+      state({}),
+      state({ selection, objects: [anObject(1)], toasted: true }),
+    );
+
+    await done;
+
+    const cancel = fetchElevationsMock.mock.calls[0][2];
+
+    const changed =
+      cancel && 'stateChangePredicate' in cancel
+        ? cancel.stateChangePredicate
+        : undefined;
+
+    expect(changed?.(state({ selection, objects: [anObject(1)] }))).toBe(
+      changed?.(state({ selection, objects: [anObject(1)] })),
+    );
+
+    expect(changed?.(state({ selection, objects: [anObject(1)] }))).not.toBe(
+      changed?.(state({ objects: [anObject(1)] })),
+    );
+  });
+
   it('leaves the toast to whoever aborted the read', async () => {
-    // Re-selecting the same feature cancels the read in flight while the
-    // subject — and so the toast — stays; overwriting it would blank the
-    // elevation for good, since the newer run finds nothing to do.
+    // The abort says the subject moved on, and the run for the new one owns the
+    // toast from here; overwriting it would describe what is no longer shown.
     fetchElevationsMock.mockRejectedValue(
       new DOMException('canceled', 'AbortError'),
     );
