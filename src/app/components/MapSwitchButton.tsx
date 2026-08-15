@@ -716,10 +716,9 @@ export function MapSwitchButton(): ReactElement {
                     active={active}
                     onClick={handleLayerButtonClick}
                     {...props}
-                    className={clsx(
-                      'd-inline-flex align-items-center gap-1',
-                      joined && 'pe-1 border-end-0 fm-btn-joined',
-                    )}
+                    className={
+                      joined ? 'pe-1 border-end-0 fm-btn-joined' : undefined
+                    }
                   >
                     {def.custom ? (
                       <IconSpecGlyph
