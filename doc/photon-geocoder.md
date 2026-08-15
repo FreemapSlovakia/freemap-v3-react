@@ -84,10 +84,20 @@ references an undefined `photon_req` zone, the test fails, and the reload is
 skipped rather than breaking the running config.
 
 `/opt/photon/photon.freemap.sk` is the served file (symlinked from
-`sites-enabled/`) and the one certbot edits, so its TLS block is authoritative.
-`photon.freemap.sk.hardened` is a full copy including that TLS block; keep the
-two in sync, and swap by copying contents rather than re-pointing the symlink,
-so certbot's renewal bookkeeping keeps matching the path it knows.
+`sites-enabled/`), and `photon.freemap.sk.hardened` is a full copy of it.
+
+Re-pointing that symlink is safe, and is how a blue-green switchover would move
+traffic between two instances — `/opt/graphhopper` already does exactly this
+(`sites-enabled/… → /opt/graphhopper/graphhopper.freemap.sk → ….a`, flipped to
+`.b` on each update). Renewal only rewrites the pem files under
+`/etc/letsencrypt/live/`; the paths in the vhost never change, so certbot does
+not care which copy is currently linked.
+
+The real constraint is that **every copy must carry the whole TLS block**, since
+any of them may be the served one. GraphHopper's `.a`/`.b` differ in exactly one
+line, the `proxy_pass` port. Keeping them in sync is manual: a `certbot --nginx`
+run (not a renewal) edits only the file that is linked at that moment, so
+re-sync the others after one.
 
 ## Import runbook
 
@@ -124,6 +134,35 @@ Then:
     sudo systemctl restart photon
     sudo rm -rf /fm/data4/nginx-proxy-cache/photon/* && sudo systemctl reload nginx
 
+### Re-importing without a 7-hour outage
+
+Nothing auto-updates: there is no timer and no cron, and Photon can only update
+a database in place from a Nominatim database (which we do not run). Staying
+current means a periodic full re-import, by hand.
+
+Do **not** re-run the import above against the live `-data-dir`. It would have
+to delete `photon_data` first, and search is then down for the whole ~7 h.
+Import into a staging directory and swap, so the outage is one restart:
+
+    mkdir -p /fm/data4/photon-new
+    # …same import pipeline, but: -data-dir /fm/data4/photon-new
+
+    sudo systemctl stop photon
+    mv /fm/data4/photon/photon_data /fm/data4/photon/photon_data.old
+    mv /fm/data4/photon-new/photon_data /fm/data4/photon/
+    sudo chown -R freemap:freemap /fm/data4/photon
+    sudo systemctl start photon
+
+Wait for `curl "http://127.0.0.1:2322/api?q=bratislava&limit=1"` to answer —
+opening a 59 GB index on a cold page cache is not instant, and nginx's cached
+responses are what cover users meanwhile. Only once it answers:
+
+    sudo rm -rf /fm/data4/nginx-proxy-cache/photon/* && sudo systemctl reload nginx
+
+Then `rm -rf /fm/data4/photon/photon_data.old`. Keeping the old index until the
+new one is proven is the whole point — it is the rollback. Budget ~130 GB for
+the window where both indexes and the dump coexist.
+
 ### Watching an import
 
 The log line `Imported N documents [X/second]` reports the **cumulative**
@@ -140,10 +179,11 @@ the exit code as its last line. Absent, with no `java`/`zstd` processes running,
 means it was killed outright (reboot, OOM) rather than failing.
 
 Observed on 2026-08-14 (Europe, 16 languages, 13,188,391,174-byte dump): roughly
-6,000 documents/second sustained, ~560 kB/s of compressed input, index passing
-21 GB at 47M documents, ~7 h total. The index is markedly larger than the
-prebuilt Europe tarball suggests, because that one carries four languages and
-ours carries sixteen.
+6,500 documents/second sustained, ~560 kB/s of compressed input, **158.1M
+documents into a 59 GB index in ~6h45m** (16:21 → 23:06). The index is markedly
+larger than the prebuilt Europe tarball suggests, because that one carries four
+languages and ours carries sixteen. Budget disk accordingly: a re-import needs
+room for the new index alongside the old one, or the old one deleted first.
 
 ### Verifying the service
 
@@ -156,7 +196,11 @@ foreign city. If it returns Paris, the language work landed end to end.
 
 `502` from nginx means Photon is not listening on 2322 — check
 `systemctl status photon` and `journalctl -u photon -n 50`. A response with
-`X-Cache-Status: HIT` confirms the cache is live; `429` confirms the rate limit.
+`X-Cache-Status: HIT` confirms the cache is live; `429` confirms the rate limit
+(a burst of 60 parallel requests from one IP gets ~18 of them rejected).
+
+`journalctl -u photon` shows nothing unless you are in `adm` or
+`systemd-journal` — the unit runs as `freemap`, not as you.
 
 ## Switching the app over
 
@@ -183,33 +227,43 @@ cache keys on the URI alone. The vhost therefore blanks that header
 (`proxy_set_header Accept-Language "";`) so a cached response cannot leak one
 user's language to another; the app must not rely on header-based language.
 
-`lang` should be one of the imported `-languages`. Where a translation is simply
-missing, Photon falls back to `-default-language` and then to the local name; how
-it treats a language that was never imported is untested here — worth a quick
-check before wiring the UI locale straight through.
+`lang` **must** be one of the imported `-languages`. Where a translation is
+simply missing Photon falls back gracefully (to `-default-language`, then the
+local name), but a language that was never imported is a hard **HTTP 400**:
+
+    {"lang":[{"message":"Language is not supported. Supported are: default,
+      de, pt, en, hr, it, fr, hu, es, cs, uk, sk, sl, pl, ro, nl, sr", ...}]}
+
+All nine UI locales (`sk en cs de fr it hu pl sl`) are inside that set, so
+passing the locale straight through is safe today. It stops being safe the
+moment a tenth locale is added: **adding a UI language that was not imported
+breaks search outright for its users**, and widening `-languages` costs a full
+re-import. Add the code to `-languages`, re-import, *then* ship the locale — or
+have the app map unknown locales to `default`.
 
 ## Status of the first install (delete this section once search is live)
 
-Started 2026-08-14 16:21; the Europe import is running detached on fm5, logging
-to `/fm/data4/martin/photon-install/import.log`, and was ~34 % in after two
-hours. To finish:
+The endpoint is **up and verified** as of 2026-08-15 07:09 — import `EXIT=0`,
+service enabled, `https://photon.freemap.sk` answering 200 through nginx with
+the cache and rate limit both confirmed live, and the Slovak/Hungarian exonym
+queries returning the right foreign cities.
 
-1. `grep EXIT= /fm/data4/martin/photon-install/import.log` → expect `EXIT=0`.
-2. Run the one-time unit install above, then the verification commands.
-3. `sudo nginx -t && sudo systemctl reload nginx` — the live vhost gained
-   `proxy_set_header Accept-Language "";` after it was last loaded, and nginx is
-   still serving the version without it.
-4. Delete the dump (~13 GB) from `/fm/data4/martin/photon-install` once the
-   index works, or keep it until the next weekly dump supersedes it.
+What is left here: delete the dump (~13 GB) from
+`/fm/data4/martin/photon-install` once you are confident no re-import is
+imminent, or keep it until the next weekly dump supersedes it. `/fm/data4` has
+1.4 TB free, so there is no pressure.
 
 `/opt/photon` also holds an unused `photon-1.2.1.jar`; 1.3.0 is the one the unit
 runs, and its release notes cover improved Czech/Slovak street-number matching.
+The unit serves with `-Xmx8g` (the import used 16g) — query serving is far
+lighter than indexing and the 59 GB index is served from page cache, but this
+has not yet been observed under real autocomplete load.
 
 ## Open items
 
 - The app still calls Nominatim; the switch above is not done.
 - No monitoring on the endpoint yet (fm5 runs munin-node).
-- Updating a Photon database in place is only possible from a Nominatim
-  database, so staying current means periodic full re-imports from the dumps.
+- Nothing re-imports on a schedule, so the index ages until someone runs the
+  staged re-import by hand. Decide a cadence, or automate it.
 - `src/static/llms.txt` describes search behaviour; update it when the app
   switches geocoder.
