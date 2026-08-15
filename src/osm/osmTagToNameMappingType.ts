@@ -353,6 +353,48 @@ export type OsmTagToNameMapping = {
     warehouse: string;
     yes: string;
   };
+  craft: {
+    '*': string;
+    yes: string;
+    bakery: string;
+    beekeeper: string;
+    blacksmith: string;
+    brewery: string;
+    builder: string;
+    carpenter: string;
+    caterer: string;
+    cleaning: string;
+    confectionery: string;
+    distillery: string;
+    dressmaker: string;
+    electrician: string;
+    electronics_repair: string;
+    gardener: string;
+    glaziery: string;
+    grinding_mill: string;
+    handicraft: string;
+    hvac: string;
+    jeweller: string;
+    joiner: string;
+    key_cutter: string;
+    locksmith: string;
+    metal_construction: string;
+    painter: string;
+    photographer: string;
+    plumber: string;
+    pottery: string;
+    roofer: string;
+    sawmill: string;
+    shoemaker: string;
+    signmaker: string;
+    stonemason: string;
+    tailor: string;
+    tiler: string;
+    upholsterer: string;
+    watchmaker: string;
+    window_construction: string;
+    winery: string;
+  };
   emergency: {
     defibrillator: string;
     phone: string;
@@ -858,6 +900,7 @@ export type OsmTagToNameMapping = {
   };
   place: {
     '*': string;
+    cadastral_community: string;
     city: string;
     country: string;
     farm: string;
@@ -866,6 +909,7 @@ export type OsmTagToNameMapping = {
     islet: string;
     isolated_dwelling: string;
     locality: string;
+    municipality: string;
     ocean: string;
     sea: string;
     square: string;

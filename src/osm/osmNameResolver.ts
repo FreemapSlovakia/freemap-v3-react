@@ -10,6 +10,12 @@ export function resolveGenericNameWithMeta(
   const parts: Part[] = [];
 
   for (const [k, vs] of Object.entries(tags)) {
+    // An OSM tag is always a string, but these also arrive from WMS feature
+    // info and from geocoding, where a value can be a number, a null or absent.
+    if (typeof vs !== 'string') {
+      continue;
+    }
+
     for (const v of vs.split(';').map((v) => v.trim())) {
       const valMapping = m[k];
 
