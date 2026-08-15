@@ -1,7 +1,22 @@
+// The presence of `showSaveFilePicker` says the browser implements it, not that
+// it can deliver a file: no Android browser implements the writes, and Samsung
+// Internet opens the dialog and then rejects `createWritable`. The anchor below
+// is how Android saves files anyway.
+const pickerSupported =
+  'showSaveFilePicker' in window && !/Android/i.test(navigator.userAgent);
+
+/** Refusals that mean "no picker here" rather than a failed save. */
+function isPlatformRefusal(err: unknown): boolean {
+  return (
+    err instanceof DOMException &&
+    (err.name === 'SecurityError' || err.name === 'NotAllowedError')
+  );
+}
+
 /**
  * Saves a blob to a file the user picks. Prefers the File System Access API
  * (a native "Save as" dialog that streams straight to disk) and falls back to a
- * synthesized `<a download>` where it's unavailable (Firefox, Safari).
+ * synthesized `<a download>` where it's unavailable (Firefox, Safari, Android).
  *
  * `accept` maps a MIME type to its file extensions and, when given, populates
  * the picker's file-type filter.
@@ -15,18 +30,12 @@ export async function saveBlob(
   suggestedName: string,
   accept?: Record<string, string[]>,
 ): Promise<void> {
-  // The presence of `showSaveFilePicker` says the browser implements it, not
-  // that this document may call it: a cross-origin iframe (the map embed) is
-  // refused with a `SecurityError`, and a missing user gesture or a policy
-  // restriction with a `NotAllowedError`. Both mean "no picker here", so they
-  // fall through to the anchor below rather than failing the save.
-  if ('showSaveFilePicker' in window) {
+  if (pickerSupported) {
     let handle: FileSystemFileHandle | undefined;
 
-    // Only the picker call is guarded: once the user has picked a file, a later
-    // failure must surface rather than fall through to the anchor, which would
-    // leave the picked file empty and silently drop a second copy into the
-    // download folder.
+    // A cross-origin iframe (the map embed) is refused with a `SecurityError`,
+    // and a missing user gesture or a policy restriction with a
+    // `NotAllowedError`.
     try {
       handle = await showSaveFilePicker({
         suggestedName,
@@ -42,24 +51,36 @@ export async function saveBlob(
           : undefined,
       });
     } catch (err) {
-      if (
-        !(
-          err instanceof DOMException &&
-          (err.name === 'SecurityError' || err.name === 'NotAllowedError')
-        )
-      ) {
+      if (!isPlatformRefusal(err)) {
         throw err;
       }
     }
 
     if (handle) {
-      const writable = await handle.createWritable();
+      let writable: FileSystemWritableFileStream | undefined;
 
-      await writable.write(blob);
+      // The net for a browser that offers a picker it cannot write through and
+      // isn't gated above. Only opening the stream may fall through — nothing
+      // is written yet, so
+      // the anchor still saves the file (at the cost of the empty file the
+      // picker may have created). A failure once writing has started must
+      // surface instead, or the picked file is left half-written and a second
+      // copy lands in the download folder.
+      try {
+        writable = await handle.createWritable();
+      } catch (err) {
+        if (!isPlatformRefusal(err)) {
+          throw err;
+        }
+      }
 
-      await writable.close();
+      if (writable) {
+        await writable.write(blob);
 
-      return;
+        await writable.close();
+
+        return;
+      }
     }
   }
 
