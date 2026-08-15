@@ -1,4 +1,4 @@
-import { sendError } from '@app/store/middleware/globalErrorHandler.js';
+import { reportError } from '@app/store/middleware/globalErrorHandler.js';
 import type {
   Processor,
   ProcessorHandler,
@@ -80,9 +80,14 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
     } catch (err) {
       // `toastError` replaces the middleware's generic processor toast with the
       // export's own, so the reporting the middleware would have done is done
-      // here. A cancelled export is not a failure.
+      // here — reporting only, so the failure gets one toast rather than the
+      // export's plus a ticket-id one. A cancelled export is not a failure.
       if (loaded && !isAbortError(err)) {
-        sendError({ kind: 'processor', error: err, action: params[0].action });
+        reportError({
+          kind: 'processor',
+          error: err,
+          action: params[0].action,
+        });
       }
 
       await toastError(err, loadMapFeaturesExportMessages, 'exportError');

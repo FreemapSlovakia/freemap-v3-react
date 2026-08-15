@@ -49,10 +49,17 @@ const trackedErrorSignatures = new Set<string>();
 let trackedErrorCount = 0;
 const MAX_TRACKED_ERRORS = 25;
 
-export function sendError(errDetails: ErrorDetails): void {
-  // filter out old browsers
-  if (!Array.prototype.flatMap) {
-    return;
+// filter out old browsers
+const reportable = Boolean(Array.prototype.flatMap);
+
+/**
+ * Reports an error to Sentry and Matomo and returns the Sentry event id, if
+ * any. This is the form for a caller that shows its own message; `sendError`
+ * adds the generic ticket-id toast on top, for errors nothing else surfaces.
+ */
+export function reportError(errDetails: ErrorDetails): string | undefined {
+  if (!reportable) {
+    return undefined;
   }
 
   const { error, ...rest } = errDetails;
@@ -77,6 +84,17 @@ export function sendError(errDetails: ErrorDetails): void {
 
     trackMatomo(['trackEvent', 'App', 'error', name]);
   }
+
+  return eventId;
+}
+
+/** Reports an error and shows the generic ticket-id toast for it. */
+export function sendError(errDetails: ErrorDetails): void {
+  if (!reportable) {
+    return;
+  }
+
+  const eventId = reportError(errDetails);
 
   if (errDetails.message === 'Script error.' || errDetails.filename === '') {
     // don't show to user
