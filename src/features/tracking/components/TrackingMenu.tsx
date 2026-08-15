@@ -108,7 +108,6 @@ export function TrackingMenu(): ReactElement {
         >
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               onClick={() =>
                 dispatch(setActiveModal({ type: 'tracking-watched' }))
@@ -126,7 +125,6 @@ export function TrackingMenu(): ReactElement {
         <LongPressTooltip breakpoint="md" label={tm?.devices.button} kbd="g d">
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               disabled={!online}
               onClick={() => dispatch(setActiveModal({ type: 'tracking-my' }))}
@@ -139,7 +137,6 @@ export function TrackingMenu(): ReactElement {
         </LongPressTooltip>
 
         <SelectDropdown
-          className="ms-1"
           id="tracking_visual"
           breakpoint="lg"
           toggleIcon={<FaRegEye />}
@@ -162,7 +159,6 @@ export function TrackingMenu(): ReactElement {
         />
 
         <SelectDropdown
-          className="ms-1"
           id="tracking_colorize"
           breakpoint="lg"
           toggleIcon={<FaPalette />}
@@ -203,7 +199,6 @@ export function TrackingMenu(): ReactElement {
           <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
             {({ label, labelClassName, props }) => (
               <Button
-                className="ms-1"
                 variant="secondary"
                 active={elevationChartActive}
                 onClick={() =>

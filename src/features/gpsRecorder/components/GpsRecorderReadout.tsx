@@ -265,7 +265,7 @@ export function GpsRecorderReadout({ collapsedIcon }: Props): ReactNode {
   return (
     <Dropdown
       align="start"
-      className={pinnable ? 'ms-1' : 'd-inline-block'}
+      className={pinnable ? undefined : 'd-inline-block'}
       autoClose={pinnable ? 'outside' : true}
       onSelect={(selection, e) => {
         e?.preventDefault();

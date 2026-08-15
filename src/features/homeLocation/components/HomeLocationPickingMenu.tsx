@@ -69,12 +69,11 @@ export default function HomeLocationPickingMenu(): ReactElement | null {
   return (
     <div>
       <Toolbar className="mt-2">
-        <div className="m-1">Zvoľte domovskú pozíciu</div>
+        <div className="px-1">Zvoľte domovskú pozíciu</div>
 
         <LongPressTooltip breakpoint="sm" label={m?.general.save}>
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="primary"
               onClick={handleSave}
               disabled={!selectingHomeLocation || saving}
@@ -89,7 +88,6 @@ export default function HomeLocationPickingMenu(): ReactElement | null {
         <LongPressTooltip breakpoint="sm" label={m?.general.cancel}>
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="dark"
               onClick={() => dispatch(setSelectingHomeLocation(false))}
               {...props}

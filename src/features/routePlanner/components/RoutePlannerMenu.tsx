@@ -649,7 +649,6 @@ export default function RoutePlannerMenu(): ReactElement {
 
         {activeTTDef?.api === 'gh' && (
           <Dropdown
-            className="ms-1"
             onSelect={(mode) => {
               dispatch(routePlannerSetMode(mode as RoutingMode));
             }}
@@ -702,7 +701,6 @@ export default function RoutePlannerMenu(): ReactElement {
 
         {activeTTDef?.api === 'osrm' && (
           <SelectDropdown
-            className="ms-1"
             id="mode"
             breakpoint="md"
             name={rpm?.modeLabel}
@@ -721,7 +719,7 @@ export default function RoutePlannerMenu(): ReactElement {
           />
         )}
 
-        <ButtonGroup className="ms-1">
+        <ButtonGroup>
           <Dropdown
             className="btn-group"
             id="set-start-dropdown"
@@ -892,7 +890,6 @@ export default function RoutePlannerMenu(): ReactElement {
 
         {routeFound && (
           <SelectDropdown
-            className="ms-1"
             id="route-colorizing-mode"
             breakpoint="lg"
             toggleIcon={<FaPalette />}
@@ -935,7 +932,7 @@ export default function RoutePlannerMenu(): ReactElement {
         )}
 
         {resultFound && (
-          <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
+          <Dropdown id="more" onSelect={handleMoreSelect}>
             <Dropdown.Toggle variant="secondary">
               <FaEllipsisV />
             </Dropdown.Toggle>

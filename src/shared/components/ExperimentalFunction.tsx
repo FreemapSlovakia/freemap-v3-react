@@ -1,8 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import clsx from 'clsx';
+import { GlyphMarker } from '@shared/components/GlyphMarker.js';
+import type { HTMLAttributes, ReactElement } from 'react';
 import { FaFlask } from 'react-icons/fa';
-import type { IconBaseProps } from 'react-icons/lib';
 
 /**
  * Marks a function as not finished yet.
@@ -11,19 +10,14 @@ import type { IconBaseProps } from 'react-icons/lib';
  * long-press tooltip, and a press that has to mean either "explain the flask" or
  * "press the button" can only get one of them wrong.
  */
-export function ExperimentalFunction({ className, ...props }: IconBaseProps) {
+export function ExperimentalFunction(
+  props: HTMLAttributes<HTMLElement>,
+): ReactElement {
   const m = useMessages();
 
   return (
-    <LongPressTooltip label={m?.general.experimentalFunction}>
-      {({ props: tooltipProps }) => (
-        <span
-          {...tooltipProps}
-          className={clsx('text-warning fm-cursor-help', className)}
-        >
-          <FaFlask {...props} />
-        </span>
-      )}
-    </LongPressTooltip>
+    <GlyphMarker hint={m?.general.experimentalFunction} {...props}>
+      <FaFlask />
+    </GlyphMarker>
   );
 }

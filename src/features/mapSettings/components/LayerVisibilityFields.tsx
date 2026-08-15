@@ -29,7 +29,7 @@ export function LayerVisibilityFields({
         label={
           <>
             {msm?.showInMenu}
-            <OfflineBadge className="ms-1" offline={disabled} />
+            <OfflineBadge offline={disabled} />
           </>
         }
         disabled={disabled}
@@ -47,7 +47,7 @@ export function LayerVisibilityFields({
         label={
           <>
             {msm?.showInToolbar}
-            <OfflineBadge className="ms-1" offline={disabled} />
+            <OfflineBadge offline={disabled} />
           </>
         }
         disabled={disabled}

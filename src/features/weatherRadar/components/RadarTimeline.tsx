@@ -45,7 +45,7 @@ export function RadarTimeline() {
   const frame = frames[index];
 
   if (!frame) {
-    return <span className="align-self-center ms-2">{wm?.loading}</span>;
+    return <span className="px-1 align-self-center">{wm?.loading}</span>;
   }
 
   // Boundaries as a share of the track. The thumb sits at
@@ -89,7 +89,7 @@ export function RadarTimeline() {
           keyboard-reachable control; this only carries the pointer shortcut to
           the offer, which the main menu reaches by keyboard anyway. */}
       <div
-        className={clsx('align-self-center', 'ms-2', classes.track)}
+        className={clsx('px-1 align-self-center', classes.track)}
         style={
           {
             '--fm-radar-locked-until': `${frames.length < 2 ? 0 : at(from)}%`,
@@ -158,9 +158,7 @@ export function RadarTimeline() {
 
       <span
         className={clsx(
-          'align-self-center',
-          'ms-2',
-          'small',
+          'px-1 align-self-center small',
           classes.label,
           frame.forecast && 'text-warning-emphasis',
         )}

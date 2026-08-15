@@ -104,7 +104,7 @@ export function MapControls(): ReactElement | null {
         <MapSwitchButton />
       )}
 
-      <ButtonGroup className="ms-1">
+      <ButtonGroup>
         <LongPressTooltip label={m?.main.zoomIn}>
           {({ props }) => (
             <Button
@@ -140,7 +140,6 @@ export function MapControls(): ReactElement | null {
         <LongPressTooltip label={m?.main.locateMe}>
           {({ props }) => (
             <Button
-              className="ms-1"
               onClick={handleLocateClick}
               active={locate}
               variant={gpsTracked ? 'warning' : 'secondary'}
@@ -166,7 +165,6 @@ export function MapControls(): ReactElement | null {
         >
           {({ props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               onClick={handleFullscreenClick}
               {...props}

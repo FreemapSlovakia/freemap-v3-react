@@ -238,7 +238,6 @@ export default function ObjectsMenu(): ReactElement {
   return (
     <ToolMenu tool="objects">
       <Dropdown
-        className="ms-1"
         id="objectsMenuDropdown"
         show={dropdownOpened}
         onSelect={handleSelect}
@@ -273,7 +272,6 @@ export default function ObjectsMenu(): ReactElement {
       <LongPressTooltip label={om?.style.button}>
         {({ props }) => (
           <Button
-            className="ms-1"
             variant="secondary"
             onClick={() => {
               dispatch(setActiveModal({ type: 'objects-style' }));
@@ -291,7 +289,6 @@ export default function ObjectsMenu(): ReactElement {
         <LongPressTooltip label={m?.general.delete} kbd="Del">
           {({ props }) => (
             <Button
-              className="ms-1"
               variant="danger"
               onClick={() => {
                 dispatch(objectsSetFilter([]));

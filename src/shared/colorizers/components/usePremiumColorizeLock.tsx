@@ -22,7 +22,7 @@ export function usePremiumColorizeLock(): (
     mode && isPremiumColorizingMode(mode)
       ? {
           locked: !premium,
-          gem: <PremiumGem className="ms-1" capture nested />,
+          gem: <PremiumGem capture nested />,
         }
       : { locked: false, gem: undefined };
 }

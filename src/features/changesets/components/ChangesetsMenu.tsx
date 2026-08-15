@@ -45,7 +45,6 @@ export default function ChangesetsMenu(): ReactElement {
   return (
     <ToolMenu tool="changesets">
       <SelectDropdown
-        className="ms-1"
         id="days"
         breakpoint="lg"
         disabled={!online}
@@ -62,7 +61,7 @@ export default function ChangesetsMenu(): ReactElement {
       />
 
       <Form
-        className="ms-1 d-flex flex-nowrap"
+        className="d-flex flex-nowrap"
         onSubmit={(e) => {
           e.preventDefault();
 
@@ -98,7 +97,6 @@ export default function ChangesetsMenu(): ReactElement {
       <LongPressTooltip label={cm?.refresh}>
         {({ label, labelClassName, props }) => (
           <Button
-            className="ms-1"
             variant="primary"
             disabled={!canRefresh}
             onClick={() => dispatch(changesetsRefresh())}
@@ -114,7 +112,6 @@ export default function ChangesetsMenu(): ReactElement {
         <LongPressTooltip label={m?.general.convertToDrawing}>
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               onClick={() => dispatch(convertToDrawing({ type: 'changesets' }))}
               {...props}

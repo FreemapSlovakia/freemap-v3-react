@@ -4,6 +4,30 @@
   $enable-negative-margins: true
 );
 
+// The app's own tokens, all derived from Bootstrap's scales rather than typed as
+// literals — Bootstrap keeps these in Sass only, and the app's own rules are
+// plain CSS, so they are republished here as custom properties. Documented in
+// `doc/ui-conventions.md`.
+:root {
+  // Bootstrap's spacing scale, key for key: `--fm-space-2` is what `.p-2` and
+  // `.gap-2` use.
+  @each $key, $value in bootstrap.$spacers {
+    --fm-space-#{$key}: #{$value};
+  }
+
+  // Icon size scale. A glyph is `1em` of its element, so an icon's size is a
+  // font size; these are Bootstrap's `small`, body and `.fs-5` steps.
+  --fm-icon-sm: #{bootstrap.$font-size-sm};
+  --fm-icon: #{bootstrap.$font-size-base};
+  --fm-icon-lg: #{bootstrap.$h5-font-size};
+
+  // How far a mark stands off whatever it annotates — and, being real padding,
+  // how far its hit area reaches. The whole step here, since running text spaces
+  // nothing itself; a container with a gap of its own turns it down to the
+  // difference.
+  --fm-marker-air: var(--fm-space-2);
+}
+
 // Bootstrap ships no min-width:0 utility; needed so flex children can shrink
 // below their content width (lets inner text wrap instead of overflowing).
 .min-w-0 {

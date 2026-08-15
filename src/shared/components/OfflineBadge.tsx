@@ -1,7 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
-import clsx from 'clsx';
 import type { ReactElement, ReactNode } from 'react';
 import { BiWifiOff } from 'react-icons/bi';
 
@@ -19,9 +18,7 @@ type Props = {
 
 /**
  * Says that a control needs a connection, with the reason in a tooltip; renders
- * nothing while online. As in `PremiumGem`, `pointerEvents: 'initial'` keeps it
- * hoverable inside a disabled dropdown item, which takes pointer events away
- * from its content.
+ * nothing while online.
  */
 export function OfflineBadge({
   className,
@@ -37,16 +34,11 @@ export function OfflineBadge({
   }
 
   return (
-    <LongPressTooltip label={hint ?? m?.general.offlineUnavailable}>
-      {({ props }) => (
-        <span
-          {...props}
-          className={clsx('text-warning', className)}
-          style={{ pointerEvents: 'initial', cursor: 'help' }}
-        >
-          <BiWifiOff />
-        </span>
-      )}
-    </LongPressTooltip>
+    <GlyphMarker
+      hint={hint ?? m?.general.offlineUnavailable}
+      className={className}
+    >
+      <BiWifiOff />
+    </GlyphMarker>
   );
 }

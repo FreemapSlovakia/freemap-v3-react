@@ -3,7 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -96,13 +96,9 @@ export function ElevationValue({
         isNetworkError(error) ? (
           <OfflineBadge offline hint={errorText} />
         ) : (
-          <LongPressTooltip label={errorText}>
-            {({ props }) => (
-              <span className="text-danger fm-cursor-help" {...props}>
-                <FaExclamationTriangle />
-              </span>
-            )}
-          </LongPressTooltip>
+          <GlyphMarker hint={errorText} color="danger">
+            <FaExclamationTriangle />
+          </GlyphMarker>
         )
       ) : elevation == null ? (
         <span className="text-muted">—</span>
@@ -110,19 +106,11 @@ export function ElevationValue({
         <>
           <b>{nf01.format(elevation)}</b>&nbsp;{m?.general.masl}
           {sourceHint && (
-            <LongPressTooltip label={sourceHint}>
-              {({ props }) => (
-                <span
-                  className="ms-1 text-body-secondary fm-cursor-help"
-                  {...props}
-                >
-                  <FaInfoCircle />
-                </span>
-              )}
-            </LongPressTooltip>
+            <GlyphMarker hint={sourceHint} color="body-secondary">
+              <FaInfoCircle />
+            </GlyphMarker>
           )}
           <PremiumGem
-            className="ms-1"
             hint={premium ? undefined : prm?.higherPrecisionElevation}
           />
         </>

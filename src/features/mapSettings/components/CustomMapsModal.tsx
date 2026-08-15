@@ -303,10 +303,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
               <FaPlus /> {m?.mapLayers.addCustomMap}
             </Button>
 
-            <OfflineBadge
-              className="align-self-center"
-              offline={!canSaveSettings}
-            />
+            <OfflineBadge offline={!canSaveSettings} />
 
             <Button variant="dark" onClick={close}>
               <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
@@ -345,10 +342,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
               <FaCheck /> {m?.general.save}
             </Button>
 
-            <OfflineBadge
-              className="align-self-center"
-              offline={!canSaveSettings}
-            />
+            <OfflineBadge offline={!canSaveSettings} />
 
             <Button variant="dark" onClick={goToList}>
               <FaTimes /> {m?.general.cancel}

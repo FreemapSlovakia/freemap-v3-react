@@ -4,7 +4,6 @@ import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import clsx from 'clsx';
 import type { ReactElement, ReactNode } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
@@ -13,15 +12,22 @@ import { useDispatch } from 'react-redux';
 export function Selection({
   label,
   icon,
+  control,
   deletable = false,
-  noLeftMargin = false,
   children,
 }: {
   label?: string;
+  /** The selection's own glyph — no control, see `control`. */
   icon: ReactElement;
+  /**
+   * The button that reopens the tool the selection belongs to. Kept out of the
+   * head: the head carries its own long-press tooltip, and a control inside it
+   * would open two at once, as well as taking the head's hit area past the
+   * toolbar's height.
+   */
+  control?: ReactNode;
   deletable?: boolean;
   children?: ReactNode;
-  noLeftMargin?: boolean;
 }): ReactElement {
   const dispatch = useDispatch();
 
@@ -35,17 +41,16 @@ export function Selection({
 
       <Toolbar className="mt-2 fm-toolbar-selection">
         <ButtonToolbar>
+          {control}
+
           <LongPressTooltip breakpoint="sm" label={label}>
             {({ label, labelClassName, props }) => (
               <span
-                className={clsx(
-                  'align-self-center me-1',
-                  noLeftMargin || 'ms-2',
-                )}
+                className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
                 {...props}
               >
                 {icon}
-                <span className={labelClassName}> {label}</span>
+                <span className={labelClassName}>{label}</span>
               </span>
             )}
           </LongPressTooltip>
@@ -57,7 +62,6 @@ export function Selection({
           <LongPressTooltip label={m?.general.close} kbd="Esc">
             {({ props }) => (
               <Button
-                className="ms-1"
                 variant="dark"
                 onClick={() => dispatch(selectFeature(null))}
                 {...props}

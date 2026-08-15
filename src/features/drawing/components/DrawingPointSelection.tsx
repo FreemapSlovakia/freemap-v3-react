@@ -83,20 +83,14 @@ export default function DrawingPointSelection(): ReactElement | null {
       />
 
       <Selection
-        icon={
-          <>
-            <DrawingToggleButton tool="draw-points" />
-            <FaMapMarkerAlt className="ms-2" />
-          </>
-        }
+        control={<DrawingToggleButton tool="draw-points" />}
+        icon={<FaMapMarkerAlt />}
         label={m?.selections.drawPoints}
         deletable
-        noLeftMargin
       >
         <LongPressTooltip breakpoint="sm" label={dm?.modify}>
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               onClick={() =>
                 dispatch(setActiveModal({ type: 'current-drawing-properties' }))
@@ -112,7 +106,6 @@ export default function DrawingPointSelection(): ReactElement | null {
         <LongPressTooltip breakpoint="sm" label={dm?.projection.projectPoint}>
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               onClick={() => setProjectPointDialogVisible(true)}
               {...props}
@@ -124,7 +117,6 @@ export default function DrawingPointSelection(): ReactElement | null {
         </LongPressTooltip>
 
         <OpenInExternalAppMenuButton
-          className="ms-1"
           lat={coords.lat}
           lon={coords.lon}
           includePoint

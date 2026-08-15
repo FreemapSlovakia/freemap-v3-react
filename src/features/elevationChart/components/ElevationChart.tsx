@@ -1072,12 +1072,7 @@ export default function ElevationChart(): ReactElement | null {
             ))}
             {/* The finer national models are premium's; say so where they'd
                 otherwise just be missing from the list. */}
-            {!premium && (
-              <PremiumGem
-                className="ms-1"
-                hint={prm?.higherPrecisionElevation}
-              />
-            )}
+            {!premium && <PremiumGem hint={prm?.higherPrecisionElevation} />}
           </p>
         )}
 

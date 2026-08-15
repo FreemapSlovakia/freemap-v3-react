@@ -20,15 +20,10 @@ export default function RoutePointSelection():
   return (
     point && (
       <Selection
-        icon={
-          <>
-            <RoutePlannerToggleButton />
-            <FaMapMarkerAlt className="ms-2" />
-          </>
-        }
+        control={<RoutePlannerToggleButton />}
+        icon={<FaMapMarkerAlt />}
         label={rpm?.point.point}
         deletable
-        noLeftMargin
       />
     )
   );

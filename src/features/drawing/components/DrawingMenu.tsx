@@ -29,7 +29,6 @@ export default function DrawingMenu(): ReactElement | undefined {
     drawToolDef && (
       <ToolMenu tool={drawToolDef.tool}>
         <SelectDropdown
-          className="ms-1"
           breakpoint="lg"
           name={m?.general.drawingTool}
           value={drawTool}
@@ -52,7 +51,6 @@ export default function DrawingMenu(): ReactElement | undefined {
           {({ props, label, labelClassName }) => (
             <Button
               variant="secondary"
-              className="ms-1"
               onClick={() =>
                 dispatch(setActiveModal({ type: 'drawing-properties' }))
               }

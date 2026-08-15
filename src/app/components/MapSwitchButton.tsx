@@ -15,6 +15,7 @@ import { Checkbox } from '@shared/components/Checkbox.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
@@ -69,19 +70,12 @@ import { useMediaQuery } from 'react-responsive';
 import { setActiveModal } from '../store/actions.js';
 
 /**
- * Fills an acting badge with as much icon as its 24px will hold: the glyph is
- * `1em` of the button's own size, which `btn-sm` would keep at 14px, so it is
- * set here and the padding gives back what it takes — 18 + 2×2 + 2×1 of border.
- */
-const actionBadgeStyle = { fontSize: '1.125rem', padding: '0.125rem' };
-
-/**
  * A badge on a menu item, explained by the same tooltip the toolbar uses.
  *
  * `action` gives it Bootstrap's button clothes: the item is an anchor, so a
  * real `<button>` inside it would not be valid markup, and the span carries
  * `data-*` naming what to do instead — which the item's own click handler reads
- * (see `handlePossibleBadgeClick`). It is therefore a mouse affordance only.
+ * (see `handlePossibleBadgeClick`).
  */
 function Badge({
   label,
@@ -95,29 +89,30 @@ function Badge({
   children: ReactNode;
 }) {
   return (
-    <LongPressTooltip label={label}>
-      {({ props }) => (
-        <span
-          {...props}
-          {...data}
-          style={action ? actionBadgeStyle : undefined}
-          className={clsx(
-            action
-              ? // Square, at the height of the row's own line — any taller and
-                // it opens up every row it appears in.
-                'btn btn-sm btn-outline-warning ms-2 lh-1'
-              : 'text-warning ms-1',
-          )}
-        >
-          {children}
-        </span>
-      )}
-    </LongPressTooltip>
+    <GlyphMarker
+      hint={label}
+      {...data}
+      // The button clothes are the acting badge's own box, and `.fm-badge-action`
+      // sizes it to the 24px a target needs.
+      bare={action}
+      color={action ? null : 'warning'}
+      // Every `data-*` a badge carries is one `handlePossibleBadgeClick` acts on,
+      // so carrying any of them makes it a control — including the photo filter,
+      // which does so without the button clothes.
+      cursor={data ? 'pointer' : undefined}
+      className={
+        action
+          ? 'btn btn-sm btn-outline-warning lh-1 fm-badge-action'
+          : undefined
+      }
+    >
+      {children}
+    </GlyphMarker>
   );
 }
 
 function getKbdShortcut(shortcut?: Shortcut | null) {
-  return shortcut && <kbd className="ms-1">{formatShortcut(shortcut)}</kbd>;
+  return shortcut && <kbd>{formatShortcut(shortcut)}</kbd>;
 }
 
 export function MapSwitchButton(): ReactElement {
@@ -403,9 +398,7 @@ export function MapSwitchButton(): ReactElement {
           def.type !== 'X' &&
           !def.custom &&
           def.countries?.map((country) => (
-            <Emoji className="ms-1" key={country}>
-              {countryCodeToFlag(country)}
-            </Emoji>
+            <Emoji key={country}>{countryCodeToFlag(country)}</Emoji>
           ))}
 
         {place !== 'toolbar' &&
@@ -419,7 +412,7 @@ export function MapSwitchButton(): ReactElement {
         !def.custom &&
         def.premiumFromZoom !== undefined &&
         zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
-          <PremiumGem className="ms-1" capture nested />
+          <PremiumGem capture nested />
         ) : null}
 
         {/* Everything but a downloaded map draws nothing while offline. The
@@ -429,13 +422,13 @@ export function MapSwitchButton(): ReactElement {
         {place === 'menu' &&
           !def.cached &&
           def.technology !== 'interactive' && (
-            <OfflineBadge className="ms-1" hint={m?.mapLayers.offlineWarning} />
+            <OfflineBadge hint={m?.mapLayers.offlineWarning} />
           )}
 
         {place === 'tooltip' &&
           !def.cached &&
           def.technology !== 'interactive' &&
-          !online && <BiWifiOff className="ms-1 text-warning" />}
+          !online && <BiWifiOff className="text-warning" />}
 
         {place !== 'toolbar' && !def.custom && def.superseededBy && (
           <Badge label={m?.mapLayers.legacy}>
@@ -444,7 +437,7 @@ export function MapSwitchButton(): ReactElement {
         )}
 
         {place !== 'toolbar' && !def.custom && def.experimental && (
-          <ExperimentalFunction data-interactive="1" className="ms-1" />
+          <ExperimentalFunction />
         )}
 
         {place === 'menu' &&
@@ -501,10 +494,7 @@ export function MapSwitchButton(): ReactElement {
         {place !== 'tooltip' &&
           activeLayers.includes('i') &&
           def.type === 'i' && (
-            <Badge
-              label={m?.mapLayers.interactiveLayerWarning}
-              data={{ 'data-interactive': '1' }}
-            >
+            <Badge label={m?.mapLayers.interactiveLayerWarning}>
               <FaEyeSlash />
             </Badge>
           )}
@@ -577,16 +567,14 @@ export function MapSwitchButton(): ReactElement {
                 <Checkbox value={active} />
               )}
 
-              <span className="px-2">
-                {def.custom ? (
-                  <IconSpecGlyph
-                    spec={def.iconSpec}
-                    fallback={<MdDashboardCustomize />}
-                  />
-                ) : (
-                  def.icon
-                )}
-              </span>
+              {def.custom ? (
+                <IconSpecGlyph
+                  spec={def.iconSpec}
+                  fallback={<MdDashboardCustomize />}
+                />
+              ) : (
+                def.icon
+              )}
 
               <span>
                 {def.custom
@@ -605,7 +593,7 @@ export function MapSwitchButton(): ReactElement {
 
   return (
     <>
-      <div className="d-none d-sm-block me-1">{m?.mapLayers.switch}</div>
+      <div className="px-1 d-none d-sm-block">{m?.mapLayers.switch}</div>
 
       <ButtonGroup>
         {(isWide ? layerDefs : []).map((def) => {
@@ -712,13 +700,13 @@ export function MapSwitchButton(): ReactElement {
             <Fragment key={type}>
               <LongPressTooltip
                 label={
-                  <>
+                  <span className="d-inline-flex flex-wrap align-items-center gap-1">
                     {def.custom
                       ? def.name || `${m?.mapLayers.customBase} ${type}`
                       : (m?.mapLayers.letters[type] ?? '…')}
 
                     {commonBadges(def, 'tooltip')}
-                  </>
+                  </span>
                 }
               >
                 {({ props }) => (
@@ -728,9 +716,10 @@ export function MapSwitchButton(): ReactElement {
                     active={active}
                     onClick={handleLayerButtonClick}
                     {...props}
-                    className={
-                      joined ? 'pe-1 border-end-0 fm-btn-joined' : undefined
-                    }
+                    className={clsx(
+                      'd-inline-flex align-items-center gap-1',
+                      joined && 'pe-1 border-end-0 fm-btn-joined',
+                    )}
                   >
                     {def.custom ? (
                       <IconSpecGlyph

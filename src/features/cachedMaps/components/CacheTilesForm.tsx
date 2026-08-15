@@ -607,7 +607,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
               {/* the range stops short of the layer's premium zooms; the gem
                   says why, there being no checkerboard on a cached map */}
               {premiumLimit !== undefined && (
-                <PremiumGem className="ms-1" hint={cm?.premiumZoomHint} />
+                <PremiumGem hint={cm?.premiumZoomHint} />
               )}
             </Form.Label>
 

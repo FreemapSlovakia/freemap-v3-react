@@ -65,7 +65,6 @@ export function MapDetailsMenu(): ReactElement | null {
   return (
     <ToolMenu tool="map-details">
       <Dropdown
-        className="ms-1"
         onSelect={(selection, e) => {
           e.preventDefault();
           dispatch(

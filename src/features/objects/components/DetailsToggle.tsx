@@ -25,7 +25,6 @@ export function DetailsToggle(): ReactElement {
     <LongPressTooltip breakpoint="sm" label={om?.showDetails}>
       {({ label, labelClassName, props }) => (
         <Button
-          className="ms-1"
           variant="secondary"
           active={showDetails}
           aria-pressed={showDetails}

@@ -16,7 +16,7 @@ export function HintTooltip({ hint, children }: Props): ReactElement {
   return (
     <LongPressTooltip label={hint}>
       {({ props }) => (
-        <span {...props} className="fm-hint">
+        <span {...props} className="fm-hint py-2">
           {children}
         </span>
       )}

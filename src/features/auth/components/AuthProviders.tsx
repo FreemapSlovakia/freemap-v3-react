@@ -67,7 +67,7 @@ const PROVIDERS: ProviderDef[] = [
   {
     provider: 'garmin',
     label: 'Garmin',
-    icon: <SiGarmin style={{ fontSize: '400%', marginBlock: '-24px' }} />,
+    icon: <SiGarmin className="fm-icon-wordmark" />,
     style: { backgroundColor: '#1791FF', color: '#fff' },
   },
   {

@@ -105,8 +105,11 @@ export default function WeatherRadarMenu() {
             breakpoint="sm"
           >
             {({ props, label, labelClassName }) => (
-              <span className="align-self-center ms-1 me-1" {...props}>
-                <FaCloudShowersHeavy />{' '}
+              <span
+                className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
+                {...props}
+              >
+                <FaCloudShowersHeavy />
                 <span className={labelClassName}>{label}</span>
               </span>
             )}
@@ -114,7 +117,7 @@ export default function WeatherRadarMenu() {
 
           {!hidden && (
             <>
-              <ButtonGroup className="ms-1">
+              <ButtonGroup>
                 <LongPressTooltip label={wm?.previousFrame}>
                   {({ props }) => (
                     <Button
@@ -157,11 +160,7 @@ export default function WeatherRadarMenu() {
 
               <RadarTimeline />
 
-              <Dropdown
-                className="ms-1"
-                onSelect={handleSettingsSelect}
-                autoClose="outside"
-              >
+              <Dropdown onSelect={handleSettingsSelect} autoClose="outside">
                 <LongPressTooltip label={wm?.settings} breakpoint="xxl">
                   {({ props, label, labelClassName }) => (
                     <Dropdown.Toggle variant="secondary" {...props}>
@@ -184,7 +183,7 @@ export default function WeatherRadarMenu() {
             </>
           )}
 
-          <ButtonGroup className="ms-1">
+          <ButtonGroup>
             <LongPressTooltip
               label={hidden ? m?.general.expand : m?.general.collapse}
             >

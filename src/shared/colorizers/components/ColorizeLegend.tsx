@@ -199,8 +199,12 @@ export function ColorizeLegend({ mode, icon, features }: Props) {
       <Toolbar className="mt-2 d-flex">
         <LongPressTooltip label={cm.legend} breakpoint="sm">
           {({ props, label, labelClassName }) => (
-            <span className="align-self-center ms-1" {...props}>
-              {icon} <FaPalette />{' '}
+            <span
+              className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
+              {...props}
+            >
+              {icon}
+              <FaPalette />
               <span className={labelClassName}>
                 {label}
                 {unit ? ` [${unit}]` : ''}

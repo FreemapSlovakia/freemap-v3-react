@@ -1,6 +1,6 @@
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import clsx from 'clsx';
 import type { MouseEvent, ReactElement, ReactNode } from 'react';
 import { FaGem } from 'react-icons/fa';
@@ -42,9 +42,6 @@ type PremiumGemProps = {
  * Premium marker gem with a tooltip (hover or touch long-press). For non-premium
  * users the gem is warning-colored and links to the purchase flow
  * (`#show=premium`); for premium users it's a success-colored, inert marker.
- *
- * `pointerEvents: 'initial'` keeps it hoverable/clickable inside containers that
- * disable pointer events (e.g. a disabled dropdown item).
  */
 export function PremiumGem({
   className,
@@ -88,53 +85,35 @@ export function PremiumGem({
   // (nested) or for premium users (no navigation).
   const asLink = Boolean(onActivate) && !nested;
 
-  // The label keeps normal link styling; only the gem carries the premium color.
-  const content = (
-    <>
-      {expand && (
-        <>
-          {asLink ? (
-            <span className="text-decoration-underline">{label}</span>
-          ) : (
-            label
-          )}{' '}
-        </>
-      )}
-
-      <FaGem className={becomePremium ? 'text-warning' : 'text-success'} />
-    </>
-  );
-
   return (
-    <LongPressTooltip label={tooltip}>
-      {({ props }) => {
-        const shared = {
-          ...props,
-          className: clsx(asLink && 'text-decoration-none', className),
-          style: {
-            pointerEvents: 'initial' as const,
-            cursor: onActivate ? 'pointer' : 'default',
-          },
-          onClick: capture ? undefined : onActivate,
-          onClickCapture: (e: MouseEvent) => {
-            // Let the tooltip swallow the click that ends a long-press; only
-            // navigate on a genuine click it didn't prevent.
-            props.onClickCapture(e);
-
-            if (capture && !e.defaultPrevented) {
-              onActivate?.(e);
-            }
-          },
-        };
-
-        return asLink ? (
-          <a {...shared} href="#show=premium">
-            {content}
-          </a>
+    <GlyphMarker
+      hint={tooltip}
+      color={becomePremium ? 'warning' : 'success'}
+      // The label keeps normal link styling; only the gem carries the premium
+      // color, which `GlyphMarker` applies to the glyph alone.
+      label={
+        expand && asLink ? (
+          <span className="text-decoration-underline">{label}</span>
         ) : (
-          <span {...shared}>{content}</span>
-        );
-      }}
-    </LongPressTooltip>
+          label
+        )
+      }
+      href={asLink ? '#show=premium' : undefined}
+      className={clsx(asLink && 'text-decoration-none', className)}
+      onClick={capture ? undefined : onActivate}
+      onClickCapture={
+        capture && onActivate
+          ? (e) => {
+              // The tooltip swallows the click that ends a long-press; only a
+              // genuine click it didn't prevent navigates.
+              if (!e.defaultPrevented) {
+                onActivate(e);
+              }
+            }
+          : undefined
+      }
+    >
+      <FaGem />
+    </GlyphMarker>
   );
 }

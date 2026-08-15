@@ -43,7 +43,6 @@ import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import fmLogo from '@/images/freemap-logo-print.png';
 import 'leaflet/dist/leaflet.css';
-import clsx from 'clsx';
 import {
   Fragment,
   type MouseEvent,
@@ -628,10 +627,7 @@ export function Main(): ReactElement {
                   {/* The app's standing offline mark. The search box shows one
                       only for a query it can't answer itself, so this is what
                       says the connection is gone at all. */}
-                  <OfflineBadge
-                    className="align-self-center ms-1 me-2 fs-4"
-                    hint={m?.general.offline}
-                  />
+                  <OfflineBadge hint={m?.general.offline} />
 
                   {!window.fmEmbedded && showMenu && <MainMenuButton />}
 
@@ -675,7 +671,6 @@ export function Main(): ReactElement {
                       >
                         {({ label, labelClassName, props }) => (
                           <Button
-                            className={clsx(trackFound && 'ms-1')}
                             variant="secondary"
                             onClick={() =>
                               dispatch(

@@ -281,7 +281,7 @@ export function CachedMapsList(): ReactElement {
           <FaPlus /> {cmm?.addOfflineMap}
         </Button>
 
-        <OfflineBadge className="align-self-center" />
+        <OfflineBadge />
 
         <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>

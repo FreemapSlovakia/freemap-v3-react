@@ -310,7 +310,6 @@ export function DataViewerMenu(): ReactElement {
           <LongPressTooltip breakpoint="sm" label={tvm?.upload}>
             {({ label, labelClassName, props }) => (
               <Button
-                className="ms-1"
                 variant={hasTrack ? 'secondary' : 'primary'}
                 onClick={() => {
                   dispatch(setActiveModal({ type: 'file-import' }));
@@ -325,16 +324,13 @@ export function DataViewerMenu(): ReactElement {
         )}
 
         {/* Separate the import action from the loaded-track actions. */}
-        {canUpload && hasTrack && (
-          <div className=" ms-1 vr align-self-stretch" />
-        )}
+        {canUpload && hasTrack && <div className="vr align-self-stretch" />}
 
         {/* Pick which track the chart / "more info" act on, shown only when
             several lines are loaded. */}
         {trackLines.length > 1 && (
           <SelectDropdown
             asSelect
-            className="ms-1"
             id="track_selector"
             toggleIcon={<FaRoute />}
             name={tvm?.trackLabel}
@@ -355,7 +351,6 @@ export function DataViewerMenu(): ReactElement {
           <LongPressTooltip breakpoint="md" label={m?.general.elevationProfile}>
             {({ label, labelClassName, props }) => (
               <Button
-                className="ms-1"
                 variant="secondary"
                 active={elevationChartActive}
                 onClick={() => {
@@ -372,7 +367,6 @@ export function DataViewerMenu(): ReactElement {
 
         {enableElevationChart && (
           <SelectDropdown
-            className="ms-1"
             id="colorizing_mode"
             breakpoint="lg"
             toggleIcon={<FaPalette />}
@@ -429,7 +423,6 @@ export function DataViewerMenu(): ReactElement {
           <LongPressTooltip breakpoint="md" label={tvm?.moreInfo}>
             {({ label, labelClassName, props }) => (
               <Button
-                className="ms-1"
                 variant="secondary"
                 active={trackInfoActive}
                 aria-pressed={trackInfoActive}
@@ -454,7 +447,7 @@ export function DataViewerMenu(): ReactElement {
         )}
 
         {hasTrack && (
-          <Dropdown className="ms-1" id="more" onSelect={handleMoreSelect}>
+          <Dropdown id="more" onSelect={handleMoreSelect}>
             <Dropdown.Toggle variant="secondary">
               <FaEllipsisV />
             </Dropdown.Toggle>

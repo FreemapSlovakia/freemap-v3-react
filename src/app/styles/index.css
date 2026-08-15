@@ -40,7 +40,6 @@ button#freemap-logo {
   background-image: url("@/images/freemap-logo.png");
   background-size: 122px 34px;
   background-repeat: no-repeat;
-  margin-right: 3px;
   height: 34px;
   width: 122px;
   -webkit-transform: scale(1);
@@ -95,8 +94,12 @@ button#freemap-logo {
     vertical-align: top;
     align-items: center;
 
-    padding: 0.25rem;
-    margin-inline: 0.5rem;
+    /* The toolbar owns the rhythm between its own children, so nothing in it
+       carries a margin of its own — see `doc/ui-conventions.md`. */
+    gap: var(--fm-space-1);
+
+    padding: var(--fm-space-1);
+    margin-inline: var(--fm-space-2);
 
     border: 0;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
@@ -296,6 +299,89 @@ button#freemap-logo {
 
 .fm-cursor-help {
   cursor: help;
+}
+
+.fm-cursor-pointer {
+  cursor: pointer;
+}
+
+.fm-icon-sm {
+  font-size: var(--fm-icon-sm);
+}
+
+.fm-icon {
+  font-size: var(--fm-icon);
+}
+
+.fm-icon-lg {
+  font-size: var(--fm-icon-lg);
+}
+
+/* A logotype drawn as an icon (the Garmin wordmark) needs the width of a word,
+   so it sits off the scale on purpose: a square 24×24 viewBox needs the scale-up
+   to read at all. The negative block margin — in the scaled em, so it tracks the
+   size — gives back the empty box around it, keeping the row's height. */
+.fm-icon-wordmark {
+  font-size: 400%;
+  margin-block: -0.375em;
+}
+
+/* A glyph standing for a state or an offer, explained by a tooltip
+   (`GlyphMarker`). Pointer events are the mark's own: a disabled container takes
+   them away from its content, and the mark is often what says why the container
+   is disabled. */
+.fm-marker {
+  pointer-events: initial;
+
+  /* A mark never stretches — in a `.btn-toolbar` the default `stretch` would give
+     it the height of the buttons — and never shrinks: a squashed glyph reads as
+     a different one. */
+  align-self: center;
+  flex-shrink: 0;
+}
+
+/* The mark's spacing and its hit area are one thing: padding before the glyph
+   both stands it off what it annotates and gives a finger somewhere to land.
+   Real padding rather than an overlay, so two marks side by side *tile* — one
+   can never swallow the other's taps or its tooltip. Only the block axis is
+   given back, the height of the line or the row not being the mark's to change;
+   that direction is nearly always dead space anyway. */
+.fm-marker-air {
+  padding-inline: var(--fm-marker-air);
+  padding-block: var(--fm-space-2);
+  margin-block: calc(-1 * var(--fm-space-2));
+}
+
+/* Two marks in a row split the space between them rather than each paying for
+   it, which keeps the pair the right distance apart and — since the halves meet
+   — gives them the same reach as each other. Anything else beside a mark (a
+   button, the text it annotates) pays nothing, so the mark takes the whole
+   step on that side. */
+.fm-marker-air + .fm-marker-air {
+  padding-inline-start: calc(var(--fm-marker-air) / 2);
+}
+
+.fm-marker-air:has(+ .fm-marker-air) {
+  padding-inline-end: calc(var(--fm-marker-air) / 2);
+}
+
+/* A container that spaces its own children leaves the mark only the difference;
+   running text, which spaces nothing, leaves it the whole step. */
+.fm-toolbar,
+.btn-toolbar,
+.dropdown-item {
+  --fm-marker-air: var(--fm-space-1);
+}
+
+/* A bare mark is its glyph and nothing else, so its box is exactly the glyph:
+   `line-height: 0` leaves the line box the glyph's own height, and an
+   inline-block takes its baseline from that line box — the glyph's bottom edge,
+   which is where an `<svg>` in the surrounding text sits too. A flex box can't:
+   with nothing in it that has a baseline of its own it synthesizes one from its
+   own border box, and the mark rides the padding above the line it annotates. */
+.fm-glyph {
+  display: inline-block;
+  line-height: 0;
 }
 
 /* A phrase with an explanation behind it (see `HintTooltip`). */

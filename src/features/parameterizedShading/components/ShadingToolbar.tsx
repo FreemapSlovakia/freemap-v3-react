@@ -52,12 +52,7 @@ export function ShadingToolbar({
         </Dropdown.Item>
       </DropdownButton>
 
-      <Button
-        className="ms-1"
-        disabled={!canRemove}
-        variant="danger"
-        onClick={onRemove}
-      >
+      <Button disabled={!canRemove} variant="danger" onClick={onRemove}>
         {m?.general.remove}
       </Button>
     </ButtonToolbar>

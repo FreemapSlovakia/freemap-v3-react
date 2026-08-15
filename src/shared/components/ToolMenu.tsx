@@ -79,13 +79,13 @@ export function ToolMenu({
     (state) => activeMapToolSelector(state) === tool,
   );
 
+  const buttonIcon = collapsed && wrapCollapsedIcon !== undefined;
+
   const icon = toolDef && (
     <span className={iconClassName}>
       {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}
     </span>
   );
-
-  const buttonIcon = collapsed && wrapCollapsedIcon !== undefined;
 
   return (
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
@@ -105,31 +105,25 @@ export function ToolMenu({
               >
                 {({ label, labelClassName, props }) => (
                   <span
-                    // A button brings its own room, so the margin a bare icon
-                    // needs would double up beside it.
                     className={clsx(
-                      'align-self-center',
-                      buttonIcon ? 'mx-0' : 'mx-1',
+                      'align-self-center d-inline-flex align-items-center gap-2',
+                      // Wrapped, the icon is a button, which sits where a button
+                      // sits and brings its own hit area; bare, the glyph needs
+                      // both the air and something to aim at.
+                      !buttonIcon && 'px-1 py-2 my-n2',
                     )}
                     {...props}
                   >
-                    {buttonIcon ? wrapCollapsedIcon(icon) : icon}{' '}
-                    <span className={labelClassName}> {label}</span>
+                    {buttonIcon ? wrapCollapsedIcon(icon) : icon}
+                    <span className={labelClassName}>{label}</span>
                   </span>
                 )}
               </LongPressTooltip>
 
-              {toolDef.experimental && !collapsed && (
-                <span className="align-self-center mx-1">
-                  <ExperimentalFunction />
-                </span>
-              )}
+              {toolDef.experimental && !collapsed && <ExperimentalFunction />}
 
               {toolDef.requiresOnline && !collapsed && (
-                <OfflineBadge
-                  className="align-self-center mx-1"
-                  hint={m?.general.offlineToolUnavailable}
-                />
+                <OfflineBadge hint={m?.general.offlineToolUnavailable} />
               )}
             </>
           )}
@@ -140,7 +134,6 @@ export function ToolMenu({
             <LongPressTooltip label={m?.general.expand}>
               {({ props }) => (
                 <Button
-                  className="ms-1"
                   variant="dark"
                   onClick={() => {
                     if (!open) {
@@ -161,7 +154,6 @@ export function ToolMenu({
                 <LongPressTooltip label={m?.general.collapse}>
                   {({ props }) => (
                     <Button
-                      className="ms-1"
                       variant="dark"
                       onClick={() => setUserCollapsed(true)}
                       {...props}
@@ -181,7 +173,6 @@ export function ToolMenu({
               >
                 {({ props }) => (
                   <Button
-                    className="ms-1"
                     variant="dark"
                     onClick={() => dispatch(closeTool(tool))}
                     {...props}

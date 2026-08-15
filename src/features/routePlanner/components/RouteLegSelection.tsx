@@ -35,14 +35,9 @@ export default function RouteLegSelection(): ReactElement | undefined | false {
     id !== undefined &&
     point && (
       <Selection
-        icon={
-          <>
-            <RoutePlannerToggleButton />
-            <FaMapMarkerAlt className="ms-2" />
-          </>
-        }
+        control={<RoutePlannerToggleButton />}
+        icon={<FaMapMarkerAlt />}
         label={rpm?.leg}
-        noLeftMargin
       >
         {canBeManual && (
           <RoutePlannerTransportType

@@ -62,19 +62,14 @@ export default function ObjectSelection(): ReactElement | null {
 
   return (
     <Selection
-      icon={
-        <>
-          <ObjectsToggleButton />
-          <FaMapMarkerAlt className="ms-2" />
-        </>
-      }
+      control={<ObjectsToggleButton />}
+      icon={<FaMapMarkerAlt />}
       label={m?.selections.objects}
-      noLeftMargin
     >
       <DetailsToggle />
 
       {!window.fmEmbedded && (
-        <ButtonGroup className="ms-1">
+        <ButtonGroup>
           <LongPressTooltip label={m?.search.routeFrom}>
             {({ props }) => (
               <Button

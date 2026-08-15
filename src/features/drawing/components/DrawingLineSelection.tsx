@@ -313,18 +313,10 @@ export default function DrawingLineSelection(): ReactElement | null {
       />
 
       <Selection
-        icon={
-          <>
-            <DrawingToggleButton
-              tool={isLine ? 'draw-lines' : 'draw-polygons'}
-            />
-            {isLine ? (
-              <TbTimeline className="ms-2" />
-            ) : (
-              <FaDrawPolygon className="ms-2" />
-            )}
-          </>
+        control={
+          <DrawingToggleButton tool={isLine ? 'draw-lines' : 'draw-polygons'} />
         }
+        icon={isLine ? <TbTimeline /> : <FaDrawPolygon />}
         label={
           isHole
             ? m?.selections.drawPolygonHole
@@ -333,13 +325,11 @@ export default function DrawingLineSelection(): ReactElement | null {
               : m?.selections.drawPolygons
         }
         deletable
-        noLeftMargin
       >
         {cuttingHole && (
           <LongPressTooltip breakpoint="sm" label={m?.general.cancel} kbd="Esc">
             {({ label, labelClassName, props }) => (
               <Button
-                className="ms-1"
                 variant="secondary"
                 onClick={() => dispatch(drawingLineStopDrawing())}
                 {...props}
@@ -355,7 +345,6 @@ export default function DrawingLineSelection(): ReactElement | null {
           <LongPressTooltip breakpoint="sm" label={dm?.stopDrawing} kbd="Esc">
             {({ label, labelClassName, props }) => (
               <Button
-                className="ms-1"
                 variant="secondary"
                 onClick={() => dispatch(drawingLineStopDrawing())}
                 {...props}
@@ -373,7 +362,6 @@ export default function DrawingLineSelection(): ReactElement | null {
           <LongPressTooltip breakpoint="sm" label={dm?.modify}>
             {({ label, labelClassName, props }) => (
               <Button
-                className="ms-1"
                 variant="secondary"
                 onClick={() =>
                   dispatch(
@@ -389,12 +377,7 @@ export default function DrawingLineSelection(): ReactElement | null {
           </LongPressTooltip>
         )}
 
-        <Dropdown
-          className="ms-1"
-          id="more"
-          onSelect={handleMoreSelect}
-          onToggle={setMoreOpen}
-        >
+        <Dropdown id="more" onSelect={handleMoreSelect} onToggle={setMoreOpen}>
           <Dropdown.Toggle variant="secondary">
             <FaEllipsisV />
           </Dropdown.Toggle>

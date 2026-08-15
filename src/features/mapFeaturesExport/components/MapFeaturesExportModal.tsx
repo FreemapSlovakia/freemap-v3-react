@@ -446,31 +446,24 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                             gdrive: (
                               <>
                                 <FaGoogle /> Google Drive
-                                <OfflineBadge className="ms-1" />
+                                <OfflineBadge />
                               </>
                             ),
                             dropbox: (
                               <>
                                 <FaDropbox /> Dropbox
-                                <OfflineBadge className="ms-1" />
+                                <OfflineBadge />
                               </>
                             ),
                             garmin: (
                               <>
-                                {/* A wordmark in a square 24×24 viewBox: it needs
-                                  the scale-up to read, and the negative margin
-                                  (in the scaled em, so it tracks the size) to
-                                  give back the empty box around it. */}
                                 <SiGarmin
                                   title="Garmin"
-                                  style={{
-                                    fontSize: '400%',
-                                    marginBlock: '-0.375em',
-                                  }}
+                                  className="fm-icon-wordmark"
                                 />
                                 &ensp;
                                 <ExperimentalFunction />
-                                <OfflineBadge className="ms-1" />
+                                <OfflineBadge />
                               </>
                             ),
                           }[exportTarget]

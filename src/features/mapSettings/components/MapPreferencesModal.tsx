@@ -323,7 +323,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
           <Form.Group controlId="maxZoom">
             <Form.Label>
               {m?.mapLayers.maxZoom}
-              <OfflineBadge className="ms-1" offline={!canSaveSettings} />
+              <OfflineBadge offline={!canSaveSettings} />
             </Form.Label>
 
             <Form.Control

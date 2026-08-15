@@ -54,7 +54,7 @@ export default function DrawingLinePointSelection(): ReactElement | null {
   ) {
     return (
       <Toolbar className="mt-2">
-        <span className="me-2">{dm?.selectPointToJoin}</span>
+        <span className="px-1">{dm?.selectPointToJoin}</span>
 
         <LongPressTooltip breakpoint="sm" kbd="Esc" label={m?.general.cancel}>
           {({ label, labelClassName, props }) => (
@@ -91,31 +91,23 @@ export default function DrawingLinePointSelection(): ReactElement | null {
 
   return (
     <Selection
-      icon={
-        <>
-          <DrawingToggleButton
-            tool={line.type === 'line' ? 'draw-lines' : 'draw-polygons'}
-          />
-          {line.type === 'line' ? (
-            <MdTimeline className="ms-2" />
-          ) : (
-            <FaDrawPolygon className="ms-2" />
-          )}
-        </>
+      control={
+        <DrawingToggleButton
+          tool={line.type === 'line' ? 'draw-lines' : 'draw-polygons'}
+        />
       }
+      icon={line.type === 'line' ? <MdTimeline /> : <FaDrawPolygon />}
       label={
         line.type === 'line'
           ? m?.selections.linePoint
           : m?.selections.polygonPoint
       }
       deletable={line.points.length > (line.type === 'line' ? 2 : 3)}
-      noLeftMargin
     >
       {line.type === 'line' && !end && (
         <LongPressTooltip breakpoint="sm" label={dm?.split}>
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               onClick={() => dispatch(drawingLineSplit(pt))}
               {...props}
@@ -131,7 +123,6 @@ export default function DrawingLinePointSelection(): ReactElement | null {
         <LongPressTooltip breakpoint="sm" label={dm?.join}>
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               onClick={() => dispatch(drawingLineJoinStart(pt))}
               {...props}
@@ -147,7 +138,6 @@ export default function DrawingLinePointSelection(): ReactElement | null {
         <LongPressTooltip breakpoint="sm" label={dm?.continue}>
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               onClick={() => dispatch(drawingLineContinue(pt))}
               {...props}

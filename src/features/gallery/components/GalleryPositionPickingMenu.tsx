@@ -21,12 +21,11 @@ export default function GalleryPositionPickingMenu(): ReactElement | null {
   return (
     <div>
       <Toolbar className="mt-2">
-        <div className="m-2">{gm?.locationPicking.title}</div>
+        <div className="px-1">{gm?.locationPicking.title}</div>
 
         <LongPressTooltip breakpoint="sm" label={m?.general.ok}>
           {({ label, labelClassName, props }) => (
             <Button
-              className="me-1"
               onClick={() => dispatch(galleryConfirmPickedPosition())}
               {...props}
             >

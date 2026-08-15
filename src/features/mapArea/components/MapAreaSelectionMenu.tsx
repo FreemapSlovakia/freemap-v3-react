@@ -18,15 +18,11 @@ export default function MapAreaSelectionMenu(): ReactElement {
   return (
     <div>
       <Toolbar className="mt-2">
-        <div className="m-2">{ma?.pickHint}</div>
+        <div className="px-1">{ma?.pickHint}</div>
 
         <LongPressTooltip breakpoint="sm" label={m?.general.ok}>
           {({ label, labelClassName, props }) => (
-            <Button
-              className="me-1"
-              onClick={() => dispatch(mapAreaSelectConfirm())}
-              {...props}
-            >
+            <Button onClick={() => dispatch(mapAreaSelectConfirm())} {...props}>
               <FaCheck />
               <span className={labelClassName}> {label}</span>
             </Button>

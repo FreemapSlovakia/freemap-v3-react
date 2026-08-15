@@ -210,7 +210,7 @@ export function ExportablesSelector({
           onChange={() => toggle(type)}
         >
           <Icon /> {em?.what[type]}
-          {type === 'pictures' && <OfflineBadge className="ms-1" />}
+          {type === 'pictures' && <OfflineBadge />}
         </ToggleButton>
       ))}
     </div>

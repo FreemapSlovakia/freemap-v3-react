@@ -169,7 +169,6 @@ export default function GpsRecorderMenu(): ReactElement {
       >
         {({ label, labelClassName, props }) => (
           <Button
-            className="ms-1"
             variant="primary"
             disabled={pending}
             // Must stay a direct gesture handler: this tap is what allows the
@@ -198,7 +197,6 @@ export default function GpsRecorderMenu(): ReactElement {
         <LongPressTooltip label={grm?.stop}>
           {({ props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               disabled={pending}
               onClick={handleStop}
@@ -217,12 +215,7 @@ export default function GpsRecorderMenu(): ReactElement {
       {!recording && (status?.count ?? 0) > 0 && (
         <LongPressTooltip label={grm?.delete}>
           {({ props }) => (
-            <Button
-              className="ms-1"
-              variant="danger"
-              onClick={handleClear}
-              {...props}
-            >
+            <Button variant="danger" onClick={handleClear} {...props}>
               <FaTrash />
             </Button>
           )}
@@ -235,7 +228,6 @@ export default function GpsRecorderMenu(): ReactElement {
         <LongPressTooltip label={m?.general.elevationProfile}>
           {({ props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               active={chartActive}
               onClick={() =>
@@ -256,7 +248,6 @@ export default function GpsRecorderMenu(): ReactElement {
       <LongPressTooltip label={grm?.settings}>
         {({ props }) => (
           <Button
-            className="ms-1"
             variant="secondary"
             onClick={() =>
               dispatch(setActiveModal({ type: 'gps-recorder-settings' }))

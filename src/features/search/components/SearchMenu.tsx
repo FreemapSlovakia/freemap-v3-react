@@ -277,11 +277,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   let prevSource: SearchSource | undefined;
 
   return (
-    <Form
-      onSubmit={handleSearch}
-      style={{ display: hidden ? 'none' : '' }}
-      className="ms-1"
-    >
+    <Form onSubmit={handleSearch} style={{ display: hidden ? 'none' : '' }}>
       <Dropdown
         as={ButtonGroup}
         show={open}
@@ -398,7 +394,7 @@ function Result({ value }: { value: SearchResult }) {
 
   return (
     <div className="d-flex flex-column mx-n2">
-      <div className="d-flex f-gap-2 align-items-center">
+      <div className="d-flex gap-2 align-items-center">
         {img.length > 0 ? (
           <img src={img[0]} style={{ width: '1em', height: '1em' }} alt="" />
         ) : (

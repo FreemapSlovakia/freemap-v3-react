@@ -139,6 +139,13 @@ const WINDOWED_MAX_WIDTH = 1920;
 // original, which can be tens of megabytes over mobile data.
 const SHARED_IMAGE_WIDTH = 3840;
 
+// `Rating` and `Azimuth` size themselves in pixels rather than off the icon
+// scale, so the two steps they use are named here: the read-only marks take
+// `--fm-icon-lg`, and a star the user is meant to hit takes the 24px WCAG 2.2
+// SC 2.5.8 asks of a target.
+const READOUT_STAR_SIZE = 20;
+const RATING_STAR_SIZE = 24;
+
 // The modal content's CSS width by Bootstrap breakpoint (xl / lg / smaller),
 // shared by the image-fetch width, the display rescale, and the pano canvas.
 function modalContentWidth(): number {
@@ -917,7 +924,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               {azimuth != null && (
                 <>
                   {' ｜ '}
-                  <Azimuth value={azimuth} size={18} />
+                  <Azimuth value={azimuth} size={READOUT_STAR_SIZE} />
                 </>
               )}
 
@@ -925,7 +932,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               <Rating
                 className={classes.stars}
-                size={22}
+                size={READOUT_STAR_SIZE}
                 initialValue={rating}
                 readonly
               />
@@ -1069,19 +1076,15 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   )}
 
                   {user && (
-                    <div className="d-flex flex-wrap f-gap-1 align-items-center mb-3">
+                    <div className="d-flex flex-wrap gap-1 align-items-center mb-3">
                       <span className="flex-shrink-0">
                         {gm?.viewer.yourRating}
                       </span>
 
                       {disabledPremium ? null : (
                         <Rating
-                          className={clsx(
-                            classes.stars,
-                            'ms-1',
-                            'flex-shrink-0',
-                          )}
-                          size={22}
+                          className={clsx(classes.stars, 'flex-shrink-0')}
+                          size={RATING_STAR_SIZE}
                           allowFraction={false}
                           initialValue={myStars ?? 0}
                           // Offline it only shows what the user gave the photo:

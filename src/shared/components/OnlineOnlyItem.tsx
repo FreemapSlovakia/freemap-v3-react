@@ -35,7 +35,7 @@ export function OnlineOnlyItem({
       disabled={off}
     >
       {children}
-      <OfflineBadge className="ms-1" offline={offline} />
+      <OfflineBadge offline={offline} />
     </Dropdown.Item>
   );
 }

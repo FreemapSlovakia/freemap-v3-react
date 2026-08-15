@@ -82,10 +82,7 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
             <FaCheck /> {m?.general.save}
           </Button>
 
-          <OfflineBadge
-            className="align-self-center"
-            offline={!canSaveSettings}
-          />
+          <OfflineBadge offline={!canSaveSettings} />
 
           <ResetToDefaultsButton
             onClick={handleReset}

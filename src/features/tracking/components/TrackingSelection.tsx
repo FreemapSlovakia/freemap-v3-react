@@ -24,32 +24,28 @@ export function TrackingSelection(): ReactElement {
 
   return (
     <Selection
-      icon={
-        <>
-          <LongPressTooltip label={m?.tools.tracking}>
-            {({ props }) => (
-              <Button
-                {...props}
-                variant="dark"
-                disabled={trackingOpen}
-                onClick={() => dispatch(openTool('tracking'))}
-              >
-                <FaBullseye />
-              </Button>
-            )}
-          </LongPressTooltip>{' '}
-          <FaEye />
-        </>
+      control={
+        <LongPressTooltip label={m?.tools.tracking}>
+          {({ props }) => (
+            <Button
+              {...props}
+              variant="dark"
+              disabled={trackingOpen}
+              onClick={() => dispatch(openTool('tracking'))}
+            >
+              <FaBullseye />
+            </Button>
+          )}
+        </LongPressTooltip>
       }
+      icon={<FaEye />}
       label={m?.selections.tracking}
       deletable
-      noLeftMargin
     >
       <LongPressTooltip label={m?.general.modify}>
         {({ props }) => (
           <Button
             {...props}
-            className="ms-1"
             variant="secondary"
             onClick={() =>
               dispatch(

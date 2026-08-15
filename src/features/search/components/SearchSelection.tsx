@@ -64,7 +64,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
     <Selection icon={<FaSearch />} label={m?.search.result} deletable={kept}>
       <DetailsToggle />
 
-      <ButtonGroup className="ms-1">
+      <ButtonGroup>
         <LongPressTooltip label={m?.search.routeFrom}>
           {({ props }) => (
             <Button
@@ -118,12 +118,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
         </LongPressTooltip>
       </ButtonGroup>
 
-      <ResponsiveActions
-        className="ms-1"
-        gap={1}
-        align="start"
-        toggleLabel={m?.general.actions}
-      >
+      <ResponsiveActions gap={1} align="start" toggleLabel={m?.general.actions}>
         <Action
           icon={<FaPencilAlt />}
           label={m?.general.convertToDrawing}
@@ -148,7 +143,6 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
         <LongPressTooltip breakpoint="sm" label={m?.search.keepOnMap}>
           {({ label, labelClassName, props }) => (
             <Button
-              className="ms-1"
               variant="secondary"
               onClick={() => {
                 dispatch(searchKeepResult(selectedResult.id));

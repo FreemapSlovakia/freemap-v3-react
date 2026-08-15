@@ -18,37 +18,36 @@ type MapLayerItemDef = {
   experimental?: boolean;
 };
 
+/**
+ * A layer's name with the marks that go with it, laid out as a row of its own —
+ * it appears in a menu item, in a `<select>`-like toggle and in plain form text,
+ * so the spacing can't be left to whichever of those it lands in.
+ */
 export function MapLayerItem({ def }: { def: MapLayerItemDef }): ReactElement {
   const m = useMessages();
 
   return (
-    <>
+    <span className="d-inline-flex flex-wrap align-items-center gap-1">
       {def.layer === 'base' ? (
         <TbLayersSelected className="opacity-50" />
       ) : (
         <TbLayersSelectedBottom className="opacity-50" />
       )}
 
-      <span className="px-2">
-        {def.icon ?? <IconSpecGlyph spec={def.iconSpec} />}
-      </span>
+      {def.icon ?? <IconSpecGlyph spec={def.iconSpec} />}
 
       {m?.mapLayers.letters[def.type] ?? def.name ?? def.type}
 
       {def.type !== 'X' &&
         def.countries?.map((country) => (
-          <Emoji className="ms-1" key={country}>
-            {countryCodeToFlag(country)}
-          </Emoji>
+          <Emoji key={country}>{countryCodeToFlag(country)}</Emoji>
         ))}
 
       {def.superseededBy && (
-        <FaHistory className="text-warning ms-1" title={m?.mapLayers.legacy} />
+        <FaHistory className="text-warning" title={m?.mapLayers.legacy} />
       )}
 
-      {def.experimental && (
-        <ExperimentalFunction data-interactive="1" className="ms-1" />
-      )}
-    </>
+      {def.experimental && <ExperimentalFunction />}
+    </span>
   );
 }

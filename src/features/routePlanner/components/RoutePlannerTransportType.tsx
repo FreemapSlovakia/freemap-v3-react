@@ -34,7 +34,6 @@ export function RoutePlannerTransportType({
 
   return (
     <Dropdown
-      className="ms-1"
       id="transport-type"
       onSelect={(transportType) =>
         onChange((transportType || undefined) as TransportType)
@@ -107,7 +106,7 @@ export function RoutePlannerTransportType({
                   {withDefault && (
                     <>
                       {' '}
-                      <PremiumGem className="ms-1" nested />
+                      <PremiumGem nested />
                     </>
                   )}
                 </Dropdown.Item>

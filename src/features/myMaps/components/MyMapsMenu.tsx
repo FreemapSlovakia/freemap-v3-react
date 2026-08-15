@@ -162,7 +162,7 @@ export function MyMapsMenu(): ReactElement {
           >
             {({ props }) => (
               <span
-                className={`${classes['name']} align-self-center d-none d-sm-inline-block text-truncate ms-2 me-1`}
+                className={`${classes['name']} ps-1 align-self-center d-none d-sm-inline-block text-truncate`}
                 {...props}
               >
                 <span className="d-none d-md-inline">{m?.tools.myMap}: </span>
@@ -185,7 +185,6 @@ export function MyMapsMenu(): ReactElement {
             <LongPressTooltip breakpoint="xl" label={mm?.save}>
               {({ label, labelClassName, props }) => (
                 <Button
-                  className="ms-1"
                   variant={dirty ? 'primary' : 'secondary'}
                   onClick={handleSave}
                   {...props}
@@ -200,12 +199,7 @@ export function MyMapsMenu(): ReactElement {
           {!hidden && dirty && (
             <LongPressTooltip breakpoint="xl" label={mm?.reload}>
               {({ label, labelClassName, props }) => (
-                <Button
-                  className="ms-1"
-                  variant="secondary"
-                  onClick={handleReload}
-                  {...props}
-                >
+                <Button variant="secondary" onClick={handleReload} {...props}>
                   <FaSync />
                   <span className={labelClassName}> {label}</span>
                 </Button>
@@ -218,7 +212,6 @@ export function MyMapsMenu(): ReactElement {
               {({ label, labelClassName, props }) => (
                 <Dropdown as={ButtonGroup} align="end" {...props}>
                   <Button
-                    className="ms-1"
                     variant="secondary"
                     onClick={() => dispatch(mapsDisconnect())}
                   >
@@ -253,7 +246,6 @@ export function MyMapsMenu(): ReactElement {
           >
             {({ props }) => (
               <Button
-                className="ms-1"
                 variant="dark"
                 onClick={() => setHidden((hidden) => !hidden)}
                 {...props}

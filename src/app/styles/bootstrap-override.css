@@ -84,20 +84,63 @@ kbd,
 
 kbd {
   background-color: #bbb;
-  line-height: 0;
+
+  /* Just enough leading for the pill's own glyph, so a key never grows the line
+     it sits in — a menu row is a flex container, which blockifies a key into a
+     box whose height is exactly this. */
+  line-height: 1;
 }
 
-.f-gap-1 {
-  gap: 0.25rem;
+/* A toolbar decides the spacing between the controls it holds, so its children
+   carry no margins of their own; a `gap-*` utility overrides this where a
+   toolbar wants a wider rhythm. */
+.btn-toolbar {
+  gap: var(--fm-space-1);
 }
 
-.f-gap-2 {
-  gap: 0.5rem;
+/* An acting badge on a menu row: square, at the height of the row's own line, so
+   it doesn't open up every row it appears in. The glyph keeps the size every
+   other icon has rather than shrinking to `btn-sm`'s, and the padding is
+   whatever is left of the line once the glyph and the border have had theirs —
+   which comes to the 24px WCAG 2.2 SC 2.5.8 asks of a target, so unlike a bare
+   mark it needs nothing added. */
+.fm-badge-action {
+  --bs-btn-font-size: var(--fm-icon);
+  --bs-btn-padding-y: calc(
+    (
+      var(--bs-body-line-height) *
+      var(--fm-icon) -
+      var(--fm-icon) -
+      2 *
+      var(--bs-border-width)
+    ) /
+    2
+  );
+  --bs-btn-padding-x: var(--bs-btn-padding-y);
 }
 
+/* A menu row decides the rhythm between the icon, the label and the badges that
+   follow it, so nothing in the row carries a margin of its own. It still wraps
+   on a narrow screen: `white-space: normal` lets a long label wrap inside its own
+   flex item, and the row wraps between items. */
 .dropdown-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--fm-space-1);
+  white-space: normal;
+
+  /* A glyph in the row never gives up width to the label — a squashed icon
+     reads as a different icon. */
+  & > svg,
+  & > img {
+    flex-shrink: 0;
+  }
+
+  /* A finger needs a taller row and more room to miss the edge by. */
   @media (pointer: coarse) {
-    padding: 0.5rem 1.5rem;
+    --bs-dropdown-item-padding-y: var(--fm-space-2);
+    --bs-dropdown-item-padding-x: var(--fm-space-4);
   }
 }
 
@@ -116,10 +159,6 @@ legend {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
   }
-}
-
-.dropdown-item {
-  white-space: normal; /* to see all menu text on narrow mobile screens */
 }
 
 .w-4 {

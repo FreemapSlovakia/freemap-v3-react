@@ -468,7 +468,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
         {/* Beside the button, not in it: a disabled one takes no pointer
             events, so a badge inside could never be asked what it means. */}
-        <OfflineBadge className="align-self-center" />
+        <OfflineBadge />
 
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close}

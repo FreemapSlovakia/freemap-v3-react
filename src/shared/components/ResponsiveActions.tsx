@@ -263,9 +263,7 @@ export function ResponsiveActions({
                     entry.props.label
                   )}
 
-                  {entry.props.requiresOnline && (
-                    <OfflineBadge className="ms-1" />
-                  )}
+                  {entry.props.requiresOnline && <OfflineBadge />}
                 </Dropdown.Item>
               ),
             )}

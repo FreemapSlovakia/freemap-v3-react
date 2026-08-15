@@ -219,13 +219,17 @@ export default function GalleryMenu() {
           <ButtonToolbar>
             <LongPressTooltip label={m?.tools.photos} breakpoint="sm">
               {({ props, label, labelClassName }) => (
-                <span className="align-self-center ms-1 me-1" {...props}>
-                  <FaCamera /> <span className={labelClassName}>{label}</span>
+                <span
+                  className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
+                  {...props}
+                >
+                  <FaCamera />
+                  <span className={labelClassName}>{label}</span>
                 </span>
               )}
             </LongPressTooltip>
 
-            <OfflineBadge className="align-self-center" />
+            <OfflineBadge />
 
             {!hidden && (
               <>
@@ -233,7 +237,6 @@ export default function GalleryMenu() {
                   {({ props, label, labelClassName }) => (
                     <Button
                       variant="secondary"
-                      className="ms-1"
                       disabled={!online}
                       onClick={() =>
                         dispatch(setActiveModal({ type: 'gallery-upload' }))
@@ -249,7 +252,6 @@ export default function GalleryMenu() {
                 <LongPressTooltip label={gm?.filter} kbd="p f" breakpoint="lg">
                   {({ props, label, labelClassName }) => (
                     <Button
-                      className="ms-1"
                       variant="secondary"
                       onClick={() =>
                         dispatch(setActiveModal({ type: 'gallery-filter' }))
@@ -264,7 +266,6 @@ export default function GalleryMenu() {
                 </LongPressTooltip>
 
                 <Dropdown
-                  className="ms-1"
                   onSelect={(colorizeBy) => {
                     if (colorizeBy === LEGEND_ITEM) {
                       dispatch(galleryToggleLegend());
@@ -337,7 +338,6 @@ export default function GalleryMenu() {
                 </Dropdown>
 
                 <Dropdown
-                  className="ms-1"
                   onSelect={(listBy) =>
                     dispatch(galleryList(listBy as GalleryListOrder))
                   }
@@ -382,7 +382,6 @@ export default function GalleryMenu() {
                 >
                   {({ props, label, labelClassName }) => (
                     <Button
-                      className="ms-1"
                       variant="secondary"
                       disabled={!online}
                       onClick={() =>
@@ -399,7 +398,6 @@ export default function GalleryMenu() {
                 </LongPressTooltip>
 
                 <Dropdown
-                  className="ms-1"
                   id="more"
                   onSelect={handleMoreSelect}
                   autoClose="outside"
@@ -469,7 +467,7 @@ export default function GalleryMenu() {
               </>
             )}
 
-            <ButtonGroup className="ms-1">
+            <ButtonGroup>
               <LongPressTooltip
                 label={hidden ? m?.general.expand : m?.general.collapse}
               >

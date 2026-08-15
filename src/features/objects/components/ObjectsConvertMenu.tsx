@@ -41,7 +41,7 @@ export function ObjectsConvertMenu({ object }: Props): ReactElement {
   // what tells the two menus apart; they hold the same actions otherwise, and
   // the toolbar each sits in says nothing about scope on its own.
   return (
-    <Dropdown className="ms-1">
+    <Dropdown>
       <Dropdown.Toggle
         variant="secondary"
         // Both toolbars are on screen whenever an object is selected while the

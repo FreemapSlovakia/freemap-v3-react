@@ -3,6 +3,12 @@
 Conventions for react-bootstrap UI so new code looks like the rest of the app.
 Derived from how the codebase already uses these components, not invented.
 
+Covered here: [button variants](#button-variants),
+[single vs. multiple selection](#single-vs-multiple-selection),
+[tokens](#tokens-come-from-bootstrap), [icon sizes](#icon-sizes),
+[touch targets](#touch-targets-and-the-marker-primitive),
+[spacing](#spacing-the-container-decides), [toolbar outlines](#toolbar-outlines).
+
 ## Button variants
 
 `variant` encodes the button's **role**, not its color or its surface. The same
@@ -78,6 +84,186 @@ button, so the two options split the width and truncate. It reads well because
 there are exactly two of them and each stays recognizable clipped. Treat it as
 the exception: it costs label text, and with more options, or options that
 differ only near the end, it stops being readable.
+
+## Tokens come from Bootstrap
+
+Bootstrap keeps its scales in Sass, and the app's own rules are plain CSS, so
+`index.scss` **republishes them as custom properties** rather than letting a
+literal be re-typed into a rule. Nothing in `index.css` or a component's CSS
+should carry a spacing or size number that Bootstrap already has a name for.
+
+| Token | Derived from | Is |
+| --- | --- | --- |
+| `--fm-space-0…5` | `$spacers`, key for key | `--fm-space-2` is what `.p-2` / `.gap-2` use |
+| `--fm-icon-sm` | `$font-size-sm` | `0.875rem` |
+| `--fm-icon` | `$font-size-base` | `1rem` |
+| `--fm-icon-lg` | `$h5-font-size` | `1.25rem`, Bootstrap's `.fs-5` step |
+| `--fm-marker-air` | `--fm-space-2` | how far a mark stands off what it annotates, which is also how far its hit area reaches |
+
+Restyle a Bootstrap component through **its own** custom properties, not by
+overriding the property it computes. `.fm-badge-action` sets `--bs-btn-font-size`
+and `--bs-btn-padding-*`; the coarse-pointer menu row sets
+`--bs-dropdown-item-padding-*`. Derive rather than measure where the value is
+implied by another: that badge's padding is
+`calc((var(--bs-body-line-height) * var(--fm-icon) - var(--fm-icon) - 2 * var(--bs-border-width)) / 2)`
+— "whatever is left of the row's line once the glyph and the border have had
+theirs" — and a toolbar's hit area is its own height less its own padding.
+
+An outright constant is fair only where nothing implies it: `.fm-icon-wordmark`'s
+`400%`, which is what a logotype in a square 24×24 viewBox needs to read as a
+word.
+
+## Icon sizes
+
+A react-icons glyph is `1em` of the element it sits in, so **an icon's size is a
+font size**. A `.btn`'s icon therefore comes out at 1rem, while a bare glyph
+beside the button takes whatever the surrounding text is — which is how a toolbar
+ends up reading as two sizes.
+
+Three steps, one utility class each, are the only sizes an icon takes. They are
+Bootstrap's own `small` / body / `.fs-5` steps (see Tokens above) as classes
+without `!important`, so that a container can size the marks inside it:
+
+| Class | Use for |
+| --- | --- |
+| `fm-icon-sm` | A mark subordinate to the text it annotates, or one inside a `btn-sm`. |
+| `fm-icon` | **The default.** What a `.btn`'s own icon comes out at, and so what a mark in a menu row — where everything is text-sized — has to be. |
+| `fm-icon-lg` | A glyph that is the whole control and has nothing to match — the social links in the main menu. Rare. |
+
+### One size in a toolbar, and room instead of size
+
+A bare glyph in a toolbar takes `fm-icon` — **the same size as the icon in the
+button beside it**. It's tempting to size it up, since a button's box and padding
+give its icon a presence a lone glyph has none of; don't. Two glyphs at two sizes
+a few pixels apart read as a mistake, not as a hierarchy.
+
+What the mark gets instead of size is **room**: the hit area below, of which it
+keeps a step as visible air. That is what makes it hold its own next to a button.
+
+Don't write a one-off `fontSize`, `fs-*` or `size={…}` for an icon. Two
+documented exceptions:
+
+- **`fm-icon-wordmark`** — a logotype drawn as an icon (the Garmin mark) is a
+  word, not a glyph, and needs the width of one; a negative block margin in the
+  scaled `em` gives back the empty box so the row's height is unchanged.
+- **Components that size themselves in pixels** — `Rating`,
+  `Azimuth`. Name the constant and tie it to a step (see `GalleryViewerModal`),
+  and give an interactive one at least 24px.
+
+## Touch targets and the marker primitive
+
+A glyph carries about 16px of ink. WCAG 2.2 SC 2.5.8 asks for 24×24 CSS px — so a
+bare glyph that means something is a target a fingertip cannot reliably land on.
+That matters more here than usual: `LongPressTooltip` is the only way these marks
+say what they mean on touch, so a target the finger misses removes the
+explanation entirely, and for an acting mark the action with it.
+
+**`GlyphMarker`** is the one place that decides all of it — the glyph's size, the
+hit area, and pointer events inside a disabled container (a disabled control takes
+pointer events away from its content, and the mark is often what says *why* it is
+disabled). `OfflineBadge`, `PremiumGem`, `ExperimentalFunction`, `StatusIcon` /
+`UnsavedWarningIcon` and `MapSwitchButton`'s layer badges are all thin wrappers
+over it. A new mark should be one too, not another hand-rolled `LongPressTooltip`
++ `<span>`.
+
+### The air and the hit area are the same padding
+
+`.fm-marker-air` is one rule: `padding-inline` of `--fm-marker-air`, and
+`padding-block` of a step given straight back as a negative margin.
+
+That single padding does both jobs. It stands the mark off whatever it annotates,
+*and* it is the target. Which means the two can never disagree, and — because it
+is real padding rather than an overlay — **two marks side by side tile instead of
+overlapping**. Neither can swallow the other's taps or its tooltip, which is what
+an inset target reaching over its neighbour does.
+
+Two marks in a row **split** the step between them (`.fm-marker-air +
+.fm-marker-air`, and the `:has(+ …)` for the other half). Both halves being equal
+and meeting in the middle is what makes the pair the same size as each other —
+give one of them the whole step and it comes out visibly wider than its
+neighbour, which is the same unfairness overlapping targets had, just quieter.
+Anything else beside a mark — a button, the text it annotates — pays nothing, so
+there the mark takes the whole step.
+
+Only the block axis is given back — the height of a line or a row is not the
+mark's to change. That direction does overlap the line or row above, which is
+nearly always dead space; where it isn't, paint order decides and the later row
+wins.
+
+`--fm-marker-air` is the one knob, and it is set by the **container**, not the
+call site: the whole step in running text, which spaces nothing itself, and one
+step less inside a `.dropdown-item`, `.fm-toolbar` or `.btn-toolbar`, whose own
+gap makes up the rest. A mark in a menu row and a mark in a sentence then stand
+off their neighbours by the same amount.
+
+Two things opt out. `.fm-badge-action` — the acting badge on a layer row — has
+button clothes sized to the row's line, which already come to 24px, so
+`GlyphMarker`'s `bare` leaves the padding off rather than making its box a
+different shape. And a mark inside a **control** must never carry it: the padding
+adds to that control's height, which grows the toolbar and, because
+`.btn-toolbar` stretches, pulls every button in it taller — and entering the
+control enters the wrapper too, so both long-press tooltips open at once. Move
+the control out instead: `Selection` takes the tool's toggle button as its own
+`control` prop, beside the head rather than in it.
+
+### The glyph's box
+
+A bare mark's box is `.fm-glyph` — `inline-block` plus `line-height: 0` — and
+that is load bearing. The glyph then sits in an ordinary line box, so the mark's
+baseline is that line box's, which is the glyph's bottom edge: exactly where an
+`<svg>` in the surrounding text sits. **Don't reach for a flex box here.** With
+nothing in it that has a baseline of its own it synthesizes one from its own
+border box, which the padding has just moved, and the mark rides that much above
+the line it annotates. `align-items: baseline` is supposed to fix that and doesn't
+reliably, since a replaced item has no baseline either.
+
+### Everything else is a Bootstrap utility
+
+There is no class for "a toolbar head" or "a bare readout in a toolbar" — those
+were custom classes hiding three Bootstrap utilities and a `:has()` rule that
+guessed what the call site already knew. Write it out instead, where it can be
+read without opening a stylesheet:
+
+| Wanted | Written |
+| --- | --- |
+| A toolbar head (icon + name, its own long-press target) | `align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2` |
+| The same, where the icon is itself a button | drop `px-1 py-2 my-n2` — the button is the target and sits where a button sits |
+| A bare readout or hint in a toolbar | `px-1`, or `ps-1` where a mark follows and brings its own leading air |
+| A taller target on a phrase in prose | `py-2` — vertical padding on an inline box doesn't move the line |
+| A target on a standalone icon link | `p-2 m-n2`, with the row's `gap-3` so the targets meet rather than overlap |
+
+## Spacing: the container decides
+
+**One spacing decision per container, never a margin per child.** A toolbar whose
+children each carry their own `ms-1` cannot keep an even rhythm, and a mark
+inserted between two buttons lands wherever its own class puts it.
+
+These containers own the gap; nothing inside them carries a margin:
+
+| Container | Gap | Where |
+| --- | --- | --- |
+| `.fm-toolbar` | `0.25rem` | `index.css` |
+| `.btn-toolbar` | `0.25rem` | `bootstrap-override.css` — a `gap-*` utility overrides it where a toolbar wants more air (see `Toast`) |
+| `.dropdown-item` | `0.25rem` | `bootstrap-override.css`; a wrapping flex row, so a long label still wraps inside its own item |
+| `ResponsiveActions` | `gap` prop | its own `d-inline-flex` |
+
+**One gap vocabulary: Bootstrap's `gap-*` utilities.** The project's own
+`f-gap-1` / `f-gap-2` are gone; don't reintroduce a parallel set.
+
+Margins on children survive in one place, and it is a different thing: content
+appended to **inline running text** — inside a `Form.Label`, a `Form.Check` label,
+a `ToggleButton`'s own caption, a sentence — is part of that text, not a control
+in a row of controls, and is separated by `ms-1` (or a plain space). Making every
+`.btn` and `.form-label` a flex container to avoid that would cost more than it
+buys.
+
+**Never on a `GlyphMarker`, though** — it carries its own leading air, which is
+also its hit area. See [touch targets](#the-air-and-the-hit-area-are-the-same-padding).
+
+A component that renders a row appearing in several kinds of container lays that
+row out itself rather than trusting whichever it lands in — see `MapLayerItem`,
+which shows up in a menu item, in a `<select>`-like toggle, and in plain form
+text.
 
 ## Toolbar outlines
 
