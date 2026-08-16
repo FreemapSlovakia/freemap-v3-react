@@ -72,6 +72,20 @@ function preventDefault(e: { preventDefault: () => void }) {
   e.preventDefault();
 }
 
+/**
+ * Focus that is not the box's to take: somewhere text goes, or a modal's own —
+ * which is bounced straight back (`enforceFocus`), leaving the list showing
+ * behind the backdrop and its `aria-expanded` swallowing the next map click.
+ */
+function holdsFocus(el: Element | null): boolean {
+  return (
+    el instanceof HTMLInputElement ||
+    el instanceof HTMLTextAreaElement ||
+    (el instanceof HTMLElement && el.isContentEditable) ||
+    Boolean(el?.closest('[role="dialog"], .modal'))
+  );
+}
+
 /** Shorter than this suggests nothing, and searches nothing. */
 const minQueryLength = 3;
 
@@ -303,18 +317,16 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
       if (!inputRef.current || active === inputRef.current) {
         setOpen(true);
-      } else if (
-        !active ||
-        active === document.body ||
-        boxRef.current?.contains(active)
-      ) {
-        // Nobody else is typing — the search button, or nothing at all, has
-        // the focus — so take it back and show what arrived.
+      } else if (!holdsFocus(active)) {
+        // Nothing is being typed into — the map, a button, or nothing at all
+        // has the focus — so take it back and show what arrived. The map
+        // counts: Leaflet's container is focusable, so map-details results
+        // arrive with it holding the focus.
         inputRef.current.focus();
       }
-      // Otherwise the user has moved on to another control. Suggestions land
-      // a keystroke's delay plus a round trip later, so taking the caret back
-      // here would pull it out of whatever they are filling in now.
+      // Otherwise the user has moved on to something of their own. Suggestions
+      // land a keystroke's delay plus a round trip later, so taking the caret
+      // back here would pull it out of whatever they are filling in now.
     } else {
       setOpen(false);
       // setValue(''); TODO
