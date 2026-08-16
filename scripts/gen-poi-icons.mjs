@@ -28,11 +28,47 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Resvg } from '@resvg/resvg-js';
+import { optimize } from 'svgo';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ICON_DIR = join(here, '..', 'src', 'images', 'poiIcons');
 const OUT_FILE = join(here, '..', 'src', 'osm', 'poiIcons.ts');
+const MAPPING_FILE = join(here, '..', 'src', 'osm', 'osmTagToIconMapping.ts');
 const VERIFY = process.argv.includes('--verify');
+
+// Where the drawings come from. Ours are bundled whole — the icon picker offers
+// every one of them — while the borrowed sets are far larger than anything we
+// map, so only the icons osmTagToIconMapping actually names are taken. Their
+// names are prefixed, both to say where a drawing came from and so neither set
+// can collide with ours.
+const SOURCES = [
+  { dir: ICON_DIR, prefix: '', whole: true },
+  {
+    dir: join(here, '..', 'node_modules', '@rapideditor', 'temaki', 'icons'),
+    prefix: 'temaki:',
+  },
+  {
+    dir: join(here, '..', 'node_modules', '@mapbox', 'maki', 'icons'),
+    prefix: 'maki:',
+  },
+  // Vendored rather than installed: the whole iD editor is a huge dependency
+  // for the handful of line drawings nothing else has. See the folder's README.
+  {
+    dir: join(here, '..', 'src', 'images', 'idIcons'),
+    prefix: 'id:',
+    whole: true,
+  },
+];
+
+// Every icon the tag mapping names. Only a value is read — the keys are OSM tag
+// keys and values, and some look just like icon names.
+const referenced = new Set(
+  [
+    ...readFileSync(MAPPING_FILE, 'utf8').matchAll(
+      /:\s*'([^']*)'|:\s*"([^"]*)"/g,
+    ),
+  ].map((m) => m[1] ?? m[2]),
+);
 
 // Paint for the near-white areas that stand for the surface behind the drawing
 // (knockouts and haloes). Consumers set the variable to whatever that surface
@@ -59,6 +95,26 @@ function walk(dir) {
 
 // Round to 3 decimals, dropping trailing zeros.
 const r = (n) => Number(n.toFixed(3));
+
+// Squeezes the path data before the cleaning pass runs. The plugins that would
+// interfere are off: ids can be referenced (`dog_park` uses one), and a paint
+// renamed to a keyword would slip past the theming below. (`removeViewBox` is
+// not in preset-default, so the viewBox the drawing is placed by is safe.)
+const SVGO_CONFIG = {
+  multipass: true,
+  floatPrecision: 3,
+  plugins: [
+    {
+      name: 'preset-default',
+      params: {
+        overrides: {
+          cleanupIds: false,
+          convertColors: { names2hex: true, rgb2hex: true, shorthex: false },
+        },
+      },
+    },
+  ],
+};
 
 // ---------------------------------------------------------------- XML parsing
 
@@ -473,11 +529,13 @@ function themePaint(value) {
 
   const max = Math.max(red, green, blue);
 
-  if (max - Math.min(red, green, blue) > 16) {
+  const l = max / 255;
+
+  // A hue this dark reads as black however saturated it is (the beehive's
+  // #030c25), so it is ink rather than a colour worth preserving.
+  if (l > 0.2 && max - Math.min(red, green, blue) > 16) {
     return { paint: value, colored: true };
   }
-
-  const l = max / 255;
 
   // Everything down to a mid-dark grey is the drawing's ink. The cut-off has to
   // sit above the greys some icons are drawn entirely in (#404040, #646464) —
@@ -729,40 +787,68 @@ function cleanIcon(root, prefix) {
   return { body, colored, svgAttrs: svg.attrs };
 }
 
-/** The icon's own coordinate system: viewBox, else width/height. */
+/**
+ * The icon's own coordinate system: viewBox, else width/height. `ppu` is how
+ * many pixels one user unit is at the icon's natural size — the two usually
+ * agree, but a handful of icons draw a 3.7-unit viewBox at 14 px, and taking
+ * their units for pixels renders them at a third of their proper size.
+ */
 function viewport(attrs) {
+  // Only a plain length is a pixel size: `width="100%"` means "fill whatever
+  // you are placed in", and reading it as 100 px would claim the drawing is
+  // seven times its real size.
+  const px = /^\s*[\d.]+\s*(px)?\s*$/.test(attrs.width ?? '')
+    ? Number.parseFloat(attrs.width)
+    : Number.NaN;
+
   if (attrs.viewBox) {
     const [x, y, w, h] = attrs.viewBox
       .trim()
       .split(/[\s,]+/)
       .map(Number);
 
-    return { x, y, w, h };
+    return { x, y, w, h, ppu: Number.isFinite(px) && w ? px / w : 1 };
   }
 
-  const w = Number.parseFloat(attrs.width);
   const h = Number.parseFloat(attrs.height);
 
-  return Number.isFinite(w) && Number.isFinite(h) ? { x: 0, y: 0, w, h } : null;
+  return Number.isFinite(px) && Number.isFinite(h)
+    ? { x: 0, y: 0, w: px, h, ppu: 1 }
+    : null;
 }
 
 // -------------------------------------------------------------------- collect
 
 const ok = [];
 const failed = [];
+const skipped = [];
 
-for (const abs of walk(ICON_DIR).sort()) {
+for (const source of SOURCES) {
+  for (const abs of walk(source.dir).sort()) {
+    collect(abs, source);
+  }
+}
+
+function collect(abs, source) {
   const src = readFileSync(abs, 'utf8');
 
-  const path = relative(ICON_DIR, abs).replace(/\.svg$/, '');
+  const path = relative(source.dir, abs).replace(/\.svg$/, '');
 
   // The folders only group the sources; an icon is identified by its file name
   // alone, which is what a stored `poi:<name>` spec carries.
-  const name = path.split('/').pop();
+  const name = source.prefix + path.split('/').pop();
+
+  if (!source.whole && !referenced.has(name)) {
+    skipped.push(name);
+
+    return;
+  }
 
   try {
+    const optimized = optimize(src, { ...SVGO_CONFIG, path: abs }).data;
+
     const { body, colored, svgAttrs } = cleanIcon(
-      parseXml(src),
+      parseXml(optimized),
       `${name.replaceAll(/[^\w]/g, '_')}_`,
     );
 
@@ -781,11 +867,12 @@ for (const abs of walk(ICON_DIR).sort()) {
     }
 
     ok.push({
-      path,
+      path: source.prefix + path,
       name,
       body,
       mono: !colored,
       vb: [r(vp.x), r(vp.y), r(vp.w), r(vp.h)],
+      ppu: r(vp.ppu),
       bbox: [r(bbox.x - vp.x), r(bbox.y - vp.y), r(bbox.width), r(bbox.height)],
       src,
     });
@@ -797,7 +884,11 @@ for (const abs of walk(ICON_DIR).sort()) {
 // --------------------------------------------------------------------- verify
 
 if (VERIFY) {
-  const SIZE = 96;
+  // Rendered large on purpose: a re-fitted curve moves antialiased edge pixels
+  // by a fraction of a pixel, and the bigger the render the smaller a share of
+  // the drawing those edges are — so the threshold below can stay tight enough
+  // to catch a dropped detail.
+  const SIZE = 320;
 
   // No background: the alpha channel then carries the drawing's shape alone,
   // independent of the tone it is painted in.
@@ -854,8 +945,11 @@ if (VERIFY) {
         shape++;
       }
 
+      // Only the paints the theming promises to keep are compared: a hue too
+      // dark to read as one is deliberately re-inked, exactly as themePaint says.
       if (
         ap[i + 3] > 200 &&
+        Math.max(ap[i], ap[i + 1], ap[i + 2]) > 51 &&
         Math.max(ap[i], ap[i + 1], ap[i + 2]) -
           Math.min(ap[i], ap[i + 1], ap[i + 2]) >
           24 &&
@@ -913,7 +1007,9 @@ const entryLines = ok.map(
   (icon) =>
     `  ${key(icon.name)}: { vb: [${icon.vb.join(', ')}], bbox: [${icon.bbox.join(
       ', ',
-    )}], mono: ${icon.mono}, body: ${JSON.stringify(icon.body)} },`,
+    )}], ${icon.ppu === 1 ? '' : `ppu: ${icon.ppu}, `}mono: ${
+      icon.mono
+    }, body: ${JSON.stringify(icon.body)} },`,
 );
 
 writeFileSync(
@@ -943,6 +1039,8 @@ export type PoiIcon = {
   vb: readonly [x: number, y: number, w: number, h: number];
   /** Ink bounding box in viewport-local units: [x, y, width, height]. */
   bbox: readonly [lx: number, ly: number, bw: number, bh: number];
+  /** Pixels per user unit at the drawing's natural size; 1 unless stated. */
+  ppu?: number;
   /** True when the drawing carries no colour of its own, so it follows the text colour. */
   mono: boolean;
   /** Markup to inline into a host <svg> that sets \`fill="currentColor"\`. */

@@ -873,7 +873,28 @@ export type OsmTagToNameMapping = {
     tree_row: string;
     valley: string;
     volcano: string;
-    water: string;
+    water: {
+      '*': string;
+      water: {
+        basin: string;
+        canal: string;
+        ditch: string;
+        drain: string;
+        fish_pass: string;
+        lagoon: string;
+        lake: string;
+        moat: string;
+        oxbow: string;
+        pond: string;
+        reflecting_pool: string;
+        reservoir: string;
+        river: string;
+        salt_pond: string;
+        stream: string;
+        stream_pool: string;
+        wastewater: string;
+      };
+    };
     wetland: {
       '*': string;
       wetland: {

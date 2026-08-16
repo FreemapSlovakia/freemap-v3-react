@@ -29,7 +29,12 @@ type FaEntry = { kind: 'fa'; name: string; def: IconDefinition };
 
 type Entry = PoiEntry | FaEntry;
 
+// Our own icons only. The borrowed sets are bundled just where the tag mapping
+// names one, so offering them here would let a drawing point be saved against
+// an icon that a later mapping edit drops from the table — the marker would
+// then come back blank, with nothing to catch it at build time.
 const poiEntries: PoiEntry[] = Object.keys(poiIcons)
+  .filter((name) => !name.includes(':'))
   .map((name) => ({ kind: 'poi' as const, name }))
   .sort((a, b) => a.name.localeCompare(b.name));
 

@@ -754,7 +754,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     stone: 'Kő',
     tree_row: 'Fasor',
     valley: 'Völgy',
-    water: 'Víztest',
+    water: {
+      '*': 'Víztest',
+    },
     wetland: {
       '*': 'Vizenyős terület',
       wetland: {

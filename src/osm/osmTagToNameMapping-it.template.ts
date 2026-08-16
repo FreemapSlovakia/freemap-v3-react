@@ -756,7 +756,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
     tree_row: 'Filare alberi',
     valley: 'Valle',
-    water: 'Acqua',
+    water: {
+      '*': 'Acqua',
+    },
     wetland: {
       '*': 'Zona umida',
       wetland: {

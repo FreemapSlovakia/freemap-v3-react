@@ -7,13 +7,13 @@ export const MARKER_VIEWBOX_WIDTH = 310;
 
 export const MARKER_REF_WIDTH = 24;
 
-// Drawing a poi icon at this many viewBox units per icon unit makes it render at
-// its *natural* pixel size — identical to the same icon on a map tile — when the
+// Drawing a poi icon at this many viewBox units per icon *pixel* makes it render
+// at its natural size — identical to the same icon on a map tile — when the
 // marker is displayed at MARKER_REF_WIDTH (`310 viewBox units → 24 px` cancels
-// the scale, leaving 1 icon unit = 1 px). The map renderer draws poi icons at
-// their `ink_extents()` unscaled, so this is true natural-size parity; markers
-// shown larger (document export) scale icon and shape together, keeping the
-// proportions. This replaces the old hand-tuned POI_REF_UNIT constant.
+// the scale). The map renderer draws poi icons at their `ink_extents()`
+// unscaled, so this is true natural-size parity; markers shown larger (document
+// export) scale icon and shape together, keeping the proportions. This replaces
+// the old hand-tuned POI_REF_UNIT constant.
 const NATURAL_SCALE = MARKER_VIEWBOX_WIDTH / MARKER_REF_WIDTH;
 
 // Given an icon's precomputed drawing bbox, returns the rect at which to place
@@ -33,7 +33,13 @@ export function poiIconGlyphRect(
 
   const [, , vbW, vbH] = icon.vb;
 
-  const scale = Math.min(NATURAL_SCALE, glyphSize / Math.max(bw, bh));
+  // The bbox is in user units, which are pixels for most icons but not all —
+  // `ppu` converts, so an icon drawing a 3.7-unit viewBox at 14 px isn't left
+  // at a third of its size.
+  const scale = Math.min(
+    NATURAL_SCALE * (icon.ppu ?? 1),
+    glyphSize / Math.max(bw, bh),
+  );
 
   return {
     x: cx - (lx + bw / 2) * scale,
