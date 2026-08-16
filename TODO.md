@@ -406,23 +406,31 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
         `boundary=administrative` is absorbed instead, which is why towns come
         back once.
       - **A place node and its boundary relation both answer.** `N530544488` is
-        the `label` member of `R1690324` (Košice); Nominatim links the two but
-        the JSONL dump carries no `linked_place_id`, so both are indexed.
-      - **A city's address names one of the districts it contains.** The address
-        is taken from the feature's own point, and Košice contains four okresy,
-        so any single one is wrong for the city.
+        the `label` member of `R1690324` (Košice); Nominatim links the two and
+        returns only the relation, but the JSONL dump carries no
+        `linked_place_id`, so Photon indexes both. Not the same as the closed
+        [#95](https://github.com/komoot/photon/issues/95) (three Kraków
+        relations differing only in `admin_level`, closed as a mapping issue):
+        here the link exists upstream and is merely lost in export.
+      - **A city's address names one of the districts it contains.** Photon
+        addresses `R1690324` as *District of Košice IV*; Nominatim's own
+        `lookup` answers *Košice, Košický kraj, Slovensko* for the same object.
+        So the address is taken from the feature's point somewhere in Photon's
+        pipeline, and Košice contains four okresy — any single one is wrong.
       - **Every piece of a station answers separately.** `q=kosice&limit=30`
         returns 8 × `railway=stop`, 6 × `railway=platform` and 6 ×
         `railway=platform_edge`, all named Košice at postcode 040 22 —
-        indistinguishable rows for one station. This one Photon already has an
-        answer for: **`dedupe`** (documented on `master`) collapses hits sharing
-        name, postcode and OSM value, which is precisely this shape. It is a
-        no-op on our 1.3.0 — `dedupe=0` and `dedupe=1` answer identically — so
-        **recheck it on the next upgrade**, and drop our own id-dedupe if it
-        turns out to cover that too.
+        indistinguishable rows for one station. **`dedupe` does not cover this
+        and is not meant to**: it works (`q=hlavna` collapses 25 rows to 14) but
+        only for `osm_key=highway`, deliberately narrowed after
+        [#367](https://github.com/komoot/photon/issues/367), where a greedier
+        rule swallowed bus stops. Widening it is the open
+        [#588](https://github.com/komoot/photon/issues/588), not a bug.
       `searchProcessorHandler` dedupes exact repeats by element id, which is the
       client's share of this; the rest wants reporting at
-      `github.com/komoot/photon`.
+      `github.com/komoot/photon`. Every case above reproduces on
+      `photon.komoot.io`, which runs the same 1.3.0 and the same 2026-08-08
+      import, so none of it is our index.
 
 ## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
 
