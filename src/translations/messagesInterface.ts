@@ -60,7 +60,7 @@ export type Messages = {
     iconNone: string;
     iconSearch: string;
     load: string;
-    unnamed: string;
+    unknown: string;
     enablePopup: string;
     broadcastChannelUnsupported: string;
     componentLoadingError: string;
@@ -183,6 +183,7 @@ export type Messages = {
     buttonTitle: string;
     placeholder: string;
     result: string;
+    showMore: string;
     keepOnMap: string;
     offlineHint: string;
     sources: Record<SearchSource, string>;

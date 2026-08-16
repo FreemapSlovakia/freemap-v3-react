@@ -20,6 +20,15 @@
   }
 }
 
+/* A menu item is a flex row, so a result left to its natural size ends where its
+   own text does — putting the element-type symbol somewhere different on every
+   row. Growing into the item gives the symbols one column, and the zero floor
+   is what lets the address line truncate instead of widening the whole menu. */
+.result {
+  flex-grow: 1;
+  min-width: 0;
+}
+
 .no-after::after {
   display: none !important;
 }

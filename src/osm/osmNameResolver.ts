@@ -193,16 +193,28 @@ export function getNameFromOsmElement(
   tags: Record<string, string>,
   lang: string,
 ): string {
+  return (
+    getOsmName(tags, lang) ||
+    getOsmAddress(tags) ||
+    tags['ref'] ||
+    tags['operator']
+  );
+}
+
+/** What the element is called, and nothing standing in for it. */
+export function getOsmName(tags: Record<string, string>, lang: string): string {
   const langName = tags[`name:${lang}`];
 
   const name = tags['name'];
 
-  const effName =
-    name && langName && langName !== name ? `${langName} (${name})` : name;
-
   // TODO alt_name, loc_name, ...
 
-  const addr = [
+  return name && langName && langName !== name ? `${langName} (${name})` : name;
+}
+
+/** The `addr:*` tags as one line — a place to be, not a name. */
+export function getOsmAddress(tags: Record<string, string>): string {
+  return [
     (tags['addr:place'] ?? tags['addr:street'] ?? '') +
       ' ' +
       (tags['addr:housename'] ??
@@ -222,8 +234,6 @@ export function getNameFromOsmElement(
     .map((a) => a?.trim())
     .filter((a) => a)
     .join(', ');
-
-  return effName || addr || tags['ref'] || tags['operator'];
 }
 
 function adjustTags(tags: Record<string, string>) {

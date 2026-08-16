@@ -105,7 +105,10 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
             <Tooltip key={selectedIconValue} direction="top">
               <span>
                 {/* {m?.objects.subcategories[pt.id]} */}
-                {gn} <i>{name}</i>
+                {/* Named first, kind of thing second — as the search list reads. */}
+                {name && <b>{name}</b>}
+                {name && gn && ' '}
+                {gn}
                 {ele && <br />}
                 {ele && `${nf.format(parseFloat(ele))} ${m?.general.masl}`}
               </span>

@@ -1,8 +1,9 @@
 # Self-hosted Photon geocoder
 
-Search runs against `nominatim.openstreetmap.org` today. The Nominatim usage
-policy asks consumers at our traffic level to self-host, so search moves to our
-own Photon instance at `https://photon.freemap.sk`.
+Search runs against our own Photon instance at `https://photon.freemap.sk`,
+replacing `nominatim.openstreetmap.org` — the Nominatim usage policy asks
+consumers at our traffic level to self-host. Photon is also built for
+type-ahead, which is what lets the search box suggest as you type.
 
 ## Why the dumps needed an upstream change first
 
@@ -202,23 +203,75 @@ foreign city. If it returns Paris, the language work landed end to end.
 `journalctl -u photon` shows nothing unless you are in `adm` or
 `systemd-journal` — the unit runs as `freemap`, not as you.
 
-## Switching the app over
+## How the app calls it
 
-Two call sites, both currently hitting Nominatim directly:
+`PHOTON_URL` (rspack `EnvironmentPlugin`, default `https://photon.freemap.sk`)
+is the base. Two call sites:
 
-- `src/features/search/model/processors/searchProcessorHandler.ts:141` — forward
-  search (`/search?`)
-- `src/features/mapDetails/model/mapDetailsProcessorHandler.ts:108` — reverse
-  geocoding (`/reverse?`)
+- `searchProcessorHandler.ts` — forward search (`/api?`), after the local
+  parsers (GeoJSON, bbox, tile, coordinates) have all declined the query
+- `mapDetailsProcessorHandler.ts` — reverse geocoding (`/reverse?`), one of the
+  sources behind the map-details tool. Photon has no equivalent of Nominatim's
+  `zoom`, which asked for a coarser answer the further out the map was, so a
+  click now always resolves to the nearest feature whatever the zoom. Far from
+  anything indexed it answers with nothing rather than something distant. If the
+  old behaviour is wanted back, `layer=` is the knob to reach for.
 
-`src/shared/types/nominatimResult.ts` holds the response schema. Photon returns
-GeoJSON with a different property set, so it needs its own schema rather than a
-tweak to that one.
+`src/shared/types/photonResult.ts` holds the schema and the three things the
+wire format needs turning into: the language guard, the bbox reordering, and the
+display name. `photonToSearchResult` in `search/model/resultUtils.ts` builds the
+`SearchResult` both call sites push.
+
+Three things about the response that the mapping exists for:
+
+- **`osm_type` is `N`/`W`/`R`**, not `node`/`way`/`relation`. Anything comparing
+  a hit against an Overpass element has to convert — map-details dedupes the
+  reverse hit against the nearby/surrounding elements exactly there.
+- **`extent` is `[west, north, east, south]`**, which is *not* the GeoJSON bbox
+  order. `photonExtentToBBox` reorders it; getting this wrong yields a box that
+  is inside-out in latitude rather than an obvious error.
+- **There is no `display_name`.** Photon answers with separate address parts,
+  which `photonDisplayName` joins, dropping repeats (a place and the city it
+  names are one word twice).
+
+Geometry is always the centroid — Photon indexes no outlines, so a hit that
+Nominatim would have returned with `polygon_geojson` now arrives as a point.
+This is not a loss in the UI: results are already `incomplete`, and picking one
+fetches the element from OSM with its geometry and full tags.
 
 The result `source` ids `'nominatim-forward'` and `'nominatim-reverse'` are
-**persisted in saved maps** (see `src/features/myMaps/model/mapDocumentSchema.test.ts`),
-so they are part of the storage format — renaming them breaks existing saved
-maps unless the schema migrates them.
+**kept deliberately**. They are persisted in saved maps (see
+`src/features/myMaps/model/mapDocumentSchema.test.ts`) and in the map-details
+source filter in localStorage, so they are part of the storage format; they now
+name the kind of lookup rather than the backend, and renaming them needs a
+migration on both.
+
+Suggestions are the same call: `searchSetQuery` carries an `autocomplete` flag
+that the search box sets while typing (debounced, from the third character). It
+skips the `@lat,lon` map-details branch — two Overpass queries per keystroke is
+not a suggestion — and swallows request failures, since a toast per character
+would be unusable. It asks for no fewer results than a submitted search does:
+both take `searchLimitStep` (5), and **Show more** raises the limit by another
+step, which is also what Enter does once there is more to show. Whether to offer
+it is read off the number of features the geocoder sent, before the dedupe
+described next — a full page holding a duplicate arrives shorter than it was
+asked for, and would otherwise read as the end of the results.
+
+**Photon can serve one OSM element more than once**, so the forward search keeps
+the first hit per element id and drops the rest. Nominatim holds a row per
+classifying tag, and every Slovak cadastral community carries two
+(`boundary=cadastral` **+** `place=cadastral_community`), so it is indexed
+twice; komoot's own instance answers the same way, which is why this is filtered
+here rather than fixed in our import. Both copies otherwise answer to the same
+id — the same React key in the list, and the same element for anything looking a
+result up by it. Other duplicate shapes Photon returns are recorded in
+[`TODO.md`](../TODO.md) for reporting upstream.
+
+A search is counted in Matomo where it ends: `Search/pick`, when a result is
+chosen from the list, carrying that result's source. There is no event for
+submitting, because suggestions have made submitting the rare case — most
+searches now end in a pick, and counting only those would have counted almost
+nothing.
 
 Photon takes the UI language as `&lang=`. **Always send it explicitly.** When
 it is absent Photon falls back to the request's `Accept-Language` header, which
@@ -234,36 +287,30 @@ local name), but a language that was never imported is a hard **HTTP 400**:
     {"lang":[{"message":"Language is not supported. Supported are: default,
       de, pt, en, hr, it, fr, hu, es, cs, uk, sk, sl, pl, ro, nl, sr", ...}]}
 
-All nine UI locales (`sk en cs de fr it hu pl sl`) are inside that set, so
-passing the locale straight through is safe today. It stops being safe the
-moment a tenth locale is added: **adding a UI language that was not imported
-breaks search outright for its users**, and widening `-languages` costs a full
-re-import. Add the code to `-languages`, re-import, *then* ship the locale — or
-have the app map unknown locales to `default`.
+All nine UI locales (`sk en cs de fr it hu pl sl`) are inside that set. The app
+does not rely on that holding: `photonLang` in `photonResult.ts` carries the
+imported list and asks for `default` for anything else, so a tenth UI locale
+degrades to local names instead of breaking search outright. **Keep that list in
+step with `-languages` on fm5** — widening it there costs a full re-import, and
+until both agree the new locale silently gets `default`.
 
-## Status of the first install (delete this section once search is live)
+## Host housekeeping
 
-The endpoint is **up and verified** as of 2026-08-15 07:09 — import `EXIT=0`,
-service enabled, `https://photon.freemap.sk` answering 200 through nginx with
-the cache and rate limit both confirmed live, and the Slovak/Hungarian exonym
-queries returning the right foreign cities.
-
-What is left here: delete the dump (~13 GB) from
-`/fm/data4/martin/photon-install` once you are confident no re-import is
-imminent, or keep it until the next weekly dump supersedes it. `/fm/data4` has
-1.4 TB free, so there is no pressure.
-
-`/opt/photon` also holds an unused `photon-1.2.1.jar`; 1.3.0 is the one the unit
+`/opt/photon` holds an unused `photon-1.2.1.jar`; 1.3.0 is the one the unit
 runs, and its release notes cover improved Czech/Slovak street-number matching.
+
 The unit serves with `-Xmx8g` (the import used 16g) — query serving is far
-lighter than indexing and the 59 GB index is served from page cache, but this
-has not yet been observed under real autocomplete load.
+lighter than indexing and the 59 GB index is served from page cache. Autocomplete
+makes every keystroke a potential query, so this is the number to revisit first
+if the endpoint ever struggles.
 
 ## Open items
 
-- The app still calls Nominatim; the switch above is not done.
-- No monitoring on the endpoint yet (fm5 runs munin-node).
+- No monitoring on the endpoint yet (fm5 runs munin-node). Search now depends on
+  it, so an outage is user-visible.
 - Nothing re-imports on a schedule, so the index ages until someone runs the
   staged re-import by hand. Decide a cadence, or automate it.
-- `src/static/llms.txt` describes search behaviour; update it when the app
-  switches geocoder.
+- Nothing measures the real query load, and the nginx rate limit (20 r/s per IP)
+  was picked before suggestions existed. It should hold — the box debounces and
+  the 24 h cache absorbs repeats — but it is now the limit a fast typist meets
+  first.

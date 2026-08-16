@@ -91,7 +91,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     iconNone: 'Brez ikone',
     iconSearch: 'Iskanje ikon',
     load: 'Naloži',
-    unnamed: 'Brez imena',
+    unknown: 'Neznano',
     enablePopup:
       'V brskalniku omogočite pojavna (pop-up) okna za to spletno mesto.',
     broadcastChannelUnsupported:

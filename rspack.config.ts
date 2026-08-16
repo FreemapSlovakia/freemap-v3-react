@@ -491,6 +491,9 @@ const config: Configuration = {
         'https://overpass.freemap.sk/api/interpreter',
       OSM_API_URL:
         process.env['OSM_API_URL'] || 'https://api.openstreetmap.org',
+      // Self-hosted Photon: forward search and reverse geocoding. Its index
+      // fixes which languages `lang=` may ask for — see doc/photon-geocoder.md.
+      PHOTON_URL: process.env['PHOTON_URL'] || 'https://photon.freemap.sk',
       // Origin for the weather radar layer. Addressed directly: the upstream
       // authenticates by Referer and sends CORS for our origins, so nothing of
       // ours needs to sit in the path. Note both depend on the request

@@ -163,7 +163,10 @@ export function ObjectDetails({
             &ensp;
           </Fragment>
         ))}
-        {genericName} {displayName && <i>{displayName}</i>}
+        {/* Named first, kind of thing second — as the search list reads. */}
+        {displayName && <span className="fw-semibold">{displayName}</span>}
+        {displayName && genericName && ' '}
+        {genericName}
       </p>
 
       <ElevationValue {...elevation} label={om?.elevation} className="mb-3" />

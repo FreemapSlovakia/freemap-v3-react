@@ -2,23 +2,35 @@ import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import {
+  startProgress,
+  stopProgress,
+} from '@features/progress/model/actions.js';
 import { tileToGeoJSON } from '@mapbox/tilebelt';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import type { LatLon } from '@shared/types/common.js';
-import { syntheticFeatureId } from '@shared/types/featureId.js';
-import { NominatimResultSchema } from '@shared/types/nominatimResult.js';
+import {
+  stringifyFeatureId,
+  syntheticFeatureId,
+} from '@shared/types/featureId.js';
+import {
+  PhotonResponseSchema,
+  photonLang,
+} from '@shared/types/photonResult.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { feature, point } from '@turf/helpers';
 import type { BBox } from 'geojson';
 import { CRS, Point } from 'leaflet';
-import z from 'zod';
 import {
+  SEARCH_PROGRESS_ID,
   type SearchResult,
+  searchLimitStep,
   searchSelectResult,
   searchSetQuery,
   searchSetResults,
 } from '../actions.js';
+import { photonToSearchResult } from '../resultUtils.js';
 
 export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
   dispatch,
@@ -139,63 +151,100 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
 
   // do geocoding
 
-  const res = await httpRequest({
-    getState,
-    url:
-      'https://nominatim.openstreetmap.org/search?' +
-      objectToURLSearchParams({
-        q: query,
-        format: 'json',
-        polygon_geojson: 1,
-        extratags: 1,
-        namedetails: 0, // TODO maybe use some more details
-        limit: 20,
-        'accept-language': getState().l10n.language,
-        viewbox: action.payload.fromUrl
-          ? undefined
-          : (await mapPromise).getBounds().toBBoxString(),
-        email: 'martin.zdila@freemap.sk',
-      }),
-    expectedStatus: 200,
-    cancelActions: [clearMapFeatures, searchSetQuery],
-  });
+  const { autocomplete, fromUrl } = action.payload;
 
-  const results = z
-    .array(NominatimResultSchema)
-    .parse(await res.json())
-    .map((item): SearchResult => {
-      return {
-        source: 'nominatim-forward',
-        id:
-          item.osm_type !== undefined && item.osm_id !== undefined
-            ? { type: 'osm', elementType: item.osm_type, id: item.osm_id }
-            : syntheticFeatureId(),
-        incomplete: true,
-        displayName: item.display_name,
-        geojson: feature(
-          item.geojson ?? null,
-          {
-            [item.class]: item.type,
-            name: item.name,
-            ...item.extratags,
-          },
-          item.boundingbox
-            ? {
-                bbox: [
-                  Number(item.boundingbox[2]),
-                  Number(item.boundingbox[1]),
-                  Number(item.boundingbox[3]),
-                  Number(item.boundingbox[0]),
-                ],
-              }
-            : undefined,
-        ),
-      };
+  const limit = action.payload.limit ?? searchLimitStep;
+
+  // Photon ranks by distance from the given point as well as by relevance. A
+  // query from the URL names a place outright, so it is left unbiased.
+  const biasMap = fromUrl ? undefined : await mapPromise;
+
+  let results: SearchResult[];
+
+  let more = false;
+
+  dispatch(startProgress(SEARCH_PROGRESS_ID));
+
+  try {
+    const res = await httpRequest({
+      getState,
+      url:
+        process.env['PHOTON_URL'] +
+        '/api?' +
+        objectToURLSearchParams({
+          q: query,
+          // Never left out: without it Photon reads `Accept-Language`, which the
+          // vhost blanks precisely so one URL means one thing to the cache.
+          lang: photonLang(getState().l10n.language),
+          limit,
+          // Coarsened to ~100 m: the URL is the geocoder's cache key, and at
+          // full precision no two people ever share one — the same word from
+          // centres a metre apart misses, which is the traffic the 24 h cache
+          // is there to absorb. Ranking cannot tell the difference.
+          lat: biasMap && round(biasMap.getCenter().lat),
+          lon: biasMap && round(biasMap.getCenter().lng),
+          // How wide around that point to prefer. Photon assumes 12 — a region
+          // — however close the map actually is, so someone looking at one
+          // street gets the same spread as someone looking at a country.
+          // Rounded because a fractional zoom step can leave it between levels.
+          zoom: biasMap && Math.round(biasMap.getZoom()),
+        }),
+      expectedStatus: 200,
+      cancelActions: [clearMapFeatures, searchSetQuery],
     });
 
-  dispatch(searchSetResults(results));
+    // Photon serves one OSM element more than once — Nominatim holds a row per
+    // classifying tag, so a relation tagged `boundary=cadastral` *and*
+    // `place=cadastral_community` (every Slovak cadastral community) is indexed
+    // twice. Both copies answer to the same id: the same React key in the list,
+    // and the same element for anything that looks a result up by it. The first
+    // is kept, Photon's own ranking deciding which that is.
+    const byId = new Map<string, SearchResult>();
 
-  if (action.payload.fromUrl && results[0]) {
+    const { features } = PhotonResponseSchema.parse(await res.json());
+
+    for (const feature of features) {
+      const result = photonToSearchResult(feature, 'nominatim-forward');
+
+      const key = stringifyFeatureId(result.id);
+
+      if (!byId.has(key)) {
+        byId.set(key, result);
+      }
+    }
+
+    results = [...byId.values()];
+
+    // Read off what the geocoder sent, not off what survived the dedupe: a
+    // full page holding a duplicate arrives shorter than it was asked for and
+    // would otherwise read as the end of the results.
+    more = features.length >= limit;
+  } catch (err) {
+    if (!autocomplete) {
+      throw err;
+    }
+
+    // The next keystroke asks again; a failed suggestion is not worth a toast.
+    return;
+  } finally {
+    dispatch(stopProgress(SEARCH_PROGRESS_ID));
+  }
+
+  // Aborting reaches only a request still in flight, so one that already
+  // answered would otherwise replace the list with results for a query the box
+  // has since moved on from.
+  if (getState().search.query !== query) {
+    return;
+  }
+
+  dispatch(searchSetResults(results, more));
+
+  if (fromUrl && results[0]) {
     dispatch(searchSelectResult({ result: results[0] }));
   }
 };
+
+/** Three decimals — a shade over 100 m of latitude. */
+function round(deg: number): number {
+  return Math.round(deg * 1000) / 1000;
+}

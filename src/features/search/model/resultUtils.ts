@@ -1,5 +1,17 @@
-import type { OsmFeatureId } from '@shared/types/featureId.js';
+import {
+  type OsmFeatureId,
+  syntheticFeatureId,
+} from '@shared/types/featureId.js';
+import {
+  type PhotonFeature,
+  photonAddress,
+  photonDisplayName,
+  photonExtentToBBox,
+  photonOsmElementType,
+  photonOsmTags,
+} from '@shared/types/photonResult.js';
 import { feature } from '@turf/helpers';
+import type { Point } from 'geojson';
 import type { SearchResult } from './actions.js';
 
 /**
@@ -13,6 +25,40 @@ export function hasGeometry(result: SearchResult): boolean {
     result.geojson.type === 'FeatureCollection' ||
     result.geojson.geometry !== null
   );
+}
+
+/**
+ * A geocoder hit as a result holds one.
+ *
+ * The hit is `incomplete`: Photon answers with a centroid and the tag it was
+ * indexed under, and the outline — with the rest of the tags — arrives from OSM
+ * when the result is selected.
+ */
+export function photonToSearchResult(
+  { geometry, properties }: PhotonFeature,
+  source: 'nominatim-forward' | 'nominatim-reverse',
+): SearchResult {
+  return {
+    source,
+    id:
+      properties.osm_type !== undefined && properties.osm_id !== undefined
+        ? {
+            type: 'osm',
+            elementType: photonOsmElementType(properties.osm_type),
+            id: properties.osm_id,
+          }
+        : syntheticFeatureId(),
+    incomplete: true,
+    displayName: photonDisplayName(properties),
+    // Absent rather than empty: a hit with no address at all must still fall
+    // back to showing its name below, as every other source does.
+    address: photonAddress(properties) || undefined,
+    geojson: feature(
+      geometry as Point,
+      photonOsmTags(properties),
+      properties.extent && { bbox: photonExtentToBBox(properties.extent) },
+    ),
+  };
 }
 
 /**

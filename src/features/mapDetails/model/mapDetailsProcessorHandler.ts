@@ -12,6 +12,7 @@ import {
   searchSetQuery,
   searchSetResults,
 } from '@features/search/model/actions.js';
+import { photonToSearchResult } from '@features/search/model/resultUtils.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   type IsWmsLayerDef,
@@ -21,16 +22,20 @@ import {
 } from '@shared/mapDefinitions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { type FeatureId, syntheticFeatureId } from '@shared/types/featureId.js';
-import { NominatimResultSchema } from '@shared/types/nominatimResult.js';
+import type { FeatureId } from '@shared/types/featureId.js';
 import {
   type OverpassBounds,
   OverpassBoundsExtraSchema,
   overpassResultSchema,
 } from '@shared/types/overpass.js';
+import {
+  PhotonResponseSchema,
+  photonLang,
+  photonOsmElementType,
+} from '@shared/types/photonResult.js';
 import { wmsBaseUrl } from '@shared/wms.js';
 import { distance } from '@turf/distance';
-import { feature, point } from '@turf/helpers';
+import { point } from '@turf/helpers';
 import { toWgs84 } from '@turf/projection';
 import type { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
@@ -105,19 +110,16 @@ export async function handle(
       : httpRequest({
           getState,
           url:
-            'https://nominatim.openstreetmap.org/reverse?' +
+            process.env['PHOTON_URL'] +
+            '/reverse?' +
             objectToURLSearchParams({
               lat,
               lon,
-              format: 'json',
-              polygon_geojson: 1,
-              extratags: 1,
-              // Nominatim reads this as an address-detail level, not a scale
-              zoom: Math.round(getState().map.zoom),
-              namedetails: 0, // TODO maybe use some more details
-              limit: 20,
-              'accept-language': getState().l10n.language,
-              email: 'martin.zdila@freemap.sk',
+              // Never left out: without it Photon reads `Accept-Language`,
+              // which the vhost blanks so one URL means one thing to the cache.
+              lang: photonLang(getState().l10n.language),
+              // The nearest one place; what else is here comes from Overpass.
+              limit: 1,
             }),
           expectedStatus: 200,
         }).then((res) => res.json()),
@@ -212,8 +214,21 @@ export async function handle(
     ? OverpassResultBoundsSchema.parse(resSurrounding).elements
     : [];
 
-  const reverseGeocodingElement =
-    NominatimResultSchema.optional().parse(resReverse);
+  // Photon answers with a collection; `limit=1` makes it the nearest place.
+  const reverseGeocodingElement = resReverse
+    ? PhotonResponseSchema.parse(resReverse).features[0]
+    : undefined;
+
+  const reverseProps = reverseGeocodingElement?.properties;
+
+  // What Overpass calls the element, so the two can be told apart below.
+  const reverseOsm =
+    reverseProps?.osm_type !== undefined && reverseProps.osm_id !== undefined
+      ? {
+          type: photonOsmElementType(reverseProps.osm_type),
+          id: reverseProps.osm_id,
+        }
+      : undefined;
 
   const surroundingElementsSet = new Set(
     surroundingElements.map((item) => item.type + item.id),
@@ -267,37 +282,7 @@ export async function handle(
   );
 
   if (reverseGeocodingElement) {
-    sr.push({
-      source: 'nominatim-reverse',
-      id:
-        reverseGeocodingElement.osm_type && reverseGeocodingElement.osm_id
-          ? {
-              type: 'osm',
-              elementType: reverseGeocodingElement.osm_type,
-              id: reverseGeocodingElement.osm_id,
-            }
-          : syntheticFeatureId(),
-      incomplete: true,
-      displayName: reverseGeocodingElement.display_name,
-      geojson: feature(
-        reverseGeocodingElement.geojson ?? null,
-        {
-          [reverseGeocodingElement.class]: reverseGeocodingElement.type,
-          name: reverseGeocodingElement.name,
-          ...reverseGeocodingElement.extratags,
-        },
-        reverseGeocodingElement.boundingbox
-          ? {
-              bbox: [
-                Number(reverseGeocodingElement.boundingbox[2]),
-                Number(reverseGeocodingElement.boundingbox[1]),
-                Number(reverseGeocodingElement.boundingbox[3]),
-                Number(reverseGeocodingElement.boundingbox[0]),
-              ],
-            }
-          : undefined,
-      ),
-    });
+    sr.push(photonToSearchResult(reverseGeocodingElement, 'nominatim-reverse'));
   }
 
   const elements = [
@@ -306,17 +291,13 @@ export async function handle(
         // remove dupes
         (e) =>
           !surroundingElementsSet.has(e.type + e.id) &&
-          (!reverseGeocodingElement ||
-            reverseGeocodingElement.osm_type !== e.type ||
-            reverseGeocodingElement.osm_id !== e.id),
+          (!reverseOsm || reverseOsm.type !== e.type || reverseOsm.id !== e.id),
       )
       .map((element) => ({ ...element, source: 'overpass-nearby' as const })),
     ...surroundingElements
       .filter(
         (e) =>
-          !reverseGeocodingElement ||
-          reverseGeocodingElement.osm_type !== e.type ||
-          reverseGeocodingElement.osm_id !== e.id,
+          !reverseOsm || reverseOsm.type !== e.type || reverseOsm.id !== e.id,
       )
       .map((e) => ({
         e,

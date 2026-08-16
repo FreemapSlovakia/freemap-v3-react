@@ -37,6 +37,9 @@ export const SearchSourceSchema = z.union([
     'coords',
     'overpass-nearby',
     'overpass-surrounding',
+    // Geocoding runs against Photon; these two ids name the kind of lookup, not
+    // the backend. They are part of the saved-map format (and of the persisted
+    // map-details source filter), so renaming them needs a migration.
     'nominatim-forward',
     'nominatim-reverse',
     'osm',
@@ -59,6 +62,11 @@ export interface SearchResult {
   loading?: true;
   zoom?: number;
   displayName?: string;
+  /**
+   * Where the hit is, without its own name — a list showing the name on its own
+   * line takes this for the line below it. Only a geocoding hit has one.
+   */
+  address?: string;
   genericName?: string;
 }
 
@@ -123,10 +131,31 @@ export type SavedSearchResult = z.infer<typeof SavedSearchResultSchema>;
 export const searchSetQuery = createAction<{
   query: string;
   fromUrl?: boolean;
+  /**
+   * The query is a keystroke rather than a search the user asked for, so it
+   * fails quietly — a toast per character would be unusable — and never runs
+   * the map-details lookup that `@lat,lon` otherwise triggers.
+   */
+  autocomplete?: boolean;
+  /** How many to ask for; `searchLimitStep` unless Show more has raised it. */
+  limit?: number;
 }>('SEARCH_SET_QUERY');
 
-export const searchSetResults =
-  createAction<SearchResult[]>('SEARCH_SET_RESULTS');
+/** The list grows by this much, from this much. */
+export const searchLimitStep = 5;
+
+/** Watched by the box, so Show more can't be asked for twice over. */
+export const SEARCH_PROGRESS_ID = 'search';
+
+export const searchSetResults = createAction(
+  'SEARCH_SET_RESULTS',
+  /**
+   * `more` says the geocoder filled the page it was given, so asking for a
+   * longer one may bring something new. It cannot be read off `results`, which
+   * a duplicate hit can leave shorter than what was asked for.
+   */
+  (results: SearchResult[], more = false) => ({ payload: { results, more } }),
+);
 
 export const searchClear = createAction('SEARCH_CLEAR');
 

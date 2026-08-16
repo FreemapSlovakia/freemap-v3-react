@@ -2,7 +2,8 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SourceName } from '@features/objects/components/SourceName.js';
 import { isLocalSearchQuery } from '@features/search/localQuery.js';
 import {
-  getNameFromOsmElement,
+  getOsmAddress,
+  getOsmName,
   resolveGenericName,
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
@@ -13,6 +14,7 @@ import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   featureIdsEqual,
   type OsmFeatureId,
@@ -49,8 +51,10 @@ import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
+  SEARCH_PROGRESS_ID,
   type SearchResult,
   type SearchSource,
+  searchLimitStep,
   searchSelectResult,
   searchSetHover,
   searchSetQuery,
@@ -67,6 +71,12 @@ type Props = {
 function preventDefault(e: { preventDefault: () => void }) {
   e.preventDefault();
 }
+
+/** Shorter than this suggests nothing, and searches nothing. */
+const minQueryLength = 3;
+
+/** Long enough that a typed word is one lookup rather than one per letter. */
+const suggestDelayMs = 300;
 
 const typeSymbol: Record<OsmFeatureId['elementType'], ReactNode> = {
   node: <GoDotFill />,
@@ -118,13 +128,79 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const query = useAppSelector((state) => state.search.query);
 
+  const more = useAppSelector((state) => state.search.more);
+
+  // A request already running would answer the same Show more twice, so it is
+  // neither offered nor reachable until it lands.
+  const searching = useAppSelector((state) =>
+    state.progress.includes(SEARCH_PROGRESS_ID),
+  );
+
   const [value, setValue] = useState(query);
 
   const [open, setOpen] = useState(false);
 
+  // `more` describes the results in the store, so the box must be holding the
+  // query they answer: Enter on a half-typed one would otherwise ask for a
+  // longer page of something else, and land a list longer than it believes.
+  const canShowMore = more && !searching && value === query;
+
+  /**
+   * What the box last asked for, which the store's `query` cannot answer:
+   * emptying the box throws its results away but leaves `query` naming them,
+   * so the same query pasted back in one step would be skipped as already
+   * searched and the box would stay empty until Enter.
+   */
+  const askedRef = useRef(query);
+
+  // How many the list is currently asking for. Show more raises it; anything
+  // that changes the query puts it back to one page.
+  const [limit, setLimit] = useState(searchLimitStep);
+
   useEffect(() => {
-    setValue(query);
+    // Only a query from somewhere else — a URL restore, say — belongs in the
+    // box. Writing our own suggestion back into it reverts a keystroke that
+    // lands between the dispatch and this effect.
+    if (query !== askedRef.current) {
+      setValue(query);
+    }
+
+    setLimit(searchLimitStep);
+
+    // However the query changed — submitted here, restored from the URL, set
+    // by picking a result — it has been asked and must not be suggested again.
+    askedRef.current = query;
   }, [query]);
+
+  // Offline the box still finds what the query itself carries; anything else
+  // has to be asked of the geocoder, and only that goes dead.
+  const needsGeocoder = !online && Boolean(value) && !isLocalSearchQuery(value);
+
+  // Suggest while typing, skipping what has already been asked for.
+  useEffect(() => {
+    if (
+      needsGeocoder ||
+      value.length < minQueryLength ||
+      value === askedRef.current
+    ) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      // Re-checked on the way out: submitting between the keystroke and here
+      // asks for this very query, and suggesting it again would answer the
+      // committed search with a suggestion.
+      if (value === askedRef.current) {
+        return;
+      }
+
+      askedRef.current = value;
+
+      dispatch(searchSetQuery({ query: value, autocomplete: true }));
+    }, suggestDelayMs);
+
+    return () => clearTimeout(timeout);
+  }, [value, needsGeocoder, dispatch]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -134,11 +210,26 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     (e: ChangeEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      if (value.length > 2) {
-        dispatch(searchSetQuery({ query: value }));
+      if (value.length < minQueryLength) {
+        return;
       }
+
+      // Enter is Show more once there is more — the only thing left for it to
+      // do on a query the suggestions have already answered, so a grown list is
+      // not shrunk back to one page by committing it. A query the box has moved
+      // on to starts at one page instead: how far the last one was grown says
+      // nothing about this one.
+      const next = canShowMore
+        ? limit + searchLimitStep
+        : value === query
+          ? limit
+          : searchLimitStep;
+
+      dispatch(searchSetQuery({ query: value, limit: next }));
+
+      setLimit(next);
     },
-    [dispatch, value],
+    [canShowMore, dispatch, limit, query, value],
   );
 
   const handleChange = useCallback(
@@ -147,11 +238,30 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
       setValue(value);
 
-      if (results.length > 0) {
-        dispatch(searchSetResults([]));
+      // Only a query too short to suggest empties the list: above that the
+      // suggestions replace it, and clearing first would flicker it shut.
+      if (value.length < minQueryLength) {
+        // The box holds no query any more, so nothing has been asked for —
+        // whatever is typed next deserves a fresh look, the query just thrown
+        // away included.
+        askedRef.current = '';
+
+        setLimit(searchLimitStep);
+
+        // Takes the question back as well as the answers: it aborts a request
+        // still in flight (`cancelActions`) and moves `search.query` on, so a
+        // suggestion that already answered is refused instead of refilling the
+        // list under an empty box. An empty query asks the geocoder nothing.
+        if (query) {
+          dispatch(searchSetQuery({ query: '' }));
+        }
+
+        if (results.length > 0) {
+          dispatch(searchSetResults([]));
+        }
       }
     },
-    [dispatch, results.length],
+    [dispatch, query, results.length],
   );
 
   const handleSelect = useCallback(
@@ -165,6 +275,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       );
 
       if (result) {
+        // Where a search ends now that suggestions answer most of them: an
+        // Enter is the rarity, so counting one would count almost nothing.
+        trackMatomo(['trackEvent', 'Search', 'pick', result.source]);
+
         dispatch(searchSelectResult({ result }));
       }
 
@@ -173,13 +287,34 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     [results, dispatch],
   );
 
+  const showMore = useCallback(() => {
+    const next = limit + searchLimitStep;
+
+    setLimit(next);
+
+    // Straight out, with no debounce and no `autocomplete`: this is asked for
+    // rather than guessed at, so a failure is worth saying out loud.
+    dispatch(searchSetQuery({ query: value, limit: next }));
+  }, [dispatch, limit, value]);
+
   useEffect(() => {
     if (results.length) {
-      if (!inputRef.current || document.activeElement === inputRef.current) {
+      const active = document.activeElement;
+
+      if (!inputRef.current || active === inputRef.current) {
         setOpen(true);
-      } else {
-        inputRef.current?.focus();
+      } else if (
+        !active ||
+        active === document.body ||
+        boxRef.current?.contains(active)
+      ) {
+        // Nobody else is typing — the search button, or nothing at all, has
+        // the focus — so take it back and show what arrived.
+        inputRef.current.focus();
       }
+      // Otherwise the user has moved on to another control. Suggestions land
+      // a keystroke's delay plus a round trip later, so taking the caret back
+      // here would pull it out of whatever they are filling in now.
     } else {
       setOpen(false);
       // setValue(''); TODO
@@ -231,9 +366,19 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     }
   }, [open, dispatch]);
 
+  // Only while the caret is in the box does Enter reach the form: arrowing
+  // into the list moves it, and Enter then picks the row it landed on.
+  const [inputFocused, setInputFocused] = useState(false);
+
   const handleInputFocus = useCallback(() => {
+    setInputFocused(true);
+
     setOpen(results.length > 0);
   }, [results]);
+
+  const handleInputBlur = useCallback(() => {
+    setInputFocused(false);
+  }, []);
 
   // Opening is driven by the input's focus and by arriving results; a request
   // to close is honoured whatever holds the focus — a click on the map leaves
@@ -270,10 +415,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     }
   }, [open]);
 
-  // Offline the box still finds what the query itself carries; anything else
-  // has to be asked of the geocoder, and only that goes dead.
-  const needsGeocoder = !online && Boolean(value) && !isLocalSearchQuery(value);
-
   let prevSource: SearchSource | undefined;
 
   return (
@@ -294,6 +435,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               placeholder={m?.search.placeholder}
               ref={inputRef}
               onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
+              // The browser offers the queries submitted here before, in a list
+              // of its own that covers the suggestions with stale entries.
+              autoComplete="off"
             />
 
             {results.length ? (
@@ -373,6 +518,49 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               </Fragment>
             );
           })}
+
+          {canShowMore && (
+            <Dropdown.Item
+              as="button"
+              type="button"
+              // The pointer acts on mousedown, because the click that follows
+              // is not reliably delivered: with the caret outside the box —
+              // which picking a result leaves it — the menu's own focus
+              // handling swallows roughly every other one. `preventDefault`
+              // keeps the focus wherever it was rather than moving it here.
+              onMouseDown={(e) => {
+                if (e.button !== 0) {
+                  return;
+                }
+
+                e.preventDefault();
+
+                showMore();
+              }}
+              // A click carrying no pointer (`detail === 0`) is the keyboard
+              // activating the row, which arrowing down from the results must
+              // still reach. One with a pointer behind it has already been
+              // served above.
+              onClick={(e) => {
+                e.preventDefault();
+
+                e.stopPropagation();
+
+                if (e.detail === 0) {
+                  showMore();
+                }
+              }}
+            >
+              <small>{m?.search.showMore}</small>
+
+              {inputFocused && (
+                <>
+                  {' '}
+                  <kbd>Enter</kbd>
+                </>
+              )}
+            </Dropdown.Item>
+          )}
         </FmDropdownMenu>
       </Dropdown>
     </Form>
@@ -388,12 +576,20 @@ function Result({ value }: { value: SearchResult }) {
 
   const language = useEffectiveChosenLanguage();
 
-  const name = value.displayName || getNameFromOsmElement(tags, language);
+  // One shape for every source: what it is called, then what kind of thing it
+  // is, then where it is. `getNameFromOsmElement` would fold the last into the
+  // first — an element with only `addr:*` tags reads as if it were named after
+  // its address — so the two are taken apart here.
+  const name = value.address
+    ? getOsmName(tags, language)
+    : value.displayName || getOsmName(tags, language) || tags['ref'];
+
+  const address = value.address ?? getOsmAddress(tags);
 
   const img = resolveGenericName(osmTagToIconMapping, tags);
 
   return (
-    <div className="d-flex flex-column mx-n2">
+    <div className={clsx('d-flex flex-column mx-n2', classes.result)}>
       <div className="d-flex gap-2 align-items-center">
         {img.length > 0 ? (
           <img src={img[0]} style={{ width: '1em', height: '1em' }} alt="" />
@@ -410,11 +606,20 @@ function Result({ value }: { value: SearchResult }) {
           />
         )}
 
+        {/* The name carries the emphasis, so the kind of thing reads the same
+            whether it follows one or stands as the whole row — a list of
+            unnamed features would otherwise be muted from top to bottom. */}
         <div className="flex-grow-1 text-truncate">
-          {genericName || m?.general.unnamed}
+          {name && <span className="fw-semibold">{name}</span>}
+
+          {genericName ? (
+            <span className={clsx(name && 'ms-2')}>{genericName}</span>
+          ) : (
+            !name && m?.general.unknown
+          )}
         </div>
 
-        <div style={{ opacity: 0.25 }}>
+        <div className="flex-shrink-0" style={{ opacity: 0.25 }}>
           {value.id.type === 'osm'
             ? typeSymbol[value.id.elementType]
             : value.id.type === 'wms' && tags['Shape']
@@ -423,7 +628,7 @@ function Result({ value }: { value: SearchResult }) {
         </div>
       </div>
 
-      {name && <small className="ms-4 text-truncate">{name}</small>}
+      {address && <small className="ms-4 text-truncate">{address}</small>}
     </div>
   );
 }

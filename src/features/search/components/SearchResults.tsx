@@ -235,8 +235,9 @@ function ResultGeometry({
 
       if (displayName || genericName) {
         layer.bindTooltip(
-          escapeHtml(genericName) +
-            (displayName ? ` <i>${escapeHtml(displayName)}</i>` : ''),
+          // Named first, kind of thing second — as the search list reads.
+          (displayName ? `<b>${escapeHtml(displayName)}</b> ` : '') +
+            escapeHtml(genericName),
           isPoi
             ? // Clear of the pin, whose tip is the position.
               { direction: 'top', offset: [0, -36] }

@@ -94,7 +94,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     iconNone: 'Aucune icône',
     iconSearch: 'Rechercher des icônes',
     load: 'Charger',
-    unnamed: 'Sans nom',
+    unknown: 'Inconnu',
     enablePopup:
       'Veuillez autoriser les fenêtres pop-up pour ce site dans votre navigateur.',
     broadcastChannelUnsupported:

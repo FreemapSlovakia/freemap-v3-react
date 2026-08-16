@@ -12,15 +12,19 @@ import { hasGeometry } from '../resultUtils.js';
 
 /**
  * Keeps a result that is already on the map from being taken back to the
- * geometry-less form the list holds it in — picking a geocoding hit a second
- * time would otherwise drop the element loaded for it and fetch it again. The
- * pick still goes through, so it makes its result the active one; only the
- * result itself is swapped for the one already shown.
+ * stand-in the list holds it in — picking a geocoding hit a second time would
+ * otherwise drop the element loaded for it and fetch it again. The pick still
+ * goes through, so it makes its result the active one; only the result itself
+ * is swapped for the one already shown.
+ *
+ * `incomplete` is what tells the two apart, not geometry: a geocoding hit
+ * arrives with a centroid, so it has geometry from the start and is still
+ * waiting for the outline and the rest of its tags.
  */
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
   transform({ action, getState }) {
-    if (!action.payload || hasGeometry(action.payload.result)) {
+    if (!action.payload?.result.incomplete) {
       return action;
     }
 
@@ -30,7 +34,7 @@ export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
       featureIdsEqual(id, result.id),
     );
 
-    return shown && hasGeometry(shown)
+    return shown && !shown.incomplete && hasGeometry(shown)
       ? { ...action, payload: { ...action.payload, result: shown } }
       : action;
   },

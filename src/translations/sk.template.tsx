@@ -89,7 +89,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     iconNone: 'Bez ikony',
     iconSearch: 'Hľadať ikony',
     load: 'Načítať',
-    unnamed: 'Bez názvu',
+    unknown: 'Neznáme',
     enablePopup:
       'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
     broadcastChannelUnsupported:
@@ -275,6 +275,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Hľadať',
     placeholder: 'Hľadať v mape',
     result: 'Nález',
+    showMore: 'Zobraziť viac…',
     keepOnMap: 'Ponechať na mape',
     offlineHint:
       'Bez pripojenia na internet možno nájsť iba súradnice, ohraničujúci box, čísla dlaždíc (z/x/y) alebo vložený GeoJSON.',

@@ -90,7 +90,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     iconNone: 'Kein Symbol',
     iconSearch: 'Symbole suchen',
     load: 'Laden',
-    unnamed: 'Kein Name',
+    unknown: 'Unbekannt',
     enablePopup:
       'Bitte aktivieren Sie Pop-up-Fenster für diese Seite in Ihrem Browser.',
     broadcastChannelUnsupported:

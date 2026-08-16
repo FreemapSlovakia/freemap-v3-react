@@ -97,7 +97,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     iconNone: 'Nessuna icona',
     iconSearch: 'Cerca icone',
     load: 'Carica',
-    unnamed: 'Nessun nome',
+    unknown: 'Sconosciuto',
     enablePopup: 'Per favore abilita i popup nel tuo browser per questo sito.',
     broadcastChannelUnsupported:
       'Questa azione non è supportata dal tuo browser (BroadcastChannel non è disponibile, ad es. in modalità privata o in un browser integrato in un’app). Usa una finestra normale in un browser moderno.',

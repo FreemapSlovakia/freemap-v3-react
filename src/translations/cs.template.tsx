@@ -90,7 +90,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     iconNone: 'Bez ikony',
     iconSearch: 'Hledat ikony',
     load: 'Načíst',
-    unnamed: 'Bez názvu',
+    unknown: 'Neznámé',
     enablePopup: 'Prosím, povolte v prohlížeči pop-up okna pro tuto stránku.',
     broadcastChannelUnsupported:
       'Tato akce není ve vašem prohlížeči podporována (BroadcastChannel není k dispozici, např. v anonymním režimu nebo v prohlížeči vestavěném v aplikaci). Použijte standardní okno v moderním prohlížeči.',

@@ -95,7 +95,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     iconNone: 'Nincs ikon',
     iconSearch: 'Ikonok keresése',
     load: 'Betöltés',
-    unnamed: 'Névtelen',
+    unknown: 'Ismeretlen',
     componentLoadingError:
       'Nem sikerült betölteni a komponenst. Kérlek, ellenőrizd az internetkapcsolatodat.',
     offline: 'Nincs internetkapcsolatod.',

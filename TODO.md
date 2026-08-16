@@ -392,6 +392,38 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
       before downloading. Needs a big shrink interrupted mid-flight to matter,
       hence deferred.
 
+## Search / Photon geocoder (see [`doc/photon-geocoder.md`](./doc/photon-geocoder.md))
+
+- [ ] **Report the duplicate hits upstream.** Photon answers with one OSM element
+      more than once, and with a settlement twice over. Both come from Nominatim's
+      model rather than from our index — komoot's own instance shows the same — so
+      the fix belongs upstream, not in a filter of ours over the dump:
+      - **A relation with two classifying tags is indexed twice.** Every Slovak
+        cadastral community is `boundary=cadastral` **+**
+        `place=cadastral_community`, and Nominatim keeps a row for each
+        (`R2386490` → `place/cadastral_community` and `boundary/cadastral`,
+        confirmed via `details.php?…&class=`). A `place` tag on
+        `boundary=administrative` is absorbed instead, which is why towns come
+        back once.
+      - **A place node and its boundary relation both answer.** `N530544488` is
+        the `label` member of `R1690324` (Košice); Nominatim links the two but
+        the JSONL dump carries no `linked_place_id`, so both are indexed.
+      - **A city's address names one of the districts it contains.** The address
+        is taken from the feature's own point, and Košice contains four okresy,
+        so any single one is wrong for the city.
+      - **Every piece of a station answers separately.** `q=kosice&limit=30`
+        returns 8 × `railway=stop`, 6 × `railway=platform` and 6 ×
+        `railway=platform_edge`, all named Košice at postcode 040 22 —
+        indistinguishable rows for one station. This one Photon already has an
+        answer for: **`dedupe`** (documented on `master`) collapses hits sharing
+        name, postcode and OSM value, which is precisely this shape. It is a
+        no-op on our 1.3.0 — `dedupe=0` and `dedupe=1` answer identically — so
+        **recheck it on the next upgrade**, and drop our own id-dedupe if it
+        turns out to cover that too.
+      `searchProcessorHandler` dedupes exact repeats by element id, which is the
+      client's share of this; the rest wants reporting at
+      `github.com/komoot/photon`.
+
 ## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
 
 Open items are issues under `area: infra`.

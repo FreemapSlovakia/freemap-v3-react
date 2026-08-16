@@ -43,6 +43,8 @@ export interface SearchState {
    */
   hoverResult: SearchResult | null;
   query: string;
+  /** The geocoder filled the page it was given, so a longer one may hold more. */
+  more: boolean;
 }
 
 export const searchInitialState: SearchState = {
@@ -51,6 +53,7 @@ export const searchInitialState: SearchState = {
   previewId: null,
   hoverResult: null,
   query: '',
+  more: false,
 };
 
 function indexOfResult(state: SearchState, id: FeatureId): number {
@@ -110,11 +113,22 @@ export const searchReducer = createReducer(searchInitialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => searchInitialState)
     .addCase(searchSetQuery, (state, { payload }) => {
+      // A different question leaves the old answer's `more` describing results
+      // that are about to be replaced — and not every query reaches the
+      // geocoder to replace them: `@lat,lon` is a map-details lookup, and a
+      // suggestion that failed says nothing at all. Either way the offer to
+      // fetch a longer page of the *previous* query would still stand.
+      if (payload.query !== state.query) {
+        state.more = false;
+      }
+
       state.query = payload.query;
     })
     .addCase(searchClear, () => searchInitialState)
     .addCase(searchSetResults, (state, action) => {
-      state.results = action.payload;
+      state.results = action.payload.results;
+
+      state.more = action.payload.more;
 
       // The pointer rests on a row of the list that is being replaced.
       state.hoverResult = null;

@@ -90,7 +90,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     iconNone: 'Bez ikony',
     iconSearch: 'Szukaj ikon',
     load: 'Wczytaj',
-    unnamed: 'Bez nazwy',
+    unknown: 'Nieznane',
     enablePopup: 'Włącz wyskakujące okna dla tej strony w swojej przeglądarce.',
     broadcastChannelUnsupported:
       'Ta czynność nie jest obsługiwana w Twojej przeglądarce (BroadcastChannel jest niedostępny, np. w trybie prywatnym lub w przeglądarce wbudowanej w aplikację). Użyj zwykłego okna w nowoczesnej przeglądarce.',

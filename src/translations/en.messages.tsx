@@ -87,7 +87,7 @@ const messages: Messages = {
     iconNone: 'No icon',
     iconSearch: 'Search icons',
     load: 'Load',
-    unnamed: 'No name',
+    unknown: 'Unknown',
     enablePopup: 'Please enable pop-up windows for this site in you browser.',
     broadcastChannelUnsupported:
       'This action isn’t supported in your browser (BroadcastChannel is unavailable, e.g. in private mode or an in-app browser). Please use a standard window in a modern browser.',
@@ -239,6 +239,7 @@ const messages: Messages = {
     buttonTitle: 'Search',
     placeholder: 'Search in the map',
     result: 'Lookup',
+    showMore: 'Show more…',
     keepOnMap: 'Keep on the map',
     offlineHint:
       'Without an internet connection only coordinates, a bounding box, tile numbers (z/x/y) or pasted GeoJSON can be found.',

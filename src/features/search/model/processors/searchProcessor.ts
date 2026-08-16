@@ -1,5 +1,4 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { trackMatomo } from '@shared/trackMatomo.js';
 import { searchSetQuery } from '../actions.js';
 
 export const searchProcessor: Processor<typeof searchSetQuery> = {
@@ -8,15 +7,20 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
   handle: async (props) => {
     const { action } = props;
 
-    const { query } = action.payload;
+    const { query, autocomplete } = action.payload;
 
     if (!query) {
       return;
     }
 
-    trackMatomo(['trackEvent', 'Search', 'search']);
-
     if (query.startsWith('@')) {
+      // Two Overpass queries per keystroke is not a suggestion, and the
+      // geocoder has nothing to say about the syntax either — `@lat,lon` waits
+      // for the search to be asked for.
+      if (autocomplete) {
+        return;
+      }
+
       const latlng = query
         .slice(1)
         .split(',')
