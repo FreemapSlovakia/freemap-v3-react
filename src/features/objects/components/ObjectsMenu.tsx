@@ -5,12 +5,12 @@ import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import type { Node, OsmMapping } from '@osm/types.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
-import classes from '@shared/poiIcon.module.css';
 import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import {
   type ChangeEvent,
@@ -212,7 +212,7 @@ export default function ObjectsMenu(): ReactElement {
             disabled={!online}
           >
             {img.length > 0 ? (
-              <img src={img[0]} className={classes.icon} alt="" />
+              <IconGlyph poi={img[0]} />
             ) : (
               <span
                 style={{

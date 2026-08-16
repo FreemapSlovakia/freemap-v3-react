@@ -27,12 +27,11 @@ import type { TrackingState } from '@features/tracking/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
+import { poiIcons } from '@osm/poiIcons.js';
 import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import {
   buildMarkerSvg,
-  fetchSvgText,
   resolveMarkerGlyph,
   svgToPngDataUrl,
   utf8ToBase64,
@@ -114,7 +113,6 @@ export interface BuildExportOptions {
 
 interface Caches {
   faCache: Map<string, IconDefinition | undefined>;
-  poiSvgCache: Map<string, Promise<string | undefined>>;
 }
 
 interface MarkerSpec {
@@ -123,18 +121,18 @@ interface MarkerSpec {
   icon?: string;
   label?: string;
   /**
-   * Pre-resolved icon image URL (e.g. an OSM-tag-resolved POI SVG). When set it
-   * is fetched and embedded instead of resolving `icon`.
+   * Pre-resolved poi icon name (e.g. resolved from OSM tags). When set, its
+   * drawing is embedded instead of resolving `icon`.
    */
-  iconUrl?: string;
-  /** Icon spec to use when neither `icon`/`label` nor `iconUrl` yields content. */
+  iconName?: string;
+  /** Icon spec to use when neither `icon`/`label` nor `iconName` yields content. */
   fallbackIcon?: string;
 }
 
-// Resolves a POI icon (the bundled SVG URL) from a feature's OSM tags — the
-// same mapping the in-app POI and search markers use. Returns undefined when no
-// tag matches. Non-string property values are ignored.
-function osmTagIconUrl(
+// Resolves the bundled poi icon name from a feature's OSM tags — the same
+// mapping the in-app POI and search markers use. Returns undefined when no tag
+// matches. Non-string property values are ignored.
+function osmTagIconName(
   props: Record<string, unknown> | null | undefined,
 ): string | undefined {
   if (!props) {
@@ -173,22 +171,11 @@ async function bakeMarkerProps(
     ...caches,
   });
 
-  if (!glyph.hasContent && spec.iconUrl) {
-    let p = caches.poiSvgCache.get(spec.iconUrl);
+  if (!glyph.hasContent && spec.iconName) {
+    const poi = poiIcons[spec.iconName];
 
-    if (!p) {
-      p = fetchSvgText(spec.iconUrl);
-      caches.poiSvgCache.set(spec.iconUrl, p);
-    }
-
-    const poiSvg = await p;
-
-    if (poiSvg) {
-      glyph = {
-        poiSvg,
-        poiBBox: poiIconBBoxes[spec.iconUrl],
-        hasContent: true,
-      };
+    if (poi) {
+      glyph = { poi, hasContent: true };
     }
   }
 
@@ -202,8 +189,7 @@ async function bakeMarkerProps(
     hasContent: glyph.hasContent,
     text: glyph.text,
     faSvg: glyph.faSvg,
-    poiSvg: glyph.poiSvg,
-    poiBBox: glyph.poiBBox,
+    poi: glyph.poi,
     // Center the anchor so a shape-agnostic renderer places every marker by
     // centering it on the coordinate.
     anchorAtCenter: true,
@@ -268,7 +254,7 @@ async function convertForeignFeatures(
           // No explicit icon → resolve one from OSM tags (search results /
           // POIs), then fall back to a flag glyph (matching the in-app
           // waypoint).
-          iconUrl: style.icon ? undefined : osmTagIconUrl(props),
+          iconName: style.icon ? undefined : osmTagIconName(props),
           fallbackIcon: 'fa:flag',
         },
         mode,
@@ -622,7 +608,6 @@ export async function buildExportFeatureCollection({
 
   const caches: Caches = {
     faCache: new Map(),
-    poiSvgCache: new Map(),
   };
 
   const markerMode = Boolean(pointMode.svgMarker || pointMode.pngMarker);
@@ -768,7 +753,7 @@ export async function buildExportFeatureCollection({
           {
             markerType: objectsSettings.selectedIcon,
             color: objectsSettings.color,
-            iconUrl: osmTagIconUrl(tags),
+            iconName: osmTagIconName(tags),
           },
           pointMode,
           caches,

@@ -197,8 +197,8 @@ function ResultGeometry({
             <MarkerIcon
               color={markerColor}
               markerType={markerType}
-              imageOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
-              image={img[0]}
+              poiOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
+              poi={img[0]}
             />
           ),
         }),

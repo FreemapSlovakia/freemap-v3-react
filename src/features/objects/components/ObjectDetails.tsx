@@ -11,6 +11,7 @@ import {
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
+import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import { Fragment, type ReactElement } from 'react';
@@ -159,7 +160,7 @@ export function ObjectDetails({
       <p className="lead">
         {imgs.map((img) => (
           <Fragment key={img}>
-            <img src={img} style={{ width: '1em', height: '1em' }} alt="" />
+            <IconGlyph poi={img} />
             &ensp;
           </Fragment>
         ))}

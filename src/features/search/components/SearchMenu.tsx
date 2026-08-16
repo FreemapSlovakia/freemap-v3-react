@@ -9,6 +9,7 @@ import {
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -604,7 +605,7 @@ function Result({ value }: { value: SearchResult }) {
     <div className={clsx('d-flex flex-column mx-n2', classes.result)}>
       <div className="d-flex gap-2 align-items-center">
         {img.length > 0 ? (
-          <img src={img[0]} style={{ width: '1em', height: '1em' }} alt="" />
+          <IconGlyph poi={img[0]} />
         ) : (
           <span
             style={{

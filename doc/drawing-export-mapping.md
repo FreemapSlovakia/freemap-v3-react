@@ -47,7 +47,7 @@ import.
 | `markerType` | `<fm:markerType>`            | **Lossless**                                                                                                                                  |
 | `icon`       | `<fm:icon>`                  | **Lossless** — preserves `fa:` / `poi:` / literal text prefix                                                                                 |
 | `color`      | `<fm:color>`                 | **Lossless** — preserves full `#RRGGBBAA`                                                                                                     |
-| (derived)    | `<locus:icon>`               | Self-contained SVG data URL mirroring `RichMarker` (shape + inner white + glyph: text/fa path/poi image). Purely visual; not source of truth. |
+| (derived)    | `<locus:icon>`               | Self-contained SVG data URL mirroring `RichMarker` (shape + inner white + glyph: text/fa path/poi drawing). Purely visual; not source of truth. |
 
 ### GeoJSON export (per Point feature)
 

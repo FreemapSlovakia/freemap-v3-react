@@ -88,8 +88,8 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
             key={`poi-${stringifyFeatureId(id)}`}
             interactive={interactive}
             position={{ lat: coords.lat, lng: coords.lon }}
-            image={img[0]}
-            imageOpacity={access === 'private' || access === 'no' ? 0.33 : 1.0}
+            poi={img[0]}
+            poiOpacity={access === 'private' || access === 'no' ? 0.33 : 1.0}
             color={
               activeId && featureIdsEqual(activeId, id)
                 ? COLORS.selected

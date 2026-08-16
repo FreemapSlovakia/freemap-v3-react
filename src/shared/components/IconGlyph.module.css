@@ -1,15 +1,23 @@
 .glyph {
   width: 1em;
   height: 1em;
+
+  /* Knockouts inside an icon stand for whatever is behind the drawing, which
+     among page content is the page itself. The name has to match
+     POI_ICON_KNOCKOUT_VAR in the generated poiIcons table. */
+  --fm-icon-ko: var(--bs-body-bg);
 }
 
 /*
-  A bundled poi icon is an external SVG drawn as an <image>, so `currentColor`
-  cannot reach inside it — it comes in its own artwork colours, which are black
-  bar a few. That reads on a light background; on a dark one it is flattened to
-  a silhouette in the body colour instead (`brightness(0)` blackens every hue,
-  `invert(1)` then whitens it; transparency is untouched).
+  The handful of icons drawn in colours of their own (the spring family, trees,
+  water) keep them — for those the colour carries the meaning, so following the
+  text colour would flatten a drinking spring and a polluted one into the same
+  glyph. Those colours were picked for a light map tile and go muddy against a
+  dark one (#0064ff on the dark body sits at 1.6:1), so there they get a
+  hairline halo to lift them off it.
 */
-[data-bs-theme="dark"] .poiGlyph {
-  filter: brightness(0) invert(1);
+[data-bs-theme="dark"] .colored {
+  filter: drop-shadow(0 0 0.5px var(--bs-body-color))
+    drop-shadow(0 0 0.5px var(--bs-body-color))
+    drop-shadow(0 0 0.5px var(--bs-body-color));
 }

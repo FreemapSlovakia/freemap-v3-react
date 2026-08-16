@@ -11,6 +11,11 @@ export const COLORS = {
 export const GLYPH_INSET_LIGHT = '#fff';
 export const GLYPH_INSET_DARK = '#333';
 
+// Ink for the poi icons that carry colors of their own (springs, water, trees):
+// they are drawn for a light map tile, so their uncolored parts stay black on
+// the white inset rather than following the marker color.
+export const POI_ARTWORK_INK = '#000';
+
 // WCAG asks 3:1 for graphical objects; 2:1 is deliberately laxer so only
 // genuinely washed-out colors flip. Every color in the app's own marker
 // palettes clears it on white (the palest, #409a40, sits at 3.55), while a

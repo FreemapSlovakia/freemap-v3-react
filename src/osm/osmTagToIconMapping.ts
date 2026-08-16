@@ -1,824 +1,510 @@
-import aerialway from '../images/poiIcons/aerialway.svg';
-import aerodrome from '../images/poiIcons/aerodrome.svg';
-import alpine_hut from '../images/poiIcons/alpine_hut.svg';
-import american_football from '../images/poiIcons/american_football.svg';
-import animal_shelter from '../images/poiIcons/animal_shelter.svg';
-import antenna from '../images/poiIcons/antenna.svg';
-import apartment from '../images/poiIcons/apartment.svg';
-import arch from '../images/poiIcons/arch.svg';
-import archaeological_site from '../images/poiIcons/archaeological_site.svg';
-import arts_centre from '../images/poiIcons/arts_centre.svg';
-import artwork from '../images/poiIcons/artwork.svg';
-import atm from '../images/poiIcons/atm.svg';
-import attraction from '../images/poiIcons/attraction.svg';
-import bank from '../images/poiIcons/bank.svg';
-import bar from '../images/poiIcons/bar.svg';
-import basic_hut from '../images/poiIcons/basic_hut.svg';
-import basketball from '../images/poiIcons/basketball.svg';
-import bbq from '../images/poiIcons/bbq.svg';
-import beach from '../images/poiIcons/beach.svg';
-import beach_resort from '../images/poiIcons/beach_resort.svg';
-import beehive from '../images/poiIcons/beehive.svg';
-import bell_tower from '../images/poiIcons/bell_tower.svg';
-import bench from '../images/poiIcons/bench.svg';
-import bicycle_parking from '../images/poiIcons/bicycle_parking.svg';
-import bicycle_repair_station from '../images/poiIcons/bicycle_repair_station.svg';
-import biergarten from '../images/poiIcons/biergarten.svg';
-import bird_hide from '../images/poiIcons/bird_hide.svg';
-import board from '../images/poiIcons/board.svg';
-import boat_rental from '../images/poiIcons/boat_rental.svg';
-import boundary_stone from '../images/poiIcons/boundary_stone.svg';
-import bowling_alley from '../images/poiIcons/bowling_alley.svg';
-import bridge from '../images/poiIcons/bridge.svg';
-import building from '../images/poiIcons/building.svg';
-import bunker from '../images/poiIcons/bunker.svg';
-import bureau_de_change from '../images/poiIcons/bureau_de_change.svg';
-import bus_station from '../images/poiIcons/bus_station.svg';
-import bus_stop from '../images/poiIcons/bus_stop.svg';
-import bust from '../images/poiIcons/bust.svg';
-import cafe from '../images/poiIcons/cafe.svg';
-import camp_site from '../images/poiIcons/camp_site.svg';
-import car_wash from '../images/poiIcons/car_wash.svg';
-import casino from '../images/poiIcons/casino.svg';
-import castle from '../images/poiIcons/castle.svg';
-import cattle_grid from '../images/poiIcons/cattle_grid.svg';
-import cave_entrance from '../images/poiIcons/cave_entrance.svg';
-import cemetery from '../images/poiIcons/cemetery.svg';
-import chalet from '../images/poiIcons/chalet.svg';
-import charging_station from '../images/poiIcons/charging_station.svg';
-import chimney from '../images/poiIcons/chimney.svg';
-import church from '../images/poiIcons/church.svg';
-import cinema from '../images/poiIcons/cinema.svg';
-import city from '../images/poiIcons/city.svg';
-import city_gate from '../images/poiIcons/city_gate.svg';
-import commercial from '../images/poiIcons/commercial.svg';
-import community_centre from '../images/poiIcons/community_centre.svg';
-import construction from '../images/poiIcons/construction.svg';
-import courthouse from '../images/poiIcons/courthouse.svg';
-import cricket from '../images/poiIcons/cricket.svg';
-import cross from '../images/poiIcons/cross.svg';
-import cycle_barrier from '../images/poiIcons/cycle_barrier.svg';
-import dam from '../images/poiIcons/dam.svg';
-import danger from '../images/poiIcons/danger.svg';
-import defibrillator from '../images/poiIcons/defibrillator.svg';
-import dentist from '../images/poiIcons/dentist.svg';
-import doctors from '../images/poiIcons/doctors.svg';
-import dog_park from '../images/poiIcons/dog_park.svg';
-import drinking_spring from '../images/poiIcons/drinking_spring.svg';
-import drinking_water from '../images/poiIcons/drinking_water.svg';
-import dyke from '../images/poiIcons/dyke.svg';
-import earth_bank from '../images/poiIcons/earth_bank.svg';
-import college from '../images/poiIcons/education/college.svg';
-import kindergarten from '../images/poiIcons/education/nursery.svg';
-import school from '../images/poiIcons/education/school.svg';
-import elevator from '../images/poiIcons/elevator.svg';
-import embankment from '../images/poiIcons/embankment.svg';
-import embassy from '../images/poiIcons/embassy.svg';
-import emergency_phone from '../images/poiIcons/emergency_phone.svg';
-import entrance from '../images/poiIcons/entrance.svg';
-import excrement_bags from '../images/poiIcons/excrement_bags.svg';
-import farm from '../images/poiIcons/farm.svg';
-import fast_food from '../images/poiIcons/fast_food.svg';
-import fell from '../images/poiIcons/fell.svg';
-import fence from '../images/poiIcons/fence.svg';
-import ferry from '../images/poiIcons/ferry.svg';
-import fire_station from '../images/poiIcons/fire_station.svg';
-import firepit from '../images/poiIcons/firepit.svg';
-import fishing from '../images/poiIcons/fishing.svg';
-import fitness_centre from '../images/poiIcons/fitness_centre.svg';
-import fitness_station from '../images/poiIcons/fitness_station.svg';
-import fixme from '../images/poiIcons/fixme.svg';
-import ford from '../images/poiIcons/ford.svg';
-import foresters_lodge from "../images/poiIcons/forester's_lodge.svg";
-import fort from '../images/poiIcons/fort.svg';
-import fortress from '../images/poiIcons/fortress.svg';
-import fountain from '../images/poiIcons/fountain.svg';
-import free_flying from '../images/poiIcons/free_flying.svg';
-import fuel from '../images/poiIcons/fuel.svg';
-import gate from '../images/poiIcons/gate.svg';
-import golf from '../images/poiIcons/golf.svg';
-import guest_house from '../images/poiIcons/guest_house.svg';
-import guidepost from '../images/poiIcons/guidepost.svg';
-import gully from '../images/poiIcons/gully.svg';
-import hardware from '../images/poiIcons/hardware.svg';
-import heliport from '../images/poiIcons/heliport.svg';
-import rest_area from '../images/poiIcons/highway-rest-area.svg';
-import horse_riding from '../images/poiIcons/horse_riding.svg';
-import hospital from '../images/poiIcons/hospital.svg';
-import hostel from '../images/poiIcons/hostel.svg';
-import hot_spring from '../images/poiIcons/hot_spring.svg';
-import hotel from '../images/poiIcons/hotel.svg';
-import hunting_stand from '../images/poiIcons/hunting_stand.svg';
-import hut from '../images/poiIcons/hut.svg';
-import ice_cream from '../images/poiIcons/ice_cream.svg';
-import industry from '../images/poiIcons/industry.svg';
-import information from '../images/poiIcons/information.svg';
-import internet_cafe from '../images/poiIcons/internet_cafe.svg';
-import kissing_gate from '../images/poiIcons/kissing_gate.svg';
-import lean_to from '../images/poiIcons/lean_to.svg';
-import library from '../images/poiIcons/library.svg';
-import lift_gate from '../images/poiIcons/lift_gate.svg';
-import lighthouse from '../images/poiIcons/lighthouse.svg';
-import logging from '../images/poiIcons/logging.svg';
-import manger from '../images/poiIcons/manger.svg';
-import manor from '../images/poiIcons/manor.svg';
-import map from '../images/poiIcons/map.svg';
-import mast from '../images/poiIcons/mast_other.svg';
-import memorial from '../images/poiIcons/memorial.svg';
-import memorial_stone from '../images/poiIcons/memorial_stone.svg';
-import mine from '../images/poiIcons/mine.svg';
-import miniature_golf from '../images/poiIcons/miniature_golf.svg';
-import monument from '../images/poiIcons/monument.svg';
-import motel from '../images/poiIcons/motel.svg';
-import motorcycle_barrier from '../images/poiIcons/motorcycle_barrier.svg';
-import motorcycle_parking from '../images/poiIcons/motorcycle_parking.svg';
-import museum from '../images/poiIcons/museum.svg';
-import nightclub from '../images/poiIcons/nightclub.svg';
-import not_drinking_spring from '../images/poiIcons/not_drinking_spring.svg';
-import obelisk from '../images/poiIcons/obelisk.svg';
-import obstacle from '../images/poiIcons/obstacle.svg';
-import obstacle_tree from '../images/poiIcons/obstacle_tree.svg';
-import obstacle_vegetation from '../images/poiIcons/obstacle_vegetation.svg';
-import office from '../images/poiIcons/office.svg';
-import outdoor_seating from '../images/poiIcons/outdoor_seating.svg';
-import palace from '../images/poiIcons/palace.svg';
-import park from '../images/poiIcons/park.svg';
-import parking from '../images/poiIcons/parking.svg';
-import parking_tickets from '../images/poiIcons/parking_tickets.svg';
-import peak from '../images/poiIcons/peak.svg';
-import pharmacy from '../images/poiIcons/pharmacy.svg';
-import picnic_shelter from '../images/poiIcons/picnic_shelter.svg';
-import picnic_table from '../images/poiIcons/picnic_table.svg';
-import pitch from '../images/poiIcons/pitch.svg';
-import place_of_worship from '../images/poiIcons/place_of_worship.svg';
-import plaque from '../images/poiIcons/plaque.svg';
-import playground from '../images/poiIcons/playground.svg';
-import police from '../images/poiIcons/police.svg';
-import post_box from '../images/poiIcons/post_box.svg';
-import post_office from '../images/poiIcons/post_office.svg';
-import prison from '../images/poiIcons/prison.svg';
-import pub from '../images/poiIcons/pub.svg';
-import public_bath from '../images/poiIcons/public_bath.svg';
-import public_bookcase from '../images/poiIcons/public_bookcase.svg';
-import public_transport from '../images/poiIcons/public_transport.svg';
-import public_transport_tickets from '../images/poiIcons/public_transport_tickets.svg';
-import racetrack from '../images/poiIcons/racetrack.svg';
-import racetrack_cycling from '../images/poiIcons/racetrack-cycling.svg';
-import racetrack_horse from '../images/poiIcons/racetrack-horse.svg';
-import rail from '../images/poiIcons/rail.svg';
-import rail_light from '../images/poiIcons/rail-light.svg';
-import rail_metro from '../images/poiIcons/rail-metro.svg';
-import ranger_station from '../images/poiIcons/ranger-station.svg';
-import recycling from '../images/poiIcons/recycling.svg';
-import refitted_drinking_spring from '../images/poiIcons/refitted_drinking_spring.svg';
-import refitted_not_drinking_spring from '../images/poiIcons/refitted_not_drinking_spring.svg';
-import refitted_spring from '../images/poiIcons/refitted_spring.svg';
-import rental_bicycle from '../images/poiIcons/rental_bicycle.svg';
-import rental_car from '../images/poiIcons/rental_car.svg';
-import residential from '../images/poiIcons/residential-community.svg';
-import restaurant from '../images/poiIcons/restaurant.svg';
-import rock from '../images/poiIcons/rock.svg';
-import ruins from '../images/poiIcons/ruins.svg';
-import saddle from '../images/poiIcons/saddle.svg';
-import sauna from '../images/poiIcons/sauna.svg';
-import shelter from '../images/poiIcons/shelter.svg';
-import shop_alcohol from '../images/poiIcons/shop/alcohol.svg';
-import shop_art from '../images/poiIcons/shop/art.svg';
-import shop_bag from '../images/poiIcons/shop/bag.svg';
-import shop_bakery from '../images/poiIcons/shop/bakery.svg';
-import shop_beauty from '../images/poiIcons/shop/beauty.svg';
-import shop_bed from '../images/poiIcons/shop/bed.svg';
-import shop_beverages from '../images/poiIcons/shop/beverages.svg';
-import bicycle from '../images/poiIcons/shop/bicycle.svg';
-import books from '../images/poiIcons/shop/book.svg';
-import shop_bookmaker from '../images/poiIcons/shop/bookmaker.svg';
-import shop_butcher from '../images/poiIcons/shop/butcher.svg';
-import shop_car from '../images/poiIcons/shop/car.svg';
-import shop_car_parts from '../images/poiIcons/shop/car_parts.svg';
-import shop_car_repair from '../images/poiIcons/shop/car_repair.svg';
-import shop_carpet from '../images/poiIcons/shop/carpet.svg';
-import shop_charity from '../images/poiIcons/shop/charity.svg';
-import shop_chemist from '../images/poiIcons/shop/chemist.svg';
-import shop_clothes from '../images/poiIcons/shop/clothes.svg';
-import shop_coffee from '../images/poiIcons/shop/coffee.svg';
-import shop_computer from '../images/poiIcons/shop/computer.svg';
-import shop_confectionery from '../images/poiIcons/shop/confectionery.svg';
-import shop_convenience from '../images/poiIcons/shop/convenience.svg';
-import shop_copyshop from '../images/poiIcons/shop/copyshop.svg';
-import shop_dairy from '../images/poiIcons/shop/dairy.svg';
-import shop_deli from '../images/poiIcons/shop/deli.svg';
-import shop_department_store from '../images/poiIcons/shop/department_store.svg';
-import shop_diy from '../images/poiIcons/shop/diy.svg';
-import shop_electronics from '../images/poiIcons/shop/electronics.svg';
-import shop_fabric from '../images/poiIcons/shop/fabric.svg';
-import shop_florist from '../images/poiIcons/shop/florist.svg';
-import shop_furniture from '../images/poiIcons/shop/furniture.svg';
-import shop_garden_centre from '../images/poiIcons/shop/garden_centre.svg';
-import shop_gift from '../images/poiIcons/shop/gift.svg';
-import shop_greengrocer from '../images/poiIcons/shop/greengrocer.svg';
-import shop_hairdresser from '../images/poiIcons/shop/hairdresser.svg';
-import shop_hifi from '../images/poiIcons/shop/hifi.svg';
-import shop_houseware from '../images/poiIcons/shop/houseware.svg';
-import shop_interior_decoration from '../images/poiIcons/shop/interior_decoration.svg';
-import shop_jewelry from '../images/poiIcons/shop/jewelry.svg';
-import shop_laundry from '../images/poiIcons/shop/laundry.svg';
-import shop_marketplace from '../images/poiIcons/shop/marketplace.svg';
-import shop_massage from '../images/poiIcons/shop/massage.svg';
-import shop_medical_supply from '../images/poiIcons/shop/medical_supply.svg';
-import shop_mobile_phone from '../images/poiIcons/shop/mobile_phone.svg';
-import shop_music from '../images/poiIcons/shop/music.svg';
-import shop_musical_instrument from '../images/poiIcons/shop/musical_instrument.svg';
-import shop_newsagent from '../images/poiIcons/shop/newsagent.svg';
-import shop_optician from '../images/poiIcons/shop/optician.svg';
-import shop_outdoor from '../images/poiIcons/shop/outdoor.svg';
-import shop_paint from '../images/poiIcons/shop/paint.svg';
-import shop_perfumery from '../images/poiIcons/shop/perfumery.svg';
-import shop_pet from '../images/poiIcons/shop/pet.svg';
-import shop_photo from '../images/poiIcons/shop/photo.svg';
-import shop_seafood from '../images/poiIcons/shop/seafood.svg';
-import shop_second_hand from '../images/poiIcons/shop/second_hand.svg';
-import shop_shoes from '../images/poiIcons/shop/shoes.svg';
-import shop_sports from '../images/poiIcons/shop/sports.svg';
-import shop_stationery from '../images/poiIcons/shop/stationery.svg';
-import shop_supermarket from '../images/poiIcons/shop/supermarket.svg';
-import shop_tea from '../images/poiIcons/shop/tea.svg';
-import shop_ticket from '../images/poiIcons/shop/ticket.svg';
-import shop_tobacco from '../images/poiIcons/shop/tobacco.svg';
-import shop_toys from '../images/poiIcons/shop/toys.svg';
-import shop_trade from '../images/poiIcons/shop/trade.svg';
-import shop_travel_agency from '../images/poiIcons/shop/travel_agency.svg';
-import shop_tyres from '../images/poiIcons/shop/tyres.svg';
-import shop_variety_store from '../images/poiIcons/shop/variety_store.svg';
-import vending_machine from '../images/poiIcons/shop/vending_machine.svg';
-import shop_video from '../images/poiIcons/shop/video.svg';
-import shop_video_games from '../images/poiIcons/shop/video_games.svg';
-import shop from '../images/poiIcons/shop.svg';
-import shower from '../images/poiIcons/shower.svg';
-import sinkhole from '../images/poiIcons/sinkhole.svg';
-import skateboard from '../images/poiIcons/skateboard.svg';
-import slipway from '../images/poiIcons/slipway.svg';
-import social_facility from '../images/poiIcons/social_facility.svg';
-import archery from '../images/poiIcons/sport/archery.svg';
-import baseball from '../images/poiIcons/sport/baseball.svg';
-import diving from '../images/poiIcons/sport/diving.svg';
-import gym from '../images/poiIcons/sport/gym.svg';
-import gymnastics from '../images/poiIcons/sport/gymnasium.svg';
-import climbing from '../images/poiIcons/sport/hillclimbing.svg';
-import skating from '../images/poiIcons/sport/iceskating.svg';
-import motor from '../images/poiIcons/sport/motorracing.svg';
-import ski from '../images/poiIcons/sport/skiing_crosscountry.svg';
-import skiing from '../images/poiIcons/sport/skiing_downhill.svg';
-import soccer from '../images/poiIcons/sport/soccer.svg';
-import swimming from '../images/poiIcons/sport/swimming_outdoor.svg';
-import tennis from '../images/poiIcons/sport/tennis.svg';
-import spring from '../images/poiIcons/spring.svg';
-import stadium from '../images/poiIcons/stadium.svg';
-import steps from '../images/poiIcons/stairs.svg';
-import statue from '../images/poiIcons/statue.svg';
-import stile from '../images/poiIcons/stile.svg';
-import stone from '../images/poiIcons/stone.svg';
-import table_tennis from '../images/poiIcons/table-tennis.svg';
-import taxi from '../images/poiIcons/taxi.svg';
-import telephone from '../images/poiIcons/telephone.svg';
-import terminal from '../images/poiIcons/terminal.svg';
-import theatre from '../images/poiIcons/theatre.svg';
-import toilets from '../images/poiIcons/toilets.svg';
-import toll from '../images/poiIcons/toll.svg';
-import toll_booth from '../images/poiIcons/toll_booth.svg';
-import tower_communication from '../images/poiIcons/tower_communication.svg';
-import tower_observation from '../images/poiIcons/tower_observation.svg';
-import tower_other from '../images/poiIcons/tower_other.svg';
-import town from '../images/poiIcons/town.svg';
-import townhall from '../images/poiIcons/townhall.svg';
-import traffic_signals from '../images/poiIcons/traffic_signals.svg';
-import tree from '../images/poiIcons/tree.svg';
-import tree_protected from '../images/poiIcons/tree_protected.svg';
-import tree2 from '../images/poiIcons/tree2.svg';
-import tunnel from '../images/poiIcons/tunnel.svg';
-import university from '../images/poiIcons/university.svg';
-import vehicle_inspection from '../images/poiIcons/vehicle_inspection.svg';
-import veterinary from '../images/poiIcons/veterinary.svg';
-import viewpoint from '../images/poiIcons/viewpoint.svg';
-import village from '../images/poiIcons/village.svg';
-import volcano from '../images/poiIcons/volcano.svg';
-import volleyball from '../images/poiIcons/volleyball.svg';
-import warehouse from '../images/poiIcons/warehouse.svg';
-import waste_basket from '../images/poiIcons/waste_basket.svg';
-import waste_disposal from '../images/poiIcons/waste_disposal.svg';
-import watches from '../images/poiIcons/watch.svg';
-import water_park from '../images/poiIcons/water_park.svg';
-import water_tower from '../images/poiIcons/water_tower.svg';
-import water_well from '../images/poiIcons/water_well.svg';
-import water_works from '../images/poiIcons/water_works.svg';
-import waterfall from '../images/poiIcons/waterfall.svg';
-import watering_place from '../images/poiIcons/watering_place.svg';
-import watermill from '../images/poiIcons/watermill.svg';
-import wayside_shrine from '../images/poiIcons/wayside_shrine.svg';
-import weather_shelter from '../images/poiIcons/weather_shelter.svg';
-import wetland from '../images/poiIcons/wetland.svg';
-import wilderness_hut from '../images/poiIcons/wilderness_hut.svg';
-import windmill from '../images/poiIcons/windmill.svg';
-import zoo from '../images/poiIcons/zoo.svg';
-import type { Node } from './types.js';
+import type { PoiIconName } from './poiIcons.js';
+
+// Every leaf names a bundled icon, so a mistyped or removed one is a build
+// error instead of a silently missing icon. Structurally a `Node`, which is
+// what the generic tag resolver takes.
+interface IconNode {
+  [key: string]: IconNode | PoiIconName;
+}
 
 // hack to have only single icon for churches...
-const buildingMapping = {
-  '*': building,
-  hut,
-  church,
-  chapel: church,
-  farm,
-  parking,
-  warehouse,
+const buildingMapping: IconNode = {
+  '*': 'building',
+  hut: 'hut',
+  church: 'church',
+  chapel: 'church',
+  farm: 'farm',
+  parking: 'parking',
+  warehouse: 'warehouse',
 };
 
-export const osmTagToIconMapping: Node = {
+export const osmTagToIconMapping: IconNode = {
   aerialway: {
-    '*': aerialway,
+    '*': 'aerialway',
   },
   aeroway: {
-    aerodrome,
-    helipad: heliport,
-    terminal,
+    aerodrome: 'aerodrome',
+    helipad: 'heliport',
+    terminal: 'terminal',
   },
   amenity: {
-    animal_shelter,
-    atm,
-    arts_centre,
-    bank,
-    bar,
-    bbq,
-    bench,
-    bicycle_parking,
-    bicycle_repair_station,
-    bicycle_rental: rental_bicycle,
-    biergarten,
-    boat_rental,
-    bureau_de_change,
-    bus_station,
-    cafe,
-    car_rental: rental_car,
-    car_wash,
-    casino,
-    charging_station,
-    cinema,
-    clinic: doctors,
-    college,
-    community_centre,
-    courthouse,
-    dentist,
-    doctors,
-    drinking_water,
-    embassy,
-    emergency_phone,
-    excrement_bags,
-    fast_food,
-    feeding_place: manger,
-    game_feeding: manger,
-    ferry,
-    fire_station,
-    fountain,
-    fuel,
-    grave_yard: cemetery,
-    hospital,
-    hunting_stand,
-    ice_cream,
-    internet_cafe,
-    kindergarten,
-    library,
-    motorcycle_parking,
-    nightclub,
-    parking,
-    parking_entrance: parking,
-    parking_space: parking,
-    pharmacy,
+    animal_shelter: 'animal_shelter',
+    atm: 'atm',
+    arts_centre: 'arts_centre',
+    bank: 'bank',
+    bar: 'bar',
+    bbq: 'bbq',
+    bench: 'bench',
+    bicycle_parking: 'bicycle_parking',
+    bicycle_repair_station: 'bicycle_repair_station',
+    bicycle_rental: 'rental_bicycle',
+    biergarten: 'biergarten',
+    boat_rental: 'boat_rental',
+    bureau_de_change: 'bureau_de_change',
+    bus_station: 'bus_station',
+    cafe: 'cafe',
+    car_rental: 'rental_car',
+    car_wash: 'car_wash',
+    casino: 'casino',
+    charging_station: 'charging_station',
+    cinema: 'cinema',
+    clinic: 'doctors',
+    college: 'college',
+    community_centre: 'community_centre',
+    courthouse: 'courthouse',
+    dentist: 'dentist',
+    doctors: 'doctors',
+    drinking_water: 'drinking_water',
+    embassy: 'embassy',
+    emergency_phone: 'emergency_phone',
+    excrement_bags: 'excrement_bags',
+    fast_food: 'fast_food',
+    feeding_place: 'manger',
+    game_feeding: 'manger',
+    ferry: 'ferry',
+    fire_station: 'fire_station',
+    fountain: 'fountain',
+    fuel: 'fuel',
+    grave_yard: 'cemetery',
+    hospital: 'hospital',
+    hunting_stand: 'hunting_stand',
+    ice_cream: 'ice_cream',
+    internet_cafe: 'internet_cafe',
+    kindergarten: 'nursery',
+    library: 'library',
+    motorcycle_parking: 'motorcycle_parking',
+    nightclub: 'nightclub',
+    parking: 'parking',
+    parking_entrance: 'parking',
+    parking_space: 'parking',
+    pharmacy: 'pharmacy',
     place_of_worship: {
-      '*': place_of_worship,
+      '*': 'place_of_worship',
       building: buildingMapping,
     },
-    police,
-    post_box,
-    post_office,
-    prison,
-    pub,
-    public_bath,
-    public_bookcase,
-    ranger_station,
-    recycling,
-    restaurant,
-    school,
+    police: 'police',
+    post_box: 'post_box',
+    post_office: 'post_office',
+    prison: 'prison',
+    pub: 'pub',
+    public_bath: 'public_bath',
+    public_bookcase: 'public_bookcase',
+    ranger_station: 'ranger-station',
+    recycling: 'recycling',
+    restaurant: 'restaurant',
+    school: 'school',
     shelter: {
-      '*': shelter,
+      '*': 'shelter',
       shelter_type: {
-        basic_hut,
-        lean_to,
-        picnic_shelter,
-        public_transport,
-        weather_shelter,
+        basic_hut: 'basic_hut',
+        lean_to: 'lean_to',
+        picnic_shelter: 'picnic_shelter',
+        public_transport: 'public_transport',
+        weather_shelter: 'weather_shelter',
       },
     },
-    shower,
-    ski_rental: skiing,
-    social_facility,
-    taxi,
-    telephone,
-    theatre,
-    toilets,
-    townhall,
-    university,
-    vehicle_inspection,
+    shower: 'shower',
+    ski_rental: 'skiing_downhill',
+    social_facility: 'social_facility',
+    taxi: 'taxi',
+    telephone: 'telephone',
+    theatre: 'theatre',
+    toilets: 'toilets',
+    townhall: 'townhall',
+    university: 'university',
+    vehicle_inspection: 'vehicle_inspection',
     vending_machine: {
-      '*': vending_machine,
+      '*': 'vending_machine',
       vending: {
-        parking_tickets,
-        public_transport_tickets,
+        parking_tickets: 'parking_tickets',
+        public_transport_tickets: 'public_transport_tickets',
       },
     },
-    veterinary,
-    waste_basket,
-    waste_disposal,
-    watering_place,
+    veterinary: 'veterinary',
+    waste_basket: 'waste_basket',
+    waste_disposal: 'waste_disposal',
+    watering_place: 'watering_place',
   },
   barrier: {
-    cycle_barrier,
-    entrance,
-    fence,
-    gate,
-    kissing_gate,
-    lift_gate,
-    motorcycle_barrier,
-    stile,
-    swing_gate: lift_gate,
-    toll_booth,
-    cattle_grid,
+    cycle_barrier: 'cycle_barrier',
+    entrance: 'entrance',
+    fence: 'fence',
+    gate: 'gate',
+    kissing_gate: 'kissing_gate',
+    lift_gate: 'lift_gate',
+    motorcycle_barrier: 'motorcycle_barrier',
+    stile: 'stile',
+    swing_gate: 'lift_gate',
+    toll_booth: 'toll_booth',
+    cattle_grid: 'cattle_grid',
   },
   bridge: {
-    '*': bridge,
+    '*': 'bridge',
   },
   boundary: {
     administrative: {
       admin_level: {
-        6: city,
-        9: village,
+        6: 'city',
+        9: 'village',
       },
     },
   },
   emergency: {
-    defibrillator,
-    phone: emergency_phone,
+    defibrillator: 'defibrillator',
+    phone: 'emergency_phone',
   },
   entrance: {
-    '*': entrance,
+    '*': 'entrance',
     // no: no_entrance, // TODO
   },
   ford: {
-    yes: ford,
+    yes: 'ford',
   },
   highway: {
-    bus_stop,
-    elevator,
-    ford,
-    rest_area,
-    steps,
-    traffic_signals,
+    bus_stop: 'bus_stop',
+    elevator: 'elevator',
+    ford: 'ford',
+    rest_area: 'highway-rest-area',
+    steps: 'stairs',
+    traffic_signals: 'traffic_signals',
   },
   historic: {
-    archaeological_site,
-    boundary_stone,
+    archaeological_site: 'archaeological_site',
+    boundary_stone: 'boundary_stone',
     castle: {
-      '*': castle,
+      '*': 'castle',
       castle_type: {
-        fortress,
-        palace,
+        fortress: 'fortress',
+        palace: 'palace',
       },
     },
-    city_gate,
-    fort,
-    manor,
+    city_gate: 'city_gate',
+    fort: 'fort',
+    manor: 'manor',
     memorial: {
-      '*': memorial,
+      '*': 'memorial',
       memorial: {
-        bust,
-        plaque,
-        statue,
-        stone: memorial_stone,
+        bust: 'bust',
+        plaque: 'plaque',
+        statue: 'statue',
+        stone: 'memorial_stone',
       },
     },
-    mine,
-    mine_shaft: mine,
-    monument,
-    obelisk,
-    wayside_cross: cross,
-    wayside_shrine,
+    mine: 'mine',
+    mine_shaft: 'mine',
+    monument: 'monument',
+    obelisk: 'obelisk',
+    wayside_cross: 'cross',
+    wayside_shrine: 'wayside_shrine',
   },
   landuse: {
-    cemetery,
-    commercial,
-    construction,
-    farmland: farm,
-    farmyard: farm,
+    cemetery: 'cemetery',
+    commercial: 'commercial',
+    construction: 'construction',
+    farmland: 'farm',
+    farmyard: 'farm',
     industrial: {
-      '*': industry,
-      industrial: mine,
+      '*': 'industry',
+      industrial: 'mine',
     },
-    logging,
-    residential,
+    logging: 'logging',
+    residential: 'residential-community',
   },
   leisure: {
-    beach_resort,
-    bird_hide,
-    bowling_alley,
-    dog_park,
-    firepit,
-    fishing,
-    fitness_centre,
-    fitness_station,
-    horse_riding,
-    golf_course: golf,
-    miniature_golf,
-    outdoor_seating,
-    park,
-    picnic_table,
-    pitch,
-    playground,
-    sauna,
-    slipway,
-    stadium,
-    swimming_pool: water_park,
-    swimming_area: swimming,
+    beach_resort: 'beach_resort',
+    bird_hide: 'bird_hide',
+    bowling_alley: 'bowling_alley',
+    dog_park: 'dog_park',
+    firepit: 'firepit',
+    fishing: 'fishing',
+    fitness_centre: 'fitness_centre',
+    fitness_station: 'fitness_station',
+    horse_riding: 'horse_riding',
+    golf_course: 'golf',
+    miniature_golf: 'miniature_golf',
+    outdoor_seating: 'outdoor_seating',
+    park: 'park',
+    picnic_table: 'picnic_table',
+    pitch: 'pitch',
+    playground: 'playground',
+    sauna: 'sauna',
+    slipway: 'slipway',
+    stadium: 'stadium',
+    swimming_pool: 'water_park',
+    swimming_area: 'swimming_outdoor',
     track: {
-      '*': racetrack,
+      '*': 'racetrack',
       sport: {
-        cycling: racetrack_cycling,
-        equestrian: racetrack_horse,
-        horse_racing: racetrack_horse,
+        cycling: 'racetrack-cycling',
+        equestrian: 'racetrack-horse',
+        horse_racing: 'racetrack-horse',
       },
     },
-    water_park,
+    water_park: 'water_park',
   },
   man_made: {
-    adit: mine,
-    antenna,
-    apiary: beehive,
-    beehive,
-    bridge,
-    chimney,
-    cross,
-    clearcut: logging,
-    dyke,
-    embankment,
-    foresters_lodge,
-    lighthouse,
-    mast,
-    mineshaft: mine,
-    reservoir_covered: water_works,
+    adit: 'mine',
+    antenna: 'antenna',
+    apiary: 'beehive',
+    beehive: 'beehive',
+    bridge: 'bridge',
+    chimney: 'chimney',
+    cross: 'cross',
+    clearcut: 'logging',
+    dyke: 'dyke',
+    embankment: 'embankment',
+    foresters_lodge: "forester's_lodge",
+    lighthouse: 'lighthouse',
+    mast: 'mast_other',
+    mineshaft: 'mine',
+    reservoir_covered: 'water_works',
     tower: {
       'tower:type': {
-        '*': tower_other,
-        bell_tower,
-        communication: tower_communication,
-        observation: tower_observation,
+        '*': 'tower_other',
+        bell_tower: 'bell_tower',
+        communication: 'tower_communication',
+        observation: 'tower_observation',
       },
     },
-    water_tower,
-    water_well,
-    water_works,
-    watermill,
-    windmill,
+    water_tower: 'water_tower',
+    water_well: 'water_well',
+    water_works: 'water_works',
+    watermill: 'watermill',
+    windmill: 'windmill',
   },
   military: {
-    bunker,
-    danger_area: danger,
+    bunker: 'bunker',
+    danger_area: 'danger',
   },
   natural: {
-    arch,
-    beach,
-    cave_entrance,
-    earth_bank,
-    fell,
-    gully,
-    hot_spring,
-    peak,
-    rock,
-    saddle,
-    sinkhole,
+    arch: 'arch',
+    beach: 'beach',
+    cave_entrance: 'cave_entrance',
+    earth_bank: 'earth_bank',
+    fell: 'fell',
+    gully: 'gully',
+    hot_spring: 'hot_spring',
+    peak: 'peak',
+    rock: 'rock',
+    saddle: 'saddle',
+    sinkhole: 'sinkhole',
     spring: {
-      '*': spring,
+      '*': 'spring',
       drinking_water: {
-        no: not_drinking_spring,
-        yes: drinking_spring,
+        no: 'not_drinking_spring',
+        yes: 'drinking_spring',
       },
       refitted: {
         yes: {
-          '*': refitted_spring,
+          '*': 'refitted_spring',
           drinking_water: {
-            no: refitted_not_drinking_spring,
-            yes: refitted_drinking_spring,
+            no: 'refitted_not_drinking_spring',
+            yes: 'refitted_drinking_spring',
           },
         },
       },
     },
-    stone,
+    stone: 'stone',
     tree: {
-      '*': tree2,
+      '*': 'tree2',
       denotation: {
-        natural_monument: tree,
+        natural_monument: 'tree',
       },
       protected: {
-        yes: tree_protected,
+        yes: 'tree_protected',
       },
     },
-    volcano,
-    wetland,
+    volcano: 'volcano',
+    wetland: 'wetland',
   },
   obstacle: {
-    '*': obstacle,
-    vegetation: obstacle_vegetation,
-    dense_vegetation: obstacle_vegetation,
-    fallen_tree: obstacle_tree,
-    fallen_trees: obstacle_tree,
-    'fallen trees': obstacle_tree,
-    deadwood: obstacle_tree,
-    branches: obstacle_tree,
-    tree: obstacle_tree,
-    trees: obstacle_tree,
-    root: obstacle_tree,
+    '*': 'obstacle',
+    vegetation: 'obstacle_vegetation',
+    dense_vegetation: 'obstacle_vegetation',
+    fallen_tree: 'obstacle_tree',
+    fallen_trees: 'obstacle_tree',
+    'fallen trees': 'obstacle_tree',
+    deadwood: 'obstacle_tree',
+    branches: 'obstacle_tree',
+    tree: 'obstacle_tree',
+    trees: 'obstacle_tree',
+    root: 'obstacle_tree',
   },
   place: {
-    city,
-    town,
-    farm,
-    village,
+    city: 'city',
+    town: 'town',
+    farm: 'farm',
+    village: 'village',
   },
   railway: {
-    '*': rail,
-    light_rail: rail_light,
-    subway: rail_metro,
+    '*': 'rail',
+    light_rail: 'rail-light',
+    subway: 'rail-metro',
   },
   route: {
-    horse: horse_riding,
-    ski,
+    horse: 'horse_riding',
+    ski: 'skiing_crosscountry',
   },
   ruins: {
-    '*': ruins,
+    '*': 'ruins',
   },
   shop: {
-    '*': shop,
-    alcohol: shop_alcohol,
-    art: shop_art,
-    bag: shop_bag,
-    bakery: shop_bakery,
-    beauty: shop_beauty,
-    bed: shop_bed,
-    beverages: shop_beverages,
-    bicycle: bicycle,
-    bookmaker: shop_bookmaker,
-    books,
-    butcher: shop_butcher,
-    car_parts: shop_car_parts,
-    carpet: shop_carpet,
-    car_repair: shop_car_repair,
-    car: shop_car,
-    charity: shop_charity,
-    chemist: shop_chemist,
-    clothes: shop_clothes,
-    coffee: shop_coffee,
-    computer: shop_computer,
-    confectionery: shop_confectionery,
-    convenience: shop_convenience,
-    copyshop: shop_copyshop,
-    dairy: shop_dairy,
-    deli: shop_deli,
-    department_store: shop_department_store,
-    diy: shop_diy,
-    electronics: shop_electronics,
-    fabric: shop_fabric,
-    farm: shop_greengrocer,
-    florist: shop_florist,
-    furniture: shop_furniture,
-    garden_centre: shop_garden_centre,
-    gift: shop_gift,
-    greengrocer: shop_greengrocer,
-    hairdresser: shop_hairdresser,
-    hardware,
-    hifi: shop_hifi,
-    houseware: shop_houseware,
-    ice_cream,
-    interior_decoration: shop_interior_decoration,
-    jewelry: shop_jewelry,
-    laundry: shop_laundry,
-    marketplace: shop_marketplace,
-    massage: shop_massage,
-    medical_supply: shop_medical_supply,
-    mobile_phone: shop_mobile_phone,
-    musical_instrument: shop_musical_instrument,
-    music: shop_music,
-    newsagent: shop_newsagent,
-    optician: shop_optician,
-    outdoor: shop_outdoor,
-    paint: shop_paint,
-    perfumery: shop_perfumery,
-    pet: shop_pet,
-    photo: shop_photo,
-    seafood: shop_seafood,
-    second_hand: shop_second_hand,
-    shoes: shop_shoes,
-    sports: shop_sports,
-    stationery: shop_stationery,
-    supermarket: shop_supermarket,
-    tea: shop_tea,
-    ticket: shop_ticket,
-    tobacco: shop_tobacco,
-    toys: shop_toys,
-    trade: shop_trade,
-    travel_agency: shop_travel_agency,
-    tyres: shop_tyres,
-    variety_store: shop_variety_store,
-    video_games: shop_video_games,
-    video: shop_video,
-    watches,
+    '*': 'shop',
+    alcohol: 'alcohol',
+    art: 'art',
+    bag: 'bag',
+    bakery: 'bakery',
+    beauty: 'beauty',
+    bed: 'bed',
+    beverages: 'beverages',
+    bicycle: 'bicycle',
+    bookmaker: 'bookmaker',
+    books: 'book',
+    butcher: 'butcher',
+    car_parts: 'car_parts',
+    carpet: 'carpet',
+    car_repair: 'car_repair',
+    car: 'car',
+    charity: 'charity',
+    chemist: 'chemist',
+    clothes: 'clothes',
+    coffee: 'coffee',
+    computer: 'computer',
+    confectionery: 'confectionery',
+    convenience: 'convenience',
+    copyshop: 'copyshop',
+    dairy: 'dairy',
+    deli: 'deli',
+    department_store: 'department_store',
+    diy: 'diy',
+    electronics: 'electronics',
+    fabric: 'fabric',
+    farm: 'greengrocer',
+    florist: 'florist',
+    furniture: 'furniture',
+    garden_centre: 'garden_centre',
+    gift: 'gift',
+    greengrocer: 'greengrocer',
+    hairdresser: 'hairdresser',
+    hardware: 'hardware',
+    hifi: 'hifi',
+    houseware: 'houseware',
+    ice_cream: 'ice_cream',
+    interior_decoration: 'interior_decoration',
+    jewelry: 'jewelry',
+    laundry: 'laundry',
+    marketplace: 'marketplace',
+    massage: 'massage',
+    medical_supply: 'medical_supply',
+    mobile_phone: 'mobile_phone',
+    musical_instrument: 'musical_instrument',
+    music: 'music',
+    newsagent: 'newsagent',
+    optician: 'optician',
+    outdoor: 'outdoor',
+    paint: 'paint',
+    perfumery: 'perfumery',
+    pet: 'pet',
+    photo: 'photo',
+    seafood: 'seafood',
+    second_hand: 'second_hand',
+    shoes: 'shoes',
+    sports: 'sports',
+    stationery: 'stationery',
+    supermarket: 'supermarket',
+    tea: 'tea',
+    ticket: 'ticket',
+    tobacco: 'tobacco',
+    toys: 'toys',
+    trade: 'trade',
+    travel_agency: 'travel_agency',
+    tyres: 'tyres',
+    variety_store: 'variety_store',
+    video_games: 'video_games',
+    video: 'video',
+    watches: 'watch',
   },
   sport: {
-    '8pin': bowling_alley,
-    '9pin': bowling_alley,
-    '10pin': bowling_alley,
-    archery,
-    american_football,
-    baseball,
-    basketball,
-    beachvolleyball: volleyball,
-    bicycle,
-    bowling: bowling_alley,
-    candlepin: bowling_alley,
-    climbing,
-    cricket,
-    cycling: bicycle,
-    diving,
-    equestrian: horse_riding,
-    free_flying,
-    golf,
-    gym,
-    gymnastics,
-    horse_racing: horse_riding,
-    horse_riding,
-    ice_skating: skating,
-    motor,
-    skateboard,
-    skating,
-    ski_jumping: skiing,
-    skiing,
-    soccer,
-    swimming,
-    table_tennis,
-    tennis,
-    volleyball,
+    '8pin': 'bowling_alley',
+    '9pin': 'bowling_alley',
+    '10pin': 'bowling_alley',
+    archery: 'archery',
+    american_football: 'american_football',
+    baseball: 'baseball',
+    basketball: 'basketball',
+    beachvolleyball: 'volleyball',
+    bicycle: 'bicycle',
+    bowling: 'bowling_alley',
+    candlepin: 'bowling_alley',
+    climbing: 'hillclimbing',
+    cricket: 'cricket',
+    cycling: 'bicycle',
+    diving: 'diving',
+    equestrian: 'horse_riding',
+    free_flying: 'free_flying',
+    golf: 'golf',
+    gym: 'gym',
+    gymnastics: 'gymnasium',
+    horse_racing: 'horse_riding',
+    horse_riding: 'horse_riding',
+    ice_skating: 'iceskating',
+    motor: 'motorracing',
+    skateboard: 'skateboard',
+    skating: 'iceskating',
+    ski_jumping: 'skiing_downhill',
+    skiing: 'skiing_downhill',
+    soccer: 'soccer',
+    swimming: 'swimming_outdoor',
+    table_tennis: 'table-tennis',
+    tennis: 'tennis',
+    volleyball: 'volleyball',
   },
   toll: {
-    '*': toll,
+    '*': 'toll',
   },
   tourism: {
-    alpine_hut,
-    apartment,
+    alpine_hut: 'alpine_hut',
+    apartment: 'apartment',
     artwork: {
-      '*': artwork,
+      '*': 'artwork',
       artwork_type: {
-        bust,
+        bust: 'bust',
       },
     },
-    attraction,
-    camp_site,
-    chalet,
-    guest_house,
-    hostel,
-    hotel,
+    attraction: 'attraction',
+    camp_site: 'camp_site',
+    chalet: 'chalet',
+    guest_house: 'guest_house',
+    hostel: 'hostel',
+    hotel: 'hotel',
     information: {
-      '*': information,
+      '*': 'information',
       information: {
-        board,
-        guidepost,
-        map,
-        office,
+        board: 'board',
+        guidepost: 'guidepost',
+        map: 'map',
+        office: 'office',
       },
     },
-    motel,
-    museum,
-    picnic_site: picnic_table,
-    viewpoint,
-    wilderness_hut,
-    zoo,
+    motel: 'motel',
+    museum: 'museum',
+    picnic_site: 'picnic_table',
+    viewpoint: 'viewpoint',
+    wilderness_hut: 'wilderness_hut',
+    zoo: 'zoo',
   },
   tunnel: {
-    '*': tunnel,
+    '*': 'tunnel',
     // no: '', TODO
   },
   waterway: {
-    dam,
-    waterfall,
+    dam: 'dam',
+    waterfall: 'waterfall',
   },
 
   // NOTE keep at the end
   building: buildingMapping,
   fixme: {
-    '*': fixme,
+    '*': 'fixme',
   },
 };

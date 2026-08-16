@@ -1,11 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { poiIcons } from '@osm/poiIcons.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
 import {
   faSpec,
   loadAllIcons,
   parseIconSpec,
-  poiIconNameToUrl,
   poiSpec,
   useFaIcon,
 } from '@shared/drawingIcons.js';
@@ -23,14 +23,14 @@ import { FaXmark } from 'react-icons/fa6';
 
 const PAGE = 120;
 
-type PoiEntry = { kind: 'poi'; name: string; url: string };
+type PoiEntry = { kind: 'poi'; name: string };
 
 type FaEntry = { kind: 'fa'; name: string; def: IconDefinition };
 
 type Entry = PoiEntry | FaEntry;
 
-const poiEntries: PoiEntry[] = Object.entries(poiIconNameToUrl)
-  .map(([name, url]) => ({ kind: 'poi' as const, name, url }))
+const poiEntries: PoiEntry[] = Object.keys(poiIcons)
+  .map((name) => ({ kind: 'poi' as const, name }))
   .sort((a, b) => a.name.localeCompare(b.name));
 
 type Props = {
@@ -68,9 +68,9 @@ export function IconPicker({
     selectedSpec?.kind === 'fa' ? selectedSpec.name : undefined,
   );
 
-  const selectedPoiUrl =
-    selectedSpec?.kind === 'poi'
-      ? poiIconNameToUrl[selectedSpec.name]
+  const selectedPoi =
+    selectedSpec?.kind === 'poi' && poiIcons[selectedSpec.name]
+      ? selectedSpec.name
       : undefined;
 
   useEffect(() => {
@@ -120,8 +120,8 @@ export function IconPicker({
       >
         {selectedFa ? (
           <IconGlyph def={selectedFa} />
-        ) : selectedPoiUrl ? (
-          <IconGlyph url={selectedPoiUrl} />
+        ) : selectedPoi ? (
+          <IconGlyph poi={selectedPoi} />
         ) : selectedSpec?.kind === 'fa' ? (
           <Spinner size="sm" />
         ) : (
@@ -195,7 +195,7 @@ export function IconPicker({
                     {e.kind === 'fa' ? (
                       <IconGlyph def={e.def} />
                     ) : (
-                      <IconGlyph url={e.url} />
+                      <IconGlyph poi={e.name} />
                     )}
                   </Button>
                 );

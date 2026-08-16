@@ -1,5 +1,5 @@
 import type { MarkerType } from '@features/objects/model/actions.js';
-import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
+import { POI_ICON_KNOCKOUT_VAR, poiIcons } from '@osm/poiIcons.js';
 import { poiIconGlyphRect } from '@shared/poiIconGlyph.js';
 import type Leaflet from 'leaflet';
 import { type BaseIconOptions, DomUtil, Icon } from 'leaflet';
@@ -15,16 +15,21 @@ import {
 import { createRoot, type Root } from 'react-dom/client';
 import { Marker, type MarkerProps } from 'react-leaflet';
 import { splitColorAlpha } from '../colorAlpha.js';
-import { COLORS, GLYPH_INSET_LIGHT, glyphInsetColor } from '../colors.js';
+import {
+  COLORS,
+  GLYPH_INSET_LIGHT,
+  glyphInsetColor,
+  POI_ARTWORK_INK,
+} from '../colors.js';
 
 // Fixed glyph box (in viewBox units) and font size, shared by all marker
 // shapes so icon/text size is independent of the shape.
 const GLYPH_SIZE = 160;
 
-// The glyph takes the marker's own color on the white inset, so shape and glyph
-// read as one marker. Only applies to the monochrome glyph kinds we draw
-// ourselves (label text, Font Awesome paths); a `poi` icon is referenced as an
-// `<image>` and keeps the colors baked into the asset.
+// The glyph takes the marker's own color on the inset, so shape and glyph read
+// as one marker. Applies to every monochrome glyph kind — label text, Font
+// Awesome paths, and the poi icons that carry no color of their own, whose
+// drawing is inlined and so follows the fill like any other path.
 const textStyle: CSSProperties = {
   fontSize: '150px',
   fontWeight: 'bold',
@@ -59,32 +64,32 @@ export interface IconSvg {
 // mutually-exclusive `IconProps` below.
 interface MarkerIconProps extends BaseIconProps {
   label?: string | number;
-  image?: string;
+  poi?: string;
   faIcon?: ReactElement;
   iconSvg?: IconSvg;
-  imageOpacity?: number;
+  poiOpacity?: number;
 }
 
-// `faIcon`, `iconSvg`, `image` (+ `imageOpacity`) and `label` are mutually
+// `faIcon`, `iconSvg`, `poi` (+ `poiOpacity`) and `label` are mutually
 // exclusive.
 type IconContentProps =
   | {
       faIcon?: ReactElement;
       iconSvg?: never;
-      image?: never;
-      imageOpacity?: never;
+      poi?: never;
+      poiOpacity?: never;
       label?: never;
     }
   | {
       iconSvg?: IconSvg;
       faIcon?: never;
-      image?: never;
-      imageOpacity?: never;
+      poi?: never;
+      poiOpacity?: never;
       label?: never;
     }
   | {
-      image?: string;
-      imageOpacity?: number;
+      poi?: string;
+      poiOpacity?: number;
       faIcon?: never;
       iconSvg?: never;
       label?: never;
@@ -93,8 +98,8 @@ type IconContentProps =
       label?: string | number;
       faIcon?: never;
       iconSvg?: never;
-      image?: never;
-      imageOpacity?: never;
+      poi?: never;
+      poiOpacity?: never;
     };
 
 type IconProps = BaseIconProps & IconContentProps;
@@ -175,8 +180,8 @@ export function RichMarker({
   glyphColor,
   faIcon,
   iconSvg,
-  image,
-  imageOpacity,
+  poi: poiName,
+  poiOpacity,
   label,
   ...restProps
 }: Props): ReactElement {
@@ -221,8 +226,8 @@ export function RichMarker({
             glyphColor={glyphColor}
             faIcon={faIcon}
             iconSvg={iconSvg}
-            image={image}
-            imageOpacity={imageOpacity}
+            poi={poiName}
+            poiOpacity={poiOpacity}
             label={label}
             markerType={markerType}
           />
@@ -233,8 +238,8 @@ export function RichMarker({
       glyphColor,
       faIcon,
       iconSvg,
-      image,
-      imageOpacity,
+      poiName,
+      poiOpacity,
       label,
       markerType,
     ],
@@ -282,8 +287,8 @@ export class MarkerLeafletIcon extends Icon<
 }
 
 export function MarkerIcon({
-  image,
-  imageOpacity,
+  poi: poiName,
+  poiOpacity,
   faIcon,
   iconSvg,
   color = COLORS.normal,
@@ -299,14 +304,17 @@ export function MarkerIcon({
 
   const glyphFill = glyphColor ?? fillColor;
 
-  // A `poi` icon is external multi-color artwork drawn for a light background,
-  // so it always keeps the white inset; the glyphs painted in `glyphFill` get
-  // whichever inset they read on.
-  const insetFill = image ? GLYPH_INSET_LIGHT : glyphInsetColor(glyphFill);
+  const icon = poiName === undefined ? undefined : poiIcons[poiName];
 
-  // A glyph (label text, poi image or Font Awesome icon) fills the white inset;
-  // this flag also drives whether the inset is drawn.
-  const hasContent = Boolean(label || image || faIcon || iconSvg);
+  // A poi icon with colors of its own is artwork drawn for a light background,
+  // so it keeps the white inset; everything else is painted in `glyphFill` and
+  // gets whichever inset that reads on.
+  const insetFill =
+    icon && !icon.mono ? GLYPH_INSET_LIGHT : glyphInsetColor(glyphFill);
+
+  // A glyph (label text, poi icon or Font Awesome icon) fills the inset; this
+  // flag also drives whether the inset is drawn.
+  const hasContent = Boolean(label || icon || faIcon || iconSvg);
 
   // The glyph is drawn at a fixed size centered on each shape's inset, so its
   // on-screen size does not depend on the marker shape.
@@ -317,7 +325,7 @@ export function MarkerIcon({
 
     // A `react-icons` element is a self-contained `<svg viewBox=…>`; clone it
     // into a GLYPH_SIZE box centered on the inset so it scales exactly like
-    // `image`/`iconSvg`. Its `fill="currentColor"` resolves to the wrapping
+    // `poi`/`iconSvg`. Its `fill="currentColor"` resolves to the wrapping
     // `<g>`'s color unless the element sets its own `color`.
     // Size via `size`, not `width`/`height`: react-icons' IconBase writes its
     // own `height`/`width` from `size` *after* spreading our props, so a cloned
@@ -343,24 +351,27 @@ export function MarkerIcon({
 
     // Scale+center the icon by its precomputed drawing bbox (see
     // poiIconGlyphRect), so icons keep the relative sizes the map renders
-    // instead of each filling the box. Icons absent from the table (e.g.
-    // malformed) fall back to filling the full GLYPH_SIZE box.
-    const imageGlyph =
-      image &&
-      (() => {
-        const bbox = poiIconBBoxes[image];
-
-        const rect = bbox
-          ? poiIconGlyphRect(bbox, cx, cy, GLYPH_SIZE)
-          : {
-              x: cx - GLYPH_SIZE / 2,
-              y: cy - GLYPH_SIZE / 2,
-              width: GLYPH_SIZE,
-              height: GLYPH_SIZE,
-            };
-
-        return <image {...rect} xlinkHref={image} opacity={imageOpacity} />;
-      })();
+    // instead of each filling the box.
+    const poiGlyph = icon && (
+      <svg
+        {...poiIconGlyphRect(icon, cx, cy, GLYPH_SIZE)}
+        viewBox={icon.vb.join(' ')}
+        opacity={poiOpacity}
+        fill={icon.mono ? glyphFill : POI_ARTWORK_INK}
+        style={
+          {
+            // `color` as well as `fill`: shapes that carry no paint of their own
+            // inherit the fill, while the ones the drawing paints explicitly say
+            // `currentColor`, which resolves against `color`.
+            color: icon.mono ? glyphFill : POI_ARTWORK_INK,
+            // Knockouts inside the drawing show the inset the glyph sits on.
+            [POI_ICON_KNOCKOUT_VAR]: insetFill,
+          } as CSSProperties
+        }
+        // Build-time markup from the generated icon table, never user input.
+        dangerouslySetInnerHTML={{ __html: icon.body }}
+      />
+    );
 
     return (
       <>
@@ -376,7 +387,7 @@ export function MarkerIcon({
           </text>
         )}
 
-        {imageGlyph}
+        {poiGlyph}
 
         {iconSvg && (
           <path

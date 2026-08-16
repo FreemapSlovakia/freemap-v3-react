@@ -482,7 +482,7 @@ function WaypointMarker({
 
   // No icon spec resolved → fall back to the legacy flag glyph.
   const hasIconContent =
-    contentProps.image || contentProps.iconSvg || contentProps.label;
+    contentProps.poi || contentProps.iconSvg || contentProps.label;
 
   return (
     <RichMarker

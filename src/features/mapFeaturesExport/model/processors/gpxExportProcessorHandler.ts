@@ -706,9 +706,8 @@ async function addDrawingPoints(
   only: Selection | undefined,
 ) {
   // Caches shared across all points in this export, so a thousand identical
-  // poi/fa icons resolve once, and identical markers rasterize to PNG once.
+  // fa icons resolve once, and identical markers rasterize to PNG once.
   const faCache = new Map<string, IconDefinition | undefined>();
-  const poiSvgCache = new Map<string, Promise<string | undefined>>();
   const locusIconCache = new Map<string, Promise<string | undefined>>();
 
   // Build the synchronous parts (and kick off the async Locus-icon work) in
@@ -796,7 +795,6 @@ async function addDrawingPoints(
         label,
         icon,
         faCache,
-        poiSvgCache,
       });
 
       locusIconCache.set(key, locusIcon);
@@ -851,23 +849,18 @@ async function buildLocusIconDataUrl({
   label,
   icon,
   faCache,
-  poiSvgCache,
 }: {
   markerType: DrawingPointsState['points'][number]['markerType'];
   color: string;
   label?: string;
   icon?: string;
   faCache: Map<string, IconDefinition | undefined>;
-  poiSvgCache: Map<string, Promise<string | undefined>>;
 }): Promise<string | undefined> {
-  const { text, faSvg, poiSvg, poiBBox, hasContent } = await resolveMarkerGlyph(
-    {
-      icon,
-      label,
-      faCache,
-      poiSvgCache,
-    },
-  );
+  const { text, faSvg, poi, hasContent } = await resolveMarkerGlyph({
+    icon,
+    label,
+    faCache,
+  });
 
   const { svg, width, height } = buildMarkerSvg({
     markerType,
@@ -875,8 +868,7 @@ async function buildLocusIconDataUrl({
     hasContent,
     text,
     faSvg,
-    poiSvg,
-    poiBBox,
+    poi,
   });
 
   // Base64-encode via UTF-8-safe path so non-ASCII labels survive btoa.
