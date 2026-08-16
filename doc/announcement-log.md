@@ -159,6 +159,7 @@ the curl above.
 
 | Date | Topic | Reach | Commits | Link |
 |------|-------|-------|---------|------|
+| 2026-08-16 | **Search runs on our own Photon** — off `nominatim.openstreetmap.org`, whose policy asks an app this size to run its own; suggestions while typing (which the shared service forbids), typo tolerance, 16 indexed languages against the prebuilt database's 4 | 1♥ 1↻ (just posted) | `7660089e` | https://en.osm.town/@FreemapSlovakia/117104348205819754 |
 | 2026-08-15 | **Record a track from the web app** — the PWA drives the standalone Android recorder over its loopback API; background recording with the screen off, live track, live elevation profile, Finish hands the ride to the track viewer. Android-only, experimental | 0♥ 2↻ (just posted) | `7616e552` `c8c9e171` `c5908bd8` `6af45d4b` `fda3f534` `803924c8` `27ecba06` | https://en.osm.town/@FreemapSlovakia/117098553555043788 |
 | 2026-08-13 | **Polygons with holes in Drawing** — cut out a hole, make a hole of the enclosing polygon, detach hole; area net of holes, and holes survive GeoJSON/KML/GPX export | 0♥ 0↻ (just posted) | `a6616a8b` `63f2f890` `4d1fb42c` | https://en.osm.town/@FreemapSlovakia/117088914210123613 |
 | 2026-08-01 | **Steepness at any point** — on a planned route, a drawn line, a GPX file or live tracking | 1♥ 5↻ | `ccfe422a` `64179169` `308f0eda` `29d34943` `2d66ceb7` | https://en.osm.town/@FreemapSlovakia/117019442212391027 |
@@ -190,6 +191,7 @@ point of tracking the two separately.
 
 | Date | Post | Reach | Commits | Link |
 |------|------|-------|---------|------|
+| 2026-08-16 | Na počiatku bolo svetlo. Fotón. Vo svetle to nájdeš. … Photon je to, čo od teraz zabezpečuje vyhľadávanie (geocoding) na freemape… | *(pending — re-export)* | `7660089e` | https://www.facebook.com/FreemapSlovakia/posts/pfbid0KsER3LE44o61dcK37Zn5723ZfXbogvrB2A1rpGD3enXT1jPPDbaSaBfQzgK5vf9cl |
 | 2026-08-15 | 🏔️ Chystáte sa na miesta so slabým signálom? Vylepšili sme Offline mapy vo webovej aplikácii Freemap… (2 photos) | *(pending — re-export)* | `17f27fbe` `3d7a10e9` `ef0278b7` `1bb1cd19` `dd3e3c28` `7147f796` `508f3892` `736fd65b` `dde43a89` `bff71a23` `818eb550` `1898901b` | — |
 | 2026-08-13 | 🕳️ Jazero s ostrovom? Čistinka uprostred lesa? Odteraz sa dá nakresliť aj polygón s dierou.… | *(pending — re-export)* | `a6616a8b` `63f2f890` `4d1fb42c` | — |
 | 2026-08-09 | Vydali sme novú verziu mobilnej aplikácie freemap - 1.2.0. Novinky: 🗺️ Nové vrstvy mapy podľa v… | 847 reach · 20 react · 9 cmt · 1 shr | — | https://www.facebook.com/FreemapSlovakia/posts/pfbid02tt1X7JtvYDCasZiNzhEa5yw1E5vfMhGite4CXzxc41HdgpjRcss5xU176fFJRWjrl |
