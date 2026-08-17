@@ -9,6 +9,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { parseTolerance } from '@shared/simplifyPrompt.js';
 import { area } from '@turf/area';
 import { booleanContains } from '@turf/boolean-contains';
 import { destination } from '@turf/destination';
@@ -272,15 +273,15 @@ export default function DrawingLineSelection(): ReactElement | null {
           break;
 
         case 'simplify': {
-          const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
+          // Asked for outright rather than derived: the line is being
+          // simplified because the user says so, and one already thin would be
+          // offered nothing to do.
+          const tolerance = parseTolerance(
+            window.prompt(m?.general.simplifyPrompt, '50') ?? '',
+          );
 
-          if (tolerance !== null) {
-            dispatch(
-              drawingLineSimplify({
-                lineIndex,
-                tolerance: Number(tolerance || '0') / 100000,
-              }),
-            );
+          if (tolerance) {
+            dispatch(drawingLineSimplify({ lineIndex, tolerance }));
           }
 
           break;

@@ -41,8 +41,6 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   tooManyForLookup: ({ count, limit }) =>
     `Túl sok objektum a találatként való megjelenítéshez (${count}, legfeljebb ${limit}). Nagyítson rá, vagy szűkítse a szűrőt.`,
   showAsLookup: 'Megjelenítés találatként',
-  allVisible: 'Minden látható',
-  thisObject: 'Ez az objektum',
   tooManyPoints: ({ limit }) =>
     `Az eredmény ${limit} objektumra lett korlátozva.`,
   markerShape: 'Jelölő alakja',

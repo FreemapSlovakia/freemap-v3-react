@@ -117,6 +117,8 @@ const convertSourceTools: Record<
   track: 'import-file',
   changesets: 'changesets',
   'search-result': undefined,
+  // The live feed goes on after the copy, so tracking keeps its toolbar.
+  tracking: undefined,
 };
 
 export const mainReducer = createReducer(mainInitialState, (builder) => {

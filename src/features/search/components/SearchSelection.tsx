@@ -17,6 +17,8 @@ import {
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { useSimplifyPrompt } from '@shared/hooks/useSimplifyPrompt.js';
+import { convertibleLines } from '@shared/simplifyTolerance.js';
 import { center } from '@turf/center';
 import type { ReactElement } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
@@ -46,6 +48,8 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
   const dispatch = useDispatch();
 
   const online = useOnline();
+
+  const askSimplification = useSimplifyPrompt();
 
   const selectedResult = useAppSelector(activeSearchResultSelector);
 
@@ -123,7 +127,15 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
           icon={<FaPencilAlt />}
           label={m?.general.convertToDrawing}
           onClick={() => {
-            dispatch(convertToDrawing({ type: 'search-result' }));
+            const tolerance = askSimplification(
+              selectedResult.geojson
+                ? convertibleLines(selectedResult.geojson)
+                : [],
+            );
+
+            if (tolerance !== null) {
+              dispatch(convertToDrawing({ type: 'search-result', tolerance }));
+            }
           }}
           showFrom="sm"
           showLabelFrom="md"

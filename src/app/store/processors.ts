@@ -110,6 +110,7 @@ import { toastsRemoveProcessor } from '@features/toasts/model/processors/toastsR
 import { toastsRestartTimeoutProcessor } from '@features/toasts/model/processors/toastsRestartTimeoutProcessor.js';
 import { toastsStopTimeoutProcessor } from '@features/toasts/model/processors/toastsStopTimeoutProcessor.js';
 import * as trackingAccessTokenProcessors from '@features/tracking/model/processors/trackingAccessTokenProcessors.js';
+import { trackingCopyToDataViewerProcessor } from '@features/tracking/model/processors/trackingCopyProcessor.js';
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
 import { trackingFollowProcessor } from '@features/tracking/model/processors/trackingFollowProcessors.js';
 import {
@@ -203,6 +204,7 @@ export const processors = [
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),
   trackingFollowProcessor,
+  trackingCopyToDataViewerProcessor,
   gpsRecorderStartProcessor,
   gpsRecorderPauseProcessor,
   gpsRecorderStopProcessor,

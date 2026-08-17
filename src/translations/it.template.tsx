@@ -66,6 +66,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Aggiungi nuovo',
     clear: 'Pulisci',
     convertToDrawing: 'Converti in disegno',
+    copyToDrawing: 'Copia nel disegno',
+    copyTo: ({ tool }) => <>Copia in {tool}</>,
 
     simplifyPrompt:
       'Per favore inserisci il fattore di semplificazione. Imposta lo zero per nessuna semplificazione.',

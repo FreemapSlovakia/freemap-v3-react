@@ -31,6 +31,7 @@ import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useSimplifyPrompt } from '@shared/hooks/useSimplifyPrompt.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { Feature, LineString } from 'geojson';
 import {
@@ -103,6 +104,7 @@ import {
   routePlannerOptimizeApplicable,
   storedRouteIsShowingSelector,
 } from '../model/reducer.js';
+import { plannedRouteLines } from '../model/routeGeometry.js';
 import { loadRoutePlannerMessages } from '../translations/loadRoutePlannerMessages.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
@@ -444,6 +446,10 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => (state.routePlanner.isochrones?.length ?? 0) > 0,
   );
 
+  const isochrones = useAppSelector((state) => state.routePlanner.isochrones);
+
+  const askSimplification = useSimplifyPrompt();
+
   const resultFound = routeFound || isochronesFound;
 
   // A single placed point is already worth a delete — it is what the next click
@@ -552,7 +558,13 @@ export default function RoutePlannerMenu(): ReactElement {
         break;
 
       case 'convert-to-drawing': {
-        dispatch(convertToDrawing({ type: 'planned-route' }));
+        const tolerance = askSimplification(
+          plannedRouteLines(isochrones, alternatives[activeAlternativeIndex]),
+        );
+
+        if (tolerance !== null) {
+          dispatch(convertToDrawing({ type: 'planned-route', tolerance }));
+        }
 
         break;
       }

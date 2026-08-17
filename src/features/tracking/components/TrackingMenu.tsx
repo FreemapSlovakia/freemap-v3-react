@@ -36,7 +36,9 @@ import { useDispatch } from 'react-redux';
 import { resolveChartTrack } from '../chartTrack.js';
 import { trackingActions } from '../model/actions.js';
 import { trackPointsToFeature } from '../trackGeojson.js';
+import { hasDrawableSegment } from '../tracks.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
+import { TrackingConvertMenu } from './TrackingConvertMenu.js';
 
 export default TrackingMenu;
 
@@ -69,6 +71,10 @@ export function TrackingMenu(): ReactElement {
 
   const tracks = useAppSelector((state) => state.tracking.tracks);
 
+  const trackedDevices = useAppSelector(
+    (state) => state.tracking.trackedDevices,
+  );
+
   const selectedToken = useAppSelector((state) =>
     state.main.selection?.type === 'tracking'
       ? state.main.selection.id
@@ -96,6 +102,11 @@ export function TrackingMenu(): ReactElement {
   const chartTrack = useMemo(
     () => resolveChartTrack(tracks, selectedToken),
     [tracks, selectedToken],
+  );
+
+  const convertible = useMemo(
+    () => hasDrawableSegment(tracks, trackedDevices),
+    [tracks, trackedDevices],
   );
 
   return (
@@ -219,6 +230,8 @@ export function TrackingMenu(): ReactElement {
             )}
           </LongPressTooltip>
         )}
+
+        {convertible && <TrackingConvertMenu />}
       </ToolMenu>
 
       {colorizeLegend && colorizeBy && (

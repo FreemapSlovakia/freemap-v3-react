@@ -1,8 +1,11 @@
 import { convertToDrawing } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  Action,
+  ActionDivider,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import type { ReactElement } from 'react';
-import { Dropdown } from 'react-bootstrap';
 import { FaPencilAlt, FaSearch } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import type { ObjectsResult } from '../model/actions.js';
@@ -20,8 +23,10 @@ type Props = {
  * acting on all of them are the same gesture, and the next thing they can
  * become is added once.
  *
- * Converting with full geometry is offered for a single object only: doing it
- * for a whole screenful would be an OSM request per object.
+ * Acting on all of them hands them over for good, so it "converts"; one object
+ * stays where it is, so it is copied. Converting with full geometry is offered
+ * for a single object only: doing it for a whole screenful would be an OSM
+ * request per object.
  */
 export function ObjectsConvertMenu({ object }: Props): ReactElement {
   const m = useMessages();
@@ -32,47 +37,38 @@ export function ObjectsConvertMenu({ object }: Props): ReactElement {
 
   const id = object?.id;
 
-  const convertToPoint = () =>
-    dispatch(convertToDrawing({ type: 'objects', id }));
-
-  const showAsLookup = () => dispatch(objectsShowAsLookup({ id }));
-
-  // Named by what it acts on — this object, or all of them — because that is
-  // what tells the two menus apart; they hold the same actions otherwise, and
-  // the toolbar each sits in says nothing about scope on its own.
   return (
-    <Dropdown>
-      <Dropdown.Toggle
-        variant="secondary"
-        // Both toolbars are on screen whenever an object is selected while the
-        // tool is open, and the menu points its `aria-labelledby` here.
-        id={object ? 'objects-convert-one' : 'objects-convert-all'}
-      >
-        {object ? om?.thisObject : om?.allVisible}
-      </Dropdown.Toggle>
+    <ResponsiveActions>
+      <Action
+        icon={<FaPencilAlt />}
+        label={object ? m?.general.copyToDrawing : m?.general.convertToDrawing}
+        onClick={() => {
+          dispatch(convertToDrawing({ type: 'objects', id }));
+        }}
+        showFrom="never"
+      />
 
-      <FmDropdownMenu>
-        <Dropdown.Item as="button" onClick={convertToPoint}>
-          <FaPencilAlt /> {m?.general.convertToDrawing}
-        </Dropdown.Item>
+      {id && id.elementType !== 'node' && (
+        <Action
+          icon={<FaPencilAlt />}
+          label={om?.convertWithGeometry}
+          onClick={() => {
+            dispatch(convertToDrawing({ type: 'objects-geometry', id }));
+          }}
+          showFrom="never"
+        />
+      )}
 
-        {id && id.elementType !== 'node' && (
-          <Dropdown.Item
-            as="button"
-            onClick={() => {
-              dispatch(convertToDrawing({ type: 'objects-geometry', id }));
-            }}
-          >
-            <FaPencilAlt /> {om?.convertWithGeometry}
-          </Dropdown.Item>
-        )}
+      <ActionDivider />
 
-        <Dropdown.Divider />
-
-        <Dropdown.Item as="button" onClick={showAsLookup}>
-          <FaSearch /> {om?.showAsLookup}
-        </Dropdown.Item>
-      </FmDropdownMenu>
-    </Dropdown>
+      <Action
+        icon={<FaSearch />}
+        label={om?.showAsLookup}
+        onClick={() => {
+          dispatch(objectsShowAsLookup({ id }));
+        }}
+        showFrom="never"
+      />
+    </ResponsiveActions>
   );
 }

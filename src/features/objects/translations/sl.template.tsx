@@ -35,8 +35,6 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   tooManyForLookup: ({ count, limit }) =>
     `Preveč objektov za prikaz kot najdbe (${count}, največ ${limit}). Približajte ali zožite filter.`,
   showAsLookup: 'Prikaži kot Najdba',
-  allVisible: 'Vsi vidni',
-  thisObject: 'Ta objekt',
   style: {
     button: 'Slog oznake',
     title: 'Slog oznake objekta',

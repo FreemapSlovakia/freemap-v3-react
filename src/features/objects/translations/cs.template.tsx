@@ -38,8 +38,6 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   tooManyForLookup: ({ count, limit }) =>
     `Příliš mnoho objektů pro zobrazení jako nálezy (${count}, nejvýše ${limit}). Přibližte mapu nebo zužte filtr.`,
   showAsLookup: 'Zobrazit jako Nález',
-  allVisible: 'Všechny viditelné',
-  thisObject: 'Tento objekt',
   markerShape: 'Tvar značky',
 };
 

@@ -9,6 +9,7 @@ import {
   type Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import { getMessages } from '@features/l10n/messagesStore.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
@@ -27,15 +28,24 @@ import {
   WAYPOINT_ICONS,
   waypointKind,
 } from '@features/routePlanner/model/routeColors.js';
+import { alternativeCoordinates } from '@features/routePlanner/model/routeGeometry.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import { searchUnselectResult } from '@features/search/model/actions.js';
 import { hasGeometry } from '@features/search/model/resultUtils.js';
 import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  DEFAULT_TRACK_COLOR,
+  DEFAULT_TRACK_WIDTH,
+  resolveTracks,
+  trackLineSegments,
+} from '@features/tracking/tracks.js';
 import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
 import { mergeLines } from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
+import { promptSimplification } from '@shared/simplifyPrompt.js';
+import { convertibleLines } from '@shared/simplifyTolerance.js';
 import {
   lineStyleFromProperties,
   pointStyleFromProperties,
@@ -55,6 +65,17 @@ function ringToPoints(ring: Position[], dropClosing: boolean): Point[] {
     lon: node[0],
     id,
   }));
+}
+
+// A polygon ring simplified as a ring: `simplify` keeps one from degenerating
+// into fewer points than a polygon can be made of.
+function simplifyRing(ring: Position[], tolerance: number): Position[] {
+  return tolerance
+    ? simplify(
+        { type: 'Polygon', coordinates: [ring] },
+        { mutate: true, highQuality: true, tolerance },
+      ).coordinates[0]!
+    : ring;
 }
 
 /**
@@ -146,10 +167,21 @@ function geojsonToDrawing(
   geojson: Feature | FeatureCollection,
   getState: () => RootState,
   dispatch: Dispatch,
+  tolerance = 0,
 ): { lineCount: number; pointCount: number } {
   const { features } = turfFlatten(geojson);
 
   mergeLines(features);
+
+  if (tolerance) {
+    for (const [i, feature] of features.entries()) {
+      features[i] = simplify(feature, {
+        mutate: false,
+        highQuality: true,
+        tolerance,
+      });
+    }
+  }
 
   let lineCount = 0;
 
@@ -200,21 +232,35 @@ function geojsonToDrawing(
   return { lineCount, pointCount };
 }
 
+/**
+ * Selects what was converted when it is a single feature — by its position in
+ * the list, which is what a drawing selection names. `first` holds the two
+ * lengths from before the conversion, so the index is the one the feature
+ * actually landed at.
+ */
 function selectAfterConvert(
   dispatch: Dispatch,
-  getState: () => RootState,
+  first: { lineIndex: number; pointIndex: number },
   lineCount: number,
   pointCount: number,
 ): void {
   dispatch(
     selectFeature(
       lineCount === 1
-        ? { type: 'draw-line-poly', id: getState().drawingLines.lines.length }
+        ? { type: 'draw-line-poly', id: first.lineIndex }
         : pointCount === 1
-          ? { type: 'draw-points', id: getState().drawingPoints.points.length }
+          ? { type: 'draw-points', id: first.pointIndex }
           : null,
     ),
   );
+}
+
+/** Where the next converted line and point land. */
+function firstIndexes(state: RootState) {
+  return {
+    lineIndex: state.drawingLines.lines.length,
+    pointIndex: state.drawingPoints.points.length,
+  };
 }
 
 /**
@@ -227,6 +273,7 @@ function selectAfterConvert(
 async function convertPlannedRoute(
   getState: () => RootState,
   dispatch: Dispatch,
+  tolerance: number,
 ): Promise<void> {
   const state = getState();
 
@@ -290,7 +337,7 @@ async function convertPlannedRoute(
               ? ISOCHRONE_FILL_OPACITY * lineOpacity
               : 0,
           ),
-          points: ringToPoints(ring, true),
+          points: ringToPoints(simplifyRing(ring, tolerance), true),
           holeOf: i > 0 ? start : undefined,
         });
       }
@@ -300,14 +347,14 @@ async function convertPlannedRoute(
 
     lineCount += lines.length;
   } else if (alternative) {
-    // Each leg/step shares its endpoint with the next one's start, so drop
-    // consecutive duplicate coordinates to avoid stacked nodes at the joints.
-    const coords = alternative.legs
-      .flatMap((leg) => leg.steps.flatMap((step) => step.geometry.coordinates))
-      .filter(
-        (coord, i, all) =>
-          i === 0 || coord[0] !== all[i - 1][0] || coord[1] !== all[i - 1][1],
-      );
+    const raw = alternativeCoordinates(alternative);
+
+    const coords = tolerance
+      ? simplify(
+          { type: 'LineString', coordinates: raw },
+          { mutate: true, highQuality: true, tolerance },
+        ).coordinates
+      : raw;
 
     const dominant = dominantStepMode(alternative);
 
@@ -423,6 +470,8 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         return;
       }
 
+      const first = firstIndexes(state);
+
       let lineCount = 0;
 
       let pointCount = 0;
@@ -484,7 +533,63 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       // there's recorded data to lose.
       dispatch(dataViewerDelete());
 
-      selectAfterConvert(dispatch, getState, lineCount, pointCount);
+      selectAfterConvert(dispatch, first, lineCount, pointCount);
+    } else if (payload.type === 'tracking') {
+      // The live tracks stay where they are — the feed goes on, so this is a
+      // copy. Each continuous segment converts on its own, at full fidelity, in
+      // the color and width the device is drawn in.
+      const tracks = resolveTracks(
+        state.tracking.tracks,
+        state.tracking.trackedDevices,
+      ).filter(
+        (track) => payload.id === undefined || track.token === payload.id,
+      );
+
+      const first = firstIndexes(state);
+
+      const lines = tracks.flatMap((track) =>
+        trackLineSegments(track).map((segment): Line => {
+          const coords = segment.map(
+            (point): Position => [point.lon, point.lat],
+          );
+
+          return {
+            ...state.drawingSettings.style,
+            type: 'line',
+            label: track.label ?? undefined,
+            color: track.color || DEFAULT_TRACK_COLOR,
+            width: track.width || DEFAULT_TRACK_WIDTH,
+            points: ringToPoints(
+              payload.tolerance
+                ? simplify(
+                    { type: 'LineString', coordinates: coords },
+                    {
+                      mutate: true,
+                      highQuality: true,
+                      tolerance: payload.tolerance,
+                    },
+                  ).coordinates
+                : coords,
+              false,
+            ),
+          };
+        }),
+      );
+
+      if (lines.length === 0) {
+        return;
+      }
+
+      dispatch(drawingLineAdd(lines));
+
+      // Only a single line takes the selection over. The other branches drop it
+      // when there is nothing to select, but here the device stays watched and
+      // stays selectable, so its selection is left where it is.
+      if (lines.length === 1) {
+        dispatch(
+          selectFeature({ type: 'draw-line-poly', id: first.lineIndex }),
+        );
+      }
     } else if (payload.type === 'changesets') {
       const { changesets } = state.changesets;
 
@@ -521,16 +626,18 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         return;
       }
 
+      const first = firstIndexes(state);
+
       const { lineCount, pointCount } = geojsonToDrawing(
         result.geojson,
-
         getState,
         dispatch,
+        payload.tolerance,
       );
 
       dispatch(searchUnselectResult(result.id));
 
-      selectAfterConvert(dispatch, getState, lineCount, pointCount);
+      selectAfterConvert(dispatch, first, lineCount, pointCount);
     }
 
     // The conversion is done here, but the action still has to reach the
@@ -541,7 +648,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
   },
   handle: async ({ getState, dispatch, action }) => {
     if (action.payload.type === 'planned-route') {
-      await convertPlannedRoute(getState, dispatch);
+      await convertPlannedRoute(getState, dispatch, action.payload.tolerance);
 
       return;
     }
@@ -555,14 +662,28 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
     try {
       const geojson = await fetchOsmFullGeojson(id, getState);
 
-      const { lineCount, pointCount } = geojsonToDrawing(
-        geojson,
-
-        getState,
-        dispatch,
+      // Asked here rather than in the menu, which is the one conversion that
+      // doesn't know its own geometry until it has been fetched — a relation
+      // can be tens of thousands of nodes.
+      const tolerance = promptSimplification(
+        convertibleLines(geojson),
+        getMessages()?.general.simplifyPrompt,
       );
 
-      selectAfterConvert(dispatch, getState, lineCount, pointCount);
+      if (tolerance === null) {
+        return;
+      }
+
+      const first = firstIndexes(getState());
+
+      const { lineCount, pointCount } = geojsonToDrawing(
+        geojson,
+        getState,
+        dispatch,
+        tolerance,
+      );
+
+      selectAfterConvert(dispatch, first, lineCount, pointCount);
     } catch (err) {
       if (isAbortError(err)) {
         return;

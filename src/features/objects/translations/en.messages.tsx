@@ -34,8 +34,6 @@ const en: ObjectsMessages = {
   tooManyForLookup: ({ count, limit }) =>
     `Too many objects to show as lookups (${count}, at most ${limit}). Zoom in or narrow the filter.`,
   showAsLookup: 'Show as Lookup',
-  allVisible: 'All visible',
-  thisObject: 'This object',
   style: {
     button: 'Marker style',
     title: 'Object marker style',

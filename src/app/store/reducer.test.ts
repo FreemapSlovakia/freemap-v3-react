@@ -245,7 +245,7 @@ describe('convertToDrawing', () => {
   it('leaves the tools alone when converting from a selection toolbar', () => {
     const s = run(
       openTool('objects'),
-      convertToDrawing({ type: 'search-result' }),
+      convertToDrawing({ type: 'search-result', tolerance: 0 }),
     );
 
     expect(s.panelTools).toEqual(['objects']);

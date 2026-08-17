@@ -35,8 +35,6 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   tooManyForLookup: ({ count, limit }) =>
     `Priveľa objektov na zobrazenie ako nálezy (${count}, najviac ${limit}). Priblížte mapu alebo zúžte filter.`,
   showAsLookup: 'Zobraziť ako Nález',
-  allVisible: 'Všetky viditeľné',
-  thisObject: 'Tento objekt',
   style: {
     button: 'Štýl značky',
     title: 'Štýl značky objektu',

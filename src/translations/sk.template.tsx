@@ -64,6 +64,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Pridať nové',
     clear: 'Vyčistiť',
     convertToDrawing: 'Skonvertovať na kreslenie',
+    copyToDrawing: 'Kopírovať do kreslenia',
+    copyTo: ({ tool }) => <>Kopírovať do {tool}</>,
     simplifyPrompt:
       'Prosím, zadajte faktor zjednodušenia. Zadajte nulu pre vynechanie zjednodušenia.',
     copyUrl: 'Kopírovať URL',

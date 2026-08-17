@@ -38,8 +38,6 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   tooManyForLookup: ({ count, limit }) =>
     `Troppi oggetti da mostrare come risultati (${count}, al massimo ${limit}). Ingrandisci o restringi il filtro.`,
   showAsLookup: 'Mostra come Risultato',
-  allVisible: 'Tutti i visibili',
-  thisObject: 'Questo oggetto',
   markerShape: 'Forma del marcatore',
 };
 

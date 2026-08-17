@@ -26,8 +26,6 @@ export type ObjectsMessages = {
   convertWithGeometry: string;
   showAsLookup: string;
   tooManyForLookup: (props: { count: number; limit: number }) => string;
-  allVisible: string;
-  thisObject: string;
   style: {
     button: string;
     title: string;

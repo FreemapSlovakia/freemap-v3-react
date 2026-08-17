@@ -14,7 +14,6 @@ import { toLatLng, toLatLngArr } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import { distance } from '@turf/distance';
 import { Fragment, type ReactElement, useMemo, useRef, useState } from 'react';
 import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
@@ -22,6 +21,12 @@ import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import type { TrackPoint } from '../model/types.js';
 import { trackPointsToFeature } from '../trackGeojson.js';
+import {
+  DEFAULT_TRACK_COLOR,
+  DEFAULT_TRACK_WIDTH,
+  resolveTracks,
+  splitTrackSegments,
+} from '../tracks.js';
 import { TrackingPoint, tooltipText } from './TrackingPoint.js';
 
 type HotlineOpts = {
@@ -29,46 +34,6 @@ type HotlineOpts = {
   outlineWidth: number;
   palette: HotlinePalette | undefined;
 };
-
-// Break a track's points into segments at the configured distance/duration
-// gaps, so each continuous run is rendered (and colorized) on its own.
-function splitTrackSegments(track: {
-  trackPoints: TrackPoint[];
-  splitDistance?: number | null;
-  splitDuration?: number | null;
-}): TrackPoint[][] {
-  const segments: TrackPoint[][] = [];
-
-  let curSegment: TrackPoint[] | null = null;
-
-  let prevTp: TrackPoint | undefined;
-
-  for (const tp of track.trackPoints) {
-    if (
-      prevTp &&
-      ((typeof track.splitDistance === 'number' &&
-        distance([tp.lon, tp.lat], [prevTp.lon, prevTp.lat], {
-          units: 'meters',
-        }) > track.splitDistance) ||
-        (typeof track.splitDuration === 'number' &&
-          tp.ts.getTime() - prevTp.ts.getTime() > track.splitDuration * 60000))
-    ) {
-      curSegment = null;
-    }
-
-    if (!curSegment) {
-      curSegment = [];
-
-      segments.push(curSegment);
-    }
-
-    curSegment.push(tp);
-
-    prevTp = tp;
-  }
-
-  return segments;
-}
 
 // TODO hooks-based rewrite causes massive re-rendering; revisit
 export function TrackingResult(): ReactElement {
@@ -120,14 +85,10 @@ export function TrackingResult(): ReactElement {
     };
   }, [activeColorizer]);
 
-  const tracks1 = useMemo(() => {
-    const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));
-
-    return tracks.map((track) => ({
-      ...track,
-      ...tdMap.get(track.token),
-    }));
-  }, [trackedDevices, tracks]);
+  const tracks1 = useMemo(
+    () => resolveTracks(tracks, trackedDevices),
+    [trackedDevices, tracks],
+  );
 
   const activeTrackId = useAppSelector((state) =>
     state.main.selection?.type === 'tracking'
@@ -182,9 +143,9 @@ export function TrackingResult(): ReactElement {
   return (
     <>
       {tracks1.map((track) => {
-        const color = track.color || '#7239a8';
+        const color = track.color || DEFAULT_TRACK_COLOR;
 
-        const width = track.width || 4;
+        const width = track.width || DEFAULT_TRACK_WIDTH;
 
         let handleClick = clickHandlerMemo.current[track.token];
 

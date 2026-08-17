@@ -41,6 +41,8 @@ export type Messages = {
     add: string;
     clear: string;
     convertToDrawing: string;
+    copyToDrawing: string;
+    copyTo: (props: { tool: ReactNode }) => JSX.Element;
     simplifyPrompt: string;
     copyUrl: string;
     copyPageUrl: string;

@@ -64,6 +64,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Dodaj novo',
     clear: 'Počisti',
     convertToDrawing: 'Pretvori v risbo',
+    copyToDrawing: 'Kopiraj v risbo',
+    copyTo: ({ tool }) => <>Kopiraj v {tool}</>,
     simplifyPrompt:
       'Vnesite faktor poenostavitve. Za brez poenostavitve vnesite nič.',
     copyUrl: 'Kopiraj URL',

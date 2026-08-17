@@ -62,6 +62,8 @@ const messages: Messages = {
     add: 'Add new',
     clear: 'Clear',
     convertToDrawing: 'Convert to drawing',
+    copyToDrawing: 'Copy to drawing',
+    copyTo: ({ tool }) => <>Copy to {tool}</>,
     simplifyPrompt:
       'Please enter simplification factor. Set to zero for no simplification.',
     copyUrl: 'Copy URL',

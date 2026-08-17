@@ -167,9 +167,11 @@ export const convertToDrawing = createAction<
   // objects: `id` omitted → bulk-convert every visible object as a point
   | { type: 'objects'; id?: OsmFeatureId }
   | { type: 'objects-geometry'; id: OsmFeatureId }
-  | { type: 'planned-route' }
+  | { type: 'planned-route'; tolerance: number }
   | { type: 'track'; tolerance: number }
-  | { type: 'search-result' }
+  // tracking: `id` is a watched device's token; omitted converts every one of them
+  | { type: 'tracking'; id?: string; tolerance: number }
+  | { type: 'search-result'; tolerance: number }
   | { type: 'changesets' }
 >('CONVERT_TO_DRAWING');
 

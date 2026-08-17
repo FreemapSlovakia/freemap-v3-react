@@ -63,6 +63,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Új hozzáadása',
     clear: 'Törlés',
     convertToDrawing: 'Átalakítás rajzzá',
+    copyToDrawing: 'Másolás a rajzba',
+    copyTo: ({ tool }) => <>Másolás ide: {tool}</>,
     simplifyPrompt:
       'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
     copyUrl: 'URL másolása',

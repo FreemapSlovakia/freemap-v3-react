@@ -62,4 +62,16 @@ export const trackingActions = {
   ),
 
   delete: createAction<{ token: string | number }>('TRACKING_DELETE'),
+
+  /**
+   * Copies what a watched device has travelled so far into the track viewer,
+   * where it becomes an ordinary loaded track. The live feed keeps running, so
+   * this is a snapshot, not a hand-over. `token` absent copies every watched
+   * device.
+   */
+  copyToDataViewer: createAction<{
+    token?: string;
+    /** How the copy meets what the viewer already holds. */
+    mode: 'replace' | 'append';
+  }>('TRACKING_COPY_TO_DATA_VIEWER'),
 };

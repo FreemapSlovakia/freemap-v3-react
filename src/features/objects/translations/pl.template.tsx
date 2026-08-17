@@ -39,8 +39,6 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   tooManyForLookup: ({ count, limit }) =>
     `Zbyt wiele obiektów, aby pokazać je jako wyniki (${count}, najwyżej ${limit}). Przybliż mapę lub zawęź filtr.`,
   showAsLookup: 'Pokaż jako Wynik',
-  allVisible: 'Wszystkie widoczne',
-  thisObject: 'Ten obiekt',
   markerShape: 'Kształt znacznika',
 };
 

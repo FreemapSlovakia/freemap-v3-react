@@ -28,6 +28,8 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useSimplifyPrompt } from '@shared/hooks/useSimplifyPrompt.js';
+import { convertibleLines } from '@shared/simplifyTolerance.js';
 import { flatten } from '@turf/flatten';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useCallback, useMemo } from 'react';
@@ -78,6 +80,8 @@ export function DataViewerMenu(): ReactElement {
   const dispatch = useDispatch();
 
   const confirm = useConfirm();
+
+  const askSimplification = useSimplifyPrompt();
 
   const cancelConfirm = useConfirmCancel();
 
@@ -202,35 +206,28 @@ export function DataViewerMenu(): ReactElement {
   const needsElevationDecision =
     coverage !== 'full' && elevationDecision === 'undecided';
 
-  // Only a dense GPS recording (`fm:kind === 'track'`) is worth simplifying —
-  // otherwise the drawing carries thousands of editable vertices. Routes and
-  // generic imported geometry convert at full fidelity with no prompt.
+  // A GPS recording (`fm:kind === 'track'`) is the one thing converting can
+  // lose data from, so it is what the warning is about. Routes and generic
+  // imported geometry have nothing rich to lose.
   const hasDenseTrack = (trackGeojson?.features ?? []).some(
     (f) => featureKind(f) === 'track',
   );
 
   const handleConvertToDrawing = useCallback(() => {
-    let tolerance = 0;
+    // One question for a dense recording: it both warns that the recorded data
+    // is dropped (the track is replaced) and asks how much to simplify, filled
+    // in from the track's own density; Cancel aborts. Routes and generic
+    // geometry have nothing rich to lose, so they only ever get the question
+    // when there is enough of them to be worth thinning.
+    const tolerance = askSimplification(
+      trackGeojson ? convertibleLines(trackGeojson) : [],
+      hasDenseTrack ? tvm?.convertLossWarning : undefined,
+    );
 
-    // A single prompt for a dense recording: it both warns that the recorded
-    // data is dropped (the track is replaced) and asks for a simplification
-    // factor; Cancel aborts. Routes and generic geometry have nothing rich to
-    // lose and aren't worth simplifying, so they convert straight away.
-    if (hasDenseTrack) {
-      const answer = window.prompt(
-        `${tvm?.convertLossWarning}\n\n${m?.general.simplifyPrompt}`,
-        '50',
-      );
-
-      if (answer === null) {
-        return;
-      }
-
-      tolerance = Number(answer || '0') / 100000;
+    if (tolerance !== null) {
+      dispatch(convertToDrawing({ type: 'track', tolerance }));
     }
-
-    dispatch(convertToDrawing({ type: 'track', tolerance }));
-  }, [dispatch, m, tvm, hasDenseTrack]);
+  }, [dispatch, tvm, hasDenseTrack, trackGeojson, askSimplification]);
 
   const handleUpdateElevation = useCallback(async () => {
     // With only some points missing, defer to the adaptive modal so the user

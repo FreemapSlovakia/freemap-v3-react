@@ -79,6 +79,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Ajouter',
     clear: 'Effacer',
     convertToDrawing: 'Convertir en dessin',
+    copyToDrawing: 'Copier vers le dessin',
+    copyTo: ({ tool }) => <>Copier vers {tool}</>,
     simplifyPrompt:
       'Veuillez saisir le facteur de simplification. Saisissez zéro pour ne pas simplifier.',
     copyUrl: 'Copier l’URL',
