@@ -1,6 +1,7 @@
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import type { ReactElement } from 'react';
-import { Image, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
+import { Image, OverlayTrigger, Popover } from 'react-bootstrap';
 import { FaGem } from 'react-icons/fa';
 
 type Props = {
@@ -43,12 +44,9 @@ export function UserChip({ user }: Props): ReactElement {
       )}
       <b>{user.name}</b>
       {user.premium && (
-        <OverlayTrigger
-          placement="top"
-          overlay={<Tooltip>{prm?.premiumUser}</Tooltip>}
-        >
-          <FaGem className="ms-1 text-info" />
-        </OverlayTrigger>
+        <GlyphMarker hint={prm?.premiumUser} color="info">
+          <FaGem />
+        </GlyphMarker>
       )}
     </>
   );
