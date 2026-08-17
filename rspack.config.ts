@@ -262,6 +262,15 @@ const config: Configuration = {
   // worse, gets bundled into the `sw`/`upload-sw` service-worker entries where
   // XMLHttpRequest is unavailable. Opt out.
   lazyCompilation: false,
+  // maplibre-gl spawns its worker from a runtime URL (`new Worker(url)`), which
+  // the bundler can't trace. That's by design here — MaplibreLayer supplies the
+  // URL via `setWorkerUrl`.
+  ignoreWarnings: [
+    {
+      module: /maplibre-gl[\\/]dist[\\/]maplibre-gl\.mjs$/,
+      message: /the request of a dependency is an expression/,
+    },
+  ],
   context: path.resolve(__dirname, 'src'),
   entry: {
     main: './app/index.tsx',
@@ -296,6 +305,9 @@ const config: Configuration = {
     minimizer: [
       new TerserPlugin({
         minify: TerserPlugin.swcMinify,
+        // Already-minified maplibre worker assets: re-minifying them buys
+        // nothing and risks breaking the ESM link between the two files.
+        exclude: /^maplibre-gl-(worker|shared)\./,
       }),
       // LightningCSS (replaces cssnano) so it also downlevels native CSS
       // nesting to flat selectors for the browsers in `cssTargets`.
@@ -449,6 +461,15 @@ const config: Configuration = {
       {
         test: /\.(wasm|wgsl)$/,
         type: 'asset/resource',
+      },
+      {
+        // maplibre-gl's worker is loaded by URL at runtime, not bundled, so it
+        // stays a raw asset — the `.mjs` rule above would otherwise parse it as
+        // a module. The loader also emits the sibling module it imports.
+        test: /[\\/]maplibre-gl-worker\.mjs$/,
+        type: 'asset/resource',
+        generator: { filename: '[name].[contenthash].js' },
+        use: [{ loader: path.resolve('maplibreWorkerLoader.js') }],
       },
     ],
   },

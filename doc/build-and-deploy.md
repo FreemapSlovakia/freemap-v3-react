@@ -34,6 +34,23 @@ CSS minification therefore uses `rspack.LightningCssMinimizerRspackPlugin` with 
 
 Symptom of breakage: `classes['typo']` stops being a type error (the ambient `Record` is shadowing because no `.d.css.ts` resolved) — check the loader order, the `.d.css.ts` naming, and `allowArbitraryExtensions`.
 
+## maplibre-gl's worker is a build-emitted asset, not a bundled module
+
+Since v6, maplibre-gl no longer inlines its worker. It ships `dist/maplibre-gl-worker.mjs`, resolves it from `import.meta.url` at runtime, and that file `import`s `dist/maplibre-gl-shared.mjs` as a literal `./` sibling. Under a bundler `import.meta.url` points at the bundle, so the auto-detection yields `''` and `new Worker('')` — the map silently fails. rspack even bakes the build machine's `file:///home/…` path into the output. Consumers must call `setWorkerUrl()`; `MaplibreLayer.tsx` does, at module scope.
+
+The wiring (`rspack.config.ts` + `maplibreWorkerLoader.js`):
+
+- A rule matching `maplibre-gl-worker.mjs` makes it `type: 'asset/resource'`. It has to come **after** the generic `.mjs` rule, which would otherwise force it back to `javascript/auto` and bundle it as a module.
+- `maplibreWorkerLoader.js` reads the shared sibling, emits it, and rewrites the worker's import to the emitted name. Nothing else can rewrite that specifier — it's inside an asset the bundler treats as opaque bytes. The loader errors out if the specifier ever disappears.
+- Both are emitted as **`.js`**, not `.mjs`: nginx's stock `mime.types` has no `.mjs` entry, and a module worker served as `application/octet-stream` is rejected by the browser (it would also miss `gzip_types`).
+- Both carry a **content hash**. The offline shell (`offlineStaticCache.ts`) only re-fetches assets whose URL changed, so stable names would pin an old worker against a new bundle after a redeploy.
+- `TerserPlugin` **excludes** them. They're already minified, and re-minifying the two halves separately risks breaking the ESM bindings between them.
+- `ignoreWarnings` drops maplibre's "Critical dependency: the request of a dependency is an expression" — that's the `new Worker(url)` call, which is the intended design here.
+
+Cheap check that the pair still links after a maplibre bump: `cd dist && node --input-type=module -e "import('./maplibre-gl-worker.<hash>.js')"`. `ReferenceError: self is not defined` means the modules linked and only evaluation hit a browser global — that's a pass. A `SyntaxError` about a missing export means the two halves are mismatched.
+
+Also note v6 requires WebGL2, so the vector layers are simply unavailable on devices that lack it.
+
 ## sentry-cli: the URL and the auth token must come from the same source
 
 `pnpm sentry-sourcemaps` (run by `pnpm deploy`) uploads to the self-hosted **https://sentry.freemap.sk**, but the `--url` flag is deliberately **not** passed. sentry-cli ≥ 3 refuses to combine a server URL and an auth token that come from different configuration sources — CLI flag + `~/.sentryclirc` token gives:

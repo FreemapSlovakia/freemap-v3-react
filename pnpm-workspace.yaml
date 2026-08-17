@@ -20,42 +20,8 @@ minimumReleaseAge: 1440
 # entry per package (pnpm folds multiple same-name entries into a version union,
 # which has mishandled the newest member).
 minimumReleaseAgeExclude:
-  - "@bufbuild/protobuf@2.14.0"
-  - "@rspack/binding-darwin-arm64@2.1.10"
-  - "@rspack/binding-darwin-x64@2.1.10"
-  - "@rspack/binding-linux-arm64-gnu@2.1.10"
-  - "@rspack/binding-linux-arm64-musl@2.1.10"
-  - "@rspack/binding-linux-ppc64-gnu@2.1.10"
-  - "@rspack/binding-linux-riscv64-gnu@2.1.10"
-  - "@rspack/binding-linux-riscv64-musl@2.1.10"
-  - "@rspack/binding-linux-s390x-gnu@2.1.10"
-  - "@rspack/binding-linux-x64-gnu@2.1.10"
-  - "@rspack/binding-linux-x64-musl@2.1.10"
-  - "@rspack/binding-wasm32-wasi@2.1.10"
-  - "@rspack/binding-win32-arm64-msvc@2.1.10"
-  - "@rspack/binding-win32-ia32-msvc@2.1.10"
-  - "@rspack/binding-win32-x64-msvc@2.1.10"
-  - "@rspack/binding@2.1.10"
-  - "@rspack/cli@2.1.10"
-  - "@rspack/core@2.1.10"
-  - sass-embedded-all-unknown@1.102.0
-  - sass-embedded-android-arm64@1.102.0
-  - sass-embedded-android-arm@1.102.0
-  - sass-embedded-android-riscv64@1.102.0
-  - sass-embedded-android-x64@1.102.0
-  - sass-embedded-darwin-arm64@1.102.0
-  - sass-embedded-darwin-x64@1.102.0
-  - sass-embedded-linux-arm64@1.102.0
-  - sass-embedded-linux-arm@1.102.0
-  - sass-embedded-linux-musl-arm64@1.102.0
-  - sass-embedded-linux-musl-arm@1.102.0
-  - sass-embedded-linux-musl-riscv64@1.102.0
-  - sass-embedded-linux-musl-x64@1.102.0
-  - sass-embedded-linux-riscv64@1.102.0
-  - sass-embedded-linux-x64@1.102.0
-  - sass-embedded-unknown-all@1.102.0
-  - sass-embedded-win32-arm64@1.102.0
-  - sass-embedded-win32-x64@1.102.0
-  - sass-embedded@1.102.0
+  - "@maplibre/maplibre-gl-leaflet@0.1.4"
+  - exifreader@4.43.0
+  - maplibre-gl@6.4.0
 
 minimumReleaseAgeStrict: true

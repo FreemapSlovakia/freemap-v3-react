@@ -1,8 +1,17 @@
 import '@maplibre/maplibre-gl-leaflet';
 import { createTileLayerComponent, type LayerProps } from '@react-leaflet/core';
 import * as L from 'leaflet';
-import type { Map as MaplibreMap } from 'maplibre-gl';
+import { type Map as MaplibreMap, setWorkerUrl } from 'maplibre-gl';
 import '../maplibreLanguage.js';
+
+// maplibre-gl ships its worker as a separate file that auto-detects itself from
+// `import.meta.url` — which points at the bundle, not the worker, once rspack
+// has inlined the library, so the URL has to be handed over explicitly. rspack
+// emits the worker and the module it imports as assets; see
+// doc/build-and-deploy.md.
+setWorkerUrl(
+  new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).href,
+);
 
 class MaplibreWithLang extends L.MaplibreGL {
   _language?: string | null;
