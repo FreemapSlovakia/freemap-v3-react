@@ -260,29 +260,6 @@ export function MapSwitchButton(): ReactElement {
     [dispatch],
   );
 
-  extraHandler.current = useCallback(
-    (eventKey: string) => {
-      if (eventKey === 'show-all') {
-        setExpand('all');
-      } else if (eventKey === 'show-more') {
-        setExpand('more');
-      } else if (eventKey === 'offlineMaps') {
-        closeMenu();
-
-        dispatch(cachedMapsSetView('list'));
-
-        dispatch(setActiveModal({ type: 'offline-maps' }));
-      } else if (eventKey.startsWith('layer-')) {
-        dispatch(mapToggleLayer({ type: eventKey.slice(6) }));
-      } else {
-        return false;
-      }
-
-      return true;
-    },
-    [closeMenu, dispatch],
-  );
-
   const handleSelect = useCallback(
     (selection: string | null, e: SyntheticEvent<unknown>) => {
       if (selection === null || handlePossibleBadgeClick(e)) {
@@ -361,6 +338,34 @@ export function MapSwitchButton(): ReactElement {
       def.countries.some((c) => countriesSet.has(c)),
     zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
   }));
+
+  extraHandler.current = (eventKey: string) => {
+    if (eventKey === 'show-all') {
+      setExpand('all');
+    } else if (eventKey === 'show-more') {
+      setExpand('more');
+    } else if (eventKey === 'offlineMaps') {
+      closeMenu();
+
+      dispatch(cachedMapsSetView('list'));
+
+      dispatch(setActiveModal({ type: 'offline-maps' }));
+    } else if (eventKey.startsWith('layer-')) {
+      const type = eventKey.slice(6);
+
+      // Base layers are mutually exclusive, so picking one is the end of the
+      // choice and the menu closes; overlays stack, so it stays open.
+      if (layerDefs.find((def) => def.type === type)?.layer === 'base') {
+        closeMenu();
+      }
+
+      dispatch(mapToggleLayer({ type }));
+    } else {
+      return false;
+    }
+
+    return true;
+  };
 
   // The extent to zoom to when a layer's tiles aren't in the current view, or
   // undefined when they are. Country-limited integrated layers use the
