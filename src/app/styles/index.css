@@ -348,8 +348,13 @@ button#freemap-logo {
    that direction is nearly always dead space anyway. */
 .fm-marker-air {
   padding-inline: var(--fm-marker-air);
-  padding-block: var(--fm-space-2);
-  margin-block: calc(-1 * var(--fm-space-2));
+
+  /* The block axis is the only one with room to spare, so it takes the whole
+     44–48px a fingertip wants; the inline axis is capped by the spacing, since
+     two glyphs a step apart cannot both be 24px wide without overlapping, and
+     overlapping is what this is here to avoid. */
+  padding-block: var(--fm-space-3);
+  margin-block: calc(-1 * var(--fm-space-3));
 }
 
 /* Two marks in a row split the space between them rather than each paying for

@@ -185,10 +185,19 @@ neighbour, which is the same unfairness overlapping targets had, just quieter.
 Anything else beside a mark — a button, the text it annotates — pays nothing, so
 there the mark takes the whole step.
 
-Only the block axis is given back — the height of a line or a row is not the
-mark's to change. That direction does overlap the line or row above, which is
-nearly always dead space; where it isn't, paint order decides and the later row
-wins.
+The two axes are not symmetrical, and shouldn't be. **Inline** is capped by the
+spacing: two 16px glyphs a step apart cannot both be 24px wide without
+overlapping, and not overlapping is the whole point — so a mark comes out 22–28px
+wide depending on what is beside it. **Block** has room to spare, so it takes the
+whole 44–48px a fingertip wants (`--fm-space-3`), and gives every pixel of it
+back as margin: the height of a line or a row is not the mark's to change. That
+direction does overlap the line or row above, which is nearly always dead space;
+where it isn't, paint order decides and the later row wins.
+
+Measured, with `--fm-space-3` on the block axis: 28×48 in prose, 24×48 in a menu
+row or a toolbar, 22×48 for each of two marks sharing a step in a menu row —
+that last one being the only case under the 24px floor, and only when two marks
+are adjacent.
 
 `--fm-marker-air` is the one knob, and it is set by the **container**, not the
 call site: the whole step in running text, which spaces nothing itself, and one
