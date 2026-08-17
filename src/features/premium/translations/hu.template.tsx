@@ -38,6 +38,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <p className="mb-0">A Freemap ingyenes és nyílt marad.</p>
     </>
   ),
+  dtmAreaNames: { gb: 'Anglia' },
   stepsForAnonymous: (
     <>
       <div className="fw-bold">Hogyan működik</div>

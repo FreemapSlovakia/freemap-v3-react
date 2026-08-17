@@ -38,6 +38,7 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <p className="mb-0">Freemap reste gratuit et ouvert.</p>
     </>
   ),
+  dtmAreaNames: { gb: 'Angleterre' },
   stepsForAnonymous: (
     <>
       <div className="fw-bold">Comment ça marche</div>

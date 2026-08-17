@@ -40,6 +40,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
 
+  dtmAreaNames: { gb: 'England' },
   stepsForAnonymous: (
     <>
       <div className="fw-bold">So funktioniert es</div>

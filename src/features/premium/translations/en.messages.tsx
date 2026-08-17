@@ -34,6 +34,7 @@ const en: PremiumMessages = {
       <p className="mb-0">Freemap stays free and open.</p>
     </>
   ),
+  dtmAreaNames: { gb: 'England' },
   stepsForAnonymous: (
     <>
       <div className="fw-bold">How it works</div>

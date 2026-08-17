@@ -4,6 +4,12 @@ export type PremiumMessages = {
   title: string;
   /** `dtmCountries` is the localized country list of the elevation bullet. */
   commonHeader: (price: number, dtmCountries: string) => ReactNode;
+  /**
+   * What that list says instead of the country's own name where the model
+   * covers only part of it, keyed by the code the coverage is reported under.
+   * `Intl.DisplayNames` names countries alone, so these are translated by hand.
+   */
+  dtmAreaNames: { gb: string };
   stepsForAnonymous: ReactNode;
   success: string;
   becomePremium: string;

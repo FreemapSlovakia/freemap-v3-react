@@ -108,6 +108,18 @@ Still emitting at info level (non-blocking, optional cleanup):
       for manual pending state, and **React Compiler** eligibility (decide first —
       it would let many hand-written `useMemo`/`useCallback` be dropped, changing
       how much manual hook churn is worthwhile).
+- [ ] **Scope England's terrain model to England.** The Environment Agency's
+      LIDAR composite covers England alone, but coverage is reported per country
+      (`/geotools/covered-countries` matches an `alpha2` column), so the credit
+      shows anywhere in the UK and GEDTM30 is credited beside it everywhere —
+      each an over-credit, which is the safe direction, and the premium tooltip
+      names England through `dtmAreaNames` rather than the country. To make it
+      exact, carry a subdivision token end to end: an England polygon row in the
+      API's `country` table under `gb-eng`, the same name for the England entry
+      in `ELEVATION_SOURCES` (so `?sources=1` reports it), then here the entry's
+      `country`, `ELEVATION_API_DTM_COUNTRIES` and `COUNTRY_TOKEN` in
+      `elevationSources.ts`, which today accepts two letters only. Both server
+      changes are needed together — the token has to match on both sides.
 
 ## Decisions worth not relitigating
 

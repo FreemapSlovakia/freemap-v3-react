@@ -17,6 +17,9 @@ import {
  * (`OUTDOOR_NATIONAL_DTM_ATTRIBUTION` in `mapDefinitions.tsx`) — the same
  * models, and at the moment the same countries, but the two lists stay separate
  * because either side can gain a model the other doesn't hold.
+ *
+ * Coverage is per country, so `gb` overstates a model that covers England
+ * alone; a read elsewhere in the UK still falls back to GEDTM30.
  */
 export const ELEVATION_API_DTM_COUNTRIES = [
   'at',
@@ -25,6 +28,7 @@ export const ELEVATION_API_DTM_COUNTRIES = [
   'es',
   'fi',
   'fr',
+  'gb',
   'hr',
   'it',
   'no',

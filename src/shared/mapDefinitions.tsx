@@ -137,6 +137,13 @@ export const GEDTM30_ATTR: AttributionDef = {
  */
 export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
   country: string;
+  /**
+   * Set where the model covers only part of the country. Coverage is reported
+   * per country, so such a model can't be shown only where it reaches — it is
+   * credited over the whole country, and GEDTM30 stays credited beside it for
+   * the part it doesn't cover.
+   */
+  partial?: boolean;
 })[] = [
   {
     type: 'data',
@@ -216,16 +223,25 @@ export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
     name: 'DMR: Državna geodetska uprava',
     url: 'https://dgu.gov.hr/proizvodi-i-usluge/podaci-topografske-izmjere/digitalni-model-reljefa/180',
   },
+  {
+    type: 'data',
+    // The copyright line is what the OGL v3 licence asks for verbatim.
+    country: 'gb',
+    partial: true,
+    name: 'LIDAR Composite DTM 1\xa0m (England, OGL\xa0v3): ©\xa0Environment Agency copyright and/or database right 2022. All rights reserved.',
+    url: 'https://www.data.gov.uk/dataset/01b3ee39-da3f-47b6-83da-dc98e73a461f/lidar-composite-digital-terrain-model-dtm-1m',
+  },
 ];
 
 /**
- * Countries the outdoor renderer shades from a national elevation model. The
- * elevation API keeps its own list, `ELEVATION_API_DTM_COUNTRIES`, which need
- * not hold the same countries.
+ * Countries the outdoor renderer shades from a national elevation model over
+ * their whole area, so GEDTM30 isn't credited there. A `partial` model leaves
+ * its country out. The elevation API keeps its own list,
+ * `ELEVATION_API_DTM_COUNTRIES`, which need not hold the same countries.
  */
-const OUTDOOR_NATIONAL_DTM_COUNTRIES = OUTDOOR_NATIONAL_DTM_ATTRIBUTION.map(
-  (a) => a.country,
-);
+const OUTDOOR_NATIONAL_DTM_COUNTRIES = OUTDOOR_NATIONAL_DTM_ATTRIBUTION.filter(
+  (a) => !a.partial,
+).map((a) => a.country);
 
 // Attribution shared by the outdoor map and its KST-routes variant: Freemap,
 // OSM data, the national elevation sources, and the global GEDTM30 model that
