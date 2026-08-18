@@ -3,6 +3,12 @@ import type { DrawingMessages } from './DrawingMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<DrawingMessages> = {
   edit: {
+    properties: 'Właściwości',
+    propertyKey: 'Nazwa',
+    propertyValue: 'Wartość',
+    addProperty: 'Dodaj właściwość',
+    removeProperty: 'Usuń właściwość',
+    insertIntoLabel: 'Wstaw do etykiety',
     title: 'Właściwości',
     color: 'Kolor',
     fillColor: 'Kolor wypełnienia',

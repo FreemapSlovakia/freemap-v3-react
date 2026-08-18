@@ -4,6 +4,12 @@ import type { DrawingMessages } from './DrawingMessages.js';
 const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
   modify: 'Lastnosti',
   edit: {
+    properties: 'Lastnosti',
+    propertyKey: 'Ime',
+    propertyValue: 'Vrednost',
+    addProperty: 'Dodaj lastnost',
+    removeProperty: 'Odstrani lastnost',
+    insertIntoLabel: 'Vstavi v oznako',
     title: 'Lastnosti',
     color: 'Barva',
     fillColor: 'Barva polnila',

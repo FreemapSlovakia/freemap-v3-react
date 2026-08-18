@@ -4,6 +4,12 @@ import type { DrawingMessages } from './DrawingMessages.js';
 const hu: DeepPartialWithRequiredObjects<DrawingMessages> = {
   modify: 'Tulajdonságok',
   edit: {
+    properties: 'Tulajdonságok',
+    propertyKey: 'Név',
+    propertyValue: 'Érték',
+    addProperty: 'Tulajdonság hozzáadása',
+    removeProperty: 'Tulajdonság eltávolítása',
+    insertIntoLabel: 'Beszúrás a feliratba',
     title: 'Tulajdonságok',
     color: 'Szín',
     fillColor: 'Kitöltőszín',
