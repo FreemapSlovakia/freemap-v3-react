@@ -15,11 +15,14 @@
       padding: 0 3px;
     }
 
-    /* A user's own text, which may run to several lines. Leaflet keeps
-       tooltips to one line; here the newlines are the point, and the box is
-       centred on the longest of them. Runs of spaces still collapse. */
+    /* A user's own text, which may run to several lines. `pre` rather than
+       `pre-line`: both honour the newlines the user typed, but `pre-line` also
+       breaks a long line to fit the box, which turned every label wider than
+       the tooltip into two — Leaflet's own `nowrap` never did that. Lines are
+       broken where the label says and nowhere else, and the box is centred on
+       the longest of them. */
     &.multiline {
-      white-space: pre-line;
+      white-space: pre;
       text-align: center;
     }
   }
