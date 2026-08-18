@@ -526,7 +526,7 @@ The **Advertise with Us** page (also opened from the "place your own ad here" ba
 
 The **Map License** modal explains the attribution the licenses require and points at the map's **©** button, which lists the sources to credit for what is currently shown: the active layers' map, data and picture credits, plus a routing credit (Sonny's LiDAR DTM, the terrain model the router is weighted by) whenever a GraphHopper route or isochrone stands.
 
-The **Map legend** modal is specific to the currently active map and explains its symbols, grouped into collapsible categories (e.g. Accommodation, Food & Drink, Institutions, Sports, Natural features, Other points of interest, Land cover, Water, Roads and paths, Railways, Terrain, Borders, Other). The legend content differs per map type and is also available for WMS and custom WMS maps. It can also be opened from the map's **?** help button (<kbd>m</kbd> <kbd>l</kbd>).
+The **Map legend** modal is specific to the currently active map and explains its symbols, grouped into collapsible categories (e.g. Accommodation, Food & Drink, Institutions, Sports, Natural features, Other points of interest, Land cover, Water, Roads and paths, Railways, Terrain, Borders, Other). The legend content differs per map type and is also available for WMS and custom WMS maps. It can also be opened from the map's **ⓘ** info button (<kbd>m</kbd> <kbd>l</kbd>).
 
 ### Support Freemap
 
@@ -555,13 +555,15 @@ Right-clicking (or long-pressing) a location on the map opens a context menu wit
 - Plan a route from here
 - Plan a route to here
 
-### Help button
+### Info button
 
-A round **?** button at the bottom-right corner of the map opens a small popover with:
+A round **ⓘ** info button at the bottom-right corner of the map opens a small popover with:
 
 - Copyright
 - Map legend (<kbd>m</kbd> <kbd>l</kbd>)
 - Privacy policy
+- Terms of service
+- Refund policy
 
 ## Map Layers
 

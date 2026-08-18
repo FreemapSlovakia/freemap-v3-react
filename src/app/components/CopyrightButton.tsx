@@ -11,10 +11,10 @@ import { type ReactElement, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaFileContract,
+  FaInfoCircle,
   FaList,
   FaLock,
   FaMoneyBillWave,
-  FaQuestion,
   FaRegCopyright,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -63,7 +63,7 @@ export function CopyrightButton(): ReactElement {
               variant="secondary"
               {...props}
             >
-              <FaQuestion />
+              <FaInfoCircle />
             </Dropdown.Toggle>
           )}
         </LongPressTooltip>

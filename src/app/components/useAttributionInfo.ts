@@ -5,6 +5,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
+import { askingCookieConsentSelector } from '../store/selectors.js';
 
 const EsriWorldImageryAttributionSchema = z.object({
   contributors: z.array(
@@ -56,6 +57,8 @@ export function useAttributionInfo() {
     (state) => 'attribution' in state.toasts.toasts,
   );
 
+  const askingCookieConsent = useAppSelector(askingCookieConsentSelector);
+
   // hide attribution on mouse down
   useEffect(() => {
     if (!showingAttribution) {
@@ -87,6 +90,38 @@ export function useAttributionInfo() {
       document.body.removeEventListener('pointerdown', handlePointerDown);
     };
   }, [dispatch, showingAttribution]);
+
+  const attributionHeldRef = useRef(false);
+
+  // The consent prompt shares the toast stack, so the attribution is raised
+  // without a timeout while it is unanswered — no timeout also means the toast
+  // ignores the pointer, which would otherwise arm one on leaving it. Answering
+  // the prompt re-raises the toast, now with its five seconds.
+  const showAttributionToast = useCallback(
+    (timeout: number | undefined) => {
+      attributionHeldRef.current = timeout === undefined;
+
+      dispatch(
+        toastsAdd({
+          id: 'attribution',
+          messageKey: 'general.attribution',
+          style: 'info',
+          timeout,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  useEffect(() => {
+    if (
+      showingAttribution &&
+      !askingCookieConsent &&
+      attributionHeldRef.current
+    ) {
+      showAttributionToast(5000);
+    }
+  }, [askingCookieConsent, showingAttribution, showAttributionToast]);
 
   const [esriAttributions, setEsriAttributions] = useState<
     EsriWorldImageryAttribution | undefined
@@ -185,15 +220,14 @@ export function useAttributionInfo() {
       esriAttributions.add(a);
     }
 
-    dispatch(
-      toastsAdd({
-        id: 'attribution',
-        messageKey: 'general.attribution',
-        style: 'info',
-        timeout: 5000,
-      }),
-    );
-  }, [layers, dispatch, nonce, esriAttribution]);
+    showAttributionToast(askingCookieConsent ? undefined : 5000);
+  }, [
+    layers,
+    nonce,
+    esriAttribution,
+    askingCookieConsent,
+    showAttributionToast,
+  ]);
 
   return useCallback(() => {
     setNonce((n) => n + 1);
