@@ -1,68 +1,11 @@
+/* On top of the shared floating-window box: the size it falls back to before
+   the stored one is applied, and the plot's own typography. */
 .elevation-chart {
-  position: relative;
-  background-color: rgba(255, 255, 255, 0.8);
-  [data-bs-theme="dark"] & {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-  overflow: hidden;
   width: 300px;
   height: 150px;
-  touch-action: none;
-
-  & > button {
-    position: absolute;
-    right: 0px;
-    margin-right: 0.5rem;
-  }
 
   & > svg {
     user-select: none;
     font-size: 12px;
   }
-}
-
-/* Room the toolbar row keeps clear at its end for the grip, which is pinned to
-   the corner rather than laid out in the row — the row wraps, and the grip
-   belongs in the corner on every one of its shapes. Measured from the row's
-   own right edge, which its margin and the box's padding already inset. */
-.footer {
-  padding-right: 1rem;
-}
-
-/* A finger-sized grip in the top-left corner, over the empty corner of the axis
-   margins. The only way to move the window — pressing the plot scrubs the
-   profile instead, which is the only way a finger can read values off it. */
-.move-handle {
-  position: absolute;
-  top: 0.25rem;
-  left: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  font-size: 1.25rem;
-  cursor: move;
-  touch-action: none;
-  color: var(--bs-secondary-color);
-}
-
-/* A finger-sized grip in the bottom-right corner: the native `resize: both`
-   corner is a couple of CSS pixels of an element that already sets
-   `touch-action: none`, so a touch pointer can't grab it at all. */
-.resize-handle {
-  position: absolute;
-  right: -0.25rem;
-  bottom: -0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  /* Larger than the icon's default 1em, so the mark carries about as much
-     weight as the buttons beside it while the target stays finger-sized. */
-  font-size: 1.5rem;
-  cursor: nwse-resize;
-  touch-action: none;
-  color: var(--bs-secondary-color);
 }
