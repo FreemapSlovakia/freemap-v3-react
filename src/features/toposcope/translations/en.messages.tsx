@@ -15,7 +15,6 @@ const en: ToposcopeMessages = {
   settings: {
     title: 'Toposcope',
     inscriptions: 'Inscriptions',
-    quadrant: ({ from, to }) => `${from}–${to}`,
     innerCircleRadius: 'Inner circle radius',
     outerCircleRadius: 'Outer circle radius',
     scale: 'Scale',

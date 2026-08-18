@@ -32,7 +32,9 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
 
   const c = tm?.cardinals;
 
-  // The four inscriptions run clockwise from the quadrant between S and E.
+  // The four inscriptions run clockwise from the quadrant between S and E. The
+  // two letters are joined with a dash here rather than through a message: the
+  // letters are translated, the dash between them is the same everywhere.
   const quadrants = [
     [c?.s, c?.e],
     [c?.s, c?.w],
@@ -85,10 +87,7 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
             className="mb-2"
           >
             <Form.Label className="small mb-1">
-              {tm?.settings.quadrant({
-                from: quadrants[index]![0] ?? '',
-                to: quadrants[index]![1] ?? '',
-              })}
+              {quadrants[index]![0]}–{quadrants[index]![1]}
             </Form.Label>
 
             <Form.Control

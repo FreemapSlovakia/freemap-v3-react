@@ -20,8 +20,6 @@ export type ToposcopeMessages = {
     title: string;
     /** Heading over the four texts curved along the outer circle. */
     inscriptions: string;
-    /** Names one of them by the quadrant it sits in, e.g. "S–E". */
-    quadrant: (props: { from: string; to: string }) => string;
     innerCircleRadius: string;
     /** The ring the rays stop at, inside the inscriptions. */
     outerCircleRadius: string;
