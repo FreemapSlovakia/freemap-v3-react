@@ -458,6 +458,30 @@ export function latLonToString(
   )}, ${formatGpsCoord(latLon.lon, 'WE', style, language)}`;
 }
 
+/**
+ * Degrees, minutes and whole seconds. `cardinals` is the negative and positive
+ * hemisphere letter, e.g. `'SN'` for a latitude. Shorter than
+ * {@link formatGpsCoord}'s DMS, which carries three decimals of a second.
+ */
+function formatWholeSecondCoord(angle: number, cardinals: string): string {
+  // Rounded once, as whole seconds, so a value just short of the next minute
+  // can't come out as 60".
+  const total = Math.round(Math.abs(angle) * 3600);
+
+  return `${cardinals[angle < 0 ? 0 : 1]} ${Math.floor(total / 3600)}° ${Math.floor(
+    (total % 3600) / 60,
+  )}' ${total % 60}"`;
+}
+
+/**
+ * A position as the two lines a toposcope is engraved with, latitude over
+ * longitude. What `{location}` expands to in a drawing label, on the map and on
+ * the dial alike — which is why it lives here rather than with the toposcope.
+ */
+export function formatLocationLines(coords: LatLon): string {
+  return `${formatWholeSecondCoord(coords.lat, 'SN')}\n${formatWholeSecondCoord(coords.lon, 'WE')}`;
+}
+
 export function positionsEqual(pt1?: Position, pt2?: Position): boolean {
   if (!pt1 || !pt2) {
     throw new Error();

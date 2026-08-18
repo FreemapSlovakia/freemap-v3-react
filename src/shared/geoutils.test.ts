@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   containsElevations,
   elevationCoverage,
+  formatLocationLines,
   lineSegments,
   trackTimeSegments,
 } from './geoutils.js';
@@ -216,5 +217,26 @@ describe('trackTimeSegments', () => {
         geometry: { type: 'Point', coordinates: [0, 0] },
       }),
     ).toEqual([]);
+  });
+});
+
+describe('formatLocationLines', () => {
+  it('writes latitude over longitude in whole seconds', () => {
+    expect(formatLocationLines({ lat: 49.013621, lon: 20.169882 })).toBe(
+      'N 49° 0\' 49"\nE 20° 10\' 12"',
+    );
+  });
+
+  it('names the hemisphere each side of zero', () => {
+    expect(formatLocationLines({ lat: -33.9, lon: -18.4 })).toBe(
+      'S 33° 54\' 0"\nW 18° 24\' 0"',
+    );
+  });
+
+  it('carries into the next minute rather than writing 60 seconds', () => {
+    // 59.9995' would round to 60" a naive way; the whole angle is rounded once.
+    expect(formatLocationLines({ lat: 1 - 0.1 / 3600, lon: 0 })).toBe(
+      'N 1° 0\' 0"\nE 0° 0\' 0"',
+    );
   });
 });

@@ -66,7 +66,7 @@ function makeDeserializeBox(
 }
 
 /** Half the viewport, never below what the content needs nor past its edges. */
-function halfViewportSize() {
+export function halfViewportSize() {
   return {
     width: Math.min(
       Math.max(window.innerWidth / 2, 400),

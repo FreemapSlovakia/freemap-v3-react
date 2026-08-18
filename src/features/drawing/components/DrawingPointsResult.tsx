@@ -5,6 +5,7 @@ import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
+import { formatLocationLines } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
 import type {
@@ -188,7 +189,15 @@ function DrawingPointMarker({
           permanent
           opacity={0.9 * opacity}
         >
-          <span>{interpolateLabel(label, props)}</span>
+          {/* `{location}` is computed rather than stored, so it is offered
+              here the same way the toposcope offers it — otherwise a point
+              labelled with it shows the token itself. */}
+          <span>
+            {interpolateLabel(label, {
+              ...props,
+              location: formatLocationLines(coords),
+            })}
+          </span>
         </Tooltip>
       )}
     </RichMarker>

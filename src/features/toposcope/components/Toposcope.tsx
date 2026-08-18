@@ -1,8 +1,12 @@
 import { closeTool, selectFeature } from '@app/store/actions.js';
 import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
+import { formatLocationLines } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useFloatingWindow } from '@shared/hooks/useFloatingWindow.js';
+import {
+  halfViewportSize,
+  useFloatingWindow,
+} from '@shared/hooks/useFloatingWindow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { siteNames, siteOf } from '@shared/sites.js';
 import clsx from 'clsx';
@@ -18,15 +22,24 @@ import {
   metersToMiles,
   type RayValues,
 } from '../rayTemplate.js';
-import {
-  bearingTo,
-  distanceTo,
-  formatDialLocation,
-} from '../toposcopeGeometry.js';
+import { bearingTo, distanceTo } from '../toposcopeGeometry.js';
 import { setToposcopeSvg } from '../toposcopeSvgHolder.js';
 import { useToposcopeMessages } from '../translations/useToposcopeMessages.js';
 import classes from './Toposcope.module.css';
 import { type ToposcopeRay, ToposcopeSvg } from './ToposcopeSvg.js';
+
+/**
+ * The dial is round and sits in the middle of whatever room it is given, so a
+ * panel wider than it is tall would only pad the sides. It opens square, on the
+ * shorter of the two halves the viewport offers.
+ */
+function squareDefaultSize() {
+  const { width, height } = halfViewportSize();
+
+  const side = Math.min(width, height);
+
+  return { width: side, height: side };
+}
 
 /** Splits a label into lines, dropping the blank ones a stray newline leaves. */
 function toLines(text: string): string[] {
@@ -130,7 +143,7 @@ export default function Toposcope(): ReactElement {
         distance: nf.format(meters / 1000),
         distance_mi: nfMi.format(metersToMiles(meters)),
         azimuth: nfAz.format(bearing),
-        location: formatDialLocation(point.coords),
+        location: formatLocationLines(point.coords),
         props: point.props,
       };
 
@@ -156,7 +169,7 @@ export default function Toposcope(): ReactElement {
         ? toLines(
             interpolateLabel(center.point.label ?? '', {
               ...center.point.props,
-              location: formatDialLocation(center.point.coords),
+              location: formatLocationLines(center.point.coords),
             }),
           )
         : [],
@@ -171,7 +184,10 @@ export default function Toposcope(): ReactElement {
     pos,
     width,
     height,
-  } = useFloatingWindow({ storageKey: 'fm.toposcope.box' });
+  } = useFloatingWindow({
+    storageKey: 'fm.toposcope.box',
+    defaultSize: squareDefaultSize,
+  });
 
   // The portal the dial was made on — the same name the page title carries, so
   // an exported dial says which of the two sites drew it.
