@@ -3,11 +3,7 @@
   --fg: #f6f4ef;
   --muted: #c3c1bb;
   --kick: #d98a63;
-  --ring: #d98a63;
   --tags: #7d8891;
-  --sig-bg: rgba(255, 255, 255, 0.06);
-  --sig-bd: rgba(246, 244, 239, 0.22);
-  --z: #e9e7e1;
   --bd: #000;
   --bin0: rgba(246, 244, 239, 0.08);
   --bin1: rgba(246, 244, 239, 0.15);
@@ -16,7 +12,9 @@
   display: inline-block;
   position: relative;
   overflow: hidden;
-  max-width: min(500px, 100%);
+  /* No percentage here: it is ignored while the flex row measures the card, so
+     the toolbar around it would keep the width of the unwrapped text. */
+  max-width: 380px;
   box-sizing: border-box;
   text-decoration: none;
   border-radius: var(--bs-border-radius);
@@ -36,11 +34,7 @@
     --fg: #17191f;
     --muted: #5c5a54;
     --kick: #c2643f;
-    --ring: #c2643f;
     --tags: #8a8880;
-    --sig-bg: #17191f;
-    --sig-bd: #17191f;
-    --z: #f6f4ef;
     --bd: #cbc7bd;
     --bin0: rgba(23, 25, 31, 0.07);
     --bin1: rgba(23, 25, 31, 0.14);
@@ -55,7 +49,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 10px 44px 10px 12px;
+  padding: 9px 12px;
 }
 
 .kick {
@@ -67,7 +61,7 @@
 
 .head {
   font-weight: 600;
-  font-size: 22px;
+  font-size: 20px;
   letter-spacing: -0.02em;
   margin-top: 4px;
   line-height: 1.05;
@@ -85,19 +79,6 @@
   letter-spacing: 0.04em;
   color: var(--kick);
   margin-top: 5px;
-}
-
-.sig {
-  position: absolute;
-  right: 14px;
-  bottom: 12px;
-  z-index: 3;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--sig-bg);
-  border: 1px solid var(--sig-bd);
 }
 
 .bin {

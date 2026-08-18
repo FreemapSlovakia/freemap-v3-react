@@ -3,16 +3,15 @@ import { ZdilaAd } from '@features/ad/components/ZdilaAd.js';
 import type { AdMessages } from './AdMessages.js';
 
 const en: AdMessages = {
-  self: (email) => (
-    <>
-      Interested in placing your own ad here? Don’t hesitate to contact us at{' '}
-      {email}.
-    </>
-  ),
+  self: {
+    head: 'Your ad here',
+    sub: 'Reach people planning their time outdoors — right inside the map.',
+    cta: 'See what we offer',
+  },
   rovas: () => (
     <RovasAd rovasDesc="an economy that rewards work">
-      <b>Get rewarded for the work you do.</b> Log any volunteer activity you
-      choose, have it verified by the community, and earn chrons.
+      Log your volunteer work, have it verified by the community, and earn
+      chrons.
     </RovasAd>
   ),
   zdilaAuthorship: () => (

@@ -257,38 +257,6 @@ export function ZdilaAd({ kick, head, sub, meta }: Props): ReactElement {
 
         {meta && <div className={classes.meta}>{meta}</div>}
       </div>
-
-      <span className={classes.sig}>
-        <svg
-          viewBox="0 0 100 100"
-          width="26"
-          height="26"
-          style={{ display: 'block' }}
-        >
-          <polyline
-            points="24,26 76,26 24,74 76,74"
-            fill="none"
-            stroke="var(--z)"
-            strokeWidth="9"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <g fill="var(--z)">
-            <circle cx="24" cy="26" r="8.5" />
-            <circle cx="76" cy="26" r="8.5" />
-            <circle cx="50" cy="50" r="8.5" />
-            <circle cx="24" cy="74" r="8.5" />
-          </g>
-          <circle
-            cx="76"
-            cy="74"
-            r="10"
-            fill="var(--z)"
-            stroke="var(--ring)"
-            strokeWidth="8"
-          />
-        </svg>
-      </span>
     </a>
   );
 }

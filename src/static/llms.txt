@@ -517,9 +517,12 @@ Opens a submenu:
 - Keyboard Shortcuts
 - Garmin
 - Freemap.sk for Geocaching Extension
+- Advertise with Us
 - **Reset application** — clears all locally stored settings (signing you out) and reloads the page; confirmed first
 
 Most items open a modal with the selected topic; **Reset application** instead wipes the persisted state and reloads.
+
+The **Advertise with Us** page (also opened from the "place your own ad here" banner) describes the audience, where the ad appears in the interface, the accepted formats, and the address to ask for an offer at.
 
 The **Map License** modal explains the attribution the licenses require and points at the map's **©** button, which lists the sources to credit for what is currently shown: the active layers' map, data and picture credits, plus a routing credit (Sonny's LiDAR DTM, the terrain model the router is weighted by) whenever a GraphHopper route or isochrone stands.
 

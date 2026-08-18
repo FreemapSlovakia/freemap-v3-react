@@ -2,6 +2,7 @@ import { createAction } from '@reduxjs/toolkit';
 import z from 'zod';
 
 export const DocumentSchema = z.enum([
+  'advertise',
   'attribution',
   'dvePercenta',
   'exports',

@@ -4,16 +4,11 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { AdMessages } from './AdMessages.js';
 
 const it: DeepPartialWithRequiredObjects<AdMessages> = {
-  self: (email) => (
-    <>
-      Vuoi pubblicare il tuo annuncio qui? Non esitare a contattarci a {email}.
-    </>
-  ),
+  self: {},
   rovas: () => (
     <RovasAd rovasDesc="un’economia che premia il lavoro">
-      <b>Fatti premiare per il lavoro che svolgi.</b> Registra qualsiasi
-      attività di volontariato tu scelga, falla verificare dalla community e
-      guadagna chron.
+      Registra la tua attività di volontariato, falla verificare dalla community
+      e guadagna chron.
     </RovasAd>
   ),
   zdilaAuthorship: () => (

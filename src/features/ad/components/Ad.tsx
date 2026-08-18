@@ -8,6 +8,7 @@ import { Button } from 'react-bootstrap';
 import tShirt from '@/images/fm-t-shirt.jpg';
 import { type AdItem, useAd } from '../hooks/useAd.js';
 import { useAdMessages } from '../translations/useAdMessages.js';
+import { SelfAd } from './SelfAd.js';
 
 const ads: AdItem[] = [
   { id: 'tShirt', countries: ['SK'], chance: 3 }, // Freemap T-Shirt
@@ -104,14 +105,7 @@ export default function Ad(): ReactElement | null {
         }}
       >
         {ad === 'self' ? (
-          <div
-            className="border px-3 py-2 rounded bg-body text-body"
-            style={{ maxWidth: '420px' }}
-          >
-            {adm?.self(
-              <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>,
-            )}
-          </div>
+          adm && <SelfAd {...adm.self} />
         ) : ad === 'rovas' ? (
           adm?.rovas()
         ) : ad === 'zdilaAuthorship' ? (
