@@ -15,13 +15,21 @@
    Two boundaries suffice: a free user's trailing locked band starts exactly
    where the forecast does, and a premium user has no locked band at all. */
 .track {
+  /* Half a thumb: the slider hangs this far past each end (see below), so the
+     wrapper has to stand clear by the same, as margin — padding won't do it. */
+  --fm-radar-overhang: var(--fm-space-2);
+
   position: relative;
   width: 9rem;
-  height: 1.5rem;
+  height: var(--fm-space-4);
   flex: none;
+
+  /* A step more on the left, where the round thumb meets a filled button. */
+  margin-inline-start: calc(var(--fm-radar-overhang) + var(--fm-space-1));
+  margin-inline-end: var(--fm-radar-overhang);
   padding: 0;
   border: 0;
-  border-radius: 1rem;
+  border-radius: var(--bs-border-radius-pill);
   background: linear-gradient(
     to right,
     rgba(var(--bs-warning-rgb), 0.5) 0 var(--fm-radar-locked-until),
@@ -30,18 +38,22 @@
     var(--fm-radar-tail) var(--fm-radar-warning-from) 100%
   );
   background-repeat: no-repeat;
-  background-size: 100% 0.5rem;
+  background-size: 100% var(--fm-space-2);
   background-position: center;
 }
 
-/* Laid over its own share of the wrapper. The thumb travels from half its own
-   width in from each end, so the input is stretched by that much at both ends
-   for the value extremes to line up with the band boundaries behind it. */
+/* Laid over its own share of the wrapper, stretched by `--fm-radar-overhang` at
+   both ends — see the wrapper. */
 input.timeline {
   position: absolute;
   top: 0;
-  left: calc(var(--fm-radar-open-from) - 0.5rem);
-  width: calc(var(--fm-radar-open-to) - var(--fm-radar-open-from) + 1rem);
+  left: calc(var(--fm-radar-open-from) - var(--fm-radar-overhang));
+  width: calc(
+    var(--fm-radar-open-to) -
+    var(--fm-radar-open-from) +
+    2 *
+    var(--fm-radar-overhang)
+  );
   margin: 0;
 }
 

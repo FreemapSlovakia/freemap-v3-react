@@ -106,7 +106,11 @@ export function ElevationValue({
         <>
           <b>{nf01.format(elevation)}</b>&nbsp;{m?.general.masl}
           {sourceHint && (
-            <GlyphMarker hint={sourceHint} color="body-secondary">
+            <GlyphMarker
+              hint={sourceHint}
+              color="body-secondary"
+              className="ms-1"
+            >
               <FaInfoCircle />
             </GlyphMarker>
           )}

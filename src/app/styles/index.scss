@@ -20,12 +20,6 @@
   --fm-icon-sm: #{bootstrap.$font-size-sm};
   --fm-icon: #{bootstrap.$font-size-base};
   --fm-icon-lg: #{bootstrap.$h5-font-size};
-
-  // How far a mark stands off whatever it annotates — and, being real padding,
-  // how far its hit area reaches. The whole step here, since running text spaces
-  // nothing itself; a container with a gap of its own turns it down to the
-  // difference.
-  --fm-marker-air: var(--fm-space-2);
 }
 
 // Bootstrap ships no min-width:0 utility; needed so flex children can shrink

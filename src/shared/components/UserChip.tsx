@@ -44,7 +44,15 @@ export function UserChip({ user }: Props): ReactElement {
       )}
       <b>{user.name}</b>
       {user.premium && (
-        <GlyphMarker hint={prm?.premiumUser} color="info">
+        // The sentence already puts a space after the chip, so the gem reaches
+        // over it rather than adding a second. `position-relative` is load
+        // bearing: inline content that follows paints over an in-flow box, so
+        // without it the reach does nothing.
+        <GlyphMarker
+          hint={prm?.premiumUser}
+          color="info"
+          className="me-n1 position-relative"
+        >
           <FaGem />
         </GlyphMarker>
       )}

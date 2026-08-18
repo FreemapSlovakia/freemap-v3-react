@@ -98,7 +98,6 @@ should carry a spacing or size number that Bootstrap already has a name for.
 | `--fm-icon-sm` | `$font-size-sm` | `0.875rem` |
 | `--fm-icon` | `$font-size-base` | `1rem` |
 | `--fm-icon-lg` | `$h5-font-size` | `1.25rem`, Bootstrap's `.fs-5` step |
-| `--fm-marker-air` | `--fm-space-2` | how far a mark stands off what it annotates, which is also how far its hit area reaches |
 
 Restyle a Bootstrap component through **its own** custom properties, not by
 overriding the property it computes. `.fm-badge-action` sets `--bs-btn-font-size`
@@ -166,54 +165,42 @@ disabled). `OfflineBadge`, `PremiumGem`, `ExperimentalFunction`, `StatusIcon` /
 over it. A new mark should be one too, not another hand-rolled `LongPressTooltip`
 + `<span>`.
 
-### The air and the hit area are the same padding
+### The hit area is invisible
 
-`.fm-marker-air` is one rule: `padding-inline` of `--fm-marker-air`, and
-`padding-block` of a step given straight back as a negative margin.
+`.fm-marker-target` is one rule: a step of inline padding each side, and a step
+of block padding given straight back as margin. **24×32**, the same box the
+tool's own head gets from `px-1 py-2 my-n2` — that head is the shape to match.
 
-That single padding does both jobs. It stands the mark off whatever it annotates,
-*and* it is the target. Which means the two can never disagree, and — because it
-is real padding rather than an overlay — **two marks side by side tile instead of
-overlapping**. Neither can swallow the other's taps or its tooltip, which is what
-an inset target reaching over its neighbour does.
+Not a step more. `py-3` would make it 48px tall, which is taller than a toolbar's
+own content box: the overspill lands on the map, so a tap meant for the map hits
+the mark instead.
 
-Two marks in a row **split** the step between them (`.fm-marker-air +
-.fm-marker-air`, and the `:has(+ …)` for the other half). Both halves being equal
-and meeting in the middle is what makes the pair the same size as each other —
-give one of them the whole step and it comes out visibly wider than its
-neighbour, which is the same unfairness overlapping targets had, just quieter.
-Anything else beside a mark — a button, the text it annotates — pays nothing, so
-there the mark takes the whole step.
+Being real padding rather than an overlay, two marks side by side **tile** — one
+can never swallow the other's taps or its tooltip. Where the container already
+puts a gap between its children, the second of two marks drops its leading step
+so the pair doesn't end up a step *plus* a gap *plus* a step apart. That rule is
+also why the padding isn't `px-1`: Bootstrap's spacing utilities are
+`!important`, and it has to be able to win.
 
-The two axes are not symmetrical, and shouldn't be. **Inline** is capped by the
-spacing: two 16px glyphs a step apart cannot both be 24px wide without
-overlapping, and not overlapping is the whole point — so a mark comes out 22–28px
-wide depending on what is beside it. **Block** has room to spare, so it takes the
-whole 44–48px a fingertip wants (`--fm-space-3`), and gives every pixel of it
-back as margin: the height of a line or a row is not the mark's to change. That
-direction does overlap the line or row above, which is nearly always dead space;
-where it isn't, paint order decides and the later row wins.
+It also leaves the second mark 20px wide against its neighbour's 24. Their glyph
+centres are still 24px apart, so the pair meets SC 2.5.8 by its spacing
+exception; splitting the step instead would even them up at 22 each, which is
+worse on both counts. Don't "fix" the asymmetry without measuring first.
 
-Measured, with `--fm-space-3` on the block axis: 28×48 in prose, 24×48 in a menu
-row or a toolbar, 22×48 for each of two marks sharing a step in a menu row —
-that last one being the only case under the 24px floor, and only when two marks
-are adjacent.
+**The two axes cost differently.** Block padding is free — that direction is the
+line's own leading, dead space, and it is given straight back as margin so
+nothing moves. Inline padding is not: it is real width, so a mark *does* push its
+neighbours a step apart. That is the deal, and it is why the step is one unit and
+not two — grow it further and the row visibly reshuffles. Reaching instead of
+pushing (padding plus a negative margin) is available where the surrounding text
+already supplies the space, but it needs `position-relative` to beat the text
+that follows, and it must never reach over another mark.
 
-`--fm-marker-air` is the one knob, and it is set by the **container**, not the
-call site: the whole step in running text, which spaces nothing itself, and one
-step less inside a `.dropdown-item`, `.fm-toolbar` or `.btn-toolbar`, whose own
-gap makes up the rest. A mark in a menu row and a mark in a sentence then stand
-off their neighbours by the same amount.
-
-Two things opt out. `.fm-badge-action` — the acting badge on a layer row — has
-button clothes sized to the row's line, which already come to 24px, so
-`GlyphMarker`'s `bare` leaves the padding off rather than making its box a
-different shape. And a mark inside a **control** must never carry it: the padding
-adds to that control's height, which grows the toolbar and, because
-`.btn-toolbar` stretches, pulls every button in it taller — and entering the
-control enters the wrapper too, so both long-press tooltips open at once. Move
-the control out instead: `Selection` takes the tool's toggle button as its own
-`control` prop, beside the head rather than in it.
+**A mark brings its own step and no more.** Anything wider is the call site's or
+the container's to say — a `gap`, or an `ms-1` where running text wants more air
+than the step (see `ElevationValue`). The mark carries no inline *margin*, so a
+margin utility on it composes normally, and its own step is padding rather than
+margin so the room is room a finger can use.
 
 ### The glyph's box
 
@@ -237,9 +224,10 @@ read without opening a stylesheet:
 | --- | --- |
 | A toolbar head (icon + name, its own long-press target) | `align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2` |
 | The same, where the icon is itself a button | drop `px-1 py-2 my-n2` — the button is the target and sits where a button sits |
-| A bare readout or hint in a toolbar | `px-1`, or `ps-1` where a mark follows and brings its own leading air |
+| A bare readout or hint in a toolbar | `px-1`, or `ps-1` where a mark follows — a toolbar gives its marks a margin of their own |
 | A taller target on a phrase in prose | `py-2` — vertical padding on an inline box doesn't move the line |
 | A target on a standalone icon link | `p-2 m-n2`, with the row's `gap-3` so the targets meet rather than overlap |
+| A mark where the sentence already puts a space after it | `me-n1 position-relative` — reach over that space instead of adding a second one. `position-relative` is the point: inline content that follows paints over an in-flow box, so without it the gap looks right but answers to the sentence rather than to the mark (see `UserChip`). |
 
 ## Spacing: the container decides
 
@@ -266,8 +254,8 @@ in a row of controls, and is separated by `ms-1` (or a plain space). Making ever
 `.btn` and `.form-label` a flex container to avoid that would cost more than it
 buys.
 
-**Never on a `GlyphMarker`, though** — it carries its own leading air, which is
-also its hit area. See [touch targets](#the-air-and-the-hit-area-are-the-same-padding).
+That includes a `GlyphMarker`: it carries no inline *margin* of its own, so a
+margin utility on it composes normally with its step of padding.
 
 A component that renders a row appearing in several kinds of container lays that
 row out itself rather than trusting whichever it lands in — see `MapLayerItem`,

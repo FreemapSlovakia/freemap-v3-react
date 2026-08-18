@@ -87,7 +87,7 @@ export function GlyphMarker({
           ...props,
           className: clsx(
             'fm-marker',
-            !bare && 'fm-marker-air',
+            !bare && 'fm-marker-target',
             // A label makes the mark a phrase, which has to be able to wrap;
             // without one the mark is the glyph, and `fm-glyph` makes its box
             // exactly that.

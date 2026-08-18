@@ -89,7 +89,7 @@ export function RadarTimeline() {
           keyboard-reachable control; this only carries the pointer shortcut to
           the offer, which the main menu reaches by keyboard anyway. */}
       <div
-        className={clsx('px-1 align-self-center', classes.track)}
+        className={clsx('align-self-center', classes.track)}
         style={
           {
             '--fm-radar-locked-until': `${frames.length < 2 ? 0 : at(from)}%`,

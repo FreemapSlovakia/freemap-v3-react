@@ -966,7 +966,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     }
                   >
                     {({ props }) => (
-                      <span {...props}>
+                      // A mark's target; no margin to give back, since vertical
+                      // padding on an inline box moves nothing.
+                      <span {...props} className="py-2">
                         <LicenseBadge licenseId={badgeLicense} />{' '}
                         <a href={licenseUrl} target="license" rel="noreferrer">
                           {licenseName}

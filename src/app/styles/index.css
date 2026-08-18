@@ -340,50 +340,27 @@ button#freemap-logo {
   flex-shrink: 0;
 }
 
-/* The mark's spacing and its hit area are one thing: padding before the glyph
-   both stands it off what it annotates and gives a finger somewhere to land.
-   Real padding rather than an overlay, so two marks side by side *tile* — one
-   can never swallow the other's taps or its tooltip. Only the block axis is
-   given back, the height of the line or the row not being the mark's to change;
-   that direction is nearly always dead space anyway. */
-.fm-marker-air {
-  padding-inline: var(--fm-marker-air);
-
-  /* The block axis is the only one with room to spare, so it takes the whole
-     44–48px a fingertip wants; the inline axis is capped by the spacing, since
-     two glyphs a step apart cannot both be 24px wide without overlapping, and
-     overlapping is what this is here to avoid. */
-  padding-block: var(--fm-space-3);
-  margin-block: calc(-1 * var(--fm-space-3));
+/* The mark's hit area. Padding rather than an overlay, so two marks side by side
+   tile instead of one swallowing the other's taps; the block step is given back
+   as margin so nothing moves. Not `px-1 py-2 my-n2`: utilities are `!important`
+   and the rule below has to be able to win. */
+.fm-marker-target {
+  padding-inline: var(--fm-space-1);
+  padding-block: var(--fm-space-2);
+  margin-block: calc(-1 * var(--fm-space-2));
 }
 
-/* Two marks in a row split the space between them rather than each paying for
-   it, which keeps the pair the right distance apart and — since the halves meet
-   — gives them the same reach as each other. Anything else beside a mark (a
-   button, the text it annotates) pays nothing, so the mark takes the whole
-   step on that side. */
-.fm-marker-air + .fm-marker-air {
-  padding-inline-start: calc(var(--fm-marker-air) / 2);
+/* Otherwise two marks in a gapped container sit a step *plus a gap plus a step*
+   apart. */
+:is(.fm-toolbar, .btn-toolbar, .dropdown-item)
+  > .fm-marker-target
+  + .fm-marker-target {
+  padding-inline-start: 0;
 }
 
-.fm-marker-air:has(+ .fm-marker-air) {
-  padding-inline-end: calc(var(--fm-marker-air) / 2);
-}
-
-/* A container that spaces its own children leaves the mark only the difference;
-   running text, which spaces nothing, leaves it the whole step. */
-.fm-toolbar,
-.btn-toolbar,
-.dropdown-item {
-  --fm-marker-air: var(--fm-space-1);
-}
-
-/* A bare mark is its glyph and nothing else, so its box is exactly the glyph:
-   `line-height: 0` leaves the line box the glyph's own height, and an
-   inline-block takes its baseline from that line box — the glyph's bottom edge,
-   which is where an `<svg>` in the surrounding text sits too. A flex box can't:
-   with nothing in it that has a baseline of its own it synthesizes one from its
-   own border box, and the mark rides the padding above the line it annotates. */
+/* The glyph's own box, sitting on the text baseline like any inline `<svg>`.
+   Not a flex box: with no baseline of its own inside it, one gets synthesized
+   from the border box, and the padding then lifts the mark off the line. */
 .fm-glyph {
   display: inline-block;
   line-height: 0;
