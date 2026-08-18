@@ -58,8 +58,12 @@ export const mapAreaSelectingSelector = (state: RootState): boolean =>
 // home location, picking or showing a photo location, or drawing an export/cache
 // area. In these modes the regular features stay visible but non-interactive and
 // the tools stay inert (clicks don't draw points, add route legs, etc.).
+export const toposcopePickingCenterSelector = (state: RootState): boolean =>
+  state.toposcope.pickingCenter;
+
 export const pickingModeSelector = (state: RootState): boolean =>
   selectingHomeLocationSelector(state) ||
+  toposcopePickingCenterSelector(state) ||
   galleryPickingPositionForIdSelector(state) !== null ||
   galleryShowPositionSelector(state) ||
   mapAreaSelectingSelector(state);
@@ -79,6 +83,7 @@ export const showGalleryPickerSelector = createSelector(
   selectingHomeLocationSelector,
   drawingLineSelector,
   mapAreaSelectingSelector,
+  toposcopePickingCenterSelector,
   (
     tool,
     layers,
@@ -87,6 +92,7 @@ export const showGalleryPickerSelector = createSelector(
     selectingHomeLocation,
     drawingLine,
     mapAreaSelecting,
+    toposcopePickingCenter,
   ) =>
     // gallery picker is available only when no map-click tool owns the click
     !tool &&
@@ -95,7 +101,8 @@ export const showGalleryPickerSelector = createSelector(
     !galleryShowPosition &&
     !selectingHomeLocation &&
     !drawingLine &&
-    !mapAreaSelecting,
+    !mapAreaSelecting &&
+    !toposcopePickingCenter,
 );
 
 export const showGalleryViewerSelector = (state: RootState): boolean =>
@@ -114,6 +121,7 @@ export const mouseCursorSelector = createSelector(
   showGalleryPickerSelector,
   galleryShowPositionSelector,
   (state: RootState) => state.drawingLines.drawing,
+  toposcopePickingCenterSelector,
   (
     selectingHomeLocation,
     tool,
@@ -121,12 +129,13 @@ export const mouseCursorSelector = createSelector(
     showGalleryPicker,
     galleryShowPosition,
     drawing,
+    toposcopePickingCenter,
   ) => {
     if (galleryShowPosition) {
       return 'auto';
     }
 
-    if (selectingHomeLocation || showGalleryPicker) {
+    if (selectingHomeLocation || showGalleryPicker || toposcopePickingCenter) {
       return 'crosshair';
     }
 

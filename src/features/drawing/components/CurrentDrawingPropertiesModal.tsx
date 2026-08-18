@@ -20,14 +20,20 @@ import {
   type ReactElement,
   type SubmitEvent,
   useCallback,
+  useRef,
   useState,
 } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTag, FaTimes } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
 import { setActiveModal } from '../../../app/store/actions.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import classes from './CurrentDrawingPropertiesModal.module.css';
+import {
+  DrawingPropsEditor,
+  propsToRows,
+  rowsToProps,
+} from './DrawingPropsEditor.js';
 
 type Props = { show: boolean };
 
@@ -51,6 +57,16 @@ export default function CurrentDrawingPropertiesModal({
         ? (state.drawingLines.lines[selection.id]?.label ?? '')
         : '???';
   });
+
+  const props = useAppSelector((state) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-points' && selection.id !== undefined
+      ? state.drawingPoints.points[selection.id]?.props
+      : selection?.type === 'draw-line-poly' && selection.id !== undefined
+        ? state.drawingLines.lines[selection.id]?.props
+        : undefined;
+  }, shallowEqual);
 
   const color = useAppSelector((state) => {
     const { selection } = state.main;
@@ -139,6 +155,45 @@ export default function CurrentDrawingPropertiesModal({
   const selection = useAppSelector((state) => state.main.selection);
 
   const [editedLabel, setEditedLabel] = useState(label);
+
+  const [editedRows, setEditedRows] = useState(() => propsToRows(props));
+
+  // The label field, so a property can be written in at the cursor.
+  const labelRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleInsertKey = useCallback((key: string) => {
+    const el = labelRef.current;
+
+    const token = `{${key}}`;
+
+    // A textarea reports a selection of 0..0 whether the caret is genuinely at
+    // the start or has never been in the field at all, so being focused is what
+    // tells a caret to write at from no caret to append after.
+    const caret =
+      el && document.activeElement === el
+        ? { at: el.selectionStart, end: el.selectionEnd }
+        : undefined;
+
+    setEditedLabel((label) => {
+      const text = label ?? '';
+
+      const { at, end } = caret ?? { at: text.length, end: text.length };
+
+      return text.slice(0, at) + token + text.slice(end);
+    });
+
+    // The caret follows what was written, so pressing several in a row reads in
+    // the order they were pressed.
+    if (el) {
+      const at = (caret?.at ?? el.value.length) + token.length;
+
+      requestAnimationFrame(() => {
+        el.focus();
+
+        el.setSelectionRange(at, at);
+      });
+    }
+  }, []);
 
   const [editedColor, setEditedColor] = useState(color);
 
@@ -337,6 +392,7 @@ export default function CurrentDrawingPropertiesModal({
                 dashArray: editedDash,
                 lineCap: editedLineCap,
                 lineJoin: editedLineJoin,
+                props: rowsToProps(editedRows),
               },
             })
           : drawingPointChangeProperties({
@@ -346,6 +402,7 @@ export default function CurrentDrawingPropertiesModal({
                 color: editedColor,
                 markerType: editedMarkerType,
                 icon: editedIcon || undefined,
+                props: rowsToProps(editedRows),
               },
             }),
       );
@@ -367,11 +424,12 @@ export default function CurrentDrawingPropertiesModal({
       editedLineJoin,
       close,
       selection,
+      editedRows,
     ],
   );
 
   const handleLocalLabelChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setEditedLabel(e.currentTarget.value);
     },
     [],
@@ -404,14 +462,27 @@ export default function CurrentDrawingPropertiesModal({
           <Form.Group controlId="label">
             <Form.Label>{dm?.edit.label}</Form.Label>
 
+            {/* A textarea because a label may run to several lines — which
+                also means Enter breaks the line instead of submitting, and the
+                Save button is the way out. */}
             <Form.Control
               autoFocus
-              type="text"
+              ref={labelRef}
+              as="textarea"
+              rows={2}
               value={editedLabel ?? ''}
               onChange={handleLocalLabelChange}
             />
 
             <Form.Text muted>{dm?.edit.hint}</Form.Text>
+          </Form.Group>
+
+          <Form.Group className="mt-3">
+            <DrawingPropsEditor
+              rows={editedRows}
+              onChange={setEditedRows}
+              onInsertKey={handleInsertKey}
+            />
           </Form.Group>
 
           {drawType === 'draw-line-poly' ? (

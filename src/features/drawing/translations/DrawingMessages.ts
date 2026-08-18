@@ -20,6 +20,15 @@ export type DrawingMessages = {
     lineJoinRound: string;
     lineJoinMiter: string;
     lineJoinBevel: string;
+    /** Heading over the feature's own data table. */
+    properties: string;
+    /** Column placeholders for one row of it. */
+    propertyKey: string;
+    propertyValue: string;
+    addProperty: string;
+    removeProperty: string;
+    /** Writes `{key}` into the label being edited. */
+    insertIntoLabel: string;
   };
   split: string;
   join: string;

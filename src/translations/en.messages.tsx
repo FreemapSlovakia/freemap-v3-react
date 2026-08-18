@@ -157,6 +157,7 @@ const messages: Messages = {
     mapDetails: 'Map details',
     tracking: 'Live tracking',
     gpsRecorder: 'GPS recorder',
+    toposcope: 'Toposcope',
     myMaps: 'My maps',
     myMap: 'My map',
   },

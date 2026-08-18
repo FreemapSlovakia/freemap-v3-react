@@ -18,7 +18,11 @@ import {
   type LineJoin,
   toWireHoleIndexes,
 } from '@features/drawing/model/actions/drawingLineActions.js';
-import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
+import {
+  type DrawingProps,
+  drawingPointSetAll,
+  normalizeProps,
+} from '@features/drawing/model/actions/drawingPointActions.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -72,6 +76,11 @@ import {
   searchSetResultStyle,
   searchUnselectResult,
 } from '@features/search/model/actions.js';
+import { toposcopeSet } from '@features/toposcope/model/actions.js';
+import {
+  parseToposcope,
+  serializeToposcope,
+} from '@features/toposcope/toposcopeUrl.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
 import type { TrackedDevice } from '@features/tracking/model/types.js';
 import {
@@ -100,6 +109,10 @@ import {
   type OsmFeatureId,
   osmElementTypes,
 } from '@shared/types/featureId.js';
+import {
+  serializeDrawingLine,
+  serializeDrawingPoint,
+} from '@shared/urlSerialization.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
@@ -403,6 +416,8 @@ export function handleLocationChange(store: MyStore): void {
 
   handleFeatureStyles(getState, dispatch, query);
 
+  handleToposcope(getState, dispatch, query);
+
   const changesetsDays = query['changesets-days'];
 
   const changesetParams: ChangesetParams = {};
@@ -451,8 +466,10 @@ export function handleLocationChange(store: MyStore): void {
       key === 'line' ||
       key === 'polygon'
     ) {
+      // `s` so the style fields survive a label written on several lines: a
+      // bare `.` stops at a newline and would drop every field after it.
       // biome-ignore lint/suspicious/noControlCharactersInRegex: I am aware of this
-      const m = /([^;\x1e]*)([;\x1e].*)?/.exec(value);
+      const m = /([^;\x1e]*)([;\x1e][\s\S]*)?/.exec(value);
 
       if (!m) {
         continue;
@@ -492,11 +509,18 @@ export function handleLocationChange(store: MyStore): void {
 
   const stateHoleIndexes = toWireHoleIndexes(stateLines);
 
+  // The type prefixes the digest because it is the URL's parameter *name*
+  // (`line=` / `polygon=`) rather than one of the fields the serializer writes,
+  // so without it a polygon and a line of the same shape read alike and a
+  // history entry that only changed the type never arrives.
+  const digestLine = (line: Line, holeOf: number | undefined) =>
+    `${line.type}${serializeDrawingLine(line, holeOf)}`;
+
   if (
-    lines.map((line) => serializePoints(line, line.holeOf)).join(';') !==
+    lines.map((line) => digestLine(line, line.holeOf)).join('\x1d') !==
     stateLines
-      .map((line, i) => serializePoints(line, stateHoleIndexes[i]))
-      .join(';')
+      .map((line, i) => digestLine(line, stateHoleIndexes[i]))
+      .join('\x1d')
   ) {
     dispatch(drawingLineSetLines(lines));
   }
@@ -1254,8 +1278,8 @@ function parseColorAndLabel(m: string): ReturnType<typeof parseStyleFields> {
  * geometry params and the per-feature default-style params (`track-style`,
  * `objects-style`, `search-style`). Field codes: `L`abel, `C`olor,
  * `F`illColor, `W`idth, `D`ashArray, line`K`ap, line`J`oin, `S`hape
- * (markerType), `I`con. A leading separator is tolerated. Only present fields
- * are returned.
+ * (markerType), `I`con, `P`roperties. A leading separator is tolerated. Only
+ * present fields are returned.
  */
 export function parseStyleFields(s: string): {
   label?: string;
@@ -1267,6 +1291,7 @@ export function parseStyleFields(s: string): {
   lineJoin?: LineJoin;
   markerType?: 'pin' | 'square' | 'ring';
   icon?: string;
+  props?: DrawingProps;
 } {
   const out: ReturnType<typeof parseStyleFields> = {};
 
@@ -1298,6 +1323,19 @@ export function parseStyleFields(s: string): {
         field[1] === 's' ? 'square' : field[1] === 'r' ? 'ring' : undefined;
     } else if (field[0] === 'I') {
       out.icon = field.slice(1) || undefined;
+    } else if (field[0] === 'P') {
+      // Key/value pairs, unit-separated. A trailing key with no value is
+      // dropped rather than read as empty, so a truncated link can't invent a
+      // property nobody wrote.
+      const parts = field.slice(1).split('\x1f');
+
+      const props: DrawingProps = {};
+
+      for (let i = 0; i + 1 < parts.length; i += 2) {
+        props[parts[i]!] = parts[i + 1]!;
+      }
+
+      out.props = normalizeProps(props);
     }
   }
 
@@ -1380,6 +1418,58 @@ function handleFeatureStyles(
   }
 }
 
+/**
+ * The toposcope dial's own settings — a `\x1e`-separated field string; see
+ * `serializeToposcope`. Its centre and rays are drawn points and arrive with
+ * the `point=` params instead.
+ */
+function handleToposcope(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  query: Record<string, string | string[]>,
+) {
+  const param =
+    typeof query['toposcope'] === 'string' ? query['toposcope'] : '';
+
+  // Compared through the serializer that wrote it rather than field by field,
+  // so a setting added later can't be left out of the comparison and quietly
+  // stop arriving.
+  if (param !== serializeToposcope(getState().toposcope)) {
+    dispatch(toposcopeSet(parseToposcope(param)));
+  }
+}
+
+/**
+ * One `point=` value: `lat/lon` followed by optional style fields. Returns
+ * `undefined` for anything that isn't a pair of coordinates.
+ *
+ * The tail is matched with `[\s\S]` rather than `.` because a label may be
+ * written on several lines — a bare `.` stops at the newline, the match then
+ * fails against the anchored end, and the point is dropped altogether.
+ */
+export function parseDrawingPointParam(value: string | undefined) {
+  const m = value
+    ? /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)([\s\S]*)$/.exec(value)
+    : null;
+
+  if (!m) {
+    return undefined;
+  }
+
+  const { label, color, markerType, icon, props } = parseColorAndLabel(
+    m[3] ?? '',
+  );
+
+  return {
+    coords: { lat: parseFloat(m[1]!), lon: parseFloat(m[2]!) },
+    label,
+    color,
+    markerType,
+    icon,
+    props,
+  };
+}
+
 function handleInfoPoint(
   getState: () => RootState,
   dispatch: Dispatch,
@@ -1398,27 +1488,8 @@ function handleInfoPoint(
         : [drawingPoint]
   )
     .concat(typeof emp === 'string' ? [emp] : [])
-    .map((ip) =>
-      ip ? /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)(.*?)?$/.exec(ip) : null,
-    )
-    .filter((ipMatch) => ipMatch)
-    .map((ipMatch) => {
-      // see https://github.com/microsoft/TypeScript/issues/29642
-      const m = ipMatch!;
-
-      const { label, color, markerType, icon } = parseColorAndLabel(m[3] ?? '');
-
-      return {
-        coords: {
-          lat: parseFloat(m[1]!),
-          lon: parseFloat(m[2]!),
-        },
-        label,
-        color,
-        markerType,
-        icon,
-      };
-    });
+    .map(parseDrawingPointParam)
+    .filter((point) => point !== undefined);
 
   // backward compatibility
   const ipl = query['info-point-label'];
@@ -1427,22 +1498,15 @@ function handleInfoPoint(
     ips[0]!.label = typeof ipl === 'string' ? decodeURIComponent(ipl) : '';
   }
 
-  // compare
+  // Compared through the very serializer that wrote the URL, so the comparison
+  // can't overlook a field the way a hand-rolled list of them did. Joined on a
+  // separator no label can contain, so two different sets can't digest alike.
   if (
-    ips
-      .map(
-        ({ coords, label, color, markerType, icon }) =>
-          `${serializePoint(coords)},${label},${color},${markerType},${icon}`,
-      )
-      .sort()
-      .join('\n') !==
+    ips.map(serializeDrawingPoint).sort().join('\x1d') !==
     getState()
-      .drawingPoints.points.map(
-        ({ coords, label, color, markerType, icon }) =>
-          `${serializePoint(coords)},${label},${color},${markerType},${icon}`,
-      )
+      .drawingPoints.points.map(serializeDrawingPoint)
       .sort()
-      .join('\n')
+      .join('\x1d')
   ) {
     dispatch(drawingPointSetAll(ips));
   }
@@ -1468,12 +1532,6 @@ function parseDate(value: unknown): Date | undefined {
   const date = new Date(value);
 
   return Number.isNaN(date.getTime()) ? undefined : date;
-}
-
-function serializePoints(line: Line, holeOf: number | undefined): string {
-  return `${line.type}:${line.color ?? ''}:${line.fillColor ?? ''}:${holeOf ?? ''}:${line.points
-    .map((point) => serializePoint(point))
-    .join(',')}`;
 }
 
 function serializePoint(point: LatLon | null | undefined): string {

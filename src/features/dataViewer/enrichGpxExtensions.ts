@@ -44,7 +44,7 @@ function enrichWaypointsWithExtensions(
 
     const props = feature.properties;
 
-    for (const tag of ['markerType', 'icon', 'color'] as const) {
+    for (const tag of ['label', 'markerType', 'icon', 'color'] as const) {
       const value = wpt
         .getElementsByTagNameNS(FM_NS, tag)[0]
         ?.textContent?.trim();
@@ -99,6 +99,7 @@ function enrichTracksWithExtensions(
     const props = feature.properties;
 
     for (const tag of [
+      'label',
       'type',
       'color',
       'fillColor',

@@ -5,6 +5,7 @@ import {
   openTool,
   selectFeature,
 } from '@app/store/actions.js';
+import { normalizeProps } from '@features/drawing/model/actions/drawingPointActions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { isDrawTool, isMapClickTool } from '@shared/toolDefinitions.js';
@@ -124,6 +125,8 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       const line = state.lines[payload.index];
 
       Object.assign(line, payload.properties);
+
+      line.props = normalizeProps(line.props);
 
       // Only a polygon can be a hole or hold one, so turning this ring into a
       // line frees both it and its own holes.

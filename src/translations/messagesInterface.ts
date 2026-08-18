@@ -122,6 +122,7 @@ export type Messages = {
     mapDetails: string;
     tracking: string;
     gpsRecorder: string;
+    toposcope: string;
     myMap: string;
     myMaps: string;
   };

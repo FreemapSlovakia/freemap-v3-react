@@ -8,6 +8,7 @@ import {
   drawingPointChangeProperties,
   drawingPointDelete,
   drawingPointSetAll,
+  normalizeProps,
 } from '../actions/drawingPointActions.js';
 
 export interface DrawingPointsState {
@@ -44,7 +45,11 @@ export const drawingPointsReducer = createReducer(initialState, (builder) =>
       state.change++;
     })
     .addCase(drawingPointChangeProperties, (state, { payload }) => {
-      Object.assign(state.points[payload.index], payload.properties);
+      const point = state.points[payload.index];
+
+      Object.assign(point, payload.properties);
+
+      point.props = normalizeProps(point.props);
     })
     .addCase(drawingPointChangePosition, (state, { payload }) => {
       const point = state.points[payload.index];

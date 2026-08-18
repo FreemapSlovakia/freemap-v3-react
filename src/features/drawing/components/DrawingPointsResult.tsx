@@ -15,6 +15,7 @@ import type {
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { interpolateLabel } from '../interpolateLabel.js';
 import type { DrawingPoint } from '../model/actions/drawingPointActions.js';
 import {
   drawingMeasure,
@@ -145,7 +146,7 @@ export function DrawingPointsResult(): ReactElement {
 }
 
 function DrawingPointMarker({
-  point: { coords, label, markerType, icon },
+  point: { coords, label, markerType, icon, props },
   renderColor,
   glyphColor,
   interactive,
@@ -182,12 +183,12 @@ function DrawingPointMarker({
     >
       {label && (
         <Tooltip
-          className="compact"
+          className="compact multiline"
           direction="top"
           permanent
           opacity={0.9 * opacity}
         >
-          <span>{label}</span>
+          <span>{interpolateLabel(label, props)}</span>
         </Tooltip>
       )}
     </RichMarker>

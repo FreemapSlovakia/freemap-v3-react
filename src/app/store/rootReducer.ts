@@ -30,6 +30,7 @@ import { routePlannerSettingsReducer } from '@features/routePlanner/model/settin
 import { searchReducer } from '@features/search/model/reducer.js';
 import { searchSettingsReducer } from '@features/search/model/settingsReducer.js';
 import { toastsReducer } from '@features/toasts/model/reducer.js';
+import { toposcopeReducer } from '@features/toposcope/model/reducer.js';
 import { trackingReducer } from '@features/tracking/model/reducer.js';
 import { trackingSettingsReducer } from '@features/tracking/model/settingsReducer.js';
 import { weatherRadarReducer } from '@features/weatherRadar/model/reducer.js';
@@ -71,6 +72,7 @@ export const reducers = {
   search: searchReducer,
   searchSettings: searchSettingsReducer,
   toasts: toastsReducer,
+  toposcope: toposcopeReducer,
   tracking: trackingReducer,
   trackingSettings: trackingSettingsReducer,
   trackViewer: dataViewerReducer,

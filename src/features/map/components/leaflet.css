@@ -14,6 +14,14 @@
     &.compact {
       padding: 0 3px;
     }
+
+    /* A user's own text, which may run to several lines. Leaflet keeps
+       tooltips to one line; here the newlines are the point, and the box is
+       centred on the longest of them. Runs of spaces still collapse. */
+    &.multiline {
+      white-space: pre-line;
+      text-align: center;
+    }
   }
 
   & .leaflet-tooltip-top:before {

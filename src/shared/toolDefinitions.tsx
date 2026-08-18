@@ -12,6 +12,7 @@ import {
   FaRoute,
 } from 'react-icons/fa';
 import { MdPolyline, MdShapeLine } from 'react-icons/md';
+import { PiCompassRoseBold } from 'react-icons/pi';
 import { TbMapPins } from 'react-icons/tb';
 import type { Messages } from '../translations/messagesInterface.js';
 
@@ -140,6 +141,12 @@ export const toolDefinitions: ToolDefinition[] = [
     msgKey: 'tracking',
     kbd: 'KeyT',
     requiresOnline: true,
+  },
+  {
+    tool: 'toposcope',
+    icon: <PiCompassRoseBold />,
+    msgKey: 'toposcope',
+    kbd: 'KeyS',
   },
   {
     tool: 'gps-recorder',

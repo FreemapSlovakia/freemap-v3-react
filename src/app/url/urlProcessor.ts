@@ -1,6 +1,7 @@
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
 import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
 import { routeKey } from '@features/routePlanner/model/actions.js';
+import { serializeToposcope } from '@features/toposcope/toposcopeUrl.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
@@ -135,6 +136,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     objects,
     wiki,
     elevationChart,
+    toposcope,
   } = state;
 
   if (!isUrlUpdatingEnabled()) {
@@ -296,6 +298,18 @@ function updateUrl(state: RootState, forced: boolean): void {
   // Everything describing what the map holds; shared with the my-maps
   // unsaved-changes comparison so the two can't disagree.
   historyParts.push(...getMapContentParts(state));
+
+  // The dial's own settings. Deliberately outside the map content: the centre
+  // and the rays are drawn points and travel with them, but this has no place
+  // in a saved map document yet, and adding it to that comparison would report
+  // a map as changed the moment it was loaded.
+  {
+    const toposcopeParam = serializeToposcope(toposcope);
+
+    if (toposcopeParam) {
+      historyParts.push(['toposcope', toposcopeParam]);
+    }
+  }
 
   if (trackViewerSettings.colorizeTrackBy) {
     historyParts.push([

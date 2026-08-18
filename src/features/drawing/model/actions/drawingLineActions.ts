@@ -1,6 +1,10 @@
 import type { Selection } from '@app/store/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import z from 'zod';
+import {
+  type DrawingProps,
+  DrawingPropsSchema,
+} from './drawingPointActions.js';
 
 export const LineCapSchema = z.enum(['butt', 'round', 'square']);
 
@@ -35,6 +39,8 @@ export const LineSchema = z.object({
   type: DrawingLineTypeSchema,
   points: z.array(PointSchema),
   label: z.string().optional(),
+  /** See {@link DrawingPropsSchema}. */
+  props: DrawingPropsSchema.optional(),
   color: z.string().optional(),
   fillColor: z.string().optional(),
   width: z.number().optional(),
@@ -145,6 +151,8 @@ export const drawingLineChangeProperties = createAction<{
     dashArray: number[] | undefined;
     lineCap: LineCap | undefined;
     lineJoin: LineJoin | undefined;
+    /** Empty clears the data table. */
+    props: DrawingProps | undefined;
   };
 }>('DRAWING_LINE_CHANGE_PROPERTIES');
 

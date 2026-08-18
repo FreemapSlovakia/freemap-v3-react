@@ -39,6 +39,7 @@ import {
   useMapEvents,
 } from 'react-leaflet';
 import { shallowEqual, useDispatch } from 'react-redux';
+import { interpolateLabel } from '../interpolateLabel.js';
 import {
   type DrawnLine,
   drawingLineAddPoint,
@@ -693,8 +694,8 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
               .map(({ lat, lon }) => ({ lat, lng: lon }))}
           >
             {line.label && (
-              <Tooltip className="compact" permanent>
-                <span>{line.label}</span>
+              <Tooltip className="compact multiline" permanent>
+                <span>{interpolateLabel(line.label, line.props)}</span>
               </Tooltip>
             )}
           </Polyline>
@@ -730,12 +731,12 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
         >
           {line.label && ps.length > 4 && (
             <Tooltip
-              className="compact"
+              className="compact multiline"
               offset={[-4, 0]}
               direction="center"
               permanent
             >
-              <span>{line.label}</span>
+              <span>{interpolateLabel(line.label, line.props)}</span>
             </Tooltip>
           )}
         </Polygon>

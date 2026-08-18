@@ -98,6 +98,31 @@ These place standalone map annotations — markers, lines, filled areas — not 
 | `line`, `polygon` (repeatable) | Drawing line / polygon | r/w | `lat/lon,lat/lon,…[<style fields>]` |
 | `distance-measurement-points`, `area-measurement-points`, `elevation-measurement-point` | Legacy measurement aliases | read-only | coords |
 
+## Toposcope
+
+The dial's **centre and rays are drawn points**, so they travel in the `point=` params above: the centre is the first point carrying the property `toposcope=center` (`%1EPtoposcope%1Fcenter`) — that, and nothing else, is what makes it the centre; its viewpoint icon is only how it looks. This param carries only the dial's own settings, and is omitted entirely while they are all at their defaults.
+
+| Param | Controls | R/W | Format |
+|---|---|---|---|
+| `toposcope` | Dial settings | r/w | `%1E`-separated fields, see below |
+
+Field codes (`serializeToposcope` / `parseToposcope` in [`toposcopeUrl.ts`](../src/features/toposcope/toposcopeUrl.ts)); a field is written only when it differs from the default, and one out of range is read as absent:
+
+| Code | Meaning | Default |
+|---|---|---|
+| `R` | Inner circle radius, 0–80 of the dial's 200-unit span | `25` |
+| `O` | Outer circle radius — the ring the rays stop at, 30–98. The band between it and the inscription circle at 99 is what the inscriptions are written in, centred | `90` |
+| `S` | Scale of the writing on the dial, 25–400 % | `100` |
+| `U` | Turn the western half's labels so none reads upside down (`U0` / `U1`) | on |
+| `A` | Template for a ray's first line | `{label}` |
+| `B` | Template for its second line | `{elevation} · {distance}` |
+| `0`–`3` | The four inscriptions along the outer circle, from the S–E quadrant clockwise. `{attribution}` expands to the map data credit, `{credit}` to the portal's own ("Toposcope by Freemap Slovakia" / "… Europe", by domain) | `''`, `{attribution}`, `''`, `{credit}` |
+
+A ray's lines are written from **templates** rather than from the point's own label. A template can name `{label}` (the point's label, its own property references already resolved), `{elevation}`, `{elevation_ft}`, `{distance}`, `{distance_mi}`, `{azimuth}`, `{location}`, and `{property:<name>}` for any property the point carries. Unlike a drawing label, a name a template can't answer expands to nothing and takes its separator with it — so `{elevation} · {distance}` on a point with no elevation reads as the distance alone. The first template is written above the ray and the second below it. Each yields as many lines as its text and its values have — a multi-line point label or `{location}` keeps its own lines, all of them on that template's side — and one that comes out empty leaves nothing on its side.
+
+Nothing about the toposcope is kept in localStorage, and it is deliberately **not** part of the map-content parts the my-maps unsaved-changes comparison digests — a saved map document has no place for it yet, so including it would report a map as changed the moment it was loaded.
+
+
 ## Style codec
 
 The drawing geometry params and the per-feature default-style params (`track-style`, `objects-style`, `search-style`) share one field codec, implemented by `parseStyleFields` in [`locationChangeHandler.ts`](../src/app/url/locationChangeHandler.ts).
@@ -115,10 +140,19 @@ Fields are joined by the record-separator character `\x1e` (URL-encoded `%1E`). 
 | `S` | Marker shape — `s`quare / `r`ing (default pin) | `Sr` |
 | `I` | Marker icon spec — `poi:<name>` (bundled POI icon) or `fa:<name>` (Font Awesome) | `Ipoi%3Aanimal_shelter` → `poi:animal_shelter` (`%3A` = `:`) |
 | `L` | Label (drawing geometry only) | `LMy point` |
+| `P` | Properties — key/value pairs joined by the unit separator `\x1f` (URL-encoded `%1F`), drawing geometry only | `Pname%1FSitno%1Fele%1F1009` |
 
 Colors are RGBA hex; the alpha channel carries the opacity (e.g. `#3388ff33` ≈ 20 % opacity).
 
 Each default-style param applies only the fields it supports (e.g. `objects-style` reads `C` and `S`), merges them over the current style, and persists the result to local storage.
+
+### Properties
+
+Every drawing point, line and polygon can carry a table of free-form key/value properties — the OSM tags a converted object arrived with, or whatever the user typed into the properties table in the Properties modal. They are written as the `P` field above and are absent entirely when the table is empty.
+
+A `{key}` anywhere in a **label** is replaced by that property's value when the feature is drawn, so a label can say `{name}` instead of holding a copy of the name. A key that isn't in the table is left standing as written, which is what tells a typo apart from a deliberate brace. Converting an object sets the label to `{name}` for this reason.
+
+Only a curated set of OSM tags is carried on conversion (`name`, `ele`, `description`, `operator`, `website`, `phone`, `opening_hours`, `wikipedia`, `wikidata`, `ref`) — a well-mapped POI has dozens, they all end up in the URL behind the feature, and bulk-converting a screenful with the lot would produce a link too long to send. The table takes anything by hand.
 
 ### Examples
 

@@ -3,6 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import type { DataViewerState } from '@features/dataViewer/model/reducer.js';
+import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
 import type {
   DrawingLineType,
   Line,
@@ -534,8 +535,10 @@ function addStyledTrk(
 ) {
   const trkEle = createElement(doc.documentElement, 'trk');
 
-  if (line.label && (!hole || 'polygonId' in hole)) {
-    createElement(trkEle, 'name', line.label);
+  const renderedLabel = interpolateLabel(line.label ?? '', line.props);
+
+  if (renderedLabel && (!hole || 'polygonId' in hole)) {
+    createElement(trkEle, 'name', renderedLabel);
   }
 
   const extEle = writeTrkStyle(
@@ -543,6 +546,11 @@ function addStyledTrk(
     hole && 'style' in hole ? hole.style : line,
     hole !== undefined && 'style' in hole,
   );
+
+  // Only when it is a template; otherwise `<name>` already says it.
+  if (line.label && line.label !== renderedLabel) {
+    appendNs(extEle, FM_NS, 'fm:label', line.label);
+  }
 
   if (hole) {
     appendNs(
@@ -717,7 +725,7 @@ async function addDrawingPoints(
 
   for (const [
     index,
-    { coords, label, color, markerType, icon },
+    { coords, label, color, markerType, icon, props },
   ] of points.entries()) {
     if (!keepDrawingPoint(only, index)) {
       continue;
@@ -730,8 +738,10 @@ async function addDrawingPoints(
       toLatLon(coords),
     );
 
-    if (label) {
-      createElement(wptEle, 'name', label);
+    const renderedLabel = interpolateLabel(label ?? '', props);
+
+    if (renderedLabel) {
+      createElement(wptEle, 'name', renderedLabel);
     }
 
     // `<sym>` carries the icon for Garmin / BaseCamp / MapSource and many
@@ -746,7 +756,13 @@ async function addDrawingPoints(
 
     const extEle = createElement(wptEle, 'extensions');
 
-    // Lossless round-trip metadata for our own importer.
+    // Lossless round-trip metadata for our own importer. The label only when it
+    // is a template — otherwise `<name>` already says it. GPX has nowhere to put
+    // the properties themselves; GeoJSON carries those.
+    if (label && label !== renderedLabel) {
+      appendNs(extEle, FM_NS, 'fm:label', label);
+    }
+
     if (markerType) {
       appendNs(extEle, FM_NS, 'fm:markerType', markerType);
     }

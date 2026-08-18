@@ -8,7 +8,7 @@ const de: DeepPartialWithRequiredObjects<DrawingMessages> = {
     fillColor: 'Füllfarbe',
     label: 'Beschriftung',
     width: 'Breite',
-    hint: 'Um die Beschriftung zu entfernen, lassen Sie das Feld leer.',
+    hint: 'Mit der Eingabetaste beginnt eine neue Zeile. Um die Beschriftung zu entfernen, lassen Sie das Feld leer.',
     shape: 'Form',
     text: 'Text',
     textHint:

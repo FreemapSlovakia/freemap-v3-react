@@ -33,6 +33,7 @@ const URL_MODAL_IDS = [
   'route-planner-style',
   'search-result-style',
   'support-us',
+  'toposcope-settings',
   'track-viewer-style',
   'tracking-my',
   'tracking-watched',

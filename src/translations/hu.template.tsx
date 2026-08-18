@@ -165,6 +165,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     myMaps: 'Saját térképeim',
     myMap: 'Térképem',
     gpsRecorder: 'GPS-rögzítő',
+    toposcope: 'Panorámatábla',
   },
 
   mainMenu: {

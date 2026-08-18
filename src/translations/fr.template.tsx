@@ -162,6 +162,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     myMaps: 'Mes cartes',
     myMap: 'Ma carte',
     gpsRecorder: 'Enregistreur GPS',
+    toposcope: "Table d'orientation",
   },
   mainMenu: {
     title: 'Menu principal',

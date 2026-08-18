@@ -57,6 +57,7 @@ import { useMouseCursor } from '../hooks/useMouseCursor.js';
 import { setActiveModal } from '../store/actions.js';
 import {
   askingCookieConsentSelector,
+  isToolOpen,
   openToolsSelector,
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
@@ -199,6 +200,36 @@ const elevationChartFactory = () =>
   import(
     /* webpackChunkName: "elevation-chart" */
     '@features/elevationChart/components/ElevationChart.js'
+  );
+
+const toposcopeFactory = () =>
+  import(
+    /* webpackChunkName: "toposcope" */
+    '@features/toposcope/components/Toposcope.js'
+  );
+
+const toposcopeMenuFactory = () =>
+  import(
+    /* webpackChunkName: "toposcope-menu" */
+    '@features/toposcope/components/ToposcopeMenu.js'
+  );
+
+const toposcopeCenterPickingFactory = () =>
+  import(
+    /* webpackChunkName: "toposcope-center-picking" */
+    '@features/toposcope/components/ToposcopeCenterPicking.js'
+  );
+
+const toposcopeCenterPickingMenuFactory = () =>
+  import(
+    /* webpackChunkName: "toposcope-center-picking-menu" */
+    '@features/toposcope/components/ToposcopeCenterPickingMenu.js'
+  );
+
+const toposcopeSettingsModalFactory = () =>
+  import(
+    /* webpackChunkName: "toposcope-settings-modal" */
+    '@features/toposcope/components/ToposcopeSettingsModal.js'
   );
 
 const trackingModalFactory = () =>
@@ -424,6 +455,14 @@ export function Main(): ReactElement {
     Boolean(state.elevationChart.elevationProfilePoints),
   );
 
+  const showToposcope = useAppSelector((state) =>
+    isToolOpen(state, 'toposcope'),
+  );
+
+  const pickingToposcopeCenter = useAppSelector(
+    (state) => state.toposcope.pickingCenter,
+  );
+
   const showGalleryPicker = useAppSelector(showGalleryPickerSelector);
 
   const showMenu = useAppSelector(
@@ -431,7 +470,8 @@ export function Main(): ReactElement {
       state.homeLocation.selectingHomeLocation === false &&
       !state.gallery.pickingPositionForId &&
       !state.gallery.showPosition &&
-      !state.mapArea.selecting,
+      !state.mapArea.selecting &&
+      !state.toposcope.pickingCenter,
   );
 
   const selectingMapArea = useAppSelector(
@@ -756,6 +796,8 @@ export function Main(): ReactElement {
                       <AsyncComponent factory={drawingMenuFactory} />
                     ) : openedTool === 'map-details' ? (
                       <MapDetailsMenu />
+                    ) : openedTool === 'toposcope' ? (
+                      <AsyncComponent factory={toposcopeMenuFactory} />
                     ) : openedTool === 'tracking' ? (
                       <AsyncComponent factory={trackingMenuFactory} />
                     ) : null}
@@ -792,6 +834,10 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={homeLocationPickingMenuFactory} />
               )}
 
+              {pickingToposcopeCenter && (
+                <AsyncComponent factory={toposcopeCenterPickingMenuFactory} />
+              )}
+
               {selectingMapArea && (
                 <AsyncComponent factory={mapAreaSelectionMenuFactory} />
               )}
@@ -814,6 +860,8 @@ export function Main(): ReactElement {
             {showElevationChart && (
               <AsyncComponent factory={elevationChartFactory} />
             )}
+
+            {showToposcope && <AsyncComponent factory={toposcopeFactory} />}
           </div>
 
           <div className={classes.typeZoomControl}>
@@ -871,6 +919,10 @@ export function Main(): ReactElement {
             {showGalleryPicker && <GalleryPicker />}
 
             {selectingHomeLocation !== false && <HomeLocationPickingResult />}
+
+            {pickingToposcopeCenter && (
+              <AsyncComponent factory={toposcopeCenterPickingFactory} />
+            )}
 
             {selectingMapArea && <MapAreaSelectionResult />}
 
@@ -1020,6 +1072,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'objects-style'}
         factory={objectsStyleModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'toposcope-settings'}
+        factory={toposcopeSettingsModalFactory}
       />
 
       <AsyncModal

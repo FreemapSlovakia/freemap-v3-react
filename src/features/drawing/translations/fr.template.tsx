@@ -9,7 +9,7 @@ const fr: DeepPartialWithRequiredObjects<DrawingMessages> = {
     fillColor: 'Couleur de remplissage',
     label: 'Étiquette',
     width: 'Largeur',
-    hint: 'Pour supprimer l’étiquette, laissez ce champ vide.',
+    hint: 'Entrée passe à la ligne. Pour supprimer l’étiquette, laissez ce champ vide.',
     shape: 'Forme',
     text: 'Texte',
     textHint: 'Icône ou 2 caractères au maximum affichés dans le marqueur.',

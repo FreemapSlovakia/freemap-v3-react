@@ -9,7 +9,7 @@ const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
     fillColor: 'Barva polnila',
     label: 'Oznaka',
     width: 'Širina',
-    hint: 'Če želite oznako odstraniti, pustite polje prazno.',
+    hint: 'S tipko Enter začnete novo vrstico. Če želite oznako odstraniti, pustite polje prazno.',
     shape: 'Oblika',
     text: 'Besedilo',
     textHint: 'Ikona ali največ 2 znaka, prikazana v oznaki.',

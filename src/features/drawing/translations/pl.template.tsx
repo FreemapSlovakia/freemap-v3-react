@@ -8,7 +8,7 @@ const pl: DeepPartialWithRequiredObjects<DrawingMessages> = {
     fillColor: 'Kolor wypełnienia',
     label: 'Etykieta',
     width: 'Szerokość',
-    hint: 'Aby usunąć etykietę, pozostaw to pole puste.',
+    hint: 'Enter zaczyna nowy wiersz. Aby usunąć etykietę, pozostaw to pole puste.',
     shape: 'Kształt',
     text: 'Tekst',
     textHint: 'Ikona lub maksymalnie 2 znaki wyświetlane w znaczniku.',

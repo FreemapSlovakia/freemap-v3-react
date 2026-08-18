@@ -163,6 +163,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     myMaps: 'Moji zemljevidi',
     myMap: 'Moj zemljevid',
     gpsRecorder: 'GPS snemalnik',
+    toposcope: 'Panoramska tabla',
   },
 
   mainMenu: {

@@ -448,6 +448,59 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
 
 Open items are issues under `area: infra`.
 
+## Drawing properties (`props` on points and lines)
+
+- [ ] **Carry properties through GPX.** They export to GeoJSON `properties` and
+      come back, but GPX only carries the rendered `<name>` and the raw
+      `<fm:label>` — a drawing round-tripped through GPX keeps its label text
+      and loses the table behind it. Needs an `<fm:prop k="…">` element (or
+      similar) plus whatever it takes to get it back through `togeojson`, which
+      is the part that decides whether it's worth doing.
+- [ ] **Reconsider the carried-tag allowlist** (`CARRIED_TAGS` in
+      `drawingPointActions.ts`). Ten keys is a guess at what's useful without
+      making a bulk conversion produce an unsendable link; revisit once there's
+      a sense of what people actually reference in labels.
+
+## Toposcope (`src/features/toposcope/`)
+
+The dial is drawn from the centre point plus the drawn points, and saves as an
+SVG. What it does not do yet:
+
+- **Fill the rays from the Objects tool.** `ObjectsConvertMenu` already turns
+  objects into drawing points; a "peaks around here" button that pulls the
+  visible peaks/places in, sorted by bearing, is what makes the tool usable
+  without placing every point by hand. This replaces the old app's raw Overpass
+  query.
+- **Elevation for hand-placed rays.** `{ele}` and the Show-elevations switch read
+  the `ele` property, which a converted object arrives with — but a point dropped
+  by hand has none. `fetchElevations` would fill it in (an action on the drawing
+  selection, writing the property like any other), and the same number gives the
+  vertical angle a real toposcope is engraved with. Prefer the OSM tag where
+  there is one: a 30 m DEM smooths summits and under-reads a sharp peak.
+- **Line of sight.** `densifyAlong` + `fetchElevations` along each ray can say
+  whether a peak is actually visible from the observer, and hide (or mark) the
+  ones behind terrain. Nothing else on the web does this; a plausible premium
+  gate.
+- **Put the dial in a saved map.** The whole toposcope is in the URL now — the
+  centre and rays as drawn points, the settings as `toposcope=` — but nothing of
+  it reaches `mapDocumentSchema.ts`, so saving a map keeps its points and loses
+  its inscriptions and geometry. The param is therefore deliberately outside
+  `getMapContentParts`, since the my-maps unsaved-changes digest reads that and
+  would report a freshly loaded map as changed. Adding it to the document means
+  adding it to both at once.
+- **Import an old `toposcope.json`** from the standalone Toposcope Maker
+  (`{pois, inscriptions, innerCircleRadius, fontSize, preventUpturnedText}`) via
+  a `ToposcopeProjectCompatSchema`, so that app can be retired with a redirect.
+- **Per-ray text flip**, which the old app had as a per-POI `flipText`. Now that
+  drawn features carry properties it has a home — a `toposcope:flip` property on
+  the point, beside the `toposcope=center` that marks the middle — without
+  another schema field or a side table that reordering breaks.
+- **Print-ready output** — millimetre units and a configurable physical
+  diameter, plus PDF. A toposcope is engraved or printed, and SVG-only is where
+  the old app stopped.
+- **An SEO hub page** in `sitemap-generator/` — the term is searched in every
+  target market and there is almost no web tooling for it.
+
 ## Weather radar (`src/features/weatherRadar/`, see [`doc/weather-radar.md`](./doc/weather-radar.md))
 
 [`doc/weather.md`](./doc/weather.md) records what was asked of the upstream feed

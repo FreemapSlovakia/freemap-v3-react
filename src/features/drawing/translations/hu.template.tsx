@@ -9,7 +9,7 @@ const hu: DeepPartialWithRequiredObjects<DrawingMessages> = {
     fillColor: 'Kitöltőszín',
     label: 'Felirat',
     width: 'Szélesség',
-    hint: 'A felirat eltávolításához hagyja üresen ezt a mezőt.',
+    hint: 'Az Enter új sort kezd. A felirat eltávolításához hagyja üresen ezt a mezőt.',
     shape: 'Forma',
     text: 'Szöveg',
     textHint: 'Ikon vagy legfeljebb 2 karakter jelenik meg a jelölőn belül.',

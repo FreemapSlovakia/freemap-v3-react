@@ -2,6 +2,7 @@ import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
+import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import {
   CRS,
   type LatLngExpression,
@@ -53,6 +54,7 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     wiki: { preview: null, loading: false },
     homeLocation: { selectingHomeLocation: false },
     mapArea: { selecting: null },
+    toposcope: { pickingCenter: false },
     elevationChart: { target: null },
     drawingLines: { joinWith: undefined, drawing: false },
     ...overrides,
@@ -239,6 +241,20 @@ describe('handleEvent — Escape', () => {
     expect(
       handleEvent(esc(), makeState({ elevationChart: { target: {} } })),
     ).toEqual(elevationChartClose());
+  });
+
+  it('leaves the toposcope centre picking before anything else', () => {
+    // The map is in a mode of its own; Escape must end that rather than close a
+    // panel or clear the selection and leave the map waiting for a click.
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          toposcope: { pickingCenter: true },
+          elevationChart: { target: {} },
+        }),
+      ),
+    ).toEqual(toposcopeSetPickingCenter(false));
   });
 
   // The modal closes itself on its own document listener, which runs only

@@ -1,5 +1,6 @@
 import type { Selection } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
+import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
 import {
@@ -656,7 +657,12 @@ export async function buildExportFeatureCollection({
     const fill = line.fillColor ? splitColorAlpha(line.fillColor) : undefined;
 
     const props = {
-      title: line.label,
+      // The feature's own data first, so a style key can't be shadowed by a
+      // property that happens to share its name.
+      ...line.props,
+      title: interpolateLabel(line.label ?? '', line.props) || undefined,
+      // The label as written, template and all; `title` is what it renders to.
+      'freemap:label': line.label,
       stroke: stroke?.color,
       'stroke-opacity':
         stroke && stroke.opacity < 1 ? stroke.opacity : undefined,
@@ -704,7 +710,11 @@ export async function buildExportFeatureCollection({
         continue;
       }
 
-      const props: Record<string, unknown> = { title: p.label };
+      const props: Record<string, unknown> = {
+        ...p.props,
+        title: interpolateLabel(p.label ?? '', p.props) || undefined,
+        'freemap:label': p.label,
+      };
 
       if (pointMode.props) {
         const marker = p.color ? splitColorAlpha(p.color) : undefined;

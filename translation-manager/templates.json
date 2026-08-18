@@ -20,6 +20,7 @@
     "src/features/gpsRecorder/translations/{LANG}.tsx",
     "src/features/weatherRadar/translations/{LANG}.tsx",
     "src/features/elevationChart/translations/{LANG}.tsx",
+    "src/features/toposcope/translations/{LANG}.tsx",
     "src/shared/colorizers/translations/{LANG}.tsx",
     "src/features/openInExternalApp/translations/{LANG}.tsx",
     "src/features/credits/translations/{LANG}.tsx",

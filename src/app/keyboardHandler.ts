@@ -17,6 +17,7 @@ import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.j
 import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
+import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import {
@@ -44,7 +45,8 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     state.homeLocation.selectingHomeLocation !== false ||
     state.gallery.pickingPositionForId ||
     state.gallery.showPosition ||
-    state.mapArea.selecting;
+    state.mapArea.selecting ||
+    state.toposcope.pickingCenter;
 
   // Overlays that own their open-state outside main.activeModal: the gallery
   // viewer (own + Wikimedia Commons photos), and the Wikipedia preview (shown
@@ -76,6 +78,12 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     // dismissals below.
     if (showingModal && !suspendedModal) {
       return undefined;
+    }
+
+    // Before the panels and the selection: the map is in a mode of its own,
+    // and leaving it is what Escape is for here.
+    if (state.toposcope.pickingCenter) {
+      return toposcopeSetPickingCenter(false);
     }
 
     if (state.elevationChart.target) {

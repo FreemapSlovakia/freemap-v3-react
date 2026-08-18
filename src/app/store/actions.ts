@@ -31,6 +31,7 @@ export const ToolSchema = z.enum([
   'map-details',
   'objects',
   'route-planner',
+  'toposcope',
   'tracking',
 ]);
 

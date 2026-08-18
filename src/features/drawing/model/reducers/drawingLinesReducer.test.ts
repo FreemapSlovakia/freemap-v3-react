@@ -517,6 +517,7 @@ describe('polygon holes', () => {
           dashArray: undefined,
           lineCap: undefined,
           lineJoin: undefined,
+          props: undefined,
         },
       }),
     );

@@ -47,6 +47,8 @@ import.
 | `markerType` | `<fm:markerType>`            | **Lossless**                                                                                                                                  |
 | `icon`       | `<fm:icon>`                  | **Lossless** — preserves `fa:` / `poi:` / literal text prefix                                                                                 |
 | `color`      | `<fm:color>`                 | **Lossless** — preserves full `#RRGGBBAA`                                                                                                     |
+| `label`      | `<name>` (rendered) + `<fm:label>` (raw)     | `<name>` carries the label with its `{key}` placeholders already expanded, which is what a consumer should show; `<fm:label>` is written only when the two differ, so our own importer restores the template |
+| `props`      | GeoJSON `properties` only                    | GPX has no home for arbitrary key/value on a waypoint, and inventing one our own importer can't read back would be worse than not writing it — see the note below |
 | (derived)    | `<locus:icon>`               | Self-contained SVG data URL mirroring `RichMarker` (shape + inner white + glyph: text/fa path/poi drawing). Purely visual; not source of truth. |
 
 ### GeoJSON export (per Point feature)
@@ -72,6 +74,24 @@ icon       ← freemap:icon        → osmAndIconToIconSpec(osmand:icon)
 color      ← freemap:color       → osmand:color
                                  → marker-color
 ```
+
+
+## Properties
+
+A drawing feature can carry a table of free-form key/value **properties** (see
+[`url-params.md`](./url-params.md#properties)) — the OSM tags a converted object
+arrived with, or whatever the user typed. A `{key}` in the label expands from
+them when the feature is drawn.
+
+- **GeoJSON** carries them as real `properties`, spread first so a style key
+  can never be shadowed by a property that shares its name, with the rendered
+  text in simplestyle's `title` and the raw label in `freemap:label`.
+- **GPX** carries the rendered `<name>` and `<fm:label>` but **not** the
+  properties themselves. Round-tripping a drawing through GPX therefore keeps
+  its label — template and all, since `enrichGpxExtensions` lifts `fm:label`
+  into `freemap:label` alongside the styling — but loses the table the template
+  referred to; through GeoJSON it keeps both. Reading back, `freemap:label` wins
+  over a bare `name`, which becomes `{name}` with the name kept as a property.
 
 ## Drawing lines and polygons
 

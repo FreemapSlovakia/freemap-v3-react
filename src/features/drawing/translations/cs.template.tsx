@@ -9,7 +9,7 @@ const cs: DeepPartialWithRequiredObjects<DrawingMessages> = {
     fillColor: 'Barva výplně',
     label: 'Popis',
     width: 'Šířka',
-    hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
+    hint: 'Klávesou Enter začnete nový řádek. Pokud chcete popis odstranit, nechte pole prázdné.',
     shape: 'Tvar',
     text: 'Text',
     textHint: 'Ikona nebo nejvýše 2 znaky zobrazené ve značce.',

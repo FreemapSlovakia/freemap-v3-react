@@ -8,7 +8,10 @@ import {
   type Line,
   type Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
-import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import {
+  drawingPointAdd,
+  pickDrawingProps,
+} from '@features/drawing/model/actions/drawingPointActions.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
@@ -127,10 +130,19 @@ function featuresToLines(
         ...base,
         ...style,
         type: isPolygon ? 'polygon' : 'line',
+        // Referenced rather than copied, so editing the property moves the
+        // label with it.
+        // Our own export writes the label as written into `freemap:label`;
+        // anything else names the feature and gets a reference to that name.
         label:
-          isPolygon || labelLinesToo
-            ? feature.properties?.['name']
-            : undefined /* ignore street names */,
+          typeof feature.properties?.['freemap:label'] === 'string'
+            ? feature.properties['freemap:label']
+            : (isPolygon || labelLinesToo) && feature.properties?.['name']
+              ? '{name}'
+              : undefined /* ignore street names */,
+        props: pickDrawingProps(
+          feature.properties as Record<string, string> | undefined,
+        ),
         points: ringToPoints(ring, isGeoJsonPolygon || (isPolygon && closed)),
         holeOf: isGeoJsonPolygon && i > 0 ? start : undefined,
       });
@@ -203,7 +215,13 @@ function geojsonToDrawing(
         drawingPointAdd({
           ...state.drawingSettings.style,
           ...style,
-          label: feature.properties?.['name'],
+          label:
+            typeof feature.properties?.['freemap:label'] === 'string'
+              ? feature.properties['freemap:label']
+              : feature.properties?.['name']
+                ? '{name}'
+                : undefined,
+          props: pickDrawingProps(tags),
           coords: {
             lat: geometry.coordinates[1],
             lon: geometry.coordinates[0],
@@ -437,7 +455,10 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           drawingPointAdd({
             ...state.drawingSettings.style,
             coords: object.coords,
-            label: object.tags?.['name'], // TODO put object type and some other tags to name
+            // The name is referenced rather than copied, so editing the
+            // property below moves the drawn label with it.
+            label: object.tags?.['name'] ? '{name}' : undefined,
+            props: pickDrawingProps(object.tags),
             color: state.drawingSettings.style.color,
             markerType: state.objectsSettings.selectedIcon,
             icon: tagsToPoiIconSpec(object.tags),

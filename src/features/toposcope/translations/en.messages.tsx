@@ -1,0 +1,34 @@
+import type { ToposcopeMessages } from './ToposcopeMessages.js';
+
+const en: ToposcopeMessages = {
+  pickCenterHint:
+    'Place the centre of the dial with the ◎ button in the toolbar.',
+  addCenter: 'Place the centre',
+  moveCenter: 'Move the centre',
+  pickCenterPrompt: 'Click the map where the toposcope stands',
+  addPointsHint:
+    'Add drawing points; each one becomes a ray of the dial. The centre is a drawn point too — label and move it in the drawing tool.',
+  downloadAsSvg: 'Download as SVG',
+  osmAttribution: '© OpenStreetMap contributors',
+  credit: ({ site }) => `Toposcope by ${site}`,
+  cardinals: { n: 'N', e: 'E', s: 'S', w: 'W' },
+  settings: {
+    title: 'Toposcope',
+    inscriptions: 'Inscriptions',
+    quadrant: ({ from, to }) => `${from}–${to}`,
+    innerCircleRadius: 'Inner circle radius',
+    outerCircleRadius: 'Outer circle radius',
+    scale: 'Scale',
+    scaleHint:
+      'How large the writing is against the dial. Resizing the panel scales the whole drawing together.',
+    preventUpturnedText: 'Prevent upside-down text',
+    line1: 'First line',
+    line2: 'Second line',
+    lineHint:
+      'Available: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location}, and {property:name} for any property of the point. A value that is missing takes its separator with it.',
+    placeholders:
+      "An inscription can carry {attribution} for the map credit and {credit} for this portal's.",
+  },
+};
+
+export default en;

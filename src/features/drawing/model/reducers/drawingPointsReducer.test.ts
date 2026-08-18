@@ -70,6 +70,7 @@ describe('drawingPointsReducer', () => {
           color: '#f00',
           markerType: undefined,
           icon: undefined,
+          props: undefined,
         },
       }),
     );

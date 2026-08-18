@@ -2,7 +2,10 @@ import type {
   Line,
   Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
-import type { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
+import type {
+  DrawingPoint,
+  DrawingProps,
+} from '@features/drawing/model/actions/drawingPointActions.js';
 import type { LatLon } from './types/common.js';
 
 /**
@@ -17,6 +20,20 @@ export function serializeLatLon(point: LatLon | null): string {
   return point ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}` : '';
 }
 
+/**
+ * The data table as one style field: `P` followed by key/value pairs joined by
+ * the unit separator, which nests inside the record-separated field list the
+ * same way a unit nests inside a record. A key or value carrying either
+ * separator can't be typed, and the URL encoder escapes both on the way out.
+ *
+ * Empty is no field at all, so a feature with no properties adds nothing.
+ */
+export function serializeDrawingProps(props: DrawingProps | undefined): string {
+  const entries = Object.entries(props ?? {});
+
+  return entries.length ? `\x1eP${entries.flat().join('\x1f')}` : '';
+}
+
 export function serializeDrawingPoint(point: DrawingPoint): string {
   return `${serializeLatLon(point.coords)}${point.color ? `\x1eC${point.color}` : ''}${
     point.label ? `\x1eL${point.label}` : ''
@@ -26,7 +43,7 @@ export function serializeDrawingPoint(point: DrawingPoint): string {
       : point.markerType === 'ring'
         ? '\x1eSr'
         : ''
-  }${point.icon ? `\x1eI${point.icon}` : ''}`;
+  }${point.icon ? `\x1eI${point.icon}` : ''}${serializeDrawingProps(point.props)}`;
 }
 
 /**
@@ -55,5 +72,5 @@ export function serializeDrawingLine(line: Line, holeOf?: number): string {
       : line.lineJoin === 'bevel'
         ? '\x1eJb'
         : ''
-  }${holeOf === undefined ? '' : `\x1eH${holeOf}`}`;
+  }${holeOf === undefined ? '' : `\x1eH${holeOf}`}${serializeDrawingProps(line.props)}`;
 }
