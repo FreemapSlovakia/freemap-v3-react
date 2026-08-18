@@ -703,7 +703,7 @@ Notes:
 
 - The `i` (Data layer) overlay hosts every tool's interactive features; hiding it hides those features without disabling the tools.
 - The single `X` "Outdoor" base map renders hiking, bicycle, ski and riding trails together — there are no longer separate per-activity trail layers.
-- The `R` (Weather radar) overlay is animated: turning it on opens its own toolbar with play/pause, frame stepping and a timeline. The timeline carries the same frames for everyone — the measured frames the server offers (about three hours at present) plus a one-hour forecast — but only part of it can be opened without premium: premium reaches up to six hours back and can open the forecast, everyone else two hours and no forecast. The locked stretches are painted in the upsell colour at each end and offer premium when clicked. The only setting is whether the forecast frames are shown at all, which is itself premium.
+- The `R` (Weather radar) overlay is animated: turning it on opens its own toolbar with play/pause, frame stepping and a timeline. The timeline carries the same frames for everyone — the measured frames the server publishes plus a one-hour forecast — but only part of it can be opened without premium: premium reaches up to six hours back and can open the forecast, everyone else two hours and no forecast. The locked stretches are painted in the upsell colour at each end and offer premium when clicked. The only setting is whether the forecast frames are shown at all, which is itself premium.
 
 ##### Internal layer codes
 
