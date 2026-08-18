@@ -4,7 +4,11 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { AdMessages } from './AdMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<AdMessages> = {
-  self: {},
+  self: {
+    head: 'Tu może być Twoja reklama',
+    sub: 'Dotrzyj do osób planujących czas na świeżym powietrzu — bezpośrednio w mapie.',
+    cta: 'Zobacz naszą ofertę',
+  },
   rovas: () => (
     <RovasAd rovasDesc="gospodarka, która nagradza pracę">
       Rejestruj swoją aktywność wolontariacką, zweryfikuj ją w społeczności i

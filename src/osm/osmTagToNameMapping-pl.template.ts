@@ -737,6 +737,26 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     valley: 'Dolina',
     water: {
       '*': 'Zbiornik wodny',
+
+      water: {
+        basin: 'Zbiornik',
+        canal: 'Kanał',
+        ditch: 'Rów',
+        drain: 'Rów odwadniający',
+        fish_pass: 'Przepławka',
+        lagoon: 'Laguna',
+        lake: 'Jezioro',
+        moat: 'Fosa',
+        oxbow: 'Starorzecze',
+        pond: 'Staw',
+        reflecting_pool: 'Basen lustrzany',
+        reservoir: 'Zbiornik retencyjny',
+        river: 'Rzeka',
+        salt_pond: 'Staw solny',
+        stream: 'Potok',
+        stream_pool: 'Rozlewisko potoku',
+        wastewater: 'Zbiornik ścieków',
+      },
     },
     wetland: {
       '*': 'Torfowisko',

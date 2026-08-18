@@ -27,6 +27,7 @@ const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Annulla la chiusura automatica',
     iso: 'it_IT',
     elevationProfile: 'Profilo altimetrico',
     save: 'Salva',
@@ -245,6 +246,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    showMore: 'Mostra altro…',
     offlineHint:
       'Senza una connessione a internet è possibile trovare solo coordinate, un riquadro di delimitazione, numeri di tassello (z/x/y) o GeoJSON incollato.',
     inProgress: 'Ricerca in corso…',

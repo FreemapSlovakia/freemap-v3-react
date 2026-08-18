@@ -29,6 +29,7 @@ const outdoorMap = 'Turistika, Cyklo, Běžky, Jízda';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Zrušit automatické zavření',
     iso: 'cs_CZ',
     elevationProfile: 'Výškový profil',
     save: 'Uložit',
@@ -239,6 +240,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    showMore: 'Zobrazit více…',
     inProgress: 'Hledám…',
     noResults: 'Nebyly nalezeny žádné výsledky',
     prompt: 'Zadejte lokalitu',

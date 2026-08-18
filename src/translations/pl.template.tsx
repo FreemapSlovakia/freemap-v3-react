@@ -29,6 +29,7 @@ const outdoorMap = 'Turystyka, Rower, Biegówki, Jazda konna';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Anuluj automatyczne zamknięcie',
     iso: 'pl_PL',
     elevationProfile: 'Profil wysokościowy',
     save: 'Zapisz',
@@ -232,6 +233,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    showMore: 'Pokaż więcej…',
     offlineHint:
       'Bez połączenia z internetem można znaleźć tylko współrzędne, obszar ograniczający, numery kafelków (z/x/y) lub wklejony GeoJSON.',
     inProgress: 'Wyszukiwanie…',

@@ -8,6 +8,7 @@ const cs: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Zobrazit trasové body',
   settings: 'Nastavení výškového profilu',
   elevationSource: 'Výšková data',
+  fetchError: 'Výšku se nepodařilo načíst',
 };
 
 export default cs;

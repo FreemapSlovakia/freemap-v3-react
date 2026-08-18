@@ -8,6 +8,7 @@ const de: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Wegpunkte anzeigen',
   settings: 'Höhenprofil-Einstellungen',
   elevationSource: 'Höhendaten',
+  fetchError: 'Die Höhe konnte nicht gelesen werden',
 };
 
 export default de;

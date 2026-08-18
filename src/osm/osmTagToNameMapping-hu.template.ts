@@ -756,6 +756,26 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     valley: 'Völgy',
     water: {
       '*': 'Víztest',
+
+      water: {
+        basin: 'Medence',
+        canal: 'Csatorna',
+        ditch: 'Árok',
+        drain: 'Vízelvezető árok',
+        fish_pass: 'Hallépcső',
+        lagoon: 'Lagúna',
+        lake: 'Tó',
+        moat: 'Vizesárok',
+        oxbow: 'Holtág',
+        pond: 'Tavacska',
+        reflecting_pool: 'Tükörmedence',
+        reservoir: 'Víztározó',
+        river: 'Folyó',
+        salt_pond: 'Sópárló',
+        stream: 'Patak',
+        stream_pool: 'Patakmeder-tó',
+        wastewater: 'Szennyvízmedence',
+      },
     },
     wetland: {
       '*': 'Vizenyős terület',

@@ -37,6 +37,12 @@ const fr: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   namePrefix: 'Hors ligne',
   offlineWiden:
     'Sans connexion, cette carte peut être réduite mais pas agrandie — l’agrandir nécessiterait de télécharger des tuiles qu’elle ne contient pas.',
+  premiumZoomHint:
+    'Les niveaux de zoom les plus détaillés de cette couche sont premium. Une carte hors ligne conserve ses tuiles définitivement et les affiche sans connexion : les télécharger demande donc un accès premium.',
+  premiumWiden:
+    "Cette carte atteint des niveaux de zoom premium. Sans accès premium, elle peut être réduite mais pas agrandie — l'agrandir téléchargerait de nouveau des tuiles premium.",
+  premiumSkipped:
+    "Les niveaux de zoom les plus détaillés de cette carte sont premium et n'ont pas été téléchargés : elle reste donc marquée comme incomplète.",
 };
 
 export default fr;

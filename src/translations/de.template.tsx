@@ -28,6 +28,7 @@ const outdoorMap = 'Wandern, Radfahren, Langlauf, Reiten';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Automatisches Schließen abbrechen',
     iso: 'de_DE',
     elevationProfile: 'Höhenprofil',
     save: 'Speichern',
@@ -241,6 +242,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    showMore: 'Mehr anzeigen…',
     offlineHint:
       'Ohne Internetverbindung können nur Koordinaten, ein Begrenzungsrahmen, Kachelnummern (z/x/y) oder eingefügtes GeoJSON gefunden werden.',
     inProgress: 'Suche…',

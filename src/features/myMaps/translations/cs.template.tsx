@@ -66,6 +66,64 @@ const cs: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   offlineCachedAll: ({ count }) => `Počet map dostupných offline: ${count}.`,
   offlineCachedPartial: ({ count, failed }) =>
     `Offline uložených map: ${count}, neúspěšných: ${failed}.`,
+  savedToOutbox: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> byla uložena v tomto prohlížeči a odešle se, jakmile to
+      připojení dovolí.
+    </>
+  ),
+  unsent: 'Neodesláno',
+  unsentTooltip:
+    'Tato mapa má změny uložené v tomto prohlížeči, které se ještě nedostaly na server. Odešlou se automaticky, jakmile to připojení dovolí.',
+  syncing: 'Odesílám…',
+  syncNow: 'Odeslat neodeslané změny',
+  outboxEmpty: 'Žádné neodeslané změny.',
+  outboxOffline: 'Bez připojení — neodeslané změny zůstávají ve frontě.',
+  outboxSynced: ({ count }) => `Odeslané změny v mapách: ${count}.`,
+  outboxRetryLater: ({ count }) =>
+    `Změny v mapách se nepodařilo odeslat (${count}); zkusí se to znovu později.`,
+  outboxError: ({ err }) =>
+    addError(getMessages()!, 'Chyba při odesílání změn map', err),
+  outboxConflict: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> byla mezitím změněna jinde, takže vaše neodeslané změny
+      nelze odeslat. Vyberte, co s nimi.
+    </>
+  ),
+  outboxForbidden: ({ name }) => (
+    <>
+      Už nemáte právo zapisovat do mapy <i>{name}</i>, takže vaše neodeslané
+      změny nelze odeslat. Vyberte, co s nimi.
+    </>
+  ),
+  outboxGone: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> už neexistuje, takže vaše neodeslané změny nelze
+      odeslat. Vyberte, co s nimi.
+    </>
+  ),
+  outboxUnreadable: ({ name }) => (
+    <>
+      Neodeslané změny mapy <i>{name}</i> nelze načíst z tohoto prohlížeče,
+      takže je nelze odeslat.
+    </>
+  ),
+  outboxConflictBadge: 'Konflikt',
+  outboxBlockedBadge: 'Nelze odeslat',
+  outboxResolveCopy: 'Uložit jako kopii',
+  outboxResolveOverwrite: 'Přepsat verzi na serveru',
+  outboxResolveDiscard: 'Zahodit moje změny',
+  outboxDiscardTitle: 'Zahození neodeslaných změn',
+  outboxDiscardConfirm: (name) => (
+    <>
+      Zahodit neodeslané změny mapy <i>{name}</i>? Existují jen v tomto
+      prohlížeči a nelze je obnovit.
+    </>
+  ),
+  outboxCopyName: (name) => `${name} (kopie)`,
+  logoutUnsentTitle: 'Neodeslané změny map',
+  logoutUnsentWarning: ({ count }) =>
+    `Počet map se změnami, které se ještě nedostaly na server: ${count}. Odhlášením se zahodí. Přesto se odhlásit?`,
 };
 
 export default cs;

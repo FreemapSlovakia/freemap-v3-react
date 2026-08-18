@@ -868,6 +868,26 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     volcano: 'Ognjenik',
     water: {
       '*': 'Vodna površina',
+
+      water: {
+        basin: 'Bazen',
+        canal: 'Kanal',
+        ditch: 'Jarek',
+        drain: 'Odvodni jarek',
+        fish_pass: 'Ribja steza',
+        lagoon: 'Laguna',
+        lake: 'Jezero',
+        moat: 'Grajski jarek',
+        oxbow: 'Mrtvica',
+        pond: 'Ribnik',
+        reflecting_pool: 'Zrcalni bazen',
+        reservoir: 'Zadrževalnik',
+        river: 'Reka',
+        salt_pond: 'Solni bazen',
+        stream: 'Potok',
+        stream_pool: 'Tolmun',
+        wastewater: 'Bazen odpadne vode',
+      },
     },
     wetland: {
       '*': 'Mokrišče',

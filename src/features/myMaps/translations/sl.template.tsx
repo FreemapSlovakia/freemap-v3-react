@@ -72,6 +72,64 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     `Število zemljevidov, ki so zdaj na voljo brez povezave: ${count}.`,
   offlineCachedPartial: ({ count, failed }) =>
     `Brez povezave shranjenih zemljevidov: ${count}, neuspešnih: ${failed}.`,
+  savedToOutbox: ({ name }) => (
+    <>
+      Zemljevid <i>{name}</i> je bil shranjen v tem brskalniku in bo poslan
+      takoj, ko bo povezava to dopuščala.
+    </>
+  ),
+  unsent: 'Neposlano',
+  unsentTooltip:
+    'Ta zemljevid ima spremembe, shranjene v tem brskalniku, ki še niso prišle na strežnik. Poslane bodo samodejno, takoj ko bo povezava to dopuščala.',
+  syncing: 'Pošiljanje…',
+  syncNow: 'Pošlji neposlane spremembe',
+  outboxEmpty: 'Ni neposlanih sprememb.',
+  outboxOffline: 'Ni povezave — neposlane spremembe ostajajo v vrsti.',
+  outboxSynced: ({ count }) => `Poslane spremembe zemljevidov: ${count}.`,
+  outboxRetryLater: ({ count }) =>
+    `Sprememb zemljevidov ni bilo mogoče poslati (${count}); poskus bo ponovljen pozneje.`,
+  outboxError: ({ err }) =>
+    addError(getMessages()!, 'Napaka pri pošiljanju sprememb zemljevidov', err),
+  outboxConflict: ({ name }) => (
+    <>
+      Zemljevid <i>{name}</i> je bil medtem spremenjen drugje, zato vaših
+      neposlanih sprememb ni mogoče poslati. Izberite, kaj z njimi.
+    </>
+  ),
+  outboxForbidden: ({ name }) => (
+    <>
+      Nimate več pravice pisanja v zemljevid <i>{name}</i>, zato vaših
+      neposlanih sprememb ni mogoče poslati. Izberite, kaj z njimi.
+    </>
+  ),
+  outboxGone: ({ name }) => (
+    <>
+      Zemljevid <i>{name}</i> ne obstaja več, zato vaših neposlanih sprememb ni
+      mogoče poslati. Izberite, kaj z njimi.
+    </>
+  ),
+  outboxUnreadable: ({ name }) => (
+    <>
+      Neposlanih sprememb zemljevida <i>{name}</i> ni mogoče prebrati iz tega
+      brskalnika, zato jih ni mogoče poslati.
+    </>
+  ),
+  outboxConflictBadge: 'Spor',
+  outboxBlockedBadge: 'Ni mogoče poslati',
+  outboxResolveCopy: 'Shrani kot kopijo',
+  outboxResolveOverwrite: 'Prepiši različico na strežniku',
+  outboxResolveDiscard: 'Zavrzi moje spremembe',
+  outboxDiscardTitle: 'Zavrženje neposlanih sprememb',
+  outboxDiscardConfirm: (name) => (
+    <>
+      Zavreči neposlane spremembe zemljevida <i>{name}</i>? Obstajajo le v tem
+      brskalniku in jih ni mogoče obnoviti.
+    </>
+  ),
+  outboxCopyName: (name) => `${name} (kopija)`,
+  logoutUnsentTitle: 'Neposlane spremembe zemljevidov',
+  logoutUnsentWarning: ({ count }) =>
+    `Število zemljevidov s spremembami, ki še niso prišle na strežnik: ${count}. Z odjavo bodo zavržene. Se vseeno odjavite?`,
 };
 
 export default sl;

@@ -35,6 +35,12 @@ const de: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   namePrefix: 'Offline',
   offlineWiden:
     'Ohne Verbindung kann diese Karte verkleinert, aber nicht vergrößert werden — beim Vergrößern müssten Kacheln heruntergeladen werden, die sie nicht enthält.',
+  premiumZoomHint:
+    'Die tiefsten Zoomstufen dieser Ebene sind Premium. Eine Offline-Karte behält ihre Kacheln dauerhaft und zeigt sie ohne Verbindung, deshalb erfordert das Herunterladen dieser Stufen einen Premium-Zugang.',
+  premiumWiden:
+    'Diese Karte reicht bis in Premium-Zoomstufen. Ohne Premium-Zugang lässt sie sich verkleinern, aber nicht vergrößern — beim Vergrößern würden Premium-Kacheln neu geladen.',
+  premiumSkipped:
+    'Die tiefsten Zoomstufen dieser Karte sind Premium und wurden nicht heruntergeladen, deshalb bleibt sie als unvollständig markiert.',
 };
 
 export default de;

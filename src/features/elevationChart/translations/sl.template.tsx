@@ -8,6 +8,7 @@ const sl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Prikaži točke poti',
   settings: 'Nastavitve višinskega profila',
   elevationSource: 'Podatki o višini',
+  fetchError: 'Nadmorske višine ni bilo mogoče prebrati',
 };
 
 export default sl;

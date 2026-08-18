@@ -28,6 +28,7 @@ const outdoorMap = 'Pohodništvo, Kolesarjenje, Smučanje, Jahanje';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Prekliči samodejno zapiranje',
     iso: 'sl_SI',
     elevationProfile: 'Višinski profil',
     save: 'Shrani',
@@ -238,6 +239,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    showMore: 'Prikaži več…',
     offlineHint:
       'Brez internetne povezave je mogoče najti samo koordinate, omejevalni okvir, številke ploščic (z/x/y) ali prilepljen GeoJSON.',
     inProgress: 'Iščem…',

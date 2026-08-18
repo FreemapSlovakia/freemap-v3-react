@@ -755,6 +755,26 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     valley: 'Údolí',
     water: {
       '*': 'Vodní plocha',
+
+      water: {
+        basin: 'Nádrž',
+        canal: 'Kanál',
+        ditch: 'Příkop',
+        drain: 'Odvodňovací strouha',
+        fish_pass: 'Rybí přechod',
+        lagoon: 'Laguna',
+        lake: 'Jezero',
+        moat: 'Vodní příkop',
+        oxbow: 'Slepé rameno',
+        pond: 'Rybník',
+        reflecting_pool: 'Okrasné jezírko',
+        reservoir: 'Přehradní nádrž',
+        river: 'Řeka',
+        salt_pond: 'Solná pánev',
+        stream: 'Potok',
+        stream_pool: 'Tůň',
+        wastewater: 'Nádrž odpadních vod',
+      },
     },
     wetland: {
       '*': 'Mokřad',

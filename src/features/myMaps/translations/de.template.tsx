@@ -69,6 +69,68 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     `${count} Karte(n) sind jetzt offline verfügbar.`,
   offlineCachedPartial: ({ count, failed }) =>
     `${count} Karte(n) offline gespeichert, ${failed} fehlgeschlagen.`,
+  savedToOutbox: ({ name }) => (
+    <>
+      Die Karte <i>{name}</i> wurde in diesem Browser gespeichert und wird
+      gesendet, sobald die Verbindung es zulässt.
+    </>
+  ),
+  unsent: 'Nicht gesendet',
+  unsentTooltip:
+    'Diese Karte hat in diesem Browser gespeicherte Änderungen, die den Server noch nicht erreicht haben. Sie werden automatisch gesendet, sobald die Verbindung es zulässt.',
+  syncing: 'Wird gesendet…',
+  syncNow: 'Nicht gesendete Änderungen senden',
+  outboxEmpty: 'Keine nicht gesendeten Änderungen.',
+  outboxOffline:
+    'Keine Verbindung — die nicht gesendeten Änderungen bleiben in der Warteschlange.',
+  outboxSynced: ({ count }) => `Gesendete Kartenänderungen: ${count}.`,
+  outboxRetryLater: ({ count }) =>
+    `Kartenänderungen konnten nicht gesendet werden (${count}); es wird später erneut versucht.`,
+  outboxError: ({ err }) =>
+    addError(getMessages()!, 'Fehler beim Senden der Kartenänderungen', err),
+  outboxConflict: ({ name }) => (
+    <>
+      Die Karte <i>{name}</i> wurde inzwischen anderswo geändert, daher können
+      Ihre nicht gesendeten Änderungen nicht gesendet werden. Wählen Sie, was
+      damit geschehen soll.
+    </>
+  ),
+  outboxForbidden: ({ name }) => (
+    <>
+      Sie haben kein Schreibrecht mehr für die Karte <i>{name}</i>, daher können
+      Ihre nicht gesendeten Änderungen nicht gesendet werden. Wählen Sie, was
+      damit geschehen soll.
+    </>
+  ),
+  outboxGone: ({ name }) => (
+    <>
+      Die Karte <i>{name}</i> existiert nicht mehr, daher können Ihre nicht
+      gesendeten Änderungen nicht gesendet werden. Wählen Sie, was damit
+      geschehen soll.
+    </>
+  ),
+  outboxUnreadable: ({ name }) => (
+    <>
+      Die nicht gesendeten Änderungen der Karte <i>{name}</i> lassen sich aus
+      diesem Browser nicht zurücklesen, daher können sie nicht gesendet werden.
+    </>
+  ),
+  outboxConflictBadge: 'Konflikt',
+  outboxBlockedBadge: 'Senden nicht möglich',
+  outboxResolveCopy: 'Als Kopie speichern',
+  outboxResolveOverwrite: 'Version auf dem Server überschreiben',
+  outboxResolveDiscard: 'Meine Änderungen verwerfen',
+  outboxDiscardTitle: 'Nicht gesendete Änderungen verwerfen',
+  outboxDiscardConfirm: (name) => (
+    <>
+      Die nicht gesendeten Änderungen der Karte <i>{name}</i> verwerfen? Sie
+      bestehen nur in diesem Browser und lassen sich nicht wiederherstellen.
+    </>
+  ),
+  outboxCopyName: (name) => `${name} (Kopie)`,
+  logoutUnsentTitle: 'Nicht gesendete Kartenänderungen',
+  logoutUnsentWarning: ({ count }) =>
+    `${count} Karte(n) haben Änderungen, die den Server noch nicht erreicht haben. Beim Abmelden gehen sie verloren. Trotzdem abmelden?`,
 };
 
 export default de;

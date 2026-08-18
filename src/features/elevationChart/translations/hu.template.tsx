@@ -8,6 +8,7 @@ const hu: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Útpontok megjelenítése',
   settings: 'Magassági profil beállításai',
   elevationSource: 'Magassági adatok',
+  fetchError: 'A magasságot nem sikerült beolvasni',
 };
 
 export default hu;

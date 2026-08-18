@@ -35,6 +35,12 @@ const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   namePrefix: 'Offline',
   offlineWiden:
     'Kapcsolat nélkül ez a térkép csak kisebbé tehető, nagyobbá nem — a nagyításhoz olyan csempéket kellene letölteni, amelyeket nem tartalmaz.',
+  premiumZoomHint:
+    'Ennek a rétegnek a legrészletesebb nagyítási szintjei prémiumok. Az offline térkép véglegesen megtartja a csempéket, és kapcsolat nélkül is megjeleníti őket, ezért letöltésükhöz prémium hozzáférés szükséges.',
+  premiumWiden:
+    'Ez a térkép prémium nagyítási szintekig ér. Prémium hozzáférés nélkül kicsinyíthető, de nem nagyítható — a nagyítás újra letöltené a prémium csempéket.',
+  premiumSkipped:
+    'Ennek a térképnek a legrészletesebb nagyítási szintjei prémiumok, és nem töltődtek le, ezért a térkép hiányosként marad megjelölve.',
 };
 
 export default hu;

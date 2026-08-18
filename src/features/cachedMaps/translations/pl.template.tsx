@@ -35,6 +35,12 @@ const pl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   namePrefix: 'Offline',
   offlineWiden:
     'Bez połączenia tę mapę można zmniejszyć, ale nie powiększyć — powiększenie wymagałoby pobrania kafelków, których nie zawiera.',
+  premiumZoomHint:
+    'Najbardziej szczegółowe poziomy powiększenia tej warstwy są premium. Mapa offline zachowuje kafelki na stałe i pokazuje je bez połączenia, więc ich pobranie wymaga dostępu premium.',
+  premiumWiden:
+    'Ta mapa sięga poziomów powiększenia premium. Bez dostępu premium można ją zmniejszyć, ale nie powiększyć — powiększenie pobrałoby kafelki premium na nowo.',
+  premiumSkipped:
+    'Najbardziej szczegółowe poziomy powiększenia tej mapy są premium i nie zostały pobrane, więc pozostaje oznaczona jako niekompletna.',
 };
 
 export default pl;

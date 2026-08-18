@@ -8,6 +8,7 @@ const pl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Pokaż punkty trasy',
   settings: 'Ustawienia profilu wysokości',
   elevationSource: 'Dane wysokościowe',
+  fetchError: 'Nie udało się odczytać wysokości',
 };
 
 export default pl;

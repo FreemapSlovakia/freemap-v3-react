@@ -27,6 +27,7 @@ const outdoorMap = 'Túrázás, Kerékpár, Síelés, Lovaglás';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Automatikus bezárás megszakítása',
     iso: 'hu_HU',
     elevationProfile: 'Magassági profil',
     save: 'Mentés',
@@ -244,6 +245,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    showMore: 'Több megjelenítése…',
     offlineHint:
       'Internetkapcsolat nélkül csak koordináták, határoló keret, csempeszámok (z/x/y) vagy beillesztett GeoJSON találhatók meg.',
     inProgress: 'Keresés…',

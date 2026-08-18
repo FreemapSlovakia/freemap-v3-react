@@ -35,6 +35,12 @@ const cs: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   namePrefix: 'Offline',
   offlineWiden:
     'Bez připojení lze tuto mapu jen zmenšit, nikoli zvětšit — zvětšením by bylo potřeba stáhnout dlaždice, které neobsahuje.',
+  premiumZoomHint:
+    'Nejpodrobnější přiblížení této vrstvy jsou prémiová. Offline mapa si dlaždice ponechává natrvalo a zobrazuje je i bez připojení, takže ke stažení těchto úrovní je potřeba prémiový přístup.',
+  premiumWiden:
+    'Tato mapa sahá do prémiových přiblížení. Bez prémiového přístupu ji lze zmenšit, nikoli však zvětšit — zvětšením by se znovu stáhly prémiové dlaždice.',
+  premiumSkipped:
+    'Nejpodrobnější přiblížení této mapy jsou prémiová a nestáhla se, takže mapa zůstává označená jako nekompletní.',
 };
 
 export default cs;

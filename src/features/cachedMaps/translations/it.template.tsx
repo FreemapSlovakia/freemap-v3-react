@@ -36,6 +36,12 @@ const it: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   namePrefix: 'Offline',
   offlineWiden:
     'Senza connessione questa mappa può essere ridotta, ma non ingrandita — per ingrandirla servirebbe scaricare tasselli che non contiene.',
+  premiumZoomHint:
+    "I livelli di zoom più dettagliati di questo strato sono premium. Una mappa offline conserva le sue tessere per sempre e le mostra senza connessione, quindi scaricarli richiede l'accesso premium.",
+  premiumWiden:
+    'Questa mappa arriva a livelli di zoom premium. Senza accesso premium può essere ridotta, ma non ingrandita: ingrandirla scaricherebbe di nuovo tessere premium.',
+  premiumSkipped:
+    'I livelli di zoom più dettagliati di questa mappa sono premium e non sono stati scaricati, perciò resta contrassegnata come incompleta.',
 };
 
 export default it;

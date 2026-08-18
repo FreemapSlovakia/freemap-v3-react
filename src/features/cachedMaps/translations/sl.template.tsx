@@ -35,6 +35,12 @@ const sl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   namePrefix: 'Brez povezave',
   offlineWiden:
     'Brez povezave je ta zemljevid mogoče le zmanjšati, ne pa povečati — pri povečanju bi bilo treba prenesti ploščice, ki jih ne vsebuje.',
+  premiumZoomHint:
+    'Najpodrobnejše ravni povečave te plasti so premium. Zemljevid brez povezave ploščice obdrži trajno in jih prikazuje tudi brez povezave, zato je za njihov prenos potreben premium dostop.',
+  premiumWiden:
+    'Ta zemljevid sega v premium ravni povečave. Brez premium dostopa ga je mogoče pomanjšati, ne pa povečati — s povečavo bi se premium ploščice prenesle znova.',
+  premiumSkipped:
+    'Najpodrobnejše ravni povečave tega zemljevida so premium in se niso prenesle, zato ostaja označen kot nepopoln.',
 };
 
 export default sl;

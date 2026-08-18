@@ -78,6 +78,71 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   offline: 'Hors ligne',
   makeAllOffline: 'Rendre tout disponible hors ligne',
   removeAllOffline: 'Tout retirer du mode hors ligne',
+  savedToOutbox: ({ name }) => (
+    <>
+      La carte <i>{name}</i> a été enregistrée dans ce navigateur et sera
+      envoyée dès que la connexion le permettra.
+    </>
+  ),
+  unsent: 'Non envoyé',
+  unsentTooltip:
+    'Cette carte comporte des modifications enregistrées dans ce navigateur qui ne sont pas encore parvenues au serveur. Elles seront envoyées automatiquement dès que la connexion le permettra.',
+  syncing: 'Envoi…',
+  syncNow: 'Envoyer les modifications non envoyées',
+  outboxEmpty: 'Aucune modification non envoyée.',
+  outboxOffline:
+    'Pas de connexion — les modifications non envoyées restent en attente.',
+  outboxSynced: ({ count }) => `Modifications de cartes envoyées : ${count}.`,
+  outboxRetryLater: ({ count }) =>
+    `Les modifications de cartes n’ont pas pu être envoyées (${count}) ; une nouvelle tentative aura lieu plus tard.`,
+  outboxError: ({ err }) =>
+    addError(
+      getMessages()!,
+      "Erreur lors de l'envoi des modifications de cartes",
+      err,
+    ),
+  outboxConflict: ({ name }) => (
+    <>
+      La carte <i>{name}</i> a été modifiée ailleurs entre-temps ; vos
+      modifications non envoyées ne peuvent donc pas être envoyées. Choisissez
+      ce qu’il faut en faire.
+    </>
+  ),
+  outboxForbidden: ({ name }) => (
+    <>
+      Vous n’avez plus le droit d’écrire sur la carte <i>{name}</i> ; vos
+      modifications non envoyées ne peuvent donc pas être envoyées. Choisissez
+      ce qu’il faut en faire.
+    </>
+  ),
+  outboxGone: ({ name }) => (
+    <>
+      La carte <i>{name}</i> n’existe plus ; vos modifications non envoyées ne
+      peuvent donc pas être envoyées. Choisissez ce qu’il faut en faire.
+    </>
+  ),
+  outboxUnreadable: ({ name }) => (
+    <>
+      Les modifications non envoyées de la carte <i>{name}</i> ne peuvent pas
+      être relues depuis ce navigateur, elles ne peuvent donc pas être envoyées.
+    </>
+  ),
+  outboxConflictBadge: 'Conflit',
+  outboxBlockedBadge: 'Envoi impossible',
+  outboxResolveCopy: 'Enregistrer comme copie',
+  outboxResolveOverwrite: 'Écraser la version du serveur',
+  outboxResolveDiscard: 'Abandonner mes modifications',
+  outboxDiscardTitle: 'Abandon des modifications non envoyées',
+  outboxDiscardConfirm: (name) => (
+    <>
+      Abandonner les modifications non envoyées de la carte <i>{name}</i> ?
+      Elles n’existent que dans ce navigateur et sont irrécupérables.
+    </>
+  ),
+  outboxCopyName: (name) => `${name} (copie)`,
+  logoutUnsentTitle: 'Modifications de cartes non envoyées',
+  logoutUnsentWarning: ({ count }) =>
+    `${count} carte(s) comportent des modifications qui ne sont pas encore parvenues au serveur. La déconnexion les abandonne. Se déconnecter quand même ?`,
 };
 
 export default fr;

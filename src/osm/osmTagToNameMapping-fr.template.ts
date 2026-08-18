@@ -866,6 +866,26 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     volcano: 'Volcan',
     water: {
       '*': 'Plan d’eau',
+
+      water: {
+        basin: 'Bassin',
+        canal: 'Canal',
+        ditch: 'Fossé',
+        drain: 'Fossé de drainage',
+        fish_pass: 'Passe à poissons',
+        lagoon: 'Lagune',
+        lake: 'Lac',
+        moat: 'Douve',
+        oxbow: 'Bras mort',
+        pond: 'Étang',
+        reflecting_pool: 'Bassin miroir',
+        reservoir: 'Réservoir',
+        river: 'Rivière',
+        salt_pond: 'Marais salant',
+        stream: 'Ruisseau',
+        stream_pool: 'Vasque',
+        wastewater: "Bassin d'eaux usées",
+      },
     },
     wetland: {
       '*': 'Zone humide',

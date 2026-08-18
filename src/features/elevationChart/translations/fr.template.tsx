@@ -8,6 +8,7 @@ const fr: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Afficher les points de cheminement',
   settings: 'Paramètres du profil altimétrique',
   elevationSource: 'Données altimétriques',
+  fetchError: "L'altitude n'a pas pu être lue",
 };
 
 export default fr;

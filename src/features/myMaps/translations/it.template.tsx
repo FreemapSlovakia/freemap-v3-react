@@ -68,6 +68,69 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     `${count} mappa/e ora sono disponibili offline.`,
   offlineCachedPartial: ({ count, failed }) =>
     `${count} mappa/e salvate offline, ${failed} non riuscite.`,
+  savedToOutbox: ({ name }) => (
+    <>
+      La mappa <i>{name}</i> è stata salvata in questo browser e sarà inviata
+      non appena la connessione lo consentirà.
+    </>
+  ),
+  unsent: 'Non inviate',
+  unsentTooltip:
+    'Questa mappa ha modifiche salvate in questo browser che non sono ancora arrivate al server. Verranno inviate automaticamente non appena la connessione lo consentirà.',
+  syncing: 'Invio in corso…',
+  syncNow: 'Invia le modifiche non inviate',
+  outboxEmpty: 'Nessuna modifica non inviata.',
+  outboxOffline:
+    'Nessuna connessione — le modifiche non inviate restano in coda.',
+  outboxSynced: ({ count }) => `Modifiche alle mappe inviate: ${count}.`,
+  outboxRetryLater: ({ count }) =>
+    `Non è stato possibile inviare le modifiche alle mappe (${count}); si riproverà più tardi.`,
+  outboxError: ({ err }) =>
+    addError(
+      getMessages()!,
+      "Errore durante l'invio delle modifiche alle mappe",
+      err,
+    ),
+  outboxConflict: ({ name }) => (
+    <>
+      La mappa <i>{name}</i> è stata modificata altrove nel frattempo, quindi le
+      tue modifiche non inviate non possono essere inviate. Scegli cosa farne.
+    </>
+  ),
+  outboxForbidden: ({ name }) => (
+    <>
+      Non hai più il permesso di scrivere sulla mappa <i>{name}</i>, quindi le
+      tue modifiche non inviate non possono essere inviate. Scegli cosa farne.
+    </>
+  ),
+  outboxGone: ({ name }) => (
+    <>
+      La mappa <i>{name}</i> non esiste più, quindi le tue modifiche non inviate
+      non possono essere inviate. Scegli cosa farne.
+    </>
+  ),
+  outboxUnreadable: ({ name }) => (
+    <>
+      Le modifiche non inviate della mappa <i>{name}</i> non possono essere
+      rilette da questo browser, quindi non possono essere inviate.
+    </>
+  ),
+  outboxConflictBadge: 'Conflitto',
+  outboxBlockedBadge: 'Invio impossibile',
+  outboxResolveCopy: 'Salva come copia',
+  outboxResolveOverwrite: 'Sovrascrivi la versione sul server',
+  outboxResolveDiscard: 'Scarta le mie modifiche',
+  outboxDiscardTitle: 'Scarto delle modifiche non inviate',
+  outboxDiscardConfirm: (name) => (
+    <>
+      Scartare le modifiche non inviate della mappa <i>{name}</i>? Esistono solo
+      in questo browser e non possono essere recuperate.
+    </>
+  ),
+  outboxCopyName: (name) => `${name} (copia)`,
+  logoutUnsentTitle: 'Modifiche alle mappe non inviate',
+  logoutUnsentWarning: ({ count }) =>
+    `${count} mappa/e hanno modifiche che non sono ancora arrivate al server. Uscendo verranno scartate. Uscire comunque?`,
 };
 
 export default it;

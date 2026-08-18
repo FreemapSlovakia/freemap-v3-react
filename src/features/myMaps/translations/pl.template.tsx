@@ -67,6 +67,64 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   offlineCachedAll: ({ count }) => `Liczba map dostępnych offline: ${count}.`,
   offlineCachedPartial: ({ count, failed }) =>
     `Map zapisanych offline: ${count}, nieudanych: ${failed}.`,
+  savedToOutbox: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> została zapisana w tej przeglądarce i zostanie wysłana,
+      gdy tylko pozwoli na to połączenie.
+    </>
+  ),
+  unsent: 'Niewysłane',
+  unsentTooltip:
+    'Ta mapa ma zmiany zapisane w tej przeglądarce, które nie dotarły jeszcze na serwer. Zostaną wysłane automatycznie, gdy tylko pozwoli na to połączenie.',
+  syncing: 'Wysyłanie…',
+  syncNow: 'Wyślij niewysłane zmiany',
+  outboxEmpty: 'Brak niewysłanych zmian.',
+  outboxOffline: 'Brak połączenia — niewysłane zmiany czekają w kolejce.',
+  outboxSynced: ({ count }) => `Wysłane zmiany w mapach: ${count}.`,
+  outboxRetryLater: ({ count }) =>
+    `Nie udało się wysłać zmian w mapach (${count}); nastąpi ponowna próba.`,
+  outboxError: ({ err }) =>
+    addError(getMessages()!, 'Błąd podczas wysyłania zmian w mapach', err),
+  outboxConflict: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> została w międzyczasie zmieniona gdzie indziej, więc
+      Twoich niewysłanych zmian nie można wysłać. Wybierz, co z nimi zrobić.
+    </>
+  ),
+  outboxForbidden: ({ name }) => (
+    <>
+      Nie masz już prawa zapisu do mapy <i>{name}</i>, więc Twoich niewysłanych
+      zmian nie można wysłać. Wybierz, co z nimi zrobić.
+    </>
+  ),
+  outboxGone: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> już nie istnieje, więc Twoich niewysłanych zmian nie
+      można wysłać. Wybierz, co z nimi zrobić.
+    </>
+  ),
+  outboxUnreadable: ({ name }) => (
+    <>
+      Niewysłanych zmian mapy <i>{name}</i> nie można odczytać z tej
+      przeglądarki, więc nie można ich wysłać.
+    </>
+  ),
+  outboxConflictBadge: 'Konflikt',
+  outboxBlockedBadge: 'Nie można wysłać',
+  outboxResolveCopy: 'Zapisz jako kopię',
+  outboxResolveOverwrite: 'Nadpisz wersję na serwerze',
+  outboxResolveDiscard: 'Odrzuć moje zmiany',
+  outboxDiscardTitle: 'Odrzucenie niewysłanych zmian',
+  outboxDiscardConfirm: (name) => (
+    <>
+      Odrzucić niewysłane zmiany mapy <i>{name}</i>? Istnieją tylko w tej
+      przeglądarce i nie da się ich odzyskać.
+    </>
+  ),
+  outboxCopyName: (name) => `${name} (kopia)`,
+  logoutUnsentTitle: 'Niewysłane zmiany map',
+  logoutUnsentWarning: ({ count }) =>
+    `Liczba map ze zmianami, które nie dotarły jeszcze na serwer: ${count}. Wylogowanie je odrzuci. Wylogować mimo to?`,
 };
 
 export default pl;
