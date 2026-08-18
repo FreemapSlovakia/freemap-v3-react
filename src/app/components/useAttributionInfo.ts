@@ -59,9 +59,13 @@ export function useAttributionInfo() {
 
   const askingCookieConsent = useAppSelector(askingCookieConsentSelector);
 
-  // hide attribution on mouse down
+  const attributionPinned = useAppSelector(
+    (state) => state.toasts.toasts['attribution']?.pinned ?? false,
+  );
+
+  // hide attribution on mouse down, unless the user pinned it
   useEffect(() => {
-    if (!showingAttribution) {
+    if (!showingAttribution || attributionPinned) {
       return;
     }
 
@@ -89,7 +93,7 @@ export function useAttributionInfo() {
     return () => {
       document.body.removeEventListener('pointerdown', handlePointerDown);
     };
-  }, [dispatch, showingAttribution]);
+  }, [dispatch, showingAttribution, attributionPinned]);
 
   const attributionHeldRef = useRef(false);
 
@@ -117,11 +121,17 @@ export function useAttributionInfo() {
     if (
       showingAttribution &&
       !askingCookieConsent &&
+      !attributionPinned &&
       attributionHeldRef.current
     ) {
       showAttributionToast(5000);
     }
-  }, [askingCookieConsent, showingAttribution, showAttributionToast]);
+  }, [
+    askingCookieConsent,
+    showingAttribution,
+    attributionPinned,
+    showAttributionToast,
+  ]);
 
   const [esriAttributions, setEsriAttributions] = useState<
     EsriWorldImageryAttribution | undefined

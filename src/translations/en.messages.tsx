@@ -34,6 +34,7 @@ const messages: Messages = {
     delete: 'Delete',
     remove: 'Remove',
     close: 'Close',
+    cancelAutoClose: 'Cancel auto-close',
     collapse: 'Collapse',
     expand: 'Expand',
     apply: 'Apply',

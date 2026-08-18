@@ -15,6 +15,7 @@ export type Messages = {
     delete: string;
     remove: string;
     close: string;
+    cancelAutoClose: string;
     collapse: string;
     expand: string;
     apply: string;

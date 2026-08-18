@@ -3,9 +3,52 @@
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
   max-width: calc(max(380px, 25dvw));
 
-  > .btn-close {
+  /* Nudged into the corner, past the alert's own padding. Relative, so the
+     message text still wraps around where the icons would have sat. */
+  .corner {
     position: relative;
-    top: -0.5rem;
-    left: 0.5rem;
+    top: -0.25rem;
+    left: 0.25rem;
+  }
+
+  /* The button makes this row far taller than the 2px bar it carries, so it
+     sits back in the alert's own bottom padding rather than adding to it. */
+  .countdown {
+    margin-top: -0.25rem;
+    /* Matches .corner's own nudge, so the button lines up under the ×. */
+    margin-right: -0.25rem;
+    margin-bottom: -0.75rem;
+  }
+
+  /* Matches Bootstrap's .btn-close box and opacities, whose --bs-btn-close-*
+     are scoped to that class and unreachable here. */
+  .iconButton {
+    --fm-toast-icon-opacity: 0.5;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: content-box;
+    width: 1em;
+    height: 1em;
+    padding: 0.25em;
+    color: var(--bs-emphasis-color);
+    background: transparent;
+    border: 0;
+    border-radius: var(--bs-border-radius);
+    opacity: var(--fm-toast-icon-opacity);
+
+    &:hover {
+      --fm-toast-icon-opacity: 0.75;
+    }
+
+    &:focus-visible {
+      --fm-toast-icon-opacity: 1;
+
+      outline: 0;
+      box-shadow: var(--bs-focus-ring-x, 0) var(--bs-focus-ring-y, 0)
+        var(--bs-focus-ring-blur, 0) var(--bs-focus-ring-width)
+        var(--bs-focus-ring-color);
+    }
   }
 }

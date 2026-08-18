@@ -16,6 +16,7 @@ import {
   type ToastAction,
   toastsRemove,
   toastsRestartTimeout,
+  toastsSetPinned,
   toastsStopTimeout,
 } from '../model/actions.js';
 import { Toast } from './Toast.js';
@@ -106,7 +107,16 @@ export function Toasts(): ReactElement {
     () =>
       Object.values(toasts)
         .map(
-          ({ id, actions, style, noClose, timeout, timeoutSince, ...rest }) => {
+          ({
+            id,
+            actions,
+            style,
+            noClose,
+            timeout,
+            timeoutSince,
+            pinned,
+            ...rest
+          }) => {
             const msg = rest.messageLoader ? (
               <LazyToastMessage
                 key={id}
@@ -126,6 +136,7 @@ export function Toasts(): ReactElement {
               noClose,
               timeout,
               timeoutSince,
+              pinned,
             };
           },
         )
@@ -172,7 +183,16 @@ export function Toasts(): ReactElement {
   return (
     <div className={classes.toasts}>
       {items.map(
-        ({ id, actions, style, msg, noClose, timeout, timeoutSince }) => {
+        ({
+          id,
+          actions,
+          style,
+          msg,
+          noClose,
+          timeout,
+          timeoutSince,
+          pinned,
+        }) => {
           return (
             <Toast
               key={id}
@@ -188,6 +208,11 @@ export function Toasts(): ReactElement {
               }))}
               timeout={timeout}
               timeoutSince={timeoutSince}
+              pinned={pinned}
+              onKeepOpen={(id) => {
+                dispatch(toastsSetPinned({ id, pinned: true }));
+                dispatch(toastsStopTimeout(id));
+              }}
               onTimeoutStop={() => dispatch(toastsStopTimeout(id))}
               onTimeoutRestart={() =>
                 dispatch(toastsRestartTimeout({ id, timeoutSince: Date.now() }))

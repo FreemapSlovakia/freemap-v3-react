@@ -70,6 +70,12 @@ export type ResolvedToast = StoredToast & {
   actions: ToastAction[];
   id: string;
   timeoutSince: number | undefined;
+  /**
+   * The user killed the countdown: it does not come back, `cancelType` and the
+   * predicates leave the toast alone, and the attribution toast ignores the
+   * click that otherwise dismisses it. Only the × takes it down.
+   */
+  pinned: boolean;
 };
 
 const toastsAddAction = createAction('TOASTS_ADD', (toast: StoredToast) => {
@@ -79,6 +85,7 @@ const toastsAddAction = createAction('TOASTS_ADD', (toast: StoredToast) => {
       ...toast,
       actions: toast.actions ?? [],
       timeoutSince: toast.timeout === undefined ? undefined : Date.now(),
+      pinned: false,
     } satisfies ResolvedToast,
   };
 });
@@ -100,3 +107,7 @@ export const toastsRestartTimeout = createAction<{
   id: string;
   timeoutSince: number;
 }>('TOASTS_RESTART_TIMEOUT');
+
+export const toastsSetPinned = createAction<{ id: string; pinned: boolean }>(
+  'TOASTS_SET_PINNED',
+);

@@ -36,6 +36,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     delete: 'Zmazať',
     remove: 'Odstrániť',
     close: 'Zavrieť',
+    cancelAutoClose: 'Zrušiť automatické zatvorenie',
     collapse: 'Zbaliť',
     expand: 'Rozbaliť',
     apply: 'Použiť',
