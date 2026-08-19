@@ -15,7 +15,7 @@ import {
   formatAzimuth,
   formatLocationLines,
 } from '@shared/geoutils.js';
-import { interpolateLabel } from './interpolateLabel.js';
+import { interpolateLabel, PROPERTY_PREFIX } from './interpolateLabel.js';
 import {
   lineLength,
   measuredRings,
@@ -54,9 +54,6 @@ export type LabelValues = Record<string, string | undefined>;
 function lazy(values: LabelValues, key: string, get: () => string): void {
   Object.defineProperty(values, key, { get, enumerable: true });
 }
-
-/** The properties, under the prefix that reaches them. */
-export const PROPERTY_PREFIX = 'p:';
 
 function withProps(props: Record<string, string> | undefined): LabelValues {
   return Object.fromEntries(

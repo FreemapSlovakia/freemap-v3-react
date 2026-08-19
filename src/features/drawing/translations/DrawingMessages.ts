@@ -15,6 +15,8 @@ export type DrawingMessages = {
     pointKeys: string;
     lineKeys: string;
     polygonKeys: string;
+    /** How `[…]` marks a part of the label to leave out when a value is missing. */
+    optionalKeys: string;
     shape: string;
     text: string;
     textHint: string;

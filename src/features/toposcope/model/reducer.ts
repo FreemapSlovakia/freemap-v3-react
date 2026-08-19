@@ -58,7 +58,7 @@ export const toposcopeInitialState: ToposcopeState = {
   scale: 100,
   preventUpturnedText: true,
   line1: '{label}',
-  line2: '{elevation} · {distance}',
+  line2: '[{elevation} · ]{distance}',
 };
 
 export const toposcopeReducer = createReducer(

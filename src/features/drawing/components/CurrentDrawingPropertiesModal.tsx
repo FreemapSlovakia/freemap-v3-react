@@ -27,7 +27,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTag, FaTimes } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import { setActiveModal } from '../../../app/store/actions.js';
-import { PROPERTY_PREFIX } from '../labelValues.js';
+import { PROPERTY_PREFIX } from '../interpolateLabel.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import classes from './CurrentDrawingPropertiesModal.module.css';
 import {
@@ -481,7 +481,8 @@ export default function CurrentDrawingPropertiesModal({
                 ? dm?.edit.pointKeys
                 : editedType === 'polygon'
                   ? dm?.edit.polygonKeys
-                  : dm?.edit.lineKeys}
+                  : dm?.edit.lineKeys}{' '}
+              {dm?.edit.optionalKeys}
             </Form.Text>
           </Form.Group>
 

@@ -9,6 +9,8 @@ const de: DeepPartialWithRequiredObjects<DrawingMessages> = {
       'Schreibe {p:name} für eine Eigenschaft namens name, {length} für die Länge ({length_m}, {length_km}, {length_mi}) und {azimuth} bei einer geraden Linie aus zwei Punkten.',
     polygonKeys:
       'Schreibe {p:name} für eine Eigenschaft namens name, {area} für die Fläche ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) und {perimeter} für den Umfang ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'Ein Teil in [eckigen Klammern] wird nur geschrieben, wenn alles darin einen Wert hat: {p:name}[, {p:ele} m] lässt die Höhe weg, wenn sie fehlt.',
     properties: 'Eigenschaften',
     propertyKey: 'Name',
     propertyValue: 'Wert',

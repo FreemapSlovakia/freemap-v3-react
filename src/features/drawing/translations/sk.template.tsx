@@ -10,6 +10,8 @@ const sk: DeepPartialWithRequiredObjects<DrawingMessages> = {
       'Napíšte {p:nazov} pre vlastnosť s názvom nazov, {length} pre dĺžku ({length_m}, {length_km}, {length_mi}) a {azimuth} pri priamej čiare z dvoch bodov.',
     polygonKeys:
       'Napíšte {p:nazov} pre vlastnosť s názvom nazov, {area} pre plochu ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) a {perimeter} pre obvod ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'Časť v [hranatých zátvorkách] sa vypíše, len keď má všetko v nej hodnotu: {p:nazov}[, {p:ele} m] vynechá výšku, ak chýba.',
     properties: 'Vlastnosti',
     propertyKey: 'Názov',
     propertyValue: 'Hodnota',

@@ -10,6 +10,8 @@ const fr: DeepPartialWithRequiredObjects<DrawingMessages> = {
       'Écrivez {p:nom} pour une propriété nommée nom, {length} pour la longueur ({length_m}, {length_km}, {length_mi}) et {azimuth} pour une ligne droite de deux points.',
     polygonKeys:
       'Écrivez {p:nom} pour une propriété nommée nom, {area} pour la surface ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) et {perimeter} pour le périmètre ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'Une partie entre [crochets] n’est écrite que si tout ce qu’elle contient a une valeur : {p:nom}[, {p:ele} m] omet l’altitude lorsqu’elle manque.',
     properties: 'Propriétés',
     propertyKey: 'Nom',
     propertyValue: 'Valeur',

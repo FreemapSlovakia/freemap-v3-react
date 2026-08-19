@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { interpolateLabel, labelUsesKey } from './interpolateLabel.js';
+import { interpolateLabel } from './interpolateLabel.js';
 
 describe('interpolateLabel', () => {
   it('expands a key that is there', () => {
@@ -25,18 +25,23 @@ describe('interpolateLabel', () => {
   });
 
   it('expands an empty value to nothing', () => {
-    expect(interpolateLabel('[{note}]', { note: '' })).toBe('[]');
+    expect(interpolateLabel('({note})', { note: '' })).toBe('()');
+  });
+
+  it('drops a bracketed part whose value is empty', () => {
+    expect(
+      interpolateLabel('{name}[ ({note})]', { name: 'Sitno', note: '' }),
+    ).toBe('Sitno');
+  });
+
+  it('understands every p: name, so an absent property empties its group', () => {
+    // Unlike a computed key nobody knows, which stays on screen.
+    expect(interpolateLabel('{name}[, {p:operator}]', { name: 'Sitno' })).toBe(
+      'Sitno',
+    );
   });
 
   it('passes a label with no braces straight through', () => {
     expect(interpolateLabel('Plain label', { name: 'x' })).toBe('Plain label');
-  });
-});
-
-describe('labelUsesKey', () => {
-  it('is true only for the key actually written', () => {
-    expect(labelUsesKey('{name} {ele}', 'ele')).toBe(true);
-    expect(labelUsesKey('{name}', 'ele')).toBe(false);
-    expect(labelUsesKey(undefined, 'ele')).toBe(false);
   });
 });

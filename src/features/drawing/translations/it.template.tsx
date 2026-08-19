@@ -10,6 +10,8 @@ const it: DeepPartialWithRequiredObjects<DrawingMessages> = {
       'Scrivi {p:nome} per una proprietà chiamata nome, {length} per la lunghezza ({length_m}, {length_km}, {length_mi}) e {azimuth} per una linea dritta di due punti.',
     polygonKeys:
       'Scrivi {p:nome} per una proprietà chiamata nome, {area} per l’area ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) e {perimeter} per il perimetro ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'Una parte tra [parentesi quadre] viene scritta solo se tutto ciò che contiene ha un valore: {p:nome}[, {p:ele} m] omette la quota quando manca.',
     properties: 'Proprietà',
     propertyKey: 'Nome',
     propertyValue: 'Valore',

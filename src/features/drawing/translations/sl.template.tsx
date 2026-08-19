@@ -10,6 +10,8 @@ const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
       'Napišite {p:ime} za lastnost z imenom ime, {length} za dolžino ({length_m}, {length_km}, {length_mi}) in {azimuth} pri ravni črti iz dveh točk.',
     polygonKeys:
       'Napišite {p:ime} za lastnost z imenom ime, {area} za površino ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) in {perimeter} za obseg ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'Del v [oglatih oklepajih] se izpiše le, kadar ima vse v njem vrednost: {p:ime}[, {p:ele} m] izpusti višino, kadar je ni.',
     properties: 'Lastnosti',
     propertyKey: 'Ime',
     propertyValue: 'Vrednost',

@@ -10,6 +10,8 @@ const hu: DeepPartialWithRequiredObjects<DrawingMessages> = {
       'Írjon {p:nev} elemet a nev nevű tulajdonsághoz, {length} elemet a hosszhoz ({length_m}, {length_km}, {length_mi}), és {azimuth} elemet két pontból álló egyenes vonalhoz.',
     polygonKeys:
       'Írjon {p:nev} elemet a nev nevű tulajdonsághoz, {area} elemet a területhez ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) és {perimeter} elemet a kerülethez ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'A [szögletes zárójelbe] tett rész csak akkor jelenik meg, ha benne mindennek van értéke: {p:nev}[, {p:ele} m] elhagyja a magasságot, ha hiányzik.',
     properties: 'Tulajdonságok',
     propertyKey: 'Név',
     propertyValue: 'Érték',

@@ -9,6 +9,8 @@ const pl: DeepPartialWithRequiredObjects<DrawingMessages> = {
       'Wpisz {p:nazwa} dla właściwości o nazwie nazwa, {length} dla długości ({length_m}, {length_km}, {length_mi}) oraz {azimuth} dla prostej linii z dwóch punktów.',
     polygonKeys:
       'Wpisz {p:nazwa} dla właściwości o nazwie nazwa, {area} dla powierzchni ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) i {perimeter} dla obwodu ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'Część w [nawiasach kwadratowych] pojawi się tylko wtedy, gdy wszystko w niej ma wartość: {p:nazwa}[, {p:ele} m] pomija wysokość, gdy jej nie ma.',
     properties: 'Właściwości',
     propertyKey: 'Nazwa',
     propertyValue: 'Wartość',

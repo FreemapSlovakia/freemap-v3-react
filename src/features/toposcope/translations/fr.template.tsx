@@ -25,7 +25,7 @@ const fr: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
     line1: 'Première ligne',
     line2: 'Deuxième ligne',
     lineHint:
-      "Disponibles : {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} et {p:nom} pour n'importe quelle propriété du point. Une valeur manquante emporte son séparateur.",
+      "Disponibles : {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} et {p:nom} pour n'importe quelle propriété du point. Une partie entre [crochets] n’est écrite que si tout ce qu’elle contient a une valeur, comme [{elevation} · ]{distance}.",
     placeholders:
       'Une inscription peut contenir {attribution} pour le crédit de la carte et {credit} pour ce portail.',
   },

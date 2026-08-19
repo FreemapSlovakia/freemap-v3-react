@@ -14,14 +14,14 @@ const values: RayValues = {
 
 describe('fillRayTemplate', () => {
   it('fills the default second line', () => {
-    expect(fillRayTemplate('{elevation} · {distance}', values)).toBe(
+    expect(fillRayTemplate('[{elevation} · ]{distance}', values)).toBe(
       '1946 m · 12,3 km',
     );
   });
 
-  it('drops a missing value together with its separator', () => {
+  it('drops the bracketed part when its value is missing', () => {
     expect(
-      fillRayTemplate('{elevation} · {distance}', {
+      fillRayTemplate('[{elevation} · ]{distance}', {
         ...values,
         elevation: undefined,
       }),
@@ -30,7 +30,7 @@ describe('fillRayTemplate', () => {
 
   it('closes up when the missing value is in the middle', () => {
     expect(
-      fillRayTemplate('{label} · {elevation} · {distance}', {
+      fillRayTemplate('{label}[ · {elevation}] · {distance}', {
         ...values,
         elevation: undefined,
       }),
@@ -50,23 +50,16 @@ describe('fillRayTemplate', () => {
     // would be a typo swallowed everywhere.
     expect(fillRayTemplate('{nonsense}', values)).toBe('{nonsense}');
 
-    expect(fillRayTemplate('{elevatoin} · {distance}', values)).toBe(
+    expect(fillRayTemplate('[{elevatoin} · ]{distance}', values)).toBe(
       '{elevatoin} · 12,3 km',
     );
   });
 
-  it('still empties a name it knows but has no value for', () => {
-    expect(
-      fillRayTemplate('{elevation} · {distance}', {
-        ...values,
-        elevation: undefined,
-      }),
-    ).toBe('12,3 km');
-  });
-
   it('empties a property the point does not carry', () => {
     // Absent data, not an unknown name — the prefix is understood.
-    expect(fillRayTemplate('{p:website} · {distance}', values)).toBe('12,3 km');
+    expect(fillRayTemplate('[{p:website} · ]{distance}', values)).toBe(
+      '12,3 km',
+    );
   });
 
   it('leaves a template with no placeholders alone', () => {
@@ -75,7 +68,7 @@ describe('fillRayTemplate', () => {
 
   it('is empty when everything it names is', () => {
     expect(
-      fillRayTemplate('{elevation} · {elevation_ft}', {
+      fillRayTemplate('[{elevation}][ · {elevation_ft}]', {
         ...values,
         elevation: undefined,
         elevation_ft: undefined,
@@ -91,11 +84,9 @@ describe('a value that carries its own lines', () => {
     );
   });
 
-  it('tidies each line on its own', () => {
-    // The separator orphaned on the first line goes without the second line's
-    // text being pulled up to meet it.
+  it('keeps them through a group that survives', () => {
     expect(
-      fillRayTemplate('{label} · {elevation}', {
+      fillRayTemplate('{label}[ · {elevation}]', {
         ...values,
         label: 'Foo\nBar',
         elevation: undefined,
@@ -125,7 +116,7 @@ describe('punctuation inside a value', () => {
 
   it('still closes up the template around an empty value', () => {
     expect(
-      fillRayTemplate('{label}, {elevation}', {
+      fillRayTemplate('{label}[, {elevation}]', {
         ...values,
         label: 'St. Peter',
         elevation: undefined,

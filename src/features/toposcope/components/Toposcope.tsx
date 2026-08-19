@@ -1,5 +1,4 @@
 import { closeTool, selectFeature } from '@app/store/actions.js';
-import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
 import { drawingPointLabel } from '@features/drawing/labelValues.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import {
@@ -168,15 +167,7 @@ export default function Toposcope(): ReactElement {
   // The middle of the dial says whatever the centre point is labelled with —
   // `{location}` by default, which the picker writes when it creates the point.
   const centerLines = useMemo(
-    () =>
-      center
-        ? toLines(
-            interpolateLabel(center.point.label ?? '', {
-              ...center.point.props,
-              location: formatLocationLines(center.point.coords),
-            }),
-          )
-        : [],
+    () => (center ? toLines(drawingPointLabel(center.point)) : []),
     [center],
   );
 

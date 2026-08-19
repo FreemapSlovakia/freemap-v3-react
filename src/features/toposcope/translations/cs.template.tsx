@@ -24,7 +24,7 @@ const cs: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
     line1: 'První řádek',
     line2: 'Druhý řádek',
     lineHint:
-      'K dispozici: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} a {p:nazev} pro libovolnou vlastnost bodu. Chybějící hodnota si s sebou vezme i oddělovač.',
+      'K dispozici: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} a {p:nazev} pro libovolnou vlastnost bodu. Část v [hranatých závorkách] se vypíše, jen když má všechno v ní hodnotu, například [{elevation} · ]{distance}.',
     placeholders:
       'Ve vlastním textu můžete použít {attribution} pro zdroj mapy a {credit} pro tento portál.',
   },

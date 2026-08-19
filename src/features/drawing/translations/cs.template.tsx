@@ -10,6 +10,8 @@ const cs: DeepPartialWithRequiredObjects<DrawingMessages> = {
       'Napište {p:nazev} pro vlastnost s názvem nazev, {length} pro délku ({length_m}, {length_km}, {length_mi}) a {azimuth} u přímé čáry ze dvou bodů.',
     polygonKeys:
       'Napište {p:nazev} pro vlastnost s názvem nazev, {area} pro plochu ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) a {perimeter} pro obvod ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'Část v [hranatých závorkách] se vypíše, jen když má všechno v ní hodnotu: {p:nazev}[, {p:ele} m] vynechá výšku, pokud chybí.',
     properties: 'Vlastnosti',
     propertyKey: 'Název',
     propertyValue: 'Hodnota',

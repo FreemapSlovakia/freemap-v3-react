@@ -25,7 +25,7 @@ const it: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
     line1: 'Prima riga',
     line2: 'Seconda riga',
     lineHint:
-      'Disponibili: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} e {p:nome} per qualsiasi proprietà del punto. Un valore mancante porta via anche il suo separatore.',
+      'Disponibili: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} e {p:nome} per qualsiasi proprietà del punto. Una parte tra [parentesi quadre] viene scritta solo se tutto ciò che contiene ha un valore, come [{elevation} · ]{distance}.',
     placeholders:
       "Un'iscrizione può contenere {attribution} per i crediti della mappa e {credit} per questo portale.",
   },

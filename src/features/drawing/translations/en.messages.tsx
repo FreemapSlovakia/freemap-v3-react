@@ -15,6 +15,8 @@ const en: DrawingMessages = {
       'Write {p:name} to draw a property called name, {length} for the length ({length_m}, {length_km}, {length_mi}), and {azimuth} for a straight two-point line.',
     polygonKeys:
       'Write {p:name} to draw a property called name, {area} for the area ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) and {perimeter} for the way round it ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'Put a part in [square brackets] to write it only when everything inside it has a value: {p:name}[, {p:ele} m] leaves out the height where there is none.',
     shape: 'Shape',
     text: 'Text',
     textHint: 'Icon or up to 2 characters shown inside the marker.',
