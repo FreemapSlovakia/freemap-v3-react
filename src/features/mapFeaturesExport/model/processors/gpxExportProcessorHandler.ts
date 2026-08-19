@@ -3,7 +3,10 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import type { DataViewerState } from '@features/dataViewer/model/reducer.js';
-import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
+import {
+  drawingLineLabel,
+  drawingPointLabel,
+} from '@features/drawing/labelValues.js';
 import type {
   DrawingLineType,
   Line,
@@ -535,7 +538,7 @@ function addStyledTrk(
 ) {
   const trkEle = createElement(doc.documentElement, 'trk');
 
-  const renderedLabel = interpolateLabel(line.label ?? '', line.props);
+  const renderedLabel = drawingLineLabel(line);
 
   if (renderedLabel && (!hole || 'polygonId' in hole)) {
     createElement(trkEle, 'name', renderedLabel);
@@ -738,7 +741,7 @@ async function addDrawingPoints(
       toLatLon(coords),
     );
 
-    const renderedLabel = interpolateLabel(label ?? '', props);
+    const renderedLabel = drawingPointLabel({ coords, label, props });
 
     if (renderedLabel) {
       createElement(wptEle, 'name', renderedLabel);

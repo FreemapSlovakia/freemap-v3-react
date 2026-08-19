@@ -5,7 +5,6 @@ import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
-import { formatLocationLines } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import Color from 'color';
 import type {
@@ -16,7 +15,7 @@ import type {
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { interpolateLabel } from '../interpolateLabel.js';
+import { drawingPointLabel } from '../labelValues.js';
 import type { DrawingPoint } from '../model/actions/drawingPointActions.js';
 import {
   drawingMeasure,
@@ -147,7 +146,8 @@ export function DrawingPointsResult(): ReactElement {
 }
 
 function DrawingPointMarker({
-  point: { coords, label, markerType, icon, props },
+  point,
+  point: { coords, label, markerType, icon },
   renderColor,
   glyphColor,
   interactive,
@@ -189,15 +189,7 @@ function DrawingPointMarker({
           permanent
           opacity={0.9 * opacity}
         >
-          {/* `{location}` is computed rather than stored, so it is offered
-              here the same way the toposcope offers it — otherwise a point
-              labelled with it shows the token itself. */}
-          <span>
-            {interpolateLabel(label, {
-              ...props,
-              location: formatLocationLines(coords),
-            })}
-          </span>
+          <span>{drawingPointLabel(point)}</span>
         </Tooltip>
       )}
     </RichMarker>

@@ -1,5 +1,6 @@
 import { closeTool, selectFeature } from '@app/store/actions.js';
 import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
+import { drawingPointLabel } from '@features/drawing/labelValues.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import { formatLocationLines } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -135,7 +136,7 @@ export default function Toposcope(): ReactElement {
       const ele = rawEle ? Number(rawEle) : Number.NaN;
 
       const values: RayValues = {
-        label: interpolateLabel(point.label ?? '', point.props),
+        label: drawingPointLabel(point),
         elevation: Number.isFinite(ele) ? nfEle.format(ele) : undefined,
         elevation_ft: Number.isFinite(ele)
           ? nfFt.format(metersToFeet(ele))
