@@ -689,6 +689,7 @@ export default function RoutePlannerMenu(): ReactElement {
             </LongPressTooltip>
 
             <Dropdown.Menu
+              className="fm-dropdown-fixed"
               popperConfig={fixedPopperConfig}
               as={GraphopperModeMenu}
             >

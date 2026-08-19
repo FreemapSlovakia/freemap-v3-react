@@ -2,6 +2,18 @@
   z-index: 10000;
 }
 
+/* Popper writes the real `position` only on its second render — its instance is
+   created in an effect — so the menu spends its first frame on Bootstrap's
+   `position: absolute`. Inside a `.fm-toolbar`, which is `inline-flex`, Chromium
+   folds that frame's box into the toolbar's intrinsic width and doesn't
+   re-measure once popper flips the menu to `fixed`, so the toolbar stays wider
+   for as long as the menu is open. Opening out of flow from the start keeps the
+   menu out of that measurement. Only for menus popper positions with
+   `strategy: 'fixed'` — `fm-dropdown-fixed` marks those. */
+.dropdown-menu.fm-dropdown-fixed {
+  position: fixed;
+}
+
 /* A menu with no scroller of its own scrolls as a whole, so every menu is
    bounded by the viewport without each one having to opt in. Both custom
    properties come from `availableHeightModifier`; where it doesn't run, they

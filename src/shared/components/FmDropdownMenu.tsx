@@ -27,7 +27,11 @@ export function FmDropdownMenu({
     <Dropdown.Menu
       {...props}
       popperConfig={popperConfig}
-      className={clsx('fm-dropdown-with-scroller', className)}
+      className={clsx(
+        'fm-dropdown-with-scroller',
+        popperConfig?.strategy === 'fixed' && 'fm-dropdown-fixed',
+        className,
+      )}
     >
       <div className="fm-menu-scroller" ref={sc}>
         <div />
