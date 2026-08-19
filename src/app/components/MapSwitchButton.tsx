@@ -1,7 +1,5 @@
 import { hasRole } from '@features/auth/model/types.js';
-import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { SubmenuHeader } from '@features/mainMenu/components/SubmenuHeader.js';
 import {
   mapFitBbox,
   mapRefocus,
@@ -19,16 +17,10 @@ import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
-import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { Radio } from '@shared/components/Radio.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
-import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
-import {
-  modalMenuItemProps,
-  useMenuHandler,
-} from '@shared/hooks/useMenuHandler.js';
+import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import {
   getCountriesBbox,
   getLayerBbox,
@@ -49,17 +41,13 @@ import {
   useState,
 } from 'react';
 import { Button, ButtonGroup, Dropdown, Form } from 'react-bootstrap';
-import { BiWifiOff, BiWorld } from 'react-icons/bi';
+import { BiWorld } from 'react-icons/bi';
 import {
-  FaChevronRight,
-  FaCog,
-  FaDatabase,
   FaEllipsisV,
   FaEyeSlash,
   FaFilter,
   FaGem,
   FaHistory,
-  FaLayerGroup,
   FaRegMap,
   FaSearchLocation,
   FaSearchPlus,
@@ -118,8 +106,6 @@ function getKbdShortcut(shortcut?: Shortcut | null) {
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
 
-  const canSaveSettings = useCanSaveSettings();
-
   // Both questions asked of it below — is the layer in range, are its tiles
   // premium here — are about the tiles the layer would request, and Leaflet
   // requests them at the rounded map zoom.
@@ -133,14 +119,6 @@ export function MapSwitchButton(): ReactElement {
 
   const pictureFilterIsActive = useAppSelector((state) =>
     Object.values(state.gallery.filter).some((x) => x !== undefined),
-  );
-
-  // while picking a photo position or drawing a map-area rectangle, restrict the
-  // map switcher to plain layer switching (no offline maps / settings)
-  const restrictToMapSwitching = useAppSelector(
-    (state) =>
-      state.gallery.pickingPositionForId !== null ||
-      state.mapArea.selecting !== null,
   );
 
   const canPreviewLayers = useAppSelector((state) =>
@@ -161,7 +139,6 @@ export function MapSwitchButton(): ReactElement {
     menuShown,
     handleMenuToggle,
     closeMenu,
-    submenu,
     extraHandler,
   } = useMenuHandler();
 
@@ -298,11 +275,6 @@ export function MapSwitchButton(): ReactElement {
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
-  const cachedMapsTotalSize = cachedMaps.reduce(
-    (sum, cm) => sum + cm.sizeBytes,
-    0,
-  );
-
   const countries = useAppSelector((state) => state.map.countries);
 
   const countriesSet = countries && new Set(countries);
@@ -342,12 +314,6 @@ export function MapSwitchButton(): ReactElement {
       setExpand('all');
     } else if (eventKey === 'show-more') {
       setExpand('more');
-    } else if (eventKey === 'offlineMaps') {
-      closeMenu();
-
-      dispatch(cachedMapsSetView('list'));
-
-      dispatch(setActiveModal({ type: 'offline-maps' }));
     } else if (eventKey.startsWith('layer-')) {
       const type = eventKey.slice(6);
 
@@ -499,12 +465,7 @@ export function MapSwitchButton(): ReactElement {
     );
   }
 
-  function layersMemuItems(
-    layer: 'base' | 'overlay',
-    showLeadingDivider: boolean,
-  ) {
-    let first = true;
-
+  function layersMemuItems(layer: 'base' | 'overlay') {
     return layerDefs
       .filter((def) => def.layer === layer)
       .map((def) => {
@@ -542,49 +503,49 @@ export function MapSwitchButton(): ReactElement {
 
         const active = (type === 'i') !== activeLayers.includes(type);
 
-        const wasFirst = first;
-
-        first = false;
-
         return (
-          <Fragment key={type}>
-            {wasFirst && showLeadingDivider && <Dropdown.Divider />}
-
-            <Dropdown.Item
-              href={`#layers=${type}`}
-              eventKey={`layer-${type}`}
-              active={active}
-              // className={clsx(showInMenu || 'text-secondary')}
-            >
-              {/* base layers are mutually exclusive (radio), overlays stack
+          <Dropdown.Item
+            key={type}
+            href={`#layers=${type}`}
+            eventKey={`layer-${type}`}
+            active={active}
+          >
+            {/* base layers are mutually exclusive (radio), overlays stack
                   (checkbox) */}
-              {def.layer === 'base' ? (
-                <Radio value={active} />
-              ) : (
-                <Checkbox value={active} />
-              )}
+            {def.layer === 'base' ? (
+              <Radio value={active} />
+            ) : (
+              <Checkbox value={active} />
+            )}
 
-              {def.custom ? (
-                <IconSpecGlyph
-                  spec={def.iconSpec}
-                  fallback={<MdDashboardCustomize />}
-                />
-              ) : (
-                def.icon
-              )}
+            {def.custom ? (
+              <IconSpecGlyph
+                spec={def.iconSpec}
+                fallback={<MdDashboardCustomize />}
+              />
+            ) : (
+              def.icon
+            )}
 
-              <span>
-                {def.custom
-                  ? def.name || `${m?.mapLayers.customBase} ${type}`
-                  : (m?.mapLayers.letters[type] ?? '…')}
-              </span>
+            <span>
+              {def.custom
+                ? def.name || `${m?.mapLayers.customBase} ${type}`
+                : (m?.mapLayers.letters[type] ?? '…')}
+            </span>
 
-              {commonBadges(def, 'menu')}
-            </Dropdown.Item>
-          </Fragment>
+            {commonBadges(def, 'menu')}
+          </Dropdown.Item>
         );
       });
   }
+
+  const baseItems = layersMemuItems('base');
+
+  const baseHasItems = baseItems.some(Boolean);
+
+  const overlayItems = layersMemuItems('overlay');
+
+  const overlayHasItems = overlayItems.some(Boolean);
 
   let showsOfm = false;
 
@@ -773,122 +734,47 @@ export function MapSwitchButton(): ReactElement {
           </Dropdown.Toggle>
 
           <FmDropdownMenu>
-            {submenu === 'mapSettings' ? (
-              <>
-                <SubmenuHeader icon={<FaCog />} title={m?.mapLayers.settings} />
+            {baseItems}
 
-                <OnlineOnlyItem
-                  offline={!canSaveSettings}
-                  {...modalMenuItemProps('map-layers-config')}
-                >
-                  <FaLayerGroup /> {m?.mapLayers.configureLayers} <kbd>m</kbd>{' '}
-                  <kbd>y</kbd>
-                </OnlineOnlyItem>
-
-                {/* A custom map lives only in the account's settings, so
-                    offline there is nothing here to add, change or remove —
-                    unless the settings are the browser's own. */}
-                <OnlineOnlyItem
-                  offline={!canSaveSettings}
-                  {...modalMenuItemProps('custom-maps')}
-                >
-                  <MdDashboardCustomize /> {m?.mapLayers.customMaps}
-                  {customLayerDefs.length > 0 && ` · ${customLayerDefs.length}`}{' '}
-                  <kbd>m</kbd> <kbd>c</kbd>
-                </OnlineOnlyItem>
-
-                <Dropdown.Item as="button" eventKey="offlineMaps">
-                  <BiWifiOff /> {m?.mapLayers.offlineMaps}
-                  {cachedMapsTotalSize > 0 &&
-                    ` · ${formatSize(cachedMapsTotalSize)}`}{' '}
-                  <kbd>m</kbd> <kbd>o</kbd>
-                </Dropdown.Item>
-
-                <Dropdown.Item {...modalMenuItemProps('browse-cache')}>
-                  <FaDatabase /> {m?.mapLayers.browseCache} <kbd>m</kbd>{' '}
-                  <kbd>b</kbd>
-                </Dropdown.Item>
-
-                <Dropdown.Divider />
-
-                <Dropdown.Item {...modalMenuItemProps('map-preferences')}>
-                  <FaCog /> {m?.mapLayers.preferences} <kbd>m</kbd> <kbd>p</kbd>
-                </Dropdown.Item>
-              </>
-            ) : (
-              <>
-                {!normalizedFilter && !restrictToMapSwitching && (
-                  <Dropdown.Item
-                    key="mapSettings"
-                    as="button"
-                    eventKey="submenu-mapSettings"
-                  >
-                    <FaCog /> {m?.mapLayers.settings}
-                    <FaChevronRight />
-                  </Dropdown.Item>
-                )}
-
-                {(() => {
-                  const baseItems = layersMemuItems(
-                    'base',
-                    !normalizedFilter && !restrictToMapSwitching,
-                  );
-                  const baseHasItems = baseItems.some(Boolean);
-                  const overlayItems = layersMemuItems(
-                    'overlay',
-                    !normalizedFilter || baseHasItems,
-                  );
-                  const noMatches =
-                    normalizedFilter &&
-                    !baseHasItems &&
-                    !overlayItems.some(Boolean);
-
-                  return (
-                    <>
-                      {baseItems}
-                      {overlayItems}
-                      {noMatches && (
-                        <Dropdown.ItemText className="text-muted text-center">
-                          {m?.mapLayers.noMapsFound}
-                        </Dropdown.ItemText>
-                      )}
-                    </>
-                  );
-                })()}
-
-                <Dropdown.Divider />
-
-                {!normalizedFilter &&
-                  (expand === false || expand === 'more') &&
-                  (!isWide && expand === false ? (
-                    <Dropdown.Item
-                      as="button"
-                      eventKey="show-more"
-                      className="mb-2"
-                    >
-                      {m?.mapLayers.showMore}
-                    </Dropdown.Item>
-                  ) : (
-                    <Dropdown.Item
-                      as="button"
-                      eventKey="show-all"
-                      className="mb-2"
-                    >
-                      {m?.mapLayers.showAll}
-                    </Dropdown.Item>
-                  ))}
-
-                <div className="px-2 pb-1">
-                  <Form.Control
-                    type="search"
-                    size="sm"
-                    placeholder={m?.mapLayers.filterMaps}
-                    value={filter}
-                    onChange={handleFilterChange}
-                  />
-                </div>
-              </>
+            {(!normalizedFilter || baseHasItems) && overlayHasItems && (
+              <Dropdown.Divider />
             )}
+
+            {overlayItems}
+
+            {normalizedFilter && !baseHasItems && !overlayHasItems && (
+              <Dropdown.ItemText className="text-muted text-center">
+                {m?.mapLayers.noMapsFound}
+              </Dropdown.ItemText>
+            )}
+
+            <Dropdown.Divider />
+
+            {!normalizedFilter &&
+              (expand === false || expand === 'more') &&
+              (!isWide && expand === false ? (
+                <Dropdown.Item
+                  as="button"
+                  eventKey="show-more"
+                  className="mb-2"
+                >
+                  {m?.mapLayers.showMore}
+                </Dropdown.Item>
+              ) : (
+                <Dropdown.Item as="button" eventKey="show-all" className="mb-2">
+                  {m?.mapLayers.showAll}
+                </Dropdown.Item>
+              ))}
+
+            <div className="px-2 pb-1">
+              <Form.Control
+                type="search"
+                size="sm"
+                placeholder={m?.mapLayers.filterMaps}
+                value={filter}
+                onChange={handleFilterChange}
+              />
+            </div>
           </FmDropdownMenu>
         </Dropdown>
       </ButtonGroup>

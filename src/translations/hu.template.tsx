@@ -360,8 +360,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiledHelp:
       'A WMS alapértelmezés szerint a teljes nézetről egyetlen képként töltődik be: egy kérés több tucat helyett, és a feliratokat nem vágja el a csempék határa. A csempéket olyan kiszolgálóhoz kapcsolja be, amely korlátozza a kép méretét vagy gyorsítótárazza a csempéket — cserébe nézetenként sok kérés indul.',
     zIndex: 'Z-index',
-    preferences: 'Beállítások',
-    mapSection: 'Térkép',
+    preferences: 'Térkép beállításai',
     maxZoom: 'Maximális nagyítás',
     zoomSnap: 'Nagyítási lépték',
     zoomSnapFree: 'Szabad',
@@ -381,7 +380,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Átfedő',
     },
     showMore: 'További térképek megjelenítése',
-    configureLayers: 'Rétegek beállítása',
+    layersConfiguration: 'Rétegek beállítása',
     technologies: {
       tile: 'Képcsempék (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',
@@ -415,7 +414,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Hiba történt a magasságiprofil-adatok lekérésénél',
         err,
       ),
-    settings: 'Magasság',
+    settings: 'Magasság beállításai',
     settingsHelp:
       'Az első két beállítás a terepmodellt korrigálja, ezért mindenhol érvényes, ahol a magasság abból származik: tervezett útvonalaknál, rajzolt vonalaknál és méréseknél, valamint olyan importált nyomvonalaknál, amelyek magasságát a kiszolgálóról cserélte le. A rögzített tengerszint feletti magasság — élő nyomkövetés, vagy rögzített formában megtartott nyomvonal — érintetlen marad. Az exportált fájlok mindig megtartják a saját magasságukat.',
     windowOff: 'ki',

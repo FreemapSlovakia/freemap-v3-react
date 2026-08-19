@@ -361,7 +361,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
       photosCc: 'rôzne licencie Creative Commons',
     },
-    configureLayers: 'Nastavenie vrstiev',
+    layersConfiguration: 'Nastavenie vrstiev',
     customMaps: 'Vlastné mapy',
     addCustomMap: 'Pridať vlastnú mapu',
     activate: 'Aktivovať',
@@ -385,8 +385,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiledHelp:
       'WMS sa štandardne vyžiada ako jeden obrázok celého výrezu: jedna požiadavka namiesto desiatok a názvy neprerezané na hraniciach dlaždíc. Dlaždice zapnite pre server, ktorý obmedzuje veľkosť obrázka alebo ktorý dlaždice kešuje — za cenu dávky požiadaviek na každý výrez.',
     zIndex: 'Z-Index',
-    preferences: 'Predvoľby',
-    mapSection: 'Mapa',
+    preferences: 'Predvoľby mapy',
     maxZoom: 'Maximálne priblíženie',
     zoomSnap: 'Krok priblíženia',
     zoomSnapFree: 'Voľne',
@@ -431,7 +430,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ele: `Nadm. výška [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Nastala chyba pri získavaní výškového profilu', err),
-    settings: 'Nadmorská výška',
+    settings: 'Predvoľby nadmorskej výšky',
     settingsHelp:
       'Prvé dve nastavenia opravujú model terénu, takže platia všade, kde sa výška číta z neho: pri plánovaných trasách, nakreslených líniách a meraniach a pri importovaných trasách, ktorým ste výšku nahradili zo servera. Zaznamenaná nadmorská výška — živé sledovanie alebo trasa, ktorú ste ponechali tak, ako bola zaznamenaná — zostáva nedotknutá. Exportované súbory si vždy zachovajú vlastnú výšku.',
     windowOff: 'vypnuté',

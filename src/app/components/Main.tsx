@@ -280,6 +280,12 @@ const mapPreferencesModalFactory = () =>
     '@features/mapSettings/components/MapPreferencesModal.js'
   );
 
+const elevationSettingsModalFactory = () =>
+  import(
+    /* webpackChunkName: "elevation-settings-modal" */
+    '@features/elevationChart/components/ElevationSettingsModal.js'
+  );
+
 const embedMapModalFactory = () =>
   import(
     /* webpackChunkName: "embed-map-modal" */
@@ -983,6 +989,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'map-preferences'}
         factory={mapPreferencesModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'elevation-settings'}
+        factory={elevationSettingsModalFactory}
       />
 
       <AsyncModal

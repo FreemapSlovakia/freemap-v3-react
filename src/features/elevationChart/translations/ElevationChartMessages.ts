@@ -3,7 +3,6 @@ export type ElevationChartMessages = {
   downhill: string;
   downloadAsSvg: string;
   showWaypoints: string;
-  settings: string;
   elevationSource: string;
   fetchError: string;
 };

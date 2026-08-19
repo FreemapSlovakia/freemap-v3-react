@@ -11,6 +11,7 @@ const URL_MODAL_IDS = [
   'credits-purchase',
   'custom-maps',
   'drawing-properties',
+  'elevation-settings',
   'embed',
   'file-import',
   'gallery-filter',

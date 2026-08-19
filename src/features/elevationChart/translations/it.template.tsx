@@ -6,7 +6,6 @@ const it: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downhill: 'Discesa totale',
   downloadAsSvg: 'Scarica come SVG',
   showWaypoints: 'Mostra i waypoint',
-  settings: 'Impostazioni del profilo altimetrico',
   elevationSource: 'Dati altimetrici',
   fetchError: "Non è stato possibile leggere l'altitudine",
 };

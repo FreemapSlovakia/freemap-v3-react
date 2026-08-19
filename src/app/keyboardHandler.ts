@@ -400,6 +400,9 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
 
         case 'KeyL':
           return setActiveModal({ type: 'legend' });
+
+        case 'KeyE':
+          return setActiveModal({ type: 'elevation-settings' });
       }
 
       return undefined;

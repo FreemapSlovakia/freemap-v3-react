@@ -214,7 +214,7 @@ export type Messages = {
       routing: string;
     };
     attr: Record<string, ReactNode>;
-    configureLayers: string;
+    layersConfiguration: string;
     customMaps: string;
     addCustomMap: string;
     activate: string;
@@ -242,7 +242,6 @@ export type Messages = {
     };
     zIndex: string;
     preferences: string;
-    mapSection: string;
     maxZoom: string;
     zoomSnap: string;
     zoomSnapFree: string;

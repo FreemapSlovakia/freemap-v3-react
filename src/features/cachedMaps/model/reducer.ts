@@ -1,3 +1,4 @@
+import { setActiveModal } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { BrowseCacheStats } from '../browseCache.js';
 import { sameCoverage } from '../cachedTileMaps.js';
@@ -106,6 +107,15 @@ export const cachedMapsReducer = createReducer(
       })
       .addCase(browseCacheStatsLoaded, (state, { payload }) => {
         state.browseStats = payload;
+      })
+      // The modal opens on the list wherever it is opened from — menu item,
+      // keyboard chord or `#show=` link — rather than on the form a previous
+      // visit was left in.
+      .addCase(setActiveModal, (state, { payload }) => {
+        if (payload?.type === 'offline-maps') {
+          state.view = 'list';
+          state.editId = null;
+        }
       })
       .addCase(cachedMapsSetView, (state, { payload }) => {
         if (typeof payload === 'string') {

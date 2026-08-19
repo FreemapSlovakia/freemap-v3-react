@@ -6,7 +6,6 @@ const sl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downhill: 'Skupni spust',
   downloadAsSvg: 'Prenesi kot SVG',
   showWaypoints: 'Prikaži točke poti',
-  settings: 'Nastavitve višinskega profila',
   elevationSource: 'Podatki o višini',
   fetchError: 'Nadmorske višine ni bilo mogoče prebrati',
 };

@@ -1,6 +1,1 @@
-export type Submenu =
-  | 'openExternally'
-  | 'help'
-  | 'language'
-  | 'mapSettings'
-  | null;
+export type Submenu = 'openExternally' | 'help' | 'language' | null;

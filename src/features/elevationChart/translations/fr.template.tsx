@@ -6,7 +6,6 @@ const fr: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downhill: 'Dénivelé négatif total',
   downloadAsSvg: 'Télécharger en SVG',
   showWaypoints: 'Afficher les points de cheminement',
-  settings: 'Paramètres du profil altimétrique',
   elevationSource: 'Données altimétriques',
   fetchError: "L'altitude n'a pas pu être lue",
 };

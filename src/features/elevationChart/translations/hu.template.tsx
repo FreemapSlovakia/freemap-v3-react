@@ -6,7 +6,6 @@ const hu: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downhill: 'Összes lejtés',
   downloadAsSvg: 'Letöltés SVG-ként',
   showWaypoints: 'Útpontok megjelenítése',
-  settings: 'Magassági profil beállításai',
   elevationSource: 'Magassági adatok',
   fetchError: 'A magasságot nem sikerült beolvasni',
 };

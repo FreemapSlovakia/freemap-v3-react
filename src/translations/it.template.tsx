@@ -358,8 +358,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiledHelp:
       'Per impostazione predefinita un WMS viene richiesto come un’unica immagine dell’intera vista: una sola richiesta invece di decine, ed etichette non tagliate ai bordi dei riquadri. Attiva i riquadri per un server che limita la dimensione dell’immagine o che li memorizza nella cache, al prezzo di una raffica di richieste per ogni vista.',
     zIndex: 'Z-Index',
-    preferences: 'Preferenze',
-    mapSection: 'Mappa',
+    preferences: 'Preferenze della mappa',
     maxZoom: 'Zoom massimo',
     zoomSnap: 'Passo dello zoom',
     zoomSnapFree: 'Libero',
@@ -379,7 +378,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Sovrapposto',
     },
     showMore: 'Mostra più mappe',
-    configureLayers: 'Configura livelli',
+    layersConfiguration: 'Configurazione dei livelli',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',
       maplibre: 'Vettore (MapLibre)',
@@ -413,7 +412,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Errore durante il recupero dei dati del profilo altimetrico',
         err,
       ),
-    settings: 'Altitudine',
+    settings: 'Preferenze dell’altitudine',
     settingsHelp:
       'Le prime due impostazioni correggono un modello del terreno, quindi valgono ovunque l’altitudine venga letta da esso: percorsi pianificati, linee disegnate e misurazioni, e tracce importate la cui altitudine è stata sostituita dal server. L’altitudine registrata — tracciamento in tempo reale o una traccia mantenuta così com’è stata registrata — resta intatta. I file esportati conservano sempre la propria altitudine.',
     windowOff: 'disattivato',

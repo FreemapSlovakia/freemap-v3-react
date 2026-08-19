@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
@@ -94,6 +95,8 @@ const EMPTY_ARRAY: ElevationProfilePoint[] = [];
 
 export default function ElevationChart(): ReactElement | null {
   const m = useElevationChartMessages();
+
+  const gm = useMessages();
 
   const dispatch = useDispatch();
 
@@ -752,13 +755,13 @@ export default function ElevationChart(): ReactElement | null {
             </LongPressTooltip>
           )}
 
-          <LongPressTooltip label={m?.settings}>
+          <LongPressTooltip label={gm?.elevationChart.settings}>
             {({ props }) => (
               <Button
                 variant="secondary"
                 size="sm"
                 onClick={() =>
-                  dispatch(setActiveModal({ type: 'map-preferences' }))
+                  dispatch(setActiveModal({ type: 'elevation-settings' }))
                 }
                 {...props}
               >

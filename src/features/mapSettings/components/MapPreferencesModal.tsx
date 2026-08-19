@@ -5,12 +5,6 @@ import {
   saveSettings,
   setActiveModal,
 } from '@app/store/actions.js';
-import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
-import {
-  type ElevationSettingsState,
-  elevationSettingsInitialState,
-  GRADE_WINDOW_WHOLE_LINE,
-} from '@features/elevationChart/model/settingsReducer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { isCompassSupported } from '@features/location/compass.js';
 import { ensureCompassPermission } from '@features/location/ensureCompassPermission.js';
@@ -36,7 +30,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';
-import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaSlidersH, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 // The zoom grid a gesture can settle on, as Leaflet's `zoomSnap`. Finer than a
@@ -49,16 +43,6 @@ const ZOOM_SNAPS = [
   // No grid at all, so it is worded rather than numbered.
   { value: '0', label: undefined },
 ] as const;
-
-const GRADE_WINDOW_STEP_M = 5;
-
-const GRADE_WINDOW_MAX_M = 200;
-
-// The whole-line window sits on the slider's own top notch, one step past the
-// longest window measured in metres: it is unbounded, so no place on a scale of
-// metres belongs to it. The stored value is out of band, hence the two
-// conversions around the control.
-const GRADE_WINDOW_WHOLE_LINE_POS = GRADE_WINDOW_MAX_M + GRADE_WINDOW_STEP_M;
 
 type Props = { show: boolean };
 
@@ -105,26 +89,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     initialShowBearingLine,
   );
 
-  const initialDespikeWindow = useAppSelector((state) =>
-    String(state.elevationSettings.despikeWindow),
-  );
-
-  const [despikeWindow, setDespikeWindow] = useState(initialDespikeWindow);
-
-  const initialDitchFillWindow = useAppSelector((state) =>
-    String(state.elevationSettings.ditchFillWindow),
-  );
-
-  const [ditchFillWindow, setDitchFillWindow] = useState(
-    initialDitchFillWindow,
-  );
-
-  const initialGradeWindow = useAppSelector((state) =>
-    String(state.elevationSettings.gradeWindow),
-  );
-
-  const [gradeWindow, setGradeWindow] = useState(initialGradeWindow);
-
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
   useDocumentTitle(show ? m?.mapLayers.preferences : undefined);
@@ -155,12 +119,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     setHeadingSource(locationSettingsInitialState.headingSource);
 
     setShowBearingLine(locationSettingsInitialState.showBearingLine);
-
-    setDespikeWindow(String(elevationSettingsInitialState.despikeWindow));
-
-    setDitchFillWindow(String(elevationSettingsInitialState.ditchFillWindow));
-
-    setGradeWindow(String(elevationSettingsInitialState.gradeWindow));
   }, [canSaveSettings]);
 
   const handleSubmit = (e: SubmitEvent) => {
@@ -204,26 +162,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       dispatch(locationSetShowBearingLine(showBearingLine));
     }
 
-    // Only what changed: a redraw follows the smoothing windows, and the
-    // steepness window asks for none.
-    const elevationSettings: Partial<ElevationSettingsState> = {};
-
-    if (despikeWindow !== initialDespikeWindow) {
-      elevationSettings.despikeWindow = Number(despikeWindow);
-    }
-
-    if (ditchFillWindow !== initialDitchFillWindow) {
-      elevationSettings.ditchFillWindow = Number(ditchFillWindow);
-    }
-
-    if (gradeWindow !== initialGradeWindow) {
-      elevationSettings.gradeWindow = Number(gradeWindow);
-    }
-
-    if (Object.keys(elevationSettings).length > 0) {
-      dispatch(elevationSetSettings(elevationSettings));
-    }
-
     if (Object.keys(settings).length > 0) {
       // saveSettingsProcessor closes the modal on success;
       // dispatching setActiveModal(null) here would cancel its PATCH.
@@ -236,33 +174,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   const handleMaxZoomChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setMaxZoom(e.currentTarget.value);
-    },
-    [],
-  );
-
-  const handleDespikeWindowChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setDespikeWindow(e.currentTarget.value);
-    },
-    [],
-  );
-
-  const handleDitchFillWindowChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setDitchFillWindow(e.currentTarget.value);
-    },
-    [],
-  );
-
-  const handleGradeWindowChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const pos = Number(e.currentTarget.value);
-
-      setGradeWindow(
-        String(
-          pos === GRADE_WINDOW_WHOLE_LINE_POS ? GRADE_WINDOW_WHOLE_LINE : pos,
-        ),
-      );
     },
     [],
   );
@@ -280,10 +191,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     featureScale !== initialFeatureScale ||
     zoomSnap !== initialZoomSnap ||
     headingSource !== initialHeadingSource ||
-    showBearingLine !== initialShowBearingLine ||
-    despikeWindow !== initialDespikeWindow ||
-    ditchFillWindow !== initialDitchFillWindow ||
-    gradeWindow !== initialGradeWindow;
+    showBearingLine !== initialShowBearingLine;
 
   // `maxZoom` counts only while it can be written; left out, a signed-in offline
   // user's non-default value would keep the reset button alive forever.
@@ -296,10 +204,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     featureScale === String(mapInitialState.featureScale) &&
     zoomSnap === String(mapInitialState.zoomSnap) &&
     headingSource === locationSettingsInitialState.headingSource &&
-    showBearingLine === locationSettingsInitialState.showBearingLine &&
-    despikeWindow === String(elevationSettingsInitialState.despikeWindow) &&
-    ditchFillWindow === String(elevationSettingsInitialState.ditchFillWindow) &&
-    gradeWindow === String(elevationSettingsInitialState.gradeWindow);
+    showBearingLine === locationSettingsInitialState.showBearingLine;
 
   return (
     <Modal
@@ -311,13 +216,11 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCog /> {m?.mapLayers.preferences}
+            <FaSlidersH /> {m?.mapLayers.preferences}
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          <p className="fw-bold mb-3">{m?.mapLayers.mapSection}</p>
-
           {/* The one preference here kept in the account's settings; the rest
               are this browser's own and save with no connection. */}
           <Form.Group controlId="maxZoom">
@@ -471,89 +374,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
             <Form.Text muted className="d-block">
               {m?.main.bearingLineHelp}
-            </Form.Text>
-          </Form.Group>
-
-          <hr />
-
-          <p className="fw-bold mb-1">{m?.elevationChart.settings}</p>
-
-          <Form.Text muted className="d-block mb-3">
-            {m?.elevationChart.settingsHelp}
-          </Form.Text>
-
-          <Form.Group controlId="despikeWindow">
-            <Form.Label>
-              {m?.elevationChart.despike}{' '}
-              <span className="text-body-secondary">
-                {despikeWindow === '0'
-                  ? `(${m?.elevationChart.windowOff})`
-                  : `(${despikeWindow}\u00a0m)`}
-              </span>
-            </Form.Label>
-
-            <Form.Range
-              min={0}
-              max={100}
-              step={5}
-              value={despikeWindow}
-              onChange={handleDespikeWindowChange}
-            />
-
-            <Form.Text muted className="d-block">
-              {m?.elevationChart.despikeHelp}
-            </Form.Text>
-          </Form.Group>
-
-          <Form.Group controlId="ditchFillWindow" className="mt-3">
-            <Form.Label>
-              {m?.elevationChart.ditchFill}{' '}
-              <span className="text-body-secondary">
-                {ditchFillWindow === '0'
-                  ? `(${m?.elevationChart.windowOff})`
-                  : `(${ditchFillWindow}\u00a0m)`}
-              </span>
-            </Form.Label>
-
-            <Form.Range
-              min={0}
-              max={100}
-              step={5}
-              value={ditchFillWindow}
-              onChange={handleDitchFillWindowChange}
-            />
-
-            <Form.Text muted className="d-block">
-              {m?.elevationChart.ditchFillHelp}
-            </Form.Text>
-          </Form.Group>
-
-          <Form.Group controlId="gradeWindow" className="mt-3">
-            <Form.Label>
-              {m?.elevationChart.gradeWindow}{' '}
-              <span className="text-body-secondary">
-                {gradeWindow === '0'
-                  ? `(${m?.elevationChart.windowOff})`
-                  : gradeWindow === String(GRADE_WINDOW_WHOLE_LINE)
-                    ? `(${m?.elevationChart.windowWholeLine})`
-                    : `(${gradeWindow}\u00a0m)`}
-              </span>
-            </Form.Label>
-
-            <Form.Range
-              min={0}
-              max={GRADE_WINDOW_WHOLE_LINE_POS}
-              step={GRADE_WINDOW_STEP_M}
-              value={
-                gradeWindow === String(GRADE_WINDOW_WHOLE_LINE)
-                  ? GRADE_WINDOW_WHOLE_LINE_POS
-                  : gradeWindow
-              }
-              onChange={handleGradeWindowChange}
-            />
-
-            <Form.Text muted className="d-block">
-              {m?.elevationChart.gradeWindowHelp}
             </Form.Text>
           </Form.Group>
         </Modal.Body>

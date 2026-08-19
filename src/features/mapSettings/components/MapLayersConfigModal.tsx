@@ -44,7 +44,7 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
-  useDocumentTitle(show ? m?.mapLayers.configureLayers : undefined);
+  useDocumentTitle(show ? m?.mapLayers.layersConfiguration : undefined);
 
   const handleSubmit = useCallback(
     (e: SubmitEvent) => {
@@ -60,7 +60,7 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaLayerGroup /> {m?.mapLayers.configureLayers}
+            <FaLayerGroup /> {m?.mapLayers.layersConfiguration}
           </Modal.Title>
         </Modal.Header>
 

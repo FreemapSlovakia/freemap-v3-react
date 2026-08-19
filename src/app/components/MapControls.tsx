@@ -12,6 +12,7 @@ import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { toggleLocate } from '../store/actions.js';
+import { MapManageButton } from './MapManageButton.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
 
 export function MapControls(): ReactElement | null {
@@ -34,6 +35,15 @@ export function MapControls(): ReactElement | null {
   );
 
   const location = useAppSelector((state) => state.location.location);
+
+  // while picking a photo position or drawing a map-area rectangle, the map
+  // switcher is restricted to plain layer switching — managing maps is out of
+  // the way of the pick
+  const restrictToMapSwitching = useAppSelector(
+    (state) =>
+      state.gallery.pickingPositionForId !== null ||
+      state.mapArea.selecting !== null,
+  );
 
   const handleLocateClick = useCallback(() => {
     // Locating on but not following — the user panned away from the position.
@@ -100,8 +110,14 @@ export function MapControls(): ReactElement | null {
 
   return !map ? null : (
     <Toolbar className="m-2">
+      {/* One flag for both: an embed that may not switch maps has no use for
+          the editors and caches that manage them either. */}
       {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
-        <MapSwitchButton />
+        <>
+          <MapSwitchButton />
+
+          {!restrictToMapSwitching && <MapManageButton />}
+        </>
       )}
 
       <ButtonGroup>

@@ -325,7 +325,7 @@ const messages: Messages = {
       ),
       photosCc: 'various Creative Commons licenses',
     },
-    configureLayers: 'Configure layers',
+    layersConfiguration: 'Layers configuration',
     customMaps: 'Custom maps',
     addCustomMap: 'Add custom map',
     activate: 'Activate',
@@ -354,8 +354,7 @@ const messages: Messages = {
       overlay: 'Overlay',
     },
     zIndex: 'Z-Index',
-    preferences: 'Preferences',
-    mapSection: 'Map',
+    preferences: 'Map preferences',
     maxZoom: 'Max zoom',
     zoomSnap: 'Zoom step',
     zoomSnapFree: 'Free',
@@ -395,7 +394,7 @@ const messages: Messages = {
     ele: `Elevation [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Error fetching elevation profile data', err),
-    settings: 'Elevation',
+    settings: 'Elevation preferences',
     settingsHelp:
       'The first two correct a terrain model, so they apply wherever elevation is read from one: planned routes, drawn lines and measurements, and imported tracks whose elevation you replaced from the server. Recorded altitude — live tracking, or a track you kept as recorded — is left untouched. Exported files always keep their own elevation.',
     windowOff: 'off',
