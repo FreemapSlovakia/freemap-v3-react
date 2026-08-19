@@ -34,7 +34,14 @@ type Piece = { text: string; written: boolean };
 /** A written piece that is nothing but the marks holding two values apart. */
 const SEPARATORS_ONLY = /^[ \t·,.;\-–—/|]*$/;
 
-function resolve(key: string, values: RayValues): string {
+/**
+ * What the template asked for, or `undefined` when it named something the dial
+ * has never heard of — which is left on screen rather than swallowed, exactly
+ * as a drawing label leaves it. A name the dial does know but has no value for
+ * this ray (a point with no elevation) is empty instead, and the line closes up
+ * around it.
+ */
+function resolve(key: string, values: RayValues): string | undefined {
   if (key.startsWith(PROPERTY_PREFIX)) {
     const name = key.slice(PROPERTY_PREFIX.length);
 
@@ -61,16 +68,18 @@ function resolve(key: string, values: RayValues): string {
     case 'location':
       return values.location;
     default:
-      return '';
+      return undefined;
   }
 }
 
 /**
- * Fills one of the dial's line templates. Unlike a drawing label — where an
- * unknown `{key}` stays on screen so a typo is visible — a template lists
- * optional facts, so a name it can't answer expands to nothing and the line
+ * Fills one of the dial's line templates. A template lists optional facts, so a
+ * name the dial knows but has no value for expands to nothing and the line
  * closes up around it: `{elevation} · {distance}` on a point with no elevation
- * reads as the distance alone rather than as `· 12,3 km`.
+ * reads as the distance alone rather than as `· 12,3 km`. A name it does not
+ * know at all stays as written, the way a drawing label leaves one — a template
+ * is applied to every ray at once, so a typo swallowed here would be a typo
+ * swallowed everywhere.
  *
  * That closing up is done on the template's own punctuation and never on a
  * value's, so `{label}` holding `Poprad, Slovakia` comes through untouched.
@@ -88,7 +97,12 @@ export function fillRayTemplate(template: string, values: RayValues): string {
       pieces.push({ text: template.slice(at, match.index), written: true });
     }
 
-    pieces.push({ text: resolve(match[1]!, values), written: false });
+    // An unanswerable name stays as it was written, and counts as something the
+    // line says — so the separators either side of it are kept too.
+    pieces.push({
+      text: resolve(match[1]!, values) ?? match[0],
+      written: false,
+    });
 
     at = match.index + match[0].length;
   }

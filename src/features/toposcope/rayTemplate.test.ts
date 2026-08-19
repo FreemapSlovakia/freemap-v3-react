@@ -45,10 +45,28 @@ describe('fillRayTemplate', () => {
     expect(fillRayTemplate('{p:website}', values)).toBe('');
   });
 
-  it('expands a name it does not know to nothing', () => {
-    // Unlike a drawing label, where an unknown key stays visible: a template
-    // lists optional facts, so one it can't answer simply says nothing.
-    expect(fillRayTemplate('{nonsense}', values)).toBe('');
+  it('leaves a name it does not know as written, as a label does', () => {
+    // A template is applied to every ray at once, so a typo swallowed here
+    // would be a typo swallowed everywhere.
+    expect(fillRayTemplate('{nonsense}', values)).toBe('{nonsense}');
+
+    expect(fillRayTemplate('{elevatoin} · {distance}', values)).toBe(
+      '{elevatoin} · 12,3 km',
+    );
+  });
+
+  it('still empties a name it knows but has no value for', () => {
+    expect(
+      fillRayTemplate('{elevation} · {distance}', {
+        ...values,
+        elevation: undefined,
+      }),
+    ).toBe('12,3 km');
+  });
+
+  it('empties a property the point does not carry', () => {
+    // Absent data, not an unknown name — the prefix is understood.
+    expect(fillRayTemplate('{p:website} · {distance}', values)).toBe('12,3 km');
   });
 
   it('leaves a template with no placeholders alone', () => {
