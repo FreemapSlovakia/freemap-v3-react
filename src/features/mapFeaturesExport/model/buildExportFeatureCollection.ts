@@ -666,6 +666,10 @@ export async function buildExportFeatureCollection({
       title: drawingLineLabel(line, drawingLines.lines) || undefined,
       // The label as written, template and all; `title` is what it renders to.
       'freemap:label': line.label,
+      // The table again, whole: spread above it reads well for other tooling
+      // but is indistinguishable from the style keys, so our importer takes
+      // this copy instead and no key of the user's is lost.
+      ...(line.props && { 'freemap:props': line.props }),
       stroke: stroke?.color,
       'stroke-opacity':
         stroke && stroke.opacity < 1 ? stroke.opacity : undefined,
@@ -717,6 +721,7 @@ export async function buildExportFeatureCollection({
         ...p.props,
         title: drawingPointLabel(p) || undefined,
         'freemap:label': p.label,
+        ...(p.props && { 'freemap:props': p.props }),
       };
 
       if (pointMode.props) {

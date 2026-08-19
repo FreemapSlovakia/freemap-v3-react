@@ -9,7 +9,9 @@ import {
   type Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import {
+  type DrawingProps,
   drawingPointAdd,
+  normalizeProps,
   pickDrawingProps,
 } from '@features/drawing/model/actions/drawingPointActions.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
@@ -81,14 +83,43 @@ function simplifyRing(ring: Position[], tolerance: number): Position[] {
     : ring;
 }
 
+/** The label as the author wrote it, template and all, where the file carries one. */
+function ownLabel(
+  properties: Record<string, unknown> | null | undefined,
+): string | undefined {
+  const label = properties?.['freemap:label'];
+
+  return typeof label === 'string' ? label : undefined;
+}
+
 /**
- * The line/polygon features of an import as one drawing batch.
- *
- * Holes reach us two ways and both land as a `holeOf` index into the batch: a
- * GeoJSON polygon carries them as its own interior rings, while GPX has no
- * polygon type, so our writer emits them as sibling tracks tied together by
- * `fm:polygonId` / `fm:holeOf`.
+ * The property table an imported feature brings. Our own exports write it whole
+ * — GPX as `<fm:prop>`, GeoJSON as a `freemap:props` object — so every key
+ * survives, not just the OSM tags `pickDrawingProps` carries. Anything else
+ * states its data in the properties themselves.
  */
+function importedProps(
+  properties: Record<string, unknown> | null | undefined,
+): DrawingProps | undefined {
+  const own = properties?.['freemap:props'];
+
+  if (!own || typeof own !== 'object') {
+    return pickDrawingProps(properties ?? undefined);
+  }
+
+  const table: DrawingProps = {};
+
+  // Only strings: a hand-edited file could put anything here, and a value that
+  // isn't one fails the schema when a saved map is read back.
+  for (const [key, value] of Object.entries(own)) {
+    if (typeof value === 'string') {
+      table[key] = value;
+    }
+  }
+
+  return normalizeProps(table);
+}
+
 function featuresToLines(
   features: Feature[],
   base: Partial<Line>,
@@ -115,6 +146,9 @@ function featuresToLines(
 
     const start = lines.length;
 
+    // Once per feature: every ring of a polygon shares its table.
+    const props = importedProps(feature.properties);
+
     for (const [i, ring] of rings.entries()) {
       const closed =
         !isGeoJsonPolygon &&
@@ -132,17 +166,12 @@ function featuresToLines(
         type: isPolygon ? 'polygon' : 'line',
         // Referenced rather than copied, so editing the property moves the
         // label with it.
-        // Our own export writes the label as written into `freemap:label`;
-        // anything else names the feature and gets a reference to that name.
         label:
-          typeof feature.properties?.['freemap:label'] === 'string'
-            ? feature.properties['freemap:label']
-            : (isPolygon || labelLinesToo) && feature.properties?.['name']
-              ? '{p:name}'
-              : undefined /* ignore street names */,
-        props: pickDrawingProps(
-          feature.properties as Record<string, string> | undefined,
-        ),
+          ownLabel(feature.properties) ??
+          ((isPolygon || labelLinesToo) && feature.properties?.['name']
+            ? '{p:name}'
+            : undefined) /* ignore street names */,
+        props,
         points: ringToPoints(ring, isGeoJsonPolygon || (isPolygon && closed)),
         holeOf: isGeoJsonPolygon && i > 0 ? start : undefined,
       });
@@ -216,12 +245,9 @@ function geojsonToDrawing(
           ...state.drawingSettings.style,
           ...style,
           label:
-            typeof feature.properties?.['freemap:label'] === 'string'
-              ? feature.properties['freemap:label']
-              : feature.properties?.['name']
-                ? '{p:name}'
-                : undefined,
-          props: pickDrawingProps(tags),
+            ownLabel(feature.properties) ??
+            (feature.properties?.['name'] ? '{p:name}' : undefined),
+          props: importedProps(feature.properties),
           coords: {
             lat: geometry.coordinates[1],
             lon: geometry.coordinates[0],
@@ -518,7 +544,10 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             drawingPointAdd({
               ...state.drawingSettings.style,
               ...style,
-              label: feature.properties?.['name'],
+              label:
+                ownLabel(feature.properties) ??
+                (feature.properties?.['name'] as string | undefined),
+              props: importedProps(feature.properties),
               markerType:
                 style.markerType ?? state.objectsSettings.selectedIcon,
               coords: {

@@ -54,6 +54,8 @@ function enrichWaypointsWithExtensions(
       }
     }
 
+    enrichWithFmProps(wpt, props);
+
     for (const tag of ['icon', 'background', 'color'] as const) {
       const value = wpt
         .getElementsByTagNameNS(OSMAND_NS, tag)[0]
@@ -64,6 +66,32 @@ function enrichWaypointsWithExtensions(
       }
     }
   }
+}
+
+/**
+ * The `<fm:prop>` table an element carries. Its presence is what tells our own
+ * file from anyone else's: `<name>` there holds the label already rendered, so
+ * the conversion takes the table instead of reading the name back as data.
+ */
+function enrichWithFmProps(el: Element, props: Record<string, unknown>): void {
+  const rows = Array.from(el.getElementsByTagNameNS(FM_NS, 'prop'));
+
+  if (rows.length === 0) {
+    return;
+  }
+
+  const table: Record<string, string> = {};
+
+  for (const row of rows) {
+    const key = row.getAttribute('key');
+
+    // Untrimmed, and an empty one still counts: the value is the user's.
+    if (key) {
+      table[key] = row.textContent ?? '';
+    }
+  }
+
+  props['freemap:props'] = table;
 }
 
 // GPX has no polygon type; we treat `<trk>` as either a LineString or a
@@ -120,6 +148,8 @@ function enrichTracksWithExtensions(
         props[`freemap:${tag}`] = value;
       }
     }
+
+    enrichWithFmProps(trk, props);
 
     for (const tag of ['color', 'fill_color', 'width'] as const) {
       const value = trk

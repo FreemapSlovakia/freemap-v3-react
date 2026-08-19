@@ -12,6 +12,7 @@ import type {
   DrawnLine,
   Line,
 } from '@features/drawing/model/actions/drawingLineActions.js';
+import type { DrawingProps } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import type { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import type { GalleryMessages } from '@features/gallery/translations/GalleryMessages.js';
@@ -555,10 +556,12 @@ function addStyledTrk(
     hole !== undefined && 'style' in hole,
   );
 
-  // Only when it is a template; otherwise `<name>` already says it.
-  if (line.label && line.label !== renderedLabel) {
+  // As written, `<name>` above holding it rendered.
+  if (line.label) {
     appendNs(extEle, FM_NS, 'fm:label', line.label);
   }
+
+  appendProps(extEle, line.props);
 
   if (hole) {
     appendNs(
@@ -764,12 +767,13 @@ async function addDrawingPoints(
 
     const extEle = createElement(wptEle, 'extensions');
 
-    // Lossless round-trip metadata for our own importer. The label only when it
-    // is a template — otherwise `<name>` already says it. GPX has nowhere to put
-    // the properties themselves; GeoJSON carries those.
-    if (label && label !== renderedLabel) {
+    // For our own importer: the label as written and the table it draws from,
+    // `<name>` above holding the two of them rendered together.
+    if (label) {
       appendNs(extEle, FM_NS, 'fm:label', label);
     }
+
+    appendProps(extEle, props);
 
     if (markerType) {
       appendNs(extEle, FM_NS, 'fm:markerType', markerType);
@@ -833,6 +837,16 @@ async function addDrawingPoints(
     if (locusIcon) {
       createElement(pending[i].extEle, [LOCUS_NS, 'locus:icon'], locusIcon);
     }
+  }
+}
+
+/**
+ * The feature's own table, one `<fm:prop key="…">` per pair — every key, since
+ * `<name>` says only what the label rendered to.
+ */
+function appendProps(parent: Element, props: DrawingProps | undefined): void {
+  for (const key in props) {
+    createElement(parent, [FM_NS, 'fm:prop'], props[key]!, { key });
   }
 }
 

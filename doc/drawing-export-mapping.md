@@ -47,8 +47,8 @@ import.
 | `markerType` | `<fm:markerType>`            | **Lossless**                                                                                                                                  |
 | `icon`       | `<fm:icon>`                  | **Lossless** — preserves `fa:` / `poi:` / literal text prefix                                                                                 |
 | `color`      | `<fm:color>`                 | **Lossless** — preserves full `#RRGGBBAA`                                                                                                     |
-| `label`      | `<name>` (rendered) + `<fm:label>` (raw)     | `<name>` carries the label with its `{p:…}` and computed placeholders already expanded, which is what a consumer should show; `<fm:label>` is written only when the two differ, so our own importer restores the template |
-| `props`      | GeoJSON `properties` only                    | GPX has no home for arbitrary key/value on a waypoint, and inventing one our own importer can't read back would be worse than not writing it — see the note below |
+| `label`      | `<name>` (rendered) + `<fm:label>` (raw)     | `<name>` carries the label with its `{p:…}` and computed placeholders already expanded, which is what a consumer should show; `<fm:label>` carries it as written, so our own importer restores the template |
+| `props`      | `<fm:prop key="…">` / GeoJSON `properties`   | **Lossless** — one element per pair, every key, since `<name>` says only what the two of them rendered to |
 | (derived)    | `<locus:icon>`               | Self-contained SVG data URL mirroring `RichMarker` (shape + inner white + glyph: text/fa path/poi drawing). Purely visual; not source of truth. |
 
 ### GeoJSON export (per Point feature)
@@ -85,13 +85,30 @@ them when the feature is drawn.
 
 - **GeoJSON** carries them as real `properties`, spread first so a style key
   can never be shadowed by a property that shares its name, with the rendered
-  text in simplestyle's `title` and the raw label in `freemap:label`.
-- **GPX** carries the rendered `<name>` and `<fm:label>` but **not** the
-  properties themselves. Round-tripping a drawing through GPX therefore keeps
-  its label — template and all, since `enrichGpxExtensions` lifts `fm:label`
-  into `freemap:label` alongside the styling — but loses the table the template
-  referred to; through GeoJSON it keeps both. Reading back, `freemap:label` wins
-  over a bare `name`, which becomes `{name}` with the name kept as a property.
+  text in simplestyle's `title` and the raw label in `freemap:label`. The table
+  is written a second time, whole, under `freemap:props`: spread among the style
+  keys it can no longer be told back apart, so that copy is what our own
+  importer reads.
+- **GPX** carries them as one `<fm:prop key="…">value</fm:prop>` per pair
+  inside `<extensions>`, beside the raw `<fm:label>`. `enrichGpxExtensions`
+  collects them under `freemap:props`.
+- Both formats therefore round-trip **every** key, not only the OSM tags
+  `pickDrawingProps` knows how to carry, so a property the user invented
+  survives. `importedProps` is the single place that decides where a converted
+  feature's table comes from, and prefers `freemap:props` over reading tags off
+  the feature.
+
+A GPX `<name>` holds the label **rendered**, which is our own output: read back
+as data it would become the `name` property, and `{p:name}` would expand to the
+whole of the previous round's line, growing again with every trip. So the table
+is what the conversion reads, and its presence is the whole signal — a file that
+carries one is ours and its `<name>` is ignored; a file without one is read as
+before, the name becoming a property and the label `{p:name}`. (The data-viewer
+point branch instead copies the name as literal text; that predates this.)
+
+An export from before the table existed therefore keeps its old behaviour rather
+than losing its properties, and no separate marker is needed to tell the two
+apart.
 
 ## Drawing lines and polygons
 

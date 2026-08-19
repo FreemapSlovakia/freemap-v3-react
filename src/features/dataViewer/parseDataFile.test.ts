@@ -186,3 +186,59 @@ describe('parseDataFile', () => {
     ).toBe('waypoint');
   });
 });
+
+/** What this app's own exporter writes for a labelled point carrying a table. */
+const OWN_GPX = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:fm="https://www.freemap.sk/GPX/1/0">
+ <wpt lat="49.05648" lon="21.316533">
+  <ele>514.22</ele>
+  <name>Dubník 504</name>
+  <extensions>
+   <fm:label>{p:name} {p:ele}</fm:label>
+   <fm:prop key="name">Dubník</fm:prop>
+   <fm:prop key="ele">504</fm:prop>
+   <fm:prop key="my own">kept</fm:prop>
+   <fm:prop key="blank"></fm:prop>
+   <fm:prop key="padded"> spaced </fm:prop>
+  </extensions>
+ </wpt>
+</gpx>`;
+
+/** Somebody else's file, which says what it means in `<name>`. */
+const FOREIGN_GPX = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+ <wpt lat="49.05648" lon="21.316533"><name>Dubník</name></wpt>
+</gpx>`;
+
+const propsOf = (text: string, filename: string) =>
+  parseDataFile(text, filename)?.features[0]?.properties;
+
+describe('parseDataFile drawing extensions', () => {
+  it('brings the label as written and the table it draws from', () => {
+    const props = propsOf(OWN_GPX, 'own.gpx');
+
+    expect(props?.['freemap:label']).toBe('{p:name} {p:ele}');
+
+    expect(props?.['freemap:props']).toEqual({
+      name: 'Dubník',
+      ele: '504',
+      'my own': 'kept',
+      blank: '',
+      padded: ' spaced ',
+    });
+  });
+
+  it('keeps `<name>` too, which the viewer titles the feature by', () => {
+    // The table is what the conversion reads; `<name>` holds the label
+    // rendered, and is the only thing somebody else's file says.
+    expect(propsOf(OWN_GPX, 'own.gpx')?.['name']).toBe('Dubník 504');
+  });
+
+  it('leaves a file with no extensions of ours alone', () => {
+    const props = propsOf(FOREIGN_GPX, 'foreign.gpx');
+
+    expect(props?.['name']).toBe('Dubník');
+
+    expect(props?.['freemap:props']).toBeUndefined();
+  });
+});

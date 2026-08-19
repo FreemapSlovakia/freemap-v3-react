@@ -119,8 +119,13 @@ const CARRIED_TAGS = [
   'ref',
 ] as const;
 
+/**
+ * Takes `unknown` because an imported feature's properties are whatever the file
+ * said, and keeps only the strings — a GeoJSON writing `"ele": 1234` as a number
+ * would otherwise save a map that fails its own schema on reload.
+ */
 export function pickDrawingProps(
-  tags: Record<string, string> | undefined,
+  tags: Record<string, unknown> | undefined,
 ): DrawingProps | undefined {
   if (!tags) {
     return undefined;
@@ -131,7 +136,7 @@ export function pickDrawingProps(
   for (const tag of CARRIED_TAGS) {
     const value = tags[tag];
 
-    if (value) {
+    if (typeof value === 'string' && value) {
       props[tag] = value;
     }
   }
