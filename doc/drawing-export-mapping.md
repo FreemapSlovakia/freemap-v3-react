@@ -47,7 +47,7 @@ import.
 | `markerType` | `<fm:markerType>`            | **Lossless**                                                                                                                                  |
 | `icon`       | `<fm:icon>`                  | **Lossless** — preserves `fa:` / `poi:` / literal text prefix                                                                                 |
 | `color`      | `<fm:color>`                 | **Lossless** — preserves full `#RRGGBBAA`                                                                                                     |
-| `label`      | `<name>` (rendered) + `<fm:label>` (raw)     | `<name>` carries the label with its `{key}` placeholders already expanded, which is what a consumer should show; `<fm:label>` is written only when the two differ, so our own importer restores the template |
+| `label`      | `<name>` (rendered) + `<fm:label>` (raw)     | `<name>` carries the label with its `{p:…}` and computed placeholders already expanded, which is what a consumer should show; `<fm:label>` is written only when the two differ, so our own importer restores the template |
 | `props`      | GeoJSON `properties` only                    | GPX has no home for arbitrary key/value on a waypoint, and inventing one our own importer can't read back would be worse than not writing it — see the note below |
 | (derived)    | `<locus:icon>`               | Self-contained SVG data URL mirroring `RichMarker` (shape + inner white + glyph: text/fa path/poi drawing). Purely visual; not source of truth. |
 
@@ -80,7 +80,7 @@ color      ← freemap:color       → osmand:color
 
 A drawing feature can carry a table of free-form key/value **properties** (see
 [`url-params.md`](./url-params.md#properties)) — the OSM tags a converted object
-arrived with, or whatever the user typed. A `{key}` in the label expands from
+arrived with, or whatever the user typed. A `{p:key}` in the label expands from
 them when the feature is drawn.
 
 - **GeoJSON** carries them as real `properties`, spread first so a style key

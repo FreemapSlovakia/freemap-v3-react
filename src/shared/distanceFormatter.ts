@@ -15,6 +15,9 @@ export const lengthUnits = {
 
 export type LengthUnit = keyof typeof lengthUnits;
 
+/** Every unit the length readout offers is nameable in a label as well. */
+export const lengthUnitKeys = Object.keys(lengthUnits) as LengthUnit[];
+
 /**
  * A length in metres, written in the unit asked for. The value and its unit are
  * held together by a non-breaking space — written as an escape, since an

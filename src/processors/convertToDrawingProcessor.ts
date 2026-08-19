@@ -138,7 +138,7 @@ function featuresToLines(
           typeof feature.properties?.['freemap:label'] === 'string'
             ? feature.properties['freemap:label']
             : (isPolygon || labelLinesToo) && feature.properties?.['name']
-              ? '{name}'
+              ? '{p:name}'
               : undefined /* ignore street names */,
         props: pickDrawingProps(
           feature.properties as Record<string, string> | undefined,
@@ -219,7 +219,7 @@ function geojsonToDrawing(
             typeof feature.properties?.['freemap:label'] === 'string'
               ? feature.properties['freemap:label']
               : feature.properties?.['name']
-                ? '{name}'
+                ? '{p:name}'
                 : undefined,
           props: pickDrawingProps(tags),
           coords: {
@@ -457,7 +457,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             coords: object.coords,
             // The name is referenced rather than copied, so editing the
             // property below moves the drawn label with it.
-            label: object.tags?.['name'] ? '{name}' : undefined,
+            label: object.tags?.['name'] ? '{p:name}' : undefined,
             props: pickDrawingProps(object.tags),
             color: state.drawingSettings.style.color,
             markerType: state.objectsSettings.selectedIcon,

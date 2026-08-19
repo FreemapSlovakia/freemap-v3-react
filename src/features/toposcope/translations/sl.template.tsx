@@ -24,7 +24,7 @@ const sl: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
     line1: 'Prva vrstica',
     line2: 'Druga vrstica',
     lineHint:
-      'Na voljo: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} in {property:ime} za katero koli lastnost točke. Manjkajoča vrednost s seboj vzame tudi ločilo.',
+      'Na voljo: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} in {p:ime} za katero koli lastnost točke. Manjkajoča vrednost s seboj vzame tudi ločilo.',
     placeholders:
       'V napisu lahko uporabite {attribution} za vir zemljevida in {credit} za ta portal.',
   },

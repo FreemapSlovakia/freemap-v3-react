@@ -5,11 +5,11 @@ const it: DeepPartialWithRequiredObjects<DrawingMessages> = {
   modify: 'Proprietà',
   edit: {
     pointKeys:
-      'Scrivi {chiave} per una proprietà e {location} per la posizione.',
+      'Scrivi {p:nome} per una proprietà chiamata nome e {location} per la posizione.',
     lineKeys:
-      'Scrivi {chiave} per una proprietà, {length} per la lunghezza ({length_m}, {length_km}, {length_mi}) e {azimuth} per una linea dritta di due punti.',
+      'Scrivi {p:nome} per una proprietà chiamata nome, {length} per la lunghezza ({length_m}, {length_km}, {length_mi}) e {azimuth} per una linea dritta di due punti.',
     polygonKeys:
-      'Scrivi {chiave} per una proprietà, {area} per l’area ({area_m2}, {area_a}, {area_ha}, {area_km2}) e {perimeter} per il perimetro ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+      'Scrivi {p:nome} per una proprietà chiamata nome, {area} per l’area ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) e {perimeter} per il perimetro ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
     properties: 'Proprietà',
     propertyKey: 'Nome',
     propertyValue: 'Valore',

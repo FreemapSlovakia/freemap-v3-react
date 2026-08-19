@@ -17,6 +17,22 @@ export const areaUnits = {
 export type AreaUnit = keyof typeof areaUnits;
 
 /**
+ * What each unit is called in an `{area_*}` label placeholder — the symbols
+ * carry superscripts and the placeholders have to be typeable. Derived from the
+ * table above so a unit the readout offers can always be named in a label too.
+ */
+export const areaUnitKeys: Record<AreaUnit, string> = {
+  'm²': 'area_m2',
+  'km²': 'area_km2',
+  a: 'area_a',
+  ha: 'area_ha',
+  'mi²': 'area_mi2',
+  'yd²': 'area_yd2',
+  'ft²': 'area_ft2',
+  ac: 'area_ac',
+};
+
+/**
  * Digits enough to say something without saying more than the measurement can:
  * a bigger number gets fewer of them. The same rule `formatDistance` uses.
  */

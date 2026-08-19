@@ -25,7 +25,7 @@ const de: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
     line1: 'Erste Zeile',
     line2: 'Zweite Zeile',
     lineHint:
-      'Verfügbar: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} und {property:name} für jede Eigenschaft des Punktes. Ein fehlender Wert nimmt sein Trennzeichen mit.',
+      'Verfügbar: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} und {p:name} für jede Eigenschaft des Punktes. Ein fehlender Wert nimmt sein Trennzeichen mit.',
     placeholders:
       'Eine Inschrift kann {attribution} für den Kartennachweis und {credit} für dieses Portal enthalten.',
   },

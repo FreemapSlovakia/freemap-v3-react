@@ -38,11 +38,11 @@ describe('fillRayTemplate', () => {
   });
 
   it('reads any property of the point', () => {
-    expect(fillRayTemplate('{property:wikidata}', values)).toBe('Q607770');
+    expect(fillRayTemplate('{p:wikidata}', values)).toBe('Q607770');
   });
 
   it('expands a property that is not there to nothing', () => {
-    expect(fillRayTemplate('{property:website}', values)).toBe('');
+    expect(fillRayTemplate('{p:website}', values)).toBe('');
   });
 
   it('expands a name it does not know to nothing', () => {
@@ -118,7 +118,7 @@ describe('punctuation inside a value', () => {
 
 describe('a key from the prototype chain', () => {
   it('reads as nothing rather than as what every object inherits', () => {
-    expect(fillRayTemplate('{property:constructor}', values)).toBe('');
-    expect(fillRayTemplate('{property:toString}', values)).toBe('');
+    expect(fillRayTemplate('{p:constructor}', values)).toBe('');
+    expect(fillRayTemplate('{p:toString}', values)).toBe('');
   });
 });

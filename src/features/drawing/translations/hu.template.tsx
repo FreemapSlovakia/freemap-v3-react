@@ -5,11 +5,11 @@ const hu: DeepPartialWithRequiredObjects<DrawingMessages> = {
   modify: 'Tulajdonságok',
   edit: {
     pointKeys:
-      'Írjon {kulcs} elemet egy tulajdonsághoz és {location} elemet a helyzethez.',
+      'Írjon {p:nev} elemet a nev nevű tulajdonsághoz és {location} elemet a helyzethez.',
     lineKeys:
-      'Írjon {kulcs} elemet egy tulajdonsághoz, {length} elemet a hosszhoz ({length_m}, {length_km}, {length_mi}), és {azimuth} elemet két pontból álló egyenes vonalhoz.',
+      'Írjon {p:nev} elemet a nev nevű tulajdonsághoz, {length} elemet a hosszhoz ({length_m}, {length_km}, {length_mi}), és {azimuth} elemet két pontból álló egyenes vonalhoz.',
     polygonKeys:
-      'Írjon {kulcs} elemet egy tulajdonsághoz, {area} elemet a területhez ({area_m2}, {area_a}, {area_ha}, {area_km2}) és {perimeter} elemet a kerülethez ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+      'Írjon {p:nev} elemet a nev nevű tulajdonsághoz, {area} elemet a területhez ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) és {perimeter} elemet a kerülethez ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
     properties: 'Tulajdonságok',
     propertyKey: 'Név',
     propertyValue: 'Érték',

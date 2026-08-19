@@ -4,11 +4,12 @@ import type { DrawingMessages } from './DrawingMessages.js';
 const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
   modify: 'Lastnosti',
   edit: {
-    pointKeys: 'Napišite {ključ} za lastnost in {location} za položaj.',
+    pointKeys:
+      'Napišite {p:ime} za lastnost z imenom ime in {location} za položaj.',
     lineKeys:
-      'Napišite {ključ} za lastnost, {length} za dolžino ({length_m}, {length_km}, {length_mi}) in {azimuth} pri ravni črti iz dveh točk.',
+      'Napišite {p:ime} za lastnost z imenom ime, {length} za dolžino ({length_m}, {length_km}, {length_mi}) in {azimuth} pri ravni črti iz dveh točk.',
     polygonKeys:
-      'Napišite {ključ} za lastnost, {area} za površino ({area_m2}, {area_a}, {area_ha}, {area_km2}) in {perimeter} za obseg ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+      'Napišite {p:ime} za lastnost z imenom ime, {area} za površino ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) in {perimeter} za obseg ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
     properties: 'Lastnosti',
     propertyKey: 'Ime',
     propertyValue: 'Vrednost',

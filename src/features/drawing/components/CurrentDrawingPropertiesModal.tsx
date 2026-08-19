@@ -27,6 +27,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaTag, FaTimes } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import { setActiveModal } from '../../../app/store/actions.js';
+import { PROPERTY_PREFIX } from '../labelValues.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 import classes from './CurrentDrawingPropertiesModal.module.css';
 import {
@@ -164,7 +165,7 @@ export default function CurrentDrawingPropertiesModal({
   const handleInsertKey = useCallback((key: string) => {
     const el = labelRef.current;
 
-    const token = `{${key}}`;
+    const token = `{${PROPERTY_PREFIX}${key}}`;
 
     // A textarea reports a selection of 0..0 whether the caret is genuinely at
     // the start or has never been in the field at all, so being focused is what

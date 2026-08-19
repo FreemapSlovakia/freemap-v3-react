@@ -24,7 +24,7 @@ const en: ToposcopeMessages = {
     line1: 'First line',
     line2: 'Second line',
     lineHint:
-      'Available: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location}, and {property:name} for any property of the point. A value that is missing takes its separator with it.',
+      'Available: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location}, and {p:name} for any property of the point. A value that is missing takes its separator with it.',
     placeholders:
       "An inscription can carry {attribution} for the map credit and {credit} for this portal's.",
   },

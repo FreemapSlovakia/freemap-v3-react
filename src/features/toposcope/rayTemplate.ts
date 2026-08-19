@@ -1,3 +1,4 @@
+import { PROPERTY_PREFIX } from '@features/drawing/labelValues.js';
 import type { DrawingProps } from '@features/drawing/model/actions/drawingPointActions.js';
 
 /** Metres to feet, for `{elevation_ft}`. */
@@ -8,7 +9,7 @@ const METERS_PER_MILE = 1609.344;
 
 /**
  * What a ray's two template lines can name. Everything the dial works out for
- * itself, plus `{property:<name>}` for anything the point happens to carry.
+ * itself, plus `{p:<name>}` for anything the point happens to carry.
  */
 export type RayValues = {
   /** The point's own label, its own `{key}` references already resolved. */
@@ -34,10 +35,10 @@ type Piece = { text: string; written: boolean };
 const SEPARATORS_ONLY = /^[ \t·,.;\-–—/|]*$/;
 
 function resolve(key: string, values: RayValues): string {
-  if (key.startsWith('property:')) {
-    const name = key.slice('property:'.length);
+  if (key.startsWith(PROPERTY_PREFIX)) {
+    const name = key.slice(PROPERTY_PREFIX.length);
 
-    // Own keys only: `{property:constructor}` must read as a property nobody
+    // Own keys only: `{p:constructor}` must read as a property nobody
     // set, not as what every object inherits under that name.
     return values.props && Object.hasOwn(values.props, name)
       ? values.props[name]!

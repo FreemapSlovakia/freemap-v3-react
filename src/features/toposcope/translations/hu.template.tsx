@@ -24,7 +24,7 @@ const hu: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
     line1: 'Első sor',
     line2: 'Második sor',
     lineHint:
-      'Használható: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} és {property:nev} a pont bármely tulajdonságához. A hiányzó érték az elválasztóját is elviszi.',
+      'Használható: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} és {p:nev} a pont bármely tulajdonságához. A hiányzó érték az elválasztóját is elviszi.',
     placeholders:
       'A feliratban az {attribution} a térkép forrását, a {credit} ezt a portált jelöli.',
   },

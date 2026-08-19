@@ -4,11 +4,12 @@ import type { DrawingMessages } from './DrawingMessages.js';
 const sk: DeepPartialWithRequiredObjects<DrawingMessages> = {
   modify: 'Vlastnosti',
   edit: {
-    pointKeys: 'Napíšte {kľúč} pre vlastnosť a {location} pre polohu.',
+    pointKeys:
+      'Napíšte {p:nazov} pre vlastnosť s názvom nazov a {location} pre polohu.',
     lineKeys:
-      'Napíšte {kľúč} pre vlastnosť, {length} pre dĺžku ({length_m}, {length_km}, {length_mi}) a {azimuth} pri priamej čiare z dvoch bodov.',
+      'Napíšte {p:nazov} pre vlastnosť s názvom nazov, {length} pre dĺžku ({length_m}, {length_km}, {length_mi}) a {azimuth} pri priamej čiare z dvoch bodov.',
     polygonKeys:
-      'Napíšte {kľúč} pre vlastnosť, {area} pre plochu ({area_m2}, {area_a}, {area_ha}, {area_km2}) a {perimeter} pre obvod ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+      'Napíšte {p:nazov} pre vlastnosť s názvom nazov, {area} pre plochu ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) a {perimeter} pre obvod ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
     properties: 'Vlastnosti',
     propertyKey: 'Názov',
     propertyValue: 'Hodnota',

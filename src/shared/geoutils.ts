@@ -464,6 +464,18 @@ export function bearingTo(from: LatLon, to: LatLon): number {
   return (turfBearing([from.lon, from.lat], [to.lon, to.lat]) + 360) % 360;
 }
 
+/**
+ * A bearing as the line readout writes it: two decimals and the degree sign,
+ * with no space between. Shared with the `{azimuth}` label placeholder so the
+ * label and the readout beside it can't say the same angle differently.
+ */
+export function formatAzimuth(degrees: number, locale: string): string {
+  return `${new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(degrees)}°`;
+}
+
 /** Great-circle distance in metres. */
 export function distanceTo(from: LatLon, to: LatLon): number {
   return distance([from.lon, from.lat], [to.lon, to.lat], { units: 'meters' });

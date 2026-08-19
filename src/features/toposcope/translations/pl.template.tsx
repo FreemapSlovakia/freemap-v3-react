@@ -24,7 +24,7 @@ const pl: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
     line1: 'Pierwszy wiersz',
     line2: 'Drugi wiersz',
     lineHint:
-      'Dostępne: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} oraz {property:nazwa} dla dowolnej właściwości punktu. Brakująca wartość zabiera ze sobą separator.',
+      'Dostępne: {label}, {elevation}, {elevation_ft}, {distance}, {distance_mi}, {azimuth}, {location} oraz {p:nazwa} dla dowolnej właściwości punktu. Brakująca wartość zabiera ze sobą separator.',
     placeholders:
       'W napisie można użyć {attribution} dla źródła mapy i {credit} dla tego portalu.',
   },

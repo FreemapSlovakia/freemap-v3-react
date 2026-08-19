@@ -4,8 +4,8 @@ import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
+import { formatAzimuth } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import { bearing } from '@turf/bearing';
@@ -18,6 +18,8 @@ import {
   divIcon,
   type LatLngBounds,
   type LeafletMouseEvent,
+  type Polygon as LeafletPolygon,
+  type Polyline as LeafletPolyline,
   type PointExpression,
 } from 'leaflet';
 import {
@@ -271,11 +273,6 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
     dispatch(drawingMeasure({}));
   }
-
-  const azimuthNumberFormat = useNumberFormat({
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 
   function handleSelect() {
     dispatch(
@@ -536,6 +533,25 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     }
   }, [showHandles, handleTier]);
 
+  const polygonRef = useRef<LeafletPolygon>(null);
+
+  const polylineRef = useRef<LeafletPolyline>(null);
+
+  // Leaflet places a path's tooltip once, where the shape's centre was when the
+  // tooltip opened, and leaves it there however the shape moves afterwards —
+  // there is no `move` event on a path to hang a reposition off. So drag a node
+  // and the label stays behind, pointing at nothing. Re-seated after every
+  // render, which is when the geometry can have changed.
+  useEffect(() => {
+    for (const layer of [polygonRef.current, polylineRef.current]) {
+      const tooltip = layer?.getTooltip();
+
+      if (layer && tooltip?.isOpen()) {
+        tooltip.setLatLng(layer.getCenter());
+      }
+    }
+  });
+
   // A ring being drawn isn't a ring yet; leaving it out keeps the parent from
   // rendering a degenerate hole while the first points go down.
   const holeRings = useMemo(
@@ -645,7 +661,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             </>
           ) : null}
           ↔ {formatDistance(dist, language)}
-          <br />∡ {azimuthNumberFormat.format(azimuth)}°
+          <br />∡ {formatAzimuth(azimuth, language)}
         </span>
       ) : null;
 
@@ -680,6 +696,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           />
 
           <Polyline
+            ref={polylineRef}
             weight={width}
             pathOptions={{
               color: renderColor,
@@ -704,6 +721,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
       {ps.length > 1 && line.type === 'polygon' && !isHole && (
         <Polygon
+          ref={polygonRef}
           key={`polygon-${interactiveLine ? 'a' : 'b'}`}
           pane="fm-drawing-polygons"
           weight={width}
@@ -926,7 +944,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
                   ↔ {formatDistance(segDist, language)}
                   {i < 2 ? null : (
                     <>
-                      <br />∡ {azimuthNumberFormat.format(azimuth)}°
+                      <br />∡ {formatAzimuth(azimuth, language)}
                     </>
                   )}
                 </span>

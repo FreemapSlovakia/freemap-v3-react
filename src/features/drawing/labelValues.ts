@@ -1,15 +1,20 @@
 import { getLanguage } from '@features/l10n/messagesStore.js';
 import {
   type AreaUnit,
+  areaUnitKeys,
   formatArea,
   naturalAreaUnit,
 } from '@shared/areaFormatter.js';
 import {
   formatDistance,
   formatLength,
-  type LengthUnit,
+  lengthUnitKeys,
 } from '@shared/distanceFormatter.js';
-import { bearingTo, formatLocationLines } from '@shared/geoutils.js';
+import {
+  bearingTo,
+  formatAzimuth,
+  formatLocationLines,
+} from '@shared/geoutils.js';
 import { interpolateLabel } from './interpolateLabel.js';
 import {
   lineLength,
@@ -21,8 +26,16 @@ import type { DrawnLine, Line } from './model/actions/drawingLineActions.js';
 import type { DrawingPoint } from './model/actions/drawingPointActions.js';
 
 /**
- * What a `{key}` in a label can name: the feature's own properties, plus the
- * values the app works out from its geometry.
+ * What a `{key}` in a label can name. The bare namespace is what the app works
+ * out from the geometry — `{area}`, `{length}`, `{location}` — and the feature's
+ * own properties live under `p:`, as `{p:name}`.
+ *
+ * The prefix is required rather than a fallback for names the app doesn't use.
+ * Were a bare `{area}` to mean a property called `area` until the day the app
+ * learned to measure one, every label already written — and already shared in a
+ * URL — would change meaning under its author. This way a computed name added
+ * later can only start answering a label that was, until then, visibly
+ * unanswered.
  *
  * Resolving a label goes through here and nowhere else. A label is drawn on the
  * map, written into a GeoJSON `title` and a GPX `<name>`, and read by the
@@ -39,19 +52,25 @@ export type LabelValues = Record<string, string | undefined>;
  * measured each time for nothing.
  */
 function lazy(values: LabelValues, key: string, get: () => string): void {
-  // A property of the same name wins: it is the user's own data, and a label
-  // naming it means the value they typed.
-  if (Object.hasOwn(values, key)) {
-    return;
-  }
-
   Object.defineProperty(values, key, { get, enumerable: true });
+}
+
+/** The properties, under the prefix that reaches them. */
+export const PROPERTY_PREFIX = 'p:';
+
+function withProps(props: Record<string, string> | undefined): LabelValues {
+  return Object.fromEntries(
+    Object.entries(props ?? {}).map(([key, value]) => [
+      PROPERTY_PREFIX + key,
+      value,
+    ]),
+  );
 }
 
 export function pointLabelValues(
   point: Pick<DrawingPoint, 'coords' | 'props'>,
 ): LabelValues {
-  const values: LabelValues = { ...point.props };
+  const values = withProps(point.props);
 
   lazy(values, 'location', () => formatLocationLines(point.coords));
 
@@ -68,7 +87,7 @@ export function lineLabelValues(
     Partial<Pick<DrawnLine, 'id' | 'holeOfId'>>,
   lines: readonly DrawnLine[] = [],
 ): LabelValues {
-  const values: LabelValues = { ...line.props };
+  const values = withProps(line.props);
 
   const locale = getLanguage();
 
@@ -91,7 +110,7 @@ export function lineLabelValues(
   lazy(values, 'length', () => formatDistance(lengthM(), locale));
   lazy(values, 'perimeter', () => formatDistance(lengthM(), locale));
 
-  for (const unit of ['m', 'km', 'mi'] satisfies LengthUnit[]) {
+  for (const unit of lengthUnitKeys) {
     lazy(values, `length_${unit}`, () => formatLength(lengthM(), unit, locale));
 
     lazy(values, `perimeter_${unit}`, () =>
@@ -106,23 +125,16 @@ export function lineLabelValues(
       formatArea(areaM2(), naturalAreaUnit(areaM2()), locale),
     );
 
-    for (const [key, unit] of [
-      ['area_m2', 'm²'],
-      ['area_a', 'a'],
-      ['area_ha', 'ha'],
-      ['area_km2', 'km²'],
-    ] satisfies [string, AreaUnit][]) {
+    for (const [unit, key] of Object.entries(areaUnitKeys) as [
+      AreaUnit,
+      string,
+    ][]) {
       lazy(values, key, () => formatArea(areaM2(), unit, locale));
     }
   } else if (line.points.length === 2) {
     // Only where there is one direction to give: a line with a bend has several.
     lazy(values, 'azimuth', () =>
-      new Intl.NumberFormat(locale, {
-        style: 'unit',
-        unit: 'degree',
-        unitDisplay: 'narrow',
-        maximumFractionDigits: 0,
-      }).format(bearingTo(line.points[0]!, line.points[1]!)),
+      formatAzimuth(bearingTo(line.points[0]!, line.points[1]!), locale),
     );
   }
 

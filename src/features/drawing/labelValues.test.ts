@@ -27,7 +27,11 @@ const square = {
 describe('drawingPointLabel', () => {
   it('draws a property the label names', () => {
     expect(
-      drawingPointLabel({ coords, label: '{name}', props: { name: 'Sitno' } }),
+      drawingPointLabel({
+        coords,
+        label: '{p:name}',
+        props: { name: 'Sitno' },
+      }),
     ).toBe('Sitno');
   });
 
@@ -39,6 +43,34 @@ describe('drawingPointLabel', () => {
 
   it('leaves a key it cannot answer as written', () => {
     expect(drawingPointLabel({ coords, label: '{nmae}' })).toBe('{nmae}');
+  });
+
+  it('needs the prefix for a property, so a bare name is never one', () => {
+    // What keeps a computed key added later from changing what an already
+    // shared label means.
+    expect(
+      drawingPointLabel({ coords, label: '{name}', props: { name: 'Sitno' } }),
+    ).toBe('{name}');
+  });
+
+  it('reaches a property whose name is also a computed one', () => {
+    expect(
+      drawingPointLabel({
+        coords,
+        label: '{p:location}',
+        props: { location: 'underground' },
+      }),
+    ).toBe('underground');
+  });
+
+  it('reaches a property whose name carries a colon', () => {
+    expect(
+      drawingPointLabel({
+        coords,
+        label: '{p:name:sk}',
+        props: { 'name:sk': 'Sitno' },
+      }),
+    ).toBe('Sitno');
   });
 
   it('reads an absent label as empty', () => {
@@ -53,7 +85,7 @@ describe('drawingPointLabel', () => {
 describe('drawingLineLabel', () => {
   it('draws a property the label names', () => {
     expect(
-      drawingLineLabel({ ...line, label: '{name}', props: { name: 'Hron' } }),
+      drawingLineLabel({ ...line, label: '{p:name}', props: { name: 'Hron' } }),
     ).toBe('Hron');
   });
 
@@ -72,7 +104,7 @@ describe('drawingLineLabel', () => {
   });
 
   it('gives an azimuth only where there is one direction', () => {
-    expect(drawingLineLabel({ ...line, label: '{azimuth}' })).toBe('90°');
+    expect(drawingLineLabel({ ...line, label: '{azimuth}' })).toBe('90.00°');
 
     const bent = { ...line, points: [...line.points, at(1, 1, 2)] };
 
@@ -129,6 +161,20 @@ describe('a polygon', () => {
 
     expect(parseFloat(holed.replace(/[^\d.]/g, ''))).toBeLessThan(
       parseFloat(whole.replace(/[^\d.]/g, '')),
+    );
+  });
+
+  it('offers every unit the readout does, acres included', () => {
+    expect(drawingLineLabel({ ...square, label: '{area_ac}' })).toMatch(
+      /\u00a0ac$/,
+    );
+
+    expect(drawingLineLabel({ ...square, label: '{area_mi2}' })).toMatch(
+      /\u00a0mi²$/,
+    );
+
+    expect(drawingLineLabel({ ...square, label: '{perimeter_nmi}' })).toMatch(
+      /\u00a0nmi$/,
     );
   });
 
