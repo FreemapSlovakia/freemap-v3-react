@@ -13,6 +13,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Deploys are serialized by the concurrency group above, so a job that hangs
+    # blocks every later one until someone kills it. Fail instead.
+    timeout-minutes: 15
     env:
       # sentry-cli only honors the token if the URL comes from the same
       # configuration source, so both must be set here in the environment.
@@ -21,8 +24,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Install protoc
-        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+      # A prebuilt release rather than apt: `apt-get` blocks on the dpkg lock
+      # the runner's own unattended-upgrades still holds, with no timeout and
+      # no output, and `build:proto` is the only thing that needs protoc.
+      - uses: arduino/setup-protoc@v3
+        timeout-minutes: 4
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: pnpm/action-setup@v6
         with:
