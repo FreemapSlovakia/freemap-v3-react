@@ -389,6 +389,9 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
         case 'KeyO':
           return setActiveModal({ type: 'offline-maps' });
 
+        case 'KeyB':
+          return setActiveModal({ type: 'browse-cache' });
+
         case 'KeyY':
           return setActiveModal({ type: 'map-layers-config' });
 

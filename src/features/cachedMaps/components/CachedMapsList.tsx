@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
+import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
@@ -10,6 +11,7 @@ import {
 } from '@shared/components/ResponsiveActions.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { modalMenuItemProps } from '@shared/hooks/useMenuHandler.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
@@ -18,6 +20,7 @@ import { Button, ListGroup, Modal, ProgressBar } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
   FaCrosshairs,
+  FaDatabase,
   FaEye,
   FaPencilAlt,
   FaPlay,
@@ -45,6 +48,8 @@ export function CachedMapsList(): ReactElement {
   const ome = useOfflineMapExportMessages();
 
   const dispatch = useDispatch();
+
+  const confirm = useConfirm();
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
@@ -253,9 +258,20 @@ export function CachedMapsList(): ReactElement {
                           icon={<FaTrash />}
                           label={m?.general.delete}
                           variant="danger"
-                          onClick={() =>
-                            dispatch(cachedMapDeleted({ id: cm.type }))
-                          }
+                          onClick={async () => {
+                            if (
+                              await confirm({
+                                title: cmm?.deleteTitle,
+                                message: cmm?.deleteConfirm({
+                                  name: cm.name || `{${cm.type}}`,
+                                }),
+                                confirmLabel: m?.general.delete,
+                                confirmStyle: 'danger',
+                              })
+                            ) {
+                              dispatch(cachedMapDeleted({ id: cm.type }));
+                            }
+                          }}
                           showFrom="sm"
                         />
                       </ResponsiveActions>
@@ -273,6 +289,20 @@ export function CachedMapsList(): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
+        {/* a real link, so it can be opened or copied like the menu entries
+            that address a modal; the click itself is handled here */}
+        <Button
+          variant="link"
+          href={modalMenuItemProps('browse-cache').href}
+          onClick={(e) => {
+            e.preventDefault();
+
+            dispatch(setActiveModal({ type: 'browse-cache' }));
+          }}
+        >
+          <FaDatabase /> {m?.mapLayers.browseCache}
+        </Button>
+
         <Button
           variant="primary"
           disabled={!online}

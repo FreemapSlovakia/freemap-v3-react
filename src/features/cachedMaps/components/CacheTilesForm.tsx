@@ -198,6 +198,10 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     editing?.bounds,
   );
 
+  const [networkFallback, setNetworkFallback] = useState(
+    editing?.networkFallback !== false,
+  );
+
   const [showInMenu, setShowInMenu] = useState(
     editing ? (layersSettings[editing.type]?.showInMenu ?? true) : true,
   );
@@ -412,6 +416,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
               maxNativeZoom: parseInt(maxZoom, 10),
               bounds: bbox,
               tileCount: tileCount ?? 0,
+              networkFallback,
             },
           }),
         );
@@ -454,6 +459,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
           createdAt: new Date().toISOString(),
           sizeBytes: 0,
           tileScale: Number(scale),
+          networkFallback,
         } as CachedTileMapDef;
 
         dispatch(cacheTilesStart(meta));
@@ -501,6 +507,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       showInMenu,
       showInToolbar,
       initialVisibility,
+      networkFallback,
     ],
   );
 
@@ -669,6 +676,18 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
                 </ToggleButtonGroup>
               </Form.Group>
             )}
+
+        <Form.Group className="mb-3">
+          <Form.Check
+            id="networkFallback"
+            type="checkbox"
+            checked={networkFallback}
+            label={cm?.networkFallback}
+            onChange={(e) => setNetworkFallback(e.currentTarget.checked)}
+          />
+
+          <Form.Text>{cm?.networkFallbackHint}</Form.Text>
+        </Form.Group>
 
         <Form.Group>
           <LayerVisibilityFields

@@ -389,6 +389,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     offlineMaps: 'Cartes hors ligne',
+    browseCache: 'Mise en cache pendant la navigation',
     legacy: 'obsolète',
   },
   elevationChart: {

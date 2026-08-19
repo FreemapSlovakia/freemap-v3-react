@@ -385,9 +385,9 @@ The toolbar holds everything the tool does: ◎ to place or move the centre, ⚙
 
 Caches selected map areas (tiles) in the browser for offline use. (This is different from "Offline maps export", which produces a downloadable MBTiles/SQLiteDB file.)
 
-A cached map is not limited to what it holds. While there is a connection it behaves as the layer it was made from: it takes that layer's zoom range and its premium gate, and any tile it doesn't have — outside its area, deeper than it was downloaded, or not downloaded yet — is fetched from that layer's own server. Such tiles are only displayed, never added to the cached map. Without a connection the map falls back to being just what was downloaded: its own area and zoom range, with the deepest cached level scaled up beyond it.
+A cached map is not limited to what it holds. While there is a connection it behaves as the layer it was made from: it takes that layer's zoom range and its premium gate, and any tile it doesn't have — outside its area, deeper than it was downloaded, or not downloaded yet — is fetched from that layer's own server. Such tiles are only displayed, never added to the cached map. Without a connection the map falls back to being just what was downloaded: its own area and zoom range, with the deepest cached level scaled up beyond it. The form's **Fetch missing tiles from the internet** checkbox (on by default) governs this: unticked, the map is a sealed artifact that shows what was downloaded and nothing else, connection or not.
 
-The manager modal lists already-cached offline maps with their zoom range, tile count, scale, size and status (Ready, or incomplete with a percentage), and has buttons to modify, delete, and **Add offline map**. A ready map has an **Activate** button that switches the map layer on and zooms to its area; a map that is still downloading offers **Zoom to area** instead. A running download can be **Stop**ped, which halts it and keeps whatever has been cached so far; an incomplete map then offers **Resume**, which fetches only the tiles it is missing. **Delete** discards the map altogether and is available whether or not it is downloading.
+The manager modal lists already-cached offline maps with their zoom range, tile count, scale, size and status (Ready, or incomplete with a percentage), and has buttons to modify, delete, and **Add offline map**. A ready map has an **Activate** button that switches the map layer on and zooms to its area; a map that is still downloading offers **Zoom to area** instead. A running download can be **Stop**ped, which halts it and keeps whatever has been cached so far; an incomplete map then offers **Resume**, which fetches only the tiles it is missing. **Delete** discards the map altogether, asking for confirmation first, and is available whether or not it is downloading.
 
 The "Cache map for offline use" form lets the user choose:
 
@@ -397,6 +397,7 @@ The "Cache map for offline use" form lets the user choose:
 - an icon, picked from the same icon set the drawing points use (Font Awesome and the OSM POI icons). Caching a custom map starts from that map's own icon; the built-in layers have none to pass on. A map left without one keeps the generic glyph of wherever it is listed — the offline symbol in the offline-map lists and in Configure layers, the custom-map symbol in the layer menu and toolbar
 - the zoom range. For a layer whose deepest zooms are premium, a non-premium user's range stops just short of them and a gem beside the field says why: cached tiles are kept for good and are shown with no connection, where no checkerboard applies, so downloading those levels needs premium access. Browsing them online is unaffected — the cached map shows the same checkerboard there as the source layer does.
 - the scale (1×, 2×, … — only for layers that offer hi-DPI tiles; defaults to what the current screen displays). A cached map holds exactly one scale and is always drawn at it, regardless of the screen and of the resolution/feature-size preferences.
+- whether missing tiles may be fetched from the internet (see above)
 - whether to show the cached map in the menu and/or toolbar
 
 It shows the estimated tile count and size before caching starts; the size is estimated by fetching a few real tiles of the selected layer, area, zoom range and scale. It warns about very large downloads and about downloads that would not fit in the browser's free storage.
@@ -404,6 +405,14 @@ It shows the estimated tile count and size before caching starts; the size is es
 **Modify** opens the same form seeded from an existing offline map, to change its name, icon, area, zoom range and menu/toolbar visibility. The map (layer) and the scale are fixed, since changing either would invalidate every stored tile. Widening the area or the zoom range downloads only the tiles that are missing; narrowing it deletes the tiles that fall outside. The form then shows both the map's total tile count and how many of them still have to be downloaded. Changing only the name touches no tiles.
 
 Picking the rectangle option (in this form and in the map/document exports below) hides the modal and lets the user drag the rectangle's corner, edge, and center handles on the map, confirming with **OK** or discarding with **Cancel** (<kbd>Esc</kbd>). The confirmed rectangle is remembered for the other export/cache forms until the page is reloaded; if it lies outside the current view, the map jumps to it.
+
+### Cache while browsing
+
+- Access: Maps button menu > Manage maps > Cache while browsing (also linked from the Offline maps list)
+- Keyboard shortcut: <kbd>m</kbd> <kbd>b</kbd>
+- URL path: `/#show=browse-cache`
+
+A second, separate cache: the one ordinary map browsing fills. It covers every tile layer, is shared by all of them, and is off by default. Its options are **Serve tiles from** (Internet only / Internet, then cache / Cache, then internet / Cache only), **Save tiles fetched from the internet**, **Keep tiles for** (7 to 365 days, or until space runs out) and a **Cache size limit** (100 MB to 2 GB, or none) — over the limit the least recently shown tiles go first. "Cache, then internet" always shows a held tile at once, refreshing an expired one in the background rather than making the map wait. The screen shows how many tiles are held and how much space they take; the settings take effect on **Save**, and **Clear cache** (which asks for confirmation) empties the cache while leaving the settings alone. Layers whose tiles are served without CORS headers are left uncached, their size being unmeasurable.
 
 ### Share / Open in external app
 
@@ -610,7 +619,7 @@ There is also a button with three vertical dots that opens a menu listing additi
 
 - Access: Maps button menu > Manage maps
 
-Expands a submenu with four items, each opening its own modal: **Configure layers**, **Custom maps** (suffixed with the number of custom maps), **Offline maps** (suffixed with the total cache size), and — below a divider — **Preferences**.
+Expands a submenu with five items, each opening its own modal: **Configure layers**, **Custom maps** (suffixed with the number of custom maps), **Offline maps** (suffixed with the total cache size), **Cache while browsing**, and — below a divider — **Preferences**.
 
 #### Configure layers
 

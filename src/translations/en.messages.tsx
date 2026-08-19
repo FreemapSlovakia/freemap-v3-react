@@ -380,6 +380,7 @@ const messages: Messages = {
       </>
     ),
     offlineMaps: 'Offline maps',
+    browseCache: 'Cache while browsing',
     legacy: 'legacy',
     legacyMapWarning: ({ from, to }) => (
       <>

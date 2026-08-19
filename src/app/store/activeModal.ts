@@ -7,6 +7,7 @@ import z from 'zod';
 const URL_MODAL_IDS = [
   'about',
   'account',
+  'browse-cache',
   'credits-purchase',
   'custom-maps',
   'drawing-properties',

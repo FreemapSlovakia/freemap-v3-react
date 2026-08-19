@@ -1,6 +1,8 @@
 import { createReducer } from '@reduxjs/toolkit';
+import type { BrowseCacheStats } from '../browseCache.js';
 import { sameCoverage } from '../cachedTileMaps.js';
 import {
+  browseCacheStatsLoaded,
   cachedMapDeleted,
   cachedMapEdited,
   cachedMapsSetView,
@@ -25,12 +27,15 @@ export interface CachedMapsState {
   view: 'list' | 'add' | 'edit';
   /** The map the `edit` view is showing. */
   editId: string | null;
+  /** What the browse cache holds; `null` until it has been read. */
+  browseStats: BrowseCacheStats | null;
 }
 
 export const cachedMapsInitialState: CachedMapsState = {
   activeDownloads: {},
   view: 'list',
   editId: null,
+  browseStats: null,
 };
 
 export const cachedMapsReducer = createReducer(
@@ -98,6 +103,9 @@ export const cachedMapsReducer = createReducer(
       })
       .addCase(cachedMapDeleted, (state, { payload }) => {
         delete state.activeDownloads[payload.id];
+      })
+      .addCase(browseCacheStatsLoaded, (state, { payload }) => {
+        state.browseStats = payload;
       })
       .addCase(cachedMapsSetView, (state, { payload }) => {
         if (typeof payload === 'string') {

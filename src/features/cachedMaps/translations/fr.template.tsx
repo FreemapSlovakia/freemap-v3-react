@@ -43,6 +43,43 @@ const fr: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
     "Cette carte atteint des niveaux de zoom premium. Sans accès premium, elle peut être réduite mais pas agrandie — l'agrandir téléchargerait de nouveau des tuiles premium.",
   premiumSkipped:
     "Les niveaux de zoom les plus détaillés de cette carte sont premium et n'ont pas été téléchargés : elle reste donc marquée comme incomplète.",
+  networkFallback: 'Télécharger depuis internet les tuiles manquantes',
+  networkFallbackHint:
+    "Activé : en se déplaçant hors de la zone téléchargée ou en zoomant davantage, les tuiles en direct s'affichent tant qu'il y a une connexion internet. Désactivé : la carte n'affiche que ce qui a été téléchargé.",
+  deleteTitle: 'Supprimer la carte hors ligne',
+  deleteConfirm: ({ name }) => (
+    <>
+      Vraiment supprimer la carte hors ligne <b>{name}</b> et toutes ses tuiles
+      ?
+    </>
+  ),
+  browse: {
+    intro:
+      'Les tuiles rencontrées sur la carte peuvent être conservées pour plus tard, afin que les zones revisitées se chargent sans connexion internet. Cela concerne toutes les couches tuilées et reste indépendant des cartes hors ligne téléchargées.',
+    mode: 'Source des tuiles',
+    modes: {
+      networkOnly: 'Internet uniquement',
+      networkFirst: 'Internet, puis cache',
+      cacheFirst: 'Cache, puis internet',
+      cacheOnly: 'Cache uniquement',
+    },
+    store: 'Enregistrer les tuiles téléchargées depuis internet',
+    maxAge: 'Conserver les tuiles',
+    maxSize: 'Limite de taille',
+    days: ({ days }) => <>{days} jours</>,
+    keepForever: "Tant qu'il y a de la place",
+    noSizeLimit: 'Sans limite',
+    retentionHint:
+      'Les tuiles expirées sont supprimées, et au-delà de la limite de taille les moins récemment affichées partent en premier.',
+    cached: ({ tiles, size }) => (
+      <>
+        En cache : <strong>{tiles}</strong> tuiles ({size})
+      </>
+    ),
+    clear: 'Vider le cache',
+    clearConfirm:
+      'Vraiment supprimer toutes les tuiles conservées pendant la navigation ? Les réglages sont conservés.',
+  },
 };
 
 export default fr;

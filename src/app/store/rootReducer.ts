@@ -1,5 +1,6 @@
 import { authReducer } from '@features/auth/model/reducer.js';
 import { cachedMapsReducer } from '@features/cachedMaps/model/reducer.js';
+import { cachedMapsSettingsReducer } from '@features/cachedMaps/model/settingsReducer.js';
 import { changesetReducer } from '@features/changesets/model/reducer.js';
 import { cookieConsentReducer } from '@features/cookieConsent/model/reducer.js';
 import { dataViewerReducer } from '@features/dataViewer/model/reducer.js';
@@ -44,6 +45,7 @@ export { getInitialState } from './persistence.js';
 export const reducers = {
   auth: authReducer,
   cachedMaps: cachedMapsReducer,
+  cachedMapsSettings: cachedMapsSettingsReducer,
   changesets: changesetReducer,
   cookieConsent: cookieConsentReducer,
   drawingSettings: drawingSettingsReducer,

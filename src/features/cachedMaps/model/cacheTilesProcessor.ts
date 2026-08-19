@@ -15,6 +15,7 @@ import {
 import { buildTileUrl, pickSubdomain, withTileScale } from '@shared/tileUrl.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Dispatch } from 'redux';
+import { putTileResponse } from '../browseCache.js';
 import {
   deleteCachedTileMap,
   getCachedTileMaps,
@@ -27,6 +28,7 @@ import {
   sameCoverage,
 } from '../cachedTileMaps.js';
 import { toCachedLayerUrl } from '../cachedTileUrl.js';
+import { notifyServiceWorker } from '../notifyServiceWorker.js';
 import { premiumZoomLimit } from '../sourceLayer.js';
 import { loadCachedMapsMessages } from '../translations/loadCachedMapsMessages.js';
 import {
@@ -345,20 +347,11 @@ async function downloadTiles(
 
           sizeBytes += blob.size;
 
-          // Store a plain same-origin response instead of the cross-origin one:
-          // a CORS response carries the tile server's `Vary` (typically
-          // `Accept-Encoding, Origin`) and its CORS headers, which are
-          // meaningless under the `/__cached__/` origin and only make
-          // `cache.match` browser-dependent.
-          await cache.put(
+          await putTileResponse(
+            cache,
             cacheKey,
-            new Response(blob, {
-              headers: {
-                'Content-Type':
-                  response.headers.get('content-type') ??
-                  'application/octet-stream',
-              },
-            }),
+            response.headers.get('content-type'),
+            blob,
           );
         }
       }),
@@ -535,6 +528,11 @@ export const cachedMapEditedProcessor: Processor<typeof cachedMapEdited> = {
     if (sameCoverage(prev, next)) {
       await updateCachedTileMap(next);
 
+      // The worker remembers where a map's misses go, and an edit is the one
+      // thing that can move them. Only after the write: told any earlier, it
+      // would re-read the metadata this is replacing and keep it for good.
+      notifyServiceWorker('cached-maps-changed');
+
       return;
     }
 
@@ -568,6 +566,8 @@ export const cachedMapEditedProcessor: Processor<typeof cachedMapEdited> = {
     };
 
     await commitMeta(dispatch, meta);
+
+    notifyServiceWorker('cached-maps-changed');
 
     // Widening drops nothing, so every tile the map had is still inside and its
     // own count carries over — no need to walk the cache to find that out.

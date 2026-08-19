@@ -404,12 +404,13 @@ export function Layers(): ReactElement | null {
 
           // Online the map wears its source layer's zoom range and premium gate:
           // the service worker fetches whatever the cache lacks, so it behaves
-          // as the layer itself would, checkerboard included. Offline it is only
-          // what was downloaded — its own range, upscaled past the deepest zoom
-          // it holds rather than left blank.
-          const envelope = online
-            ? sourceLayerEnvelope(cm.sourceType, customLayerDefs)
-            : undefined;
+          // as the layer itself would, checkerboard included. Offline — or with
+          // the network fallback off — it is only what was downloaded: its own
+          // range, upscaled past the deepest zoom it holds rather than left blank.
+          const envelope =
+            online && cm.networkFallback !== false
+              ? sourceLayerEnvelope(cm.sourceType, customLayerDefs)
+              : undefined;
 
           // cors: false — cached tiles are served same-origin by the service
           // worker, so `crossOrigin` buys nothing, and the CORS-mode request it

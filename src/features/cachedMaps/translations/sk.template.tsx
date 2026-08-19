@@ -41,6 +41,42 @@ const sk: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
     'Bez pripojenia možno túto mapu zmenšiť, nie však zväčšiť — zväčšením by bolo treba stiahnuť dlaždice, ktoré nemá.',
   premiumSkipped:
     'Najpodrobnejšie priblíženia tejto mapy sú prémiové a nestiahli sa, takže mapa zostáva označená ako nekompletná.',
+  networkFallback: 'Chýbajúce dlaždice sťahovať z internetu',
+  networkFallbackHint:
+    'Zapnuté: pri posune mimo stiahnutej oblasti alebo pri väčšom priblížení sa zobrazia živé dlaždice, pokiaľ je pripojenie na internet. Vypnuté: mapa ukáže len to, čo bolo stiahnuté.',
+  deleteTitle: 'Zmazať offline mapu',
+  deleteConfirm: ({ name }) => (
+    <>
+      Naozaj zmazať offline mapu <b>{name}</b> aj so všetkými jej dlaždicami?
+    </>
+  ),
+  browse: {
+    intro:
+      'Dlaždice, na ktoré na mape natrafíte, sa dajú uchovať na neskôr, aby sa už navštívené oblasti načítali aj bez internetu. Týka sa to všetkých dlaždicových vrstiev a je to nezávislé od stiahnutých offline máp.',
+    mode: 'Zdroj dlaždíc',
+    modes: {
+      networkOnly: 'Iba internet',
+      networkFirst: 'Internet, potom vyrovnávacia pamäť',
+      cacheFirst: 'Vyrovnávacia pamäť, potom internet',
+      cacheOnly: 'Iba vyrovnávacia pamäť',
+    },
+    store: 'Ukladať dlaždice stiahnuté z internetu',
+    maxAge: 'Uchovávať dlaždice',
+    maxSize: 'Limit veľkosti',
+    days: ({ days }) => <>{days} dní</>,
+    keepForever: 'Kým je miesto',
+    noSizeLimit: 'Bez limitu',
+    retentionHint:
+      'Dlaždice po uplynutí doby sa zahodia a po prekročení limitu veľkosti odídu najdlhšie nezobrazené.',
+    cached: ({ tiles, size }) => (
+      <>
+        Uložené: <strong>{tiles}</strong> dlaždíc ({size})
+      </>
+    ),
+    clear: 'Vymazať pamäť',
+    clearConfirm:
+      'Naozaj zahodiť všetky dlaždice uložené pri prehliadaní? Nastavenia zostanú.',
+  },
 };
 
 export default sk;

@@ -23,7 +23,7 @@ a floating toolbar over the map.
 | **Destructive** | `danger` | Delete / Remove / Cancel-download and other irreversible actions. **Solid, not `outline-danger`.** Also turns the packed `ResponsiveActions` dropdown item red. |
 | **Toggle** | `outline-primary` | `ToggleButton` / `ToggleButtonGroup` members — bootstrap fills them solid-primary when checked. For a lone `active`-driven toggle button, use `primary` when active and `outline-primary` when not. |
 | **Upsell / notice** | `warning` | Premium prompts, support/donate CTAs, attention notices. Keep rare — it's an attention color. |
-| **Inline text link** | `link` | A button that should read as a hyperlink inside prose or a dense row. |
+| **Inline text link** | `link` | A button that should read as a hyperlink: inside prose, in a dense row, or a footer entry that goes to another screen rather than acting on this one (see the offline-maps list's link to the browse cache). |
 
 ### Toggle state vs. pointer state
 

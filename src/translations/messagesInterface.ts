@@ -259,6 +259,7 @@ export type Messages = {
     loadWmsLayers: string;
     serverNotResponding: (props: { name: string }) => JSX.Element;
     offlineMaps: string;
+    browseCache: string;
     legacy: string;
     legacyMapWarning: (props: { from: string; to: string }) => JSX.Element;
   };

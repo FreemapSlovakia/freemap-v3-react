@@ -41,6 +41,43 @@ const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
     'Ez a térkép prémium nagyítási szintekig ér. Prémium hozzáférés nélkül kicsinyíthető, de nem nagyítható — a nagyítás újra letöltené a prémium csempéket.',
   premiumSkipped:
     'Ennek a térképnek a legrészletesebb nagyítási szintjei prémiumok, és nem töltődtek le, ezért a térkép hiányosként marad megjelölve.',
+  networkFallback: 'Hiányzó csempék letöltése az internetről',
+  networkFallbackHint:
+    'Bekapcsolva: a letöltött területen kívülre húzva vagy közelebb nagyítva élő csempék jelennek meg, amíg van internetkapcsolat. Kikapcsolva: a térkép csak azt mutatja, ami le lett töltve.',
+  deleteTitle: 'Offline térkép törlése',
+  deleteConfirm: ({ name }) => (
+    <>
+      Biztosan törli a(z) <b>{name}</b> offline térképet az összes csempéjével
+      együtt?
+    </>
+  ),
+  browse: {
+    intro:
+      'A térképen látott csempék megőrizhetők későbbre, így az újra felkeresett területek internet nélkül is betöltődnek. Ez minden csempés rétegre vonatkozik, és független a letöltött offline térképektől.',
+    mode: 'Csempék forrása',
+    modes: {
+      networkOnly: 'Csak internet',
+      networkFirst: 'Internet, majd gyorsítótár',
+      cacheFirst: 'Gyorsítótár, majd internet',
+      cacheOnly: 'Csak gyorsítótár',
+    },
+    store: 'Az internetről letöltött csempék mentése',
+    maxAge: 'Csempék megőrzése',
+    maxSize: 'Méretkorlát',
+    days: ({ days }) => <>{days} nap</>,
+    keepForever: 'Amíg van hely',
+    noSizeLimit: 'Nincs korlát',
+    retentionHint:
+      'A lejárt csempék törlődnek, a méretkorlát felett pedig a legrégebben megjelenítettek mennek elsőként.',
+    cached: ({ tiles, size }) => (
+      <>
+        Tárolva: <strong>{tiles}</strong> csempe ({size})
+      </>
+    ),
+    clear: 'Gyorsítótár ürítése',
+    clearConfirm:
+      'Biztosan eldobja a böngészés közben eltárolt összes csempét? A beállítások megmaradnak.',
+  },
 };
 
 export default hu;

@@ -23,6 +23,12 @@ export type CachedTileMapDef = CustomLayerDef<
    * the resolution/feature-scale preferences say.
    */
   tileScale?: number;
+  /**
+   * Whether a tile the map doesn't hold may be fetched from the source server
+   * while there is a connection. Off makes the map a sealed artifact: it shows
+   * what was downloaded and nothing else. Absent counts as on.
+   */
+  networkFallback?: boolean;
 };
 
 /**

@@ -396,6 +396,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     offlineMaps: 'Offline térképek',
+    browseCache: 'Gyorsítótárazás böngészés közben',
     legacy: 'elavult',
     legacyMapWarning: ({ from, to }) => (
       <>

@@ -385,6 +385,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     offlineMaps: 'Zemljevidi brez povezave',
+    browseCache: 'Shranjevanje med brskanjem',
     legacy: 'zastarela',
     legacyMapWarning: ({ from, to }) => (
       <>

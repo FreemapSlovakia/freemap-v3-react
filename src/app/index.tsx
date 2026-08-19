@@ -2,8 +2,10 @@ import { attachAuthSync } from '@features/auth/authSync.js';
 import { attachGarminLoginMessageHandler } from '@features/auth/garminLoginMessageHandler.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { attachOAuthLoginMessageHandler } from '@features/auth/oauthLoginMessageHandler.js';
+import { readBrowseCacheStats } from '@features/cachedMaps/browseCache.js';
 import { getCachedTileMaps } from '@features/cachedMaps/cache.js';
 import { cachedMapsLoaded } from '@features/cachedMaps/model/actions.js';
+import { syncBrowseCache } from '@features/cachedMaps/model/browseCacheProcessor.js';
 import { invokeGeoip } from '@features/geoip/model/actions.js';
 import { attachRecorderConnection } from '@features/gpsRecorder/connection.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
@@ -109,10 +111,21 @@ getCachedTileMaps()
     console.warn('Reading cached tile maps failed:', err);
   });
 
+// The service worker takes the browse-cache policy from IndexedDB, which only
+// the processors write — so hand it the rehydrated settings once at startup, or
+// storage cleared behind the app's back would leave it working from stale ones.
+syncBrowseCache(store.getState()).catch((err) => {
+  console.warn('Publishing the browse-cache settings failed:', err);
+});
+
 // The static app shell is kept alive as long as any offline content exists.
 // Register every content provider before syncing the static cache.
 registerOfflineContentProvider(() =>
   getCachedTileMaps().then((maps) => maps.length > 0),
+);
+
+registerOfflineContentProvider(() =>
+  readBrowseCacheStats().then((stats) => stats.tiles > 0),
 );
 
 registerOfflineContentProvider(() => getOfflineMapCount().then((c) => c > 0));

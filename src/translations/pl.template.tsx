@@ -380,6 +380,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     offlineMaps: 'Mapy offline',
+    browseCache: 'Zapisywanie podczas przeglądania',
     legacy: 'przestarzała',
     legacyMapWarning: ({ from, to }) => (
       <>

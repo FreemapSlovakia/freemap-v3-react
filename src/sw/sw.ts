@@ -1,11 +1,19 @@
 /// <reference lib="webworker" />
 
+import { BROWSE_CACHE_NAME } from '@features/cachedMaps/browseCache.js';
 import {
   CACHED_TILE_PATH_PREFIX,
   parseCachedTilePath,
 } from '@features/cachedMaps/cachedTileUrl.js';
 import { pickSubdomain } from '@shared/tileUrl.js';
 import { get } from 'idb-keyval';
+import {
+  applyBrowseState,
+  browseTileResponse,
+  dropIndex,
+  refreshBrowseState,
+} from './browseTileCache.js';
+import { fetchTile } from './fetchTile.js';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -34,6 +42,7 @@ type CachedTileMapMeta = {
   type: string;
   url: string;
   subdomains?: string | string[];
+  networkFallback?: boolean;
 };
 
 self.addEventListener('install', (event) => {
@@ -63,6 +72,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Chrome asks for some subresources with `only-if-cached` outside `same-origin`
+  // mode, a combination `fetch()` refuses outright. Answering such a request at
+  // all would break an image that loads perfectly well without us.
+  if (
+    event.request.cache === 'only-if-cached' &&
+    event.request.mode !== 'same-origin'
+  ) {
+    return;
+  }
+
   const isSameOrigin = url.origin === self.location.origin;
 
   if (isSameOrigin && url.pathname.startsWith(CACHED_TILE_PATH_PREFIX)) {
@@ -71,12 +90,37 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const isStaticAsset = isSameOrigin && !url.pathname.startsWith('/api/');
+  // `destination` keeps the browse cache to tiles a map is actually drawing: an
+  // offline-map download and the size sampler ask for the very same URLs through
+  // `fetch`, and answering those from — or copying them into — that cache would
+  // both duplicate the download and, in `cache-only` mode, hand the downloader
+  // 404s it would record as tiles it had fetched. Only cross-origin images may
+  // wait for settings that haven't been read yet: the app's own assets are never
+  // tiles, and a same-origin tile layer (nothing ships one) would lose only the
+  // first screenful.
+  if (event.request.destination === 'image') {
+    refreshBrowseState();
 
-  if (isStaticAsset) {
+    const browsed = browseTileResponse(event, !isSameOrigin);
+
+    if (browsed) {
+      event.respondWith(browsed);
+
+      return;
+    }
+  }
+
+  if (isStaticAssetRequest(url)) {
     event.respondWith(serveStaticAsset(event));
   }
 });
+
+/** Same-origin, and not the API: what the offline static cache answers for. */
+function isStaticAssetRequest(url: URL): boolean {
+  return (
+    url.origin === self.location.origin && !url.pathname.startsWith('/api/')
+  );
+}
 
 async function serveStaticAsset(event: FetchEvent): Promise<Response> {
   // Online: pass through to the network. The offline-static cache is owned
@@ -105,47 +149,81 @@ async function serveStaticAsset(event: FetchEvent): Promise<Response> {
 }
 
 /**
- * The origin a cached map's tiles came from, keyed by map id, `null` for a map
- * whose template gives none. A map's id is random and its source layer can't be
- * changed once it exists, so an entry can never go stale — only an id that isn't
- * in the table yet reads the database, which is what picks up a map made since.
+ * Where a cached map's uncached tiles are fetched from, keyed by map id, `null`
+ * for a map whose template gives no origin or which may not reach the network at
+ * all. Refreshed from the database at most every {@link RELOAD_MS}, so an edit
+ * the worker was never told about — a dropped `cached-maps-changed` — costs
+ * seconds rather than the rest of its life.
  */
-const tileOrigins = new Map<string, string | null>();
+let tileSources = new Map<string, string | null>();
 
-let tileOriginsReadAt = 0;
+let tileSourcesReadAt = 0;
 
-async function tileOrigin(mapId: string): Promise<string | undefined> {
-  // An id that isn't in the table is either a map made since the last read or
-  // one that no longer exists, and only a read tells the two apart — so read
-  // again, but no more often than this, lest a pan over a map whose metadata is
-  // gone open a transaction per tile.
-  if (!tileOrigins.has(mapId) && Date.now() - tileOriginsReadAt > RELOAD_MS) {
-    tileOriginsReadAt = Date.now();
+let tileSourcesReading: Promise<void> | null = null;
 
-    try {
-      const metas =
-        (await get<CachedTileMapMeta[]>(CACHED_TILE_MAPS_KEY)) ?? [];
+async function tileSource(mapId: string): Promise<string | undefined> {
+  // No more often than this, lest a pan over a map whose metadata is gone open a
+  // transaction per tile. A pan's worth of tiles all miss at once, so they share
+  // one read rather than each starting their own.
+  const stale = Date.now() - tileSourcesReadAt > RELOAD_MS;
 
-      for (const { type, url, subdomains } of metas) {
-        try {
-          // `{s}` resolved as the download resolves it: it asked one host only,
-          // so that is the one the tiles are known to have come from
-          tileOrigins.set(
-            type,
-            new URL(url.replace('{s}', pickSubdomain(subdomains))).origin,
-          );
-        } catch {
-          // A map whose url template won't parse doesn't fall through — and is
-          // remembered as such, so it doesn't re-read the table per tile.
-          tileOrigins.set(type, null);
-        }
-      }
-    } catch {
-      return undefined;
+  if (stale) {
+    tileSourcesReading ??= readTileSources().finally(() => {
+      tileSourcesReading = null;
+    });
+
+    const reading = tileSourcesReading;
+
+    // An id that isn't in the table is either a map made since the last read or
+    // one that no longer exists, and only a read tells the two apart. A known id
+    // has an answer already, so it takes the one in hand and lets the read
+    // refresh the table behind it — which is what an edit the worker was never
+    // told about eventually arrives by.
+    if (!tileSources.has(mapId)) {
+      await reading;
     }
   }
 
-  return tileOrigins.get(mapId) ?? undefined;
+  return tileSources.get(mapId) ?? undefined;
+}
+
+async function readTileSources(): Promise<void> {
+  // The table this read is for. An edit landing meanwhile replaces it, and its
+  // own read is on the way — filling the one just discarded would put the
+  // pre-edit metadata back for good.
+  const target = tileSources;
+
+  try {
+    const metas = (await get<CachedTileMapMeta[]>(CACHED_TILE_MAPS_KEY)) ?? [];
+
+    if (target !== tileSources) {
+      return;
+    }
+
+    for (const { type, url, subdomains, networkFallback } of metas) {
+      try {
+        // `{s}` resolved as the download resolves it: it asked one host only, so
+        // that is the one the tiles are known to have come from
+        tileSources.set(
+          type,
+          networkFallback === false
+            ? null
+            : new URL(url.replace('{s}', pickSubdomain(subdomains))).origin,
+        );
+      } catch {
+        // A map whose url template won't parse doesn't fall through — and is
+        // remembered as such, so it doesn't re-read the table per tile.
+        tileSources.set(type, null);
+      }
+    }
+
+    // Only a read that landed starts the window. A failed one leaves the next
+    // tile to try again, rather than answering 404 for the next few seconds — an
+    // error tile Leaflet never asks about again.
+    tileSourcesReadAt = Date.now();
+  } catch {
+    // IndexedDB unavailable; the caller finds nothing and draws the error tile
+  }
 }
 
 async function serveCachedTile(event: FetchEvent): Promise<Response> {
@@ -191,14 +269,15 @@ async function serveCachedTile(event: FetchEvent): Promise<Response> {
 
   // Nothing stored for this tile: the map is being browsed outside the area it
   // covers, or its download hasn't reached here. Ask the map's own tile server,
-  // so a cached map isn't a walled garden while there is a connection. The
-  // answer is not written back — the map stays exactly the artifact that was
+  // so a cached map isn't a walled garden while there is a connection — unless
+  // the map is set to stay sealed, in which case there is nothing more to serve.
+  // The answer is not written back — the map stays exactly the artifact that was
   // downloaded.
-  const origin = await tileOrigin(mapId);
+  const source = await tileSource(mapId);
 
-  if (origin) {
+  if (source) {
     try {
-      return await fetch(`${origin}${parsed.path}${url.search}`, {
+      return await fetchTile(`${source}${parsed.path}${url.search}`, {
         // A tile <img> without `crossOrigin` asks in no-cors mode, and an
         // opaque answer is both returnable to it and free of any need for the
         // source layer to send CORS headers. One that does set `crossOrigin`
@@ -241,6 +320,7 @@ self.addEventListener('activate', (event) => {
         ...cacheNames.map((cacheName) =>
           cacheName !== FALLBACK_CACHE_NAME &&
           cacheName !== STATIC_CACHE_NAME &&
+          cacheName !== BROWSE_CACHE_NAME &&
           !cacheName.startsWith(TILE_CACHE_PREFIX)
             ? caches.delete(cacheName)
             : undefined,
@@ -248,4 +328,18 @@ self.addEventListener('activate', (event) => {
       ]);
     })(),
   );
+});
+
+self.addEventListener('message', (event) => {
+  const type = (event.data as { type?: string } | undefined)?.type;
+
+  if (type === 'browse-cache-changed') {
+    event.waitUntil(applyBrowseState());
+  } else if (type === 'browse-cache-cleared') {
+    dropIndex();
+  } else if (type === 'cached-maps-changed') {
+    tileSources = new Map();
+
+    tileSourcesReadAt = 0;
+  }
 });

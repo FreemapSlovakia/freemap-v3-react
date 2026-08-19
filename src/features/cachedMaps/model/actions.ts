@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { BrowseCacheConfig, BrowseCacheStats } from '../browseCache.js';
 import type { CachedTileMapDef } from '../cachedTileMaps.js';
 
 /** Payload is the full CachedTileMapDef with downloadedCount=0 and sizeBytes=0. */
@@ -59,3 +60,15 @@ export const cachedMapEdited = createAction<{
 export const cachedMapsSetView = createAction<
   'list' | 'add' | { edit: string }
 >('CACHED_MAPS_SET_VIEW');
+
+export const cachedMapsSetSettings = createAction<Partial<BrowseCacheConfig>>(
+  'CACHED_MAPS_SET_SETTINGS',
+);
+
+/** Empties the browse cache, settings untouched. */
+export const browseCacheCleared = createAction('BROWSE_CACHE_CLEARED');
+
+/** What the browse cache holds; `null` while it has yet to be read. */
+export const browseCacheStatsLoaded = createAction<BrowseCacheStats | null>(
+  'BROWSE_CACHE_STATS_LOADED',
+);

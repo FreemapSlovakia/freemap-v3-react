@@ -7,6 +7,12 @@ import {
 } from '@features/auth/model/processors/authInitProcessor.js';
 import { authLogoutProcessor } from '@features/auth/model/processors/authLogoutProcessor.js';
 import {
+  browseCacheClearProcessor,
+  browseCacheLayersProcessor,
+  browseCacheOpenProcessor,
+  browseCacheSettingsProcessor,
+} from '@features/cachedMaps/model/browseCacheProcessor.js';
+import {
   cachedMapDeletedProcessor,
   cachedMapEditedProcessor,
   cacheTilesRestartProcessor,
@@ -239,6 +245,10 @@ export const processors = [
   cacheTilesStartProcessor,
   cacheTilesRestartProcessor,
   cacheTilesStopProcessor,
+  browseCacheSettingsProcessor,
+  browseCacheLayersProcessor,
+  browseCacheOpenProcessor,
+  browseCacheClearProcessor,
   cachedMapDeletedProcessor,
   cachedMapEditedProcessor,
   urlProcessor,

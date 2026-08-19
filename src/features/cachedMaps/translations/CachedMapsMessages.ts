@@ -26,4 +26,28 @@ export type CachedMapsMessages = {
   premiumWiden: string;
   offlineWiden: string;
   premiumSkipped: string;
+  networkFallback: string;
+  networkFallbackHint: string;
+  deleteTitle: string;
+  deleteConfirm: (props: { name: string }) => JSX.Element;
+  browse: {
+    intro: string;
+    mode: string;
+    modes: {
+      networkOnly: string;
+      networkFirst: string;
+      cacheFirst: string;
+      cacheOnly: string;
+    };
+    store: string;
+    maxAge: string;
+    maxSize: string;
+    days: (props: { days: ReactNode }) => JSX.Element;
+    keepForever: string;
+    noSizeLimit: string;
+    retentionHint: string;
+    cached: (props: { tiles: ReactNode; size: ReactNode }) => JSX.Element;
+    clear: string;
+    clearConfirm: string;
+  };
 };

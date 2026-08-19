@@ -53,6 +53,7 @@ import { BiWifiOff, BiWorld } from 'react-icons/bi';
 import {
   FaChevronRight,
   FaCog,
+  FaDatabase,
   FaEllipsisV,
   FaEyeSlash,
   FaFilter,
@@ -801,6 +802,11 @@ export function MapSwitchButton(): ReactElement {
                   {cachedMapsTotalSize > 0 &&
                     ` · ${formatSize(cachedMapsTotalSize)}`}{' '}
                   <kbd>m</kbd> <kbd>o</kbd>
+                </Dropdown.Item>
+
+                <Dropdown.Item {...modalMenuItemProps('browse-cache')}>
+                  <FaDatabase /> {m?.mapLayers.browseCache} <kbd>m</kbd>{' '}
+                  <kbd>b</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Divider />

@@ -1,5 +1,6 @@
 import { authInitialState } from '@features/auth/model/reducer.js';
 import { UserSchema, UserSettingsSchema } from '@features/auth/model/types.js';
+import { cachedMapsSettingsInitialState } from '@features/cachedMaps/model/settingsReducer.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
 import { dataViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
 import {
@@ -251,6 +252,20 @@ function defineEntry<K extends keyof RootState>(
   return entry as unknown as PersistEntry;
 }
 
+const PersistedCachedMapsSettingsSchema = z
+  .object({
+    mode: z.enum([
+      'network-only',
+      'network-first',
+      'cache-first',
+      'cache-only',
+    ]),
+    store: z.boolean(),
+    maxAgeDays: z.number(),
+    maxSizeMb: z.number(),
+  })
+  .partial();
+
 const PERSIST: PersistEntry[] = [
   defineEntry({
     key: 'map',
@@ -478,6 +493,12 @@ const PERSIST: PersistEntry[] = [
       showLegend: g.showLegend,
       premium: g.premium,
     }),
+  }),
+  defineEntry({
+    key: 'cachedMapsSettings',
+    schema: PersistedCachedMapsSettingsSchema,
+    initial: cachedMapsSettingsInitialState,
+    persist: (s) => s,
   }),
   defineEntry({
     key: 'weatherRadarSettings',

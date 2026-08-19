@@ -256,6 +256,12 @@ const cachedMapsModalFactory = () =>
     '@features/cachedMaps/components/CachedMapsModal.js'
   );
 
+const browseCacheModalFactory = () =>
+  import(
+    /* webpackChunkName: "browse-cache-modal" */
+    '@features/cachedMaps/components/BrowseCacheModal.js'
+  );
+
 const mapLayersConfigModalFactory = () =>
   import(
     /* webpackChunkName: "map-layers-config-modal" */
@@ -957,6 +963,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'offline-maps'}
         factory={cachedMapsModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'browse-cache'}
+        factory={browseCacheModalFactory}
       />
 
       <AsyncModal

@@ -392,6 +392,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     offlineMaps: 'Offline-Karten',
+    browseCache: 'Beim Stöbern zwischenspeichern',
     legacy: 'veraltet',
     legacyMapWarning: ({ from, to }) => (
       <>
