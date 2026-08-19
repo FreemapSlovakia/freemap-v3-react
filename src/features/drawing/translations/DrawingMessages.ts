@@ -7,6 +7,14 @@ export type DrawingMessages = {
     label: string;
     width: string;
     hint: string;
+    /**
+     * What a `{key}` in the label can name beyond the feature's own properties.
+     * Listed per geometry, since only a polygon has an area and only a point
+     * has one position.
+     */
+    pointKeys: string;
+    lineKeys: string;
+    polygonKeys: string;
     shape: string;
     text: string;
     textHint: string;

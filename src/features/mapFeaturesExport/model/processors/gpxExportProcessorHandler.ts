@@ -9,6 +9,7 @@ import {
 } from '@features/drawing/labelValues.js';
 import type {
   DrawingLineType,
+  DrawnLine,
   Line,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import type { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
@@ -517,6 +518,7 @@ function addDrawingLines(
           ? { polygonId: String(index) }
           : undefined
         : { holeOf: String(parentIndex), style: lines[parentIndex]! },
+      lines,
     );
   }
 }
@@ -535,10 +537,13 @@ function addStyledTrk(
   doc: Document,
   line: Line,
   hole?: { polygonId: string } | { holeOf: string; style: Line },
+  // The whole collection, so a label naming `{area}` is measured with the holes
+  // taken off it, exactly as the readout and the map do.
+  lines: readonly DrawnLine[] = [],
 ) {
   const trkEle = createElement(doc.documentElement, 'trk');
 
-  const renderedLabel = drawingLineLabel(line);
+  const renderedLabel = drawingLineLabel(line, lines);
 
   if (renderedLabel && (!hole || 'polygonId' in hole)) {
     createElement(trkEle, 'name', renderedLabel);

@@ -2,7 +2,11 @@ import { closeTool, selectFeature } from '@app/store/actions.js';
 import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
 import { drawingPointLabel } from '@features/drawing/labelValues.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
-import { formatLocationLines } from '@shared/geoutils.js';
+import {
+  bearingTo,
+  distanceTo,
+  formatLocationLines,
+} from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   halfViewportSize,
@@ -23,7 +27,6 @@ import {
   metersToMiles,
   type RayValues,
 } from '../rayTemplate.js';
-import { bearingTo, distanceTo } from '../toposcopeGeometry.js';
 import { setToposcopeSvg } from '../toposcopeSvgHolder.js';
 import { useToposcopeMessages } from '../translations/useToposcopeMessages.js';
 import classes from './Toposcope.module.css';

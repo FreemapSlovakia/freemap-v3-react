@@ -474,7 +474,14 @@ export default function CurrentDrawingPropertiesModal({
               onChange={handleLocalLabelChange}
             />
 
-            <Form.Text muted>{dm?.edit.hint}</Form.Text>
+            <Form.Text muted>
+              {dm?.edit.hint}{' '}
+              {drawType === 'draw-points'
+                ? dm?.edit.pointKeys
+                : editedType === 'polygon'
+                  ? dm?.edit.polygonKeys
+                  : dm?.edit.lineKeys}
+            </Form.Text>
           </Form.Group>
 
           <Form.Group className="mt-3">

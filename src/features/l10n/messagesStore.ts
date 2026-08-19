@@ -8,6 +8,21 @@ export function getMessages(): Messages | undefined {
   return messages;
 }
 
+/**
+ * The language the messages above are in, for the formatting that has to happen
+ * outside React — an exporter writing a label, say, which needs a locale for
+ * `Intl` and has no hook to read one from.
+ */
+let language = 'en';
+
+export function getLanguage(): string {
+  return language;
+}
+
+export function setLanguage(next: string): void {
+  language = next;
+}
+
 export function setMessages(next: Messages | undefined): void {
   messages = next;
 

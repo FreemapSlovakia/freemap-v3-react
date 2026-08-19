@@ -695,7 +695,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           >
             {line.label && (
               <Tooltip className="compact multiline" permanent>
-                <span>{drawingLineLabel(line)}</span>
+                <span>{drawingLineLabel(line, holes)}</span>
               </Tooltip>
             )}
           </Polyline>
@@ -736,7 +736,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
               direction="center"
               permanent
             >
-              <span>{drawingLineLabel(line)}</span>
+              <span>{drawingLineLabel(line, holes)}</span>
             </Tooltip>
           )}
         </Polygon>

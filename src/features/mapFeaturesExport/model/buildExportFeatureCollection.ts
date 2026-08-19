@@ -663,7 +663,7 @@ export async function buildExportFeatureCollection({
       // The feature's own data first, so a style key can't be shadowed by a
       // property that happens to share its name.
       ...line.props,
-      title: drawingLineLabel(line) || undefined,
+      title: drawingLineLabel(line, drawingLines.lines) || undefined,
       // The label as written, template and all; `title` is what it renders to.
       'freemap:label': line.label,
       stroke: stroke?.color,

@@ -5,6 +5,12 @@ import {
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import {
+  lineLength,
+  measuredRings,
+  ringsArea,
+  ringsPerimeter,
+} from '@features/drawing/measureLine.js';
 import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
 import { loadMeasurementMessages } from '@features/measurement/translations/loadMeasurementMessages.js';
@@ -14,9 +20,6 @@ import { isAbortError } from '@shared/isAbortError.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
-import { area } from '@turf/area';
-import { lineString, polygon } from '@turf/helpers';
-import { length } from '@turf/length';
 
 // Every measurement readout pins a fixed geographic target (a drawn geometry or
 // a picked point), so panning/zooming the map must not dismiss it — only a
@@ -178,19 +181,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         const { points, type } = line;
 
         if (type === 'polygon' && points.length > 2) {
-          // The holes belong to the shape, so they come off its area and their
-          // outlines count towards its perimeter. A hole measured on its own is
-          // just its own ring.
-          const rings = [
-            points,
-            ...(line.holeOfId === undefined
-              ? lines
-                  .filter((l) => l.holeOfId === line.id && l.points.length > 2)
-                  .map((l) => l.points)
-              : []),
-          ].map((ring) =>
-            [...ring, ring[0]!].map((point) => [point.lon, point.lat]),
-          );
+          const rings = measuredRings(line, lines);
 
           dispatch(
             toastsAdd({
@@ -198,11 +189,8 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               messageKey: 'areaInfo',
               messageLoader: loadMeasurementMessages,
               messageParams: {
-                area: area(polygon(rings, {})),
-                perimeter: rings.reduce(
-                  (sum, ring) => sum + length(lineString(ring)),
-                  0,
-                ),
+                area: ringsArea(rings),
+                perimeter: ringsPerimeter(rings) / 1000,
               },
               id: 'measurementInfo',
               cancelType,
@@ -216,9 +204,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               messageKey: 'distanceInfo',
               messageLoader: loadMeasurementMessages,
               messageParams: {
-                length: length(
-                  lineString(points.map((point) => [point.lon, point.lat])),
-                ),
+                length: lineLength(line) / 1000,
               },
               id: 'measurementInfo',
               cancelType,

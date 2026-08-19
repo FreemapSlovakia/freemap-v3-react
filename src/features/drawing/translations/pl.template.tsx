@@ -3,6 +3,11 @@ import type { DrawingMessages } from './DrawingMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<DrawingMessages> = {
   edit: {
+    pointKeys: 'Wpisz {klucz} dla właściwości i {location} dla położenia.',
+    lineKeys:
+      'Wpisz {klucz} dla właściwości, {length} dla długości ({length_m}, {length_km}, {length_mi}) oraz {azimuth} dla prostej linii z dwóch punktów.',
+    polygonKeys:
+      'Wpisz {klucz} dla właściwości, {area} dla powierzchni ({area_m2}, {area_a}, {area_ha}, {area_km2}) i {perimeter} dla obwodu ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
     properties: 'Właściwości',
     propertyKey: 'Nazwa',
     propertyValue: 'Wartość',

@@ -1,17 +1,3 @@
-import type { LatLon } from '@shared/types/common.js';
-import { bearing } from '@turf/bearing';
-import { distance } from '@turf/distance';
-
-/** Compass bearing from the observer to a point, degrees clockwise from north. */
-export function bearingTo(from: LatLon, to: LatLon): number {
-  return (bearing([from.lon, from.lat], [to.lon, to.lat]) + 360) % 360;
-}
-
-/** Great-circle distance in metres. */
-export function distanceTo(from: LatLon, to: LatLon): number {
-  return distance([from.lon, from.lat], [to.lon, to.lat], { units: 'meters' });
-}
-
 /**
  * Where a bearing lands on the dial, in the SVG's user units: the toposcope is
  * drawn north-up, and SVG's y grows downward.

@@ -1,3 +1,4 @@
+import { lengthUnits } from '@shared/distanceFormatter.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
@@ -6,15 +7,6 @@ import { Button, Form, InputGroup } from 'react-bootstrap';
 type Props = {
   length: number;
   lengthLabel: string;
-};
-
-const lengthUnits = {
-  km: 1,
-  m: 0.001,
-  mi: 1.609344,
-  yd: 0.0009144,
-  ft: 0.0003048,
-  nmi: 1.852, // nautical mile
 };
 
 type Units = keyof typeof lengthUnits;

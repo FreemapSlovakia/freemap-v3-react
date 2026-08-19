@@ -1,4 +1,5 @@
 import type { LatLon } from '@shared/types/common.js';
+import { bearing as turfBearing } from '@turf/bearing';
 import { booleanContains } from '@turf/boolean-contains';
 import { distance } from '@turf/distance';
 import type {
@@ -456,6 +457,16 @@ export function latLonToString(
     style,
     language,
   )}, ${formatGpsCoord(latLon.lon, 'WE', style, language)}`;
+}
+
+/** Compass bearing from one place to another, degrees clockwise from north. */
+export function bearingTo(from: LatLon, to: LatLon): number {
+  return (turfBearing([from.lon, from.lat], [to.lon, to.lat]) + 360) % 360;
+}
+
+/** Great-circle distance in metres. */
+export function distanceTo(from: LatLon, to: LatLon): number {
+  return distance([from.lon, from.lat], [to.lon, to.lat], { units: 'meters' });
 }
 
 /**
