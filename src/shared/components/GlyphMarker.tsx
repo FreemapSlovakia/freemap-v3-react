@@ -1,4 +1,7 @@
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  LongPressTooltip,
+  useInTooltip,
+} from '@shared/components/LongPressTooltip.js';
 import clsx from 'clsx';
 import type {
   HTMLAttributes,
@@ -64,6 +67,8 @@ export function GlyphMarker({
   onClickCapture,
   ...rest
 }: Props): ReactElement {
+  const inTooltip = useInTooltip();
+
   const acts = Boolean(onClick || onClickCapture || href);
 
   const glyphClass = clsx(sizeClass[size], color && `text-${color}`);
@@ -78,6 +83,23 @@ export function GlyphMarker({
         {label} <span className={glyphClass}>{children}</span>
       </>
     );
+
+  // Inside a tooltip the mark is already explained, and a tooltip of its own
+  // could never be read — so there it is the glyph and nothing else.
+  if (inTooltip) {
+    return (
+      <span
+        {...rest}
+        className={clsx(
+          'fm-marker',
+          label == null && `fm-glyph ${glyphClass}`,
+          className,
+        )}
+      >
+        {content}
+      </span>
+    );
+  }
 
   return (
     <LongPressTooltip label={hint}>

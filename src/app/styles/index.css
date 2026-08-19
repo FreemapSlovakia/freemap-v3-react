@@ -342,20 +342,20 @@ button#freemap-logo {
 
 /* The mark's hit area. Padding rather than an overlay, so two marks side by side
    tile instead of one swallowing the other's taps; the block step is given back
-   as margin so nothing moves. Not `px-1 py-2 my-n2`: utilities are `!important`
-   and the rule below has to be able to win. */
+   as margin so nothing moves. */
 .fm-marker-target {
   padding-inline: var(--fm-space-1);
   padding-block: var(--fm-space-2);
   margin-block: calc(-1 * var(--fm-space-2));
 }
 
-/* Otherwise two marks in a gapped container sit a step *plus a gap plus a step*
-   apart. */
-:is(.fm-toolbar, .btn-toolbar, .dropdown-item)
-  > .fm-marker-target
-  + .fm-marker-target {
-  padding-inline-start: 0;
+/* A container that puts a step between its children would otherwise leave two
+   marks a step *plus a gap plus a step* apart. It hangs off the first of the
+   pair, not the second — these containers wrap, and see `doc/ui-conventions.md`
+   for why that matters. */
+:is(.fm-toolbar, .btn-toolbar, .dropdown-item, .gap-1)
+> .fm-marker-target:has(+ .fm-marker-target) {
+  margin-inline-end: calc(-1 * var(--fm-space-1));
 }
 
 /* The glyph's own box, sitting on the text baseline like any inline `<svg>`.

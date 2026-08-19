@@ -12,7 +12,7 @@ import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
-import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
+import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
@@ -29,7 +29,6 @@ import {
   modalMenuItemProps,
   useMenuHandler,
 } from '@shared/hooks/useMenuHandler.js';
-import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   getCountriesBbox,
   getLayerBbox,
@@ -117,8 +116,6 @@ function getKbdShortcut(shortcut?: Shortcut | null) {
 
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
-
-  const online = useOnline();
 
   const canSaveSettings = useCanSaveSettings();
 
@@ -397,13 +394,18 @@ export function MapSwitchButton(): ReactElement {
     def: (typeof layerDefs)[number],
     place: 'menu' | 'toolbar' | 'tooltip',
   ) {
+    const premiumHere =
+      !def.custom &&
+      def.premiumFromZoom !== undefined &&
+      zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0);
+
     return (
       <>
         {place !== 'toolbar' &&
           def.type !== 'X' &&
           !def.custom &&
           def.countries?.map((country) => (
-            <Emoji key={country}>{countryCodeToFlag(country)}</Emoji>
+            <CountryFlag key={country} country={country} />
           ))}
 
         {place !== 'toolbar' &&
@@ -414,26 +416,15 @@ export function MapSwitchButton(): ReactElement {
           )}
 
         {(place === 'menu' || (place === 'tooltip' && premium)) &&
-        !def.custom &&
-        def.premiumFromZoom !== undefined &&
-        zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0) ? (
-          <PremiumGem capture nested />
-        ) : null}
+          premiumHere && <PremiumGem capture nested />}
 
         {/* Everything but a downloaded map draws nothing while offline. The
-            toolbar says it through the button's own tooltip, as premium does —
-            and inside that tooltip a bare glyph, since a badge there would open
-            a tooltip of its own. */}
-        {place === 'menu' &&
+            toolbar says it through the button's own tooltip, as premium does. */}
+        {place !== 'toolbar' &&
           !def.cached &&
           def.technology !== 'interactive' && (
             <OfflineBadge hint={m?.mapLayers.offlineWarning} />
           )}
-
-        {place === 'tooltip' &&
-          !def.cached &&
-          def.technology !== 'interactive' &&
-          !online && <BiWifiOff className="text-warning" />}
 
         {place !== 'toolbar' && !def.custom && def.superseededBy && (
           <Badge label={m?.mapLayers.legacy}>

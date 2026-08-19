@@ -1,6 +1,7 @@
 import type { ExternalTarget } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
+import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import type { LatLon } from '@shared/types/common.js';
 import { canShareFile } from '@shared/webShare.js';
@@ -12,7 +13,6 @@ import {
   FaShareAlt,
   FaWindowMaximize,
 } from 'react-icons/fa';
-import { Emoji } from '@/shared/components/Emoji.js';
 import {
   getF4mapUrl,
   getGeocachingUrl,
@@ -245,7 +245,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {oeam?.oma} <Emoji>🇸🇰</Emoji>
+        {oeam?.oma} <CountryFlag country="sk" />
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
@@ -253,7 +253,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {oeam?.hiking_sk} <Emoji>🇸🇰</Emoji>
+        {oeam?.hiking_sk} <CountryFlag country="sk" />
         {showKbdShortcut && (
           <>
             {' '}
@@ -267,7 +267,7 @@ export function OpenInExternalAppDropdownItems({
         target="_blank"
         eventKey="url"
       >
-        {oeam?.zbgis} <Emoji>🇸🇰</Emoji>
+        {oeam?.zbgis} <CountryFlag country="sk" />
         {showKbdShortcut && (
           <>
             {' '}

@@ -3,17 +3,30 @@ import {
   getMinWidthForBreakpoint,
 } from '@shared/breakpoints.js';
 import {
+  createContext,
   Fragment,
   type MouseEvent,
   type PointerEvent,
   type ReactNode,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { Overlay, Tooltip } from 'react-bootstrap';
+
+const InTooltip = createContext(false);
+
+/**
+ * Whether this is a tooltip's own body. A mark rendered there is already being
+ * explained, so it drops to its glyph rather than offering a tooltip of its own
+ * — see `GlyphMarker`.
+ */
+export function useInTooltip(): boolean {
+  return useContext(InTooltip);
+}
 
 type Props = {
   label?: ReactNode;
@@ -201,8 +214,10 @@ export function LongPressTooltip({
         >
           {(props) => (
             <Tooltip {...props}>
-              {tooltipBody}
-              {kbdEl}
+              <InTooltip value>
+                {tooltipBody}
+                {kbdEl}
+              </InTooltip>
             </Tooltip>
           )}
         </Overlay>

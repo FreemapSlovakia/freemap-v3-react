@@ -2,7 +2,7 @@ import {
   elevationSourcesFromTokens,
   SONNY_TOKEN,
 } from '@shared/elevationSources.js';
-import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useRegionNames } from '@shared/hooks/useRegionNames.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
 import { useMemo } from 'react';
 import type { ElevationProvenance } from '../model/actions.js';
@@ -19,7 +19,7 @@ export function useElevationSources(
   provenance: ElevationProvenance,
   reported: string[] = [],
 ): AttributionDef[] {
-  const language = useAppSelector((state) => state.l10n.language);
+  const regionNames = useRegionNames();
 
   return useMemo(() => {
     if (provenance === 'recorded') {
@@ -31,12 +31,10 @@ export function useElevationSources(
     const tokens =
       provenance === 'sonny' ? [...reported, SONNY_TOKEN] : reported;
 
-    const regionNames = new Intl.DisplayNames(language, { type: 'region' });
-
     return elevationSourcesFromTokens(tokens, (country) =>
       regionNames.of(country.toUpperCase()),
     );
-  }, [provenance, reported, language]);
+  }, [provenance, reported, regionNames]);
 }
 
 /** The sources' names in one comma-separated string, for a tooltip. */

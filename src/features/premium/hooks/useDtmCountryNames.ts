@@ -1,5 +1,6 @@
 import { ELEVATION_API_DTM_COUNTRIES } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useRegionNames } from '@shared/hooks/useRegionNames.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
 import { useMemo } from 'react';
 import { usePremiumMessages } from '../translations/usePremiumMessages.js';
@@ -16,9 +17,9 @@ export function useDtmCountryNames(): string {
 
   const areaNames = usePremiumMessages()?.dtmAreaNames;
 
-  return useMemo(() => {
-    const regionNames = new Intl.DisplayNames(language, { type: 'region' });
+  const regionNames = useRegionNames();
 
+  return useMemo(() => {
     const names = ELEVATION_API_DTM_COUNTRIES.map(
       (country) =>
         areaNames?.[country as keyof typeof areaNames] ??
@@ -27,5 +28,5 @@ export function useDtmCountryNames(): string {
     ).sort(makeLabelComparator(language));
 
     return new Intl.ListFormat(language, { type: 'conjunction' }).format(names);
-  }, [language, areaNames]);
+  }, [language, areaNames, regionNames]);
 }

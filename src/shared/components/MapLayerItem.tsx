@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
+import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import type { ReactElement } from 'react';
 import { FaHistory } from 'react-icons/fa';
@@ -40,11 +41,13 @@ export function MapLayerItem({ def }: { def: MapLayerItemDef }): ReactElement {
 
       {def.type !== 'X' &&
         def.countries?.map((country) => (
-          <Emoji key={country}>{countryCodeToFlag(country)}</Emoji>
+          <CountryFlag key={country} country={country} />
         ))}
 
       {def.superseededBy && (
-        <FaHistory className="text-warning" title={m?.mapLayers.legacy} />
+        <GlyphMarker hint={m?.mapLayers.legacy}>
+          <FaHistory />
+        </GlyphMarker>
       )}
 
       {def.experimental && <ExperimentalFunction />}

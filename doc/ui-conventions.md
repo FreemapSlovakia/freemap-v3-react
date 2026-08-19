@@ -161,9 +161,16 @@ explanation entirely, and for an acting mark the action with it.
 hit area, and pointer events inside a disabled container (a disabled control takes
 pointer events away from its content, and the mark is often what says *why* it is
 disabled). `OfflineBadge`, `PremiumGem`, `ExperimentalFunction`, `StatusIcon` /
-`UnsavedWarningIcon` and `MapSwitchButton`'s layer badges are all thin wrappers
-over it. A new mark should be one too, not another hand-rolled `LongPressTooltip`
-+ `<span>`.
+`UnsavedWarningIcon`, `CountryFlag` and `MapSwitchButton`'s layer badges are all
+thin wrappers over it. A new mark should be one too, not another hand-rolled
+`LongPressTooltip` + `<span>`.
+
+Being one place is also what lets a mark know where it is. `LongPressTooltip`
+marks its own body with a context, and a `GlyphMarker` that finds itself in one
+renders the glyph alone — no hit area, no second tooltip. So a mark can go in a
+tooltip's label without the call site deciding anything: the same
+`<OfflineBadge>` or `<CountryFlag>` reads as a mark in a menu row and as a plain
+glyph in the tooltip beside it.
 
 ### The hit area is invisible
 
@@ -177,15 +184,20 @@ the mark instead.
 
 Being real padding rather than an overlay, two marks side by side **tile** — one
 can never swallow the other's taps or its tooltip. Where the container already
-puts a gap between its children, the second of two marks drops its leading step
-so the pair doesn't end up a step *plus* a gap *plus* a step apart. That rule is
-also why the padding isn't `px-1`: Bootstrap's spacing utilities are
-`!important`, and it has to be able to win.
+puts a step between its children, the first of two marks swallows that gap with a
+trailing negative margin, so the pair doesn't end up a step *plus* a gap *plus* a
+step apart. Every mark keeps the same 24px box that way, and the two boxes meet
+edge to edge; dropping the second mark's leading padding instead would close the
+same distance but leave it 20px wide against its neighbour's 24.
 
-It also leaves the second mark 20px wide against its neighbour's 24. Their glyph
-centres are still 24px apart, so the pair meets SC 2.5.8 by its spacing
-exception; splitting the step instead would even them up at 22 each, which is
-worse on both counts. Don't "fix" the asymmetry without measuring first.
+It hangs off the first mark rather than pulling the second one back because these
+containers wrap. At a line break the margin then lands at a line end, where it
+only frees up slack; on the second mark it would push it out past the content
+edge, on a line where there is no gap to cancel in the first place.
+
+The containers that qualify are the ones whose gap is exactly one step — the
+toolbars and a menu row, which set it in CSS, and anything carrying `gap-1`. A
+container with no gap at all needs nothing: two marks already tile there.
 
 **The two axes cost differently.** Block padding is free — that direction is the
 line's own leading, dead space, and it is given straight back as margin so

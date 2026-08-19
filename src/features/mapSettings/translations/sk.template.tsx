@@ -7,6 +7,7 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   overlayOpacity: 'Viditeľnosť',
   showInMenu: 'Zobraziť v menu',
   showInToolbar: 'Zobraziť v lište',
+  keyboardShortcut: 'Klávesová skratka',
   saveSuccess: 'Zmeny boli uložené.',
   customMapSaved: 'Vlastná mapa bola uložená.',
   savingError: ({ err }) =>

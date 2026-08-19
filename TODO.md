@@ -46,6 +46,14 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
+- [ ] **Mount a mark's tooltip `Overlay` only once it has been shown.** With no
+      `breakpoint`, `LongPressTooltip` sets `labelHidden` and mounts its
+      `Overlay` for the life of every mark. Hidden it draws no DOM, no popper
+      and no listeners, but it still costs ~26 of the ~38 hooks a mark carries,
+      and a layer menu or the layer-settings table holds dozens at once. Gate it
+      on `show || wasShown` instead of `labelHidden`. Measure before and after —
+      it is milliseconds on mount-once UI, so this is only worth doing if it
+      stays a small change.
 - [ ] **Remove the `*Settings` localStorage migration code (after ~2026-09).**
       The one-time migration from the old transient-slice keys can be dropped
       once active users have re-saved under the new keys (a couple of months

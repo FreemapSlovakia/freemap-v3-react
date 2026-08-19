@@ -7,6 +7,7 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   overlayOpacity: 'Átlátszóság',
   showInMenu: 'Megjelenítés a menüben',
   showInToolbar: 'Megjelenítés az eszköztáron',
+  keyboardShortcut: 'Gyorsbillentyű',
   saveSuccess: 'A beállítások el lettek mentve.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a beállítások mentésénél', err),

@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { clsx } from 'clsx';
@@ -8,7 +9,6 @@ import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap';
 import { FaCamera, FaInfoCircle, FaTimes, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
-import { countryCodeToFlag, Emoji } from '../../../shared/components/Emoji.js';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '../../../shared/hooks/useNumberFormat.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
@@ -291,12 +291,12 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                                 {i === 0 && (
                                   <th
                                     rowSpan={data.length + iAmExtra + 1}
-                                    title={country}
                                     className="text-center"
                                   >
-                                    <Emoji className="w-6">
-                                      {countryCodeToFlag(country)}
-                                    </Emoji>
+                                    <CountryFlag
+                                      className="w-6"
+                                      country={country}
+                                    />
                                   </th>
                                 )}
                                 <td className="text-end text-nowrap">
