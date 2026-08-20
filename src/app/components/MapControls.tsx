@@ -197,10 +197,10 @@ export function MapControls(): ReactElement | null {
       )}
 
       {/* Last, being the one button that leads away from the map rather than
-          acting on it. One flag with the switcher: an embed that may not switch
-          maps has no use for the editors and caches that manage them either. */}
-      {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) &&
-        !restrictToMapSwitching && <MapManageButton />}
+          acting on it. Never in an embed: the layer table, the custom maps and
+          the caches behind it belong to the visitor's own account and browser,
+          not to the page the map is embedded in. */}
+      {!window.fmEmbedded && !restrictToMapSwitching && <MapManageButton />}
     </Toolbar>
   );
 }

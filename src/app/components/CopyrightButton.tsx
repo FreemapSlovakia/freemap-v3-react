@@ -114,17 +114,23 @@ export function CopyrightButton(): ReactElement {
             <FaFileContract /> {m?.general.termsOfService}
           </Dropdown.Item>
 
-          <Dropdown.Item
-            key="refundPolicy"
-            href="#document=refundPolicy"
-            onClick={(e) => {
-              e.preventDefault();
+          {/* Terms of a purchase, and an embed sells nothing — its premium gem
+              leaves for the portal, which states them where the money is
+              actually taken. The two policies above stay: the embed does
+              process the visitor's data, and they are using the service. */}
+          {!window.fmEmbedded && (
+            <Dropdown.Item
+              key="refundPolicy"
+              href="#document=refundPolicy"
+              onClick={(e) => {
+                e.preventDefault();
 
-              dispatch(documentShow('refundPolicy'));
-            }}
-          >
-            <FaMoneyBillWave /> {m?.general.refundPolicy}
-          </Dropdown.Item>
+                dispatch(documentShow('refundPolicy'));
+              }}
+            >
+              <FaMoneyBillWave /> {m?.general.refundPolicy}
+            </Dropdown.Item>
+          )}
         </FmDropdownMenu>
       </Dropdown>
     </Toolbar>

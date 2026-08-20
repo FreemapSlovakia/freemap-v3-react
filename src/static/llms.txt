@@ -526,6 +526,8 @@ Users can configure:
 
 Users can then copy and paste the generated iframe markup.
 
+An embedded map is recognized by being framed at all, not by anything in its address, so any link it opens in a new tab lands in the ordinary app. It shows no "Manage maps" gear, starts none of the keyboard chords, and refuses the modals that manage the visitor's own maps or account — **Layers configuration**, **Custom maps**, **Offline maps**, **Cache while browsing**, **Map preferences**, **Elevation preferences** and the premium purchase — even when a `show=` in its own address names one. A premium gem inside an embed therefore opens the portal in a new tab with the purchase modal, rather than trying to sign the visitor in and charge them inside somebody else's page.
+
 ### Info & help
 
 - Access: Info & help
@@ -587,7 +589,7 @@ A round **ⓘ** info button at the bottom-right corner of the map opens a small 
 - Map legend (<kbd>m</kbd> <kbd>l</kbd>)
 - Privacy policy
 - Terms of service
-- Refund policy
+- Refund policy (not in an embedded map, which sells nothing; the privacy policy and terms of service stay, both applying to the visitor either way)
 
 ## Map Layers
 
@@ -603,7 +605,7 @@ The toolbar also contains the following buttons:
 - zoom out (keyboard shortcut: <kbd>-</kbd>)
 - find me (locate me by the browser's geolocation API)
 - toggle fullscreen (not shown in the installed app, which has no browser chrome to escape, nor on iOS, whose Safari has no fullscreen to enter)
-- manage maps (last; a gear opening the "Manage maps" menu described below, hidden while a photo position or a map area is being picked)
+- manage maps (last; a gear opening the "Manage maps" menu described below, hidden while a photo position or a map area is being picked, and never present in an embedded map)
 
 **Find me** cycles through three states: off; on with the map following the position (the button is highlighted); and on without following, once the map has been moved by hand (the button stays pressed but loses the highlight). Pressing it in that third state brings the map back to the position and resumes following rather than switching locating off — only a press while following turns it off.
 

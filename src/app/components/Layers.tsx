@@ -3,6 +3,7 @@ import { getCachedTileScale } from '@features/cachedMaps/cachedTileMaps.js';
 import { toCachedLayerUrl } from '@features/cachedMaps/cachedTileUrl.js';
 import { sourceLayerEnvelope } from '@features/cachedMaps/sourceLayer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -14,10 +15,9 @@ import {
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
 import { wmsBaseUrl } from '@shared/wms.js';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import missingTile from '@/images/missing-tile-256x256.png';
-import { setActiveModal } from '../store/actions.js';
 import { AsyncComponent } from './AsyncComponent.js';
 import { ScaledTileLayer } from './ScaledTileLayer.js';
 import { WmsImageLayer } from './WmsImageLayer.js';
@@ -88,9 +88,9 @@ export function Layers(): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const handlePremiumClick = useCallback(() => {
-    dispatch(setActiveModal({ type: 'premium' }));
-  }, [dispatch]);
+  // Only ever wired for a non-premium user — `effPremiumFromZoom` is undefined
+  // for everyone else — which is exactly when the hook returns a function.
+  const handlePremiumClick = useBecomePremium();
 
   // `fixedScale` pins a tile layer to one `@Nx` variant — a cached map holds
   // exactly one, so the screen's DPI and the resolution/feature-scale

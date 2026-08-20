@@ -59,6 +59,23 @@ const MODAL_RENAMES: Record<string, string> = {
   maps: 'my-maps',
 };
 
+/**
+ * Modals an embedded map refuses to open: those that manage the visitor's own
+ * maps, or that sign them in and take their money — neither of which belongs
+ * in an iframe on somebody else's page. Their buttons are hidden there and the
+ * keyboard chords never start, so a `show=` in the iframe's own URL is the last
+ * way in; premium reaches its modal by opening the portal in a tab of its own.
+ */
+const EMBED_FORBIDDEN_MODAL_IDS = new Set<string>([
+  'browse-cache',
+  'custom-maps',
+  'elevation-settings',
+  'map-layers-config',
+  'map-preferences',
+  'offline-maps',
+  'premium',
+]);
+
 export const ModalIdSchema = z.enum([
   ...URL_MODAL_IDS,
   'current-drawing-properties',
@@ -122,6 +139,11 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
   const arg = slash === -1 ? undefined : raw.slice(slash + 1);
 
   const type = MODAL_RENAMES[rawType] ?? rawType;
+
+  // After the rename, so an old name for a forbidden modal is refused too.
+  if (window.fmEmbedded && EMBED_FORBIDDEN_MODAL_IDS.has(type)) {
+    return null;
+  }
 
   switch (type) {
     case 'tracking-watched':

@@ -1,6 +1,6 @@
-import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -58,6 +58,8 @@ export default function WeatherRadarMenu() {
 
   const premium = useAppSelector(radarPremiumSelector);
 
+  const becomePremium = useBecomePremium();
+
   const [hidden, setHidden] = usePersistentBoolean(
     'fm.weatherRadarMenu.collapsed',
   );
@@ -90,7 +92,7 @@ export default function WeatherRadarMenu() {
     if (premium) {
       dispatch(weatherRadarSetSettings({ showNowcast: !settings.showNowcast }));
     } else {
-      dispatch(setActiveModal({ type: 'premium' }));
+      becomePremium?.();
     }
   }
 

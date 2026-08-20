@@ -1,4 +1,4 @@
-import { setActiveModal } from '@app/store/actions.js';
+import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
@@ -31,6 +31,8 @@ export function RadarTimeline() {
   const wm = useWeatherRadarMessages();
 
   const dispatch = useDispatch();
+
+  const becomePremium = useBecomePremium();
 
   const frames = useAppSelector(radarFramesSelector);
 
@@ -122,7 +124,11 @@ export function RadarTimeline() {
         // premium user clicking the track's edge would be sold what they have.
         onClick={
           from > 0 || tailLocked
-            ? () => dispatch(setActiveModal({ type: 'premium' }))
+            ? () => {
+                // Without the event: this element also carries the drag, whose
+                // propagation the hook would stop.
+                becomePremium?.();
+              }
             : undefined
         }
       >
