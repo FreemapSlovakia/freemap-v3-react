@@ -11,6 +11,7 @@ import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
 import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
+import { useMediaQuery } from 'react-responsive';
 import { toggleLocate } from '../store/actions.js';
 import { MapManageButton } from './MapManageButton.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
@@ -78,6 +79,12 @@ export function MapControls(): ReactElement | null {
     [dispatch],
   );
 
+  // An installed app has no browser chrome to escape, so the button would win
+  // nothing. Deliberately not `(display-mode: fullscreen)` as well: that also
+  // matches while the Fullscreen API is active, which would take the button
+  // away at the moment it is needed to leave again.
+  const installed = useMediaQuery({ query: '(display-mode: standalone)' });
+
   const map = useMap();
 
   const handleFullscreenClick = useCallback(() => {
@@ -110,14 +117,8 @@ export function MapControls(): ReactElement | null {
 
   return !map ? null : (
     <Toolbar className="m-2">
-      {/* One flag for both: an embed that may not switch maps has no use for
-          the editors and caches that manage them either. */}
       {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
-        <>
-          <MapSwitchButton />
-
-          {!restrictToMapSwitching && <MapManageButton />}
-        </>
+        <MapSwitchButton />
       )}
 
       <ButtonGroup>
@@ -171,7 +172,7 @@ export function MapControls(): ReactElement | null {
         </LongPressTooltip>
       )}
 
-      {document.fullscreenEnabled && (
+      {document.fullscreenEnabled && !installed && (
         <LongPressTooltip
           label={
             document.fullscreenElement
@@ -194,6 +195,12 @@ export function MapControls(): ReactElement | null {
           )}
         </LongPressTooltip>
       )}
+
+      {/* Last, being the one button that leads away from the map rather than
+          acting on it. One flag with the switcher: an embed that may not switch
+          maps has no use for the editors and caches that manage them either. */}
+      {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) &&
+        !restrictToMapSwitching && <MapManageButton />}
     </Toolbar>
   );
 }
