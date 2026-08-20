@@ -204,10 +204,22 @@ let trim = false;
 
 let cache: Promise<Cache> | null = null;
 
+// whether there is a cache to look in at all — off by default, so usually not
+let exists: Promise<boolean> | null = null;
+
 function openCache(): Promise<Cache> {
   cache ??= caches.open(BROWSE_CACHE_NAME);
 
+  // opening creates it
+  exists = Promise.resolve(true);
+
   return cache;
+}
+
+function cacheExists(): Promise<boolean> {
+  exists ??= caches.has(BROWSE_CACHE_NAME).catch(() => false);
+
+  return exists;
 }
 
 function loadIndex(): Promise<BrowseIndex> {
@@ -236,6 +248,8 @@ export function dropIndex(): void {
   index = null;
 
   cache = null;
+
+  exists = null;
 
   trim = false;
 
@@ -293,6 +307,8 @@ async function flushIndex(): Promise<void> {
 
   const held = await source;
 
+  // Every path that touches the index has waited for the settings first, so
+  // there are always some to evict against by the time a flush runs.
   const settings = config ?? browseCacheDefaults;
 
   const drop = new Set(expiredUrls(held, settings, Date.now()));
@@ -496,6 +512,46 @@ async function revalidateTile(
   } catch {
     // still unreachable; the stale tile stands and the next view tries again
   }
+}
+
+/**
+ * A tile held under any of `urls` — the spellings one tile could have been
+ * stored under — for an offline map that lacks it. Served whatever the mode
+ * says: the mode governs browsing, and here the alternative is a blank tile.
+ */
+export async function browseCachedTile(
+  event: FetchEvent,
+  urls: string[],
+): Promise<Response | undefined> {
+  if (!(await cacheExists())) {
+    return undefined;
+  }
+
+  const held = await loadIndex();
+
+  // The index says which spelling is held, so only one is fetched. Falling back
+  // on the address actually asked for, since the two can drift apart.
+  const url = urls.find((candidate) => held.entries.has(candidate)) ?? urls[0];
+
+  let stored: Response | undefined;
+
+  try {
+    // by name, not `openCache`: nothing here should create the cache
+    stored = await caches.match(url, {
+      cacheName: BROWSE_CACHE_NAME,
+      ignoreVary: true,
+    });
+  } catch {
+    return undefined;
+  }
+
+  // A touch schedules a flush, which evicts by the settings — so before they are
+  // read the tile is served untouched rather than judged by someone else's.
+  if (stored && config) {
+    touchTile(event, held, url, stored);
+  }
+
+  return stored;
 }
 
 async function serveBrowseTile(

@@ -1,3 +1,4 @@
+import { TILE_SCALE_SUFFIX } from '@shared/tileUrl.js';
 import {
   clear,
   createStore,
@@ -205,8 +206,7 @@ export function tileTemplateToRegExp(template: string): RegExp {
     .join('');
 
   return new RegExp(
-    // a protocol-relative template is fetched over whatever the page uses;
-    // `@Nx` is the hi-DPI variant ScaledTileLayer appends to the URL
-    `^${body.startsWith('//') ? `https?:${body}` : body}(?:@\\d+(?:\\.\\d+)?x)?(?:\\?.*)?$`,
+    // a protocol-relative template is fetched over whatever the page uses
+    `^${body.startsWith('//') ? `https?:${body}` : body}(?:${TILE_SCALE_SUFFIX})?(?:\\?.*)?$`,
   );
 }
