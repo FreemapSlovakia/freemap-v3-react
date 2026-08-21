@@ -1,4 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  isCompassSupported,
+  subscribeCompass,
+} from '@features/location/compass.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -24,7 +28,11 @@ import {
   layoutLabels,
 } from '../labels/layout.js';
 import type { PanoramaLabel } from '../labels/types.js';
-import { panoramaSetAzimuth, panoramaSetProbe } from '../model/actions.js';
+import {
+  panoramaSetAzimuth,
+  panoramaSetProbe,
+  panoramaSetSettings,
+} from '../model/actions.js';
 import type { PanoramaRenderInfo } from '../model/reducer.js';
 import {
   labelLayoutLimits,
@@ -53,8 +61,19 @@ const COMPASS_HEIGHT = 24;
 /** A full turn in a minute, which reads as looking around rather than spinning. */
 const AUTO_PAN_DEG_PER_S = 6;
 
-/** How long after a touch the view waits before turning by itself again. */
-const AUTO_PAN_RESUME_MS = 4000;
+/**
+ * Roughly how long the view takes to close on where the phone points. Long
+ * enough that a magnetometer's jitter reads as a still picture rather than a
+ * shiver, short enough that turning to look at something arrives with the turn.
+ */
+const COMPASS_EASE_MS = 200;
+
+/**
+ * A magnetometer streams whether or not the device moves, so silence means the
+ * sensor died or the permission went — at which point turning by itself is a
+ * better answer than a picture frozen at the last bearing it heard.
+ */
+const COMPASS_STALE_MS = 3000;
 
 /** Farther than this in a press and it was a drag, not a click. */
 const CLICK_SLOP_PX = 4;
@@ -77,6 +96,11 @@ function mod(value: number, n: number): number {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), Math.max(min, max));
+}
+
+/** Signed `a - b` folded into `[-180, 180)`, so easing takes the short way. */
+function angleDiff(a: number, b: number): number {
+  return ((a - b + 540) % 360) - 180;
 }
 
 /** Where a bearing and a distance from the viewpoint land on the ground. */
@@ -164,11 +188,12 @@ export function PanoramaView({
 
   const [dragging, setDragging] = useState(false);
 
-  const [paused, setPaused] = useState(false);
-
+  // Where a distance was read, as a bearing and an image row — see
+  // `sampleGround`. Held that way rather than as screen pixels so it stays over
+  // its own terrain while the view turns, which a press-set one has to survive.
   const [hover, setHover] = useState<{
-    x: number;
-    y: number;
+    az: number;
+    iy: number;
     distance: number;
   } | null>(null);
 
@@ -258,6 +283,19 @@ export function PanoramaView({
     }
   }, [storedAzimuth]);
 
+  // A reading belongs to the picture it was taken from. `iy` is an image row,
+  // and the two passes are not the same height — the preview's rows are a
+  // quarter of the detailed one's — so a reading carried across would be put
+  // back at the wrong altitude while still claiming the old distance. A new
+  // viewpoint is the same story, and the reducer already clears the map's mark
+  // for it.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the render's identity is the point
+  useEffect(() => {
+    setHover(null);
+
+    setPanoramaHover(null);
+  }, [render.id]);
+
   // What the map's wedge follows. Its own store rather than Redux: the wedge
   // needs the field of view too, and that is nobody else's business.
   useEffect(() => {
@@ -269,10 +307,31 @@ export function PanoramaView({
   // every frame would notify twice and the throttle would never fire.
   useEffect(() => () => setPanoramaView(null), []);
 
-  // Turns by itself until the picture is touched, and takes it up again once
-  // the hand has been off it for a moment.
+  /** Where the device points, as a bearing and when it was last heard. */
+  const compassRef = useRef<{ heading: number; at: number } | null>(null);
+
+  // Only while the view is meant to be moving, and only where there is a
+  // magnetometer to ask — desktop Chrome exposes the events with nothing behind
+  // them. On iOS the readings arrive only after the permission the play button
+  // asks for, so until then this stays silent and the view turns by itself.
   useEffect(() => {
-    if (!settings.autoPan || dragging || paused) {
+    if (!settings.autoPan || !isCompassSupported()) {
+      compassRef.current = null;
+
+      return;
+    }
+
+    return subscribeCompass(({ heading, at }) => {
+      compassRef.current = { heading, at };
+    });
+  }, [settings.autoPan]);
+
+  // Moves on its own until it is taken over by hand. Where the device can say
+  // which way it is pointed the view follows that — a panorama held up at a
+  // ridge should be looking at the ridge — and turning at a steady six degrees
+  // a second is what to do when nothing knows any better.
+  useEffect(() => {
+    if (!settings.autoPan || dragging) {
       return;
     }
 
@@ -285,7 +344,18 @@ export function PanoramaView({
 
       last = now;
 
-      setAzimuth((a) => mod(a + (AUTO_PAN_DEG_PER_S * dt) / 1000, 360));
+      const compass = compassRef.current;
+
+      setAzimuth((a) =>
+        compass && now - compass.at < COMPASS_STALE_MS
+          ? mod(
+              a +
+                angleDiff(compass.heading, a) *
+                  Math.min(1, dt / COMPASS_EASE_MS),
+              360,
+            )
+          : mod(a + (AUTO_PAN_DEG_PER_S * dt) / 1000, 360),
+      );
 
       raf = requestAnimationFrame(step);
     };
@@ -293,21 +363,7 @@ export function PanoramaView({
     raf = requestAnimationFrame(step);
 
     return () => cancelAnimationFrame(raf);
-  }, [settings.autoPan, dragging, paused]);
-
-  // The wait starts when the hand comes off, not when it goes on: `dragging` is
-  // a dependency so the timer is armed by the drag *ending*. Counting down from
-  // the press instead would let any drag longer than the wait expire under the
-  // finger, and the view would start turning the instant it was released.
-  useEffect(() => {
-    if (!paused || dragging) {
-      return;
-    }
-
-    const timer = setTimeout(() => setPaused(false), AUTO_PAN_RESUME_MS);
-
-    return () => clearTimeout(timer);
-  }, [paused, dragging]);
+  }, [settings.autoPan, dragging]);
 
   // The geometry a zoom has to work back from, kept where an event handler can
   // read it without being torn down and rebuilt on every frame of a pan.
@@ -409,16 +465,31 @@ export function PanoramaView({
 
   const travelRef = useRef(0);
 
+  /** Whether this gesture has already taken the view over. */
+  const stoppedRef = useRef(false);
+
+  /** Whether a second finger ever joined, which makes the gesture a pinch. */
+  const pinchedRef = useRef(false);
+
   const handlePointerDown = useCallback((e: ReactPointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);
 
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-    travelRef.current = 0;
+    // Only the first finger starts a gesture. Zeroing on the second one too
+    // would hand a pinch a fresh travel budget, and the lift at the end of it
+    // would then read as a press on whatever the last finger was over.
+    if (pointers.current.size > 1) {
+      pinchedRef.current = true;
+    } else {
+      travelRef.current = 0;
+
+      stoppedRef.current = false;
+
+      pinchedRef.current = false;
+    }
 
     setDragging(true);
-
-    setPaused(true);
   }, []);
 
   /**
@@ -449,8 +520,11 @@ export function PanoramaView({
       const distance = distanceAt(data.depth, ix, iy);
 
       return {
-        px,
-        py,
+        // The bearing and the image row, not the pixel they were read at: the
+        // picture moves under a readout that outlives the gesture, and these
+        // are what put it back over the terrain it measured.
+        az,
+        iy,
         ground:
           distance === null
             ? null
@@ -509,6 +583,25 @@ export function PanoramaView({
 
           travelRef.current += Math.abs(dx) + Math.abs(dy);
 
+          // Turning it by hand is taking it over, and it stays taken over —
+          // the same thing the stop button does, said with the gesture that
+          // already means "I want to look at this". Only once it is a drag: a
+          // press that goes nowhere is asking a distance, not steering.
+          //
+          // Latched in a ref rather than tested against the setting, which is a
+          // render behind: pointer moves keep arriving before the store's
+          // `false` comes back, and every one of them would dispatch again —
+          // and every dispatch writes the whole persisted state to localStorage.
+          if (
+            travelRef.current > CLICK_SLOP_PX &&
+            !stoppedRef.current &&
+            settings.autoPan
+          ) {
+            stoppedRef.current = true;
+
+            dispatch(panoramaSetSettings({ autoPan: false }));
+          }
+
           setAzimuth((a) => mod(a - dx * degPerPx, 360));
 
           setOffsetY((o) => clamp(o - dy / scale, 0, maxOffsetY));
@@ -517,7 +610,17 @@ export function PanoramaView({
         return;
       }
 
-      // A mouse hovering: say how far away whatever is under it stands.
+      // Hovering is a mouse's and a pen's; a finger says what it wants by
+      // pressing, and `endPointer` answers that. A touch does reach here — one
+      // that started on a label is never registered, and its moves still bubble
+      // — and left to set a readout it could never clear one: its `pointerup`
+      // finds nothing to end, and `pointerleave` is exactly what a finger
+      // lifting fires.
+      if (e.pointerType === 'touch') {
+        return;
+      }
+
+      // A pointer hovering: say how far away whatever is under it stands.
       const sample = sampleGround(e);
 
       if (!sample) {
@@ -526,8 +629,8 @@ export function PanoramaView({
 
       setHover(
         sample.ground && {
-          x: sample.px,
-          y: sample.py,
+          az: sample.az,
+          iy: sample.iy,
           distance: sample.ground.distance,
         },
       );
@@ -536,7 +639,15 @@ export function PanoramaView({
       // committing to it — the press is what leaves a mark behind.
       setPanoramaHover(sample.ground);
     },
-    [degPerPx, maxOffsetY, sampleGround, scale, zoomAt],
+    [
+      degPerPx,
+      dispatch,
+      maxOffsetY,
+      sampleGround,
+      scale,
+      settings.autoPan,
+      zoomAt,
+    ],
   );
 
   const endPointer = useCallback(
@@ -559,12 +670,25 @@ export function PanoramaView({
 
       // A press that went nowhere asks what is there, rather than turning the
       // view: the distance buffer says how far, which with the bearing is a
-      // place on the map.
-      if (travelRef.current <= CLICK_SLOP_PX) {
+      // place on the map. A pinch is not that, however still the fingers were:
+      // its own branch never counts travel, so without this the lift ending a
+      // zoom would mark and measure wherever the last finger sat.
+      if (travelRef.current <= CLICK_SLOP_PX && !pinchedRef.current) {
         const sample = sampleGround(e);
 
         if (sample) {
           dispatch(panoramaSetProbe(sample.ground));
+
+          // A finger has no hover, so the press has to say the distance as well
+          // as mark it — otherwise the readout is a thing only a mouse ever
+          // sees. It stays until the next press, the way the mark does.
+          setHover(
+            sample.ground && {
+              az: sample.az,
+              iy: sample.iy,
+              distance: sample.ground.distance,
+            },
+          );
 
           setSelected(null);
         }
@@ -580,6 +704,18 @@ export function PanoramaView({
       return y < 0 || y > height ? null : { x: screenX(label.azimuth), y };
     },
     [clampedOffsetY, height, scale, screenX],
+  );
+
+  // The readout put back where its terrain now is, the same way a label is: a
+  // press-set one outlives the gesture, and the view keeps turning under it.
+  const hoverAt = useMemo(
+    () =>
+      hover && {
+        x: screenX(hover.az),
+        y: (hover.iy - clampedOffsetY) * scale,
+        distance: hover.distance,
+      },
+    [clampedOffsetY, hover, scale, screenX],
   );
 
   // Which summits count at all, kept apart from how many of them fit. Ranked
@@ -670,10 +806,15 @@ export function PanoramaView({
       onPointerMove={handlePointerMove}
       onPointerUp={endPointer}
       onPointerCancel={endPointer}
-      onPointerLeave={() => {
-        setHover(null);
+      // A touch pointer ceases to exist when the finger lifts, which fires this
+      // straight after the press that set the readout. Only a pointer that can
+      // actually leave takes the readout with it.
+      onPointerLeave={(e) => {
+        if (e.pointerType !== 'touch') {
+          setHover(null);
 
-        setPanoramaHover(null);
+          setPanoramaHover(null);
+        }
       }}
     >
       <div
@@ -749,25 +890,27 @@ export function PanoramaView({
         ))}
       </div>
 
-      {hover && !dragging && (
+      {hoverAt && !dragging && (
         // Flipped to the other side of the pointer near an edge: the viewport
         // clips what leaves it, so a readout sitting below the cursor simply
         // vanishes along the bottom of the picture.
         <div
           className={classes.readout}
           style={{
-            left: hover.x,
-            top: hover.y,
+            left: hoverAt.x,
+            top: hoverAt.y,
             transform: `translate(${
-              hover.x > width - READOUT_CLEARANCE_PX
+              hoverAt.x > width - READOUT_CLEARANCE_PX
                 ? 'calc(-100% - 8px)'
                 : '8px'
             }, ${
-              hover.y > height - LINE_HEIGHT - 12 ? 'calc(-100% - 8px)' : '8px'
+              hoverAt.y > height - LINE_HEIGHT - 12
+                ? 'calc(-100% - 8px)'
+                : '8px'
             })`,
           }}
         >
-          {formatDistance(hover.distance, language)}
+          {formatDistance(hoverAt.distance, language)}
         </div>
       )}
 

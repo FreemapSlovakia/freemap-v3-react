@@ -1,4 +1,5 @@
 import { closeTool } from '@app/store/actions.js';
+import { requestCompassPermission } from '@features/location/compass.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
@@ -135,11 +136,14 @@ export default function Panorama(): ReactElement {
     <div
       className={clsx(
         windowClasses.window,
-        'm-2',
-        'p-2',
-        'rounded',
         'd-flex',
         'flex-column',
+        // Dropped rather than overridden in full screen: Bootstrap's utilities
+        // are `!important` and a single class, the same weight as the rule that
+        // would undo them, so which one wins comes down to stylesheet order.
+        // Left on, they inset the panel and round it — a frame with the map
+        // showing through it.
+        !fullscreen && ['m-2', 'p-2', 'rounded'],
         // The plain class is what the header watches for, to lift its whole
         // stacking context over the bottom controls — see `Main.module.css`.
         fullscreen && [classes.fullscreen, 'fm-fullscreen'],
@@ -252,9 +256,15 @@ export default function Panorama(): ReactElement {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() =>
-                  dispatch(panoramaSetSettings({ autoPan: !settings.autoPan }))
-                }
+                onClick={() => {
+                  // Asked on either edge, not just when turning it on: a phone
+                  // starts out following, so the press that gets here first is
+                  // as often the one stopping it. Straight out of the click,
+                  // since that is the only place iOS grants it from.
+                  void requestCompassPermission();
+
+                  dispatch(panoramaSetSettings({ autoPan: !settings.autoPan }));
+                }}
                 {...props}
               >
                 {settings.autoPan ? <FaStop /> : <FaPlay />}

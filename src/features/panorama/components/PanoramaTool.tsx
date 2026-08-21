@@ -1,3 +1,4 @@
+import { requestCompassPermission } from '@features/location/compass.js';
 import type { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
@@ -16,6 +17,15 @@ export function PanoramaTool(): null {
     'click',
     useCallback(
       ({ latlng }: LeafletMouseEvent) => {
+        // iOS hands out the magnetometer only from a gesture, and on a phone
+        // the view is set to follow it before anyone has pressed anything — so
+        // this click, the one every panorama begins with, is where to ask.
+        // Nothing is done with the answer: a refusal leaves the view turning by
+        // itself, which is what it does on a device with no compass either.
+        // Deliberately not `ensureCompassPermission`, which would take a
+        // refusal here out on the located heading beam's own preference.
+        void requestCompassPermission();
+
         dispatch(panoramaPick({ lat: latlng.lat, lon: latlng.lng }));
       },
       [dispatch],

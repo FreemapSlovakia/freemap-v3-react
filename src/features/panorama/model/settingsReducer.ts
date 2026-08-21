@@ -89,8 +89,8 @@ export const DOMINANCE_STEPS_M = [
 
 export interface PanoramaSettingsState {
   /**
-   * Which tier to ask for. The detailed one is premium's, and the service
-   * clamps what an account may have regardless of what is asked.
+   * Which tier to ask for. Everything above the coarsest is premium's, and the
+   * service clamps what an account may have regardless of what is asked.
    */
   quality: PanoramaQuality;
   /** How much sky and ground the frame holds; `custom` uses the two below. */
@@ -103,7 +103,11 @@ export interface PanoramaSettingsState {
   labelDensity: number;
   /** Metres of dominance a summit needs to be named; see {@link DOMINANCE_STEPS_M}. */
   minDominance: number;
-  /** Turns the view by itself until touched. */
+  /**
+   * Lets the view move on its own: toward where the device points where there
+   * is a compass to ask, and at a steady turn where there is not. Turning the
+   * picture by hand clears it, the same as the stop button does.
+   */
   autoPan: boolean;
 }
 
@@ -120,10 +124,11 @@ function touchDevice(): boolean {
 
 export const panoramaSettingsInitialState: PanoramaSettingsState = {
   // What to ask for, not what will be granted: an account without premium is
-  // put back on the fast tier before the request goes out. Defaulting the other
-  // way would leave a premium user looking at the free picture until they found
-  // this control.
-  quality: 'detailed',
+  // put back to `FREE_QUALITY` before the request goes out. Defaulting to a
+  // middling tier rather than the free one keeps a premium user off the free
+  // picture without their finding this control, and rather than the finest one
+  // because that is half a minute of a server that renders one at a time.
+  quality: 'standard',
   tilt: 'standard',
   altMin: -18,
   altMax: 12,

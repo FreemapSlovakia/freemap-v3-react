@@ -39,7 +39,7 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     label: 'Minimálna dominancia',
     all: 'Ľubovoľná',
   },
-  autoPan: 'Otáčať samo',
+  autoPan: 'Otáčať so zariadením alebo samo',
   fullscreen: 'Na celú obrazovku',
   peak: {
     elevation: 'Nadmorská výška',

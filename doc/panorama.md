@@ -70,12 +70,14 @@ along one of the two axes. Only the coarsest is free, the rest premium's;
 the progress bar all ask it rather than each repeating the rule, and asking for
 *less* than the account may have is never blocked.
 
-The setting **defaults to the detailed tier**, because the account is what
-decides whether it is granted:
-asking for it without premium is put back to fast before the request goes out,
-and defaulting the other way would leave a premium user on the free picture
-until they found the control. For the same reason the menu shows the tier being
-rendered rather than the one stored.
+The setting **defaults to a middling tier**, not the free one, because the
+account is what decides whether it is granted: asking for more without premium
+is put back to `FREE_QUALITY` before the request goes out, and defaulting the other way
+would leave a premium user on the free picture until they found the control.
+Middling rather than finest because the top tier is the better part of a minute
+of a server that renders one at a time — a default nobody chose should not cost
+that. For the same reason the menu shows the tier being rendered rather than the
+one stored.
 
 `panoramaStep` then raises the asked-for step wherever a full turn over the
 current vertical band would exceed the service's 24 Mpx cap. Neither tier
@@ -117,6 +119,43 @@ the label layout runs in screen space, so more names appear as it does. Wheel
 or pinch; there is no zoom control, because a picture one drags is a picture one
 pinches.
 
+**Turning it by hand stops the following outright**, rather than pausing it:
+the drag clears `autoPan`, which is the same state the stop button writes and
+is persisted like any other preference. A timed resume was the first attempt
+and was wrong — someone drags because they want to look at something, and
+having the picture swing back to where the phone points a few seconds later
+takes it away again. The stop fires only once travel passes `CLICK_SLOP_PX`,
+so a press asking a distance is not steering.
+
+**Where the device points wins over turning by itself.** One `autoPan`
+preference, two behaviours: with a magnetometer the view eases toward the
+compass bearing (`subscribeCompass`, which already resolves iOS' ready-made
+heading against the W3C Euler angles and compensates for tilt and screen
+rotation), and without one it turns at a steady six degrees a second. Both run
+off the same rAF loop, and the loop asks per frame rather than picking a mode
+once: a sensor that goes quiet for `COMPASS_STALE_MS` hands the turn back
+rather than freezing the picture at the last bearing it heard.
+
+The easing constant is the whole feel of it — `COMPASS_EASE_MS` short enough
+that turning around arrives with the turn, long enough that magnetometer jitter
+reads as a still picture. Note `useHeading` is deliberately **not** reused here:
+it fuses in the GPS course and is gated on the locate mode being on, and someone
+standing still reading a skyline wants neither.
+
+iOS grants the sensor only from a user gesture — a promise chained off a click
+still counts, a later effect does not — so **the map click that picks the
+viewpoint is where it is asked**, not the ▶ button. A phone starts out
+following, so waiting for ▶ would mean waiting for a press nobody has any
+reason to make: the compass would never engage at all, and the view would spin
+forever. The ▶/■ press asks too, on either edge, for the case where following
+was turned off and is being turned back on.
+
+Nothing is done with the answer. A refusal leaves the view turning by itself,
+which is what a device without a magnetometer does anyway — and deliberately
+**not** `ensureCompassPermission`, which would take a refusal here out on
+`locationSettings.headingSource`, a preference belonging to the located heading
+beam and nothing to do with this panel.
+
 **The bearing is a viewport, and both layers have to be told so.** It moves at
 gesture speed, which two mechanisms would otherwise punish:
 
@@ -144,7 +183,18 @@ and turned by mutating one transform, so a pan rewrites nothing else — the sam
 construction as the located heading beam, in the viewpoint marker's own red so
 the two can't be confused. The same store carries where the pointer rests on
 the ground, which the map marks with a faded crosshair beside the solid one a
-press leaves behind. Each carries a dashed line back to the viewpoint — the
+press leaves behind. A finger has no hover, so **the hover branch is a mouse's and a pen's alone**
+and a press is what measures on touch. Gating it that way is not tidiness: a
+touch starting on a peak label is never registered (the label stops the
+`pointerdown`) while its moves still bubble, so it would set a readout that
+nothing could clear — its `pointerup` finds no gesture to end, and
+`pointerleave` is precisely what a finger lifting fires.
+
+The reading is held as a bearing and an image row, not as the pixel it was
+taken at, so it stays over its own terrain while the view turns — a press-set
+one has to survive the compass moving the picture under it. It is dropped when
+a new render lands: the two passes are different heights, and the same row in
+the preview and in the detailed picture are different altitudes. Each carries a dashed line back to the viewpoint — the
 line of sight the reading was taken along — and a press that lands off the map
 pans it with `panInside` rather than centring on it, which would throw the
 viewpoint at the other end of that line off the screen.
@@ -274,6 +324,5 @@ since the service names none per render and a 300 km view crosses borders.
 
 - Narrow-`fov` re-render for real optical zoom past the image's own pixels;
   the service says it is proportionally cheap.
-- Device-orientation ("hold the phone up") mode beside the auto-pan.
 - Entry from a selected peak, and a cross-link with the toposcope.
 - Sun path — the service hasn't implemented it either.

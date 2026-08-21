@@ -38,7 +38,7 @@ const en: PanoramaMessages = {
     label: 'Minimum dominance',
     all: 'Any',
   },
-  autoPan: 'Turn by itself',
+  autoPan: 'Turn with the device, or by itself',
   fullscreen: 'Full screen',
   peak: {
     elevation: 'Elevation',
