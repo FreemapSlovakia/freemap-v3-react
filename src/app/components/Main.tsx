@@ -202,6 +202,18 @@ const elevationChartFactory = () =>
     '@features/elevationChart/components/ElevationChart.js'
   );
 
+const panoramaFactory = () =>
+  import(
+    /* webpackChunkName: "panorama" */
+    '@features/panorama/components/Panorama.js'
+  );
+
+const panoramaMenuFactory = () =>
+  import(
+    /* webpackChunkName: "panorama-menu" */
+    '@features/panorama/components/PanoramaMenu.js'
+  );
+
 const toposcopeFactory = () =>
   import(
     /* webpackChunkName: "toposcope" */
@@ -470,6 +482,8 @@ export function Main(): ReactElement {
   const showToposcope = useAppSelector((state) =>
     isToolOpen(state, 'toposcope'),
   );
+
+  const showPanorama = useAppSelector((state) => isToolOpen(state, 'panorama'));
 
   const pickingToposcopeCenter = useAppSelector(
     (state) => state.toposcope.pickingCenter,
@@ -810,6 +824,8 @@ export function Main(): ReactElement {
                       <MapDetailsMenu />
                     ) : openedTool === 'toposcope' ? (
                       <AsyncComponent factory={toposcopeMenuFactory} />
+                    ) : openedTool === 'panorama' ? (
+                      <AsyncComponent factory={panoramaMenuFactory} />
                     ) : openedTool === 'tracking' ? (
                       <AsyncComponent factory={trackingMenuFactory} />
                     ) : null}
@@ -874,6 +890,8 @@ export function Main(): ReactElement {
             )}
 
             {showToposcope && <AsyncComponent factory={toposcopeFactory} />}
+
+            {showPanorama && <AsyncComponent factory={panoramaFactory} />}
           </div>
 
           <div className={classes.typeZoomControl}>

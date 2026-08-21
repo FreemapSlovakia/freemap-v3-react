@@ -12,7 +12,6 @@ const it: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
   downloadAsSvg: 'Scarica come SVG',
   osmAttribution: '© OpenStreetMap contributors',
   credit: ({ site }) => `Tavola d'orientamento di ${site}`,
-  cardinals: { n: 'N', e: 'E', s: 'S', w: 'O' },
   settings: {
     title: "Tavola d'orientamento",
     inscriptions: 'Iscrizioni',

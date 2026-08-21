@@ -25,6 +25,8 @@ import { mapDetailsReducer } from '@features/mapDetails/model/reducer.js';
 import { mapsReducer } from '@features/myMaps/model/reducer.js';
 import { objectsReducer } from '@features/objects/model/reducer.js';
 import { objectsSettingsReducer } from '@features/objects/model/settingsReducer.js';
+import { panoramaReducer } from '@features/panorama/model/reducer.js';
+import { panoramaSettingsReducer } from '@features/panorama/model/settingsReducer.js';
 import { progressReducer } from '@features/progress/model/reducer.js';
 import { routePlannerReducer } from '@features/routePlanner/model/reducer.js';
 import { routePlannerSettingsReducer } from '@features/routePlanner/model/settingsReducer.js';
@@ -68,6 +70,8 @@ export const reducers = {
   map: mapReducer,
   objects: objectsReducer,
   objectsSettings: objectsSettingsReducer,
+  panorama: panoramaReducer,
+  panoramaSettings: panoramaSettingsReducer,
   progress: progressReducer,
   routePlanner: routePlannerReducer,
   routePlannerSettings: routePlannerSettingsReducer,

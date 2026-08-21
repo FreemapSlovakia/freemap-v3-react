@@ -1,5 +1,6 @@
 import { closeTool, selectFeature } from '@app/store/actions.js';
 import { drawingPointLabel } from '@features/drawing/labelValues.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import {
   bearingTo,
@@ -54,6 +55,8 @@ function toLines(text: string): string[] {
 
 export default function Toposcope(): ReactElement {
   const m = useToposcopeMessages();
+
+  const gm = useMessages();
 
   const dispatch = useDispatch();
 
@@ -223,10 +226,10 @@ export default function Toposcope(): ReactElement {
                 .replaceAll('{credit}', credit),
             )}
             cardinals={[
-              m?.cardinals.e ?? '',
-              m?.cardinals.s ?? '',
-              m?.cardinals.w ?? '',
-              m?.cardinals.n ?? '',
+              gm?.cardinals.e ?? '',
+              gm?.cardinals.s ?? '',
+              gm?.cardinals.w ?? '',
+              gm?.cardinals.n ?? '',
             ]}
             innerCircleRadius={innerCircleRadius}
             outerCircleRadius={outerCircleRadius}

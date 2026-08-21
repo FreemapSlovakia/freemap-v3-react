@@ -14,8 +14,6 @@ export type ToposcopeMessages = {
   osmAttribution: string;
   /** This portal's own, that `{credit}` expands to; `site` is its name. */
   credit: (props: { site: string }) => string;
-  /** Single letters written around the dial. */
-  cardinals: { n: string; e: string; s: string; w: string };
   settings: {
     title: string;
     /** Heading over the four texts curved along the outer circle. */

@@ -1,0 +1,111 @@
+import { describe, expect, it } from 'vitest';
+import { layoutLabels } from './layout.js';
+import type { PanoramaLabel } from './types.js';
+
+function label(id: string, rank: number): PanoramaLabel {
+  return {
+    id,
+    name: id,
+    lat: 0,
+    lon: 0,
+    ele: 1000,
+    distance: 10000,
+    azimuth: 0,
+    y: 0,
+    rank,
+  };
+}
+
+const options = {
+  measure: () => 50,
+  viewportWidth: 400,
+  lineHeight: 16,
+  minLeader: 6,
+  maxClimb: 140,
+};
+
+describe('panorama label layout', () => {
+  it('places a lone label just above its summit', () => {
+    const [placement] = layoutLabels([label('a', 1)], {
+      ...options,
+      anchor: () => ({ x: 200, y: 150 }),
+    });
+
+    expect(placement).toMatchObject({ left: 175, top: 128, width: 50 });
+  });
+
+  it('climbs a line at a time out of a taken spot', () => {
+    const placements = layoutLabels([label('a', 2), label('b', 1)], {
+      ...options,
+      anchor: (l) => ({ x: l.id === 'a' ? 200 : 210, y: 150 }),
+    });
+
+    expect(placements.map((p) => p.top)).toEqual([128, 112]);
+  });
+
+  it('leaves a label alone when the one beside it does not overlap', () => {
+    const placements = layoutLabels([label('a', 2), label('b', 1)], {
+      ...options,
+      anchor: (l) => ({ x: l.id === 'a' ? 100 : 300, y: 150 }),
+    });
+
+    expect(placements.map((p) => p.top)).toEqual([128, 128]);
+  });
+
+  it('leaves a summit too near the top of the frame unnamed', () => {
+    const placements = layoutLabels([label('a', 2)], {
+      ...options,
+      anchor: () => ({ x: 200, y: 20 }),
+    });
+
+    expect(placements).toEqual([]);
+  });
+
+  it('keeps labels clear of the compass strip', () => {
+    const placements = layoutLabels([label('a', 2), label('b', 1)], {
+      ...options,
+      minTop: 22,
+      anchor: () => ({ x: 200, y: 60 }),
+    });
+
+    expect(placements.map((p) => p.top)).toEqual([38, 22]);
+  });
+
+  it('keeps the highest ranked when the view is crowded', () => {
+    // Given in rank order, which is the caller's part of the bargain.
+    const placements = layoutLabels(
+      [label('high', 9), label('mid', 1), label('low', 0.1)],
+      {
+        ...options,
+        anchor: () => ({ x: 200, y: 40 }),
+      },
+    );
+
+    expect(placements.map((p) => p.label.id)).toEqual(['high', 'mid']);
+  });
+
+  it('skips what is off screen or has nowhere to point', () => {
+    const placements = layoutLabels([label('a', 1), label('b', 1)], {
+      ...options,
+      anchor: (l) => (l.id === 'a' ? null : { x: 900, y: 150 }),
+    });
+
+    expect(placements).toEqual([]);
+  });
+
+  it('stops at the limit', () => {
+    const placements = layoutLabels(
+      [label('a', 3), label('b', 2), label('c', 1)],
+      {
+        ...options,
+        anchor: (l) => ({
+          x: l.id === 'a' ? 50 : l.id === 'b' ? 150 : 250,
+          y: 150,
+        }),
+        limit: 2,
+      },
+    );
+
+    expect(placements.map((p) => p.label.id)).toEqual(['a', 'b']);
+  });
+});

@@ -31,6 +31,13 @@
   z-index: 1011;
 }
 
+/* Same confinement, for a panel that has gone full screen: whatever z-index it
+   gives itself is settled inside the header, so covering the bottom controls is
+   the header's to do. */
+.header:has(:global(.fm-fullscreen)) {
+  z-index: 1012;
+}
+
 .type-zoom-control {
   display: flex;
   flex-wrap: wrap;

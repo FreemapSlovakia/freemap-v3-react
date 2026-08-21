@@ -509,6 +509,37 @@ SVG. What it does not do yet:
 - **An SEO hub page** in `sitemap-generator/` — the term is searched in every
   target market and there is almost no web tooling for it.
 
+## Panorama (`src/features/panorama/`, see [`doc/panorama.md`](./doc/panorama.md))
+
+Shipped as an MVP: pick a viewpoint, 360° render, pan/zoom, peak labels, the
+distance probe, a premium quality tier. What was deliberately left for later:
+
+- [ ] **Narrow-`fov` re-render** once the view is zoomed past the image's own
+      pixels — real optical zoom rather than magnified ones. The service says a
+      60–120° slice is proportionally cheap, so this can stay free.
+- [ ] **Label sources beyond the renderer's summits.** The shape is already
+      generic (`labels/types.ts`); what's missing is the projection helper —
+      azimuth/distance/altitude for an arbitrary coordinate, tested against the
+      distance buffer for visibility, exactly as the service does for a summit.
+      Candidates: the map selection, drawn points, route waypoints, gallery
+      photos, OSM POIs. Elevation comes from the elevation API.
+- [ ] **Device-orientation mode** beside the auto-pan — hold the phone up and
+      the view follows the real heading. iOS needs
+      `DeviceOrientationEvent.requestPermission()` behind a user gesture.
+- [ ] **Cross-fade** between the fast pass and the detailed one; today it swaps.
+- [ ] **Entry points**: a "Panorama from here" action on a selected
+      `natural=peak` (passing the summit node so the viewpoint snaps to it), and
+      a cross-link to and from the toposcope centre.
+- [ ] **Download the picture** as PNG, and a share link that names the heading.
+- [ ] **Custom vertical range and eye height** are in the settings slice and
+      honoured by the request, but no control exposes them — the three tilt
+      presets are all the toolbar offers, and a custom band can only arrive
+      through `panorama-tilt=altMin,altMax`. Their message strings were removed
+      rather than left translated into nine languages with no consumer; a
+      settings modal would bring both back.
+- [ ] **Sun path** — the service hasn't implemented it either; the distance
+      buffer already holds what it needs.
+
 ## Weather radar (`src/features/weatherRadar/`, see [`doc/weather-radar.md`](./doc/weather-radar.md))
 
 [`doc/weather.md`](./doc/weather.md) records what was asked of the upstream feed

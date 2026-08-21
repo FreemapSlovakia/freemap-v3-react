@@ -11,7 +11,6 @@ const sk: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
   downloadAsSvg: 'Stiahnuť ako SVG',
   osmAttribution: '© prispievatelia OpenStreetMap',
   credit: ({ site }) => `Orientačná ružica od ${site}`,
-  cardinals: { n: 'S', e: 'V', s: 'J', w: 'Z' },
   settings: {
     title: 'Orientačná ružica',
     inscriptions: 'Vlastné texty',

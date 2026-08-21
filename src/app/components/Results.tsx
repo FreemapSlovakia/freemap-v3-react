@@ -43,6 +43,10 @@ export function Results(): ReactElement {
       activeMapToolSelector(state) === 'route-planner',
   );
 
+  const hasPanorama = useAppSelector(
+    (state) => state.panorama.viewpoint !== null,
+  );
+
   const opacity = useAppSelector(
     (state) => state.map.layersSettings['i']?.opacity ?? 1,
   );
@@ -94,6 +98,17 @@ export function Results(): ReactElement {
       )}
 
       <ChangesetsResult />
+
+      {hasPanorama && (
+        <AsyncComponent
+          factory={() =>
+            import(
+              /* webpackChunkName: "panorama-result" */
+              '@features/panorama/components/PanoramaResult.js'
+            )
+          }
+        />
+      )}
 
       <TrackingResult />
 

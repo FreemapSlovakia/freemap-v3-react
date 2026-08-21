@@ -137,6 +137,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     auto: 'Automatikus mód',
   },
 
+  cardinals: {
+    n: 'É',
+    ne: 'ÉK',
+    e: 'K',
+    se: 'DK',
+    s: 'D',
+    sw: 'DNy',
+    w: 'Ny',
+    nw: 'ÉNy',
+  },
+
   selections: {
     objects: 'Objektum (érdekes pont, POI)',
     drawPoints: 'Pont',
@@ -167,6 +178,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     myMap: 'Térképem',
     gpsRecorder: 'GPS-rögzítő',
     toposcope: 'Panorámatábla',
+    panorama: 'Panoráma',
   },
 
   mainMenu: {

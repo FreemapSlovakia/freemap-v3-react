@@ -1,4 +1,8 @@
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
+import {
+  serializePanoramaTilt,
+  serializePanoramaViewpoint,
+} from '@features/panorama/panoramaUrl.js';
 import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
 import { routeKey } from '@features/routePlanner/model/actions.js';
 import { serializeToposcope } from '@features/toposcope/toposcopeUrl.js';
@@ -25,6 +29,14 @@ import { isUrlUpdatingEnabled } from './urlUpdating.js';
 // VIEW_COALESCE_GAP_MS has elapsed since the last viewport write — so distinct
 // panning sessions stay separately navigable.
 const VIEW_COALESCE_GAP_MS = 60_000;
+
+// Params that move as fast as a gesture and so must not cost a history entry
+// each: the map's own viewport, and the bearing the panorama is turned to. A
+// change confined to these replaces the current entry instead of pushing one,
+// and is rate-limited below.
+const VIEWPORT_KEYS = new Set(['map', 'panorama-az']);
+
+const isContentPart = ([key]: QueryPart) => !VIEWPORT_KEYS.has(key);
 
 // WebKit rejects history writes past a cap — the SecurityError names 100 per 10
 // seconds — and a viewport-only change can arrive as fast as the store updates:
@@ -137,6 +149,8 @@ function updateUrl(state: RootState, forced: boolean): void {
     wiki,
     elevationChart,
     toposcope,
+    panorama,
+    panoramaSettings,
   } = state;
 
   if (!isUrlUpdatingEnabled()) {
@@ -208,6 +222,14 @@ function updateUrl(state: RootState, forced: boolean): void {
     wiki.preview,
     wiki.loading,
     elevationChart.target,
+    panorama.viewpoint,
+    // Listed here to be noticed at all — this array only asks whether anything
+    // moved. Whether the write pushes a history entry or replaces one is a
+    // separate question, answered by `VIEWPORT_KEYS`.
+    panorama.azimuth,
+    panoramaSettings.tilt,
+    panoramaSettings.altMin,
+    panoramaSettings.altMax,
   ];
 
   const restChanged =
@@ -311,6 +333,23 @@ function updateUrl(state: RootState, forced: boolean): void {
     }
   }
 
+  // Where the panorama is taken from, so a link reopens it; the picture itself
+  // is re-rendered on arrival. The bearing rides in a param of its own because
+  // it is a viewport, not content — see `VIEWPORT_KEYS`.
+  if (panorama.viewpoint) {
+    historyParts.push([
+      'panorama',
+      serializePanoramaViewpoint(panorama.viewpoint),
+    ]);
+
+    historyParts.push(['panorama-az', String(Math.round(panorama.azimuth))]);
+
+    historyParts.push([
+      'panorama-tilt',
+      serializePanoramaTilt(panoramaSettings),
+    ]);
+  }
+
   if (trackViewerSettings.colorizeTrackBy) {
     historyParts.push([
       'track-colorize-by',
@@ -368,8 +407,8 @@ function updateUrl(state: RootState, forced: boolean): void {
   // holds the content parts when no map id claims them, so filtering the
   // viewport out of it covers both arrangements.
   const restSignature = `${serializeQuery(
-    queryParts.filter(([key]) => key !== 'map'),
-  )}\n${sq ?? ''}`;
+    queryParts.filter(isContentPart),
+  )}\n${mapId ? serializeQuery(historyParts.filter(isContentPart)) : ''}`;
 
   const prevHistoryState = history.state as {
     sq?: string;

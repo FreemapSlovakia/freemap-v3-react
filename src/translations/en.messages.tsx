@@ -132,6 +132,17 @@ const messages: Messages = {
     auto: 'Automatic mode',
   },
 
+  cardinals: {
+    n: 'N',
+    ne: 'NE',
+    e: 'E',
+    se: 'SE',
+    s: 'S',
+    sw: 'SW',
+    w: 'W',
+    nw: 'NW',
+  },
+
   selections: {
     objects: 'Object (POI)',
     drawPoints: 'Point',
@@ -158,6 +169,7 @@ const messages: Messages = {
     tracking: 'Live tracking',
     gpsRecorder: 'GPS recorder',
     toposcope: 'Toposcope',
+    panorama: 'Panorama',
     myMaps: 'My maps',
     myMap: 'My map',
   },

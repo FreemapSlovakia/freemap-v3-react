@@ -11,7 +11,6 @@ const sl: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
   downloadAsSvg: 'Prenesi kot SVG',
   osmAttribution: '© sodelavci OpenStreetMap',
   credit: ({ site }) => `Panoramska tabla — ${site}`,
-  cardinals: { n: 'S', e: 'V', s: 'J', w: 'Z' },
   settings: {
     title: 'Panoramska tabla',
     inscriptions: 'Napisi',

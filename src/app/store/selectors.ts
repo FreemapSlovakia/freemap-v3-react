@@ -153,6 +153,9 @@ export const mouseCursorSelector = createSelector(
       case 'map-details':
         return 'help';
 
+      case 'panorama':
+        return 'crosshair';
+
       case 'draw-points':
         return markerCursor;
 

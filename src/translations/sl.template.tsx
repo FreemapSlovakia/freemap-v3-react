@@ -137,6 +137,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     auto: 'Samodejni način',
   },
 
+  cardinals: {
+    n: 'S',
+    ne: 'SV',
+    e: 'V',
+    se: 'JV',
+    s: 'J',
+    sw: 'JZ',
+    w: 'Z',
+    nw: 'SZ',
+  },
+
   selections: {
     objects: 'Objekt (POI)',
     drawPoints: 'Točka',
@@ -165,6 +176,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     myMap: 'Moj zemljevid',
     gpsRecorder: 'GPS snemalnik',
     toposcope: 'Panoramska tabla',
+    panorama: 'Panorama',
   },
 
   mainMenu: {

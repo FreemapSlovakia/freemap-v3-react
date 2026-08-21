@@ -4,12 +4,6 @@ import type { ColorizerMessages } from './ColorizerMessages.js';
 const sl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Obarvaj po',
   legend: 'Legenda',
-  compass: {
-    n: 'S',
-    e: 'V',
-    s: 'J',
-    w: 'Z',
-  },
   mode: {
     none: 'Neaktivno',
     elevation: 'Nadmorska višina',

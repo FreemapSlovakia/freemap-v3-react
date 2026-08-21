@@ -1,6 +1,7 @@
 import { BearingLine } from '@features/location/components/BearingLine.js';
 import { useFixOpacity } from '@features/location/hooks/useFixOpacity.js';
 import { useHeading } from '@features/location/hooks/useHeading.js';
+import { makeBeamIcon } from '@shared/beamIcon.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { divIcon, type Marker as LeafletMarker } from 'leaflet';
 import { type ReactElement, useEffect, useMemo, useRef } from 'react';
@@ -37,36 +38,19 @@ const clampSpread = (spread: number) =>
   Math.min(Math.max(spread, MIN_SPREAD), MAX_SPREAD);
 
 /**
- * A wedge fading outwards, drawn pointing north; the marker element is then
- * rotated to the heading. Its width doubles as the uncertainty readout — narrow
- * for a well-calibrated compass, wide when falling back to the GPS course.
+ * The heading wedge. Its width doubles as the uncertainty readout — narrow for
+ * a well-calibrated compass, wide when falling back to the GPS course.
  */
-function makeBeamIcon(spread: number) {
-  const half = (spread * Math.PI) / 180;
-
-  const x1 = (BEAM_RADIUS * Math.sin(-half)).toFixed(2);
-  const y1 = (-BEAM_RADIUS * Math.cos(-half)).toFixed(2);
-  const x2 = (BEAM_RADIUS * Math.sin(half)).toFixed(2);
-  const y2 = (-BEAM_RADIUS * Math.cos(half)).toFixed(2);
-
-  // `display:block` on the svg is load-bearing: inline it would sit on the text
-  // baseline, leaving the wrapper taller than the svg (`.leaflet-container` sets
-  // `line-height: 1.5`) so `transform-origin: 50% 50%` would rotate about a
-  // point below the marker anchor and swing the apex off the dot.
-  return divIcon({
-    iconSize: [BEAM_SIZE, BEAM_SIZE],
-    iconAnchor: [BEAM_SIZE / 2, BEAM_SIZE / 2],
-    html: `<div style="transform-origin:50% 50%">
-      <svg style="display:block" xmlns="http://www.w3.org/2000/svg" width="${BEAM_SIZE}" height="${BEAM_SIZE}" viewBox="${-BEAM_SIZE / 2} ${-BEAM_SIZE / 2} ${BEAM_SIZE} ${BEAM_SIZE}">
-        <radialGradient id="fm-heading-beam" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="${BEAM_RADIUS}">
-          <stop offset="0.2" stop-color="#3388ff" stop-opacity=".75"/>
-          <stop offset="1" stop-color="#3388ff" stop-opacity="0"/>
-        </radialGradient>
-        <path fill="url(#fm-heading-beam)" d="M0 0L${x1} ${y1}A${BEAM_RADIUS} ${BEAM_RADIUS} 0 0 1 ${x2} ${y2}Z"/>
-      </svg>
-    </div>`,
+const headingBeamIcon = (spread: number) =>
+  makeBeamIcon({
+    halfAngle: spread,
+    size: BEAM_SIZE,
+    radius: BEAM_RADIUS,
+    color: '#3388ff',
+    innerStop: 0.2,
+    innerOpacity: 0.75,
+    gradientId: 'fm-heading-beam',
   });
-}
 
 export function LocationResult(): ReactElement | null {
   const gpsLocation = useAppSelector((state) => state.location.location);
@@ -90,7 +74,7 @@ export function LocationResult(): ReactElement | null {
   const spread = heading === null ? null : clampSpread(heading.spread);
 
   const beamIcon = useMemo(
-    () => (spread === null ? null : makeBeamIcon(spread)),
+    () => (spread === null ? null : headingBeamIcon(spread)),
     [spread],
   );
 

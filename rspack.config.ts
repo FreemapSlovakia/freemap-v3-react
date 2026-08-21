@@ -522,6 +522,10 @@ const config: Configuration = {
       // no-referrer`.
       WEATHER_RADAR_URL:
         process.env['WEATHER_RADAR_URL'] || 'https://cache.bigware.sk',
+      // Panorama rendering. Addressed directly rather than through the API: it
+      // takes the account's bearer token itself, clamps the quality it grants,
+      // and queues by whatever priority it decides — see doc/panorama.md.
+      TERRAIN_URL: process.env['TERRAIN_URL'] || 'https://terrain.freemap.sk',
       // Where single OSM element (node/way/relation) lookups are resolved:
       // 'overpass' (default, internal instance) or 'osm-api' (public OSM API).
       OSM_ELEMENT_SOURCE: process.env['OSM_ELEMENT_SOURCE'] || 'overpass',

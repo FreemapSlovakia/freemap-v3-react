@@ -61,6 +61,18 @@ import {
 } from '@features/objects/model/actions.js';
 import { osmLoad } from '@features/osm/model/osmActions.js';
 import {
+  panoramaClear,
+  panoramaPick,
+  panoramaSetAzimuth,
+  panoramaSetSettings,
+} from '@features/panorama/model/actions.js';
+import {
+  parsePanoramaTilt,
+  parsePanoramaViewpoint,
+  serializePanoramaTilt,
+  serializePanoramaViewpoint,
+} from '@features/panorama/panoramaUrl.js';
+import {
   type ColorStop,
   type Color as ColorType,
   type ShadingComponent,
@@ -126,7 +138,7 @@ import {
 } from '../store/actions.js';
 import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
-import { openToolsSelector } from '../store/selectors.js';
+import { isToolOpen, openToolsSelector } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
@@ -417,6 +429,8 @@ export function handleLocationChange(store: MyStore): void {
   handleFeatureStyles(getState, dispatch, query);
 
   handleToposcope(getState, dispatch, query);
+
+  handlePanorama(getState, dispatch, query);
 
   const changesetsDays = query['changesets-days'];
 
@@ -1436,6 +1450,71 @@ function handleToposcope(
   // stop arriving.
   if (param !== serializeToposcope(getState().toposcope)) {
     dispatch(toposcopeSet(parseToposcope(param)));
+  }
+}
+
+/**
+ * `panorama=` the viewpoint, `panorama-az=` the bearing, `panorama-tilt=` the
+ * vertical band; see `panoramaUrl.ts` for the formats. The picture is not in
+ * the link: arriving with a viewpoint renders it again, which is the same
+ * explicit action a click on the map is.
+ *
+ * A link's tilt is applied whatever the standing preference — what the sender
+ * framed is part of what they are showing.
+ */
+function handlePanorama(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  query: Record<string, string | string[]>,
+) {
+  const { viewpoint, azimuth } = getState().panorama;
+
+  // Compared through the serializer that wrote it: a full coordinate rounded on
+  // the way out would otherwise read back as a different place and pay for a
+  // whole render on every step through the history.
+  const next = parsePanoramaViewpoint(
+    typeof query['panorama'] === 'string' ? query['panorama'] : '',
+  );
+
+  if (!next) {
+    if (viewpoint) {
+      dispatch(panoramaClear());
+    }
+
+    return;
+  }
+
+  // Without its panel there is nothing to render into, and a render is seconds
+  // of somebody else's server.
+  if (!isToolOpen(getState(), 'panorama')) {
+    return;
+  }
+
+  const az = Number(query['panorama-az']);
+
+  if (Number.isFinite(az) && az !== azimuth) {
+    dispatch(panoramaSetAzimuth(az));
+  }
+
+  const tilt = parsePanoramaTilt(
+    typeof query['panorama-tilt'] === 'string' ? query['panorama-tilt'] : '',
+  );
+
+  const settings = getState().panoramaSettings;
+
+  if (
+    tilt &&
+    serializePanoramaTilt({ ...settings, ...tilt }) !==
+      serializePanoramaTilt(settings)
+  ) {
+    dispatch(panoramaSetSettings(tilt));
+  }
+
+  if (
+    !viewpoint ||
+    serializePanoramaViewpoint(viewpoint) !== serializePanoramaViewpoint(next)
+  ) {
+    dispatch(panoramaPick(next));
   }
 }
 

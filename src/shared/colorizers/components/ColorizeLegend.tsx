@@ -1,14 +1,15 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactNode, useMemo } from 'react';
 import { FaPalette } from 'react-icons/fa';
+import type { Messages } from '@/translations/messagesInterface.js';
 import { readCoordTimes } from '../colorize.js';
 import type { ColorizingMode, HotlinePalette } from '../index.js';
 import { colorizers } from '../index.js';
 import { STEEPNESS_FULL_SCALE } from '../modes/steepness.js';
-import type { ColorizerMessages } from '../translations/ColorizerMessages.js';
 import { useColorizerMessages } from '../translations/useColorizerMessages.js';
 
 type Tick = { t: number; label: ReactNode };
@@ -75,7 +76,7 @@ function numericRange(
  */
 function legendSpec(
   mode: ColorizingMode,
-  cm: ColorizerMessages,
+  cardinals: Messages['cardinals'],
   features: Feature<LineString>[] | undefined,
   language: string,
   zoom: number,
@@ -102,11 +103,11 @@ function legendSpec(
     case 'heading':
       return {
         ticks: [
-          { t: 0, label: cm.compass.n },
-          { t: 0.25, label: cm.compass.e },
-          { t: 0.5, label: cm.compass.s },
-          { t: 0.75, label: cm.compass.w },
-          { t: 1, label: cm.compass.n },
+          { t: 0, label: cardinals.n },
+          { t: 0.25, label: cardinals.e },
+          { t: 0.5, label: cardinals.s },
+          { t: 0.75, label: cardinals.w },
+          { t: 1, label: cardinals.n },
         ],
       };
   }
@@ -174,6 +175,8 @@ type Props = {
 export function ColorizeLegend({ mode, icon, features }: Props) {
   const cm = useColorizerMessages();
 
+  const m = useMessages();
+
   const language = useAppSelector((state) => state.l10n.language);
 
   // The same zoom the line is colorized at: a mode's smoothing window widens
@@ -184,8 +187,11 @@ export function ColorizeLegend({ mode, icon, features }: Props) {
   // render path; it only reruns when the mode, features, language, or messages
   // change.
   const { unit, ticks } = useMemo(
-    () => (cm ? legendSpec(mode, cm, features, language, zoom) : { ticks: [] }),
-    [mode, cm, features, language, zoom],
+    () =>
+      cm && m
+        ? legendSpec(mode, m.cardinals, features, language, zoom)
+        : { ticks: [] },
+    [mode, cm, m, features, language, zoom],
   );
 
   if (!cm) {

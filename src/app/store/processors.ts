@@ -97,6 +97,10 @@ import { objectsLookupProcessor } from '@features/objects/model/objectsLookupPro
 import { downloadMapProcessor } from '@features/offlineMapExport/model/downloadMapProcessor.js';
 import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
 import { osmLoadProcessor } from '@features/osm/model/processors/osmLoadProcessor.js';
+import {
+  panoramaReleaseProcessor,
+  panoramaRenderProcessor,
+} from '@features/panorama/model/processors/panoramaRenderProcessor.js';
 import { purchaseProcessor } from '@features/purchases/model/processors/purchaseProcessor.js';
 import { routePlannerColorizeProcessor } from '@features/routePlanner/model/processors/colorizeProcessor.js';
 import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/processors/findRouteProcessor.js';
@@ -237,6 +241,8 @@ export const processors = [
   legendProcessor,
   legacyMapWarningProcessor,
   openInExternalAppProcessor,
+  panoramaRenderProcessor,
+  panoramaReleaseProcessor,
   ...Object.values(rpcProcessors),
   exportMapFeaturesProcessor,
   ...authProcessors,

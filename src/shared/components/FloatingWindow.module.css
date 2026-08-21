@@ -11,6 +11,7 @@
 
   & > button {
     position: absolute;
+    z-index: 1;
     right: 0px;
     margin-right: 0.5rem;
   }
@@ -26,9 +27,15 @@
 
 /* A finger-sized grip in the top-left corner. The only way to move the window —
    pressing the content is left to the content, which is the only way a finger
-   can read values off it. */
+   can read values off it.
+
+   The z-index is what keeps it reachable: it is laid out before the content, so
+   content of its own that establishes a stacking context — a panorama's
+   viewport, say — would otherwise paint straight over the only handle the
+   window can be moved by. */
 .move-handle {
   position: absolute;
+  z-index: 1;
   top: 0.25rem;
   left: 0.25rem;
   display: flex;
@@ -47,6 +54,7 @@
    `touch-action: none`, so a touch pointer can't grab it at all. */
 .resize-handle {
   position: absolute;
+  z-index: 1;
   right: -0.25rem;
   bottom: -0.25rem;
   display: flex;

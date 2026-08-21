@@ -12,7 +12,7 @@ import {
   FaRoute,
 } from 'react-icons/fa';
 import { MdPolyline, MdShapeLine } from 'react-icons/md';
-import { PiCompassRoseBold } from 'react-icons/pi';
+import { PiCompassRoseBold, PiMountains } from 'react-icons/pi';
 import { TbMapPins } from 'react-icons/tb';
 import type { Messages } from '../translations/messagesInterface.js';
 
@@ -67,6 +67,7 @@ export const MAP_CLICK_TOOLS: Tool[] = [
   'draw-lines',
   'draw-polygons',
   'map-details',
+  'panorama',
   'route-planner',
 ];
 
@@ -147,6 +148,13 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <PiCompassRoseBold />,
     msgKey: 'toposcope',
     kbd: 'KeyS',
+  },
+  {
+    tool: 'panorama',
+    icon: <PiMountains />,
+    msgKey: 'panorama',
+    requiresOnline: true,
+    experimental: true,
   },
   {
     tool: 'gps-recorder',

@@ -4,12 +4,6 @@ import type { ColorizerMessages } from './ColorizerMessages.js';
 const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Színezés szerint',
   legend: 'Jelmagyarázat',
-  compass: {
-    n: 'É',
-    e: 'K',
-    s: 'D',
-    w: 'Ny',
-  },
   mode: {
     none: 'Inaktív',
     elevation: 'Magasság',

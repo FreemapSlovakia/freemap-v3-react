@@ -11,7 +11,6 @@ const hu: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
   downloadAsSvg: 'Letöltés SVG-ként',
   osmAttribution: '© OpenStreetMap közreműködők',
   credit: ({ site }) => `Panorámatábla — ${site}`,
-  cardinals: { n: 'É', e: 'K', s: 'D', w: 'Ny' },
   settings: {
     title: 'Panorámatábla',
     inscriptions: 'Feliratok',

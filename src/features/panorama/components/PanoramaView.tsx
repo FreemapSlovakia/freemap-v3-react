@@ -1,0 +1,836 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { formatDistance } from '@shared/distanceFormatter.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import type { LatLon } from '@shared/types/common.js';
+import destination from '@turf/destination';
+import clsx from 'clsx';
+import {
+  Fragment,
+  type ReactElement,
+  type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Button, Card } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { distanceAt } from '../depth.js';
+import {
+  type LabelAnchor,
+  type LabelPlacement,
+  layoutLabels,
+} from '../labels/layout.js';
+import type { PanoramaLabel } from '../labels/types.js';
+import { panoramaSetAzimuth, panoramaSetProbe } from '../model/actions.js';
+import type { PanoramaRenderInfo } from '../model/reducer.js';
+import {
+  labelLayoutLimits,
+  NO_DOMINANCE_FILTER,
+} from '../model/settingsReducer.js';
+import type { PanoramaRenderData } from '../renderHolder.js';
+import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
+import { setPanoramaHover, setPanoramaView } from '../viewStore.js';
+import classes from './Panorama.module.css';
+
+/** Matches `.label` in the stylesheet, which is what `measure` measures. */
+const LABEL_FONT = '12px sans-serif';
+
+const LINE_HEIGHT = 16;
+
+/**
+ * Shortest leader drawn. Long enough to read as a line pointing at something
+ * rather than as a tick under the text, which is the whole job it has when
+ * several names stand over one stretch of skyline.
+ */
+const MIN_LEADER = 16;
+
+/** Matches `.compass`, whose strip the labels are kept out of. */
+const COMPASS_HEIGHT = 24;
+
+/** A full turn in a minute, which reads as looking around rather than spinning. */
+const AUTO_PAN_DEG_PER_S = 6;
+
+/** How long after a touch the view waits before turning by itself again. */
+const AUTO_PAN_RESUME_MS = 4000;
+
+/** Farther than this in a press and it was a drag, not a click. */
+const CLICK_SLOP_PX = 4;
+
+/** Room the distance readout needs before it has to flip to the other side. */
+const READOUT_CLEARANCE_PX = 90;
+
+/** How far in the view may go, whatever resolution the picture has. */
+const MAX_ZOOM = 8;
+
+/** How far left of the view a wrapped label may sit and still be worth drawing. */
+const WRAP_MARGIN_PX = 200;
+
+/** How still the turning must be before the bearing is written down. */
+const SETTLE_MS = 500;
+
+function mod(value: number, n: number): number {
+  return ((value % n) + n) % n;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), Math.max(min, max));
+}
+
+/** Where a bearing and a distance from the viewpoint land on the ground. */
+function groundPoint(
+  viewpoint: LatLon,
+  azimuth: number,
+  distance: number,
+): LatLon {
+  const [lon, lat] = destination(
+    [viewpoint.lon, viewpoint.lat],
+    distance,
+    azimuth,
+    { units: 'meters' },
+  ).geometry.coordinates as [number, number];
+
+  return { lat, lon };
+}
+
+let measureCtx: CanvasRenderingContext2D | null | undefined;
+
+/**
+ * Cached across renders: the font never changes, so a name measures the same
+ * for as long as the page lives, and the layout runs on every frame of a pan
+ * over the better part of a thousand of them.
+ */
+const measured = new Map<string, number>();
+
+function measureText(text: string): number {
+  const hit = measured.get(text);
+
+  if (hit !== undefined) {
+    return hit;
+  }
+
+  if (measureCtx === undefined) {
+    measureCtx = document.createElement('canvas').getContext('2d');
+
+    if (measureCtx) {
+      measureCtx.font = LABEL_FONT;
+    }
+  }
+
+  // Roughly what the font comes out at, for a browser that gave us no context.
+  const width = measureCtx?.measureText(text).width ?? text.length * 6.5;
+
+  measured.set(text, width);
+
+  return width;
+}
+
+type Props = {
+  render: PanoramaRenderInfo;
+  data: PanoramaRenderData;
+  width: number;
+  height: number;
+};
+
+export function PanoramaView({
+  render,
+  data,
+  width,
+  height,
+}: Props): ReactElement {
+  const m = usePanoramaMessages();
+
+  const gm = useMessages();
+
+  const dispatch = useDispatch();
+
+  const settings = useAppSelector((state) => state.panoramaSettings);
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const storedAzimuth = useAppSelector((state) => state.panorama.azimuth);
+
+  // The bearing lives here frame by frame and reaches the store once the
+  // turning settles — every action writes the persisted state to localStorage,
+  // so dispatching per frame would be sixty writes a second. Seeded from the
+  // store, which is what a reloaded `panorama-az=` restores.
+  const [azimuth, setAzimuth] = useState(storedAzimuth);
+
+  const [zoom, setZoom] = useState(1);
+
+  const [offsetY, setOffsetY] = useState(0);
+
+  const [dragging, setDragging] = useState(false);
+
+  const [paused, setPaused] = useState(false);
+
+  const [hover, setHover] = useState<{
+    x: number;
+    y: number;
+    distance: number;
+  } | null>(null);
+
+  const [selected, setSelected] = useState<string | null>(null);
+
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  const nfM = useNumberFormat({
+    style: 'unit',
+    unit: 'meter',
+    maximumFractionDigits: 0,
+  });
+
+  const nfDeg = useNumberFormat({
+    style: 'unit',
+    unit: 'degree',
+    unitDisplay: 'narrow',
+    maximumFractionDigits: 0,
+  });
+
+  // The whole altitude band fits the panel to begin with. Zooming past the
+  // image's own pixels magnifies rather than reveals, but it is still worth
+  // having: it spreads a crowded skyline out, which brings more names with it,
+  // and it is how one aims at a particular ridge. So the floor is a fixed
+  // magnification, raised where the image has pixels the panel isn't showing.
+  //
+  // Never smaller than what makes one full turn fill the width, either: below
+  // that the background repeats and the same ridge is on screen twice, while
+  // the names and the compass — which have one place per bearing — cover only
+  // the first copy. A wide, low panel therefore shows the whole turn and
+  // scrolls vertically instead.
+  const fitScale =
+    height > 0 ? Math.max(height / render.height, width / render.width) : 1;
+
+  const maxZoom = Math.max(MAX_ZOOM, 1 / fitScale);
+
+  const scale = fitScale * clamp(zoom, 1, maxZoom);
+
+  const degPerPx = render.stepDeg / scale;
+
+  const spanPx = 360 / degPerPx;
+
+  const azLeft = azimuth - (width * degPerPx) / 2;
+
+  const maxOffsetY = Math.max(0, render.height - height / scale);
+
+  const clampedOffsetY = Math.min(offsetY, maxOffsetY);
+
+  /** Where a bearing lands in the viewport, taking the 360° wrap either way. */
+  const screenX = useCallback(
+    (az: number): number => {
+      const x = mod(az - azLeft, 360) / degPerPx;
+
+      // Only what falls off the right edge is worth looking for on the left,
+      // and only when the wrap brings it back within reach of the view. Testing
+      // the turn's width instead would move everything at once wherever one
+      // turn barely fills the panel — which is precisely the case a wide, low
+      // panel is in.
+      return x > width && x - spanPx > -WRAP_MARGIN_PX ? x - spanPx : x;
+    },
+    [azLeft, degPerPx, spanPx, width],
+  );
+
+  // What was last written down, so a bearing arriving from outside can be told
+  // from this component's own echo of it coming back.
+  const writtenRef = useRef(storedAzimuth);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      writtenRef.current = azimuth;
+
+      dispatch(panoramaSetAzimuth(azimuth));
+    }, SETTLE_MS);
+
+    return () => clearTimeout(timer);
+  }, [azimuth, dispatch]);
+
+  // A bearing set from the URL — a reload, or stepping through the history —
+  // turns the view. Ignoring what this component itself wrote is what keeps a
+  // settle mid-drag from snapping the picture back to where it was half a
+  // second ago.
+  useEffect(() => {
+    if (Math.round(storedAzimuth) !== Math.round(writtenRef.current)) {
+      writtenRef.current = storedAzimuth;
+
+      setAzimuth(storedAzimuth);
+    }
+  }, [storedAzimuth]);
+
+  // What the map's wedge follows. Its own store rather than Redux: the wedge
+  // needs the field of view too, and that is nobody else's business.
+  useEffect(() => {
+    setPanoramaView({ azimuth, fov: width * degPerPx });
+  }, [azimuth, degPerPx, width]);
+
+  // Cleared on the way out only. Clearing it before every re-run instead would
+  // leave the store's half-degree threshold nothing to compare against, so
+  // every frame would notify twice and the throttle would never fire.
+  useEffect(() => () => setPanoramaView(null), []);
+
+  // Turns by itself until the picture is touched, and takes it up again once
+  // the hand has been off it for a moment.
+  useEffect(() => {
+    if (!settings.autoPan || dragging || paused) {
+      return;
+    }
+
+    let raf = 0;
+
+    let last = performance.now();
+
+    const step = (now: number) => {
+      const dt = now - last;
+
+      last = now;
+
+      setAzimuth((a) => mod(a + (AUTO_PAN_DEG_PER_S * dt) / 1000, 360));
+
+      raf = requestAnimationFrame(step);
+    };
+
+    raf = requestAnimationFrame(step);
+
+    return () => cancelAnimationFrame(raf);
+  }, [settings.autoPan, dragging, paused]);
+
+  // The wait starts when the hand comes off, not when it goes on: `dragging` is
+  // a dependency so the timer is armed by the drag *ending*. Counting down from
+  // the press instead would let any drag longer than the wait expire under the
+  // finger, and the view would start turning the instant it was released.
+  useEffect(() => {
+    if (!paused || dragging) {
+      return;
+    }
+
+    const timer = setTimeout(() => setPaused(false), AUTO_PAN_RESUME_MS);
+
+    return () => clearTimeout(timer);
+  }, [paused, dragging]);
+
+  // The geometry a zoom has to work back from, kept where an event handler can
+  // read it without being torn down and rebuilt on every frame of a pan.
+  const geomRef = useRef({
+    azimuth,
+    zoom,
+    offsetY: clampedOffsetY,
+    scale,
+    degPerPx,
+    fitScale,
+    maxZoom,
+    width,
+    height,
+    stepDeg: render.stepDeg,
+    renderHeight: render.height,
+  });
+
+  useEffect(() => {
+    geomRef.current = {
+      azimuth,
+      zoom,
+      offsetY: clampedOffsetY,
+      scale,
+      degPerPx,
+      fitScale,
+      maxZoom,
+      width,
+      height,
+      stepDeg: render.stepDeg,
+      renderHeight: render.height,
+    };
+  });
+
+  /**
+   * Zooms about a point, leaving whatever is under it where it is — the bearing
+   * at that column and the image row at that line both come out unmoved, so the
+   * view closes in on what was aimed at rather than on the middle of the panel.
+   */
+  const zoomAt = useCallback((px: number, py: number, factor: number) => {
+    const g = geomRef.current;
+
+    const nextZoom = clamp(g.zoom * factor, 1, g.maxZoom);
+
+    if (nextZoom === g.zoom) {
+      return;
+    }
+
+    const nextScale = g.fitScale * nextZoom;
+
+    const nextDegPerPx = g.stepDeg / nextScale;
+
+    const azAt = g.azimuth + (px - g.width / 2) * g.degPerPx;
+
+    const rowAt = g.offsetY + py / g.scale;
+
+    setZoom(nextZoom);
+
+    setAzimuth(mod(azAt - (px - g.width / 2) * nextDegPerPx, 360));
+
+    setOffsetY(
+      clamp(
+        rowAt - py / nextScale,
+        0,
+        Math.max(0, g.renderHeight - g.height / nextScale),
+      ),
+    );
+  }, []);
+
+  // Not through React's handler: it registers wheel passively, so the page
+  // would scroll as well as the view zooming.
+  useEffect(() => {
+    const el = viewportRef.current;
+
+    if (!el) {
+      return;
+    }
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+
+      const rect = el.getBoundingClientRect();
+
+      zoomAt(
+        e.clientX - rect.left,
+        e.clientY - rect.top,
+        e.deltaY < 0 ? 1.25 : 1 / 1.25,
+      );
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [zoomAt]);
+
+  const pointers = useRef(new Map<number, { x: number; y: number }>());
+
+  /** Distance between the two fingers on the previous move, while pinching. */
+  const pinchRef = useRef<number | null>(null);
+
+  const travelRef = useRef(0);
+
+  const handlePointerDown = useCallback((e: ReactPointerEvent) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    travelRef.current = 0;
+
+    setDragging(true);
+
+    setPaused(true);
+  }, []);
+
+  /**
+   * What a pointer is aimed at: where in the panel it is, and where its line of
+   * sight meets the terrain — `null` ground for sky, and no sample at all when
+   * the render came without a distance buffer.
+   */
+  const sampleGround = useCallback(
+    (e: ReactPointerEvent) => {
+      if (!data.depth) {
+        return null;
+      }
+
+      const rect = e.currentTarget.getBoundingClientRect();
+
+      const px = e.clientX - rect.left;
+
+      const py = e.clientY - rect.top;
+
+      const az = azLeft + px * degPerPx;
+
+      const ix = mod((az - render.azStart) / render.stepDeg, render.width);
+
+      // Clamped off the last row: at the very bottom of the frame `py / scale`
+      // lands exactly on the row past the end, which reads as no data at all.
+      const iy = Math.min(clampedOffsetY + py / scale, render.height - 0.001);
+
+      const distance = distanceAt(data.depth, ix, iy);
+
+      return {
+        px,
+        py,
+        ground:
+          distance === null
+            ? null
+            : { ...groundPoint(render.viewpoint, az, distance), distance },
+      };
+    },
+    [
+      azLeft,
+      clampedOffsetY,
+      data.depth,
+      degPerPx,
+      render.azStart,
+      render.height,
+      render.stepDeg,
+      render.viewpoint,
+      render.width,
+      scale,
+    ],
+  );
+
+  const handlePointerMove = useCallback(
+    (e: ReactPointerEvent) => {
+      const previous = pointers.current.get(e.pointerId);
+
+      if (previous) {
+        pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        const points = [...pointers.current.values()];
+
+        if (points.length >= 2) {
+          const [a, b] = points as [
+            { x: number; y: number },
+            { x: number; y: number },
+          ];
+
+          const distance = Math.hypot(a.x - b.x, a.y - b.y);
+
+          // Against the previous frame rather than the start of the gesture, so
+          // the zoom follows the fingers about as they move — the midpoint is
+          // what stays put, which is what a pinch means.
+          if (pinchRef.current) {
+            const rect = e.currentTarget.getBoundingClientRect();
+
+            zoomAt(
+              (a.x + b.x) / 2 - rect.left,
+              (a.y + b.y) / 2 - rect.top,
+              distance / pinchRef.current,
+            );
+          }
+
+          pinchRef.current = distance;
+        } else {
+          const dx = e.clientX - previous.x;
+
+          const dy = e.clientY - previous.y;
+
+          travelRef.current += Math.abs(dx) + Math.abs(dy);
+
+          setAzimuth((a) => mod(a - dx * degPerPx, 360));
+
+          setOffsetY((o) => clamp(o - dy / scale, 0, maxOffsetY));
+        }
+
+        return;
+      }
+
+      // A mouse hovering: say how far away whatever is under it stands.
+      const sample = sampleGround(e);
+
+      if (!sample) {
+        return;
+      }
+
+      setHover(
+        sample.ground && {
+          x: sample.px,
+          y: sample.py,
+          distance: sample.ground.distance,
+        },
+      );
+
+      // The map follows the pointer, so what is under it can be found without
+      // committing to it — the press is what leaves a mark behind.
+      setPanoramaHover(sample.ground);
+    },
+    [degPerPx, maxOffsetY, sampleGround, scale, zoomAt],
+  );
+
+  const endPointer = useCallback(
+    (e: ReactPointerEvent) => {
+      // A press that started on a label never became a pan, and must not be
+      // read as a press on the terrain behind it either.
+      if (!pointers.current.delete(e.pointerId)) {
+        return;
+      }
+
+      if (pointers.current.size < 2) {
+        pinchRef.current = null;
+      }
+
+      if (pointers.current.size > 0) {
+        return;
+      }
+
+      setDragging(false);
+
+      // A press that went nowhere asks what is there, rather than turning the
+      // view: the distance buffer says how far, which with the bearing is a
+      // place on the map.
+      if (travelRef.current <= CLICK_SLOP_PX) {
+        const sample = sampleGround(e);
+
+        if (sample) {
+          dispatch(panoramaSetProbe(sample.ground));
+
+          setSelected(null);
+        }
+      }
+    },
+    [dispatch, sampleGround],
+  );
+
+  const anchor = useCallback(
+    (label: PanoramaLabel): LabelAnchor | null => {
+      const y = (label.y - clampedOffsetY) * scale;
+
+      return y < 0 || y > height ? null : { x: screenX(label.azimuth), y };
+    },
+    [clampedOffsetY, height, scale, screenX],
+  );
+
+  // Which summits count at all, kept apart from how many of them fit. Ranked
+  // order survives the filter, which is what the layout takes them in.
+  const candidates = useMemo(
+    () =>
+      settings.minDominance > NO_DOMINANCE_FILTER
+        ? render.labels.filter(
+            (label) => (label.dominance ?? Infinity) >= settings.minDominance,
+          )
+        : render.labels,
+    [render.labels, settings.minDominance],
+  );
+
+  const placements = useMemo((): LabelPlacement[] => {
+    const limits = labelLayoutLimits(settings.labelDensity);
+
+    return limits
+      ? layoutLabels(candidates, {
+          anchor,
+          measure: (label) => measureText(label.name),
+          viewportWidth: width,
+          lineHeight: LINE_HEIGHT,
+          minLeader: MIN_LEADER,
+          minTop: COMPASS_HEIGHT + 2,
+          maxClimb: limits.maxClimbPx,
+          // How many, rather than which: the rank orders the candidates against
+          // each other, and the crowd is thinned by taking the best few that
+          // fit the width. Without a pitch there is no thinning at all — what
+          // the picture holds is the answer.
+          ...(limits.pitchPx === undefined
+            ? {}
+            : { limit: Math.max(4, Math.round(width / limits.pitchPx)) }),
+        })
+      : [];
+  }, [anchor, candidates, settings.labelDensity, width]);
+
+  // Every ten degrees, named where the eight compass points fall.
+  const ticks = useMemo(() => {
+    const out: { deg: number; x: number; text: string; cardinal: boolean }[] =
+      [];
+
+    const names = [
+      gm?.cardinals.n,
+      gm?.cardinals.ne,
+      gm?.cardinals.e,
+      gm?.cardinals.se,
+      gm?.cardinals.s,
+      gm?.cardinals.sw,
+      gm?.cardinals.w,
+      gm?.cardinals.nw,
+    ];
+
+    // Stepped by five and sieved, because the two series the strip wants don't
+    // nest: every ten degrees, and the eight compass points at multiples of
+    // forty-five. Walking in tens alone lands on a multiple of 45 only at the
+    // multiples of 90, so NE, SE, SW and NW would never be named at all.
+    const first = Math.ceil(azLeft / 5) * 5;
+
+    for (let deg = first; deg < azLeft + width * degPerPx; deg += 5) {
+      const at = mod(deg, 360);
+
+      const cardinal = at % 45 === 0;
+
+      if (!cardinal && at % 10 !== 0) {
+        continue;
+      }
+
+      out.push({
+        deg,
+        x: screenX(at),
+        text: cardinal ? (names[at / 45] ?? '') : nfDeg.format(at),
+        cardinal,
+      });
+    }
+
+    return out;
+  }, [azLeft, degPerPx, gm, nfDeg, screenX, width]);
+
+  const selectedPlacement = placements.find((p) => p.label.id === selected);
+
+  return (
+    <div
+      className={clsx(classes.viewport, dragging && classes.grabbing)}
+      ref={viewportRef}
+      style={{ width, height }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endPointer}
+      onPointerCancel={endPointer}
+      onPointerLeave={() => {
+        setHover(null);
+
+        setPanoramaHover(null);
+      }}
+    >
+      <div
+        className={classes.image}
+        style={{
+          backgroundImage: `url(${data.imageUrl})`,
+          backgroundSize: `${render.width * scale}px ${render.height * scale}px`,
+          backgroundPositionX: `${-((azLeft - render.azStart) / render.stepDeg) * scale}px`,
+          backgroundPositionY: `${-clampedOffsetY * scale}px`,
+        }}
+      />
+
+      {/* Each leader is drawn twice, dark under light, the way the names carry
+          a shadow: a pale line alone disappears against the sky, which is
+          exactly where most of them run. */}
+      <svg className={classes.overlay}>
+        {placements.map((p) => (
+          <Fragment key={p.label.id}>
+            <line
+              x1={p.anchor.x}
+              y1={p.anchor.y}
+              x2={p.anchor.x}
+              y2={p.top + LINE_HEIGHT}
+              stroke="rgba(0, 0, 0, 0.5)"
+              strokeWidth={3}
+            />
+
+            <line
+              x1={p.anchor.x}
+              y1={p.anchor.y}
+              x2={p.anchor.x}
+              y2={p.top + LINE_HEIGHT}
+              stroke="#fff"
+              strokeWidth={1}
+            />
+
+            <circle
+              cx={p.anchor.x}
+              cy={p.anchor.y}
+              r={2}
+              fill="#fff"
+              stroke="rgba(0, 0, 0, 0.5)"
+              strokeWidth={1}
+            />
+          </Fragment>
+        ))}
+      </svg>
+
+      {placements.map((p) => (
+        <button
+          key={p.label.id}
+          type="button"
+          className={classes.label}
+          style={{ left: p.left, top: p.top }}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={() =>
+            setSelected((s) => (s === p.label.id ? null : p.label.id))
+          }
+        >
+          {p.label.name}
+        </button>
+      ))}
+
+      <div className={classes.compass}>
+        {ticks.map((tick) => (
+          <div
+            key={tick.deg}
+            className={clsx(classes.tick, tick.cardinal && classes.cardinal)}
+            style={{ left: tick.x }}
+          >
+            {tick.text}
+          </div>
+        ))}
+      </div>
+
+      {hover && !dragging && (
+        // Flipped to the other side of the pointer near an edge: the viewport
+        // clips what leaves it, so a readout sitting below the cursor simply
+        // vanishes along the bottom of the picture.
+        <div
+          className={classes.readout}
+          style={{
+            left: hover.x,
+            top: hover.y,
+            transform: `translate(${
+              hover.x > width - READOUT_CLEARANCE_PX
+                ? 'calc(-100% - 8px)'
+                : '8px'
+            }, ${
+              hover.y > height - LINE_HEIGHT - 12 ? 'calc(-100% - 8px)' : '8px'
+            })`,
+          }}
+        >
+          {formatDistance(hover.distance, language)}
+        </div>
+      )}
+
+      {selectedPlacement && (
+        // The card sits inside the viewport, so without this its presses would
+        // also turn the view and mark the terrain behind it, and moving across
+        // it would keep measuring what it covers.
+        <Card
+          className={classes.card}
+          style={{
+            left: selectedPlacement.anchor.x,
+            top: selectedPlacement.top + LINE_HEIGHT + 4,
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+          onPointerMove={(e) => {
+            e.stopPropagation();
+
+            setHover(null);
+
+            setPanoramaHover(null);
+          }}
+        >
+          <Card.Body className="p-2 small">
+            <div className="fw-bold">{selectedPlacement.label.name}</div>
+
+            {selectedPlacement.label.ele !== null && (
+              <div>
+                {m?.peak.elevation}: {nfM.format(selectedPlacement.label.ele)}
+              </div>
+            )}
+
+            <div>
+              {m?.peak.distance}:{' '}
+              {formatDistance(selectedPlacement.label.distance, language)}
+            </div>
+
+            <div>
+              {m?.peak.azimuth}: {nfDeg.format(selectedPlacement.label.azimuth)}
+            </div>
+
+            {/* The same mark a press on the terrain leaves, so a summit picked
+                out of the picture and a ridge pointed at read alike: the
+                crosshair, the line of sight back to the viewpoint, and the
+                least pan that brings it into view. */}
+            <Button
+              className="mt-1"
+              size="sm"
+              variant="secondary"
+              onClick={() =>
+                dispatch(
+                  panoramaSetProbe({
+                    lat: selectedPlacement.label.lat,
+                    lon: selectedPlacement.label.lon,
+                    distance: selectedPlacement.label.distance,
+                  }),
+                )
+              }
+            >
+              {m?.peak.showOnMap}
+            </Button>
+          </Card.Body>
+        </Card>
+      )}
+    </div>
+  );
+}

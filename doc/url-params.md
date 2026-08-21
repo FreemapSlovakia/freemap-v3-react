@@ -122,6 +122,16 @@ A ray's lines are written from **templates** rather than from the point's own la
 
 Nothing about the toposcope is kept in localStorage, and it is deliberately **not** part of the map-content parts the my-maps unsaved-changes comparison digests — a saved map document has no place for it yet, so including it would report a map as changed the moment it was loaded.
 
+## Panorama
+
+| Param | Controls | R/W | Format |
+|---|---|---|---|
+| `panorama` | Viewpoint | r/w | `lat,lon` (6 decimals) |
+| `panorama-az` | Bearing the view faces | r/w | whole degrees |
+| `panorama-tilt` | Vertical band framed | r/w | preset name (`standard` / `wide` / `flat`), or `altMin,altMax` degrees for a custom band |
+
+The picture itself is not in the link: arriving with a viewpoint renders it again, which is why the param is acted on only while `tools=panorama` is open — a render is seconds of somebody else's server, and without the panel there is nothing to render into. Everything else about the view (quality, vertical range, label density, whether it turns by itself) is a standing preference in the `panoramaSettings` slice, so it is in localStorage rather than in the link. The bearing is in `VIEWPORT_KEYS` in `urlProcessor.ts`, alongside `map`: params listed there are kept out of the content signature, so a change confined to them replaces the current history entry rather than pushing one. Anything that moves at gesture speed belongs there.
+
 
 ## Style codec
 

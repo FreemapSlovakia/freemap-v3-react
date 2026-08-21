@@ -12,7 +12,6 @@ const de: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
   downloadAsSvg: 'Als SVG herunterladen',
   osmAttribution: '© OpenStreetMap-Mitwirkende',
   credit: ({ site }) => `Panoramatafel von ${site}`,
-  cardinals: { n: 'N', e: 'O', s: 'S', w: 'W' },
   settings: {
     title: 'Panoramatafel',
     inscriptions: 'Inschriften',

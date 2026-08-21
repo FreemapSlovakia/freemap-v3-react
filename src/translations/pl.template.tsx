@@ -134,6 +134,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     dark: 'Ciemny tryb',
     auto: 'Tryb automatyczny',
   },
+  cardinals: {
+    n: 'N',
+    ne: 'NE',
+    e: 'E',
+    se: 'SE',
+    s: 'S',
+    sw: 'SW',
+    w: 'W',
+    nw: 'NW',
+  },
+
   selections: {
     objects: 'Obiekt (POI)',
     drawPoints: 'Punkt',
@@ -161,6 +172,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     myMap: 'Moja mapa',
     gpsRecorder: 'Rejestrator GPS',
     toposcope: 'Tablica panoramiczna',
+    panorama: 'Panorama',
   },
   mainMenu: {
     title: 'Menu główne',

@@ -144,6 +144,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     auto: 'Modalità automatica',
   },
 
+  cardinals: {
+    n: 'N',
+    ne: 'NE',
+    e: 'E',
+    se: 'SE',
+    s: 'S',
+    sw: 'SO',
+    w: 'O',
+    nw: 'NO',
+  },
+
   selections: {
     objects: 'Oggetto (POI)',
     drawPoints: 'Punto',
@@ -172,6 +183,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     myMap: 'La mia mappa',
     gpsRecorder: 'Registratore GPS',
     toposcope: "Tavola d'orientamento",
+    panorama: 'Panorama',
   },
 
   mainMenu: {

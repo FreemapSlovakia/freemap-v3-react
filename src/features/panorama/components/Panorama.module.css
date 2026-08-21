@@ -1,0 +1,162 @@
+/* The panel, floating like the toposcope's until it is put full screen, where
+   it takes the window and drops the grips it no longer needs. */
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  /* The floating-window hook keeps writing the size it was left at onto the
+     element, so full screen has to win over it rather than ask it to stop. */
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  background-color: var(--bs-body-bg);
+}
+
+/* The grips and the close button sit straight on the picture, where a muted
+   glyph disappears into whatever happens to be behind it. A white mark with a
+   dark halo reads on sky and on forest alike — the same treatment the peak
+   names get, for the same reason. */
+.grip {
+  color: #fff;
+  opacity: 1;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.9))
+    drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
+}
+
+/* The close button as the move grip's twin — same square, same finger target,
+   same mark. Bootstrap's own is a background image, which beside a glyph reads
+   as a different kind of control and takes the halo less cleanly. Right and
+   margin come from the window's own `& > button` rule. */
+.close-grip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0.25rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+/* Takes whatever the box has left over. `min-height: 0` is what lets it give
+   room back as the window shrinks: without it a flex item never goes below the
+   size of its content, so the box's own padding and footer get squeezed out
+   before the picture yields anything. */
+.content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* What the picture is looked at through: it clips the panning image, and
+   swallows touch gestures so a drag turns the view instead of scrolling the
+   page or the map underneath. */
+/* Crosshair rather than an open hand: the readout says how far away whatever
+   sits under the pointer is, and a hand covers the very pixel being asked
+   about. The closed hand comes back while dragging, where there is nothing to
+   aim at and the grip is what wants saying. */
+.viewport {
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  cursor: crosshair;
+  user-select: none;
+  background-color: var(--bs-secondary-bg);
+
+  &.grabbing {
+    cursor: grabbing;
+  }
+}
+
+/* A 360° render wraps: its last column abuts its first, so repeating it
+   sideways turns panning into an offset with nothing to run off the end of.
+   Repeating also keeps the whole thing out of a canvas, which on older mobile
+   GPUs cannot hold an image 7200 pixels wide. */
+.image {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat-x;
+  image-rendering: auto;
+}
+
+/* Leader lines, under the text they lead to. The size is stated rather than
+   left to `inset`: an svg with no width and height keeps its intrinsic 300×150
+   viewport and clips away every line drawn past it. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* A button, so pressing a name is a press wherever it comes from, but drawn as
+   the bare text the picture wants over it. */
+.label {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 12px sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  color: #fff;
+  text-shadow:
+    0 0 3px #000,
+    0 0 3px #000;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* The compass runs along the top edge, over the sky, where it doesn't cover
+   the skyline the picture is about. */
+.compass {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  pointer-events: none;
+  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0));
+}
+
+/* Off the very edge of the frame, which a full-screen picture runs to. */
+.tick {
+  position: absolute;
+  top: 5px;
+  transform: translateX(-50%);
+  font: 10px sans-serif;
+  color: #fff;
+  text-shadow: 0 0 3px #000;
+  white-space: nowrap;
+}
+
+.cardinal {
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* Follows the pointer, so it says what is under it rather than making the eye
+   travel to a corner and back. */
+.readout {
+  position: absolute;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font: 12px sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(8px, 8px);
+}
+
+.card {
+  position: absolute;
+  z-index: 1;
+  max-width: 16rem;
+  transform: translateX(-50%);
+}

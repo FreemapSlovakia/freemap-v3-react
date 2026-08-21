@@ -98,6 +98,20 @@ export type Messages = {
     dark: string;
     auto: string;
   };
+  /**
+   * The eight compass points, as the single letters written on a dial, a
+   * compass strip or a north arrow.
+   */
+  cardinals: {
+    n: string;
+    ne: string;
+    e: string;
+    se: string;
+    s: string;
+    sw: string;
+    w: string;
+    nw: string;
+  };
   selections: {
     objects: string;
     drawPoints: string;
@@ -123,6 +137,7 @@ export type Messages = {
     tracking: string;
     gpsRecorder: string;
     toposcope: string;
+    panorama: string;
     myMap: string;
     myMaps: string;
   };

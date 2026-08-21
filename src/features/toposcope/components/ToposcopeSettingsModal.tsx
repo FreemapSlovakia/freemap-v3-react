@@ -30,7 +30,7 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? tm?.settings.title : undefined);
 
-  const c = tm?.cardinals;
+  const c = m?.cardinals;
 
   // The four inscriptions run clockwise from the quadrant between S and E. The
   // two letters are joined with a dash here rather than through a message: the

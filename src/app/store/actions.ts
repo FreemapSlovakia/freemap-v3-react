@@ -30,6 +30,7 @@ export const ToolSchema = z.enum([
   'import-file',
   'map-details',
   'objects',
+  'panorama',
   'route-planner',
   'toposcope',
   'tracking',

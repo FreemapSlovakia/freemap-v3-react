@@ -28,6 +28,10 @@ import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
+import {
+  LABEL_DENSITY_MAX,
+  panoramaSettingsInitialState,
+} from '@features/panorama/model/settingsReducer.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
 import { routePlannerSettingsInitialState } from '@features/routePlanner/model/settingsReducer.js';
@@ -152,6 +156,20 @@ export const PersistedElevationSettingsSchema = z
       z.literal(GRADE_WINDOW_WHOLE_LINE),
       z.number().min(0).max(200),
     ]),
+  })
+  .partial();
+
+const PersistedPanoramaSettingsSchema = z
+  .object({
+    quality: z.enum(['superfast', 'fast', 'standard', 'detailed', 'finest']),
+    tilt: z.enum(['standard', 'wide', 'flat', 'custom']),
+    altMin: z.number(),
+    altMax: z.number(),
+    eye: z.number(),
+    // Bounded, because the level indexes the menu's icon and word arrays.
+    labelDensity: z.number().int().min(0).max(LABEL_DENSITY_MAX),
+    minDominance: z.number(),
+    autoPan: z.boolean(),
   })
   .partial();
 
@@ -405,6 +423,12 @@ const PERSIST: PersistEntry[] = [
       resultStyle: { ...initial.resultStyle, ...data.resultStyle },
     }),
     persist: (s) => ({ resultStyle: s.resultStyle }),
+  }),
+  defineEntry({
+    key: 'panoramaSettings',
+    schema: PersistedPanoramaSettingsSchema,
+    initial: panoramaSettingsInitialState,
+    persist: (p) => p,
   }),
   defineEntry({
     key: 'elevationSettings',

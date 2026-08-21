@@ -11,7 +11,6 @@ const en: ToposcopeMessages = {
   downloadAsSvg: 'Download as SVG',
   osmAttribution: '© OpenStreetMap contributors',
   credit: ({ site }) => `Toposcope by ${site}`,
-  cardinals: { n: 'N', e: 'E', s: 'S', w: 'W' },
   settings: {
     title: 'Toposcope',
     inscriptions: 'Inscriptions',
