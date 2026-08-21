@@ -196,7 +196,11 @@ class LGalleryLayer extends LGridLayer {
               lat: lat / 1e6,
               lon: lon / 1e6,
               rating: picture.rating ?? 0,
-              userId: picture.userId ?? 0,
+              // Wikimedia photos report their Commons actor id as `authorId`;
+              // our own report `userId`. The `?? userId` also covers a backend
+              // still sending the Commons id as `userId`, from before the two
+              // id spaces were given separate field names.
+              authorId: picture.authorId ?? picture.userId ?? 0,
               createdAt: picture.createdAt ?? 0,
               takenAt: picture.takenAt ?? null,
               pano: picture.pano,
