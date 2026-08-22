@@ -5,6 +5,8 @@ export type ToposcopeMessages = {
   addCenter: string;
   /** The same button once there is a centre to put somewhere else. */
   moveCenter: string;
+  /** Its other way round: put the centre where the user is standing. */
+  centerAtMyPosition: string;
   /** Title of the toolbar that owns the map while that click is awaited. */
   pickCenterPrompt: string;
   /** Shown once there is a centre but nothing else drawn to point at. */

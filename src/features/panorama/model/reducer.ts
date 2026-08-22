@@ -1,8 +1,4 @@
 import { clearMapFeatures, closeTool } from '@app/store/actions.js';
-import {
-  locateFailed,
-  toggleLocate,
-} from '@features/location/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { mod } from '@shared/mathUtils.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -14,13 +10,12 @@ import {
   panoramaClear,
   panoramaMoveViewpoint,
   panoramaPick,
-  panoramaSetAwaitingFix,
   panoramaSetAzimuth,
   panoramaSetError,
+  panoramaSetPickingViewpoint,
   panoramaSetProbe,
   panoramaSetRender,
   panoramaSetRendering,
-  panoramaToggleFullscreen,
 } from './actions.js';
 
 /**
@@ -57,10 +52,9 @@ export interface PanoramaState {
   render: PanoramaRenderInfo | null;
   /** Bearing the middle of the viewer looks at; see `panoramaSetAzimuth`. */
   azimuth: number;
-  fullscreen: boolean;
   probe: PanoramaProbe | null;
-  /** Waiting for a GPS fix to stand on; see `panoramaLocate`. */
-  awaitingFix: boolean;
+  /** The map is waiting for a click that says where to stand. */
+  pickingViewpoint: boolean;
 }
 
 export const panoramaInitialState: PanoramaState = {
@@ -69,9 +63,8 @@ export const panoramaInitialState: PanoramaState = {
   error: null,
   render: null,
   azimuth: 0,
-  fullscreen: false,
   probe: null,
-  awaitingFix: false,
+  pickingViewpoint: false,
 };
 
 export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
@@ -83,23 +76,10 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
 
       state.probe = null;
 
-      state.awaitingFix = false;
+      state.pickingViewpoint = false;
     })
-    .addCase(panoramaSetAwaitingFix, (state, { payload }) => {
-      state.awaitingFix = payload;
-    })
-    // Locating gave up on its own: it stays on, but nothing is going to arrive
-    // to stand on, and a button spinning for ever says the opposite.
-    .addCase(locateFailed, (state) => {
-      state.awaitingFix = false;
-    })
-    // Locating being turned on or off at all ends the wait — a refused
-    // permission turns it off without ever reporting a failure, and the map's
-    // own button turning it off means the user has taken this over. The
-    // processor sets the flag after its own `toggleLocate`, so this can't
-    // undo the wait it is starting.
-    .addCase(toggleLocate, (state) => {
-      state.awaitingFix = false;
+    .addCase(panoramaSetPickingViewpoint, (state, { payload }) => {
+      state.pickingViewpoint = payload;
     })
     .addCase(panoramaMoveViewpoint, (state, { payload }) => {
       state.viewpoint = payload;
@@ -129,17 +109,22 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
     .addCase(panoramaSetAzimuth, (state, { payload }) => {
       state.azimuth = mod(payload, 360);
     })
-    .addCase(panoramaToggleFullscreen, (state, { payload }) => {
-      state.fullscreen = payload ?? !state.fullscreen;
-    })
     .addCase(panoramaSetProbe, (state, { payload }) => {
       state.probe = payload;
     })
     .addCase(panoramaClear, () => panoramaInitialState)
     // Keyed on this tool going, not on any tool closing: another opening beside
     // it says nothing about the panorama.
-    .addCase(closeTool, (state, { payload }) =>
-      payload === 'panorama' ? panoramaInitialState : state,
-    )
+    // Closing keeps the picture — a render is seconds of a one-at-a-time
+    // server. Two flags do go, because what would clear them cannot: the render
+    // in flight is cancelled with the panel, and a map left waiting for a click
+    // nobody can cancel would keep the rest of the UI hidden.
+    .addCase(closeTool, (state, { payload }) => {
+      if (payload === 'panorama') {
+        state.rendering = false;
+
+        state.pickingViewpoint = false;
+      }
+    })
     .addCase(clearMapFeatures, () => panoramaInitialState),
 );

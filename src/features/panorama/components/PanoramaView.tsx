@@ -302,8 +302,14 @@ export function PanoramaView({
 
   // What the map's wedge follows. Its own store rather than Redux: the wedge
   // needs the field of view too, and that is nobody else's business.
+  //
+  // A hidden panel measures 0 wide — `Main` puts the panels away while a place
+  // is being picked — and a zero field of view collapses the wedge to a sliver
+  // on the very map being picked on. Keep the last real one.
   useEffect(() => {
-    setPanoramaView({ azimuth, fov: width * degPerPx });
+    if (width > 0) {
+      setPanoramaView({ azimuth, fov: width * degPerPx });
+    }
   }, [azimuth, degPerPx, width]);
 
   // Cleared on the way out only. Clearing it before every re-run instead would
@@ -335,7 +341,11 @@ export function PanoramaView({
   // ridge should be looking at the ridge — and turning at a steady six degrees
   // a second is what to do when nothing knows any better.
   useEffect(() => {
-    if (!settings.autoPan || dragging) {
+    // `width === 0` says the panel is hidden — `Main` puts them away while a
+    // place is being picked. Left running it turns the view at 60 fps into a
+    // `display: none` box, re-laying out every peak label each frame, on the
+    // phone the user is picking on.
+    if (!settings.autoPan || dragging || width === 0) {
       return;
     }
 
@@ -367,7 +377,7 @@ export function PanoramaView({
     raf = requestAnimationFrame(step);
 
     return () => cancelAnimationFrame(raf);
-  }, [settings.autoPan, dragging]);
+  }, [settings.autoPan, dragging, width]);
 
   // The geometry a zoom has to work back from, kept where an event handler can
   // read it without being torn down and rebuilt on every frame of a pan.

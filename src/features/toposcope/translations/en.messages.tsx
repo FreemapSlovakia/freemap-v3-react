@@ -1,10 +1,10 @@
 import type { ToposcopeMessages } from './ToposcopeMessages.js';
 
 const en: ToposcopeMessages = {
-  pickCenterHint:
-    'Place the centre of the dial with the ◎ button in the toolbar.',
+  pickCenterHint: 'Place the centre of the dial with the ◎ button below.',
   addCenter: 'Place the centre',
   moveCenter: 'Move the centre',
+  centerAtMyPosition: 'Centre on my position',
   pickCenterPrompt: 'Click the map where the toposcope stands',
   addPointsHint:
     'Add drawing points; each one becomes a ray of the dial. The centre is a drawn point too — label and move it in the drawing tool.',

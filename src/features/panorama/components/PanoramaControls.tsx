@@ -1,20 +1,38 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { requestCompassPermission } from '@features/location/compass.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  isCompassSupported,
+  requestCompassPermission,
+} from '@features/location/compass.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import {
+  FloatingWindowControls,
+  FullscreenButton,
+} from '@shared/components/FloatingWindowControls.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
+import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import {
   LabeledSlider,
   SliderDropdown,
 } from '@shared/components/SliderDropdown.js';
-import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';
-import { Button, Spinner } from 'react-bootstrap';
-import { FaCog, FaRegDotCircle, FaSync } from 'react-icons/fa';
+import { Button } from 'react-bootstrap';
+import {
+  FaCog,
+  FaCompass,
+  FaEye,
+  FaInfoCircle,
+  FaPlay,
+  FaStop,
+  FaSync,
+} from 'react-icons/fa';
 import { LuFoldVertical, LuUnfoldVertical } from 'react-icons/lu';
 import { MdOutlineHeight } from 'react-icons/md';
 import { PiMountains } from 'react-icons/pi';
@@ -26,9 +44,8 @@ import {
 } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import {
-  panoramaLocate,
   panoramaRender,
-  panoramaSetAwaitingFix,
+  panoramaSetPickingViewpoint,
   panoramaSetSettings,
 } from '../model/actions.js';
 import {
@@ -45,8 +62,24 @@ import {
 } from '../quality.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 
-export default function PanoramaMenu(): ReactElement {
+type Props = {
+  /** The caveats panel is the footer's to draw; this only presses the button. */
+  showCaveats: boolean;
+  onToggleCaveats: () => void;
+  fullscreen: boolean;
+  onToggleFullscreen: () => void;
+};
+
+/** Everything the panorama is driven by; see `FloatingWindowControls`. */
+export function PanoramaControls({
+  showCaveats,
+  onToggleCaveats,
+  fullscreen,
+  onToggleFullscreen,
+}: Props): ReactElement {
   const m = usePanoramaMessages();
+
+  const gm = useMessages();
 
   const dispatch = useDispatch();
 
@@ -56,7 +89,7 @@ export default function PanoramaMenu(): ReactElement {
 
   const settings = useAppSelector((state) => state.panoramaSettings);
 
-  const { viewpoint, render, rendering, awaitingFix } = useAppSelector(
+  const { viewpoint, render, rendering } = useAppSelector(
     (state) => state.panorama,
   );
 
@@ -127,13 +160,33 @@ export default function PanoramaMenu(): ReactElement {
 
   // The picture answers for a viewpoint and a set of angles; once either moves
   // it is of somewhere else, and only pressing Update pays for a new render.
+  // A viewpoint with no picture at all counts too — closing the panel cancels
+  // the render in flight but keeps the place, and without this there would be
+  // nothing to ask for it again with.
   const outdated =
     viewpoint !== null &&
-    render !== null &&
-    render.key !== panoramaRenderKey(viewpoint, settings, quality);
+    (render === null ||
+      render.key !== panoramaRenderKey(viewpoint, settings, quality));
 
   return (
-    <ToolMenu tool="panorama">
+    <FloatingWindowControls fullscreen={fullscreen}>
+      <ExperimentalFunction />
+
+      <OfflineBadge hint={gm?.general.offlineToolUnavailable} />
+
+      {/* First, because nothing else in the row means anything until there is a
+          place to look from. */}
+      <PlacePickerButton
+        consumer="panorama"
+        label={m?.pickViewpoint}
+        icon={<FaEye />}
+        locateLabel={m?.locate}
+        // iOS grants the magnetometer only from a gesture, and the pick itself
+        // happens later in a processor, nowhere near one.
+        onAct={requestCompassPermission}
+        onPick={() => dispatch(panoramaSetPickingViewpoint(true))}
+      />
+
       <SelectDropdown
         // What is actually being rendered, not what is stored: an account
         // without premium asks for a finer tier by default and is put back on
@@ -217,10 +270,10 @@ export default function PanoramaMenu(): ReactElement {
       />
 
       {/* How many names fit, beside which summits count for one at all — two
-          halves of the same question, so they share a menu. Both act on what
-          already arrived, so either is instant. Sliders rather than lists: the
-          useful settings are a dozen each, and a dozen items is a menu to read
-          where this is a thing to feel out. */}
+      halves of the same question, so they share a menu. Both act on what
+      already arrived, so either is instant. Sliders rather than lists: the
+      useful settings are a dozen each, and a dozen items is a menu to read
+      where this is a thing to feel out. */}
       <SliderDropdown
         icon={densityIcon}
         toggleLabel={namesLabel}
@@ -257,8 +310,8 @@ export default function PanoramaMenu(): ReactElement {
       </SliderDropdown>
 
       {/* Set-once settings — eye height, an exact vertical band, the look —
-          which all cost a render, so they sit behind a modal rather than in
-          reach of a stray click. */}
+      which all cost a render, so they sit behind a modal rather than in
+      reach of a stray click. */}
       <LongPressTooltip label={m?.settings.title}>
         {({ props }) => (
           <Button
@@ -269,38 +322,6 @@ export default function PanoramaMenu(): ReactElement {
             {...props}
           >
             <FaCog />
-          </Button>
-        )}
-      </LongPressTooltip>
-
-      {/* The one place the viewpoint can be set without knowing where you are
-          on the map — which is exactly the case out on a hill with the phone. */}
-      <LongPressTooltip label={m?.locate}>
-        {({ props }) => (
-          <Button
-            variant="secondary"
-            onClick={() => {
-              // The other way a viewpoint is placed, so it asks for the
-              // magnetometer as the map click does — iOS grants it only from a
-              // gesture, and the pick itself happens later in a processor,
-              // nowhere near one.
-              void requestCompassPermission();
-
-              // Never disabled: a fix can fail to arrive without anything
-              // being dispatched to say so (a bare timeout keeps trying), and
-              // a button that is spinning and dead has no way out of that.
-              // Pressing it again gives up.
-              dispatch(
-                awaitingFix ? panoramaSetAwaitingFix(false) : panoramaLocate(),
-              );
-            }}
-            {...props}
-          >
-            {awaitingFix ? (
-              <Spinner animation="border" size="sm" />
-            ) : (
-              <FaRegDotCircle />
-            )}
           </Button>
         )}
       </LongPressTooltip>
@@ -318,6 +339,60 @@ export default function PanoramaMenu(): ReactElement {
           )}
         </LongPressTooltip>
       )}
-    </ToolMenu>
+
+      {/* What the picture is looked at with, as against what it is made of:
+            pushed to the far end so the row reads render settings first, and
+            these last. */}
+      <span className="ms-auto d-flex align-items-center gap-1">
+        {/* The icon is what says which state it is in, so this is an ordinary
+              action rather than a toggle wearing an outline. */}
+        <LongPressTooltip label={m?.autoPan}>
+          {({ props }) => (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                // Asked on either edge, not just when turning it on: a phone
+                // starts out following, so the press that gets here first is
+                // as often the one stopping it. Straight out of the click,
+                // since that is the only place iOS grants it from.
+                void requestCompassPermission();
+
+                dispatch(panoramaSetSettings({ autoPan: !settings.autoPan }));
+              }}
+              {...props}
+            >
+              {/* Where there is a magnetometer the view follows it rather than
+                  turning by itself, so a play mark would promise the wrong
+                  thing — see `PanoramaView`. */}
+              {settings.autoPan ? (
+                <FaStop />
+              ) : isCompassSupported() ? (
+                <FaCompass />
+              ) : (
+                <FaPlay />
+              )}
+            </Button>
+          )}
+        </LongPressTooltip>
+
+        <FullscreenButton
+          fullscreen={fullscreen}
+          onToggle={onToggleFullscreen}
+        />
+
+        <LongPressTooltip label={m?.caveats.title}>
+          {({ props }) => (
+            <Button
+              variant="secondary"
+              active={showCaveats}
+              onClick={onToggleCaveats}
+              {...props}
+            >
+              <FaInfoCircle />
+            </Button>
+          )}
+        </LongPressTooltip>
+      </span>
+    </FloatingWindowControls>
   );
 }

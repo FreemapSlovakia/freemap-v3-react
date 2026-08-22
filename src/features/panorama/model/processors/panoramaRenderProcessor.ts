@@ -1,4 +1,4 @@
-import { clearMapFeatures, closeTool } from '@app/store/actions.js';
+import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { clearPanoramaRenderData } from '../../renderHolder.js';
 import { panoramaClear, panoramaPick, panoramaRender } from '../actions.js';
@@ -16,15 +16,17 @@ export const panoramaRenderProcessor: Processor = {
 };
 
 /**
- * Releases the picture and its distance buffer once the panel is done with —
- * including `panoramaClear`, which the URL dispatches when the param goes and
- * which otherwise leaves tens of megabytes held for as long as the tool stays
- * open.
+ * Releases the picture and its distance buffer once the panorama is given up
+ * on: the map cleared, or `panoramaClear`, which the URL dispatches when the
+ * param goes.
+ *
+ * Not on merely closing the panel, so reopening finds the picture still there.
+ * That is deliberately expensive: the depth buffer alone is two bytes a pixel —
+ * tens of megabytes at the finest tier — held until the map is cleared. The
+ * trade is against seconds of a server that renders one panorama at a time.
  */
 export const panoramaReleaseProcessor: Processor = {
-  actionCreator: [closeTool, clearMapFeatures, panoramaClear],
-  actionPredicate: (action) =>
-    !closeTool.match(action) || action.payload === 'panorama',
+  actionCreator: [clearMapFeatures, panoramaClear],
   handle: () => {
     clearPanoramaRenderData();
   },

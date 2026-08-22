@@ -54,16 +54,22 @@ export const drawingLineSelector = (state: RootState): boolean =>
 export const mapAreaSelectingSelector = (state: RootState): boolean =>
   state.mapArea.selecting !== null;
 
-// True while the map is in a dedicated mode that takes over the map: picking a
-// home location, picking or showing a photo location, or drawing an export/cache
-// area. In these modes the regular features stay visible but non-interactive and
-// the tools stay inert (clicks don't draw points, add route legs, etc.).
 export const toposcopePickingCenterSelector = (state: RootState): boolean =>
   state.toposcope.pickingCenter;
 
+export const panoramaPickingViewpointSelector = (state: RootState): boolean =>
+  state.panorama.pickingViewpoint;
+
+/**
+ * True while the map is given over to a click that says where. Features stay
+ * visible but non-interactive, the tools go inert, and `Main` puts the toolbars
+ * and the floating panels away. Every such mode belongs here rather than in a
+ * list of its own.
+ */
 export const pickingModeSelector = (state: RootState): boolean =>
   selectingHomeLocationSelector(state) ||
   toposcopePickingCenterSelector(state) ||
+  panoramaPickingViewpointSelector(state) ||
   galleryPickingPositionForIdSelector(state) !== null ||
   galleryShowPositionSelector(state) ||
   mapAreaSelectingSelector(state);
@@ -78,31 +84,11 @@ export const activeMapToolSelector = (state: RootState): Tool | null =>
 export const showGalleryPickerSelector = createSelector(
   activeMapToolSelector,
   mapLayersSelector,
-  galleryPickingPositionForIdSelector,
-  galleryShowPositionSelector,
-  selectingHomeLocationSelector,
+  pickingModeSelector,
   drawingLineSelector,
-  mapAreaSelectingSelector,
-  toposcopePickingCenterSelector,
-  (
-    tool,
-    layers,
-    galleryPickingPositionForId,
-    galleryShowPosition,
-    selectingHomeLocation,
-    drawingLine,
-    mapAreaSelecting,
-    toposcopePickingCenter,
-  ) =>
-    // gallery picker is available only when no map-click tool owns the click
-    !tool &&
-    layers.includes('I') &&
-    galleryPickingPositionForId === null &&
-    !galleryShowPosition &&
-    !selectingHomeLocation &&
-    !drawingLine &&
-    !mapAreaSelecting &&
-    !toposcopePickingCenter,
+  (tool, layers, picking, drawingLine) =>
+    // The picker takes clicks of its own, so it wants the map to itself.
+    !tool && layers.includes('I') && !picking && !drawingLine,
 );
 
 export const showGalleryViewerSelector = (state: RootState): boolean =>
@@ -122,6 +108,7 @@ export const mouseCursorSelector = createSelector(
   galleryShowPositionSelector,
   (state: RootState) => state.drawingLines.drawing,
   toposcopePickingCenterSelector,
+  panoramaPickingViewpointSelector,
   (
     selectingHomeLocation,
     tool,
@@ -130,12 +117,18 @@ export const mouseCursorSelector = createSelector(
     galleryShowPosition,
     drawing,
     toposcopePickingCenter,
+    panoramaPickingViewpoint,
   ) => {
     if (galleryShowPosition) {
       return 'auto';
     }
 
-    if (selectingHomeLocation || showGalleryPicker || toposcopePickingCenter) {
+    if (
+      selectingHomeLocation ||
+      showGalleryPicker ||
+      toposcopePickingCenter ||
+      panoramaPickingViewpoint
+    ) {
       return 'crosshair';
     }
 
@@ -152,9 +145,6 @@ export const mouseCursorSelector = createSelector(
 
       case 'map-details':
         return 'help';
-
-      case 'panorama':
-        return 'crosshair';
 
       case 'draw-points':
         return markerCursor;

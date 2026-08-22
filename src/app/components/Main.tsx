@@ -59,6 +59,7 @@ import {
   askingCookieConsentSelector,
   isToolOpen,
   openToolsSelector,
+  pickingModeSelector,
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from '../store/selectors.js';
@@ -223,22 +224,13 @@ const panoramaFactory = () =>
     '@features/panorama/components/Panorama.js'
   );
 
-const panoramaMenuFactory = () =>
-  import(
-    /* webpackChunkName: "panorama-menu" */
-    '@features/panorama/components/PanoramaMenu.js'
-  );
+// The panorama has no toolbar of its own: its controls live in its window, next
+// to the picture they act on — see `PanoramaControls`.
 
 const toposcopeFactory = () =>
   import(
     /* webpackChunkName: "toposcope" */
     '@features/toposcope/components/Toposcope.js'
-  );
-
-const toposcopeMenuFactory = () =>
-  import(
-    /* webpackChunkName: "toposcope-menu" */
-    '@features/toposcope/components/ToposcopeMenu.js'
   );
 
 const toposcopeCenterPickingFactory = () =>
@@ -251,6 +243,18 @@ const toposcopeCenterPickingMenuFactory = () =>
   import(
     /* webpackChunkName: "toposcope-center-picking-menu" */
     '@features/toposcope/components/ToposcopeCenterPickingMenu.js'
+  );
+
+const panoramaViewpointPickingFactory = () =>
+  import(
+    /* webpackChunkName: "panorama-viewpoint-picking" */
+    '@features/panorama/components/PanoramaViewpointPicking.js'
+  );
+
+const panoramaViewpointPickingMenuFactory = () =>
+  import(
+    /* webpackChunkName: "panorama-viewpoint-picking-menu" */
+    '@features/panorama/components/PanoramaViewpointPickingMenu.js'
   );
 
 const panoramaSettingsModalFactory = () =>
@@ -510,16 +514,14 @@ export function Main(): ReactElement {
     (state) => state.toposcope.pickingCenter,
   );
 
+  const pickingPanoramaViewpoint = useAppSelector(
+    (state) => state.panorama.pickingViewpoint,
+  );
+
   const showGalleryPicker = useAppSelector(showGalleryPickerSelector);
 
-  const showMenu = useAppSelector(
-    (state) =>
-      state.homeLocation.selectingHomeLocation === false &&
-      !state.gallery.pickingPositionForId &&
-      !state.gallery.showPosition &&
-      !state.mapArea.selecting &&
-      !state.toposcope.pickingCenter,
-  );
+  // The toolbars and the floating panels go while a place is being picked.
+  const picking = useAppSelector(pickingModeSelector);
 
   const selectingMapArea = useAppSelector(
     (state) => state.mapArea.selecting !== null,
@@ -627,7 +629,7 @@ export function Main(): ReactElement {
   // The selection toolbar for whatever is currently selected. A tool keeps the
   // feature that belongs to it selected, so the selection toolbar sits
   // alongside the tool's own toolbar.
-  const selectionMenu = showMenu ? selectionType : null;
+  const selectionMenu = picking ? null : selectionType;
 
   const scLogo = useScrollClasses('horizontal');
 
@@ -716,11 +718,11 @@ export function Main(): ReactElement {
                       says the connection is gone at all. */}
                   <OfflineBadge hint={m?.general.offline} />
 
-                  {!window.fmEmbedded && showMenu && <MainMenuButton />}
+                  {!window.fmEmbedded && !picking && <MainMenuButton />}
 
                   {(!window.fmEmbedded || embedFeatures.includes('search')) && (
                     <SearchMenu
-                      hidden={!showMenu}
+                      hidden={picking}
                       preventShortcut={Boolean(activeModal)}
                     />
                   )}
@@ -781,13 +783,13 @@ export function Main(): ReactElement {
                 </Toolbar>
               )}
 
-              {showMenu && showMapsMenu && !window.fmEmbedded && <MyMapsMenu />}
+              {!picking && showMapsMenu && !window.fmEmbedded && <MyMapsMenu />}
 
-              {showMenu && showPictures && (
+              {!picking && showPictures && (
                 <AsyncComponent factory={galleryMenuFactory} />
               )}
 
-              {showMenu && showWeatherRadar && (
+              {!picking && showWeatherRadar && (
                 <AsyncComponent factory={weatherRadarMenuFactory} />
               )}
 
@@ -799,7 +801,7 @@ export function Main(): ReactElement {
                   recorder can't run on. Not in an embedded map: `openTool` is a
                   no-op there, so the strip could never be expanded — and the
                   recording belongs to the full app that started it. */}
-              {showMenu && gpsRecorderWanted && (
+              {!picking && gpsRecorderWanted && (
                 <AsyncComponent factory={gpsRecorderMenuFactory} />
               )}
 
@@ -824,7 +826,7 @@ export function Main(): ReactElement {
                   until the import settles — a toolbar that blinks away for a
                   frame. */}
 
-              {showMenu &&
+              {!picking &&
                 openTools.map((openedTool) => (
                   <Fragment
                     key={isDrawTool(openedTool) ? 'drawing' : openedTool}
@@ -843,10 +845,6 @@ export function Main(): ReactElement {
                       <AsyncComponent factory={drawingMenuFactory} />
                     ) : openedTool === 'map-details' ? (
                       <MapDetailsMenu />
-                    ) : openedTool === 'toposcope' ? (
-                      <AsyncComponent factory={toposcopeMenuFactory} />
-                    ) : openedTool === 'panorama' ? (
-                      <AsyncComponent factory={panoramaMenuFactory} />
                     ) : openedTool === 'tracking' ? (
                       <AsyncComponent factory={trackingMenuFactory} />
                     ) : null}
@@ -887,6 +885,10 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={toposcopeCenterPickingMenuFactory} />
               )}
 
+              {pickingPanoramaViewpoint && (
+                <AsyncComponent factory={panoramaViewpointPickingMenuFactory} />
+              )}
+
               {selectingMapArea && (
                 <AsyncComponent factory={mapAreaSelectionMenuFactory} />
               )}
@@ -906,13 +908,17 @@ export function Main(): ReactElement {
               )}
             </div>
 
-            {showElevationChart && (
-              <AsyncComponent factory={elevationChartFactory} />
-            )}
+            {/* Hidden, not unmounted: rebuilding a panorama or a profile is
+                expensive, and picking is a detour. */}
+            <div className={picking ? 'd-none' : undefined}>
+              {showElevationChart && (
+                <AsyncComponent factory={elevationChartFactory} />
+              )}
 
-            {showToposcope && <AsyncComponent factory={toposcopeFactory} />}
+              {showToposcope && <AsyncComponent factory={toposcopeFactory} />}
 
-            {showPanorama && <AsyncComponent factory={panoramaFactory} />}
+              {showPanorama && <AsyncComponent factory={panoramaFactory} />}
+            </div>
           </div>
 
           <div className={classes.typeZoomControl}>
@@ -973,6 +979,10 @@ export function Main(): ReactElement {
 
             {pickingToposcopeCenter && (
               <AsyncComponent factory={toposcopeCenterPickingFactory} />
+            )}
+
+            {pickingPanoramaViewpoint && (
+              <AsyncComponent factory={panoramaViewpointPickingFactory} />
             )}
 
             {selectingMapArea && <MapAreaSelectionResult />}

@@ -1,9 +1,9 @@
 import { closeTool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { requestCompassPermission } from '@features/location/compass.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
+import { FloatingWindowGrips } from '@shared/components/FloatingWindowControls.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ELEVATION_API_DTM_ATTRIBUTION } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -19,25 +19,14 @@ import {
   useState,
 } from 'react';
 import { Alert, Button, ProgressBar } from 'react-bootstrap';
-import {
-  FaArrowsAlt,
-  FaInfoCircle,
-  FaPlay,
-  FaStop,
-  FaTimes,
-} from 'react-icons/fa';
-import { LuMoveDiagonal2 } from 'react-icons/lu';
-import { MdFullscreen, MdFullscreenExit } from 'react-icons/md';
+import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import {
-  panoramaCancel,
-  panoramaSetSettings,
-  panoramaToggleFullscreen,
-} from '../model/actions.js';
+import { panoramaCancel } from '../model/actions.js';
 import { grantedQuality, PANORAMA_QUALITIES } from '../quality.js';
 import { getPanoramaRenderData } from '../renderHolder.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import classes from './Panorama.module.css';
+import { PanoramaControls } from './PanoramaControls.js';
 import { PanoramaProbeReadout } from './PanoramaProbeReadout.js';
 import { PanoramaView } from './PanoramaView.js';
 
@@ -79,9 +68,13 @@ export default function Panorama(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const { render, rendering, error, fullscreen, probe } = useAppSelector(
+  const { render, rendering, error, probe } = useAppSelector(
     (state) => state.panorama,
   );
+
+  // Plain, not the `meter` unit style: `general.masl` follows it and says both
+  // the unit and what it is measured from.
+  const nfEle = useNumberFormat({ maximumFractionDigits: 0 });
 
   const settings = useAppSelector((state) => state.panoramaSettings);
 
@@ -93,12 +86,7 @@ export default function Panorama(): ReactElement {
 
   const [showCaveats, setShowCaveats] = useState(false);
 
-  // Plain, not the `meter` unit style: an elevation is written with `m a.s.l.`
-  // after it, which says both the unit and what it is measured from — worth
-  // saying where a distance in metres is on the same line.
-  const nfEle = useNumberFormat({ maximumFractionDigits: 0 });
-
-  const { boxRef, footerRef, moveHandleRef, resizeHandleProps } =
+  const { boxProps, bottomProps, fullscreen, toggleFullscreen, ...grips } =
     useFloatingWindow({ storageKey: 'fm.panorama.window' });
 
   // The view fills whatever the box leaves it, which full screen changes out
@@ -136,47 +124,36 @@ export default function Panorama(): ReactElement {
     PANORAMA_QUALITIES[grantedQuality(settings.quality, premium)];
 
   return (
-    <div
-      className={clsx(
-        windowClasses.window,
-        classes.panel,
-        'd-flex',
-        'flex-column',
-        // Dropped rather than overridden in full screen: Bootstrap's utilities
-        // are `!important` and a single class, the same weight as the rule that
-        // would undo them, so which one wins comes down to stylesheet order.
-        // Left on, they pad the panel and round it — a frame with the map
-        // showing through it.
-        !fullscreen && ['p-2', 'rounded'],
-        // The plain class is what the header watches for, to lift its whole
-        // stacking context over the bottom controls — see `Main.module.css`.
-        fullscreen && [classes.fullscreen, 'fm-fullscreen'],
-      )}
-      ref={boxRef}
-    >
-      {!fullscreen && (
-        <div
-          className={clsx(windowClasses.moveHandle, classes.grip)}
-          ref={moveHandleRef}
-        >
-          <FaArrowsAlt />
-        </div>
-      )}
+    <div {...boxProps}>
+      <FloatingWindowGrips
+        fullscreen={fullscreen}
+        gripClassName={classes.grip}
+        {...grips}
+      />
 
-      <button
-        type="button"
-        className={clsx(classes.closeGrip, classes.grip)}
-        onClick={() => dispatch(closeTool('panorama'))}
-      >
-        <FaTimes />
-      </button>
+      {/* The only close button: the panel has no toolbar row of its own. */}
+      <LongPressTooltip label={gm?.general.close}>
+        {({ props }) => (
+          <button
+            type="button"
+            className={clsx(classes.closeGrip, classes.grip)}
+            onClick={() => dispatch(closeTool('panorama'))}
+            {...props}
+          >
+            <FaTimes />
+          </button>
+        )}
+      </LongPressTooltip>
       {/* Sized by the flex column rather than by the window hook's measured
           height: that arrives an observer late, so a shrinking window would
           push the footer out of the box before the picture gave anything back. */}
       <div
         className={clsx(
           classes.content,
-          'd-flex align-items-center justify-content-center',
+          // `position-relative` is what the overlays below anchor to; the
+          // observer sizing the view reads this box's own rect, which they
+          // leave alone.
+          'position-relative d-flex align-items-center justify-content-center',
         )}
         ref={contentRef}
       >
@@ -196,169 +173,125 @@ export default function Panorama(): ReactElement {
             {rendering ? m?.rendering : m?.pickHint}
           </p>
         )}
-      </div>
-      {rendering && (
-        <div className="mt-2 mx-2 d-flex align-items-center gap-2">
-          <ProgressBar
-            className="flex-grow-1"
-            striped
-            animated
-            now={Math.min(99, (elapsed / expectedMs) * 100)}
-            label={`${Math.round(elapsed / 1000)} s`}
-          />
 
-          <Button
-            variant="dark"
-            size="sm"
-            onClick={() => dispatch(panoramaCancel())}
-          >
-            {m?.cancel}
-          </Button>
-        </div>
-      )}
-      <div
-        className={clsx(
-          windowClasses.footer,
-          'd-flex flex-wrap align-items-center gap-2 mt-2 mb-1 mx-2 small',
-        )}
-        ref={footerRef}
-      >
-        {render && (
-          <span className="text-body-secondary">
-            {m?.eyeElevation}: {nfEle.format(render.eyeElevation)}{' '}
-            {gm?.general.masl}
-            {/* The finer picture is premium's; say so where the one on screen
-                is the fast pass. */}
-            {!premium && <PremiumGem hint={m?.quality.premiumHint} />}
-          </span>
-        )}
-
-        {/* What was last picked out of the picture, beside where it was picked
-            from. Here rather than over the picture: this is the one place in
-            the panel that is already text, and a summit's figures said here
-            cover nothing they are about. */}
-        {probe && (
-          <span>
-            {/* The row is a flex line whose items are separate readings; the
-                dot is what says this one belongs to the elevation before it
-                rather than being the next thing along. */}
-            <span className="text-body-secondary me-2">·</span>
-
-            <PanoramaProbeReadout probe={probe} />
-          </span>
-        )}
-
+        {/* Says the picture on screen is the fast first pass. `mt-5` clears
+            what is already in that corner: the compass strip and the move
+            grip. */}
         {render?.preview && (
-          <span className="badge text-bg-secondary">{m?.preview}</span>
+          <span className="badge text-bg-secondary position-absolute z-1 top-0 start-0 m-2 mt-5">
+            {m?.preview}
+          </span>
         )}
 
-        {render && render.queueDepth > 0 && (
-          <span className="text-body-secondary">{m?.busy}</span>
-        )}
-
-        {rendering && elapsed > expectedMs && (
-          <span className="text-body-secondary">{m?.slow}</span>
-        )}
-
-        {/* A render that failed with a picture still on screen: said here
-            rather than as an alert, which would take away a good picture over
-            a failed attempt to replace it. */}
-        {render && error && (
-          <span className="text-danger">{m?.errors[error]}</span>
-        )}
-
-        <span className="ms-auto d-flex align-items-center gap-1">
-          {/* The icon is what says which state it is in, so this is an ordinary
-              action rather than a toggle wearing an outline. */}
-          <LongPressTooltip label={m?.autoPan}>
-            {({ props }) => (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  // Asked on either edge, not just when turning it on: a phone
-                  // starts out following, so the press that gets here first is
-                  // as often the one stopping it. Straight out of the click,
-                  // since that is the only place iOS grants it from.
-                  void requestCompassPermission();
-
-                  dispatch(panoramaSetSettings({ autoPan: !settings.autoPan }));
-                }}
-                {...props}
-              >
-                {settings.autoPan ? <FaStop /> : <FaPlay />}
-              </Button>
+        {/* What the picture answers: where the eye stands, and what was last
+            picked out of it. Opposite the preview badge, and clear of the
+            compass strip and the close button by the same `mt-5`. */}
+        {(render || probe) && (
+          <div className="position-absolute z-1 top-0 end-0 m-2 mt-5 p-2 rounded bg-dark bg-opacity-50 small text-white text-end mw-100">
+            {render && (
+              <div>
+                {m?.eyeElevation}: {nfEle.format(render.eyeElevation)}{' '}
+                {gm?.general.masl}
+                {/* The finer picture is premium's; say so where the one on
+                    screen is the fast pass. */}
+                {!premium && <PremiumGem hint={m?.quality.premiumHint} />}
+              </div>
             )}
-          </LongPressTooltip>
 
-          <LongPressTooltip label={m?.fullscreen}>
-            {({ props }) => (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => dispatch(panoramaToggleFullscreen(undefined))}
-                {...props}
-              >
-                {fullscreen ? <MdFullscreenExit /> : <MdFullscreen />}
-              </Button>
+            {probe && <PanoramaProbeReadout probe={probe} />}
+          </div>
+        )}
+
+        {/* Over the picture, not above it: a row of its own takes its height
+            off the view, so the picture would shrink and grow back twice per
+            render. On a scrim, since it lies over whatever is on screen. */}
+        {rendering && (
+          <div className="position-absolute z-1 bottom-0 start-0 end-0 m-2 p-2 rounded bg-dark bg-opacity-50">
+            {/* Here rather than in the footer, which it grew by a line halfway
+                through every slow render. */}
+            {elapsed > expectedMs && (
+              <p className="mb-1 small text-white">{m?.slow}</p>
             )}
-          </LongPressTooltip>
 
-          <LongPressTooltip label={m?.caveats.title}>
-            {({ props }) => (
+            <div className="d-flex align-items-center gap-2">
+              <ProgressBar
+                className="flex-grow-1"
+                striped
+                animated
+                now={Math.min(99, (elapsed / expectedMs) * 100)}
+                label={`${Math.round(elapsed / 1000)} s`}
+              />
+
               <Button
-                variant="secondary"
+                variant="dark"
                 size="sm"
-                active={showCaveats}
-                onClick={() => setShowCaveats((v) => !v)}
-                {...props}
+                onClick={() => dispatch(panoramaCancel())}
               >
-                <FaInfoCircle />
+                {m?.cancel}
               </Button>
-            )}
-          </LongPressTooltip>
-        </span>
-
-        {showCaveats && (
-          <div className="w-100 text-body-secondary">
-            <p className="mb-1">{m?.caveats.bareEarth}</p>
-
-            <p className="mb-1">{m?.caveats.coverage}</p>
-
-            <p className="mb-1">{m?.caveats.viewpoint}</p>
-
-            <p className="mb-0">
-              {m?.terrainSource}:{' '}
-              {TERRAIN_SOURCES.map((attr, i) => (
-                <Fragment key={attr.name}>
-                  {i > 0 ? ', ' : null}
-
-                  {attr.url ? (
-                    <a
-                      href={attr.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="link-body-emphasis"
-                    >
-                      {attr.name}
-                    </a>
-                  ) : (
-                    attr.name
-                  )}
-                </Fragment>
-              ))}
-            </p>
+            </div>
           </div>
         )}
       </div>
-      {!fullscreen && (
+
+      <div {...bottomProps}>
+        <PanoramaControls
+          showCaveats={showCaveats}
+          onToggleCaveats={() => setShowCaveats((v) => !v)}
+          fullscreen={fullscreen}
+          onToggleFullscreen={toggleFullscreen}
+        />
+
         <div
-          className={clsx(windowClasses.resizeHandle, classes.grip)}
-          {...resizeHandleProps}
+          className={clsx(
+            windowClasses.footer,
+            'd-flex flex-wrap align-items-center gap-2 mt-2 mb-1 mx-2 small',
+          )}
         >
-          <LuMoveDiagonal2 />
+          {render && render.queueDepth > 0 && (
+            <span className="text-body-secondary">{m?.busy}</span>
+          )}
+
+          {/* A render that failed with a picture still on screen: said here
+            rather than as an alert, which would take away a good picture over
+            a failed attempt to replace it. */}
+          {render && error && (
+            <span className="text-danger">{m?.errors[error]}</span>
+          )}
+
+          {showCaveats && (
+            <div className="w-100 text-body-secondary">
+              <p className="mb-1">{m?.caveats.bareEarth}</p>
+
+              <p className="mb-1">{m?.caveats.coverage}</p>
+
+              <p className="mb-1">{m?.caveats.viewpoint}</p>
+
+              <p className="mb-0">
+                {m?.terrainSource}:{' '}
+                {TERRAIN_SOURCES.map((attr, i) => (
+                  <Fragment key={attr.name}>
+                    {i > 0 ? ', ' : null}
+
+                    {attr.url ? (
+                      <a
+                        href={attr.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link-body-emphasis"
+                      >
+                        {attr.name}
+                      </a>
+                    ) : (
+                      attr.name
+                    )}
+                  </Fragment>
+                ))}
+              </p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

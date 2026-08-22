@@ -2,7 +2,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
-  pickHint: 'Klikněte do mapy a uvidíte výhled z toho místa.',
+  pickHint: 'Místo pohledu zvolte tlačítkem 👁 níže.',
   rendering: 'Vykresluji panorama…',
   slow: 'Trvá to déle než obvykle.',
   busy: 'Vykreslovací služba je vytížená, může to chvíli trvat.',
@@ -10,6 +10,8 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   update: 'Aktualizovat',
   outdated: 'Obrázek je z předchozího stanoviště.',
   locate: 'Pohled z mé polohy',
+  pickViewpoint: 'Vybrat v mapě',
+  pickViewpointPrompt: 'Klikněte do mapy tam, odkud se chcete dívat',
   settings: {
     title: 'Nastavení panoramatu',
     eye: 'Výška očí',
@@ -62,7 +64,6 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     all: 'Libovolná',
   },
   autoPan: 'Otáčet se zařízením nebo samo',
-  fullscreen: 'Na celou obrazovku',
   peak: {
     title: ({ name, ele }) => (
       <>

@@ -336,7 +336,11 @@ function updateUrl(state: RootState, forced: boolean): void {
   // Where the panorama is taken from, so a link reopens it; the picture itself
   // is re-rendered on arrival. The bearing rides in a param of its own because
   // it is a viewport, not content — see `VIEWPORT_KEYS`.
-  if (panorama.viewpoint) {
+  //
+  // Only while the panel is open: closing it keeps the viewpoint so reopening
+  // finds the picture, but a link shared then would promise a panorama the
+  // recipient — who gets no `tools=panorama` — never sees.
+  if (panorama.viewpoint && tools.includes('panorama')) {
     historyParts.push([
       'panorama',
       serializePanoramaViewpoint(panorama.viewpoint),

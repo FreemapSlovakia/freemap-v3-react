@@ -2,6 +2,7 @@ import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
+import { panoramaSetPickingViewpoint } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import {
   CRS,
@@ -55,6 +56,7 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     homeLocation: { selectingHomeLocation: false },
     mapArea: { selecting: null },
     toposcope: { pickingCenter: false },
+    panorama: { pickingViewpoint: false },
     elevationChart: { target: null },
     drawingLines: { joinWith: undefined, drawing: false },
     ...overrides,
@@ -255,6 +257,18 @@ describe('handleEvent — Escape', () => {
         }),
       ),
     ).toEqual(toposcopeSetPickingCenter(false));
+  });
+
+  it('leaves the panorama viewpoint picking before anything else', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          panorama: { pickingViewpoint: true },
+          elevationChart: { target: {} },
+        }),
+      ),
+    ).toEqual(panoramaSetPickingViewpoint(false));
   });
 
   // The modal closes itself on its own document listener, which runs only

@@ -2,6 +2,7 @@ import { closeTool, selectFeature } from '@app/store/actions.js';
 import { drawingPointLabel } from '@features/drawing/labelValues.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
+import { FloatingWindowGrips } from '@shared/components/FloatingWindowControls.js';
 import {
   bearingTo,
   distanceTo,
@@ -17,8 +18,6 @@ import { siteNames, siteOf } from '@shared/sites.js';
 import clsx from 'clsx';
 import { type ReactElement, useMemo } from 'react';
 import { CloseButton } from 'react-bootstrap';
-import { FaArrowsAlt } from 'react-icons/fa';
-import { LuMoveDiagonal2 } from 'react-icons/lu';
 import { useDispatch } from 'react-redux';
 import { toposcopeCenterSelector } from '../centerPoint.js';
 import {
@@ -30,6 +29,7 @@ import {
 import { setToposcopeSvg } from '../toposcopeSvgHolder.js';
 import { useToposcopeMessages } from '../translations/useToposcopeMessages.js';
 import classes from './Toposcope.module.css';
+import { ToposcopeControls } from './ToposcopeControls.js';
 import { type ToposcopeRay, ToposcopeSvg } from './ToposcopeSvg.js';
 
 /**
@@ -174,11 +174,19 @@ export default function Toposcope(): ReactElement {
     [center],
   );
 
-  const { boxRef, footerRef, moveHandleRef, resizeHandleProps, width, height } =
-    useFloatingWindow({
-      storageKey: 'fm.toposcope.window',
-      defaultSize: squareDefaultSize,
-    });
+  const {
+    boxProps,
+    bottomProps,
+    fullscreen,
+    toggleFullscreen,
+    width,
+    height,
+    ...grips
+  } = useFloatingWindow({
+    storageKey: 'fm.toposcope.window',
+    defaultSize: squareDefaultSize,
+    boxClassName: classes.toposcope,
+  });
 
   // The portal the dial was made on — the same name the page title carries, so
   // an exported dial says which of the two sites drew it.
@@ -188,18 +196,8 @@ export default function Toposcope(): ReactElement {
   const size = Math.max(Math.min(width, height), 0);
 
   return (
-    <div
-      className={clsx(
-        windowClasses.window,
-        classes.toposcope,
-        'p-2',
-        'rounded',
-      )}
-      ref={boxRef}
-    >
-      <div className={windowClasses.moveHandle} ref={moveHandleRef}>
-        <FaArrowsAlt />
-      </div>
+    <div {...boxProps}>
+      <FloatingWindowGrips fullscreen={fullscreen} {...grips} />
 
       <CloseButton onClick={() => dispatch(closeTool('toposcope'))} />
 
@@ -238,22 +236,25 @@ export default function Toposcope(): ReactElement {
         )}
       </div>
 
-      {/* Only the hint: the settings and download buttons belong to the tool's
-          toolbar, where the rest of its controls are. */}
-      <div
-        className={clsx(
-          windowClasses.footer,
-          'd-flex flex-wrap align-items-center gap-2 mb-1 mx-2',
-        )}
-        ref={footerRef}
-      >
-        {center && rays.length === 0 && (
-          <p className="m-0 small text-body-secondary">{m?.addPointsHint}</p>
-        )}
-      </div>
+      {/* Everything below the dial under one ref: the dial takes whatever
+          height the hook says is left, so anything the hook doesn't know about
+          is pushed out of a box that clips. */}
+      <div {...bottomProps}>
+        <ToposcopeControls
+          fullscreen={fullscreen}
+          onToggleFullscreen={toggleFullscreen}
+        />
 
-      <div className={windowClasses.resizeHandle} {...resizeHandleProps}>
-        <LuMoveDiagonal2 />
+        <div
+          className={clsx(
+            windowClasses.footer,
+            'd-flex flex-wrap align-items-center gap-2 mt-2 mb-1 mx-2',
+          )}
+        >
+          {center && rays.length === 0 && (
+            <p className="m-0 small text-body-secondary">{m?.addPointsHint}</p>
+          )}
+        </div>
       </div>
     </div>
   );

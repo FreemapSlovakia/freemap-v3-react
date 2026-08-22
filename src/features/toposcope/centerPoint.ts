@@ -1,6 +1,11 @@
 import type { RootState } from '@app/store/store.js';
-import type { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
+import {
+  type DrawingPoint,
+  drawingPointAdd,
+  drawingPointChangePosition,
+} from '@features/drawing/model/actions/drawingPointActions.js';
 import { poiSpec } from '@shared/drawingIcons.js';
+import type { LatLon } from '@shared/types/common.js';
 
 /**
  * The property that makes a drawn point the dial's centre, and the value it
@@ -52,4 +57,29 @@ export function toposcopeCenterSelector(
   return index === -1
     ? undefined
     : { index, point: state.drawingPoints.points[index]! };
+}
+
+/**
+ * Puts the dial's centre at `coords` — moving the point where there is one,
+ * creating it where there isn't. Returns the action, so the map click and the
+ * GPS fix each place it the same way.
+ */
+export function placeToposcopeCenter(state: RootState, coords: LatLon) {
+  const center = toposcopeCenterSelector(state);
+
+  if (center) {
+    return drawingPointChangePosition({ index: center.index, coords });
+  }
+
+  const { color, markerType } = state.drawingSettings.style;
+
+  return drawingPointAdd({
+    coords,
+    color,
+    markerType,
+    icon: CENTER_ICON,
+    label: CENTER_LABEL,
+    props: { [CENTER_PROP]: CENTER_PROP_VALUE },
+    id: state.drawingPoints.points.length,
+  });
 }

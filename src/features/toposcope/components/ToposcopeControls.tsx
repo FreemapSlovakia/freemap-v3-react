@@ -1,7 +1,11 @@
 import { setActiveModal } from '@app/store/actions.js';
+import {
+  FloatingWindowControls,
+  FullscreenButton,
+} from '@shared/components/FloatingWindowControls.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { ToolMenu } from '@shared/components/ToolMenu.js';
+import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
 import { downloadSvg } from '@shared/downloadSvg.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
@@ -13,7 +17,16 @@ import { toposcopeSetPickingCenter } from '../model/actions.js';
 import { getToposcopeSvg } from '../toposcopeSvgHolder.js';
 import { useToposcopeMessages } from '../translations/useToposcopeMessages.js';
 
-export default function ToposcopeMenu(): ReactElement {
+type Props = {
+  fullscreen: boolean;
+  onToggleFullscreen: () => void;
+};
+
+/** Everything the dial is driven by; see `FloatingWindowControls`. */
+export function ToposcopeControls({
+  fullscreen,
+  onToggleFullscreen,
+}: Props): ReactElement {
   const m = useToposcopeMessages();
 
   const dispatch = useDispatch();
@@ -23,19 +36,16 @@ export default function ToposcopeMenu(): ReactElement {
   );
 
   return (
-    <ToolMenu tool="toposcope">
-      <LongPressTooltip label={hasCenter ? m?.moveCenter : m?.addCenter}>
-        {({ props }) => (
-          <Button
-            variant={hasCenter ? 'secondary' : 'primary'}
-            onClick={() => dispatch(toposcopeSetPickingCenter(true))}
-            {...props}
-          >
-            {/* The very symbol the point it places will wear. */}
-            <IconGlyph poi={CENTER_POI} />
-          </Button>
-        )}
-      </LongPressTooltip>
+    <FloatingWindowControls fullscreen={fullscreen}>
+      <PlacePickerButton
+        consumer="toposcope-center"
+        variant={hasCenter ? 'secondary' : 'primary'}
+        label={hasCenter ? m?.moveCenter : m?.addCenter}
+        // The very symbol the point it places will wear.
+        icon={<IconGlyph poi={CENTER_POI} />}
+        locateLabel={m?.centerAtMyPosition}
+        onPick={() => dispatch(toposcopeSetPickingCenter(true))}
+      />
 
       <LongPressTooltip label={m?.settings.title}>
         {({ props }) => (
@@ -67,6 +77,13 @@ export default function ToposcopeMenu(): ReactElement {
           )}
         </LongPressTooltip>
       )}
-    </ToolMenu>
+
+      <span className="ms-auto">
+        <FullscreenButton
+          fullscreen={fullscreen}
+          onToggle={onToggleFullscreen}
+        />
+      </span>
+    </FloatingWindowControls>
   );
 }

@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { LatLon } from '@shared/types/common.js';
 import type { HeadingSource } from './settingsReducer.js';
 
 export const setLocation = createAction<{
@@ -20,6 +21,30 @@ export const toggleLocate = createAction<boolean | undefined>('LOCATE');
  * still taken; this only ends the wait for the first one.
  */
 export const locateFailed = createAction('LOCATE_FAILED');
+
+/** Whoever wants a single fix to place something by; the wait lives in the store. */
+export type FixConsumer = 'panorama' | 'toposcope-center';
+
+/**
+ * Asks for one fix good enough to place something by, borrowing the map's own
+ * Locate me. Answered by {@link fixReady}, at once or off the first fix worth
+ * having; see `locateOnceProcessor`.
+ */
+export const requestFix = createAction<FixConsumer>('REQUEST_FIX');
+
+/**
+ * Who is waiting. Dispatched by `locateOnceProcessor` **after** it turns
+ * locating on, never by a button: any `toggleLocate` clears the wait, so
+ * setting it first would clear it again on the way in. `null` gives up.
+ */
+export const setFixRequest = createAction<FixConsumer | null>(
+  'SET_FIX_REQUEST',
+);
+
+/** The fix that was asked for, handed to whoever asked. */
+export const fixReady = createAction<{ consumer: FixConsumer } & LatLon>(
+  'FIX_READY',
+);
 
 /**
  * Whether something other than the browser is supplying fixes — the GPS

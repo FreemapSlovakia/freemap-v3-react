@@ -66,6 +66,10 @@ import {
 import { l10nSetLanguageProcessor } from '@features/l10n/model/processor.js';
 import { legendProcessor } from '@features/legend/model/legendProcessor.js';
 import { followLocationProcessor } from '@features/location/model/followProcessor.js';
+import {
+  fixReadyProcessor,
+  locateOnceProcessor,
+} from '@features/location/model/locateOnceProcessor.js';
 import { locateProcessor } from '@features/location/model/locateProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
 import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxProcessor.js';
@@ -97,10 +101,7 @@ import { objectsLookupProcessor } from '@features/objects/model/objectsLookupPro
 import { downloadMapProcessor } from '@features/offlineMapExport/model/downloadMapProcessor.js';
 import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
 import { osmLoadProcessor } from '@features/osm/model/processors/osmLoadProcessor.js';
-import {
-  panoramaFixProcessor,
-  panoramaLocateProcessor,
-} from '@features/panorama/model/processors/panoramaLocateProcessor.js';
+import { panoramaFixProcessor } from '@features/panorama/model/processors/panoramaFixProcessor.js';
 import {
   panoramaReleaseProcessor,
   panoramaRenderProcessor,
@@ -123,6 +124,7 @@ import { toastsCancelTypeProcessor } from '@features/toasts/model/processors/toa
 import { toastsRemoveProcessor } from '@features/toasts/model/processors/toastsRemoveProcessor.js';
 import { toastsRestartTimeoutProcessor } from '@features/toasts/model/processors/toastsRestartTimeoutProcessor.js';
 import { toastsStopTimeoutProcessor } from '@features/toasts/model/processors/toastsStopTimeoutProcessor.js';
+import { toposcopeFixProcessor } from '@features/toposcope/model/toposcopeFixProcessor.js';
 import * as trackingAccessTokenProcessors from '@features/tracking/model/processors/trackingAccessTokenProcessors.js';
 import { trackingCopyToDataViewerProcessor } from '@features/tracking/model/processors/trackingCopyProcessor.js';
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
@@ -164,6 +166,8 @@ export const processors = [
   searchHighlightProcessor,
   searchPreviewProcessor,
   locateProcessor,
+  locateOnceProcessor,
+  fixReadyProcessor,
   followLocationProcessor,
   saveSettingsProcessor,
   resetAppProcessor,
@@ -247,8 +251,8 @@ export const processors = [
   openInExternalAppProcessor,
   panoramaRenderProcessor,
   panoramaReleaseProcessor,
-  panoramaLocateProcessor,
   panoramaFixProcessor,
+  toposcopeFixProcessor,
   ...Object.values(rpcProcessors),
   exportMapFeaturesProcessor,
   ...authProcessors,

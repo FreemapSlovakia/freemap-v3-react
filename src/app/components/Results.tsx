@@ -1,4 +1,4 @@
-import { activeMapToolSelector } from '@app/store/selectors.js';
+import { activeMapToolSelector, isToolOpen } from '@app/store/selectors.js';
 import { ChangesetsResult } from '@features/changesets/components/ChangesetsResult.js';
 import { DrawingLinesResult } from '@features/drawing/components/DrawingLinesResult.js';
 import { DrawingPointsResult } from '@features/drawing/components/DrawingPointsResult.js';
@@ -43,8 +43,11 @@ export function Results(): ReactElement {
       activeMapToolSelector(state) === 'route-planner',
   );
 
+  // The panel keeps its viewpoint and picture when closed, so reopening finds
+  // them — but the marks on the map belong to the open panel.
   const hasPanorama = useAppSelector(
-    (state) => state.panorama.viewpoint !== null,
+    (state) =>
+      state.panorama.viewpoint !== null && isToolOpen(state, 'panorama'),
   );
 
   const opacity = useAppSelector(

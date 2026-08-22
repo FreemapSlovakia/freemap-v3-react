@@ -16,6 +16,10 @@ export type PanoramaMessages = {
   outdated: string;
   /** The button that stands the viewer on the user's own position. */
   locate: string;
+  /** Its other way round: hand the map over to a click that says where. */
+  pickViewpoint: string;
+  /** Title of the toolbar that owns the map while that click is awaited. */
+  pickViewpointPrompt: string;
   /** The set-once settings, which all cost a render to change. */
   settings: {
     title: string;
@@ -73,7 +77,6 @@ export type PanoramaMessages = {
     all: string;
   };
   autoPan: string;
-  fullscreen: string;
   /**
    * What a picked summit says, in two halves so each place can put them where
    * it has room: the panel's footer runs them along one line, the map marker's

@@ -2,9 +2,10 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { ToposcopeMessages } from './ToposcopeMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
-  pickCenterHint: 'Umiestnite stred ružice tlačidlom ◎ v paneli nástrojov.',
+  pickCenterHint: 'Umiestnite stred ružice tlačidlom ◎ nižšie.',
   addCenter: 'Umiestniť stred',
   moveCenter: 'Presunúť stred',
+  centerAtMyPosition: 'Vystrediť na moju polohu',
   pickCenterPrompt: 'Kliknite do mapy tam, kde ružica stojí',
   addPointsHint:
     'Pridajte kreslené body; z každého sa stane lúč ružice. Aj stred je kreslený bod — popíšte a presúvajte ho v nástroji kreslenia.',

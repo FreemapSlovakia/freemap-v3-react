@@ -1,7 +1,7 @@
 import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const en: PanoramaMessages = {
-  pickHint: 'Click the map to see the view from there.',
+  pickHint: 'Pick where to look from with the 👁 button below.',
   rendering: 'Rendering the panorama…',
   slow: 'Taking longer than usual.',
   busy: 'The renderer is busy, so this may take a while.',
@@ -9,6 +9,8 @@ const en: PanoramaMessages = {
   update: 'Update',
   outdated: 'The picture is of the previous viewpoint.',
   locate: 'View from my position',
+  pickViewpoint: 'Pick on the map',
+  pickViewpointPrompt: 'Click the map where you want to look from',
   settings: {
     title: 'Panorama settings',
     eye: 'Eye height',
@@ -61,7 +63,6 @@ const en: PanoramaMessages = {
     all: 'Any',
   },
   autoPan: 'Turn with the device, or by itself',
-  fullscreen: 'Full screen',
   peak: {
     title: ({ name, ele }) => (
       <>

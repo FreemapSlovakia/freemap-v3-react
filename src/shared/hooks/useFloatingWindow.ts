@@ -1,5 +1,7 @@
+import windowClasses from '@shared/components/FloatingWindow.module.css';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { clamp } from '@shared/mathUtils.js';
+import clsx from 'clsx';
 import storage from 'local-storage-fallback';
 import {
   type PointerEvent as ReactPointerEvent,
@@ -27,6 +29,11 @@ const EDGE_GAP = 8;
 
 // The `p-2` padding between the box's edges and its contents.
 const BOX_PADDING = 8;
+
+// Every open window, so raising one can put the rest back down. Two levels
+// rather than an ever-climbing counter, which one long session of panning a
+// panorama would have carried past the full-screen z-index.
+const windows = new Set<HTMLElement>();
 
 // A mouse held down keeps reporting its position after it leaves the browser
 // window, and is released there too. Kept to the viewport, the drag stops at
@@ -145,25 +152,39 @@ type Options = {
   chromeHeight?: number;
   /** Size the window opens at when nothing is stored yet. */
   defaultSize?: () => { width: number; height: number };
+  /** The panel's own classes, added to the ones every window carries. */
+  boxClassName?: string;
 };
 
-type FloatingWindow = {
-  /**
-   * Goes on the box element, which also wants `classes.window`. Its geometry is
-   * written straight onto the element from here, so the caller passes no style.
-   */
-  boxRef: (el: HTMLDivElement | null) => void;
-  /** Goes on the footer row, whose height is taken off the content's. */
-  footerRef: (el: HTMLDivElement | null) => void;
-  /** Goes on the move grip — the only part of the box that drags it. */
+/** Spread onto `FloatingWindowGrips`, which owns the markup and the drop rule. */
+export type FloatingWindowGripProps = {
+  fullscreen: boolean;
   moveHandleRef: RefObject<HTMLDivElement | null>;
-  /** Spread onto the resize grip. */
   resizeHandleProps: {
     onPointerDown: (e: ReactPointerEvent<HTMLDivElement>) => void;
     onPointerMove: (e: ReactPointerEvent<HTMLDivElement>) => void;
     onPointerUp: () => void;
     onPointerCancel: () => void;
     onLostPointerCapture: () => void;
+  };
+};
+
+type FloatingWindow = FloatingWindowGripProps & {
+  /** Spread onto the box element; both its geometry and its classes come from here. */
+  boxProps: {
+    ref: (el: HTMLDivElement | null) => void;
+    className: string;
+  };
+  toggleFullscreen: () => void;
+  /**
+   * Spread onto the element holding everything below the content — the controls
+   * row and the footer. Its height is what the content's is measured against,
+   * and the flex column is load-bearing: through a plain block the rows' own
+   * margins collapse out of that measurement while still being laid out.
+   */
+  bottomProps: {
+    ref: (el: HTMLDivElement | null) => void;
+    className: string;
   };
   /** What's left inside the box for the content, the footer already taken off. */
   width: number;
@@ -182,8 +203,13 @@ export function useFloatingWindow({
   storageKey,
   chromeHeight = 0,
   defaultSize = halfViewportSize,
+  boxClassName,
 }: Options): FloatingWindow {
   const [ref, setRef] = useState<HTMLDivElement | null>(null);
+
+  // Deliberately not remembered: a panel that reopened covering the map would
+  // give no clue what had happened.
+  const [fullscreen, setFullscreen] = useState(false);
 
   const [footerEl, setFooterEl] = useState<HTMLDivElement | null>(null);
 
@@ -316,6 +342,54 @@ export function useFloatingWindow({
     ref.style.top = `${top}px`;
   }, [ref, minBoxHeight]);
 
+  const raise = useCallback(() => {
+    if (!ref) {
+      return;
+    }
+
+    // An inline z-index wins whatever its value, so it would undercut the
+    // class's own — which is what puts a full-screen panel above the rest.
+    if (fullscreen) {
+      ref.style.removeProperty('z-index');
+
+      return;
+    }
+
+    for (const other of windows) {
+      // Never demote a full-screen panel: its z-index comes from a class, which
+      // any inline value beats, so this would put a half-viewport window over
+      // one covering the screen.
+      if (
+        other !== ref &&
+        !other.classList.contains(windowClasses.fullscreen)
+      ) {
+        other.style.zIndex = '1';
+      }
+    }
+
+    ref.style.zIndex = '2';
+  }, [ref, fullscreen]);
+
+  // Capture phase, so a control that stops the event still raises its window;
+  // `pointerdown`, so a drag or resize raises it as it starts.
+  useEffect(() => {
+    if (!ref) {
+      return;
+    }
+
+    windows.add(ref);
+
+    raise();
+
+    ref.addEventListener('pointerdown', raise, true);
+
+    return () => {
+      windows.delete(ref);
+
+      ref.removeEventListener('pointerdown', raise, true);
+    };
+  }, [ref, raise]);
+
   // Laid out before paint, since the box has no geometry at all until this
   // runs.
   useLayoutEffect(() => {
@@ -390,6 +464,9 @@ export function useFloatingWindow({
     // it, and so the map below never sees the gesture.
     e.currentTarget.setPointerCapture(e.pointerId);
 
+    // Or the gesture drags a text selection along behind it.
+    e.preventDefault();
+
     const rect = ref.getBoundingClientRect();
 
     resizeStartRef.current = {
@@ -459,6 +536,9 @@ export function useFloatingWindow({
         e.target instanceof Node &&
         moveHandleRef.current?.contains(e.target)
       ) {
+        // Or the drag extends a text selection across everything it crosses.
+        e.preventDefault();
+
         startPosRef.current = [e.clientX, e.clientY];
 
         draggedRef.current = false;
@@ -528,8 +608,27 @@ export function useFloatingWindow({
   }, [persistBox, ref]);
 
   return {
-    boxRef: setRef,
-    footerRef: setFooterEl,
+    boxProps: {
+      ref: setRef,
+      className: clsx(
+        windowClasses.window,
+        // The column the content/footer split depends on, so it is the hook's
+        // to impose rather than each panel's to remember.
+        'd-flex flex-column',
+        boxClassName,
+        // Dropped rather than overridden: Bootstrap's utilities are
+        // `!important` and a single class, so a rule undoing them would tie and
+        // be settled by stylesheet order. `fm-fullscreen` is what the header
+        // watches for (see `Main.module.css`); `pb-2` keeps the bottom row off
+        // the edge of the screen while the content above it still runs to it.
+        fullscreen
+          ? [windowClasses.fullscreen, 'fm-fullscreen', 'pb-2']
+          : ['p-2', 'rounded', 'shadow'],
+      ),
+    },
+    fullscreen,
+    toggleFullscreen: useCallback(() => setFullscreen((v) => !v), []),
+    bottomProps: { ref: setFooterEl, className: 'd-flex flex-column' },
     moveHandleRef,
     resizeHandleProps: {
       onPointerDown: handleResizeStart,

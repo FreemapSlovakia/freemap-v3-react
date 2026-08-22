@@ -51,10 +51,18 @@ browser actually tells us.
 
 ## The render is an explicit act
 
-A click on the map with the tool open both places the viewpoint and renders
-(`panoramaPick`). Everything else — dragging the viewpoint marker
+Naming a place both places the viewpoint and renders (`panoramaPick`) — the ask
+itself is the explicit act. Everything else — dragging the viewpoint marker
 (`panoramaMoveViewpoint`), changing quality or the vertical range — only stages
-the change; the toolbar then offers **Update** (`panoramaRender`).
+the change; the controls then offer **Update** (`panoramaRender`).
+
+**The panel is not a map-click tool.** It is in `panelTools`, not `mapTool`, so
+it can stay open beside the route planner. Where to stand is asked for
+explicitly, by a split button wearing the same eye its map marker wears: its own
+press raises `pickingViewpoint`, a picking mode like the toposcope's centre (see
+`pickingModeSelector`), and its one menu item takes the GPS instead. The
+toposcope's centre is placed by the same pair in the same order — the two panels
+ask the same question, so they must not answer it in opposite orders.
 
 Whether the picture still answers for the controls is **derived**, not tracked:
 `panoramaRenderKey(viewpoint, settings, quality)` is stored on the render and
@@ -62,9 +70,11 @@ compared against the current one. Nothing has to remember to set a dirty flag.
 
 **Standing where the user is** borrows the map's own Locate me rather than
 asking the browser separately: one watch, one permission prompt, and the dot on
-the map to say where the fix put them. A fix already in hand is taken at once;
-otherwise `panoramaLocateProcessor` turns locating on and `panoramaFixProcessor`
-picks the viewpoint off the first fix.
+the map to say where the fix put them. The machinery is the location feature's
+and shared — `requestFix('panorama')`, answered by `fixReady`; see
+`locateOnceProcessor`. A fix already in hand is taken at once; otherwise
+locating is turned on and the first good fix answers. `panoramaFixProcessor` is
+all that is left on this side: it turns that answer into a `panoramaPick`.
 
 **The first fix is not good enough to stand on.** `locateProcessor` opens with a
 deliberately coarse one — `enableHighAccuracy: false`, ten minutes of cache
@@ -85,10 +95,10 @@ coarse pass asks for no accuracy, and what it answers with says so.
 
 Three more details that are easy to get wrong. `toggleLocate` **clears the last fix**
 on its way in, so turning on what is already on would throw away the answer —
-hence the `!locate` guard. The fix processor is gated on `awaitingFix`, so
-locating for any other reason (the map's button, a tracking session) never moves
-a viewpoint the user placed by hand: a render this expensive is not started by a
-fix nobody asked for.
+hence the `!locate` guard. The fix processor is gated on `location.fixRequest`,
+so locating for any other reason (the map's button, a tracking session) never
+moves a viewpoint the user placed by hand: a render this expensive is not
+started by a fix nobody asked for.
 
 And the wait answers to **`toggleLocate`, not to the error paths** — those do
 not agree. `locateProcessor` reports failure three ways: a timeout keeps trying
@@ -109,6 +119,15 @@ dispatches nothing whatsoever, so pressing it again is the only way out of a
 wait that will not end, and a disabled button has none.
 
 ## Toolbar or modal
+
+**The toolbar is inside the window.** The panorama registers no tool menu of its
+own; `PanoramaControls` renders the same controls along the bottom of its panel,
+inside the shared `FloatingWindowControls` — the scroller the top toolbars use,
+so a narrow window scrolls them sideways rather than wrapping them into the
+picture's height. They belong to the picture and the picture floats — and full
+screen made the point plainly, since the panel covered the tool's own toolbar
+and left the controls unreachable. What `ToolMenu` also carried had to be
+carried here: the experimental and offline badges, and the close button.
 
 One line decides: **the toolbar carries what is changed while looking at the
 picture; the modal carries what is set once.**
@@ -276,9 +295,28 @@ because it needs the field of view as well as the bearing and that is nobody
 else's business. The wedge is a `divIcon` marker drawn pointing north
 and turned by mutating one transform, so a pan rewrites nothing else — the same
 construction as the located heading beam, in the viewpoint marker's own red so
-the two can't be confused. The same store carries where the pointer rests on
-the ground, which the map marks with a faded crosshair beside the solid one a
-press leaves behind. A finger has no hover, so **the hover branch is a mouse's and a pen's alone**
+the two can't be confused.
+
+**Everything read out of the picture is anchored at `sightFrom`** — the render's
+own viewpoint — rather than at the pin: the wedge, and the sight line each mark
+carries. The pin only stages where the *next* render goes, so a drag leaves it
+standing somewhere the picture never saw, and lines drawn from there cross
+country nobody measured. Where the two have come apart — the pin under the
+finger, or `atRenderedViewpoint` false after the drop — a faded, undraggable eye
+is drawn at `sightFrom`, so the wedge and the lines stand on something rather
+than radiating out of bare ground; it carries the render's eye elevation, which
+is still true of that place if no longer of the pin.
+
+The ghost is put out at `dragstart`, which means a **re-render inside the
+gesture**. That is only safe because `RichMarker` keeps the icon it has wherever
+nothing about it changed: rebuilding one reaches Leaflet's `setIcon`, whose
+`_initIcon` → `_initInteraction` replaces the marker's `MarkerDrag` and takes
+the gesture with it. That is what made the eye undraggable in the first place —
+the panorama re-renders every half-degree the view turns, so the drag handler
+was being replaced a dozen times a second and the press died before it moved.
+
+The same store carries where the pointer rests on the ground, which the map
+marks with a faded crosshair beside the solid one a press leaves behind. A finger has no hover, so **the hover branch is a mouse's and a pen's alone**
 and a press is what measures on touch. Gating it that way is not tidiness: a
 touch starting on a peak label is never registered (the label stops the
 `pointerdown`) while its moves still bubble, so it would set a readout that
@@ -432,9 +470,10 @@ dominance only makes sense for summits.
 summit with it: `PanoramaProbe.peak` holds the label's id, name and elevation
 beside the coordinates. One picked thing, said in three places at
 once — the name in the picture goes the marker's colour, the marker gets a
-tooltip, and the panel's footer says it beside the viewpoint's own elevation.
+tooltip, and a readout floating in the picture's top-right corner says it under
+the viewpoint's own elevation.
 
-Three because each covers where the other two aren't: the footer is the only
+Three because each covers where the other two aren't: the readout is the only
 one a finger can read (there is no hover to open a tooltip with), the tooltip
 is the one that works when the panel is small or the map is what you are
 looking at, and the colour is what says *which* of a hundred names on the

@@ -1,25 +1,3 @@
-/* Solid, unlike the floating windows' default: what this one has outside the
-   picture is text — the footer readings, and the caveats panel that is four
-   paragraphs — and map detail showing through those made them hard to read.
-   Full screen matches, so the panel doesn't change colour as it grows. */
-.panel {
-  --fm-window-opacity: 1;
-}
-
-/* The panel, floating like the toposcope's until it is put full screen, where
-   it takes the window and drops the grips it no longer needs. */
-.fullscreen {
-  z-index: 1100;
-  /* The floating-window hook writes the box's whole geometry onto the element
-     as an inline style, so full screen has to win over it rather than ask it to
-     stop. The padding and rounding it drops are Bootstrap utilities, which the
-     component leaves off instead — same weight as anything here, so
-     `!important` would not settle those. */
-  inset: 0 !important;
-  width: auto !important;
-  height: auto !important;
-}
-
 /* The grips and the close button sit straight on the picture, where a muted
    glyph disappears into whatever happens to be behind it. A white mark with a
    dark halo reads on sky and on forest alike — the same treatment the peak

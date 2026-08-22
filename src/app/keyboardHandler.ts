@@ -17,6 +17,7 @@ import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.j
 import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
+import { panoramaSetPickingViewpoint } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
@@ -84,6 +85,10 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     // and leaving it is what Escape is for here.
     if (state.toposcope.pickingCenter) {
       return toposcopeSetPickingCenter(false);
+    }
+
+    if (state.panorama.pickingViewpoint) {
+      return panoramaSetPickingViewpoint(false);
     }
 
     if (state.elevationChart.target) {

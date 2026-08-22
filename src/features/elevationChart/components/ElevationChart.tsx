@@ -4,6 +4,10 @@ import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
+import {
+  FloatingWindowGrips,
+  FullscreenButton,
+} from '@shared/components/FloatingWindowControls.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { downloadSvg } from '@shared/downloadSvg.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -19,8 +23,7 @@ import {
   useRef,
 } from 'react';
 import { Button, CloseButton } from 'react-bootstrap';
-import { FaArrowsAlt, FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
-import { LuMoveDiagonal2 } from 'react-icons/lu';
+import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useElevationSources } from '../hooks/useElevationSources.js';
 import {
@@ -190,12 +193,20 @@ export default function ElevationChart(): ReactElement | null {
 
   const { climbUp, climbDown } = elevationProfilePoints.at(-1) ?? {};
 
-  const { boxRef, footerRef, moveHandleRef, resizeHandleProps, width, height } =
-    useFloatingWindow({
-      storageKey: 'fm.elevationChart.window',
-      // The axis margins; what's left over between them is the plot.
-      chromeHeight: mt + mb,
-    });
+  const {
+    boxProps,
+    bottomProps,
+    fullscreen,
+    toggleFullscreen,
+    width,
+    height,
+    ...grips
+  } = useFloatingWindow({
+    storageKey: 'fm.elevationChart.window',
+    // The axis margins; what's left over between them is the plot.
+    chromeHeight: mt + mb,
+    boxClassName: classes.elevationChart,
+  });
 
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -299,392 +310,404 @@ export default function ElevationChart(): ReactElement | null {
   };
 
   return (
-    <div
-      className={clsx(
-        windowClasses.window,
-        classes.elevationChart,
-        'p-2',
-        'rounded',
-      )}
-      ref={boxRef}
-    >
-      {/* The window's only move grip, mirroring the resize one in the opposite
-          corner. The plot itself is left to scrubbing the profile. */}
-      <div className={windowClasses.moveHandle} ref={moveHandleRef}>
-        <FaArrowsAlt />
-      </div>
+    <div {...boxProps}>
+      {/* The grips are the only way to move or resize it: the plot itself is
+          left to scrubbing the profile. */}
+      <FloatingWindowGrips fullscreen={fullscreen} {...grips} />
 
       <CloseButton onClick={() => dispatch(elevationChartClose())} />
 
+      {/* Nothing to plot into a box with no room. `Main` hides the panels
+          rather than unmounting them while a place is being picked, and a
+          `display: none` box measures 0, which every width below turns
+          negative. */}
       <svg ref={svgRef} width={width} height={height}>
-        {/* Plot background — also the primary pointer target. */}
-        <rect
-          x={ml}
-          y={mt}
-          width={width - ml - mr}
-          height={height - mt - mb}
-          onMouseMove={handlePointerMove} // for mobiles
-          onPointerMove={handlePointerMove}
-          onPointerOut={handlePointerOut}
-          fill="var(--bs-body-bg)"
-        />
+        {width > ml + mr && height > mt + mb && (
+          <>
+            {/* Plot background — also the primary pointer target. */}
+            <rect
+              x={ml}
+              y={mt}
+              width={width - ml - mr}
+              height={height - mt - mb}
+              onMouseMove={handlePointerMove} // for mobiles
+              onPointerMove={handlePointerMove}
+              onPointerOut={handlePointerOut}
+              fill="var(--bs-body-bg)"
+            />
 
-        {/* Elevation profile: an area fill with its outline, one group per run
+            {/* Elevation profile: an area fill with its outline, one group per run
             of points with elevation. A missing value breaks the line and its
             fill rather than dropping to the baseline. */}
-        <g className="chart">
-          {(() => {
-            const segments: ElevationProfilePoint[][] = [];
+            <g className="chart">
+              {(() => {
+                const segments: ElevationProfilePoint[][] = [];
 
-            let current: ElevationProfilePoint[] = [];
+                let current: ElevationProfilePoint[] = [];
 
-            for (const pt of elevationProfilePoints) {
-              if (Number.isFinite(pt.ele)) {
-                current.push(pt);
-              } else if (current.length) {
-                segments.push(current);
+                for (const pt of elevationProfilePoints) {
+                  if (Number.isFinite(pt.ele)) {
+                    current.push(pt);
+                  } else if (current.length) {
+                    segments.push(current);
 
-                current = [];
-              }
-            }
+                    current = [];
+                  }
+                }
 
-            if (current.length) {
-              segments.push(current);
-            }
+                if (current.length) {
+                  segments.push(current);
+                }
 
-            return segments.map((seg, i) => {
-              const line = seg
-                .map((pt) => `${mapX(pt.distance)},${mapY(pt.ele)}`)
-                .join(' ');
+                return segments.map((seg, i) => {
+                  const line = seg
+                    .map((pt) => `${mapX(pt.distance)},${mapY(pt.ele)}`)
+                    .join(' ');
 
-              const baseY = height - mb;
+                  const baseY = height - mb;
 
-              return (
-                <g className="chart-segment" key={`seg${i}`}>
-                  <polygon
-                    points={
-                      `${mapX(seg[0]!.distance)},${baseY} ` +
-                      line +
-                      ` ${mapX(seg.at(-1)!.distance)},${baseY}`
-                    }
-                    fill="var(--bs-primary-bg-subtle)"
-                  />
+                  return (
+                    <g className="chart-segment" key={`seg${i}`}>
+                      <polygon
+                        points={
+                          `${mapX(seg[0]!.distance)},${baseY} ` +
+                          line +
+                          ` ${mapX(seg.at(-1)!.distance)},${baseY}`
+                        }
+                        fill="var(--bs-primary-bg-subtle)"
+                      />
 
-                  <polyline
-                    points={line}
-                    stroke="var(--bs-primary)"
-                    strokeWidth={1}
-                    fill="none"
-                  />
-                </g>
-              );
-            });
-          })()}
-        </g>
+                      <polyline
+                        points={line}
+                        stroke="var(--bs-primary)"
+                        strokeWidth={1}
+                        fill="none"
+                      />
+                    </g>
+                  );
+                });
+              })()}
+            </g>
 
-        {pointerX !== undefined && (
-          <line
-            className="crosshair"
-            key="pointerx"
-            x1={pointerX}
-            x2={pointerX}
-            y1={mt}
-            y2={height - mb}
-            stroke="var(--bs-danger)"
-            strokeWidth={1}
-          />
-        )}
+            {pointerX !== undefined && (
+              <line
+                className="crosshair"
+                key="pointerx"
+                x1={pointerX}
+                x2={pointerX}
+                y1={mt}
+                y2={height - mb}
+                stroke="var(--bs-danger)"
+                strokeWidth={1}
+              />
+            )}
 
-        {/* Dashed reference lines spanning the plot. */}
-        <g className="grid">
-          <g className="grid-horizontal">
-            {hLines.map((y, i) => {
-              const limit = hLines.length - i < 3;
+            {/* Dashed reference lines spanning the plot. */}
+            <g className="grid">
+              <g className="grid-horizontal">
+                {hLines.map((y, i) => {
+                  const limit = hLines.length - i < 3;
 
-              return (
-                <line
-                  key={`gy${i}`}
-                  x1={ml}
-                  x2={width - mr}
-                  y1={mapY(y)}
-                  y2={mapY(y)}
-                  strokeWidth={1}
-                  stroke={limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'}
-                  opacity={limit ? 0.6 : 0.4}
-                  strokeDasharray="2 2"
-                />
-              );
-            })}
-          </g>
+                  return (
+                    <line
+                      key={`gy${i}`}
+                      x1={ml}
+                      x2={width - mr}
+                      y1={mapY(y)}
+                      y2={mapY(y)}
+                      strokeWidth={1}
+                      stroke={
+                        limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'
+                      }
+                      opacity={limit ? 0.6 : 0.4}
+                      strokeDasharray="2 2"
+                    />
+                  );
+                })}
+              </g>
 
-          <g className="grid-vertical">
-            {vLines.map((x, i) => {
-              const limit = i === vLines.length - 1;
+              <g className="grid-vertical">
+                {vLines.map((x, i) => {
+                  const limit = i === vLines.length - 1;
 
-              return (
-                <line
-                  key={`gx${i}`}
-                  x1={mapX(x)}
-                  x2={mapX(x)}
-                  y1={mt}
-                  y2={height - mb}
-                  strokeWidth={1}
-                  stroke={limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'}
-                  opacity={limit ? 0.6 : 0.4}
-                  strokeDasharray="2 2"
-                />
-              );
-            })}
-          </g>
-        </g>
+                  return (
+                    <line
+                      key={`gx${i}`}
+                      x1={mapX(x)}
+                      x2={mapX(x)}
+                      y1={mt}
+                      y2={height - mb}
+                      strokeWidth={1}
+                      stroke={
+                        limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'
+                      }
+                      opacity={limit ? 0.6 : 0.4}
+                      strokeDasharray="2 2"
+                    />
+                  );
+                })}
+              </g>
+            </g>
 
-        {/* Each axis groups its line with its tick marks and value labels. Ticks
+            {/* Each axis groups its line with its tick marks and value labels. Ticks
             and labels are split into their own layers so each set can be styled
             as a whole; only the min/max/last "limit" marks override the shared
             colour to the accent. */}
-        <g className="axes">
-          {/* y-axis: vertical line at the left edge of the plot. */}
-          <g className="axis axis-y">
-            <line
-              className="axis-line"
-              x1={ml}
-              x2={ml}
-              y1={mt}
-              y2={height - mb}
-              stroke="var(--bs-body-color)"
-              strokeWidth={1}
-            />
+            <g className="axes">
+              {/* y-axis: vertical line at the left edge of the plot. */}
+              <g className="axis axis-y">
+                <line
+                  className="axis-line"
+                  x1={ml}
+                  x2={ml}
+                  y1={mt}
+                  y2={height - mb}
+                  stroke="var(--bs-body-color)"
+                  strokeWidth={1}
+                />
 
-            <g className="ticks" stroke="var(--bs-body-color)" strokeWidth={1}>
-              {hLines.map((y, i) => {
-                const limit = hLines.length - i < 3;
+                <g
+                  className="ticks"
+                  stroke="var(--bs-body-color)"
+                  strokeWidth={1}
+                >
+                  {hLines.map((y, i) => {
+                    const limit = hLines.length - i < 3;
 
-                return (
-                  <line
-                    key={`ty${i}`}
-                    x1={ml - 4}
-                    x2={ml}
-                    y1={mapY(y)}
-                    y2={mapY(y)}
-                    stroke={limit ? 'var(--bs-danger)' : undefined}
-                  />
-                );
-              })}
+                    return (
+                      <line
+                        key={`ty${i}`}
+                        x1={ml - 4}
+                        x2={ml}
+                        y1={mapY(y)}
+                        y2={mapY(y)}
+                        stroke={limit ? 'var(--bs-danger)' : undefined}
+                      />
+                    );
+                  })}
+                </g>
+
+                <g
+                  className="tick-labels"
+                  fill="var(--bs-body-color)"
+                  textAnchor="end"
+                >
+                  {hLines.map((y, i) => {
+                    const limit = hLines.length - i < 3;
+
+                    const show =
+                      limit ||
+                      (Math.abs(mapY(y) - mapY(hLines.at(-1)!)) > 14 &&
+                        Math.abs(mapY(y) - mapY(hLines.at(-2)!)) > 14);
+
+                    return show ? (
+                      <text
+                        key={`ly${i}`}
+                        x={ml - 10}
+                        y={mapY(y)}
+                        dominantBaseline="middle"
+                        fill={limit ? 'var(--bs-danger)' : undefined}
+                      >
+                        {nf0.format(y)}
+                      </text>
+                    ) : null;
+                  })}
+                </g>
+
+                {/* elevation unit, at the top of the axis */}
+                <text
+                  className="axis-unit"
+                  x={ml}
+                  y={mt - 6}
+                  textAnchor="middle"
+                  fill="var(--bs-body-color)"
+                >
+                  m
+                </text>
+              </g>
+
+              {/* x-axis: horizontal line along the plot's baseline. */}
+              <g className="axis axis-x">
+                <line
+                  className="axis-line"
+                  x1={ml}
+                  x2={width - mr}
+                  y1={height - mb}
+                  y2={height - mb}
+                  stroke="var(--bs-body-color)"
+                  strokeWidth={1}
+                />
+
+                <g
+                  className="ticks"
+                  stroke="var(--bs-body-color)"
+                  strokeWidth={1}
+                >
+                  {vLines.map((x, i) => {
+                    const limit = i === vLines.length - 1;
+
+                    return (
+                      <line
+                        key={`tx${i}`}
+                        x1={mapX(x)}
+                        x2={mapX(x)}
+                        y1={height - mb}
+                        y2={height - mb + X_TICK_LEN}
+                        stroke={limit ? 'var(--bs-danger)' : undefined}
+                      />
+                    );
+                  })}
+                </g>
+
+                <g
+                  className="tick-labels"
+                  fill="var(--bs-body-color)"
+                  textAnchor="start"
+                >
+                  {vLines.map((x, i) => {
+                    const limit = i === vLines.length - 1;
+
+                    // Hide a regular label that would collide with the endpoint or
+                    // a waypoint's own distance label (drawn in the waypoints layer).
+                    const show =
+                      limit ||
+                      (Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20 &&
+                        !labeledWaypoints.some(
+                          (wp) => Math.abs(mapX(wp.distance) - mapX(x)) < 20,
+                        ));
+
+                    return show ? (
+                      <text
+                        key={`lx${i}`}
+                        x={mapX(x) + X_LABEL_DX}
+                        y={height - mb + X_LABEL_DY}
+                        dominantBaseline="middle"
+                        transform={`rotate(45, ${mapX(x) + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
+                        fill={limit ? 'var(--bs-danger)' : undefined}
+                      >
+                        {nf1.format(x / 1000)}
+                      </text>
+                    ) : null;
+                  })}
+                </g>
+
+                {/* distance unit, past the right end of the axis */}
+                <text
+                  className="axis-unit"
+                  x={width - mr + 6}
+                  y={height - mb}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  fill="var(--bs-body-color)"
+                >
+                  km
+                </text>
+              </g>
             </g>
 
-            <g
-              className="tick-labels"
-              fill="var(--bs-body-color)"
-              textAnchor="end"
-            >
-              {hLines.map((y, i) => {
-                const limit = hLines.length - i < 3;
-
-                const show =
-                  limit ||
-                  (Math.abs(mapY(y) - mapY(hLines.at(-1)!)) > 14 &&
-                    Math.abs(mapY(y) - mapY(hLines.at(-2)!)) > 14);
-
-                return show ? (
-                  <text
-                    key={`ly${i}`}
-                    x={ml - 10}
-                    y={mapY(y)}
-                    dominantBaseline="middle"
-                    fill={limit ? 'var(--bs-danger)' : undefined}
-                  >
-                    {nf0.format(y)}
-                  </text>
-                ) : null;
-              })}
-            </g>
-
-            {/* elevation unit, at the top of the axis */}
-            <text
-              className="axis-unit"
-              x={ml}
-              y={mt - 6}
-              textAnchor="middle"
-              fill="var(--bs-body-color)"
-            >
-              m
-            </text>
-          </g>
-
-          {/* x-axis: horizontal line along the plot's baseline. */}
-          <g className="axis axis-x">
-            <line
-              className="axis-line"
-              x1={ml}
-              x2={width - mr}
-              y1={height - mb}
-              y2={height - mb}
-              stroke="var(--bs-body-color)"
-              strokeWidth={1}
-            />
-
-            <g className="ticks" stroke="var(--bs-body-color)" strokeWidth={1}>
-              {vLines.map((x, i) => {
-                const limit = i === vLines.length - 1;
-
-                return (
-                  <line
-                    key={`tx${i}`}
-                    x1={mapX(x)}
-                    x2={mapX(x)}
-                    y1={height - mb}
-                    y2={height - mb + X_TICK_LEN}
-                    stroke={limit ? 'var(--bs-danger)' : undefined}
-                  />
-                );
-              })}
-            </g>
-
-            <g
-              className="tick-labels"
-              fill="var(--bs-body-color)"
-              textAnchor="start"
-            >
-              {vLines.map((x, i) => {
-                const limit = i === vLines.length - 1;
-
-                // Hide a regular label that would collide with the endpoint or
-                // a waypoint's own distance label (drawn in the waypoints layer).
-                const show =
-                  limit ||
-                  (Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20 &&
-                    !labeledWaypoints.some(
-                      (wp) => Math.abs(mapX(wp.distance) - mapX(x)) < 20,
-                    ));
-
-                return show ? (
-                  <text
-                    key={`lx${i}`}
-                    x={mapX(x) + X_LABEL_DX}
-                    y={height - mb + X_LABEL_DY}
-                    dominantBaseline="middle"
-                    transform={`rotate(45, ${mapX(x) + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
-                    fill={limit ? 'var(--bs-danger)' : undefined}
-                  >
-                    {nf1.format(x / 1000)}
-                  </text>
-                ) : null;
-              })}
-            </g>
-
-            {/* distance unit, past the right end of the axis */}
-            <text
-              className="axis-unit"
-              x={width - mr + 6}
-              y={height - mb}
-              textAnchor="start"
-              dominantBaseline="middle"
-              fill="var(--bs-body-color)"
-            >
-              km
-            </text>
-          </g>
-        </g>
-
-        {/* Waypoints pinned along the profile: a stem, a dot on the line, the
+            {/* Waypoints pinned along the profile: a stem, a dot on the line, the
             name and elevation on two lines angled -45° up into the top margin
             (sized to fit the tallest label above), and the distance value
             ticked on the x-axis. Same colour as the elevation line. */}
-        <g className="waypoints">
-          {labeledWaypoints.map((wp, i) => {
-            const x = mapX(wp.distance);
+            <g className="waypoints">
+              {labeledWaypoints.map((wp, i) => {
+                const x = mapX(wp.distance);
 
-            // Seat the block so its lowest point (a wide line's leading end,
-            // whichever line that is) sits a fixed gap above the plot.
-            const labelY = wp.metrics
-              ? mt - LABEL_GAP - wp.metrics.nearDrop
-              : mt;
+                // Seat the block so its lowest point (a wide line's leading end,
+                // whichever line that is) sits a fixed gap above the plot.
+                const labelY = wp.metrics
+                  ? mt - LABEL_GAP - wp.metrics.nearDrop
+                  : mt;
 
-            return (
-              <g className="waypoint" key={`wp${i}`}>
-                <line
-                  x1={x}
-                  x2={x}
-                  y1={mt}
-                  y2={height - mb}
-                  stroke="var(--bs-primary)"
-                  strokeWidth={1}
-                  opacity={0.6}
-                />
+                return (
+                  <g className="waypoint" key={`wp${i}`}>
+                    <line
+                      x1={x}
+                      x2={x}
+                      y1={mt}
+                      y2={height - mb}
+                      stroke="var(--bs-primary)"
+                      strokeWidth={1}
+                      opacity={0.6}
+                    />
 
-                <circle
-                  cx={x}
-                  cy={mapY(wp.ele)}
-                  r={3}
-                  fill="var(--bs-primary)"
-                />
+                    <circle
+                      cx={x}
+                      cy={mapY(wp.ele)}
+                      r={3}
+                      fill="var(--bs-primary)"
+                    />
 
-                {wp.metrics && (
-                  <text
-                    textAnchor="start"
-                    transform={`rotate(-45, ${x + 3}, ${labelY})`}
-                    fill="var(--bs-primary)"
-                  >
-                    {wp.lines.map((line, j) => (
-                      // Each line centered under the widest by an equal start
-                      // nudge along the (rotated) baseline; stacked by baseline.
-                      <tspan
-                        key={j}
-                        x={x + 3 + wp.metrics!.offsets[j]!}
-                        y={labelY + j * LINE_HEIGHT}
+                    {wp.metrics && (
+                      <text
+                        textAnchor="start"
+                        transform={`rotate(-45, ${x + 3}, ${labelY})`}
+                        fill="var(--bs-primary)"
                       >
-                        {line}
-                      </tspan>
-                    ))}
-                  </text>
-                )}
+                        {wp.lines.map((line, j) => (
+                          // Each line centered under the widest by an equal start
+                          // nudge along the (rotated) baseline; stacked by baseline.
+                          <tspan
+                            key={j}
+                            x={x + 3 + wp.metrics!.offsets[j]!}
+                            y={labelY + j * LINE_HEIGHT}
+                          >
+                            {line}
+                          </tspan>
+                        ))}
+                      </text>
+                    )}
 
-                {/* the waypoint's own distance, ticked on the x-axis */}
-                <line
-                  x1={x}
-                  x2={x}
-                  y1={height - mb}
-                  y2={height - mb + X_TICK_LEN}
-                  stroke="var(--bs-primary)"
-                  strokeWidth={1}
-                />
+                    {/* the waypoint's own distance, ticked on the x-axis */}
+                    <line
+                      x1={x}
+                      x2={x}
+                      y1={height - mb}
+                      y2={height - mb + X_TICK_LEN}
+                      stroke="var(--bs-primary)"
+                      strokeWidth={1}
+                    />
 
-                <text
-                  x={x + X_LABEL_DX}
-                  y={height - mb + X_LABEL_DY}
-                  textAnchor="start"
-                  dominantBaseline="middle"
-                  transform={`rotate(45, ${x + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
-                  fill="var(--bs-primary)"
-                >
-                  {nf1.format(wp.distance / 1000)}
-                </text>
-              </g>
-            );
-          })}
-        </g>
+                    <text
+                      x={x + X_LABEL_DX}
+                      y={height - mb + X_LABEL_DY}
+                      textAnchor="start"
+                      dominantBaseline="middle"
+                      transform={`rotate(45, ${x + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
+                      fill="var(--bs-primary)"
+                    >
+                      {nf1.format(wp.distance / 1000)}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
 
-        {/* Transparent interaction overlay on top. */}
-        <rect
-          x={ml}
-          y={mt}
-          width={width - ml - mr}
-          height={height - mt - mb}
-          onPointerDown={handlePointerMove} // for mobiles
-          onPointerMove={handlePointerMove}
-          onPointerOut={handlePointerOut}
-          opacity={0}
-        />
+            {/* Transparent interaction overlay on top. */}
+            <rect
+              x={ml}
+              y={mt}
+              width={width - ml - mr}
+              height={height - mt - mb}
+              onPointerDown={handlePointerMove} // for mobiles
+              onPointerMove={handlePointerMove}
+              onPointerOut={handlePointerOut}
+              opacity={0}
+            />
+          </>
+        )}
       </svg>
 
       {/* One wrapping row, measured as a whole so the SVG is sized around it
           however many lines it takes. */}
+      {/* The ref alone, not `bottomProps`: this panel's bottom is the one
+          wrapping row, so it wants none of the column the two-row panels do. */}
       <div
+        ref={bottomProps.ref}
         className={clsx(
           windowClasses.footer,
           'd-flex flex-wrap align-items-center gap-2 mb-1 mx-2',
         )}
-        ref={footerRef}
       >
         {typeof climbUp === 'number' && typeof climbDown === 'number' && (
           <p className="m-0">
@@ -777,6 +800,12 @@ export default function ElevationChart(): ReactElement | null {
               )}
             </LongPressTooltip>
           )}
+
+          <FullscreenButton
+            fullscreen={fullscreen}
+            onToggle={toggleFullscreen}
+            size="sm"
+          />
         </div>
       </div>
 
@@ -784,9 +813,6 @@ export default function ElevationChart(): ReactElement | null {
           its buttons to the left of the next line as the box narrows. Out of
           that row's flow, so it doesn't count towards the height measured for
           the chart either. */}
-      <div className={windowClasses.resizeHandle} {...resizeHandleProps}>
-        <LuMoveDiagonal2 />
-      </div>
     </div>
   );
 }

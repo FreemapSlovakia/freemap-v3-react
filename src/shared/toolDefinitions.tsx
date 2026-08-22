@@ -67,7 +67,6 @@ export const MAP_CLICK_TOOLS: Tool[] = [
   'draw-lines',
   'draw-polygons',
   'map-details',
-  'panorama',
   'route-planner',
 ];
 

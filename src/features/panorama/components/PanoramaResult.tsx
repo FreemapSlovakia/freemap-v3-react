@@ -18,6 +18,7 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import { FaCrosshairs, FaEye } from 'react-icons/fa';
 import { Marker, Polyline, Tooltip, useMap } from 'react-leaflet';
@@ -121,8 +122,17 @@ export default function PanoramaResult(): ReactElement | null {
     }
   }, [probe, map]);
 
+  // Only safe to re-render inside the gesture because `RichMarker` keeps the
+  // icon it has where nothing changed: rebuilding one reaches Leaflet's
+  // `setIcon`, which replaces the drag handler and drops the gesture with it.
+  const [dragging, setDragging] = useState(false);
+
+  const handleDragStart = useCallback(() => setDragging(true), []);
+
   const handleDragEnd = useCallback(
     (e: LeafletEvent) => {
+      setDragging(false);
+
       const { lat, lng } = (e.target as LeafletMarker).getLatLng();
 
       dispatch(panoramaMoveViewpoint({ lat, lon: lng }));
@@ -145,22 +155,27 @@ export default function PanoramaResult(): ReactElement | null {
     [viewpoint],
   );
 
+  // What everything read out of the picture is measured from — not the pin,
+  // which may since have been dragged somewhere the picture never saw.
+  const sightFrom = useMemo(
+    () => render && { lat: render.viewpoint.lat, lng: render.viewpoint.lon },
+    [render],
+  );
+
+  // Whether the pin still stands where the picture was taken from; dragging it
+  // stages a new place without rendering. The viewpoint alone is compared, not
+  // the whole render key: reframing or changing the tier makes another picture
+  // of the same spot.
+  const atRenderedViewpoint =
+    render !== null &&
+    viewpoint !== null &&
+    render.viewpoint.lat === viewpoint.lat &&
+    render.viewpoint.lon === viewpoint.lon;
+
   // The render answers the eye's elevation for the place it was taken from, so
   // there is nothing to ask the elevation API for — and nothing to gate on the
   // account, since the service already clamped what it would give this one.
-  //
-  // Dragging the marker stages a new place without rendering, so the figure is
-  // about somewhere else the moment the pin leaves the rendered viewpoint. The
-  // viewpoint alone is compared, not the whole render key: reframing or
-  // changing the tier makes another picture of the same spot, and the same spot
-  // is the same height.
-  const eyeElevation =
-    render &&
-    viewpoint &&
-    render.viewpoint.lat === viewpoint.lat &&
-    render.viewpoint.lon === viewpoint.lon
-      ? render.eyeElevation
-      : null;
+  const eyeElevation = atRenderedViewpoint ? render.eyeElevation : null;
 
   // Turned by mutating the element rather than by rebuilding the icon, which
   // would replace the DOM node on every frame of a pan. A rebuilt icon brings a
@@ -176,16 +191,38 @@ export default function PanoramaResult(): ReactElement | null {
 
   return !position ? null : (
     <>
-      {wedgeIcon && (
+      {wedgeIcon && sightFrom && (
         <Marker
           ref={wedgeRef}
-          position={position}
+          position={sightFrom}
           icon={wedgeIcon}
           interactive={false}
           keyboard={false}
-          // Under the pin it points from, which is what one grabs.
+          // Under the eye it points from, which is what one grabs.
           zIndexOffset={-1000}
         />
+      )}
+
+      {/* Where the picture was taken from, while the pin is elsewhere: faded,
+          so it reads as the place the readings come from rather than as a
+          second viewpoint, and something for the cone and the lines to stand
+          on. It keeps the render's eye elevation, still true of that place. */}
+      {(dragging || !atRenderedViewpoint) && sightFrom && (
+        <RichMarker
+          position={sightFrom}
+          opacity={0.45}
+          draggable={false}
+          // Under the live pin, for a drag that ends up nearly back where it began.
+          zIndexOffset={-500}
+          faIcon={<FaEye />}
+        >
+          {render && (
+            <Tooltip direction="top">
+              {m?.eyeElevation}: {nfEle.format(render.eyeElevation)}{' '}
+              {gm?.general.masl}
+            </Tooltip>
+          )}
+        </RichMarker>
       )}
 
       {/* An eye, not a summit: it marks where one stands and looks from, which
@@ -193,7 +230,10 @@ export default function PanoramaResult(): ReactElement | null {
       <RichMarker
         position={position}
         draggable
-        eventHandlers={{ dragend: handleDragEnd }}
+        eventHandlers={{
+          dragstart: handleDragStart,
+          dragend: handleDragEnd,
+        }}
         faIcon={<FaEye />}
       >
         {eyeElevation === null ? null : (
@@ -207,27 +247,27 @@ export default function PanoramaResult(): ReactElement | null {
           it says "this is what you are looking at" without claiming to be a
           mark anyone made. The press is what leaves the solid one.
 
-          Each carries a line back to the viewpoint — the line of sight the
-          reading was taken along, which is what says the mark belongs to this
-          panorama rather than being some other pin on the map. */}
-      {hover && (
+          Each carries a line back to where the picture was taken from — the
+          line of sight the reading was taken along. To the render, not to the
+          pin: a line from a dragged pin crosses country nobody measured. */}
+      {hover && sightFrom && (
         <SightMark
-          from={position}
+          from={sightFrom}
           at={hover}
           pathOptions={SIGHT_LINE_HOVER}
           opacity={0.65}
         />
       )}
 
-      {probe && (
+      {probe && sightFrom && (
         <SightMark
-          from={position}
+          from={sightFrom}
           at={probe}
           pathOptions={SIGHT_LINE}
           // A press on the bare terrain has no name to give, but the two
           // figures are read off the picture either way — which is the whole
           // of what such a press asked.
-          tooltip={<PanoramaProbeReadout probe={probe} stacked />}
+          tooltip={<PanoramaProbeReadout probe={probe} />}
         />
       )}
     </>

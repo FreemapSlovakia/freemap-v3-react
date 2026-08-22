@@ -8,19 +8,17 @@ import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 
 type Props = {
   probe: PanoramaProbe;
-  /** Stacks the name over the figures, for a tooltip; inline for a footer row. */
-  stacked?: boolean;
 };
 
 /**
  * What was read out of the picture: a summit's name and elevation where it was
  * picked by name, and how far off and which way it stands either way.
  *
- * One component because it is said in two places at once — the panel's footer
- * and the map marker's tooltip — and two copies of the same four formatters
+ * One component because it is said in two places at once — over the picture and
+ * in the map marker's tooltip — and two copies of the same four formatters
  * drift: how a summit is written is one decision, not two.
  */
-export function PanoramaProbeReadout({ probe, stacked }: Props): ReactElement {
+export function PanoramaProbeReadout({ probe }: Props): ReactElement {
   const m = usePanoramaMessages();
 
   const gm = useMessages();
@@ -53,19 +51,13 @@ export function PanoramaProbeReadout({ probe, stacked }: Props): ReactElement {
     azimuth: nfDeg.format(probe.azimuth),
   });
 
-  return stacked ? (
+  return (
     <>
       {title && <div>{title}</div>}
 
       {/* Guarded like the title: the messages load as their own chunk, and an
           unguarded div opens the tooltip as an empty box until they land. */}
       {figures && <div>{figures}</div>}
-    </>
-  ) : (
-    <>
-      {title}
-      {title && ' — '}
-      {figures}
     </>
   );
 }

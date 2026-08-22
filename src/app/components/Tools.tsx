@@ -1,6 +1,5 @@
 import { DrawingPointsTool } from '@features/drawing/components/DrawingPointsTool.js';
 import { MapDetailsTool } from '@features/mapDetails/components/MapDetailsTool.js';
-import { PanoramaTool } from '@features/panorama/components/PanoramaTool.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import {
@@ -29,8 +28,6 @@ export function Tools(): ReactElement {
       {tool === 'map-details' && <MapDetailsTool />}
 
       {tool === 'draw-points' && <DrawingPointsTool />}
-
-      {tool === 'panorama' && <PanoramaTool />}
 
       {drawingLines && <AsyncComponent factory={drawingLinesToolFactory} />}
 
