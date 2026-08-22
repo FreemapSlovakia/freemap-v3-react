@@ -1,7 +1,9 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { makeBeamIcon } from '@shared/beamIcon.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { LatLon } from '@shared/types/common.js';
 import type {
   LatLngLiteral,
@@ -11,20 +13,26 @@ import type {
 } from 'leaflet';
 import {
   type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useRef,
 } from 'react';
 import { FaCrosshairs, FaEye } from 'react-icons/fa';
-import { Marker, Polyline, useMap } from 'react-leaflet';
+import { Marker, Polyline, Tooltip, useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { panoramaMoveViewpoint } from '../model/actions.js';
+import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import { usePanoramaHover, usePanoramaView } from '../viewStore.js';
+import { PanoramaProbeReadout } from './PanoramaProbeReadout.js';
 
 const WEDGE_SIZE = 240;
 
 const WEDGE_RADIUS = 110;
+
+/** How near the edge a mark may sit and still count as on screen. */
+const PAN_MARGIN_PX = 40;
 
 /**
  * The line of sight a reading was taken along. Thin and dashed so it reads as a
@@ -67,9 +75,19 @@ const makeWedgeIcon = (fov: number) =>
 export default function PanoramaResult(): ReactElement | null {
   const dispatch = useDispatch();
 
+  const m = usePanoramaMessages();
+
+  const gm = useMessages();
+
+  // Plain, not the `meter` unit style: `general.masl` follows it and says both
+  // the unit and what it is measured from.
+  const nfEle = useNumberFormat({ maximumFractionDigits: 0 });
+
   const viewpoint = useAppSelector((state) => state.panorama.viewpoint);
 
   const probe = useAppSelector((state) => state.panorama.probe);
+
+  const render = useAppSelector((state) => state.panorama.render);
 
   const view = usePanoramaView();
 
@@ -80,12 +98,26 @@ export default function PanoramaResult(): ReactElement | null {
   const wedgeRef = useRef<LeafletMarker | null>(null);
 
   // A ridge picked out of the picture can be tens of kilometres off and land
-  // outside the map entirely, where a mark helps nobody. Panned the least
-  // amount that brings it in rather than centred on it: centring would throw
-  // the viewpoint — the other end of what is being read — off the screen.
+  // outside the map entirely, where a mark helps nobody. A mark already on
+  // screen is left where it is — moving the map under someone who can see what
+  // they asked for is the rudest thing this could do — and one that isn't is
+  // centred, which is where the eye goes looking for it.
   useEffect(() => {
-    if (probe) {
-      map.panInside([probe.lat, probe.lon], { padding: [40, 40] });
+    if (!probe) {
+      return;
+    }
+
+    const at = map.latLngToContainerPoint([probe.lat, probe.lon]);
+
+    const size = map.getSize();
+
+    if (
+      at.x < PAN_MARGIN_PX ||
+      at.y < PAN_MARGIN_PX ||
+      at.x > size.x - PAN_MARGIN_PX ||
+      at.y > size.y - PAN_MARGIN_PX
+    ) {
+      map.panTo([probe.lat, probe.lon]);
     }
   }, [probe, map]);
 
@@ -112,6 +144,23 @@ export default function PanoramaResult(): ReactElement | null {
     () => viewpoint && { lat: viewpoint.lat, lng: viewpoint.lon },
     [viewpoint],
   );
+
+  // The render answers the eye's elevation for the place it was taken from, so
+  // there is nothing to ask the elevation API for — and nothing to gate on the
+  // account, since the service already clamped what it would give this one.
+  //
+  // Dragging the marker stages a new place without rendering, so the figure is
+  // about somewhere else the moment the pin leaves the rendered viewpoint. The
+  // viewpoint alone is compared, not the whole render key: reframing or
+  // changing the tier makes another picture of the same spot, and the same spot
+  // is the same height.
+  const eyeElevation =
+    render &&
+    viewpoint &&
+    render.viewpoint.lat === viewpoint.lat &&
+    render.viewpoint.lon === viewpoint.lon
+      ? render.eyeElevation
+      : null;
 
   // Turned by mutating the element rather than by rebuilding the icon, which
   // would replace the DOM node on every frame of a pan. A rebuilt icon brings a
@@ -146,7 +195,13 @@ export default function PanoramaResult(): ReactElement | null {
         draggable
         eventHandlers={{ dragend: handleDragEnd }}
         faIcon={<FaEye />}
-      />
+      >
+        {eyeElevation === null ? null : (
+          <Tooltip direction="top">
+            {m?.eyeElevation}: {nfEle.format(eyeElevation)} {gm?.general.masl}
+          </Tooltip>
+        )}
+      </RichMarker>
 
       {/* What the pointer is resting on, faded: it follows every mouse move, so
           it says "this is what you are looking at" without claiming to be a
@@ -165,7 +220,15 @@ export default function PanoramaResult(): ReactElement | null {
       )}
 
       {probe && (
-        <SightMark from={position} at={probe} pathOptions={SIGHT_LINE} />
+        <SightMark
+          from={position}
+          at={probe}
+          pathOptions={SIGHT_LINE}
+          // A press on the bare terrain has no name to give, but the two
+          // figures are read off the picture either way — which is the whole
+          // of what such a press asked.
+          tooltip={<PanoramaProbeReadout probe={probe} stacked />}
+        />
       )}
     </>
   );
@@ -176,11 +239,13 @@ function SightMark({
   at,
   pathOptions,
   opacity,
+  tooltip,
 }: {
   from: LatLngLiteral;
   at: LatLon;
   pathOptions: PathOptions;
   opacity?: number;
+  tooltip?: ReactNode;
 }): ReactElement {
   const to = { lat: at.lat, lng: at.lon };
 
@@ -192,12 +257,19 @@ function SightMark({
         pathOptions={pathOptions}
       />
 
+      {/* Interactive only where there is something to say: an inert mark lets a
+          click through to the map, which under this tool means picking a new
+          viewpoint — and nobody presses a pin meaning to move house. */}
       <RichMarker
         position={to}
-        interactive={false}
+        interactive={Boolean(tooltip)}
         opacity={opacity}
         faIcon={<FaCrosshairs />}
-      />
+      >
+        {/* Above the pin, which points down at the place it marks — a tooltip
+            below it would sit on the very ground being named. */}
+        {tooltip ? <Tooltip direction="top">{tooltip}</Tooltip> : null}
+      </RichMarker>
     </>
   );
 }

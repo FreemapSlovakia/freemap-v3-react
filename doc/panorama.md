@@ -60,6 +60,94 @@ Whether the picture still answers for the controls is **derived**, not tracked:
 `panoramaRenderKey(viewpoint, settings, quality)` is stored on the render and
 compared against the current one. Nothing has to remember to set a dirty flag.
 
+**Standing where the user is** borrows the map's own Locate me rather than
+asking the browser separately: one watch, one permission prompt, and the dot on
+the map to say where the fix put them. A fix already in hand is taken at once;
+otherwise `panoramaLocateProcessor` turns locating on and `panoramaFixProcessor`
+picks the viewpoint off the first fix.
+
+**The first fix is not good enough to stand on.** `locateProcessor` opens with a
+deliberately coarse one — `enableHighAccuracy: false`, ten minutes of cache
+allowed — so the marker appears at once, and it arrives well before the watch's.
+Taken as the viewpoint it would draw a panorama of where the user was ten
+minutes ago, or of a cell-tower estimate kilometres off, at up to forty seconds
+of server time. `panoramaFixProcessor` therefore ignores a fix rougher than
+`MAX_ACCURACY_M` or older than `MAX_AGE_MS` and keeps waiting for the accurate
+one. Ignoring rather than refusing: the wait simply continues, and the button
+stays pressable, which is how a user gives up.
+
+Three more details that are easy to get wrong. `toggleLocate` **clears the last fix**
+on its way in, so turning on what is already on would throw away the answer —
+hence the `!locate` guard. The fix processor is gated on `awaitingFix`, so
+locating for any other reason (the map's button, a tracking session) never moves
+a viewpoint the user placed by hand: a render this expensive is not started by a
+fix nobody asked for.
+
+And the wait answers to **`toggleLocate`, not to the error paths** — those do
+not agree. `locateProcessor` reports failure three ways: a timeout keeps trying
+and says nothing to us, `POSITION_UNAVAILABLE` dispatches `locateFailed`, and a
+refused permission dispatches `toggleLocate(false)` and a toast without ever
+dispatching `locateFailed` at all. Waiting on the failure actions alone left the
+button spinning for ever behind a "could not get position" toast. So any toggle
+clears the flag — which is also right for the user turning locating off by hand
+— and the processor sets the flag *after* its own `toggleLocate`, or it would
+clear the wait it is starting.
+
+Even that leaves one hole, because `locateProcessor` runs **inside** that
+dispatch: where it refuses on the spot — no geolocation at all — locating is
+already off again by the time the flag is set, and no later toggle is coming to
+clear it. So the processor reads `location.locate` back and gives up rather than
+assuming the ask took. And the button is never disabled: a bare timeout
+dispatches nothing whatsoever, so pressing it again is the only way out of a
+wait that will not end, and a disabled button has none.
+
+## Toolbar or modal
+
+One line decides: **the toolbar carries what is changed while looking at the
+picture; the modal carries what is set once.**
+
+By that test nothing moved into the modal when it arrived — the toolbar's
+controls all pass. The peak-name sliders act on the picture already in hand, so
+they are instant and belong under the eye. Quality is the most-changed render
+param and doubles as the premium surface, showing the tier actually granted.
+The tilt presets are how a view is framed, which is a thing done while looking
+at it. Locate and Update are actions.
+
+What the modal took was what had **no UI at all**: `eye`, which every request
+carried and nothing could change, and the exact vertical band, which the toolbar
+could display when a link carried one but had nowhere to type. The look
+(`ridge_strength`, `ridge_color`, `ground_color`) joined them.
+
+The band is split rather than duplicated, which is the trap here: the modal
+first grew its own preset dropdown, and the same control in two places is two
+places free to disagree. **The toolbar picks a preset, the modal types the
+angles.** The toolbar's list ends in a "Exact angles…" item that opens the modal
+rather than setting anything, and the modal's two fields are seeded from
+`tiltRange` — whatever is framed now — so they read as the numbers behind the
+current choice. Only typing different ones sets `tilt: 'custom'`; leaving them
+alone must not turn "Standard" into a pair of numbers saying the very same
+thing.
+
+Everything in there is a request parameter, so all of it is in
+`panoramaRenderKey` and none of it renders on its own — Save stages, Update
+pays. Named looks lead, because the only preview a colour has is a whole render
+and choosing four numbers blind is not a thing to ask of anyone;
+`panoramaLookOf` reads the settings back to a name, or `custom` where they match
+none.
+
+**`ridgeStrength` is a gain, not an opacity.** The renderer inks a near ridge at
+about 0.55 alpha and a distant one at 0.15, so `1` is already translucent and
+there would be no way to ask for a solid line if the field stopped at full. The
+service therefore sets no ceiling — alpha clamps at composite — but the slider
+stops at `RIDGE_STRENGTH_MAX`, past which even the haziest distant ridge has
+saturated and moving it further changes nothing.
+
+`ridgeWidth` is thickness in **output** pixels, so a line weighs the same
+whatever `step` the tier renders at, and it is independent of the gain: the
+interior of a stroke inks at the same alpha however wide it is, so widening
+thickens without darkening. This one the service does bound (20), because every
+stroke inks a band of rows and the pass costs more the wider they are.
+
 ## Quality, and the pixel cap
 
 Five tiers in `PANORAMA_QUALITIES`, coarsest to finest — `step`/sampling
@@ -195,9 +283,15 @@ taken at, so it stays over its own terrain while the view turns — a press-set
 one has to survive the compass moving the picture under it. It is dropped when
 a new render lands: the two passes are different heights, and the same row in
 the preview and in the detailed picture are different altitudes. Each carries a dashed line back to the viewpoint — the
-line of sight the reading was taken along — and a press that lands off the map
-pans it with `panInside` rather than centring on it, which would throw the
-viewpoint at the other end of that line off the screen.
+line of sight the reading was taken along.
+
+A mark already on screen leaves the map alone: moving it under someone who can
+see what they asked for is the rudest thing this could do. One that isn't —
+a ridge picked out of the picture can be tens of kilometres off — is **centred**,
+which is where the eye goes looking for it. On screen is measured in container
+pixels against a `PAN_MARGIN_PX` inset, so a mark hard against an edge counts as
+off. Note the check knows nothing of the panel itself, which floats over the
+map: a mark behind it reads as visible and is left there.
 
 ## Labels
 
@@ -214,9 +308,35 @@ direction: raw metres put a big distant massif over a nearby hill that fills
 far more of the frame, while metres over distance — the angle it subtends —
 puts a roadside knoll over the whole High Tatra range. `labelRank` in
 `fromPeaks.ts` takes dominance over the square root of distance, which sits
-between the two, and it is the one number here most worth re-tuning against
-real views. Whatever it becomes, it stays a bare ordering with no unit:
-nothing may test it against a fixed cut.
+between the two, times a haze term `exp(-distance / HAZE_M)`.
+
+The square root alone still flattered the horizon: it is a slow falloff and the
+far field is *wide* — a ring at 150 km holds far more mountains than one at 15 —
+so distant giants crowded out the near hills, and thinning the names took the
+near ones first. The haze term says a summit has to be **seeable**, not merely
+big; it barely touches anything close and falls away hard past `HAZE_M`
+(120 km). It is a soft falloff, not a cutoff: the High Tatras at 50 km still
+outrank the foothills, which is right, while a 1500 m giant at 177 km drops
+below a hill two ridges away, which is also right — on most days it is not
+there at all.
+
+**Both terms scale a signed number, which is the trap.** Dominance is negative
+for a top that never rises clear of its own ridge, and scaling a negative number
+*down* raises it — so multiplying by a falloff made a subordinate top rank
+*better* the further off it was, exactly backwards, and across most of the near
+field the weighting exists to protect. `labelRank` therefore divides by the
+falloff where the dominance is negative and multiplies where it is positive:
+either way the rank drops with distance, and every top that stands clear
+outranks every one that doesn't.
+
+This belongs here and not in the request. The service is asked for everything it
+will name, and ranking is display policy that depends on the panel, the zoom and
+the density setting — none of which it knows. Re-tuning `HAZE_M` costs a
+re-render of the labels; re-tuning it server-side would cost a whole panorama.
+
+`labelRank` is the one number here most worth re-tuning against real views.
+Whatever it becomes, it stays a bare ordering with no unit: nothing may test it
+against a fixed cut.
 
 **Dominance is signed.** A top that never rises clear of its own ridge scores
 how far the ridge stands over it — a shoulder around −37 m, a bump inside a
@@ -298,8 +418,54 @@ already have.
 
 So a second source (map selection, drawn points, route waypoints, gallery
 photos, OSM POIs) plugs in by producing `PanoramaLabel`s; layout, culling,
-styling and the tap card need no changes. Ranking is per-kind — angular
+styling and what a press does need no changes. Ranking is per-kind — angular
 dominance only makes sense for summits.
+
+**Pressing a name marks its summit on the map**, and the mark carries the
+summit with it: `PanoramaProbe.peak` holds the label's id, name and elevation
+beside the coordinates. One picked thing, said in three places at
+once — the name in the picture goes the marker's colour, the marker gets a
+tooltip, and the panel's footer says it beside the viewpoint's own elevation.
+
+Three because each covers where the other two aren't: the footer is the only
+one a finger can read (there is no hover to open a tooltip with), the tooltip
+is the one that works when the panel is small or the map is what you are
+looking at, and the colour is what says *which* of a hundred names on the
+skyline the other two are talking about.
+
+`distance` and `azimuth` sit on the probe itself rather than inside `peak`,
+because a press on the bare terrain reads both off the picture just the same —
+that is the whole of what such a press asked. Only the `peak` half is optional,
+so the tooltip and the footer both carry the figures and add the name above
+them where there is one. The marker is interactive so that a press on the pin
+does not fall through to the map, which under this tool picks a new viewpoint —
+nobody presses a pin meaning to move house.
+
+**The eye marker says its own elevation**, from `meta.eye_elevation` — the
+render answers it for the place it was taken from, so there is no request to
+make, no account to branch on (the service clamped what it would give this one
+when it drew the picture) and no credit to add beyond the ⓘ panel's. It is the
+eye's height, `settings.eye` included, not the bare DEM value.
+
+It is hidden the moment the marker is dragged off the rendered viewpoint, since
+dragging stages a new place without rendering and the figure would then be
+about somewhere else. Only the viewpoint is compared, not the whole render key:
+reframing or changing the tier makes another picture of the same spot, and the
+same spot is the same height.
+
+**Elevation is not derived for a terrain press.** It looks as though it should
+be: the image row gives the altitude angle, and `eye + distance × tan(alt)`
+follows. It doesn't survive the far field — the renderer draws with Earth
+curvature and refraction, so at 50 km the naive inversion is out by the better
+part of 200 m, and matching its correction means guessing its constants. The
+right source is the elevation API the app already talks to
+(`src/shared/elevation.ts`), keyed on the ground point the press already
+resolves. Not wired up yet.
+
+Earlier attempts, both worse: a card drawn in the picture put the answer over
+the very skyline it was about and stole presses and hover from the viewer under
+it; a toast said it somewhere the eye had no reason to be, and timed out while
+the thing it described was still on screen.
 
 ## Caveats to keep surfaced
 

@@ -87,6 +87,92 @@ export const DOMINANCE_STEPS_M = [
   1000,
 ].sort((a, b) => a - b);
 
+/**
+ * What a picture is drawn to look like: the ridge silhouettes' alpha gain and
+ * thickness, what they are inked in, and the near ground before haze.
+ */
+export type PanoramaStyle = {
+  ridgeStrength: number;
+  ridgeWidth: number;
+  ridgeColor: string;
+  groundColor: string;
+};
+
+/** What the service draws when asked for nothing; the modal resets to these. */
+export const PANORAMA_STYLE_DEFAULTS: PanoramaStyle = {
+  ridgeStrength: 1,
+  ridgeWidth: 1,
+  ridgeColor: '#000000',
+  groundColor: '#3a4a34',
+};
+
+/**
+ * Where the strength slider stops. The service has no ceiling — it is a gain on
+ * an alpha that clamps at composite — but by about here even the haziest
+ * distant ridge has saturated, so anything past it moves nothing.
+ */
+export const RIDGE_STRENGTH_MAX = 7;
+
+/** The service's own bound: every stroke inks a band of rows, so width costs. */
+export const RIDGE_WIDTH_MAX = 20;
+
+/**
+ * Named looks, so the usual answer is one press rather than three numbers
+ * chosen blind — the only preview a colour has is a whole render.
+ *
+ * `natural` is the service's own default. The rest are the API's worked
+ * examples: no linework at all, an inked map-like one, and a light ground under
+ * dark ink. Haze is untouched by any of them, so distance still reads.
+ */
+export const PANORAMA_LOOKS = {
+  natural: PANORAMA_STYLE_DEFAULTS,
+  relief: { ...PANORAMA_STYLE_DEFAULTS, ridgeStrength: 0 },
+  // A heavier stroke than the API's example asks for: what separates this from
+  // the default is meant to read as drawn, and the width is the half of that
+  // the alpha gain can't do.
+  drawn: {
+    ridgeStrength: 2.2,
+    ridgeWidth: 1.6,
+    ridgeColor: '#000000',
+    groundColor: '#7a6a4a',
+  },
+  engraved: {
+    ridgeStrength: 1,
+    ridgeWidth: 1,
+    ridgeColor: '#2b1a10',
+    groundColor: '#d8cfc0',
+  },
+  /** Whatever the user set by hand; matched by nothing, so it is `null` here. */
+  custom: null,
+} satisfies Record<string, PanoramaStyle | null>;
+
+/**
+ * The looks by name. Derived from the constant rather than declared beside it,
+ * so a look added or renamed without a label to go with it is a `tsc` error
+ * rather than a menu item that silently renders blank.
+ */
+export type PanoramaLook = keyof typeof PANORAMA_LOOKS;
+
+export const PANORAMA_LOOK_NAMES = Object.keys(
+  PANORAMA_LOOKS,
+) as PanoramaLook[];
+
+/** Which named look the current settings are, or `custom` where none matches. */
+export function panoramaLookOf(style: PanoramaStyle): PanoramaLook {
+  return (
+    PANORAMA_LOOK_NAMES.find((name) => {
+      const look = PANORAMA_LOOKS[name];
+
+      return (
+        look &&
+        (Object.keys(look) as (keyof PanoramaStyle)[]).every(
+          (key) => look[key] === style[key],
+        )
+      );
+    }) ?? 'custom'
+  );
+}
+
 export interface PanoramaSettingsState {
   /**
    * Which tier to ask for. Everything above the coarsest is premium's, and the
@@ -99,6 +185,11 @@ export interface PanoramaSettingsState {
   altMax: number;
   /** Eye height above the ground, metres. */
   eye: number;
+  /** How the picture is drawn; see `PANORAMA_LOOKS`. */
+  ridgeStrength: number;
+  ridgeWidth: number;
+  ridgeColor: string;
+  groundColor: string;
   /** How many names to draw, `0` for none; see {@link labelLayoutLimits}. */
   labelDensity: number;
   /** Metres of dominance a summit needs to be named; see {@link DOMINANCE_STEPS_M}. */
@@ -133,6 +224,7 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   altMin: -18,
   altMax: 12,
   eye: 1.7,
+  ...PANORAMA_STYLE_DEFAULTS,
   labelDensity: 5,
   minDominance: NO_DOMINANCE_FILTER,
   autoPan: touchDevice(),

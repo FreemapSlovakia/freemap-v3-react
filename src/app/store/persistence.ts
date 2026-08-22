@@ -166,6 +166,10 @@ const PersistedPanoramaSettingsSchema = z
     altMin: z.number(),
     altMax: z.number(),
     eye: z.number(),
+    ridgeStrength: z.number(),
+    ridgeWidth: z.number(),
+    ridgeColor: z.string(),
+    groundColor: z.string(),
     // Bounded, because the level indexes the menu's icon and word arrays.
     labelDensity: z.number().int().min(0).max(LABEL_DENSITY_MAX),
     minDominance: z.number(),

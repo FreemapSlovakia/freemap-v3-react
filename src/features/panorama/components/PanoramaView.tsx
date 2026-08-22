@@ -19,7 +19,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Card } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { distanceAt } from '../depth.js';
 import {
@@ -39,7 +38,6 @@ import {
   NO_DOMINANCE_FILTER,
 } from '../model/settingsReducer.js';
 import type { PanoramaRenderData } from '../renderHolder.js';
-import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import { setPanoramaHover, setPanoramaView } from '../viewStore.js';
 import classes from './Panorama.module.css';
 
@@ -89,6 +87,14 @@ const WRAP_MARGIN_PX = 200;
 
 /** How still the turning must be before the bearing is written down. */
 const SETTLE_MS = 500;
+
+/**
+ * The picked name, its leader and its dot. The marker's red lightened: the pin
+ * sits on a map, this sits on forest and rock under a black shadow, where
+ * `COLORS.normal` is too dark to read. Near enough to say "the same summit",
+ * far enough to be legible.
+ */
+const PICKED_INK = '#ff6a6a';
 
 function mod(value: number, n: number): number {
   return ((value % n) + n) % n;
@@ -164,8 +170,6 @@ export function PanoramaView({
   width,
   height,
 }: Props): ReactElement {
-  const m = usePanoramaMessages();
-
   const gm = useMessages();
 
   const dispatch = useDispatch();
@@ -175,6 +179,11 @@ export function PanoramaView({
   const language = useAppSelector((state) => state.l10n.language);
 
   const storedAzimuth = useAppSelector((state) => state.panorama.azimuth);
+
+  /** Which name is picked, if the mark on the map came from one. */
+  const pickedId = useAppSelector(
+    (state) => state.panorama.probe?.peak?.id ?? null,
+  );
 
   // The bearing lives here frame by frame and reaches the store once the
   // turning settles — every action writes the persisted state to localStorage,
@@ -197,15 +206,7 @@ export function PanoramaView({
     distance: number;
   } | null>(null);
 
-  const [selected, setSelected] = useState<string | null>(null);
-
   const viewportRef = useRef<HTMLDivElement>(null);
-
-  const nfM = useNumberFormat({
-    style: 'unit',
-    unit: 'meter',
-    maximumFractionDigits: 0,
-  });
 
   const nfDeg = useNumberFormat({
     style: 'unit',
@@ -528,7 +529,11 @@ export function PanoramaView({
         ground:
           distance === null
             ? null
-            : { ...groundPoint(render.viewpoint, az, distance), distance },
+            : {
+                ...groundPoint(render.viewpoint, az, distance),
+                distance,
+                azimuth: mod(az, 360),
+              },
       };
     },
     [
@@ -689,12 +694,44 @@ export function PanoramaView({
               distance: sample.ground.distance,
             },
           );
-
-          setSelected(null);
         }
       }
     },
     [dispatch, sampleGround],
+  );
+
+  /**
+   * Pressing a name marks its summit on the map and carries the summit itself
+   * along, which is what the marker's tooltip, the panel's footer and the
+   * label's own selected colour are all drawn from — one picked thing, said in
+   * the three places one might be looking.
+   *
+   * The mark is the same one a press on the terrain leaves — crosshair, line of
+   * sight, the map centred on it where it would be off screen — so a named
+   * summit and a ridge pointed at read alike.
+   */
+  const pickLabel = useCallback(
+    (label: PanoramaLabel) => {
+      // Pressing the picked one again lets it go. A highlighted name invites
+      // being pressed again, and the only other way out is pressing the sky,
+      // which nothing suggests.
+      if (label.id === pickedId) {
+        dispatch(panoramaSetProbe(null));
+
+        return;
+      }
+
+      dispatch(
+        panoramaSetProbe({
+          lat: label.lat,
+          lon: label.lon,
+          distance: label.distance,
+          azimuth: label.azimuth,
+          peak: { id: label.id, name: label.name, ele: label.ele },
+        }),
+      );
+    },
+    [dispatch, pickedId],
   );
 
   const anchor = useCallback(
@@ -795,8 +832,6 @@ export function PanoramaView({
     return out;
   }, [azLeft, degPerPx, gm, nfDeg, screenX, width]);
 
-  const selectedPlacement = placements.find((p) => p.label.id === selected);
-
   return (
     <div
       className={clsx(classes.viewport, dragging && classes.grabbing)}
@@ -847,7 +882,7 @@ export function PanoramaView({
               y1={p.anchor.y}
               x2={p.anchor.x}
               y2={p.top + LINE_HEIGHT}
-              stroke="#fff"
+              stroke={p.label.id === pickedId ? PICKED_INK : '#fff'}
               strokeWidth={1}
             />
 
@@ -855,7 +890,7 @@ export function PanoramaView({
               cx={p.anchor.x}
               cy={p.anchor.y}
               r={2}
-              fill="#fff"
+              fill={p.label.id === pickedId ? PICKED_INK : '#fff'}
               stroke="rgba(0, 0, 0, 0.5)"
               strokeWidth={1}
             />
@@ -868,11 +903,17 @@ export function PanoramaView({
           key={p.label.id}
           type="button"
           className={classes.label}
-          style={{ left: p.left, top: p.top }}
+          // Colour alone marks the picked one. Bold would be the obvious
+          // second signal and is the wrong one: the layout packed this name
+          // against a width measured in the regular face, so a bolder one runs
+          // over the neighbour the layout kept clear of it.
+          style={{
+            left: p.left,
+            top: p.top,
+            ...(p.label.id === pickedId ? { color: PICKED_INK } : {}),
+          }}
           onPointerDown={(e) => e.stopPropagation()}
-          onClick={() =>
-            setSelected((s) => (s === p.label.id ? null : p.label.id))
-          }
+          onClick={() => pickLabel(p.label)}
         >
           {p.label.name}
         </button>
@@ -912,67 +953,6 @@ export function PanoramaView({
         >
           {formatDistance(hoverAt.distance, language)}
         </div>
-      )}
-
-      {selectedPlacement && (
-        // The card sits inside the viewport, so without this its presses would
-        // also turn the view and mark the terrain behind it, and moving across
-        // it would keep measuring what it covers.
-        <Card
-          className={classes.card}
-          style={{
-            left: selectedPlacement.anchor.x,
-            top: selectedPlacement.top + LINE_HEIGHT + 4,
-          }}
-          onPointerDown={(e) => e.stopPropagation()}
-          onPointerMove={(e) => {
-            e.stopPropagation();
-
-            setHover(null);
-
-            setPanoramaHover(null);
-          }}
-        >
-          <Card.Body className="p-2 small">
-            <div className="fw-bold">{selectedPlacement.label.name}</div>
-
-            {selectedPlacement.label.ele !== null && (
-              <div>
-                {m?.peak.elevation}: {nfM.format(selectedPlacement.label.ele)}
-              </div>
-            )}
-
-            <div>
-              {m?.peak.distance}:{' '}
-              {formatDistance(selectedPlacement.label.distance, language)}
-            </div>
-
-            <div>
-              {m?.peak.azimuth}: {nfDeg.format(selectedPlacement.label.azimuth)}
-            </div>
-
-            {/* The same mark a press on the terrain leaves, so a summit picked
-                out of the picture and a ridge pointed at read alike: the
-                crosshair, the line of sight back to the viewpoint, and the
-                least pan that brings it into view. */}
-            <Button
-              className="mt-1"
-              size="sm"
-              variant="secondary"
-              onClick={() =>
-                dispatch(
-                  panoramaSetProbe({
-                    lat: selectedPlacement.label.lat,
-                    lon: selectedPlacement.label.lon,
-                    distance: selectedPlacement.label.distance,
-                  }),
-                )
-              }
-            >
-              {m?.peak.showOnMap}
-            </Button>
-          </Card.Body>
-        </Card>
       )}
     </div>
   );

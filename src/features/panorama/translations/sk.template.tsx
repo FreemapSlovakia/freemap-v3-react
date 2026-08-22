@@ -9,6 +9,28 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   cancel: 'Zrušiť',
   update: 'Aktualizovať',
   outdated: 'Obrázok je z predchádzajúceho stanoviska.',
+  locate: 'Pohľad z mojej polohy',
+  settings: {
+    title: 'Nastavenia panorámy',
+    eye: 'Výška očí',
+    eyeHint:
+      'Ako vysoko nad zemou stojíte — rozhľadňa či dron, nie nadmorská výška.',
+    tiltHint:
+      'Koľko oblohy a zeme obrázok zachytí — uhly nad obzorom a pod ním.',
+    custom: 'Presné uhly',
+    look: 'Vzhľad',
+    looks: {
+      natural: 'Prirodzený',
+      relief: 'Tieňovaný reliéf',
+      drawn: 'Kreslený',
+      engraved: 'Rytina',
+      custom: 'Vlastný',
+    },
+    ridgeStrength: 'Výraznosť hrebeňových línií',
+    ridgeWidth: 'Hrúbka hrebeňových línií',
+    ridgeColor: 'Farba hrebeňov',
+    groundColor: 'Farba terénu',
+  },
   preview: 'Náhľad',
   eyeElevation: 'Stanovisko',
   quality: {
@@ -42,10 +64,13 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   autoPan: 'Otáčať so zariadením alebo samo',
   fullscreen: 'Na celú obrazovku',
   peak: {
-    elevation: 'Nadmorská výška',
-    distance: 'Vzdialenosť',
-    azimuth: 'Azimut',
-    showOnMap: 'Zobraziť v mape',
+    title: ({ name, ele }) => (
+      <>
+        <b>{name}</b>
+        {ele === null ? null : ` (${ele})`}
+      </>
+    ),
+    figures: ({ distance, azimuth }) => `${distance}\xa0· ${azimuth}`,
   },
   errors: {
     offline: 'Panorámu vykresľuje server a vy ste offline.',

@@ -169,6 +169,10 @@ export function buildPanoramaRequest(
     peaks: true,
     min_dominance: MIN_DOMINANCE_M,
     max_peaks: MAX_PEAKS,
+    ridge_strength: settings.ridgeStrength,
+    ridge_width: settings.ridgeWidth,
+    ridge_color: settings.ridgeColor,
+    ground_color: settings.groundColor,
     ...PANORAMA_QUALITIES[quality].request,
     step: panoramaStep(quality, range),
   };
@@ -193,5 +197,11 @@ export function panoramaRenderKey(
     altMax,
     settings.eye,
     quality,
+    // The look is asked for, not applied afterwards, so changing it is another
+    // render — and the Update button has to say so.
+    settings.ridgeStrength,
+    settings.ridgeWidth,
+    settings.ridgeColor,
+    settings.groundColor,
   ].join('/');
 }

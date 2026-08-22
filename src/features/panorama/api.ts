@@ -28,6 +28,18 @@ export interface PanoramaRequest {
   min_dominance?: number;
   /** Cut applied after the sort, so it keeps the dominant summits. */
   max_peaks?: number;
+  /**
+   * Gain on the silhouettes' alpha, not an opacity: the geometry inks a near
+   * ridge at ~0.55 and a far one at ~0.15, so `1` is already translucent.
+   * Unbounded above — alpha clamps at composite — and `0` leaves bare relief.
+   */
+  ridge_strength?: number;
+  /** Stroke thickness in output pixels, 0–20; independent of the alpha gain. */
+  ridge_width?: number;
+  /** `#rrggbb`; a malformed one is a 400 naming the field, not a silent default. */
+  ridge_color?: string;
+  /** `#rrggbb`, the near terrain before haze washes it towards the sky. */
+  ground_color?: string;
 }
 
 /**

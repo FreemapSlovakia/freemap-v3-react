@@ -8,6 +8,28 @@ const en: PanoramaMessages = {
   cancel: 'Cancel',
   update: 'Update',
   outdated: 'The picture is of the previous viewpoint.',
+  locate: 'View from my position',
+  settings: {
+    title: 'Panorama settings',
+    eye: 'Eye height',
+    eyeHint:
+      'How high above the ground you are standing — a tower or a drone, not the elevation itself.',
+    tiltHint:
+      'How much sky and ground the picture holds, as the angles above and below the horizon.',
+    custom: 'Exact angles',
+    look: 'Look',
+    looks: {
+      natural: 'Natural',
+      relief: 'Shaded relief',
+      drawn: 'Drawn',
+      engraved: 'Engraved',
+      custom: 'Custom',
+    },
+    ridgeStrength: 'Ridge line strength',
+    ridgeWidth: 'Ridge line thickness',
+    ridgeColor: 'Ridge colour',
+    groundColor: 'Ground colour',
+  },
   preview: 'Preview',
   eyeElevation: 'Viewpoint',
   quality: {
@@ -41,10 +63,15 @@ const en: PanoramaMessages = {
   autoPan: 'Turn with the device, or by itself',
   fullscreen: 'Full screen',
   peak: {
-    elevation: 'Elevation',
-    distance: 'Distance',
-    azimuth: 'Azimuth',
-    showOnMap: 'Show on map',
+    title: ({ name, ele }) => (
+      <>
+        <b>{name}</b>
+        {ele === null ? null : ` (${ele})`}
+      </>
+    ),
+    // The dot is bound to the distance, so a tooltip narrow enough to wrap
+    // breaks after it rather than starting a line with it.
+    figures: ({ distance, azimuth }) => `${distance}\xa0· ${azimuth}`,
   },
   errors: {
     offline:

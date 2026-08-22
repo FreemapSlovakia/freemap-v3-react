@@ -98,6 +98,10 @@ import { downloadMapProcessor } from '@features/offlineMapExport/model/downloadM
 import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
 import { osmLoadProcessor } from '@features/osm/model/processors/osmLoadProcessor.js';
 import {
+  panoramaFixProcessor,
+  panoramaLocateProcessor,
+} from '@features/panorama/model/processors/panoramaLocateProcessor.js';
+import {
   panoramaReleaseProcessor,
   panoramaRenderProcessor,
 } from '@features/panorama/model/processors/panoramaRenderProcessor.js';
@@ -243,6 +247,8 @@ export const processors = [
   openInExternalAppProcessor,
   panoramaRenderProcessor,
   panoramaReleaseProcessor,
+  panoramaLocateProcessor,
+  panoramaFixProcessor,
   ...Object.values(rpcProcessors),
   exportMapFeaturesProcessor,
   ...authProcessors,

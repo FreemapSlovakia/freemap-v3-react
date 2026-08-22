@@ -28,6 +28,7 @@ const URL_MODAL_IDS = [
   'objects-style',
   'offline-map-export',
   'offline-maps',
+  'panorama-settings',
   'premium',
   // Temporary, for the 2026 price increase: invites a user holding a one-time
   // year to switch to a subscription while the current price lasts.

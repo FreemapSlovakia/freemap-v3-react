@@ -1,3 +1,6 @@
+import type { ReactNode } from 'react';
+import type { PanoramaLook } from '../model/settingsReducer.js';
+
 export type PanoramaMessages = {
   /** Shown in the empty panel, before anywhere has been picked. */
   pickHint: string;
@@ -11,6 +14,26 @@ export type PanoramaMessages = {
   update: string;
   /** Says the picture no longer answers for what the controls say. */
   outdated: string;
+  /** The button that stands the viewer on the user's own position. */
+  locate: string;
+  /** The set-once settings, which all cost a render to change. */
+  settings: {
+    title: string;
+    eye: string;
+    /** Says what the height is measured from, and that it is not the elevation. */
+    eyeHint: string;
+    /** Says what the vertical band is, which its name alone does not. */
+    tiltHint: string;
+    /** The vertical band given as its two angles rather than by name. */
+    custom: string;
+    look: string;
+    /** One per `PANORAMA_LOOKS`, so adding a look without a name won't compile. */
+    looks: Record<PanoramaLook, string>;
+    ridgeStrength: string;
+    ridgeWidth: string;
+    ridgeColor: string;
+    groundColor: string;
+  };
   /** Marks the fast pass while the detailed one is still rendering. */
   preview: string;
   /** Where the eye stands, metres above sea level. */
@@ -51,12 +74,16 @@ export type PanoramaMessages = {
   };
   autoPan: string;
   fullscreen: string;
+  /**
+   * What a picked summit says, in two halves so each place can put them where
+   * it has room: the panel's footer runs them along one line, the map marker's
+   * tooltip stacks them.
+   */
   peak: {
-    elevation: string;
-    distance: string;
-    azimuth: string;
-    /** Puts the map on the summit. */
-    showOnMap: string;
+    /** Its name, with its elevation where the terrain model knows one. */
+    title: (params: { name: string; ele: string | null }) => ReactNode;
+    /** How far off it stands, and which way. */
+    figures: (params: { distance: string; azimuth: string }) => ReactNode;
   };
   errors: {
     offline: string;

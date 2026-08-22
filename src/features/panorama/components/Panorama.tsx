@@ -1,4 +1,5 @@
 import { closeTool } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { requestCompassPermission } from '@features/location/compass.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
@@ -37,6 +38,7 @@ import { grantedQuality, PANORAMA_QUALITIES } from '../quality.js';
 import { getPanoramaRenderData } from '../renderHolder.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import classes from './Panorama.module.css';
+import { PanoramaProbeReadout } from './PanoramaProbeReadout.js';
 import { PanoramaView } from './PanoramaView.js';
 
 /**
@@ -73,9 +75,11 @@ function useElapsed(running: boolean): number {
 export default function Panorama(): ReactElement {
   const m = usePanoramaMessages();
 
+  const gm = useMessages();
+
   const dispatch = useDispatch();
 
-  const { render, rendering, error, fullscreen } = useAppSelector(
+  const { render, rendering, error, fullscreen, probe } = useAppSelector(
     (state) => state.panorama,
   );
 
@@ -89,14 +93,13 @@ export default function Panorama(): ReactElement {
 
   const [showCaveats, setShowCaveats] = useState(false);
 
-  const nfM = useNumberFormat({
-    style: 'unit',
-    unit: 'meter',
-    maximumFractionDigits: 0,
-  });
+  // Plain, not the `meter` unit style: an elevation is written with `m a.s.l.`
+  // after it, which says both the unit and what it is measured from — worth
+  // saying where a distance in metres is on the same line.
+  const nfEle = useNumberFormat({ maximumFractionDigits: 0 });
 
-  const { boxRef, footerRef, moveHandleRef, resizeHandleProps, pos } =
-    useFloatingWindow({ storageKey: 'fm.panorama.box' });
+  const { boxRef, footerRef, moveHandleRef, resizeHandleProps } =
+    useFloatingWindow({ storageKey: 'fm.panorama.window' });
 
   // The view fills whatever the box leaves it, which full screen changes out
   // from under the window hook — so it is measured rather than computed.
@@ -136,20 +139,20 @@ export default function Panorama(): ReactElement {
     <div
       className={clsx(
         windowClasses.window,
+        classes.panel,
         'd-flex',
         'flex-column',
         // Dropped rather than overridden in full screen: Bootstrap's utilities
         // are `!important` and a single class, the same weight as the rule that
         // would undo them, so which one wins comes down to stylesheet order.
-        // Left on, they inset the panel and round it — a frame with the map
+        // Left on, they pad the panel and round it — a frame with the map
         // showing through it.
-        !fullscreen && ['m-2', 'p-2', 'rounded'],
+        !fullscreen && ['p-2', 'rounded'],
         // The plain class is what the header watches for, to lift its whole
         // stacking context over the bottom controls — see `Main.module.css`.
         fullscreen && [classes.fullscreen, 'fm-fullscreen'],
       )}
       ref={boxRef}
-      style={fullscreen ? undefined : pos}
     >
       {!fullscreen && (
         <div
@@ -222,10 +225,26 @@ export default function Panorama(): ReactElement {
       >
         {render && (
           <span className="text-body-secondary">
-            {m?.eyeElevation}: {nfM.format(render.eyeElevation)}
+            {m?.eyeElevation}: {nfEle.format(render.eyeElevation)}{' '}
+            {gm?.general.masl}
             {/* The finer picture is premium's; say so where the one on screen
                 is the fast pass. */}
             {!premium && <PremiumGem hint={m?.quality.premiumHint} />}
+          </span>
+        )}
+
+        {/* What was last picked out of the picture, beside where it was picked
+            from. Here rather than over the picture: this is the one place in
+            the panel that is already text, and a summit's figures said here
+            cover nothing they are about. */}
+        {probe && (
+          <span>
+            {/* The row is a flex line whose items are separate readings; the
+                dot is what says this one belongs to the elevation before it
+                rather than being the next thing along. */}
+            <span className="text-body-secondary me-2">·</span>
+
+            <PanoramaProbeReadout probe={probe} />
           </span>
         )}
 

@@ -1,13 +1,19 @@
 import { clearMapFeatures, closeTool } from '@app/store/actions.js';
+import {
+  locateFailed,
+  toggleLocate,
+} from '@features/location/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { LatLon } from '@shared/types/common.js';
 import type { PanoramaErrorCode } from '../api.js';
 import type { PanoramaLabel } from '../labels/types.js';
 import {
+  type PanoramaProbe,
   panoramaCancel,
   panoramaClear,
   panoramaMoveViewpoint,
   panoramaPick,
+  panoramaSetAwaitingFix,
   panoramaSetAzimuth,
   panoramaSetError,
   panoramaSetProbe,
@@ -51,7 +57,9 @@ export interface PanoramaState {
   /** Bearing the middle of the viewer looks at; see `panoramaSetAzimuth`. */
   azimuth: number;
   fullscreen: boolean;
-  probe: (LatLon & { distance: number }) | null;
+  probe: PanoramaProbe | null;
+  /** Waiting for a GPS fix to stand on; see `panoramaLocate`. */
+  awaitingFix: boolean;
 }
 
 export const panoramaInitialState: PanoramaState = {
@@ -62,6 +70,7 @@ export const panoramaInitialState: PanoramaState = {
   azimuth: 0,
   fullscreen: false,
   probe: null,
+  awaitingFix: false,
 };
 
 export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
@@ -72,6 +81,24 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
       state.error = null;
 
       state.probe = null;
+
+      state.awaitingFix = false;
+    })
+    .addCase(panoramaSetAwaitingFix, (state, { payload }) => {
+      state.awaitingFix = payload;
+    })
+    // Locating gave up on its own: it stays on, but nothing is going to arrive
+    // to stand on, and a button spinning for ever says the opposite.
+    .addCase(locateFailed, (state) => {
+      state.awaitingFix = false;
+    })
+    // Locating being turned on or off at all ends the wait — a refused
+    // permission turns it off without ever reporting a failure, and the map's
+    // own button turning it off means the user has taken this over. The
+    // processor sets the flag after its own `toggleLocate`, so this can't
+    // undo the wait it is starting.
+    .addCase(toggleLocate, (state) => {
+      state.awaitingFix = false;
     })
     .addCase(panoramaMoveViewpoint, (state, { payload }) => {
       state.viewpoint = payload;

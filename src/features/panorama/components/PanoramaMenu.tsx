@@ -1,3 +1,5 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { requestCompassPermission } from '@features/location/compass.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
@@ -11,8 +13,8 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';
-import { Button } from 'react-bootstrap';
-import { FaSync } from 'react-icons/fa';
+import { Button, Spinner } from 'react-bootstrap';
+import { FaCog, FaRegDotCircle, FaSync } from 'react-icons/fa';
 import { LuFoldVertical, LuUnfoldVertical } from 'react-icons/lu';
 import { MdOutlineHeight } from 'react-icons/md';
 import { PiMountains } from 'react-icons/pi';
@@ -23,7 +25,12 @@ import {
   TbTagOff,
 } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
-import { panoramaRender, panoramaSetSettings } from '../model/actions.js';
+import {
+  panoramaLocate,
+  panoramaRender,
+  panoramaSetAwaitingFix,
+  panoramaSetSettings,
+} from '../model/actions.js';
 import {
   DOMINANCE_STEPS_M,
   LABEL_DENSITY_MAX,
@@ -49,7 +56,7 @@ export default function PanoramaMenu(): ReactElement {
 
   const settings = useAppSelector((state) => state.panoramaSettings);
 
-  const { viewpoint, render, rendering } = useAppSelector(
+  const { viewpoint, render, rendering, awaitingFix } = useAppSelector(
     (state) => state.panorama,
   );
 
@@ -160,11 +167,16 @@ export default function PanoramaMenu(): ReactElement {
       <SelectDropdown
         value={settings.tilt}
         onSelect={(value) =>
-          dispatch(
-            panoramaSetSettings({
-              tilt: (value ?? 'standard') as PanoramaTilt,
-            }),
-          )
+          // The last item is a door, not a band: the angles are typed in the
+          // settings modal, which is the only place that has room for two
+          // number fields and the one place they live.
+          value === 'custom'
+            ? dispatch(setActiveModal({ type: 'panorama-settings' }))
+            : dispatch(
+                panoramaSetSettings({
+                  tilt: (value ?? 'standard') as PanoramaTilt,
+                }),
+              )
         }
         // Shortest frame to tallest, so the list runs the way the thing it
         // controls does.
@@ -175,7 +187,19 @@ export default function PanoramaMenu(): ReactElement {
             label: m?.tilt.standard,
             icon: <MdOutlineHeight />,
           },
-          { value: 'wide', label: m?.tilt.wide, icon: <LuUnfoldVertical /> },
+          {
+            value: 'wide',
+            label: m?.tilt.wide,
+            icon: <LuUnfoldVertical />,
+            // Sets off what follows, which is a door rather than a band; the
+            // flag draws the line *after* its own option.
+            divider: true,
+          },
+          {
+            value: 'custom',
+            label: `${m?.settings.custom}…`,
+            icon: <FaCog />,
+          },
         ]}
         // A band from a `panorama-tilt=altMin,altMax` link matches no preset,
         // which would leave the toggle blank. It says the angles instead, and
@@ -231,6 +255,55 @@ export default function PanoramaMenu(): ReactElement {
           }
         />
       </SliderDropdown>
+
+      {/* Set-once settings — eye height, an exact vertical band, the look —
+          which all cost a render, so they sit behind a modal rather than in
+          reach of a stray click. */}
+      <LongPressTooltip label={m?.settings.title}>
+        {({ props }) => (
+          <Button
+            variant="secondary"
+            onClick={() =>
+              dispatch(setActiveModal({ type: 'panorama-settings' }))
+            }
+            {...props}
+          >
+            <FaCog />
+          </Button>
+        )}
+      </LongPressTooltip>
+
+      {/* The one place the viewpoint can be set without knowing where you are
+          on the map — which is exactly the case out on a hill with the phone. */}
+      <LongPressTooltip label={m?.locate}>
+        {({ props }) => (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              // The other way a viewpoint is placed, so it asks for the
+              // magnetometer as the map click does — iOS grants it only from a
+              // gesture, and the pick itself happens later in a processor,
+              // nowhere near one.
+              void requestCompassPermission();
+
+              // Never disabled: a fix can fail to arrive without anything
+              // being dispatched to say so (a bare timeout keeps trying), and
+              // a button that is spinning and dead has no way out of that.
+              // Pressing it again gives up.
+              dispatch(
+                awaitingFix ? panoramaSetAwaitingFix(false) : panoramaLocate(),
+              );
+            }}
+            {...props}
+          >
+            {awaitingFix ? (
+              <Spinner animation="border" size="sm" />
+            ) : (
+              <FaRegDotCircle />
+            )}
+          </Button>
+        )}
+      </LongPressTooltip>
 
       {outdated && !rendering && (
         <LongPressTooltip label={m?.outdated}>

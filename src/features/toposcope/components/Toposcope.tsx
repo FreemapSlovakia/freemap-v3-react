@@ -174,18 +174,11 @@ export default function Toposcope(): ReactElement {
     [center],
   );
 
-  const {
-    boxRef,
-    footerRef,
-    moveHandleRef,
-    resizeHandleProps,
-    pos,
-    width,
-    height,
-  } = useFloatingWindow({
-    storageKey: 'fm.toposcope.box',
-    defaultSize: squareDefaultSize,
-  });
+  const { boxRef, footerRef, moveHandleRef, resizeHandleProps, width, height } =
+    useFloatingWindow({
+      storageKey: 'fm.toposcope.window',
+      defaultSize: squareDefaultSize,
+    });
 
   // The portal the dial was made on — the same name the page title carries, so
   // an exported dial says which of the two sites drew it.
@@ -199,12 +192,10 @@ export default function Toposcope(): ReactElement {
       className={clsx(
         windowClasses.window,
         classes.toposcope,
-        'm-2',
         'p-2',
         'rounded',
       )}
       ref={boxRef}
-      style={pos}
     >
       <div className={windowClasses.moveHandle} ref={moveHandleRef}>
         <FaArrowsAlt />

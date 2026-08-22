@@ -9,6 +9,28 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   cancel: 'Zrušit',
   update: 'Aktualizovat',
   outdated: 'Obrázek je z předchozího stanoviště.',
+  locate: 'Pohled z mé polohy',
+  settings: {
+    title: 'Nastavení panoramatu',
+    eye: 'Výška očí',
+    eyeHint:
+      'Jak vysoko nad zemí stojíte — rozhledna či dron, ne nadmořská výška.',
+    tiltHint:
+      'Kolik oblohy a země obrázek zachytí — úhly nad obzorem a pod ním.',
+    custom: 'Přesné úhly',
+    look: 'Vzhled',
+    looks: {
+      natural: 'Přirozený',
+      relief: 'Stínovaný reliéf',
+      drawn: 'Kreslený',
+      engraved: 'Rytina',
+      custom: 'Vlastní',
+    },
+    ridgeStrength: 'Výraznost hřebenových linií',
+    ridgeWidth: 'Tloušťka hřebenových linií',
+    ridgeColor: 'Barva hřebenů',
+    groundColor: 'Barva terénu',
+  },
   preview: 'Náhled',
   eyeElevation: 'Stanoviště',
   quality: {
@@ -42,10 +64,13 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   autoPan: 'Otáčet se zařízením nebo samo',
   fullscreen: 'Na celou obrazovku',
   peak: {
-    elevation: 'Nadmořská výška',
-    distance: 'Vzdálenost',
-    azimuth: 'Azimut',
-    showOnMap: 'Zobrazit v mapě',
+    title: ({ name, ele }) => (
+      <>
+        <b>{name}</b>
+        {ele === null ? null : ` (${ele})`}
+      </>
+    ),
+    figures: ({ distance, azimuth }) => `${distance}\xa0· ${azimuth}`,
   },
   errors: {
     offline: 'Panorama vykresluje server a vy jste offline.',

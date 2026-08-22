@@ -414,7 +414,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   elevationChart: {
     distance: 'Vzdálenost [km]',
-    ele: 'Nadm. výška [m.n.m.] ',
+    ele: `Nadm. výška [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Nastala chyba při získávání výškového profilu', err),
     settings: 'Předvolby nadmořské výšky',

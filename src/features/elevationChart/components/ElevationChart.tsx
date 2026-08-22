@@ -190,19 +190,12 @@ export default function ElevationChart(): ReactElement | null {
 
   const { climbUp, climbDown } = elevationProfilePoints.at(-1) ?? {};
 
-  const {
-    boxRef,
-    footerRef,
-    moveHandleRef,
-    resizeHandleProps,
-    pos,
-    width,
-    height,
-  } = useFloatingWindow({
-    storageKey: 'fm.elevationChart.box',
-    // The axis margins; what's left over between them is the plot.
-    chromeHeight: mt + mb,
-  });
+  const { boxRef, footerRef, moveHandleRef, resizeHandleProps, width, height } =
+    useFloatingWindow({
+      storageKey: 'fm.elevationChart.window',
+      // The axis margins; what's left over between them is the plot.
+      chromeHeight: mt + mb,
+    });
 
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -310,12 +303,10 @@ export default function ElevationChart(): ReactElement | null {
       className={clsx(
         windowClasses.window,
         classes.elevationChart,
-        'm-2',
         'p-2',
         'rounded',
       )}
       ref={boxRef}
-      style={pos}
     >
       {/* The window's only move grip, mirroring the resize one in the opposite
           corner. The plot itself is left to scrubbing the profile. */}

@@ -238,6 +238,12 @@ const toposcopeCenterPickingMenuFactory = () =>
     '@features/toposcope/components/ToposcopeCenterPickingMenu.js'
   );
 
+const panoramaSettingsModalFactory = () =>
+  import(
+    /* webpackChunkName: "panorama-settings-modal" */
+    '@features/panorama/components/PanoramaSettingsModal.js'
+  );
+
 const toposcopeSettingsModalFactory = () =>
   import(
     /* webpackChunkName: "toposcope-settings-modal" */
@@ -1112,6 +1118,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'objects-style'}
         factory={objectsStyleModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'panorama-settings'}
+        factory={panoramaSettingsModalFactory}
       />
 
       <AsyncModal

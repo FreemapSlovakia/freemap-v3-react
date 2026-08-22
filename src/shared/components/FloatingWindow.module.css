@@ -1,10 +1,19 @@
 /* A panel floating over the map: draggable by its top-left grip, resizable by
-   its bottom-right one, and sized by whoever puts content in it. */
+   its bottom-right one, and sized by whoever puts content in it.
+
+   `useFloatingWindow` pins it — `position: fixed` and the four viewport
+   coordinates, written straight onto the element. Until it does, on the very
+   first paint of a window nobody has moved yet, the box sits in the flow: that
+   is how it finds the spot the layout would have given it. */
 .window {
   position: relative;
-  background-color: rgba(255, 255, 255, 0.8);
+  /* Translucent, so the map still reads behind a panel that is mostly chrome.
+     A panel carrying prose rather than a drawing sets `--fm-window-opacity: 1`
+     for itself: map detail showing through a paragraph is not fancy, it is
+     unreadable. */
+  background-color: rgba(255, 255, 255, var(--fm-window-opacity, 0.8));
   [data-bs-theme="dark"] & {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, var(--fm-window-opacity, 0.8));
   }
   overflow: hidden;
   touch-action: none;

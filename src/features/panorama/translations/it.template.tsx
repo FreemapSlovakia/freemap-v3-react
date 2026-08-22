@@ -7,6 +7,7 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   labels: {},
   dominance: {},
   peak: {},
+  settings: { looks: {} },
   errors: {},
   caveats: {},
 };
