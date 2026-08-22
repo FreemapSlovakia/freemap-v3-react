@@ -31,6 +31,11 @@ type Props = {
    * instead.
    */
   collapsible?: boolean;
+  /**
+   * Drops the close button: set while the toolbar would stay up anyway, where
+   * closing only strips it down and so repeats the collapse button.
+   */
+  noClose?: boolean;
   /** Decorates the header icon, e.g. to say the tool is doing something. */
   iconClassName?: string;
   /**
@@ -46,6 +51,7 @@ export function ToolMenu({
   tool,
   children,
   collapsible,
+  noClose,
   iconClassName,
   wrapCollapsedIcon,
 }: Props): ReactElement {
@@ -167,20 +173,22 @@ export function ToolMenu({
               {/* Escape closes the tool that owns map clicks — it is what leaves
                   a mode — so only there does it name the same gesture as this
                   button. */}
-              <LongPressTooltip
-                label={m?.general.close}
-                kbd={isMapClickTool(tool) ? 'Esc' : undefined}
-              >
-                {({ props }) => (
-                  <Button
-                    variant="dark"
-                    onClick={() => dispatch(closeTool(tool))}
-                    {...props}
-                  >
-                    <FaTimes />
-                  </Button>
-                )}
-              </LongPressTooltip>
+              {!noClose && (
+                <LongPressTooltip
+                  label={m?.general.close}
+                  kbd={isMapClickTool(tool) ? 'Esc' : undefined}
+                >
+                  {({ props }) => (
+                    <Button
+                      variant="dark"
+                      onClick={() => dispatch(closeTool(tool))}
+                      {...props}
+                    >
+                      <FaTimes />
+                    </Button>
+                  )}
+                </LongPressTooltip>
+              )}
             </>
           )}
         </ButtonToolbar>

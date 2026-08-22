@@ -157,6 +157,7 @@ export default function GpsRecorderMenu(): ReactElement {
     <ToolMenu
       tool="gps-recorder"
       collapsible
+      noClose={recording}
       iconClassName={recording ? classes.recording : undefined}
       wrapCollapsedIcon={(icon) => <GpsRecorderReadout collapsedIcon={icon} />}
     >
