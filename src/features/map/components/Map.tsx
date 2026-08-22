@@ -4,6 +4,8 @@ import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.j
 import { useMap } from '@features/map/hooks/useMap.js';
 import { initialWheelPxPerZoomLevel } from '@features/map/wheelZoomCalibration.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+// Imported for its side effect, before any layer can bind a tooltip.
+import '../leafletTooltipFocusFix.js';
 import 'leaflet/dist/leaflet.css';
 import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { MapContainer, Pane, ScaleControl } from 'react-leaflet';
