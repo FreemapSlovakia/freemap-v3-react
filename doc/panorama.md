@@ -71,10 +71,17 @@ deliberately coarse one — `enableHighAccuracy: false`, ten minutes of cache
 allowed — so the marker appears at once, and it arrives well before the watch's.
 Taken as the viewpoint it would draw a panorama of where the user was ten
 minutes ago, or of a cell-tower estimate kilometres off, at up to forty seconds
-of server time. `panoramaFixProcessor` therefore ignores a fix rougher than
-`MAX_ACCURACY_M` or older than `MAX_AGE_MS` and keeps waiting for the accurate
-one. Ignoring rather than refusing: the wait simply continues, and the button
-stays pressable, which is how a user gives up.
+of server time. Both paths therefore hold a fix to `standable` — rougher than
+`MAX_ACCURACY_M` or older than `MAX_AGE_MS` and it is ignored, including the one
+already in hand when the button is pressed, since locating may have been on for
+the map's own reasons for the last ten minutes. Ignoring rather than refusing:
+the wait simply continues, and the button stays pressable, which is how a user
+gives up.
+
+Of the two tests the accuracy is the one that carries it. `locateProcessor`
+stamps `at` with the current time wherever the platform's own timestamp cannot
+be trusted, so on such a host a cached fix arrives looking fresh — but the
+coarse pass asks for no accuracy, and what it answers with says so.
 
 Three more details that are easy to get wrong. `toggleLocate` **clears the last fix**
 on its way in, so turning on what is already on would throw away the answer —

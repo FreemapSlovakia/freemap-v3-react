@@ -57,7 +57,9 @@ export function PanoramaProbeReadout({ probe, stacked }: Props): ReactElement {
     <>
       {title && <div>{title}</div>}
 
-      <div>{figures}</div>
+      {/* Guarded like the title: the messages load as their own chunk, and an
+          unguarded div opens the tooltip as an empty box until they land. */}
+      {figures && <div>{figures}</div>}
     </>
   ) : (
     <>

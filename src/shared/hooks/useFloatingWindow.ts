@@ -27,13 +27,21 @@ const EDGE_GAP = 8;
 // The `p-2` padding between the box's edges and its contents.
 const BOX_PADDING = 8;
 
+/** Where a window ended up, as laid out — not as it asked to be. */
+type Placement = { rect: Box | null };
+
 /**
- * Every floating window currently on screen, so a new one can be placed clear
- * of them. Module-level because they are separate components that never meet:
- * each pins itself out of the flow, which is exactly what stops the next one
- * from measuring a spot the first one is already sitting in.
+ * Every floating window currently on screen, in the order they opened, so a new
+ * one can be placed clear of them. Module-level because they are separate
+ * components that never meet: each pins itself out of the flow, which is
+ * exactly what stops the next one from measuring a spot the first is sitting in.
+ *
+ * The order is what keeps them apart. A window stacks below the ones registered
+ * *before* it and ignores the rest — were it below all of them, two unmoved
+ * windows would each put themselves under the other and walk down the screen a
+ * box at a time on every re-fit.
  */
-const placedBoxes: RefObject<Box | null>[] = [];
+const placedBoxes: Placement[] = [];
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), Math.max(min, max));
@@ -91,19 +99,11 @@ function deserializeBox(value: string | null): Box | null {
 function adoptLegacySize(
   storageKey: string,
 ): { width: number; height: number } | null {
-  const [, , width, height] = (storage.getItem(legacyKeyOf(storageKey)) ?? '')
-    .split(',')
-    .map(Number);
+  // Through the same parse, so the stored format and the clamping bounds are
+  // stated once; only the position it also yields is meaningless now.
+  const box = deserializeBox(storage.getItem(legacyKeyOf(storageKey)));
 
-  return width !== undefined &&
-    height !== undefined &&
-    Number.isFinite(width) &&
-    Number.isFinite(height)
-    ? {
-        width: clamp(width, MIN_WIDTH, window.innerWidth - 2 * EDGE_GAP),
-        height: clamp(height, MIN_HEIGHT, window.innerHeight - 2 * EDGE_GAP),
-      }
-    : null;
+  return box && { width: box.width, height: box.height };
 }
 
 const legacyKeyOf = (storageKey: string) =>
@@ -125,7 +125,11 @@ function flowTop(el: HTMLElement): number {
   ) {
     const rect = sibling.getBoundingClientRect();
 
-    if (rect.height > 0) {
+    // Only what is actually in the flow — the toolbars. The other floating
+    // windows are siblings too, and pinned, so their rectangles say where they
+    // were put rather than what they take up here; counting them would stack
+    // the windows twice over, once here and once against `placedBoxes`.
+    if (rect.height > 0 && getComputedStyle(sibling).position === 'static') {
       top = Math.max(top, rect.bottom + EDGE_GAP);
     }
   }
@@ -133,13 +137,19 @@ function flowTop(el: HTMLElement): number {
   return top;
 }
 
-/** Half the viewport, never below what the content needs nor past its edges. */
+/**
+ * Half the viewport, never below what the content needs nor past its edges —
+ * the same inset the layout clamps to, so a window doesn't open two pixels
+ * wider than it is allowed to be and get pulled back on its first fit.
+ */
 export function halfViewportSize() {
   return {
     width: Math.min(
       Math.max(window.innerWidth / 2, 400),
-      Math.max(window.innerWidth - 14, 40),
+      Math.max(window.innerWidth - 2 * EDGE_GAP, 40),
     ),
+    // Not `EDGE_GAP`: this leaves room for the controls along the bottom of the
+    // map, which a window opening full height would cover.
     height: Math.min(
       Math.max(window.innerHeight / 2, 300),
       Math.max(window.innerHeight - 130, 40),
@@ -170,7 +180,7 @@ type FloatingWindow = {
   /** Goes on the footer row, whose height is taken off the content's. */
   footerRef: (el: HTMLDivElement | null) => void;
   /** Goes on the move grip — the only part of the box that drags it. */
-  moveHandleRef: React.RefObject<HTMLDivElement | null>;
+  moveHandleRef: RefObject<HTMLDivElement | null>;
   /** Spread onto the resize grip. */
   resizeHandleProps: {
     onPointerDown: (e: ReactPointerEvent<HTMLDivElement>) => void;
@@ -228,6 +238,15 @@ export function useFloatingWindow({
 
   const startPosRef = useRef<[number, number]>(undefined);
 
+  /**
+   * Whether the gesture in progress has moved the box, so a press that went
+   * nowhere writes nothing. A ref rather than a local, because the listener
+   * effect is rebuilt whenever `persistBox` changes identity — answering the
+   * cookie banner mid-drag does that — and a local would reset to `false` under
+   * the finger, losing the position on release.
+   */
+  const draggedRef = useRef(false);
+
   const posRef = useRef([initialBox?.left ?? 0, initialBox?.top ?? 0]);
 
   // The geometry the user chose, which is also what gets stored; `null` until
@@ -243,6 +262,9 @@ export function useFloatingWindow({
    */
   const movedRef = useRef(initialBox !== null);
 
+  /** This window's entry in `placedBoxes`; see there for what the order does. */
+  const placementRef = useRef<Placement>({ rect: null });
+
   // Stored at the end of a gesture rather than on every move, so a drag writes
   // to storage once.
   const persistBox = useCallback(() => {
@@ -250,11 +272,14 @@ export function useFloatingWindow({
 
     setBox(chosenRef.current);
 
-    // The size carried over from the old key is now written under the new one,
-    // so the entry it came from can go. Only here: dropping it as it was read
-    // would have lost the size for good if the window was closed before any
-    // gesture ever wrote anything.
-    storage.removeItem(legacyKeyOf(storageKey));
+    // The entry the size came from goes only once the new key actually holds
+    // something. `usePersistentState` writes nothing until cookie consent is
+    // given, so dropping it unconditionally would delete the size on behalf of
+    // a write that never happened — and dropping it as it was read would lose
+    // it for any window closed before a first gesture.
+    if (storage.getItem(storageKey)) {
+      storage.removeItem(legacyKeyOf(storageKey));
+    }
   }, [setBox, storageKey]);
 
   // Neither the chrome nor the footer is constant — the chart's top margin
@@ -288,24 +313,6 @@ export function useFloatingWindow({
       return;
     }
 
-    // A window nobody has moved is still the layout's to place, so its spot is
-    // re-derived every time anything moves: the toolbars arrive as their own
-    // lazy chunks, and a panel pinned before its tool's menu existed would sit
-    // over the very controls it belongs to.
-    if (!movedRef.current) {
-      chosen.top = placedBoxes.reduce((below, other) => {
-        const box = other.current;
-
-        return box &&
-          box !== chosen &&
-          box.left < chosen.left + chosen.width &&
-          chosen.left < box.left + box.width &&
-          below < box.top + box.height + EDGE_GAP
-          ? box.top + box.height + EDGE_GAP
-          : below;
-      }, flowTop(ref));
-    }
-
     const width = clamp(
       chosen.width,
       MIN_WIDTH,
@@ -318,27 +325,51 @@ export function useFloatingWindow({
       window.innerHeight - 2 * EDGE_GAP,
     );
 
+    // A window nobody has moved is still the layout's to place, so its spot is
+    // re-derived on every fit: the toolbars arrive as their own lazy chunks,
+    // and a panel pinned before its tool's menu existed would sit over the very
+    // controls it belongs to. Below the windows that opened before it, and only
+    // those — see `placedBoxes`.
+    const wanted = movedRef.current
+      ? chosen
+      : {
+          left: EDGE_GAP,
+          top: placedBoxes
+            .slice(0, placedBoxes.indexOf(placementRef.current))
+            .reduce((below, other) => {
+              const box = other.rect;
+
+              return box &&
+                box.left < EDGE_GAP + width &&
+                EDGE_GAP < box.left + box.width &&
+                below < box.top + box.height + EDGE_GAP
+                ? box.top + box.height + EDGE_GAP
+                : below;
+            }, flowTop(ref)),
+        };
+
     // Nudged as little as possible, and towards the top-left corner when the
     // box no longer fits at all.
     const left = clamp(
-      chosen.left,
+      wanted.left,
       EDGE_GAP,
       window.innerWidth - width - EDGE_GAP,
     );
 
     const top = clamp(
-      chosen.top,
+      wanted.top,
       EDGE_GAP,
       window.innerHeight - height - EDGE_GAP,
     );
 
     posRef.current = [left, top];
 
-    // What was actually laid out, so the next window stacks against where this
-    // one is rather than where it asked to be.
-    chosen.left = left;
-
-    chosen.top = top;
+    // What was actually laid out, kept apart from what was chosen: the next
+    // window stacks against where this one is, while the chosen box keeps the
+    // coordinates the user picked. Writing the clamp back over them would mean
+    // a window pushed in by a narrowed browser never returned to where it was
+    // put once the browser was widened again.
+    placementRef.current.rect = { left, top, width, height };
 
     ref.style.position = 'fixed';
 
@@ -372,9 +403,7 @@ export function useFloatingWindow({
       };
     }
 
-    // The ref rather than the box, so a window that is since dragged away stops
-    // holding the spot it opened in.
-    placedBoxes.push(chosenRef);
+    placedBoxes.push(placementRef.current);
 
     fitIntoView();
 
@@ -385,8 +414,11 @@ export function useFloatingWindow({
     // after this ran.
     const observer = new ResizeObserver(fitIntoView);
 
-    if (ref.parentElement) {
-      for (const sibling of ref.parentElement.children) {
+    for (const sibling of ref.parentElement?.children ?? []) {
+      // Never the box itself. `fitIntoView` writes its width and height, and a
+      // resize gesture writes them too — observing it would have this undo
+      // every drag of the grip mid-frame, and loop doing it.
+      if (sibling !== ref) {
         observer.observe(sibling);
       }
     }
@@ -396,7 +428,7 @@ export function useFloatingWindow({
 
       observer.disconnect();
 
-      const at = placedBoxes.indexOf(chosenRef);
+      const at = placedBoxes.indexOf(placementRef.current);
 
       // `splice(-1, 1)` drops the last entry rather than nothing, which would
       // evict somebody else's window from a registry every window shares.
@@ -516,8 +548,6 @@ export function useFloatingWindow({
     // off the release instead would jump the window by however far the button
     // travelled unseen — a mouse leaving the window keeps reporting itself,
     // and comes up out there.
-    let moved = false;
-
     const handleWindowPointerDown = (e: PointerEvent) => {
       // Only the grip drags the window: a press anywhere on the content is the
       // content's, which is how a finger does what a mouse does by hovering.
@@ -527,7 +557,7 @@ export function useFloatingWindow({
       ) {
         startPosRef.current = [e.clientX, e.clientY];
 
-        moved = false;
+        draggedRef.current = false;
       }
     };
 
@@ -539,7 +569,7 @@ export function useFloatingWindow({
       startPosRef.current = undefined;
 
       // A pointer that went down and up on the same spot moved nothing.
-      if (moved) {
+      if (draggedRef.current) {
         persistBox();
       }
     };
@@ -575,7 +605,7 @@ export function useFloatingWindow({
 
       ref.style.top = `${posRef.current[1]}px`;
 
-      moved = true;
+      draggedRef.current = true;
     };
 
     window.addEventListener('pointerdown', handleWindowPointerDown);

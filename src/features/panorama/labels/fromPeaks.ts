@@ -53,7 +53,10 @@ export function labelsFromPeaks(peaks: Peak[]): PanoramaLabel[] {
   return peaks
     .filter((peak) => peak.visible && peak.name)
     .map((peak) => ({
-      id: `peak/${peak.osm_id}`,
+      // The type too: an OSM id is unique per element kind, not across them, so
+      // a node and a way could otherwise share a label id — and the id is what
+      // says which name is picked and which React row is which.
+      id: `peak/${peak.type}/${peak.osm_id}`,
       name: peak.name,
       lat: peak.lat,
       lon: peak.lon,

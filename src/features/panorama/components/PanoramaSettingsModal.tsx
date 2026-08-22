@@ -178,7 +178,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? m?.settings.title : undefined);
 
-  const look = panoramaLookOf({ ...settings, ...draft });
+  const look = panoramaLookOf(draft);
 
   return (
     <Modal

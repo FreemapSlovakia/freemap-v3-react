@@ -12,10 +12,11 @@ import {
  * than asking the browser separately: one watch, one permission prompt, and the
  * dot on the map to say where the fix put them.
  *
- * A fix already in hand is taken at once. Otherwise locating is turned on and
- * `panoramaFixProcessor` picks the viewpoint off the first fix to arrive — but
- * only when it is off, because `toggleLocate` clears the last fix on its way in
- * and turning on what is already on would throw away the answer.
+ * A fix already in hand and good enough to stand on is taken at once. Otherwise
+ * locating is turned on and `panoramaFixProcessor` picks the viewpoint off the
+ * first fix worth having — but only when it is off, because `toggleLocate`
+ * clears the last fix on its way in and turning on what is already on would
+ * throw away the answer.
  *
  * The wait is declared **after** that, since any `toggleLocate` ends a wait:
  * a refused permission turns locating off without ever reporting a failure, so
@@ -27,7 +28,10 @@ export const panoramaLocateProcessor: Processor = {
   handle: async ({ getState, dispatch }) => {
     const { location, locate } = getState().location;
 
-    if (location) {
+    // The same bar the wait holds later fixes to. A fix already in hand is as
+    // likely to be the coarse one — locating may have been on for the map's own
+    // reasons for the last ten minutes — and it costs the same render.
+    if (location && standable(location)) {
       dispatch(panoramaPick({ lat: location.lat, lon: location.lon }));
 
       return;
@@ -72,6 +76,21 @@ const MAX_ACCURACY_M = 100;
 const MAX_AGE_MS = 60_000;
 
 /**
+ * Whether a fix is worth standing a panorama on.
+ *
+ * The age is the weaker of the two tests: `locateProcessor` stamps `at` with
+ * the current time where the platform's own timestamp is not to be trusted, so
+ * on such a host a cached fix arrives looking fresh. The accuracy is what
+ * carries it — the coarse pass asks for none, and what it answers with says so.
+ */
+function standable(location: { accuracy: number; at: number }): boolean {
+  return (
+    location.accuracy <= MAX_ACCURACY_M &&
+    Date.now() - location.at <= MAX_AGE_MS
+  );
+}
+
+/**
  * The fix the panel was waiting for. Gated on `awaitingFix`, so locating for
  * any other reason — the map's own button, a tracking session — doesn't move
  * a viewpoint the user placed by hand, and a render this expensive is never
@@ -87,11 +106,7 @@ export const panoramaFixProcessor: Processor = {
   handle: async ({ getState, dispatch }) => {
     const { location } = getState().location;
 
-    if (
-      location &&
-      location.accuracy <= MAX_ACCURACY_M &&
-      Date.now() - location.at <= MAX_AGE_MS
-    ) {
+    if (location && standable(location)) {
       dispatch(panoramaPick({ lat: location.lat, lon: location.lon }));
     }
   },
