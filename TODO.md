@@ -46,6 +46,48 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
+- [ ] **Finish `PickingMenu` — three picking toolbars still hand-roll it.**
+      `src/shared/components/PickingMenu.tsx` was extracted for the toposcope's
+      centre and the panorama's viewpoint; `MapAreaSelectionMenu`,
+      `GalleryPositionPickingMenu` and `HomeLocationPickingMenu` still write the
+      same `Toolbar` + prompt + dark cancel button by hand. They differ only by
+      a confirm button (`FaCheck`, `m?.general.ok`/`save`, sometimes disabled)
+      and `kbd="Esc"` on cancel, so an optional `onConfirm`/`confirmLabel`/
+      `confirmDisabled`/`cancelKbd` retires ~90 lines. While there:
+      `HomeLocationPickingMenu` has a hardcoded Slovak prompt
+      (`'Zvoľte domovskú pozíciu'`).
+- [ ] **Make `pickingModeSelector` answer *which* mode, not just whether.**
+      It returns a boolean, so `mouseCursorSelector` re-enumerates four of the
+      six modes, `keyboardHandler` handles them at three different priorities
+      (with nothing saying that ordering was intended), and `Main` mounts each
+      mode's component and menu behind its own flag. A `PickingMode | null`
+      string union turns the cursor into one `Record` lookup and the Escape
+      chain into one block at one priority. A `toolDefinitions`-style registry
+      that also owns the lazy factories would be too far: the modes aren't
+      uniform (map-area is a drag, gallery-show-position picks nothing,
+      home-location has a Save).
+- [ ] **The crosshair list and `pickingModeSelector` have drifted.**
+      `mouseCursorSelector` gives a crosshair for four picking modes but not for
+      gallery position picking or map-area selection. Collapsing it to
+      `showGalleryPicker || picking` is a behaviour change for those two —
+      decide it deliberately rather than letting the two lists keep diverging.
+      Folds into the item above.
+- [ ] **`MyMapsMenu` hand-builds the split button** `SplitButton` now
+      abstracts (`Dropdown as={ButtonGroup}` + `Button` + `Dropdown.Toggle
+      split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
+      button first, which `SplitButton` doesn't expose yet.
+- [ ] **`SplitButton`'s menu can't do what `SelectDropdown`'s can** — no `kbd`,
+      `extra` (premium badge), `active` or `divider`, because it writes its own
+      item loop instead of sharing `SelectDropdown`'s. Factor the item builder
+      out of `SelectDropdown` when a split button first needs one of those.
+- [ ] **`makeFixProcessor` factory.** `panoramaFixProcessor` and
+      `toposcopeFixProcessor` differ only in the consumer id, the tool id and
+      the action built, and both restate the same "ignore a fix if the panel has
+      since closed" policy. Worth doing at a third consumer, not before.
+- [ ] **`location.fixRequest` holds one consumer**, so asking for a fix from the
+      second panel supersedes the first — its spinner stops and nothing is
+      placed, silently. Both panels open *and* both awaiting is a corner; make
+      it a set if it ever bites.
 - [ ] **Mount a mark's tooltip `Overlay` only once it has been shown.** With no
       `breakpoint`, `LongPressTooltip` sets `labelHidden` and mounts its
       `Overlay` for the life of every mark. Hidden it draws no DOM, no popper
