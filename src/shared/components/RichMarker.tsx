@@ -14,6 +14,7 @@ import {
 } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { Marker, type MarkerProps } from 'react-leaflet';
+import { shallowEqual } from 'react-redux';
 import { splitColorAlpha } from '../colorAlpha.js';
 import {
   COLORS,
@@ -173,6 +174,17 @@ function setMarkerInteractive(
   }
 }
 
+/**
+ * Whether two elements would render the same thing — same component, same
+ * props. Shallow, which is all a `react-icons` glyph ever needs.
+ */
+function sameElement(a?: ReactElement, b?: ReactElement): boolean {
+  return (
+    a === b ||
+    (!!a && !!b && a.type === b.type && shallowEqual(a.props, b.props))
+  );
+}
+
 export function RichMarker({
   autoOpenPopup,
   markerType = 'pin',
@@ -186,6 +198,19 @@ export function RichMarker({
   ...restProps
 }: Props): ReactElement {
   const markerRef = useRef<Leaflet.Marker | null>(null);
+
+  // `faIcon` is written inline at the call site, so it is a fresh object every
+  // render — and rebuilding the icon from it reaches Leaflet's `setIcon`, whose
+  // `_initInteraction` **replaces the marker's drag handler**. A marker that
+  // re-renders often is then undraggable: the gesture dies under the finger.
+  // Keep the previous element wherever it says the same thing.
+  const faIconRef = useRef(faIcon);
+
+  if (!sameElement(faIconRef.current, faIcon)) {
+    faIconRef.current = faIcon;
+  }
+
+  const stableFaIcon = faIconRef.current;
 
   useEffect(() => {
     if (autoOpenPopup && markerRef.current) {
@@ -224,7 +249,7 @@ export function RichMarker({
           <MarkerIcon
             color={color}
             glyphColor={glyphColor}
-            faIcon={faIcon}
+            faIcon={stableFaIcon}
             iconSvg={iconSvg}
             poi={poiName}
             poiOpacity={poiOpacity}
@@ -236,7 +261,7 @@ export function RichMarker({
     [
       color,
       glyphColor,
-      faIcon,
+      stableFaIcon,
       iconSvg,
       poiName,
       poiOpacity,
