@@ -35,12 +35,12 @@ import {
   DOMINANCE_STEPS_M,
   LABEL_DENSITY_MAX,
   NO_DOMINANCE_FILTER,
+  type PanoramaTilt,
 } from '../model/settingsReducer.js';
 import {
   grantedQuality,
   PANORAMA_QUALITY_ORDER,
   type PanoramaQuality,
-  type PanoramaTilt,
   panoramaRenderKey,
 } from '../quality.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';

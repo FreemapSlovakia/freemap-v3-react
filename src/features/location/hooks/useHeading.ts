@@ -1,5 +1,6 @@
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { angleDiff } from '@shared/mathUtils.js';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
@@ -82,11 +83,6 @@ const SPREAD_GPS = 45;
 const SPREAD_COMPASS_UNKNOWN = 30;
 
 let compassWarned = false;
-
-/** Signed difference `a - b` folded into `[-180, 180)`. */
-function angleDiff(a: number, b: number): number {
-  return ((a - b + 540) % 360) - 180;
-}
 
 /**
  * The heading to draw for the current position, fused from the two sources that

@@ -40,6 +40,8 @@ export interface PanoramaRequest {
   ridge_color?: string;
   /** `#rrggbb`, the near terrain before haze washes it towards the sky. */
   ground_color?: string;
+  /** What the service encodes the picture as; `avif` is its default and ours. */
+  format: 'avif' | 'png';
 }
 
 /**

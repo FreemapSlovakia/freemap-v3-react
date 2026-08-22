@@ -20,14 +20,15 @@ import {
   PANORAMA_LOOK_NAMES,
   PANORAMA_LOOKS,
   PANORAMA_STYLE_DEFAULTS,
+  PANORAMA_TILTS,
   type PanoramaLook,
   type PanoramaSettingsState,
   panoramaLookOf,
   panoramaSettingsInitialState,
   RIDGE_STRENGTH_MAX,
   RIDGE_WIDTH_MAX,
+  tiltRange,
 } from '../model/settingsReducer.js';
-import { PANORAMA_TILTS, tiltRange } from '../quality.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 
 type Props = { show: boolean };
@@ -50,6 +51,16 @@ const EYE_MAX = 300;
 
 /** Angles above and below the horizon, so short of straight up or down. */
 const ALT_LIMIT = 89;
+
+/**
+ * What a number field currently says. `NaN` for an empty one rather than
+ * `Number('')`'s `0`, which would read as an answer — standing on the ground,
+ * or a band with an edge on the horizon — instead of a field mid-edit, and the
+ * validity check would let it through.
+ */
+function typedNumber(value: string): number {
+  return value.trim() ? Number(value) : Number.NaN;
+}
 
 /** The current settings as a form: the band as its two angles, whichever way it
  * is stored, so the fields read as the numbers behind what is framed now. */
@@ -210,13 +221,9 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                 max={EYE_MAX}
                 step={0.1}
                 value={Number.isFinite(draft.eye) ? draft.eye : ''}
-                // `Number('')` is 0, which would read as standing on the ground
-                // rather than as a field being cleared mid-edit.
                 onChange={(e) =>
                   patch({
-                    eye: e.currentTarget.value.trim()
-                      ? Number(e.currentTarget.value)
-                      : Number.NaN,
+                    eye: typedNumber(e.currentTarget.value),
                   })
                 }
               />
@@ -250,9 +257,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                 value={Number.isFinite(draft.altMin) ? draft.altMin : ''}
                 onChange={(e) =>
                   patch({
-                    altMin: e.currentTarget.value.trim()
-                      ? Number(e.currentTarget.value)
-                      : Number.NaN,
+                    altMin: typedNumber(e.currentTarget.value),
                   })
                 }
               />
@@ -265,9 +270,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                 value={Number.isFinite(draft.altMax) ? draft.altMax : ''}
                 onChange={(e) =>
                   patch({
-                    altMax: e.currentTarget.value.trim()
-                      ? Number(e.currentTarget.value)
-                      : Number.NaN,
+                    altMax: typedNumber(e.currentTarget.value),
                   })
                 }
               />

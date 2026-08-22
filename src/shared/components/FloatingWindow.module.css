@@ -1,12 +1,18 @@
 /* A panel floating over the map: draggable by its top-left grip, resizable by
    its bottom-right one, and sized by whoever puts content in it.
 
-   `useFloatingWindow` pins it — `position: fixed` and the four viewport
-   coordinates, written straight onto the element. Until it does, on the very
-   first paint of a window nobody has moved yet, the box sits in the flow: that
-   is how it finds the spot the layout would have given it. */
+   Out of the flow always, so a toolbar appearing above it or another window
+   opening beside it can't carry it along — which is what they did while it was
+   an in-flow item of the toolbar row's flex container. `useFloatingWindow`
+   writes the four coordinates onto the element; two windows opened together
+   simply overlap, and the answer to that is to drag one.
+
+   `fixed` rather than `absolute`: the coordinates are the viewport's, which is
+   what the hook clamps them against. Absolute would resolve them against the
+   header instead, and agree only for as long as the header stays pinned at the
+   viewport's own corner. */
 .window {
-  position: relative;
+  position: fixed;
   /* Translucent, so the map still reads behind a panel that is mostly chrome.
      A panel carrying prose rather than a drawing sets `--fm-window-opacity: 1`
      for itself: map detail showing through a paragraph is not fancy, it is

@@ -1,6 +1,9 @@
 import type { LatLon } from '@shared/types/common.js';
 import type { PanoramaRequest } from './api.js';
-import type { PanoramaSettingsState } from './model/settingsReducer.js';
+import {
+  type PanoramaSettingsState,
+  tiltRange,
+} from './model/settingsReducer.js';
 
 /** Coarsest to finest; the order the menu offers them in. */
 export const PANORAMA_QUALITY_ORDER = [
@@ -84,25 +87,6 @@ export function grantedQuality(
     : FREE_QUALITY;
 }
 
-export type PanoramaTilt = 'standard' | 'wide' | 'flat' | 'custom';
-
-/** Degrees below and above horizontal each tilt preset frames. */
-export const PANORAMA_TILTS: Record<
-  Exclude<PanoramaTilt, 'custom'>,
-  [number, number]
-> = {
-  standard: [-18, 12],
-  wide: [-30, 25],
-  flat: [-6, 6],
-};
-
-/** The frame a settings state asks for, whichever way it says it. */
-export function tiltRange(settings: PanoramaSettingsState): [number, number] {
-  return settings.tilt === 'custom'
-    ? [settings.altMin, settings.altMax]
-    : PANORAMA_TILTS[settings.tilt];
-}
-
 /** The service's cap on `width × height`, which it answers 400 to. */
 const MAX_PANORAMA_PIXELS = 24_000_000;
 
@@ -175,6 +159,7 @@ export function buildPanoramaRequest(
     ground_color: settings.groundColor,
     ...PANORAMA_QUALITIES[quality].request,
     step: panoramaStep(quality, range),
+    format: 'avif',
   };
 }
 

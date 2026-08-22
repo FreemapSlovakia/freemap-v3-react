@@ -6,6 +6,7 @@ import {
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { angleDiff, clamp } from '@shared/mathUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import destination from '@turf/destination';
 import clsx from 'clsx';
@@ -100,15 +101,6 @@ function mod(value: number, n: number): number {
   return ((value % n) + n) % n;
 }
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), Math.max(min, max));
-}
-
-/** Signed `a - b` folded into `[-180, 180)`, so easing takes the short way. */
-function angleDiff(a: number, b: number): number {
-  return ((a - b + 540) % 360) - 180;
-}
-
 /** Where a bearing and a distance from the viewpoint land on the ground. */
 function groundPoint(
   viewpoint: LatLon,
@@ -157,6 +149,28 @@ function measureText(text: string): number {
   return width;
 }
 
+/** A distance read off the picture, as a bearing and an image row. */
+type HoverReading = { az: number; iy: number; distance: number };
+
+/**
+ * The reading a sample carries, or `null` where it hit sky. Held as bearing and
+ * row rather than as the pixel it was taken at, so it stays over its own
+ * terrain while the view turns — which a press-set one has to survive.
+ */
+function hoverReading(sample: {
+  az: number;
+  iy: number;
+  ground: { distance: number } | null;
+}): HoverReading | null {
+  return (
+    sample.ground && {
+      az: sample.az,
+      iy: sample.iy,
+      distance: sample.ground.distance,
+    }
+  );
+}
+
 type Props = {
   render: PanoramaRenderInfo;
   data: PanoramaRenderData;
@@ -197,14 +211,7 @@ export function PanoramaView({
 
   const [dragging, setDragging] = useState(false);
 
-  // Where a distance was read, as a bearing and an image row — see
-  // `sampleGround`. Held that way rather than as screen pixels so it stays over
-  // its own terrain while the view turns, which a press-set one has to survive.
-  const [hover, setHover] = useState<{
-    az: number;
-    iy: number;
-    distance: number;
-  } | null>(null);
+  const [hover, setHover] = useState<HoverReading | null>(null);
 
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -382,8 +389,10 @@ export function PanoramaView({
     renderHeight: render.height,
   });
 
+  // Written in place rather than replaced: this runs after every render, which
+  // during a pan is every frame, and the object is nobody's dependency.
   useEffect(() => {
-    geomRef.current = {
+    Object.assign(geomRef.current, {
       azimuth,
       zoom,
       offsetY: clampedOffsetY,
@@ -395,7 +404,7 @@ export function PanoramaView({
       height,
       stepDeg: render.stepDeg,
       renderHeight: render.height,
-    };
+    });
   });
 
   /**
@@ -632,13 +641,7 @@ export function PanoramaView({
         return;
       }
 
-      setHover(
-        sample.ground && {
-          az: sample.az,
-          iy: sample.iy,
-          distance: sample.ground.distance,
-        },
-      );
+      setHover(hoverReading(sample));
 
       // The map follows the pointer, so what is under it can be found without
       // committing to it — the press is what leaves a mark behind.
@@ -687,13 +690,7 @@ export function PanoramaView({
           // A finger has no hover, so the press has to say the distance as well
           // as mark it — otherwise the readout is a thing only a mouse ever
           // sees. It stays until the next press, the way the mark does.
-          setHover(
-            sample.ground && {
-              az: sample.az,
-              iy: sample.iy,
-              distance: sample.ground.distance,
-            },
-          );
+          setHover(hoverReading(sample));
         }
       }
     },
@@ -791,10 +788,12 @@ export function PanoramaView({
   }, [anchor, candidates, settings.labelDensity, width]);
 
   // Every ten degrees, named where the eight compass points fall.
-  const ticks = useMemo(() => {
-    const out: { deg: number; x: number; text: string; cardinal: boolean }[] =
-      [];
-
+  // Every label the strip can carry, worked out once per language: the eight
+  // compass points and a degree figure at each of the other multiples of ten.
+  // The strip is redrawn on every frame of a pan, and formatting a number is
+  // dear enough that doing it for thirty visible ticks sixty times a second is
+  // most of what drawing the strip costs.
+  const tickLabels = useMemo(() => {
     const names = [
       gm?.cardinals.n,
       gm?.cardinals.ne,
@@ -805,6 +804,17 @@ export function PanoramaView({
       gm?.cardinals.w,
       gm?.cardinals.nw,
     ];
+
+    return Array.from({ length: 72 }, (_, i) => {
+      const at = i * 5;
+
+      return at % 45 === 0 ? (names[at / 45] ?? '') : nfDeg.format(at);
+    });
+  }, [gm, nfDeg]);
+
+  const ticks = useMemo(() => {
+    const out: { deg: number; x: number; text: string; cardinal: boolean }[] =
+      [];
 
     // Stepped by five and sieved, because the two series the strip wants don't
     // nest: every ten degrees, and the eight compass points at multiples of
@@ -824,13 +834,13 @@ export function PanoramaView({
       out.push({
         deg,
         x: screenX(at),
-        text: cardinal ? (names[at / 45] ?? '') : nfDeg.format(at),
+        text: tickLabels[at / 5] ?? '',
         cardinal,
       });
     }
 
     return out;
-  }, [azLeft, degPerPx, gm, nfDeg, screenX, width]);
+  }, [azLeft, degPerPx, screenX, tickLabels, width]);
 
   return (
     <div

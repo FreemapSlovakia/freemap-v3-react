@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import type { PanoramaQuality, PanoramaTilt } from '../quality.js';
+import type { PanoramaQuality } from '../quality.js';
 import { panoramaSetSettings } from './actions.js';
 
 /**
@@ -86,6 +86,30 @@ export const DOMINANCE_STEPS_M = [
   ...DOMINANCE_MAGNITUDES_M,
   1000,
 ].sort((a, b) => a - b);
+
+export type PanoramaTilt = 'standard' | 'wide' | 'flat' | 'custom';
+
+/** Degrees below and above horizontal each tilt preset frames. */
+export const PANORAMA_TILTS: Record<
+  Exclude<PanoramaTilt, 'custom'>,
+  [number, number]
+> = {
+  standard: [-18, 12],
+  wide: [-30, 25],
+  flat: [-6, 6],
+};
+
+/**
+ * The frame a settings state asks for, whichever way it says it. Here beside
+ * the presets and the other settings derivations rather than in `quality.ts`,
+ * which answers what a tier costs: the framing is a setting, and what reads it
+ * is the menu, the modal and the URL codec.
+ */
+export function tiltRange(settings: PanoramaSettingsState): [number, number] {
+  return settings.tilt === 'custom'
+    ? [settings.altMin, settings.altMax]
+    : PANORAMA_TILTS[settings.tilt];
+}
 
 /**
  * What a picture is drawn to look like: the ridge silhouettes' alpha gain and

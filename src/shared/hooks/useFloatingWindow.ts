@@ -1,4 +1,5 @@
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import { clamp } from '@shared/mathUtils.js';
 import storage from 'local-storage-fallback';
 import {
   type PointerEvent as ReactPointerEvent,
@@ -26,26 +27,6 @@ const EDGE_GAP = 8;
 
 // The `p-2` padding between the box's edges and its contents.
 const BOX_PADDING = 8;
-
-/** Where a window ended up, as laid out — not as it asked to be. */
-type Placement = { rect: Box | null };
-
-/**
- * Every floating window currently on screen, in the order they opened, so a new
- * one can be placed clear of them. Module-level because they are separate
- * components that never meet: each pins itself out of the flow, which is
- * exactly what stops the next one from measuring a spot the first is sitting in.
- *
- * The order is what keeps them apart. A window stacks below the ones registered
- * *before* it and ignores the rest — were it below all of them, two unmoved
- * windows would each put themselves under the other and walk down the screen a
- * box at a time on every re-fit.
- */
-const placedBoxes: Placement[] = [];
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), Math.max(min, max));
-}
 
 // A mouse held down keeps reporting its position after it leaves the browser
 // window, and is released there too. Kept to the viewport, the drag stops at
@@ -110,31 +91,24 @@ const legacyKeyOf = (storageKey: string) =>
   storageKey.replace(/\.window$/, '.box');
 
 /**
- * Where the flow would have put the box: under everything laid out before it.
- * Computed from the siblings rather than from the box's own rectangle, so it
- * still answers once the box is pinned and out of the flow — which is what lets
- * a window that nobody has moved keep clear of a toolbar that arrives late.
+ * Where a window opens when nothing is remembered for it: under the toolbars,
+ * which is all its container holds — every window is positioned, so nothing
+ * else contributes to that height.
+ *
+ * Measured once, as it opens. A toolbar arriving afterwards (they are their own
+ * lazy chunks) is not moved out of the way of, and neither is a window already
+ * open: two windows opened together land on top of each other, and the answer
+ * is to drag one. Keeping out of their way meant reimplementing block layout in
+ * JavaScript — a registry of open windows, an ordering rule, a sibling walk and
+ * an observer over the container — which cost far more than it bought.
  */
-function flowTop(el: HTMLElement): number {
-  let top = EDGE_GAP;
+function defaultTop(el: HTMLElement): number {
+  const parent = el.parentElement;
 
-  for (
-    let sibling = el.previousElementSibling;
-    sibling;
-    sibling = sibling.previousElementSibling
-  ) {
-    const rect = sibling.getBoundingClientRect();
-
-    // Only what is actually in the flow — the toolbars. The other floating
-    // windows are siblings too, and pinned, so their rectangles say where they
-    // were put rather than what they take up here; counting them would stack
-    // the windows twice over, once here and once against `placedBoxes`.
-    if (rect.height > 0 && getComputedStyle(sibling).position === 'static') {
-      top = Math.max(top, rect.bottom + EDGE_GAP);
-    }
-  }
-
-  return top;
+  // The bottom edge, not the height: what the box is measured against sits
+  // below an info bar of its own sometimes, and a height would put the window
+  // over the toolbars by however tall that was.
+  return parent ? parent.getBoundingClientRect().bottom + EDGE_GAP : EDGE_GAP;
 }
 
 /**
@@ -255,21 +229,9 @@ export function useFloatingWindow({
   // each window afterwards has room for.
   const chosenRef = useRef<Box | null>(initialBox);
 
-  /**
-   * Whether where the window sits is the user's answer rather than the
-   * layout's. A stored box is one, so a window put somewhere deliberately is
-   * not shuffled about by a toolbar arriving afterwards.
-   */
-  const movedRef = useRef(initialBox !== null);
-
-  /** This window's entry in `placedBoxes`; see there for what the order does. */
-  const placementRef = useRef<Placement>({ rect: null });
-
   // Stored at the end of a gesture rather than on every move, so a drag writes
   // to storage once.
   const persistBox = useCallback(() => {
-    movedRef.current = true;
-
     setBox(chosenRef.current);
 
     // The entry the size came from goes only once the new key actually holds
@@ -325,53 +287,23 @@ export function useFloatingWindow({
       window.innerHeight - 2 * EDGE_GAP,
     );
 
-    // A window nobody has moved is still the layout's to place, so its spot is
-    // re-derived on every fit: the toolbars arrive as their own lazy chunks,
-    // and a panel pinned before its tool's menu existed would sit over the very
-    // controls it belongs to. Below the windows that opened before it, and only
-    // those — see `placedBoxes`.
-    const wanted = movedRef.current
-      ? chosen
-      : {
-          left: EDGE_GAP,
-          top: placedBoxes
-            .slice(0, placedBoxes.indexOf(placementRef.current))
-            .reduce((below, other) => {
-              const box = other.rect;
-
-              return box &&
-                box.left < EDGE_GAP + width &&
-                EDGE_GAP < box.left + box.width &&
-                below < box.top + box.height + EDGE_GAP
-                ? box.top + box.height + EDGE_GAP
-                : below;
-            }, flowTop(ref)),
-        };
-
     // Nudged as little as possible, and towards the top-left corner when the
-    // box no longer fits at all.
+    // box no longer fits at all. The clamp is never written back over the
+    // chosen box: a window pushed in by a narrowed browser has to return to
+    // where it was put once the browser is widened again.
     const left = clamp(
-      wanted.left,
+      chosen.left,
       EDGE_GAP,
       window.innerWidth - width - EDGE_GAP,
     );
 
     const top = clamp(
-      wanted.top,
+      chosen.top,
       EDGE_GAP,
       window.innerHeight - height - EDGE_GAP,
     );
 
     posRef.current = [left, top];
-
-    // What was actually laid out, kept apart from what was chosen: the next
-    // window stacks against where this one is, while the chosen box keeps the
-    // coordinates the user picked. Writing the clamp back over them would mean
-    // a window pushed in by a narrowed browser never returned to where it was
-    // put once the browser was widened again.
-    placementRef.current.rect = { left, top, width, height };
-
-    ref.style.position = 'fixed';
 
     ref.style.width = `${width}px`;
 
@@ -382,60 +314,24 @@ export function useFloatingWindow({
     ref.style.top = `${top}px`;
   }, [ref, minBoxHeight]);
 
-  // A window nobody has moved yet is placed where the layout would have put it
-  // — under the toolbars — and pinned there. That keeps the opening position
-  // the one the page decides, without leaving the box in the flow afterwards,
-  // where a toolbar appearing or another window opening would shove it sideways.
-  //
-  // Laid out before paint, since the box is on screen unpinned until it runs.
+  // Laid out before paint, since the box has no geometry at all until this
+  // runs.
   useLayoutEffect(() => {
     if (!ref) {
       return;
     }
 
-    if (!chosenRef.current) {
-      // `left`/`top` are placeholders: `fitIntoView` derives both for as long
-      // as nobody has moved the window.
-      chosenRef.current = {
-        left: EDGE_GAP,
-        top: EDGE_GAP,
-        ...defaultSizeOnce(),
-      };
-    }
-
-    placedBoxes.push(placementRef.current);
+    chosenRef.current ??= {
+      left: EDGE_GAP,
+      top: defaultTop(ref),
+      ...defaultSizeOnce(),
+    };
 
     fitIntoView();
 
     window.addEventListener('resize', fitIntoView);
 
-    // What the box shares its container with decides where an unmoved one
-    // sits, and the toolbars above it arrive as their own lazy chunks — long
-    // after this ran.
-    const observer = new ResizeObserver(fitIntoView);
-
-    for (const sibling of ref.parentElement?.children ?? []) {
-      // Never the box itself. `fitIntoView` writes its width and height, and a
-      // resize gesture writes them too — observing it would have this undo
-      // every drag of the grip mid-frame, and loop doing it.
-      if (sibling !== ref) {
-        observer.observe(sibling);
-      }
-    }
-
-    return () => {
-      window.removeEventListener('resize', fitIntoView);
-
-      observer.disconnect();
-
-      const at = placedBoxes.indexOf(placementRef.current);
-
-      // `splice(-1, 1)` drops the last entry rather than nothing, which would
-      // evict somebody else's window from a registry every window shares.
-      if (at >= 0) {
-        placedBoxes.splice(at, 1);
-      }
-    };
+    return () => window.removeEventListener('resize', fitIntoView);
   }, [ref, fitIntoView, defaultSizeOnce]);
 
   // The content fills what the footer row leaves over, so both are watched: the

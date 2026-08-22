@@ -1,6 +1,9 @@
 import type { LatLon } from '@shared/types/common.js';
-import type { PanoramaSettingsState } from './model/settingsReducer.js';
-import { PANORAMA_TILTS, type PanoramaTilt } from './quality.js';
+import {
+  PANORAMA_TILTS,
+  type PanoramaSettingsState,
+  type PanoramaTilt,
+} from './model/settingsReducer.js';
 
 /** Digits `panorama=` is written with, which is also what it is compared at. */
 const COORD_DIGITS = 6;

@@ -10,11 +10,14 @@
    it takes the window and drops the grips it no longer needs. */
 .fullscreen {
   z-index: 1100;
-  /* The floating-window hook writes the box's whole geometry onto the element
-     as an inline style, so full screen has to win over it rather than ask it to
-     stop. The padding and rounding it drops are Bootstrap utility classes,
-     which the component leaves off instead — same weight as anything here, so
-     `!important` would not settle those. */
+  /* `fixed` rather than the window's own `absolute`: its container is only as
+     tall as the toolbars, so `inset: 0` there would cover a strip, not the
+     screen. The floating-window hook writes the box's whole geometry onto the
+     element as an inline style, so full screen has to win over it rather than
+     ask it to stop — and over `.window`, which is another module's class of the
+     same weight. The padding and rounding it drops are Bootstrap utilities,
+     which the component leaves off instead. */
+  position: fixed !important;
   inset: 0 !important;
   width: auto !important;
   height: auto !important;
