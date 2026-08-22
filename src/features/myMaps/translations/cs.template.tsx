@@ -51,7 +51,7 @@ const cs: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     append: 'Připojit',
     replace: 'Nahradit',
   },
-  loadInclMapAndPosition: 'Včetně uložené podkladové mapy a pozice',
+  loadExclMapAndPosition: 'Načíst bez podkladové mapy a pozice',
   writers: 'Editori',
   addWriter: 'Přidat editora',
   conflictError: 'Mapa byla mezitím modifikována.',

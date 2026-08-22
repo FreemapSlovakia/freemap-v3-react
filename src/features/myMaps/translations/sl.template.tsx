@@ -52,7 +52,7 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     append: 'Pripni',
     replace: 'Nadomesti',
   },
-  loadInclMapAndPosition: 'Vključno s shranjenim podložnim zemljevidom in lego',
+  loadExclMapAndPosition: 'Naloži brez podložnega zemljevida in lege',
   writers: 'Uredniki',
   addWriter: 'Dodaj urednika',
   conflictError: 'Zemljevid je bil vmes spremenjen.',

@@ -36,9 +36,8 @@ import {
   FaEraser,
   FaFilter,
   FaPlus,
-  FaRegCheckSquare,
-  FaRegSquare,
   FaSave,
+  FaShapes,
   FaTimes,
   FaTrash,
   FaUnlink,
@@ -100,8 +99,6 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
   const [filter, setFilter] = useState('');
 
-  const [inclPosition, setInclPosition] = useState(true);
-
   const m = useMessages();
 
   const mm = useMyMapsMessages();
@@ -115,7 +112,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
   // Asked rather than set beforehand: a load either merges into what's on the
   // map or replaces it, and on an empty map both do the same thing.
   const handleLoad = useCallback(
-    async (id: string) => {
+    async (id: string, inclPosition: boolean) => {
       let merge = false;
 
       if (hasContent) {
@@ -143,7 +140,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
         }),
       );
     },
-    [hasContent, inclPosition, confirmChoice, mm, dispatch],
+    [hasContent, confirmChoice, mm, dispatch],
   );
 
   const filteredMaps = sortedMaps.filter(
@@ -243,24 +240,12 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
             />
           </InputGroup>
 
-          <Dropdown align="end" autoClose="outside">
+          <Dropdown align="end">
             <Dropdown.Toggle variant="secondary">
               <FaCog />
             </Dropdown.Toggle>
 
             <FmDropdownMenu>
-              <Dropdown.Header>{m?.general.load}</Dropdown.Header>
-
-              <Dropdown.Item
-                as="button"
-                onClick={() => setInclPosition((b) => !b)}
-              >
-                {inclPosition ? <FaRegCheckSquare /> : <FaRegSquare />}{' '}
-                {mm?.loadInclMapAndPosition}
-              </Dropdown.Item>
-
-              <Dropdown.Divider />
-
               <Dropdown.Header>{mm?.offline}</Dropdown.Header>
 
               <OnlineOnlyItem
@@ -354,7 +339,15 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                           !isOffline &&
                           !(pending && canStandInForMap(pending.blocked))
                         }
-                        onClick={() => handleLoad(map.id)}
+                        onClick={() => handleLoad(map.id, true)}
+                        menu={
+                          <Dropdown.Item
+                            as="button"
+                            onClick={() => handleLoad(map.id, false)}
+                          >
+                            <FaShapes /> {mm?.loadExclMapAndPosition}
+                          </Dropdown.Item>
+                        }
                         showFrom="sm"
                       />
 

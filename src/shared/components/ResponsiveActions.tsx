@@ -3,12 +3,19 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import clsx from 'clsx';
 import {
   Children,
+  cloneElement,
+  Fragment,
   isValidElement,
   type ReactElement,
   type ReactNode,
   type Ref,
 } from 'react';
-import { Button, type ButtonProps, Dropdown } from 'react-bootstrap';
+import {
+  Button,
+  ButtonGroup,
+  type ButtonProps,
+  Dropdown,
+} from 'react-bootstrap';
 import { FaEllipsisV } from 'react-icons/fa';
 import { useOnline } from '../hooks/useOnline.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
@@ -38,6 +45,12 @@ export type ActionProps = {
    * "the connection".
    */
   requiresOnline?: boolean;
+  /**
+   * `Dropdown.Item`s offering variants of the action. Inline they hang off a
+   * split toggle beside the button; packed they follow it in the menu. Pass
+   * them bare or as an array — a fragment hides them from packed disabling.
+   */
+  menu?: ReactNode;
 } & Pick<
   ButtonProps,
   // `variant="danger"` also turns the packed dropdown item red.
@@ -155,6 +168,17 @@ export function ResponsiveActions({
     return prev?.divider === false && !prev.inline && i < lastPackedPos;
   });
 
+  // Packed, an action's variants are plain items in the shared menu, so a
+  // disabled action has to hand its state down to them itself.
+  const renderPackedMenu = (menu: ReactNode, off: boolean | undefined) =>
+    off
+      ? Children.map(menu, (child) =>
+          isValidElement<{ disabled?: boolean }>(child)
+            ? cloneElement(child, { disabled: true })
+            : child,
+        )
+      : menu;
+
   const renderButton = (
     {
       label,
@@ -164,45 +188,73 @@ export function ResponsiveActions({
       variant: ownVariant,
       requiresOnline,
       disabled,
+      menu,
       ...rest
     }: ActionProps,
     key: number,
   ) => {
     const off = isOff({ disabled, requiresOnline });
 
+    const split = (button: ReactNode) => (
+      <Dropdown key={key} as={ButtonGroup} align={align}>
+        {button}
+
+        <Dropdown.Toggle
+          split
+          variant={ownVariant ?? variant}
+          size={size}
+          disabled={off}
+        />
+
+        <FmDropdownMenu>{menu}</FmDropdownMenu>
+      </Dropdown>
+    );
+
+    const renderPlain = () => {
+      const button = (
+        <Button
+          key={key}
+          variant={ownVariant ?? variant}
+          size={size}
+          disabled={off}
+          {...rest}
+        >
+          {label}
+        </Button>
+      );
+
+      return menu ? split(button) : button;
+    };
+
     // An inline action is icon-only unless `showLabelFrom` prints the label
     // beside the icon; where the label is hidden it shows in the tooltip.
     return icon ? (
       <LongPressTooltip key={key} label={label} breakpoint={showLabelFrom}>
-        {({ label: tipLabel, labelClassName, props: tipProps }) => (
-          <Button
-            variant={ownVariant ?? variant}
-            size={size}
-            disabled={off}
-            {...rest}
-            {...tipProps}
-            aria-label={
-              rest['aria-label'] ??
-              (typeof label === 'string' ? label : undefined)
-            }
-          >
-            {icon}
-            {showLabelFrom && (
-              <span className={labelClassName}> {tipLabel}</span>
-            )}
-          </Button>
-        )}
+        {({ label: tipLabel, labelClassName, props: tipProps }) => {
+          const button = (
+            <Button
+              variant={ownVariant ?? variant}
+              size={size}
+              disabled={off}
+              {...rest}
+              {...tipProps}
+              aria-label={
+                rest['aria-label'] ??
+                (typeof label === 'string' ? label : undefined)
+              }
+            >
+              {icon}
+              {showLabelFrom && (
+                <span className={labelClassName}> {tipLabel}</span>
+              )}
+            </Button>
+          );
+
+          return menu ? split(button) : button;
+        }}
       </LongPressTooltip>
     ) : (
-      <Button
-        key={key}
-        variant={ownVariant ?? variant}
-        size={size}
-        disabled={off}
-        {...rest}
-      >
-        {label}
-      </Button>
+      renderPlain()
     );
   };
 
@@ -240,31 +292,34 @@ export function ResponsiveActions({
               entry.divider ? (
                 <Dropdown.Divider key={`divider-${i}`} />
               ) : (
-                <Dropdown.Item
-                  key={entry.index}
-                  {...(entry.props.href
-                    ? { href: entry.props.href }
-                    : ({ as: 'button', type: 'button' } as const))}
-                  onClick={entry.props.onClick}
-                  disabled={isOff(entry.props)}
-                  active={entry.props.active}
-                  className={clsx(
-                    entry.props.variant === 'danger' && 'text-danger',
-                    entry.props.className,
-                  )}
-                  title={entry.props.title}
-                  aria-label={entry.props['aria-label']}
-                >
-                  {entry.props.icon ? (
-                    <>
-                      {entry.props.icon} {entry.props.label}
-                    </>
-                  ) : (
-                    entry.props.label
-                  )}
+                <Fragment key={entry.index}>
+                  <Dropdown.Item
+                    {...(entry.props.href
+                      ? { href: entry.props.href }
+                      : ({ as: 'button', type: 'button' } as const))}
+                    onClick={entry.props.onClick}
+                    disabled={isOff(entry.props)}
+                    active={entry.props.active}
+                    className={clsx(
+                      entry.props.variant === 'danger' && 'text-danger',
+                      entry.props.className,
+                    )}
+                    title={entry.props.title}
+                    aria-label={entry.props['aria-label']}
+                  >
+                    {entry.props.icon ? (
+                      <>
+                        {entry.props.icon} {entry.props.label}
+                      </>
+                    ) : (
+                      entry.props.label
+                    )}
 
-                  {entry.props.requiresOnline && <OfflineBadge />}
-                </Dropdown.Item>
+                    {entry.props.requiresOnline && <OfflineBadge />}
+                  </Dropdown.Item>
+
+                  {renderPackedMenu(entry.props.menu, isOff(entry.props))}
+                </Fragment>
               ),
             )}
           </FmDropdownMenu>

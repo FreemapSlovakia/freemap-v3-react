@@ -26,7 +26,7 @@ export type MyMapsMessages = {
     append: string;
     replace: string;
   };
-  loadInclMapAndPosition: string;
+  loadExclMapAndPosition: string;
   writers: string;
   addWriter: string;
   conflictError: string;

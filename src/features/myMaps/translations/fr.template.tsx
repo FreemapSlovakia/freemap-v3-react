@@ -67,8 +67,7 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     append: 'Ajouter',
     replace: 'Remplacer',
   },
-  loadInclMapAndPosition:
-    'Inclure la carte de fond et la position enregistrées',
+  loadExclMapAndPosition: 'Charger sans le fond de carte ni la position',
   writers: 'Éditeurs',
   addWriter: 'Ajouter un éditeur',
   conflictError: 'La carte a été modifiée entre-temps.',

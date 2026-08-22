@@ -52,7 +52,7 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     append: 'Aggiungi',
     replace: 'Sostituisci',
   },
-  loadInclMapAndPosition: 'Inclusa la mappa di sfondo salvata e posizione',
+  loadExclMapAndPosition: 'Carica senza la mappa di sfondo e la posizione',
   writers: 'Editori',
   addWriter: 'Aggiungi editor',
   conflictError: 'La mappa è stata modificata nel frattempo.',

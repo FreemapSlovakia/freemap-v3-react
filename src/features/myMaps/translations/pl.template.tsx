@@ -52,7 +52,7 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     append: 'Dołącz',
     replace: 'Zastąp',
   },
-  loadInclMapAndPosition: 'Wraz z zapisaną mapą tła i pozycją',
+  loadExclMapAndPosition: 'Wczytaj bez mapy tła i pozycji',
   writers: 'Edytorzy',
   addWriter: 'Dodaj edytora',
   conflictError: 'Mapa została w międzyczasie zmodyfikowana.',

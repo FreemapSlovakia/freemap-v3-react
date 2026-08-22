@@ -47,7 +47,7 @@ const en: MyMapsMessages = {
     append: 'Append',
     replace: 'Replace',
   },
-  loadInclMapAndPosition: 'Include saved background map and position',
+  loadExclMapAndPosition: 'Load without background map and position',
   writers: 'Editors',
   addWriter: 'Add an editor',
   conflictError: 'The map has been modified in the meantime.',

@@ -53,7 +53,7 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     append: 'Anhängen',
     replace: 'Ersetzen',
   },
-  loadInclMapAndPosition: 'Mit gespeicherter Hintergrundkarte und Position',
+  loadExclMapAndPosition: 'Ohne Hintergrundkarte und Position laden',
   writers: 'Bearbeiter',
   addWriter: 'Editor hinzufügen',
   conflictError: 'Die Karte wurde inzwischen geändert.',

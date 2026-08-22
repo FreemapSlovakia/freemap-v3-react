@@ -53,7 +53,7 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     append: 'Hozzáfűzés',
     replace: 'Csere',
   },
-  loadInclMapAndPosition: 'A mentett alaptérképpel és pozíciójával',
+  loadExclMapAndPosition: 'Betöltés alaptérkép és pozíció nélkül',
   writers: 'Szerkesztők',
   addWriter: 'Szerkesztő hozzáadása',
   conflictError: 'A térképet időközben módosították.',
