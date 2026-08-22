@@ -207,6 +207,74 @@ const entryDocs: EntryDoc[] = [
   },
 ];
 
+/**
+ * Fails the build when a **shared** stylesheet is emitted into more than one
+ * chunk.
+ *
+ * A `.css` reached only from lazily-loaded components is copied into each of
+ * their chunk stylesheets, and loading the second one re-appends the shared
+ * rules *after* the first component's own — so anything the two disagree about
+ * at equal specificity silently swaps winner. It cost an afternoon once: the
+ * panorama's move grip reverted to Bootstrap's the moment the toposcope opened.
+ *
+ * Nothing shows it in dev, which serves a single bundle, so the check is the
+ * only thing standing between that and production. The fix it asks for is to
+ * give the stylesheet an eager importer — see `doc/build-and-deploy.md`.
+ *
+ * `src/shared/` only, because that is where chunks that can be open at the same
+ * time meet. A feature's own stylesheet reaches several chunks too — a message
+ * that renders a component pulls it into all nine of that feature's language
+ * chunks — but only one language is ever loaded, so those copies never meet and
+ * never reorder anything. Wasted bytes there, not a hazard.
+ */
+class SingleCopyCssPlugin {
+  apply(compiler: rspack.Compiler) {
+    compiler.hooks.thisCompilation.tap('SingleCopyCss', (compilation) => {
+      compilation.hooks.afterSeal.tap('SingleCopyCss', () => {
+        const shared = path.resolve(__dirname, 'src/shared');
+
+        // Duplicated, but harmless, and not fixable from here: it belongs to a
+        // shared component and follows it into every chunk that uses it. Its
+        // one rule is written `.toggle.toggle` to outrank a Bootstrap
+        // selector, which puts it out of reach of anything the load order
+        // could do anyway. Left warning about, it would train the eye to skip
+        // this whole check.
+        const benign = ['SelectToggle.module.css'];
+
+        const duplicated = [...compilation.modules]
+          .filter((module) => {
+            const file = module.nameForCondition();
+
+            return (
+              file?.endsWith('.css') &&
+              file.startsWith(shared) &&
+              !benign.some((name) => file.endsWith(name))
+            );
+          })
+          .map((module) => ({
+            file: module.nameForCondition() ?? '?',
+            chunks: compilation.chunkGraph
+              .getModuleChunks(module)
+              .map((chunk) => chunk.name ?? String(chunk.id)),
+          }))
+          .filter(({ chunks }) => chunks.length > 1);
+
+        for (const { file, chunks } of duplicated) {
+          compilation.warnings.push(
+            new rspack.WebpackError(
+              `${path.relative(__dirname, file)} is emitted into ${chunks.length} chunks (${chunks.join(', ')}).\n` +
+                'Whichever loads last wins any equal-specificity conflict with a feature stylesheet. ' +
+                'An eager importer in Main.tsx fixes it where the users are top-level lazy components; ' +
+                'where the stylesheet follows a shared *component* into many chunks it cannot be, so this warns rather than fails. ' +
+                'See doc/build-and-deploy.md.',
+            ),
+          );
+        }
+      });
+    });
+  }
+}
+
 // A language with no row here gets no entry document and no web manifest, and
 // silently falls back to the domain's default ones. This config is not
 // type-checked, so nothing but this guard catches the omission.
@@ -474,6 +542,7 @@ const config: Configuration = {
     ],
   },
   plugins: [
+    new SingleCopyCssPlugin(),
     !prod &&
       new TsCheckerRspackPlugin({
         typescript: {

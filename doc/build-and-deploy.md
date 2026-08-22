@@ -23,6 +23,63 @@ CSS minification therefore uses `rspack.LightningCssMinimizerRspackPlugin` with 
 
 **Don't** revert to cssnano or remove `cssTargets`. Lowering only runs in the prod minifier, so dev (style-loader, modern browser) is unaffected — verify real output with `DEPLOYMENT=prod npx rspack build`, then grep `dist/*.css` for stray `&` (should be 0).
 
+## A stylesheet reached only from lazy chunks is emitted into every one of them
+
+There is no `splitChunks` CSS grouping, so a `.module.css` imported **only** by
+lazily-loaded components is duplicated into each of their chunk stylesheets.
+Loading the second such component appends that copy *after* the first
+component's own CSS, and any pair of rules that disagree at equal specificity —
+one class each — silently swaps winner.
+
+That is what made the panorama's move grip revert to Bootstrap's muted style the
+moment the toposcope was opened: both panels use
+`shared/components/FloatingWindow.module.css`, whose `.move-handle` sets a
+colour, and the panorama's own `.grip` overrides it — until a second copy of
+`.move-handle` arrived after it.
+
+**Dev cannot show this.** One bundle, one copy, nothing inserted afterwards; it
+only appears in a real production build.
+
+The fix is to give the shared stylesheet an eager importer — `Main.tsx` carries
+a bare `import '@shared/components/FloatingWindow.module.css'` for exactly this
+— which puts it in `main.css`: emitted once, and ahead of every feature
+stylesheet, which is the order a shared base wants regardless.
+
+`SingleCopyCssPlugin` in `rspack.config.ts` **warns** for every stylesheet under
+`src/shared/` that reaches more than one chunk, naming them. Treat the warning as
+"check whether anything overrides these rules", because the duplication only
+bites when a feature stylesheet overrides a shared one **at equal specificity** —
+one class each.
+
+**Load order will not settle it for you.** The chunk-CSS runtime inserts a
+stylesheet *relative to an existing link* — `n.parentNode.insertBefore(l,
+n.nextSibling)`, not `head.appendChild` — so a lazily-loaded feature sheet can
+land **ahead of `main.css`** and lose a tie it looks like it should win. Reading
+the emitted CSS and reasoning "this one is fetched later, so it wins" is how the
+panorama's grips were declared fixed twice while still being black in
+production.
+
+Two fixes, and which one applies depends on why the stylesheet is duplicated:
+
+- **An eager importer**, where the users are top-level lazy components.
+  `FloatingWindow.module.css` had three, and the import in `Main.tsx` removed it
+  from all of them.
+- **Raise the overriding rule's specificity**, so load order stops mattering at
+  all. This is the only option when the stylesheet belongs to a shared
+  *component*, since it follows that component into every chunk that uses it and
+  no import changes that. (`optimization.removeAvailableModules` does not help
+  either — those chunks do not all descend from one parent.)
+
+`SelectToggle.module.css` is the second case and already takes the second fix: it
+is one rule, written `.toggle.toggle` to outrank a Bootstrap selector, so nothing
+the load order does can reach it. It is in the plugin's `benign` list for that
+reason — a warning that fires on every build and is always fine teaches people to
+skip the whole check.
+
+Feature-local CSS reaching several chunks is not flagged: a message that renders
+a component pulls it into all nine of that feature's language chunks, and only
+one language is ever loaded, so those copies never meet.
+
 ## Typed CSS modules need the `.d.css.ts` naming
 
 `*.module.css` files get a precise per-file declaration so `import classes from './x.module.css'` is typed with the actual class names instead of the loose `Record<string, string>` ambient fallback. The wiring (all in `rspack.config.ts` + `tsconfig.json` + `typings/global.d.ts`):

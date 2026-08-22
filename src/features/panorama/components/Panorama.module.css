@@ -23,8 +23,16 @@
 /* The grips and the close button sit straight on the picture, where a muted
    glyph disappears into whatever happens to be behind it. A white mark with a
    dark halo reads on sky and on forest alike — the same treatment the peak
-   names get, for the same reason. */
-.grip {
+   names get, for the same reason.
+
+   The class is doubled to put this above `FloatingWindow.module.css`'s own
+   `.move-handle` / `.resize-handle` colour, which it ties with at one class
+   each. Load order does not settle that tie the way it looks like it should:
+   the CSS chunk runtime inserts a stylesheet *relative to an existing link*
+   rather than appending it, so a lazily-loaded feature sheet can land ahead of
+   `main.css` and lose. Specificity is the only part of this that is ours to
+   decide — the same trick `SelectToggle.module.css` uses against Bootstrap. */
+.grip.grip {
   color: #fff;
   opacity: 1;
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.9))
