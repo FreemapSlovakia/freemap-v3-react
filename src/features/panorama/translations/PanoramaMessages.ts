@@ -2,13 +2,14 @@ import type { ReactNode } from 'react';
 import type { PanoramaLook } from '../model/settingsReducer.js';
 
 export type PanoramaMessages = {
-  /** Shown in the empty panel, before anywhere has been picked. */
-  pickHint: string;
+  /**
+   * Shown in the empty panel, before anywhere has been picked. The button's
+   * icon is passed in rather than named, so a locale needs no imports.
+   */
+  pickHint: (params: { icon: ReactNode }) => ReactNode;
   rendering: string;
-  /** Said while a wait runs longer than the tier usually takes. */
-  slow: string;
-  /** Said when the last render had to queue behind others. */
-  busy: string;
+  /** Said while the render waits its turn; `ahead` is how many go first. */
+  queued: (params: { ahead: number }) => string;
   cancel: string;
   /** Renders what the moved viewpoint and changed settings now ask for. */
   update: string;

@@ -19,7 +19,7 @@ import {
   useState,
 } from 'react';
 import { Alert, Button, ProgressBar } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
+import { FaEye, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { panoramaCancel } from '../model/actions.js';
 import { grantedQuality, PANORAMA_QUALITIES } from '../quality.js';
@@ -68,7 +68,7 @@ export default function Panorama(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const { render, rendering, error, probe } = useAppSelector(
+  const { render, rendering, progress, error, probe } = useAppSelector(
     (state) => state.panorama,
   );
 
@@ -123,6 +123,25 @@ export default function Panorama(): ReactElement {
   const { expectedMs } =
     PANORAMA_QUALITIES[grantedQuality(settings.quality, premium)];
 
+  const nfPercent = useNumberFormat({
+    style: 'percent',
+    maximumFractionDigits: 0,
+  });
+
+  // The service reports its own progress, but only once the request has landed
+  // on it, and not at all where the side channel can't be opened — so the clock
+  // estimate stands in until a real figure arrives.
+  const queued = progress?.phase === 'queued' ? progress : null;
+
+  // Only the rendering phase counts columns; the ones after it carry no figure
+  // and would otherwise drop a nearly full bar back to zero.
+  const percent =
+    !progress || queued
+      ? null
+      : progress.phase === 'rendering'
+        ? progress.percent
+        : 100;
+
   return (
     <div {...boxProps}>
       <FloatingWindowGrips
@@ -170,7 +189,7 @@ export default function Panorama(): ReactElement {
           </Alert>
         ) : (
           <p className="m-0 text-center text-body-secondary">
-            {rendering ? m?.rendering : m?.pickHint}
+            {rendering ? m?.rendering : m?.pickHint({ icon: <FaEye /> })}
           </p>
         )}
 
@@ -207,19 +226,30 @@ export default function Panorama(): ReactElement {
             render. On a scrim, since it lies over whatever is on screen. */}
         {rendering && (
           <div className="position-absolute z-1 bottom-0 start-0 end-0 m-2 p-2 rounded bg-dark bg-opacity-50">
-            {/* Here rather than in the footer, which it grew by a line halfway
-                through every slow render. */}
-            {elapsed > expectedMs && (
-              <p className="mb-1 small text-white">{m?.slow}</p>
+            {queued && (
+              <p className="mb-1 small text-white">
+                {m?.queued({ ahead: queued.ahead })}
+              </p>
             )}
 
             <div className="d-flex align-items-center gap-2">
+              {/* Full and grey while queued: there is nothing to be a fraction
+                  of until the render starts. */}
               <ProgressBar
                 className="flex-grow-1"
                 striped
                 animated
-                now={Math.min(99, (elapsed / expectedMs) * 100)}
-                label={`${Math.round(elapsed / 1000)} s`}
+                variant={queued ? 'secondary' : undefined}
+                now={
+                  queued
+                    ? 100
+                    : (percent ?? Math.min(99, (elapsed / expectedMs) * 100))
+                }
+                label={
+                  percent === null
+                    ? `${Math.round(elapsed / 1000)} s`
+                    : nfPercent.format(percent / 100)
+                }
               />
 
               <Button
@@ -248,10 +278,6 @@ export default function Panorama(): ReactElement {
             'd-flex flex-wrap align-items-center gap-2 mt-2 mb-1 mx-2 small',
           )}
         >
-          {render && render.queueDepth > 0 && (
-            <span className="text-body-secondary">{m?.busy}</span>
-          )}
-
           {/* A render that failed with a picture still on screen: said here
             rather than as an alert, which would take away a good picture over
             a failed attempt to replace it. */}

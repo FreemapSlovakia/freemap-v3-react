@@ -27,6 +27,7 @@ import {
   panoramaPick,
   panoramaRender,
   panoramaSetError,
+  panoramaSetProgress,
   panoramaSetRender,
   panoramaSetRendering,
 } from '../actions.js';
@@ -69,10 +70,11 @@ async function renderPass(
 ): Promise<boolean> {
   const id = claimPanoramaRender();
 
-  const { meta, imageUrl, depth, queueDepth } = await renderPanorama(
+  const { meta, imageUrl, depth } = await renderPanorama(
     buildPanoramaRequest(viewpoint, settings, quality),
     getState,
     CANCEL,
+    (progress) => dispatch(panoramaSetProgress(progress)),
   );
 
   if (!isCurrentPanoramaRender(id)) {
@@ -97,7 +99,6 @@ async function renderPass(
       altMax: meta.alt_max,
       stepDeg: meta.step_deg,
       labels: labelsFromPeaks(meta.peaks ?? []),
-      queueDepth,
     }),
   );
 

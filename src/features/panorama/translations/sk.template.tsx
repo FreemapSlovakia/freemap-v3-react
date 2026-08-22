@@ -2,10 +2,16 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
-  pickHint: 'Miesto pohľadu zvoľte tlačidlom 👁 nižšie.',
+  pickHint: ({ icon }) => <>Miesto pohľadu zvoľte tlačidlom {icon} nižšie.</>,
   rendering: 'Vykresľujem panorámu…',
-  slow: 'Trvá to dlhšie ako zvyčajne.',
-  busy: 'Vykresľovacia služba je vyťažená, môže to chvíľu trvať.',
+  queued: ({ ahead }) =>
+    ahead === 0
+      ? 'Čaká sa na vykresľovaciu službu…'
+      : ahead === 1
+        ? 'Čaká sa — pred vami je 1 panoráma.'
+        : ahead < 5
+          ? `Čaká sa — pred vami sú ${ahead} panorámy.`
+          : `Čaká sa — pred vami je ${ahead} panorám.`,
   cancel: 'Zrušiť',
   update: 'Aktualizovať',
   outdated: 'Obrázok je z predchádzajúceho stanoviska.',

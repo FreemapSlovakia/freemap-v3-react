@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { LatLon } from '@shared/types/common.js';
-import type { PanoramaErrorCode } from '../api.js';
+import type { PanoramaErrorCode, PanoramaProgress } from '../api.js';
 import type { PanoramaRenderInfo } from './reducer.js';
 import type { PanoramaSettingsState } from './settingsReducer.js';
 
@@ -75,6 +75,15 @@ export const panoramaSetRender = createAction<PanoramaRenderInfo>(
 
 export const panoramaSetError =
   createAction<PanoramaErrorCode>('PANORAMA_SET_ERROR');
+
+/**
+ * How far the render in flight has got, as the service reports it. Only ever
+ * dispatched with something to say; what makes it stale — a pass ending, an
+ * error, the panel closing — clears it in the reducer.
+ */
+export const panoramaSetProgress = createAction<PanoramaProgress>(
+  'PANORAMA_SET_PROGRESS',
+);
 
 /**
  * Where a press in the picture landed on the map, read off the distance

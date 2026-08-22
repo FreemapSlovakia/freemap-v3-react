@@ -178,6 +178,7 @@ export function PanoramaControls({
           place to look from. */}
       <PlacePickerButton
         consumer="panorama"
+        variant={viewpoint ? 'secondary' : 'primary'}
         label={m?.pickViewpoint}
         icon={<FaEye />}
         locateLabel={m?.locate}

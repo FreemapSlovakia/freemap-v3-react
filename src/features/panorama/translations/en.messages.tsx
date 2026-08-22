@@ -1,10 +1,21 @@
 import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const en: PanoramaMessages = {
-  pickHint: 'Pick where to look from with the 👁 button below.',
+  // The space after the icon is explicit: the locale generator drops a plain
+  // one, leaving the fallback languages reading "the 👁button below".
+  pickHint: ({ icon }) => (
+    <>
+      Pick where to look from with the {icon}
+      {' button below.'}
+    </>
+  ),
   rendering: 'Rendering the panorama…',
-  slow: 'Taking longer than usual.',
-  busy: 'The renderer is busy, so this may take a while.',
+  queued: ({ ahead }) =>
+    ahead === 0
+      ? 'Waiting for the renderer…'
+      : ahead === 1
+        ? 'Waiting — one panorama ahead.'
+        : `Waiting — ${ahead} panoramas ahead.`,
   cancel: 'Cancel',
   update: 'Update',
   outdated: 'The picture is of the previous viewpoint.',

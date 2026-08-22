@@ -18,10 +18,17 @@ this side:
 - **Hanging up cancels the work**, within about a second, queued or running. So
   a new render must abort the one in flight rather than queue behind it. That
   is what the `cancelActions` in `panoramaRenderProcessorHandler` are for.
-- **`X-Queue-Depth`** on the response says how many were waiting when this one
-  was admitted. It arrives with the finished picture, so it can't drive a live
-  queue readout — it is kept on the render and used to warn that the service is
-  busy.
+- **Progress comes over a side channel.** The response is one multipart body
+  that arrives at the end, so `renderPanorama` invents a token, sends it as
+  `X-Job`, and subscribes to `GET /progress/{token}` — an `EventSource`
+  reporting `phase` (`queued`/`rendering`/`encoding`/`done`), how many renders
+  are `ahead`, and `percent`. Subscribed *before* the request, or the queued
+  phase is missed. Both ends must close it: `done` is the last event and a
+  browser reopens a stream that ends. An unrecognised phase — the service's
+  `unknown`, for a token whose request hasn't landed yet — reports nothing, and
+  the panel falls back to the clock estimate, which is also what happens where
+  the stream can't be opened at all. The response's own `X-Queue-Depth` says
+  the same thing after the fact and is not read.
 - **The client sends the account's bearer token itself.** The service is
   addressed directly rather than through `freemap-v3-api`, so `httpRequest`
   adds no credentials of its own (it only does that for relative URLs) and the
@@ -31,18 +38,20 @@ this side:
 
 The endpoint is `process.env['TERRAIN_URL']`, defined in `rspack.config.ts`.
 
-**It is cross-origin, so it needs CORS.** The request carries `Authorization`
-and `Content-Type: application/json`, either of which makes it non-simple, so
-the browser sends an `OPTIONS` preflight first. The vhost in front of the
-service has to answer that and allow both headers, and expose `X-Queue-Depth`
-or the busy hint reads as zero:
+**It is cross-origin, so it needs CORS.** The request carries `Authorization`,
+`Content-Type: application/json` and `X-Job`, any of which makes it non-simple,
+so the browser sends an `OPTIONS` preflight first. The vhost in front of the
+service has to answer that and allow all three:
 
 ```
 Access-Control-Allow-Origin: <the portal origin>
-Access-Control-Allow-Methods: POST, OPTIONS
-Access-Control-Allow-Headers: authorization, content-type
-Access-Control-Expose-Headers: X-Queue-Depth
+Access-Control-Allow-Methods: POST, GET, OPTIONS
+Access-Control-Allow-Headers: authorization, content-type, x-job
 ```
+
+The progress stream is a plain `GET`, so it needs the origin header on the
+response but no preflight — and it needs `proxy_buffering off`, or nginx holds
+every event until the render is over.
 
 A CORS refusal reaches the client as the same `TypeError` an unplugged cable
 would, so `panoramaErrorCode` only says "offline" when `navigator.onLine`

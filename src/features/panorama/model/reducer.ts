@@ -2,7 +2,7 @@ import { clearMapFeatures, closeTool } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { mod } from '@shared/mathUtils.js';
 import type { LatLon } from '@shared/types/common.js';
-import type { PanoramaErrorCode } from '../api.js';
+import type { PanoramaErrorCode, PanoramaProgress } from '../api.js';
 import type { PanoramaLabel } from '../labels/types.js';
 import {
   type PanoramaProbe,
@@ -14,6 +14,7 @@ import {
   panoramaSetError,
   panoramaSetPickingViewpoint,
   panoramaSetProbe,
+  panoramaSetProgress,
   panoramaSetRender,
   panoramaSetRendering,
 } from './actions.js';
@@ -40,14 +41,14 @@ export interface PanoramaRenderInfo {
   altMax: number;
   stepDeg: number;
   labels: PanoramaLabel[];
-  /** How many renders were waiting when this one was admitted. */
-  queueDepth: number;
 }
 
 export interface PanoramaState {
   /** Where the marker stands; the picture may still be of somewhere else. */
   viewpoint: LatLon | null;
   rendering: boolean;
+  /** How far the pass in flight has got; `null` while nothing is known. */
+  progress: PanoramaProgress | null;
   error: PanoramaErrorCode | null;
   render: PanoramaRenderInfo | null;
   /** Bearing the middle of the viewer looks at; see `panoramaSetAzimuth`. */
@@ -60,6 +61,7 @@ export interface PanoramaState {
 export const panoramaInitialState: PanoramaState = {
   viewpoint: null,
   rendering: false,
+  progress: null,
   error: null,
   render: null,
   azimuth: 0,
@@ -87,9 +89,14 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
     .addCase(panoramaSetRendering, (state, { payload }) => {
       state.rendering = payload;
 
+      state.progress = null;
+
       if (payload) {
         state.error = null;
       }
+    })
+    .addCase(panoramaSetProgress, (state, { payload }) => {
+      state.progress = payload;
     })
     .addCase(panoramaSetRender, (state, { payload }) => {
       state.render = payload;
@@ -97,14 +104,21 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
       state.error = null;
 
       state.probe = null;
+
+      // A pass has ended; whatever the next one reports starts from nothing.
+      state.progress = null;
     })
     .addCase(panoramaSetError, (state, { payload }) => {
       state.error = payload;
 
       state.rendering = false;
+
+      state.progress = null;
     })
     .addCase(panoramaCancel, (state) => {
       state.rendering = false;
+
+      state.progress = null;
     })
     .addCase(panoramaSetAzimuth, (state, { payload }) => {
       state.azimuth = mod(payload, 360);
@@ -122,6 +136,8 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
     .addCase(closeTool, (state, { payload }) => {
       if (payload === 'panorama') {
         state.rendering = false;
+
+        state.progress = null;
 
         state.pickingViewpoint = false;
       }

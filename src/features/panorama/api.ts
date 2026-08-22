@@ -133,12 +133,6 @@ export interface PanoramaResponse {
   /** Object URL of the rendered image; revoke it when it goes off screen. */
   imageUrl: string;
   depth: PanoramaDepth | null;
-  /**
-   * How many renders were waiting when this one was admitted. It arrives with
-   * the finished picture, so it can't drive a live queue readout — it says
-   * afterwards that the service is busy, which the next wait can warn about.
-   */
-  queueDepth: number;
 }
 
 /**
@@ -177,6 +171,81 @@ export function panoramaErrorCode(err: unknown): PanoramaErrorCode {
   return 'failed';
 }
 
+const ProgressSchema = z.object({
+  phase: z.enum(['queued', 'rendering', 'encoding', 'done']),
+  /** Renders that must finish before this one starts; `0` means next. */
+  ahead: z.number().default(0),
+  /** 0–100 through the render; a column count, so the rate drifts a little. */
+  percent: z.number().default(0),
+});
+
+/**
+ * How far along a render is. The picture arrives all at once at the end, so
+ * this comes over a side channel — see the service's `docs/API.md`.
+ */
+export type PanoramaProgress = z.infer<typeof ProgressSchema>;
+
+/**
+ * Rejects the service's `unknown` phase along with anything malformed: the
+ * token is only registered once its request lands, and until then there is
+ * nothing to say.
+ */
+function parseProgress(data: string): PanoramaProgress | null {
+  try {
+    const parsed = ProgressSchema.safeParse(JSON.parse(data));
+
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Watches one render, by the token its request carries. Subscribed before the
+ * request goes out, which is what makes the queued phase visible.
+ */
+function watchProgress(
+  token: string,
+  onProgress: (progress: PanoramaProgress) => void,
+): () => void {
+  const events = new EventSource(
+    `${process.env['TERRAIN_URL']}/progress/${token}`,
+  );
+
+  // Set on open, not on the first usable event: the service reports `unknown`
+  // until the request lands, and those parse to nothing.
+  let opened = false;
+
+  events.onopen = () => {
+    opened = true;
+  };
+
+  events.onmessage = ({ data }) => {
+    const progress = parseProgress(data);
+
+    if (!progress) {
+      return;
+    }
+
+    onProgress(progress);
+
+    // `done` is the last event and the browser reopens a stream that ends.
+    if (progress.phase === 'done') {
+      events.close();
+    }
+  };
+
+  // Never connected, so the side channel isn't there — let it go rather than
+  // have the browser retry it for the length of the render.
+  events.onerror = () => {
+    if (!opened) {
+      events.close();
+    }
+  };
+
+  return () => events.close();
+}
+
 /**
  * Renders one panorama. Seconds of work on the server, serialised there, so the
  * caller owns the progress and the cancellation — pass the triggers that make
@@ -187,55 +256,68 @@ export async function renderPanorama(
   request: PanoramaRequest,
   getState: () => RootState,
   cancel: CancelTriggers,
+  onProgress?: (progress: PanoramaProgress) => void,
 ): Promise<PanoramaResponse> {
   const { user } = getState().auth;
 
-  const response = await httpRequest({
-    ...cancel,
-    getState,
-    method: 'POST',
-    // Absolute, so `httpRequest` adds no credentials of its own; the terrain
-    // service clamps quality per account and needs the token to do it.
-    url: `${process.env['TERRAIN_URL']}/panorama`,
-    data: request,
-    ...(user ? { headers: { Authorization: `Bearer ${user.authToken}` } } : {}),
-  });
+  // Ours to invent; the service only keys `/progress/{token}` on it.
+  const token = crypto.randomUUID();
 
-  const form = await response.formData();
+  const unwatch = onProgress ? watchProgress(token, onProgress) : undefined;
 
-  const metaPart = form.get('meta');
+  try {
+    const response = await httpRequest({
+      ...cancel,
+      getState,
+      method: 'POST',
+      // Absolute, so `httpRequest` adds no credentials of its own; the terrain
+      // service clamps quality per account and needs the token to do it.
+      url: `${process.env['TERRAIN_URL']}/panorama`,
+      data: request,
+      headers: {
+        'X-Job': token,
+        ...(user ? { Authorization: `Bearer ${user.authToken}` } : {}),
+      },
+    });
 
-  if (typeof metaPart !== 'string') {
-    throw new Error('missing panorama meta');
-  }
+    const form = await response.formData();
 
-  const meta = MetaSchema.parse(JSON.parse(metaPart));
+    const metaPart = form.get('meta');
 
-  const imagePart = form.get('image');
-
-  if (!(imagePart instanceof Blob)) {
-    throw new Error('missing panorama image');
-  }
-
-  const depthPart = form.get('depth');
-
-  // A picture without distances is worth far more than no picture: the reading
-  // and the press-to-mark go quiet, everything else works, and the panel is
-  // already built for a render that carries no depth at all.
-  let depth: PanoramaDepth | null = null;
-
-  if (meta.depth && depthPart instanceof Blob) {
-    try {
-      depth = await decodeDepth(depthPart, meta.width, meta.height, meta.depth);
-    } catch (err) {
-      console.warn('panorama depth buffer could not be decoded', err);
+    if (typeof metaPart !== 'string') {
+      throw new Error('missing panorama meta');
     }
-  }
 
-  return {
-    meta,
-    imageUrl: URL.createObjectURL(imagePart),
-    depth,
-    queueDepth: Number(response.headers.get('X-Queue-Depth')) || 0,
-  };
+    const meta = MetaSchema.parse(JSON.parse(metaPart));
+
+    const imagePart = form.get('image');
+
+    if (!(imagePart instanceof Blob)) {
+      throw new Error('missing panorama image');
+    }
+
+    const depthPart = form.get('depth');
+
+    // A picture without distances is worth far more than no picture: the
+    // reading and the press-to-mark go quiet, everything else works, and the
+    // panel is already built for a render that carries no depth at all.
+    let depth: PanoramaDepth | null = null;
+
+    if (meta.depth && depthPart instanceof Blob) {
+      try {
+        depth = await decodeDepth(
+          depthPart,
+          meta.width,
+          meta.height,
+          meta.depth,
+        );
+      } catch (err) {
+        console.warn('panorama depth buffer could not be decoded', err);
+      }
+    }
+
+    return { meta, imageUrl: URL.createObjectURL(imagePart), depth };
+  } finally {
+    unwatch?.();
+  }
 }
