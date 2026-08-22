@@ -166,6 +166,17 @@ final state. `hashchange` is handled by `locationChangeHandler`. When you add
 state that should be shareable/bookmarkable, wire it through here **and** update
 the hash-param docs in `src/static/llms.txt`.
 
+`sessionStash.ts` is the counterweight to the platform losing that URL. An
+installed PWA relaunched after Android reclaims its process is restarted from
+its launch intent, which carries only the manifest's `start_url` — a browser tab
+is spared, since the browser restores tabs itself. So the hash plus its
+`history.state` (`sq`, `tr`) is written to `localStorage` as the page goes away,
+and put back at bootstrap when a **mobile** app window arrives at a bare URL.
+`index.tsx` must call `restoreStashedUrl()` before `handleLocationChange`.
+Desktop is excluded on purpose: it restores its own windows, and a
+`file_handlers` launch there (desktop-only) also arrives at a bare `start_url`,
+so restoring would reopen the last session around the file being opened.
+
 The full list of supported URL params (read/write vs. read-only, formats, and
 the shared `\x1e`-field **style codec** used by the drawing geometry params and
 the per-feature default-style params `track-style` / `objects-style` /

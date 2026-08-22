@@ -41,6 +41,7 @@ import './styles/bootstrap-override.css';
 import './styles/index.css';
 import { createCookieConsentToastAction } from '@features/cookieConsent/model/toastAction.js';
 import { handleLocationChange } from './url/locationChangeHandler.js';
+import { restoreStashedUrl } from './url/sessionStash.js';
 import { setUrlUpdatingEnabled } from './url/urlUpdating.js';
 
 window.localStorageFallback = storage;
@@ -65,6 +66,10 @@ if (/\/{2,}/.test(window.location.pathname)) {
       window.location.hash,
   );
 }
+
+// Before anything reads the URL: an installed app relaunched at its bare
+// `start_url` continues from where the last session ended.
+restoreStashedUrl();
 
 // workaround to fix blurring menus on hidpi desktop chrome
 if (

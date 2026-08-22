@@ -18,6 +18,7 @@ import {
   type QueryPart,
   serializeQuery,
 } from './mapContentParts.js';
+import { stashUrl } from './sessionStash.js';
 import { serializeZoom } from './urlMapUtils.js';
 import { isUrlUpdatingEnabled } from './urlUpdating.js';
 
@@ -101,19 +102,23 @@ function rerun() {
 // user left a moment before, not the one they were looking at. `pagehide`
 // covers unload and bfcache; a mobile tab can instead be frozen and discarded
 // while merely hidden, which only `visibilitychange` sees.
-function flushRerun() {
+//
+// The stash goes last, so it records the URL the rewrite just wrote.
+function endSession() {
   if (rerunTimer !== undefined) {
     clearTimeout(rerunTimer);
 
     rerun();
   }
+
+  stashUrl();
 }
 
-window.addEventListener('pagehide', flushRerun);
+window.addEventListener('pagehide', endSession);
 
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
-    flushRerun();
+    endSession();
   }
 });
 
