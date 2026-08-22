@@ -4,6 +4,7 @@ import {
   toggleLocate,
 } from '@features/location/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import { mod } from '@shared/mathUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { PanoramaErrorCode } from '../api.js';
 import type { PanoramaLabel } from '../labels/types.js';
@@ -126,7 +127,7 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
       state.rendering = false;
     })
     .addCase(panoramaSetAzimuth, (state, { payload }) => {
-      state.azimuth = ((payload % 360) + 360) % 360;
+      state.azimuth = mod(payload, 360);
     })
     .addCase(panoramaToggleFullscreen, (state, { payload }) => {
       state.fullscreen = payload ?? !state.fullscreen;

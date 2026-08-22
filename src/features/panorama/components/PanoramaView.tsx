@@ -6,7 +6,7 @@ import {
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import { angleDiff, clamp } from '@shared/mathUtils.js';
+import { angleDiff, clamp, mod } from '@shared/mathUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import destination from '@turf/destination';
 import clsx from 'clsx';
@@ -96,10 +96,6 @@ const SETTLE_MS = 500;
  * far enough to be legible.
  */
 const PICKED_INK = '#ff6a6a';
-
-function mod(value: number, n: number): number {
-  return ((value % n) + n) % n;
-}
 
 /** Where a bearing and a distance from the viewpoint land on the ground. */
 function groundPoint(
@@ -389,10 +385,8 @@ export function PanoramaView({
     renderHeight: render.height,
   });
 
-  // Written in place rather than replaced: this runs after every render, which
-  // during a pan is every frame, and the object is nobody's dependency.
   useEffect(() => {
-    Object.assign(geomRef.current, {
+    geomRef.current = {
       azimuth,
       zoom,
       offsetY: clampedOffsetY,
@@ -404,7 +398,7 @@ export function PanoramaView({
       height,
       stepDeg: render.stepDeg,
       renderHeight: render.height,
-    });
+    };
   });
 
   /**
@@ -787,7 +781,6 @@ export function PanoramaView({
       : [];
   }, [anchor, candidates, settings.labelDensity, width]);
 
-  // Every ten degrees, named where the eight compass points fall.
   // Every label the strip can carry, worked out once per language: the eight
   // compass points and a degree figure at each of the other multiples of ten.
   // The strip is redrawn on every frame of a pan, and formatting a number is
@@ -805,10 +798,17 @@ export function PanoramaView({
       gm?.cardinals.nw,
     ];
 
+    // Indexed by fives so the strip can look a bearing up directly, but only
+    // the ones it draws are filled: the sieve below takes multiples of ten and
+    // of forty-five, and nothing else is ever asked for.
     return Array.from({ length: 72 }, (_, i) => {
       const at = i * 5;
 
-      return at % 45 === 0 ? (names[at / 45] ?? '') : nfDeg.format(at);
+      return at % 45 === 0
+        ? (names[at / 45] ?? '')
+        : at % 10 === 0
+          ? nfDeg.format(at)
+          : '';
     });
   }, [gm, nfDeg]);
 

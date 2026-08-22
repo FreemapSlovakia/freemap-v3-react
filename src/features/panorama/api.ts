@@ -19,6 +19,15 @@ export interface PanoramaRequest {
   alt_max: number;
   step: number;
   eye: number;
+  /**
+   * Metres around the viewpoint the eye is raised to the highest ground in,
+   * 0–200. The pyramid stores a 6 m average, which costs a summit more the
+   * sharper it is, so the raw value at a peak sits below where a person would
+   * stand and puts the rock they are on above their eye. `0` disables it.
+   */
+  eye_search_radius?: number;
+  /** Farthest terrain considered, metres, 1 000–400 000. */
+  range?: number;
   supersample_x: number;
   supersample_y: number;
   depth: boolean;
@@ -40,8 +49,21 @@ export interface PanoramaRequest {
   ridge_color?: string;
   /** `#rrggbb`, the near terrain before haze washes it towards the sky. */
   ground_color?: string;
-  /** What the service encodes the picture as; `avif` is its default and ours. */
-  format: 'avif' | 'png';
+  /**
+   * What the service encodes the picture as. AVIF by a wide margin — 216 KB
+   * against PNG's 3.7 MB for a full turn — because this renderer draws nothing
+   * but smooth gradients, and the sky dither that keeps them from banding is
+   * exactly what PNG cannot pack.
+   */
+  format?: 'avif' | 'png';
+  /**
+   * AVIF quality, 1–100; ignored for PNG. It decides whether the sky dither
+   * survives the encode, so it matters more here than it usually would: below
+   * about 93 the encoder drops the noise and the banding comes back.
+   */
+  quality?: number;
+  /** Amplitude of that dither in 8-bit levels; `0` turns it off. */
+  dither_strength?: number;
 }
 
 /**

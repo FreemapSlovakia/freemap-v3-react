@@ -91,9 +91,12 @@ const legacyKeyOf = (storageKey: string) =>
   storageKey.replace(/\.window$/, '.box');
 
 /**
- * Where a window opens when nothing is remembered for it: under the toolbars,
- * which is all its container holds — every window is positioned, so nothing
- * else contributes to that height.
+ * Where a window opens when nothing is remembered for it: below everything its
+ * container holds. **This assumes the container is the app's chrome** — the
+ * info bar and the toolbars — which is what it is for all three panels; the
+ * windows themselves are positioned and add nothing to its height. Somewhere
+ * full-height it would answer "below the screen", and the clamp would drop the
+ * window to the bottom edge.
  *
  * Measured once, as it opens. A toolbar arriving afterwards (they are their own
  * lazy chunks) is not moved out of the way of, and neither is a window already
@@ -103,11 +106,10 @@ const legacyKeyOf = (storageKey: string) =>
  * an observer over the container — which cost far more than it bought.
  */
 function defaultTop(el: HTMLElement): number {
+  // The bottom edge, not the height, since the container starts below the top
+  // of the viewport as often as not.
   const parent = el.parentElement;
 
-  // The bottom edge, not the height: what the box is measured against sits
-  // below an info bar of its own sometimes, and a height would put the window
-  // over the toolbars by however tall that was.
   return parent ? parent.getBoundingClientRect().bottom + EDGE_GAP : EDGE_GAP;
 }
 
@@ -427,9 +429,15 @@ export function useFloatingWindow({
     if (resizeStartRef.current && ref) {
       resizeStartRef.current = undefined;
 
+      // Only the size: a resize doesn't move the box, and taking the position
+      // from `posRef` would take it clamped — a window pushed in by a narrowed
+      // browser would then keep the pushed-in coordinate and never return to
+      // where it was put once the browser was widened again.
       chosenRef.current = {
-        left: posRef.current[0]!,
-        top: posRef.current[1]!,
+        ...(chosenRef.current ?? {
+          left: posRef.current[0]!,
+          top: posRef.current[1]!,
+        }),
         width: ref.offsetWidth,
         height: ref.offsetHeight,
       };

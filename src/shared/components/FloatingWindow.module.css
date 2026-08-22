@@ -1,11 +1,11 @@
 /* A panel floating over the map: draggable by its top-left grip, resizable by
    its bottom-right one, and sized by whoever puts content in it.
 
-   Out of the flow always, so a toolbar appearing above it or another window
-   opening beside it can't carry it along — which is what they did while it was
-   an in-flow item of the toolbar row's flex container. `useFloatingWindow`
-   writes the four coordinates onto the element; two windows opened together
-   simply overlap, and the answer to that is to drag one.
+   Out of the flow, so nothing laid out around it can carry it along: the boxes
+   are block-level siblings of the toolbar row inside the header, and in the
+   flow a toolbar growing or another window opening pushed the rest down.
+   `useFloatingWindow` writes the four coordinates onto the element instead; two
+   windows opened together simply overlap, and the answer to that is to drag one.
 
    `fixed` rather than `absolute`: the coordinates are the viewport's, which is
    what the hook clamps them against. Absolute would resolve them against the
