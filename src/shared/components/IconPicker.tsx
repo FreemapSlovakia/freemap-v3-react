@@ -9,6 +9,7 @@ import {
   poiSpec,
   useFaIcon,
 } from '@shared/drawingIcons.js';
+import clsx from 'clsx';
 import {
   type ReactElement,
   type ReactNode,
@@ -120,6 +121,8 @@ export function IconPicker({
         ref={targetRef}
         id={id}
         variant="outline-secondary"
+        // The variant's muted grey is for a label; a glyph needs the text colour.
+        className={selectedFa || selectedPoi ? 'text-body' : undefined}
         title={m?.general.iconChoose}
         onClick={() => setOpen((o) => !o)}
       >
@@ -185,7 +188,8 @@ export function IconPicker({
                   <Button
                     key={`${e.kind}:${e.name}`}
                     size="sm"
-                    className="p-2 lh-1"
+                    // Not while selected: the fill then carries the contrast.
+                    className={clsx('p-2 lh-1', !isSelected && 'text-body')}
                     variant="outline-secondary"
                     active={isSelected}
                     onClick={() => {
