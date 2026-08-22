@@ -30,10 +30,6 @@
     border-radius: inherit;
     backdrop-filter: blur(6px);
     background-color: rgba(255, 255, 255, 0.7);
-
-    [data-bs-theme="dark"] & {
-      background-color: rgba(0, 0, 0, 0.7);
-    }
   }
 
   & > button {
@@ -42,6 +38,14 @@
     right: 0px;
     margin-right: 0.5rem;
   }
+}
+
+/* Not nested under `.window`: `&` inside a `::before` rule resolves through
+   `:is()`, which rejects pseudo-elements, so the whole selector is dropped and
+   dark panels stay white. `:not(.fullscreen)` because this outranks the
+   fullscreen override below, which needs its opaque background to win. */
+[data-bs-theme="dark"] .window:not(.fullscreen)::before {
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 /* The panel taking the screen, dropping the grips it no longer needs. */
