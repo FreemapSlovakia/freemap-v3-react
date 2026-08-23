@@ -35,6 +35,21 @@
   cursor: pointer;
 }
 
+/* Clears the two grips for an overlay in a top corner: they sit 0.25rem down
+   and stand 2rem tall, measured from the *box*, while the overlay is measured
+   from the content inside it. Bootstrap's spacing scale steps 1.5rem to 3rem,
+   so it has nothing that fits. No `m-2` on the callers, which would win this on
+   source order. */
+.below-grips {
+  /* The box's own `p-2` supplies the gap under the grip. */
+  margin-top: 2.25rem;
+}
+
+/* Full screen drops that padding, so the gap has to come from here instead. */
+.below-grips-fullscreen {
+  margin-top: 2.75rem;
+}
+
 /* Takes whatever the box has left over. `min-height: 0` is what lets it give
    room back as the window shrinks: without it a flex item never goes below the
    size of its content, so the box's own padding and footer get squeezed out

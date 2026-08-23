@@ -193,20 +193,28 @@ export default function Panorama(): ReactElement {
           </p>
         )}
 
-        {/* Says the picture on screen is the fast first pass. `mt-5` clears
-            what is already in that corner: the compass strip and the move
-            grip. */}
+        {/* Says the picture on screen is the fast first pass. */}
         {render?.preview && (
-          <span className="badge text-bg-secondary position-absolute z-1 top-0 start-0 m-2 mt-5">
+          <span
+            className={clsx(
+              fullscreen ? classes.belowGripsFullscreen : classes.belowGrips,
+              'badge text-bg-secondary position-absolute z-1 top-0 start-0 ms-2 me-2 mb-2',
+            )}
+          >
             {m?.preview}
           </span>
         )}
 
         {/* What the picture answers: where the eye stands, and what was last
-            picked out of it. Opposite the preview badge, and clear of the
-            compass strip and the close button by the same `mt-5`. */}
+            picked out of it. Opposite the preview badge, and clear of the close
+            button the same way. */}
         {(render || probe) && (
-          <div className="position-absolute z-1 top-0 end-0 m-2 mt-5 p-2 rounded bg-dark bg-opacity-50 small text-white text-end mw-100">
+          <div
+            className={clsx(
+              fullscreen ? classes.belowGripsFullscreen : classes.belowGrips,
+              'position-absolute z-1 top-0 end-0 ms-2 me-2 mb-2 p-2 rounded bg-dark bg-opacity-50 small text-white text-end mw-100',
+            )}
+          >
             {render && (
               <div>
                 {m?.eyeElevation}: {nfEle.format(render.eyeElevation)}{' '}
