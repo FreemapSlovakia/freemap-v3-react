@@ -61,7 +61,7 @@ export type PanoramaMessages = {
     flat: string;
   };
   labels: {
-    /** Names the menu the two sliders share. */
+    /** Names the menu the four sliders share. */
     title: string;
     /** How many names fit — a count, beside the dominance threshold. */
     density: string;
@@ -70,6 +70,16 @@ export type PanoramaMessages = {
     few: string;
     normal: string;
     many: string;
+    /** What the rank measures: a summit's real size, or how big it looks. */
+    weight: string;
+    weightHint: string;
+    /** One per `LABEL_DISTANCE_WEIGHTS`, so a step without a name won't compile. */
+    weights: readonly [string, string, string, string, string];
+    /** How far a name has to carry before haze outweighs the summit. */
+    haze: string;
+    /** The step with no falloff and no cut. */
+    hazeOff: string;
+    hazeHint: string;
   };
   dominance: {
     /** Names the control: how much a summit must stand out to be named. */

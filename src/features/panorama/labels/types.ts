@@ -25,17 +25,13 @@ export interface PanoramaLabel {
   /** Height in the rendered image, in output pixels, origin top-left. */
   y: number;
   /**
-   * What ranks it against the rest when there is no room for everything. A
-   * bare ordering with no unit — for a summit it weighs the metres it stands
-   * above its surroundings against how far off it is (see `labelRank`) — so
-   * nothing may test it against a fixed cut; sort by it and take what fits.
-   */
-  rank: number;
-  /**
    * Metres the summit stands above its surroundings — signed, so a top under
-   * its own ridge is negative — kept beside the rank so the dominance filter
-   * has a figure with a unit to test. A source that measures nothing of the
-   * kind leaves it out, and passes every filter.
+   * its own ridge is negative. What the viewer ranks and filters on; the rank
+   * itself is derived there, since the user sets what it weighs.
+   *
+   * A source that measures nothing of the kind leaves it out and passes every
+   * filter — but ranks below every real summit, which is a decision the next
+   * such source has to make rather than inherit. See `TODO.md`.
    */
   dominance?: number;
 }

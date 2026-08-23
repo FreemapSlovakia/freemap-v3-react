@@ -3,7 +3,8 @@ import type { PanoramaLabel } from './types.js';
 
 /**
  * Thins a crowd down to one name per `minPitchDeg` of horizon, keeping whichever
- * ranks highest — so the labels take the picture in rank order.
+ * ranks highest — so the labels take the picture in rank order. Takes them
+ * **already ranked** (`rankLabels`), since nothing in the type carries it.
  *
  * In degrees rather than pixels, and over every candidate rather than the ones
  * on screen: what is named must not depend on where the view points, or a

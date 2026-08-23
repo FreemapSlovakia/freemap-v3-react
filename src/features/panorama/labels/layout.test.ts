@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { layoutLabels, thinLabels } from './layout.js';
 import type { PanoramaLabel } from './types.js';
 
-function label(id: string, rank: number): PanoramaLabel {
+/** Rank is the caller's, so these are given best first, by position. */
+function label(id: string): PanoramaLabel {
   return {
     id,
     name: id,
@@ -12,7 +13,6 @@ function label(id: string, rank: number): PanoramaLabel {
     distance: 10000,
     azimuth: 0,
     y: 0,
-    rank,
   };
 }
 
@@ -26,7 +26,7 @@ const options = {
 
 describe('panorama label layout', () => {
   it('places a lone label just above its summit', () => {
-    const [placement] = layoutLabels([label('a', 1)], {
+    const [placement] = layoutLabels([label('a')], {
       ...options,
       anchor: () => ({ x: 200, y: 150 }),
     });
@@ -35,7 +35,7 @@ describe('panorama label layout', () => {
   });
 
   it('climbs a line at a time out of a taken spot', () => {
-    const placements = layoutLabels([label('a', 2), label('b', 1)], {
+    const placements = layoutLabels([label('a'), label('b')], {
       ...options,
       anchor: (l) => ({ x: l.id === 'a' ? 200 : 210, y: 150 }),
     });
@@ -44,7 +44,7 @@ describe('panorama label layout', () => {
   });
 
   it('leaves a label alone when the one beside it does not overlap', () => {
-    const placements = layoutLabels([label('a', 2), label('b', 1)], {
+    const placements = layoutLabels([label('a'), label('b')], {
       ...options,
       anchor: (l) => ({ x: l.id === 'a' ? 100 : 300, y: 150 }),
     });
@@ -53,7 +53,7 @@ describe('panorama label layout', () => {
   });
 
   it('leaves a summit too near the top of the frame unnamed', () => {
-    const placements = layoutLabels([label('a', 2)], {
+    const placements = layoutLabels([label('a')], {
       ...options,
       anchor: () => ({ x: 200, y: 20 }),
     });
@@ -62,7 +62,7 @@ describe('panorama label layout', () => {
   });
 
   it('keeps labels clear of the compass strip', () => {
-    const placements = layoutLabels([label('a', 2), label('b', 1)], {
+    const placements = layoutLabels([label('a'), label('b')], {
       ...options,
       minTop: 22,
       anchor: () => ({ x: 200, y: 60 }),
@@ -74,7 +74,7 @@ describe('panorama label layout', () => {
   it('keeps the highest ranked when the view is crowded', () => {
     // Given in rank order, which is the caller's part of the bargain.
     const placements = layoutLabels(
-      [label('high', 9), label('mid', 1), label('low', 0.1)],
+      [label('high'), label('mid'), label('low')],
       {
         ...options,
         anchor: () => ({ x: 200, y: 40 }),
@@ -85,7 +85,7 @@ describe('panorama label layout', () => {
   });
 
   it('skips what is off screen or has nowhere to point', () => {
-    const placements = layoutLabels([label('a', 1), label('b', 1)], {
+    const placements = layoutLabels([label('a'), label('b')], {
       ...options,
       anchor: (l) => (l.id === 'a' ? null : { x: 900, y: 150 }),
     });
@@ -96,7 +96,7 @@ describe('panorama label layout', () => {
 
 describe('panorama label thinning', () => {
   function at(id: string, azimuth: number): PanoramaLabel {
-    return { ...label(id, 1), azimuth };
+    return { ...label(id), azimuth };
   }
 
   it('keeps the first of a crowd inside one pitch', () => {

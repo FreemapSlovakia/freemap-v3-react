@@ -55,6 +55,37 @@ export function labelLayoutLimits(level: number): LabelLayoutLimits | null {
 export const NO_DOMINANCE_FILTER = -100_000;
 
 /**
+ * Farthest the haze slider reaches — the API's own ceiling for `range`, so
+ * nothing can be rendered for the falloff to act on past it. The client sends
+ * no `range` at all, so what a view actually holds is the service's 300 km
+ * default: at this end the falloff does nothing, which is what `0` is for.
+ */
+export const LABEL_HAZE_MAX_KM = 400;
+
+/**
+ * How hard distance is weighed against a summit's own metres, as the exponent
+ * `p` in `dominance / distance ** p`. The ends are the two things a rank can
+ * mean: `0` is its real size and `1` the angle it subtends; see
+ * `doc/panorama.md`.
+ */
+export const LABEL_DISTANCE_WEIGHTS = [0, 0.25, 0.5, 0.75, 1];
+
+export const LABEL_DISTANCE_WEIGHT_MAX = LABEL_DISTANCE_WEIGHTS.at(-1) ?? 1;
+
+/**
+ * Which stop a stored value sits on. One between two — an older setting, a
+ * hand-edited store — snaps to the nearest rather than leaving the slider
+ * somewhere it cannot be moved back to.
+ */
+export function nearestStep(steps: readonly number[], value: number): number {
+  return steps.reduce(
+    (best, step, i) =>
+      Math.abs(step - value) < Math.abs((steps[best] ?? 0) - value) ? i : best,
+    0,
+  );
+}
+
+/**
  * Metres of dominance a summit needs before it is a candidate at all, as the
  * stops the slider has. Dominance is signed — a top that never rises clear of
  * its own ridge scores how far the ridge stands over it — so the negative stops
@@ -219,6 +250,14 @@ export interface PanoramaSettingsState {
   /** Metres of dominance a summit needs to be named; see {@link DOMINANCE_STEPS_M}. */
   minDominance: number;
   /**
+   * How far a name has to carry: both the falloff the rank is weighed by and,
+   * a few times further out, where names stop altogether. `0` is clear air —
+   * no falloff and no cut. See `hazeCutoffM`.
+   */
+  labelHazeKm: number;
+  /** What the rank measures; see {@link LABEL_DISTANCE_WEIGHTS}. */
+  labelDistanceWeight: number;
+  /**
    * Lets the view move on its own: toward where the device points where there
    * is a compass to ask, and at a steady turn where there is not. Turning the
    * picture by hand clears it, the same as the stop button does.
@@ -251,6 +290,8 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   ...PANORAMA_STYLE_DEFAULTS,
   labelDensity: 5,
   minDominance: NO_DOMINANCE_FILTER,
+  labelHazeKm: 120,
+  labelDistanceWeight: 0.5,
   autoPan: touchDevice(),
 };
 

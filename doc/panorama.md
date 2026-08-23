@@ -138,8 +138,16 @@ screen made the point plainly, since the panel covered the tool's own toolbar
 and left the controls unreachable. What `ToolMenu` also carried had to be
 carried here: the experimental and offline badges, and the close button.
 
-One line decides: **the toolbar carries what is changed while looking at the
-picture; the modal carries what is set once.**
+One line decides: **the toolbar carries what rearranges the picture already in
+hand; the modal carries what has to be asked for again.** Cost, not frequency —
+frequency is what it usually amounts to, but it gives no answer for a setting
+that is rarely touched and still instant, and the haze slider spent a day in the
+modal on that mistake.
+
+Two deliberate exceptions, both request parameters kept in the toolbar because
+they are how a view is *framed* while looking at it: quality and the vertical
+view. Nothing else in the toolbar costs a render, and nothing in the modal is
+free.
 
 By that test nothing moved into the modal when it arrived — the toolbar's
 controls all pass. The peak-name sliders act on the picture already in hand, so
@@ -361,15 +369,17 @@ invite comparison with published figures for tops that score below zero.
 direction: raw metres put a big distant massif over a nearby hill that fills
 far more of the frame, while metres over distance — the angle it subtends —
 puts a roadside knoll over the whole High Tatra range. `labelRank` in
-`fromPeaks.ts` takes dominance over the square root of distance, which sits
-between the two, times a haze term `exp(-distance / HAZE_M)`.
+`fromPeaks.ts` takes dominance over `distance ** distanceWeight`, which sits
+between the two wherever the weight does, times a haze term
+`exp(-distance / hazeM)`. Both are the user's; the square root is the default.
 
-The square root alone still flattered the horizon: it is a slow falloff and the
+The distance term alone still flattered the horizon: it is a slow falloff and the
 far field is *wide* — a ring at 150 km holds far more mountains than one at 15 —
 so distant giants crowded out the near hills, and thinning the names took the
 near ones first. The haze term says a summit has to be **seeable**, not merely
-big; it barely touches anything close and falls away hard past `HAZE_M`
-(120 km). It is a soft falloff, not a cutoff: the High Tatras at 50 km still
+big; it barely touches anything close and falls away hard past `hazeM`
+(120 km by default). Soft over the range that matters — the tail cut below is
+what ends it: the High Tatras at 50 km still
 outrank the foothills, which is right, while a 1500 m giant at 177 km drops
 below a hill two ridges away, which is also right — on most days it is not
 there at all.
@@ -385,8 +395,24 @@ outranks every one that doesn't.
 
 This belongs here and not in the request. The service is asked for everything it
 will name, and ranking is display policy that depends on the panel, the zoom and
-the density setting — none of which it knows. Re-tuning `HAZE_M` costs a
-re-render of the labels; re-tuning it server-side would cost a whole panorama.
+the density setting — none of which it knows. Re-ranking costs a re-sort of the
+labels in hand; doing it server-side would cost a whole panorama.
+
+**Both terms are the user's**, so `rankLabels` runs in the viewer and
+`labelsFromPeaks` hands over an unordered list. That is why the rank is not a
+field on `PanoramaLabel`: it would be stale the moment a slider moved.
+
+`labelDistanceWeight` is the exponent `p` in `dominance / distance ** p`, and
+its two ends are the only two things a rank can honestly mean — `0` is **real
+size** (raw metres, so the far massif wins) and `1` is **apparent size** (the
+angle it subtends, so the near hill wins). `0.5` is the default and asks a
+summit twice as far for `√2` the dominance to tie. `labelHazeKm` is the other
+end of the same question, and `0` is clear air — no falloff, no cut.
+
+Two knobs for what looks like one preference, because they act on different
+scales: the exponent sets the trade rate everywhere, while the haze does almost
+nothing up close and bites hard past its own distance. Once real views say which
+pairs are worth having, they are candidates to collapse into one preset.
 
 `labelRank` is the one number here most worth re-tuning against real views.
 Whatever it becomes, it stays a bare ordering with no unit: nothing may test it
@@ -431,15 +457,43 @@ backfills would depend on where the view points, and the flicker would be back
 one level down. A vertically crowded skyline therefore shows slightly fewer
 names than the pitch alone implies.
 
-Two sliders under one **Peak names** menu, and both act on what already
-arrived: **Minimum dominance** says which summits count (`DOMINANCE_STEPS_M`, a
-floor in metres), **Number of names** says how many of them fit
-(`labelLayoutLimits`, a level from 0 to `LABEL_DENSITY_MAX`). Neither narrows
-the request — the service is always asked for everything it will name, because
-a narrower ask can only take candidates away and would cost a whole render to
-change, while a filter over the labels in hand is instant.
+Four sliders under one **Peak names** menu, and every one of them acts on what
+already arrived. Two cut: **Minimum dominance** says which summits count
+(`DOMINANCE_STEPS_M`, a floor in metres) and **Number of names** says how many
+of them fit (`labelLayoutLimits`, a level from 0 to `LABEL_DENSITY_MAX`). Two
+order: the distance weight and the haze above. None of them narrows the request
+— the service is always asked for everything it will name, because a narrower
+ask can only take candidates away and would cost a whole render to change, while
+a filter over the labels in hand is instant.
 
-They read alike but cut differently, which is why they share a menu rather than
+**That is also why they are all here and not in the settings modal.** The line
+is not how often a control is used but what it costs: the toolbar carries what
+rearranges the picture already in hand, the modal carries what has to be asked
+for again. Everything in `PanoramaSettingsModal` is a request parameter, and the
+Save button stages a render for it; nothing in the toolbar's own menus does.
+Quality and the vertical view are the two deliberate exceptions — they *are*
+request parameters, but they are how a view is framed while looking at it, so
+burying them behind a modal would cost more than the rule is worth.
+
+**The haze also cuts, at three times its distance** (`hazeCutoffM`, beside
+`labelRank` so one module owns both halves of what the haze does). As a
+weighting alone it can only demote, and the thinning keeps the best name per
+stretch of horizon — so a giant 200 km off, alone in its stretch with nothing
+near to lose to, is named however far its rank has fallen. That is the one case
+where the name is certainly wrong: it is pointing at empty sky. A tail cut on
+the same slider closes it without a second control, and it is what the setting's
+own prose already claimed ("by two or three times this…"). Note it does not bite
+at the default: 120 km × 3 is past the 300 km the service renders when no
+`range` is asked for, which is what the client does.
+
+**The service has no peak-distance cut** — peaks come back filtered only by
+visibility and `min_dominance`, then cut to `max_peaks`, and no list is sent to
+it (the peaks are its own `--peaks` GeoPackage). Its `range` looks like the same
+thing and is not: it bounds the terrain the render *sees*, so asking for a short
+one would take the far ridges out of the picture, and it costs a whole render.
+Hence a client-side filter.
+
+The other two read alike but cut differently, which is why they share a menu rather than
 being merged: thinning by the pitch keeps whatever ranks highest in each stretch
 of horizon, and the rank weighs distance, so it favours the near field; the
 dominance floor keeps the summits that stand clear however far off they are. "Every big peak, as many as

@@ -22,6 +22,7 @@ import {
 } from 'react';
 import { useDispatch } from 'react-redux';
 import { distanceAt } from '../depth.js';
+import { hazeCutoffM, rankLabels } from '../labels/fromPeaks.js';
 import {
   type LabelAnchor,
   type LabelPlacement,
@@ -35,10 +36,7 @@ import {
   panoramaSetSettings,
 } from '../model/actions.js';
 import type { PanoramaRenderInfo } from '../model/reducer.js';
-import {
-  labelLayoutLimits,
-  NO_DOMINANCE_FILTER,
-} from '../model/settingsReducer.js';
+import { labelLayoutLimits } from '../model/settingsReducer.js';
 import type { PanoramaRenderData } from '../renderHolder.js';
 import { setPanoramaHover, setPanoramaView } from '../viewStore.js';
 import classes from './Panorama.module.css';
@@ -773,17 +771,35 @@ export function PanoramaView({
     [clampedOffsetY, hover, scale, screenX],
   );
 
-  // Which summits count at all, kept apart from how many of them fit. Ranked
-  // order survives the filter, which is what the layout takes them in.
-  const candidates = useMemo(
-    () =>
-      settings.minDominance > NO_DOMINANCE_FILTER
-        ? render.labels.filter(
-            (label) => (label.dominance ?? Infinity) >= settings.minDominance,
-          )
-        : render.labels,
-    [render.labels, settings.minDominance],
+  const weighting = useMemo(
+    () => ({
+      hazeKm: settings.labelHazeKm,
+      distanceWeight: settings.labelDistanceWeight,
+    }),
+    [settings.labelHazeKm, settings.labelDistanceWeight],
   );
+
+  // Where the names stand against each other, which the weighting moves — so it
+  // is worked out here rather than kept on the render.
+  const ranked = useMemo(
+    () => rankLabels(render.labels, weighting),
+    [render.labels, weighting],
+  );
+
+  // Which summits count at all. The far cut is ours rather than the service's:
+  // its own `range` bounds the terrain the render sees, so asking it for one
+  // would take the far ridges out of the picture and cost a render.
+  const candidates = useMemo(() => {
+    const ceiling = hazeCutoffM(weighting);
+
+    // `NO_DOMINANCE_FILTER` is below every real figure, so the "Any" stop needs
+    // no case of its own.
+    return ranked.filter(
+      (label) =>
+        (label.dominance ?? Infinity) >= settings.minDominance &&
+        label.distance <= ceiling,
+    );
+  }, [ranked, settings.minDominance, weighting]);
 
   const limits = useMemo(
     () => labelLayoutLimits(settings.labelDensity),
@@ -807,19 +823,18 @@ export function PanoramaView({
     [candidates, degPerPx, limits, width],
   );
 
+  // No `limits` guard of its own: `named` is already empty without them.
   const placements = useMemo(
     (): LabelPlacement[] =>
-      limits
-        ? layoutLabels(named, {
-            anchor,
-            measure: (label) => measureText(label.name),
-            viewportWidth: width,
-            lineHeight: LINE_HEIGHT,
-            minLeader: MIN_LEADER,
-            minTop: COMPASS_HEIGHT + 2,
-            maxClimb: limits.maxClimbPx,
-          })
-        : [],
+      layoutLabels(named, {
+        anchor,
+        measure: (label) => measureText(label.name),
+        viewportWidth: width,
+        lineHeight: LINE_HEIGHT,
+        minLeader: MIN_LEADER,
+        minTop: COMPASS_HEIGHT + 2,
+        maxClimb: limits?.maxClimbPx ?? 0,
+      }),
     [anchor, limits, named, width],
   );
 

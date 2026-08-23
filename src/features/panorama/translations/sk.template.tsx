@@ -64,6 +64,20 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     few: 'Menej',
     normal: 'Normálne',
     many: 'Viac',
+    weight: 'Hodnotiť vrchy podľa',
+    weightHint:
+      'Podľa veľkosti sa pomenujú veľhory nech sú akokoľvek ďaleko, podľa blízkosti to, čo vypĺňa pohľad.',
+    weights: [
+      'Veľkosti',
+      'Skôr veľkosti',
+      'Veľkosti aj blízkosti',
+      'Skôr blízkosti',
+      'Blízkosti',
+    ],
+    haze: 'Dokiaľ siahajú názvy',
+    hazeOff: 'Čistý vzduch',
+    hazeHint:
+      'Ako ďaleko musí vrch byť, aby opar znamenal viac ako samotný vrch. Nad trojnásobkom tejto vzdialenosti sa už nepomenuje nič.',
   },
   dominance: {
     label: 'Minimálna dominancia',

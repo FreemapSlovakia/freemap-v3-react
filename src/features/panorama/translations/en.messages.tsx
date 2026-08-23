@@ -68,6 +68,20 @@ const en: PanoramaMessages = {
     few: 'Fewer',
     normal: 'Normal',
     many: 'More',
+    weight: 'Rank peaks by',
+    weightHint:
+      'Size names the great mountains however far off; nearness names whatever fills the view.',
+    weights: [
+      'Size',
+      'Mostly size',
+      'Size and nearness',
+      'Mostly nearness',
+      'Nearness',
+    ],
+    haze: 'How far names carry',
+    hazeOff: 'Clear air',
+    hazeHint:
+      'How far a summit must be before haze counts for more than the summit does. Past three times that, nothing is named at all.',
   },
   dominance: {
     label: 'Minimum dominance',

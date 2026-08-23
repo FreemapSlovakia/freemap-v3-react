@@ -30,6 +30,8 @@ import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
 import {
   LABEL_DENSITY_MAX,
+  LABEL_DISTANCE_WEIGHT_MAX,
+  LABEL_HAZE_MAX_KM,
   panoramaSettingsInitialState,
 } from '@features/panorama/model/settingsReducer.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
@@ -173,6 +175,11 @@ const PersistedPanoramaSettingsSchema = z
     // Bounded, because the level indexes the menu's icon and word arrays.
     labelDensity: z.number().int().min(0).max(LABEL_DENSITY_MAX),
     minDominance: z.number(),
+    // Bounded to what the sliders offer: both reach `rankLabels`, where a
+    // stored value from outside the range would order the names by something
+    // no control can undo.
+    labelHazeKm: z.number().min(0).max(LABEL_HAZE_MAX_KM),
+    labelDistanceWeight: z.number().min(0).max(LABEL_DISTANCE_WEIGHT_MAX),
     autoPan: z.boolean(),
   })
   .partial();

@@ -51,7 +51,10 @@ import {
 import {
   DOMINANCE_STEPS_M,
   LABEL_DENSITY_MAX,
+  LABEL_DISTANCE_WEIGHTS,
+  LABEL_HAZE_MAX_KM,
   NO_DOMINANCE_FILTER,
+  nearestStep,
   type PanoramaTilt,
 } from '../model/settingsReducer.js';
 import {
@@ -101,6 +104,12 @@ export function PanoramaControls({
     maximumFractionDigits: 0,
   });
 
+  const nfKm = useNumberFormat({
+    style: 'unit',
+    unit: 'kilometer',
+    maximumFractionDigits: 0,
+  });
+
   const nfDeg = useNumberFormat({
     style: 'unit',
     unit: 'degree',
@@ -108,22 +117,21 @@ export function PanoramaControls({
     maximumFractionDigits: 0,
   });
 
-  // A stored value between two stops — an older setting, a hand-edited store —
-  // snaps to the nearest stop rather than putting the slider somewhere it
-  // cannot be moved back to.
-  const dominanceStep = DOMINANCE_STEPS_M.reduce(
-    (best, meters, i) =>
-      Math.abs(meters - settings.minDominance) <
-      Math.abs((DOMINANCE_STEPS_M[best] ?? 0) - settings.minDominance)
-        ? i
-        : best,
-    0,
-  );
+  const dominanceStep = nearestStep(DOMINANCE_STEPS_M, settings.minDominance);
 
   const dominanceLabel =
     settings.minDominance === NO_DOMINANCE_FILTER
       ? m?.dominance.all
       : `≥ ${nfM.format(settings.minDominance)}`;
+
+  const hazeLabel = settings.labelHazeKm
+    ? nfKm.format(settings.labelHazeKm)
+    : m?.labels.hazeOff;
+
+  const weightStep = nearestStep(
+    LABEL_DISTANCE_WEIGHTS,
+    settings.labelDistanceWeight,
+  );
 
   // The slider is finer than four words, but a word still says roughly where
   // it stands — a bare "6 of 10" would mean nothing about the picture. Clamped
@@ -149,14 +157,6 @@ export function PanoramaControls({
     <TbBaselineDensityMedium key="2" />,
     <TbBaselineDensitySmall key="3" />,
   ][densityBand];
-
-  // How many names, and — only while it is actually filtering — what a summit
-  // has to be to get one. The threshold is off by default, so the toggle stays
-  // a single word for anyone who never touches it.
-  const namesLabel =
-    settings.minDominance === NO_DOMINANCE_FILTER
-      ? densityLabel
-      : `${densityLabel} · ${dominanceLabel}`;
 
   // The picture answers for a viewpoint and a set of angles; once either moves
   // it is of somewhere else, and only pressing Update pays for a new render.
@@ -270,15 +270,14 @@ export function PanoramaControls({
         breakpoint="md"
       />
 
-      {/* How many names fit, beside which summits count for one at all — two
-      halves of the same question, so they share a menu. Both act on what
-      already arrived, so either is instant. Sliders rather than lists: the
-      useful settings are a dozen each, and a dozen items is a menu to read
-      where this is a thing to feel out. */}
+      {/* Which summits are named and how they are ordered — four halves of one
+          question, all instant, so they share a menu. Sliders rather than
+          lists, since the useful settings are a dozen each and a dozen items is
+          a menu to read where this is a thing to feel out. The toggle is named
+          rather than summarised: no two of the four speak for the others. */}
       <SliderDropdown
         icon={densityIcon}
-        toggleLabel={namesLabel}
-        name={m?.labels.title}
+        toggleLabel={m?.labels.title}
         breakpoint="md"
       >
         <LabeledSlider
@@ -306,6 +305,38 @@ export function PanoramaControls({
                 minDominance: DOMINANCE_STEPS_M[step] ?? NO_DOMINANCE_FILTER,
               }),
             )
+          }
+        />
+
+        {/* The two that decide the order rather than the cut. */}
+        <LabeledSlider
+          id="fm-panorama-weight"
+          label={m?.labels.weight}
+          valueLabel={m?.labels.weights[weightStep]}
+          hint={m?.labels.weightHint}
+          min={0}
+          max={LABEL_DISTANCE_WEIGHTS.length - 1}
+          value={weightStep}
+          onChange={(step) =>
+            dispatch(
+              panoramaSetSettings({
+                labelDistanceWeight: LABEL_DISTANCE_WEIGHTS[step] ?? 0.5,
+              }),
+            )
+          }
+        />
+
+        <LabeledSlider
+          id="fm-panorama-haze"
+          label={m?.labels.haze}
+          valueLabel={hazeLabel}
+          hint={m?.labels.hazeHint}
+          min={0}
+          max={LABEL_HAZE_MAX_KM}
+          step={10}
+          value={settings.labelHazeKm}
+          onChange={(labelHazeKm) =>
+            dispatch(panoramaSetSettings({ labelHazeKm }))
           }
         />
       </SliderDropdown>

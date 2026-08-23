@@ -54,9 +54,16 @@ export function SliderDropdown({
         {/* A column, because everything inside a toolbar inherits
             `white-space: nowrap` — without it the label and the slider sit
             side by side on one line. */}
+        {/* A capped column that wraps, against the toolbar's inherited
+            `nowrap`: uncapped, a slider carrying a hint sizes the menu to the
+            whole sentence and it grows to the width of the window. */}
         <div
-          className="px-3 py-1 d-flex flex-column gap-2"
-          style={{ minWidth: '15rem' }}
+          className="px-3 py-1 d-flex flex-column gap-3"
+          style={{
+            minWidth: '15rem',
+            maxWidth: '20rem',
+            whiteSpace: 'normal',
+          }}
         >
           {children}
         </div>
@@ -72,6 +79,8 @@ type SliderProps = {
   label: ReactNode;
   /** Says where it stands, below the slider. */
   valueLabel: ReactNode;
+  /** What the setting means, for one whose name cannot carry it. */
+  hint?: ReactNode;
   min: number;
   max: number;
   step?: number;
@@ -83,6 +92,7 @@ export function LabeledSlider({
   id,
   label,
   valueLabel,
+  hint,
   min,
   max,
   step = 1,
@@ -91,9 +101,16 @@ export function LabeledSlider({
 }: SliderProps): ReactElement {
   return (
     <div className="d-flex flex-column">
-      <Form.Label className="mb-0" htmlFor={id}>
-        {label}
-      </Form.Label>
+      {/* Name and value on one line, the value emphasised: it is the part that
+          moves, and a stack of sliders reads as rows rather than as a column of
+          labels with a column of centred values between them. */}
+      <div className="d-flex justify-content-between align-items-baseline gap-2">
+        <Form.Label className="mb-0" htmlFor={id}>
+          {label}
+        </Form.Label>
+
+        <span className="fw-semibold">{valueLabel}</span>
+      </div>
 
       <Form.Range
         id={id}
@@ -104,7 +121,7 @@ export function LabeledSlider({
         onChange={(e) => onChange(Number(e.currentTarget.value))}
       />
 
-      <div className="text-center">{valueLabel}</div>
+      {hint && <Form.Text className="mt-0">{hint}</Form.Text>}
     </div>
   );
 }

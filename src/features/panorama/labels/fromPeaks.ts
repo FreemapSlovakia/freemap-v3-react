@@ -2,53 +2,79 @@ import type { Peak } from '../api.js';
 import type { PanoramaLabel } from './types.js';
 
 /**
- * How far away a summit has to be before haze is more of the story than the
- * summit is. Not a cutoff — the falloff is gradual, and a giant far past it
- * still outranks a nearby bump — but by two or three times this the name is
- * for something that is a smudge on a good day and nothing on most.
+ * How the two halves of the haze are set: how far a name has to carry, in
+ * kilometres, and what the rank measures — `0` for a summit's own metres, `1`
+ * for the angle it subtends. See `doc/panorama.md`.
  */
-const HAZE_M = 120_000;
+export interface LabelWeighting {
+  hazeKm: number;
+  distanceWeight: number;
+}
+
+/** Multiples of the haze distance past which a summit goes unnamed outright. */
+const HAZE_CUTOFF = 3;
 
 /**
- * What a summit is worth naming for, weighing how much it stands above its
- * surroundings against how far away it is.
+ * Metres past which the haze says not to name a summit at all, or `Infinity`
+ * where the air is clear.
  *
- * Neither term alone will do. Metres put a big distant massif over a nearby
- * hill that fills far more of the frame; metres over distance is the angle it
- * subtends, which puts a roadside knoll over the whole High Tatra range. The
- * square root sits between the two, so a summit has to be either close or
- * genuinely large to outrank one that is both a little.
- *
- * The square root alone still flattered the horizon, though: it is a slow
- * falloff, and the far field is *wide* — a ring at 150 km holds far more
- * mountains than one at 15 — so distant giants crowded out the near hills a
- * viewer can actually make out, and thinning the names took the near ones
- * first. The haze term is what says a summit has to be seeable, not just big:
- * it barely touches anything close and falls away hard past `HAZE_M`.
- *
- * A heuristic, and the one thing here worth re-tuning against real views.
+ * The weighting alone cannot do this: it demotes, and the thinning keeps the
+ * best name per stretch of horizon, so a giant alone in its stretch is named
+ * however far its rank has fallen — pointing at empty sky.
  */
-function labelRank(peak: Peak): number {
-  const distance = Math.max(peak.distance, 1);
+export function hazeCutoffM({ hazeKm }: LabelWeighting): number {
+  return hazeKm > 0 ? hazeKm * 1000 * HAZE_CUTOFF : Infinity;
+}
 
-  /** How much a summit's own metres are worth at that distance: falls with it. */
-  const worth = Math.exp(-distance / HAZE_M) / Math.sqrt(distance);
+/**
+ * What a label is worth naming for, weighing how much its subject stands above
+ * its surroundings against how far away it is.
+ *
+ * Neither term alone will do, which is what `distanceWeight` picks between:
+ * metres alone put a distant massif over a nearby hill that fills far more of
+ * the frame, the angle it subtends puts a roadside knoll over the High Tatras.
+ * The haze term then says a summit has to be seeable, not merely big. Why those
+ * shapes, and what the tuning is worth, is in `doc/panorama.md`.
+ */
+function labelRank(
+  label: PanoramaLabel,
+  { hazeKm, distanceWeight }: LabelWeighting,
+): number {
+  const distance = Math.max(label.distance, 1);
+
+  /** How much a subject's own metres are worth at that distance: falls with it. */
+  const worth =
+    (hazeKm > 0 ? Math.exp(-distance / (hazeKm * 1000)) : 1) /
+    distance ** distanceWeight;
+
+  // Ranks a source that measures no dominance below every real summit, while
+  // the dominance filter passes it. A trap for the next source; see `TODO.md`.
+  const dominance = label.dominance ?? 1;
 
   // Divided rather than multiplied where the dominance is negative. It is
   // signed by design — a top that never rises clear of its own ridge says by
   // how much the ridge stands over it — and scaling a negative number *down*
   // raises it, so multiplying would have made a subordinate top rank better the
-  // further off it was, which is precisely backwards and covers most of the
-  // near field this weighting exists to protect. Either way the rank falls with
-  // distance, and every top that stands clear outranks every one that doesn't.
-  return peak.dominance >= 0 ? peak.dominance * worth : peak.dominance / worth;
+  // further off it was, which is precisely backwards.
+  return dominance >= 0 ? dominance * worth : dominance / worth;
 }
 
 /**
- * The renderer's peaks as labels, **in rank order** — which is what the layout
- * takes them in, and doing it once per render rather than once per frame
- * matters: a rich view answers with the better part of a thousand summits.
+ * The labels in the order the layout takes them, best first. The viewer's to
+ * run rather than the render's, since the weighting is the user's: once per
+ * render and per change of it, never per frame.
  */
+export function rankLabels(
+  labels: PanoramaLabel[],
+  weighting: LabelWeighting,
+): PanoramaLabel[] {
+  return labels
+    .map((label) => ({ label, rank: labelRank(label, weighting) }))
+    .sort((a, b) => b.rank - a.rank)
+    .map(({ label }) => label);
+}
+
+/** The renderer's peaks as labels, in no particular order; see {@link rankLabels}. */
 export function labelsFromPeaks(peaks: Peak[]): PanoramaLabel[] {
   return peaks
     .filter((peak) => peak.visible && peak.name)
@@ -64,8 +90,6 @@ export function labelsFromPeaks(peaks: Peak[]): PanoramaLabel[] {
       distance: peak.distance,
       azimuth: peak.azimuth,
       y: peak.y,
-      rank: labelRank(peak),
       dominance: peak.dominance,
-    }))
-    .sort((a, b) => b.rank - a.rank);
+    }));
 }
