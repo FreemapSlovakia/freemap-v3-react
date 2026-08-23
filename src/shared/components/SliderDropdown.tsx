@@ -1,7 +1,7 @@
 import type { Breakpoint } from '@shared/breakpoints.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import type { ReactElement, ReactNode } from 'react';
-import { Dropdown, Form } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import { LongPressTooltip } from './LongPressTooltip.js';
 
 type Props = {
@@ -54,74 +54,15 @@ export function SliderDropdown({
         {/* A column, because everything inside a toolbar inherits
             `white-space: nowrap` — without it the label and the slider sit
             side by side on one line. */}
-        {/* A capped column that wraps, against the toolbar's inherited
-            `nowrap`: uncapped, a slider carrying a hint sizes the menu to the
+        {/* Capped: uncapped, a slider carrying a hint sizes the menu to the
             whole sentence and it grows to the width of the window. */}
         <div
           className="px-3 py-1 d-flex flex-column gap-3"
-          style={{
-            minWidth: '15rem',
-            maxWidth: '20rem',
-            whiteSpace: 'normal',
-          }}
+          style={{ minWidth: '15rem', maxWidth: '20rem' }}
         >
           {children}
         </div>
       </FmDropdownMenu>
     </Dropdown>
-  );
-}
-
-type SliderProps = {
-  /** Ties the label to the range; must be unique on the page. */
-  id: string;
-  /** Names the setting, above the slider. */
-  label: ReactNode;
-  /** Says where it stands, below the slider. */
-  valueLabel: ReactNode;
-  /** What the setting means, for one whose name cannot carry it. */
-  hint?: ReactNode;
-  min: number;
-  max: number;
-  step?: number;
-  value: number;
-  onChange: (value: number) => void;
-};
-
-export function LabeledSlider({
-  id,
-  label,
-  valueLabel,
-  hint,
-  min,
-  max,
-  step = 1,
-  value,
-  onChange,
-}: SliderProps): ReactElement {
-  return (
-    <div className="d-flex flex-column">
-      {/* Name and value on one line, the value emphasised: it is the part that
-          moves, and a stack of sliders reads as rows rather than as a column of
-          labels with a column of centred values between them. */}
-      <div className="d-flex justify-content-between align-items-baseline gap-2">
-        <Form.Label className="mb-0" htmlFor={id}>
-          {label}
-        </Form.Label>
-
-        <span className="fw-semibold">{valueLabel}</span>
-      </div>
-
-      <Form.Range
-        id={id}
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.currentTarget.value))}
-      />
-
-      {hint && <Form.Text className="mt-0">{hint}</Form.Text>}
-    </div>
   );
 }

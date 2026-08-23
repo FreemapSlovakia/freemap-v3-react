@@ -80,10 +80,6 @@ Still emitting at info level (non-blocking, optional cleanup):
       `extra` (premium badge), `active` or `divider`, because it writes its own
       item loop instead of sharing `SelectDropdown`'s. Factor the item builder
       out of `SelectDropdown` when a split button first needs one of those.
-- [ ] **`makeFixProcessor` factory.** `panoramaFixProcessor` and
-      `toposcopeFixProcessor` differ only in the consumer id, the tool id and
-      the action built, and both restate the same "ignore a fix if the panel has
-      since closed" policy. Worth doing at a third consumer, not before.
 - [ ] **`location.fixRequest` holds one consumer**, so asking for a fix from the
       second panel supersedes the first — its spinner stops and nothing is
       placed, silently. Both panels open *and* both awaiting is a corner; make
@@ -95,27 +91,6 @@ Still emitting at info level (non-blocking, optional cleanup):
       only source and every peak carries a figure. Whoever adds the second one
       (map selection, drawn points, POIs — see `labels/types.ts`) has to decide
       what its labels are worth against summits; no constant here can guess it.
-- [ ] **`thinLabels` is quadratic exactly where it is hottest.** Its `kept.some()`
-      scan never short-circuits at max zoom — the pitch is then finer than the
-      gaps, so nothing is thinned and every label compares against all ~900 kept:
-      ~405 k `angleDiff` calls, 4–10 ms on mobile, and the memo keys on
-      `degPerPx`, so it re-runs on every frame of a pinch. Bucketing by azimuth
-      (uniform width ≤ pitch, scan ±2 buckets) cuts it ~60×; quantising the memo
-      key gets most of it for one line. Measure first — it is invisible on
-      desktop at default density.
-- [ ] **Toolbar dropdowns keep re-escaping the toolbar's `nowrap`.**
-      `src/app/styles/index.css` sets `white-space: nowrap` on every descendant
-      of `.btn-toolbar`, which reaches into dropdown menus;
-      `bootstrap-override.css` already undoes it for `.dropdown-item`,
-      `RadarTimeline.module.css` works around it with a fixed width, and
-      `SliderDropdown` is the third. Scope the blanket rule so it does not cross
-      `.dropdown-menu` and all three escapes go away.
-- [ ] **`LabeledSlider` and the panorama settings modal have diverged.** The
-      modal hand-rolls label + `Form.Range` with the value in parentheses and no
-      hint slot; the shared one puts the value on the right and takes a hint.
-      Unify onto the shared component — and it is a general form control living
-      in a file named after the dropdown, so it wants moving out at the same
-      time.
 - [ ] **Mount a mark's tooltip `Overlay` only once it has been shown.** With no
       `breakpoint`, `LongPressTooltip` sets `labelHidden` and mounts its
       `Overlay` for the life of every mark. Hidden it draws no DOM, no popper

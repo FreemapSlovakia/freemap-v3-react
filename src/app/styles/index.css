@@ -115,6 +115,14 @@ button#freemap-logo {
     & * {
       white-space: nowrap;
     }
+
+    /* A menu is not a toolbar row: it drops out of the row's own layout and has
+       room to wrap, which anything holding prose needs. Scoped here rather than
+       escaped again in each menu — this is the third one that had to. */
+    & .dropdown-menu,
+    & .dropdown-menu * {
+      white-space: normal;
+    }
   }
 }
 

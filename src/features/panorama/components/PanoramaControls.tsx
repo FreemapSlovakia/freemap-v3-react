@@ -12,14 +12,12 @@ import {
   FloatingWindowControls,
   FullscreenButton,
 } from '@shared/components/FloatingWindowControls.js';
+import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
-import {
-  LabeledSlider,
-  SliderDropdown,
-} from '@shared/components/SliderDropdown.js';
+import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';

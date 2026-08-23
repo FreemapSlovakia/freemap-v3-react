@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
@@ -309,36 +310,28 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label htmlFor="fm-panorama-ridge">
-              {m?.settings.ridgeStrength} ({nf.format(draft.ridgeStrength)})
-            </Form.Label>
-
-            <Form.Range
+            <LabeledSlider
               id="fm-panorama-ridge"
+              label={m?.settings.ridgeStrength}
+              valueLabel={nf.format(draft.ridgeStrength)}
               min={0}
               max={RIDGE_STRENGTH_MAX}
               step={0.1}
               value={draft.ridgeStrength}
-              onChange={(e) =>
-                patch({ ridgeStrength: e.currentTarget.valueAsNumber })
-              }
+              onChange={(ridgeStrength) => patch({ ridgeStrength })}
             />
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label htmlFor="fm-panorama-ridge-width">
-              {m?.settings.ridgeWidth} ({nf.format(draft.ridgeWidth)})
-            </Form.Label>
-
-            <Form.Range
+            <LabeledSlider
               id="fm-panorama-ridge-width"
+              label={m?.settings.ridgeWidth}
+              valueLabel={nf.format(draft.ridgeWidth)}
               min={0}
               max={RIDGE_WIDTH_MAX}
               step={0.1}
               value={draft.ridgeWidth}
-              onChange={(e) =>
-                patch({ ridgeWidth: e.currentTarget.valueAsNumber })
-              }
+              onChange={(ridgeWidth) => patch({ ridgeWidth })}
             />
           </Form.Group>
 
