@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutLabels } from './layout.js';
+import { layoutLabels, thinLabels } from './layout.js';
 import type { PanoramaLabel } from './types.js';
 
 function label(id: string, rank: number): PanoramaLabel {
@@ -92,20 +92,28 @@ describe('panorama label layout', () => {
 
     expect(placements).toEqual([]);
   });
+});
 
-  it('stops at the limit', () => {
-    const placements = layoutLabels(
-      [label('a', 3), label('b', 2), label('c', 1)],
-      {
-        ...options,
-        anchor: (l) => ({
-          x: l.id === 'a' ? 50 : l.id === 'b' ? 150 : 250,
-          y: 150,
-        }),
-        limit: 2,
-      },
-    );
+describe('panorama label thinning', () => {
+  function at(id: string, azimuth: number): PanoramaLabel {
+    return { ...label(id, 1), azimuth };
+  }
 
-    expect(placements.map((p) => p.label.id)).toEqual(['a', 'b']);
+  it('keeps the first of a crowd inside one pitch', () => {
+    const kept = thinLabels([at('a', 100), at('b', 103), at('c', 130)], 10);
+
+    expect(kept.map((l) => l.id)).toEqual(['a', 'c']);
+  });
+
+  it('measures the gap the short way round north', () => {
+    const kept = thinLabels([at('a', 358), at('b', 3)], 10);
+
+    expect(kept.map((l) => l.id)).toEqual(['a']);
+  });
+
+  it('names everything when nothing is within a pitch', () => {
+    const labels = [at('a', 0), at('b', 20), at('c', 40)];
+
+    expect(thinLabels(labels, 10)).toEqual(labels);
   });
 });

@@ -1,4 +1,40 @@
+import { angleDiff } from '@shared/mathUtils.js';
 import type { PanoramaLabel } from './types.js';
+
+/**
+ * Thins a crowd down to one name per `minPitchDeg` of horizon, keeping whichever
+ * ranks highest — so the labels take the picture in rank order.
+ *
+ * In degrees rather than pixels, and over every candidate rather than the ones
+ * on screen: what is named must not depend on where the view points, or a
+ * summit scrolling in at one edge takes the name off a summit in the middle.
+ */
+export function thinLabels(
+  labels: PanoramaLabel[],
+  minPitchDeg: number,
+): PanoramaLabel[] {
+  // The busiest density asks for no pitch at all. Falling through would keep
+  // every candidate anyway, but by comparing each against all the ones before
+  // it — a squared scan of the better part of a thousand, re-run on every
+  // frame of a pinch.
+  if (minPitchDeg <= 0) {
+    return labels;
+  }
+
+  const kept: PanoramaLabel[] = [];
+
+  for (const label of labels) {
+    if (
+      !kept.some(
+        (k) => Math.abs(angleDiff(label.azimuth, k.azimuth)) < minPitchDeg,
+      )
+    ) {
+      kept.push(label);
+    }
+  }
+
+  return kept;
+}
 
 /** Where a label's subject sits on screen, in viewport pixels. */
 export interface LabelAnchor {
@@ -30,8 +66,6 @@ export interface LayoutOptions {
   maxClimb: number;
   /** Highest a label may sit — room kept for the compass strip. */
   minTop?: number;
-  /** Stops after this many are placed. */
-  limit?: number;
 }
 
 function overlaps(
@@ -56,9 +90,10 @@ function overlaps(
  * Each one wants to sit centred just above its subject; where that spot is
  * taken it climbs by a line at a time until it finds air, and is dropped if it
  * reaches the top of the view without finding any. Labels are taken in rank
- * order, so what gets dropped in a crowd is whatever stands out least — and
- * because it all runs against screen positions, zooming in reveals more labels
- * without asking the server for anything.
+ * order, so what gets dropped in a crowd is whatever stands out least.
+ *
+ * How many names the picture holds is {@link thinLabels}'s to decide, not this
+ * one's: the crowd is thinned before the view is ever consulted.
  *
  * A summit too near the top of the frame to have a line above it goes unnamed
  * rather than being written over itself; widening the vertical view or turning
@@ -74,7 +109,6 @@ export function layoutLabels(
     minLeader,
     maxClimb,
     minTop = 0,
-    limit,
   }: LayoutOptions,
 ): LabelPlacement[] {
   const gutter = 6;
@@ -82,10 +116,6 @@ export function layoutLabels(
   const placed: LabelPlacement[] = [];
 
   for (const label of labels) {
-    if (limit !== undefined && placed.length >= limit) {
-      break;
-    }
-
     const at = anchor(label);
 
     if (!at) {

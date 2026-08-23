@@ -408,11 +408,28 @@ tighter than its own sample spacing, which rejected summits in plain view and
 made the count swing with `step`. With no floor, one viewpoint now answers with
 about 620 named peaks at `step` 0.05 against roughly 540 at 0.1.
 
-Everything about placement is ours. `labels/layout.ts` walks the labels in rank
-order and puts each centred just above its subject, climbing a line at a time
-where the spot is taken and dropping it where there is no air. It runs against
-**screen** positions on every pan and zoom, so zooming in reveals more labels
-with no new request.
+Everything about placement is ours, in two passes. `thinLabels` decides which
+summits get a name at all: one per pitch of horizon, in rank order. `layoutLabels`
+then walks the survivors and puts each centred just above its subject, climbing a
+line at a time where the spot is taken and dropping it where there is no air, all
+against **screen** positions.
+
+**The thinning is in degrees, over every candidate — not in pixels, over the ones
+on screen.** A count of labels filled from the whole ranked list makes what is
+named depend on where the view points: a better-ranked summit scrolling in at one
+edge takes the name off a summit in the middle, and a pan is a steady flicker of
+names going out for no visible reason. Against degrees the answer holds still, and
+labels only come and go at the edges. The pitch is `pitchPx * degPerPx`, so the
+zoom is still in it — magnifying spreads the skyline out, which is what reveals
+more names with no new request.
+
+**A name the layout then can't fit leaves a hole**, rather than the next
+candidate taking its place. The count-based version backfilled — it walked the
+ranked list until that many were *placed* — and that is exactly what cannot be
+kept: whether a label finds air depends on screen positions, so which summit
+backfills would depend on where the view points, and the flicker would be back
+one level down. A vertically crowded skyline therefore shows slightly fewer
+names than the pitch alone implies.
 
 Two sliders under one **Peak names** menu, and both act on what already
 arrived: **Minimum dominance** says which summits count (`DOMINANCE_STEPS_M`, a
@@ -423,15 +440,15 @@ a narrower ask can only take candidates away and would cost a whole render to
 change, while a filter over the labels in hand is instant.
 
 They read alike but cut differently, which is why they share a menu rather than
-being merged: thinning by the count keeps whatever ranks highest, and the rank
-weighs distance, so it favours the near field; the dominance floor keeps the
-summits that stand clear however far off they are. "Every big peak, as many as
+being merged: thinning by the pitch keeps whatever ranks highest in each stretch
+of horizon, and the rank weighs distance, so it favours the near field; the
+dominance floor keeps the summits that stand clear however far off they are. "Every big peak, as many as
 fit" needs both, and neither slider reaches it alone. The toggle says where the
 count stands and adds the floor beside it only while that is filtering, so the
 button stays one word for anyone who never touches it.
 
-The density level moves **both** limits `labelLayoutLimits` returns — the width
-one name may claim, and how far it may climb to find room — because either
+The density level moves **both** limits `labelLayoutLimits` returns — the stretch
+of horizon one name may claim, and how far it may climb to find room — because either
 alone is the one that binds and the other then does nothing. The busiest step has no
 width at all: what the picture will physically hold is what asking for the most
 ought to mean, leaving collision and the climb as the only limits. A rich view offers far more

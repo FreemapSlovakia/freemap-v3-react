@@ -26,6 +26,7 @@ import {
   type LabelAnchor,
   type LabelPlacement,
   layoutLabels,
+  thinLabels,
 } from '../labels/layout.js';
 import type { PanoramaLabel } from '../labels/types.js';
 import {
@@ -433,17 +434,33 @@ export function PanoramaView({
 
     const rowAt = g.offsetY + py / g.scale;
 
+    const nextAzimuth = mod(azAt - (px - g.width / 2) * nextDegPerPx, 360);
+
+    const nextOffsetY = clamp(
+      rowAt - py / nextScale,
+      0,
+      Math.max(0, g.renderHeight - g.height / nextScale),
+    );
+
+    // Written back here rather than left to the effect that refreshes it after
+    // the commit. A pinch reports several moves per rendered frame, and each
+    // one reading the same stale zoom makes the steps overwrite instead of
+    // compounding — a wide pinch then zooms only as far as its last pair of
+    // events, which is most of the gesture thrown away.
+    geomRef.current = {
+      ...g,
+      zoom: nextZoom,
+      scale: nextScale,
+      degPerPx: nextDegPerPx,
+      azimuth: nextAzimuth,
+      offsetY: nextOffsetY,
+    };
+
     setZoom(nextZoom);
 
-    setAzimuth(mod(azAt - (px - g.width / 2) * nextDegPerPx, 360));
+    setAzimuth(nextAzimuth);
 
-    setOffsetY(
-      clamp(
-        rowAt - py / nextScale,
-        0,
-        Math.max(0, g.renderHeight - g.height / nextScale),
-      ),
-    );
+    setOffsetY(nextOffsetY);
   }, []);
 
   // Not through React's handler: it registers wheel passively, so the page
@@ -768,28 +785,43 @@ export function PanoramaView({
     [render.labels, settings.minDominance],
   );
 
-  const placements = useMemo((): LabelPlacement[] => {
-    const limits = labelLayoutLimits(settings.labelDensity);
+  const limits = useMemo(
+    () => labelLayoutLimits(settings.labelDensity),
+    [settings.labelDensity],
+  );
 
-    return limits
-      ? layoutLabels(candidates, {
-          anchor,
-          measure: (label) => measureText(label.name),
-          viewportWidth: width,
-          lineHeight: LINE_HEIGHT,
-          minLeader: MIN_LEADER,
-          minTop: COMPASS_HEIGHT + 2,
-          maxClimb: limits.maxClimbPx,
-          // How many, rather than which: the rank orders the candidates against
-          // each other, and the crowd is thinned by taking the best few that
-          // fit the width. Without a pitch there is no thinning at all — what
-          // the picture holds is the answer.
-          ...(limits.pitchPx === undefined
-            ? {}
-            : { limit: Math.max(4, Math.round(width / limits.pitchPx)) }),
-        })
-      : [];
-  }, [anchor, candidates, settings.labelDensity, width]);
+  // Which summits get a name. Turning the view must not change the answer, so
+  // the pitch is converted to degrees of horizon and applied to every candidate
+  // — not to the ones on screen. The zoom is in it because a magnified view
+  // spreads the skyline out, which is what reveals more names.
+  const named = useMemo(
+    () =>
+      limits
+        ? // Four names across the view however narrow the panel is; a busiest
+          // step with no pitch at all thins nothing.
+          thinLabels(
+            candidates,
+            Math.min(limits.pitchPx ?? 0, width / 4) * degPerPx,
+          )
+        : [],
+    [candidates, degPerPx, limits, width],
+  );
+
+  const placements = useMemo(
+    (): LabelPlacement[] =>
+      limits
+        ? layoutLabels(named, {
+            anchor,
+            measure: (label) => measureText(label.name),
+            viewportWidth: width,
+            lineHeight: LINE_HEIGHT,
+            minLeader: MIN_LEADER,
+            minTop: COMPASS_HEIGHT + 2,
+            maxClimb: limits.maxClimbPx,
+          })
+        : [],
+    [anchor, limits, named, width],
+  );
 
   // Every label the strip can carry, worked out once per language: the eight
   // compass points and a degree figure at each of the other multiples of ten.
