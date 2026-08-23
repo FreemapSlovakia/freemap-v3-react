@@ -231,6 +231,11 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
         state.lines.push(line);
       } else {
         line = state.lines[action.payload.lineIndex];
+
+        // A handle's click/dragstart can arrive after its line is gone.
+        if (!line) {
+          return;
+        }
       }
 
       if (action.payload.drawing) {

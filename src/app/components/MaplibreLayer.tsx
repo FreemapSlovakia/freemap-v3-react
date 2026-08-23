@@ -45,7 +45,10 @@ class MaplibreWithLang extends L.MaplibreGL {
   }
 
   onRemove(map: L.Map) {
-    const self = this as unknown as { _glMap?: { remove(): void } | null };
+    const self = this as unknown as {
+      _glMap?: { remove(): void } | null;
+      _container?: HTMLElement;
+    };
 
     // When GL initialization failed (e.g. no WebGL context on a low-end
     // device), `_glMap` is never assigned and the upstream onRemove throws
@@ -53,6 +56,15 @@ class MaplibreWithLang extends L.MaplibreGL {
     // container) still runs.
     if (!self._glMap) {
       self._glMap = { remove() {} };
+    }
+
+    // Upstream detaches the container from its pane before disposing the GL
+    // map, and throws if the container was already taken out — put it back so
+    // the disposal still runs and the WebGL context isn't leaked.
+    const pane = map.getPane(this.getPaneName());
+
+    if (pane && self._container && self._container.parentNode !== pane) {
+      pane.appendChild(self._container);
     }
 
     L.MaplibreGL.prototype.onRemove.call(this, map);

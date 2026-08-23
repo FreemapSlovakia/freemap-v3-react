@@ -23,6 +23,10 @@ const ADD_CONCURRENCY = 8;
 // keep a transient failure on a flaky link from permanently dropping a chunk.
 const CACHE_RETRY_ROUNDS = 3;
 
+// The Cache API is absent in insecure contexts and some private-browsing modes;
+// every entry point below then no-ops instead of throwing on startup.
+const cacheApiAvailable = typeof caches !== 'undefined';
+
 /**
  * Features that need the static app shell cached for offline use (offline tile
  * maps, offline My Maps, …) register a provider here, so the shell is kept alive
@@ -176,6 +180,10 @@ async function refreshUrls(cache: Cache, urls: string[]): Promise<void> {
 }
 
 export async function cacheStaticAssets(): Promise<void> {
+  if (!cacheApiAvailable) {
+    return;
+  }
+
   const cache = await caches.open(STATIC_CACHE_NAME);
 
   const manifest = await fetchManifest();
@@ -214,6 +222,10 @@ export async function cacheStaticAssets(): Promise<void> {
 }
 
 export async function isStaticCacheReady(): Promise<boolean> {
+  if (!cacheApiAvailable) {
+    return false;
+  }
+
   // The manifest sentinel is written only after a populate completes, so it
   // distinguishes a ready cache from an empty one left behind by a failed
   // populate — which `caches.has` alone would wrongly report as ready.
@@ -226,7 +238,9 @@ export async function isStaticCacheReady(): Promise<boolean> {
 }
 
 export async function clearStaticCache(): Promise<void> {
-  await caches.delete(STATIC_CACHE_NAME);
+  if (cacheApiAvailable) {
+    await caches.delete(STATIC_CACHE_NAME);
+  }
 
   await del(STATIC_MANIFEST_KEY);
 }
@@ -238,6 +252,10 @@ export async function clearStaticCache(): Promise<void> {
  *   left by a previous incomplete populate, and prune superseded ones.
  */
 export async function syncStaticCache(): Promise<void> {
+  if (!cacheApiAvailable) {
+    return;
+  }
+
   if (!(await hasAnyOfflineContent())) {
     await clearStaticCache();
 
