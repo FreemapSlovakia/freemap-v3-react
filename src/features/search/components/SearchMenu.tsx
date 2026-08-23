@@ -8,10 +8,13 @@ import {
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -51,6 +54,10 @@ import {
 import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
+import {
+  type CommandMatch,
+  useCommandMatches,
+} from '../hooks/useCommandMatches.js';
 import {
   SEARCH_PROGRESS_ID,
   type SearchResult,
@@ -187,6 +194,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     askedRef.current = query;
   }, [query]);
 
+  // The app's own functions and maps, answered from here while the geocoder is
+  // still being asked. A query that answers itself is about a place, not a
+  // function, so it is left alone.
+  const commands = useCommandMatches(isLocalSearchQuery(value) ? '' : value);
+
+  const functionMatches = commands.filter(
+    ({ command }) => command.kind === 'function',
+  );
+
+  const mapMatches = commands.filter(({ command }) => command.kind === 'map');
+
   // Offline the box still finds what the query itself carries; anything else
   // has to be asked of the geocoder, and only that goes dead.
   const needsGeocoder = !online && Boolean(value) && !isLocalSearchQuery(value);
@@ -285,6 +303,39 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         return;
       }
 
+      if (eventKey.startsWith('cmd-')) {
+        const id = eventKey.slice(4);
+
+        const match = commands.find(({ command }) => command.id === id);
+
+        if (match) {
+          trackMatomo(['trackEvent', 'Search', 'command', id]);
+
+          dispatch(match.command.action);
+        }
+
+        // The query is spent: the box is emptied and the lookup taken back,
+        // aborting one in flight. Left standing, its answer would land a
+        // moment later and open the list over whatever was just opened.
+        setValue('');
+
+        askedRef.current = '';
+
+        setLimit(searchLimitStep);
+
+        if (query) {
+          dispatch(searchSetQuery({ query: '' }));
+        }
+
+        if (results.length > 0) {
+          dispatch(searchSetResults([]));
+        }
+
+        setOpen(false);
+
+        return;
+      }
+
       const result = results.find(
         (item) => stringifyFeatureId(item.id) === eventKey,
       );
@@ -299,7 +350,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
       setOpen(false);
     },
-    [results, dispatch],
+    [commands, query, results, dispatch],
   );
 
   const showMore = useCallback(() => {
@@ -328,11 +379,18 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       // Otherwise the user has moved on to something of their own. Suggestions
       // land a keystroke's delay plus a round trip later, so taking the caret
       // back here would pull it out of whatever they are filling in now.
+    } else if (commands.length) {
+      // Answered from here rather than fetched, so the caret is in the box
+      // already — unless the list was rebuilt by something else entirely
+      // (signing in, a layer going), which is no reason to take the focus.
+      if (!inputRef.current || document.activeElement === inputRef.current) {
+        setOpen(true);
+      }
     } else {
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results]);
+  }, [results, commands]);
 
   useEffect(() => {
     if (hidden || preventShortcut) {
@@ -386,8 +444,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const handleInputFocus = useCallback(() => {
     setInputFocused(true);
 
-    setOpen(results.length > 0);
-  }, [results]);
+    setOpen(results.length > 0 || commands.length > 0);
+  }, [results, commands]);
 
   const handleInputBlur = useCallback(() => {
     setInputFocused(false);
@@ -454,7 +512,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               autoComplete="off"
             />
 
-            {results.length ? (
+            {results.length || commands.length ? (
               <Button variant="secondary" onClick={handleCaretClick}>
                 {open ? <FaCaretUp /> : <FaCaretDown />}
               </Button>
@@ -484,18 +542,44 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         </Dropdown.Toggle>
 
         <FmDropdownMenu className={classes.searchDropdown}>
+          {functionMatches.length > 0 && (
+            <div className="dropdown-caption-divider">
+              {m?.search.commands.caption}
+            </div>
+          )}
+
+          {functionMatches.map((match) => (
+            <CommandItem key={match.command.id} match={match} />
+          ))}
+
+          {mapMatches.length > 0 && (
+            <div className="dropdown-caption-divider">
+              {m?.mapLayers.layers}
+            </div>
+          )}
+
+          {mapMatches.map((match) => (
+            <CommandItem key={match.command.id} match={match} />
+          ))}
+
           {results.map((result) => {
             const id = stringifyFeatureId(result.id);
 
+            // A source that names itself only when it shares the list: the
+            // places are what the box is for, so on their own they carry no
+            // caption — but under one they need theirs, or they read as more of
+            // what the caption above announced.
             const divider =
-              !(
-                [
-                  'nominatim-forward',
-                  'bbox',
-                  'coords',
-                  'geojson',
-                ] as SearchSource[]
-              ).includes(result.source) && prevSource !== result.source ? (
+              (commands.length > 0 ||
+                !(
+                  [
+                    'nominatim-forward',
+                    'bbox',
+                    'coords',
+                    'geojson',
+                  ] as SearchSource[]
+                ).includes(result.source)) &&
+              prevSource !== result.source ? (
                 <div className="dropdown-caption-divider">
                   <SourceName result={result} />
                 </div>
@@ -578,6 +662,73 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       </Dropdown>
     </Form>
   );
+}
+
+function CommandItem({ match }: { match: CommandMatch }) {
+  const { command } = match;
+
+  const props = {
+    eventKey: `cmd-${command.id}`,
+    onClick: preventDefault,
+    ...(command.href
+      ? { href: command.href }
+      : ({ as: 'button', type: 'button' } as const)),
+  };
+
+  const highlighted = <Highlight text={command.label} at={match.positions} />;
+
+  // The row is a flex box with a gap of its own, so the label goes in one box:
+  // left loose, every highlighted run would be spaced off the next.
+  const label = (
+    <>
+      {command.layerDef ? (
+        <MapLayerItem def={command.layerDef} label={highlighted} />
+      ) : (
+        <>
+          {command.icon}
+
+          <span>{highlighted}</span>
+        </>
+      )}
+
+      {command.experimental && <ExperimentalFunction />}
+
+      {command.badges}
+    </>
+  );
+
+  return command.requiresOnline || command.offline !== undefined ? (
+    <OnlineOnlyItem {...props} offline={command.offline}>
+      {label}
+    </OnlineOnlyItem>
+  ) : (
+    <Dropdown.Item {...props}>{label}</Dropdown.Item>
+  );
+}
+
+/** The label with the characters the query matched picked out. */
+function Highlight({ text, at }: { text: string; at: number[] }) {
+  if (at.length === 0) {
+    return text;
+  }
+
+  const matched = new Set(at);
+
+  const parts: ReactNode[] = [];
+
+  let from = 0;
+
+  for (let i = 1; i <= text.length; i++) {
+    if (i === text.length || matched.has(i) !== matched.has(from)) {
+      const part = text.slice(from, i);
+
+      parts.push(matched.has(from) ? <b key={from}>{part}</b> : part);
+
+      from = i;
+    }
+  }
+
+  return parts;
 }
 
 function Result({ value }: { value: SearchResult }) {

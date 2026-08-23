@@ -3,15 +3,11 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import {
-  type IsWmsLayerDef,
-  integratedLayerDefs,
-  type LayerDef,
-} from '@shared/mapDefinitions.js';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import { FaList, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { getLegendLayers, getWmsLayerDefs } from '../legendLayers.js';
 import { useLegendMessages } from '../translations/useLegendMessages.js';
 import OutdoorMapLegend from './OutdoorMapLegend.js';
 import { WmsMapLegend } from './WmsMapLegend.js';
@@ -30,26 +26,13 @@ export default function LegendModal({ show }: Props): ReactElement {
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
   const wmsLayerDefs = useMemo(
-    () =>
-      [...customLayers, ...integratedLayerDefs].filter(
-        (def): def is LayerDef<IsWmsLayerDef, IsWmsLayerDef> =>
-          def.technology === 'wms',
-      ),
+    () => getWmsLayerDefs(customLayers),
     [customLayers],
   );
 
   const legendLayers = useMemo(
-    () =>
-      new Set([
-        'A',
-        'T',
-        'C',
-        'K',
-        'X',
-        ...wmsLayerDefs.map((def) => def.type),
-      ]),
-
-    [wmsLayerDefs],
+    () => getLegendLayers(customLayers),
+    [customLayers],
   );
 
   const activeLegendLayers = layers.filter((layer) => legendLayers.has(layer));

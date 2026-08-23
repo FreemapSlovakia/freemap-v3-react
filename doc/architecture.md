@@ -20,8 +20,9 @@ src/
     components/   Main.tsx (the shell), Layers, Tools, Results, modals host
     hooks/
   features/<name>/   one self-contained feature per folder (see "Feature anatomy")
-  shared/         cross-feature utilities, components, hooks, and the two registries
-                  (mapDefinitions.tsx = layers, toolDefinitions.tsx = tools)
+  shared/         cross-feature utilities, components, hooks, and the three registries
+                  (mapDefinitions.tsx = layers, toolDefinitions.tsx = tools,
+                   commandDefinitions.tsx = what the search box can do)
   translations/   global i18n master (en.messages.tsx) + per-language files + Messages type
   processors/     a handful of cross-cutting processors not owned by one feature
   osm/, sw/, processors/, pica-gpu/, documents/, images/, static/
@@ -205,7 +206,7 @@ Gotcha: toast`messageKey`s referenced from processors must resolve against the
 **global** `Messages`, so those namespaces stay global even when the rest of the
   feature's strings are lazy.
 
-## The two registries to keep honest
+## The three registries to keep honest
 
 - `src/shared/mapDefinitions.tsx` — the layer registry (ids, zoom ranges, premium
   thresholds, credits, keyboard shortcuts, countries, base/overlay). The most
@@ -215,6 +216,13 @@ Gotcha: toast`messageKey`s referenced from processors must resolve against the
   shortcut, whether it's a drawing tool) and `MAP_CLICK_TOOLS`, which decides
   which slot a tool opens into (see "Open tools"). `Tool` itself is a Zod enum in
   `src/app/store/actions.ts`.
+- `src/shared/commandDefinitions.tsx` — what the search box offers to _do_ beside
+  the places it finds: tools, main-menu modals, help documents and map layers,
+  each with the action a pick dispatches. Labels are taken from the global
+  `Messages` (a lazy per-feature bundle can't name a row synchronously), and
+  synonyms come from `search.commands.keywords`, keyed by command id. Matching is
+  `src/shared/fuzzyMatch.ts`; the rows are assembled and ranked in
+  `features/search/hooks/useCommandMatches.ts` and never enter the store.
 
 ## Open tools
 

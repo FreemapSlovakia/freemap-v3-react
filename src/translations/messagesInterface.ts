@@ -206,6 +206,14 @@ export type Messages = {
     keepOnMap: string;
     offlineHint: string;
     sources: Record<SearchSource, string>;
+    commands: {
+      caption: string;
+      /**
+       * Synonyms per command id, comma-separated. A command missing from here
+       * is found by its label alone.
+       */
+      keywords: Record<string, string>;
+    };
   };
   mapLayers: {
     showMore: string;

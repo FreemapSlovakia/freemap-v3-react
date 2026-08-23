@@ -3,11 +3,11 @@ import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { FaHistory } from 'react-icons/fa';
 import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
 
-type MapLayerItemDef = {
+export type MapLayerItemDef = {
   type: string;
   layer: 'base' | 'overlay';
   icon?: ReactElement;
@@ -24,7 +24,14 @@ type MapLayerItemDef = {
  * it appears in a menu item, in a `<select>`-like toggle and in plain form text,
  * so the spacing can't be left to whichever of those it lands in.
  */
-export function MapLayerItem({ def }: { def: MapLayerItemDef }): ReactElement {
+export function MapLayerItem({
+  def,
+  label,
+}: {
+  def: MapLayerItemDef;
+  /** Stands in for the resolved name — a search hit shows its matched letters in bold. */
+  label?: ReactNode;
+}): ReactElement {
   const m = useMessages();
 
   return (
@@ -37,7 +44,7 @@ export function MapLayerItem({ def }: { def: MapLayerItemDef }): ReactElement {
 
       {def.icon ?? <IconSpecGlyph spec={def.iconSpec} />}
 
-      {m?.mapLayers.letters[def.type] ?? def.name ?? def.type}
+      {label ?? m?.mapLayers.letters[def.type] ?? def.name ?? def.type}
 
       {def.type !== 'X' &&
         def.countries?.map((country) => (
