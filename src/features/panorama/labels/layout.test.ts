@@ -1,3 +1,4 @@
+import { angleDiff, mod } from '@shared/mathUtils.js';
 import { describe, expect, it } from 'vitest';
 import { layoutLabels, thinLabels } from './layout.js';
 import type { PanoramaLabel } from './types.js';
@@ -115,5 +116,52 @@ describe('panorama label thinning', () => {
     const labels = [at('a', 0), at('b', 20), at('c', 40)];
 
     expect(thinLabels(labels, 10)).toEqual(labels);
+  });
+
+  /** What the buckets have to agree with: compare against everything kept. */
+  function thinnedFlat(
+    labels: PanoramaLabel[],
+    minPitchDeg: number,
+  ): PanoramaLabel[] {
+    const kept: PanoramaLabel[] = [];
+
+    for (const label of labels) {
+      if (
+        !kept.some(
+          (k) => Math.abs(angleDiff(label.azimuth, k.azimuth)) < minPitchDeg,
+        )
+      ) {
+        kept.push(label);
+      }
+    }
+
+    return kept;
+  }
+
+  it('keeps exactly what a flat scan would, at every pitch', () => {
+    // A fixed spread rather than a random one, so a failure is reproducible.
+    // The multiplier is prime to 360, which walks the whole circle unevenly and
+    // lands labels on both sides of every bucket edge.
+    const labels = Array.from({ length: 400 }, (_, i) =>
+      at(String(i), mod(i * 47.3, 360)),
+    );
+
+    for (const pitch of [0.05, 0.3, 1, 7, 23, 60, 90]) {
+      expect(
+        thinLabels(labels, pitch).map((l) => l.id),
+        `pitch ${pitch}`,
+      ).toEqual(thinnedFlat(labels, pitch).map((l) => l.id));
+    }
+  });
+
+  it('agrees on labels sitting exactly on a bucket edge', () => {
+    // Pitch 36 gives ten buckets of exactly 36°, so these land on the seams.
+    const labels = [0, 36, 71.9, 72, 108, 359.9].map((az) =>
+      at(String(az), az),
+    );
+
+    expect(thinLabels(labels, 36).map((l) => l.id)).toEqual(
+      thinnedFlat(labels, 36).map((l) => l.id),
+    );
   });
 });

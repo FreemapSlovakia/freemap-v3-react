@@ -1,5 +1,8 @@
-import { angleDiff } from '@shared/mathUtils.js';
+import { angleDiff, mod } from '@shared/mathUtils.js';
 import type { PanoramaLabel } from './types.js';
+
+/** How many buckets either side of its own a label has to be compared against. */
+const NEIGHBOUR_BUCKETS = 2;
 
 /**
  * Thins a crowd down to one name per `minPitchDeg` of horizon, keeping whichever
@@ -9,28 +12,56 @@ import type { PanoramaLabel } from './types.js';
  * In degrees rather than pixels, and over every candidate rather than the ones
  * on screen: what is named must not depend on where the view points, or a
  * summit scrolling in at one edge takes the name off a summit in the middle.
+ *
+ * Each candidate is compared only against what was kept near it, because the
+ * flat scan degenerates exactly where it runs hottest: magnified far enough,
+ * the pitch is finer than the gaps, so nothing is thinned, nothing
+ * short-circuits, and every one of the better part of a thousand compares
+ * against all the rest — on every frame of a pinch.
  */
 export function thinLabels(
   labels: PanoramaLabel[],
   minPitchDeg: number,
 ): PanoramaLabel[] {
-  // The busiest density asks for no pitch at all. Falling through would keep
-  // every candidate anyway, but by comparing each against all the ones before
-  // it — a squared scan of the better part of a thousand, re-run on every
-  // frame of a pinch.
+  // The busiest density asks for no pitch at all, and keeps everything.
   if (minPitchDeg <= 0) {
     return labels;
   }
 
+  // Uniform and no wider than the pitch, so whatever lies within one pitch is
+  // at most `NEIGHBOUR_BUCKETS` away — the ceiling never gives a bucket
+  // narrower than half of it.
+  const count = Math.ceil(360 / minPitchDeg);
+
+  const width = 360 / count;
+
   const kept: PanoramaLabel[] = [];
 
+  const byBucket = new Map<number, PanoramaLabel[]>();
+
   for (const label of labels) {
-    if (
-      !kept.some(
-        (k) => Math.abs(angleDiff(label.azimuth, k.azimuth)) < minPitchDeg,
-      )
-    ) {
+    const home = Math.floor(mod(label.azimuth, 360) / width) % count;
+
+    let clear = true;
+
+    for (let d = -NEIGHBOUR_BUCKETS; clear && d <= NEIGHBOUR_BUCKETS; d++) {
+      clear = !byBucket
+        .get(mod(home + d, count))
+        ?.some(
+          (k) => Math.abs(angleDiff(label.azimuth, k.azimuth)) < minPitchDeg,
+        );
+    }
+
+    if (clear) {
       kept.push(label);
+
+      const bucket = byBucket.get(home);
+
+      if (bucket) {
+        bucket.push(label);
+      } else {
+        byBucket.set(home, [label]);
+      }
     }
   }
 

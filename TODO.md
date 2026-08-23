@@ -593,20 +593,11 @@ distance probe, a premium quality tier. What was deliberately left for later:
       distance buffer for visibility, exactly as the service does for a summit.
       Candidates: the map selection, drawn points, route waypoints, gallery
       photos, OSM POIs. Elevation comes from the elevation API.
-- [ ] **Device-orientation mode** beside the auto-pan — hold the phone up and
-      the view follows the real heading. iOS needs
-      `DeviceOrientationEvent.requestPermission()` behind a user gesture.
 - [ ] **Cross-fade** between the fast pass and the detailed one; today it swaps.
 - [ ] **Entry points**: a "Panorama from here" action on a selected
       `natural=peak` (passing the summit node so the viewpoint snaps to it), and
       a cross-link to and from the toposcope centre.
 - [ ] **Download the picture** as PNG, and a share link that names the heading.
-- [ ] **Custom vertical range and eye height** are in the settings slice and
-      honoured by the request, but no control exposes them — the three tilt
-      presets are all the toolbar offers, and a custom band can only arrive
-      through `panorama-tilt=altMin,altMax`. Their message strings were removed
-      rather than left translated into nine languages with no consumer; a
-      settings modal would bring both back.
 - [ ] **Sun path** — the service hasn't implemented it either; the distance
       buffer already holds what it needs.
 
