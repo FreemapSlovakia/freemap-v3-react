@@ -34,13 +34,15 @@ export const areaUnitKeys: Record<AreaUnit, string> = {
 
 /**
  * Digits enough to say something without saying more than the measurement can:
- * a bigger number gets fewer of them. The same rule `formatDistance` uses.
+ * three significant digits, so a bigger number gets fewer of them. The same rule
+ * `formatDistance` uses. Counted from the rounded value — 9.999 rounds to 10.00,
+ * which would carry a digit more than asked for.
  */
 export function measurementFractionDigits(value: number): number {
-  return Math.max(
-    0,
-    Math.min(20, Math.floor(4 - (value ? Math.log10(value) : 0))),
-  );
+  const digits = (v: number) =>
+    v ? Math.max(0, Math.min(20, 2 - Math.floor(Math.log10(Math.abs(v))))) : 2;
+
+  return digits(Number(value.toFixed(digits(value))));
 }
 
 /**
@@ -69,9 +71,19 @@ export function formatArea(
  * expects rather than a single unit stretched across all of them.
  */
 export function naturalAreaUnit(squareMeters: number): AreaUnit {
-  return squareMeters < areaUnits.ha
+  // Compared as the unit would print it, so 9999.6 m² — which rounds to 10 000 —
+  // is a hectare rather than a square metre count of one.
+  const rounded = (unit: AreaUnit) => {
+    const value = squareMeters / areaUnits[unit];
+
+    return (
+      Number(value.toFixed(measurementFractionDigits(value))) * areaUnits[unit]
+    );
+  };
+
+  return rounded('m²') < areaUnits.ha
     ? 'm²'
-    : squareMeters < areaUnits['km²']
+    : rounded('ha') < areaUnits['km²']
       ? 'ha'
       : 'km²';
 }

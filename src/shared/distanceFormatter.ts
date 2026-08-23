@@ -40,14 +40,17 @@ export function formatLength(
 }
 
 export function formatDistance(valueInMeters: number, locale: string): string {
-  const useKilometers = valueInMeters >= 1000;
+  const meterDigits = measurementFractionDigits(valueInMeters);
+
+  // The unit follows the rounded metre value: 999.9 m rounds to 1000, which is
+  // a kilometre and must not be written as metres.
+  const useKilometers = Number(valueInMeters.toFixed(meterDigits)) >= 1000;
 
   const value = useKilometers ? valueInMeters / 1000 : valueInMeters;
 
-  const fractionDigits = Math.max(
-    0,
-    Math.min(20, Math.floor(4 - (value ? Math.log10(value) : 0))),
-  );
+  const fractionDigits = useKilometers
+    ? measurementFractionDigits(value)
+    : meterDigits;
 
   const formatter = new Intl.NumberFormat(locale, {
     style: 'unit',

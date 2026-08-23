@@ -5,6 +5,7 @@ import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
+import { hasSubMeterPrecision } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';
@@ -54,9 +55,11 @@ export function ElevationValue({
   label,
   className,
 }: ElevationValueProps): ReactElement | null {
-  const nf01 = useNumberFormat({
+  // A decimal only where a national LiDAR model answered; off SRTM or GEDTM30 it
+  // would be noise, and every other elevation readout writes whole metres.
+  const nfEle = useNumberFormat({
     minimumFractionDigits: 0,
-    maximumFractionDigits: 1,
+    maximumFractionDigits: hasSubMeterPrecision(reportedSources) ? 1 : 0,
   });
 
   const m = useMessages();
@@ -104,7 +107,7 @@ export function ElevationValue({
         <span className="text-muted">—</span>
       ) : (
         <>
-          <b>{nf01.format(elevation)}</b>&nbsp;{m?.general.masl}
+          <b>{nfEle.format(elevation)}</b>&nbsp;{m?.general.masl}
           {sourceHint && (
             <GlyphMarker
               hint={sourceHint}

@@ -1,4 +1,4 @@
-import { areaUnits } from '@shared/areaFormatter.js';
+import { areaUnits, measurementFractionDigits } from '@shared/areaFormatter.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
@@ -41,10 +41,7 @@ export function AreaInfo({
 
   const num = length / areaUnits[unit];
 
-  const fractionDigits = Math.max(
-    0,
-    Math.min(20, Math.floor(4 - (num ? Math.log10(num) : 0))),
-  );
+  const fractionDigits = measurementFractionDigits(num);
 
   const nf = useNumberFormat({
     maximumFractionDigits: fractionDigits,

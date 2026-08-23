@@ -101,6 +101,20 @@ const GLOBAL_MODELS: Record<string, AttributionDef> = {
 const COUNTRY_TOKEN = /^[a-z]{2}$/;
 
 /**
+ * Whether every model that answered is a national one — LiDAR-derived, so a
+ * reading off it is worth a decimal. Recognized by the country code it is
+ * reported under, since a global model the API gains is named by a model id we
+ * would not know: the decimal is then withheld rather than claimed off a 30 m
+ * grid. Nothing reported is treated the same way.
+ */
+export function hasSubMeterPrecision(tokens: string[]): boolean {
+  return (
+    tokens.length > 0 &&
+    tokens.every((token) => COUNTRY_TOKEN.test(token.toLowerCase()))
+  );
+}
+
+/**
  * Resolves the source tokens the elevation API reports (`?sources=1`) to the
  * attribution entries to credit, ordered as the map's own attribution orders
  * them: the national models first, the global ones last. Duplicates collapse, so

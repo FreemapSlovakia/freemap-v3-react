@@ -115,7 +115,7 @@ export function GpsRecorderReadout({ collapsedIcon }: Props): ReactNode {
     [language],
   );
 
-  // `formatDistance` keeps five significant digits, which reads as noise on
+  // `formatDistance` keeps three significant digits, which reads as noise on
   // values that change every second and are only good to a metre anyway.
   const metersFormat = useMemo(
     () =>

@@ -11,7 +11,7 @@ const en: MeasurementMessages = {
   elevationInfo: (params) => (
     <ElevationInfo
       {...params}
-      lang="cs"
+      lang="en"
       tileMessage="Tile"
       maslMessage="Elevation"
     />

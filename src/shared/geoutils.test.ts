@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   containsElevations,
   elevationCoverage,
+  formatAzimuth,
   formatLocationLines,
   lineSegments,
   trackTimeSegments,
@@ -238,5 +239,16 @@ describe('formatLocationLines', () => {
     expect(formatLocationLines({ lat: 1 - 0.1 / 3600, lon: 0 })).toBe(
       'N 1° 0\' 0"\nE 0° 0\' 0"',
     );
+  });
+});
+
+describe('formatAzimuth', () => {
+  it('writes whole degrees', () => {
+    expect(formatAzimuth(123.45, 'en')).toBe('123°');
+  });
+
+  it('wraps a bearing that rounds up to a full turn', () => {
+    expect(formatAzimuth(359.7, 'en')).toBe('0°');
+    expect(formatAzimuth(360, 'en')).toBe('0°');
   });
 });

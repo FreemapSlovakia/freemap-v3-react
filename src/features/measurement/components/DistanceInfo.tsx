@@ -1,3 +1,4 @@
+import { measurementFractionDigits } from '@shared/areaFormatter.js';
 import { lengthUnits } from '@shared/distanceFormatter.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -44,10 +45,7 @@ export function InnerDistanceInfo({ length, lengthLabel }: Props) {
 
   const num = length / lengthUnits[unit];
 
-  const fractionDigits = Math.max(
-    0,
-    Math.min(20, Math.floor(4 - (num ? Math.log10(num) : 0))),
-  );
+  const fractionDigits = measurementFractionDigits(num);
 
   const nf = useNumberFormat({
     maximumFractionDigits: fractionDigits,

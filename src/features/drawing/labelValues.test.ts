@@ -104,7 +104,7 @@ describe('drawingLineLabel', () => {
   });
 
   it('gives an azimuth only where there is one direction', () => {
-    expect(drawingLineLabel({ ...line, label: '{azimuth}' })).toBe('90.00°');
+    expect(drawingLineLabel({ ...line, label: '{azimuth}' })).toBe('90°');
 
     const bent = { ...line, points: [...line.points, at(1, 1, 2)] };
 

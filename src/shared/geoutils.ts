@@ -465,15 +465,16 @@ export function bearingTo(from: LatLon, to: LatLon): number {
 }
 
 /**
- * A bearing as the line readout writes it: two decimals and the degree sign,
- * with no space between. Shared with the `{azimuth}` label placeholder so the
- * label and the readout beside it can't say the same angle differently.
+ * A bearing as the line readout writes it: whole degrees and the degree sign,
+ * with no space between — the precision the panorama and the toposcope write an
+ * angle at. Shared with the `{azimuth}` label placeholder so the label and the
+ * readout beside it can't say the same angle differently.
  */
 export function formatAzimuth(degrees: number, locale: string): string {
-  return `${new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(degrees)}°`;
+  // Wrapped after rounding: 359.7° is north, and must not come out as 360°.
+  const whole = ((Math.round(degrees) % 360) + 360) % 360;
+
+  return `${new Intl.NumberFormat(locale).format(whole)}°`;
 }
 
 /** Great-circle distance in metres. */

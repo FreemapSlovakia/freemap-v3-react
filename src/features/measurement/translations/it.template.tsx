@@ -12,7 +12,7 @@ const it: DeepPartialWithRequiredObjects<MeasurementMessages> = {
   elevationInfo: (params) => (
     <ElevationInfo
       {...params}
-      lang="cs"
+      lang="it"
       tileMessage="Tile"
       maslMessage="Elevazione"
     />
