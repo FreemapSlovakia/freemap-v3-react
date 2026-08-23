@@ -4,6 +4,7 @@ import {
 } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
+import { Chord } from '@shared/components/Chord.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
@@ -73,7 +74,7 @@ export function MainMenu(): ReactElement {
 
       {user ? (
         <OnlineOnlyItem {...modalMenuItemProps('account')}>
-          <FaUser /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
+          <FaUser /> {m?.mainMenu.account} <Chord modal="account" />
         </OnlineOnlyItem>
       ) : (
         <OnlineOnlyItem {...modalMenuItemProps('login')}>
@@ -88,7 +89,7 @@ export function MainMenu(): ReactElement {
         eventKey="clear-map-features"
         disabled={!hasClearableMapFeatures}
       >
-        <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
+        <FaEraser /> {m?.main.clearMap} <Chord command="clear-map-features" />
       </Dropdown.Item>
 
       {/* Only a layer toggle, so it works offline; the layer menu is where the
@@ -103,7 +104,7 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('my-maps')}>
-        <FaRegMap /> {m?.tools.myMaps} <kbd>g</kbd> <kbd>m</kbd>
+        <FaRegMap /> {m?.tools.myMaps} <Chord modal="my-maps" />
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -116,7 +117,7 @@ export function MainMenu(): ReactElement {
 
       {toolDefinitions
         .filter(({ draw, tool }) => !draw && isToolAvailable(unavailable, tool))
-        .map(({ tool: newTool, icon, msgKey, kbd, experimental }) => {
+        .map(({ tool: newTool, icon, msgKey, experimental }) => {
           return (
             newTool && (
               <Dropdown.Item
@@ -131,12 +132,7 @@ export function MainMenu(): ReactElement {
                     <ExperimentalFunction />{' '}
                   </>
                 )}
-                {kbd && (
-                  <>
-                    <kbd>g</kbd>{' '}
-                    <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
-                  </>
-                )}
+                <Chord tool={newTool} />
               </Dropdown.Item>
             )
           );
@@ -149,16 +145,18 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('map-features-export')}>
-        <FaFileExport /> {m?.mainMenu.mapFeaturesExport} <kbd>e</kbd>{' '}
-        <kbd>g</kbd>
+        <FaFileExport /> {m?.mainMenu.mapFeaturesExport}{' '}
+        <Chord modal="map-features-export" />
       </Dropdown.Item>
 
       <OnlineOnlyItem {...modalMenuItemProps('map-to-document-export')}>
-        <FaPrint /> {m?.mainMenu.mapToDocumentExport} <kbd>e</kbd> <kbd>p</kbd>
+        <FaPrint /> {m?.mainMenu.mapToDocumentExport}{' '}
+        <Chord modal="map-to-document-export" />
       </OnlineOnlyItem>
 
       <OnlineOnlyItem {...modalMenuItemProps('offline-map-export')}>
-        <FaDatabase /> {m?.mainMenu.offlineMapExport} <kbd>e</kbd> <kbd>m</kbd>
+        <FaDatabase /> {m?.mainMenu.offlineMapExport}{' '}
+        <Chord modal="offline-map-export" />
       </OnlineOnlyItem>
 
       <Dropdown.Item {...documentMenuItemProps('exports')}>
@@ -166,7 +164,7 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('embed')}>
-        <FaCode /> {m?.mainMenu.embedMap} <kbd>e</kbd> <kbd>e</kbd>
+        <FaCode /> {m?.mainMenu.embedMap} <Chord modal="embed" />
       </Dropdown.Item>
 
       <Dropdown.Divider />

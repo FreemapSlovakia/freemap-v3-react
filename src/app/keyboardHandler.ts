@@ -19,6 +19,7 @@ import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { panoramaSetPickingViewpoint } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
+import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import {
@@ -31,12 +32,14 @@ import {
   setActiveModal,
   setSelectingHomeLocation,
 } from './store/actions.js';
+import { modalOf } from './store/activeModal.js';
 import { isToolOpen, showGalleryViewerSelector } from './store/selectors.js';
 import type { MyStore, RootState } from './store/store.js';
 
 let keyTimer: number | null = null;
 
-let initCode: 'KeyE' | 'KeyG' | 'KeyP' | 'KeyJ' | 'KeyM' | null = null;
+/** The key that started a chord, while the next one is awaited. */
+let initCode: string | null = null;
 
 export function handleEvent(event: KeyboardEvent, state: RootState) {
   const withModifiers =
@@ -251,15 +254,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     return undefined;
   }
 
-  if (
-    !window.fmEmbedded &&
-    !keyTimer &&
-    (event.code === 'KeyG' ||
-      event.code === 'KeyE' ||
-      event.code === 'KeyP' ||
-      event.code === 'KeyJ' ||
-      event.code === 'KeyM')
-  ) {
+  if (!window.fmEmbedded && !keyTimer && chordPrefixCodes.has(event.code)) {
     initCode = event.code;
 
     keyTimer = window.setTimeout(() => {
@@ -271,16 +266,8 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     return 'I';
   }
 
-  if (keyTimer) {
+  if (keyTimer && initCode) {
     if (initCode === 'KeyG') {
-      if (event.code === 'KeyC') {
-        return clearMapFeatures();
-      }
-
-      if (event.code === 'KeyM') {
-        return setActiveModal({ type: 'my-maps' });
-      }
-
       const toolDefinition = toolDefinitions.find(
         (td) => td.kbd === event.code,
       );
@@ -291,126 +278,28 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
           ? closeTool(toolDefinition.tool)
           : openTool(toolDefinition.tool);
       }
+    }
 
-      if (event.code === 'KeyW') {
-        return setActiveModal({ type: 'tracking-watched' });
-      }
+    const target = chordTarget(initCode, event.code);
 
-      if (event.code === 'KeyD') {
-        return setActiveModal({ type: 'tracking-my' });
-      }
-
+    if (!target) {
       return undefined;
     }
 
-    if (initCode === 'KeyJ') {
-      switch (event.code) {
-        case 'KeyC':
-          return openInExternalApp({ where: 'copy' });
-
-        case 'KeyG':
-          return openInExternalApp({ where: 'google' });
-
-        case 'KeyJ':
-          return openInExternalApp({ where: 'josm' });
-
-        case 'KeyO':
-          return openInExternalApp({ where: 'osm.org' });
-
-        case 'KeyI':
-          return openInExternalApp({ where: 'osm.org/id' });
-
-        case 'KeyM':
-          return openInExternalApp({ where: 'mapy.com' });
-
-        case 'KeyH':
-          return openInExternalApp({ where: 'hiking.sk' });
-
-        case 'KeyZ':
-          return openInExternalApp({ where: 'zbgis' });
-
-        case 'KeyP':
-          return openInExternalApp({ where: 'peakfinder' });
-
-        case 'KeyL':
-          return openInExternalApp({ where: 'mapillary' });
-
-        case 'Digit4':
-          return openInExternalApp({ where: 'f4map' });
-
-        default:
-          return undefined;
-      }
+    if ('modal' in target) {
+      return setActiveModal(modalOf(target.modal));
     }
 
-    if (initCode === 'KeyP') {
-      switch (event.code) {
-        case 'KeyL':
-          return galleryList('-createdAt');
-
-        case 'KeyU':
-          return setActiveModal({ type: 'gallery-upload' });
-
-        case 'KeyF':
-          return setActiveModal({ type: 'gallery-filter' });
-
-        case 'KeyB':
-          return setActiveModal({ type: 'gallery-leaderboard' });
-
-        default:
-          return undefined;
-      }
+    if ('external' in target) {
+      return openInExternalApp({ where: target.external });
     }
 
-    if (initCode === 'KeyE') {
-      switch (event.code) {
-        case 'KeyA':
-          return setActiveModal({ type: 'account' });
+    switch (target.command) {
+      case 'clear-map-features':
+        return clearMapFeatures();
 
-        case 'KeyG':
-          return setActiveModal({ type: 'map-features-export' });
-
-        case 'KeyP':
-          return setActiveModal({ type: 'map-to-document-export' });
-
-        case 'KeyE':
-          return setActiveModal({ type: 'embed' });
-
-        case 'KeyD':
-          return setActiveModal({ type: 'drawing-properties' });
-
-        case 'KeyM':
-          return setActiveModal({ type: 'offline-map-export' });
-      }
-
-      return undefined;
-    }
-
-    if (initCode === 'KeyM') {
-      switch (event.code) {
-        case 'KeyP':
-          return setActiveModal({ type: 'map-preferences' });
-
-        case 'KeyO':
-          return setActiveModal({ type: 'offline-maps' });
-
-        case 'KeyB':
-          return setActiveModal({ type: 'browse-cache' });
-
-        case 'KeyY':
-          return setActiveModal({ type: 'map-layers-config' });
-
-        case 'KeyC':
-          return setActiveModal({ type: 'custom-maps' });
-
-        case 'KeyL':
-          return setActiveModal({ type: 'legend' });
-
-        case 'KeyE':
-          return setActiveModal({ type: 'elevation-settings' });
-      }
-
-      return undefined;
+      case 'gallery-list':
+        return galleryList('-createdAt');
     }
   }
 

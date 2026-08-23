@@ -677,8 +677,6 @@ function CommandItem({ match }: { match: CommandMatch }) {
 
   const highlighted = <Highlight text={command.label} at={match.positions} />;
 
-  // The row is a flex box with a gap of its own, so the label goes in one box:
-  // left loose, every highlighted run would be spaced off the next.
   const label = (
     <>
       {command.layerDef ? (
@@ -687,7 +685,7 @@ function CommandItem({ match }: { match: CommandMatch }) {
         <>
           {command.icon}
 
-          <span>{highlighted}</span>
+          {highlighted}
         </>
       )}
 
@@ -706,10 +704,14 @@ function CommandItem({ match }: { match: CommandMatch }) {
   );
 }
 
-/** The label with the characters the query matched picked out. */
+/**
+ * The label with the characters the query matched picked out. One box, because
+ * every row it goes in is a flex row with a gap: loose, each highlighted run
+ * would be spaced off the next.
+ */
 function Highlight({ text, at }: { text: string; at: number[] }) {
   if (at.length === 0) {
-    return text;
+    return <span>{text}</span>;
   }
 
   const matched = new Set(at);
@@ -728,7 +730,7 @@ function Highlight({ text, at }: { text: string; at: number[] }) {
     }
   }
 
-  return parts;
+  return <span>{parts}</span>;
 }
 
 function Result({ value }: { value: SearchResult }) {

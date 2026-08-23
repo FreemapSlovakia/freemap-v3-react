@@ -4,6 +4,7 @@ import { SubmenuHeader } from '@features/mainMenu/components/SubmenuHeader.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { LEGEND_ITEM } from '@shared/colorizers/components/legendToggleOption.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
+import { Chord } from '@shared/components/Chord.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -364,9 +365,7 @@ export default function GalleryMenu() {
                           <Dropdown.Item key={key} as="button" eventKey={key}>
                             <Icon /> {gm?.f[key]}{' '}
                             {key === '-createdAt' && (
-                              <>
-                                <kbd>p</kbd> <kbd>l</kbd>
-                              </>
+                              <Chord command="gallery-list" />
                             )}
                           </Dropdown.Item>
                         );

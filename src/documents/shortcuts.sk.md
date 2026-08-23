@@ -14,7 +14,7 @@ Skúste napríklad:
 - pri prehliadaní fotografií prechádzať medzi nimi pomocou šípok doľava a doprava
 - na spustenie vyhľadávania trás stlačiť <kbd>g</kbd>, potom <kbd>r</kbd>
 - na spustenie režimu kreslenia čiar stlačiť <kbd>g</kbd>, potom <kbd>l</kbd>
-- na prezeranie fotografií od posledne nahranej stlačiť <kbd>g</kbd>, potom <kbd>l</kbd>
+- na prezeranie fotografií od posledne nahranej stlačiť <kbd>p</kbd>, potom <kbd>l</kbd>
 - na zatvorenie dialógových okien a nástrojov použiť klávesu <kbd>Esc</kbd>
 
 Ďalšie skratky nájdete priamo pri položkách v menu a lištách jednotlivých nástrojov.

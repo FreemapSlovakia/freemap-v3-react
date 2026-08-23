@@ -1,6 +1,7 @@
 import type { ExternalTarget } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
+import { Chord } from '@shared/components/Chord.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -110,7 +111,7 @@ export function OpenInExternalAppDropdownItems({
           {showKbdShortcut && (
             <>
               {' '}
-              <kbd>j</kbd> <kbd>c</kbd>
+              <Chord external="copy" />
             </>
           )}
         </Dropdown.Item>
@@ -133,7 +134,7 @@ export function OpenInExternalAppDropdownItems({
         {showKbdShortcut && (
           <>
             {' '}
-            <kbd>j</kbd> <kbd>o</kbd>
+            <Chord external="osm.org" />
           </>
         )}
       </OnlineOnlyItem>
@@ -147,7 +148,7 @@ export function OpenInExternalAppDropdownItems({
         {showKbdShortcut && (
           <>
             {' '}
-            <kbd>j</kbd> <kbd>m</kbd>
+            <Chord external="mapy.com" />
           </>
         )}
       </OnlineOnlyItem>
@@ -161,7 +162,7 @@ export function OpenInExternalAppDropdownItems({
         {showKbdShortcut && (
           <>
             {' '}
-            <kbd>j</kbd> <kbd>g</kbd>
+            <Chord external="google" />
           </>
         )}
       </OnlineOnlyItem>
@@ -183,7 +184,7 @@ export function OpenInExternalAppDropdownItems({
         {showKbdShortcut && (
           <>
             {' '}
-            <kbd>j</kbd> <kbd>4</kbd>
+            <Chord external="f4map" />
           </>
         )}
       </OnlineOnlyItem>
@@ -197,7 +198,7 @@ export function OpenInExternalAppDropdownItems({
         {showKbdShortcut && (
           <>
             {' '}
-            <kbd>j</kbd> <kbd>p</kbd>
+            <Chord external="peakfinder" />
           </>
         )}
       </OnlineOnlyItem>
@@ -211,7 +212,7 @@ export function OpenInExternalAppDropdownItems({
         {showKbdShortcut && (
           <>
             {' '}
-            <kbd>j</kbd> <kbd>l</kbd>
+            <Chord external="mapillary" />
           </>
         )}
       </OnlineOnlyItem>
@@ -257,7 +258,7 @@ export function OpenInExternalAppDropdownItems({
         {showKbdShortcut && (
           <>
             {' '}
-            <kbd>j</kbd> <kbd>h</kbd>
+            <Chord external="hiking.sk" />
           </>
         )}
       </OnlineOnlyItem>
@@ -271,7 +272,7 @@ export function OpenInExternalAppDropdownItems({
         {showKbdShortcut && (
           <>
             {' '}
-            <kbd>j</kbd> <kbd>z</kbd>
+            <Chord external="zbgis" />
           </>
         )}
       </OnlineOnlyItem>
@@ -283,7 +284,7 @@ export function OpenInExternalAppDropdownItems({
         {showKbdShortcut && (
           <>
             {' '}
-            <kbd>j</kbd> <kbd>j</kbd>
+            <Chord external="josm" />
           </>
         )}
       </Dropdown.Item>
@@ -297,7 +298,7 @@ export function OpenInExternalAppDropdownItems({
         {showKbdShortcut && (
           <>
             {' '}
-            <kbd>j</kbd> <kbd>i</kbd>
+            <Chord external="osm.org/id" />
           </>
         )}
       </OnlineOnlyItem>

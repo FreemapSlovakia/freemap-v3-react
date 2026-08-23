@@ -1,5 +1,6 @@
 import { documentShow } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
@@ -86,7 +87,7 @@ export function CopyrightButton(): ReactElement {
                 dispatch(setActiveModal({ type: 'legend' }));
               }}
             >
-              <FaList /> {m?.mainMenu.mapLegend} <kbd>m</kbd> <kbd>l</kbd>
+              <FaList /> {m?.mainMenu.mapLegend} <Chord modal="legend" />
             </OnlineOnlyItem>
           )}
 
