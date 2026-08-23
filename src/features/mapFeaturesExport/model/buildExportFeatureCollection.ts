@@ -582,6 +582,25 @@ function addTracking(
   }
 }
 
+// A property set to `undefined` is not JSON. A written file loses it to
+// `JSON.stringify`, but a collection handed to the track viewer is kept as it
+// is and validated when stored, so the two must not differ. Copies rather than
+// deletes: some features come straight out of the store.
+function withoutUndefinedProps(feature: Feature): Feature {
+  const props = feature.properties;
+
+  if (!props || !Object.values(props).some((v) => v === undefined)) {
+    return feature;
+  }
+
+  return {
+    ...feature,
+    properties: Object.fromEntries(
+      Object.entries(props).filter(([, v]) => v !== undefined),
+    ),
+  };
+}
+
 // Builds the GeoJSON FeatureCollection shared by the data export
 // (`pointMode: { props: true }`) and the raster map export
 // (`pointMode: { svgMarker: true }`). Source order matches the legacy
@@ -856,5 +875,5 @@ export async function buildExportFeatureCollection({
     }
   }
 
-  return featureCollection(features);
+  return featureCollection(features.map(withoutUndefinedProps));
 }
