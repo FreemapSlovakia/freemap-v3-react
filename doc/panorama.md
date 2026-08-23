@@ -347,6 +347,14 @@ a new render lands: the two passes are different heights, and the same row in
 the preview and in the detailed picture are different altitudes. Each carries a dashed line back to the viewpoint — the
 line of sight the reading was taken along.
 
+The press also leaves a dot in the picture itself, in the picked names' ink,
+which is the map crosshair's counterpart where the pressing happened. It is put
+back from the same bearing and row, so it stays on its terrain as the view
+turns, and it answers to the mark on the map rather than to itself: picking a
+name instead clears it, since a named summit already reddens its own anchor dot,
+and a new viewpoint drops both while this picture is still up. A press on the
+sky marks nothing, the way it already marks nothing on the map.
+
 A mark already on screen leaves the map alone: moving it under someone who can
 see what they asked for is the rudest thing this could do. One that isn't —
 a ridge picked out of the picture can be tens of kilometres off — is **centred**,

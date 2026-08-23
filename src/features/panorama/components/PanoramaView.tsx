@@ -194,6 +194,10 @@ export function PanoramaView({
     (state) => state.panorama.probe?.peak?.id ?? null,
   );
 
+  // What the dot in the picture answers to: a new viewpoint clears the mark on
+  // the map while this picture is still up, and the two must go together.
+  const marked = useAppSelector((state) => state.panorama.probe !== null);
+
   // The bearing lives here frame by frame and reaches the store once the
   // turning settles — every action writes the persisted state to localStorage,
   // so dispatching per frame would be sixty writes a second. Seeded from the
@@ -207,6 +211,12 @@ export function PanoramaView({
   const [dragging, setDragging] = useState(false);
 
   const [hover, setHover] = useState<HoverReading | null>(null);
+
+  /**
+   * Where a press on the terrain landed, held as bearing and row like the
+   * readout: the counterpart in the picture of the mark it leaves on the map.
+   */
+  const [picked, setPicked] = useState<{ az: number; iy: number } | null>(null);
 
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -295,6 +305,8 @@ export function PanoramaView({
   // biome-ignore lint/correctness/useExhaustiveDependencies: the render's identity is the point
   useEffect(() => {
     setHover(null);
+
+    setPicked(null);
 
     setPanoramaHover(null);
   }, [render.id]);
@@ -710,6 +722,8 @@ export function PanoramaView({
           // as mark it — otherwise the readout is a thing only a mouse ever
           // sees. It stays until the next press, the way the mark does.
           setHover(hoverReading(sample));
+
+          setPicked(sample.ground ? { az: sample.az, iy: sample.iy } : null);
         }
       }
     },
@@ -728,6 +742,10 @@ export function PanoramaView({
    */
   const pickLabel = useCallback(
     (label: PanoramaLabel) => {
+      // A named summit wears its own anchor dot in the picked ink, so the mark
+      // a terrain press left would be a second red dot for one marked place.
+      setPicked(null);
+
       // Pressing the picked one again lets it go. A highlighted name invites
       // being pressed again, and the only other way out is pressing the sky,
       // which nothing suggests.
@@ -769,6 +787,19 @@ export function PanoramaView({
         distance: hover.distance,
       },
     [clampedOffsetY, hover, scale, screenX],
+  );
+
+  // The dot put back over its own terrain as the view turns, the same way the
+  // readout is. Gone with the mark on the map, whoever cleared it.
+  const pickedAt = useMemo(
+    () =>
+      picked && marked
+        ? {
+            x: screenX(picked.az),
+            y: (picked.iy - clampedOffsetY) * scale,
+          }
+        : null,
+    [clampedOffsetY, marked, picked, scale, screenX],
   );
 
   const weighting = useMemo(
@@ -948,6 +979,21 @@ export function PanoramaView({
             />
           </Fragment>
         ))}
+
+        {/* Where a press on the terrain landed: the counterpart in the picture
+            of the crosshair it put on the map. Larger than a label's anchor
+            dot and haloed like one, since it stands on rock and forest with no
+            name beside it to say what it is. */}
+        {pickedAt && (
+          <circle
+            cx={pickedAt.x}
+            cy={pickedAt.y}
+            r={4}
+            fill={PICKED_INK}
+            stroke="rgba(0, 0, 0, 0.6)"
+            strokeWidth={1.5}
+          />
+        )}
       </svg>
 
       {placements.map((p) => (
