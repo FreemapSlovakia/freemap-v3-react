@@ -84,10 +84,21 @@ export type CommandContext = {
   embedFeatures: string[];
 };
 
+/**
+ * The keys of a chord, as the menus show them. `keyboardHandler` owns what they
+ * actually do, so a chord changed there has to be changed here too.
+ */
+function chord(...keys: string[]) {
+  // Keyed by position, because a chord can press the same key twice (`e` `e`).
+  return keys.map((key, i) => <kbd key={i}>{key}</kbd>);
+}
+
 type ModalCommand = {
   id: ModalId;
   icon: ReactElement;
   label: (m: Messages) => string;
+  /** The chord that opens it, if it has one. */
+  kbd?: string[];
   requiresOnline?: boolean;
   /** Answers what the modal's menu item passes to `OnlineOnlyItem`. */
   offline?: (ctx: CommandContext) => boolean;
@@ -103,6 +114,7 @@ const modalCommands: ModalCommand[] = [
     id: 'account',
     icon: <FaUser />,
     label: (m) => m.mainMenu.account,
+    kbd: ['e', 'a'],
     requiresOnline: true,
     available: (ctx) => ctx.loggedIn,
   },
@@ -113,25 +125,38 @@ const modalCommands: ModalCommand[] = [
     requiresOnline: true,
     available: (ctx) => !ctx.loggedIn,
   },
-  { id: 'my-maps', icon: <FaRegMap />, label: (m) => m.tools.myMaps },
+  {
+    id: 'my-maps',
+    icon: <FaRegMap />,
+    label: (m) => m.tools.myMaps,
+    kbd: ['g', 'm'],
+  },
   {
     id: 'map-features-export',
     icon: <FaFileExport />,
     label: (m) => m.mainMenu.mapFeaturesExport,
+    kbd: ['e', 'g'],
   },
   {
     id: 'map-to-document-export',
     icon: <FaPrint />,
     label: (m) => m.mainMenu.mapToDocumentExport,
+    kbd: ['e', 'p'],
     requiresOnline: true,
   },
   {
     id: 'offline-map-export',
     icon: <FaDatabase />,
     label: (m) => m.mainMenu.offlineMapExport,
+    kbd: ['e', 'm'],
     requiresOnline: true,
   },
-  { id: 'embed', icon: <FaCode />, label: (m) => m.mainMenu.embedMap },
+  {
+    id: 'embed',
+    icon: <FaCode />,
+    label: (m) => m.mainMenu.embedMap,
+    kbd: ['e', 'e'],
+  },
   {
     id: 'support-us',
     icon: <FaHeart color="red" />,
@@ -142,6 +167,7 @@ const modalCommands: ModalCommand[] = [
     id: 'legend',
     icon: <FaList />,
     label: (m) => m.mainMenu.mapLegend,
+    kbd: ['m', 'l'],
     requiresOnline: true,
     // The modal describes the layers that are on, so with none of them on it
     // would open empty.
@@ -161,33 +187,39 @@ const modalCommands: ModalCommand[] = [
     id: 'map-layers-config',
     icon: <FaLayerGroup />,
     label: (m) => m.mapLayers.layersConfiguration,
+    kbd: ['m', 'y'],
     offline: (ctx) => !ctx.canSaveSettings,
   },
   {
     id: 'custom-maps',
     icon: <MdDashboardCustomize />,
     label: (m) => m.mapLayers.customMaps,
+    kbd: ['m', 'c'],
     offline: (ctx) => !ctx.canSaveSettings,
   },
   {
     id: 'offline-maps',
     icon: <BiWifiOff />,
     label: (m) => m.mapLayers.offlineMaps,
+    kbd: ['m', 'o'],
   },
   {
     id: 'browse-cache',
     icon: <FaDatabase />,
     label: (m) => m.mapLayers.browseCache,
+    kbd: ['m', 'b'],
   },
   {
     id: 'map-preferences',
     icon: <FaSlidersH />,
     label: (m) => m.mapLayers.preferences,
+    kbd: ['m', 'p'],
   },
   {
     id: 'elevation-settings',
     icon: <FaChartArea />,
     label: (m) => m.elevationChart.settings,
+    kbd: ['m', 'e'],
   },
 ];
 
@@ -220,11 +252,7 @@ export function getCommands(ctx: CommandContext): Command[] {
         kind: 'function',
         icon: td.icon,
         label: m.tools[td.msgKey],
-        badges: td.kbd && (
-          <>
-            <kbd>g</kbd> <kbd>{td.kbd.replace(/^Key/, '').toLowerCase()}</kbd>
-          </>
-        ),
+        badges: td.kbd && chord('g', td.kbd.replace(/^Key/, '').toLowerCase()),
         href: `#tools=${td.tool}`,
         action: openTool(td.tool),
         // A tool's `requiresOnline` is about the controls that fetch, not about
@@ -243,6 +271,7 @@ export function getCommands(ctx: CommandContext): Command[] {
         kind: 'function',
         icon: mc.icon,
         label: mc.label(m),
+        badges: mc.kbd && chord(...mc.kbd),
         href: `#show=${mc.id}`,
         action: setActiveModal(modalOf(mc.id)),
         requiresOnline: mc.requiresOnline,
@@ -255,6 +284,7 @@ export function getCommands(ctx: CommandContext): Command[] {
       kind: 'function',
       icon: <FaEraser />,
       label: m.main.clearMap,
+      badges: chord('g', 'c'),
       action: clearMapFeatures(),
     });
 
