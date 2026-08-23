@@ -88,6 +88,34 @@ Still emitting at info level (non-blocking, optional cleanup):
       second panel supersedes the first — its spinner stops and nothing is
       placed, silently. Both panels open *and* both awaiting is a corner; make
       it a set if it ever bites.
+- [ ] **A panorama label with no dominance ranks below every summit.** The
+      dominance *filter* passes it (`?? Infinity` — a cut it cannot judge should
+      not remove it), while `labelRank` scores it as a 1 m bump (`?? 1`), so the
+      thinning drops it first. Harmless today, since `labelsFromPeaks` is the
+      only source and every peak carries a figure. Whoever adds the second one
+      (map selection, drawn points, POIs — see `labels/types.ts`) has to decide
+      what its labels are worth against summits; no constant here can guess it.
+- [ ] **`thinLabels` is quadratic exactly where it is hottest.** Its `kept.some()`
+      scan never short-circuits at max zoom — the pitch is then finer than the
+      gaps, so nothing is thinned and every label compares against all ~900 kept:
+      ~405 k `angleDiff` calls, 4–10 ms on mobile, and the memo keys on
+      `degPerPx`, so it re-runs on every frame of a pinch. Bucketing by azimuth
+      (uniform width ≤ pitch, scan ±2 buckets) cuts it ~60×; quantising the memo
+      key gets most of it for one line. Measure first — it is invisible on
+      desktop at default density.
+- [ ] **Toolbar dropdowns keep re-escaping the toolbar's `nowrap`.**
+      `src/app/styles/index.css` sets `white-space: nowrap` on every descendant
+      of `.btn-toolbar`, which reaches into dropdown menus;
+      `bootstrap-override.css` already undoes it for `.dropdown-item`,
+      `RadarTimeline.module.css` works around it with a fixed width, and
+      `SliderDropdown` is the third. Scope the blanket rule so it does not cross
+      `.dropdown-menu` and all three escapes go away.
+- [ ] **`LabeledSlider` and the panorama settings modal have diverged.** The
+      modal hand-rolls label + `Form.Range` with the value in parentheses and no
+      hint slot; the shared one puts the value on the right and takes a hint.
+      Unify onto the shared component — and it is a general form control living
+      in a file named after the dropdown, so it wants moving out at the same
+      time.
 - [ ] **Mount a mark's tooltip `Overlay` only once it has been shown.** With no
       `breakpoint`, `LongPressTooltip` sets `labelHidden` and mounts its
       `Overlay` for the life of every mark. Hidden it draws no DOM, no popper
