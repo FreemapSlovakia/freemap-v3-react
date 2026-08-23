@@ -65,6 +65,10 @@ const messages: Messages = {
     convertToDrawing: 'Convert to drawing',
     copyToDrawing: 'Copy to drawing',
     copyTo: ({ tool }) => <>Copy to {tool}</>,
+    convertTo: ({ tool }) => <>Convert to {tool}</>,
+    openIn: ({ what }) => <>Open in {what}</>,
+    panoramaFromHere: 'Panorama from here',
+    toposcopeFromHere: 'Toposcope from here',
     simplifyPrompt:
       'Please enter simplification factor. Set to zero for no simplification.',
     copyUrl: 'Copy URL',

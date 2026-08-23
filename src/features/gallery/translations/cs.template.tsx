@@ -62,7 +62,6 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Přidej',
     yourRating: 'Tvé hodnocení:',
     showOnTheMap: 'Ukázat na mapě',
-    openInNewWindow: 'Otevřít v…',
     uploaded: ({ username, createdAt }) => (
       <>
         Nahrál {username} dne {createdAt}

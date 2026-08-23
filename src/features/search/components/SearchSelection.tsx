@@ -1,14 +1,8 @@
-import {
-  convertToDrawing,
-  openTool,
-  setActiveModal,
-} from '@app/store/actions.js';
+import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
+import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DetailsToggle } from '@features/objects/components/DetailsToggle.js';
-import {
-  routePlannerSetFinish,
-  routePlannerSetStart,
-} from '@features/routePlanner/model/actions.js';
+import { useObjectActions } from '@features/objects/components/useObjectActions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
   Action,
@@ -16,23 +10,19 @@ import {
 } from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useOnline } from '@shared/hooks/useOnline.js';
 import { useSimplifyPrompt } from '@shared/hooks/useSimplifyPrompt.js';
 import { convertibleLines } from '@shared/simplifyTolerance.js';
-import { center } from '@turf/center';
 import type { ReactElement } from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import {
   FaPaintBrush,
   FaPencilAlt,
-  FaPlay,
   FaSearch,
-  FaStop,
   FaThumbtack,
 } from 'react-icons/fa';
+import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { searchKeepResult } from '../model/actions.js';
-import { hasGeometry } from '../model/resultUtils.js';
 import {
   activeSearchResultKeptSelector,
   activeSearchResultSelector,
@@ -47,15 +37,19 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const online = useOnline();
-
   const askSimplification = useSimplifyPrompt();
+
+  const convertToDataViewer = useConvertToDataViewer();
 
   const selectedResult = useAppSelector(activeSearchResultSelector);
 
   // False for every freshly picked result: it is on the map because it is being
   // looked at, and goes when that stops.
   const kept = useAppSelector(activeSearchResultKeptSelector);
+
+  const { actions, onSelect } = useObjectActions({
+    result: selectedResult ?? null,
+  });
 
   return selectedResult &&
     !selectedResult.loading &&
@@ -68,61 +62,12 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
     <Selection icon={<FaSearch />} label={m?.search.result} deletable={kept}>
       <DetailsToggle />
 
-      <ButtonGroup>
-        <LongPressTooltip label={m?.search.routeFrom}>
-          {({ props }) => (
-            <Button
-              variant="secondary"
-              disabled={!online}
-              {...props}
-              onClick={() => {
-                dispatch(openTool('route-planner'));
-
-                if (hasGeometry(selectedResult)) {
-                  const c = center(selectedResult.geojson).geometry.coordinates;
-
-                  dispatch(
-                    routePlannerSetStart({
-                      lat: c[1],
-                      lon: c[0],
-                    }),
-                  );
-                }
-              }}
-            >
-              <FaPlay color="#32CD32" />
-            </Button>
-          )}
-        </LongPressTooltip>
-
-        <LongPressTooltip label={m?.search.routeTo}>
-          {({ props }) => (
-            <Button
-              variant="secondary"
-              disabled={!online}
-              onClick={() => {
-                dispatch(openTool('route-planner'));
-
-                if (hasGeometry(selectedResult)) {
-                  const c = center(selectedResult.geojson).geometry.coordinates;
-
-                  dispatch(
-                    routePlannerSetFinish({
-                      lat: c[1],
-                      lon: c[0],
-                    }),
-                  );
-                }
-              }}
-              {...props}
-            >
-              <FaStop color="#FF6347" />
-            </Button>
-          )}
-        </LongPressTooltip>
-      </ButtonGroup>
-
-      <ResponsiveActions gap={1} align="start" toggleLabel={m?.general.actions}>
+      <ResponsiveActions
+        gap={1}
+        align="start"
+        toggleLabel={m?.general.actions}
+        onSelect={onSelect}
+      >
         <Action
           icon={<FaPencilAlt />}
           label={m?.general.convertToDrawing}
@@ -137,8 +82,16 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
               dispatch(convertToDrawing({ type: 'search-result', tolerance }));
             }
           }}
-          showFrom="sm"
-          showLabelFrom="md"
+          showFrom="never"
+        />
+
+        <Action
+          icon={<MdShapeLine />}
+          label={m?.general.convertTo({ tool: m?.tools.dataViewer })}
+          onClick={() => {
+            convertToDataViewer({ type: 'search-result' });
+          }}
+          showFrom="never"
         />
 
         <Action
@@ -149,6 +102,8 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
           }}
           showFrom="never"
         />
+
+        {actions}
       </ResponsiveActions>
 
       {!kept && (

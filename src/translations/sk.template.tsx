@@ -67,6 +67,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     convertToDrawing: 'Skonvertovať na kreslenie',
     copyToDrawing: 'Kopírovať do kreslenia',
     copyTo: ({ tool }) => <>Kopírovať do {tool}</>,
+    convertTo: ({ tool }) => <>Skonvertovať do {tool}</>,
+    openIn: ({ what }) => <>Otvoriť v {what}</>,
+    panoramaFromHere: 'Panoráma odtiaľto',
+    toposcopeFromHere: 'Orientačná ružica odtiaľto',
     simplifyPrompt:
       'Prosím, zadajte faktor zjednodušenia. Zadajte nulu pre vynechanie zjednodušenia.',
     copyUrl: 'Kopírovať URL',

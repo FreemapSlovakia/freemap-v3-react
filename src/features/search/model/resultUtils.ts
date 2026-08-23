@@ -1,3 +1,5 @@
+import { lineSegments } from '@shared/geoutils.js';
+import type { LatLon } from '@shared/types/common.js';
 import {
   type OsmFeatureId,
   syntheticFeatureId,
@@ -10,8 +12,11 @@ import {
   photonOsmElementType,
   photonOsmTags,
 } from '@shared/types/photonResult.js';
-import { feature } from '@turf/helpers';
-import type { Point } from 'geojson';
+import { along } from '@turf/along';
+import { center } from '@turf/center';
+import { feature, lineString } from '@turf/helpers';
+import { length } from '@turf/length';
+import type { Feature, Point } from 'geojson';
 import type { SearchResult } from './actions.js';
 
 /**
@@ -80,4 +85,46 @@ export function loadingResult(id: OsmFeatureId): SearchResult {
     loading: true,
     geojson: feature(null, {}),
   };
+}
+
+/**
+ * Where a result is acted on — its elevation read, a view taken from it: the
+ * midpoint of its longest segment for a line, whose bbox centre can sit well
+ * off it (a bend, a horseshoe), and the centre of the geometry otherwise.
+ * `null` for a result carrying no geometry to act at — a Nominatim hit without
+ * one, an empty collection — which turf answers with a throw rather than a
+ * value.
+ */
+export function resultCoords(result: SearchResult): LatLon | null {
+  const geometry =
+    result.geojson.type === 'Feature' ? result.geojson.geometry : null;
+
+  let p: Feature<Point>;
+
+  try {
+    if (
+      geometry?.type === 'LineString' ||
+      geometry?.type === 'MultiLineString'
+    ) {
+      const { line, len } = lineSegments(geometry)
+        .filter((coords) => coords.length > 1)
+        .map((coords) => lineString(coords))
+        .map((line) => ({ line, len: length(line) }))
+        .reduce((longest, candidate) =>
+          candidate.len > longest.len ? candidate : longest,
+        );
+
+      p = along(line, len / 2);
+    } else {
+      p = center(result.geojson);
+    }
+  } catch {
+    return null;
+  }
+
+  const [lon, lat] = p.geometry.coordinates;
+
+  return Number.isFinite(lon) && Number.isFinite(lat)
+    ? { lat: lat!, lon: lon! }
+    : null;
 }

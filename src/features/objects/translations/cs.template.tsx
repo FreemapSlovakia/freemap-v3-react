@@ -10,16 +10,11 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Styl značky objektu',
   },
   source: 'Zdroj',
-  detail: (props) => (
-    <ObjectDetails
-      {...props}
-      openText="Otevřít na OpenStreetMap.org"
-      historyText="historie"
-      editInJosmText="Editovat v JOSM"
-    />
-  ),
+  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Nadmořská výška',
   showDetails: 'Podrobnosti',
+  openInOsm: 'OpenStreetMap.org',
+  osmHistory: 'OpenStreetMap.org (historie)',
   type: 'Typ',
   lowZoomAlert: {
     message: ({ minZoom }) =>
@@ -35,6 +30,7 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     square: 'Čtvercová',
   },
   convertWithGeometry: 'S celou geometrií',
+  convertWithGeometryTo: ({ tool }) => <>S celou geometrií do {tool}</>,
   tooManyForLookup: ({ count, limit }) =>
     `Příliš mnoho objektů pro zobrazení jako nálezy (${count}, nejvýše ${limit}). Přibližte mapu nebo zužte filtr.`,
   showAsLookup: 'Zobrazit jako Nález',

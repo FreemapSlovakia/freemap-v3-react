@@ -2,8 +2,8 @@ import {
   type ElevationReading,
   ElevationValue,
 } from '@features/elevationChart/components/ElevationValue.js';
+import { getOsmElementUrl } from '@features/openInExternalApp/externalUrlUtils.js';
 import type { SearchResult } from '@features/search/model/actions.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   categoryKeys,
   getNameFromOsmElement,
@@ -15,29 +15,17 @@ import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import { Fragment, type ReactElement } from 'react';
-import { Button, Table } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { Table } from 'react-bootstrap';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { SourceName } from './SourceName.js';
 
 type Props = {
   result: SearchResult;
   elevation: ElevationReading;
-  openText: string;
-  historyText: string;
-  editInJosmText: string;
 };
 
-export function ObjectDetails({
-  result,
-  elevation,
-  openText,
-  historyText,
-  editInJosmText,
-}: Props): ReactElement {
+export function ObjectDetails({ result, elevation }: Props): ReactElement {
   const { id, geojson } = result;
-
-  const dispatch = useDispatch();
 
   const genericName = useGenericNameResolver(result);
 
@@ -53,36 +41,6 @@ export function ObjectDetails({
     getNameFromOsmElement(geojson.properties ?? {}, language);
 
   const parsedId = OsmFeatureIdSchema.safeParse(id);
-
-  const handleEditInJosm = () => {
-    if (!parsedId.success) {
-      throw new Error('unsupported type');
-    }
-
-    fetch(
-      'http://localhost:8111/load_object?new_layer=true&relation_members=true&objects=' +
-        { node: 'n', way: 'w', relation: 'r' }[parsedId.data.elementType] +
-        parsedId.data.id +
-        '&layer_name=' +
-        encodeURIComponent(
-          `${genericName}${displayName ? ` "${displayName}"` : ''}`,
-        ),
-    )
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Error response from localhost:8111: ${res.status}`);
-        }
-      })
-      .catch((err) => {
-        dispatch?.(
-          toastsAdd({
-            messageKey: 'general.operationError',
-            messageParams: { err },
-            style: 'danger',
-          }),
-        );
-      });
-  };
 
   function renderKey(k: string) {
     return !parsedId.success ? (
@@ -172,22 +130,23 @@ export function ObjectDetails({
 
       <ElevationValue {...elevation} label={om?.elevation} className="mb-3" />
 
-      {parsedId.success && (
+      {/* An embed has no selection toolbar, so its ⋮ menu can't carry these. */}
+      {window.fmEmbedded && parsedId.success && (
         <p>
           <a
             target="_blank"
             rel="noreferrer"
-            href={`https://www.openstreetmap.org/${parsedId.data.elementType}/${parsedId.data.id}`}
+            href={getOsmElementUrl(parsedId.data)}
           >
-            {openText}
+            {om?.openInOsm}
           </a>
           {' ('}
           <a
             target="_blank"
             rel="noreferrer"
-            href={`https://www.openstreetmap.org/${parsedId.data.elementType}/${parsedId.data.id}/history`}
+            href={getOsmElementUrl(parsedId.data, true)}
           >
-            {historyText}
+            {om?.osmHistory}
           </a>
           )
         </p>
@@ -195,12 +154,6 @@ export function ObjectDetails({
 
       {parsedId.success && geojson.properties?.['description'] && (
         <p>{geojson.properties['description']}</p>
-      )}
-
-      {!window.fmEmbedded && parsedId.success && (
-        <Button onClick={handleEditInJosm} className="mb-4">
-          {editInJosmText}
-        </Button>
       )}
 
       {geojson.properties && (

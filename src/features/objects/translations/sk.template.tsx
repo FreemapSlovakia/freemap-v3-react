@@ -6,16 +6,11 @@ import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Zdroj',
-  detail: (props) => (
-    <ObjectDetails
-      {...props}
-      openText="Otvoriť na OpenStreetMap.org"
-      historyText="história"
-      editInJosmText="Editovať v JOSM"
-    />
-  ),
+  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Nadmorská výška',
   showDetails: 'Podrobnosti',
+  openInOsm: 'OpenStreetMap.org',
+  osmHistory: 'OpenStreetMap.org (história)',
   type: 'Typ',
   lowZoomAlert: {
     message: ({ minZoom }) =>
@@ -32,6 +27,7 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     square: 'Štvorcová',
   },
   convertWithGeometry: 'S celou geometriou',
+  convertWithGeometryTo: ({ tool }) => <>S celou geometriou do {tool}</>,
   tooManyForLookup: ({ count, limit }) =>
     `Priveľa objektov na zobrazenie ako nálezy (${count}, najviac ${limit}). Priblížte mapu alebo zúžte filter.`,
   showAsLookup: 'Zobraziť ako Nález',

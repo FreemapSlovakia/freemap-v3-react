@@ -67,6 +67,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     convertToDrawing: 'Pretvori v risbo',
     copyToDrawing: 'Kopiraj v risbo',
     copyTo: ({ tool }) => <>Kopiraj v {tool}</>,
+    convertTo: ({ tool }) => <>Pretvori v {tool}</>,
+    openIn: ({ what }) => <>Odpri v {what}</>,
+    panoramaFromHere: 'Panorama od tu',
+    toposcopeFromHere: 'Panoramska tabla od tu',
     simplifyPrompt:
       'Vnesite faktor poenostavitve. Za brez poenostavitve vnesite nič.',
     copyUrl: 'Kopiraj URL',

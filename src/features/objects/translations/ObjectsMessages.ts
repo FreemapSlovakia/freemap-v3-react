@@ -1,6 +1,6 @@
 import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
 import type { SearchResult } from '@features/search/model/actions.js';
-import type { JSX } from 'react';
+import type { JSX, ReactNode } from 'react';
 
 export type ObjectsMessages = {
   source: string;
@@ -10,6 +10,8 @@ export type ObjectsMessages = {
   }) => JSX.Element;
   elevation: string;
   showDetails: string;
+  openInOsm: string;
+  osmHistory: string;
   type: string;
   lowZoomAlert: {
     message: (props: { minZoom: number }) => string;
@@ -24,6 +26,8 @@ export type ObjectsMessages = {
     square: string;
   };
   convertWithGeometry: string;
+  /** The same, where the destination has to be named — two such items in one menu. */
+  convertWithGeometryTo: (props: { tool: ReactNode }) => JSX.Element;
   showAsLookup: string;
   tooManyForLookup: (props: { count: number; limit: number }) => string;
   style: {

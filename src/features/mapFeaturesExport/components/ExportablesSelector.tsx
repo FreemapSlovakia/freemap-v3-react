@@ -1,4 +1,5 @@
 import { hasGeometry } from '@features/search/model/resultUtils.js';
+import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
@@ -162,8 +163,13 @@ export function useSelectedExportable(): Exportable | null {
       case 'route-leg':
         return state.routePlanner.alternatives.length ? 'plannedRoute' : null;
 
-      case 'search':
-        return state.search.selectedResults.some(hasGeometry) ? 'search' : null;
+      case 'search': {
+        // The selected result itself, not merely some shown one: narrowing the
+        // export to a result that carries no geometry would write nothing.
+        const result = activeSearchResultSelector(state);
+
+        return result && hasGeometry(result) ? 'search' : null;
+      }
 
       default:
         return null;

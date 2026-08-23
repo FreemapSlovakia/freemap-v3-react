@@ -44,6 +44,11 @@ export type Messages = {
     convertToDrawing: string;
     copyToDrawing: string;
     copyTo: (props: { tool: ReactNode }) => JSX.Element;
+    convertTo: (props: { tool: ReactNode }) => JSX.Element;
+    /** Names an app the feature is handed to, where nothing else says so. */
+    openIn: (props: { what: ReactNode }) => JSX.Element;
+    panoramaFromHere: string;
+    toposcopeFromHere: string;
     simplifyPrompt: string;
     copyUrl: string;
     copyPageUrl: string;

@@ -1,9 +1,12 @@
 import { openTool, setActiveModal } from '@app/store/actions.js';
+import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import {
   elevationChartClose,
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { josmRemote } from '@features/openInExternalApp/josmRemote.js';
+import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -20,6 +23,7 @@ import {
   FaChartArea,
   FaCompressAlt,
   FaDrawPolygon,
+  FaEdit,
   FaEllipsisV,
   FaExchangeAlt,
   FaObjectGroup,
@@ -28,9 +32,11 @@ import {
   FaTag,
   FaTimes,
 } from 'react-icons/fa';
+import { MdShapeLine } from 'react-icons/md';
 import { RiScissorsFill } from 'react-icons/ri';
 import { TbAngle, TbTimeline } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
+import { drawnLinesToOsmXml } from '../josmXml.js';
 import {
   type DrawnLine,
   drawingLineAddPoint,
@@ -59,6 +65,10 @@ export default function DrawingLineSelection(): ReactElement | null {
   const m = useMessages();
 
   const dm = useDrawingMessages();
+
+  const oeam = useOpenInExternalAppMessages();
+
+  const convertToDataViewer = useConvertToDataViewer();
 
   const drawing = useAppSelector((state) => state.drawingLines.drawing);
 
@@ -272,6 +282,27 @@ export default function DrawingLineSelection(): ReactElement | null {
 
           break;
 
+        case 'data-viewer':
+          convertToDataViewer({ type: 'drawing-line', index: lineIndex });
+
+          break;
+
+        case 'josm':
+          if (line) {
+            // The geometry itself, as a new layer of unsaved data — the editor
+            // has nothing to download it from.
+            josmRemote(dispatch, 'load_data', {
+              new_layer: 'true',
+              layer_name: line.label || 'Freemap',
+              data: drawnLinesToOsmXml(
+                line,
+                lines.filter((hole) => hole.holeOfId === line.id),
+              ),
+            });
+          }
+
+          break;
+
         case 'simplify': {
           // Asked for outright rather than derived: the line is being
           // simplified because the user says so, and one already thin would be
@@ -290,9 +321,12 @@ export default function DrawingLineSelection(): ReactElement | null {
     },
     [
       canRememberHintPref,
+      convertToDataViewer,
       dispatch,
       enclosingIndex,
+      line,
       lineIndex,
+      lines,
       m,
       preventCutHoleHint,
       toggleElevationChart,
@@ -438,6 +472,23 @@ export default function DrawingLineSelection(): ReactElement | null {
               <Dropdown.Item as="button" eventKey="reverse">
                 <FaExchangeAlt />
                 &nbsp;{dm?.reverse ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            {/* A hole is part of its parent shape, which is what the export
+                writes for either of them — so the parent is what converts. */}
+            {!isHole && line.points.length > 1 && (
+              <Dropdown.Item as="button" eventKey="data-viewer">
+                <MdShapeLine />
+                &nbsp;
+                {m?.general.convertTo({ tool: m?.tools.dataViewer }) ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            {!window.fmEmbedded && line.points.length > 1 && (
+              <Dropdown.Item as="button" eventKey="josm">
+                <FaEdit />
+                &nbsp;{m?.general.openIn({ what: oeam?.josm }) ?? '…'}
               </Dropdown.Item>
             )}
           </FmDropdownMenu>

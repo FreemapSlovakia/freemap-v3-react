@@ -1,4 +1,7 @@
+import type { RootState } from '@app/store/store.js';
+import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { mapRefocus } from '@features/map/model/actions.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
@@ -6,7 +9,9 @@ import { usePremiumMessages } from '@features/premium/translations/usePremiumMes
 import { getMinWidthForBreakpoint } from '@shared/breakpoints.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { RouteEndpointItems } from '@shared/components/RouteEndpointItems.js';
 import { UserChip } from '@shared/components/UserChip.js';
+import { ViewFromHereItems } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -20,6 +25,7 @@ import {
   type SubmitEvent,
   useCallback,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState,
@@ -28,6 +34,7 @@ import {
   Alert,
   Badge,
   Button,
+  Dropdown,
   Form,
   InputGroup,
   Modal,
@@ -35,7 +42,7 @@ import {
 } from 'react-bootstrap';
 import {
   FaCamera,
-  FaExternalLinkAlt,
+  FaEllipsisV,
   FaGem,
   FaImage,
   FaPencilAlt,
@@ -47,7 +54,7 @@ import {
 } from 'react-icons/fa';
 import { RiFullscreenLine } from 'react-icons/ri';
 import { SiWikimediacommons } from 'react-icons/si';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import { Rating } from 'react-simple-star-rating';
 import { getPhotoLicense, LicenseBadge } from '../licenses.js';
 import {
@@ -189,6 +196,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const gm = useGalleryMessages();
 
   const dispatch = useDispatch();
+
+  // Read as the click comes: the drawing is nothing this viewer re-renders for.
+  const store = useStore<RootState>();
 
   const confirm = useConfirm();
 
@@ -637,13 +647,57 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   // "Open in external app" points at the Commons file page for Wikimedia photos,
   // and at the raw image for gallery photos.
-  let url = isWikimedia
+  const publicUrl = isWikimedia
     ? (commonsMeta?.descriptionUrl ?? commonsPageUrl ?? '')
     : `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(activeImageId ?? 0)}/image`;
+
+  let url = publicUrl;
 
   if (!isWikimedia && activeImageId === image?.id && image.hmac) {
     url += `?hmac=${encodeURIComponent(image.hmac)}`;
   }
+
+  // What the node JOSM adds says about the place: the photo of it. No name — a
+  // photo's title names the picture, not the feature.
+  const pointTags = useMemo(
+    (): Record<string, string> => (publicUrl ? { image: publicUrl } : {}),
+    [publicUrl],
+  );
+
+  // What the photo says about the place, for a drawing point copied from it.
+  // Read only in a click handler, and `dateFormat` is a fresh object on every
+  // render, so there is nothing for a memo to hold on to.
+  const photoProps = ((): Record<string, string> => {
+    const props: Record<string, string> = {};
+
+    const author = isWikimedia ? commonsMeta?.artist : image?.user?.name;
+
+    if (displayTitle) {
+      props['name'] = displayTitle;
+    }
+
+    if (displayDescription) {
+      props['description'] = displayDescription;
+    }
+
+    if (publicUrl) {
+      props['image'] = publicUrl;
+    }
+
+    if (author) {
+      props['author'] = author;
+    }
+
+    const captured = capturedDate
+      ? dateFormat.format(capturedDate)
+      : capturedRaw;
+
+    if (captured) {
+      props['captured'] = captured;
+    }
+
+    return props;
+  })();
 
   // Sharing the photo as a file rather than as a link, at full size rather than at the size it
   // happens to be displayed. A gallery photo's `url` is already the original; a Wikimedia one's is
@@ -1214,10 +1268,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
             )}
 
             {lat !== undefined && lon !== undefined && (
-              <LongPressTooltip
-                breakpoint="md"
-                label={gm?.viewer.openInNewWindow}
-              >
+              <LongPressTooltip breakpoint="md" label={m?.general.actions}>
                 {({ label, labelClassName, props }) => (
                   <OpenInExternalAppMenuButton
                     lat={lat}
@@ -1225,12 +1276,62 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     placement="top"
                     includePoint
                     pointTitle={displayTitle ?? undefined}
+                    pointTags={pointTags}
                     pointDescription={displayDescription ?? undefined}
                     url={url}
                     imageUrl={shareImageUrl}
-                    {...props}
+                    toggleProps={props}
+                    menuItems={
+                      <>
+                        {/* The photo stands somewhere, so the place can be
+                            routed to and looked at — and the viewer gets out of
+                            the way of the map that answers. */}
+                        <Dropdown.Item
+                          as="button"
+                          onClick={() => {
+                            const { drawingSettings, drawingPoints } =
+                              store.getState();
+
+                            dispatch(
+                              drawingPointAdd({
+                                id: drawingPoints.points.length,
+                                coords: { lat, lon },
+                                color: drawingSettings.style.color,
+                                markerType: drawingSettings.style.markerType,
+                                icon: 'fa:camera',
+                                // The title, where there is one; a photo without
+                                // one leaves the point unlabelled rather than
+                                // showing the placeholder.
+                                label: '{p:name}',
+                                props: photoProps,
+                              }),
+                            );
+
+                            dispatch(mapRefocus({ lat, lon }));
+
+                            close();
+                          }}
+                        >
+                          <FaPencilAlt /> {m?.general.copyToDrawing}
+                        </Dropdown.Item>
+
+                        <RouteEndpointItems
+                          divider
+                          lat={lat}
+                          lon={lon}
+                          onAct={close}
+                        />
+
+                        <ViewFromHereItems
+                          divider
+                          lat={lat}
+                          lon={lon}
+                          onAct={close}
+                        />
+                      </>
+                    }
                   >
-                    <FaExternalLinkAlt />
+                    <FaEllipsisV />
                     <span className={labelClassName}> {label}</span>
                   </OpenInExternalAppMenuButton>
                 )}

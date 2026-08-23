@@ -50,7 +50,6 @@ export type GalleryMessages = {
     addComment: string;
     yourRating: string;
     showOnTheMap: string;
-    openInNewWindow: string;
     uploaded: ({
       username,
       createdAt,

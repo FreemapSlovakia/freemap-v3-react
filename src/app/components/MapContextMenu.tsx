@@ -153,7 +153,10 @@ export function MapContextMenu(): ReactElement {
     closeMenu,
     submenu,
     extraHandler,
-  } = useMenuHandler();
+  } = useMenuHandler({
+    at: { lat: contextMenu.lat, lon: contextMenu.lon },
+    includePoint: true,
+  });
 
   useEffect(() => {
     if (!map) {

@@ -1,4 +1,18 @@
+import type { OsmFeatureId } from '@shared/types/featureId.js';
 import { CRS } from 'leaflet';
+
+/** An OSM element's own page on osm.org, or its history. */
+export function getOsmElementUrl(
+  { elementType, id }: OsmFeatureId,
+  history?: boolean,
+): string {
+  return `https://www.openstreetmap.org/${elementType}/${id}${history ? '/history' : ''}`;
+}
+
+/** The element itself open in iD, as opposed to whatever is at a position. */
+export function getIdElementUrl({ elementType, id }: OsmFeatureId): string {
+  return `https://www.openstreetmap.org/edit?editor=id&${elementType}=${id}`;
+}
 
 export function getOsmUrl(
   lat: number,

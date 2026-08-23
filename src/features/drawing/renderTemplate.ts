@@ -120,6 +120,16 @@ function parse(text: string): Node[] {
 }
 
 /**
+ * Whether the text says anything beyond itself — a placeholder, or a group that
+ * can disappear. What is written plainly can stand as a value elsewhere (a
+ * `name` tag, say); a template can't, since what it reads as depends on where
+ * it is drawn.
+ */
+export function isTemplate(text: string): boolean {
+  return parse(text).some((node) => node.kind !== 'text');
+}
+
+/**
  * Renders `text`, asking `resolve` for each placeholder.
  *
  * A key `resolve` doesn't know stays on screen as it was written, so a typo is

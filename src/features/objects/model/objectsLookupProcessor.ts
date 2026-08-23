@@ -2,18 +2,19 @@ import { closeTool } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   type SearchResult,
+  searchKeepResult,
   searchKeepResults,
   searchSelectResult,
 } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
-import { point } from '@turf/helpers';
 import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 import {
   type ObjectsResult,
   objectsSetFilter,
   objectsShowAsLookup,
 } from './actions.js';
+import { objectToSearchResult } from './objectToSearchResult.js';
 
 /**
  * How many objects can be handed over at once. Each becomes a kept result the
@@ -23,25 +24,19 @@ import {
 const MAX_LOOKUPS = 500;
 
 function toResult(object: ObjectsResult): SearchResult {
-  return {
-    source: 'osm',
-    id: object.id,
-    // The point the marker sits at, so the geometry behind it is fetched when it
-    // is looked at and not before — a screenful of objects would otherwise be
-    // hundreds of ways and relations resolved down to their nodes for nothing.
-    geojson: point([object.coords.lon, object.coords.lat], object.tags),
-    incomplete: true,
-  };
+  // Kept on the map, so the geometry behind the marker is still to be fetched.
+  return { ...objectToSearchResult(object), incomplete: true };
 }
 
 /**
  * Shows objects as lookup results.
  *
- * One object is shown the way a result picked from the list is — it becomes the
- * one being looked at, and the rest of the objects are untouched. All of them
- * are instead handed over for good: they arrive kept, none of them transient,
- * and the objects go with the predicate that fetched them. Leaving it set would
- * fetch them again on the next pan and draw them over what they became.
+ * One object becomes a kept result — asked for rather than merely looked at, so
+ * it stays until it is taken off — and the rest of the objects are untouched.
+ * All of them are instead handed over for good: they arrive kept, none of them
+ * transient, and the objects go with the predicate that fetched them. Leaving it
+ * set would fetch them again on the next pan and draw them over what they
+ * became.
  */
 export const objectsLookupProcessor: Processor<typeof objectsShowAsLookup> = {
   actionCreator: objectsShowAsLookup,
@@ -55,6 +50,8 @@ export const objectsLookupProcessor: Processor<typeof objectsShowAsLookup> = {
 
       if (object) {
         dispatch(searchSelectResult({ result: toResult(object) }));
+
+        dispatch(searchKeepResult(object.id));
       }
 
       return;

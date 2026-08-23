@@ -2,23 +2,18 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
 import type { SearchResult } from '@features/search/model/actions.js';
+import { resultCoords } from '@features/search/model/resultUtils.js';
 import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { fetchElevations } from '@shared/elevation.js';
-import { lineSegments } from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
-import type { LatLon } from '@shared/types/common.js';
 import {
   featureIdsEqual,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
-import { along } from '@turf/along';
-import { center } from '@turf/center';
-import { lineString, point } from '@turf/helpers';
-import { length } from '@turf/length';
-import type { Feature, Point } from 'geojson';
 import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 import { objectsSetShowDetails } from './actions.js';
+import { objectToSearchResult } from './objectToSearchResult.js';
 
 const TOAST_ID = 'mapDetails.tags';
 
@@ -32,46 +27,6 @@ type DetailsTarget = {
   key: string;
   result: SearchResult;
 };
-
-/**
- * Where a result's elevation is read: the midpoint of its longest segment for a
- * line, whose bbox centre can sit well off it (a bend, a horseshoe), and the
- * centre of the geometry otherwise. `null` for a result carrying no geometry to
- * read at — a Nominatim hit without one, an empty collection — which turf
- * answers with a throw rather than a value.
- */
-function resultCoords(result: SearchResult): LatLon | null {
-  const geometry =
-    result.geojson.type === 'Feature' ? result.geojson.geometry : null;
-
-  let p: Feature<Point>;
-
-  try {
-    if (
-      geometry?.type === 'LineString' ||
-      geometry?.type === 'MultiLineString'
-    ) {
-      const line = lineSegments(geometry)
-        .filter((coords) => coords.length > 1)
-        .map((coords) => lineString(coords))
-        .reduce((longest, candidate) =>
-          length(candidate) > length(longest) ? candidate : longest,
-        );
-
-      p = along(line, length(line) / 2);
-    } else {
-      p = center(result.geojson);
-    }
-  } catch {
-    return null;
-  }
-
-  const [lon, lat] = p.geometry.coordinates;
-
-  return Number.isFinite(lon) && Number.isFinite(lat)
-    ? { lat: lat!, lon: lon! }
-    : null;
-}
 
 /** What the details toast is about, or `null` if the selection has no details. */
 function detailsTarget(state: RootState): DetailsTarget | null {
@@ -99,11 +54,7 @@ function detailsTarget(state: RootState): DetailsTarget | null {
     return object
       ? {
           key: `objects:${stringifyFeatureId(object.id)}`,
-          result: {
-            source: 'osm',
-            id: object.id,
-            geojson: point([object.coords.lon, object.coords.lat], object.tags),
-          },
+          result: objectToSearchResult(object),
         }
       : null;
   }

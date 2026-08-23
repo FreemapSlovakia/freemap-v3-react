@@ -54,7 +54,6 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Dodaj',
     yourRating: 'Twoja ocena:',
     showOnTheMap: 'Pokaż na mapie',
-    openInNewWindow: 'Otwórz w…',
     uploaded: ({ username, createdAt }) => (
       <>
         Przesłał {username} dnia {createdAt}

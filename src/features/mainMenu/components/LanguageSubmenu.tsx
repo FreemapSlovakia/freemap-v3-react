@@ -1,11 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Emoji } from '@shared/components/Emoji.js';
+import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { IoLanguage } from 'react-icons/io5';
 import { languageItems } from './languageItems.js';
-import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function LanguageSubmenu(): JSX.Element {
   const m = useMessages();

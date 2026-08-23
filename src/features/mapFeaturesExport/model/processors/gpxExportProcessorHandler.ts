@@ -60,6 +60,7 @@ import {
   keepDrawingLine,
   keepDrawingPoint,
   keepObject,
+  keepSearchResult,
   selectedTrackToken,
 } from '../selectionFilter.js';
 import {
@@ -214,7 +215,9 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('search')) {
-    for (const { geojson } of search.selectedResults.filter(hasGeometry)) {
+    for (const { geojson } of search.selectedResults
+      .filter((result) => keepSearchResult(only, result.id))
+      .filter(hasGeometry)) {
       addGeojson(doc, geojson);
     }
   }

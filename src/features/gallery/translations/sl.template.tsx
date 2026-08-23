@@ -61,7 +61,6 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Dodaj',
     yourRating: 'Tvoja ocena:',
     showOnTheMap: 'Prikaži na zemljevidu',
-    openInNewWindow: 'Odpri v…',
     uploaded: ({ username, createdAt }) => (
       <>
         Naložil {username} dne {createdAt}

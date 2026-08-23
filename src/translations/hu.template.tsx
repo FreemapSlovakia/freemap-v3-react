@@ -66,6 +66,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     convertToDrawing: 'Átalakítás rajzzá',
     copyToDrawing: 'Másolás a rajzba',
     copyTo: ({ tool }) => <>Másolás ide: {tool}</>,
+    convertTo: ({ tool }) => <>Átalakítás ide: {tool}</>,
+    openIn: ({ what }) => <>Megnyitás itt: {what}</>,
+    panoramaFromHere: 'Panoráma innen',
+    toposcopeFromHere: 'Panorámatábla innen',
     simplifyPrompt:
       'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
     copyUrl: 'URL másolása',

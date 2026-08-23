@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   documentMenuItemProps,
@@ -15,7 +16,6 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 import { getDocuments } from '@/documents/index.js';
-import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function HelpSubmenu(): JSX.Element {
   const m = useMessages();

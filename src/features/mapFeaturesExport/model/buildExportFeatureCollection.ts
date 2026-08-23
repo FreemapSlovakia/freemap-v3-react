@@ -61,6 +61,7 @@ import {
   keepDrawingLine,
   keepDrawingPoint,
   keepObject,
+  keepSearchResult,
   selectedTrackToken,
 } from './selectionFilter.js';
 
@@ -835,6 +836,7 @@ export async function buildExportFeatureCollection({
 
   if (include.search) {
     const searchFeatures = search.selectedResults
+      .filter((result) => keepSearchResult(only, result.id))
       .filter(hasGeometry)
       .flatMap(({ geojson }) =>
         geojson.type === 'FeatureCollection' ? geojson.features : [geojson],

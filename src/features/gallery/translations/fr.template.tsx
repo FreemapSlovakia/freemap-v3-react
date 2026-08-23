@@ -65,7 +65,6 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Ajouter',
     yourRating: 'Votre note :',
     showOnTheMap: 'Afficher sur la carte',
-    openInNewWindow: 'Ouvrir dans…',
     deleteTitle: 'Suppression de la photo',
     modify: 'Modifier',
     premiumOnly:

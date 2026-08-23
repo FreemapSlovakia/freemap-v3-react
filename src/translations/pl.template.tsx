@@ -68,6 +68,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     convertToDrawing: 'Przekształć na rysunek',
     copyToDrawing: 'Kopiuj do rysunku',
     copyTo: ({ tool }) => <>Kopiuj do {tool}</>,
+    convertTo: ({ tool }) => <>Przekształć do {tool}</>,
+    openIn: ({ what }) => <>Otwórz w {what}</>,
+    panoramaFromHere: 'Panorama stąd',
+    toposcopeFromHere: 'Tablica panoramiczna stąd',
     simplifyPrompt:
       'Wprowadź współczynnik uproszczenia. Wprowadź zero, aby pominąć uproszczenie.',
     copyUrl: 'Skopiuj URL',

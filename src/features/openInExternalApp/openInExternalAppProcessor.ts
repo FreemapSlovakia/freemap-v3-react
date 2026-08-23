@@ -63,6 +63,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       zoom: rawZoom = getState().map.zoom,
       includePoint,
       pointTitle,
+      pointTags,
       pointDescription,
       url,
       imageUrl,
@@ -175,8 +176,19 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
                 lon: String(lon),
               });
 
-              if (pointTitle) {
-                usp.set('addtags', `name=${pointTitle}`);
+              const addtags = Object.entries(
+                pointTags ?? (pointTitle ? { name: pointTitle } : {}),
+              )
+                // `|` separates the pairs and the first `=` splits one, so a
+                // key or value carrying either would land as a different tag.
+                .filter(
+                  ([k, v]) =>
+                    !k.includes('|') && !k.includes('=') && !v.includes('|'),
+                )
+                .map(([k, v]) => `${k}=${v}`);
+
+              if (addtags.length > 0) {
+                usp.set('addtags', addtags.join('|'));
               }
 
               url.search = usp.toString();

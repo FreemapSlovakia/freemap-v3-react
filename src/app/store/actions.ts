@@ -177,6 +177,27 @@ export const convertToDrawing = createAction<
   | { type: 'changesets' }
 >('CONVERT_TO_DRAWING');
 
+/** What a conversion to the track viewer takes its features from. */
+export type DataViewerSource =
+  // objects: `id` omitted → every visible object, as points
+  | { type: 'objects'; id?: OsmFeatureId }
+  | { type: 'objects-geometry'; id: OsmFeatureId }
+  | { type: 'search-result' }
+  | { type: 'drawing-point'; index: number }
+  | { type: 'drawing-line'; index: number };
+
+/**
+ * Hands map features to the track viewer ("Tracks and data"), where they become
+ * ordinary loaded data — the mirror of {@link convertToDrawing}, and like it the
+ * source goes with them. One object is the exception and is copied: objects are
+ * live data, refetched on every pan, so a single one cannot be taken away.
+ */
+export const convertToDataViewer = createAction<{
+  source: DataViewerSource;
+  /** How it meets what the viewer already holds; see `useDataMergeMode`. */
+  mode: 'append' | 'replace';
+}>('CONVERT_TO_DATA_VIEWER');
+
 export type ExternalTarget =
   | 'copy'
   | 'f4map'
@@ -204,6 +225,12 @@ export const openInExternalApp = createAction<{
   mapType?: string;
   includePoint?: boolean;
   pointTitle?: string;
+  /**
+   * What the point is, as OSM tags — JOSM adds the node carrying them. Given
+   * (even empty) it decides the tags outright; without it the title, where
+   * there is one, goes as the `name`.
+   */
+  pointTags?: Record<string, string>;
   pointDescription?: string;
   /** The page this is about: opened in a window, or shared as a link. */
   url?: string;

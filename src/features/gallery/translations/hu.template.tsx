@@ -63,7 +63,6 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Hozzáadás',
     yourRating: 'Az Ön értékelése:',
     showOnTheMap: 'Megjelenítés a térképen',
-    openInNewWindow: 'Megnyitás…',
     uploaded: ({ username, createdAt }) => (
       <>
         {username} töltötte fel ekkor: {createdAt}

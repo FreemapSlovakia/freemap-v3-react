@@ -23,6 +23,7 @@ import { mapRefocus } from '@features/map/model/actions.js';
 import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Language } from '@shared/langUtils.js';
+import type { LatLon } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -59,13 +60,25 @@ export function documentMenuItemProps(document: string) {
 
 export function useMenuHandler({
   pointTitle,
+  pointTags,
   pointDescription,
   imageUrl,
+  at,
+  includePoint,
 }: {
   pointTitle?: string;
+  /** What the place is, as OSM tags; see the `openInExternalApp` payload. */
+  pointTags?: Record<string, string>;
   pointDescription?: string;
   /** The picture the `image` target shares as a file; nothing else here needs an address. */
   imageUrl?: string;
+  /**
+   * Where the external-app targets act, when that is not the middle of the map
+   * — the position a menu belongs to, such as a drawn point's.
+   */
+  at?: LatLon;
+  /** The position is a place in its own right: JOSM puts a node there. */
+  includePoint?: boolean;
 } = {}) {
   const dispatch = useDispatch();
 
@@ -73,9 +86,10 @@ export function useMenuHandler({
 
   const confirm = useConfirm();
 
-  const lat = useAppSelector((state) => state.map.lat);
+  // A caller that says where it acts doesn't re-render with the map.
+  const lat = useAppSelector((state) => at?.lat ?? state.map.lat);
 
-  const lon = useAppSelector((state) => state.map.lon);
+  const lon = useAppSelector((state) => at?.lon ?? state.map.lon);
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
@@ -251,7 +265,9 @@ export function useMenuHandler({
             lat,
             lon,
             zoom,
+            includePoint,
             pointTitle,
+            pointTags,
             pointDescription,
             imageUrl,
           }),
@@ -302,8 +318,10 @@ export function useMenuHandler({
       confirm,
       lat,
       lon,
+      includePoint,
       pointDescription,
       pointTitle,
+      pointTags,
       imageUrl,
       zoom,
       layers,

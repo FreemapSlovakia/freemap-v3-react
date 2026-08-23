@@ -10,16 +10,11 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Stile marcatore oggetto',
   },
   source: 'Fonte',
-  detail: (props) => (
-    <ObjectDetails
-      {...props}
-      openText="Apri su OpenStreetMap.org"
-      historyText="storia"
-      editInJosmText="Modifica su JOSM"
-    />
-  ),
+  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Elevazione',
   showDetails: 'Dettagli',
+  openInOsm: 'OpenStreetMap.org',
+  osmHistory: 'OpenStreetMap.org (storia)',
   type: 'Tipo',
   lowZoomAlert: {
     message: ({ minZoom }) =>
@@ -35,6 +30,7 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     square: 'Quadrata',
   },
   convertWithGeometry: 'Con la geometria completa',
+  convertWithGeometryTo: ({ tool }) => <>Con la geometria completa in {tool}</>,
   tooManyForLookup: ({ count, limit }) =>
     `Troppi oggetti da mostrare come risultati (${count}, al massimo ${limit}). Ingrandisci o restringi il filtro.`,
   showAsLookup: 'Mostra come Risultato',

@@ -137,6 +137,7 @@ import {
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { cancelProcessor } from '@/processors/cancelProcessor.js';
+import { convertToDataViewerProcessor } from '@/processors/convertToDataViewerProcessor.js';
 import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
 import { deleteProcessor } from '@/processors/deleteProcessor.js';
 import { errorProcessor } from '@/processors/errorProcessor.js';
@@ -155,6 +156,7 @@ export const processors = [
   deleteProcessor,
   geoipProcessor,
   convertToDrawingProcessor,
+  convertToDataViewerProcessor,
   cookieConsentProcessor,
   authLogoutProcessor,
   authDisconnectProcessor,

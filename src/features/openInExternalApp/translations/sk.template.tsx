@@ -3,14 +3,15 @@ import type { OpenInExternalAppMessages } from './OpenInExternalAppMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   openInExternal: 'Zdieľať / otvoriť v ext. aplikácii',
+  openIn: 'Otvoriť v…',
   osm: 'OpenStreetMap',
   oma: 'OMA',
   googleMaps: 'Google Mapy',
   hiking_sk: 'Hiking.sk',
   zbgis: 'ZBGIS',
   mapy_cz: 'Mapy.com',
-  josm: 'Editor JOSM',
-  id: 'Editor iD',
+  josm: 'JOSM',
+  id: 'iD',
   window: 'Nové okno',
   url: 'Zdieľať polohu',
   image: 'Zdieľať fotografiu',

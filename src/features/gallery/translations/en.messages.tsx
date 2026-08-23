@@ -59,7 +59,6 @@ const en: GalleryMessages = {
     addComment: 'Add',
     yourRating: 'Your rating:',
     showOnTheMap: 'Show on the map',
-    openInNewWindow: 'Open in…',
     uploaded: ({ username, createdAt }) => (
       <>
         Uploaded by {username} on {createdAt}

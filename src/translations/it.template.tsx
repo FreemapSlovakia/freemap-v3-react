@@ -69,7 +69,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     convertToDrawing: 'Converti in disegno',
     copyToDrawing: 'Copia nel disegno',
     copyTo: ({ tool }) => <>Copia in {tool}</>,
+    convertTo: ({ tool }) => <>Converti in {tool}</>,
+    openIn: ({ what }) => <>Apri in {what}</>,
 
+    panoramaFromHere: 'Panorama da qui',
+    toposcopeFromHere: 'Tavola d’orientamento da qui',
     simplifyPrompt:
       'Per favore inserisci il fattore di semplificazione. Imposta lo zero per nessuna semplificazione.',
 

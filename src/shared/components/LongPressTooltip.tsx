@@ -28,6 +28,20 @@ export function useInTooltip(): boolean {
   return useContext(InTooltip);
 }
 
+/**
+ * What the render prop hands the control being explained: the tooltip's own
+ * ref and the gestures that open it. A control that isn't an element of the
+ * caller's own — a component wrapping its own button — takes these through a
+ * prop of its own and spreads them there.
+ */
+export type TooltipTargetProps = {
+  ref: (el: HTMLElement | null) => void;
+  onPointerEnter: (e: PointerEvent) => void;
+  onPointerLeave: (e: PointerEvent) => void;
+  onClickCapture: (e: MouseEvent) => void;
+  onContextMenuCapture: (e: MouseEvent) => void;
+};
+
 type Props = {
   label?: ReactNode;
   /**
@@ -40,13 +54,7 @@ type Props = {
   breakpoint?: Breakpoint;
   kbd?: string;
   children: (props: {
-    props: {
-      ref: (el: HTMLElement | null) => void;
-      onPointerEnter: (e: PointerEvent) => void;
-      onPointerLeave: (e: PointerEvent) => void;
-      onClickCapture: (e: MouseEvent) => void;
-      onContextMenuCapture: (e: MouseEvent) => void;
-    };
+    props: TooltipTargetProps;
     label: ReactNode;
     labelClassName: string;
   }) => ReactNode;
