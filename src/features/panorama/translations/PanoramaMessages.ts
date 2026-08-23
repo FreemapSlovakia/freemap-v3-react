@@ -21,6 +21,15 @@ export type PanoramaMessages = {
   pickViewpoint: string;
   /** Title of the toolbar that owns the map while that click is awaited. */
   pickViewpointPrompt: string;
+  /** Turns the picture into a toposcope: its viewpoint, its names as rays. */
+  createToposcope: string;
+  /** Asked when that would land the summits among drawings already on the map. */
+  toposcopeMergeModal: {
+    title: string;
+    message: string;
+    append: string;
+    replace: string;
+  };
   /** The set-once settings, which all cost a render to change. */
   settings: {
     title: string;

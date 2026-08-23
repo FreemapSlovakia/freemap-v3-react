@@ -18,6 +18,14 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   locate: 'Pohľad z mojej polohy',
   pickViewpoint: 'Vybrať v mape',
   pickViewpointPrompt: 'Kliknite do mapy tam, odkiaľ sa chcete pozerať',
+  createToposcope: 'Vytvoriť orientačnú ružicu z tohto výhľadu',
+  toposcopeMergeModal: {
+    title: 'Mapa nie je prázdna',
+    message:
+      'V mape sú už nakreslené body. Pridať k nim vrcholy z tohto výhľadu, alebo ich nahradiť? Stred ružice sa tak či tak presunie na toto stanovisko.',
+    append: 'Pridať',
+    replace: 'Nahradiť',
+  },
   settings: {
     title: 'Nastavenia panorámy',
     eye: 'Výška očí',

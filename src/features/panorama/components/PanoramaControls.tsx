@@ -7,6 +7,7 @@ import {
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
+import { useConfirmChoice } from '@shared/components/ConfirmProvider.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import {
   FloatingWindowControls,
@@ -20,7 +21,7 @@ import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import type { ReactElement } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
 import {
   FaCog,
@@ -33,7 +34,7 @@ import {
 } from 'react-icons/fa';
 import { LuFoldVertical, LuUnfoldVertical } from 'react-icons/lu';
 import { MdOutlineHeight } from 'react-icons/md';
-import { PiMountains } from 'react-icons/pi';
+import { PiCompassRoseBold, PiMountains } from 'react-icons/pi';
 import {
   TbBaselineDensityLarge,
   TbBaselineDensityMedium,
@@ -45,6 +46,7 @@ import {
   panoramaRender,
   panoramaSetPickingViewpoint,
   panoramaSetSettings,
+  panoramaToToposcope,
 } from '../model/actions.js';
 import {
   DOMINANCE_STEPS_M,
@@ -93,6 +95,37 @@ export function PanoramaControls({
   const { viewpoint, render, rendering } = useAppSelector(
     (state) => state.panorama,
   );
+
+  const hasDrawnPoints = useAppSelector(
+    (state) => state.drawingPoints.points.length > 0,
+  );
+
+  const confirmChoice = useConfirmChoice();
+
+  // Asked rather than decided here: the summits are drawn points like any
+  // others, so a map that already carries some can as well gain a dial as be
+  // cleared for one.
+  const createToposcope = useCallback(async () => {
+    let replace = false;
+
+    if (hasDrawnPoints) {
+      const choice = await confirmChoice({
+        title: m?.toposcopeMergeModal.title,
+        message: m?.toposcopeMergeModal.message,
+        confirmLabel: m?.toposcopeMergeModal.append,
+        extraLabel: m?.toposcopeMergeModal.replace,
+        extraStyle: 'danger',
+      });
+
+      if (choice === 'cancel') {
+        return;
+      }
+
+      replace = choice === 'extra';
+    }
+
+    dispatch(panoramaToToposcope({ replace }));
+  }, [confirmChoice, dispatch, hasDrawnPoints, m]);
 
   const quality = grantedQuality(settings.quality, premium);
 
@@ -352,6 +385,21 @@ export function PanoramaControls({
             {...props}
           >
             <FaCog />
+          </Button>
+        )}
+      </LongPressTooltip>
+
+      {/* The picture's own names taken round to a dial, which is a drawing and
+          so can be printed and saved. */}
+      <LongPressTooltip label={m?.createToposcope}>
+        {({ props }) => (
+          <Button
+            variant="secondary"
+            disabled={!render}
+            onClick={() => void createToposcope()}
+            {...props}
+          >
+            <PiCompassRoseBold />
           </Button>
         )}
       </LongPressTooltip>

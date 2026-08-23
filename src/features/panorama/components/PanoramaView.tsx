@@ -22,7 +22,7 @@ import {
 } from 'react';
 import { useDispatch } from 'react-redux';
 import { distanceAt } from '../depth.js';
-import { hazeCutoffM, rankLabels } from '../labels/fromPeaks.js';
+import { candidateLabels } from '../labels/fromPeaks.js';
 import {
   type LabelAnchor,
   type LabelPlacement,
@@ -779,27 +779,12 @@ export function PanoramaView({
     [settings.labelHazeKm, settings.labelDistanceWeight],
   );
 
-  // Where the names stand against each other, which the weighting moves — so it
-  // is worked out here rather than kept on the render.
-  const ranked = useMemo(
-    () => rankLabels(render.labels, weighting),
-    [render.labels, weighting],
+  // Which summits count at all, best first — the weighting moves both, so it is
+  // worked out here rather than kept on the render.
+  const candidates = useMemo(
+    () => candidateLabels(render.labels, weighting, settings.minDominance),
+    [render.labels, settings.minDominance, weighting],
   );
-
-  // Which summits count at all. The far cut is ours rather than the service's:
-  // its own `range` bounds the terrain the render sees, so asking it for one
-  // would take the far ridges out of the picture and cost a render.
-  const candidates = useMemo(() => {
-    const ceiling = hazeCutoffM(weighting);
-
-    // `NO_DOMINANCE_FILTER` is below every real figure, so the "Any" stop needs
-    // no case of its own.
-    return ranked.filter(
-      (label) =>
-        (label.dominance ?? Infinity) >= settings.minDominance &&
-        label.distance <= ceiling,
-    );
-  }, [ranked, settings.minDominance, weighting]);
 
   const limits = useMemo(
     () => labelLayoutLimits(settings.labelDensity),

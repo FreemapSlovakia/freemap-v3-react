@@ -106,6 +106,7 @@ import {
   panoramaReleaseProcessor,
   panoramaRenderProcessor,
 } from '@features/panorama/model/processors/panoramaRenderProcessor.js';
+import { panoramaToposcopeProcessor } from '@features/panorama/model/processors/panoramaToposcopeProcessor.js';
 import { purchaseProcessor } from '@features/purchases/model/processors/purchaseProcessor.js';
 import { routePlannerColorizeProcessor } from '@features/routePlanner/model/processors/colorizeProcessor.js';
 import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/processors/findRouteProcessor.js';
@@ -252,6 +253,7 @@ export const processors = [
   panoramaRenderProcessor,
   panoramaReleaseProcessor,
   panoramaFixProcessor,
+  panoramaToposcopeProcessor,
   toposcopeFixProcessor,
   ...Object.values(rpcProcessors),
   exportMapFeaturesProcessor,

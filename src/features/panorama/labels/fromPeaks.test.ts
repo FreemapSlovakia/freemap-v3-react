@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hazeCutoffM, rankLabels } from './fromPeaks.js';
+import { candidateLabels, hazeCutoffM, rankLabels } from './fromPeaks.js';
 import type { PanoramaLabel } from './types.js';
 
 function label(
@@ -100,5 +100,32 @@ describe('panorama haze cutoff', () => {
     // 300 km is what a render holds when no `range` is asked for, which is what
     // the client does — so at the default the cut is inert.
     expect(hazeCutoffM(halfway)).toBeGreaterThan(300_000);
+  });
+});
+
+describe('panorama label candidates', () => {
+  it('takes what passes both cuts, best first', () => {
+    expect(ids(candidateLabels([giant, hill], halfway, 0))).toEqual([
+      'hill',
+      'giant',
+    ]);
+  });
+
+  it('drops what does not stand out enough', () => {
+    expect(ids(candidateLabels([giant, hill], halfway, 1000))).toEqual([
+      'giant',
+    ]);
+  });
+
+  it('drops what the haze has ended the names past', () => {
+    expect(
+      ids(candidateLabels([giant, hill], { ...halfway, hazeKm: 40 }, 0)),
+    ).toEqual(['hill']);
+  });
+
+  it('keeps a top under its own ridge where nothing is filtered', () => {
+    const under = label('under', 1000, -50);
+
+    expect(ids(candidateLabels([under], halfway, -100_000))).toEqual(['under']);
   });
 });

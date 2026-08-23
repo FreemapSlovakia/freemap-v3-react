@@ -2,6 +2,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
+  toposcopeMergeModal: {},
   quality: {},
   tilt: {},
   labels: {},

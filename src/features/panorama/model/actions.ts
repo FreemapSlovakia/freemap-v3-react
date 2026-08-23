@@ -96,3 +96,13 @@ export const panoramaSetProbe = createAction<PanoramaProbe | null>(
 export const panoramaSetSettings = createAction<Partial<PanoramaSettingsState>>(
   'PANORAMA_SET_SETTINGS',
 );
+
+/**
+ * Turns the picture into a toposcope: the viewpoint becomes the dial's centre
+ * and every named summit a drawn point, which is what the dial draws its rays
+ * to. `replace` takes the drawn points already on the map away first, which is
+ * asked for rather than decided here — see `PanoramaControls`.
+ */
+export const panoramaToToposcope = createAction<{ replace: boolean }>(
+  'PANORAMA_TO_TOPOSCOPE',
+);

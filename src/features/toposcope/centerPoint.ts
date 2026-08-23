@@ -59,6 +59,23 @@ export function toposcopeCenterSelector(
     : { index, point: state.drawingPoints.points[index]! };
 }
 
+/** A fresh centre standing at `coords`, marked, styled and labelled as one. */
+export function makeToposcopeCenter(
+  state: RootState,
+  coords: LatLon,
+): DrawingPoint {
+  const { color, markerType } = state.drawingSettings.style;
+
+  return {
+    coords,
+    color,
+    markerType,
+    icon: CENTER_ICON,
+    label: CENTER_LABEL,
+    props: { [CENTER_PROP]: CENTER_PROP_VALUE },
+  };
+}
+
 /**
  * Puts the dial's centre at `coords` — moving the point where there is one,
  * creating it where there isn't. Returns the action, so the map click and the
@@ -67,19 +84,10 @@ export function toposcopeCenterSelector(
 export function placeToposcopeCenter(state: RootState, coords: LatLon) {
   const center = toposcopeCenterSelector(state);
 
-  if (center) {
-    return drawingPointChangePosition({ index: center.index, coords });
-  }
-
-  const { color, markerType } = state.drawingSettings.style;
-
-  return drawingPointAdd({
-    coords,
-    color,
-    markerType,
-    icon: CENTER_ICON,
-    label: CENTER_LABEL,
-    props: { [CENTER_PROP]: CENTER_PROP_VALUE },
-    id: state.drawingPoints.points.length,
-  });
+  return center
+    ? drawingPointChangePosition({ index: center.index, coords })
+    : drawingPointAdd({
+        ...makeToposcopeCenter(state, coords),
+        id: state.drawingPoints.points.length,
+      });
 }

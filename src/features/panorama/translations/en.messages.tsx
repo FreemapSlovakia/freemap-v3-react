@@ -22,6 +22,14 @@ const en: PanoramaMessages = {
   locate: 'View from my position',
   pickViewpoint: 'Pick on the map',
   pickViewpointPrompt: 'Click the map where you want to look from',
+  createToposcope: 'Create toposcope from this view',
+  toposcopeMergeModal: {
+    title: 'Map is not empty',
+    message:
+      "Some points are already drawn on the map. Append the summits from this view to them, or replace them? The dial's centre moves to this viewpoint either way.",
+    append: 'Append',
+    replace: 'Replace',
+  },
   settings: {
     title: 'Panorama settings',
     eye: 'Eye height',

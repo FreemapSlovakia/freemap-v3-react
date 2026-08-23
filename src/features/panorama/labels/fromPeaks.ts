@@ -93,3 +93,28 @@ export function labelsFromPeaks(peaks: Peak[]): PanoramaLabel[] {
       dominance: peak.dominance,
     }));
 }
+
+/**
+ * The labels worth naming at all, best first: ranked by the weighting, then cut
+ * by how much a summit stands out and how far the air carries a name. What
+ * survives this is what the layout thins down to what fits.
+ *
+ * The far cut is ours rather than the service's: its own `range` bounds the
+ * terrain the render sees, so asking it for one would take the far ridges out
+ * of the picture and cost a render.
+ */
+export function candidateLabels(
+  labels: PanoramaLabel[],
+  weighting: LabelWeighting,
+  minDominance: number,
+): PanoramaLabel[] {
+  const ceiling = hazeCutoffM(weighting);
+
+  // `NO_DOMINANCE_FILTER` is below every real figure, so the "Any" stop needs
+  // no case of its own.
+  return rankLabels(labels, weighting).filter(
+    (label) =>
+      (label.dominance ?? Infinity) >= minDominance &&
+      label.distance <= ceiling,
+  );
+}

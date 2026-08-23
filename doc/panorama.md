@@ -593,6 +593,53 @@ the very skyline it was about and stole presses and hover from the viewer under
 it; a toast said it somewhere the eye had no reason to be, and timed out while
 the thing it described was still on screen.
 
+## Round to a toposcope
+
+The toolbar's compass-rose button turns the picture into a
+[toposcope](../src/features/toposcope/): `panoramaToposcopeProcessor` stands the
+dial's centre on the render's viewpoint (`makeToposcopeCenter`, or the existing
+centre moved rather than a second one appearing) and adds one drawn point per
+named summit, then opens the tool. Both panels float, so neither closes the
+other.
+
+A converted summit is an ordinary drawing point — `poi:peak`, `props.name` and
+`props.ele`, label `{p:name}` — because the dial has no store of its own: its
+rays *are* the drawn points, and its default templates then read the name over
+the elevation and distance with nothing typed in. The point is what carries the
+conversion into a saved map, a URL and a GeoJSON export.
+
+**The rays are worked out from the render, never read off the screen.** The
+viewer's own `named` set was the obvious source and is the wrong one: it is
+thinned in pixels, so zooming in names more of the skyline and pressing the
+button at a different magnification would give a different dial. The processor
+runs the same filters (`candidateLabels`) over `render.labels` and thins by a
+pitch of its own — the density setting read at `REFERENCE_DEG_PER_PX`, the
+picture at its natural framing, with `DIAL_MIN_PITCH_DEG` under it. So the
+peak-name sliders still say how busy the dial is, and nothing else does.
+
+The floor carries **both** ends of that slider, where `labelLayoutLimits` sets no
+pitch: the busiest step, which asks for all the picture holds, and "none", which
+turns names off in the picture — not an answer to a button pressed for a dial of
+them. It caps the dial at 72 rays.
+
+**Every point goes in one `drawingPointSetAll`.** Adding them one at a time
+pushes a history entry per summit — a `point=` param is a content change, and
+`urlProcessor` never holds a push back — which WebKit refuses past a hundred in
+ten seconds.
+
+**Whether the drawing already on the map is kept is the user's answer, not a
+rule.** A map with drawn points on it asks (`useConfirmChoice`, the shape
+`MyMapsModalList` uses for the same question) and the choice rides in the
+action's `replace`. Appending leaves a summit already standing within
+`placeKey`'s five decimals alone, so appending twice from one picture doesn't
+double every ray; replacing takes every drawn point away, and the selection with
+them where it named one.
+
+An existing centre **moves** to the new viewpoint under either answer — a dial
+centred anywhere else would measure the new summits from a place the picture was
+not taken from — so the dialog says so: it re-aims rays that were already there,
+which "append" alone would not lead anyone to expect.
+
 ## Caveats to keep surfaced
 
 The ⓘ panel says them, and they are the support mail this feature would
@@ -616,5 +663,5 @@ since the service names none per render and a 300 km view crosses borders.
 
 - Narrow-`fov` re-render for real optical zoom past the image's own pixels;
   the service says it is proportionally cheap.
-- Entry from a selected peak, and a cross-link with the toposcope.
+- Entry from a selected peak, and the toposcope's own way back to a panorama.
 - Sun path — the service hasn't implemented it either.
