@@ -180,9 +180,15 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
 
       line.points = line.points.filter((point) => point.id !== payload.pointId);
     })
-    .addCase(selectFeature, (state) => ({
+    .addCase(selectFeature, (state, { payload }) => ({
       ...state,
-      lines: dropDanglingHoles(state.lines.filter(linefilter)),
+      // A line selection addresses its line by index, so it must neither drop
+      // the line it selects nor renumber the others; abandoned partial lines
+      // go on the next selection made elsewhere.
+      lines:
+        payload?.type === 'draw-line-poly' || payload?.type === 'line-point'
+          ? state.lines
+          : dropDanglingHoles(state.lines.filter(isCompleteLine)),
       drawing: false,
       joinWith: undefined,
       holeFor: undefined,
@@ -314,7 +320,9 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
     .addCase(drawingLineSetLines, (state, action) => ({
       ...state,
       lines: dropDanglingHoles(
-        ingest(action.payload).filter((_, i) => linefilter(action.payload[i]!)),
+        ingest(action.payload).filter((_, i) =>
+          isCompleteLine(action.payload[i]!),
+        ),
       ),
     }))
     .addCase(
@@ -442,7 +450,8 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
     ),
 );
 
-function linefilter(line: Line) {
+/** Whether the line has enough points to be one; anything less is a partial draw. */
+export function isCompleteLine(line: Line) {
   return (
     (line.type === 'line' && line.points.length > 1) ||
     (line.type === 'polygon' && line.points.length > 2)

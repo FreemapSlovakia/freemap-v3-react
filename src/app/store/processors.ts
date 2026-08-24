@@ -35,6 +35,7 @@ import {
   dataViewerStoreProcessor,
 } from '@features/dataViewer/model/processors/dataViewerStoreProcessors.js';
 import { dataViewerToggleElevationChartProcessor } from '@features/dataViewer/model/processors/dataViewerToggleElevationChartProcessor.js';
+import { drawingDiscardPartialLineProcessor } from '@features/drawing/model/processors/drawingDiscardPartialLineProcessor.js';
 import { elevationChartPendingTargetProcessor } from '@features/elevationChart/model/pendingTargetProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
 import { galleryAllOfLicenseProcessor } from '@features/gallery/model/processors/galleryAllOfLicenseProcessor.js';
@@ -174,6 +175,7 @@ export const processors = [
   followLocationProcessor,
   saveSettingsProcessor,
   resetAppProcessor,
+  drawingDiscardPartialLineProcessor,
   measurementProcessor,
   changesetsProcessor,
   changesetsTrackProcessor,

@@ -350,7 +350,7 @@ describe('drawingLinesReducer — continue & drawing flag', () => {
   });
 });
 
-describe('drawingLinesReducer — linefilter (selectFeature / setLines)', () => {
+describe('drawingLinesReducer — isCompleteLine (selectFeature / setLines)', () => {
   it('selectFeature drops degenerate lines and polygons', () => {
     const state = withLines([
       line('line', [p(0), p(1)]), // valid line (>1 point)
@@ -366,6 +366,23 @@ describe('drawingLinesReducer — linefilter (selectFeature / setLines)', () => 
       ['polygon', 3],
     ]);
     expect(next.drawing).toBe(false);
+  });
+
+  it('a line selection keeps every line, so no index it carries is renumbered', () => {
+    const state = withLines([
+      line('line', [p(0)]), // degenerate line
+      line('line', [p(0), p(1)]),
+    ]);
+
+    for (const selection of [
+      { type: 'line-point', lineIndex: 0, pointId: 0 } as const,
+      { type: 'draw-line-poly', id: 1 } as const,
+    ]) {
+      const next = drawingLinesReducer(state, selectFeature(selection));
+
+      expect(next.lines).toHaveLength(2);
+      expect(next.drawing).toBe(false);
+    }
   });
 
   it('setLines applies the same degeneracy filter', () => {

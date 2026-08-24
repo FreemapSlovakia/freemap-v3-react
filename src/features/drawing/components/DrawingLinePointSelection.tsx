@@ -47,11 +47,7 @@ export default function DrawingLinePointSelection(): ReactElement | null {
     (state) => state.drawingLines.joinWith !== undefined,
   );
 
-  if (
-    !line ||
-    selection?.type !== 'line-point' ||
-    joining /* TODO show joining toolbar */
-  ) {
+  if (joining /* TODO show joining toolbar */) {
     return (
       <Toolbar className="mt-2">
         <span className="px-1">{dm?.selectPointToJoin}</span>
@@ -74,9 +70,9 @@ export default function DrawingLinePointSelection(): ReactElement | null {
     );
   }
 
-  // The point may have been deleted while its selection lingers; drop the
-  // toolbar rather than showing actions for a vertex that no longer exists.
-  if (!point) {
+  // The line or the point may have been deleted while its selection lingers;
+  // drop the toolbar rather than showing actions for what no longer exists.
+  if (!line || !point || selection?.type !== 'line-point') {
     return null;
   }
 
