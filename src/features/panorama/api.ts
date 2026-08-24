@@ -41,17 +41,9 @@ export interface PanoramaRequest {
   depth_step?: number;
   peaks: boolean;
   /**
-   * Metres a summit must stand above its surroundings to be returned.
-   * **Deprecated** in favour of `peak_filter`, and still sent beside one: an
-   * explicit value wins outright over both the filter and the service's own
-   * 30 m default, so a permissive one keeps an older service honest. A
-   * restrictive one there would quietly override the filter instead.
-   */
-  min_dominance?: number;
-  /**
-   * Which peaks come back at all, in the same language as `peak_rank`. Sending
-   * one also steps aside the `min_dominance` default, which is the reason we
-   * send a filter that passes everything rather than none.
+   * Which peaks come back at all, in the same language as `peak_rank`. Unsent:
+   * the service filters nothing by default, and every cut this viewer makes is
+   * one the user can move without paying for a render.
    */
   peak_filter?: PeakRankExpression | number;
   /** How many to keep, in `peak_rank` order; `0` is no cap. */

@@ -142,11 +142,16 @@ export const PROMINENCE_WEIGHT_STEP = 0.05;
  * knob and the figure beside it disagreeing.
  */
 export function prominenceWeightStep(weight: number): number {
-  return (
-    Math.round(
-      Math.min(Math.max(weight, 0), PROMINENCE_WEIGHT_MAX) /
-        PROMINENCE_WEIGHT_STEP,
-    ) * PROMINENCE_WEIGHT_STEP
+  // Rounded to the step's own precision, or the multiply puts the error back:
+  // `Math.round(0.3 / 0.05) * 0.05` is 0.30000000000000004, which is not a
+  // valid `<input type=range>` step from `min` and never equals the default.
+  return Number(
+    (
+      Math.round(
+        Math.min(Math.max(weight, 0), PROMINENCE_WEIGHT_MAX) /
+          PROMINENCE_WEIGHT_STEP,
+      ) * PROMINENCE_WEIGHT_STEP
+    ).toFixed(2),
   );
 }
 

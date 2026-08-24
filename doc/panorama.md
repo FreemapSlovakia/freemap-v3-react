@@ -649,8 +649,8 @@ at the default: 120 km × 3 is past the 300 km the picture holds unless the
 account has premium and asks for more.
 
 **The service has no peak-distance cut** — peaks come back filtered only by
-visibility and `min_dominance`, then cut to `max_peaks`, and no list is sent to
-it (the peaks are its own `--peaks` GeoPackage). Its `range` looks like the same
+visibility and whatever `peak_filter` says, then cut to `max_peaks`, and no list
+is sent to it (the peaks are its own `--peaks` GeoPackage). Its `range` looks like the same
 thing and is not: it bounds the terrain the render *sees* — a setting of its own
 under "Quality", not a way to thin names — so narrowing it to drop a name would take the
 ridge out of the picture too, and cost a whole render. Hence a client-side
@@ -681,12 +681,19 @@ the only thing that makes a cut safe is that the order is *ours*. It once was
 not, and a summit 2.1 km from an Ötztal viewpoint was dropped while distant
 massifs filled the payload; that report is where this whole area came from.
 
-The cap is set past the richest view anyone has measured (2665 peaks) so that
-it does not bind in practice, and that is deliberate rather than lazy: the
-order it would cut by is pinned at the **default** weights, so a user who has
-moved *Rank peaks by* or *Favour real mountains* to an end would be served a
-set truncated by an ordering they had moved away from. Insurance against a view
-nobody has seen, not a working part.
+**The cap does bind** — a Tatra summit answers with 6055 peaks, so 1055 of them
+never reach the client — and what it drops is chosen by an order pinned at the
+**default** weights. In principle that is a trap: a user who has moved *Rank
+peaks by* or *Favour real mountains* to an end is served a set truncated by an
+ordering they had moved away from, and no slider can ask for the rest without
+another render.
+
+Measured rather than reasoned about: of those 1055, **none reaches the top 200**
+at any of the four corners of the two ranking sliders — prominence at 0 or at
+its maximum, size or nearness, haze on or off. They are deeply negative
+dominance at distance, which is the bottom of every ordering rather than of the
+default one. That is the property to re-measure before trusting the cap again if
+the ranking changes; it was re-measured when the two terms were resummed.
 
 **`PEAK_RANK` is `labelRank` minus everything that moves without a render.**
 Same dominance term with the same sign rule, same prominence term with the same
@@ -704,22 +711,19 @@ negative dominance at 150–260 km, where `dominance / worth` multiplies the
 payload's 0.05 m rounding by `√distance`. Nothing that could reorder anything
 but the tail.
 
-**`peak_filter: 1` passes everything, and sending it is not the same as sending
-nothing.** The service's `min_dominance` defaults to 30 m — which would cut
-exactly the near field — and a filter is what steps that default aside:
-measured at one viewpoint, 2011 peaks with a filter against 457 without.
+**No `peak_filter` is sent**, because the service filters nothing of its own
+accord: with no expression it returns every visible summit, so saying "keep
+everything" is saying nothing. It briefly was not so — a `min_dominance`
+defaulting to 30 m cut the near field for anyone who never mentioned it, which
+cost a client-side `-100000` and then a `peak_filter: 1` to switch off. Both are
+gone with the parameter.
 
-The deprecated `min_dominance: -100000` says the same thing the old way, and is
-sent **alongside** it deliberately. An explicit threshold is honoured beside a
-filter rather than replaced by it, so a restrictive one there would be a bug —
-ours removes nothing, and it is what answers for a service too old to know
-`peak_filter`, which would otherwise ignore the field and apply its 30 m default
-unannounced. Drop it once no such service can be deployed.
-
-`revealed_peaks` is likewise left unsent: switching the revealed names off would
-spare the payload, but the switch is instant and the payload is not, so
-switching them back on would show nothing until the next render. Both filters
-stay client-side.
+Every cut this viewer makes stays client-side, and that is the rule rather than
+an accident: each is a control the user can move, and the payload cannot be
+re-fetched without paying for a render. The service's `revealed_peaks` was the
+temptation worth naming — switching the revealed names off would spare the
+payload, but the switch is instant and the payload is not, so switching them
+back on would have shown nothing until the next render.
 
 Beyond that, how many arrive is not the client's to influence. From a valley
 viewpoint the service returned **two** peaks with no floor and no cap — asking

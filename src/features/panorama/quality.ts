@@ -144,25 +144,6 @@ export function panoramaStep(
 }
 
 /**
- * Keep everything the service can see. Sent to displace its `min_dominance`
- * default of 30 m, which would cut exactly the near-field tops a panorama most
- * wants named — dominance is **signed**, so a top that never rises clear of its
- * own ridge scores how far the ridge stands over it, and any floor at all drops
- * those.
- *
- * Which summits count is decided against the viewport instead, where a change
- * is instant; re-rendering to reveal one more label would be absurd.
- */
-const PEAK_FILTER = 1;
-
-/**
- * The same "keep everything" said the deprecated way, for a service that does
- * not know `peak_filter`. Deeper than any real terrain, and dominance is
- * signed, so it removes nothing on a service that honours it beside the filter.
- */
-const MIN_DOMINANCE_M = -100_000;
-
-/**
  * How many peaks to keep. It does bind — a Tatra summit answers with 6055 — and
  * what it drops is chosen by {@link PEAK_RANK}, whose weights are the defaults
  * rather than the user's, so in principle someone at an end of *Rank peaks by*
@@ -257,20 +238,9 @@ export function buildPanoramaRequest(
     depth: true,
     depth_step: 4,
     peaks: true,
-    // Two ways of saying "keep everything", during the window where both are
-    // needed. Not sending either would cut the near field: the service's
-    // `min_dominance` defaults to 30 m, and dominance is signed, so any floor
-    // drops exactly the tops a panorama most wants named (measured on a request
-    // carrying neither: 457 peaks against 2011).
-    //
-    // `peak_filter` is the successor and the one that will remain. The explicit
-    // threshold beside it changes nothing today — an explicit value wins
-    // outright, and this one removes nothing — but it is what answers for a
-    // service too old to know `peak_filter`, which would ignore that field and
-    // apply its default unannounced. Drop it once no such service can be
-    // deployed; a *restrictive* value here would override the filter instead.
-    peak_filter: PEAK_FILTER,
-    min_dominance: MIN_DOMINANCE_M,
+    // No `peak_filter`: the service filters nothing of its own accord now, so
+    // saying "keep everything" is saying nothing. Which summits count is
+    // decided against the viewport instead, where a change is instant.
     max_peaks: MAX_PEAKS,
     peak_rank: PEAK_RANK,
     ridge_strength: settings.ridgeStrength,
