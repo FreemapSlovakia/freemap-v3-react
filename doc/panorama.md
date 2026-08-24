@@ -476,6 +476,52 @@ falloff where the dominance is negative and multiplies where it is positive:
 either way the rank drops with distance, and every top that stands clear
 outranks every one that doesn't.
 
+**Prominence answers what dominance structurally cannot.** Dominance is measured
+from the viewpoint within 3 km of the summit, so a mountain hemmed in by taller
+neighbours reads as unremarkable however famous it is — from a Tatra viewpoint
+the old ranking never named **Rysy at 4 km**, and from 100 km it never named
+Gerlachovský štít. The service now returns a precomputed topographic
+`prominence` (and `prom_dist_m`, the distance the match had to reach), which
+does not move with the viewpoint. `labelRank` sums the two into a **stature** in
+metres — `dominance + PROMINENCE_WEIGHT × prominence × matchTrust` — and applies
+the distance falloff to that total.
+
+**Summed before the falloff, not after**, which is the only order that works.
+Where the total is positive the two are identical arithmetic; where it is
+negative they are not, because the falloff *divides* there. Adding afterwards
+would multiply a hemmed-in summit's dominance by `√distance` while dividing its
+prominence by it, so no prominence could ever lift it — and negative dominance
+is exactly what "hemmed in by taller neighbours" reads as, the case the term
+exists for.
+
+Three more decisions in that shape, none of them free choices:
+
+- **Added, not swapped in.** Two thirds of the corpus carries no prominence at
+  all — nearer half of what a viewpoint actually sees, the unmatched skewing to
+  minor tops. Swapping it in for dominance would rank every one of those last,
+  and a mountain nobody could match is not a flat one.
+- **Weighed, never thresholded.** The service's own validation calls it reliable
+  for ordering above ~300 m and noise below ~150 m; a term proportional to it
+  discounts its own unreliable end, where a `prominence >= x` cut would be
+  arbitrary at that accuracy.
+- **Discounted where the match had to reach.** 1.7% of matches inside 50 m are
+  badly wrong against 5.4% past 100 m, so `matchTrust` drops to
+  `PROM_DOUBTED_TRUST` past 50 m. Two steps, not a ramp: the service matches two
+  ways — position alone within 150 m, position *and* elevation agreeing out to
+  400 m — so distance does not order them, and a ramp to zero would throw away
+  the corroborated band precisely because it is the far one. The 0.7 is
+  provisional; the service has not measured that band's error rate, since
+  selecting on elevation agreement is what makes it unmeasurable the way the
+  others were.
+
+0.3 is the default, tuned over four viewpoints: below it Rysy is still unnamed,
+above it the effect saturates and distant giants start taking the near field's
+names. It is also a **setting** — "Favour real mountains" in the peak-names
+menu, 0 to 1 — because it is the one constant here a user can hold an opinion
+about and watch the effect of, which the match trust and the payload cap are
+not. As an instant slider it is therefore excluded from `PEAK_RANK`, which
+pins it at the default like every other movable part.
+
 This belongs here and not in the request. The service is asked for everything it
 will name, and ranking is display policy that depends on the panel, the zoom and
 the density setting — none of which it knows. Re-ranking costs a re-sort of the
@@ -619,38 +665,52 @@ over the full turn — so what really decides the count is how many lines they m
 stack into; raising the cap alone changes nothing while the climb is exhausted
 first.
 
-The request asks for **everything the service will name**: a `min_dominance`
-below any real terrain, capped at `max_peaks: 5000` as a bound on the payload
-rather than on what is drawn. Its own default of 30 m would be a heavy cut, and
-against a signed figure a floor of `0` would cut the near field entirely.
-Thinning belongs here, where a change is instant.
+The request **orders and then cuts**, which is the service's intended shape:
+`peak_rank` says what matters, `max_peaks` (5000) says how many survive. What a
+cut drops is unrecoverable — no client filter restores what was never sent — so
+the only thing that makes a cut safe is that the order is *ours*. It once was
+not, and a summit 2.1 km from an Ötztal viewpoint was dropped while distant
+massifs filled the payload; that report is where this whole area came from.
 
-**The cap is bandwidth, not server load.** The service truncates before
-serializing, so raising it costs it only the gzip of what it keeps — a
-millisecond or so — and the reader 248 B a peak, 59 B of it on the wire once
-the vhost's `gzip` has had it. A rich Alpine view answers with 2665 peaks, and
-the whole response, picture included, lands in 236 KB. Hence 5000 rather than a
-tight number: the cap binds only where a view really holds that many, and there
-it now costs a few hundred kilobytes rather than the megabyte and a half it
-would have before the service rounded its numbers and nginx started compressing
-them.
+The cap is set past the richest view anyone has measured (2665 peaks) so that
+it does not bind in practice, and that is deliberate rather than lazy: the
+order it would cut by is pinned at the **default** weights, so a user who has
+moved *Rank peaks by* or *Favour real mountains* to an end would be served a
+set truncated by an ordering they had moved away from. Insurance against a view
+nobody has seen, not a working part.
 
-What the cut drops is decided by the service's own label rank, whose distance
-exponent we send as `peak_rank_power` — the viewer's `labelDistanceWeight`. The
-two orders are not identical, since ours also carries a haze term and the
-revealed penalty and the service's does not; sending it narrows the gap where
-the cap binds, which is the only place either order matters. That parameter is
-**not** in `panoramaRenderKey`: it changes which peaks are sent, not what is
-drawn, and the slider it comes from is one of the instant ones, so the next
-render for any other reason picks it up.
+**`PEAK_RANK` is `labelRank` minus everything that moves without a render.**
+Same dominance term with the same sign rule, same prominence term with the same
+match discount, built from the same constants so the two cannot drift. Left out
+deliberately: the haze falloff, the revealed penalty and the user's distance
+exponent. Those three are instant sliders, and baking the current haze into the
+cut would have the service drop exactly the far giants that switching to "clear
+air" exists to reveal — with no render in prospect to fetch them back. So the
+request ranks on what could ever be wanted and the viewer ranks on what is
+wanted now.
 
-Sorting by raw dominance was the old behaviour (`peak_rank_power: 0`) and it
-truncated the wrong end — from an Ötztal viewpoint a summit 2.1 km away was cut
-while distant massifs filled the payload, unrecoverable client-side. The
-service's `revealed_peaks` flag is a similar trap avoided: it would free cut
-slots when the revealed names are switched off, but the switch is instant and
-the payload is not, so checking it back on would show nothing until the next
-render. That filter stays client-side.
+Verified against the running service: the `rank` it returns per peak matches
+what `labelRank` computes to within 0.03%, and the worst cases are all deeply
+negative dominance at 150–260 km, where `dominance / worth` multiplies the
+payload's 0.05 m rounding by `√distance`. Nothing that could reorder anything
+but the tail.
+
+**`peak_filter: 1` passes everything, and sending it is not the same as sending
+nothing.** The service's `min_dominance` defaults to 30 m — which would cut
+exactly the near field — and a filter is what steps that default aside:
+measured at one viewpoint, 2011 peaks with a filter against 457 without.
+
+The deprecated `min_dominance: -100000` says the same thing the old way, and is
+sent **alongside** it deliberately. An explicit threshold is honoured beside a
+filter rather than replaced by it, so a restrictive one there would be a bug —
+ours removes nothing, and it is what answers for a service too old to know
+`peak_filter`, which would otherwise ignore the field and apply its 30 m default
+unannounced. Drop it once no such service can be deployed.
+
+`revealed_peaks` is likewise left unsent: switching the revealed names off would
+spare the payload, but the switch is instant and the payload is not, so
+switching them back on would show nothing until the next render. Both filters
+stay client-side.
 
 Beyond that, how many arrive is not the client's to influence. From a valley
 viewpoint the service returned **two** peaks with no floor and no cap — asking

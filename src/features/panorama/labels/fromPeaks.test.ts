@@ -25,11 +25,15 @@ const hill = label('hill', 20_000, 300);
 
 const giant = label('giant', 177_000, 1500);
 
-/** Halfway between real and apparent size, which is the default. */
-const halfway = { hazeKm: 120, distanceWeight: 0.5 };
+/**
+ * Halfway between real and apparent size, which is the default. The prominence
+ * weight is stated rather than imported: these test the formula, and should not
+ * start passing vacuously if the shipped default ever goes to zero.
+ */
+const halfway = { hazeKm: 120, distanceWeight: 0.5, prominenceWeight: 0.3 };
 
 /** No falloff, so the weighting is the only thing deciding. */
-const clear = { hazeKm: 0, distanceWeight: 0.5 };
+const clear = { hazeKm: 0, distanceWeight: 0.5, prominenceWeight: 0.3 };
 
 const ids = (labels: PanoramaLabel[]) => labels.map((l) => l.id);
 
@@ -66,6 +70,68 @@ describe('panorama label ranking', () => {
     ).toEqual(['giant', 'hill']);
   });
 
+  it('lifts a summit its neighbours flatten, on prominence', () => {
+    // The Rysy case: hemmed in, so it barely stands clear from here, but a real
+    // mountain. Same distance, so only the prominence separates them.
+    const hemmed = {
+      ...label('hemmed', 5000, 20),
+      prominence: 300,
+      promDistM: 20,
+    };
+
+    const bump = label('bump', 5000, 60);
+
+    expect(ids(rankLabels([bump, hemmed], halfway))).toEqual([
+      'hemmed',
+      'bump',
+    ]);
+  });
+
+  it('lifts a mountain that does not stand clear of its own ridge at all', () => {
+    // Negative dominance is what "hemmed in by taller neighbours" reads as, so
+    // this is the case the prominence term exists for. It only works because
+    // the two are summed before distance is applied: added afterwards, the
+    // dominance would be multiplied by √distance and the prominence divided by
+    // it, and no prominence could reach.
+    const hemmed = {
+      ...label('hemmed', 5000, -50),
+      prominence: 400,
+      promDistM: 20,
+    };
+
+    const bump = label('bump', 5000, 10);
+
+    expect(ids(rankLabels([bump, hemmed], halfway))).toEqual([
+      'hemmed',
+      'bump',
+    ]);
+
+    // And with the term off it is back below the bump, as before.
+    expect(
+      ids(rankLabels([bump, hemmed], { ...halfway, prominenceWeight: 0 })),
+    ).toEqual(['bump', 'hemmed']);
+  });
+
+  it('believes a prominence less the further it was matched from', () => {
+    const near = { ...label('near', 5000, 20), prominence: 300, promDistM: 20 };
+
+    const far = { ...label('far', 5000, 20), prominence: 300, promDistM: 140 };
+
+    // Same figure, so the match distance is the whole difference. One arriving
+    // without a distance is treated as the far kind, not thrown away — though
+    // the service sends both or neither.
+    expect(ids(rankLabels([far, near], halfway))).toEqual(['near', 'far']);
+
+    expect(
+      ids(
+        rankLabels(
+          [near, { ...label('bare', 5000, 20), prominence: 300 }],
+          halfway,
+        ),
+      ),
+    ).toEqual(['near', 'bare']);
+  });
+
   it('names what fills the view at a weight of one', () => {
     expect(
       ids(rankLabels([giant, hill], { ...clear, distanceWeight: 1 })),
@@ -89,7 +155,7 @@ describe('panorama label ranking', () => {
 
 describe('panorama haze cutoff', () => {
   it('ends the names three times past where the haze starts', () => {
-    expect(hazeCutoffM({ hazeKm: 40, distanceWeight: 0.5 })).toBe(120_000);
+    expect(hazeCutoffM({ ...halfway, hazeKm: 40 })).toBe(120_000);
   });
 
   it('never cuts in clear air', () => {

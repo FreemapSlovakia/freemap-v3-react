@@ -33,6 +33,7 @@ import {
   LABEL_DENSITY_MAX,
   LABEL_DISTANCE_WEIGHT_MAX,
   LABEL_HAZE_MAX_KM,
+  PROMINENCE_WEIGHT_MAX,
   panoramaSettingsInitialState,
   RANGE_MAX_KM,
   RANGE_MIN_KM,
@@ -185,11 +186,12 @@ const PersistedPanoramaSettingsSchema = z
     // Bounded, because the level indexes the menu's icon and word arrays.
     labelDensity: z.number().int().min(0).max(LABEL_DENSITY_MAX),
     minDominance: z.number(),
-    // Bounded to what the sliders offer: both reach `rankLabels`, where a
+    // Bounded to what the sliders offer: all three reach `rankLabels`, where a
     // stored value from outside the range would order the names by something
     // no control can undo.
     labelHazeKm: z.number().min(0).max(LABEL_HAZE_MAX_KM),
     labelDistanceWeight: z.number().min(0).max(LABEL_DISTANCE_WEIGHT_MAX),
+    prominenceWeight: z.number().min(0).max(PROMINENCE_WEIGHT_MAX),
     autoPan: z.boolean(),
   })
   .partial();

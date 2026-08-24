@@ -4,6 +4,9 @@ import type { CancelTriggers } from '@shared/cancelRegister.js';
 import z from 'zod';
 import { decodeDepth, type PanoramaDepth } from './depth.js';
 
+/** One node of the service's ranking language: an operator and its arguments. */
+export type PeakRankExpression = (string | number | PeakRankExpression)[];
+
 /**
  * What the terrain service is asked for. Field names are the wire's, so the
  * request object goes out as-is — see `doc/panorama.md` and the service's own
@@ -33,17 +36,28 @@ export interface PanoramaRequest {
   depth: boolean;
   depth_step?: number;
   peaks: boolean;
-  /** Metres a summit must stand above its surroundings to be returned. */
+  /**
+   * Metres a summit must stand above its surroundings to be returned.
+   * **Deprecated** in favour of `peak_filter`, and still sent beside one: an
+   * explicit value wins outright over both the filter and the service's own
+   * 30 m default, so a permissive one keeps an older service honest. A
+   * restrictive one there would quietly override the filter instead.
+   */
   min_dominance?: number;
-  /** Cut applied after the sort, so it keeps the summits worth labelling. */
+  /**
+   * Which peaks come back at all, in the same language as `peak_rank`. Sending
+   * one also steps aside the `min_dominance` default, which is the reason we
+   * send a filter that passes everything rather than none.
+   */
+  peak_filter?: PeakRankExpression | number;
+  /** How many to keep, in `peak_rank` order; `0` is no cap. */
   max_peaks?: number;
   /**
-   * Exponent on distance in that sort, 0–4 — `0` is dominance alone. Sent as
-   * the viewer's own `labelDistanceWeight`: the two orders still differ, ours
-   * carrying a haze term the service's has no notion of, but it narrows the
-   * gap where the cut binds, which is the only place either order matters.
+   * What `max_peaks` orders by, as the service's JSON prefix expression — the
+   * shape is MapLibre's, the operators are the service's own. See `PEAK_RANK`
+   * in `quality.ts`, and the service's `docs/API.md` for the language.
    */
-  peak_rank_power?: number;
+  peak_rank?: PeakRankExpression;
   /**
    * Gain on the silhouettes' alpha, not an opacity: the geometry inks a near
    * ridge at ~0.55 and a far one at ~0.15, so `1` is already translucent.
@@ -122,6 +136,19 @@ const PeakSchema = z.object({
    * more of the frame.
    */
   dominance: z.number(),
+  /**
+   * **Metres** of true topographic prominence, precomputed from the DEM and the
+   * same wherever it is asked from — so unlike `dominance` it says whether a
+   * summit is a mountain at all, not whether it stands out from here. Absent
+   * where no DEM summit could be matched, which means unknown, never zero.
+   */
+  prominence: z.number().nullish(),
+  /**
+   * Metres between the OSM node and the DEM summit that prominence came from —
+   * the match's error bar. Past 50 m the disagreement rate climbs, and a close
+   * match is still not a correct one; see the service's `docs/API.md`.
+   */
+  prom_dist_m: z.number().nullish(),
 });
 
 export type Peak = z.infer<typeof PeakSchema>;

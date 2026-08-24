@@ -35,6 +35,14 @@ export interface PanoramaLabel {
    */
   dominance?: number;
   /**
+   * Metres of true topographic prominence, where the renderer could match one.
+   * Says whether the subject is a mountain at all, which dominance — measured
+   * from the viewpoint — cannot; see `doc/panorama.md`.
+   */
+  prominence?: number;
+  /** How far off the summit that prominence was matched from, metres. */
+  promDistM?: number;
+  /**
    * The depth lift is what brought its subject into view: drawn and nameable,
    * but hidden from the actual viewpoint. A source that warps nothing leaves it
    * out.

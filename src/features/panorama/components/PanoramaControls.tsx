@@ -59,7 +59,10 @@ import {
   NO_DOMINANCE_FILTER,
   nearestStep,
   type PanoramaTilt,
+  PROMINENCE_WEIGHT_MAX,
+  PROMINENCE_WEIGHT_STEP,
   panoramaSettingsInitialState,
+  prominenceWeightStep,
 } from '../model/settingsReducer.js';
 import {
   grantedPanorama,
@@ -79,6 +82,7 @@ const LABEL_DEFAULTS = {
   labelDensity: panoramaSettingsInitialState.labelDensity,
   minDominance: panoramaSettingsInitialState.minDominance,
   labelDistanceWeight: panoramaSettingsInitialState.labelDistanceWeight,
+  prominenceWeight: panoramaSettingsInitialState.prominenceWeight,
   labelHazeKm: panoramaSettingsInitialState.labelHazeKm,
   showRevealedLabels: panoramaSettingsInitialState.showRevealedLabels,
 };
@@ -151,6 +155,8 @@ export function PanoramaControls({
 
   const grants = grantedPanorama(settings, premium);
 
+  const nf = useNumberFormat({ maximumFractionDigits: 2 });
+
   const nfM = useNumberFormat({
     style: 'unit',
     unit: 'meter',
@@ -180,6 +186,8 @@ export function PanoramaControls({
   const hazeLabel = settings.labelHazeKm
     ? nfKm.format(settings.labelHazeKm)
     : m?.labels.hazeOff;
+
+  const prominenceStep = prominenceWeightStep(settings.prominenceWeight);
 
   const weightStep = nearestStep(
     LABEL_DISTANCE_WEIGHTS,
@@ -361,7 +369,7 @@ export function PanoramaControls({
           }
         />
 
-        {/* The two that decide the order rather than the cut. */}
+        {/* Those that decide the order rather than the cut. */}
         <LabeledSlider
           id="fm-panorama-weight"
           label={m?.labels.weight}
@@ -403,6 +411,25 @@ export function PanoramaControls({
           }
         />
 
+        {/* The third thing the rank weighs, beside what the two above set. A
+            bare number like the ridge sliders, since the useful range is
+            narrow and no five words divide it usefully. */}
+        <LabeledSlider
+          id="fm-panorama-prominence"
+          label={m?.labels.prominence}
+          valueLabel={
+            prominenceStep ? nf.format(prominenceStep) : m?.labels.prominenceOff
+          }
+          hint={m?.labels.prominenceHint}
+          min={0}
+          max={PROMINENCE_WEIGHT_MAX}
+          step={PROMINENCE_WEIGHT_STEP}
+          value={prominenceStep}
+          onChange={(prominenceWeight) =>
+            dispatch(panoramaSetSettings({ prominenceWeight }))
+          }
+        />
+
         {/* Of the picture on screen, not of the setting: staging a lift, or
             taking one away, must not hide the only control that can bring back
             the names hidden in the render still being looked at. A cut like the
@@ -428,9 +455,9 @@ export function PanoramaControls({
           </div>
         )}
 
-        {/* Four sliders deep into a picture is no place to be stuck, and none
-            of them says what it started at. Applies at once, like everything
-            else here — there is no form to submit.
+        {/* Several sliders deep into a picture is no place to be stuck, and
+            none of them says what it started at. Applies at once, like
+            everything else here — there is no form to submit.
 
             It answers for the revealed-names checkbox even where no lift has
             drawn it: that setting persists, so leaving it out would strand a

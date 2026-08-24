@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { PROMINENCE_WEIGHT } from '../labels/fromPeaks.js';
 import type { PanoramaQuality } from '../quality.js';
 import { panoramaSetSettings } from './actions.js';
 
@@ -123,6 +124,31 @@ export function labelWeightBand(weight: number): number {
 }
 
 export const LABEL_DISTANCE_WEIGHT_MAX = LABEL_DISTANCE_WEIGHTS.at(-1) ?? 1;
+
+/**
+ * Where the prominence slider stops. Measured over four viewpoints, the effect
+ * saturates around 0.6 — past it the same distant giants keep winning — so a
+ * ceiling of `1` is already generous.
+ */
+export const PROMINENCE_WEIGHT_MAX = 1;
+
+/** How fine that slider is; the default sits on the grid. */
+export const PROMINENCE_WEIGHT_STEP = 0.05;
+
+/**
+ * A stored weight on the slider's own grid. The other three controls in that
+ * menu snap through `nearestStep` or a band for the same reason: a value from
+ * between the steps — an older store, a retuned default — otherwise leaves the
+ * knob and the figure beside it disagreeing.
+ */
+export function prominenceWeightStep(weight: number): number {
+  return (
+    Math.round(
+      Math.min(Math.max(weight, 0), PROMINENCE_WEIGHT_MAX) /
+        PROMINENCE_WEIGHT_STEP,
+    ) * PROMINENCE_WEIGHT_STEP
+  );
+}
 
 /**
  * Which stop a stored value sits on. One between two — an older setting, a
@@ -336,6 +362,12 @@ export interface PanoramaSettingsState {
   /** What the rank measures; see {@link LABEL_DISTANCE_WEIGHTS}. */
   labelDistanceWeight: number;
   /**
+   * What a metre of true prominence is worth beside a metre of dominance —
+   * whether a summit earns its name by being a mountain at all or by standing
+   * out from here.
+   */
+  prominenceWeight: number;
+  /**
    * Lets the view move on its own: toward where the device points where there
    * is a compass to ask, and at a steady turn where there is not. Turning the
    * picture by hand clears it, the same as the stop button does.
@@ -375,6 +407,7 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   minDominance: NO_DOMINANCE_FILTER,
   labelHazeKm: 120,
   labelDistanceWeight: 0.5,
+  prominenceWeight: PROMINENCE_WEIGHT,
   autoPan: touchDevice(),
 };
 

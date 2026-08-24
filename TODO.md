@@ -91,6 +91,10 @@ Still emitting at info level (non-blocking, optional cleanup):
       only source and every peak carries a figure. Whoever adds the second one
       (map selection, drawn points, POIs — see `labels/types.ts`) has to decide
       what its labels are worth against summits; no constant here can guess it.
+      Now two-sided: a source supplying `prominence` without a `dominance`
+      lands on that same `?? 1` and the prominence term then lifts it *above*
+      real summits — 1 + 0.3 × 800 for a big one — so the fallback is wrong in
+      both directions and the next source has to set both or neither.
 - [ ] **Mount a mark's tooltip `Overlay` only once it has been shown.** With no
       `breakpoint`, `LongPressTooltip` sets `labelHidden` and mounts its
       `Overlay` for the life of every mark. Hidden it draws no DOM, no popper

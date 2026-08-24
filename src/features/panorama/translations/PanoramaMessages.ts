@@ -94,6 +94,11 @@ export type PanoramaMessages = {
     weightHint: string;
     /** Five bands over the weight slider's stops; see `labelWeightBand`. */
     weights: readonly [string, string, string, string, string];
+    /** How much a summit's own standing counts beside how it reads from here. */
+    prominence: string;
+    /** The step that ranks on what the viewpoint sees and nothing else. */
+    prominenceOff: string;
+    prominenceHint: string;
     /** How far a name has to carry before haze outweighs the summit. */
     haze: string;
     /** The step with no falloff and no cut. */

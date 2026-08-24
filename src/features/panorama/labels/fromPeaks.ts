@@ -2,13 +2,16 @@ import type { Peak } from '../api.js';
 import type { PanoramaLabel } from './types.js';
 
 /**
- * How the two halves of the haze are set: how far a name has to carry, in
- * kilometres, and what the rank measures — `0` for a summit's own metres, `1`
- * for the angle it subtends. See `doc/panorama.md`.
+ * Everything the user sets about the ranking: how far a name has to carry, what
+ * the rank measures against distance — `0` for a summit's own metres, `1` for
+ * the angle it subtends — and what a metre of prominence is worth beside a
+ * metre of dominance. See `doc/panorama.md`.
  */
 export interface LabelWeighting {
   hazeKm: number;
   distanceWeight: number;
+  /** What a metre of prominence is worth; see {@link PROMINENCE_WEIGHT}. */
+  prominenceWeight: number;
 }
 
 /** Multiples of the haze distance past which a summit goes unnamed outright. */
@@ -19,6 +22,38 @@ const HAZE_CUTOFF = 3;
  * Where names compete for room, the one that can actually be seen takes it.
  */
 const REVEALED_RANK_PENALTY = 0.5;
+
+/**
+ * What a metre of prominence is worth beside a metre of dominance. Tuned over
+ * four viewpoints: below this the Tatra viewpoint still fails to name Rysy,
+ * whose neighbours flatten its dominance; above it the effect saturates and
+ * distant giants start taking the near field's names.
+ */
+export const PROMINENCE_WEIGHT = 0.3;
+
+/** Where the service's own figures stop calling a match comfortable. */
+export const PROM_TRUSTED_M = 50;
+
+/** What a match past that is worth — provisional; see `doc/panorama.md`. */
+export const PROM_DOUBTED_TRUST = 0.7;
+
+/**
+ * How much of a prominence to believe. The step is at 50 m because that is
+ * where the service's own figures turn: 1.7% of matches inside it disagree
+ * badly with the OSM elevation against 5.4% past 100 m.
+ *
+ * A step and not a ramp to zero, which is a different point: the service
+ * matches two ways — position alone inside 150 m, position *and* elevation
+ * agreeing out to 400 m — so the farthest matches are the corroborated ones,
+ * and fading them out would discard the better evidence for being far.
+ */
+function matchTrust({ prominence, promDistM }: PanoramaLabel): number {
+  return prominence === undefined
+    ? 0
+    : (promDistM ?? Infinity) <= PROM_TRUSTED_M
+      ? 1
+      : PROM_DOUBTED_TRUST;
+}
 
 /**
  * Metres past which the haze says not to name a summit at all, or `Infinity`
@@ -40,12 +75,17 @@ export function hazeCutoffM({ hazeKm }: LabelWeighting): number {
  * metres alone put a distant massif over a nearby hill that fills far more of
  * the frame, the angle it subtends puts a roadside knoll over the High Tatras.
  * The haze term then says a summit has to be seeable, not merely big — and one
- * that is only seeable because the lift raised it is demoted outright. Why
- * those shapes, and what the tuning is worth, is in `doc/panorama.md`.
+ * that is only seeable because the lift raised it is demoted outright.
+ *
+ * Prominence answers what none of that can: dominance is measured from the
+ * viewpoint, so a summit hemmed in by taller neighbours reads as unremarkable
+ * however famous it is. Weighed in rather than swapped for, since it is missing
+ * for half the peaks and rough for the small ones. Why those shapes, and what
+ * the tuning is worth, is in `doc/panorama.md`.
  */
 function labelRank(
   label: PanoramaLabel,
-  { hazeKm, distanceWeight }: LabelWeighting,
+  { hazeKm, distanceWeight, prominenceWeight }: LabelWeighting,
 ): number {
   const distance = Math.max(label.distance, 1);
 
@@ -54,16 +94,32 @@ function labelRank(
     (hazeKm > 0 ? Math.exp(-distance / (hazeKm * 1000)) : 1) /
     distance ** distanceWeight;
 
-  // Ranks a source that measures no dominance below every real summit, while
-  // the dominance filter passes it. A trap for the next source; see `TODO.md`.
+  // A source measuring no dominance scores as a 1 m bump, which ranks it below
+  // every real summit while the dominance filter still passes it. The trap for
+  // the next source is now two-sided: supply a prominence without a dominance
+  // and the fallback puts it *above* real summits instead. See `TODO.md`.
   const dominance = label.dominance ?? 1;
 
-  // Divided rather than multiplied where the dominance is negative. It is
-  // signed by design — a top that never rises clear of its own ridge says by
-  // how much the ridge stands over it — and scaling a negative number *down*
-  // raises it, so multiplying would have made a subordinate top rank better the
-  // further off it was, which is precisely backwards.
-  const rank = dominance >= 0 ? dominance * worth : dominance / worth;
+  // Both are metres of standing above the surroundings, so they are summed
+  // *before* distance is applied, not after. Adding afterwards is the same
+  // arithmetic wherever the total is positive, and wrong where it is not: the
+  // negative branch divides, so a hemmed-in summit's dominance would be
+  // multiplied by `√distance` while its prominence was divided by it, and no
+  // prominence could ever lift it. That case is the whole point of the term —
+  // "hemmed in by taller neighbours" is exactly what negative dominance says.
+  //
+  // Prominence is added and never thresholded: the service's figure is reliable
+  // for ordering above ~300 m and noise below ~150 m, so a term proportional to
+  // it discounts its own unreliable end.
+  const stature =
+    dominance + prominenceWeight * (label.prominence ?? 0) * matchTrust(label);
+
+  // Divided rather than multiplied where that total is negative. It is signed
+  // by design — a top that never rises clear of its own ridge says by how much
+  // the ridge stands over it — and scaling a negative number *down* raises it,
+  // so multiplying would have made a subordinate top rank better the further
+  // off it was, which is precisely backwards.
+  const rank = stature >= 0 ? stature * worth : stature / worth;
 
   if (!label.revealed) {
     return rank;
@@ -110,6 +166,10 @@ export function labelsFromPeaks(peaks: Peak[]): PanoramaLabel[] {
       azimuth: peak.azimuth,
       y: peak.y,
       dominance: peak.dominance,
+      // Left out rather than zeroed where the service knows none: absent is
+      // "unknown", and a mountain nobody could match is not a flat one.
+      ...(peak.prominence == null ? {} : { prominence: peak.prominence }),
+      ...(peak.prom_dist_m == null ? {} : { promDistM: peak.prom_dist_m }),
       revealed: peak.revealed,
     }));
 }

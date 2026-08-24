@@ -93,6 +93,10 @@ const en: PanoramaMessages = {
       'Mostly nearness',
       'Nearness',
     ],
+    prominence: 'Favour real mountains',
+    prominenceOff: 'Off',
+    prominenceHint:
+      'Names a summit for being a mountain in its own right, not only for standing out from where you happen to be — so a famous peak hemmed in by taller neighbours still earns its name. Unknown for many summits, which are then judged as before.',
     haze: 'How far names carry',
     hazeOff: 'Clear air',
     hazeHint:

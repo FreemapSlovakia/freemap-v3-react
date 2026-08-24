@@ -812,8 +812,13 @@ export function PanoramaView({
     () => ({
       hazeKm: settings.labelHazeKm,
       distanceWeight: settings.labelDistanceWeight,
+      prominenceWeight: settings.prominenceWeight,
     }),
-    [settings.labelHazeKm, settings.labelDistanceWeight],
+    [
+      settings.labelHazeKm,
+      settings.labelDistanceWeight,
+      settings.prominenceWeight,
+    ],
   );
 
   const filters = useMemo(

@@ -89,6 +89,10 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Skôr blízkosti',
       'Blízkosti',
     ],
+    prominence: 'Uprednostniť skutočné hory',
+    prominenceOff: 'Vypnuté',
+    prominenceHint:
+      'Vrch dostane meno za to, že je horou sám osebe, nielen za to, ako vyčnieva odtiaľ, kde práve stojíte — takže aj slávny štít vklinený medzi vyššími susedmi si meno zaslúži. Pri mnohých vrcholoch je neznáma a tie sa posudzujú ako doteraz.',
     haze: 'Dokiaľ siahajú názvy',
     hazeOff: 'Čistý vzduch',
     hazeHint:

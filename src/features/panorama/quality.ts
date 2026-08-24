@@ -1,8 +1,10 @@
 import type { LatLon } from '@shared/types/common.js';
-import type { PanoramaRequest } from './api.js';
+import type { PanoramaRequest, PeakRankExpression } from './api.js';
+import { PROM_DOUBTED_TRUST, PROM_TRUSTED_M } from './labels/fromPeaks.js';
 import {
   ALT_LIMIT,
   type PanoramaSettingsState,
+  panoramaSettingsInitialState,
   tiltRange,
 } from './model/settingsReducer.js';
 
@@ -142,27 +144,89 @@ export function panoramaStep(
 }
 
 /**
- * Metres a summit must stand above the ground around it to be returned, low
- * enough to be no filter at all — dominance is **signed**, so a top that never
- * rises clear of its own ridge scores how far the ridge stands over it, and a
- * floor of `0` would drop exactly the near-field tops a panorama most wants
- * named. Deeper than any real terrain, so nothing is cut.
+ * Keep everything the service can see. Sent to displace its `min_dominance`
+ * default of 30 m, which would cut exactly the near-field tops a panorama most
+ * wants named — dominance is **signed**, so a top that never rises clear of its
+ * own ridge scores how far the ridge stands over it, and any floor at all drops
+ * those.
  *
- * How many names are shown is decided against the viewport instead, where a
- * change is instant; re-rendering to reveal one more label would be absurd.
+ * Which summits count is decided against the viewport instead, where a change
+ * is instant; re-rendering to reveal one more label would be absurd.
+ */
+const PEAK_FILTER = 1;
+
+/**
+ * The same "keep everything" said the deprecated way, for a service that does
+ * not know `peak_filter`. Deeper than any real terrain, and dominance is
+ * signed, so it removes nothing on a service that honours it beside the filter.
  */
 const MIN_DOMINANCE_M = -100_000;
 
 /**
- * A bound on the payload, not on what is drawn, and barely a cost to the
- * service: it truncates before serializing, so what it keeps costs a
- * millisecond of gzip there and 59 B a peak on the wire here. Set past the
- * richest view measured — an Ötztal summit answers with 2665, the whole
- * response 236 KB — since the cut binds only where a view holds that many.
- * What survives is decided by the service's label rank, hence the exponent
- * below.
+ * How many peaks to keep. It does bind — a Tatra summit answers with 6055 — and
+ * what it drops is chosen by {@link PEAK_RANK}, whose weights are the defaults
+ * rather than the user's, so in principle someone at an end of *Rank peaks by*
+ * could be served a set truncated by an ordering they had moved away from, with
+ * no way to ask for the rest.
+ *
+ * Measured rather than assumed: of the 1055 that cap drops from that view, none
+ * reaches the top 200 under either extreme of either slider. They are deeply
+ * negative dominance at distance, which is the bottom of every ordering, not
+ * just the default one. Raise this if that ever stops being true; at 59 B a
+ * peak on the wire the headroom is cheap.
  */
 const MAX_PEAKS = 5000;
+
+/** `distance`, floored at 1 m, which is what the whole total is divided by. */
+const DISTANCE: PeakRankExpression = ['max', ['get', 'distance'], 1];
+
+/**
+ * `1 / distance ** p` at the **default** exponent — read from the initial state
+ * rather than restated, so retuning that default cannot leave the request
+ * ordering by a number nobody chose.
+ */
+const CUT_WORTH: PeakRankExpression = [
+  '/',
+  1,
+  ['^', DISTANCE, panoramaSettingsInitialState.labelDistanceWeight],
+];
+
+/** Dominance and prominence summed, as `labelRank` sums them, at the defaults. */
+const CUT_STATURE: PeakRankExpression = [
+  '+',
+  ['get', 'dominance'],
+  [
+    '*',
+    panoramaSettingsInitialState.prominenceWeight,
+    ['coalesce', ['get', 'prominence'], 0],
+    [
+      'case',
+      ['<=', ['coalesce', ['get', 'prom_dist_m'], 1e9], PROM_TRUSTED_M],
+      1,
+      PROM_DOUBTED_TRUST,
+    ],
+  ],
+];
+
+/**
+ * What the service should order by before it cuts. `labelRank`'s two terms —
+ * dominance with its sign rule, plus prominence discounted by how far its match
+ * reached — with every part the user can move fixed at its default: the haze
+ * term and the revealed penalty are left out, and the distance and prominence
+ * weights are the defaults rather than the current settings.
+ *
+ * All of those move without a render. Baking the current haze into the cut
+ * would have the service drop the far giants that "clear air" exists to reveal,
+ * and the slider that reveals them cannot ask for another render. So the
+ * request ranks on what could ever be wanted and the viewer ranks on what is
+ * wanted now; the constants are shared with `labelRank` so the two cannot
+ * drift.
+ */
+const PEAK_RANK: PeakRankExpression = [
+  '*',
+  CUT_STATURE,
+  ['^', CUT_WORTH, ['sign', CUT_STATURE]],
+];
 
 /**
  * The band actually asked for. A depth lift raises the horizon by exactly its
@@ -193,15 +257,22 @@ export function buildPanoramaRequest(
     depth: true,
     depth_step: 4,
     peaks: true,
+    // Two ways of saying "keep everything", during the window where both are
+    // needed. Not sending either would cut the near field: the service's
+    // `min_dominance` defaults to 30 m, and dominance is signed, so any floor
+    // drops exactly the tops a panorama most wants named (measured on a request
+    // carrying neither: 457 peaks against 2011).
+    //
+    // `peak_filter` is the successor and the one that will remain. The explicit
+    // threshold beside it changes nothing today — an explicit value wins
+    // outright, and this one removes nothing — but it is what answers for a
+    // service too old to know `peak_filter`, which would ignore that field and
+    // apply its default unannounced. Drop it once no such service can be
+    // deployed; a *restrictive* value here would override the filter instead.
+    peak_filter: PEAK_FILTER,
     min_dominance: MIN_DOMINANCE_M,
     max_peaks: MAX_PEAKS,
-    // Deliberately absent from `panoramaRenderKey`: it decides which peaks are
-    // sent, not what is drawn, and the slider it comes from is one of the
-    // instant ones. The next render for any other reason picks the change up.
-    peak_rank_power: settings.labelDistanceWeight,
-    // Not `revealed_peaks`, though the service offers it: switching the names
-    // off would free cut slots, but the switch is instant and the payload is
-    // not, so switching them back on would show nothing until the next render.
+    peak_rank: PEAK_RANK,
     ridge_strength: settings.ridgeStrength,
     ridge_width: settings.ridgeWidth,
     ridge_color: settings.ridgeColor,
