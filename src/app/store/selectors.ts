@@ -60,6 +60,9 @@ export const toposcopePickingCenterSelector = (state: RootState): boolean =>
 export const panoramaPickingViewpointSelector = (state: RootState): boolean =>
   state.panorama.pickingViewpoint;
 
+export const viewshedPickingViewpointSelector = (state: RootState): boolean =>
+  state.viewshed.pickingViewpoint;
+
 /**
  * True while the map is given over to a click that says where. Features stay
  * visible but non-interactive, the tools go inert, and `Main` puts the toolbars
@@ -70,6 +73,7 @@ export const pickingModeSelector = (state: RootState): boolean =>
   selectingHomeLocationSelector(state) ||
   toposcopePickingCenterSelector(state) ||
   panoramaPickingViewpointSelector(state) ||
+  viewshedPickingViewpointSelector(state) ||
   galleryPickingPositionForIdSelector(state) !== null ||
   galleryShowPositionSelector(state) ||
   mapAreaSelectingSelector(state);
@@ -109,6 +113,7 @@ export const mouseCursorSelector = createSelector(
   (state: RootState) => state.drawingLines.drawing,
   toposcopePickingCenterSelector,
   panoramaPickingViewpointSelector,
+  viewshedPickingViewpointSelector,
   (
     selectingHomeLocation,
     tool,
@@ -118,6 +123,7 @@ export const mouseCursorSelector = createSelector(
     drawing,
     toposcopePickingCenter,
     panoramaPickingViewpoint,
+    viewshedPickingViewpoint,
   ) => {
     if (galleryShowPosition) {
       return 'auto';
@@ -127,7 +133,8 @@ export const mouseCursorSelector = createSelector(
       selectingHomeLocation ||
       showGalleryPicker ||
       toposcopePickingCenter ||
-      panoramaPickingViewpoint
+      panoramaPickingViewpoint ||
+      viewshedPickingViewpoint
     ) {
       return 'crosshair';
     }

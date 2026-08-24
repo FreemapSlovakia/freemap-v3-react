@@ -78,6 +78,7 @@ import {
   type ShadingComponent,
   serializeShading,
 } from '@features/parameterizedShading/model/Shading.js';
+import { isPremium } from '@features/premium/premium.js';
 import {
   type RoutePoint,
   routePlannerSetParams,
@@ -95,6 +96,17 @@ import {
 } from '@features/toposcope/toposcopeUrl.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
 import type { TrackedDevice } from '@features/tracking/model/types.js';
+import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
+import {
+  viewshedClear,
+  viewshedPick,
+  viewshedSetSettings,
+} from '@features/viewshed/model/actions.js';
+import { grantedRadiusKm } from '@features/viewshed/request.js';
+import {
+  parseViewshed,
+  sameViewpoint,
+} from '@features/viewshed/viewshedUrl.js';
 import {
   wikiLoadPreview,
   wikiSetPreview,
@@ -604,6 +616,10 @@ export function handleLocationChange(store: MyStore): void {
   if (diff && Object.keys(diff).length) {
     dispatch(mapRefocus(diff));
   }
+
+  // After the layers the URL names are on: until here `map.layers` still holds
+  // whatever was stored from last time, and the viewshed gates on it.
+  handleViewshed(getState, dispatch, query);
 
   const { shading } = query;
 
@@ -1515,6 +1531,59 @@ function handlePanorama(
     serializePanoramaViewpoint(viewpoint) !== serializePanoramaViewpoint(next)
   ) {
     dispatch(panoramaPick(next));
+  }
+}
+
+/**
+ * `viewshed=lat,lon,radiusKm` — where one stands and how far it looks. The
+ * overlay is not in the link: arriving with a viewpoint computes it again.
+ */
+function handleViewshed(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  query: Record<string, string | string[]>,
+) {
+  const { viewpoint } = getState().viewshed;
+
+  // The layer being off keeps the viewpoint on purpose, and stops the URL
+  // carrying the param — which must not read as "the viewshed went".
+  if (!getState().map.layers.includes(VIEWSHED_LAYER)) {
+    return;
+  }
+
+  const next = parseViewshed(
+    typeof query['viewshed'] === 'string' ? query['viewshed'] : '',
+  );
+
+  if (!next) {
+    if (viewpoint) {
+      dispatch(viewshedClear());
+    }
+
+    return;
+  }
+
+  const state = getState();
+
+  // Against what was granted, which is what the URL was written from: an account
+  // looking at a clamped picture would otherwise read its own link back as a
+  // change and store the clamped figure over the one it asked for. Before the
+  // pick, so a link naming both is computed at the radius it names.
+  if (
+    next.radiusKm !== undefined &&
+    next.radiusKm !==
+      grantedRadiusKm(
+        state.viewshedSettings.radiusKm,
+        isPremium(state.auth.user),
+      )
+  ) {
+    dispatch(viewshedSetSettings({ radiusKm: next.radiusKm }));
+  }
+
+  // Only the viewpoint pays for a render, as a click on the map does; a step
+  // through the history that moved only the radius stages it and offers Update.
+  if (!viewpoint || !sameViewpoint(viewpoint, next.viewpoint)) {
+    dispatch(viewshedPick(next.viewpoint));
   }
 }
 

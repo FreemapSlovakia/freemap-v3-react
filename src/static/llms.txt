@@ -93,6 +93,7 @@ The Account modal has three collapsible sections (below); from the buttons at th
   - "Optimize order" in the route planner (reordering the waypoints to minimize travel time)
   - Colorizing routes and tracks in every mode except Elevation, Speed and Time — those three are free, the rest carry a gem and are locked (the option is disabled, the gem opens the purchase flow)
   - Weather radar: up to 6 hours of history instead of 2, plus the 1-hour forecast (the `R` overlay)
+  - Viewshed: looking further than 20 km, and every detail tier above the coarsest (the `v` overlay)
   - High-resolution elevation data in supported countries (used by the elevation API for the chart, colorizing, and elevation fill); currently Slovakia (DMR 5.0: ÚGKK SR), Czechia (DMR 5G: ČÚZK), Austria (ALS DTM: Geoland.at), Switzerland (swissALTI3D: © swisstopo), Italy (HR-DTM 5 m: IRPI-CNR), Slovenia (DMR: Ministrstvo za okolje in prostor), Spain (MDT05: IGN/CNIG), Sweden (Markhöjdmodell: Lantmäteriet), France (RGE ALTI: IGN), Poland (NMT: GUGiK), Finland (Korkeusmalli 2 m: Maanmittauslaitos), Croatia (DMR: Državna geodetska uprava), Norway (DTM: Kartverket, NLOD 2.0), and England (LIDAR Composite DTM 1 m: Environment Agency, OGL v3), with more countries being added; past their borders a premium read falls back to a global 30 m model (GEDTM30), while without premium the elevation API answers from SRTM everywhere
 
 #### Personal information
@@ -603,6 +604,7 @@ Right-clicking (or long-pressing) a location on the map opens a context menu wit
 - Plan a route from here
 - Plan a route to here
 - Panorama from here
+- Viewshed from here (turns the `v` overlay on and computes it from that point)
 - Toposcope from here
 
 ### Info button
@@ -758,6 +760,7 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 | Photos                     | I   | gallery           |   10 |            |              |                 |              | ⇧f       |           | Own Creative-Commons photos (CC BY-SA 4.0 default; premium-only option) **and** geotagged Wikimedia Commons photos, in one layer; both shown from zoom 10 |
 | Wikipedia                  | w   | wikipedia         |    8 |            |              |                 |              | ⇧w       |           | Wikipedia                                                  |
 | Weather radar              | R   | radar             |      |          9 |              |                 |              | ⇧r       |           | Animated precipitation radar. Premium: up to 6 h of history plus a 1-hour forecast; otherwise 2 h and no forecast. Data © EUMETNET OPERA — over Italy CC BY-SA 4.0 © Radar-DPC |
+| Viewshed                   | v   | viewshed          |      |            |              |                 |              | ⇧v       |           | Experimental; what can be seen from one chosen point, computed on the server from the terrain model (© Freemap; national LiDAR models, GEDTM30 elsewhere). Premium: further than 20 km, and detail above the coarsest tier |
 | Forest tracks NLC (2017)   | l1  | tile              |   11 |         15 |              |            1000 | l2           |          | sk        | © NLC Zvolen (legacy)                                      |
 | Forest tracks NLC          | l2  | maplibre          |    9 |            |              |                 |              | ⇧n       | sk        | © NLC Zvolen                                               |
 | Parametric shading         | h   | parametricShading |      |         13 |              |                 |              | ⇧h       |           | Experimental; © Freemap, GEDTM30 (Europe)                  |
@@ -769,6 +772,7 @@ Notes:
 
 - The `i` (Data layer) overlay hosts every tool's interactive features; hiding it hides those features without disabling the tools.
 - The single `X` "Outdoor" base map renders hiking, bicycle, ski and riding trails together — there are no longer separate per-activity trail layers.
+- The `v` (Viewshed) overlay is not a map of anything until a point is chosen: turning it on asks where you stand, and the answer starts a render that takes seconds on the server. Its own toolbar sets the range (1–300 km) and the quality tier, each tier showing the ground a pixel covers at the current range, and behind a cog the eye and target heights, the colour, the strength and the minimum opacity; it offers Update whenever the overlay is of other settings, and the viewpoint marker can be dragged, which stages a new place rather than rendering. Without premium the range is capped at 20 km and only the coarsest detail tier renders — the other options stay in the menus, marked with a gem that opens the purchase flow. The image's opacity is the projected area of each patch of ground, so a slope facing you reads solid and one seen edge-on fades; the strength slider curves that so it can be read at a glance, and the minimum opacity turns it into a stencil. It is bare earth — no trees, no buildings — and the link carries `viewshed=lat,lon,radiusKm`.
 - The `R` (Weather radar) overlay is animated: turning it on opens its own toolbar with play/pause, frame stepping and a timeline. The timeline carries the same frames for everyone — the measured frames the server publishes plus a one-hour forecast — but only part of it can be opened without premium: premium reaches up to six hours back and can open the forecast, everyone else two hours and no forecast. The locked stretches are painted in the upsell colour at each end and offer premium when clicked. The only setting is whether the forecast frames are shown at all, which is itself premium.
 
 ##### Internal layer codes

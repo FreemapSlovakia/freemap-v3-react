@@ -32,9 +32,6 @@ const en: PanoramaMessages = {
   },
   settings: {
     title: 'Panorama settings',
-    eye: 'Eye height',
-    eyeHint:
-      'How high above the ground you are standing — a tower or a drone, not the elevation itself.',
     tiltHint:
       'How much sky and ground the picture holds, as the angles above and below the horizon.',
     custom: 'Exact angles',
@@ -42,7 +39,6 @@ const en: PanoramaMessages = {
     depthLiftOff: 'True view',
     depthLiftHint:
       'Raises distant terrain so that far ranges separate from the ridges in front of them, the way a hand-drawn panorama does. It also brings into view summits you could not actually see from here; their names are marked.',
-    range: 'Maximum visible distance',
     rangeHint:
       'Terrain past 300 km is premium’s. Every extra kilometre is walked along every ray of the picture, so a farther view costs the renderer proportionally more.',
     look: 'Look',
@@ -59,7 +55,6 @@ const en: PanoramaMessages = {
     groundColor: 'Ground colour',
   },
   preview: 'Preview',
-  eyeElevation: 'Viewpoint',
   quality: {
     label: 'Quality / speed',
     superfast: 'Lowest / fastest',

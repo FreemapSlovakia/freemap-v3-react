@@ -4,8 +4,12 @@ import {
   serializePanoramaViewpoint,
 } from '@features/panorama/panoramaUrl.js';
 import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
+import { isPremium } from '@features/premium/premium.js';
 import { routeKey } from '@features/routePlanner/model/actions.js';
 import { serializeToposcope } from '@features/toposcope/toposcopeUrl.js';
+import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
+import { grantedRadiusKm } from '@features/viewshed/request.js';
+import { serializeViewshed } from '@features/viewshed/viewshedUrl.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
@@ -156,6 +160,9 @@ function updateUrl(state: RootState, forced: boolean): void {
     toposcope,
     panorama,
     panoramaSettings,
+    viewshed,
+    viewshedSettings,
+    auth,
   } = state;
 
   if (!isUrlUpdatingEnabled()) {
@@ -190,6 +197,13 @@ function updateUrl(state: RootState, forced: boolean): void {
   // The map the URL names, and with it whether the content goes into the
   // history entry instead of the address bar.
   const mapId = urlMapIdSelector(state);
+
+  // What the viewshed is actually of; premium changing moves it without the
+  // stored setting moving, and the address bar has to follow. Only where there
+  // is one — this runs on every action.
+  const viewshedRadiusKm = viewshed.viewpoint
+    ? grantedRadiusKm(viewshedSettings.radiusKm, isPremium(auth.user))
+    : undefined;
 
   const rest = [
     changesets.authorName,
@@ -235,6 +249,8 @@ function updateUrl(state: RootState, forced: boolean): void {
     panoramaSettings.tilt,
     panoramaSettings.altMin,
     panoramaSettings.altMax,
+    viewshed.viewpoint,
+    viewshedRadiusKm,
   ];
 
   const restChanged =
@@ -356,6 +372,16 @@ function updateUrl(state: RootState, forced: boolean): void {
     historyParts.push([
       'panorama-tilt',
       serializePanoramaTilt(panoramaSettings),
+    ]);
+  }
+
+  // Where the viewshed is taken from and how far it looks; the overlay itself is
+  // computed again on arrival. Only while its layer is on, which `layers=`
+  // carries alongside.
+  if (viewshed.viewpoint && map.layers.includes(VIEWSHED_LAYER)) {
+    historyParts.push([
+      'viewshed',
+      serializeViewshed(viewshed.viewpoint, viewshedRadiusKm ?? 0),
     ]);
   }
 

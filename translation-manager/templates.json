@@ -22,6 +22,7 @@
     "src/features/elevationChart/translations/{LANG}.tsx",
     "src/features/toposcope/translations/{LANG}.tsx",
     "src/features/panorama/translations/{LANG}.tsx",
+    "src/features/viewshed/translations/{LANG}.tsx",
     "src/shared/colorizers/translations/{LANG}.tsx",
     "src/features/openInExternalApp/translations/{LANG}.tsx",
     "src/features/credits/translations/{LANG}.tsx",

@@ -132,6 +132,13 @@ import { trackingCopyToDataViewerProcessor } from '@features/tracking/model/proc
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
 import { trackingFollowProcessor } from '@features/tracking/model/processors/trackingFollowProcessors.js';
 import {
+  viewshedCancelProcessor,
+  viewshedFixProcessor,
+  viewshedLayerProcessor,
+  viewshedReleaseProcessor,
+  viewshedRenderProcessor,
+} from '@features/viewshed/model/processors.js';
+import {
   weatherRadarLayerProcessor,
   weatherRadarRefreshProcessor,
 } from '@features/weatherRadar/model/processors.js';
@@ -258,6 +265,11 @@ export const processors = [
   panoramaReleaseProcessor,
   panoramaFixProcessor,
   panoramaToposcopeProcessor,
+  viewshedRenderProcessor,
+  viewshedReleaseProcessor,
+  viewshedCancelProcessor,
+  viewshedLayerProcessor,
+  viewshedFixProcessor,
   toposcopeFixProcessor,
   ...Object.values(rpcProcessors),
   exportMapFeaturesProcessor,

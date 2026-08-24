@@ -234,7 +234,9 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
 
         <Modal.Body>
           <Form.Group className="mb-3">
-            <Form.Label htmlFor="fm-panorama-eye">{m?.settings.eye}</Form.Label>
+            <Form.Label htmlFor="fm-panorama-eye">
+              {gm?.general.eyeHeight}
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -256,7 +258,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               <InputGroup.Text>m</InputGroup.Text>
             </InputGroup>
 
-            <Form.Text>{m?.settings.eyeHint}</Form.Text>
+            <Form.Text>{gm?.general.eyeHeightHint}</Form.Text>
           </Form.Group>
 
           {/* The angles themselves, not another preset list — picking a preset
@@ -333,7 +335,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               id="fm-panorama-range"
               label={
                 <>
-                  {m?.settings.range}
+                  {gm?.general.maxVisibleDistance}
 
                   {!premium && <PremiumGem hint={m?.settings.rangeHint} />}
                 </>

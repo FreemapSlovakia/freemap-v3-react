@@ -44,6 +44,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     yes: 'Sì',
     no: 'No',
     masl,
+    viewpoint: 'Punto di osservazione',
+    eyeHeight: 'Altezza dell’occhio',
+    eyeHeightHint:
+      'Quanto sei in alto rispetto al terreno — una torre o un drone, non la quota sul livello del mare.',
+    maxVisibleDistance: 'Distanza massima visibile',
     copyCode: 'Copia codice',
     loading: 'Caricamento…',
     ok: 'OK',
@@ -73,6 +78,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     openIn: ({ what }) => <>Apri in {what}</>,
 
     panoramaFromHere: 'Panorama da qui',
+    viewshedFromHere: 'Visibilità da qui',
     toposcopeFromHere: 'Tavola d’orientamento da qui',
     simplifyPrompt:
       'Per favore inserisci il fattore di semplificazione. Imposta lo zero per nessuna semplificazione.',
@@ -337,6 +343,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-I': 'immagini, galleria, foto',
         'layer-w': 'wiki, articoli',
         'layer-R': 'meteo, pioggia, precipitazioni, temporale, previsioni',
+        'layer-v':
+          'analisi di visibilità, bacino visivo, linea di vista, terreno',
         'layer-5': 'ombreggiatura, rilievo, terreno, quota',
         'layer-6': 'ombreggiatura, rilievo, superficie, quota',
         'layer-7': 'ombreggiatura, rilievo, terreno, quota, lidar',
@@ -391,6 +399,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l2: 'Tracce forestali NLC',
       w: 'Wikipedia',
       R: 'Radar meteo',
+      v: 'Visibilità',
       '5': 'Ombreggiatura del terreno',
       '6': 'Ombreggiatura della superficie',
       '7': 'Ombreggiatura dettagliata della terreno',

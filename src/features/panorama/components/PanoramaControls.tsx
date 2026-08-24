@@ -26,19 +26,20 @@ import { Button, Form } from 'react-bootstrap';
 import {
   FaCog,
   FaCompass,
-  FaEye,
   FaInfoCircle,
   FaPlay,
   FaStop,
+  FaStreetView,
   FaSync,
 } from 'react-icons/fa';
 import { LuFoldVertical, LuUnfoldVertical } from 'react-icons/lu';
 import { MdOutlineHeight } from 'react-icons/md';
-import { PiCompassRoseBold, PiMountains } from 'react-icons/pi';
+import { PiCompassRoseBold } from 'react-icons/pi';
 import {
   TbBaselineDensityLarge,
   TbBaselineDensityMedium,
   TbBaselineDensitySmall,
+  TbGridDots,
   TbTagOff,
 } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
@@ -213,7 +214,7 @@ export function PanoramaControls({
         consumer="panorama"
         variant={viewpoint ? 'secondary' : 'primary'}
         label={m?.pickViewpoint}
-        icon={<FaEye />}
+        icon={<FaStreetView />}
         locateLabel={m?.locate}
         // iOS grants the magnetometer only from a gesture, and the pick itself
         // happens later in a processor, nowhere near one.
@@ -246,7 +247,7 @@ export function PanoramaControls({
               <PremiumGem nested />
             ),
         }))}
-        toggleIcon={<PiMountains />}
+        toggleIcon={<TbGridDots />}
         name={m?.quality.label}
         breakpoint="md"
       />

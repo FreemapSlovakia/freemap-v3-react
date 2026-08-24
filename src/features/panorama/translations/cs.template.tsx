@@ -28,9 +28,6 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   settings: {
     title: 'Nastavení panoramatu',
-    eye: 'Výška očí',
-    eyeHint:
-      'Jak vysoko nad zemí stojíte — rozhledna či dron, ne nadmořská výška.',
     tiltHint:
       'Kolik oblohy a země obrázek zachytí — úhly nad obzorem a pod ním.',
     custom: 'Přesné úhly',
@@ -38,7 +35,6 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLiftOff: 'Věrný pohled',
     depthLiftHint:
       'Nadzvedne vzdálený terén, takže se daleká pohoří oddělí od hřebenů před nimi — tak, jak to dělají ručně kreslená panoramata. Zároveň se tím do obrázku dostanou vrcholy, které byste odtud ve skutečnosti neviděli; jejich názvy jsou odlišené.',
-    range: 'Maximální viditelná vzdálenost',
     rangeHint:
       'Terén nad 300 km patří prémiu. Každý kilometr navíc se projde po každém paprsku obrázku, takže vzdálenější výhled stojí vykreslování úměrně víc.',
     look: 'Vzhled',
@@ -55,7 +51,6 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     groundColor: 'Barva terénu',
   },
   preview: 'Náhled',
-  eyeElevation: 'Stanoviště',
   quality: {
     label: 'Kvalita / rychlost',
     superfast: 'Nejnižší / nejrychlejší',

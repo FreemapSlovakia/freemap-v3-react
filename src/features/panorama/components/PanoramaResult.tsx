@@ -1,6 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { makeBeamIcon } from '@shared/beamIcon.js';
-import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -20,11 +19,10 @@ import {
   useRef,
   useState,
 } from 'react';
-import { FaCrosshairs, FaEye } from 'react-icons/fa';
+import { FaCrosshairs, FaStreetView } from 'react-icons/fa';
 import { Marker, Polyline, Tooltip, useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { panoramaMoveViewpoint } from '../model/actions.js';
-import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import { usePanoramaHover, usePanoramaView } from '../viewStore.js';
 import { PanoramaProbeReadout } from './PanoramaProbeReadout.js';
 
@@ -37,30 +35,28 @@ const PAN_MARGIN_PX = 40;
 
 /**
  * The line of sight a reading was taken along. Thin and dashed so it reads as a
- * sight line rather than as a route someone drew, and in the viewpoint marker's
- * own colour so the pair belong together.
+ * sight line rather than as a route someone drew, and in the mark colour like
+ * everything else here.
  */
-const SIGHT_LINE = {
-  color: COLORS.normal,
+const sightLine = (color: string): PathOptions => ({
+  color,
   weight: 1.5,
   opacity: 0.75,
   dashArray: '5 5',
-};
-
-const SIGHT_LINE_HOVER = { ...SIGHT_LINE, weight: 1, opacity: 0.4 };
+});
 
 /**
  * The slice of horizon the viewer currently holds, drawn from the viewpoint —
  * screen-sized rather than ground-sized, since it says which way one is
- * looking, not how far one can see. In the viewpoint marker's own colour, so it
- * is never mistaken for the located heading beam.
+ * looking, not how far one can see. Its colour is what keeps it from being
+ * mistaken for the located heading beam.
  */
-const makeWedgeIcon = (fov: number) =>
+const makeWedgeIcon = (fov: number, color: string) =>
   makeBeamIcon({
     halfAngle: fov / 2,
     size: WEDGE_SIZE,
     radius: WEDGE_RADIUS,
-    color: COLORS.normal,
+    color,
     innerStop: 0.1,
     innerOpacity: 0.55,
     gradientId: 'fm-panorama-wedge',
@@ -76,8 +72,6 @@ const makeWedgeIcon = (fov: number) =>
 export default function PanoramaResult(): ReactElement | null {
   const dispatch = useDispatch();
 
-  const m = usePanoramaMessages();
-
   const gm = useMessages();
 
   // Plain, not the `meter` unit style: `general.masl` follows it and says both
@@ -89,6 +83,13 @@ export default function PanoramaResult(): ReactElement | null {
   const probe = useAppSelector((state) => state.panorama.probe);
 
   const render = useAppSelector((state) => state.panorama.render);
+
+  // Everything drawn here — the eye, the wedge, the sight lines and the marks
+  // they end at — is inked in the picture's own terrain colour, so the map says
+  // which panorama it belongs to.
+  const markColor = useAppSelector(
+    (state) => state.panoramaSettings.groundColor,
+  );
 
   const view = usePanoramaView();
 
@@ -146,8 +147,15 @@ export default function PanoramaResult(): ReactElement | null {
   const fov = view === null ? null : Math.round(view.fov);
 
   const wedgeIcon = useMemo(
-    () => (fov === null ? null : makeWedgeIcon(fov)),
-    [fov],
+    () => (fov === null ? null : makeWedgeIcon(fov, markColor)),
+    [fov, markColor],
+  );
+
+  const sight = useMemo(() => sightLine(markColor), [markColor]);
+
+  const sightHover = useMemo(
+    () => ({ ...sight, weight: 1, opacity: 0.4 }),
+    [sight],
   );
 
   const position = useMemo(
@@ -210,15 +218,16 @@ export default function PanoramaResult(): ReactElement | null {
       {(dragging || !atRenderedViewpoint) && sightFrom && (
         <RichMarker
           position={sightFrom}
+          color={markColor}
           opacity={0.45}
           draggable={false}
           // Under the live pin, for a drag that ends up nearly back where it began.
           zIndexOffset={-500}
-          faIcon={<FaEye />}
+          faIcon={<FaStreetView />}
         >
           {render && (
             <Tooltip direction="top">
-              {m?.eyeElevation}: {nfEle.format(render.eyeElevation)}{' '}
+              {gm?.general.viewpoint}: {nfEle.format(render.eyeElevation)}{' '}
               {gm?.general.masl}
             </Tooltip>
           )}
@@ -229,16 +238,18 @@ export default function PanoramaResult(): ReactElement | null {
           is as often a saddle or a road as a peak. */}
       <RichMarker
         position={position}
+        color={markColor}
         draggable
         eventHandlers={{
           dragstart: handleDragStart,
           dragend: handleDragEnd,
         }}
-        faIcon={<FaEye />}
+        faIcon={<FaStreetView />}
       >
         {eyeElevation === null ? null : (
           <Tooltip direction="top">
-            {m?.eyeElevation}: {nfEle.format(eyeElevation)} {gm?.general.masl}
+            {gm?.general.viewpoint}: {nfEle.format(eyeElevation)}{' '}
+            {gm?.general.masl}
           </Tooltip>
         )}
       </RichMarker>
@@ -254,7 +265,8 @@ export default function PanoramaResult(): ReactElement | null {
         <SightMark
           from={sightFrom}
           at={hover}
-          pathOptions={SIGHT_LINE_HOVER}
+          color={markColor}
+          pathOptions={sightHover}
           opacity={0.65}
         />
       )}
@@ -263,7 +275,8 @@ export default function PanoramaResult(): ReactElement | null {
         <SightMark
           from={sightFrom}
           at={probe}
-          pathOptions={SIGHT_LINE}
+          color={markColor}
+          pathOptions={sight}
           // A press on the bare terrain has no name to give, but the two
           // figures are read off the picture either way — which is the whole
           // of what such a press asked.
@@ -277,12 +290,14 @@ export default function PanoramaResult(): ReactElement | null {
 function SightMark({
   from,
   at,
+  color,
   pathOptions,
   opacity,
   tooltip,
 }: {
   from: LatLngLiteral;
   at: LatLon;
+  color: string;
   pathOptions: PathOptions;
   opacity?: number;
   tooltip?: ReactNode;
@@ -302,6 +317,7 @@ function SightMark({
           viewpoint — and nobody presses a pin meaning to move house. */}
       <RichMarker
         position={to}
+        color={color}
         interactive={Boolean(tooltip)}
         opacity={opacity}
         faIcon={<FaCrosshairs />}

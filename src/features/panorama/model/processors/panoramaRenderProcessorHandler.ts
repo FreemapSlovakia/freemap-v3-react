@@ -4,10 +4,11 @@ import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
 import { isAbortError } from '@shared/isAbortError.js';
+import { terrainErrorCode } from '@shared/terrainService.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { Dispatch } from 'redux';
-import { panoramaErrorCode, renderPanorama } from '../../api.js';
+import { renderPanorama } from '../../api.js';
 import { labelsFromPeaks } from '../../labels/fromPeaks.js';
 import {
   buildPanoramaRequest,
@@ -166,7 +167,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     // replaced this one, or the panel closing. Clearing it here would say the
     // panel is idle while the next render is running.
     if (!isAbortError(err)) {
-      dispatch(panoramaSetError(panoramaErrorCode(err)));
+      dispatch(panoramaSetError(terrainErrorCode(err)));
     }
 
     return;

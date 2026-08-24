@@ -30,6 +30,7 @@ import { SearchMenu } from '@features/search/components/SearchMenu.js';
 import { SearchSelection } from '@features/search/components/SearchSelection.js';
 import { Toasts } from '@features/toasts/components/Toasts.js';
 import { TrackingSelection } from '@features/tracking/components/TrackingSelection.js';
+import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
 import { RADAR_LAYER } from '@features/weatherRadar/api.js';
 import { WikiLayer } from '@features/wiki/components/WikiLayer.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
@@ -198,6 +199,24 @@ const weatherRadarMenuFactory = () =>
   import(
     /* webpackChunkName: "weather-radar-menu" */
     '@features/weatherRadar/components/WeatherRadarMenu.js'
+  );
+
+const viewshedMenuFactory = () =>
+  import(
+    /* webpackChunkName: "viewshed-menu" */
+    '@features/viewshed/components/ViewshedMenu.js'
+  );
+
+const viewshedViewpointPickingFactory = () =>
+  import(
+    /* webpackChunkName: "viewshed-viewpoint-picking" */
+    '@features/viewshed/components/ViewshedViewpointPicking.js'
+  );
+
+const viewshedViewpointPickingMenuFactory = () =>
+  import(
+    /* webpackChunkName: "viewshed-viewpoint-picking-menu" */
+    '@features/viewshed/components/ViewshedViewpointPickingMenu.js'
   );
 
 const adFactory = () =>
@@ -518,6 +537,10 @@ export function Main(): ReactElement {
     (state) => state.panorama.pickingViewpoint,
   );
 
+  const pickingViewshedViewpoint = useAppSelector(
+    (state) => state.viewshed.pickingViewpoint,
+  );
+
   const showGalleryPicker = useAppSelector(showGalleryPickerSelector);
 
   // The toolbars and the floating panels go while a place is being picked.
@@ -537,6 +560,10 @@ export function Main(): ReactElement {
 
   const showWeatherRadar = useAppSelector((state) =>
     state.map.layers.includes(RADAR_LAYER),
+  );
+
+  const showViewshed = useAppSelector((state) =>
+    state.map.layers.includes(VIEWSHED_LAYER),
   );
 
   const language = useAppSelector((state) => state.l10n.language);
@@ -793,6 +820,10 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={weatherRadarMenuFactory} />
               )}
 
+              {!picking && showViewshed && (
+                <AsyncComponent factory={viewshedMenuFactory} />
+              )}
+
               {/* Outside the chain below: a running recording keeps its toolbar
                   — collapsed to a strip, and told apart by its own gate — for as
                   long as it runs, because nothing else on the screen says the
@@ -889,6 +920,10 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={panoramaViewpointPickingMenuFactory} />
               )}
 
+              {pickingViewshedViewpoint && (
+                <AsyncComponent factory={viewshedViewpointPickingMenuFactory} />
+              )}
+
               {selectingMapArea && (
                 <AsyncComponent factory={mapAreaSelectionMenuFactory} />
               )}
@@ -983,6 +1018,10 @@ export function Main(): ReactElement {
 
             {pickingPanoramaViewpoint && (
               <AsyncComponent factory={panoramaViewpointPickingFactory} />
+            )}
+
+            {pickingViewshedViewpoint && (
+              <AsyncComponent factory={viewshedViewpointPickingFactory} />
             )}
 
             {selectingMapArea && <MapAreaSelectionResult />}

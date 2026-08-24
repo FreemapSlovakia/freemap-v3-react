@@ -67,7 +67,11 @@ the change; the controls then offer **Update** (`panoramaRender`).
 
 **The panel is not a map-click tool.** It is in `panelTools`, not `mapTool`, so
 it can stay open beside the route planner. Where to stand is asked for
-explicitly, by a split button wearing the same eye its map marker wears: its own
+explicitly, by a split button wearing the same standing figure its map marker
+wears (the viewshed's pair wear an eye, the toposcope's the viewpoint starburst
+— one glyph per observer, so a map carrying several says which is which; the
+binoculars are the viewshed *layer's* own mark, in the switcher and its toolbar
+title): its own
 press raises `pickingViewpoint`, a picking mode like the toposcope's centre (see
 `pickingModeSelector`), and its one menu item takes the GPS instead. The
 toposcope's centre is placed by the same pair in the same order — the two panels
@@ -385,8 +389,13 @@ The map's field-of-view wedge reads from `viewStore.ts` rather than from Redux,
 because it needs the field of view as well as the bearing and that is nobody
 else's business. The wedge is a `divIcon` marker drawn pointing north
 and turned by mutating one transform, so a pan rewrites nothing else — the same
-construction as the located heading beam, in the viewpoint marker's own red so
-the two can't be confused.
+construction as the located heading beam.
+
+**Everything `PanoramaResult` draws is inked in `panoramaSettings.groundColor`**
+— the eye, the faded eye, the wedge, the sight lines and the marks they end at.
+That is what tells them from the located heading beam, and from another
+terrain overlay's own marks (the viewshed's follow its overlay colour the same
+way). One source, so a look changed in the settings modal moves all of them.
 
 **Everything read out of the picture is anchored at `sightFrom`** — the render's
 own viewpoint — rather than at the pin: the wedge, and the sight line each mark

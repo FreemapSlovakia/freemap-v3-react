@@ -45,6 +45,7 @@ function makeState(o: Overrides = {}): RootState {
     mapArea: { selecting: null, ...o.mapArea },
     toposcope: { pickingCenter: false, ...o.toposcope },
     panorama: { pickingViewpoint: false, ...o.panorama },
+    viewshed: { pickingViewpoint: false, ...o.viewshed },
     tracking: { tracks: [], ...o.tracking },
     trackViewer: { trackGeojson: null, ...o.trackViewer },
     toasts: { toasts: {}, ...o.toasts },

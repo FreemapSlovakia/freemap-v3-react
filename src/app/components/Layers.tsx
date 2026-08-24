@@ -47,6 +47,12 @@ const radarLayerFactory = () =>
     '@features/weatherRadar/components/RadarLayer.js'
   );
 
+const viewshedLayerFactory = () =>
+  import(
+    /* webpackChunkName: "viewshed-layer" */
+    '@features/viewshed/components/ViewshedLayer.js'
+  );
+
 export function Layers(): ReactElement | null {
   const layers = useAppSelector((state) => state.map.layers);
 
@@ -134,6 +140,19 @@ export function Layers(): ReactElement | null {
           opacity={opacity}
           zIndex={layerDef.zIndex ?? 1}
           maxZoom={maxZoom}
+        />
+      );
+    }
+
+    if (layerDef.technology === 'viewshed') {
+      // One image per viewpoint rather than a grid: where it is drawn and what
+      // it is of live in the feature's own slices.
+      return (
+        <AsyncComponent
+          factory={viewshedLayerFactory}
+          key={type}
+          opacity={opacity}
+          zIndex={layerDef.zIndex ?? 1}
         />
       );
     }
