@@ -154,14 +154,15 @@ export function panoramaStep(
 const MIN_DOMINANCE_M = -100_000;
 
 /**
- * A bound on the payload, not on what is drawn — the view decides how many
- * names it has room for, and asking again to reveal one more would cost a whole
- * render. Set well above what any panel can hold: a rich summit answers with
- * the better part of a thousand, and at a few hundred bytes each that is
- * nothing beside the picture they belong to. The cut is applied after the sort,
- * so what it does drop is what dominates the view least.
+ * A bound on the payload, not on what is drawn, and barely a cost to the
+ * service: it truncates before serializing, so what it keeps costs a
+ * millisecond of gzip there and 59 B a peak on the wire here. Set past the
+ * richest view measured — an Ötztal summit answers with 2665, the whole
+ * response 236 KB — since the cut binds only where a view holds that many.
+ * What survives is decided by the service's label rank, hence the exponent
+ * below.
  */
-const MAX_PEAKS = 2000;
+const MAX_PEAKS = 5000;
 
 /**
  * The band actually asked for. A depth lift raises the horizon by exactly its
@@ -174,10 +175,16 @@ function renderTiltRange(settings: PanoramaSettingsState): [number, number] {
   return [altMin, Math.min(altMax + settings.depthLift, ALT_LIMIT)];
 }
 
+/**
+ * `peaks` is the caller's because only one pass of a render asks for them —
+ * the cheap one, whose answer the detailed pass then carries; see
+ * `panoramaRenderProcessorHandler`.
+ */
 export function buildPanoramaRequest(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
   { quality, rangeKm }: PanoramaGrants,
+  peaks: boolean,
 ): PanoramaRequest {
   const band = renderTiltRange(settings);
 
@@ -191,9 +198,16 @@ export function buildPanoramaRequest(
     range: rangeKm * 1000,
     depth: true,
     depth_step: 4,
-    peaks: true,
+    peaks,
     min_dominance: MIN_DOMINANCE_M,
     max_peaks: MAX_PEAKS,
+    // Deliberately absent from `panoramaRenderKey`: it decides which peaks are
+    // sent, not what is drawn, and the slider it comes from is one of the
+    // instant ones. The next render for any other reason picks the change up.
+    peak_rank_power: settings.labelDistanceWeight,
+    // Not `revealed_peaks`, though the service offers it: switching the names
+    // off would free cut slots, but the switch is instant and the payload is
+    // not, so switching them back on would show nothing until the next render.
     ridge_strength: settings.ridgeStrength,
     ridge_width: settings.ridgeWidth,
     ridge_color: settings.ridgeColor,

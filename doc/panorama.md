@@ -284,6 +284,22 @@ behind it. Always, with nothing to turn it off: because the preview is the
 *coarsest* tier it adds a few percent to a detailed render, where a middling
 preview would have cost the third again that once made it worth asking about.
 
+**Only the first pass asks for peaks**, and `carryOver` moves its labels into
+the second pass's pixels — `y` is `(alt_max − altitude) / step`, so the same
+summit sits lower down the taller image, and nothing else about a label changes
+with the tier. Three reasons, in order of weight: the peak list is the larger
+half of the payload and would otherwise be fetched twice; the peak pass costs
+the detailed render about two seconds it need not spend; and the two passes do
+not fully agree about peaks anyway — visibility is decided by the rays a tier
+cast, and a summit with a near-level neighbourhood can still swing its
+dominance, which together changed four of the top forty labels under the second
+pass at an Ötztal viewpoint.
+
+The trade is that the coarse pass answers for **visibility** too, so a summit
+the detailed picture draws behind a ridge can still carry a name. Two of those
+four were exactly that. It is the better half of the bargain: a name that is
+marginally wrong beats a set of names that rearranges itself while being read.
+
 ## What the store holds, and what it can't
 
 `PanoramaRenderInfo` (in `model/reducer.ts`) is the serializable half of a
@@ -494,11 +510,13 @@ panorama most wants named — hence `MIN_DOMINANCE_M` sits far below any real
 terrain.
 
 **Which peaks come back depends on the render**, since visibility is tested
-against the depth buffer — a finer tier still resolves somewhat more of them,
-though far less than it used to: the service's visibility tolerance was once
-tighter than its own sample spacing, which rejected summits in plain view and
-made the count swing with `step`. With no floor, one viewpoint now answers with
-about 620 named peaks at `step` 0.05 against roughly 540 at 0.1.
+against the rays the tier actually cast — two bracketing a summit stand 0.2°
+apart at preview quality and 0.017° at the finest, so a marginal top appears at
+one tier and not the other. From an Ötztal viewpoint the two passes shared 2470
+peaks and disagreed about 358 of them. Dominance no longer moves with the tier
+in the same way (the service measures it on a grid of its own), though a summit
+whose neighbourhood is near-level can still swing hard — 634 m against −0.8 m
+for one of them. Which is why only one pass asks; see below.
 
 Everything about placement is ours, in two passes. `thinLabels` decides which
 summits get a name at all: one per pitch of horizon, in rank order. `layoutLabels`
@@ -579,11 +597,37 @@ stack into; raising the cap alone changes nothing while the climb is exhausted
 first.
 
 The request asks for **everything the service will name**: a `min_dominance`
-below any real terrain, capped at `max_peaks: 2000` as a bound on the payload
+below any real terrain, capped at `max_peaks: 5000` as a bound on the payload
 rather than on what is drawn. Its own default of 30 m would be a heavy cut, and
 against a signed figure a floor of `0` would cut the near field entirely.
-Thinning belongs here, where a change is instant; the cap is applied after the
-sort, so what it does drop is what dominates the view least.
+Thinning belongs here, where a change is instant.
+
+**The cap is bandwidth, not server load.** The service truncates before
+serializing, so raising it costs it only the gzip of what it keeps — a
+millisecond or so — and the reader 248 B a peak, 59 B of it on the wire once
+the vhost's `gzip` has had it. A rich Alpine view answers with 2665 peaks, and
+the whole response, picture included, lands in 236 KB. Hence 5000 rather than a
+tight number: the cap binds only where a view really holds that many, and there
+it now costs a few hundred kilobytes rather than the megabyte and a half it
+would have before the service rounded its numbers and nginx started compressing
+them.
+
+What the cut drops is decided by the service's own label rank, whose distance
+exponent we send as `peak_rank_power` — the viewer's `labelDistanceWeight`. The
+two orders are not identical, since ours also carries a haze term and the
+revealed penalty and the service's does not; sending it narrows the gap where
+the cap binds, which is the only place either order matters. That parameter is
+**not** in `panoramaRenderKey`: it changes which peaks are sent, not what is
+drawn, and the slider it comes from is one of the instant ones, so the next
+render for any other reason picks it up.
+
+Sorting by raw dominance was the old behaviour (`peak_rank_power: 0`) and it
+truncated the wrong end — from an Ötztal viewpoint a summit 2.1 km away was cut
+while distant massifs filled the payload, unrecoverable client-side. The
+service's `revealed_peaks` flag is a similar trap avoided: it would free cut
+slots when the revealed names are switched off, but the switch is instant and
+the payload is not, so checking it back on would show nothing until the next
+render. That filter stays client-side.
 
 Beyond that, how many arrive is not the client's to influence. From a valley
 viewpoint the service returned **two** peaks with no floor and no cap — asking

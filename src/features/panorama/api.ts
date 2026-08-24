@@ -35,8 +35,15 @@ export interface PanoramaRequest {
   peaks: boolean;
   /** Metres a summit must stand above its surroundings to be returned. */
   min_dominance?: number;
-  /** Cut applied after the sort, so it keeps the dominant summits. */
+  /** Cut applied after the sort, so it keeps the summits worth labelling. */
   max_peaks?: number;
+  /**
+   * Exponent on distance in that sort, 0–4 — `0` is dominance alone. Sent as
+   * the viewer's own `labelDistanceWeight`: the two orders still differ, ours
+   * carrying a haze term the service's has no notion of, but it narrows the
+   * gap where the cut binds, which is the only place either order matters.
+   */
+  peak_rank_power?: number;
   /**
    * Gain on the silhouettes' alpha, not an opacity: the geometry inks a near
    * ridge at ~0.55 and a far one at ~0.15, so `1` is already translucent.

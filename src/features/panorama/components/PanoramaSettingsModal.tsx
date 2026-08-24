@@ -252,7 +252,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               />
 
               {/* Literal, as the shading modal's metre fields are: the symbol
-                  is the same in every locale this app speaks. */}
+                  is the sam */}
               <InputGroup.Text>m</InputGroup.Text>
             </InputGroup>
 

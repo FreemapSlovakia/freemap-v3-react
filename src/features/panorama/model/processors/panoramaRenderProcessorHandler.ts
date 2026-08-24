@@ -9,6 +9,7 @@ import type { LatLon } from '@shared/types/common.js';
 import type { Dispatch } from 'redux';
 import { panoramaErrorCode, renderPanorama } from '../../api.js';
 import { labelsFromPeaks } from '../../labels/fromPeaks.js';
+import type { PanoramaLabel } from '../../labels/types.js';
 import {
   buildPanoramaRequest,
   grantedPanorama,
@@ -50,6 +51,28 @@ const CANCEL: CancelTriggers = {
     closeTool.match(action) && action.payload === 'panorama',
 };
 
+/** One pass's names, and the frame they were measured in; see {@link carryOver}. */
+type PassLabels = {
+  labels: PanoramaLabel[];
+  altMax: number;
+  stepDeg: number;
+};
+
+/**
+ * The cheap pass's names in the detailed pass's pixels. `y` is
+ * `(alt_max − altitude) / step`, so a pass at a finer step puts the same summit
+ * lower down the taller image; the band is normally the same, but reading both
+ * costs nothing and survives one that isn't.
+ */
+function carryOver(from: PassLabels, to: Omit<PassLabels, 'labels'>) {
+  return from.stepDeg === to.stepDeg && from.altMax === to.altMax
+    ? from.labels
+    : from.labels.map((label) => ({
+        ...label,
+        y: (label.y * from.stepDeg + (to.altMax - from.altMax)) / to.stepDeg,
+      }));
+}
+
 /**
  * One render, of what was asked for rather than of whatever the state says by
  * the time it runs. The two passes are up to forty seconds apart, and dragging
@@ -57,21 +80,23 @@ const CANCEL: CancelTriggers = {
  * so re-reading the state here would have the second pass quietly render
  * somewhere the user never asked to see, and record it as though they had.
  *
- * Answers whether the panel is still this render's to fill; `false` says
- * something has replaced it since, and that there is nothing more to do.
+ * `carried` are the names an earlier pass already answered with, which this one
+ * then does not ask for. Answers with its own names, or `null` where something
+ * has replaced this render since and there is nothing more to do.
  */
 async function renderPass(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
   grants: PanoramaGrants,
   preview: boolean,
+  carried: PassLabels | null,
   getState: () => RootState,
   dispatch: Dispatch,
-): Promise<boolean> {
+): Promise<PassLabels | null> {
   const id = claimPanoramaRender();
 
   const { meta, imageUrl, depth } = await renderPanorama(
-    buildPanoramaRequest(viewpoint, settings, grants),
+    buildPanoramaRequest(viewpoint, settings, grants, !carried),
     getState,
     CANCEL,
     (progress) => dispatch(panoramaSetProgress(progress)),
@@ -80,10 +105,16 @@ async function renderPass(
   if (!isCurrentPanoramaRender(id)) {
     URL.revokeObjectURL(imageUrl);
 
-    return false;
+    return null;
   }
 
   setPanoramaRenderData({ id, imageUrl, depth });
+
+  const frame = { altMax: meta.alt_max, stepDeg: meta.step_deg };
+
+  const labels = carried
+    ? carryOver(carried, frame)
+    : labelsFromPeaks(meta.peaks ?? []);
 
   dispatch(
     panoramaSetRender({
@@ -99,11 +130,11 @@ async function renderPass(
       altMax: meta.alt_max,
       stepDeg: meta.step_deg,
       depthLift: settings.depthLift,
-      labels: labelsFromPeaks(meta.peaks ?? []),
+      labels,
     }),
   );
 
-  return true;
+  return { labels, ...frame };
 }
 
 const handle: ProcessorHandler = async ({ getState, dispatch }) => {
@@ -129,18 +160,33 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     // user can already turn around in. Always, not by preference: that pass is
     // the coarsest tier there is, so it adds a few percent to a detailed render
     // rather than the third again it would cost were it a middling one.
-    if (
-      grants.quality !== PANORAMA_PREVIEW_QUALITY &&
-      !(await renderPass(
+    //
+    // It is also the only pass that asks for peaks: that halves the peak
+    // payload and spares the detailed render a peak pass costing it about two
+    // seconds. It settles the names as well, which no longer costs what it
+    // once did — the service now measures dominance on a grid of its own — but
+    // visibility is still decided by the rays a tier happened to cast, and a
+    // near-level neighbourhood can still swing a score. Four of the top forty
+    // labels changed under the second pass at an Ötztal viewpoint.
+    //
+    // The trade is that the coarse pass answers for visibility too, so a summit
+    // the detailed picture draws behind a ridge can still carry a name.
+    let carried: PassLabels | null = null;
+
+    if (grants.quality !== PANORAMA_PREVIEW_QUALITY) {
+      carried = await renderPass(
         viewpoint,
         settings,
         { ...grants, quality: PANORAMA_PREVIEW_QUALITY },
         true,
+        null,
         getState,
         dispatch,
-      ))
-    ) {
-      return;
+      );
+
+      if (!carried) {
+        return;
+      }
     }
 
     if (
@@ -149,6 +195,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
         settings,
         grants,
         false,
+        carried,
         getState,
         dispatch,
       ))
