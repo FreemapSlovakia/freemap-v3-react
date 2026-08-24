@@ -1,8 +1,11 @@
 import { clearMapFeatures, closeTool } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { mod } from '@shared/mathUtils.js';
+import type {
+  TerrainErrorCode,
+  TerrainProgress,
+} from '@shared/terrainService.js';
 import type { LatLon } from '@shared/types/common.js';
-import type { PanoramaErrorCode, PanoramaProgress } from '../api.js';
 import type { PanoramaLabel } from '../labels/types.js';
 import {
   type PanoramaProbe,
@@ -55,8 +58,8 @@ export interface PanoramaState {
   viewpoint: LatLon | null;
   rendering: boolean;
   /** How far the pass in flight has got; `null` while nothing is known. */
-  progress: PanoramaProgress | null;
-  error: PanoramaErrorCode | null;
+  progress: TerrainProgress | null;
+  error: TerrainErrorCode | null;
   render: PanoramaRenderInfo | null;
   /** Bearing the middle of the viewer looks at; see `panoramaSetAzimuth`. */
   azimuth: number;

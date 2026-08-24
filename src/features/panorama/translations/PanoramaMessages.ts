@@ -33,9 +33,6 @@ export type PanoramaMessages = {
   /** The set-once settings, which all cost a render to change. */
   settings: {
     title: string;
-    eye: string;
-    /** Says what the height is measured from, and that it is not the elevation. */
-    eyeHint: string;
     /** Says what the vertical band is, which its name alone does not. */
     tiltHint: string;
     /** The vertical band given as its two angles rather than by name. */
@@ -46,8 +43,6 @@ export type PanoramaMessages = {
     depthLiftOff: string;
     /** Says what it buys, and that it draws what cannot actually be seen. */
     depthLiftHint: string;
-    /** How far the picture sees; past the free bound it is premium's. */
-    range: string;
     /** The gem's tooltip: what a farther view costs, and why it is premium's. */
     rangeHint: string;
     look: string;
@@ -60,8 +55,6 @@ export type PanoramaMessages = {
   };
   /** Marks the fast pass while the detailed one is still rendering. */
   preview: string;
-  /** Where the eye stands, metres above sea level. */
-  eyeElevation: string;
   quality: {
     label: string;
     /** Coarsest to finest; everything past the first is premium's. */

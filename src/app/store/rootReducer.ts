@@ -36,6 +36,8 @@ import { toastsReducer } from '@features/toasts/model/reducer.js';
 import { toposcopeReducer } from '@features/toposcope/model/reducer.js';
 import { trackingReducer } from '@features/tracking/model/reducer.js';
 import { trackingSettingsReducer } from '@features/tracking/model/settingsReducer.js';
+import { viewshedReducer } from '@features/viewshed/model/reducer.js';
+import { viewshedSettingsReducer } from '@features/viewshed/model/settingsReducer.js';
 import { weatherRadarReducer } from '@features/weatherRadar/model/reducer.js';
 import { weatherRadarSettingsReducer } from '@features/weatherRadar/model/settingsReducer.js';
 import { websocketReducer } from '@features/websocket/model/reducer.js';
@@ -83,6 +85,8 @@ export const reducers = {
   trackingSettings: trackingSettingsReducer,
   trackViewer: dataViewerReducer,
   trackViewerSettings: dataViewerSettingsReducer,
+  viewshed: viewshedReducer,
+  viewshedSettings: viewshedSettingsReducer,
   weatherRadar: weatherRadarReducer,
   weatherRadarSettings: weatherRadarSettingsReducer,
   websocket: websocketReducer,

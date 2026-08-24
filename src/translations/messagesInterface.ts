@@ -24,6 +24,13 @@ export type Messages = {
     yes: string;
     no: string;
     masl: string;
+    /** Where one stands and looks from; names the elevation the marks report. */
+    viewpoint: string;
+    /** How high above the ground the eye is, shared by every terrain view. */
+    eyeHeight: string;
+    eyeHeightHint: string;
+    /** How far such a view reaches. */
+    maxVisibleDistance: string;
     copyCode: string;
     loading: string;
     ok: string;
@@ -48,6 +55,7 @@ export type Messages = {
     /** Names an app the feature is handed to, where nothing else says so. */
     openIn: (props: { what: ReactNode }) => JSX.Element;
     panoramaFromHere: string;
+    viewshedFromHere: string;
     toposcopeFromHere: string;
     simplifyPrompt: string;
     copyUrl: string;

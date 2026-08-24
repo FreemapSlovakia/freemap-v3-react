@@ -23,7 +23,7 @@ export const toggleLocate = createAction<boolean | undefined>('LOCATE');
 export const locateFailed = createAction('LOCATE_FAILED');
 
 /** Whoever wants a single fix to place something by; the wait lives in the store. */
-export type FixConsumer = 'panorama' | 'toposcope-center';
+export type FixConsumer = 'panorama' | 'toposcope-center' | 'viewshed';
 
 /**
  * Asks for one fix good enough to place something by, borrowing the map's own

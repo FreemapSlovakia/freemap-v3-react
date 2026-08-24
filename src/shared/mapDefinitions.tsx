@@ -1,6 +1,7 @@
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
+  FaBinoculars,
   FaBus,
   FaCamera,
   FaCloudShowersHeavy,
@@ -253,6 +254,16 @@ const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
   { ...GEDTM30_ATTR, exceptCountries: OUTDOOR_NATIONAL_DTM_COUNTRIES },
 ];
 
+// What the terrain service draws from. It never says which model answered and a
+// render reaches 300 km across borders, so all are credited — GEDTM30 without
+// `exceptCountries`, unlike the map layers. (The panorama's footer credits the
+// narrower `ELEVATION_API_DTM_ATTRIBUTION`, which this file cannot import.)
+const TERRAIN_ATTRIBUTION: AttributionDef[] = [
+  FM_ATTR,
+  ...OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
+  GEDTM30_ATTR,
+];
+
 export type HasUrl = {
   url: string;
 };
@@ -326,6 +337,15 @@ type IsRadarLayerDef = HasMaxNativeZoom &
   HasZIndex & {
     technology: 'radar';
   };
+
+/**
+ * What can be seen from one point, as a single image the terrain service
+ * renders per viewpoint. Its own technology because it is not a grid of tiles
+ * at all — see `doc/viewshed.md`.
+ */
+type IsViewshedLayerDef = HasZIndex & {
+  technology: 'viewshed';
+};
 
 export type IsWmsLayerDef = HasUrl &
   HasZIndex &
@@ -448,7 +468,8 @@ export type IsAllTechnologiesLayerDef =
   | IsGalleryLayerDef
   | IsInteractiveLayerDef
   | IsWikipediaLayerDef
-  | IsRadarLayerDef;
+  | IsRadarLayerDef
+  | IsViewshedLayerDef;
 
 export type IsCustomLayer = {
   name?: string;
@@ -1103,6 +1124,19 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     // translucent rather than hiding the ground.
     defaultOpacity: 2 / 3,
     attribution: [OPERA_ATTR, DPC_RADAR_ATTR],
+  },
+  {
+    layer: 'overlay',
+    type: 'v',
+    defaultInMenu: true,
+    technology: 'viewshed',
+    icon: <FaBinoculars />,
+    shortcut: { code: 'KeyV', shift: true },
+    zIndex: 3,
+    // No `defaultOpacity`: the image's own alpha is already faint over most of
+    // a wide view, so there is nothing left to give away.
+    attribution: TERRAIN_ATTRIBUTION,
+    experimental: true,
   },
   {
     layer: 'overlay',

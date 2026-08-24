@@ -45,6 +45,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     yes: 'Ja',
     no: 'Nein',
     masl,
+    viewpoint: 'Standpunkt',
+    eyeHeight: 'Augenhöhe',
+    eyeHeightHint:
+      'Wie hoch über dem Boden Sie stehen — ein Turm oder eine Drohne, nicht die Höhe über dem Meer.',
+    maxVisibleDistance: 'Maximale Sichtweite',
     copyCode: 'Code kopieren',
     loading: 'Lade…',
     ok: 'OK',
@@ -70,6 +75,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     convertTo: ({ tool }) => <>Nach {tool} umwandeln</>,
     openIn: ({ what }) => <>In {what} öffnen</>,
     panoramaFromHere: 'Panorama von hier',
+    viewshedFromHere: 'Sichtbarkeit von hier',
     toposcopeFromHere: 'Panoramatafel von hier',
     simplifyPrompt:
       'Bitte den Vereinfachungsfaktor eingeben. Null für keine Vereinfachung eingeben.',
@@ -335,6 +341,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-I': 'bilder, galerie, fotos',
         'layer-w': 'wiki, artikel',
         'layer-R': 'wetter, regen, niederschlag, gewitter, vorhersage',
+        'layer-v':
+          'sichtbarkeitsanalyse, sichtfeld, sichtlinie, aussicht, gelände',
         'layer-5': 'schummerung, relief, gelände, höhe',
         'layer-6': 'schummerung, relief, oberfläche, höhe',
         'layer-7': 'schummerung, relief, gelände, höhe, lidar',
@@ -378,6 +386,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l2: 'Forststraßen NLC',
       w: 'Wikipedia',
       R: 'Wetterradar',
+      v: 'Sichtbarkeit',
       '5': 'Geländeschattierung',
       '6': 'Oberflächenschattierung',
       '7': 'Detaillierte Geländeschattierung',

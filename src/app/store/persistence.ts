@@ -44,6 +44,11 @@ import { routePlannerSettingsInitialState } from '@features/routePlanner/model/s
 import { SearchResultStyleSchema } from '@features/search/model/actions.js';
 import { searchSettingsInitialState } from '@features/search/model/settingsReducer.js';
 import { trackingSettingsInitialState } from '@features/tracking/model/settingsReducer.js';
+import {
+  VIEWSHED_DETAIL_ORDER,
+  VIEWSHED_RADIUS_STEPS_KM,
+  viewshedSettingsInitialState,
+} from '@features/viewshed/model/settingsReducer.js';
 import { weatherRadarSettingsInitialState } from '@features/weatherRadar/model/settingsReducer.js';
 import { ColorizeSettingsShape } from '@shared/colorizers/colorizeSettings.js';
 import { ColorizingModeSchema } from '@shared/colorizers/index.js';
@@ -193,6 +198,26 @@ const PersistedPanoramaSettingsSchema = z
     labelDistanceWeight: z.number().min(0).max(LABEL_DISTANCE_WEIGHT_MAX),
     prominenceWeight: z.number().min(0).max(PROMINENCE_WEIGHT_MAX),
     autoPan: z.boolean(),
+  })
+  .partial();
+
+const PersistedViewshedSettingsSchema = z
+  .object({
+    // The stops the control offers, not a range: one between two would leave
+    // the dropdown showing nothing while still costing rays. Caught rather than
+    // refused — a failed field here would take the whole slice's defaults with
+    // it, resetting the colour and the rest over a radius nobody can see.
+    radiusKm: z
+      .number()
+      .refine((km) => VIEWSHED_RADIUS_STEPS_KM.includes(km))
+      .catch(viewshedSettingsInitialState.radiusKm),
+    detail: z.enum(VIEWSHED_DETAIL_ORDER),
+    eye: z.number().min(0),
+    targetHeight: z.number().min(0),
+    color: z.string(),
+    // The service's own bounds, which it answers 400 to rather than clamping.
+    gamma: z.number().min(0.1).max(10),
+    alphaFloor: z.number().min(0).max(1),
   })
   .partial();
 
@@ -552,6 +577,12 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedWeatherRadarSettingsSchema,
     initial: weatherRadarSettingsInitialState,
     persist: (r) => ({ showNowcast: r.showNowcast }),
+  }),
+  defineEntry({
+    key: 'viewshedSettings',
+    schema: PersistedViewshedSettingsSchema,
+    initial: viewshedSettingsInitialState,
+    persist: (v) => v,
   }),
 ];
 

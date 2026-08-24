@@ -9,6 +9,7 @@ import { ELEVATION_API_DTM_ATTRIBUTION } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useFloatingWindow } from '@shared/hooks/useFloatingWindow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useTerrainProgress } from '@shared/hooks/useTerrainProgress.js';
 import { GEDTM30_ATTR } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
 import {
@@ -19,7 +20,7 @@ import {
   useState,
 } from 'react';
 import { Alert, Button, ProgressBar } from 'react-bootstrap';
-import { FaEye, FaTimes } from 'react-icons/fa';
+import { FaStreetView, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { panoramaCancel } from '../model/actions.js';
 import { grantedQuality, PANORAMA_QUALITIES } from '../quality.js';
@@ -37,29 +38,6 @@ import { PanoramaView } from './PanoramaView.js';
  * they are all credited.
  */
 const TERRAIN_SOURCES = [...ELEVATION_API_DTM_ATTRIBUTION, GEDTM30_ATTR];
-
-function useElapsed(running: boolean): number {
-  const [elapsed, setElapsed] = useState(0);
-
-  useEffect(() => {
-    if (!running) {
-      setElapsed(0);
-
-      return;
-    }
-
-    const started = performance.now();
-
-    const timer = setInterval(
-      () => setElapsed(performance.now() - started),
-      250,
-    );
-
-    return () => clearInterval(timer);
-  }, [running]);
-
-  return elapsed;
-}
 
 export default function Panorama(): ReactElement {
   const m = usePanoramaMessages();
@@ -81,8 +59,6 @@ export default function Panorama(): ReactElement {
   const premium = useAppSelector((state) => isPremium(state.auth.user));
 
   const data = getPanoramaRenderData();
-
-  const elapsed = useElapsed(rendering);
 
   const [showCaveats, setShowCaveats] = useState(false);
 
@@ -123,24 +99,7 @@ export default function Panorama(): ReactElement {
   const { expectedMs } =
     PANORAMA_QUALITIES[grantedQuality(settings.quality, premium)];
 
-  const nfPercent = useNumberFormat({
-    style: 'percent',
-    maximumFractionDigits: 0,
-  });
-
-  // The service reports its own progress, but only once the request has landed
-  // on it, and not at all where the side channel can't be opened — so the clock
-  // estimate stands in until a real figure arrives.
-  const queued = progress?.phase === 'queued' ? progress : null;
-
-  // Only the rendering phase counts columns; the ones after it carry no figure
-  // and would otherwise drop a nearly full bar back to zero.
-  const percent =
-    !progress || queued
-      ? null
-      : progress.phase === 'rendering'
-        ? progress.percent
-        : 100;
+  const bar = useTerrainProgress(rendering, progress, expectedMs);
 
   return (
     <div {...boxProps}>
@@ -189,7 +148,7 @@ export default function Panorama(): ReactElement {
           </Alert>
         ) : (
           <p className="m-0 text-center text-body-secondary">
-            {rendering ? m?.rendering : m?.pickHint({ icon: <FaEye /> })}
+            {rendering ? m?.rendering : m?.pickHint({ icon: <FaStreetView /> })}
           </p>
         )}
 
@@ -217,7 +176,7 @@ export default function Panorama(): ReactElement {
           >
             {render && (
               <div>
-                {m?.eyeElevation}: {nfEle.format(render.eyeElevation)}{' '}
+                {gm?.general.viewpoint}: {nfEle.format(render.eyeElevation)}{' '}
                 {gm?.general.masl}
                 {/* The finer picture is premium's; say so where the one on
                     screen is the fast pass. */}
@@ -234,30 +193,20 @@ export default function Panorama(): ReactElement {
             render. On a scrim, since it lies over whatever is on screen. */}
         {rendering && (
           <div className="position-absolute z-1 bottom-0 start-0 end-0 m-2 p-2 rounded bg-dark bg-opacity-50">
-            {queued && (
+            {bar.queued && (
               <p className="mb-1 small text-white">
-                {m?.queued({ ahead: queued.ahead })}
+                {m?.queued({ ahead: bar.queued.ahead })}
               </p>
             )}
 
             <div className="d-flex align-items-center gap-2">
-              {/* Full and grey while queued: there is nothing to be a fraction
-                  of until the render starts. */}
               <ProgressBar
                 className="flex-grow-1"
                 striped
                 animated
-                variant={queued ? 'secondary' : undefined}
-                now={
-                  queued
-                    ? 100
-                    : (percent ?? Math.min(99, (elapsed / expectedMs) * 100))
-                }
-                label={
-                  percent === null
-                    ? `${Math.round(elapsed / 1000)} s`
-                    : nfPercent.format(percent / 100)
-                }
+                variant={bar.variant}
+                now={bar.now}
+                label={bar.label}
               />
 
               <Button

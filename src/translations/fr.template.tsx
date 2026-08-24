@@ -29,6 +29,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
     cancelAutoClose: 'Annuler la fermeture automatique',
     masl: masl,
+    viewpoint: "Point d'observation",
+    eyeHeight: 'Hauteur des yeux',
+    eyeHeightHint:
+      'À quelle hauteur au-dessus du sol vous vous tenez — une tour ou un drone, pas l’altitude.',
+    maxVisibleDistance: 'Distance visible maximale',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),
@@ -85,6 +90,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     convertTo: ({ tool }) => <>Convertir vers {tool}</>,
     openIn: ({ what }) => <>Ouvrir dans {what}</>,
     panoramaFromHere: 'Panorama d’ici',
+    viewshedFromHere: 'Visibilité d’ici',
     toposcopeFromHere: 'Table d’orientation d’ici',
     simplifyPrompt:
       'Veuillez saisir le facteur de simplification. Saisissez zéro pour ne pas simplifier.',
@@ -322,6 +328,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-I': 'images, galerie, photos',
         'layer-w': 'wiki, articles',
         'layer-R': 'météo, pluie, précipitations, orage, prévisions',
+        'layer-v':
+          'bassin de visibilité, ligne de vue, champ de vision, relief',
         'layer-5': 'ombrage, relief, terrain, altitude',
         'layer-6': 'ombrage, relief, surface, altitude',
         'layer-7': 'ombrage, relief, terrain, altitude, lidar',
@@ -369,6 +377,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l2: 'Chemins forestiers NLC',
       w: 'Wikipedia',
       R: 'Radar météo',
+      v: 'Visibilité',
       M: 'Photos de Wikimedia Commons',
       '5': 'Ombrage du terrain',
       '6': 'Ombrage de la surface',

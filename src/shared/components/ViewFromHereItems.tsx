@@ -2,12 +2,16 @@ import { openTool } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { requestCompassPermission } from '@features/location/compass.js';
+import { mapToggleLayer } from '@features/map/model/actions.js';
 import { panoramaPick } from '@features/panorama/model/actions.js';
 import { placeToposcopeCenter } from '@features/toposcope/centerPoint.js';
+import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
+import { viewshedPick } from '@features/viewshed/model/actions.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
+import { FaBinoculars } from 'react-icons/fa';
 import { PiCompassRoseBold, PiMountains } from 'react-icons/pi';
 import { useDispatch, useStore } from 'react-redux';
 
@@ -19,9 +23,9 @@ type Props = LatLon & {
 };
 
 /**
- * The two views taken from a place — a panorama rendered there, a toposcope
- * standing there. Dropdown items, so any menu that knows a position can carry
- * them.
+ * The views taken from a place — a panorama rendered there, what can be seen
+ * from there, a toposcope standing there. Dropdown items, so any menu that
+ * knows a position can carry them.
  */
 export function ViewFromHereItems({
   lat,
@@ -61,6 +65,21 @@ export function ViewFromHereItems({
         }}
       >
         <PiMountains /> {m?.general.panoramaFromHere}
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem
+        as="button"
+        onClick={() => {
+          // Turning the layer on with no viewpoint asks for a click; the pick
+          // that follows answers it before anything is drawn.
+          dispatch(mapToggleLayer({ type: VIEWSHED_LAYER, enable: true }));
+
+          dispatch(viewshedPick({ lat, lon }));
+
+          onAct?.();
+        }}
+      >
+        <FaBinoculars /> {m?.general.viewshedFromHere}
       </OnlineOnlyItem>
 
       <Dropdown.Item
