@@ -602,6 +602,8 @@ Right-clicking (or long-pressing) a location on the map opens a context menu wit
 - Start here drawing a line or measurement
 - Plan a route from here
 - Plan a route to here
+- Panorama from here
+- Toposcope from here
 
 ### Info button
 

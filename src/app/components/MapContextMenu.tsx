@@ -17,6 +17,7 @@ import { searchSetQuery } from '@features/search/model/actions.js';
 import type { Modifier, Obj } from '@popperjs/core';
 import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { ViewFromHereItems } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
@@ -466,6 +467,13 @@ export function MapContextMenu(): ReactElement {
                   <OnlineOnlyItem as="button" eventKey="finishRoute">
                     <FaStop color="#d9534f" /> {m?.mapCtxMenu.finishRoute}
                   </OnlineOnlyItem>
+
+                  <ViewFromHereItems
+                    divider
+                    lat={contextMenu.lat}
+                    lon={contextMenu.lon}
+                    onAct={closeMenu}
+                  />
                 </>
               )}
             </>
