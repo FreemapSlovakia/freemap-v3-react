@@ -62,6 +62,25 @@ export const NO_DOMINANCE_FILTER = -100_000;
 export const LABEL_HAZE_MAX_KM = 400;
 
 /**
+ * The stops that slider has, with clear air **last**. `0` is no falloff and no
+ * cut — names carrying further than any figure on the slider — so it belongs
+ * past 400 km, not before 10: everywhere else the slider reads "further to the
+ * right", and a `0` at the left end would break that exactly where it means the
+ * opposite of what its position says.
+ */
+export const LABEL_HAZE_STEPS_KM = [
+  ...Array.from({ length: LABEL_HAZE_MAX_KM / 10 }, (_, i) => (i + 1) * 10),
+  0,
+];
+
+/** Which stop a stored haze stands on; anything at or below `0` is clear air. */
+export function hazeStepIndex(km: number): number {
+  return km > 0
+    ? nearestStep(LABEL_HAZE_STEPS_KM.slice(0, -1), km)
+    : LABEL_HAZE_STEPS_KM.length - 1;
+}
+
+/**
  * How far the picture may see, as the slider's stops in kilometres. The API's
  * own bounds are 1–400 km; the near end starts where a view of nothing but the
  * next hillside stops being one.

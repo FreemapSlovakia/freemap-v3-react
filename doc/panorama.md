@@ -490,7 +490,10 @@ its two ends are the only two things a rank can honestly mean — `0` is **real
 size** (raw metres, so the far massif wins) and `1` is **apparent size** (the
 angle it subtends, so the near hill wins). `0.5` is the default and asks a
 summit twice as far for `√2` the dominance to tie. `labelHazeKm` is the other
-end of the same question, and `0` is clear air — no falloff, no cut.
+end of the same question, and `0` is clear air — no falloff, no cut. Its slider
+runs through `LABEL_HAZE_STEPS_KM`, which puts that `0` **after** 400 km rather
+than before 10: it means names carrying further than any figure on the slider,
+so at the low end it would read as the opposite of what its position says.
 
 Two knobs for what looks like one preference, because they act on different
 scales: the exponent sets the trade rate everywhere, while the haze does almost

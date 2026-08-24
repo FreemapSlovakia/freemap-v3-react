@@ -50,9 +50,10 @@ import {
 } from '../model/actions.js';
 import {
   DOMINANCE_STEPS_M,
+  hazeStepIndex,
   LABEL_DENSITY_MAX,
   LABEL_DISTANCE_WEIGHTS,
-  LABEL_HAZE_MAX_KM,
+  LABEL_HAZE_STEPS_KM,
   NO_DOMINANCE_FILTER,
   nearestStep,
   type PanoramaTilt,
@@ -364,11 +365,14 @@ export function PanoramaControls({
           valueLabel={hazeLabel}
           hint={m?.labels.hazeHint}
           min={0}
-          max={LABEL_HAZE_MAX_KM}
-          step={10}
-          value={settings.labelHazeKm}
-          onChange={(labelHazeKm) =>
-            dispatch(panoramaSetSettings({ labelHazeKm }))
+          max={LABEL_HAZE_STEPS_KM.length - 1}
+          value={hazeStepIndex(settings.labelHazeKm)}
+          onChange={(step) =>
+            dispatch(
+              panoramaSetSettings({
+                labelHazeKm: LABEL_HAZE_STEPS_KM[step] ?? 0,
+              }),
+            )
           }
         />
 
