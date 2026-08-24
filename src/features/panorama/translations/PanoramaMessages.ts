@@ -89,11 +89,11 @@ export type PanoramaMessages = {
     few: string;
     normal: string;
     many: string;
-    /** What the rank measures: a summit's real size, or how big it looks. */
+    /** What the rank weighs: a summit's real size, how big it looks, or how close it is. */
     weight: string;
     weightHint: string;
-    /** One per `LABEL_DISTANCE_WEIGHTS`, so a step without a name won't compile. */
-    weights: readonly [string, string, string, string, string, string, string];
+    /** Five bands over the weight slider's stops; see `labelWeightBand`. */
+    weights: readonly [string, string, string, string, string];
     /** How far a name has to carry before haze outweighs the summit. */
     haze: string;
     /** The step with no falloff and no cut. */

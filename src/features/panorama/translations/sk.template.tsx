@@ -81,15 +81,13 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     many: 'Viac',
     weight: 'Hodnotiť vrchy podľa',
     weightHint:
-      'Podľa veľkosti sa pomenujú veľhory nech sú akokoľvek ďaleko, podľa blízkosti to, čo vypĺňa pohľad.',
+      'Podľa veľkosti sa pomenujú veľhory nech sú akokoľvek ďaleko, podľa stredu to, čo vypĺňa pohľad, a podľa blízkosti to, čo je blízko, nech to vyzerá akokoľvek.',
     weights: [
       'Veľkosti',
       'Skôr veľkosti',
       'Veľkosti aj blízkosti',
       'Skôr blízkosti',
       'Blízkosti',
-      'Výrazne blízkosti',
-      'Predovšetkým blízkosti',
     ],
     haze: 'Dokiaľ siahajú názvy',
     hazeOff: 'Čistý vzduch',

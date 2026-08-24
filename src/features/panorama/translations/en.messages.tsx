@@ -85,15 +85,13 @@ const en: PanoramaMessages = {
     many: 'More',
     weight: 'Rank peaks by',
     weightHint:
-      'Size names the great mountains however far off; nearness names whatever fills the view.',
+      'Size names the great mountains however far off, the middle names whatever fills the view, and nearness names what is close whatever it looks like.',
     weights: [
       'Size',
       'Mostly size',
       'Size and nearness',
       'Mostly nearness',
       'Nearness',
-      'Strong nearness',
-      'Nearness above all',
     ],
     haze: 'How far names carry',
     hazeOff: 'Clear air',

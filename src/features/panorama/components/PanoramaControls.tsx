@@ -17,6 +17,7 @@ import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
+import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -54,9 +55,11 @@ import {
   LABEL_DENSITY_MAX,
   LABEL_DISTANCE_WEIGHTS,
   LABEL_HAZE_STEPS_KM,
+  labelWeightBand,
   NO_DOMINANCE_FILTER,
   nearestStep,
   type PanoramaTilt,
+  panoramaSettingsInitialState,
 } from '../model/settingsReducer.js';
 import {
   grantedPanorama,
@@ -66,6 +69,23 @@ import {
   panoramaRenderKey,
 } from '../quality.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
+
+/**
+ * What the peak-names menu owns, and so what its Reset puts back — the tilt,
+ * the quality and everything behind the settings modal are nobody's business
+ * here.
+ */
+const LABEL_DEFAULTS = {
+  labelDensity: panoramaSettingsInitialState.labelDensity,
+  minDominance: panoramaSettingsInitialState.minDominance,
+  labelDistanceWeight: panoramaSettingsInitialState.labelDistanceWeight,
+  labelHazeKm: panoramaSettingsInitialState.labelHazeKm,
+  showRevealedLabels: panoramaSettingsInitialState.showRevealedLabels,
+};
+
+const LABEL_SETTING_KEYS = Object.keys(
+  LABEL_DEFAULTS,
+) as (keyof typeof LABEL_DEFAULTS)[];
 
 type Props = {
   /** The caveats panel is the footer's to draw; this only presses the button. */
@@ -345,7 +365,14 @@ export function PanoramaControls({
         <LabeledSlider
           id="fm-panorama-weight"
           label={m?.labels.weight}
-          valueLabel={m?.labels.weights[weightStep]}
+          // Of the stop the knob snapped to, not of the stored value: an
+          // off-stop one from an older store would otherwise put the knob on
+          // "Nearness" while the word beside it said "Mostly nearness".
+          valueLabel={
+            m?.labels.weights[
+              labelWeightBand(LABEL_DISTANCE_WEIGHTS[weightStep] ?? 0.5)
+            ]
+          }
           hint={m?.labels.weightHint}
           min={0}
           max={LABEL_DISTANCE_WEIGHTS.length - 1}
@@ -400,6 +427,22 @@ export function PanoramaControls({
             <Form.Text className="mt-0">{m?.labels.showRevealedHint}</Form.Text>
           </div>
         )}
+
+        {/* Four sliders deep into a picture is no place to be stuck, and none
+            of them says what it started at. Applies at once, like everything
+            else here — there is no form to submit.
+
+            It answers for the revealed-names checkbox even where no lift has
+            drawn it: that setting persists, so leaving it out would strand a
+            non-default the menu offers no other way back from. The cost is that
+            the button can be live with nothing on screen to show for it. */}
+        <ResetToDefaultsButton
+          className="align-self-end"
+          onClick={() => dispatch(panoramaSetSettings(LABEL_DEFAULTS))}
+          disabled={LABEL_SETTING_KEYS.every(
+            (key) => settings[key] === LABEL_DEFAULTS[key],
+          )}
+        />
       </SliderDropdown>
 
       {/* Set-once settings — eye height, an exact vertical band, the look —
