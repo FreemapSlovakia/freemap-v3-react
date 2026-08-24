@@ -175,16 +175,10 @@ function renderTiltRange(settings: PanoramaSettingsState): [number, number] {
   return [altMin, Math.min(altMax + settings.depthLift, ALT_LIMIT)];
 }
 
-/**
- * `peaks` is the caller's because only one pass of a render asks for them —
- * the cheap one, whose answer the detailed pass then carries; see
- * `panoramaRenderProcessorHandler`.
- */
 export function buildPanoramaRequest(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
   { quality, rangeKm }: PanoramaGrants,
-  peaks: boolean,
 ): PanoramaRequest {
   const band = renderTiltRange(settings);
 
@@ -198,7 +192,7 @@ export function buildPanoramaRequest(
     range: rangeKm * 1000,
     depth: true,
     depth_step: 4,
-    peaks,
+    peaks: true,
     min_dominance: MIN_DOMINANCE_M,
     max_peaks: MAX_PEAKS,
     // Deliberately absent from `panoramaRenderKey`: it decides which peaks are

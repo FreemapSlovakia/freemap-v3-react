@@ -284,21 +284,22 @@ behind it. Always, with nothing to turn it off: because the preview is the
 *coarsest* tier it adds a few percent to a detailed render, where a middling
 preview would have cost the third again that once made it worth asking about.
 
-**Only the first pass asks for peaks**, and `carryOver` moves its labels into
-the second pass's pixels — `y` is `(alt_max − altitude) / step`, so the same
-summit sits lower down the taller image, and nothing else about a label changes
-with the tier. Three reasons, in order of weight: the peak list is the larger
-half of the payload and would otherwise be fetched twice; the peak pass costs
-the detailed render about two seconds it need not spend; and the two passes do
-not fully agree about peaks anyway — visibility is decided by the rays a tier
-cast, and a summit with a near-level neighbourhood can still swing its
-dominance, which together changed four of the top forty labels under the second
-pass at an Ötztal viewpoint.
+**Both passes ask for peaks**, and the names are redrawn when the second lands.
+They do not fully agree: `visible` is decided by the two rays bracketing a
+summit, 0.2° apart at preview quality and 0.017° at the finest, and a summit
+whose neighbourhood is near-level can still swing its dominance — together, four
+of the top forty labels changed under the second pass at an Ötztal viewpoint.
+Asking once and carrying the first answer over was tried and reverted: it saved
+the second peak pass, about two seconds of a server that renders one at a time,
+but it made the *coarse* pass answer for visibility, so summits the detailed
+picture draws behind a ridge kept their names. Redrawing is the honest half of
+that bargain — the labels answer for the picture actually being looked at.
 
-The trade is that the coarse pass answers for **visibility** too, so a summit
-the detailed picture draws behind a ridge can still carry a name. Two of those
-four were exactly that. It is the better half of the bargain: a name that is
-marginally wrong beats a set of names that rearranges itself while being read.
+Everything else about a peak is tier-independent, which is worth knowing before
+optimising here: over 2470 peaks common to both passes of that view, `ele`,
+`distance`, `azimuth` and `altitude` were identical to the last digit, and `y`
+is a closed form in `altitude` and `step`. Only `visible`, `revealed` and
+`dominance` move.
 
 ## What the store holds, and what it can't
 
@@ -516,7 +517,8 @@ one tier and not the other. From an Ötztal viewpoint the two passes shared 2470
 peaks and disagreed about 358 of them. Dominance no longer moves with the tier
 in the same way (the service measures it on a grid of its own), though a summit
 whose neighbourhood is near-level can still swing hard — 634 m against −0.8 m
-for one of them. Which is why only one pass asks; see below.
+for one of them. So the names are redrawn when the detailed pass lands; see
+"Two passes".
 
 Everything about placement is ours, in two passes. `thinLabels` decides which
 summits get a name at all: one per pitch of horizon, in rank order. `layoutLabels`
