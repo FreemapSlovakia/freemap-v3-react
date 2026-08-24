@@ -1,8 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import type {
-  TerrainErrorCode,
-  TerrainProgress,
-} from '@shared/terrainService.js';
+import type { TerrainProgress } from '@shared/terrainService.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { ViewshedRenderInfo } from './reducer.js';
 import type { ViewshedSettingsState } from './settingsReducer.js';
@@ -49,9 +46,6 @@ export const viewshedSetRendering = createAction<boolean>(
 export const viewshedSetRender = createAction<ViewshedRenderInfo>(
   'VIEWSHED_SET_RENDER',
 );
-
-export const viewshedSetError =
-  createAction<TerrainErrorCode>('VIEWSHED_SET_ERROR');
 
 /**
  * How far the render in flight has got, as the service reports it. Only ever

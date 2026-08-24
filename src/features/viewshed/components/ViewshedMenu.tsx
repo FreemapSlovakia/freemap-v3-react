@@ -75,7 +75,7 @@ export default function ViewshedMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const { viewpoint, rendering, progress, error } = useAppSelector(
+  const { viewpoint, rendering, progress } = useAppSelector(
     (state) => state.viewshed,
   );
 
@@ -346,12 +346,6 @@ export default function ViewshedMenu(): ReactElement {
                     )}
                   </LongPressTooltip>
                 )
-              )}
-
-              {error && (
-                <span className="align-self-center text-danger">
-                  {m?.errors[error]}
-                </span>
               )}
             </>
           )}

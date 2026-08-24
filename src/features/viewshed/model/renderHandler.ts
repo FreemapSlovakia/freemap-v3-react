@@ -1,6 +1,7 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { isPremium } from '@features/premium/premium.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { terrainErrorCode } from '@shared/terrainService.js';
@@ -16,12 +17,12 @@ import {
   grantedViewshed,
   viewshedRenderKey,
 } from '../request.js';
+import { loadViewshedMessages } from '../translations/loadViewshedMessages.js';
 import {
   viewshedCancel,
   viewshedClear,
   viewshedPick,
   viewshedRender,
-  viewshedSetError,
   viewshedSetProgress,
   viewshedSetRender,
   viewshedSetRendering,
@@ -94,7 +95,18 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     // replaced this one, or the layer going. Clearing the flag here would say
     // the toolbar is idle while the next render is running.
     if (!isAbortError(err)) {
-      dispatch(viewshedSetError(terrainErrorCode(err)));
+      dispatch(viewshedSetRendering(false));
+
+      // A toast rather than a line in the toolbar: the toolbar collapses, and a
+      // render that failed while it was collapsed would say nothing at all.
+      dispatch(
+        toastsAdd({
+          id: 'viewshed',
+          style: 'danger',
+          messageKey: `errors.${terrainErrorCode(err)}`,
+          messageLoader: loadViewshedMessages,
+        }),
+      );
     }
   }
 };

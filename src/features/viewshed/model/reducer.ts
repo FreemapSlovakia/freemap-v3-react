@@ -1,16 +1,12 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import type {
-  TerrainErrorCode,
-  TerrainProgress,
-} from '@shared/terrainService.js';
+import type { TerrainProgress } from '@shared/terrainService.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
   viewshedCancel,
   viewshedClear,
   viewshedMoveViewpoint,
   viewshedPick,
-  viewshedSetError,
   viewshedSetPickingViewpoint,
   viewshedSetProgress,
   viewshedSetRender,
@@ -37,7 +33,6 @@ export interface ViewshedState {
   rendering: boolean;
   /** How far the render in flight has got; `null` while nothing is known. */
   progress: TerrainProgress | null;
-  error: TerrainErrorCode | null;
   render: ViewshedRenderInfo | null;
   /** The map is waiting for a click that says where to stand. */
   pickingViewpoint: boolean;
@@ -47,7 +42,6 @@ export const viewshedInitialState: ViewshedState = {
   viewpoint: null,
   rendering: false,
   progress: null,
-  error: null,
   render: null,
   pickingViewpoint: false,
 };
@@ -56,8 +50,6 @@ export const viewshedReducer = createReducer(viewshedInitialState, (builder) =>
   builder
     .addCase(viewshedPick, (state, { payload }) => {
       state.viewpoint = payload;
-
-      state.error = null;
 
       state.pickingViewpoint = false;
     })
@@ -71,25 +63,12 @@ export const viewshedReducer = createReducer(viewshedInitialState, (builder) =>
       state.rendering = payload;
 
       state.progress = null;
-
-      if (payload) {
-        state.error = null;
-      }
     })
     .addCase(viewshedSetProgress, (state, { payload }) => {
       state.progress = payload;
     })
     .addCase(viewshedSetRender, (state, { payload }) => {
       state.render = payload;
-
-      state.error = null;
-
-      state.rendering = false;
-
-      state.progress = null;
-    })
-    .addCase(viewshedSetError, (state, { payload }) => {
-      state.error = payload;
 
       state.rendering = false;
 
