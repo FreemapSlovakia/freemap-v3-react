@@ -93,7 +93,7 @@ export type PanoramaMessages = {
     weight: string;
     weightHint: string;
     /** One per `LABEL_DISTANCE_WEIGHTS`, so a step without a name won't compile. */
-    weights: readonly [string, string, string, string, string];
+    weights: readonly [string, string, string, string, string, string, string];
     /** How far a name has to carry before haze outweighs the summit. */
     haze: string;
     /** The step with no falloff and no cut. */

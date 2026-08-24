@@ -88,6 +88,8 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Veľkosti aj blízkosti',
       'Skôr blízkosti',
       'Blízkosti',
+      'Výrazne blízkosti',
+      'Predovšetkým blízkosti',
     ],
     haze: 'Dokiaľ siahajú názvy',
     hazeOff: 'Čistý vzduch',

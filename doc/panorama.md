@@ -485,11 +485,19 @@ labels in hand; doing it server-side would cost a whole panorama.
 `labelsFromPeaks` hands over an unordered list. That is why the rank is not a
 field on `PanoramaLabel`: it would be stale the moment a slider moved.
 
-`labelDistanceWeight` is the exponent `p` in `dominance / distance ** p`, and
-its two ends are the only two things a rank can honestly mean — `0` is **real
+`labelDistanceWeight` is the exponent `p` in `dominance / distance ** p`. Two of
+its stops are the only things a rank can be read as *measuring* — `0` is **real
 size** (raw metres, so the far massif wins) and `1` is **apparent size** (the
 angle it subtends, so the near hill wins). `0.5` is the default and asks a
-summit twice as far for `√2` the dominance to tie. `labelHazeKm` is the other
+summit twice as far for `√2` the dominance to tie.
+
+**The scale runs to `2`, past what it can be said to measure**, because a
+preference for what is close is a fair thing to want and the exponent goes on
+earning its keep there: from one viewpoint with 1876 named peaks, `1` names 15
+summits beyond 40 km and `2` names 9, swapping in a 3 km hill and a 10 km one
+for tops at 30 and 33 km. It stops at `2` because the near field runs out — the
+count of names under 10 km saturates at 9 of the 36 that exist, the pitch
+allowing no more — not because the exponent stops working. `labelHazeKm` is the other
 end of the same question, and `0` is clear air — no falloff, no cut. Its slider
 runs through `LABEL_HAZE_STEPS_KM`, which puts that `0` **after** 400 km rather
 than before 10: it means names carrying further than any figure on the slider,

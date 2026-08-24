@@ -92,6 +92,8 @@ const en: PanoramaMessages = {
       'Size and nearness',
       'Mostly nearness',
       'Nearness',
+      'Strong nearness',
+      'Nearness above all',
     ],
     haze: 'How far names carry',
     hazeOff: 'Clear air',

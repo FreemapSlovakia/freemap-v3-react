@@ -91,11 +91,14 @@ export const RANGE_MAX_KM = 400;
 
 /**
  * How hard distance is weighed against a summit's own metres, as the exponent
- * `p` in `dominance / distance ** p`. The ends are the two things a rank can
- * mean: `0` is its real size and `1` the angle it subtends; see
- * `doc/panorama.md`.
+ * `p` in `dominance / distance ** p`. `0` is a summit's real size and `1` the
+ * angle it subtends — the two a rank can be read as measuring. Past `1` it
+ * measures nothing and is simply a preference for what is close, which is a
+ * fair thing to want and does keep working: from one viewpoint `1` names 15
+ * summits past 40 km and `2` names 9. It stops at `2` because the near field
+ * runs out rather than the exponent stopping working. See `doc/panorama.md`.
  */
-export const LABEL_DISTANCE_WEIGHTS = [0, 0.25, 0.5, 0.75, 1];
+export const LABEL_DISTANCE_WEIGHTS = [0, 0.25, 0.5, 0.75, 1, 1.5, 2];
 
 export const LABEL_DISTANCE_WEIGHT_MAX = LABEL_DISTANCE_WEIGHTS.at(-1) ?? 1;
 
