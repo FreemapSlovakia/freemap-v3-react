@@ -75,17 +75,14 @@ export function wantedTarget(state: RootState): DetailsTarget | null {
  * dropping a panel nothing can bring back.
  */
 export const objectDetailsProcessor: Processor = {
-  handle: async ({ getState, prevState, dispatch }) => {
+  // Edge-triggered: only a changed subject opens the toast. Re-opening it
+  // merely because it is gone would make its × a no-op, and re-adding an
+  // unchanged one would throw it back to the top of the toast column.
+  stateChangePredicate: (state) => wantedTarget(state)?.key,
+  handle: async ({ getState, dispatch }) => {
     const state = getState();
 
     const target = wantedTarget(state);
-
-    // Edge-triggered: only a changed subject opens the toast. Re-opening it
-    // merely because it is gone would make its × a no-op, and re-adding an
-    // unchanged one would throw it back to the top of the toast column.
-    if (target?.key === wantedTarget(prevState)?.key) {
-      return;
-    }
 
     if (!target) {
       if (state.toasts.toasts[TOAST_ID]) {

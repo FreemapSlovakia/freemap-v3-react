@@ -4,17 +4,11 @@ import { trackingTrackSelector } from '@app/store/selectors.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 
 export const trackingFollowProcessor: Processor = {
-  async handle({ dispatch, getState, action, prevState }) {
-    const track = trackingTrackSelector(getState());
-
-    const differs = trackingTrackSelector(prevState) !== track;
-
-    const lastPoint =
-      track &&
-      (!selectFeature.match(action) || action.payload?.type !== 'tracking') &&
-      differs
-        ? track.trackPoints.at(-1)
-        : undefined;
+  stateChangePredicate: trackingTrackSelector,
+  actionPredicate: (action) =>
+    !selectFeature.match(action) || action.payload?.type !== 'tracking',
+  handle({ dispatch, getState }) {
+    const lastPoint = trackingTrackSelector(getState())?.trackPoints.at(-1);
 
     if (lastPoint) {
       const { lat, lon } = lastPoint;

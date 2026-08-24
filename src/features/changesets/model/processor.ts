@@ -42,12 +42,9 @@ export const changesetsTrackProcessor: Processor = {
 export const changesetsProcessor: Processor = {
   id: 'changeset.detail',
   actionCreator: [changesetsSetParams, changesetsRefresh, openTool],
+  statePredicate: (state) => isToolOpen(state, 'changesets'),
   handle: async ({ dispatch, getState, toastError }) => {
     const state = getState();
-
-    if (!isToolOpen(state, 'changesets')) {
-      return;
-    }
 
     // Cancel the fetch/toasts as soon as the changesets tool is gone.
     const changesetsClosed = (s: RootState) => !isToolOpen(s, 'changesets');

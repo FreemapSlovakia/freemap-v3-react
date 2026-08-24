@@ -149,17 +149,22 @@ describe('wantedTarget', () => {
 });
 
 describe('objectDetailsProcessor', () => {
+  // Mirrors the middleware: the subject changing is what runs the handler.
   const run = (prevState: RootState, nextState: RootState) => {
     const dispatch = vi.fn();
 
+    const { stateChangePredicate, handle } = objectDetailsProcessor;
+
     const done =
-      objectDetailsProcessor.handle?.({
-        prevState,
-        getState: () => nextState,
-        dispatch,
-        action: { type: 'WHATEVER', payload: undefined },
-        toastError: async () => {},
-      }) ?? Promise.resolve();
+      (stateChangePredicate?.(nextState) !== stateChangePredicate?.(prevState)
+        ? handle?.({
+            prevState,
+            getState: () => nextState,
+            dispatch,
+            action: { type: 'WHATEVER', payload: undefined },
+            toastError: async () => {},
+          })
+        : undefined) ?? Promise.resolve();
 
     return { dispatch, done };
   };

@@ -14,11 +14,8 @@ import { setLocation } from './actions.js';
  */
 export const followLocationProcessor: Processor<typeof setLocation> = {
   actionCreator: setLocation,
+  statePredicate: (state) => state.map.gpsTracked,
   handle: async ({ getState, dispatch, action }) => {
-    if (!getState().map.gpsTracked) {
-      return;
-    }
-
     const map = await mapPromise;
 
     const { zoom } = getState().map;
