@@ -407,7 +407,10 @@ export default function GalleryMenu() {
                     <FaCog />
                   </Dropdown.Toggle>
 
-                  <FmDropdownMenu>
+                  {/* Closing is not a level of its own — it reopens at the root. */}
+                  <FmDropdownMenu
+                    level={moreView === 'closed' ? 'root' : moreView}
+                  >
                     {moreView === 'license' ? (
                       <>
                         <SubmenuHeader

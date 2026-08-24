@@ -423,7 +423,7 @@ export function ResponsiveActions({
         >
           {renderToggle()}
 
-          <FmDropdownMenu>
+          <FmDropdownMenu level={submenu}>
             {openSubmenu && (
               <>
                 <SubmenuHeader

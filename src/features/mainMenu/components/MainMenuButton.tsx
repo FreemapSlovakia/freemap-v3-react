@@ -32,7 +32,7 @@ export function MainMenuButton(): ReactElement {
         )}
       </LongPressTooltip>
 
-      <FmDropdownMenu>
+      <FmDropdownMenu level={submenu}>
         {submenu === null ? (
           <MainMenu />
         ) : submenu === 'help' ? (

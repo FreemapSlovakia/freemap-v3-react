@@ -100,7 +100,7 @@ export function OpenInExternalAppMenuButton({
         {children}
       </Dropdown.Toggle>
 
-      <FmDropdownMenu>
+      <FmDropdownMenu level={submenu}>
         {submenu === 'openExternally' ? (
           <>
             <SubmenuHeader icon={<FaExternalLinkAlt />} title={oeam?.openIn} />
