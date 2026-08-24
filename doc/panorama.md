@@ -159,7 +159,12 @@ at it. Locate and Update are actions.
 What the modal took was what had **no UI at all**: `eye`, which every request
 carried and nothing could change, and the exact vertical band, which the toolbar
 could display when a link carried one but had nowhere to type. The look
-(`ridge_strength`, `ridge_color`, `ground_color`) joined them.
+(`ridge_strength`, `ridge_color`, `ground_color`) joined them, and so did the
+depth lift, which sits beside the band because it moves it.
+
+The one cut that setting brings — whether the summits it reveals are named — is
+in the peak-names menu instead, and only while there is a lift to have revealed
+any. Same rule: the lift is asked for, the cut acts on the labels in hand.
 
 The band is split rather than duplicated, which is the trap here: the modal
 first grew its own preset dropdown, and the same control in two places is two
@@ -210,6 +215,17 @@ of a server that renders one at a time — a default nobody chose should not cos
 that. For the same reason the menu shows the tier being rendered rather than the
 one stored.
 
+**How far the picture sees** is the other setting an account can overreach on:
+`rangeKm`, 10–400 km, past `FREE_RANGE_MAX_KM` (300 — the service's own default,
+so nothing regressed when the control arrived) it is premium's, since every
+extra kilometre is samples along every ray. The two travel together as
+`PanoramaGrants` from `grantedPanorama(settings, premium)`, which is what
+`buildPanoramaRequest` and `panoramaRenderKey` take: the key carries the
+**granted** range, so a lapsed account is not told its picture is out of date
+over a figure it cannot have. The modal's slider stops at what the account may
+have and wears a gem, rather than running to 400 and being clamped behind the
+user's back — the same shape as the cached-map zoom range.
+
 `panoramaStep` then raises the asked-for step wherever a full turn over the
 current vertical band would exceed the service's 24 Mpx cap. Neither tier
 reaches it today, but the headroom is thinner than it looks: pixels and cost
@@ -217,6 +233,47 @@ both run with `1/step²`, so one notch finer is several times the render — 0.0
 at the standard tilt is 27 Mpx, over the cap and about a minute of somebody
 else's server. The cap binds through the **tilt** setting as much as through
 the quality, which is why both are in the render key.
+
+## Unfolding distance
+
+A true panorama spends its frame badly: the ridge four kilometres off fills a
+third of the picture and the range that is the reason to look that way gets a
+sliver above it. `depth_lift` — the modal's **Unfold distance** — raises terrain
+in proportion to how far off it is, nothing at the eye and the asked-for degrees
+at the service's `range`, so the layers separate. `0` is a true view and the
+default.
+
+Two consequences the client owns.
+
+**The band is raised with it.** The horizon rises by exactly the lift, so
+`renderTiltRange` adds the same amount to `alt_max` before the request goes out
+— otherwise the far ridges the lift exists to separate climb straight out of an
+unchanged frame. `panoramaStep` works from the raised band too, since the pixel
+cap binds through it. The tilt setting itself is left alone: the toolbar and the
+modal go on saying what the user framed, and `panoramaRenderKey` carries the
+lift as an entry of its own, because a lift of 1° over a 12° top is a different
+picture from none over 13°.
+
+**The lift reveals.** It warps the world rather than the picture, so it decides
+what hides what: a range lifted clear of the crest in front of it is drawn, and
+its summits come back with `revealed: true`. That is not a bug to route around —
+the service tried keeping true visibility under a lifted picture and it tears,
+leaving distant ranges as flat-topped slabs — but it does mean a render with a
+lift is a **drawing, not a photograph**, and the client has to say so. It does,
+three ways: such a name and its leader are drawn at `REVEALED_OPACITY`,
+`showRevealedLabels` turns them off altogether (a cut in `candidateLabels`, so
+the toposcope obeys it too), and the ⓘ panel gains a caveat.
+
+Both of those, and the checkbox itself, key on **`render.depthLift`, not the
+setting** — the setting says what the *next* render will do, and a lift staged
+or taken away without pressing Update would otherwise hide the one control that
+can bring back names hidden in the picture still on screen.
+
+`labelRank` also **halves** a revealed summit's rank, so where names compete for
+room the one that can actually be seen takes it. Halved rather than tiered below
+every seeable top: what the lift reveals is usually the range the picture was
+unfolded to see, and a strict tier would hand its name to the near ridge that
+hides it.
 
 ## Two passes
 
@@ -365,8 +422,9 @@ map: a mark behind it reads as visible and is left there.
 
 ## Labels
 
-The service returns only **visible** summits, with fractional pixel positions
-and a **dominance** in metres: how far the summit stands above the terrain
+The service returns only **visible** summits — including, under a depth lift,
+the ones only the lift made visible, flagged `revealed` — with fractional pixel
+positions and a **dominance** in metres: how far the summit stands above the terrain
 around it, within 3 km of itself. A summit standing clear of its neighbours
 reads as a peak; one on a long level ridge does not, however tall it is. Not
 called prominence, because topographic prominence is non-negative by definition
@@ -491,15 +549,16 @@ near to lose to, is named however far its rank has fallen. That is the one case
 where the name is certainly wrong: it is pointing at empty sky. A tail cut on
 the same slider closes it without a second control, and it is what the setting's
 own prose already claimed ("by two or three times this…"). Note it does not bite
-at the default: 120 km × 3 is past the 300 km the service renders when no
-`range` is asked for, which is what the client does.
+at the default: 120 km × 3 is past the 300 km the picture holds unless the
+account has premium and asks for more.
 
 **The service has no peak-distance cut** — peaks come back filtered only by
 visibility and `min_dominance`, then cut to `max_peaks`, and no list is sent to
 it (the peaks are its own `--peaks` GeoPackage). Its `range` looks like the same
-thing and is not: it bounds the terrain the render *sees*, so asking for a short
-one would take the far ridges out of the picture, and it costs a whole render.
-Hence a client-side filter.
+thing and is not: it bounds the terrain the render *sees* — a setting of its own
+under "Quality", not a way to thin names — so narrowing it to drop a name would take the
+ridge out of the picture too, and cost a whole render. Hence a client-side
+filter.
 
 The other two read alike but cut differently, which is why they share a menu rather than
 being merged: thinning by the pitch keeps whatever ranks highest in each stretch
@@ -662,6 +721,10 @@ otherwise generate:
 - **The eye is the local maximum** within a few metres of the click, because
   the pyramid stores an average and averaging costs a sharp summit more than it
   costs flat ground.
+- **An unfolded picture is a drawing.** Said only while the lift is set, since
+  without one the picture keeps the promise this takes back: a dashed-leader
+  peak is really behind a ridge, and a distance read off the depth buffer no
+  longer implies a line of sight.
 
 Attribution credits every model the pyramid can answer from — the same set the
 elevation API credits (`ELEVATION_API_DTM_ATTRIBUTION`) plus `GEDTM30_ATTR` —

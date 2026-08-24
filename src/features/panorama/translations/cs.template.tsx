@@ -34,6 +34,13 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     tiltHint:
       'Kolik oblohy a země obrázek zachytí — úhly nad obzorem a pod ním.',
     custom: 'Přesné úhly',
+    depthLift: 'Rozvinout dálku',
+    depthLiftOff: 'Věrný pohled',
+    depthLiftHint:
+      'Nadzvedne vzdálený terén, takže se daleká pohoří oddělí od hřebenů před nimi — tak, jak to dělají ručně kreslená panoramata. Zároveň se tím do obrázku dostanou vrcholy, které byste odtud ve skutečnosti neviděli; jejich názvy jsou odlišené.',
+    range: 'Maximální viditelná vzdálenost',
+    rangeHint:
+      'Terén nad 300 km patří prémiu. Každý kilometr navíc se projde po každém paprsku obrázku, takže vzdálenější výhled stojí vykreslování úměrně víc.',
     look: 'Vzhled',
     looks: {
       natural: 'Přirozený',
@@ -86,6 +93,9 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Čistý vzduch',
     hazeHint:
       'Jak daleko musí vrchol být, aby opar znamenal víc než samotný vrchol. Nad trojnásobkem této vzdálenosti se už nic nepojmenuje.',
+    showRevealed: 'Pojmenovat odhalené vrcholy',
+    showRevealedHint:
+      'Vrcholy, které rozvinutí dálky vytáhlo zpoza bližšího hřebene: jsou nakreslené, ale odtud je ve skutečnosti není vidět. Jejich názvy jsou světlejší a když není místo pro oba, přednost dostane vrchol, který je vidět.',
   },
   dominance: {
     label: 'Minimální dominance',
@@ -119,6 +129,8 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Podrobnost se liší podle země. Kde existuje národní laserový model, je blízké okolí ostré; jinde odpovídá globální 30m model.',
     viewpoint:
       'Oko je umístěno na nejvyšší bod v okruhu několika metrů od místa kliknutí, aby výhled z vrcholu nekazila skála vedle vás.',
+    depthLift:
+      'Dálka je rozvinutá, takže tento obrázek je kresba, ne fotografie: vrcholy se světlejším názvem ve skutečnosti zakrývá hřeben před nimi a vzdálenost odečtená z obrázku už neznamená přímý výhled.',
   },
   terrainSource: 'Terén',
 };

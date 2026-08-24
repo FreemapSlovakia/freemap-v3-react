@@ -301,6 +301,12 @@ export default function Panorama(): ReactElement {
 
               <p className="mb-1">{m?.caveats.viewpoint}</p>
 
+              {/* Of the render, not of the setting: this says what the picture
+                  on screen is, and a lift only staged has not drawn it yet. */}
+              {(render?.depthLift ?? 0) > 0 && (
+                <p className="mb-1">{m?.caveats.depthLift}</p>
+              )}
+
               <p className="mb-0">
                 {m?.terrainSource}:{' '}
                 {TERRAIN_SOURCES.map((attr, i) => (

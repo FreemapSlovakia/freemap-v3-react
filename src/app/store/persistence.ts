@@ -29,10 +29,13 @@ import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
 import {
+  DEPTH_LIFT_MAX,
   LABEL_DENSITY_MAX,
   LABEL_DISTANCE_WEIGHT_MAX,
   LABEL_HAZE_MAX_KM,
   panoramaSettingsInitialState,
+  RANGE_MAX_KM,
+  RANGE_MIN_KM,
 } from '@features/panorama/model/settingsReducer.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
@@ -168,6 +171,13 @@ const PersistedPanoramaSettingsSchema = z
     altMin: z.number(),
     altMax: z.number(),
     eye: z.number(),
+    // Bounded to what the slider offers: the request adds it to the top of the
+    // band, and the service refuses anything past 45 outright.
+    depthLift: z.number().min(0).max(DEPTH_LIFT_MAX),
+    // The asked-for figure, which may be past what a lapsed account may have —
+    // `grantedRangeKm` clamps the request, so premium grants it back silently.
+    rangeKm: z.number().min(RANGE_MIN_KM).max(RANGE_MAX_KM),
+    showRevealedLabels: z.boolean(),
     ridgeStrength: z.number(),
     ridgeWidth: z.number(),
     ridgeColor: z.string(),

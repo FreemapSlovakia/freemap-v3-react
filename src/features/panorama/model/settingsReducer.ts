@@ -56,11 +56,19 @@ export const NO_DOMINANCE_FILTER = -100_000;
 
 /**
  * Farthest the haze slider reaches — the API's own ceiling for `range`, so
- * nothing can be rendered for the falloff to act on past it. The client sends
- * no `range` at all, so what a view actually holds is the service's 300 km
- * default: at this end the falloff does nothing, which is what `0` is for.
+ * nothing can be rendered for the falloff to act on past it. At this end the
+ * falloff does nothing, which is what `0` is for.
  */
 export const LABEL_HAZE_MAX_KM = 400;
+
+/**
+ * How far the picture may see, as the slider's stops in kilometres. The API's
+ * own bounds are 1–400 km; the near end starts where a view of nothing but the
+ * next hillside stops being one.
+ */
+export const RANGE_MIN_KM = 10;
+
+export const RANGE_MAX_KM = 400;
 
 /**
  * How hard distance is weighed against a summit's own metres, as the exponent
@@ -119,6 +127,16 @@ export const DOMINANCE_STEPS_M = [
 ].sort((a, b) => a - b);
 
 export type PanoramaTilt = 'standard' | 'wide' | 'flat' | 'custom';
+
+/** Angles above and below the horizon a band may reach; short of straight up. */
+export const ALT_LIMIT = 89;
+
+/**
+ * Where the unfolding slider stops, short of the service's own 45: the lift
+ * raises the horizon by its own degrees, and the band raised with it costs
+ * pixels, so a caricature past this would buy nothing but render time.
+ */
+export const DEPTH_LIFT_MAX = 20;
 
 /** Degrees below and above horizontal each tilt preset frames. */
 export const PANORAMA_TILTS: Record<
@@ -240,6 +258,22 @@ export interface PanoramaSettingsState {
   altMax: number;
   /** Eye height above the ground, metres. */
   eye: number;
+  /**
+   * Degrees far terrain is raised by, unfolding the distance the projection
+   * compresses; `0` is a true view. The lift decides what hides what, so it
+   * draws summits the eye cannot see — hence `showRevealedLabels`.
+   */
+  depthLift: number;
+  /**
+   * Farthest terrain the picture holds, kilometres. Past `FREE_RANGE_MAX_KM` it
+   * is premium's — every extra kilometre is samples on every ray.
+   */
+  rangeKm: number;
+  /**
+   * Whether the summits only the lift brings into view are named. A filter over
+   * the labels in hand, so it is instant; the lift itself costs a render.
+   */
+  showRevealedLabels: boolean;
   /** How the picture is drawn; see `PANORAMA_LOOKS`. */
   ridgeStrength: number;
   ridgeWidth: number;
@@ -287,6 +321,11 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   altMin: -18,
   altMax: 12,
   eye: 1.7,
+  depthLift: 0,
+  // The service's own default, and what every render asked for before there was
+  // a control: free accounts see no change.
+  rangeKm: 300,
+  showRevealedLabels: true,
   ...PANORAMA_STYLE_DEFAULTS,
   labelDensity: 5,
   minDominance: NO_DOMINANCE_FILTER,

@@ -50,6 +50,13 @@ export interface PanoramaRequest {
   /** `#rrggbb`, the near terrain before haze washes it towards the sky. */
   ground_color?: string;
   /**
+   * Degrees of extra elevation at `range`, tapering to nothing at the eye,
+   * 0–45. It warps the world rather than the picture, so it decides what hides
+   * what: a range lifted clear of the ridge in front of it is drawn, and its
+   * summits come back flagged `revealed`.
+   */
+  depth_lift?: number;
+  /**
    * What the service encodes the picture as. AVIF by a wide margin — 216 KB
    * against PNG's 3.7 MB for a full turn — because this renderer draws nothing
    * but smooth gradients, and the sky dither that keeps them from banding is
@@ -84,8 +91,15 @@ const PeakSchema = z.object({
   azimuth: z.number(),
   altitude: z.number(),
   x: z.number(),
+  /** Follows `depth_lift`, unlike `altitude`, so labels sit on their summits. */
   y: z.number(),
   visible: z.boolean(),
+  /**
+   * `depth_lift` is what brought it into view: drawn and nameable, but hidden
+   * from the actual viewpoint. Defaulted, so a service older than this client
+   * still renders rather than failing the parse.
+   */
+  revealed: z.boolean().default(false),
   /**
    * **Metres, signed**, the summit stands above the terrain around it within
    * 3 km of itself. Negative where the top never rises clear of its own ridge,

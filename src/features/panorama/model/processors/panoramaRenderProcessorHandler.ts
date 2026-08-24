@@ -11,9 +11,9 @@ import { panoramaErrorCode, renderPanorama } from '../../api.js';
 import { labelsFromPeaks } from '../../labels/fromPeaks.js';
 import {
   buildPanoramaRequest,
-  grantedQuality,
+  grantedPanorama,
   PANORAMA_PREVIEW_QUALITY,
-  type PanoramaQuality,
+  type PanoramaGrants,
   panoramaRenderKey,
 } from '../../quality.js';
 import {
@@ -63,7 +63,7 @@ const CANCEL: CancelTriggers = {
 async function renderPass(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
-  quality: PanoramaQuality,
+  grants: PanoramaGrants,
   preview: boolean,
   getState: () => RootState,
   dispatch: Dispatch,
@@ -71,7 +71,7 @@ async function renderPass(
   const id = claimPanoramaRender();
 
   const { meta, imageUrl, depth } = await renderPanorama(
-    buildPanoramaRequest(viewpoint, settings, quality),
+    buildPanoramaRequest(viewpoint, settings, grants),
     getState,
     CANCEL,
     (progress) => dispatch(panoramaSetProgress(progress)),
@@ -89,7 +89,7 @@ async function renderPass(
     panoramaSetRender({
       id,
       viewpoint,
-      key: panoramaRenderKey(viewpoint, settings, quality),
+      key: panoramaRenderKey(viewpoint, settings, grants),
       preview,
       eyeElevation: meta.eye_elevation,
       width: meta.width,
@@ -98,6 +98,7 @@ async function renderPass(
       altMin: meta.alt_min,
       altMax: meta.alt_max,
       stepDeg: meta.step_deg,
+      depthLift: settings.depthLift,
       labels: labelsFromPeaks(meta.peaks ?? []),
     }),
   );
@@ -114,15 +115,12 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
 
   const settings = getState().panoramaSettings;
 
-  // Everything past the fast tier is premium's. Asking for more without it
-  // would only have the service clamp it back, so the request says what the
-  // account can have.
-  const quality = grantedQuality(
-    settings.quality,
-    isPremium(getState().auth.user),
-  );
+  // The finer tiers and the farther views are premium's. Asking for more
+  // without it would only have the service clamp it back, so the request says
+  // what the account can have.
+  const grants = grantedPanorama(settings, isPremium(getState().auth.user));
 
-  trackMatomo(['trackEvent', 'Panorama', 'render', quality]);
+  trackMatomo(['trackEvent', 'Panorama', 'render', grants.quality]);
 
   dispatch(panoramaSetRendering(true));
 
@@ -132,11 +130,11 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     // the coarsest tier there is, so it adds a few percent to a detailed render
     // rather than the third again it would cost were it a middling one.
     if (
-      quality !== PANORAMA_PREVIEW_QUALITY &&
+      grants.quality !== PANORAMA_PREVIEW_QUALITY &&
       !(await renderPass(
         viewpoint,
         settings,
-        PANORAMA_PREVIEW_QUALITY,
+        { ...grants, quality: PANORAMA_PREVIEW_QUALITY },
         true,
         getState,
         dispatch,
@@ -149,7 +147,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       !(await renderPass(
         viewpoint,
         settings,
-        quality,
+        grants,
         false,
         getState,
         dispatch,

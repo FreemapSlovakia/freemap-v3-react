@@ -40,6 +40,16 @@ export type PanoramaMessages = {
     tiltHint: string;
     /** The vertical band given as its two angles rather than by name. */
     custom: string;
+    /** Raises far terrain, unfolding the distance the projection compresses. */
+    depthLift: string;
+    /** The step that leaves the view true. */
+    depthLiftOff: string;
+    /** Says what it buys, and that it draws what cannot actually be seen. */
+    depthLiftHint: string;
+    /** How far the picture sees; past the free bound it is premium's. */
+    range: string;
+    /** The gem's tooltip: what a farther view costs, and why it is premium's. */
+    rangeHint: string;
     look: string;
     /** One per `PANORAMA_LOOKS`, so adding a look without a name won't compile. */
     looks: Record<PanoramaLook, string>;
@@ -89,6 +99,10 @@ export type PanoramaMessages = {
     /** The step with no falloff and no cut. */
     hazeOff: string;
     hazeHint: string;
+    /** Whether summits only the unfolding brings into view are named at all. */
+    showRevealed: string;
+    /** Says what such a summit is, and how its name is marked. */
+    showRevealedHint: string;
   };
   dominance: {
     /** Names the control: how much a summit must stand out to be named. */
@@ -123,6 +137,8 @@ export type PanoramaMessages = {
     bareEarth: string;
     coverage: string;
     viewpoint: string;
+    /** Said only while the picture is unfolded, which it takes back. */
+    depthLift: string;
   };
   /** Credits the terrain models the picture was rendered from. */
   terrainSource: string;

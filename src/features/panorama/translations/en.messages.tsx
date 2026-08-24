@@ -38,6 +38,13 @@ const en: PanoramaMessages = {
     tiltHint:
       'How much sky and ground the picture holds, as the angles above and below the horizon.',
     custom: 'Exact angles',
+    depthLift: 'Unfold distance',
+    depthLiftOff: 'True view',
+    depthLiftHint:
+      'Raises distant terrain so that far ranges separate from the ridges in front of them, the way a hand-drawn panorama does. It also brings into view summits you could not actually see from here; their names are marked.',
+    range: 'Maximum visible distance',
+    rangeHint:
+      'Terrain past 300 km is premium’s. Every extra kilometre is walked along every ray of the picture, so a farther view costs the renderer proportionally more.',
     look: 'Look',
     looks: {
       natural: 'Natural',
@@ -90,6 +97,9 @@ const en: PanoramaMessages = {
     hazeOff: 'Clear air',
     hazeHint:
       'How far a summit must be before haze counts for more than the summit does. Past three times that, nothing is named at all.',
+    showRevealed: 'Name revealed peaks',
+    showRevealedHint:
+      'Summits that unfolding lifted out from behind a nearer ridge: drawn, but not actually visible from here. Their names are drawn faded, and rank below the ones that can be seen where there is no room for both.',
   },
   dominance: {
     label: 'Minimum dominance',
@@ -127,6 +137,8 @@ const en: PanoramaMessages = {
       'Detail varies by country. Where a national laser-scanned model exists the near field is sharp; elsewhere a global 30 m model answers.',
     viewpoint:
       'The eye is put on the highest point within a few metres of where you clicked, so a summit view is not spoiled by the rock beside it.',
+    depthLift:
+      'Distance is unfolded, so this picture is a drawing rather than a photograph: faded peak names stand behind a ridge that really hides them, and a distance read off the picture no longer means a clear line of sight.',
   },
   terrainSource: 'Terrain',
 };

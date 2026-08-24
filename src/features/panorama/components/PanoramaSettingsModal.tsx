@@ -1,6 +1,8 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { isPremium } from '@features/premium/premium.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
@@ -18,6 +20,8 @@ import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { panoramaSetSettings } from '../model/actions.js';
 import {
+  ALT_LIMIT,
+  DEPTH_LIFT_MAX,
   PANORAMA_LOOK_NAMES,
   PANORAMA_LOOKS,
   PANORAMA_STYLE_DEFAULTS,
@@ -26,10 +30,13 @@ import {
   type PanoramaSettingsState,
   panoramaLookOf,
   panoramaSettingsInitialState,
+  RANGE_MAX_KM,
+  RANGE_MIN_KM,
   RIDGE_STRENGTH_MAX,
   RIDGE_WIDTH_MAX,
   tiltRange,
 } from '../model/settingsReducer.js';
+import { FREE_RANGE_MAX_KM, grantedRangeKm } from '../quality.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 
 type Props = { show: boolean };
@@ -40,6 +47,8 @@ type Draft = Pick<
   | 'eye'
   | 'altMin'
   | 'altMax'
+  | 'depthLift'
+  | 'rangeKm'
   | 'ridgeStrength'
   | 'ridgeWidth'
   | 'ridgeColor'
@@ -49,9 +58,6 @@ type Draft = Pick<
 const EYE_MIN = 0;
 
 const EYE_MAX = 300;
-
-/** Angles above and below the horizon, so short of straight up or down. */
-const ALT_LIMIT = 89;
 
 /**
  * What a number field currently says. `NaN` for an empty one rather than
@@ -72,6 +78,8 @@ function seedDraft(settings: PanoramaSettingsState): Draft {
     eye: settings.eye,
     altMin,
     altMax,
+    depthLift: settings.depthLift,
+    rangeKm: settings.rangeKm,
     ridgeStrength: settings.ridgeStrength,
     ridgeWidth: settings.ridgeWidth,
     ridgeColor: settings.ridgeColor,
@@ -84,6 +92,8 @@ const defaults: Draft = {
   eye: panoramaSettingsInitialState.eye,
   altMin: tiltRange(panoramaSettingsInitialState)[0],
   altMax: tiltRange(panoramaSettingsInitialState)[1],
+  depthLift: panoramaSettingsInitialState.depthLift,
+  rangeKm: panoramaSettingsInitialState.rangeKm,
   ...PANORAMA_STYLE_DEFAULTS,
 };
 
@@ -107,7 +117,15 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
 
   const settings = useAppSelector((state) => state.panoramaSettings);
 
+  const premium = useAppSelector((state) => isPremium(state.auth.user));
+
   const nf = useNumberFormat({ maximumFractionDigits: 1 });
+
+  const nfKm = useNumberFormat({
+    style: 'unit',
+    unit: 'kilometer',
+    maximumFractionDigits: 0,
+  });
 
   // A copy to edit, so a render landing underneath the modal can't rewrite what
   // is being typed and Cancel really is a cancel.
@@ -191,6 +209,10 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
   useDocumentTitle(show ? m?.settings.title : undefined);
 
   const look = panoramaLookOf(draft);
+
+  // What the slider shows and what the figure beside it says, both: a lapsed
+  // account whose stored range is past the free bound is rendering this one.
+  const grantedRange = grantedRangeKm(draft.rangeKm, premium);
 
   return (
     <Modal
@@ -280,6 +302,49 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
             </InputGroup>
 
             <Form.Text>{m?.settings.tiltHint}</Form.Text>
+          </Form.Group>
+
+          {/* Beside the band because it moves it: the horizon rises by exactly
+              the lift, and the request adds the same on top so the far ridges
+              stay in frame. */}
+          <Form.Group className="mb-3">
+            <LabeledSlider
+              id="fm-panorama-depth-lift"
+              label={m?.settings.depthLift}
+              valueLabel={
+                draft.depthLift
+                  ? `${nf.format(draft.depthLift)}°`
+                  : m?.settings.depthLiftOff
+              }
+              hint={m?.settings.depthLiftHint}
+              min={0}
+              max={DEPTH_LIFT_MAX}
+              step={0.5}
+              value={draft.depthLift}
+              onChange={(depthLift) => patch({ depthLift })}
+            />
+          </Form.Group>
+
+          {/* Capped at what the account may have rather than clamped after the
+              fact, the way the cached-map zooms are: the gem beside the name is
+              what says the rest of the slider exists. */}
+          <Form.Group className="mb-3">
+            <LabeledSlider
+              id="fm-panorama-range"
+              label={
+                <>
+                  {m?.settings.range}
+
+                  {!premium && <PremiumGem hint={m?.settings.rangeHint} />}
+                </>
+              }
+              valueLabel={nfKm.format(grantedRange)}
+              min={RANGE_MIN_KM}
+              max={premium ? RANGE_MAX_KM : FREE_RANGE_MAX_KM}
+              step={10}
+              value={grantedRange}
+              onChange={(rangeKm) => patch({ rangeKm })}
+            />
           </Form.Group>
 
           <hr />

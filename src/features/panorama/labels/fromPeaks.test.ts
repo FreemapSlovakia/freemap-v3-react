@@ -104,28 +104,61 @@ describe('panorama haze cutoff', () => {
 });
 
 describe('panorama label candidates', () => {
+  /** Nothing cut but what the case at hand is about. */
+  const all = { minDominance: -100_000, showRevealed: true };
+
   it('takes what passes both cuts, best first', () => {
-    expect(ids(candidateLabels([giant, hill], halfway, 0))).toEqual([
-      'hill',
-      'giant',
-    ]);
+    expect(
+      ids(candidateLabels([giant, hill], halfway, { ...all, minDominance: 0 })),
+    ).toEqual(['hill', 'giant']);
   });
 
   it('drops what does not stand out enough', () => {
-    expect(ids(candidateLabels([giant, hill], halfway, 1000))).toEqual([
-      'giant',
-    ]);
+    expect(
+      ids(
+        candidateLabels([giant, hill], halfway, { ...all, minDominance: 1000 }),
+      ),
+    ).toEqual(['giant']);
   });
 
   it('drops what the haze has ended the names past', () => {
     expect(
-      ids(candidateLabels([giant, hill], { ...halfway, hazeKm: 40 }, 0)),
+      ids(
+        candidateLabels(
+          [giant, hill],
+          { ...halfway, hazeKm: 40 },
+          {
+            ...all,
+            minDominance: 0,
+          },
+        ),
+      ),
     ).toEqual(['hill']);
   });
 
   it('keeps a top under its own ridge where nothing is filtered', () => {
     const under = label('under', 1000, -50);
 
-    expect(ids(candidateLabels([under], halfway, -100_000))).toEqual(['under']);
+    expect(ids(candidateLabels([under], halfway, all))).toEqual(['under']);
+  });
+
+  it('drops a summit the lift revealed once names for them are off', () => {
+    // Outranks the hill on its own figures — 400 m against 300 at half again
+    // the distance — and still gives way to it, the hill being seeable.
+    const behind = { ...label('behind', 30_000, 400), revealed: true };
+
+    expect(ids(candidateLabels([hill, behind], halfway, all))).toEqual([
+      'hill',
+      'behind',
+    ]);
+
+    expect(
+      ids(
+        candidateLabels([hill, behind], halfway, {
+          ...all,
+          showRevealed: false,
+        }),
+      ),
+    ).toEqual(['hill']);
   });
 });

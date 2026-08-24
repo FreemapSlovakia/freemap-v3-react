@@ -78,7 +78,10 @@ export const panoramaToposcopeProcessor: Processor<typeof panoramaToToposcope> =
             hazeKm: settings.labelHazeKm,
             distanceWeight: settings.labelDistanceWeight,
           },
-          settings.minDominance,
+          {
+            minDominance: settings.minDominance,
+            showRevealed: settings.showRevealedLabels,
+          },
         ),
         pitch,
       );

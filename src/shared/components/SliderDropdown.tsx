@@ -12,7 +12,7 @@ type Props = {
   name?: ReactNode;
   /** Below this the toggle label collapses into the tooltip. */
   breakpoint?: Breakpoint;
-  /** One or more `LabeledSlider`s. */
+  /** `LabeledSlider`s, and whatever else answers the same question. */
   children: ReactNode;
 };
 

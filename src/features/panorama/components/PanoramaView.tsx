@@ -11,7 +11,6 @@ import type { LatLon } from '@shared/types/common.js';
 import destination from '@turf/destination';
 import clsx from 'clsx';
 import {
-  Fragment,
   type ReactElement,
   type PointerEvent as ReactPointerEvent,
   useCallback,
@@ -95,6 +94,13 @@ const SETTLE_MS = 500;
  * far enough to be legible.
  */
 const PICKED_INK = '#ff6a6a';
+
+/**
+ * How far a summit the lift revealed is faded: it is drawn and named, but a
+ * ridge stands between it and the eye. Matches `.revealed` in the stylesheet,
+ * which fades the name itself.
+ */
+const REVEALED_OPACITY = 0.65;
 
 /** Where a bearing and a distance from the viewpoint land on the ground. */
 function groundPoint(
@@ -810,11 +816,19 @@ export function PanoramaView({
     [settings.labelHazeKm, settings.labelDistanceWeight],
   );
 
+  const filters = useMemo(
+    () => ({
+      minDominance: settings.minDominance,
+      showRevealed: settings.showRevealedLabels,
+    }),
+    [settings.minDominance, settings.showRevealedLabels],
+  );
+
   // Which summits count at all, best first — the weighting moves both, so it is
   // worked out here rather than kept on the render.
   const candidates = useMemo(
-    () => candidateLabels(render.labels, weighting, settings.minDominance),
-    [render.labels, settings.minDominance, weighting],
+    () => candidateLabels(render.labels, weighting, filters),
+    [render.labels, filters, weighting],
   );
 
   const limits = useMemo(
@@ -947,10 +961,14 @@ export function PanoramaView({
 
       {/* Each leader is drawn twice, dark under light, the way the names carry
           a shadow: a pale line alone disappears against the sky, which is
-          exactly where most of them run. */}
+          exactly where most of them run. A summit the lift revealed fades its
+          whole mark, the same as its name. */}
       <svg className={classes.overlay}>
         {placements.map((p) => (
-          <Fragment key={p.label.id}>
+          <g
+            key={p.label.id}
+            opacity={p.label.revealed ? REVEALED_OPACITY : undefined}
+          >
             <line
               x1={p.anchor.x}
               y1={p.anchor.y}
@@ -977,7 +995,7 @@ export function PanoramaView({
               stroke="rgba(0, 0, 0, 0.5)"
               strokeWidth={1}
             />
-          </Fragment>
+          </g>
         ))}
 
         {/* Where a press on the terrain landed: the counterpart in the picture
@@ -1000,7 +1018,7 @@ export function PanoramaView({
         <button
           key={p.label.id}
           type="button"
-          className={classes.label}
+          className={clsx(classes.label, p.label.revealed && classes.revealed)}
           // Colour alone marks the picked one. Bold would be the obvious
           // second signal and is the wrong one: the layout packed this name
           // against a width measured in the regular face, so a bolder one runs

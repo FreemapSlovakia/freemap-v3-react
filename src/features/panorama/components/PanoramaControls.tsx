@@ -22,7 +22,7 @@ import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement, useCallback } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import {
   FaCog,
   FaCompass,
@@ -58,6 +58,7 @@ import {
   type PanoramaTilt,
 } from '../model/settingsReducer.js';
 import {
+  grantedPanorama,
   grantedQuality,
   PANORAMA_QUALITY_ORDER,
   type PanoramaQuality,
@@ -127,7 +128,7 @@ export function PanoramaControls({
     dispatch(panoramaToToposcope({ replace }));
   }, [confirmChoice, dispatch, hasDrawnPoints, m]);
 
-  const quality = grantedQuality(settings.quality, premium);
+  const grants = grantedPanorama(settings, premium);
 
   const nfM = useNumberFormat({
     style: 'unit',
@@ -197,7 +198,7 @@ export function PanoramaControls({
   const outdated =
     viewpoint !== null &&
     (render === null ||
-      render.key !== panoramaRenderKey(viewpoint, settings, quality));
+      render.key !== panoramaRenderKey(viewpoint, settings, grants));
 
   return (
     <FloatingWindowControls fullscreen={fullscreen}>
@@ -224,7 +225,7 @@ export function PanoramaControls({
         // without premium asks for a finer tier by default and is put back on
         // the fast one, and showing it that finer name would be a lie. The
         // stored choice is kept either way, so premium later grants it silently.
-        value={quality}
+        value={grants.quality}
         onSelect={(value) => {
           const asked = (value ?? 'fast') as PanoramaQuality;
 
@@ -301,11 +302,11 @@ export function PanoramaControls({
         breakpoint="md"
       />
 
-      {/* Which summits are named and how they are ordered — four halves of one
-          question, all instant, so they share a menu. Sliders rather than
+      {/* Which summits are named and how they are ordered — one question in
+          several parts, all instant, so they share a menu. Sliders rather than
           lists, since the useful settings are a dozen each and a dozen items is
           a menu to read where this is a thing to feel out. The toggle is named
-          rather than summarised: no two of the four speak for the others. */}
+          rather than summarised: no two of them speak for the others. */}
       <SliderDropdown
         icon={densityIcon}
         toggleLabel={m?.labels.title}
@@ -370,6 +371,31 @@ export function PanoramaControls({
             dispatch(panoramaSetSettings({ labelHazeKm }))
           }
         />
+
+        {/* Of the picture on screen, not of the setting: staging a lift, or
+            taking one away, must not hide the only control that can bring back
+            the names hidden in the render still being looked at. A cut like the
+            two above and instant like them, so it belongs here rather than
+            beside the lift itself, which costs a render. */}
+        {(render?.depthLift ?? 0) > 0 && (
+          <div>
+            <Form.Check
+              id="fm-panorama-revealed"
+              type="checkbox"
+              label={m?.labels.showRevealed}
+              checked={settings.showRevealedLabels}
+              onChange={(e) =>
+                dispatch(
+                  panoramaSetSettings({
+                    showRevealedLabels: e.currentTarget.checked,
+                  }),
+                )
+              }
+            />
+
+            <Form.Text className="mt-0">{m?.labels.showRevealedHint}</Form.Text>
+          </div>
+        )}
       </SliderDropdown>
 
       {/* Set-once settings — eye height, an exact vertical band, the look —

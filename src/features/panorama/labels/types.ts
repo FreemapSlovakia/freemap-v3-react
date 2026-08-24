@@ -34,4 +34,10 @@ export interface PanoramaLabel {
    * such source has to make rather than inherit. See `TODO.md`.
    */
   dominance?: number;
+  /**
+   * The depth lift is what brought its subject into view: drawn and nameable,
+   * but hidden from the actual viewpoint. A source that warps nothing leaves it
+   * out.
+   */
+  revealed?: boolean;
 }

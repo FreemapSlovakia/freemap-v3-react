@@ -1,6 +1,7 @@
 import type { LatLon } from '@shared/types/common.js';
 import type { PanoramaRequest } from './api.js';
 import {
+  ALT_LIMIT,
   type PanoramaSettingsState,
   tiltRange,
 } from './model/settingsReducer.js';
@@ -87,6 +88,34 @@ export function grantedQuality(
     : FREE_QUALITY;
 }
 
+/**
+ * How far an account without premium may see, kilometres — the service's own
+ * default, so this is what every render held before the control existed.
+ * Farther costs samples on every ray of the picture.
+ */
+export const FREE_RANGE_MAX_KM = 300;
+
+/** As {@link grantedQuality}: asking for *less* is nobody's business to stop. */
+export function grantedRangeKm(asked: number, premium: boolean): number {
+  return premium ? asked : Math.min(asked, FREE_RANGE_MAX_KM);
+}
+
+/** What the account may actually have of the two settings it can overreach on. */
+export interface PanoramaGrants {
+  quality: PanoramaQuality;
+  rangeKm: number;
+}
+
+export function grantedPanorama(
+  settings: PanoramaSettingsState,
+  premium: boolean,
+): PanoramaGrants {
+  return {
+    quality: grantedQuality(settings.quality, premium),
+    rangeKm: grantedRangeKm(settings.rangeKm, premium),
+  };
+}
+
 /** The service's cap on `width × height`, which it answers 400 to. */
 const MAX_PANORAMA_PIXELS = 24_000_000;
 
@@ -134,20 +163,32 @@ const MIN_DOMINANCE_M = -100_000;
  */
 const MAX_PEAKS = 2000;
 
+/**
+ * The band actually asked for. A depth lift raises the horizon by exactly its
+ * own degrees, so the same is added on top: without it the far ridges the lift
+ * exists to separate climb straight out of an unchanged frame.
+ */
+function renderTiltRange(settings: PanoramaSettingsState): [number, number] {
+  const [altMin, altMax] = tiltRange(settings);
+
+  return [altMin, Math.min(altMax + settings.depthLift, ALT_LIMIT)];
+}
+
 export function buildPanoramaRequest(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
-  quality: PanoramaQuality,
+  { quality, rangeKm }: PanoramaGrants,
 ): PanoramaRequest {
-  const range = tiltRange(settings);
+  const band = renderTiltRange(settings);
 
   return {
     lon: viewpoint.lon,
     lat: viewpoint.lat,
     fov: 360,
-    alt_min: range[0],
-    alt_max: range[1],
+    alt_min: band[0],
+    alt_max: band[1],
     eye: settings.eye,
+    range: rangeKm * 1000,
     depth: true,
     depth_step: 4,
     peaks: true,
@@ -157,8 +198,9 @@ export function buildPanoramaRequest(
     ridge_width: settings.ridgeWidth,
     ridge_color: settings.ridgeColor,
     ground_color: settings.groundColor,
+    depth_lift: settings.depthLift,
     ...PANORAMA_QUALITIES[quality].request,
-    step: panoramaStep(quality, range),
+    step: panoramaStep(quality, band),
     format: 'avif',
   };
 }
@@ -171,7 +213,7 @@ export function buildPanoramaRequest(
 export function panoramaRenderKey(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
-  quality: PanoramaQuality,
+  { quality, rangeKm }: PanoramaGrants,
 ): string {
   const [altMin, altMax] = tiltRange(settings);
 
@@ -181,6 +223,12 @@ export function panoramaRenderKey(
     altMin,
     altMax,
     settings.eye,
+    // Its own entry rather than the raised band: a lift of 1 over a 12° top
+    // asks for a different picture than none over 13°.
+    settings.depthLift,
+    // The granted figure, not the asked-for one: a free account that stored a
+    // farther view is rendering the same picture it was before.
+    rangeKm,
     quality,
     // The look is asked for, not applied afterwards, so changing it is another
     // render — and the Update button has to say so.

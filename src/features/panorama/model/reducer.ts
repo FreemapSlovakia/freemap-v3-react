@@ -40,6 +40,13 @@ export interface PanoramaRenderInfo {
   altMin: number;
   altMax: number;
   stepDeg: number;
+  /**
+   * Degrees of unfolding this picture was drawn with. What the setting says is
+   * what the *next* render will do, so anything speaking about the picture in
+   * hand — the revealed-names cut, the drawing-not-photograph caveat — has to
+   * ask this instead.
+   */
+  depthLift: number;
   labels: PanoramaLabel[];
 }
 

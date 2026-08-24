@@ -34,6 +34,13 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     tiltHint:
       'Koľko oblohy a zeme obrázok zachytí — uhly nad obzorom a pod ním.',
     custom: 'Presné uhly',
+    depthLift: 'Rozvinúť diaľku',
+    depthLiftOff: 'Verný pohľad',
+    depthLiftHint:
+      'Nadvihne vzdialený terén, takže sa ďaleké pohoria oddelia od hrebeňov pred nimi — tak, ako to robia ručne kreslené panorámy. Zároveň tým do obrázka pribudnú vrchy, ktoré by ste odtiaľto v skutočnosti nevideli; ich názvy sú odlíšené.',
+    range: 'Maximálna viditeľná vzdialenosť',
+    rangeHint:
+      'Terén nad 300 km patrí prémiu. Každý kilometer navyše sa prejde po každom lúči obrázka, takže vzdialenejší výhľad stojí vykresľovanie úmerne viac.',
     look: 'Vzhľad',
     looks: {
       natural: 'Prirodzený',
@@ -86,6 +93,9 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Čistý vzduch',
     hazeHint:
       'Ako ďaleko musí vrch byť, aby opar znamenal viac ako samotný vrch. Nad trojnásobkom tejto vzdialenosti sa už nepomenuje nič.',
+    showRevealed: 'Pomenovať odhalené vrchy',
+    showRevealedHint:
+      'Vrchy, ktoré rozvinutie diaľky vytiahlo spoza bližšieho hrebeňa: sú nakreslené, no odtiaľto ich v skutočnosti nevidno. Ich názvy sú svetlejšie a keď nie je miesto pre oba, prednosť dostane vrch, ktorý vidno.',
   },
   dominance: {
     label: 'Minimálna dominancia',
@@ -119,6 +129,8 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Podrobnosť sa líši podľa krajiny. Kde existuje národný laserový model, je blízke okolie ostré; inde odpovedá globálny 30 m model.',
     viewpoint:
       'Oko je umiestnené na najvyšší bod v okruhu niekoľkých metrov od miesta kliknutia, aby výhľad z vrcholu nekazila skala vedľa vás.',
+    depthLift:
+      'Diaľka je rozvinutá, takže tento obrázok je kresba, nie fotografia: vrchy so svetlejším názvom zakrýva v skutočnosti hrebeň pred nimi a vzdialenosť odčítaná z obrázka už neznamená priamy výhľad.',
   },
   terrainSource: 'Terén',
 };

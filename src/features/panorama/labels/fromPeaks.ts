@@ -15,6 +15,12 @@ export interface LabelWeighting {
 const HAZE_CUTOFF = 3;
 
 /**
+ * What a summit's rank is worth when only the depth lift brought it into view.
+ * Where names compete for room, the one that can actually be seen takes it.
+ */
+const REVEALED_RANK_PENALTY = 0.5;
+
+/**
  * Metres past which the haze says not to name a summit at all, or `Infinity`
  * where the air is clear.
  *
@@ -33,8 +39,9 @@ export function hazeCutoffM({ hazeKm }: LabelWeighting): number {
  * Neither term alone will do, which is what `distanceWeight` picks between:
  * metres alone put a distant massif over a nearby hill that fills far more of
  * the frame, the angle it subtends puts a roadside knoll over the High Tatras.
- * The haze term then says a summit has to be seeable, not merely big. Why those
- * shapes, and what the tuning is worth, is in `doc/panorama.md`.
+ * The haze term then says a summit has to be seeable, not merely big — and one
+ * that is only seeable because the lift raised it is demoted outright. Why
+ * those shapes, and what the tuning is worth, is in `doc/panorama.md`.
  */
 function labelRank(
   label: PanoramaLabel,
@@ -56,7 +63,19 @@ function labelRank(
   // how much the ridge stands over it — and scaling a negative number *down*
   // raises it, so multiplying would have made a subordinate top rank better the
   // further off it was, which is precisely backwards.
-  return dominance >= 0 ? dominance * worth : dominance / worth;
+  const rank = dominance >= 0 ? dominance * worth : dominance / worth;
+
+  if (!label.revealed) {
+    return rank;
+  }
+
+  // Demoted rather than tiered below every seeable top: what the lift reveals
+  // is usually the range the user unfolded the picture to see, and a strict
+  // tier would give its name away to the near ridge hiding it. Signed the same
+  // way, for the same reason.
+  return rank >= 0
+    ? rank * REVEALED_RANK_PENALTY
+    : rank / REVEALED_RANK_PENALTY;
 }
 
 /**
@@ -91,22 +110,32 @@ export function labelsFromPeaks(peaks: Peak[]): PanoramaLabel[] {
       azimuth: peak.azimuth,
       y: peak.y,
       dominance: peak.dominance,
+      revealed: peak.revealed,
     }));
+}
+
+/** Which of the ranked labels are worth naming at all; see {@link candidateLabels}. */
+export interface LabelFilters {
+  /** Metres a summit must stand above its surroundings; see `DOMINANCE_STEPS_M`. */
+  minDominance: number;
+  /** Whether summits only the depth lift brings into view are named. */
+  showRevealed: boolean;
 }
 
 /**
  * The labels worth naming at all, best first: ranked by the weighting, then cut
- * by how much a summit stands out and how far the air carries a name. What
- * survives this is what the layout thins down to what fits.
+ * by how much a summit stands out, how far the air carries a name, and whether
+ * one the eye cannot actually see may carry one. What survives this is what the
+ * layout thins down to what fits.
  *
- * The far cut is ours rather than the service's: its own `range` bounds the
- * terrain the render sees, so asking it for one would take the far ridges out
- * of the picture and cost a render.
+ * The far cut is ours rather than the service's: narrowing its `range` to make
+ * it would take the far ridges out of the picture as well as out of the names,
+ * and cost a render.
  */
 export function candidateLabels(
   labels: PanoramaLabel[],
   weighting: LabelWeighting,
-  minDominance: number,
+  { minDominance, showRevealed }: LabelFilters,
 ): PanoramaLabel[] {
   const ceiling = hazeCutoffM(weighting);
 
@@ -115,6 +144,7 @@ export function candidateLabels(
   return rankLabels(labels, weighting).filter(
     (label) =>
       (label.dominance ?? Infinity) >= minDominance &&
-      label.distance <= ceiling,
+      label.distance <= ceiling &&
+      (showRevealed || !label.revealed),
   );
 }
