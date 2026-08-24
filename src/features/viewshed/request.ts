@@ -94,9 +94,10 @@ export function grantedViewshed(
 }
 
 /**
- * Metres the eye is raised to the highest ground within. Wider than the
- * panorama's: Gerlach's nominal coordinates see a tenth of what its DEM maximum
- * 75 m away sees.
+ * Radius of the ring of eight points the eye is raised to the highest of — a
+ * ring, not a disc, so a wider one can step over the summit rather than find
+ * it. Wider than the service's 10 m because a viewshed lives or dies by this,
+ * but it is a nudge off a nominal coordinate, not a summit snap.
  */
 const EYE_SEARCH_RADIUS_M = 30;
 

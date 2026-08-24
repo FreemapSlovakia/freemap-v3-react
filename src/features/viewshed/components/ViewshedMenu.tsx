@@ -192,7 +192,7 @@ export default function ViewshedMenu(): ReactElement {
                 // showing that figure would be a lie.
                 value={String(grants.radiusKm)}
                 onSelect={(value) => {
-                  const asked = Number(value);
+                  const asked = Number(value ?? grants.radiusKm);
 
                   // Offering to buy what the distance costs, rather than
                   // quietly storing a choice the next render would clamp away.

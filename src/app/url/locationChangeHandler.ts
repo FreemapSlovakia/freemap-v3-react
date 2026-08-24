@@ -1565,19 +1565,23 @@ function handleViewshed(
 
   const state = getState();
 
-  // Against what was granted, which is what the URL was written from: an account
-  // looking at a clamped picture would otherwise read its own link back as a
-  // change and store the clamped figure over the one it asked for. Before the
-  // pick, so a link naming both is computed at the radius it names.
+  const premium = isPremium(state.auth.user);
+
+  // Stored as what this account may actually have: a free reader of a premium
+  // 300 km link is looking at 20, and keeping the 300 would spring it on them
+  // the day they buy premium. Compared against the granted figure too, which is
+  // what the URL was written from, so an account reading its own link back does
+  // not store the clamp over the range it asked for. Before the pick, so a link
+  // naming both is computed at the radius it names.
   if (
     next.radiusKm !== undefined &&
-    next.radiusKm !==
-      grantedRadiusKm(
-        state.viewshedSettings.radiusKm,
-        isPremium(state.auth.user),
-      )
+    next.radiusKm !== grantedRadiusKm(state.viewshedSettings.radiusKm, premium)
   ) {
-    dispatch(viewshedSetSettings({ radiusKm: next.radiusKm }));
+    dispatch(
+      viewshedSetSettings({
+        radiusKm: grantedRadiusKm(next.radiusKm, premium),
+      }),
+    );
   }
 
   // Only the viewpoint pays for a render, as a click on the map does; a step

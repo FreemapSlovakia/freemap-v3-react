@@ -39,7 +39,10 @@ own `docs/API.md` (in the `dem-pyramid` repo); what matters on this side:
 - **The eye must be on the summit, not near it.** A viewshed is far more
   sensitive to the exact viewpoint than a panorama: from Gerlach's nominal
   coordinates the DEM reads 78 m below the true top and loses whole quadrants.
-  Hence the wider `eye_search_radius` in `buildViewshedRequest`.
+  `eye_search_radius` only softens that — it samples a ring of eight points at
+  exactly that radius, not the disc inside it, so a wider one can step over the
+  summit. Putting the eye on the top properly means snapping a picked peak to
+  the local DEM maximum, which nothing does yet.
 
 Everything about talking to the service — the bearer token, the `X-Job` progress
 token and its `EventSource`, and what a failure means — is
