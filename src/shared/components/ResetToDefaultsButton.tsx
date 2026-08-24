@@ -12,9 +12,10 @@ type Props = {
 };
 
 /**
- * "Reset to default" footer button shared by the settings/style modals. Neutral
- * (`secondary`) because it only refills the form — nothing is saved until the
- * user submits. `type="button"` so it never submits the surrounding form.
+ * "Reset to default" button shared by the settings and style modals and by the
+ * panorama's peak-names menu. Neutral (`secondary`) because putting a setting
+ * back is not the main action anywhere it appears. `type="button"` so it never
+ * submits the form it may be standing in.
  */
 export function ResetToDefaultsButton({
   onClick,
