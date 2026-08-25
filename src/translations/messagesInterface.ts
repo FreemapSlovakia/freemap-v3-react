@@ -1,6 +1,7 @@
 import { HttpError, NetworkError } from '@app/httpRequest.js';
 import type { SearchSource } from '@features/search/model/actions.js';
 import type { DeepPartial } from '@shared/types/deepPartial.js';
+import type { OsmFeatureId } from '@shared/types/featureId.js';
 import type { JSX, ReactNode } from 'react';
 
 type Err = { err: unknown };
@@ -223,6 +224,8 @@ export type Messages = {
     keepOnMap: string;
     offlineHint: string;
     sources: Record<SearchSource, string>;
+    /** What an element the query names by id is called before it is fetched. */
+    osmElementTypes: Record<OsmFeatureId['elementType'], string>;
     commands: {
       caption: string;
       /**

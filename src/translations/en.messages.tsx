@@ -283,6 +283,11 @@ const messages: Messages = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
+    osmElementTypes: {
+      node: 'Node',
+      way: 'Way',
+      relation: 'Relation',
+    },
     commands: {
       caption: 'Functions',
       keywords: {

@@ -319,6 +319,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
+    osmElementTypes: {
+      node: 'Uzol',
+      way: 'Cesta',
+      relation: 'Relácia',
+    },
     commands: {
       caption: 'Funkcie',
       keywords: {

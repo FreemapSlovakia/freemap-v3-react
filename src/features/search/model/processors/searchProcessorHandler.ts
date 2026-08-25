@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { getMessages } from '@features/l10n/messagesStore.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import {
   startProgress,
@@ -8,6 +9,7 @@ import {
 } from '@features/progress/model/actions.js';
 import { tileToGeoJSON } from '@mapbox/tilebelt';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
+import { parseOsmElementId } from '@shared/osmElementIds.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
@@ -30,7 +32,7 @@ import {
   searchSetQuery,
   searchSetResults,
 } from '../actions.js';
-import { photonToSearchResult } from '../resultUtils.js';
+import { loadingResult, photonToSearchResult } from '../resultUtils.js';
 
 export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
   dispatch,
@@ -41,7 +43,9 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
 
   // None of the four attempts below needs a server; `isLocalSearchQuery` says
   // which queries they cover, and the search box reads it to know what it can
-  // still offer offline — keep the two in step.
+  // still offer offline — keep the two in step. The OSM-id branch that follows
+  // them is parsed here too, but the element it names is fetched when the
+  // result is picked, so it stays out of `isLocalSearchQuery`.
 
   // try GeoJSON
 
@@ -142,6 +146,27 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
           id: syntheticFeatureId(),
           geojson: point([coords.lon, coords.lat]),
           displayName: query.toUpperCase(),
+        },
+      ]),
+    );
+
+    return;
+  }
+
+  // try an OSM element id
+
+  const osmId = parseOsmElementId(query);
+
+  if (osmId) {
+    const type = getMessages()?.search.osmElementTypes[osmId.elementType];
+
+    dispatch(
+      searchSetResults([
+        // The stand-in for a fetch, offered rather than shown: picking it is
+        // what starts the fetch it stands in for (`searchHighlightProcessor`).
+        {
+          ...loadingResult(osmId),
+          displayName: `${type ?? osmId.elementType} ${osmId.id}`,
         },
       ]),
     );

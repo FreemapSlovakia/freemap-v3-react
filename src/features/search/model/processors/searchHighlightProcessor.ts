@@ -56,7 +56,11 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       dispatch(
         osmLoad({
           ids: [parsed.data],
-          focus: Boolean(action.payload.focus),
+          // A result that is nothing but an id has nothing to fit to yet, so
+          // the map is taken to the element once it lands instead.
+          focus:
+            action.payload.focus !== false &&
+            !hasGeometry(action.payload.result),
         }),
       );
     }
@@ -68,7 +72,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
 
     if (
       action.payload.focus !== false &&
-      geojson &&
+      hasGeometry(action.payload.result) &&
       selection?.type === 'search' &&
       featureIdsEqual(selection.id, id)
     ) {
