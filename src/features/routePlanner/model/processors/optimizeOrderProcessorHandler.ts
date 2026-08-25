@@ -2,8 +2,8 @@ import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import { isPremium } from '@features/premium/premium.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { sameLatLon } from '@shared/geoutils.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
-import type { LatLon } from '@shared/types/common.js';
 import { loadRoutePlannerMessages } from '../../translations/loadRoutePlannerMessages.js';
 import {
   type routePlannerOptimizeOrder,
@@ -26,8 +26,6 @@ const variantOptions: Record<
   roundtrip: { roundTrip: true },
   free: { fixStart: false },
 };
-
-const samePlace = (a: LatLon, b: LatLon) => a.lat === b.lat && a.lon === b.lon;
 
 const handle: ProcessorHandler<typeof routePlannerOptimizeOrder> = async ({
   getState,
@@ -57,7 +55,7 @@ const handle: ProcessorHandler<typeof routePlannerOptimizeOrder> = async ({
   // Drop a trailing return-to-start copy left by an earlier round-trip optimize
   // so re-optimizing stays idempotent instead of accumulating duplicates.
   const base =
-    points.length > 1 && samePlace(points.at(-1)!, points[0]!)
+    points.length > 1 && sameLatLon(points.at(-1)!, points[0]!)
       ? points.slice(0, -1)
       : points;
 
@@ -108,7 +106,7 @@ const handle: ProcessorHandler<typeof routePlannerOptimizeOrder> = async ({
   // doesn't re-trigger routing).
   const changed =
     reordered.length !== points.length ||
-    reordered.some((point, i) => !samePlace(point, points[i]!));
+    reordered.some((point, i) => !sameLatLon(point, points[i]!));
 
   if (changed) {
     dispatch(routePlannerSetPoints(reordered));

@@ -442,6 +442,14 @@ export function toLatLng({ lat, lon }: LatLon): LatLngLiteral {
   return { lat, lng: lon };
 }
 
+/**
+ * The very same place, to the digit — for telling a marker that has been
+ * dragged from one that has not, where anything but an exact copy has moved.
+ */
+export function sameLatLon(a: LatLon, b: LatLon): boolean {
+  return a.lat === b.lat && a.lon === b.lon;
+}
+
 export function toLatLngArr(arr: LatLon[]): LatLngLiteral[] {
   return arr.map(toLatLng);
 }
