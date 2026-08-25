@@ -89,6 +89,7 @@ import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
  */
 const LABEL_DEFAULTS = {
   labelDensity: panoramaSettingsInitialState.labelDensity,
+  showLabelEle: panoramaSettingsInitialState.showLabelEle,
   minDominance: panoramaSettingsInitialState.minDominance,
   labelDistanceWeight: panoramaSettingsInitialState.labelDistanceWeight,
   prominenceWeight: panoramaSettingsInitialState.prominenceWeight,
@@ -385,6 +386,25 @@ export function PanoramaControls({
             dispatch(panoramaSetSettings({ labelDensity }))
           }
         />
+
+        {/* Beside the count, because it is the other half of the same
+            question: a second line makes every label taller, so fewer of them
+            fit the picture. */}
+        <div>
+          <Form.Check
+            id="fm-panorama-label-ele"
+            type="checkbox"
+            label={m?.labels.showEle}
+            checked={settings.showLabelEle}
+            onChange={(e) =>
+              dispatch(
+                panoramaSetSettings({ showLabelEle: e.currentTarget.checked }),
+              )
+            }
+          />
+
+          <Form.Text className="mt-0">{m?.labels.showEleHint}</Form.Text>
+        </div>
 
         <LabeledSlider
           id="fm-panorama-dominance"

@@ -190,6 +190,7 @@ const PersistedPanoramaSettingsSchema = z
     groundColor: z.string(),
     // Bounded, because the level indexes the menu's icon and word arrays.
     labelDensity: z.number().int().min(0).max(LABEL_DENSITY_MAX),
+    showLabelEle: z.boolean(),
     minDominance: z.number(),
     // Bounded to what the sliders offer: all three reach `rankLabels`, where a
     // stored value from outside the range would order the names by something

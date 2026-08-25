@@ -48,6 +48,12 @@ const LABEL_FONT = '12px sans-serif';
 
 const LINE_HEIGHT = 16;
 
+/** Matches `.labelEle`, the height the elevation line adds to a label. */
+const ELE_LINE_HEIGHT = 12;
+
+/** Matches `.labelEle`, which is what the elevations are measured in. */
+const ELE_FONT = '10px sans-serif';
+
 /**
  * Shortest leader drawn. Long enough to read as a line pointing at something
  * rather than as a tick under the text, which is the whole job it has when
@@ -108,14 +114,16 @@ const REVEALED_OPACITY = 0.65;
 let measureCtx: CanvasRenderingContext2D | null | undefined;
 
 /**
- * Cached across renders: the font never changes, so a name measures the same
- * for as long as the page lives, and the layout runs on every frame of a pan
- * over the better part of a thousand of them.
+ * Cached across renders by font and text, which measure the same for as long
+ * as the page lives — the layout runs on every frame of a pan over the better
+ * part of a thousand names.
  */
 const measured = new Map<string, number>();
 
-function measureText(text: string): number {
-  const hit = measured.get(text);
+function measureText(text: string, font = LABEL_FONT): number {
+  const key = `${font}|${text}`;
+
+  const hit = measured.get(key);
 
   if (hit !== undefined) {
     return hit;
@@ -123,16 +131,16 @@ function measureText(text: string): number {
 
   if (measureCtx === undefined) {
     measureCtx = document.createElement('canvas').getContext('2d');
+  }
 
-    if (measureCtx) {
-      measureCtx.font = LABEL_FONT;
-    }
+  if (measureCtx) {
+    measureCtx.font = font;
   }
 
   // Roughly what the font comes out at, for a browser that gave us no context.
   const width = measureCtx?.measureText(text).width ?? text.length * 6.5;
 
-  measured.set(text, width);
+  measured.set(key, width);
 
   return width;
 }
@@ -217,6 +225,15 @@ export function PanoramaView({
     style: 'unit',
     unit: 'degree',
     unitDisplay: 'narrow',
+    maximumFractionDigits: 0,
+  });
+
+  // The unit written out, unlike the readout's bare figure: under a name on the
+  // skyline there is nothing else to say what the number is.
+  const nfEle = useNumberFormat({
+    style: 'unit',
+    unit: 'meter',
+    unitDisplay: 'short',
     maximumFractionDigits: 0,
   });
 
@@ -885,19 +902,50 @@ export function PanoramaView({
     [candidates, degPerPx, limits, width],
   );
 
+  // Each summit's height as it is written, worked out once per set of names
+  // rather than per frame: formatting a number is dear, and the layout below
+  // asks for every one of them on every frame of a pan.
+  const eleTexts = useMemo(() => {
+    const texts = new Map<string, string>();
+
+    if (settings.showLabelEle) {
+      for (const label of named) {
+        if (label.ele !== null) {
+          texts.set(label.id, nfEle.format(label.ele));
+        }
+      }
+    }
+
+    return texts;
+  }, [named, nfEle, settings.showLabelEle]);
+
+  const labelHeight = settings.showLabelEle
+    ? LINE_HEIGHT + ELE_LINE_HEIGHT
+    : LINE_HEIGHT;
+
   // No `limits` guard of its own: `named` is already empty without them.
   const placements = useMemo(
     (): LabelPlacement[] =>
       layoutLabels(named, {
         anchor,
-        measure: (label) => measureText(label.name),
+        // The wider of the two lines: both are centred on the subject, so
+        // that is the box the neighbours have to be kept out of.
+        measure: (label) => {
+          const ele = eleTexts.get(label.id);
+
+          return Math.max(
+            measureText(label.name),
+            ele ? measureText(ele, ELE_FONT) : 0,
+          );
+        },
         viewportWidth: width,
         lineHeight: LINE_HEIGHT,
+        labelHeight,
         minLeader: MIN_LEADER,
         minTop: COMPASS_HEIGHT + 2,
         maxClimb: limits?.maxClimbPx ?? 0,
       }),
-    [anchor, limits, named, width],
+    [anchor, eleTexts, labelHeight, limits, named, width],
   );
 
   // Every label the strip can carry, worked out once per language: the eight
@@ -1005,7 +1053,7 @@ export function PanoramaView({
               x1={p.anchor.x}
               y1={p.anchor.y}
               x2={p.anchor.x}
-              y2={p.top + LINE_HEIGHT}
+              y2={p.top + labelHeight}
               stroke="rgba(0, 0, 0, 0.5)"
               strokeWidth={3}
             />
@@ -1014,7 +1062,7 @@ export function PanoramaView({
               x1={p.anchor.x}
               y1={p.anchor.y}
               x2={p.anchor.x}
-              y2={p.top + LINE_HEIGHT}
+              y2={p.top + labelHeight}
               stroke={p.label.id === pickedId ? PICKED_INK : '#fff'}
               strokeWidth={1}
             />
@@ -1064,6 +1112,13 @@ export function PanoramaView({
           onClick={() => pickLabel(p.label)}
         >
           {p.label.name}
+
+          {/* A summit the terrain model had no height for keeps its one line;
+              the box was laid out for two either way, which costs nothing but
+              a little air above it. */}
+          {eleTexts.has(p.label.id) && (
+            <span className={classes.labelEle}>{eleTexts.get(p.label.id)}</span>
+          )}
         </button>
       ))}
 

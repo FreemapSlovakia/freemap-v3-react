@@ -88,6 +88,9 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Klare Luft',
     hazeHint:
       'Wie weit ein Gipfel entfernt sein muss, damit der Dunst mehr zählt als der Gipfel selbst. Jenseits des Dreifachen davon wird gar nichts mehr benannt.',
+    showEle: 'Höhen anzeigen',
+    showEleHint:
+      'Schreibt unter jeden Gipfelnamen seine Höhe. Jede Beschriftung ist dann zwei Zeilen hoch, sodass weniger davon ins Bild passen.',
     showRevealed: 'Aufgedeckte Gipfel benennen',
     showRevealedHint:
       'Gipfel, die das Entfalten der Ferne hinter einem näheren Grat hervorgeholt hat: gezeichnet, aber von hier aus nicht wirklich sichtbar. Ihre Namen sind blasser und treten dort zurück, wo neben einem sichtbaren Gipfel kein Platz für beide ist.',

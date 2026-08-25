@@ -344,6 +344,11 @@ export interface PanoramaSettingsState {
   groundColor: string;
   /** How many names to draw, `0` for none; see {@link labelLayoutLimits}. */
   labelDensity: number;
+  /**
+   * Whether each name carries its summit's elevation on a second line. Off by
+   * default: a two-line label is taller, so fewer names fit the picture.
+   */
+  showLabelEle: boolean;
   /** Metres of dominance a summit needs to be named; see {@link DOMINANCE_STEPS_M}. */
   minDominance: number;
   /**
@@ -397,6 +402,7 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   showRevealedLabels: true,
   ...PANORAMA_STYLE_DEFAULTS,
   labelDensity: 5,
+  showLabelEle: false,
   minDominance: NO_DOMINANCE_FILTER,
   labelHazeKm: 120,
   labelDistanceWeight: 0.5,

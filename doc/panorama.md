@@ -830,6 +830,16 @@ over the full turn — so what really decides the count is how many lines they m
 stack into; raising the cap alone changes nothing while the climb is exhausted
 first.
 
+**Show elevations** writes each summit's height under its name in a smaller,
+dimmer face. It sits beside the count because it is the other half of the same
+question rather than a drawing detail: the box height (`labelHeight`) parts
+company with the climb step (`lineHeight`), every label becomes two lines tall,
+and fewer of them fit — hence the default off. The box is measured as the wider
+of its two lines, both centred on the subject, and the figures are formatted
+once per set of names rather than per frame, the way the compass ticks are. A
+summit the terrain model gave no height for keeps its one line in a box laid out
+for two.
+
 The request **orders and then cuts**, which is the service's intended shape:
 `peak_rank` says what matters, `max_peaks` (5000) says how many survive. What a
 cut drops is unrecoverable — no client filter restores what was never sent — so

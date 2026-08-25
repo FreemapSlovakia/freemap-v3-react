@@ -92,6 +92,8 @@ export interface LayoutOptions {
   viewportWidth: number;
   /** One line of text, which is also how far a crowded label climbs. */
   lineHeight: number;
+  /** The whole box, taller than a line where the elevation is written too. */
+  labelHeight?: number;
   /** Shortest leader drawn, so no text sits on the thing it names. */
   minLeader: number;
   /** How far a label may climb before it is given up on. */
@@ -103,14 +105,14 @@ export interface LayoutOptions {
 function overlaps(
   a: { left: number; top: number; width: number },
   b: { left: number; top: number; width: number },
-  lineHeight: number,
+  labelHeight: number,
   gutter: number,
 ): boolean {
   return (
     a.left < b.left + b.width + gutter &&
     b.left < a.left + a.width + gutter &&
-    a.top < b.top + lineHeight &&
-    b.top < a.top + lineHeight
+    a.top < b.top + labelHeight &&
+    b.top < a.top + labelHeight
   );
 }
 
@@ -138,6 +140,7 @@ export function layoutLabels(
     measure,
     viewportWidth,
     lineHeight,
+    labelHeight = lineHeight,
     minLeader,
     maxClimb,
     minTop = 0,
@@ -164,17 +167,17 @@ export function layoutLabels(
 
     const bottom = at.y - minLeader;
 
-    let top = bottom - lineHeight;
+    let top = bottom - labelHeight;
 
     while (
       top >= minTop &&
-      bottom - (top + lineHeight) <= maxClimb &&
-      placed.some((p) => overlaps({ left, top, width }, p, lineHeight, gutter))
+      bottom - (top + labelHeight) <= maxClimb &&
+      placed.some((p) => overlaps({ left, top, width }, p, labelHeight, gutter))
     ) {
       top -= lineHeight;
     }
 
-    if (top < minTop || bottom - (top + lineHeight) > maxClimb) {
+    if (top < minTop || bottom - (top + labelHeight) > maxClimb) {
       continue;
     }
 

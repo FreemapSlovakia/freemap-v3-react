@@ -101,6 +101,10 @@ export type PanoramaMessages = {
     /** The step with no falloff and no cut. */
     hazeOff: string;
     hazeHint: string;
+    /** Whether each name carries its summit's height on a second line. */
+    showEle: string;
+    /** Warns that a two-line label leaves room for fewer names. */
+    showEleHint: string;
     /** Whether summits only the unfolding brings into view are named at all. */
     showRevealed: string;
     /** Says what such a summit is, and how its name is marked. */

@@ -95,6 +95,9 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Czyste powietrze',
     hazeHint:
       'Jak daleko musi być szczyt, żeby mgiełka znaczyła więcej niż sam szczyt. Powyżej trzykrotności tej odległości nie jest nazywane już nic.',
+    showEle: 'Pokaż wysokości',
+    showEleHint:
+      'Pod nazwą każdego szczytu wypisuje jego wysokość. Podpis ma wtedy dwa wiersze, więc mieści się ich na obrazie mniej.',
     showRevealed: 'Nazywaj odsłonięte szczyty',
     showRevealedHint:
       'Szczyty, które rozwinięcie dali wyciągnęło zza bliższej grani: są narysowane, ale stąd naprawdę ich nie widać. Ich nazwy są jaśniejsze, a gdy brakuje miejsca dla obu, pierwszeństwo ma szczyt widoczny.',

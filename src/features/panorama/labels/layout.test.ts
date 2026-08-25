@@ -44,6 +44,18 @@ describe('panorama label layout', () => {
     expect(placements.map((p) => p.top)).toEqual([128, 112]);
   });
 
+  it('keeps a two-line label clear of its neighbour, climbing by a line', () => {
+    const placements = layoutLabels([label('a'), label('b')], {
+      ...options,
+      labelHeight: 28,
+      anchor: (l) => ({ x: l.id === 'a' ? 200 : 210, y: 150 }),
+    });
+
+    // The first sits a whole box above its summit; the second has to clear
+    // that box, which one line does not.
+    expect(placements.map((p) => p.top)).toEqual([116, 84]);
+  });
+
   it('leaves a label alone when the one beside it does not overlap', () => {
     const placements = layoutLabels([label('a'), label('b')], {
       ...options,

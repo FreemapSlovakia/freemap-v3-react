@@ -96,6 +96,9 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Čist zrak',
     hazeHint:
       'Kako daleč mora biti vrh, da megla šteje več kakor vrh sam. Nad trikratnikom te razdalje ni poimenovano nič več.',
+    showEle: 'Prikaži nadmorske višine',
+    showEleHint:
+      'Pod ime vsakega vrha izpiše njegovo višino. Napis je tedaj dvovrstičen, zato jih gre na sliko manj.',
     showRevealed: 'Poimenuj razkrite vrhove',
     showRevealedHint:
       'Vrhovi, ki jih je razgrnitev daljave potegnila izza bližjega grebena: narisani so, a od tod jih v resnici ni videti. Njihova imena so bledejša in kadar ni prostora za oba, ima prednost vrh, ki ga je videti.',

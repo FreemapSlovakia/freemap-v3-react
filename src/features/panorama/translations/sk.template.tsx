@@ -94,6 +94,9 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Čistý vzduch',
     hazeHint:
       'Ako ďaleko musí vrch byť, aby opar znamenal viac ako samotný vrch. Nad trojnásobkom tejto vzdialenosti sa už nepomenuje nič.',
+    showEle: 'Zobraziť nadmorské výšky',
+    showEleHint:
+      'Pod meno každého vrchu napíše jeho výšku. Menovka je potom dvojriadková, takže sa ich do obrázka zmestí menej.',
     showRevealed: 'Pomenovať odhalené vrchy',
     showRevealedHint:
       'Vrchy, ktoré rozvinutie diaľky vytiahlo spoza bližšieho hrebeňa: sú nakreslené, no odtiaľto ich v skutočnosti nevidno. Ich názvy sú svetlejšie a keď nie je miesto pre oba, prednosť dostane vrch, ktorý vidno.',

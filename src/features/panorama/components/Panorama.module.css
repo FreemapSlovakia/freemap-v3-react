@@ -112,12 +112,24 @@
   font: 12px sans-serif;
   line-height: 16px;
   white-space: nowrap;
+  /* Both lines sit centred over the subject, and the layout measured the box
+     as the wider of the two. */
+  text-align: center;
   color: #fff;
   text-shadow:
     0 0 3px #000,
     0 0 3px #000;
   cursor: pointer;
   pointer-events: auto;
+}
+
+/* The summit's height under its name: smaller and dimmer, so a skyline of them
+   reads as names with figures rather than as twice as many names. */
+.labelEle {
+  display: block;
+  font-size: 10px;
+  line-height: 12px;
+  opacity: 0.8;
 }
 
 /* A summit the depth lift brought into view, which a ridge really hides. Faded

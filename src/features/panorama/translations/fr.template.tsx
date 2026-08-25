@@ -94,6 +94,9 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Air limpide',
     hazeHint:
       'À quelle distance un sommet doit se trouver pour que la brume compte plus que le sommet lui-même. Au-delà du triple de cette distance, plus rien n’est nommé.',
+    showEle: 'Afficher les altitudes',
+    showEleHint:
+      'Écrit l’altitude sous le nom de chaque sommet. L’étiquette fait alors deux lignes, si bien qu’il en tient moins dans l’image.',
     showRevealed: 'Nommer les sommets révélés',
     showRevealedHint:
       'Sommets que le dépliement de la distance a fait sortir de derrière une crête plus proche : ils sont dessinés, mais on ne les voit pas réellement d’ici. Leurs noms sont plus pâles et, quand la place manque pour les deux, la priorité va au sommet que l’on voit.',

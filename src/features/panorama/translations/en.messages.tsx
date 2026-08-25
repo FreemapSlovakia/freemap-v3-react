@@ -98,6 +98,9 @@ const en: PanoramaMessages = {
     hazeOff: 'Clear air',
     hazeHint:
       'How far a summit must be before haze counts for more than the summit does. Past three times that, nothing is named at all.',
+    showEle: 'Show elevations',
+    showEleHint:
+      'Writes each summit’s height under its name. Every label is then two lines tall, so fewer of them fit the picture.',
     showRevealed: 'Name revealed peaks',
     showRevealedHint:
       'Summits that unfolding lifted out from behind a nearer ridge: drawn, but not actually visible from here. Their names are drawn faded, and rank below the ones that can be seen where there is no room for both.',

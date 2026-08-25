@@ -94,6 +94,9 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Tiszta levegő',
     hazeHint:
       'Milyen messze kell lennie egy csúcsnak, hogy a pára többet nyomjon a latban, mint maga a csúcs. Ennek háromszorosán túl semmi sem kap nevet.',
+    showEle: 'Magasságok megjelenítése',
+    showEleHint:
+      'Minden csúcs neve alá odaírja a magasságát. A felirat így kétsoros, ezért kevesebb fér el belőlük a képen.',
     showRevealed: 'Feltárt csúcsok elnevezése',
     showRevealedHint:
       'Csúcsok, amelyeket a távolság kibontása húzott elő egy közelebbi gerinc mögül: meg vannak rajzolva, de innen valójában nem látszanak. A nevük halványabb, és ha nincs hely mindkettőnek, a látható csúcs kapja meg.',
