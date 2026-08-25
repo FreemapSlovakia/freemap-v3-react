@@ -87,6 +87,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
         viewpoint,
         key: viewshedRenderKey(viewpoint, settings, grants),
         bounds: meta.bounds,
+        radiusKm: grants.radiusKm,
         eyeElevation: meta.eye_elevation,
       }),
     );

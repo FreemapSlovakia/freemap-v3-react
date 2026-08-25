@@ -1,5 +1,6 @@
 import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
+import { sameLatLon } from '@shared/geoutils.js';
 import { createSelector } from 'reselect';
 import { VIEWSHED_LAYER } from '../api.js';
 import {
@@ -23,6 +24,24 @@ export const viewshedGrantsSelector = createSelector(
   (state: RootState) => isPremium(state.auth.user),
   (settings, premium): ViewshedGrants => grantedViewshed(settings, premium),
 );
+
+/**
+ * Whether the pin still stands where the overlay was drawn from. Dragging it
+ * stages a new place without rendering, and both the toolbar and the layer have
+ * to answer that the same way — the one offers a viewshed from the new place,
+ * the other draws the old one behind it.
+ */
+export const viewshedAtRenderedViewpointSelector = (
+  state: RootState,
+): boolean => {
+  const { viewpoint, render } = state.viewshed;
+
+  return (
+    viewpoint !== null &&
+    render !== null &&
+    sameLatLon(render.viewpoint, viewpoint)
+  );
+};
 
 /**
  * Whether the overlay on the map still answers for the controls. Derived from

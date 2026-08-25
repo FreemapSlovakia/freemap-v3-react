@@ -5,11 +5,13 @@ import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
+import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
@@ -42,6 +44,7 @@ import {
   viewshedSetSettings,
 } from '../model/actions.js';
 import {
+  viewshedAtRenderedViewpointSelector,
   viewshedGrantsSelector,
   viewshedOutdatedSelector,
 } from '../model/selectors.js';
@@ -54,6 +57,9 @@ import {
 } from '../model/settingsReducer.js';
 import { grantedDetail, grantedRadiusKm, viewshedScale } from '../request.js';
 import { useViewshedMessages } from '../translations/useViewshedMessages.js';
+
+/** Constant, so the menu doesn't rebuild its items on every render. */
+const VIEWPOINT_OMIT: ViewFromHere[] = ['viewshed'];
 
 /** Highest a target may be raised, metres — a mast, not a mountain. */
 const TARGET_HEIGHT_MAX = 100;
@@ -115,6 +121,10 @@ export default function ViewshedMenu(): ReactElement {
   );
 
   const outdated = useAppSelector(viewshedOutdatedSelector);
+
+  const atRenderedViewpoint = useAppSelector(
+    viewshedAtRenderedViewpointSelector,
+  );
 
   const radiusOptions = useMemo(
     () =>
@@ -185,6 +195,17 @@ export default function ViewshedMenu(): ReactElement {
                 locateLabel={m?.locate}
                 onPick={() => dispatch(viewshedSetPickingViewpoint(true))}
               />
+
+              {viewpoint && (
+                <PlaceActionsButton
+                  lat={viewpoint.lat}
+                  lon={viewpoint.lon}
+                  // The overlay on screen is the viewshed from here — but only
+                  // while the pin stands where it was drawn from; dragged
+                  // elsewhere, a viewshed from there is worth offering again.
+                  omit={atRenderedViewpoint ? VIEWPOINT_OMIT : undefined}
+                />
+              )}
 
               <SelectDropdown
                 // What is actually being rendered, not what is stored: an

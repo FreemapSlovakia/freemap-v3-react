@@ -1,5 +1,5 @@
 import type { LatLon } from '@shared/types/common.js';
-import { VIEWSHED_RADIUS_STEPS_KM } from './model/settingsReducer.js';
+import { nearestRadiusKm } from './model/settingsReducer.js';
 
 /** Digits `viewshed=` is written with, which is also what it is compared at. */
 const COORD_DIGITS = 6;
@@ -53,9 +53,12 @@ export function parseViewshed(param: string): ParsedViewshed | null {
   return {
     viewpoint: { lat, lon },
     // Only a radius the control can be moved back to: the request is built from
-    // whatever this says, and the service charges rays for it.
-    ...(radiusKm !== undefined && VIEWSHED_RADIUS_STEPS_KM.includes(radiusKm)
-      ? { radiusKm }
+    // whatever this says, and the service charges rays for it. One between the
+    // stops is snapped to the nearest rather than dropped — a link written when
+    // the near stops were offered would otherwise open at whatever the reader
+    // happens to have stored, which is not the picture it was shared as.
+    ...(radiusKm !== undefined && Number.isFinite(radiusKm) && radiusKm > 0
+      ? { radiusKm: nearestRadiusKm(radiusKm) }
       : {}),
   };
 }

@@ -23,6 +23,8 @@ export interface ViewshedRenderInfo {
   key: string;
   /** `[west, south, east, north]` in degrees, as the overlay is drawn at. */
   bounds: [number, number, number, number];
+  /** How far it actually looked — the ring the settings may since have moved. */
+  radiusKm: number;
   /** Metres above sea level, eye height included. */
   eyeElevation: number;
 }

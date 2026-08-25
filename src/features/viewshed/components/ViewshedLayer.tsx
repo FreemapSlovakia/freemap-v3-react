@@ -1,14 +1,19 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
+import {
+  GhostViewpointMarker,
+  useStagedViewpoint,
+  ViewpointElevationTooltip,
+} from '@shared/components/ViewpointMarkers.js';
+import { toLatLng } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import type { LatLngBoundsExpression, Marker as LeafletMarker } from 'leaflet';
+import type { LatLngBoundsExpression } from 'leaflet';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { FaEye } from 'react-icons/fa';
-import { Circle, ImageOverlay, Tooltip } from 'react-leaflet';
+import { Circle, ImageOverlay } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { viewshedMoveViewpoint } from '../model/actions.js';
 import {
+  viewshedAtRenderedViewpointSelector,
   viewshedGrantsSelector,
   viewshedOutdatedSelector,
 } from '../model/selectors.js';
@@ -29,10 +34,6 @@ export default function ViewshedLayer({
   zIndex,
 }: Props): ReactElement | null {
   const dispatch = useDispatch();
-
-  const gm = useMessages();
-
-  const nfEle = useNumberFormat({ maximumFractionDigits: 0 });
 
   // Field by field: the slice also carries the progress the side channel
   // reports several times a second, and nothing here moves while it does.
@@ -57,37 +58,47 @@ export default function ViewshedLayer({
     [render],
   );
 
-  const position = useMemo(
-    () => viewpoint && { lat: viewpoint.lat, lng: viewpoint.lon },
-    [viewpoint],
-  );
+  const position = useMemo(() => viewpoint && toLatLng(viewpoint), [viewpoint]);
 
-  const handleDragEnd = useCallback(
-    (e: { target: LeafletMarker }) => {
-      const { lat, lng } = e.target.getLatLng();
-
-      dispatch(viewshedMoveViewpoint({ lat, lon: lng }));
-    },
-    [dispatch],
+  const { dragging, handlers } = useStagedViewpoint(
+    useCallback((at) => dispatch(viewshedMoveViewpoint(at)), [dispatch]),
   );
 
   // `usePathOptions` compares by reference, so a fresh object would restyle the
   // circle's SVG on every render.
   const circleStyle = useMemo(
-    () => ({ color, weight: 1.5, dashArray: '5 5', fill: false }),
+    () => ({
+      color,
+      weight: 1.5,
+      // Dashed while it is a promise about the next render rather than the
+      // edge of what is drawn.
+      dashArray: outdated ? '5 5' : undefined,
+      fill: false,
+    }),
+    [color, outdated],
+  );
+
+  const ghostStyle = useMemo(
+    () => ({ color, weight: 1.5, opacity: 0.45, fill: false }),
     [color],
   );
 
-  // Only where the eye still stands where the overlay was drawn from: the
-  // service answers the elevation of the place it looked from, not of wherever
-  // the pin has since been dragged.
-  const eyeElevation =
-    render &&
-    viewpoint &&
-    render.viewpoint.lat === viewpoint.lat &&
-    render.viewpoint.lon === viewpoint.lon
-      ? render.eyeElevation
-      : null;
+  // Where the overlay was drawn from — not the pin, which may since have been
+  // dragged somewhere nothing has been computed for.
+  const renderedAt = useMemo(
+    () => render && toLatLng(render.viewpoint),
+    [render],
+  );
+
+  const atRenderedViewpoint = useAppSelector(
+    viewshedAtRenderedViewpointSelector,
+  );
+
+  // The service answers the elevation of the place it looked from, not of
+  // wherever the pin has since been dragged.
+  const eyeElevation = atRenderedViewpoint
+    ? (render?.eyeElevation ?? null)
+    : null;
 
   return (
     <>
@@ -103,13 +114,36 @@ export default function ViewshedLayer({
         />
       )}
 
-      {position && outdated && (
+      {/* How far the next render will look, which is the overlay's own edge
+          once it answers for the pin. */}
+      {position && (
         <Circle
           center={position}
           radius={grants.radiusKm * 1000}
           interactive={false}
           pathOptions={circleStyle}
         />
+      )}
+
+      {/* Where the overlay was drawn from, while the pin is elsewhere: faded,
+          so it reads as the place the picture belongs to rather than as a
+          second viewpoint, with the ring it actually looked out to. */}
+      {(dragging || !atRenderedViewpoint) && renderedAt && render && (
+        <>
+          <Circle
+            center={renderedAt}
+            radius={render.radiusKm * 1000}
+            interactive={false}
+            pathOptions={ghostStyle}
+          />
+
+          <GhostViewpointMarker
+            position={renderedAt}
+            color={color}
+            faIcon={<FaEye />}
+            elevation={render.eyeElevation}
+          />
+        </>
       )}
 
       {/* An eye, in the overlay's own colour: it marks where one stands and
@@ -119,14 +153,11 @@ export default function ViewshedLayer({
           position={position}
           color={color}
           draggable
-          eventHandlers={{ dragend: handleDragEnd }}
+          eventHandlers={handlers}
           faIcon={<FaEye />}
         >
           {eyeElevation === null ? null : (
-            <Tooltip direction="top">
-              {gm?.general.viewpoint}: {nfEle.format(eyeElevation)}{' '}
-              {gm?.general.masl}
-            </Tooltip>
+            <ViewpointElevationTooltip elevation={eyeElevation} />
           )}
         </RichMarker>
       )}

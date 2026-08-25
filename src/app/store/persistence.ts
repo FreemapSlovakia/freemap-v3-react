@@ -45,8 +45,8 @@ import { SearchResultStyleSchema } from '@features/search/model/actions.js';
 import { searchSettingsInitialState } from '@features/search/model/settingsReducer.js';
 import { trackingSettingsInitialState } from '@features/tracking/model/settingsReducer.js';
 import {
+  nearestRadiusKm,
   VIEWSHED_DETAIL_ORDER,
-  VIEWSHED_RADIUS_STEPS_KM,
   viewshedSettingsInitialState,
 } from '@features/viewshed/model/settingsReducer.js';
 import { weatherRadarSettingsInitialState } from '@features/weatherRadar/model/settingsReducer.js';
@@ -204,12 +204,15 @@ const PersistedPanoramaSettingsSchema = z
 const PersistedViewshedSettingsSchema = z
   .object({
     // The stops the control offers, not a range: one between two would leave
-    // the dropdown showing nothing while still costing rays. Caught rather than
-    // refused — a failed field here would take the whole slice's defaults with
-    // it, resetting the colour and the rest over a radius nobody can see.
+    // the dropdown showing nothing while still costing rays. Snapped to the
+    // nearest rather than refused — a failed field here would take the whole
+    // slice's defaults with it, resetting the colour and the rest over a radius
+    // nobody can see, and a store written when the near stops were offered
+    // still says what its owner asked for.
     radiusKm: z
       .number()
-      .refine((km) => VIEWSHED_RADIUS_STEPS_KM.includes(km))
+      .positive()
+      .transform(nearestRadiusKm)
       .catch(viewshedSettingsInitialState.radiusKm),
     detail: z.enum(VIEWSHED_DETAIL_ORDER),
     eye: z.number().min(0),

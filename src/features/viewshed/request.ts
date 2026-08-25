@@ -18,8 +18,8 @@ const DATA_SCALE_M = 6;
 
 /**
  * Fewest pixels a side worth drawing. A coarse tier over a short range would
- * otherwise come out at a few dozen pixels — 66 for the fastest at 1 km — which
- * reads as a broken overlay rather than a fast one.
+ * otherwise come out a few hundred pixels across — 333 for the fastest at 5 km
+ * — which reads as a broken overlay rather than a fast one.
  */
 const MIN_SIDE_PX = 600;
 

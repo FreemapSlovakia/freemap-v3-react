@@ -71,7 +71,9 @@ feature's own slices, the way the weather radar's does:
 `ViewshedMenu` is its toolbar, gated on the layer being on and collapsible like
 the radar's. Turning the layer on with nowhere to look from raises the picking
 mode (`viewshedLayerProcessor`), which is what makes the first render an
-explicit act.
+explicit act. Beside the eye button it carries a `PlaceActionsButton` for the
+viewpoint — the map context menu's own items, minus the viewshed from here,
+which is what is already on screen.
 
 ## What premium grants
 
@@ -98,7 +100,11 @@ A render is seconds of a server that runs one at a time, so:
   setting. Whether what's on the map still answers for the controls is
   **derived**: `viewshedRenderKey(viewpoint, settings)` is stored on the render
   and compared against the current one, so nothing has to set a dirty flag. The
-  dashed circle appears exactly while they disagree.
+  range circle is dashed exactly while they disagree.
+- **A staged place leaves the rendered one behind**, faded, with the range it
+  actually looked out to — `render.radiusKm`, which is why the render carries it
+  rather than deriving it from the settings the pin has moved away from. The
+  panorama does the same with its own eye; see `doc/panorama.md`.
 - **A new render aborts the one in flight** rather than queueing behind it —
   `CANCEL` in `renderHandler.ts`. The layer going is one of its triggers,
   whichever way it went.

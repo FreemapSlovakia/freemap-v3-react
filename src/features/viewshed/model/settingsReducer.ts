@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { nearestStep } from '@shared/mathUtils.js';
 import { viewshedSetSettings } from './actions.js';
 
 /**
@@ -8,8 +9,18 @@ import { viewshedSetSettings } from './actions.js';
  * of magnitude and every one of these is a round number.
  */
 export const VIEWSHED_RADIUS_STEPS_KM = [
-  1, 2, 3, 5, 7, 10, 15, 20, 30, 50, 75, 100, 150, 200, 250, 300,
+  5, 7, 10, 15, 20, 30, 50, 75, 100, 150, 200, 250, 300,
 ];
+
+/**
+ * The stop nearest a radius that is not one — a link written before the near
+ * stops went, or a stored setting from the same. Snapped rather than dropped:
+ * falling back to the default would render a shared link at a range nobody
+ * chose, and say nothing about it.
+ */
+export function nearestRadiusKm(km: number): number {
+  return VIEWSHED_RADIUS_STEPS_KM[nearestStep(VIEWSHED_RADIUS_STEPS_KM, km)]!;
+}
 
 /** Coarsest to finest; the order the menu offers them in. */
 export const VIEWSHED_DETAIL_ORDER = [
@@ -64,8 +75,8 @@ export const viewshedSettingsInitialState: ViewshedSettingsState = {
   detail: 'standard',
   eye: 1.7,
   targetHeight: 0,
-  // Nothing else on a map or an aerial is this red.
-  color: '#ff0000',
+  // Nothing else on a map or an aerial is this violet.
+  color: '#8000ff',
   // Not the service's `1`: measured alpha lands at 0.05–0.15 over most of a wide
   // view, which is not an overlay anyone can read at a glance.
   gamma: 2,
